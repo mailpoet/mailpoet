@@ -1,6 +1,9 @@
 # namp2
 Not another MP2 a.k.a MP3 done the right way.
 
+# Requirements.
+- PHP 5.3.6
+
 # OSX Install.
 - Install MAMP.
 - Install Sequel Pro.
