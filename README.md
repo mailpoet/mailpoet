@@ -8,6 +8,10 @@ Not another MP2 a.k.a MP3 done the right way.
 - Install MAMP.
 - Install Sequel Pro.
 - Install WordPress.
+- Enable debug mode.
+```php
+define(WP_DEBUG, true);
+```
 - ...
 
 # Rules.
