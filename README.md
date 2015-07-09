@@ -35,4 +35,5 @@ Kickstart file.
 - Two spaces indentation, Ruby style.
 - CamelCase for classes.
 - snake_case for methods.
+- Max line length at 80 chars.
 - ...
