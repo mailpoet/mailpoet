@@ -15,57 +15,74 @@ class MailPoet {
     'file' => '',
     'version' => '1.0.0'
   )) {
+    $this->data = array();
+    $this->version = $params['version'];
+    $this->shortname = 'mailpoet';
+    $this->file = $params['file'];
+    $this->dir = trailingslashit(dirname($this->file));
+    $this->assets_dir = $this->dir . 'assets/';
+    $this->assets_url = plugins_url(
+      '/assets/',
+      $this->file
+    );
+    $this->lib_dir = $this->dir .'lib/';
 
-  $this->version = $params['version'];
-  $this->shortname = 'mailpoet';
-  $this->file = $params['file'];
-  $this->dir = dirname($this->file);
-  $this->assets_dir = $this->dir . 'assets/';
-  $this->assets_url = plugins_url(
-    '/assets/',
-    $this->file
-  );
+    // Twig autoloader
+    require_once $this->lib_dir . 'Twig/Autoloader.php';
+    Twig_Autoloader::register();
 
-  register_activation_hook(
-    $this->file,
-    array($this, 'install')
-  );
+    // instantiate renderer
+    $this->renderer = new Twig_Environment(
+      new Twig_Loader_Filesystem($this->dir . 'views'),
+      array(
+        // 'cache' => '/path/to/compilation_cache',
+      )
+    );
 
-  // public assets
-  add_action(
-    'wp_enqueue_scripts',
-    array($this, 'public_css'),
-    10
-  );
-  add_action(
-    'wp_enqueue_scripts',
-    array($this, 'public_js'),
-    10
-  );
+    register_activation_hook(
+      $this->file,
+      array($this, 'install')
+    );
 
-  // admin assets
-  add_action(
-    'admin_enqueue_scripts',
-    array($this, 'admin_css'),
-    10,
-    1
-  );
-  add_action(
-    'admin_enqueue_scripts',
-    array($this, 'admin_js'),
-    10,
-    1
-  );
+    // public assets
+    add_action(
+      'wp_enqueue_scripts',
+      array($this, 'public_css'),
+      10
+    );
+    add_action(
+      'wp_enqueue_scripts',
+      array($this, 'public_js'),
+      10
+    );
 
-  // localization
-  $this->setup_textdomain();
-  add_action(
-    'init',
-    array($this, 'localize'),
-    0
-  );
+    // admin assets
+    add_action(
+      'admin_enqueue_scripts',
+      array($this, 'admin_css'),
+      10,
+      1
+    );
+    add_action(
+      'admin_enqueue_scripts',
+      array($this, 'admin_js'),
+      10,
+      1
+    );
+
+    // localization
+    $this->setup_textdomain();
+    add_action(
+      'init',
+      array($this, 'localize'),
+      0
+    );
+
+    // admin menu
+    add_action('admin_menu', array($this, 'admin_menu'));
   }
 
+  // public methods
   public function public_css() {
     $name = $this->shortname . '-public';
 
@@ -147,6 +164,91 @@ class MailPoet {
     $this->log_version_number();
   }
 
+  public function admin_page() {
+    // set data
+    $this->data = array(
+      'title' => __('Twig Sample page'),
+      'text' => 'Lorem ipsum dolor sit amet',
+      'unsafe_string' => '<script>alert("not triggered");</script>',
+      'users' => array(
+        array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),
+        array('name' => 'Marco', 'email' => 'marco@mailpoet.com'),
+      )
+    );
+    // Sample page using Twig
+    echo $this->renderer->render('index.html', $this->data);
+  }
+
+  public function admin_menu() {
+    // main menu
+    add_menu_page(
+      'MailPoet',
+      'MailPoet',
+      'manage_options',
+      'mailpoet-newsletters',
+      array($this, 'admin_page'),
+      $this->assets_url . 'img/menu_icon.png',
+      30
+    );
+/*
+    // newsletters
+    add_submenu_page(
+      'mailpoet-newsletters',
+      'Newsletters',
+      'Newsletters',
+      'manage_options',
+      'mailpoet-newsletters',
+      'mailpoet_newsletters'
+    );
+
+    // subscribers
+    add_submenu_page('mailpoet-newsletters',
+      'Subscribers',
+      'Subscribers',
+      'manage_options',
+      'mailpoet-subscribers',
+      'mailpoet_subscribers'
+    );
+
+    // forms
+    add_submenu_page('mailpoet-newsletters',
+      'Forms',
+      'Forms',
+      'manage_options',
+      'mailpoet-forms',
+      'mailpoet_forms'
+    );
+
+    // settings
+    add_submenu_page('mailpoet-newsletters',
+      'Settings',
+      'Settings',
+      'manage_options',
+      'mailpoet-settings',
+      'mailpoet_settings'
+    );
+
+    // premium
+    add_submenu_page('mailpoet-newsletters',
+      'Premium',
+      'Premium',
+      'manage_options',
+      'mailpoet-premium',
+      'mailpoet_premium'
+    );
+
+    // statistics
+    add_submenu_page('mailpoet-newsletters',
+      'Statistics',
+      'Statistics',
+      'manage_options',
+      'mailpoet-statistics',
+      'mailpoet_statistics'
+    );
+*/
+  }
+
+  // private methods
   private function log_version_number() {
     update_option(
       $this->shortname . '_version', $this->version

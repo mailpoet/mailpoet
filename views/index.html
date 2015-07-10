@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <p>{{ text }}</p>
+
+  <!-- escaping -->
+  <h3>Auto Escape (HTML)</h3>
+  <p>{{ unsafe_string }}</p>
+
+  <!-- escaping JS -->
+  <h3>Auto Escape (JS)</h3>
+  <p>{{ unsafe_string|e('js') }}</p>
+
+  <!-- raw content (block style) -->
+  {% verbatim %}
+    <h3>Raw</h3>
+    <p>{{ unsafe_string }}</p>
+  {% endverbatim %}
+
+  <!-- loop -->
+  <h3>Loop</h3>
+  <ul>
+  {% for user in users %}
+    <li><a href="mailto:{{ user.email }}">{{ user.name }}</a></li>
+  {% endfor %}
+  </ul>
+
+{% endblock %}

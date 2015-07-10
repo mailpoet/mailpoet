@@ -1,3 +1,6 @@
-jQuery( document ).ready( function ( e ) {
-	
+jQuery(function($) {
+    // dom ready
+    $(function() {
+
+    });
 });
