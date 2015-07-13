@@ -4,7 +4,8 @@ Not another MP2 a.k.a MP3 done the right way.
 
 # Requirements.
 
-- PHP 5.3.6
+- PHP >=5.3.6 (production).
+- PHP >=5.5 (dev).
 
 # Install.
 
