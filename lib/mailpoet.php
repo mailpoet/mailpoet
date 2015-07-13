@@ -1,7 +1,7 @@
-<?php
+<?php namespace MailPoet;
 if (!defined('ABSPATH')) exit;
 
-class MailPoet {
+class Initializer {
 
   public $version;
   public $shortname;
@@ -28,8 +28,8 @@ class MailPoet {
     $this->lib_dir = $this->dir .'/lib';
 
     // instantiate renderer
-    $this->renderer = new Twig_Environment(
-      new Twig_Loader_Filesystem($this->dir . '/views'),
+    $this->renderer = new \Twig_Environment(
+      new \Twig_Loader_Filesystem($this->dir . '/views'),
       array(
         // 'cache' => '/path/to/compilation_cache',
       )

@@ -4,5 +4,10 @@
     "twig/twig": "1.*"
   },
   "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "MailPoet\\": "lib/"
+    }
   }
 }
