@@ -25,4 +25,10 @@
   {% endfor %}
   </ul>
 
+  <!-- Notice -->
+  <h3>Notices</h3>
+  <p><a href="javascript:;" onclick="MailPoet.Notice.success('Test');">Trigger success</a></p>
+  <p><a href="javascript:;" onclick="MailPoet.Notice.error('Test');">Trigger error</a></p>
+  <p><a href="javascript:;" onclick="MailPoet.Notice.system('Test');">Trigger warning</a></p>
+
 {% endblock %}

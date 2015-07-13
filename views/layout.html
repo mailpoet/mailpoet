@@ -1,3 +1,6 @@
+<div id="mailpoet_notice_system" class="mailpoet_notice update-nag" style="display:none;"></div>
+<div id="mailpoet_notice_error" class="mailpoet_notice error" style="display:none;"></div>
+<div id="mailpoet_notice_success" class="mailpoet_notice updated" style="display:none;"></div>
 <div class="wrap">
   {% if title %}
     <h2>{{ title }}</h2>
@@ -5,3 +8,10 @@
 
   {% block content %}{% endblock %}
 </div>
+<!-- notices -->
+<script type="text/javascript" src="{{ assets_url }}/js/mailpoet_notice.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ assets_url }}/css/mailpoet_notice.css">
+
+<!-- modals -->
+<script type="text/javascript" src="{{ assets_url }}/js/mailpoet_modal.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ assets_url }}/css/mailpoet_modal.css">

@@ -19,25 +19,28 @@ class MailPoet {
     $this->version = $params['version'];
     $this->shortname = 'mailpoet';
     $this->file = $params['file'];
-    $this->dir = trailingslashit(dirname($this->file));
-    $this->assets_dir = $this->dir . 'assets/';
+    $this->dir = (dirname($this->file));
+    $this->assets_dir = $this->dir . '/assets';
     $this->assets_url = plugins_url(
-      '/assets/',
+      '/assets',
       $this->file
     );
-    $this->lib_dir = $this->dir .'lib/';
+    $this->lib_dir = $this->dir .'/lib';
 
     // Twig autoloader
-    require_once $this->lib_dir . 'Twig/Autoloader.php';
+    require_once $this->lib_dir . '/Twig/Autoloader.php';
     Twig_Autoloader::register();
 
     // instantiate renderer
     $this->renderer = new Twig_Environment(
-      new Twig_Loader_Filesystem($this->dir . 'views'),
+      new Twig_Loader_Filesystem($this->dir . '/views'),
       array(
         // 'cache' => '/path/to/compilation_cache',
       )
     );
+
+    // renderer global variables
+    $this->renderer->addGlobal('assets_url', $this->assets_url);
 
     register_activation_hook(
       $this->file,
@@ -88,7 +91,7 @@ class MailPoet {
 
     wp_register_style(
       $name,
-      $this->assets_url . 'css/public.css',
+      $this->assets_url . '/css/public.css',
       array(),
       $this->version
     );
@@ -99,7 +102,7 @@ class MailPoet {
     $name = $this->shortname . '-public';
     wp_register_script(
       $name,
-      $this->assets_url . 'js/public.js',
+      $this->assets_url . '/js/public.js',
       array('jquery'),
       $this->version
     );
@@ -110,7 +113,7 @@ class MailPoet {
     $name = $this->shortname . '-admin';
     wp_register_style(
       $name,
-      $this->assets_url . 'css/admin.css',
+      $this->assets_url . '/css/admin.css',
       array(), $this->version
     );
     wp_enqueue_style($name);
@@ -120,7 +123,7 @@ class MailPoet {
     $name = $this->shortname . '-admin';
     wp_register_script(
       $this->shortname . '-admin',
-      $this->assets_url . 'js/admin.js',
+      $this->assets_url . '/js/admin.js',
       array('jquery'),
       $this->version
     );
@@ -187,7 +190,7 @@ class MailPoet {
       'manage_options',
       'mailpoet-newsletters',
       array($this, 'admin_page'),
-      $this->assets_url . 'img/menu_icon.png',
+      $this->assets_url . '/img/menu_icon.png',
       30
     );
 /*
