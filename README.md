@@ -15,6 +15,10 @@ Not another MP2 a.k.a MP3 done the right way.
 $ curl -sS https://getcomposer.org/installer | php
 $ php composer.phar install
 ```
+- Install composer.
+```sh
+$ php composer.phar install
+```
 
 # Structure.
 
@@ -25,7 +29,14 @@ CSS and JS.
 Language files.
 
 - /lib
-MailPoet classes.
+MailPoet classes. All classes are autoloaded, under the MailPoet namespace.
+```php
+namespace \MailPoet\Models;
+class Subscriber {}
+```
+```php
+$subscriber = new \MailPoet\Models\Subscriber();
+```
 
 - /test
 Acceptance and spec tests.
