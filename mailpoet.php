@@ -19,6 +19,7 @@ if (!defined('ABSPATH')) exit;
  * @since 1.0.0
  */
 
+require 'vendor/autoload.php';
 require_once('lib/mailpoet.php');
 
 function mailpoet() {
