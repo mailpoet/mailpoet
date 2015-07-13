@@ -27,10 +27,6 @@ class MailPoet {
     );
     $this->lib_dir = $this->dir .'/lib';
 
-    // Twig autoloader
-    require_once $this->lib_dir . '/Twig/Autoloader.php';
-    Twig_Autoloader::register();
-
     // instantiate renderer
     $this->renderer = new Twig_Environment(
       new Twig_Loader_Filesystem($this->dir . '/views'),
