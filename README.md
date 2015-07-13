@@ -9,6 +9,12 @@ Not another MP2 a.k.a MP3 done the right way.
 # Install.
 
 - Clone the repo in wp-content/plugins.
+- Install PHP (OSX comes with it).
+- Install composer.
+```sh
+$ curl -sS https://getcomposer.org/installer | php
+$ php composer.phar # test composer
+```
 
 # Structure.
 
