@@ -13,7 +13,7 @@ Not another MP2 a.k.a MP3 done the right way.
 - Install composer.
 ```sh
 $ curl -sS https://getcomposer.org/installer | php
-$ php composer.phar # test composer
+$ php composer.phar install
 ```
 
 # Structure.
