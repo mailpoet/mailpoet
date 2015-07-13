@@ -21,9 +21,6 @@ $ php composer.phar # test composer
 - /assets
 CSS and JS.
 
-- /deps
-PHP dependencies.
-
 - /lang
 Language files.
 
