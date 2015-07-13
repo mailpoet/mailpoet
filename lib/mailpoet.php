@@ -165,6 +165,7 @@ class Initializer {
 
   public function admin_page() {
     // set data
+    $subscriber = new \MailPoet\Models\Subscriber();
     $this->data = array(
       'title' => __('Twig Sample page'),
       'text' => 'Lorem ipsum dolor sit amet',
@@ -172,7 +173,8 @@ class Initializer {
       'users' => array(
         array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),
         array('name' => 'Marco', 'email' => 'marco@mailpoet.com'),
-      )
+        ),
+      'subscriber' => $subscriber->name
     );
     // Sample page using Twig
     echo $this->renderer->render('index.html', $this->data);
