@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet;
+namespace MailPoet\Config;
 use MailPoet\Models;
 
 if (!defined('ABSPATH')) exit;

@@ -21,10 +21,9 @@ if (!defined('ABSPATH')) exit;
 
 require 'vendor/autoload.php';
 require_once('lib/orm/rb.php');
-require_once('lib/mailpoet.php');
 
 function mailpoet() {
-  return new \MailPoet\Initializer(array(
+  return new \MailPoet\Config\Initializer(array(
     'file' => __FILE__,
     'version' => '1.0.0'
   ));
