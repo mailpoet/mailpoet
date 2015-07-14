@@ -3,7 +3,7 @@ namespace MailPoet\Models;
 
 if (!defined('ABSPATH')) exit;
 
-class Subscriber extends Model {
+class Subscriber {
 
   public $name;
 
