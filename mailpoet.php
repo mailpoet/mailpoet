@@ -20,6 +20,7 @@ if (!defined('ABSPATH')) exit;
  */
 
 require 'vendor/autoload.php';
+require_once('lib/orm/rb.php');
 require_once('lib/mailpoet.php');
 
 function mailpoet() {

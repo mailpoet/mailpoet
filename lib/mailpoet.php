@@ -1,4 +1,7 @@
-<?php namespace MailPoet;
+<?php
+namespace MailPoet;
+use MailPoet\Models;
+
 if (!defined('ABSPATH')) exit;
 
 class Initializer {
@@ -165,7 +168,7 @@ class Initializer {
 
   public function admin_page() {
     // set data
-    $subscriber = new \MailPoet\Models\Subscriber();
+    $subscriber = new Models\Subscriber();
     $this->data = array(
       'title' => __('Twig Sample page'),
       'text' => 'Lorem ipsum dolor sit amet',

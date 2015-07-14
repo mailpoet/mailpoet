@@ -1,7 +1,9 @@
-<?php namespace MailPoet\Models;
+<?php
+namespace MailPoet\Models;
+
 if (!defined('ABSPATH')) exit;
 
-class Subscriber {
+class Subscriber extends Model {
 
   public $name;
 
