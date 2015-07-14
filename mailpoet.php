@@ -21,7 +21,6 @@ if (!defined('ABSPATH')) exit;
  */
 
 require 'vendor/autoload.php';
-require_once('lib/orm/rb.php');
 
 function mailpoet() {
   return new Initializer(array(
