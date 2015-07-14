@@ -1,4 +1,5 @@
 <?php
+use \MailPoet\Config\Initializer;
 if (!defined('ABSPATH')) exit;
 
 /*
@@ -23,7 +24,7 @@ require 'vendor/autoload.php';
 require_once('lib/orm/rb.php');
 
 function mailpoet() {
-  return new \MailPoet\Config\Initializer(array(
+  return new Initializer(array(
     'file' => __FILE__,
     'version' => '1.0.0'
   ));
