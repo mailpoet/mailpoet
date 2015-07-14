@@ -4,7 +4,9 @@
     "twig/twig": "1.*"
   },
   "require-dev": {
-    "codeception/codeception": "*"
+    "codeception/codeception": "*",
+    "codeception/specify": "*",
+    "codeception/verify": "*"
   },
   "autoload": {
     "psr-4": {
