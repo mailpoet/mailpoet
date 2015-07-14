@@ -51,4 +51,5 @@ Kickstart file.
 - CamelCase for classes.
 - snake_case for methods.
 - Max line length at 80 chars.
+- Composition over Inheritance.
 - ...
