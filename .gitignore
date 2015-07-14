@@ -2,3 +2,4 @@
 TODO
 composer.phar
 vendor
+tests/_output/*
