@@ -1,23 +1,3 @@
-/* clearfix */
-.clearfix:after {
-  content: ".";
-  display: block;
-  height: 0;
-  clear: both;
-  visibility: hidden;
-  overflow: hidden;
-}
-
-.clearfix {
-  display: inline-table;
-}
-* html .clearfix {
-  height: 1%;
-}
-.clearfix {
-  display: block;
-}
-
 /* hide scrollbars on background when a modal window is opened */
 body.mailpoet_modal_opened {
 	overflow: hidden;

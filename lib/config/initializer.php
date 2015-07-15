@@ -9,8 +9,8 @@ class Initializer {
   public $version;
   public $shortname;
   public $file;
-  public $dir;
-  public $assets_dir;
+  public $path;
+  public $assets_path;
   public $assets_url;
 
 
@@ -22,23 +22,26 @@ class Initializer {
     $this->version = $params['version'];
     $this->shortname = 'mailpoet';
     $this->file = $params['file'];
-    $this->dir = (dirname($this->file));
-    $this->assets_dir = $this->dir . '/assets';
+    $this->path = (dirname($this->file));
+    $this->views_path = $this->path . '/views';
+    $this->assets_path = $this->path . '/assets';
     $this->assets_url = plugins_url(
       '/assets',
       $this->file
     );
-    $this->lib_dir = $this->dir .'/lib';
+    $this->lib_path = $this->path .'/lib';
 
-    // instantiate renderer
+    // -------------------
+    // Template renderer
+    // -------------------
     $this->renderer = new \Twig_Environment(
-      new \Twig_Loader_Filesystem($this->dir . '/views'),
+      new \Twig_Loader_Filesystem($this->views_path),
       array(
         // 'cache' => '/path/to/compilation_cache',
       )
     );
 
-    // renderer global variables
+    // renderer: global variables
     $this->renderer->addGlobal('assets_url', $this->assets_url);
 
     register_activation_hook(

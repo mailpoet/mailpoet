@@ -1,5 +1,6 @@
 <?php
 use \MailPoet\Config\Initializer;
+
 if (!defined('ABSPATH')) exit;
 
 /*
