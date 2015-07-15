@@ -8,10 +8,15 @@
 
   {% block content %}{% endblock %}
 </div>
-<!-- notices -->
-<script type="text/javascript" src="{{ assets_url }}/js/mailpoet_notice.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ assets_url }}/css/mailpoet_notice.css">
 
-<!-- modals -->
-<script type="text/javascript" src="{{ assets_url }}/js/mailpoet_modal.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ assets_url }}/css/mailpoet_modal.css">
+<!-- stylesheets -->
+{{ stylesheet(
+  'common.css',
+  'mailpoet_modal.css'
+)}}
+
+<!-- javascripts -->
+{{ javascript(
+  'mailpoet_notice.js',
+  'mailpoet_modal.js'
+)}}

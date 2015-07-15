@@ -53,3 +53,6 @@ Acceptance and spec tests.
 
 - /mailpoet.php
 Kickstart file.
+
+# Stylus command
+stylus -w assets/css/src/*.styl -o assets/css/

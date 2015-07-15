@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Config;
 use MailPoet\Models;
+use MailPoet\Renderer;
 
 if (!defined('ABSPATH')) exit;
 
@@ -42,7 +43,8 @@ class Initializer {
     );
 
     // renderer: global variables
-    $this->renderer->addGlobal('assets_url', $this->assets_url);
+    // $this->renderer->addGlobal('assets_url', $this->assets_url);
+    $this->renderer->addExtension(new Renderer\Assets($this->assets_url));
 
     register_activation_hook(
       $this->file,
@@ -50,30 +52,30 @@ class Initializer {
     );
 
     // public assets
-    add_action(
-      'wp_enqueue_scripts',
-      array($this, 'public_css'),
-      10
-    );
-    add_action(
-      'wp_enqueue_scripts',
-      array($this, 'public_js'),
-      10
-    );
+    // add_action(
+    //   'wp_enqueue_scripts',
+    //   array($this, 'public_css'),
+    //   10
+    // );
+    // add_action(
+    //   'wp_enqueue_scripts',
+    //   array($this, 'public_js'),
+    //   10
+    // );
 
     // admin assets
-    add_action(
-      'admin_enqueue_scripts',
-      array($this, 'admin_css'),
-      10,
-      1
-    );
-    add_action(
-      'admin_enqueue_scripts',
-      array($this, 'admin_js'),
-      10,
-      1
-    );
+    // add_action(
+    //   'admin_enqueue_scripts',
+    //   array($this, 'admin_css'),
+    //   10,
+    //   1
+    // );
+    // add_action(
+    //   'admin_enqueue_scripts',
+    //   array($this, 'admin_js'),
+    //   10,
+    //   1
+    // );
 
     // localization
     $this->setup_textdomain();
