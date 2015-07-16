@@ -62,6 +62,12 @@ https://github.com/Codeception/Verify
 $ vendor/bin/codecept run
 ```
 
+# Acceptance testing.
+
+You just need phantomjs installed. Tests are in /tests/acceptance. You can run tests with:
+```
+$ vendor/bin/codecept run
+```
 
 # Stylus command
 stylus -w assets/css/src/*.styl -o assets/css/
