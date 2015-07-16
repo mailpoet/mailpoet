@@ -69,6 +69,11 @@ $ vendor/bin/codecept run
 $ brew|aptitude install phantomjs
 ```
 
+- Run PhantomJS:
+```
+$ phantomjs --webdriver=4444
+```
+
 - Run a WordPress install at:
 ```
 127.0.0.1:8888
