@@ -17,7 +17,7 @@ Not another MP2 a.k.a MP3 done the right way.
 $ curl -sS https://getcomposer.org/installer | php
 $ php composer.phar install
 ```
-- Install composer.
+- Install dependencies.
 ```sh
 $ php composer.phar install
 ```
@@ -48,11 +48,20 @@ class Subscriber {}
 $subscriber = new \MailPoet\Models\Subscriber();
 ```
 
-- /test
+- /tests
 Acceptance and spec tests.
 
 - /mailpoet.php
 Kickstart file.
+
+# Unit testing.
+
+Unit tests are in /tests/unit. You can just duplicate a Cest file and start testing. Methods available for testing come from Verify:
+https://github.com/Codeception/Verify
+```
+$ vendor/bin/codecept run
+```
+
 
 # Stylus command
 stylus -w assets/css/src/*.styl -o assets/css/
