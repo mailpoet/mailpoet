@@ -8,6 +8,6 @@ class Subscriber {
   public $name;
 
   public function __construct () {
-    $this->name = 'First Subscriber';
+    $this->name = 'Name';
   }
 }
