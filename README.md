@@ -64,7 +64,17 @@ $ vendor/bin/codecept run
 
 # Acceptance testing.
 
-You just need phantomjs installed. Tests are in /tests/acceptance. You can run tests with:
+- Install PhantomJS:
+```
+$ brew|aptitude install phantomjs
+```
+
+- Run a WordPress install at:
+```
+127.0.0.1:8888
+```
+
+- Run tests:
 ```
 $ vendor/bin/codecept run
 ```
