@@ -11,8 +11,7 @@
   ],
   "require": {
     "php": ">=5.3.3",
-    "twig/twig": "1.*",
-    "mailpoet/cssin": "dev-master"
+    "twig/twig": "1.*"
   },
   "require-dev": {
     "codeception/codeception": "*",
