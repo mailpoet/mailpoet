@@ -12,7 +12,6 @@
   "require": {
     "php": ">=5.3.3",
     "twig/twig": "1.*",
-    "mailpoet/php_xlsxwriter": "dev-master",
     "mailpoet/cssin": "dev-master"
   },
   "require-dev": {
