@@ -93,4 +93,4 @@ $ vendor/bin/codecept run
 ```
 
 # Stylus command
-stylus -w assets/css/src/*.styl -o assets/css/
+stylus -u nib -w assets/css/src/admin.styl -o assets/css/
