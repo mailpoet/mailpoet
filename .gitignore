@@ -3,3 +3,4 @@ TODO
 composer.phar
 vendor
 tests/_output/*
+bower_components/

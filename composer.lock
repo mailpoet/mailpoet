@@ -4,8 +4,55 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "44251bd02c162c951bb75ed878e636f0",
+    "hash": "ee47804b40dc027a1e888da69c27612b",
     "packages": [
+        {
+            "name": "mailpoet/cssin",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mailpoet/cssin.git",
+                "reference": "bb26c8e92978c2e7467675e4294f6f19287a04e0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FM\\": "src/"
+                }
+            },
+            "time": "2015-07-17 11:55:35"
+        },
+        {
+            "name": "mailpoet/php_xlsxwriter",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mailpoet/php_xlsxwriter.git",
+                "reference": "67798b24c928034f9d0c8637a990f0a2e9b07aec"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.3.*"
+            },
+            "type": "project",
+            "autoload": {
+                "classmap": [
+                    "xlsxwriter.class.php"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP Library to write XLSX files",
+            "homepage": "https://github.com/mailpoet/PHP_XLSXWriter",
+            "keywords": [
+                "excel",
+                "library",
+                "php",
+                "xls",
+                "xlsx"
+            ],
+            "time": "2015-07-17 12:02:49"
+        },
         {
             "name": "twig/twig",
             "version": "v1.18.2",
@@ -272,16 +319,16 @@
         },
         {
             "name": "facebook/webdriver",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/facebook/php-webdriver.git",
-                "reference": "7cfa09f0a50b5e93087a9dc0eb669bc559eb9961"
+                "reference": "8eb1952d6be0725e1064c4fe0630d0d4d1de7639"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/7cfa09f0a50b5e93087a9dc0eb669bc559eb9961",
-                "reference": "7cfa09f0a50b5e93087a9dc0eb669bc559eb9961",
+                "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/8eb1952d6be0725e1064c4fe0630d0d4d1de7639",
+                "reference": "8eb1952d6be0725e1064c4fe0630d0d4d1de7639",
                 "shasum": ""
             },
             "require": {
@@ -311,7 +358,7 @@
                 "selenium",
                 "webdriver"
             ],
-            "time": "2015-06-09 17:06:08"
+            "time": "2015-07-16 19:31:12"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1799,7 +1846,10 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "mailpoet/php_xlsxwriter": 20,
+        "mailpoet/cssin": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

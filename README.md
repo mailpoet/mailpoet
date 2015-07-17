@@ -25,9 +25,17 @@ $ php composer.phar install
 ```sh
 $ npm install npm -g
 ```
+- Install Bower
+```
+$ npm install bower -g
+```
 - Install Stylus
 ```sh
 $ npm install stylus -g
+```
+- Install Nib (Stylus extension)
+```sh
+$ npm install nib -g
 ```
 
 # Structure.
@@ -55,4 +63,4 @@ Acceptance and spec tests.
 Kickstart file.
 
 # Stylus command
-stylus -w assets/css/src/*.styl -o assets/css/
+stylus -u nib -w assets/css/src/admin.styl -o assets/css/

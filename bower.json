@@ -1,0 +1,52 @@
+{
+  "name": "mailpoet",
+  "version": "3.0.0",
+  "homepage": "https://github.com/mailpoet/mailpoet",
+  "authors": [
+    "Wysija <team@mailpoet.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "bower_components"
+  ],
+  "dependencies": {
+
+    "tinymce": "4.1.10",
+    "handlebars": "3.0.3",
+    "select2": "3.5.1",
+    "jquery-validation-engine": "https://github.com/posabsolute/jQuery-Validation-Engine.git",
+
+    "prototypejs-bower": "latest",
+    "scriptaculous-bower": "1.9.0",
+    "codemirror": "latest",
+
+    "underscore": "1.8.3",
+    "backbone": "1.2.0",
+    "backbone.marionette": "2.4.2",
+    "backbone.radio": "0.9.0",
+    "backbone.supermodel": "1.2.0",
+    "interact": "1.2.4",
+    "sticky-kit": "latest",
+    "html2canvas": "latest",
+
+    "papaparse": "4.1.1",
+    "md5js": "http://www.myersdaily.org/joseph/javascript/md5.js",
+
+    "phpmailer": "https://github.com/PHPMailer/PHPMailer.git",
+
+    "tooltipster": "latest",
+
+    "Chart.js": "~1.0.2",
+    "c3": "~0.4.10"
+  },
+  "devDependencies": {
+
+  },
+  "resolutions": {
+    "underscore": "1.8.3",
+    "backbone": "1.2.0",
+    "handlebars": "3.0.3"
+  }
+}

@@ -34,4 +34,29 @@
   <p><a href="javascript:;" onclick="MailPoet.Notice.error('Test');">Trigger error</a></p>
   <p><a href="javascript:;" onclick="MailPoet.Notice.system('Test');">Trigger warning</a></p>
 
+  <!-- Modal -->
+  <h3>Modals</h3>
+  <p><a href="javascript:;" id="modal_popup">Popup</a></p>
+  <p><a href="javascript:;" id="modal_panel">Panel</a></p>
+
+  <script type="text/javascript">
+    jQuery(function($) {
+      $(function() {
+        $('#modal_popup').on('click', function() {
+          MailPoet.Modal.popup({
+            title: "Testing 1 2...",
+            template: "<h3>Hello World!</h3>"
+          });
+        });
+        $('#modal_panel').on('click', function() {
+          MailPoet.Modal.panel({
+            title: "Testing 1 2...",
+            template: "<h3>Hello World!</h3>",
+            width: "50%"
+          });
+        });
+      });
+    });
+  </script>
+
 {% endblock %}
