@@ -1,4 +1,7 @@
 <?php
+
+namespace MailPoet\Util;
+
 /*
  * @license MIT License
  * */

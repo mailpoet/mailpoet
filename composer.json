@@ -1,14 +1,4 @@
 {
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/mailpoet/cssin.git"
-    },
-    {
-      "type": "git",
-      "url": "https://github.com/mailpoet/php_xlsxwriter.git"
-    }
-  ],
   "require": {
     "php": ">=5.3.3",
     "twig/twig": "1.*",
