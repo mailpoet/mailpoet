@@ -1,2 +1,3 @@
 <?php
-// Here you can initialize variables that will be available to your tests
+// Bypass WP protection of classes in unit tests.
+define( 'ABSPATH', '');

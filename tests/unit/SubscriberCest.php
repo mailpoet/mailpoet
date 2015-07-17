@@ -1,16 +1,17 @@
 <?php
 use \UnitTester;
+use \MailPoet\Models\Subscriber;
 
 class SubscriberCest {
 
-  public function _before() {
-    $this->subscriber = true;
-  }
+    public function _before() {
+      $this->subscriber = new Subscriber();
+    }
 
-  public function _after() {
-  }
+    public function it_can_be_created() {
+      expect($this->subscriber->name)->equals('Name');
+    }
 
-  public function test() {
-    expect($this->subscriber)->equals(true);
-  }
+    public function _after() {
+    }
 }

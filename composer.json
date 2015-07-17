@@ -18,7 +18,8 @@
   "require-dev": {
     "codeception/codeception": "*",
     "codeception/specify": "*",
-    "codeception/verify": "*"
+    "codeception/verify": "*",
+    "codegyre/robo": "*"
   },
   "autoload": {
     "psr-4": {
