@@ -11,7 +11,8 @@
   ],
   "require": {
     "php": ">=5.3.3",
-    "twig/twig": "1.*"
+    "twig/twig": "1.*",
+    "phpmailer/phpmailer": "~5.2"
   },
   "require-dev": {
     "codeception/codeception": "*",

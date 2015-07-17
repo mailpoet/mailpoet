@@ -34,8 +34,6 @@
     "papaparse": "4.1.1",
     "md5js": "http://www.myersdaily.org/joseph/javascript/md5.js",
 
-    "phpmailer": "https://github.com/PHPMailer/PHPMailer.git",
-
     "tooltipster": "latest",
 
     "Chart.js": "~1.0.2",
