@@ -4,54 +4,62 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "15fde214f1a3b08a4ea5173cd20d7d1b",
+    "hash": "554017b0555058350fad65d4a4b62e5c",
     "packages": [
         {
-            "name": "mailpoet/cssin",
-            "version": "dev-master",
+            "name": "phpmailer/phpmailer",
+            "version": "v5.2.10",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mailpoet/cssin.git",
-                "reference": "bb26c8e92978c2e7467675e4294f6f19287a04e0"
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "07005ecbb80d11ec8c0f067bb37e8909cc7fcbb7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/07005ecbb80d11ec8c0f067bb37e8909cc7fcbb7",
+                "reference": "07005ecbb80d11ec8c0f067bb37e8909cc7fcbb7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0.0"
+            },
+            "require-dev": {
+                "phpdocumentor/phpdocumentor": "*",
+                "phpunit/phpunit": "4.3.*"
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "FM\\": "src/"
-                }
-            },
-            "time": "2015-07-17 11:55:35"
-        },
-        {
-            "name": "mailpoet/php_xlsxwriter",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mailpoet/php_xlsxwriter.git",
-                "reference": "67798b24c928034f9d0c8637a990f0a2e9b07aec"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "4.3.*"
-            },
-            "type": "project",
-            "autoload": {
                 "classmap": [
-                    "xlsxwriter.class.php"
+                    "class.phpmailer.php",
+                    "class.smtp.php",
+                    "class.pop3.php",
+                    "extras/EasyPeasyICS.php",
+                    "extras/ntlm_sasl_client.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "LGPL-2.1"
             ],
-            "description": "PHP Library to write XLSX files",
-            "homepage": "https://github.com/mailpoet/PHP_XLSXWriter",
-            "keywords": [
-                "excel",
-                "library",
-                "php",
-                "xls",
-                "xlsx"
+            "authors": [
+                {
+                    "name": "Jim Jagielski",
+                    "email": "jimjag@gmail.com"
+                },
+                {
+                    "name": "Marcus Bointon",
+                    "email": "phpmailer@synchromedia.co.uk"
+                },
+                {
+                    "name": "Andy Prevost",
+                    "email": "codeworxtech@users.sourceforge.net"
+                },
+                {
+                    "name": "Brent R. Matzelle"
+                }
             ],
-            "time": "2015-07-17 12:02:49"
+            "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+            "time": "2015-05-04 12:37:21"
         },
         {
             "name": "twig/twig",
@@ -2106,10 +2114,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "mailpoet/php_xlsxwriter": 20,
-        "mailpoet/cssin": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
