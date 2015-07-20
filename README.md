@@ -32,7 +32,7 @@ $ ./do update
 # Structure.
 
 - Dependencies.
-```
+```sh
 # PHP dependencies.
 composer.json
 # JS dependencies.
@@ -64,12 +64,12 @@ Kickstart file.
 # Tests.
 
 - Unit tests:
-```
+```sh
 $ ./do test:unit
 ```
 
 - Acceptance tests:
-```
+```sh
 # Run a WordPress install with this config:
 # url: 127.0.0.1:8888
 # user: admin
@@ -78,6 +78,6 @@ $ ./do tes:acceptance
 ```
 
 # Watch assets.
-```
+```sh
 $ ./do watch
 ```
