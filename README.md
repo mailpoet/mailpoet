@@ -10,33 +10,20 @@ Not another MP2 a.k.a MP3 done the right way.
 # Install.
 
 - Clone the repo in wp-content/plugins.
-- Install PHP (OSX comes with it).
-- Install NodeJS.
+- Install system dependencies:
+PHP, NodeJS, PhantomJS.
 - Install composer.
 ```sh
 $ curl -sS https://getcomposer.org/installer | php
 $ php composer.phar install
 ```
-- Install dependencies.
+- Install PHP dependencies.
 ```sh
 $ php composer.phar install
 ```
-- Instal NPM
+- Instal JS dependencies
 ```sh
-$ npm install npm -g
-```
-- Install Bower
-```
-$ npm install bower -g
-```
-- Install Stylus
-```sh
-$ npm install stylus -g
-```
-- Install Nib (Stylus extension)
-```sh
-$ npm install nib -g
-```
+$ npm install
 
 # Structure.
 
@@ -67,20 +54,10 @@ Kickstart file.
 Unit tests are in /tests/unit. You can just duplicate a Cest file and start testing. Methods available for testing come from Verify:
 https://github.com/Codeception/Verify
 ```
-$ vendor/bin/codecept run
+$ ./do test:unit
 ```
 
 # Acceptance testing.
-
-- Install PhantomJS:
-```
-$ brew|aptitude install phantomjs
-```
-
-- Run PhantomJS:
-```
-$ phantomjs --webdriver=4444
-```
 
 - Run a WordPress install at:
 ```
@@ -89,7 +66,7 @@ $ phantomjs --webdriver=4444
 
 - Run tests:
 ```
-$ vendor/bin/codecept run
+$ ./do tes:acceptance
 ```
 
 # Stylus command

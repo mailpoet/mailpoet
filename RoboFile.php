@@ -19,10 +19,14 @@ class RoboFile extends \Robo\Tasks {
 
   function testAll() {
     $this
-      ->taskExec('phantomjs --webdriver=4444')
+      ->taskexec('phantomjs --webdriver=4444')
       ->background()
       ->run();
     sleep(2);
     $this->_exec('vendor/bin/codecept run');
+  }
+
+  function watch() {
+    $this->_exec('./node_modules/stylus/bin/stylus -u nib -w assets/css/src/admin.styl -o assets/css/');
   }
 }
