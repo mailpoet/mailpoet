@@ -1,7 +1,13 @@
 <?php
 class RoboFile extends \Robo\Tasks {
+  function install() {
+    $this->_exec('./composer.phar install');
+    $this->_exec('npm install');
+  }
+
   function update() {
     $this->_exec('./composer.phar update');
+    $this->_exec('npm update');
   }
 
   function testUnit() {

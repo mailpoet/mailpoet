@@ -2,28 +2,26 @@
 
 Not another MP2 a.k.a MP3 done the right way.
 
-# Requirements.
-
-- PHP >=5.3.6 (production).
-- PHP >=5.5 (dev).
-
 # Install.
 
-- Clone the repo in wp-content/plugins.
 - Install system dependencies:
-PHP, NodeJS, PhantomJS.
+```
+php
+nodejs
+phantomjs
+```
+
+- Clone the repo in wp-content/plugins.
+
 - Install composer.
 ```sh
 $ curl -sS https://getcomposer.org/installer | php
-$ php composer.phar install
 ```
-- Install PHP dependencies.
+
+- Install dependencies.
 ```sh
-$ php composer.phar install
+$ ./do update
 ```
-- Instal JS dependencies
-```sh
-$ npm install
 
 # Structure.
 
@@ -51,8 +49,7 @@ Kickstart file.
 
 # Unit testing.
 
-Unit tests are in /tests/unit. You can just duplicate a Cest file and start testing. Methods available for testing come from Verify:
-https://github.com/Codeception/Verify
+- Run tests:
 ```
 $ ./do test:unit
 ```
@@ -69,5 +66,7 @@ $ ./do test:unit
 $ ./do tes:acceptance
 ```
 
-# Stylus command
-stylus -u nib -w assets/css/src/admin.styl -o assets/css/
+# Watch assets.
+```
+$ ./do watch
+```
