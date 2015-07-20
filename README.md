@@ -74,7 +74,12 @@ $ ./do test:unit
 # url: 127.0.0.1:8888
 # user: admin
 # password: password
-$ ./do tes:acceptance
+$ ./do test:acceptance
+```
+
+- Run all tests:
+```sh
+$ ./do test:all
 ```
 
 # Watch assets.
