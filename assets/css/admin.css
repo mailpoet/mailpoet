@@ -12,17 +12,6 @@
 body.mailpoet_modal_opened {
   overflow: hidden;
 }
-.mailpoet_blur_overlay {
-  -webkit-filter: blur(1px);
-  -moz-filter: blur(1px);
-  -o-filter: blur(1px);
-  -ms-filter: blur(1px);
-  filter: blur(1px);
-  opacity: 0.8;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
-  filter: alpha(opacity=80);
-  pointer-events: none;
-}
 #mailpoet_modal_overlay {
   height: 100%;
   left: 0;

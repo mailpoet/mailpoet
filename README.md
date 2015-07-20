@@ -48,6 +48,7 @@ Language files.
 - /lib
 MailPoet classes. All classes are autoloaded, under the MailPoet namespace.
 ```php
+// file: ./lib/models/subscriber.php
 namespace \MailPoet\Models;
 class Subscriber {}
 ```

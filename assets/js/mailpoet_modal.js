@@ -5,7 +5,7 @@
         version: 0.8
         author: Jonathan Labreuille
         company: Wysija
-        dependencies: jQuery, Handlebars
+        dependencies: jQuery
 
 
     Options:
@@ -14,18 +14,22 @@
             // Modal window's title
             (string) title: 'Modal title'
 
-            // Handlebar template
-            (string) template: jQuery('#handlebars_template').html()
+            // template
+            (string) template:  jQuery('#handlebars_template').html() or
+                                literal html
 
         Optional:
-            // jQuery cached element object node to be displayed, instead of creating a new one
+            // jQuery cached element object node to be displayed,
+            // instead of creating a new one
             (object) element: jQuery(selector)
 
             // - data object that will be passed to the template when rendering
             (object) data: {},
 
-            // - data will be loaded via this url and passed to the template when rendering
-            // - if a "data" option was specified, it will be merged with the ajax's response data
+            // - data will be loaded via this url and passed to the template
+            // when rendering
+            // - if a "data" option was specified, it will be merged with the
+            // ajax's response data
             (string) url: '/url.json'
 
             // ajax method
@@ -54,7 +58,8 @@
             // callbacks
             (function) onInit: called when the modal is displayed
             (function) onSuccess: called by calling MailPoet_Guide.success()
-            (function) onCancel: called when closing the popup or by calling MailPoet_Guide.cancel()
+            (function) onCancel: called when closing the popup
+                                 or by calling MailPoet_Guide.cancel()
 
     Usage:
 
@@ -92,7 +97,7 @@
             type: null,
 
             // positionning
-            position: 'center',
+            position: 'right',
 
             // data sources
             data: {},
@@ -119,13 +124,14 @@
             onSuccess: null,
             onCancel: null
         },
+        renderer: 'html',
         options: {},
         templates: {
             overlay: '<div id="mailpoet_modal_overlay" style="display:none;"></div>',
             popup: '<div id="mailpoet_popup">'+
                         '<div class="mailpoet_popup_wrapper">'+
                             '<a href="javascript:;" id="mailpoet_modal_close"></a>'+
-                            '<div id="mailpoet_popup_title"><h2>{{ title }}</h2></div>'+
+                            '<div id="mailpoet_popup_title"><h2></h2></div>'+
                             '<div class="mailpoet_popup_body clearfix"></div>'+
                         '</div>'+
                     '</div>',
@@ -144,6 +150,16 @@
                         '<div class="mailpoet_panel_body clearfix"></div>'+
                     '</div>'
         },
+        setRenderer: function(renderer) {
+            this.renderer = (typeof(Handlebars) === "undefined") ? 'html' : 'handlebars';
+        },
+        compileTemplate: function(template) {
+            if(this.renderer = 'html') {
+                return function() { return template; };
+            } else {
+                return Handlebars.compile(template);
+            }
+        },
         init: function(options) {
             if(this.initialized === true) {
                 this.close();
@@ -151,6 +167,9 @@
 
             // merge options
             this.options = jQuery.extend({}, this.defaults, options);
+
+            // set renderer
+            this.setRenderer();
 
             // init overlay
             this.initOverlay();
@@ -161,9 +180,13 @@
             if(this.options.type !== null) {
                 // insert modal depending on its type
                 if(this.options.type === 'popup') {
-                    var modal = Handlebars.compile(this.templates[this.options.type]);
+                    var modal = this.compileTemplate(this.templates[this.options.type]);
+                    // create modal
                     jQuery('#mailpoet_modal_overlay').append(modal(this.options));
+                    // set title
+                    jQuery('#mailpoet_popup_title h2').html(this.options.title);
                 } else if(this.options.type === 'panel') {
+                    // create panel
                     jQuery('#mailpoet_modal_overlay').after(this.templates[this.options.type]);
                 }
 
@@ -186,7 +209,7 @@
                 }
 
                 // compile template
-                this.options.body_template = Handlebars.compile(this.options.template);
+                this.options.body_template = this.compileTemplate(this.options.template);
 
                 // setup events
                 this.setupEvents();

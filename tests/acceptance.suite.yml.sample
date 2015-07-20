@@ -10,4 +10,6 @@ modules:
         - WebDriver:
             url: 'http://127.0.0.1:8888'
             browser: phantomjs
+            wait: 1
+            restart: true
         - \Helper\Acceptance

@@ -44,7 +44,7 @@
       $(function() {
         $('#modal_popup').on('click', function() {
           MailPoet.Modal.popup({
-            title: "Testing 1 2...",
+            title: "Testing <strong>1 2...</strong>",
             template: "<h3>Hello World!</h3>"
           });
         });
@@ -52,7 +52,8 @@
           MailPoet.Modal.panel({
             title: "Testing 1 2...",
             template: "<h3>Hello World!</h3>",
-            width: "50%"
+            width: "40%",
+            overlay: true
           });
         });
       });

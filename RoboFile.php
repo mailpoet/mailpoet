@@ -14,13 +14,24 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('vendor/bin/codecept run unit');
   }
 
+  function testAcceptanceConfig() {
+    // create config file from sample unless a config file alread exists
+    return $this->_copy(
+      'tests/acceptance.suite.yml.sample',
+      'tests/acceptance.suite.yml',
+      true
+    );
+  }
+
   function testAcceptance() {
-    $this
-      ->taskExec('phantomjs --webdriver=4444')
-      ->background()
-      ->run();
-    sleep(2);
-    $this->_exec('vendor/bin/codecept run acceptance');
+    if($this->testAcceptanceConfig()) {
+      $this
+        ->taskExec('phantomjs --webdriver=4444')
+        ->background()
+        ->run();
+      sleep(2);
+      $this->_exec('vendor/bin/codecept run acceptance');
+    }
   }
 
   function testAll() {
