@@ -16,14 +16,28 @@ phantomjs
 - Install composer.
 ```sh
 $ curl -sS https://getcomposer.org/installer | php
+$ ./composer.phar install
 ```
 
 - Install dependencies.
+```sh
+$ ./do install
+```
+
+- Update dependencies when needed.
 ```sh
 $ ./do update
 ```
 
 # Structure.
+
+- Dependencies.
+```
+# PHP dependencies.
+composer.json
+# JS dependencies.
+package.json
+```
 
 - /assets
 CSS and JS.
