@@ -61,22 +61,19 @@ Acceptance and spec tests.
 - /mailpoet.php
 Kickstart file.
 
-# Unit testing.
+# Tests.
 
-- Run tests:
+- Unit tests:
 ```
 $ ./do test:unit
 ```
 
-# Acceptance testing.
-
-- Run a WordPress install at:
+- Acceptance tests:
 ```
-127.0.0.1:8888
-```
-
-- Run tests:
-```
+# Run a WordPress install with this config:
+# url: 127.0.0.1:8888
+# user: admin
+# password: password
 $ ./do tes:acceptance
 ```
 
