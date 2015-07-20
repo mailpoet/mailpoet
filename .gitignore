@@ -5,3 +5,4 @@ vendor
 tests/_output/*
 bower_components/*
 tests/_output/*
+node_modules
