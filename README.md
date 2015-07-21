@@ -69,17 +69,14 @@ Kickstart file.
 
 # Tests.
 
-- Unit tests:
+- Unit tests (using [verify](https://github.com/Codeception/Verify)):
 ```sh
 $ ./do test:unit
 ```
 
 - Acceptance tests:
 ```sh
-# Run a WordPress install with this config:
-# url: 127.0.0.1:8888
-# user: admin
-# password: password
+# Setup .env
 $ ./do test:acceptance
 ```
 
