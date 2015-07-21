@@ -1,44 +1,17 @@
 <?php
 use \UnitTester;
 
-class DKIMCest
-{
+class DKIMCest {
 
-    public function _before(UnitTester $I)
-    {
+  public function it_can_generate_keys() {
+    $keys = \MailPoet\Util\DKIM::generate_keys();
+    $public_header = '-----BEGIN PUBLIC KEY-----';
+    $private_header = '-----BEGIN RSA PRIVATE KEY-----';
 
-    }
+    expect($keys['public'])->notEmpty();
+    expect($keys['private'])->notEmpty();
 
-    public function _after(UnitTester $I)
-    {
-
-    }
-
-    public function it_can_generate_keys(UnitTester $I) {
-        $I->wantTo('generate public and private keys');
-
-        $keys = \MailPoet\Util\DKIM::generate_keys();
-
-        $I->expect('public key is not empty');
-        $I->assertNotEmpty($keys['public']);
-
-        $I->expect('private key is not empty');
-        $I->assertNotEmpty($keys['private']);
-
-        $I->expect('public key starts with proper header');
-        $I->assertTrue(
-            strpos(
-                $keys['public'],
-                '-----BEGIN PUBLIC KEY-----'
-            ) === 0
-        );
-
-        $I->expect('private key starts with proper header');
-        $I->assertTrue(
-            strpos(
-                $keys['private'],
-                '-----BEGIN RSA PRIVATE KEY-----'
-            ) === 0
-        );
-    }
+    expect($keys['public'])->contains($public_header);
+    expect($keys['private'])->contains($private_header);
+  }
 }
