@@ -6,3 +6,4 @@ tests/_output/*
 bower_components/*
 node_modules
 tests/*.suite.yml
+.env

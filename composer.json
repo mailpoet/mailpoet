@@ -8,7 +8,8 @@
     "codeception/codeception": "*",
     "codeception/specify": "*",
     "codeception/verify": "*",
-    "codegyre/robo": "*"
+    "codegyre/robo": "*",
+    "vlucas/phpdotenv": "*"
   },
   "autoload": {
     "psr-4": {
