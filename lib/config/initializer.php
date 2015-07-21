@@ -43,8 +43,10 @@ class Initializer {
     );
 
     // renderer: global variables
-    // $this->renderer->addGlobal('assets_url', $this->assets_url);
-    $this->renderer->addExtension(new Renderer\Assets($this->assets_url));
+    $this->renderer->addExtension(new Renderer\Assets(array(
+      'assets_url' => $this->assets_url,
+      'assets_path' => $this->assets_path
+    )));
 
     register_activation_hook(
       $this->file,

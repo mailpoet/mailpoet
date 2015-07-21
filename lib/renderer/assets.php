@@ -3,10 +3,10 @@ namespace MailPoet\Renderer;
 
 class Assets extends \Twig_Extension {
 
-  public $assets_url;
+  private $_globals;
 
-  public function __construct($assets_url) {
-    $this->assets_url = $assets_url;
+  public function __construct($globals) {
+    $this->_globals = $globals;
   }
 
   public function getName() {
@@ -14,9 +14,7 @@ class Assets extends \Twig_Extension {
   }
 
   public function getGlobals() {
-    return array(
-      'assets_url' => $this->assets_url
-    );
+    return $this->_globals;
   }
 
   public function getFunctions() {
@@ -42,7 +40,7 @@ class Assets extends \Twig_Extension {
       $output[] = '<link
         rel="stylesheet"
         type="text/css"
-        href="'.$this->assets_url.'/css/'.$stylesheet.'"
+        href="'.$this->_globals['assets_url'].'/css/'.$stylesheet.'"
       >';
     }
 
@@ -56,7 +54,7 @@ class Assets extends \Twig_Extension {
     foreach($scripts as $script) {
       $output[] = '<script
         type="text/javascript"
-        src="'.$this->assets_url.'/js/'.$script.'"
+        src="'.$this->_globals['assets_url'].'/js/'.$script.'"
       ></script>';
     }
 
