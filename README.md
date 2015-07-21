@@ -29,6 +29,11 @@ $ ./do install
 $ ./do update
 ```
 
+- Copy .env.sample to .env.
+```sh
+$ cp .env.sample .env
+```
+
 # Structure.
 
 - Dependencies.
