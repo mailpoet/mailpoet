@@ -3,21 +3,11 @@ class RoboFile extends \Robo\Tasks {
   function install() {
     $this->_exec('./composer.phar install');
     $this->_exec('npm install');
-    $this->symlinkDependencies();
   }
 
   function update() {
     $this->_exec('./composer.phar update');
     $this->_exec('npm update');
-    $this->symlinkDependencies();
-  }
-
-  function symlinkDependencies() {
-    // handlebars
-    $this->_symlink(
-      __DIR__.'/node_modules/handlebars/dist/handlebars.min.js',
-      __DIR__.'/assets/js/handlebars/handlebars.min.js'
-    );
   }
 
   function testUnit() {
