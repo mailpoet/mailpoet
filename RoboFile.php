@@ -14,7 +14,12 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function watch() {
-    $this->_exec('./node_modules/stylus/bin/stylus -u nib -w assets/css/src/admin.styl -o assets/css/');
+    $command = array(
+      './node_modules/stylus/bin/stylus -u',
+      'nib -w assets/css/src/admin.styl',
+      '-o assets/css/'
+    );
+    $this->_exec(join(' ', $command));
   }
 
   function testUnit() {
@@ -44,7 +49,14 @@ class RoboFile extends \Robo\Tasks {
   function loadEnv() {
     $dotenv = new Dotenv\Dotenv(__DIR__);
     $dotenv->load();
-    $this->taskReplaceInFile('tests/acceptance.suite.yml')
+
+    $this
+      ->taskWriteToFile('tests/acceptance.suite.yml')
+      ->textFromFile('tests/acceptance.suite.src')
+      ->run();
+
+    $this
+      ->taskReplaceInFile('tests/acceptance.suite.yml')
       ->regex("/url.*/")
       ->to('url: ' . "'" . getenv('WP_TEST_URL'). "'")
       ->run();
