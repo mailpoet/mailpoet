@@ -1,7 +1,5 @@
 <?php
 
-$dotenv = new Dotenv\Dotenv(__DIR__);
-$dotenv->load();
 
 class RoboFile extends \Robo\Tasks {
   function install() {
@@ -44,6 +42,8 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function loadEnv() {
+    $dotenv = new Dotenv\Dotenv(__DIR__);
+    $dotenv->load();
     $this->taskReplaceInFile('tests/acceptance.suite.yml')
       ->regex("/url.*/")
       ->to('url: ' . "'" . getenv('WP_TEST_URL'). "'")
