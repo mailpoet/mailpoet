@@ -4,5 +4,4 @@ composer.phar
 vendor
 tests/_output/*
 node_modules
-tests/*.suite.yml
 .env

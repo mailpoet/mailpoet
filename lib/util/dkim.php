@@ -2,7 +2,7 @@
 namespace MailPoet\Util;
 class DKIM {
 
-  public static function generate_keys() {
+  public static function generateKeys() {
     try {
       $certificate = openssl_pkey_new(array('private_bits'  =>  1024));
 

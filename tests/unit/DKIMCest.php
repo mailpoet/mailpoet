@@ -4,7 +4,7 @@ use \UnitTester;
 class DKIMCest {
 
   public function it_can_generate_keys() {
-    $keys = \MailPoet\Util\DKIM::generate_keys();
+    $keys = \MailPoet\Util\DKIM::generateKeys();
     $public_header = '-----BEGIN PUBLIC KEY-----';
     $private_header = '-----BEGIN RSA PRIVATE KEY-----';
 
