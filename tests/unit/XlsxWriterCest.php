@@ -6,7 +6,7 @@ class XlsxWriterCest {
     public function _before() {
     }
 
-    public function it_can_be_created() {
+    public function itCanBeCreated() {
       $writer = new \MailPoet\Util\XLSXWriter();
     }
 
