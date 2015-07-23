@@ -2,7 +2,7 @@
 
 class DKIMCest {
 
-  public function it_can_generate_keys() {
+  public function itCanGenerateKeys() {
     $keys = \MailPoet\Util\DKIM::generateKeys();
     $public_header = '-----BEGIN PUBLIC KEY-----';
     $private_header = '-----BEGIN RSA PRIVATE KEY-----';
