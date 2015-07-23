@@ -8,7 +8,7 @@ class SubscriberCest {
       $this->subscriber = new Subscriber();
     }
 
-    public function it_can_be_created() {
+    public function itCanBeCreated() {
       expect($this->subscriber->name)->equals('Name');
     }
 
