@@ -5,16 +5,19 @@ class ActivationCest {
 
     public function _before(AcceptanceTester $I) {
       $I->amOnPage('/wp-login.php');
-      $I->fillField('Username', 'admin');
-      $I->fillField('Password', 'password');
+      $I->fillField('Username', getenv('WP_TEST_USER'));
+      $I->fillField('Password', getenv('WP_TEST_PASSWORD'));
       $I->click('Log In');
     }
 
-    public function IcanActivate(AcceptanceTester $I) {
+    public function iCanActivate(AcceptanceTester $I) {
       $I->amOnPage('/wp-admin/plugins.php');
-      $I->see('MailPoet');
-      $I->click('#mailpoet .deactivate a');
-      $I->see('Plugin deactivated');
+
+      try {
+        $I->see('MailPoet');
+        $I->click('#mailpoet .deactivate a');
+        $I->see('Plugin deactivated');
+      } catch(Exception $e) {}
 
       $I->see('MailPoet');
       $I->click('#mailpoet .activate a');
