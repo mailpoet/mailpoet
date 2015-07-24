@@ -1,10 +1,20 @@
 {
+  "repositories": [
+    {
+      "type": "pear",
+      "url": "http://pear.php.net/"
+    }
+  ],
   "require": {
     "php": ">=5.3.3",
     "twig/twig": "1.*",
     "phpmailer/phpmailer": "~5.2",
     "cerdic/css-tidy": "*",
-    "sunra/php-simple-html-dom-parser": "*"
+    "sunra/php-simple-html-dom-parser": "*",
+    "tburry/pquery": "*",
+    "pear-pear.php.net/PEAR" : "*",
+    "pear-pear.php.net/Net_POP3" : "*",
+    "pear-pear.php.net/Net_Socket" : "*"
   },
   "require-dev": {
     "codeception/codeception": "*",
