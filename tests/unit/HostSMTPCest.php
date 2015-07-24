@@ -7,11 +7,11 @@ class HostSMTPCest {
     }
 
     // tests
-    public function it_has_a_list_of_hosts() {
+    public function itHasAListOfHosts() {
         expect($this->hosts)->notEmpty();
     }
 
-    public function it_has_proper_data_for_hosts() {
+    public function itHasValidDataForHosts() {
         $valid_host_count = 0;
         $host_count = count($this->hosts);
 

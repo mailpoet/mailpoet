@@ -6,11 +6,11 @@ class HostWebCest {
     }
 
     // tests
-    public function it_has_a_list_of_hosts() {
+    public function itHasAListOfHosts() {
         expect($this->hosts)->notEmpty();
     }
 
-    public function it_has_proper_data_for_hosts() {
+    public function itHasValidDataForHosts() {
         $valid_host_count = 0;
         $host_count = count($this->hosts);
 
@@ -29,7 +29,7 @@ class HostWebCest {
         expect($valid_host_count)->equals($host_count);
     }
 
-    public function it_should_return_default_limitations() {
+    public function itHasDefaultSendingLimitations() {
         $limitations = \MailPoet\Host\Web::getLimitations();
 
         expect($limitations['emails'])
@@ -39,7 +39,7 @@ class HostWebCest {
           ->equals(\MailPoet\Host\Web::DEFAULT_FREQUENCY_INTERVAL);
     }
 
-    public function it_should_return_host_limitations() {
+    public function itShoudReturnHostLimitations() {
         $host_key = array_shift(array_keys($this->hosts));
         $host = $this->hosts[$host_key];
 

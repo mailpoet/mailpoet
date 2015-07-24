@@ -6,11 +6,11 @@ class UtilCSSCest {
     }
 
     // tests
-    public function it_can_be_instantiated() {
+    public function itCanBeInstantiated() {
         expect_that($this->css instanceof \MailPoet\Util\CSS);
     }
 
-    public function it_can_parse_css() {
+    public function itCanParseCss() {
         $styles_array = array();
         try {
             $url = dirname(__DIR__).'/../assets/css/admin.css';
