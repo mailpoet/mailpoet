@@ -6,7 +6,7 @@ class HomePageCest {
     public function _before(AcceptanceTester $I) {
     }
 
-    public function it_has_a_title(AcceptanceTester $I) {
+    public function IcanSeeATitle(AcceptanceTester $I) {
       $I->amOnPage('/');
       $I->see('Hello');
     }

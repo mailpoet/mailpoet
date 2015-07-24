@@ -10,7 +10,7 @@ class ActivationCest {
       $I->click('Log In');
     }
 
-    public function i_can_activate(AcceptanceTester $I) {
+    public function IcanActivate(AcceptanceTester $I) {
       $I->amOnPage('/wp-admin/plugins.php');
       $I->see('MailPoet');
       $I->click('#mailpoet .deactivate a');

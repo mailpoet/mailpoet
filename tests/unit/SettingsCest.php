@@ -1,52 +1,30 @@
 <?php
+use \UnitTester;
+use \Codeception\Util\Stub;
+use \MailPoet\Config\Settings;
 
-class SettingsCest
-{
-  public function _before() {
-    $this->settings = \MailPoet\Settings::getAll();
-  }
+class SettingsCest {
 
-  public function it_has_defaults() {
-    $settings = \MailPoet\Settings::getDefaults();
-    expect($this->settings)->notEmpty();
-  }
+    public function _before() {
+      $stub_options = Stub::make('\MailPoet\WP\Option', [
+        'get' => 'value',
+        'set' => true
+      ]);
+      $this->settings = new Settings();
+      $this->settings->options = $stub_options;
+    }
 
-  public function it_should_load_default_settings(UnitTester $I) {
-    $settings = \MailPoet\Settings::getAll();
-    $defaults = \MailPoet\Settings::getDefaults();
-    expect($settings)->equals($defaults);
-  }
+    public function itCanSaveSettings() {
+      $saved = $this->settings->save('key', 'value');
+      expect($saved)->equals(true);
+    }
 
-  public function it_should_update_settings() {
-    $new_settings = array('test_key' => true);
-    \MailPoet\Settings::save($new_settings);
+    public function itCanLoadSettings() {
+      $this->settings->save('key', 'value');
+      $value = $this->settings->load('key');
+      expect($value)->equals('value');
+    }
 
-    $settings = \MailPoet\Settings::getAll();
-
-    expect_that(isset($settings['test_key']) && $settings['test_key'] === true);
-  }
-
-  public function it_should_reset_settings() {
-    $settings = \MailPoet\Settings::getAll();
-
-    \MailPoet\Settings::clearAll();
-
-    $reset_settings = \MailPoet\Settings::getAll();
-
-    expect($settings)->notEmpty();
-    expect($reset_settings)->equals(\MailPoet\Settings::getDefaults());
-  }
-}
-
-function get_option($value, $default) {
-  return $default;
-}
-function add_option() {
-  return true;
-}
-function update_option() {
-  return true;
-}
-function delete_option() {
-  return true;
+    public function _after() {
+    }
 }

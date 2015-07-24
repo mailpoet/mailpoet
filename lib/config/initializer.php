@@ -2,6 +2,7 @@
 namespace MailPoet\Config;
 use MailPoet\Models;
 use MailPoet\Renderer;
+use MailPoet\WP;
 
 if (!defined('ABSPATH')) exit;
 
@@ -174,8 +175,11 @@ class Initializer {
   }
 
   public function admin_page() {
-    // set data
     $subscriber = new Models\Subscriber();
+
+    $option = new WP\Option();
+    $option->set('option_name', 'option value');
+
     $this->data = array(
       'title' => __('Twig Sample page'),
       'text' => 'Lorem ipsum dolor sit amet',
@@ -184,7 +188,8 @@ class Initializer {
         array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),
         array('name' => 'Marco', 'email' => 'marco@mailpoet.com'),
         ),
-      'subscriber' => $subscriber->name
+        'subscriber' => $subscriber->name,
+        'option' => $option->get('option_name')
     );
     // Sample page using Twig
     echo $this->renderer->render('index.html', $this->data);
