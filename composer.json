@@ -2,7 +2,9 @@
   "require": {
     "php": ">=5.3.3",
     "twig/twig": "1.*",
-    "phpmailer/phpmailer": "~5.2"
+    "phpmailer/phpmailer": "~5.2",
+    "cerdic/css-tidy": "*",
+    "sunra/php-simple-html-dom-parser": "*"
   },
   "require-dev": {
     "codeception/codeception": "*",

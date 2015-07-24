@@ -4,8 +4,41 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8868736a7d968f4adddfcd0c607810ae",
+    "hash": "ee10d7ad30955e6d7cb8a92b6f44c9ab",
     "packages": [
+        {
+            "name": "cerdic/css-tidy",
+            "version": "v1.5.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Cerdic/CSSTidy.git",
+                "reference": "f8635ca50e479ddbb5d1d922d8f38ba67e781e15"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Cerdic/CSSTidy/zipball/f8635ca50e479ddbb5d1d922d8f38ba67e781e15",
+                "reference": "f8635ca50e479ddbb5d1d922d8f38ba67e781e15",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "."
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Cédric MORIN",
+                    "email": "changeme@mailinator.com"
+                }
+            ],
+            "description": "CSSTidy is a CSS minifier",
+            "time": "2014-10-26 15:28:55"
+        },
         {
             "name": "phpmailer/phpmailer",
             "version": "v5.2.10",
@@ -60,6 +93,49 @@
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
             "time": "2015-05-04 12:37:21"
+        },
+        {
+            "name": "sunra/php-simple-html-dom-parser",
+            "version": "v1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sunra/php-simple-html-dom-parser.git",
+                "reference": "a0b80ace086c7e09085669205e1b3c2c9c7a453c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sunra/php-simple-html-dom-parser/zipball/a0b80ace086c7e09085669205e1b3c2c9c7a453c",
+                "reference": "a0b80ace086c7e09085669205e1b3c2c9c7a453c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Sunra\\PhpSimple\\HtmlDomParser": "Src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sunra",
+                    "email": "sunra@yandex.ru",
+                    "homepage": "http://github.com/sunra"
+                }
+            ],
+            "description": "Composer adaptation of: A HTML DOM parser written in PHP5+ let you manipulate HTML in a very easy way! Require PHP 5+. Supports invalid HTML. Find tags on an HTML page with selectors just like jQuery. Extract contents from HTML in a single line.",
+            "homepage": "https://github.com/sunra/php-simple-html-dom-parser",
+            "keywords": [
+                "dom",
+                "html",
+                "parser"
+            ],
+            "time": "2013-05-04 14:32:03"
         },
         {
             "name": "twig/twig",

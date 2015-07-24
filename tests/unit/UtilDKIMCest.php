@@ -1,6 +1,6 @@
 <?php
 
-class DKIMCest {
+class UtilDKIMCest {
 
   public function it_can_generate_keys() {
     $keys = \MailPoet\Util\DKIM::generateKeys();
