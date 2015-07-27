@@ -50,7 +50,10 @@ class FormRendererCest {
   }
 
   public function itCanRenderExports() {
-    // TODO: Cannot work unless we load the WP environment
-    \MailPoet\Form\Renderer::getExports($this->form_data);
+    $exports = \MailPoet\Form\Renderer::getExports($this->form_data);
+    foreach($exports as $type => $export) {
+      expect($export)
+        ->equals(\MailPoet\Form\Renderer::getExport($type, $this->form_data));
+    }
   }
 }

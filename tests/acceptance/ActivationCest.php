@@ -4,10 +4,7 @@ use \AcceptanceTester;
 class ActivationCest {
 
     public function _before(AcceptanceTester $I) {
-      $I->amOnPage('/wp-login.php');
-      $I->fillField('Username', getenv('WP_TEST_USER'));
-      $I->fillField('Password', getenv('WP_TEST_PASSWORD'));
-      $I->click('Log In');
+      $I->login();
     }
 
     public function iCanActivate(AcceptanceTester $I) {

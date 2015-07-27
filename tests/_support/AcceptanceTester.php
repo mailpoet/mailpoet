@@ -23,4 +23,10 @@ class AcceptanceTester extends \Codeception\Actor
    /**
     * Define custom actions here
     */
+   public function login() {
+      $this->amOnPage('/wp-login.php');
+      $this->fillField('Username', getenv('WP_TEST_USER'));
+      $this->fillField('Password', getenv('WP_TEST_PASSWORD'));
+      $this->click('Log In');
+   }
 }
