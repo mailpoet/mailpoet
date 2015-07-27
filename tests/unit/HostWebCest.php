@@ -1,20 +1,17 @@
 <?php
 
 class HostWebCest {
-    public function _before() {
-        $this->hosts = \MailPoet\Host\Web::getList();
-    }
-
     // tests
     public function itHasAListOfHosts() {
-        expect($this->hosts)->notEmpty();
+        expect(\MailPoet\Host\Web::getList())->notEmpty();
     }
 
     public function itHasValidDataForHosts() {
         $valid_host_count = 0;
-        $host_count = count($this->hosts);
+        $hosts = \MailPoet\Host\Web::getList();
+        $host_count = count($hosts);
 
-        foreach($this->hosts as $host_key => $host_info) {
+        foreach($hosts as $host_key => $host_info) {
             if(array_key_exists('name', $host_info)
                 && is_string($host_info['name'])
                 && array_key_exists('emails', $host_info)
@@ -40,8 +37,10 @@ class HostWebCest {
     }
 
     public function itShoudReturnHostLimitations() {
-        $host_key = array_shift(array_keys($this->hosts));
-        $host = $this->hosts[$host_key];
+        $hosts = \MailPoet\Host\Web::getList();
+        $host_keys = array_keys($hosts);
+        $host_key = array_shift($host_keys);
+        $host = $hosts[$host_key];
 
         $host_limitations = \MailPoet\Host\Web::getLimitations($host_key);
 

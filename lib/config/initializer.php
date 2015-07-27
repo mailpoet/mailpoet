@@ -20,6 +20,7 @@ class Initializer {
     'file' => '',
     'version' => '1.0.0'
   )) {
+
     $this->data = array();
     $this->version = $params['version'];
     $this->shortname = 'mailpoet';
@@ -90,10 +91,18 @@ class Initializer {
 
     // admin menu
     add_action('admin_menu', array($this, 'admin_menu'));
+    add_action('admin_menu', array($this, 'admin_menu'));
+
+    // widget
+    add_action('widgets_init', array($this, 'mailpoet_widget'));
 
     // ajax action
     add_action('wp_ajax_nopriv_mailpoet_ajax', array($this, 'mailpoet_ajax'));
     add_action('wp_ajax_mailpoet_ajax', array($this, 'mailpoet_ajax'));
+  }
+
+  public function mailpoet_widget() {
+    register_widget('\MailPoet\Form\Widget');
   }
 
   public function mailpoet_ajax() {

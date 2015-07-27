@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Form;
 
+if(!defined('ABSPATH')) exit;
+
 class Renderer {
 
     // public: rendering method
@@ -559,7 +561,7 @@ EOL;
 
       case 'php':
         $output = array(
-          '$form_widget = new MailPoetFormWidget();',
+          '$form_widget = new \MailPoet\Form\Widget();',
           'echo $form_widget->widget(array(\'form\' => '.(int)$form['form'].', \'form_type\' => \'php\'));'
           );
         return join("\n", $output);
@@ -577,14 +579,14 @@ EOL;
         $output[] = '<script type="text/javascript" src="'.includes_url().'js/jquery/jquery.js'.'?mpv='.MAILPOET_VERSION.'"></script>';
 
                         // (JS) form validation
-        $output[] = '<script type="text/javascript" src="'.mailpoet_plugin_url("lib/jquery.validationEngine.js?mpv=".MAILPOET_VERSION).'"></script>';
-        $output[] = '<script type="text/javascript" src="'.mailpoet_plugin_url('lib/jquery.validationEngine-en.js?mpv='.MAILPOET_VERSION).'"></script>';
+        $output[] = '<script type="text/javascript" src="'.plugins_url('wysija-newsletters/'.'lib/jquery.validationEngine.js?mpv='.MAILPOET_VERSION).'"></script>';
+        $output[] = '<script type="text/javascript" src="'.plugins_url('wysija-newsletters/'.'lib/jquery.validationEngine-en.js?mpv='.MAILPOET_VERSION).'"></script>';
 
                         // (CSS) form validation styles
-        $output[] = '<link rel="stylesheet" type="text/css" href="'.mailpoet_plugin_url('lib/validationEngine.jquery.css?mpv='.MAILPOET_VERSION).'">';
+        $output[] = '<link rel="stylesheet" type="text/css" href="'.plugins_url('wysija-newsletters/'.'lib/validationEngine.jquery.css?mpv='.MAILPOET_VERSION).'">';
 
                         // (JS) form submission
-        $output[] = '<script type="text/javascript" src="'.mailpoet_plugin_url('www/mailpoet_form_subscribe.js?mpv='.MAILPOET_VERSION).'"></script>';
+        $output[] = '<script type="text/javascript" src="'.plugins_url('wysija-newsletters/'.'www/mailpoet_form_subscribe.js?mpv='.MAILPOET_VERSION).'"></script>';
 
                         // (JS) variables...
         $output[] = '<script type="text/javascript">';
@@ -595,7 +597,7 @@ EOL;
         $output[] = '</script>';
         $output[] = '<!--END Scripts-->';
 
-        $form_widget = new MailPoetFormWidget();
+        $form_widget = new Widget();
         $output[] = $form_widget->widget(array(
           'form' => (int)$form['form'],
           'form_type' => 'php'

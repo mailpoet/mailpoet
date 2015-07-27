@@ -1,8 +1,8 @@
 <?php
-
 class FormRendererCest {
   public function _before() {
     $this->form_data = array(
+      'form' => 1,
       'form_name' => __("New form"),
       'form_created_at' => time(),
       'data' => array(
@@ -51,6 +51,6 @@ class FormRendererCest {
 
   public function itCanRenderExports() {
     // TODO: Cannot work unless we load the WP environment
-    //\MailPoet\Form\Renderer::getExports($this->form_data);
+    \MailPoet\Form\Renderer::getExports($this->form_data);
   }
 }
