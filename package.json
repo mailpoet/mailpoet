@@ -20,6 +20,7 @@
     "moment": "^2.10.3",
     "papaparse": "4.1.1",
     "select2": "3.5.1",
+    "spectrum-colorpicker": "^1.6.2",
     "tinymce": "4.1.10",
     "underscore": "1.8.3"
   },
