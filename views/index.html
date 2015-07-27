@@ -42,9 +42,56 @@
   <p><a href="javascript:;" id="modal_popup">Popup</a></p>
   <p><a href="javascript:;" id="modal_panel">Panel</a></p>
 
+  <!-- Ajax -->
+  <h3>Ajax</h3>
+  <p><a href="javascript:;" id="ajax_get">Get</a></p>
+  <p><a href="javascript:;" id="ajax_post">Post</a></p>
+  <p id="ajax_output"></p>
+
   <script type="text/javascript">
     jQuery(function($) {
+
       $(function() {
+
+        // Ajax
+        function ajaxSuccess(data) {
+          {% verbatim %}
+          var template = "{{ user.name }} ({{ user.age }}) - extra value: {{ extra_value }}";
+          {% endverbatim %}
+
+          // $('#ajax_output').html(template(data));
+          MailPoet.Modal.popup({
+            title: 'Ajax output',
+            template: template,
+            data: data
+          });
+          MailPoet.Modal.loading(false);
+        }
+
+        $('#ajax_get').on('click', function() {
+          MailPoet.Modal.loading(true);
+          MailPoet.Ajax.get({
+            data: {
+              'extra_value': 12
+            },
+            onSuccess: ajaxSuccess
+          });
+        });
+        $('#ajax_post').on('click', function() {
+          MailPoet.Modal.loading(true);
+          MailPoet.Ajax.post({
+            data: {
+              'extra_value': 42,
+              'user': {
+                name: 'Maya',
+                age: 2
+              }
+            },
+            onSuccess: ajaxSuccess
+          });
+        });
+
+        //  Modals
         $('#modal_popup').on('click', function() {
           MailPoet.Modal.popup({
             title: "Testing <strong>1 2...</strong>",

@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\Util;
+
 class DKIM {
 
   public static function generateKeys() {

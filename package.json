@@ -1,18 +1,38 @@
 {
   "private": true,
+  "scripts": {
+    "install": "napa"
+  },
+  "napa": {
+    "sticky-kit": "leafo/sticky-kit.git",
+    "jquery-validation-engine": "posabsolute/jQuery-Validation-Engine.git",
+    "interact.js": "taye/interact.js.git"
+  },
   "dependencies": {
-    "tinymce": "4.1.10",
+    "backbone": "1.2.0",
+    "backbone.marionette": "2.4.2",
+    "backbone.radio": "0.9.0",
+    "backbone.supermodel": "1.2.0",
+    "c3": "~0.4.10",
+    "d3": "~3.5.5",
     "handlebars": "3.0.3",
-    "select2": "3.5.1"
+    "html2canvas": "latest",
+    "moment": "^2.10.3",
+    "papaparse": "4.1.1",
+    "select2": "3.5.1",
+    "tinymce": "4.1.10",
+    "underscore": "1.8.3"
   },
   "devDependencies": {
-    "mocha": "2.2.1",
-    "jsdom": "3.1.2",
-    "sinon": "1.14.1",
     "chai": "2.2.0",
-    "sinon-chai": "2.7.0",
     "chai-jq": "0.0.8",
+    "jsdom": "3.1.2",
+    "mocha": "2.2.1",
+    "napa": "^1.2.0",
+    "nib": "latest",
+    "sinon": "1.14.1",
+    "sinon-chai": "2.7.0",
     "stylus": "latest",
-    "nib": "latest"
+    "swag": "~0.7.0"
   }
 }

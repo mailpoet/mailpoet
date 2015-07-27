@@ -4,7 +4,7 @@ use MailPoet\Models;
 use MailPoet\Renderer;
 use MailPoet\WP;
 
-if (!defined('ABSPATH')) exit;
+if(!defined('ABSPATH')) exit;
 
 class Initializer {
 
@@ -16,7 +16,7 @@ class Initializer {
   public $assets_url;
 
 
-  public function __construct ($params = array(
+  public function __construct($params = array(
     'file' => '',
     'version' => '1.0.0'
   )) {
@@ -24,7 +24,7 @@ class Initializer {
     $this->version = $params['version'];
     $this->shortname = 'mailpoet';
     $this->file = $params['file'];
-    $this->path = (dirname($this->file));
+    $this->path =(dirname($this->file));
     $this->views_path = $this->path . '/views';
     $this->assets_path = $this->path . '/assets';
     $this->assets_url = plugins_url(
@@ -59,12 +59,12 @@ class Initializer {
     //   'wp_enqueue_scripts',
     //   array($this, 'public_css'),
     //   10
-    // );
+    //);
     // add_action(
     //   'wp_enqueue_scripts',
     //   array($this, 'public_js'),
     //   10
-    // );
+    //);
 
     // admin assets
     // add_action(
@@ -72,13 +72,13 @@ class Initializer {
     //   array($this, 'admin_css'),
     //   10,
     //   1
-    // );
+    //);
     // add_action(
     //   'admin_enqueue_scripts',
     //   array($this, 'admin_js'),
     //   10,
     //   1
-    // );
+    //);
 
     // localization
     $this->setup_textdomain();
@@ -90,6 +90,57 @@ class Initializer {
 
     // admin menu
     add_action('admin_menu', array($this, 'admin_menu'));
+
+    // ajax action
+    add_action('wp_ajax_nopriv_mailpoet_ajax', array($this, 'mailpoet_ajax'));
+    add_action('wp_ajax_mailpoet_ajax', array($this, 'mailpoet_ajax'));
+  }
+
+  public function mailpoet_ajax() {
+    if(!current_user_can('manage_options')) {
+      echo json_encode(array('error' => "Access Denied"));
+    } else {
+      // routing
+      // $method = $_SERVER['REQUEST_METHOD'];
+      $controller = (isset($_GET[ 'mailpoet_controller']) ? $_GET[ 'mailpoet_controller'] : null);
+      $action = (isset($_GET[ 'mailpoet_action']) ? $_GET[ 'mailpoet_action'] : null);
+
+      try {
+        if($controller === null || $action === null) {
+          throw new \Exception('unrecognized route');
+        } else {
+          // set action based on data
+          $ajax_action = $controller.'_'.$action;
+
+          if(in_array($ajax_action, get_class_methods($this))) {
+            // retrieve HTTP method
+            $method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING);
+
+            // decode json data
+            if($method === 'GET') {
+              $data = array_diff_key($_GET, array(
+                'action' => null,
+                'mailpoet_controller' => null,
+                'mailpoet_action' => null
+              ));
+            } else {
+              $data = json_decode(file_get_contents('php://input'), true);
+            }
+            // return json encoded result of ajax action
+            echo json_encode(call_user_func_array(array($this, $ajax_action), array($data)));
+          } else {
+            throw new \Exception('method "' . $ajax_action . '" is undefined');
+          }
+        }
+      } catch(Exception $e) {
+        echo json_encode(array('error' => $e->getMessage()));
+      }
+    }
+    wp_die();
+  }
+
+  public function dummy_test($data) {
+    return array_merge(array('user' => array('name' => 'Jo', 'age' => 31)), $data);
   }
 
   // public methods
@@ -101,7 +152,7 @@ class Initializer {
       $this->assets_url . '/css/public.css',
       array(),
       $this->version
-    );
+   );
     wp_enqueue_style($name);
   }
 
@@ -112,7 +163,7 @@ class Initializer {
       $this->assets_url . '/js/public.js',
       array('jquery'),
       $this->version
-    );
+   );
     wp_enqueue_script($name);
   }
 
@@ -122,7 +173,7 @@ class Initializer {
       $name,
       $this->assets_url . '/css/admin.css',
       array(), $this->version
-    );
+   );
     wp_enqueue_style($name);
   }
 
@@ -133,7 +184,7 @@ class Initializer {
       $this->assets_url . '/js/admin.js',
       array('jquery'),
       $this->version
-    );
+   );
     wp_enqueue_script($name);
   }
 
@@ -142,7 +193,7 @@ class Initializer {
       $this->shortname,
       false,
       dirname(plugin_basename($this->file)) . '/lang/'
-    );
+   );
   }
 
   public function setup_textdomain() {
@@ -151,7 +202,7 @@ class Initializer {
       'plugin_locale',
       get_locale(),
       $domain
-    );
+   );
 
     $language_path = WP_LANG_DIR
       . '/'
@@ -167,7 +218,7 @@ class Initializer {
       $domain,
       false,
       dirname(plugin_basename($this->file)) . '/lang/'
-    );
+   );
   }
 
   public function install() {
@@ -187,10 +238,10 @@ class Initializer {
       'users' => array(
         array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),
         array('name' => 'Marco', 'email' => 'marco@mailpoet.com'),
-        ),
+       ),
         'subscriber' => $subscriber->name,
         'option' => $option->get('option_name')
-    );
+   );
     // Sample page using Twig
     echo $this->renderer->render('index.html', $this->data);
   }
@@ -205,7 +256,7 @@ class Initializer {
       array($this, 'admin_page'),
       $this->assets_url . '/img/menu_icon.png',
       30
-    );
+   );
 /*
     // newsletters
     add_submenu_page(
@@ -215,7 +266,7 @@ class Initializer {
       'manage_options',
       'mailpoet-newsletters',
       'mailpoet_newsletters'
-    );
+   );
 
     // subscribers
     add_submenu_page('mailpoet-newsletters',
@@ -224,7 +275,7 @@ class Initializer {
       'manage_options',
       'mailpoet-subscribers',
       'mailpoet_subscribers'
-    );
+   );
 
     // forms
     add_submenu_page('mailpoet-newsletters',
@@ -233,7 +284,7 @@ class Initializer {
       'manage_options',
       'mailpoet-forms',
       'mailpoet_forms'
-    );
+   );
 
     // settings
     add_submenu_page('mailpoet-newsletters',
@@ -242,7 +293,7 @@ class Initializer {
       'manage_options',
       'mailpoet-settings',
       'mailpoet_settings'
-    );
+   );
 
     // premium
     add_submenu_page('mailpoet-newsletters',
@@ -251,7 +302,7 @@ class Initializer {
       'manage_options',
       'mailpoet-premium',
       'mailpoet_premium'
-    );
+   );
 
     // statistics
     add_submenu_page('mailpoet-newsletters',
@@ -260,7 +311,7 @@ class Initializer {
       'manage_options',
       'mailpoet-statistics',
       'mailpoet_statistics'
-    );
+   );
 */
   }
 
@@ -268,6 +319,6 @@ class Initializer {
   private function log_version_number() {
     update_option(
       $this->shortname . '_version', $this->version
-    );
+   );
   }
 }

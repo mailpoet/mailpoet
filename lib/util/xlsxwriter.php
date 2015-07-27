@@ -15,7 +15,7 @@ class XLSXWriter
   const EXCEL_2007_MAX_ROW=1048576;
   const EXCEL_2007_MAX_COL=16384;
   //------------------------------------------------------------------
-  protected $author ='Doc Author';
+  protected $author ='MailPoet';
   protected $sheets = array();
   protected $shared_strings = array();//unique set
   protected $shared_string_count = 0;//count of non-unique references to the unique set
@@ -607,7 +607,3 @@ class XLSXWriter_BuffererWriter
     return preg_match("//u", $string) ? true : false;
   }
 }
-
-
-
-// vim: set filetype=php expandtab tabstop=4 shiftwidth=4 autoindent smartindent:
