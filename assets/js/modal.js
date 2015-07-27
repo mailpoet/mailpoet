@@ -150,11 +150,11 @@
                         '<div class="mailpoet_panel_body clearfix"></div>'+
                     '</div>'
         },
-        setRenderer: function(renderer) {
+        setRenderer: function() {
             this.renderer = (typeof(Handlebars) === "undefined") ? 'html' : 'handlebars';
         },
         compileTemplate: function(template) {
-            if(this.renderer = 'html') {
+            if(this.renderer === 'html') {
                 return function() { return template; };
             } else {
                 return Handlebars.compile(template);

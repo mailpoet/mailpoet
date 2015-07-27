@@ -56,9 +56,15 @@
         // Ajax
         function ajaxSuccess(data) {
           {% verbatim %}
-          var template = Handlebars.compile("{{ user.name }} ({{ user.age }}) - extra value: {{ extra_value }}");
+          var template = "{{ user.name }} ({{ user.age }}) - extra value: {{ extra_value }}";
           {% endverbatim %}
-          $('#ajax_output').html(template(data));
+
+          // $('#ajax_output').html(template(data));
+          MailPoet.Modal.popup({
+            title: 'Ajax output',
+            template: template,
+            data: data
+          });
           MailPoet.Modal.loading(false);
         }
 
