@@ -48,4 +48,9 @@ class FormRendererCest {
     $css = \MailPoet\Form\Renderer::renderStyles($this->form_data);
     expect($css)->contains('.mailpoet_form {');
   }
+
+  public function itCanRenderExports() {
+    // TODO: Cannot work unless we load the WP environment
+    //\MailPoet\Form\Renderer::getExports($this->form_data);
+  }
 }

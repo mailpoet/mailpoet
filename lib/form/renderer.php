@@ -550,7 +550,7 @@ EOL;
         'class="mailpoet_form_iframe" '.
         'vspace="0" '.
         'tabindex="0" '.
-                                    //'style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" '. // TODO: need to find a solution for Height.
+        //'style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" '. // TODO: need to find a solution for Height.
         'marginwidth="0" '.
         'marginheight="0" '.
         'hspace="0" '.
@@ -566,8 +566,8 @@ EOL;
       break;
 
       case 'html':
-        // get locale setting in order to load translations
-        $wp_locale = get_locale();
+        // TODO: get locale setting in order to load translations
+        $wp_locale = \get_locale();
 
         $output = array();
 
