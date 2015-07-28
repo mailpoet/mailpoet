@@ -1,7 +1,4 @@
 <?php
-$dotenv = new Dotenv\Dotenv(dirname(dirname(__DIR__)));
-$dotenv->load();
-
 $wordpress_path = getenv('WP_TEST_PATH');
 
 if($wordpress_path) {

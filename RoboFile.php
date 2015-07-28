@@ -23,6 +23,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testUnit() {
+    $this->loadEnv();
     $this->_exec('vendor/bin/codecept run unit');
   }
 
