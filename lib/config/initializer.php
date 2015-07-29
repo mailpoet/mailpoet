@@ -6,14 +6,6 @@ use MailPoet\WP;
 
 if(!defined('ABSPATH')) exit;
 
-/*
- this is a comment
-*/
- // another comment
-$var = __('super long string
-  that takes multiple lines
-  and takes 3 lines');
-
 class Initializer {
 
   public $version;
@@ -23,12 +15,11 @@ class Initializer {
   public $assets_path;
   public $assets_url;
 
-
   public function __construct($params = array(
     'file' => '',
     'version' => '1.0.0'
   )) {
-
+    Env::init();
     $this->data = array();
     $this->version = $params['version'];
     $this->shortname = 'wysija-newsletters';
