@@ -4,13 +4,25 @@ use \MailPoet\Config\Env;
 
 class EnvCest {
   public function _before() {
-    global $wpdb;
-    $this->db_prefix = $wpdb->prefix;
     Env::init();
   }
 
   public function itCanReturnTheDbPrefix() {
-    expect(Env::$db_prefix)->equals($this->db_prefix);
+    global $wpdb;
+    $db_prefix = $wpdb->prefix;
+    expect(Env::$db_prefix)->equals($db_prefix);
+  }
+
+  public function itCanReturnTheDbHost() {
+    expect(Env::$db_host)->equals(DB_HOST);
+  }
+
+  public function itCanReturnTheDbUser() {
+    expect(Env::$db_username)->equals(DB_USER);
+  }
+
+  public function itCanReturnTheDbPassword() {
+    expect(Env::$db_password)->equals(DB_PASSWORD);
   }
 
   public function _after() {
