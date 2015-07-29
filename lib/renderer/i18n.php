@@ -14,7 +14,7 @@ class i18n extends \Twig_Extension {
     // twig custom functions
     $twig_functions = array();
     // list of WP functions to map
-    $functions = array('_', '__', '_e', '_c', '_n', '_x');
+    $functions = array('__', '_n');
 
     foreach($functions as $function) {
       $twig_functions[] = new \Twig_SimpleFunction(
