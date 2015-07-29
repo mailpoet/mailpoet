@@ -27,6 +27,7 @@ class Initializer {
     $this->path =(dirname($this->file));
     $this->views_path = $this->path . '/views';
     $this->assets_path = $this->path . '/assets';
+    $this->languages_path = $this->path . '/lang';
     $this->assets_url = plugins_url(
       '/assets',
       $this->file
@@ -214,15 +215,15 @@ class Initializer {
       $domain
    );
 
-    $language_path = WP_LANG_DIR
-      . '/'
-      . $domain
-      . '/'
-      . $domain
-      . '-'
-      . $locale
-      . '.mo';
-
+    // $language_path = WP_LANG_DIR
+    //   . '/'
+    //   . $domain
+    //   . '/'
+    //   . $domain
+    //   . '-'
+    //   . $locale
+    //   . '.mo';
+    $language_path = $this->languages_path.'/'.$domain.'-'.$locale.'.mo';
     load_textdomain($domain, $language_path);
     load_plugin_textdomain(
       $domain,
@@ -243,6 +244,8 @@ class Initializer {
 
     $this->data = array(
       'text' => 'Lorem ipsum dolor sit amet',
+      'delete_messages_1' => 1,
+      'delete_messages_2' => 10,
       'unsafe_string' => '<script>alert("not triggered");</script>',
       'users' => array(
         array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),

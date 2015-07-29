@@ -1,0 +1,2 @@
+<?php
+__( 'Include', 'plugin-include' );

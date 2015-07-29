@@ -1,10 +1,10 @@
-# Copyright (C) 2015 
+# Copyright (C) 2015
 # This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://support.mailpoet.com/\n"
-"POT-Creation-Date: 2015-07-29 14:52:45+00:00\n"
+"POT-Creation-Date: 2015-07-29 17:10:53+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,13 +25,6 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-Bookmarks: \n"
 "X-Textdomain-Support: yes\n"
-
-#: lib/config/initializer.php:13 views/form/editor.html:5
-msgid ""
-"super long string\n"
-"  that takes multiple lines\n"
-"  and takes 3 lines"
-msgstr ""
 
 #: lib/form/renderer.php:91
 msgid "Year, month, day"
@@ -129,88 +122,80 @@ msgstr ""
 msgid "Newsletter"
 msgstr ""
 
-#: mailpoet.php:34
-msgid ""
-"super loeng string\n"
-"  that takes multiple lines\n"
-"  and takes 3 lines"
-msgstr ""
-
-#: views/form/editor.html:4
-msgid "Translatable string with a link %shere%s"
-msgstr ""
-
-#: views/form/editor.html:27
+#: views/form/editor.html:23
 msgid "Save"
 msgstr ""
 
-#: views/form/editor.html:35
+#: views/form/editor.html:31
 msgid "Settings"
 msgstr ""
 
-#: views/form/editor.html:43
+#: views/form/editor.html:39
 msgid "This form adds subscribers to these lists:"
 msgstr ""
 
-#: views/form/editor.html:45
+#: views/form/editor.html:41
 msgid "Choose a list"
 msgstr ""
 
-#: views/form/editor.html:58
+#: views/form/editor.html:54
 msgid "You have to select at least 1 list"
 msgstr ""
 
-#: views/form/editor.html:64
+#: views/form/editor.html:60
 msgid "After submit..."
 msgstr ""
 
-#: views/form/editor.html:66
+#: views/form/editor.html:62
 msgid "Show message"
 msgstr ""
 
-#: views/form/editor.html:70
+#: views/form/editor.html:66
 msgid "Go to page"
 msgstr ""
 
-#: views/form/editor.html:77
+#: views/form/editor.html:73
 msgid "Check your inbox now to confirm your subscription."
 msgstr ""
 
-#: views/form/editor.html:99
+#: views/form/editor.html:95
 msgid "Shortcodes"
 msgstr ""
 
-#: views/form/editor.html:104
+#: views/form/editor.html:100
 msgid "You can easily add this form to your theme's in the"
 msgstr ""
 
-#: views/form/editor.html:104
+#: views/form/editor.html:100
 msgid "Widgets areas"
 msgstr ""
 
-#: views/form/editor.html:127
-msgid ""
-"[link_html]HTML[/link_html], [link_php]PHP[/link_php], "
-"[link_iframe]iframe[/link_iframe] and "
-"[link_shortcode]shortcode[/link_shortcode] versions are also available."
+#: views/form/editor.html:123
+msgid "[link_html]HTML[/link_html]"
 msgstr ""
 
-#: views/form/editor.html:139
+#: views/form/editor.html:135
 msgid "Fields"
 msgstr ""
 
-#: views/form/editor.html:145
+#: views/form/editor.html:141
 msgid "Add New Field"
 msgstr ""
 
-#: views/form/editor.html:154
+#: views/form/editor.html:150
 msgid "Styles"
 msgstr ""
 
-#: views/form/editor.html:158
+#: views/form/editor.html:154
 msgid "Preview"
 msgstr ""
 
-#: views/index.html:4
-msgid "monvier"
+#: views/index.html:5
+msgid "Translatable string with a link %shere%s"
 msgstr ""
+
+#: views/index.html:6 views/index.html:7
+msgid "deleted one message"
+msgid_plural "deleted %d messages"
+msgstr[0] ""
+msgstr[1] ""

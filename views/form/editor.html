@@ -1,10 +1,6 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-  <p>{{ __('Translatable string with a link %shere%s') }}</p>
-  <p>{{ __('super long string
-  that takes multiple lines
-  and takes 3 lines') | nl2br }}</p>
   <h2>{{ title }}</h2>
   <span id="mailpoet_form_name">{{ form.form_name }}</span>
   <input id="mailpoet_form_name_input" type="text" value="" style="display:none;" />

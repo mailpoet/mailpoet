@@ -1,0 +1,6 @@
+<?php
+/**
+ * Plugin Name: Example Plugin
+ */
+
+__( 'Exclude', 'plugin-include' );

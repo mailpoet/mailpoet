@@ -1,0 +1,3 @@
+<?php
+__( 'String', 'oldtextdomain' );
+__( 'String', 'vendortextdomain' );
