@@ -15,12 +15,11 @@ class Initializer {
   public $assets_path;
   public $assets_url;
 
-
   public function __construct($params = array(
     'file' => '',
     'version' => '1.0.0'
   )) {
-
+    Env::init();
     $this->data = array();
     $this->version = $params['version'];
     $this->shortname = 'mailpoet';
