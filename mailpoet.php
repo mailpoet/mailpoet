@@ -31,5 +31,7 @@ function mailpoet() {
     'version' => MAILPOET_VERSION
   ));
 }
-
+$var = __('super loeng string
+  that takes multiple lines
+  and takes 3 lines');
 mailpoet();

@@ -2,10 +2,7 @@
 <div id="mailpoet_notice_error" class="mailpoet_notice error" style="display:none;"></div>
 <div id="mailpoet_notice_success" class="mailpoet_notice updated" style="display:none;"></div>
 <div class="wrap">
-  {% if title %}
-    <h2>{{ title }}</h2>
-  {% endif %}
-
+  {% block title %}{% endblock %}
   {% block content %}{% endblock %}
 </div>
 

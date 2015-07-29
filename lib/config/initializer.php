@@ -6,6 +6,14 @@ use MailPoet\WP;
 
 if(!defined('ABSPATH')) exit;
 
+/*
+ this is a comment
+*/
+ // another comment
+$var = __('super long string
+  that takes multiple lines
+  and takes 3 lines');
+
 class Initializer {
 
   public $version;
@@ -23,7 +31,7 @@ class Initializer {
 
     $this->data = array();
     $this->version = $params['version'];
-    $this->shortname = 'mailpoet';
+    $this->shortname = 'wysija-newsletters';
     $this->file = $params['file'];
     $this->path =(dirname($this->file));
     $this->views_path = $this->path . '/views';
@@ -44,6 +52,8 @@ class Initializer {
       )
     );
 
+    // renderer: i18n
+    $this->renderer->addExtension(new Renderer\i18n());
     // renderer: global variables
     $this->renderer->addExtension(new Renderer\Assets(array(
       'assets_url' => $this->assets_url,
@@ -206,7 +216,7 @@ class Initializer {
   }
 
   public function setup_textdomain() {
-    $domain = 'mailpoet';
+    $domain = 'wysija-newsletters';
     $locale = apply_filters(
       'plugin_locale',
       get_locale(),
@@ -241,7 +251,6 @@ class Initializer {
     $option->set('option_name', 'option value');
 
     $this->data = array(
-      'title' => __('Twig Sample page'),
       'text' => 'Lorem ipsum dolor sit amet',
       'unsafe_string' => '<script>alert("not triggered");</script>',
       'users' => array(
@@ -253,6 +262,10 @@ class Initializer {
    );
     // Sample page using Twig
     echo $this->renderer->render('index.html', $this->data);
+  }
+
+  public function admin_page_form() {
+    echo $this->renderer->render('form/editor.html', $this->data);
   }
 
   public function admin_menu() {
@@ -285,16 +298,16 @@ class Initializer {
       'mailpoet-subscribers',
       'mailpoet_subscribers'
    );
-
+*/
     // forms
     add_submenu_page('mailpoet-newsletters',
       'Forms',
       'Forms',
       'manage_options',
       'mailpoet-forms',
-      'mailpoet_forms'
+      array($this, 'admin_page_form')
    );
-
+/*
     // settings
     add_submenu_page('mailpoet-newsletters',
       'Settings',

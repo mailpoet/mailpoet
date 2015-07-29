@@ -1,0 +1,174 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  <p>{{ __('Translatable string with a link %shere%s') }}</p>
+  <p>{{ __('super long string
+  that takes multiple lines
+  and takes 3 lines') | nl2br }}</p>
+  <h2>{{ title }}</h2>
+  <span id="mailpoet_form_name">{{ form.form_name }}</span>
+  <input id="mailpoet_form_name_input" type="text" value="" style="display:none;" />
+  <span>
+    <a id="mailpoet_form_edit_name" class="button" href="javascript:;">{{ form_edit_name }}</a>
+  </span>
+{% endblock %}
+
+{% block content %}
+  <div id="mailpoet_form_wrapper" class="clearfix">
+    <!-- Form Editor Container -->
+    <div id="mailpoet_form_container">
+      <!-- Form Editor -->
+      <div id="mailpoet_form_editor">
+          <div id="mailpoet_form_body"></div>
+          <p id="block_placeholder" class="block_placeholder"></p>
+      </div>
+
+      <p class="submit">
+        <a id="mailpoet_form_save" href="javascript:;" class="button button-primary" >{{ __('Save') }}</a>
+      </p>
+    </div>
+
+    <!-- Form Editor: Toolbar -->
+    <div id="mailpoet_form_toolbar" style="visibility:hidden;">
+      <div class="mailpoet_toolbar_section">
+          <a href="javascript:;" class="mailpoet_toggle"><br /></a>
+          <h3>{{ __('Settings') }}</h3>
+
+          <div>
+            <!-- Form settings -->
+          <form id="mailpoet_form_settings" action="" method="POST">
+            <div id="mailpoet_list_selection">
+              <!-- Form settings: list selection -->
+              <p>
+              <strong>{{ __('This form adds subscribers to these lists:') }}</strong>
+              </p>
+              <select name="lists" data-placeholder="{{ __('Choose a list') }}" multiple>
+                            <!-- $selected_lists = array($default_list['list']) }}
+              if(isset($form['data']['settings']['lists']) && !empty($form['data']['settings']['lists'])) {
+                $selected_lists = $form['data']['settings']['lists'];
+              }
+
+              foreach($lists as $list) {
+                $is_checked = (in_array($list['list'], $selected_lists)) ? 'selected="selected"' : '';
+                print '<option value="'.$list['list'].'" '.$is_checked.' />'.$list['list_name'].'</option>';
+              } -->
+
+              </select>
+              <!-- error if user tries to save and has not selected a list -->
+              <p class="mailpoet_error" data-error="admin_no_list">{{ __('You have to select at least 1 list') }}</p>
+            </div>
+
+            <div id="mailpoet_on_success">
+                <!-- Form settings: after submit -->
+              <p>
+                <label><strong>{{ __('After submit...') }}</strong></label>
+                <label>
+                  <input class="mailpoet_radio" type="radio" name="on_success" value="message" />{{ __('Show message') }}
+                </label>
+                &nbsp;
+                <label>
+                  <input class="mailpoet_radio" type="radio" name="on_success" value="page" />{{ __('Go to page') }}
+                </label>
+              </p>
+              <!-- default success message -->
+              {% if form.data.settings.succes_message %}
+                {% set success_message = form.data.settings.succes_message %}
+              {% else %}
+                {% set success_message = __('Check your inbox now to confirm your subscription.') %}
+              {% endif %}
+
+
+
+              <p id="mailpoet_on_success_message" class="mailpoet_on_success_option"><textarea name="success_message">{{ success_message }}</textarea></p>
+              <p id="mailpoet_on_success_page" class="mailpoet_on_success_option"><select name="success_page">
+                <!-- $pages = get_pages() }}
+                $success_page = (isset($form['data']['settings']['success_page']) && (int)$form['data']['settings']['success_page'] > 0) ? $form['data']['settings']['success_page'] : null;
+                foreach($pages as $key => $page) {
+                  print '<option value="'.$page->ID.'">'.$page->post_title.'</option>';
+                }
+ -->
+              </select></p>
+            </div>
+          </form>
+        </div>
+        </div>
+
+        <!-- Toolbar: Shortcodes / Export -->
+        <div class="mailpoet_toolbar_section closed">
+        <a href="javascript:;" class="mailpoet_toggle"><br /></a>
+        <h3>{{ __('Shortcodes') }}</h3>
+
+        <div>
+          <!-- Form export links -->
+          <p>
+            {{ __("You can easily add this form to your theme's in the") }}&nbsp;<a href="widgets.php" target="_blank">{{ __('Widgets areas') }}</a>
+         </p>
+          <p><!--             echo str_replace(
+              array(
+                '[link_html]',
+                '[link_php]',
+                '[link_iframe]',
+                '[link_shortcode]',
+                '[/link_html]',
+                '[/link_php]',
+                '[/link_iframe]',
+                '[/link_shortcode]'
+              ),
+              array(
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="html">',
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="php">',
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="iframe">',
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="shortcode">',
+                '</a>',
+                '</a>',
+                '</a>',
+                '</a>'
+              ),
+              __('[link_html]HTML[/link_html], [link_php]PHP[/link_php], [link_iframe]iframe[/link_iframe] and [link_shortcode]shortcode[/link_shortcode] versions are also available.')
+            ) }} -->
+         </p>
+
+          <!-- Form export -->
+          <div id="mailpoet_form_export"></div>
+        </div>
+        </div>
+
+        <!-- Toolbar: Fields -->
+      <div class="mailpoet_toolbar_section closed">
+        <a href="javascript:;" class="mailpoet_toggle"><br /></a>
+        <h3>{{ __('Fields') }}</h3>
+
+        <div>
+          <ul id="mailpoet_toolbar_fields">
+          </ul>
+            <p class="mailpoet_align_center">
+                <a id="mailpoet_form_add_field" class="button button-primary" href="javascript:;" style="width:100%;">{{ __('Add New Field') }}</a>
+              </p>
+          </div>
+
+      </div>
+
+      <!-- Toolbar: Styles -->
+        <div class="mailpoet_toolbar_section closed">
+          <a href="javascript:;" class="mailpoet_toggle"><br /></a>
+          <h3>{{ __('Styles') }}</h3>
+          <div>
+            <textarea id="mailpoet_form_styles">{{ form.data.styles }}</textarea>
+          <br />
+          <p class="mailpoet_align_center"><a id="mailpoet_form_preview" href="javascript:;" class="button button-primary" style="width:100%;">{{ __('Preview') }}</a></p>
+        </div>
+        </div>
+
+    <!-- End | Form Editor: Toolbar -->
+    </div>
+
+    <!-- Form Editor: History -->
+    <div id="mailpoet_form_history"></div>
+  </div>
+
+  {{ javascript(
+    'lib/prototype.min.js',
+    'lib/scriptaculous.min.js',
+    'form_editor.js'
+  )}}
+{% endblock %}
