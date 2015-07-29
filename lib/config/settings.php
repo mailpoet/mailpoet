@@ -2,6 +2,8 @@
 namespace MailPoet\Config;
 use \MailPoet\WP;
 
+if(!defined('ABSPATH')) exit;
+
 class Settings {
 
   function __construct() {
