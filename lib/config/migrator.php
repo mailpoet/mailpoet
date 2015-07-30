@@ -21,7 +21,6 @@ class Migrator {
     $table = $this->prefix . 'subscriber';
     $sql = "CREATE TABLE " . $table . " (
       id mediumint(9) NOT NULL AUTO_INCREMENT,
-      name text NOT NULL,
       PRIMARY KEY  (id)
     );";
     return $sql;
