@@ -14,10 +14,10 @@ class Migrator {
 
   function up() {
     global $wpdb;
-    dbDelta($this->subscriber());
+    dbDelta($this->subscribers());
   }
 
-  function subscriber() {
+  function subscribers() {
     $table = $this->prefix . 'subscriber';
     $sql = "CREATE TABLE " . $table . " (
       id mediumint(9) NOT NULL AUTO_INCREMENT,
