@@ -36,9 +36,9 @@
 
   <!-- Notice -->
   <h3>Notices</h3>
-  <p><a href="javascript:;" onclick="MailPoet.Notice.success('Test');">Trigger success</a></p>
-  <p><a href="javascript:;" onclick="MailPoet.Notice.error('Test');">Trigger error</a></p>
-  <p><a href="javascript:;" onclick="MailPoet.Notice.system('Test');">Trigger warning</a></p>
+  <p><a href="javascript:;" onclick="MailPoet.Notice.success('{{ __("Test") }}');">Trigger success</a></p>
+  <p><a href="javascript:;" onclick="MailPoet.Notice.error('{{ __("Test") }}');">Trigger error</a></p>
+  <p><a href="javascript:;" onclick="MailPoet.Notice.system('{{ __("Test") }}');">Trigger warning</a></p>
 
   <!-- Modal -->
   <h3>Modals</h3>
@@ -58,14 +58,9 @@
 
         // Ajax
         function ajaxSuccess(data) {
-          {% verbatim %}
-          var template = "{{ user.name }} ({{ user.age }}) - extra value: {{ extra_value }}";
-          {% endverbatim %}
-
-          // $('#ajax_output').html(template(data));
           MailPoet.Modal.popup({
-            title: 'Ajax output',
-            template: template,
+            title: '{{ __("Ajax output") }}',
+            template: $('#mailpoet_tpl_test').html(),
             data: data
           });
           MailPoet.Modal.loading(false);
@@ -97,13 +92,13 @@
         //  Modals
         $('#modal_popup').on('click', function() {
           MailPoet.Modal.popup({
-            title: "Testing <strong>1 2...</strong>",
+            title: "{{ __('Testing 3 4...') }}",
             template: "<h3>{{ __('Hello World!') }}</h3>"
           });
         });
         $('#modal_panel').on('click', function() {
           MailPoet.Modal.panel({
-            title: "Testing 1 2...",
+            title: "{{ __('Testing 1 2...') }}",
             template: "<h3>{{ __('Hello World!') }}</h3>",
             width: "40%",
             overlay: true
@@ -111,6 +106,14 @@
         });
       });
     });
+
+    Handlebars.registerHelper('__', function(msgid) {
+      return i18n.gettext(msgid);
+    });
   </script>
 
+{% endblock %}
+
+{% block templates %}
+  <script id="mailpoet_tpl_test" type="text/x-handlebars-template">{{ source('templates/test.hbs') }}</script>
 {% endblock %}

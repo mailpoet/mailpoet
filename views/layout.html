@@ -1,14 +1,17 @@
-<!-- notices -->
+<!-- system notices -->
 <div id="mailpoet_notice_system" class="mailpoet_notice update-nag" style="display:none;"></div>
-<div id="mailpoet_notice_error" class="mailpoet_notice error" style="display:none;"></div>
-<div id="mailpoet_notice_success" class="mailpoet_notice updated" style="display:none;"></div>
-
 <!-- main container -->
 <div class="wrap">
+  <!-- notices -->
+  <div id="mailpoet_notice_error" class="mailpoet_notice error" style="display:none;"></div>
+  <div id="mailpoet_notice_success" class="mailpoet_notice updated" style="display:none;"></div>
+
   <!-- title block -->
   {% block title %}{% endblock %}
   <!-- content block -->
   {% block content %}{% endblock %}
+  <!-- handlebars templates -->
+  {% block templates %}{% endblock %}
 </div>
 
 <!-- stylesheets -->
