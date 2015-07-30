@@ -1,10 +1,10 @@
-# Copyright (C) 2015
+# Copyright (C) 2015 
 # This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://support.mailpoet.com/\n"
-"POT-Creation-Date: 2015-07-29 17:10:53+00:00\n"
+"POT-Creation-Date: 2015-07-30 14:08:29+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,6 +25,26 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-Bookmarks: \n"
 "X-Textdomain-Support: yes\n"
+
+#: lib/config/initializer.php:259
+msgid "New form"
+msgstr ""
+
+#: lib/config/initializer.php:264
+msgid "Check your inbox or spam folder now to confirm your subscription."
+msgstr ""
+
+#: lib/config/initializer.php:270 lib/config/initializer.php:275
+msgid "Email"
+msgstr ""
+
+#: lib/config/initializer.php:280
+msgid "Submit"
+msgstr ""
+
+#: lib/config/initializer.php:285
+msgid "Subscribe!"
+msgstr ""
 
 #: lib/form/renderer.php:91
 msgid "Year, month, day"
@@ -122,6 +142,10 @@ msgstr ""
 msgid "Newsletter"
 msgstr ""
 
+#: views/form/editor.html:8
+msgid "Edit name' "
+msgstr ""
+
 #: views/form/editor.html:23
 msgid "Save"
 msgstr ""
@@ -138,55 +162,51 @@ msgstr ""
 msgid "Choose a list"
 msgstr ""
 
-#: views/form/editor.html:54
+#: views/form/editor.html:46
 msgid "You have to select at least 1 list"
 msgstr ""
 
-#: views/form/editor.html:60
+#: views/form/editor.html:52
 msgid "After submit..."
 msgstr ""
 
-#: views/form/editor.html:62
+#: views/form/editor.html:54
 msgid "Show message"
 msgstr ""
 
-#: views/form/editor.html:66
+#: views/form/editor.html:58
 msgid "Go to page"
 msgstr ""
 
-#: views/form/editor.html:73
+#: views/form/editor.html:65
 msgid "Check your inbox now to confirm your subscription."
 msgstr ""
 
-#: views/form/editor.html:95
+#: views/form/editor.html:85
 msgid "Shortcodes"
 msgstr ""
 
-#: views/form/editor.html:100
-msgid "You can easily add this form to your theme's in the"
+#: views/form/editor.html:90
+msgid "You can easily add this form to your theme's in the %sWidgets area%s"
 msgstr ""
 
-#: views/form/editor.html:100
-msgid "Widgets areas"
+#: views/form/editor.html:96
+msgid "%sHTML%s"
 msgstr ""
 
-#: views/form/editor.html:123
-msgid "[link_html]HTML[/link_html]"
-msgstr ""
-
-#: views/form/editor.html:135
+#: views/form/editor.html:119
 msgid "Fields"
 msgstr ""
 
-#: views/form/editor.html:141
+#: views/form/editor.html:125
 msgid "Add New Field"
 msgstr ""
 
-#: views/form/editor.html:150
+#: views/form/editor.html:134
 msgid "Styles"
 msgstr ""
 
-#: views/form/editor.html:154
+#: views/form/editor.html:138
 msgid "Preview"
 msgstr ""
 

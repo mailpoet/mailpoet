@@ -1,14 +1,14 @@
-# Copyright (C) 2015
+# Copyright (C) 2015 
 # This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://support.mailpoet.com/\n"
-"POT-Creation-Date: 2015-07-29 16:59:53+00:00\n"
+"POT-Creation-Date: 2015-07-30 14:08:29+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-07-29 19:01+0100\n"
+"PO-Revision-Date: 2015-07-30 16:19+0100\n"
 "Last-Translator: MailPoet i18n (https://www.transifex.com/organization/wysija)\n"
 "Language-Team: MailPoet i18n <https://www.transifex.com/organization/wysija>\n"
 "X-Generator: Poedit 1.7.4\n"
@@ -19,6 +19,26 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 "Language: fr\n"
 "X-Poedit-SearchPath-0: .\n"
+
+#: lib/config/initializer.php:259
+msgid "New form"
+msgstr ""
+
+#: lib/config/initializer.php:264
+msgid "Check your inbox or spam folder now to confirm your subscription."
+msgstr ""
+
+#: lib/config/initializer.php:270 lib/config/initializer.php:275
+msgid "Email"
+msgstr ""
+
+#: lib/config/initializer.php:280
+msgid "Submit"
+msgstr ""
+
+#: lib/config/initializer.php:285
+msgid "Subscribe!"
+msgstr ""
 
 #: lib/form/renderer.php:91
 msgid "Year, month, day"
@@ -116,84 +136,80 @@ msgstr ""
 msgid "Newsletter"
 msgstr ""
 
-#: views/form/editor.html:4 views/form/editor.html:26
+#: views/form/editor.html:8
+msgid "Edit name' "
+msgstr ""
+
+#: views/form/editor.html:23
 msgid "Save"
-msgstr ""
+msgstr "Sauvegarder"
 
-#: views/form/editor.html:5
-msgid "Translatable string with a link %shere%s"
-msgstr ""
-
-#: views/form/editor.html:6
-msgid "deleted one message"
-msgid_plural "deleted %d messages"
-msgstr[0] "supprimé un message"
-msgstr[1] "supprimé %d messages"
-
-#: views/form/editor.html:34
+#: views/form/editor.html:31
 msgid "Settings"
-msgstr ""
+msgstr "Réglages"
 
-#: views/form/editor.html:42
+#: views/form/editor.html:39
 msgid "This form adds subscribers to these lists:"
 msgstr ""
 
-#: views/form/editor.html:44
+#: views/form/editor.html:41
 msgid "Choose a list"
 msgstr ""
 
-#: views/form/editor.html:57
+#: views/form/editor.html:46
 msgid "You have to select at least 1 list"
 msgstr ""
 
-#: views/form/editor.html:63
+#: views/form/editor.html:52
 msgid "After submit..."
-msgstr ""
+msgstr "Après l'inscription"
+
+#: views/form/editor.html:54
+msgid "Show message"
+msgstr "Afficher le message"
+
+#: views/form/editor.html:58
+msgid "Go to page"
+msgstr "Aller à la page"
 
 #: views/form/editor.html:65
-msgid "Show message"
-msgstr ""
-
-#: views/form/editor.html:69
-msgid "Go to page"
-msgstr ""
-
-#: views/form/editor.html:76
 msgid "Check your inbox now to confirm your subscription."
 msgstr ""
 
-#: views/form/editor.html:98
+#: views/form/editor.html:85
 msgid "Shortcodes"
 msgstr ""
 
-#: views/form/editor.html:103
-msgid "You can easily add this form to your theme's in the"
+#: views/form/editor.html:90
+msgid "You can easily add this form to your theme's in the %sWidgets area%s"
 msgstr ""
 
-#: views/form/editor.html:103
-msgid "Widgets areas"
+#: views/form/editor.html:96
+msgid "%sHTML%s"
 msgstr ""
 
-#: views/form/editor.html:126
-msgid "[link_html]HTML[/link_html]"
-msgstr ""
-
-#: views/form/editor.html:138
+#: views/form/editor.html:119
 msgid "Fields"
 msgstr ""
 
-#: views/form/editor.html:144
+#: views/form/editor.html:125
 msgid "Add New Field"
 msgstr ""
 
-#: views/form/editor.html:153
+#: views/form/editor.html:134
 msgid "Styles"
 msgstr ""
 
-#: views/form/editor.html:157
+#: views/form/editor.html:138
 msgid "Preview"
 msgstr ""
 
-#: views/index.html:4
-msgid "monvier"
+#: views/index.html:5
+msgid "Translatable string with a link %shere%s"
 msgstr ""
+
+#: views/index.html:6 views/index.html:7
+msgid "deleted one message"
+msgid_plural "deleted %d messages"
+msgstr[0] ""
+msgstr[1] ""

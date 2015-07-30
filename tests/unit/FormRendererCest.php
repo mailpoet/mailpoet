@@ -40,8 +40,10 @@ class FormRendererCest {
     // tests
   public function itCanRenderAForm(){
     $html = \MailPoet\Form\Renderer::render($this->form_data);
-    expect($html)->contains('Email');
-    expect($html)->contains('Subscribe!');
+    // we need an email field
+    expect($html)->contains('name="email"');
+    // we need a submit button
+    expect($html)->contains('type="submit"');
   }
 
   public function itCanRenderAFormStyles(){

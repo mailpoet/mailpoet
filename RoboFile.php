@@ -16,7 +16,11 @@ class RoboFile extends \Robo\Tasks {
   function watch() {
     $command = array(
       './node_modules/stylus/bin/stylus -u',
-      'nib -w assets/css/src/admin.styl',
+      ' nib -w'.
+      // global admin styles
+      ' assets/css/src/admin.styl'.
+      // rtl specific styles
+      ' assets/css/src/rtl.styl',
       '-o assets/css/'
     );
     $this->_exec(join(' ', $command));

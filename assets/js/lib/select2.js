@@ -1,0 +1,1 @@
+../../../node_modules/select2/select2.js
