@@ -5,7 +5,7 @@
   <span id="mailpoet_form_name">{{ form.form_name }}</span>
   <input id="mailpoet_form_name_input" type="text" value="" style="display:none;" />
   <span>
-    <a id="mailpoet_form_edit_name" class="button" href="javascript:;">{{ form_edit_name }}</a>
+    <a id="mailpoet_form_edit_name" class="button" href="javascript:;">{{ __('Edit name' ) }}</a>
   </span>
 {% endblock %}
 
@@ -39,23 +39,14 @@
               <strong>{{ __('This form adds subscribers to these lists:') }}</strong>
               </p>
               <select name="lists" data-placeholder="{{ __('Choose a list') }}" multiple>
-                            <!-- $selected_lists = array($default_list['list']) }}
-              if(isset($form['data']['settings']['lists']) && !empty($form['data']['settings']['lists'])) {
-                $selected_lists = $form['data']['settings']['lists'];
-              }
-
-              foreach($lists as $list) {
-                $is_checked = (in_array($list['list'], $selected_lists)) ? 'selected="selected"' : '';
-                print '<option value="'.$list['list'].'" '.$is_checked.' />'.$list['list_name'].'</option>';
-              } -->
-
+                <option value="1" {% if 1 in form.data.settings.lists %}selected="selected"{% endif %}>My First list</option>
               </select>
               <!-- error if user tries to save and has not selected a list -->
               <p class="mailpoet_error" data-error="admin_no_list">{{ __('You have to select at least 1 list') }}</p>
             </div>
 
             <div id="mailpoet_on_success">
-                <!-- Form settings: after submit -->
+              <!-- Form settings: after submit -->
               <p>
                 <label><strong>{{ __('After submit...') }}</strong></label>
                 <label>
@@ -67,13 +58,11 @@
                 </label>
               </p>
               <!-- default success message -->
-              {% if form.data.settings.succes_message %}
-                {% set success_message = form.data.settings.succes_message %}
+              {% if form.data.settings.success_message %}
+                {% set success_message = form.data.settings.success_message %}
               {% else %}
                 {% set success_message = __('Check your inbox now to confirm your subscription.') %}
               {% endif %}
-
-
 
               <p id="mailpoet_on_success_message" class="mailpoet_on_success_option"><textarea name="success_message">{{ success_message }}</textarea></p>
               <p id="mailpoet_on_success_page" class="mailpoet_on_success_option"><select name="success_page">
@@ -90,38 +79,32 @@
         </div>
 
         <!-- Toolbar: Shortcodes / Export -->
-        <div class="mailpoet_toolbar_section closed">
+        <div class="mailpoet_toolbar_section">
         <a href="javascript:;" class="mailpoet_toggle"><br /></a>
         <h3>{{ __('Shortcodes') }}</h3>
 
         <div>
           <!-- Form export links -->
           <p>
-            {{ __("You can easily add this form to your theme's in the") }}&nbsp;<a href="widgets.php" target="_blank">{{ __('Widgets areas') }}</a>
+            {{ __("You can easily add this form to your theme's in the %sWidgets area%s")
+              | format('<a href="widgets.php" target="_blank">', '</a>')
+              | raw
+            }}
          </p>
-          <p><!--             echo str_replace(
-              array(
-                '[link_html]',
-                '[link_php]',
-                '[link_iframe]',
-                '[link_shortcode]',
-                '[/link_html]',
-                '[/link_php]',
-                '[/link_iframe]',
-                '[/link_shortcode]'
-              ),
-              array(
+          <p>
+            {{ __('%sHTML%s, %sPHP%s, %siframe%s and %sshortcode%s versions are also available.', 'wysija-newsletters')
+              | format(
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="html">',
+                '</a>',
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="php">',
+                '</a>',
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="iframe">',
+                '</a>',
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="shortcode">',
-                '</a>',
-                '</a>',
-                '</a>',
                 '</a>'
-              ),
-              __('[link_html]HTML[/link_html], [link_php]PHP[/link_php], [link_iframe]iframe[/link_iframe] and [link_shortcode]shortcode[/link_shortcode] versions are also available.')
-            ) }} -->
+              )
+              | raw
+            }}
          </p>
 
           <!-- Form export -->
@@ -164,7 +147,26 @@
 
   {{ javascript(
     'lib/prototype.min.js',
+    'lib/select2.js',
     'lib/scriptaculous.min.js',
     'form_editor.js'
   )}}
+
+  {{ stylesheet(
+    'lib/select2/select2.css'
+  ) }}
+
+  <script type="text/javascript">
+    jQuery(function($) {
+      $(function() {
+        // load form
+        WysijaForm.load({{ form | json_encode | raw }});
+
+        // initialize list selector
+        $('select[name="lists"]').select2({
+          width:'100%'
+        });
+      });
+    });
+  </script>
 {% endblock %}

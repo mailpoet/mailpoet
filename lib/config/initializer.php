@@ -44,8 +44,8 @@ class Initializer {
       )
     );
 
-    // renderer: i18n
-    $this->renderer->addExtension(new Renderer\i18n());
+    // renderer: i18n (passing the text)
+    $this->renderer->addExtension(new Renderer\i18n($this->shortname));
     // renderer: global variables
     $this->renderer->addExtension(new Renderer\Assets(array(
       'assets_url' => $this->assets_url,
@@ -205,28 +205,22 @@ class Initializer {
       false,
       dirname(plugin_basename($this->file)) . '/lang/'
    );
+
+    // set rtl flag
+    $this->renderer->addGlobal('is_rtl', is_rtl());
   }
 
   public function setup_textdomain() {
-    $domain = 'wysija-newsletters';
     $locale = apply_filters(
       'plugin_locale',
       get_locale(),
-      $domain
+      $this->shortname
    );
 
-    // $language_path = WP_LANG_DIR
-    //   . '/'
-    //   . $domain
-    //   . '/'
-    //   . $domain
-    //   . '-'
-    //   . $locale
-    //   . '.mo';
-    $language_path = $this->languages_path.'/'.$domain.'-'.$locale.'.mo';
-    load_textdomain($domain, $language_path);
+    $language_path = $this->languages_path.'/'.$this->shortname.'-'.$locale.'.mo';
+    load_textdomain($this->shortname, $language_path);
     load_plugin_textdomain(
-      $domain,
+      $this->shortname,
       false,
       dirname(plugin_basename($this->file)) . '/lang/'
    );
@@ -259,6 +253,40 @@ class Initializer {
   }
 
   public function admin_page_form() {
+    $this->data['form'] = array(
+      'form' => 1,
+      'form_name' => __("New form"),
+      'form_created_at' => time(),
+      'data' => array(
+        'settings' => array(
+          'on_success' => 'message',
+          'success_message' => __('Check your inbox or spam folder now to confirm your subscription.'),
+          'lists' => array(1, 2),
+          'lists_selected_by' => 'admin'
+          ),
+        'body' => array(
+          array(
+            'name' => __('Email'),
+            'type' => 'input',
+            'field' => 'email',
+            'static' => true,
+            'params' => array(
+              'label' => __('Email'),
+              'required' => true
+              )
+            ),
+          array(
+            'name' => __('Submit'),
+            'type' => 'submit',
+            'field' => 'submit',
+            'static' => true,
+            'params' => array(
+              'label' => __('Subscribe!')
+            )
+          )
+        )
+      )
+    );
     echo $this->renderer->render('form/editor.html', $this->data);
   }
 

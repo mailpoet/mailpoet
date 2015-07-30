@@ -3,7 +3,11 @@ namespace MailPoet\Renderer;
 
 class i18n extends \Twig_Extension {
 
-  public function __construct() {
+  private $_text_domain;
+
+  public function __construct($text_domain) {
+    // set text domain
+    $this->_text_domain = $text_domain;
   }
 
   public function getName() {
@@ -19,10 +23,31 @@ class i18n extends \Twig_Extension {
     foreach($functions as $function) {
       $twig_functions[] = new \Twig_SimpleFunction(
         $function,
-        $function,
+        array($this, $function),
         array('is_safe' => array('all'))
       );
     }
     return $twig_functions;
+  }
+
+  public function __() {
+    $args = func_get_args();
+
+    return call_user_func_array('__', $this->setTextDomain($args));
+  }
+
+  public function _n() {
+    $args = func_get_args();
+
+    return call_user_func_array('_n', $this->setTextDomain($args));
+  }
+
+  private function setTextDomain($args = array()) {
+    // make sure that the last argument is our text domain
+    if($args[count($args) - 1] !== $this->_text_domain) {
+      // otherwise add it to the list of arguments
+      $args[] = $this->_text_domain;
+    }
+    return $args;
   }
 }
