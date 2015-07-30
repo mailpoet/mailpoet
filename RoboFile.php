@@ -22,6 +22,20 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec(join(' ', $command));
   }
 
+  function makepot() {
+    $this->_exec('grunt makepot'.
+                ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
+                ' --base_path '.__DIR__
+    );
+  }
+
+  function pushpot() {
+    $this->_exec('grunt pushpot'.
+                ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
+                ' --base_path '.__DIR__
+    );
+  }
+
   function testUnit() {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept run unit');

@@ -37,11 +37,8 @@ class Assets extends \Twig_Extension {
     $output = array();
 
     foreach($stylesheets as $stylesheet) {
-      $output[] = '<link
-        rel="stylesheet"
-        type="text/css"
-        href="'.$this->_globals['assets_url'].'/css/'.$stylesheet.'"
-      >';
+      $output[] = '<link rel="stylesheet" type="text/css"'.
+                  ' href="'.$this->_globals['assets_url'].'/css/'.$stylesheet.'">';
     }
 
     return join("\n", $output);
@@ -52,10 +49,9 @@ class Assets extends \Twig_Extension {
     $output = array();
 
     foreach($scripts as $script) {
-      $output[] = '<script
-        type="text/javascript"
-        src="'.$this->_globals['assets_url'].'/js/'.$script.'"
-      ></script>';
+      $output[] = '<script type="text/javascript"'.
+                  ' src="'.$this->_globals['assets_url'].'/js/'.$script.'">'.
+                  '</script>';
     }
 
     return join("\n", $output);

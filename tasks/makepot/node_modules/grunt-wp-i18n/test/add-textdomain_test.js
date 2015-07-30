@@ -1,0 +1,64 @@
+'use strict';
+
+var grunt = require( 'grunt' );
+
+/*
+======== A Handy Little Nodeunit Reference ========
+https://github.com/caolan/nodeunit
+
+Test methods:
+	test.expect( numAssertions )
+	test.done()
+Test assertions:
+	test.ok( value, [message])
+	test.equal( actual, expected, [message])
+	test.notEqual( actual, expected, [message])
+	test.deepEqual( actual, expected, [message])
+	test.notDeepEqual( actual, expected, [message])
+	test.strictEqual( actual, expected, [message])
+	test.notStrictEqual( actual, expected, [message])
+	test.throws( block, [error], [message])
+	test.doesNotThrow( block, [error], [message])
+	test.ifError( value )
+*/
+
+exports.addtextdomain = {
+	setUp: function( done ) {
+		done();
+	},
+
+	add_domain: function( test ) {
+		test.expect( 1 );
+
+		var fileContents = grunt.file.read( 'tmp/text-domains/add-domain.php' ).trim();
+		var expected = "<?php" + require( 'os' ).EOL + "__( 'String', 'newtextdomain' );";
+		test.equal( fileContents.trim(), expected, 'a text domain should have been added' );
+
+		test.done();
+	},
+
+	update_domains: function( test ) {
+		test.expect( 2 );
+
+		var fileContents = grunt.file.read( 'tmp/text-domains/update-domains.php' );
+
+		test.equal( fileContents.indexOf( 'oldtextdomain' ), -1, "the 'oldtextdomain' should have been updated" );
+		test.equal( fileContents.indexOf( 'vendortextdomain' ), -1, "the 'vendortextdomain' should have been updated" );
+
+		test.done();
+	},
+
+	update_all_domains: function( test ) {
+		test.expect( 5 );
+
+		var fileContents = grunt.file.read( 'tmp/text-domains/update-all-domains.php' );
+
+		test.equal( fileContents.indexOf( '__( \'String\' );' ), -1, "the text domain should have been added to the __() method" );
+		test.equal( fileContents.indexOf( '_x( \'String\', \'a string\' );' ), -1, "the text domain should have been added to the _x() method" );
+		test.equal( fileContents.indexOf( '_n( \'1 Star\', \'%s Stars\', 2 );' ), -1, "the text domain should have been added to the _n() method" );
+		test.equal( fileContents.indexOf( 'vendortextdomain' ), -1, "the 'vendortextdomain' should have been updated" );
+		test.equal( fileContents.indexOf( 'oldtextdomain' ), -1, "the 'oldtextdomain' should have been updated" );
+
+		test.done();
+	},
+};

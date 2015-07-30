@@ -12,7 +12,8 @@
     "codeception/specify": "*",
     "codeception/verify": "*",
     "codegyre/robo": "*",
-    "vlucas/phpdotenv": "*"
+    "vlucas/phpdotenv": "*",
+    "umpirsky/twig-gettext-extractor": "1.1.*"
   },
   "autoload": {
     "psr-4": {

@@ -91,7 +91,6 @@ $ ./do watch
 ```
 
 # JS Dependencies.
-
 In order to use a JS library (let's take Handlebars as an example), you need to follow these steps:
 
 * add "handlebars" as a dependency in the `package.json` file
@@ -111,3 +110,20 @@ $ cd assets/js/lib/
 $ ln -nsf ../../../node_modules/handlebars/dist/handlebars.min.js handlebars.min.js
 ```
 * make sure to push the symlink onto the repository
+
+# Translations.
+When editing a Twig template (`views/*.html`), you have to the following WordPress functions:
+
+* `__`: returns a string
+* `_n`: returns a pluralized string
+
+```html
+<p>{{ __('Click %shere%s!') | format('<a href="#">', '</a>') | raw }}</p>
+```
+This will print: "Click [here](#)"
+
+```html
+<p>{{ _n('deleted one message', 'deleted %d messages', count, 'wysija-newsletters') | format(count) }}</p>
+```
+This will print "deleted one message" (if count === 1)
+This will print "deleted X message" (if count !== 1)

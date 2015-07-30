@@ -1,0 +1,6 @@
+<?php
+/**
+ * Plugin Name: Example Plugin
+ * Domain Path: /languages
+ * Text Domain: example-plugin
+ */

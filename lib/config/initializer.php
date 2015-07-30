@@ -22,11 +22,12 @@ class Initializer {
     Env::init();
     $this->data = array();
     $this->version = $params['version'];
-    $this->shortname = 'mailpoet';
+    $this->shortname = 'wysija-newsletters';
     $this->file = $params['file'];
     $this->path =(dirname($this->file));
     $this->views_path = $this->path . '/views';
     $this->assets_path = $this->path . '/assets';
+    $this->languages_path = $this->path . '/lang';
     $this->assets_url = plugins_url(
       '/assets',
       $this->file
@@ -43,6 +44,8 @@ class Initializer {
       )
     );
 
+    // renderer: i18n
+    $this->renderer->addExtension(new Renderer\i18n());
     // renderer: global variables
     $this->renderer->addExtension(new Renderer\Assets(array(
       'assets_url' => $this->assets_url,
@@ -205,22 +208,22 @@ class Initializer {
   }
 
   public function setup_textdomain() {
-    $domain = 'mailpoet';
+    $domain = 'wysija-newsletters';
     $locale = apply_filters(
       'plugin_locale',
       get_locale(),
       $domain
    );
 
-    $language_path = WP_LANG_DIR
-      . '/'
-      . $domain
-      . '/'
-      . $domain
-      . '-'
-      . $locale
-      . '.mo';
-
+    // $language_path = WP_LANG_DIR
+    //   . '/'
+    //   . $domain
+    //   . '/'
+    //   . $domain
+    //   . '-'
+    //   . $locale
+    //   . '.mo';
+    $language_path = $this->languages_path.'/'.$domain.'-'.$locale.'.mo';
     load_textdomain($domain, $language_path);
     load_plugin_textdomain(
       $domain,
@@ -240,8 +243,9 @@ class Initializer {
     $option->set('option_name', 'option value');
 
     $this->data = array(
-      'title' => __('Twig Sample page'),
       'text' => 'Lorem ipsum dolor sit amet',
+      'delete_messages_1' => 1,
+      'delete_messages_2' => 10,
       'unsafe_string' => '<script>alert("not triggered");</script>',
       'users' => array(
         array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),
@@ -252,6 +256,10 @@ class Initializer {
    );
     // Sample page using Twig
     echo $this->renderer->render('index.html', $this->data);
+  }
+
+  public function admin_page_form() {
+    echo $this->renderer->render('form/editor.html', $this->data);
   }
 
   public function admin_menu() {
@@ -284,16 +292,16 @@ class Initializer {
       'mailpoet-subscribers',
       'mailpoet_subscribers'
    );
-
+*/
     // forms
     add_submenu_page('mailpoet-newsletters',
       'Forms',
       'Forms',
       'manage_options',
       'mailpoet-forms',
-      'mailpoet_forms'
+      array($this, 'admin_page_form')
    );
-
+/*
     // settings
     add_submenu_page('mailpoet-newsletters',
       'Settings',

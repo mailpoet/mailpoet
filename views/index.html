@@ -1,7 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <p>{{ text }}</p>
+  <h3>{{ 'Translations' }}</h3>
+  <p>{{ __('Translatable string with a link %shere%s') | format('<a href="#">', '</a>') | raw }}</p>
+  <p>{{ _n('deleted one message', 'deleted %d messages', delete_messages_1, 'wysija-newsletters') | format(delete_messages_1) }}</p>
+  <p>{{ _n('deleted one message', 'deleted %d messages', delete_messages_2, 'wysija-newsletters') | format(delete_messages_2) }}</p>
 
   <!-- escaping -->
   <h3>Auto Escape (HTML)</h3>

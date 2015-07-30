@@ -1,0 +1,3 @@
+<?php
+// This string shouldn't exist in the generated pot file.
+__( 'Exclude', 'example-theme' );

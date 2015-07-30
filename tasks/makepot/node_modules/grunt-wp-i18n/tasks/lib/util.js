@@ -1,0 +1,151 @@
+/*
+ * grunt-wp-i18n
+ * https://github.com/cedaro/grunt-wp-i18n
+ *
+ * Copyright (c) 2014 Cedaro, LLC
+ * Licensed under the MIT license.
+ */
+
+'use strict';
+
+exports.init = function( grunt ) {
+	var _ = require( 'underscore' ),
+		crypto = require( 'crypto' ),
+		exports = {};
+
+	/**
+	 * Normalize POT objects created by gettext-parser.
+	 *
+	 * Headers are stored in two locations.
+	 *
+	 * @param {Object} pot POT file object created by gettext-parser.
+	 * @param {Object} data Additional data to normalize.
+	 *
+	 * @return {Object}
+	 */
+	function normalizePotData( pot, data ) {
+		// Normalize the content type case.
+		pot.headers['content-type'] = pot.headers['content-type'].toLowerCase();
+		pot.translations['']['']['msgstr'][0] = pot.translations['']['']['msgstr'][0].replace( /UTF-8/, 'utf-8' );
+
+		// Update the date.
+		if ( 'undefined' !== typeof data && 'date' in data ) {
+			pot.headers['pot-creation-date'] = data.date;
+			pot.translations['']['']['msgstr'][0] = pot.translations['']['']['msgstr'][0].replace( /POT-Creation-Date: (.+)/, 'POT-Creation-Date: ' + data.date );
+		}
+
+		return pot;
+	}
+
+	/**
+	 * Determine whether two POT file objects are the same.
+	 *
+	 * Replaces the date in the second object before comparing.
+	 *
+	 * @param {Object} pot POT file object created by gettext-parser.
+	 * @param {Object} pot POT file object created by gettext-parser.
+	 *
+	 * @return {Boolean}
+	 */
+	exports.comparePotFiles = function( original, compare ) {
+		var compareHash, originalDate, originalHash;
+
+		original = normalizePotData( original );
+		originalDate = original.headers['pot-creation-date'];
+		originalHash = crypto.createHash( 'md5' ).update( JSON.stringify( original ) ).digest( 'hex' );
+
+		compare = normalizePotData( compare, { date: originalDate });
+		compareHash = crypto.createHash( 'md5' ).update( JSON.stringify( compare ) ).digest( 'hex' );
+
+		return originalHash === compareHash;
+	};
+
+	/**
+	 * Load local config options from config.json in the project root.
+	 *
+	 * The config.json may contain sensitive data and should not be included in
+	 * version control.
+	 *
+	 * @return {Object}
+	 */
+	exports.getLocalConfig = function() {
+		var localConfig = {};
+
+		if ( grunt.file.exists( 'config.json' ) ) {
+			localConfig = grunt.file.readJSON( 'config.json' );
+		}
+
+		return localConfig;
+	};
+
+	/**
+	 * Merge custom POT headers.
+	 *
+	 * @param {Object} pot POT file object created by gettext-parser.
+	 * @param {Object} headers Header key value pairs.
+	 *
+	 * @return {Object}
+	 */
+	exports.mergeHeaders = function( pot, headers ) {
+		if ( _.isEmpty( headers ) ) {
+			return pot;
+		}
+
+		var poedit = {
+			'language': 'en',
+			'plural-forms': 'nplurals=2; plural=(n != 1);',
+			'x-poedit-country': 'United States',
+			'x-poedit-sourcecharset': 'UTF-8',
+			'x-poedit-keywordslist': true,
+			'x-poedit-basepath': '../',
+			'x-poedit-searchpath-0': '.',
+			'x-poedit-bookmarks': '',
+			'x-textdomain-support': 'yes'
+		};
+
+		// Make sure header keys are lowercase.
+		_.each( headers, function( value, key ) {
+			var keyLower = key.toLowerCase();
+			if ( key !== keyLower ) {
+				headers[ keyLower ] = headers[ key ];
+				delete headers[ key ];
+			}
+		});
+
+		// Add default Poedit headers.
+		if ( 'poedit' in headers && true === headers['poedit'] ) {
+			headers = _.extend( poedit, headers );
+			delete headers['poedit'];
+		}
+
+		// Add the the Poedit keywordslist header.
+		if ( 'x-poedit-keywordslist' in headers && true === headers['x-poedit-keywordslist'] ) {
+			pot.headers['x-poedit-keywordslist'] = '__;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;_nx_noop:1,2,3c;esc_attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;esc_html_x:1,2c;';
+			delete headers['x-poedit-keywordslist'];
+		}
+
+		// Merge headers
+		headers = _.extend( pot.headers, headers );
+
+		return pot;
+	};
+
+	/**
+	 * Fix POT headers.
+	 *
+	 * Updates case-sensitive Poedit headers.
+	 *
+	 * @param {String} pot POT file contents.
+	 *
+	 * @return {String}
+	 */
+	exports.fixHeaders = function( pot ) {
+		pot = pot.replace( /x-poedit-keywordslist:/i, 'X-Poedit-KeywordsList:' );
+		pot = pot.replace( /x-poedit-searchpath-0:/i, 'X-Poedit-SearchPath-0:' );
+		pot = pot.replace( /x-poedit-searchpathexcluded-0:/i, 'X-Poedit-SearchPathExcluded-0:' );
+		pot = pot.replace( /x-poedit-sourcecharset:/i, 'X-Poedit-SourceCharset:' );
+		return pot;
+	};
+
+	return exports;
+};
