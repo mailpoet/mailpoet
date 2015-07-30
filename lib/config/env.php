@@ -8,6 +8,7 @@ class Env {
   public static $db_host;
   public static $db_username;
   public static $db_password;
+  public static $db_charset;
 
   public static function init() {
     global $wpdb;
@@ -15,5 +16,6 @@ class Env {
     self::$db_host = DB_HOST;
     self::$db_username = DB_USER;
     self::$db_password = DB_PASSWORD;
+    self::$db_charset = $wpdb->get_charset_collate();
   }
 }

@@ -25,6 +25,12 @@ class EnvCest {
     expect(Env::$db_password)->equals(DB_PASSWORD);
   }
 
+  public function itCanReturnTheDbCharset() {
+    global $wpdb;
+    $charset = $wpdb->get_charset_collate();
+    expect(Env::$db_charset)->equals($charset);
+  }
+
   public function _after() {
   }
 }
