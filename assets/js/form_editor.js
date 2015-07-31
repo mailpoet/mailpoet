@@ -389,7 +389,6 @@ var WysijaForm = {
         return data;
     },
     toggleWidgets: function() {
-        return;
         $$('a[wysija_unique="1"]').invoke('removeClassName', 'disabled');
 
         // loop through each unique field already inserted in the editor and disable its toolbar equivalent
@@ -401,7 +400,7 @@ var WysijaForm = {
         });
 
         // hide list selection if a list widget has been dragged into the editor
-        $('mailpoet_list_selection')[(($$('#'+WysijaForm.options.editor+' [wysija_field="list"]').length > 0) === true) ? 'hide': 'show']();
+        $('mailpoet_settings_list_selection')[(($$('#'+WysijaForm.options.editor+' [wysija_field="list"]').length > 0) === true) ? 'hide': 'show']();
     },
     setBlockPositions: function(event, target) {
         // release dragging lock
@@ -877,11 +876,6 @@ WysijaForm.Block.create = function(block, target) {
 
     // position settings
     WysijaForm.setSettingsPosition();
-
-    // toggle widgets
-    setTimeout(function() {
-        WysijaForm.toggleWidgets();
-    }, 1);
 };
 
 document.observe('wjfe:item:drop', function(event) {
@@ -891,6 +885,11 @@ document.observe('wjfe:item:drop', function(event) {
     // hide block controls
     info('hide controls');
     WysijaForm.hideBlockControls();
+
+    // toggle widgets
+    setTimeout(function() {
+        WysijaForm.toggleWidgets();
+    }, 1);
 });
 
 /* Form Widget */

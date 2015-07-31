@@ -70,25 +70,26 @@
       // hide errors
       $('.mailpoet_error').hide();
 
-      mailpoet_post_json('subscriber_extend.php', data, function(response) {
-        if(response.error !== undefined) {
-          // there's an error!
-          $('.mailpoet_error[data-error="'+response.error+'"]').show();
-        } else {
-          // we should get the fields list in the response
-          if(response.fields !== undefined) {
-            // get fields (defaults to empty array)
-            var fields = response.fields || [];
-            // refresh toolbar
-            mailpoet_form_fields({
-              fields: $.merge(fields, default_fields)
-            });
-          }
+      console.log(('TODO: subscriber->meta->edit'));
+      // mailpoet_post_json('subscriber_extend.php', data, function(response) {
+      //   if(response.error !== undefined) {
+      //     // there's an error!
+      //     $('.mailpoet_error[data-error="'+response.error+'"]').show();
+      //   } else {
+      //     // we should get the fields list in the response
+      //     if(response.fields !== undefined) {
+      //       // get fields (defaults to empty array)
+      //       var fields = response.fields || [];
+      //       // refresh toolbar
+      //       mailpoet_form_fields({
+      //         fields: $.merge(fields, default_fields)
+      //       });
+      //     }
 
-          // close popup
-          MailPoet.Modal.success();
-        }
-      });
+      // close popup
+      MailPoet.Modal.success();
+      //   }
+      // });
       return false;
     });
 
@@ -118,4 +119,4 @@
       }
     }
   });
-<{{!}}/script>
+</script>

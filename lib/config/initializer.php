@@ -40,7 +40,7 @@ class Initializer {
     $this->renderer = new \Twig_Environment(
       new \Twig_Loader_Filesystem($this->views_path),
       array(
-        'cache' => $this->views_path.'/cache',
+        'cache' => (WP_DEBUG === false) ? $this->views_path.'/cache' : false,
       )
     );
 
@@ -243,6 +243,11 @@ class Initializer {
   }
 
   public function admin_page_form() {
+    $lists = array(
+      array('id' => 1, 'name' => 'My First List'),
+      array('id' => 2, 'name' => 'My Second List')
+    );
+
     $this->data['form'] = array(
       'form' => 1,
       'form_name' => __("New form"),
@@ -251,7 +256,7 @@ class Initializer {
         'settings' => array(
           'on_success' => 'message',
           'success_message' => __('Check your inbox or spam folder now to confirm your subscription.'),
-          'lists' => array(1, 2),
+          'lists' => array(2),
           'lists_selected_by' => 'admin'
           ),
         'body' => array(
@@ -263,8 +268,17 @@ class Initializer {
             'params' => array(
               'label' => __('Email'),
               'required' => true
-              )
-            ),
+            )
+          ),
+          array(
+            'name' => __('List selection'),
+            'type' => 'list',
+            'field' => 'list',
+            'params' => array(
+              'label' => __('Select list(s):'),
+              'values' => $lists
+            )
+          ),
           array(
             'name' => __('Submit'),
             'type' => 'submit',
@@ -278,17 +292,18 @@ class Initializer {
       )
     );
 
-    $lists = array(
-      array('id' => 1, 'name' => 'My First List'),
-      array('id' => 2, 'name' => 'My Second List')
-    );
-
     // form editor vars
     $this->data = array_merge($this->data, array(
       'date_formats' => \MailPoet\Form\Renderer::getDateFormats(),
       'date_types' => \MailPoet\Form\Renderer::getDateTypes(),
       'default_list' => $lists[0],
-      'lists' => $lists
+      'selected_lists' => (!empty($this->data['form']['settings']['lists']))
+        ? $this->data['form']['settings']['lists']
+        : array($lists[0]),
+      'lists' => $lists,
+      'pages' => get_pages(),
+      'styles' => \MailPoet\Form\Renderer::getStyles(),
+      'exports' => \MailPoet\Form\Renderer::getExports($this->data['form'])
     ));
     echo $this->renderer->render('form/editor.html', $this->data);
   }

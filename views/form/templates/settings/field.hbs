@@ -1,63 +1,66 @@
 <form id="form_field_settings" name="form_field_settings" action="" method="post">
   {{#ifCond type 'in' 'submit'}}
-  {{> _settings_label }}
+    {{> _settings_label }}
   {{/ifCond}}
 
   {{#ifCond type '==' 'input'}}
-  {{> _settings_label }}
-  {{> _settings_label_within }}
+    {{> _settings_label }}
+    {{> _settings_label_within }}
+    {{#ifCond field 'in' 'firstname,lastname' }}
+      {{> _settings_required }}
+    {{/ifCond}}
   {{/ifCond}}
 
   {{#ifCond type '==' 'textarea'}}
-  {{> _settings_label }}
-  {{> _settings_label_within }}
+    {{> _settings_label }}
+    {{> _settings_label_within }}
 
-  <p class="clearfix">
-    <label><%= __('Number of lines:') %></label>
-    <select name="params[lines]">
-      <% for i in 1..5 %>
-        <option value="<%= i %>"
-          {{#ifCond params.lines '==' <%= i %>}}selected="selected"{{/ifCond}}
-        ><%= _n('1 line', '%d lines', i) | format(i) %></option>
-      <% endfor %>
-    </select>
-  </p>
+    <p class="clearfix">
+      <label><%= __('Number of lines:') %></label>
+      <select name="params[lines]">
+        <% for i in 1..5 %>
+          <option value="<%= i %>"
+            {{#ifCond params.lines '==' <%= i %>}}selected="selected"{{/ifCond}}
+          ><%= _n('1 line', '%d lines', i) | format(i) %></option>
+        <% endfor %>
+      </select>
+    </p>
   {{/ifCond}}
 
   {{#ifCond type 'in' 'checkbox,radio'}}
-  {{> _settings_label }}
+    {{> _settings_label }}
   {{/ifCond}}
 
   {{#ifCond type '==' 'list'}}
-  {{> _settings_label }}
-  {{> _settings_list_selection }}
+    {{> _settings_label }}
+    {{> _settings_list_selection }}
   {{/ifCond}}
 
   {{#ifCond type '==' 'select'}}
-  {{> _settings_label }}
-  {{> _settings_label_within }}
+    {{> _settings_label }}
+    {{> _settings_label_within }}
   {{/ifCond}}
 
   {{#ifCond type '==' 'date'}}
-  {{> _settings_label }}
-  {{> _settings_date_default }}
-  {{> _settings_date_format }}
+    {{> _settings_label }}
+    {{> _settings_date_default }}
+    {{> _settings_date_format }}
   {{/ifCond}}
 
   {{#ifCond type '==' 'html'}}
-  <textarea name="params[text]">{{ params.text }}</textarea>
-  <p class="clearfix">
-    <label>
-      <input type="hidden" name="params[nl2br]" value="0" />
-      <input
-        class="mailpoet_checkbox"
-        type="checkbox"
-        name="params[nl2br]"
-        {{#ifCond params.nl2br ">" 0}}checked="checked"{{/ifCond}}
-        value="1"
-        />&nbsp;<%= __('Automatically add paragraphs') %>
-    </label>
-  </p>
+    <textarea name="params[text]">{{ params.text }}</textarea>
+    <p class="clearfix">
+      <label>
+        <input type="hidden" name="params[nl2br]" value="0" />
+        <input
+          class="mailpoet_checkbox"
+          type="checkbox"
+          name="params[nl2br]"
+          {{#ifCond params.nl2br ">" 0}}checked="checked"{{/ifCond}}
+          value="1"
+          />&nbsp;<%= __('Automatically add paragraphs') %>
+      </label>
+    </p>
   {{/ifCond}}
 
   {{> _settings_submit }}

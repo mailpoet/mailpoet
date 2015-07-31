@@ -2,7 +2,7 @@
   wysija_type="{{ type }}"
   wysija_field="{{ field }}"
   wysija_name="{{ name }}"
-  wysija_unique="{{#if unique}}1{{else}}0{{/if}}"
+  wysija_unique="{{#if multiple}}0{{else}}1{{/if}}"
   wysija_static="{{#if static}}1{{else}}0{{/if}}"
   wysija_params="{{#if params}}{{ json_encode params }}{{/if}}">
   {{#ifCond type '!==' 'divider'}}

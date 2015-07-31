@@ -665,10 +665,19 @@ h2.title {
   min-width: 255px;
   position: relative;
   cursor: pointer;
-  max-height: auto;
+  overflow: hidden;
+  max-height: 1000px;
+  -webkit-transition: max-height 0.5s ease-in-out;
+  -moz-transition: max-height 0.5s ease-in-out;
+  -o-transition: max-height 0.5s ease-in-out;
+  -ms-transition: max-height 0.5s ease-in-out;
+  transition: max-height 0.5s ease-in-out;
 }
 .mailpoet_toolbar_section > div {
   padding: 10px 20px 20px 20px;
+  overflow: auto;
+  height: 100%;
+  min-width: 255px;
 }
 .mailpoet_toolbar_section h3 {
   margin: 10px;
@@ -676,7 +685,6 @@ h2.title {
 }
 .mailpoet_toolbar_section.closed {
   max-height: 38px;
-  overflow: hidden;
 }
 .mailpoet_toolbar_section .mailpoet_toggle {
   position: absolute;
