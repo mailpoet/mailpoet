@@ -1,0 +1,29 @@
+<p class="clearfix">
+  <label><%= __('Validate for:') %></label>
+  <select name="params[validate]">
+    <option {{#ifCond params.validate '==' ''}}selected="selected"{{/ifCond}}
+      value="">
+      <%= __('Nothing') %>
+    </option>
+
+    <option {{#ifCond params.validate '==' 'onlyNumberSp'}}selected="selected"{{/ifCond}}
+      value="onlyNumberSp">
+      <%= __('Numbers only') %>
+    </option>
+
+    <option {{#ifCond params.validate '==' 'onlyLetterSp'}}selected="selected"{{/ifCond}}
+      value="onlyLetterSp">
+      <%= __('Letters only') %>
+    </option>
+
+    <option {{#ifCond params.validate '==' 'onlyLetterNumber'}}selected="selected"{{/ifCond}}
+      value="onlyLetterNumber">
+      <%= __('Alphanumerical') %>
+    </option>
+
+    <option {{#ifCond params.validate '==' 'phone'}}selected="selected"{{/ifCond}}
+      value="phone">
+      <%= __('Phone number, (+,-,#,(,) and spaces allowed)') %>
+    </option>
+  </select>
+</p>

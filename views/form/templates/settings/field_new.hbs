@@ -1,0 +1,121 @@
+
+<form id="form_field_new" name="form_field_new" action="" method="post">
+  {{#if field}}<input type="hidden" id="field" name="field" value="{{ field }}" />{{/if}}
+  <p>
+    <label for="type"><%= __('Select a field type:') %></label>
+    <select id="type" name="type">
+      <option value="">--</option>
+      <option
+        {{#ifCond type '==' 'input'}}selected="selected"{{/ifCond}}
+        value="input"><%= __('Text Input') %>
+      </option>
+      <option
+        {{#ifCond type '==' 'textarea'}}selected="selected"{{/ifCond}}
+        value="textarea"><%= __('Text Area') %>
+      </option>
+      <option
+        {{#ifCond type '==' 'radio'}}selected="selected"{{/ifCond}}
+        value="radio"><%= __('Radio buttons') %>
+      </option>
+      <option
+        {{#ifCond type '==' 'checkbox'}}selected="selected"{{/ifCond}}
+        value="checkbox"><%= __('Checkbox') %>
+      </option>
+      <option
+        {{#ifCond type '==' 'select'}}selected="selected"{{/ifCond}}
+        value="select"><%= __('Select') %>
+      </option>
+      <option
+        {{#ifCond type '==' 'date'}}selected="selected"{{/ifCond}}
+        value="date"><%= __('Date') %>
+      </option>
+    </select>
+  </p>
+  <p class="mailpoet_error" data-error="type_required">
+    <%= __('You need to select a type.') %>
+  </p>
+
+  <p>
+    <label><%= __("Field's name:") %></label>
+    <input type="text" name="name" value="{{ name }}" />
+  </p>
+  <p class="mailpoet_error" data-error="name_required">
+    <%= __('You need to specify a name.') %>
+  </p>
+
+  <p class="mailpoet_error" data-error="name_already_exists">
+    <%= __('This name is already used.') %>
+  </p>
+
+  <hr />
+
+  <div class="field_type_form"></div>
+
+  <p class="mailpoet_align_right">
+    <input type="submit" value="<%= __('Done') %>" class="button-primary" />
+  </p>
+</form>
+
+<script type="text/javascript">
+  jQuery(function($) {
+
+    $(function() {
+      loadFieldForm();
+    });
+
+    $('#form_field_new').on('submit', function() {
+      // get data
+      var data = $(this).serializeObject();
+
+      // hide errors
+      $('.mailpoet_error').hide();
+
+      mailpoet_post_json('subscriber_extend.php', data, function(response) {
+        if(response.error !== undefined) {
+          // there's an error!
+          $('.mailpoet_error[data-error="'+response.error+'"]').show();
+        } else {
+          // we should get the fields list in the response
+          if(response.fields !== undefined) {
+            // get fields (defaults to empty array)
+            var fields = response.fields || [];
+            // refresh toolbar
+            mailpoet_form_fields({
+              fields: $.merge(fields, default_fields)
+            });
+          }
+
+          // close popup
+          MailPoet.Modal.success();
+        }
+      });
+      return false;
+    });
+
+    $('#form_field_new #type').on('change', function() {
+      if($(this).val() !== '') {
+        $('.mailpoet_error[data-error="type_required"]').hide();
+      }
+      // load template based on type
+      loadFieldForm($(this).val());
+    });
+
+    function loadFieldForm(type) {
+      type = (type === undefined) ? $('#form_field_new #type').val() : type;
+      if(type !== '') {
+        var template = Handlebars.compile($('#form_template_field_'+type).html()),
+            data = {type: type},
+            field = $('#form_field_new #field').val();
+
+        if(field !== undefined && field.length > 0) {
+          var params = $('.mailpoet_form_field[wysija_field="'+field+'"]').attr('wysija_params');
+          data.params = JSON.parse(params);
+        }
+        // render field template
+        $('#form_field_new .field_type_form').html(template(data));
+      } else {
+        $('#form_field_new .field_type_form').html('');
+      }
+    }
+  });
+<{{!}}/script>
