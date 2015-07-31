@@ -227,6 +227,8 @@ class Initializer {
   }
 
   public function install() {
+    $migrator = new \MailPoet\Config\Migrator;
+    $migrator->up();
     $this->log_version_number();
   }
 
