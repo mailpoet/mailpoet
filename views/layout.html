@@ -7,26 +7,26 @@
   <div id="mailpoet_notice_success" class="mailpoet_notice updated" style="display:none;"></div>
 
   <!-- title block -->
-  {% block title %}{% endblock %}
+  <% block title %><% endblock %>
   <!-- content block -->
-  {% block content %}{% endblock %}
+  <% block content %><% endblock %>
   <!-- handlebars templates -->
-  {% block templates %}{% endblock %}
+  <% block templates %><% endblock %>
 </div>
 
 <!-- stylesheets -->
-{{ stylesheet(
+<%= stylesheet(
   'admin.css'
-)}}
+)%>
 <!-- rtl specific stylesheet -->
-{% if is_rtl %}
-  {{ stylesheet('rtl.css') }}
-{% endif %}
+<% if is_rtl %>
+  <%= stylesheet('rtl.css') %>
+<% endif %>
 
 <!-- javascripts -->
-{{ javascript(
+<%= javascript(
   'ajax.js',
   'notice.js',
   'modal.js',
   'lib/handlebars.min.js'
-)}}
+)%>

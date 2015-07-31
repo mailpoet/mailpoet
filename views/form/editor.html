@@ -1,15 +1,15 @@
-{% extends 'layout.html' %}
+<% extends 'layout.html' %>
 
-{% block title %}
-  <h2>{{ title }}</h2>
-  <span id="mailpoet_form_name">{{ form.form_name }}</span>
+<% block title %>
+  <h2><%= title %></h2>
+  <span id="mailpoet_form_name"><%= form.form_name %></span>
   <input id="mailpoet_form_name_input" type="text" value="" style="display:none;" />
   <span>
-    <a id="mailpoet_form_edit_name" class="button" href="javascript:;">{{ __('Edit name' ) }}</a>
+    <a id="mailpoet_form_edit_name" class="button" href="javascript:;"><%= __('Edit name' ) %></a>
   </span>
-{% endblock %}
+<% endblock %>
 
-{% block content %}
+<% block content %>
   <div id="mailpoet_form_wrapper" class="clearfix">
     <!-- Form Editor Container -->
     <div id="mailpoet_form_container">
@@ -20,7 +20,7 @@
       </div>
 
       <p class="submit">
-        <a id="mailpoet_form_save" href="javascript:;" class="button button-primary" >{{ __('Save') }}</a>
+        <a id="mailpoet_form_save" href="javascript:;" class="button button-primary" ><%= __('Save') %></a>
       </p>
     </div>
 
@@ -28,7 +28,7 @@
     <div id="mailpoet_form_toolbar" style="visibility:hidden;">
       <div class="mailpoet_toolbar_section">
           <a href="javascript:;" class="mailpoet_toggle"><br /></a>
-          <h3>{{ __('Settings') }}</h3>
+          <h3><%= __('Settings') %></h3>
 
           <div>
             <!-- Form settings -->
@@ -36,37 +36,37 @@
             <div id="mailpoet_list_selection">
               <!-- Form settings: list selection -->
               <p>
-              <strong>{{ __('This form adds subscribers to these lists:') }}</strong>
+              <strong><%= __('This form adds subscribers to these lists:') %></strong>
               </p>
-              <select name="lists" data-placeholder="{{ __('Choose a list') }}" multiple>
-                <option value="1" {% if 1 in form.data.settings.lists %}selected="selected"{% endif %}>My First list</option>
+              <select name="lists" data-placeholder="<%= __('Choose a list') %>" multiple>
+                <option value="1" <% if 1 in form.data.settings.lists %>selected="selected"<% endif %>>My First list</option>
               </select>
               <!-- error if user tries to save and has not selected a list -->
-              <p class="mailpoet_error" data-error="admin_no_list">{{ __('You have to select at least 1 list') }}</p>
+              <p class="mailpoet_error" data-error="admin_no_list"><%= __('You have to select at least 1 list') %></p>
             </div>
 
             <div id="mailpoet_on_success">
               <!-- Form settings: after submit -->
               <p>
-                <label><strong>{{ __('After submit...') }}</strong></label>
+                <label><strong><%= __('After submit...') %></strong></label>
                 <label>
-                  <input class="mailpoet_radio" type="radio" name="on_success" value="message" />{{ __('Show message') }}
+                  <input class="mailpoet_radio" type="radio" name="on_success" value="message" /><%= __('Show message') %>
                 </label>
                 &nbsp;
                 <label>
-                  <input class="mailpoet_radio" type="radio" name="on_success" value="page" />{{ __('Go to page') }}
+                  <input class="mailpoet_radio" type="radio" name="on_success" value="page" /><%= __('Go to page') %>
                 </label>
               </p>
               <!-- default success message -->
-              {% if form.data.settings.success_message %}
-                {% set success_message = form.data.settings.success_message %}
-              {% else %}
-                {% set success_message = __('Check your inbox now to confirm your subscription.') %}
-              {% endif %}
+              <% if form.data.settings.success_message %>
+                <% set success_message = form.data.settings.success_message %>
+              <% else %>
+                <% set success_message = __('Check your inbox now to confirm your subscription.') %>
+              <% endif %>
 
-              <p id="mailpoet_on_success_message" class="mailpoet_on_success_option"><textarea name="success_message">{{ success_message }}</textarea></p>
+              <p id="mailpoet_on_success_message" class="mailpoet_on_success_option"><textarea name="success_message"><%= success_message %></textarea></p>
               <p id="mailpoet_on_success_page" class="mailpoet_on_success_option"><select name="success_page">
-                <!-- $pages = get_pages() }}
+                <!-- $pages = get_pages() %>
                 $success_page = (isset($form['data']['settings']['success_page']) && (int)$form['data']['settings']['success_page'] > 0) ? $form['data']['settings']['success_page'] : null;
                 foreach($pages as $key => $page) {
                   print '<option value="'.$page->ID.'">'.$page->post_title.'</option>';
@@ -81,18 +81,18 @@
         <!-- Toolbar: Shortcodes / Export -->
         <div class="mailpoet_toolbar_section">
         <a href="javascript:;" class="mailpoet_toggle"><br /></a>
-        <h3>{{ __('Shortcodes') }}</h3>
+        <h3><%= __('Shortcodes') %></h3>
 
         <div>
           <!-- Form export links -->
           <p>
-            {{ __("You can easily add this form to your theme's in the %sWidgets area%s")
+            <%= __("You can easily add this form to your theme's in the %sWidgets area%s")
               | format('<a href="widgets.php" target="_blank">', '</a>')
               | raw
-            }}
+            %>
          </p>
           <p>
-            {{ __('%sHTML%s, %sPHP%s, %siframe%s and %sshortcode%s versions are also available.', 'wysija-newsletters')
+            <%= __('%sHTML%s, %sPHP%s, %siframe%s and %sshortcode%s versions are also available.', 'wysija-newsletters')
               | format(
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="html">',
                 '</a>',
@@ -104,7 +104,7 @@
                 '</a>'
               )
               | raw
-            }}
+            %>
          </p>
 
           <!-- Form export -->
@@ -115,13 +115,13 @@
         <!-- Toolbar: Fields -->
       <div class="mailpoet_toolbar_section closed">
         <a href="javascript:;" class="mailpoet_toggle"><br /></a>
-        <h3>{{ __('Fields') }}</h3>
+        <h3><%= __('Fields') %></h3>
 
         <div>
           <ul id="mailpoet_toolbar_fields">
           </ul>
             <p class="mailpoet_align_center">
-                <a id="mailpoet_form_add_field" class="button button-primary" href="javascript:;" style="width:100%;">{{ __('Add New Field') }}</a>
+                <a id="mailpoet_form_add_field" class="button button-primary" href="javascript:;" style="width:100%;"><%= __('Add New Field') %></a>
               </p>
           </div>
 
@@ -130,11 +130,11 @@
       <!-- Toolbar: Styles -->
         <div class="mailpoet_toolbar_section closed">
           <a href="javascript:;" class="mailpoet_toggle"><br /></a>
-          <h3>{{ __('Styles') }}</h3>
+          <h3><%= __('Styles') %></h3>
           <div>
-            <textarea id="mailpoet_form_styles">{{ form.data.styles }}</textarea>
+            <textarea id="mailpoet_form_styles"><%= form.data.styles %></textarea>
           <br />
-          <p class="mailpoet_align_center"><a id="mailpoet_form_preview" href="javascript:;" class="button button-primary" style="width:100%;">{{ __('Preview') }}</a></p>
+          <p class="mailpoet_align_center"><a id="mailpoet_form_preview" href="javascript:;" class="button button-primary" style="width:100%;"><%= __('Preview') %></a></p>
         </div>
         </div>
 
@@ -145,22 +145,22 @@
     <div id="mailpoet_form_history"></div>
   </div>
 
-  {{ javascript(
+  <%= javascript(
     'lib/prototype.min.js',
     'lib/select2.js',
     'lib/scriptaculous.min.js',
     'form_editor.js'
-  )}}
+  )%>
 
-  {{ stylesheet(
+  <%= stylesheet(
     'lib/select2/select2.css'
-  ) }}
+  ) %>
 
   <script type="text/javascript">
     jQuery(function($) {
       $(function() {
         // load form
-        WysijaForm.load({{ form | json_encode | raw }});
+        WysijaForm.load(<%= form | json_encode | raw %>);
 
         // initialize list selector
         $('select[name="lists"]').select2({
@@ -169,4 +169,4 @@
       });
     });
   </script>
-{% endblock %}
+<% endblock %>

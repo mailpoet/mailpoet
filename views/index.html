@@ -1,44 +1,44 @@
-{% extends 'layout.html' %}
+<% extends 'layout.html' %>
 
-{% block content %}
-  <h3>{{ 'Translations' }}</h3>
-  <p>{{ __('Translatable string with a link %shere%s') | format('<a href="#">', '</a>') | raw }}</p>
-  <p>{{ _n('deleted one message', 'deleted %d messages', delete_messages_1, 'wysija-newsletters') | format(delete_messages_1) }}</p>
-  <p>{{ _n('deleted one message', 'deleted %d messages', delete_messages_2, 'wysija-newsletters') | format(delete_messages_2) }}</p>
+<% block content %>
+  <h3><%= 'Translations' %></h3>
+  <p><%= __('Translatable string with a link %shere%s') | format('<a href="#">', '</a>') | raw %></p>
+  <p><%= _n('deleted one message', 'deleted %d messages', delete_messages_1, 'wysija-newsletters') | format(delete_messages_1) %></p>
+  <p><%= _n('deleted one message', 'deleted %d messages', delete_messages_2, 'wysija-newsletters') | format(delete_messages_2) %></p>
 
   <!-- escaping -->
   <h3>Auto Escape (HTML)</h3>
-  <p>{{ unsafe_string }}</p>
+  <p><%= unsafe_string %></p>
 
   <!-- escaping JS -->
   <h3>Auto Escape (JS)</h3>
-  <p>{{ unsafe_string|e('js') }}</p>
+  <p><%= unsafe_string|e('js') %></p>
 
   <!-- raw content (block style) -->
-  {% verbatim %}
+  <% verbatim %>
     <h3>Raw</h3>
-    <p>{{ unsafe_string }}</p>
-  {% endverbatim %}
+    <p><%= unsafe_string %></p>
+  <% endverbatim %>
 
   <!-- loop -->
   <h3>Loop</h3>
   <ul>
-  {% for user in users %}
-    <li><a href="mailto:{{ user.email }}">{{ user.name }}</a></li>
-  {% endfor %}
+  <% for user in users %>
+    <li><a href="mailto:<%= user.email %>"><%= user.name %></a></li>
+  <% endfor %>
   </ul>
 
   <h3>Autoloaded Subscriber</h3>
-  <p>{{ subscriber }}</p>
+  <p><%= subscriber %></p>
 
   <h3>Test Option</h3>
-  <p>{{ option }}</p>
+  <p><%= option %></p>
 
   <!-- Notice -->
   <h3>Notices</h3>
-  <p><a href="javascript:;" onclick="MailPoet.Notice.success('{{ __("Test") }}');">Trigger success</a></p>
-  <p><a href="javascript:;" onclick="MailPoet.Notice.error('{{ __("Test") }}');">Trigger error</a></p>
-  <p><a href="javascript:;" onclick="MailPoet.Notice.system('{{ __("Test") }}');">Trigger warning</a></p>
+  <p><a href="javascript:;" onclick="MailPoet.Notice.success('<%= __("Test") %>');">Trigger success</a></p>
+  <p><a href="javascript:;" onclick="MailPoet.Notice.error('<%= __("Test") %>');">Trigger error</a></p>
+  <p><a href="javascript:;" onclick="MailPoet.Notice.system('<%= __("Test") %>');">Trigger warning</a></p>
 
   <!-- Modal -->
   <h3>Modals</h3>
@@ -59,7 +59,7 @@
         // Ajax
         function ajaxSuccess(data) {
           MailPoet.Modal.popup({
-            title: '{{ __("Ajax output") }}',
+            title: '<%= __("Ajax output") %>',
             template: $('#mailpoet_tpl_test').html(),
             data: data
           });
@@ -92,28 +92,24 @@
         //  Modals
         $('#modal_popup').on('click', function() {
           MailPoet.Modal.popup({
-            title: "{{ __('Testing 3 4...') }}",
-            template: "<h3>{{ __('Hello World!') }}</h3>"
+            title: "<%= __('Testing 3 4...') %>",
+            template: "<h3><%= __('Hello World!') %></h3>"
           });
         });
         $('#modal_panel').on('click', function() {
           MailPoet.Modal.panel({
-            title: "{{ __('Testing 1 2...') }}",
-            template: "<h3>{{ __('Hello World!') }}</h3>",
+            title: "<%= __('Testing 1 2...') %>",
+            template: "<h3><%= __('Hello World!') %></h3>",
             width: "40%",
             overlay: true
           });
         });
       });
     });
-
-    Handlebars.registerHelper('__', function(msgid) {
-      return i18n.gettext(msgid);
-    });
   </script>
 
-{% endblock %}
+<% endblock %>
 
-{% block templates %}
-  <script id="mailpoet_tpl_test" type="text/x-handlebars-template">{{ source('templates/test.hbs') }}</script>
-{% endblock %}
+<% block templates %>
+  <script id="mailpoet_tpl_test" type="text/x-handlebars-template"><%= include('templates/test.hbs') %></script>
+<% endblock %>

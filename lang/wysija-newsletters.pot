@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://support.mailpoet.com/\n"
-"POT-Creation-Date: 2015-07-30 14:08:29+00:00\n"
+"POT-Creation-Date: 2015-07-31 10:31:32+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -26,23 +26,23 @@ msgstr ""
 "X-Poedit-Bookmarks: \n"
 "X-Textdomain-Support: yes\n"
 
-#: lib/config/initializer.php:259
+#: lib/config/initializer.php:269
 msgid "New form"
 msgstr ""
 
-#: lib/config/initializer.php:264
+#: lib/config/initializer.php:274
 msgid "Check your inbox or spam folder now to confirm your subscription."
 msgstr ""
 
-#: lib/config/initializer.php:270 lib/config/initializer.php:275
+#: lib/config/initializer.php:280 lib/config/initializer.php:285
 msgid "Email"
 msgstr ""
 
-#: lib/config/initializer.php:280
+#: lib/config/initializer.php:290
 msgid "Submit"
 msgstr ""
 
-#: lib/config/initializer.php:285
+#: lib/config/initializer.php:295
 msgid "Subscribe!"
 msgstr ""
 
@@ -150,7 +150,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: views/form/editor.html:31
+#: views/form/editor.html:31 views/templates/test.hbs:1
 msgid "Settings"
 msgstr ""
 
@@ -162,51 +162,51 @@ msgstr ""
 msgid "Choose a list"
 msgstr ""
 
-#: views/form/editor.html:46
+#: views/form/editor.html:45
 msgid "You have to select at least 1 list"
 msgstr ""
 
-#: views/form/editor.html:52
+#: views/form/editor.html:51
 msgid "After submit..."
 msgstr ""
 
-#: views/form/editor.html:54
+#: views/form/editor.html:53
 msgid "Show message"
 msgstr ""
 
-#: views/form/editor.html:58
+#: views/form/editor.html:57
 msgid "Go to page"
 msgstr ""
 
-#: views/form/editor.html:65
+#: views/form/editor.html:64
 msgid "Check your inbox now to confirm your subscription."
 msgstr ""
 
-#: views/form/editor.html:85
+#: views/form/editor.html:84
 msgid "Shortcodes"
 msgstr ""
 
-#: views/form/editor.html:90
+#: views/form/editor.html:89
 msgid "You can easily add this form to your theme's in the %sWidgets area%s"
 msgstr ""
 
-#: views/form/editor.html:96
+#: views/form/editor.html:95
 msgid "%sHTML%s"
 msgstr ""
 
-#: views/form/editor.html:119
+#: views/form/editor.html:118
 msgid "Fields"
 msgstr ""
 
-#: views/form/editor.html:125
+#: views/form/editor.html:124
 msgid "Add New Field"
 msgstr ""
 
-#: views/form/editor.html:134
+#: views/form/editor.html:133
 msgid "Styles"
 msgstr ""
 
-#: views/form/editor.html:138
+#: views/form/editor.html:137
 msgid "Preview"
 msgstr ""
 
@@ -219,3 +219,23 @@ msgid "deleted one message"
 msgid_plural "deleted %d messages"
 msgstr[0] ""
 msgstr[1] ""
+
+#: views/index.html:39 views/index.html:40 views/index.html:41
+msgid "Test"
+msgstr ""
+
+#: views/index.html:62
+msgid "Ajax output"
+msgstr ""
+
+#: views/index.html:95
+msgid "Testing 3 4..."
+msgstr ""
+
+#: views/index.html:96 views/index.html:102
+msgid "Hello World!"
+msgstr ""
+
+#: views/index.html:101
+msgid "Testing 1 2..."
+msgstr ""

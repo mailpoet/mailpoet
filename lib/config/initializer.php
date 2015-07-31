@@ -52,6 +52,15 @@ class Initializer {
       'assets_path' => $this->assets_path
     )));
 
+    // syntax
+    $lexer = new \Twig_Lexer($this->renderer, array(
+      'tag_comment'  => array('<%#', '%>'),
+      'tag_block'    => array('<%', '%>'),
+      'tag_variable' => array('<%=', '%>'),
+      // TODO: check for other tag to modify
+    ));
+    $this->renderer->setLexer($lexer);
+
     register_activation_hook(
       $this->file,
       array($this, 'install')
