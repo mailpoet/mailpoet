@@ -1,0 +1,27 @@
+{{#each fields}}
+  <li>
+    <a class="mailpoet_form_field"
+      wysija_field="{{ field }}"
+      wysija_name="{{ name }}"
+      wysija_unique="{{#if multiple}}0{{else}}1{{/if}}"
+      wysija_type="{{ type }}"
+      {{#if params}}wysija_params="{{ json_encode params }}"{{/if}}>
+      {{ name }}
+    </a>
+
+  {{#unless readonly}}
+    <a class="mailpoet_form_field_edit settings"
+      title="<%= __('Edit field') %>"
+      href="javascript:;"
+      data-field="{{ field }}">
+      <span class="dashicons dashicons-admin-generic"></span>
+    </a>
+    <a class="mailpoet_form_field_delete delete"
+      title="<?php _e('Delete field'); ?>"
+      href="javascript:;"
+      data-field="{{ field }}">
+      <span class="dashicons dashicons-dismiss"></span>
+    </a>
+  {{/unless}}
+  </li>
+{{/each}}

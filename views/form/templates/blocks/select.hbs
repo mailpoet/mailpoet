@@ -1,0 +1,15 @@
+{{#unless params.label_within}}
+  {{#if params.label}}
+    <p>
+      <label>{{ params.label }}{{#if params.required}} *{{/if}}</label>
+    </p>
+  {{/if}}
+{{/unless}}
+<select>
+  {{#if params.label_within}}
+    <option value="">{{ params.label }}{{#if params.required}} *{{/if}}</option>
+  {{/if}}
+  {{#each params.values}}
+    <option {{#if is_checked}}selected="selected"{{/if}}>{{ value }}</option>
+  {{/each}}
+</select>

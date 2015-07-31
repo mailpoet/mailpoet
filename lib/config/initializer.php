@@ -40,57 +40,36 @@ class Initializer {
     $this->renderer = new \Twig_Environment(
       new \Twig_Loader_Filesystem($this->views_path),
       array(
-        // 'cache' => '/path/to/compilation_cache',
+        'cache' => $this->views_path.'/cache',
       )
     );
 
     // renderer: i18n (passing the text)
     $this->renderer->addExtension(new Renderer\i18n($this->shortname));
+
+    // renderer: Handlebars extension
+    $this->renderer->addExtension(new Renderer\Handlebars());
+
     // renderer: global variables
     $this->renderer->addExtension(new Renderer\Assets(array(
       'assets_url' => $this->assets_url,
       'assets_path' => $this->assets_path
     )));
 
-    // syntax
+    // renderer: syntax
     $lexer = new \Twig_Lexer($this->renderer, array(
-      'tag_comment'  => array('<%#', '%>'),
-      'tag_block'    => array('<%', '%>'),
-      'tag_variable' => array('<%=', '%>'),
-      // TODO: check for other tag to modify
+      'tag_comment'     => array('<%#', '%>'),
+      'tag_block'       => array('<%', '%>'),
+      'tag_variable'    => array('<%=', '%>'),
+      'interpolation'   => array('%{', '}')
     ));
     $this->renderer->setLexer($lexer);
 
+    // hook: plugin activation
     register_activation_hook(
       $this->file,
       array($this, 'install')
     );
-
-    // public assets
-    // add_action(
-    //   'wp_enqueue_scripts',
-    //   array($this, 'public_css'),
-    //   10
-    //);
-    // add_action(
-    //   'wp_enqueue_scripts',
-    //   array($this, 'public_js'),
-    //   10
-    //);
-
-    // admin assets
-    // add_action(
-    //   'admin_enqueue_scripts',
-    //   array($this, 'admin_css'),
-    //   10,
-    //   1
-    //);
-    // add_action(
-    //   'admin_enqueue_scripts',
-    //   array($this, 'admin_js'),
-    //   10,
-    //   1
-    //);
 
     // localization
     $this->setup_textdomain();
@@ -298,6 +277,19 @@ class Initializer {
         )
       )
     );
+
+    $lists = array(
+      array('id' => 1, 'name' => 'My First List'),
+      array('id' => 2, 'name' => 'My Second List')
+    );
+
+    // form editor vars
+    $this->data = array_merge($this->data, array(
+      'date_formats' => \MailPoet\Form\Renderer::getDateFormats(),
+      'date_types' => \MailPoet\Form\Renderer::getDateTypes(),
+      'default_list' => $lists[0],
+      'lists' => $lists
+    ));
     echo $this->renderer->render('form/editor.html', $this->data);
   }
 

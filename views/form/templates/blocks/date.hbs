@@ -1,0 +1,50 @@
+{{#if params.label}}
+  <p>
+    <label>{{ params.label }}{{#if params.required}} *{{/if}}</label>
+  </p>
+{{/if}}
+{{#ifCond params.date_type "==" "year_month_day"}}
+  {{#unless params.date_format}}
+    {{> _settings_date_months }}
+    {{> _settings_date_days }}
+    {{> _settings_date_years }}
+  {{/unless}}
+  {{#ifCond params.date_format "==" "mm/dd/yyyy"}}
+    {{> _settings_date_months }}
+    {{> _settings_date_days }}
+    {{> _settings_date_years }}
+  {{/ifCond}}
+  {{#ifCond params.date_format "==" "dd/mm/yyyy"}}
+    {{> _settings_date_days }}
+    {{> _settings_date_months }}
+    {{> _settings_date_years }}
+  {{/ifCond}}
+  {{#ifCond params.date_format "==" "yyyy/mm/dd"}}
+    {{> _settings_date_years }}
+    {{> _settings_date_months }}
+    {{> _settings_date_days }}
+  {{/ifCond}}
+{{/ifCond}}
+
+{{#ifCond params.date_type "==" "year_month"}}
+  {{#unless params.date_format}}
+    {{> _settings_date_months }}
+    {{> _settings_date_years }}
+  {{/unless}}
+  {{#ifCond params.date_format "==" "mm/yyyy"}}
+    {{> _settings_date_months }}
+    {{> _settings_date_years }}
+  {{/ifCond}}
+  {{#ifCond params.date_format "==" "yyyy/mm"}}
+    {{> _settings_date_years }}
+    {{> _settings_date_months }}
+  {{/ifCond}}
+{{/ifCond}}
+
+{{#ifCond params.date_type "==" "year"}}
+  {{> _settings_date_years }}
+{{/ifCond}}
+
+{{#ifCond params.date_type "==" "month"}}
+  {{> _settings_date_months }}
+{{/ifCond}}

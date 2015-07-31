@@ -1,0 +1,18 @@
+<div class="mailpoet_form_block"
+  wysija_type="{{ type }}"
+  wysija_field="{{ field }}"
+  wysija_name="{{ name }}"
+  wysija_unique="{{#if unique}}1{{else}}0{{/if}}"
+  wysija_static="{{#if static}}1{{else}}0{{/if}}"
+  wysija_params="{{#if params}}{{ json_encode params }}{{/if}}">
+  {{#ifCond type '!==' 'divider'}}
+    <div class="wysija_settings" style="display:none;">
+      <a class="settings" href="javascript:;"><span></span><%= __('Edit display') %></a>
+    </div>
+  {{/ifCond}}
+  <ul class="wysija_controls clearfix" style="display: none;">
+    <li class="handle_container"><a class="handle" href="javascript:;"><span></span></a></li>
+    {{#unless static}}<li><a class="remove" href="javascript:;"><span></span></a></li>{{/unless}}
+  </ul>
+  {{{ template }}}
+</div>

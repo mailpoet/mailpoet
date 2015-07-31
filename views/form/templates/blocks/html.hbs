@@ -1,0 +1,9 @@
+{{#if params.text}}
+  <p>
+    {{#if params.nl2br}}
+      {{{ nl2br params.text }}}
+    {{else}}
+      {{{ params.text }}}
+    {{/if}}
+  </p>
+{{/if}}

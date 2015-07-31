@@ -495,8 +495,8 @@ EOL;
     $date_format = $date_formats[$block['params']['date_type']][0];
 
     // set date format if specified
-    if(isset($block['params']['date_order']) && strlen(trim($block['params']['date_order'])) > 0) {
-      $date_format = $block['params']['date_order'];
+    if(isset($block['params']['date_format']) && strlen(trim($block['params']['date_format'])) > 0) {
+      $date_format = $block['params']['date_format'];
     }
 
     // generate an array of selectors based on date format

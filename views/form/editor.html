@@ -1,12 +1,13 @@
 <% extends 'layout.html' %>
 
 <% block title %>
-  <h2><%= title %></h2>
-  <span id="mailpoet_form_name"><%= form.form_name %></span>
-  <input id="mailpoet_form_name_input" type="text" value="" style="display:none;" />
-  <span>
-    <a id="mailpoet_form_edit_name" class="button" href="javascript:;"><%= __('Edit name' ) %></a>
-  </span>
+  <h2 class="title">
+    <span id="mailpoet_form_name"><%= form.form_name %></span>
+    <input id="mailpoet_form_name_input" type="text" value="" style="display:none;" />
+    <span>
+      <a id="mailpoet_form_edit_name" class="button" href="javascript:;"><%= __('Edit name' ) %></a>
+    </span>
+  </h2>
 <% endblock %>
 
 <% block content %>
@@ -79,7 +80,7 @@
         </div>
 
         <!-- Toolbar: Shortcodes / Export -->
-        <div class="mailpoet_toolbar_section">
+        <div class="mailpoet_toolbar_section closed">
         <a href="javascript:;" class="mailpoet_toggle"><br /></a>
         <h3><%= __('Shortcodes') %></h3>
 
@@ -149,11 +150,16 @@
     'lib/prototype.min.js',
     'lib/select2.js',
     'lib/scriptaculous.min.js',
+    'lib/codemirror/codemirror.js',
+    'lib/codemirror/syntax_php.js',
+    'lib/codemirror/syntax_css.js',
     'form_editor.js'
   )%>
 
   <%= stylesheet(
-    'lib/select2/select2.css'
+    'lib/select2/select2.css',
+    'lib/codemirror/codemirror.css',
+    'lib/codemirror/theme_neo.css'
   ) %>
 
   <script type="text/javascript">
@@ -167,6 +173,164 @@
           width:'100%'
         });
       });
+
+      function mailpoet_form_fields(data) {
+        var template = Handlebars.compile(jQuery('#form_template_fields').html());
+
+        // render toolbar
+        jQuery('#mailpoet_toolbar_fields').html(template(data));
+
+        // enable code mirror editor on styles textarea
+         MailPoet.CodeEditor = CodeMirror.fromTextArea(document.getElementById('mailpoet_form_styles'), {
+          lineNumbers: true,
+          tabMode: "indent",
+            matchBrackets: true,
+            theme: 'neo',
+            mode: 'css',
+        });
+      }
+
+      // form editor: default fields
+      var default_fields = [
+        {
+          name: "<%= __('Divider') %>",
+          field: 'divider',
+          type: 'divider',
+          multiple: true,
+          readonly: true
+        },
+        {
+          name: "<%= __('First name') %>",
+          field: 'subscriber_firstname',
+          type: 'input',
+          params: {
+            label: "<%= __('First name') %>",
+            required: true
+          },
+          readonly: true
+        },
+        {
+          name: "<%= __('Last name') %>",
+          field: 'subscriber_lastname',
+          type: 'input',
+          params: {
+            label: "<%= __('Last name') %>",
+            required: true
+          },
+          readonly: true
+        },
+        {
+          name: "<%= __('List selection') %>",
+          field: 'list',
+          type: 'list',
+          params: {
+            label: "<%= __('Select list(s):') %>",
+            values: [ ] // default list
+          },
+          readonly: true
+        },
+        {
+          name: "<%= __('Random text or HTML') %>",
+          field: 'html',
+          type: 'html',
+          params: {
+              text: "<%= __('Subscribe to our newsletter and join our [mailpoet_subscribers_count] subscribers.') %>"
+          },
+          multiple: true,
+          readonly: true
+        }
+      ];
+
+      // toolbar sections
+      $(document).on('click', '.mailpoet_toolbar_section.closed', function() {
+        $('.mailpoet_toolbar_section').addClass('closed');
+        $(this).removeClass('closed');
+        return false;
+      });
+
+      var meta_fields = [];
+
+      // render toolbar
+      mailpoet_form_fields({
+        fields: $.merge(meta_fields, default_fields)
+      });
     });
+  </script>
+<% endblock %>
+
+<% block templates %>
+  <!-- toolbar templates -->
+  <%= partial('form_template_fields', 'form/templates/toolbar/fields.hbs') %>
+  <%= partial('form_template_exports', 'form/templates/toolbar/exports.hbs') %>
+
+  <!-- block templates -->
+  <%= partial('form_template_block', 'form/templates/blocks/container.hbs') %>
+  <%= partial('form_template_divider', 'form/templates/blocks/divider.hbs') %>
+  <%= partial('form_template_input', 'form/templates/blocks/input.hbs') %>
+  <%= partial('form_template_submit', 'form/templates/blocks/submit.hbs') %>
+  <%= partial('form_template_list', 'form/templates/blocks/list.hbs') %>
+  <%= partial('form_template_radio', 'form/templates/blocks/radio.hbs') %>
+  <%= partial('form_template_select', 'form/templates/blocks/select.hbs') %>
+  <%= partial('form_template_checkbox', 'form/templates/blocks/checkbox.hbs') %>
+  <%= partial('form_template_textarea', 'form/templates/blocks/textarea.hbs') %>
+  <%= partial('form_template_html', 'form/templates/blocks/html.hbs') %>
+  <%= partial('form_template_date', 'form/templates/blocks/date.hbs') %>
+  <%= partial('form_template_date_years', 'form/templates/blocks/date_years.hbs') %>
+  <%= partial('form_template_date_months', 'form/templates/blocks/date_months.hbs') %>
+  <%= partial('form_template_date_days', 'form/templates/blocks/date_days.hbs') %>
+
+  <!-- field settings -->
+  <%= partial('form_template_field_settings', 'form/templates/settings/field.hbs') %>
+
+  <%= partial('field_settings_label', 'form/templates/settings/label.hbs', '_settings_label') %>
+  <%= partial('field_settings_label_within', 'form/templates/settings/label_within.hbs', '_settings_label_within') %>
+  <%= partial('field_settings_required', 'form/templates/settings/required.hbs', '_settings_required') %>
+  <%= partial('field_settings_validate', 'form/templates/settings/validate.hbs', '_settings_validate') %>
+  <%= partial('field_settings_values', 'form/templates/settings/values.hbs', '_settings_values') %>
+  <%= partial('field_settings_date_default', 'form/templates/settings/date_default.hbs', '_settings_date_default') %>
+  <%= partial('field_settings_submit', 'form/templates/settings/submit.hbs', '_settings_submit') %>
+
+  <%= partial('field_settings_values_item', 'form/templates/settings/values_item.hbs') %>
+  <%= partial('field_settings_date_formats', 'form/templates/settings/date_formats.hbs') %>
+  <%= partial('field_settings_date_type', 'form/templates/settings/date_types.hbs') %>
+  <%= partial('field_settings_list_selection_item', 'form/templates/settings/list_selection_item.hbs') %>
+  <%= partial('field_settings_list_selection', 'form/templates/settings/list_selection.hbs') %>
+  <%= partial() %>
+
+  <!-- custom field: new -->
+  <%= partial('form_template_field_new', 'form/templates/settings/field_new.hbs') %>
+
+  <!-- form preview -->
+  <%= partial('mailpoet_form_preview_template', 'form/templates/preview.hbs') %>
+
+  <!-- field settings depending on field type -->
+  <script id="form_template_field_input" type="text/x-handlebars-template">
+    {{> _settings_required }}
+    {{> _settings_validate }}
+  </script>
+
+  <script id="form_template_field_textarea" type="text/x-handlebars-template">
+    {{> _settings_required }}
+    {{> _settings_validate }}
+  </script>
+
+  <script id="form_template_field_radio" type="text/x-handlebars-template">
+    {{> _settings_values }}
+    {{> _settings_required }}
+  </script>
+
+  <script id="form_template_field_checkbox" type="text/x-handlebars-template">
+    {{> _settings_values }}
+    {{> _settings_required }}
+  </script>
+
+  <script id="form_template_field_select" type="text/x-handlebars-template">
+    {{> _settings_values }}
+    {{> _settings_required }}
+  </script>
+
+  <script id="form_template_field_date" type="text/x-handlebars-template">
+    {{> _settings_required }}
+    {{> _settings_date_type }}
   </script>
 <% endblock %>

@@ -21,18 +21,18 @@ class Assets extends \Twig_Extension {
     return array(
       new \Twig_SimpleFunction(
         'stylesheet',
-        array($this, 'generate_stylesheet'),
+        array($this, 'generateStylesheet'),
         array('is_safe' => array('all'))
       ),
       new \Twig_SimpleFunction(
         'javascript',
-        array($this, 'generate_javascript'),
+        array($this, 'generateJavascript'),
         array('is_safe' => array('all'))
       )
     );
   }
 
-  public function generate_stylesheet() {
+  public function generateStylesheet() {
     $stylesheets = func_get_args();
     $output = array();
 
@@ -44,7 +44,7 @@ class Assets extends \Twig_Extension {
     return join("\n", $output);
   }
 
-  public function generate_javascript() {
+  public function generateJavascript() {
     $scripts = func_get_args();
     $output = array();
 

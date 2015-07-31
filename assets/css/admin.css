@@ -281,7 +281,7 @@ body.mailpoet_modal_opened {
 .mailpoet_notice {
   position: relative;
 }
-.mailpoet_notice .mailpoet_notice_close {
+.mailpoet_notice_close {
   position: absolute;
   right: 0.5em;
   top: 0.5em;
@@ -795,11 +795,11 @@ h2.title {
 }
 .mailpoet_form_block .wysija_controls {
   background-color: #dfdfdf;
-  background: -webkit-linear-gradient(center top, #bbb, #eee);
-  background: -moz-linear-gradient(center top, #bbb, #eee);
-  background: -o-linear-gradient(center top, #bbb, #eee);
-  background: -ms-linear-gradient(center top, #bbb, #eee);
-  background: linear-gradient(center top, #bbb, #eee);
+  background: -webkit-linear-gradient(center top, #eee, #bbb);
+  background: -moz-linear-gradient(center top, #eee, #bbb);
+  background: -o-linear-gradient(center top, #eee, #bbb);
+  background: -ms-linear-gradient(center top, #eee, #bbb);
+  background: linear-gradient(center top, #eee, #bbb);
   -webkit-border-radius: 2px;
   border-radius: 2px;
   border: 1px solid #ccc;
@@ -856,82 +856,82 @@ h2.title {
   color: transparent;
 }
 .alignment-left span {
-  background: url("form_editor_icons.png") no-repeat 0 0;
+  background: url("../img/form_editor_icons.png") no-repeat 0 0;
 }
 .alignment-left.active span,
 .alignment-left:hover span {
-  background: url("form_editor_icons.png") no-repeat 0 -20px;
+  background: url("../img/form_editor_icons.png") no-repeat 0 -20px;
 }
 .alignment-center span {
-  background: url("form_editor_icons.png") no-repeat -20px 0;
+  background: url("../img/form_editor_icons.png") no-repeat -20px 0;
 }
 .alignment-center.active span,
 .alignment-center:hover span {
-  background: url("form_editor_icons.png") no-repeat -20px -20px;
+  background: url("../img/form_editor_icons.png") no-repeat -20px -20px;
 }
 .alignment-right span {
-  background: url("form_editor_icons.png") no-repeat -40px 0;
+  background: url("../img/form_editor_icons.png") no-repeat -40px 0;
 }
 .alignment-right.active span,
 .alignment-right:hover span {
-  background: url("form_editor_icons.png") no-repeat -40px -20px;
+  background: url("../img/form_editor_icons.png") no-repeat -40px -20px;
 }
 .add-link span {
-  background: url("form_editor_icons.png") no-repeat -60px 0;
+  background: url("../img/form_editor_icons.png") no-repeat -60px 0;
 }
 .add-link.active span,
 .add-link:hover span {
-  background: url("form_editor_icons.png") no-repeat -60px -20px;
+  background: url("../img/form_editor_icons.png") no-repeat -60px -20px;
 }
 .remove-link span {
-  background: url("form_editor_icons.png") no-repeat -80px 0;
+  background: url("../img/form_editor_icons.png") no-repeat -80px 0;
 }
 .remove-link.active span,
 .remove-link:hover span {
-  background: url("form_editor_icons.png") no-repeat -80px -20px;
+  background: url("../img/form_editor_icons.png") no-repeat -80px -20px;
 }
 .remove span,
 .delete span {
-  background: url("form_editor_icons.png") no-repeat -100px 0;
+  background: url("../img/form_editor_icons.png") no-repeat -100px 0;
 }
 .remove.active span,
 .remove:hover span,
 .delete.active span,
 .delete:hover span {
-  background: url("form_editor_icons.png") no-repeat -100px -20px;
+  background: url("../img/form_editor_icons.png") no-repeat -100px -20px;
 }
 .handle span {
-  background: url("handle.png") no-repeat;
+  background: url("../img/handle.png") no-repeat;
   cursor: move;
   width: 40px !important;
 }
 .duplicate span {
-  background: url("form_editor_icons.png") no-repeat -140px 0;
+  background: url("../img/form_editor_icons.png") no-repeat -140px 0;
 }
 .duplicate.active span,
 .duplicate:hover span {
-  background: url("form_editor_icons.png") no-repeat -140px -20px;
+  background: url("../img/form_editor_icons.png") no-repeat -140px -20px;
 }
 .settings span {
-  background: url("form_editor_icons.png") no-repeat -160px 0;
+  background: url("../img/form_editor_icons.png") no-repeat -160px 0;
 }
 .settings.active span,
 .settings:hover span {
-  background: url("form_editor_icons.png") no-repeat -160px -20px;
+  background: url("../img/form_editor_icons.png") no-repeat -160px -20px;
 }
 .icon-plus span {
-  background: url("form_editor_icons.png") no-repeat -200px 0;
+  background: url("../img/form_editor_icons.png") no-repeat -200px 0;
 }
 .icon-plus.active span,
 .icon-plus:hover span {
-  background: url("form_editor_icons.png") no-repeat -200px -20px;
+  background: url("../img/form_editor_icons.png") no-repeat -200px -20px;
 }
 .icon-minus span {
-  background: url("form_editor_icons.png") no-repeat -220px 0;
+  background: url("../img/form_editor_icons.png") no-repeat -220px 0;
 }
 .icon-minus.active span,
 .icon-minus:hover span {
-  background: url("form_editor_icons.png") no-repeat -220px -20px;
+  background: url("../img/form_editor_icons.png") no-repeat -220px -20px;
 }
 .wysija_options {
   display: none;

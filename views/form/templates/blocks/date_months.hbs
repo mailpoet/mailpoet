@@ -1,0 +1,10 @@
+<% set currentMonth = 'now'|date('n') %>
+
+<select id="{{ field }}_months">
+  <% for month in 1..12 %>
+      <option
+      {{#if params.is_default_today}}
+        {{#ifCond month "==" "<%= currentMonth %>"}}selected="selected"{{/ifCond}}
+      {{/if}}><%= month |date('1984-' ~ month ~ '-01') |date('F') %></option>
+  <% endfor %>
+</select>

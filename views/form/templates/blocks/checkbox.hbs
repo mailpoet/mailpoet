@@ -1,0 +1,10 @@
+{{#if params.label}}
+  <p>
+    <label>{{ params.label }}{{#if params.required}} *{{/if}}</label>
+  </p>
+{{/if}}
+{{#each params.values}}
+  <p>
+    <label><input class="mailpoet_checkbox" type="checkbox" value="1" {{#if is_checked}}checked="checked"{{/if}} disabled="disabled" />{{ value }}</label>
+  </p>
+{{/each}}

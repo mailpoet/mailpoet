@@ -1,0 +1,7 @@
+{{#if params.label}}<p>{{ params.label }}</p>{{/if}}
+{{#unless params.values}}<p class="mailpoet_error"><%= __('You have to select at least 1 list') %></p>{{/unless}}
+{{#each params.values}}
+  <p>
+    <input class="mailpoet_checkbox" type="checkbox" data-list-id="{{ list_id }}" {{#if is_checked}}checked="checked"{{/if}} disabled="disabled" />{{ list_name }}
+  </p>
+{{/each}}

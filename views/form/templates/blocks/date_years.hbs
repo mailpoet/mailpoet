@@ -1,0 +1,11 @@
+<% set currentYear = "now"|date("Y") %>
+<% set minYear = currentYear - 100 %>
+
+<select id="{{ field }}_years">
+  <% for year in currentYear..minYear %>
+    <option
+      {{#if params.is_default_today}}
+        {{#ifCond year "==" "<%= year %>"}}selected="selected"{{/ifCond}}
+      {{/if}}><%= year %></option>
+  <% endfor %>
+</select>

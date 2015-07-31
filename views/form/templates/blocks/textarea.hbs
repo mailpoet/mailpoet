@@ -1,0 +1,4 @@
+<p>
+  {{#unless params.label_within}}<label>{{ params.label }}{{#if params.required}} *{{/if}}</label>{{/unless}}
+  <textarea placeholder="{{#if params.label_within}}{{ params.label }}{{#if params.required}} *{{/if}}{{/if}}" disabled="disabled" rows="{{#if params.lines}}{{ params.lines }}{{else}}1{{/if}}">{{ params.text }}</textarea>
+</p>
