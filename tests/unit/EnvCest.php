@@ -7,6 +7,10 @@ class EnvCest {
     Env::init();
   }
 
+  public function itCanReturnThePluginPrefix() {
+    expect(Env::$plugin_prefix)->equals('mailpoet_');
+  }
+
   public function itCanReturnTheDbPrefix() {
     global $wpdb;
     $db_prefix = $wpdb->prefix;

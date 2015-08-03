@@ -8,7 +8,7 @@ require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 class Migrator {
   function __construct() {
-    $this->prefix = Env::$db_prefix . 'mailpoet_';
+    $this->prefix = Env::$db_prefix . Env::$plugin_prefix;
     $this->charset = Env::$db_charset;
     $this->models = array(
       'subscriber',
@@ -40,6 +40,8 @@ class Migrator {
   function subscriber() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'first_name tinytext NOT NULL,',
+      'last_name tinytext NOT NULL,',
       'PRIMARY KEY  (id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
