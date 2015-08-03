@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Renderer;
+namespace MailPoet\Twig;
 
 class Handlebars extends \Twig_Extension {
 

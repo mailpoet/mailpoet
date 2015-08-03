@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Renderer;
+namespace MailPoet\Twig;
 
 class Assets extends \Twig_Extension {
 

@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Renderer;
+namespace MailPoet\Twig;
 
 class i18n extends \Twig_Extension {
 
