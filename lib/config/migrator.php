@@ -42,6 +42,7 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'first_name tinytext NOT NULL,',
       'last_name tinytext NOT NULL,',
+      'email tinytext NOT NULL,',
       'PRIMARY KEY  (id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
