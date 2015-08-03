@@ -7,8 +7,10 @@ class MigratorCest {
     $this->migrator = new Migrator();
   }
 
-  public function itCreatesTheSubscriberTable() {
-    // Can't be tested because of WordPress.
+  public function itCanGenerateSubscriberSql() {
+    $subscriber_sql = $this->migrator->subscriber();
+    $expected_table = $this->migrator->prefix . 'subscriber';
+    expect($subscriber_sql)->contains($expected_table);
   }
 
   public function _after() {

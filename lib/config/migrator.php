@@ -10,19 +10,57 @@ class Migrator {
   function __construct() {
     $this->prefix = Env::$db_prefix . 'mailpoet_';
     $this->charset = Env::$db_charset;
+    $this->models = array(
+      'subscriber',
+      'setting'
+    );
   }
 
   function up() {
     global $wpdb;
-    dbDelta($this->subscribers());
+
+    $migrate = function($model) {
+      dbDelta($this->$model());
+    };
+
+    array_map($migrate, $this->models);
   }
 
-  function subscribers() {
-    $table = $this->prefix . 'subscriber';
-    $sql = "CREATE TABLE " . $table . " (
-      id mediumint(9) NOT NULL AUTO_INCREMENT,
-      PRIMARY KEY  (id)
-    );";
-    return $sql;
+  function down() {
+    global $wpdb;
+
+    $drop_table = function($model) {
+      $table = $this->prefix . $model;
+      $wpdb->query("DROP TABLE {$table}");
+    };
+
+    array_map($drop_table, $this->models);
+  }
+
+  function subscriber() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'PRIMARY KEY  (id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function setting() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'PRIMARY KEY  (id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  private function sqlify($model, $attributes) {
+    $table = $this->prefix . $model;
+
+    $sql = array();
+    $sql[] = "CREATE TABLE " . $table . " (";
+    $sql = array_merge($sql, $attributes);
+    $sql[] = ")" . $this->charset .  ";";
+
+    return implode("\n", $sql);
   }
 }
