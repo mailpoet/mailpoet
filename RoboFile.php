@@ -14,14 +14,18 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function watch() {
+    $files = array(
+      // global admin styles
+      'assets/css/src/admin.styl',
+      // rtl specific styles
+      'assets/css/src/rtl.styl'
+    );
+
     $command = array(
       './node_modules/stylus/bin/stylus -u',
       ' nib -w'.
-      // global admin styles
-      ' assets/css/src/admin.styl'.
-      // rtl specific styles
-      ' assets/css/src/rtl.styl',
-      '-o assets/css/'
+      join(' ', $files).
+      ' -o assets/css/'
     );
     $this->_exec(join(' ', $command));
   }
