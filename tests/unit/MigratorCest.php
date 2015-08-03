@@ -7,7 +7,7 @@ class MigratorCest {
     $this->migrator = new Migrator();
   }
 
-  public function itCanGenerateSubscriberSql() {
+  public function itCanGenerateTheSubscriberSql() {
     $subscriber_sql = $this->migrator->subscriber();
     $expected_table = $this->migrator->prefix . 'subscriber';
     expect($subscriber_sql)->contains($expected_table);
