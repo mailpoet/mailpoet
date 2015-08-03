@@ -4,6 +4,7 @@ composer.phar
 vendor
 tests/_output/*
 tests/acceptance.suite.yml
+tests/_support/_generated/*
 node_modules
 .env
 npm-debug.log
