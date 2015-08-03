@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Config;
 use MailPoet\Models;
-use MailPoet\Renderer;
 use MailPoet\WP;
 
 if(!defined('ABSPATH')) exit;
@@ -45,13 +44,13 @@ class Initializer {
     );
 
     // renderer: i18n (passing the text)
-    $this->renderer->addExtension(new Renderer\i18n($this->shortname));
+    $this->renderer->addExtension(new \MailPoet\Twig\i18n($this->shortname));
 
     // renderer: Handlebars extension
-    $this->renderer->addExtension(new Renderer\Handlebars());
+    $this->renderer->addExtension(new \MailPoet\Twig\Handlebars());
 
     // renderer: global variables
-    $this->renderer->addExtension(new Renderer\Assets(array(
+    $this->renderer->addExtension(new \MailPoet\Twig\Assets(array(
       'assets_url' => $this->assets_url,
       'assets_path' => $this->assets_path
     )));
