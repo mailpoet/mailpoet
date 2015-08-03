@@ -45,11 +45,13 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testUnit() {
+    $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept run unit');
   }
 
   function testAcceptance() {
+    $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
     $this
       ->taskExec('phantomjs --webdriver=4444')
@@ -60,6 +62,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testAll() {
+    $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
     $this
       ->taskexec('phantomjs --webdriver=4444')
