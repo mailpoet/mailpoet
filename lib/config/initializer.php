@@ -23,6 +23,7 @@ class Initializer {
     \ORM::configure('username', Env::$db_username);
     \ORM::configure('password', Env::$db_password);
     define('MP_SUBSCRIBERS_TABLE', Env::$db_prefix . 'subscribers');
+    define('MP_SETTINGS_TABLE', Env::$db_prefix . 'settings');
 
     $this->data = array();
     $this->version = $params['version'];

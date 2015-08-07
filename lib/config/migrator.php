@@ -44,7 +44,7 @@ class Migrator {
       'last_name tinytext NOT NULL,',
       'email varchar(150) NOT NULL,',
       'PRIMARY KEY  (id),',
-      'UNIQUE INDEX email (email)'
+      'UNIQUE KEY email (email)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -52,7 +52,10 @@ class Migrator {
   function settings() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'PRIMARY KEY  (id)'
+      'name varchar(20) NOT NULL,',
+      'value varchar(255) NOT NULL,',
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY name (name)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
