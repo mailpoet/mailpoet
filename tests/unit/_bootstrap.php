@@ -1,4 +1,6 @@
 <?php
+use \MailPoet\Config\Env;
+
 $wordpress_path = getenv('WP_TEST_PATH');
 
 if($wordpress_path) {
@@ -9,4 +11,7 @@ if($wordpress_path) {
   throw new Exception("You need to specify the path to your WordPress installation\n`WP_TEST_PATH` in your .env file");
 }
 
-\MailPoet\Config\Env::init();
+Env::init();
+\ORM::configure(Env::$db_source_name);
+\ORM::configure('username', Env::$db_username);
+\ORM::configure('password', Env::$db_password);
