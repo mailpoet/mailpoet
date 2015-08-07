@@ -225,7 +225,7 @@ class Initializer {
   }
 
   public function admin_page() {
-    $subscriber = new Models\Subscriber();
+    /* $subscriber = new Models\Subscriber(); */
 
     $option = new WP\Option();
     $option->set('option_name', 'option value');
@@ -239,7 +239,7 @@ class Initializer {
         array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),
         array('name' => 'Marco', 'email' => 'marco@mailpoet.com'),
        ),
-        'subscriber' => $subscriber->name,
+        /* 'subscriber' => $subscriber->name, */
         'option' => $option->get('option_name')
    );
     // Sample page using Twig
