@@ -19,9 +19,9 @@ class Initializer {
     'version' => '1.0.0'
   )) {
     Env::init();
-    /* ORM::configure('mysql:host=localhost;dbname=my_database'); */
-    /* ORM::configure('username', Env::$db_username); */
-    /* ORM::configure('password', Env::$db_password); */
+    \ORM::configure(Env::$db_source_name);
+    \ORM::configure('username', Env::$db_username);
+    \ORM::configure('password', Env::$db_password);
 
     $this->data = array();
     $this->version = $params['version'];
