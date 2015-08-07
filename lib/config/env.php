@@ -28,10 +28,10 @@ class Env {
   public static function dbSourceName() {
     $source_name = array(
       'mysql:host=',
-      Env::$db_host,
+      DB_HOST,
       ';',
       'dbname=',
-      Env::$db_name
+      DB_NAME
     );
     return implode('', $source_name);
   }
