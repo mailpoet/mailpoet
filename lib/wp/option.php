@@ -4,7 +4,7 @@ namespace MailPoet\WP;
 class Option {
 
   function __construct() {
-    $this->prefix = 'mailpoet';
+    $this->prefix = 'mailpoet_';
   }
 
   function get($name) {
