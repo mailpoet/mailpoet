@@ -24,7 +24,6 @@ class SubscriberCest {
       $this->subscriber->email = $this->data['email'];
 
       $this->subscriber->save();
-      $this->id = $this->subscriber->id;
     }
 
     function itCanBeCreated() {
@@ -33,24 +32,24 @@ class SubscriberCest {
     }
 
     function itHasAFirstName() {
-      $subscriber = Subscriber::findOne($this->id);
+      $subscriber = Subscriber::where('first_name', $this->data['first_name'])->findOne();
       expect($subscriber->first_name)
         ->equals($this->data['first_name']);
     }
 
     function itHasALastName() {
-      $subscriber = Subscriber::findOne($this->id);
+      $subscriber = Subscriber::where('first_name', $this->data['first_name'])->findOne();
       expect($subscriber->last_name)
         ->equals($this->data['last_name']);
     }
 
     function itHasAnEmail() {
-      $subscriber = Subscriber::findOne($this->id);
+      $subscriber = Subscriber::where('first_name', $this->data['first_name'])->findOne();
       expect($subscriber->email)
         ->equals($this->data['email']);
     }
 
     function _after() {
-      Subscriber::findOne($this->id)->delete();
+      $subscriber = Subscriber::where('first_name', $this->data['first_name'])->findOne()->delete();
     }
 }
