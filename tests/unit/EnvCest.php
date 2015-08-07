@@ -13,7 +13,7 @@ class EnvCest {
 
   function itCanReturnTheDbPrefix() {
     global $wpdb;
-    $db_prefix = $wpdb->prefix;
+    $db_prefix = $wpdb->prefix . 'mailpoet_';
     expect(Env::$db_prefix)->equals($db_prefix);
   }
 

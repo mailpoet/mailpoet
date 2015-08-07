@@ -16,7 +16,7 @@ class Env {
   public static function init() {
     global $wpdb;
     self::$plugin_prefix = 'mailpoet_';
-    self::$db_prefix = $wpdb->prefix;
+    self::$db_prefix = $wpdb->prefix . self::$plugin_prefix;
     self::$db_source_name = self::dbSourceName();
     self::$db_host = DB_HOST;
     self::$db_name = DB_NAME;

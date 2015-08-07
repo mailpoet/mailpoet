@@ -8,11 +8,11 @@ require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 class Migrator {
   function __construct() {
-    $this->prefix = Env::$db_prefix . Env::$plugin_prefix;
+    $this->prefix = Env::$db_prefix;
     $this->charset = Env::$db_charset;
     $this->models = array(
-      'subscriber',
-      'setting'
+      'subscribers',
+      'settings'
     );
   }
 
@@ -37,7 +37,7 @@ class Migrator {
     array_map($drop_table, $this->models);
   }
 
-  function subscriber() {
+  function subscribers() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'first_name tinytext NOT NULL,',
@@ -48,7 +48,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function setting() {
+  function settings() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'PRIMARY KEY  (id)'
