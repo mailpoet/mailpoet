@@ -10,3 +10,5 @@
 - Methods can be no longer than 5 LOC.
 - Pass no more than 4 parameters/hash keys into a method.
 - Routes can instantiate only one object.
+- Require other classes with 'use' at the beginning of the class file.
+- Do not specify 'public' if method is public, it's implicit.

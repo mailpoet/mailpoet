@@ -19,6 +19,11 @@ class Initializer {
     'version' => '1.0.0'
   )) {
     Env::init();
+    \ORM::configure(Env::$db_source_name);
+    \ORM::configure('username', Env::$db_username);
+    \ORM::configure('password', Env::$db_password);
+    define('MP_SUBSCRIBERS_TABLE', Env::$db_prefix . 'subscribers');
+
     $this->data = array();
     $this->version = $params['version'];
     $this->shortname = 'wysija-newsletters';
@@ -220,7 +225,7 @@ class Initializer {
   }
 
   public function admin_page() {
-    $subscriber = new Models\Subscriber();
+    /* $subscriber = new Models\Subscriber(); */
 
     $option = new WP\Option();
     $option->set('option_name', 'option value');
@@ -234,7 +239,7 @@ class Initializer {
         array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),
         array('name' => 'Marco', 'email' => 'marco@mailpoet.com'),
        ),
-        'subscriber' => $subscriber->name,
+        /* 'subscriber' => $subscriber->name, */
         'option' => $option->get('option_name')
    );
     // Sample page using Twig

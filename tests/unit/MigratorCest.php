@@ -3,14 +3,16 @@ use \UnitTester;
 use \MailPoet\Config\Migrator;
 
 class MigratorCest {
-  public function _before() {
+  function _before() {
     $this->migrator = new Migrator();
   }
 
-  public function itCreatesTheSubscriberTable() {
-    // Can't be tested because of WordPress.
+  function itCanGenerateTheSubscribersSql() {
+    $subscriber_sql = $this->migrator->subscribers();
+    $expected_table = $this->migrator->prefix . 'subscribers';
+    expect($subscriber_sql)->contains($expected_table);
   }
 
-  public function _after() {
+  function _after() {
   }
 }

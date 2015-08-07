@@ -72,6 +72,12 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('vendor/bin/codecept run');
   }
 
+  function testDebug() {
+    $this->_exec('vendor/bin/codecept build');
+    $this->loadEnv();
+    $this->_exec('vendor/bin/codecept run unit --debug');
+  }
+
   protected function loadEnv() {
     $dotenv = new Dotenv\Dotenv(__DIR__);
     $dotenv->load();
