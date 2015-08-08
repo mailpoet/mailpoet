@@ -23,7 +23,7 @@ class Initializer {
 
     $this->data = array();
     $this->version = $params['version'];
-    $this->shortname = 'wysija-newsletters';
+    $this->shortname = Env::$plugin_name;
     $this->file = $params['file'];
     $this->path =(dirname($this->file));
     $this->views_path = $this->path . '/views';

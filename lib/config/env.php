@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 if(!defined('ABSPATH')) exit;
 
 class Env {
+  public static $plugin_name;
   public static $plugin_prefix;
   public static $db_prefix;
   public static $db_source_name;
@@ -15,6 +16,7 @@ class Env {
 
   public static function init() {
     global $wpdb;
+    self::$plugin_name = 'mailpoet';
     self::$plugin_prefix = 'mailpoet_';
     self::$db_prefix = $wpdb->prefix . self::$plugin_prefix;
     self::$db_source_name = self::dbSourceName();
