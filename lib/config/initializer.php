@@ -215,15 +215,9 @@ class Initializer {
   public function install() {
     $migrator = new \MailPoet\Config\Migrator;
     $migrator->up();
-    $this->log_version_number();
   }
 
   public function admin_page() {
-    /* $subscriber = new Models\Subscriber(); */
-
-    $option = new WP\Option();
-    $option->set('option_name', 'option value');
-
     $this->data = array(
       'text' => 'Lorem ipsum dolor sit amet',
       'delete_messages_1' => 1,
@@ -232,11 +226,9 @@ class Initializer {
       'users' => array(
         array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),
         array('name' => 'Marco', 'email' => 'marco@mailpoet.com'),
-       ),
-        /* 'subscriber' => $subscriber->name, */
-        'option' => $option->get('option_name')
+       )
    );
-    // Sample page using Twig
+
     echo $this->renderer->render('index.html', $this->data);
   }
 
@@ -317,26 +309,7 @@ class Initializer {
       $this->assets_url . '/img/menu_icon.png',
       30
    );
-/*
-    // newsletters
-    add_submenu_page(
-      'mailpoet-newsletters',
-      'Newsletters',
-      'Newsletters',
-      'manage_options',
-      'mailpoet-newsletters',
-      'mailpoet_newsletters'
-   );
 
-    // subscribers
-    add_submenu_page('mailpoet-newsletters',
-      'Subscribers',
-      'Subscribers',
-      'manage_options',
-      'mailpoet-subscribers',
-      'mailpoet_subscribers'
-   );
-*/
     // forms
     add_submenu_page('mailpoet-newsletters',
       'Forms',
@@ -344,41 +317,6 @@ class Initializer {
       'manage_options',
       'mailpoet-forms',
       array($this, 'admin_page_form')
-   );
-/*
-    // settings
-    add_submenu_page('mailpoet-newsletters',
-      'Settings',
-      'Settings',
-      'manage_options',
-      'mailpoet-settings',
-      'mailpoet_settings'
-   );
-
-    // premium
-    add_submenu_page('mailpoet-newsletters',
-      'Premium',
-      'Premium',
-      'manage_options',
-      'mailpoet-premium',
-      'mailpoet_premium'
-   );
-
-    // statistics
-    add_submenu_page('mailpoet-newsletters',
-      'Statistics',
-      'Statistics',
-      'manage_options',
-      'mailpoet-statistics',
-      'mailpoet_statistics'
-   );
-*/
-  }
-
-  // private methods
-  private function log_version_number() {
-    update_option(
-      $this->shortname . '_version', $this->version
    );
   }
 }
