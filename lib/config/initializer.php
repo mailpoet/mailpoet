@@ -35,37 +35,6 @@ class Initializer {
     );
     $this->lib_path = $this->path .'/lib';
 
-    // -------------------
-    // Template renderer
-    // -------------------
-    $this->renderer = new \Twig_Environment(
-      new \Twig_Loader_Filesystem($this->views_path),
-      array(
-        'cache' => (WP_DEBUG === false) ? $this->views_path.'/cache' : false,
-      )
-    );
-
-    // renderer: i18n (passing the text)
-    $this->renderer->addExtension(new \MailPoet\Twig\i18n($this->shortname));
-
-    // renderer: Handlebars extension
-    $this->renderer->addExtension(new \MailPoet\Twig\Handlebars());
-
-    // renderer: global variables
-    $this->renderer->addExtension(new \MailPoet\Twig\Assets(array(
-      'assets_url' => $this->assets_url,
-      'assets_path' => $this->assets_path
-    )));
-
-    // renderer: syntax
-    $lexer = new \Twig_Lexer($this->renderer, array(
-      'tag_comment'     => array('<%#', '%>'),
-      'tag_block'       => array('<%', '%>'),
-      'tag_variable'    => array('<%=', '%>'),
-      'interpolation'   => array('%{', '}')
-    ));
-    $this->renderer->setLexer($lexer);
-
     // hook: plugin activation
     register_activation_hook(
       $this->file,
@@ -79,6 +48,9 @@ class Initializer {
       array($this, 'localize'),
       0
     );
+
+    $renderer = new Renderer();
+    $this->renderer = $renderer->init();
 
     $menu = new Menu(
       $this->renderer,
