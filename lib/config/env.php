@@ -27,7 +27,7 @@ class Env {
     self::$db_charset = $wpdb->get_charset_collate();
   }
 
-  public static function dbSourceName() {
+  private static function dbSourceName() {
     $source_name = array(
       'mysql:host=',
       DB_HOST,
