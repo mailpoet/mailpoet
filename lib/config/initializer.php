@@ -19,11 +19,7 @@ class Initializer {
     'version' => '1.0.0'
   )) {
     Env::init();
-    \ORM::configure(Env::$db_source_name);
-    \ORM::configure('username', Env::$db_username);
-    \ORM::configure('password', Env::$db_password);
-    define('MP_SUBSCRIBERS_TABLE', Env::$db_prefix . 'subscribers');
-    define('MP_SETTINGS_TABLE', Env::$db_prefix . 'settings');
+    $this->setup_db();
 
     $this->data = array();
     $this->version = $params['version'];
@@ -86,11 +82,18 @@ class Initializer {
 
     // admin menu
     add_action('admin_menu', array($this, 'admin_menu'));
-    add_action('admin_menu', array($this, 'admin_menu'));
 
     // ajax action
     add_action('wp_ajax_nopriv_mailpoet_ajax', array($this, 'mailpoet_ajax'));
     add_action('wp_ajax_mailpoet_ajax', array($this, 'mailpoet_ajax'));
+  }
+
+  function setup_db() {
+    \ORM::configure(Env::$db_source_name);
+    \ORM::configure('username', Env::$db_username);
+    \ORM::configure('password', Env::$db_password);
+    define('MP_SUBSCRIBERS_TABLE', Env::$db_prefix . 'subscribers');
+    define('MP_SETTINGS_TABLE', Env::$db_prefix . 'settings');
   }
 
   public function mailpoet_ajax() {
