@@ -80,8 +80,11 @@ class Initializer {
       0
     );
 
-    // admin menu
-    add_action('admin_menu', array($this, 'admin_menu'));
+    $menu = new Menu(
+      $this->renderer,
+      $this->assets_url
+    );
+    $menu->init();
 
     // ajax action
     add_action('wp_ajax_nopriv_mailpoet_ajax', array($this, 'mailpoet_ajax'));
@@ -137,10 +140,6 @@ class Initializer {
       }
     }
     wp_die();
-  }
-
-  public function dummy_test($data) {
-    return array_merge(array('user' => array('name' => 'Jo', 'age' => 31)), $data);
   }
 
   // public methods
@@ -218,108 +217,5 @@ class Initializer {
   public function install() {
     $migrator = new \MailPoet\Config\Migrator;
     $migrator->up();
-  }
-
-  public function admin_page() {
-    $this->data = array(
-      'text' => 'Lorem ipsum dolor sit amet',
-      'delete_messages_1' => 1,
-      'delete_messages_2' => 10,
-      'unsafe_string' => '<script>alert("not triggered");</script>',
-      'users' => array(
-        array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),
-        array('name' => 'Marco', 'email' => 'marco@mailpoet.com'),
-       )
-   );
-
-    echo $this->renderer->render('index.html', $this->data);
-  }
-
-  public function admin_page_form() {
-    $lists = array(
-      array('id' => 1, 'name' => 'My First List'),
-      array('id' => 2, 'name' => 'My Second List')
-    );
-
-    $this->data['form'] = array(
-      'form' => 1,
-      'form_name' => __("New form"),
-      'form_created_at' => time(),
-      'data' => array(
-        'settings' => array(
-          'on_success' => 'message',
-          'success_message' => __('Check your inbox or spam folder now to confirm your subscription.'),
-          'lists' => array(2),
-          'lists_selected_by' => 'admin'
-          ),
-        'body' => array(
-          array(
-            'name' => __('Email'),
-            'type' => 'input',
-            'field' => 'email',
-            'static' => true,
-            'params' => array(
-              'label' => __('Email'),
-              'required' => true
-            )
-          ),
-          array(
-            'name' => __('List selection'),
-            'type' => 'list',
-            'field' => 'list',
-            'params' => array(
-              'label' => __('Select list(s):'),
-              'values' => $lists
-            )
-          ),
-          array(
-            'name' => __('Submit'),
-            'type' => 'submit',
-            'field' => 'submit',
-            'static' => true,
-            'params' => array(
-              'label' => __('Subscribe!')
-            )
-          )
-        )
-      )
-    );
-
-    // form editor vars
-    $this->data = array_merge($this->data, array(
-      'date_formats' => \MailPoet\Form\Renderer::getDateFormats(),
-      'date_types' => \MailPoet\Form\Renderer::getDateTypes(),
-      'default_list' => $lists[0],
-      'selected_lists' => (!empty($this->data['form']['settings']['lists']))
-        ? $this->data['form']['settings']['lists']
-        : array($lists[0]),
-      'lists' => $lists,
-      'pages' => get_pages(),
-      'styles' => \MailPoet\Form\Renderer::getStyles(),
-      'exports' => \MailPoet\Form\Renderer::getExports($this->data['form'])
-    ));
-    echo $this->renderer->render('form/editor.html', $this->data);
-  }
-
-  public function admin_menu() {
-    // main menu
-    add_menu_page(
-      'MailPoet',
-      'MailPoet',
-      'manage_options',
-      'mailpoet-newsletters',
-      array($this, 'admin_page'),
-      $this->assets_url . '/img/menu_icon.png',
-      30
-   );
-
-    // forms
-    add_submenu_page('mailpoet-newsletters',
-      'Forms',
-      'Forms',
-      'manage_options',
-      'mailpoet-forms',
-      array($this, 'admin_page_form')
-   );
   }
 }
