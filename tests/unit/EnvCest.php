@@ -4,7 +4,7 @@ use \MailPoet\Config\Env;
 
 class EnvCest {
   function _before() {
-    Env::init();
+    Env::init('file', '1.0.0');
   }
 
   function itCanReturnThePluginPrefix() {

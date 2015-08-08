@@ -18,7 +18,7 @@ class Initializer {
     'file' => '',
     'version' => '1.0.0'
   )) {
-    Env::init();
+    Env::init($params['file'], $params['version']);
     $this->setup_db();
 
     $this->data = array();
