@@ -12,11 +12,8 @@ class Initializer {
     Env::init($params['file'], $params['version']);
     $this->setup_db();
 
-    // hook: plugin activation
-    register_activation_hook(
-      Env::$file,
-      array($this, 'activate')
-    );
+    $activator = new Activator();
+    $activator->init();
 
     // localization
     $this->setup_textdomain();
@@ -34,10 +31,6 @@ class Initializer {
       Env::$assets_url
     );
     $menu->init();
-
-    // ajax action
-    add_action('wp_ajax_nopriv_mailpoet_ajax', array($this, 'mailpoet_ajax'));
-    add_action('wp_ajax_mailpoet_ajax', array($this, 'mailpoet_ajax'));
   }
 
   function setup_db() {
@@ -46,49 +39,6 @@ class Initializer {
     \ORM::configure('password', Env::$db_password);
     define('MP_SUBSCRIBERS_TABLE', Env::$db_prefix . 'subscribers');
     define('MP_SETTINGS_TABLE', Env::$db_prefix . 'settings');
-  }
-
-  public function mailpoet_ajax() {
-    if(!current_user_can('manage_options')) {
-      echo json_encode(array('error' => "Access Denied"));
-    } else {
-      // routing
-      // $method = $_SERVER['REQUEST_METHOD'];
-      $controller = (isset($_GET[ 'mailpoet_controller']) ? $_GET[ 'mailpoet_controller'] : null);
-      $action = (isset($_GET[ 'mailpoet_action']) ? $_GET[ 'mailpoet_action'] : null);
-
-      try {
-        if($controller === null || $action === null) {
-          throw new \Exception('unrecognized route');
-        } else {
-          // set action based on data
-          $ajax_action = $controller.'_'.$action;
-
-          if(in_array($ajax_action, get_class_methods($this))) {
-            // retrieve HTTP method
-            $method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING);
-
-            // decode json data
-            if($method === 'GET') {
-              $data = array_diff_key($_GET, array(
-                'action' => null,
-                'mailpoet_controller' => null,
-                'mailpoet_action' => null
-              ));
-            } else {
-              $data = json_decode(file_get_contents('php://input'), true);
-            }
-            // return json encoded result of ajax action
-            echo json_encode(call_user_func_array(array($this, $ajax_action), array($data)));
-          } else {
-            throw new \Exception('method "' . $ajax_action . '" is undefined');
-          }
-        }
-      } catch(Exception $e) {
-        echo json_encode(array('error' => $e->getMessage()));
-      }
-    }
-    wp_die();
   }
 
   // public methods
@@ -161,10 +111,5 @@ class Initializer {
       false,
       dirname(plugin_basename(Env::$file)) . '/lang/'
    );
-  }
-
-  public function activate() {
-    $migrator = new \MailPoet\Config\Migrator;
-    $migrator->up();
   }
 }
