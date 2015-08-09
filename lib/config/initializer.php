@@ -1,19 +1,10 @@
 <?php
 namespace MailPoet\Config;
 use MailPoet\Models;
-use MailPoet\WP;
 
 if(!defined('ABSPATH')) exit;
 
 class Initializer {
-
-  public $version;
-  public $shortname;
-  public $file;
-  public $path;
-  public $assets_path;
-  public $assets_url;
-
   public function __construct($params = array(
     'file' => '',
     'version' => '1.0.0'
@@ -21,24 +12,10 @@ class Initializer {
     Env::init($params['file'], $params['version']);
     $this->setup_db();
 
-    $this->data = array();
-    $this->version = $params['version'];
-    $this->shortname = Env::$plugin_name;
-    $this->file = $params['file'];
-    $this->path =(dirname($this->file));
-    $this->views_path = $this->path . '/views';
-    $this->assets_path = $this->path . '/assets';
-    $this->languages_path = $this->path . '/lang';
-    $this->assets_url = plugins_url(
-      '/assets',
-      $this->file
-    );
-    $this->lib_path = $this->path .'/lib';
-
     // hook: plugin activation
     register_activation_hook(
-      $this->file,
-      array($this, 'install')
+      Env::$file,
+      array($this, 'activate')
     );
 
     // localization
@@ -54,7 +31,7 @@ class Initializer {
 
     $menu = new Menu(
       $this->renderer,
-      $this->assets_url
+      Env::$assets_url
     );
     $menu->init();
 
@@ -116,54 +93,54 @@ class Initializer {
 
   // public methods
   public function public_css() {
-    $name = $this->shortname . '-public';
+    $name = Env::$plugin_name . '-public';
 
     wp_register_style(
       $name,
-      $this->assets_url . '/css/public.css',
+      Env::$assets_url . '/css/public.css',
       array(),
-      $this->version
+      Env::$version
    );
     wp_enqueue_style($name);
   }
 
   public function public_js() {
-    $name = $this->shortname . '-public';
+    $name = En::$plugin_name . '-public';
     wp_register_script(
       $name,
-      $this->assets_url . '/js/public.js',
+      Env::$assets_url . '/js/public.js',
       array('jquery'),
-      $this->version
+      Env::$version
    );
     wp_enqueue_script($name);
   }
 
   public function admin_css($hook = '') {
-    $name = $this->shortname . '-admin';
+    $name = Env::$plugin_name . '-admin';
     wp_register_style(
       $name,
-      $this->assets_url . '/css/admin.css',
-      array(), $this->version
+      Env::$assets_url . '/css/admin.css',
+      array(), Env::$version
    );
     wp_enqueue_style($name);
   }
 
   public function admin_js($hook = '') {
-    $name = $this->shortname . '-admin';
+    $name = Env::$plugin_name . '-admin';
     wp_register_script(
-      $this->shortname . '-admin',
-      $this->assets_url . '/js/admin.js',
+      Env::$plugin_name . '-admin',
+      Env::$assets_url . '/js/admin.js',
       array('jquery'),
-      $this->version
+      Env::$version
    );
     wp_enqueue_script($name);
   }
 
   public function localize() {
     load_plugin_textdomain(
-      $this->shortname,
+      Env::$plugin_name,
       false,
-      dirname(plugin_basename($this->file)) . '/lang/'
+      dirname(plugin_basename(Env::$file)) . '/lang/'
    );
 
     // set rtl flag
@@ -174,19 +151,19 @@ class Initializer {
     $locale = apply_filters(
       'plugin_locale',
       get_locale(),
-      $this->shortname
+      Env::$plugin_name
    );
 
-    $language_path = $this->languages_path.'/'.$this->shortname.'-'.$locale.'.mo';
-    load_textdomain($this->shortname, $language_path);
+    $language_path = Env::$languages_path.'/'.Env::$plugin_name.'-'.$locale.'.mo';
+    load_textdomain(Env::$plugin_name, $language_path);
     load_plugin_textdomain(
-      $this->shortname,
+      Env::$plugin_name,
       false,
-      dirname(plugin_basename($this->file)) . '/lang/'
+      dirname(plugin_basename(Env::$file)) . '/lang/'
    );
   }
 
-  public function install() {
+  public function activate() {
     $migrator = new \MailPoet\Config\Migrator;
     $migrator->up();
   }
