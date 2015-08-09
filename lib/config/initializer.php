@@ -9,30 +9,49 @@ class Initializer {
     'file' => '',
     'version' => '1.0.0'
   )) {
-    Env::init($params['file'], $params['version']);
-    $this->setup_db();
+  Env::init($params['file'], $params['version']);
+  }
 
+  function init() {
+    $this->setupDB();
+    $this->setupActivator();
+    $this->setupRenderer();
+    $this->setupLocalizer();
+    $this->setupMenu();
+  }
+
+  function setupDB() {
+    \ORM::configure(Env::$db_source_name);
+    \ORM::configure('username', Env::$db_username);
+    \ORM::configure('password', Env::$db_password);
+
+    $subscribers = Env::$db_prefix . 'subscribers';
+    $settings = Env::$db_prefix . 'settings';
+
+    define('MP_SUBSCRIBERS_TABLE', $subscribers);
+    define('MP_SETTINGS_TABLE', $settings);
+  }
+
+  function setupActivator() {
     $activator = new Activator();
     $activator->init();
+  }
 
+  function setupRenderer() {
     $renderer = new Renderer();
     $this->renderer = $renderer->init();
+  }
 
+  function setupLocalizer() {
     $localizer = new Localizer($this->renderer);
     $localizer->init();
+  }
 
+  function setupMenu() {
     $menu = new Menu(
       $this->renderer,
       Env::$assets_url
     );
     $menu->init();
-  }
-
-  function setup_db() {
-    \ORM::configure(Env::$db_source_name);
-    \ORM::configure('username', Env::$db_username);
-    \ORM::configure('password', Env::$db_password);
-    define('MP_SUBSCRIBERS_TABLE', Env::$db_prefix . 'subscribers');
-    define('MP_SETTINGS_TABLE', Env::$db_prefix . 'settings');
   }
 }

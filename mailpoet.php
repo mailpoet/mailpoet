@@ -25,11 +25,8 @@ require 'vendor/autoload.php';
 
 define('MAILPOET_VERSION', '1.0.0');
 
-function mailpoet() {
-  return new Initializer(array(
+$initializer = new Initializer(array(
     'file' => __FILE__,
     'version' => MAILPOET_VERSION
   ));
-}
-
-mailpoet();
+$initializer->init();
