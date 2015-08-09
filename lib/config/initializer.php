@@ -15,16 +15,11 @@ class Initializer {
     $activator = new Activator();
     $activator->init();
 
-    // localization
-    $this->setup_textdomain();
-    add_action(
-      'init',
-      array($this, 'localize'),
-      0
-    );
-
     $renderer = new Renderer();
     $this->renderer = $renderer->init();
+
+    $localizer = new Localizer($this->renderer);
+    $localizer->init();
 
     $menu = new Menu(
       $this->renderer,
@@ -84,32 +79,5 @@ class Initializer {
       Env::$version
    );
     wp_enqueue_script($name);
-  }
-
-  public function localize() {
-    load_plugin_textdomain(
-      Env::$plugin_name,
-      false,
-      dirname(plugin_basename(Env::$file)) . '/lang/'
-   );
-
-    // set rtl flag
-    $this->renderer->addGlobal('is_rtl', is_rtl());
-  }
-
-  public function setup_textdomain() {
-    $locale = apply_filters(
-      'plugin_locale',
-      get_locale(),
-      Env::$plugin_name
-   );
-
-    $language_path = Env::$languages_path.'/'.Env::$plugin_name.'-'.$locale.'.mo';
-    load_textdomain(Env::$plugin_name, $language_path);
-    load_plugin_textdomain(
-      Env::$plugin_name,
-      false,
-      dirname(plugin_basename(Env::$file)) . '/lang/'
-   );
   }
 }
