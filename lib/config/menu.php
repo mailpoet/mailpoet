@@ -37,20 +37,12 @@ class Menu {
   }
 
   function home() {
-    $data = array(
-      'text' => 'Lorem ipsum dolor sit amet',
-      'delete_messages_1' => 1,
-      'delete_messages_2' => 10,
-      'unsafe_string' => '<script>alert("not triggered");</script>',
-      'users' => array(
-        array('name' => 'Joo', 'email' => 'jonathan@mailpoet.com'),
-        array('name' => 'Marco', 'email' => 'marco@mailpoet.com'),
-      )
-    );
+    $data = array();
     echo $this->renderer->render('index.html', $data);
   }
 
   function settings() {
-    echo 'test';
+    $data = array();
+    echo $this->renderer->render('settings.html', $data);
   }
 }
