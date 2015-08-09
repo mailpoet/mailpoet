@@ -35,49 +35,4 @@ class Initializer {
     define('MP_SUBSCRIBERS_TABLE', Env::$db_prefix . 'subscribers');
     define('MP_SETTINGS_TABLE', Env::$db_prefix . 'settings');
   }
-
-  // public methods
-  public function public_css() {
-    $name = Env::$plugin_name . '-public';
-
-    wp_register_style(
-      $name,
-      Env::$assets_url . '/css/public.css',
-      array(),
-      Env::$version
-   );
-    wp_enqueue_style($name);
-  }
-
-  public function public_js() {
-    $name = En::$plugin_name . '-public';
-    wp_register_script(
-      $name,
-      Env::$assets_url . '/js/public.js',
-      array('jquery'),
-      Env::$version
-   );
-    wp_enqueue_script($name);
-  }
-
-  public function admin_css($hook = '') {
-    $name = Env::$plugin_name . '-admin';
-    wp_register_style(
-      $name,
-      Env::$assets_url . '/css/admin.css',
-      array(), Env::$version
-   );
-    wp_enqueue_style($name);
-  }
-
-  public function admin_js($hook = '') {
-    $name = Env::$plugin_name . '-admin';
-    wp_register_script(
-      Env::$plugin_name . '-admin',
-      Env::$assets_url . '/js/admin.js',
-      array('jquery'),
-      Env::$version
-   );
-    wp_enqueue_script($name);
-  }
 }
