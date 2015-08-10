@@ -266,6 +266,16 @@ class Initializer {
           ),
         'body' => array(
           array(
+            'name' => __('Birthday'),
+            'type' => 'date',
+            'field' => 'birthday',
+            'params' => array(
+              'label' => __('Birthday'),
+              'required' => true,
+              'date_format' => 'yyyy/mm/dd'
+            )
+          ),
+          array(
             'name' => __('Email'),
             'type' => 'input',
             'field' => 'email',
@@ -299,8 +309,8 @@ class Initializer {
 
     // form editor vars
     $this->data = array_merge($this->data, array(
-      'date_formats' => \MailPoet\Form\Util\Date::getFormats(),
-      'date_types' => \MailPoet\Form\Util\Date::getTypes(),
+      'date_formats' => \MailPoet\Form\Block\Date::getDateFormats(),
+      'date_types' => \MailPoet\Form\Block\Date::getDateTypes(),
       'default_list' => $lists[0],
       'selected_lists' => (!empty($this->data['form']['settings']['lists']))
         ? $this->data['form']['settings']['lists']
@@ -308,7 +318,7 @@ class Initializer {
       'lists' => $lists,
       'pages' => get_pages(),
       'styles' => \MailPoet\Form\Renderer::getStyles($this->data['form']),
-      'exports' => \MailPoet\Form\Renderer::getExports($this->data['form'])
+      'exports' => \MailPoet\Form\Util\Export::getAll($this->data['form'])
     ));
     echo $this->renderer->render('form/editor.html', $this->data);
   }

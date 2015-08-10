@@ -1,8 +1,54 @@
 <?php
-namespace MailPoet\Form\Util;
+namespace MailPoet\Form\Block;
 
-class Date {
-  static function getTypes() {
+class Date extends Base {
+
+  static function render($block) {
+    $html = '';
+    $html .= '<p class="mailpoet_paragraph">';
+    $html .= static::renderLabel($block);
+    $html .= static::renderDateSelect($block);
+    $html .= '</p>';
+
+    return $html;
+  }
+
+  private static function renderDateSelect($block = array()) {
+    $html = '';
+
+    $date_formats = static::getDateFormats();
+
+    // automatically select first date format
+    $date_format = $date_formats[$block['params']['date_type']][0];
+
+    // set date format if specified
+    if(isset($block['params']['date_format']) && strlen(trim($block['params']['date_format'])) > 0) {
+      $date_format = $block['params']['date_format'];
+    }
+
+    // generate an array of selectors based on date format
+    $date_selectors = explode('/', $date_format);
+
+    foreach($date_selectors as $date_selector) {
+      if($date_selector === 'dd') {
+        $html .= '<select class="mailpoet_date_day" name="'.static::getFieldName($block).'[day]" placeholder="'.__('Day').'">';
+        $html .= static::getDays($block);
+        $html .= '</select>';
+      } else if($date_selector === 'mm') {
+        $html .= '<select class="mailpoet_date_month" name="'.static::getFieldName($block).'[month]" placeholder="'.__('Month').'">';
+        $html .= static::getMonths($block);
+        $html .= '</select>';
+      } else if($date_selector === 'yyyy') {
+        $html .= '<select class="mailpoet_date_year" name="'.static::getFieldName($block).'[year]" placeholder="'.__('Year').'">';
+        $html .= static::getYears($block);
+        $html .= '</select>';
+      }
+    }
+
+    return $html;
+  }
+
+  static function getDateTypes() {
     return array(
       'year_month_day' => __('Year, month, day'),
       'year_month' => __('Year, month'),
@@ -11,7 +57,7 @@ class Date {
     );
   }
 
-  static function getFormats() {
+  static function getDateFormats() {
     return array(
       'year_month_day' => array('mm/dd/yyyy', 'dd/mm/yyyy', 'yyyy/mm/dd'),
       'year_month' => array('mm/yyyy', 'yyyy/mm'),
@@ -20,24 +66,13 @@ class Date {
     );
   }
   static function getMonthNames() {
-    return array(
-      __('January'),
-      __('February'),
-      __('March'),
-      __('April'),
-      __('May'),
-      __('June'),
-      __('July'),
-      __('August'),
-      __('September'),
-      __('October'),
-      __('November'),
-      __('December')
+    return array(__('January'), __('February'), __('March'), __('April'),
+      __('May'), __('June'), __('July'), __('August'), __('September'),
+      __('October'), __('November'), __('December')
     );
   }
 
   static function getMonths($block = array()) {
-
     $defaults = array(
       'selected' => null
     );

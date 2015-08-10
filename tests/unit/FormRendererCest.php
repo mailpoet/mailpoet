@@ -52,10 +52,10 @@ class FormRendererCest {
   }
 
   public function itCanRenderExports() {
-    $exports = \MailPoet\Form\Renderer::getExports($this->form_data);
+    $exports = \MailPoet\Form\Util\Export::getAll($this->form_data);
     foreach($exports as $type => $export) {
       expect($export)
-        ->equals(\MailPoet\Form\Renderer::getExport($type, $this->form_data));
+        ->equals(\MailPoet\Form\Util\Export::get($type, $this->form_data));
     }
   }
 }

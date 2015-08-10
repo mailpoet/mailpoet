@@ -9,24 +9,20 @@ abstract class Base {
   protected static function getInputValidationRules($block) {
     $rules = array();
 
-    // if it's the email field, it's mandatory and needs to be valid
     if($block['field'] === 'email') {
       $rules[] = 'required';
       $rules[] = 'custom[email]';
     }
 
-    // if it's the list field, at least one option needs to be selected
     if($block['field'] === 'list') {
       $rules[] = 'required';
     }
 
-    // check if the field is required
     if(isset($block['params']['required'])
     && (bool)$block['params']['required'] === true) {
       $rules[] = 'required';
     }
 
-    // check for validation rules
     if(isset($block['params']['validate'])) {
       if(is_array($block['params']['validate'])) {
         // handle multiple validation rules
