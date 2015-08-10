@@ -17,7 +17,11 @@
 - Do not commit to master.
 - Open a short-living feature branch.
 - Open a pull request.
+- Add close #issue in pull request description.
+- Work on the pull request.
 - Wait for confirmation before merging to master.
+- Commit title no more than 80 chars, empty line after.
+- Commit description as long as you want, 80 chars wrap.
 - Keep the GitHub open issues count at less than 10.
 - Discuss development on public Slack chats.
 - Organize features on Trello.
