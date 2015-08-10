@@ -22,4 +22,3 @@
 - Discuss development on public Slack chats.
 - Organize features on Trello.
 - Open a small github issue only when it has been discussed.
-- GitHub is not a place for features discussion.
