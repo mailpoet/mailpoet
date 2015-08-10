@@ -9,6 +9,7 @@ Not another MP2 a.k.a MP3 done the right way.
 php
 nodejs
 phantomjs
+wordpress
 ```
 
 - Clone the repo in `wp-content/plugins`.
@@ -107,10 +108,10 @@ If you specify an `alias`, you will be able to reference it using `{{> alias }}`
 <% block templates %>
   <!-- include a .hbs template -->
   <%= partial('my_template_1', 'form/templates/toolbar/fields.hbs') %>
-  
+
   <!-- include a .hbs template and register it as a partial -->
   <%= partial('my_template_2', 'form/templates/blocks.hbs', '_my_partial') %>
-  
+
   <!-- custom partial using partial defined above -->
   <script id="my_template_3" type="text/x-handlebars-template">
     {{> _my_partial }}
