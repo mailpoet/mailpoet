@@ -95,14 +95,6 @@ $ ln -s node_modules/handlebars/dist/handlebars.min.js assets/js/lib/handlebars.
 
 ## Handlebars (`views/*.hbs`)
 
-In order to include Handlebars templates (`views/*.hbs`) in your view (`views/*.html`).
-
-You can either use the `partial(id, file, alias = null)` function or create your own custom template.
-
-Templates included using `partial(id,...)` can be accessed via `jQuery('#'+id).html()`.
-
-If you specify an `alias`, you will be able to reference it using `{{> alias }}` in any Handlebars template.
-
 ```html
 <!-- use the `templates` block -->
 <% block templates %>
