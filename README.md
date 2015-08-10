@@ -90,7 +90,7 @@ $ ./do install
 
 - Symlink the dependency:
 ```sh
-$ ln -s ../../../node_modules/handlebars/dist/handlebars.min.js assets/js/lib/handlebars.min.js
+$ ln -s node_modules/handlebars/dist/handlebars.min.js assets/js/lib/handlebars.min.js
 ```
 
 ## Handlebars (`views/*.hbs`)
