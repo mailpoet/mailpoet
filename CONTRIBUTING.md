@@ -24,6 +24,6 @@
 - Commit title no more than 80 chars, empty line after.
 - Commit description as long as you want, 80 chars wrap.
 - Keep the GitHub open issues count at less than 10.
-- Discuss development on public Slack chats.
+- Discuss issues on public Slack chats, discuss code in pull requests.
 - Organize features on Trello.
 - Open a small github issue only when it has been discussed.
