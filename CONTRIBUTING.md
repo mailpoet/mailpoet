@@ -1,5 +1,4 @@
 # Contributing
-## Coding guidelines
 
 - Two spaces indentation.
 - CamelCase for classes.
