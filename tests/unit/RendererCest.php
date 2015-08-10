@@ -1,5 +1,4 @@
 <?php
-use \UnitTester;
 use \MailPoet\Config\Renderer;
 
 class RendererCest {

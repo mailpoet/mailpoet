@@ -1,5 +1,4 @@
 <?php
-use \AcceptanceTester;
 
 class ActivationCest {
 
