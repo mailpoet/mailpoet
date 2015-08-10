@@ -18,3 +18,8 @@
 - Open a short-living feature branch.
 - Open a pull request.
 - Wait for confirmation before merging to master.
+- Keep the GitHub open issues count at less than 10.
+- Discuss development on public Slack chats.
+- Organize features on Trello.
+- Open a small github issue only when it has been discussed.
+- GitHub is not a place for features discussion.
