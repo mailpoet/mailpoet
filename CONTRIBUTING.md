@@ -20,6 +20,7 @@
 - Add close #issue in pull request description.
 - Work on the pull request.
 - Wait for confirmation before merging to master.
+- No one will accept a pull request if it doesn't have 100% test coverage.
 - Commit title no more than 80 chars, empty line after.
 - Commit description as long as you want, 80 chars wrap.
 - Keep the GitHub open issues count at less than 10.
