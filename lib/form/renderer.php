@@ -1,5 +1,7 @@
 <?php
 namespace MailPoet\Form;
+use MailPoet\Form\Block;
+use MailPoet\Form\Util;
 
 if(!defined('ABSPATH')) exit;
 
@@ -36,88 +38,12 @@ class Renderer {
   }
 
   public static function getStyles($form = array()) {
-
-    $default = <<<EOL
-/* form */
-.mailpoet_form {
-
-}
-
-/* paragraphs (label + input) */
-.mailpoet_paragraph {
-
-}
-
-/* labels */
-.mailpoet_input_label,
-.mailpoet_textarea_label,
-.mailpoet_select_label,
-.mailpoet_radio_label,
-.mailpoet_list_label,
-.mailpoet_checkbox_label,
-.mailpoet_date_label {
-  display:block;
-}
-
-/* inputs */
-.mailpoet_input,
-.mailpoet_textarea,
-.mailpoet_select,
-.mailpoet_radio,
-.mailpoet_checkbox,
-.mailpoet_date {
-  display:block;
-}
-
-.mailpoet_validate_success {
-  color:#468847;
-}
-
-.mailpoet_validate_error {
-  color:#B94A48;
-}
-EOL;
-
-    if(isset($form['data']['styles']) && strlen(trim($form['data']['styles'])) > 0) {
+    if(isset($form['data']['styles'])
+    && strlen(trim($form['data']['styles'])) > 0) {
       return strip_tags($form['data']['styles']);
     } else {
-      return $default;
+      return Util\Styles::getDefaults();
     }
-  }
-
-    // public: date related methods
-  public static function getDateTypes() {
-    return array(
-      'year_month_day' => __('Year, month, day'),
-      'year_month' => __('Year, month'),
-      'month' => __('Month (January, February,...)'),
-      'year' => __('Year')
-    );
-  }
-
-  public static function getDateFormats() {
-    return array(
-      'year_month_day' => array('mm/dd/yyyy', 'dd/mm/yyyy', 'yyyy/mm/dd'),
-      'year_month' => array('mm/yyyy', 'yyyy/mm'),
-      'year' => array('yyyy'),
-      'month' => array('mm')
-    );
-  }
-  public static function getMonthNames() {
-    return array(
-      __('January'),
-      __('February'),
-      __('March'),
-      __('April'),
-      __('May'),
-      __('June'),
-      __('July'),
-      __('August'),
-      __('September'),
-      __('October'),
-      __('November'),
-      __('December')
-    );
   }
 
   // private: rendering methods
@@ -133,61 +59,24 @@ EOL;
   }
 
   private static function renderBlock($block = array()) {
-          // get field name
-    $field_name = static::getFieldName($block);
-
-          // set label
-    $field_label = (isset($block['params']['label'])) ? $block['params']['label'] : '';
-
     $html = '';
 
           // render block template depending on its type
     switch ($block['type']) {
       case 'html':
-        if(isset($block['params']['text']) && $block['params']['text']) {
-          $text = html_entity_decode($block['params']['text'], ENT_QUOTES);
-        }
-        if(isset($block['params']['nl2br']) && $block['params']['nl2br']) {
-          $text = nl2br($text);
-        }
-        $html .= '<p class="mailpoet_paragraph">';
-        $html .= $text;
-        $html .= '</p>';
+        $html .= Block\HTML::render($block);
       break;
 
       case 'divider':
-        $html .= '<hr class="mailpoet_divider" />';
+        $html .= Block\Divider::render();
       break;
 
       case 'checkbox':
+        $html .= Block\Checkbox::render($block);
+      break;
+
       case 'radio':
-        // BEGIN: container
-        $html .= '<p class="mailpoet_paragraph">';
-
-        // render label
-        $html .= static::renderLabel($block);
-
-        // create hidden default value
-        // $html .= '<input type="hidden" name="'.$field_name.'" value="0" '.static::getInputValidation($block).'/>';
-
-        // display values
-        foreach($block['params']['values'] as $value) {
-          $is_checked = (isset($value['is_checked']) && $value['is_checked']) ? 'checked="checked"' : '';
-
-          if($block['type'] === 'radio') {
-            $html .= '<label class="mailpoet_radio_label">';
-            $html .= '<input type="radio" class="mailpoet_radio" name="'.$field_name.'" value="'.$value['value'].'" '.$is_checked;
-          } else {
-            $html .= '<label class="mailpoet_checkbox_label">';
-            $html .= '<input type="checkbox" class="mailpoet_checkbox" name="'.$field_name.'" value="1" '.$is_checked;
-          }
-          $html .= static::getInputValidation($block);
-          $html .= ' />'.$value['value'];
-          $html .= '</label>';
-        }
-
-        // END: container
-        $html .= '</p>';
+        $html .= Block\Radio::render($block);
       break;
 
       case 'list':
@@ -254,25 +143,7 @@ EOL;
       break;
 
       case 'input':
-        // BEGIN: container
-        $html .= '<p class="mailpoet_paragraph">';
-
-        // render label
-        $html .= static::renderLabel($block);
-
-        $html .= '<input type="text" class="mailpoet_input" name="'.$field_name.'" title="'.$field_label.'" ';
-        if(isset($block['params']['value'])) {
-          $html .= 'value="'.$block['params']['value'].'"';
-        }
-
-        // set placeholder if label has to be displayed within the input
-        $html .= static::renderInputPlaceholder($block);
-        // get input validation
-        $html .= static::getInputValidation($block);
-        $html .= '/>';
-
-        // END: container
-        $html .= '</p>';
+        $html .= Block\Input::render($block);
       break;
 
       case 'textarea':
@@ -294,192 +165,12 @@ EOL;
       break;
 
       case 'submit':
-        $html .= '<input class="mailpoet_submit" type="submit" value="'.$field_label.'" />';
+        $html .= Block\Submit::render($block);
       break;
 
       default:
         $html .= $block['type'];
       break;
-    }
-
-    return $html;
-  }
-
-  private static function getInputValidation($block) {
-    return 'data-validation-engine="'.static::getInputValidationRules($block).'"';
-  }
-
-  private static function getInputValidationRules($block) {
-    $rules = array();
-
-    // if it's the email field, it's mandatory and needs to be valid
-    if($block['field'] === 'email') {
-      $rules[] = 'required';
-      $rules[] = 'custom[email]';
-    }
-
-    // if it's the list field, at least one option needs to be selected
-    if($block['field'] === 'list') {
-      $rules[] = 'required';
-    }
-
-    // check if the field is required
-    if(isset($block['params']['required']) && (bool)$block['params']['required'] === true) {
-      $rules[] = 'required';
-    }
-
-    // check for validation rules
-    if(isset($block['params']['validate'])) {
-      if(is_array($block['params']['validate'])) {
-        // handle multiple validation rules
-        foreach($block['params']['validate'] as $rule) {
-          $rules[] = 'custom['.$rule.']';
-        }
-      } else if(strlen(trim($block['params']['validate'])) > 0) {
-        // handle single validation rule
-        $rules[] = 'custom['.$block['params']['validate'].']';
-      }
-    }
-
-    // generate string if there is at least one rule to validate against
-    if(empty($rules)) {
-      return '';
-    } else {
-      // make sure rules are not duplicated
-      $rules = array_unique($rules);
-      return 'validate['.join(',', $rules).']';
-    }
-  }
-
-
-  private static function renderLabel($block) {
-    $html = '';
-          // if the label is displayed as a placeholder, we don't display a label outside
-    if(isset($block['params']['label_within']) && $block['params']['label_within']) {
-      return $html;
-    }
-    if(isset($block['params']['label']) && strlen(trim($block['params']['label'])) > 0) {
-      $html .= '<label class="mailpoet_'.$block['type'].'_label">'.$block['params']['label'];
-
-      if(isset($block['params']['required']) && $block['params']['required']) {
-        $html .= ' <span class="mailpoet_required">*</span>';
-      }
-
-      $html .= '</label>';
-    }
-    return $html;
-  }
-
-  private static function renderInputPlaceholder($block) {
-    $html = '';
-    // if the label is displayed as a placeholder,
-    if(isset($block['params']['label_within']) && $block['params']['label_within']) {
-      // display only label
-      if(isset($block['params']['label']) && strlen(trim($block['params']['label'])) > 0) {
-        $html .= ' placeholder="';
-        $html .= $block['params']['label'];
-        // add an asterisk if it's a required field
-        if(isset($block['params']['required']) && $block['params']['required']) {
-          $html .= ' *';
-        }
-        $html .= '" ';
-      }
-    }
-    return $html;
-  }
-
-  // return field name depending on block data
-  private static function getFieldName($block = array()) {
-    return $block['field'];
-  }
-
-  // render block wrapper's header
-  private static function renderBlockHeader() {
-    $html = '';
-
-    $html .= '<p class="mailpoet_paragraph">';
-
-    return $html;
-  }
-
-  // render block wrapper's footer
-  private static function renderBlockFooter() {
-    $html = '';
-    // END: container
-    $html .= '</p>';
-
-    return $html;
-  }
-
-  // css inlining
-  private static function getMonths($block = array()) {
-
-    $defaults = array(
-      'selected' => null
-    );
-
-    // is default today
-    if(isset($block['params']['is_default_today']) && (bool)$block['params']['is_default_today'] === true) {
-      $defaults['selected'] = (int)strftime('%m');
-    }
-
-    // merge block with defaults
-    $block = array_merge($defaults, $block);
-
-    $month_names = static::getMonthNames();
-
-    $html = '';
-    for($i = 1; $i < 13; $i++) {
-      $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
-      $html .= '<option value="'.$i.'" '.$is_selected.'>'.$month_names[$i - 1].'</option>';
-    }
-
-    return $html;
-  }
-
-  private static function getYears($block = array()) {
-    $defaults = array(
-      'selected' => null,
-      'from' => (int)strftime('%Y') - 100,
-      'to' => (int)strftime('%Y')
-    );
-    // is default today
-    if(isset($block['params']['is_default_today']) && (bool)$block['params']['is_default_today'] === true) {
-      $defaults['selected'] = (int)strftime('%Y');
-    }
-
-    // merge block with defaults
-    $block = array_merge($defaults, $block);
-
-    $html = '';
-
-    // return years as an array
-    for($i = (int)$block['to']; $i > (int)($block['from'] - 1); $i--) {
-      $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
-      $html .= '<option value="'.$i.'" '.$is_selected.'>'.$i.'</option>';
-    }
-
-    return $html;
-  }
-
-  private static function getDays($block = array()) {
-    $defaults = array(
-      'selected' => null
-    );
-    // is default today
-    if(isset($block['params']['is_default_today']) && (bool)$block['params']['is_default_today'] === true) {
-      $defaults['selected'] = (int)strftime('%d');
-    }
-
-    // merge block with defaults
-    $block = array_merge($defaults, $block);
-
-    $html = '';
-
-    // return days as an array
-    for($i = 1; $i < 32; $i++) {
-      $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
-      $html .= '<option value="'.$i.'" '.$is_selected.'>'.$i.'</option>';
     }
 
     return $html;

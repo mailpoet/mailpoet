@@ -299,15 +299,15 @@ class Initializer {
 
     // form editor vars
     $this->data = array_merge($this->data, array(
-      'date_formats' => \MailPoet\Form\Renderer::getDateFormats(),
-      'date_types' => \MailPoet\Form\Renderer::getDateTypes(),
+      'date_formats' => \MailPoet\Form\Util\Date::getFormats(),
+      'date_types' => \MailPoet\Form\Util\Date::getTypes(),
       'default_list' => $lists[0],
       'selected_lists' => (!empty($this->data['form']['settings']['lists']))
         ? $this->data['form']['settings']['lists']
         : array($lists[0]),
       'lists' => $lists,
       'pages' => get_pages(),
-      'styles' => \MailPoet\Form\Renderer::getStyles(),
+      'styles' => \MailPoet\Form\Renderer::getStyles($this->data['form']),
       'exports' => \MailPoet\Form\Renderer::getExports($this->data['form'])
     ));
     echo $this->renderer->render('form/editor.html', $this->data);
