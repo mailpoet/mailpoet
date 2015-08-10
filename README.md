@@ -57,10 +57,10 @@ $ ./do test:all
 $ ./do test:debug
 ```
 
-# Assets.
-## CSS
-We are using [Stylus](https://learnboost.github.io/stylus/) (with the [Nib extension](http://tj.github.io/nib/)) as our CSS preprocessor.
-### Structure
+# CSS
+- [Stylus](https://learnboost.github.io/stylus/)
+- [Nib extension](http://tj.github.io/nib/)
+
 ```sh
 assets/css/lib -> link your dependencies here
 assets/css/src -> place your *.styl files here
@@ -71,7 +71,7 @@ assets/css/src -> place your *.styl files here
 $ ./do watch
 ```
 
-## JS
+# JS
 
 Dependency example:
 
