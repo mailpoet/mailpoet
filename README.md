@@ -1,6 +1,6 @@
-# namp2
+# MailPoet.
 
-Not another MP2 a.k.a MP3 done the right way.
+MailPoet done the right way.
 
 # Install.
 
