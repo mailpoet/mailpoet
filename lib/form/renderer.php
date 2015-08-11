@@ -53,7 +53,7 @@ class Renderer {
     $html = '';
     switch ($block['type']) {
       case 'html':
-        $html .= Block\HTML::render($block);
+        $html .= Block\Html::render($block);
       break;
 
       case 'divider':

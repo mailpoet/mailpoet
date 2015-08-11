@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Form\Block;
 
-class HTML {
+class Html {
 
   static function render($block) {
     $html = '';

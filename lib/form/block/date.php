@@ -16,13 +16,17 @@ class Date extends Base {
   private static function renderDateSelect($block = array()) {
     $html = '';
 
+    $field_name = static::getFieldName($block);
+    $field_validation = static::getInputValidation($block);
+
     $date_formats = static::getDateFormats();
 
     // automatically select first date format
     $date_format = $date_formats[$block['params']['date_type']][0];
 
     // set date format if specified
-    if(isset($block['params']['date_format']) && strlen(trim($block['params']['date_format'])) > 0) {
+    if(isset($block['params']['date_format'])
+    && strlen(trim($block['params']['date_format'])) > 0) {
       $date_format = $block['params']['date_format'];
     }
 
@@ -31,15 +35,18 @@ class Date extends Base {
 
     foreach($date_selectors as $date_selector) {
       if($date_selector === 'dd') {
-        $html .= '<select class="mailpoet_date_day" name="'.static::getFieldName($block).'[day]" placeholder="'.__('Day').'">';
+        $html .= '<select class="mailpoet_date_day" ';
+        $html .= 'name="'.$field_name.'[day]" placeholder="'.__('Day').'">';
         $html .= static::getDays($block);
         $html .= '</select>';
       } else if($date_selector === 'mm') {
-        $html .= '<select class="mailpoet_date_month" name="'.static::getFieldName($block).'[month]" placeholder="'.__('Month').'">';
+        $html .= '<select class="mailpoet_date_month" ';
+        $html .= 'name="'.$field_name.'[month]" placeholder="'.__('Month').'">';
         $html .= static::getMonths($block);
         $html .= '</select>';
       } else if($date_selector === 'yyyy') {
-        $html .= '<select class="mailpoet_date_year" name="'.static::getFieldName($block).'[year]" placeholder="'.__('Year').'">';
+        $html .= '<select class="mailpoet_date_year" ';
+        $html .= 'name="'.$field_name.'[year]" placeholder="'.__('Year').'">';
         $html .= static::getYears($block);
         $html .= '</select>';
       }
@@ -78,7 +85,8 @@ class Date extends Base {
     );
 
     // is default today
-    if(isset($block['params']['is_default_today']) && (bool)$block['params']['is_default_today'] === true) {
+    if(isset($block['params']['is_default_today'])
+    && (bool)$block['params']['is_default_today'] === true) {
       $defaults['selected'] = (int)strftime('%m');
     }
 
@@ -90,7 +98,9 @@ class Date extends Base {
     $html = '';
     for($i = 1; $i < 13; $i++) {
       $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
-      $html .= '<option value="'.$i.'" '.$is_selected.'>'.$month_names[$i - 1].'</option>';
+      $html .= '<option value="'.$i.'" '.$is_selected.'>';
+      $html .= $month_names[$i - 1];
+      $html .= '</option>';
     }
 
     return $html;
@@ -103,7 +113,8 @@ class Date extends Base {
       'to' => (int)strftime('%Y')
     );
     // is default today
-    if(isset($block['params']['is_default_today']) && (bool)$block['params']['is_default_today'] === true) {
+    if(isset($block['params']['is_default_today'])
+    && (bool)$block['params']['is_default_today'] === true) {
       $defaults['selected'] = (int)strftime('%Y');
     }
 
@@ -126,7 +137,8 @@ class Date extends Base {
       'selected' => null
     );
     // is default today
-    if(isset($block['params']['is_default_today']) && (bool)$block['params']['is_default_today'] === true) {
+    if(isset($block['params']['is_default_today'])
+    && (bool)$block['params']['is_default_today'] === true) {
       $defaults['selected'] = (int)strftime('%d');
     }
 

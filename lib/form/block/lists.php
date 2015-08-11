@@ -6,6 +6,9 @@ class Lists extends Base {
   static function render($block) {
     $html = '';
 
+    $field_name = static::getFieldName($block);
+    $field_validation = static::getInputValidation($block);
+
     $html .= '<p class="mailpoet_paragraph">';
 
     $html .= static::renderLabel($block);
@@ -21,7 +24,7 @@ class Lists extends Base {
         $html .= '<input type="checkbox" class="mailpoet_checkbox" ';
         $html .= 'name="'.$field_name.'" ';
         $html .= 'value="'.$list['id'].'" '.$is_checked;
-        $html .= static::getInputValidation($block);
+        $html .= $field_validation;
         $html .= ' />'.$list['name'];
         $html .= '</label>';
       }
