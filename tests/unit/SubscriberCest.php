@@ -9,6 +9,11 @@ class SubscriberCest {
         'last_name' => 'Mailer',
         'email' => 'john@mailpoet.com'
       );
+      $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+      if ($subscriber) {
+        $this->subscriber = $subscriber;
+        return;
+      }
 
       $this->subscriber = Subscriber::create();
 
@@ -62,7 +67,29 @@ class SubscriberCest {
       expect($conflicted)->equals(true);
     }
 
+    function onUpdateWorks () {
+      $to_update = Subscriber::where('email', 'hello@world')->findOne();
+      if ($to_update === NULL) {
+        $created = Subscriber::create();
+        $created->first_name = 'Hello';
+        $created->last_name = 'World';
+        $created->email = 'hello@world';
+        $beforeCreate = time();
+        $created->save();
+        $to_update = Subscriber::where('email', 'hello@world')->findOne();
+        //expect(is_string($to_update->created_at))->equals(true);
+        //expect(strtotime($to_update->created_at) >= $beforeCreate)->equals(true);
+      }
+      $to_update->last_name = 'World!';
+      $beforeUpdate = time();
+      $to_update->save();
+      $updated = Subscriber::where('email', 'hello@world')->findOne();
+      //expect(is_string($updated->updated_at))->equals(true);
+      expect(strtotime($updated->updated_at) >= $beforeUpdate)->equals(true);
+    }
+
     function _after() {
       $subscriber = Subscriber::where('email', $this->data['email'])->findOne()->delete();
     }
+
 }
