@@ -1,5 +1,6 @@
 # Contributing
 
+## Code.
 - Two spaces indentation.
 - CamelCase for classes.
 - camelCase for methods & variables.
@@ -13,16 +14,20 @@
 - Require other classes with 'use' at the beginning of the class file.
 - Do not specify 'public' if method is public, it's implicit.
 - Always use guard clauses.
+
+## Git flow.
 - Do not commit to master.
 - Open a short-living feature branch.
 - Open a pull request.
 - Add close #issue in pull request description.
 - Work on the pull request.
 - Wait for confirmation before merging to master.
-- No one will accept a pull request if it doesn't have 100% test coverage.
+- No one will accept a pull request that doesn't have 100% test coverage.
 - Commit title no more than 80 chars, empty line after.
 - Commit description as long as you want, 80 chars wrap.
 - Keep the GitHub open issues count at less than 10.
+
+## Issues creation.
 - Discuss issues on public Slack chats, discuss code in pull requests.
 - Organize features on Trello.
 - Open a small github issue only when it has been discussed.
