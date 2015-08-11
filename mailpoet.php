@@ -24,6 +24,7 @@ if (!defined('ABSPATH')) exit;
 require 'vendor/autoload.php';
 
 define('MAILPOET_VERSION', '1.0.0');
+define('MAILPOET', 'wysija-newsletters');
 
 $initializer = new Initializer(array(
     'file' => __FILE__,

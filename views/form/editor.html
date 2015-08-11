@@ -333,7 +333,7 @@
       $(function() {
 
         // load form
-        WysijaForm.load(<%= form | json_encode | raw %>);
+        MailPoetForm.load(<%= form | json_encode | raw %>);
 
         // save form
         $('#mailpoet_form_save').on('click', function() {
@@ -368,7 +368,7 @@
           }
           /*mailpoet_post_json('form_save.php', {
             form: <%= form.form %>,
-            data: WysijaForm.save()
+            data: MailPoetForm.save()
           }, function(response) {
             if(response.result === false) {
               var error = null;
@@ -446,7 +446,7 @@
             template: $('#form_template_field_new').html(),
             onSuccess: function(data) {
               // toggle widgets
-              WysijaForm.toggleWidgets();
+              MailPoetForm.toggleWidgets();
             }
           });
 
@@ -468,12 +468,12 @@
                 var block_id = $('.mailpoet_form_block[wysija_field="'+field+'"]');
                 if(block_id.length > 0) {
                   // redraw block
-                  WysijaForm.get(block_id[0]).block.redraw(data);
+                  MailPoetForm.get(block_id[0]).block.redraw(data);
                   // save form
                   mailpoet_form_save();
                 }
                 // toggle widgets
-                WysijaForm.toggleWidgets();
+                MailPoetForm.toggleWidgets();
               });*/
             }
           });
@@ -498,7 +498,7 @@
               // remove any instance of the field present in the form
               var blocks = $$('#mailpoet_form_body .mailpoet_form_block[wysija_field="'+field+'"]');
               if(blocks.length > 0) {
-                var block = WysijaForm.get(blocks[0]);
+                var block = MailPoetForm.get(blocks[0]);
                 block.removeBlock();
               }
             });*/
@@ -511,7 +511,7 @@
           WysijaHistory.dequeue();
 
           // init wysija form
-          WysijaForm.init();
+          MailPoetForm.init();
           return false;
         });
 
@@ -557,9 +557,9 @@
   <%= partial('form_template_textarea', 'form/templates/blocks/textarea.hbs') %>
   <%= partial('form_template_html', 'form/templates/blocks/html.hbs') %>
   <%= partial('form_template_date', 'form/templates/blocks/date.hbs') %>
-  <%= partial('form_template_date_years', 'form/templates/blocks/date_years.hbs') %>
-  <%= partial('form_template_date_months', 'form/templates/blocks/date_months.hbs') %>
-  <%= partial('form_template_date_days', 'form/templates/blocks/date_days.hbs') %>
+  <%= partial('form_template_date_years', 'form/templates/blocks/date_years.hbs', '_settings_date_years') %>
+  <%= partial('form_template_date_months', 'form/templates/blocks/date_months.hbs', '_settings_date_months') %>
+  <%= partial('form_template_date_days', 'form/templates/blocks/date_days.hbs', '_settings_date_days') %>
 
   <!-- field settings -->
   <%= partial('form_template_field_settings', 'form/templates/settings/field.hbs') %>
@@ -573,8 +573,8 @@
   <%= partial('field_settings_submit', 'form/templates/settings/submit.hbs', '_settings_submit') %>
 
   <%= partial('field_settings_values_item', 'form/templates/settings/values_item.hbs') %>
-  <%= partial('field_settings_date_formats', 'form/templates/settings/date_formats.hbs') %>
-  <%= partial('field_settings_date_type', 'form/templates/settings/date_types.hbs') %>
+  <%= partial('field_settings_date_formats', 'form/templates/settings/date_formats.hbs', '_settings_date_formats') %>
+  <%= partial('field_settings_date_types', 'form/templates/settings/date_types.hbs', '_settings_date_types') %>
   <%= partial('field_settings_list_selection_item', 'form/templates/settings/list_selection_item.hbs') %>
   <%= partial('field_settings_list_selection', 'form/templates/settings/list_selection.hbs', '_settings_list_selection') %>
 
@@ -612,6 +612,6 @@
 
   <script id="form_template_field_date" type="text/x-handlebars-template">
     {{> _settings_required }}
-    {{> _settings_date_type }}
+    {{> _settings_date_types }}
   </script>
 <% endblock %>

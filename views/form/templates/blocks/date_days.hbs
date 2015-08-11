@@ -4,7 +4,7 @@
   <% for day in 1..31 %>
     <option
       {{#if params.is_default_today}}
-        {{#ifCond day "==" "<%= currentDay %>"}}selected="selected"{{/ifCond}}
+        {{#ifCond "<%= day %>" "==" "<%= currentDay %>"}}selected="selected"{{/ifCond}}
       {{/if}}><%= day %></option>
   <% endfor %>
 </select>

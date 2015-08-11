@@ -155,7 +155,7 @@ Object.extend(Droppables, {
         if(!this.drops.length) return;
 
         // hide controls when displaying drop areas.
-        WysijaForm.hideBlockControls();
+        MailPoetForm.hideBlockControls();
 
         this.drops.each(function (drop, iterator) {
             if(drop.element.hasClassName('block_placeholder')) {
@@ -215,7 +215,7 @@ var WysijaHistory = {
 
         if(block !== undefined) {
             // insert block back into the editor
-            $(WysijaForm.options.body).insert({top: block});
+            $(MailPoetForm.options.body).insert({top: block});
         }
     },
     clear: function() {
@@ -227,7 +227,7 @@ var WysijaHistory = {
 };
 
 /* MailPoet Form */
-var WysijaForm = {
+var MailPoetForm = {
     version: '0.6',
     options: {
         container: 'mailpoet_form_container',
@@ -266,17 +266,17 @@ var WysijaForm = {
     },
     loading: function(is_loading) {
         if(is_loading) {
-            $(WysijaForm.options.editor).addClassName('loading');
-            $(WysijaForm.options.toolbar).addClassName('loading');
+            $(MailPoetForm.options.editor).addClassName('loading');
+            $(MailPoetForm.options.toolbar).addClassName('loading');
         } else {
-            $(WysijaForm.options.editor).removeClassName('loading');
-            $(WysijaForm.options.toolbar).removeClassName('loading');
+            $(MailPoetForm.options.editor).removeClassName('loading');
+            $(MailPoetForm.options.toolbar).removeClassName('loading');
         }
     },
     loadStatic: function(blocks) {
         $A(blocks).each(function(block) {
             // create block
-            WysijaForm.Block.create(block, $('block_placeholder'));
+            MailPoetForm.Block.create(block, $('block_placeholder'));
         });
     },
     load: function(form) {
@@ -286,7 +286,7 @@ var WysijaForm = {
         if(form.data.body !== undefined) {
             $A(form.data.body).each(function(block) {
                 // create block
-                WysijaForm.Block.create(block, $('block_placeholder'));
+                MailPoetForm.Block.create(block, $('block_placeholder'));
             });
 
             // load settings
@@ -303,7 +303,7 @@ var WysijaForm = {
                     }
                 } else if(form.data.settings[setting.name] !== undefined) {
                     if(typeof form.data.settings[setting.name] === 'string') {
-                        setting.setValue(WysijaForm.decodeHtmlValue(form.data.settings[setting.name]));
+                        setting.setValue(MailPoetForm.decodeHtmlValue(form.data.settings[setting.name]));
                     } else {
                         setting.setValue(form.data.settings[setting.name]);
                     }
@@ -314,13 +314,13 @@ var WysijaForm = {
     save: function() {
         var position = 1,
             data = {
-            'version': WysijaForm.version,
+            'version': MailPoetForm.version,
             'settings': $('mailpoet_form_settings').serialize(true),
             'body': [],
             'styles': (MailPoet.CodeEditor !== undefined) ? MailPoet.CodeEditor.getValue() : null
         };
         // body
-        WysijaForm.getBlocks().each(function(b) {
+        MailPoetForm.getBlocks().each(function(b) {
             var block_data = (typeof(b.block['save']) === 'function') ? b.block.save() : null;
 
             if(block_data !== null) {
@@ -340,35 +340,35 @@ var WysijaForm = {
     init: function() {
         // set document scroll
         info('init -> set scroll offsets');
-        WysijaForm.setScrollOffsets();
+        MailPoetForm.setScrollOffsets();
 
         // position toolbar
         info('init -> set toolbar position');
-        WysijaForm.setToolbarPosition();
+        MailPoetForm.setToolbarPosition();
 
         // enable droppable targets
         info('init -> make droppable');
-        WysijaForm.makeDroppable();
+        MailPoetForm.makeDroppable();
 
         // enable sortable
         info('init -> make sortable');
-        WysijaForm.makeSortable();
+        MailPoetForm.makeSortable();
 
         // hide controls
         info('init -> hide controls');
-        WysijaForm.hideControls();
+        MailPoetForm.hideControls();
 
         // hide settings
         info('init -> hide settings');
-        WysijaForm.hideSettings();
+        MailPoetForm.hideSettings();
 
         // set settings buttons position
         info('init -> init settings');
-        WysijaForm.setSettingsPosition();
+        MailPoetForm.setSettingsPosition();
 
         // toggle widgets
         info('init -> toggle widgets');
-        WysijaForm.toggleWidgets();
+        MailPoetForm.toggleWidgets();
     },
     getFieldData: function(element) {
         // get basic field data
@@ -392,22 +392,22 @@ var WysijaForm = {
         $$('a[wysija_unique="1"]').invoke('removeClassName', 'disabled');
 
         // loop through each unique field already inserted in the editor and disable its toolbar equivalent
-        $$('#'+WysijaForm.options.editor+' [wysija_unique="1"]').each(function(element) {
-            var field = $$('#'+WysijaForm.options.toolbar+' [wysija_field="'+element.readAttribute('wysija_field')+'"]').first();
+        $$('#'+MailPoetForm.options.editor+' [wysija_unique="1"]').each(function(element) {
+            var field = $$('#'+MailPoetForm.options.toolbar+' [wysija_field="'+element.readAttribute('wysija_field')+'"]').first();
             if(field !== undefined) {
                 field.addClassName('disabled');
             }
         });
 
         // hide list selection if a list widget has been dragged into the editor
-        $('mailpoet_settings_list_selection')[(($$('#'+WysijaForm.options.editor+' [wysija_field="list"]').length > 0) === true) ? 'hide': 'show']();
+        $('mailpoet_settings_list_selection')[(($$('#'+MailPoetForm.options.editor+' [wysija_field="list"]').length > 0) === true) ? 'hide': 'show']();
     },
     setBlockPositions: function(event, target) {
         // release dragging lock
-        WysijaForm.locks.dragging = false;
+        MailPoetForm.locks.dragging = false;
 
         var index = 1;
-        WysijaForm.getBlocks().each(function (container) {
+        MailPoetForm.getBlocks().each(function (container) {
             container.setPosition(index++);
             // remove z-index value to avoid issues when resizing images
             if(container['block'] !== undefined) {
@@ -432,27 +432,27 @@ var WysijaForm = {
         }
     },
     setScrollOffsets: function() {
-        WysijaForm.scroll = document.viewport.getScrollOffsets();
+        MailPoetForm.scroll = document.viewport.getScrollOffsets();
     },
     hideSettings: function() {
-        $(WysijaForm.options.container).select('.wysija_settings').invoke('hide');
+        $(MailPoetForm.options.container).select('.wysija_settings').invoke('hide');
     },
     setSettingsPosition: function() {
         // get viewport offsets and dimensions
         var viewportHeight = document.viewport.getHeight(),
             blockPadding = 5;
 
-        $(WysijaForm.options.container).select('.wysija_settings').each(function(element) {
+        $(MailPoetForm.options.container).select('.wysija_settings').each(function(element) {
             // get parent dimensions and position
             var parentDim = element.up('.mailpoet_form_block').getDimensions(),
                 parentPos = element.up('.mailpoet_form_block').cumulativeOffset(),
-                is_visible = (parentPos.top <= (WysijaForm.scroll.top + viewportHeight)) ? true : false,
+                is_visible = (parentPos.top <= (MailPoetForm.scroll.top + viewportHeight)) ? true : false,
                 buttonMargin = 5,
                 relativeTop = buttonMargin;
 
             if(is_visible) {
                 // desired position is set to center of viewport
-                var absoluteTop = parseInt(WysijaForm.scroll.top + ((viewportHeight / 2) - (element.getHeight() / 2)), 10),
+                var absoluteTop = parseInt(MailPoetForm.scroll.top + ((viewportHeight / 2) - (element.getHeight() / 2)), 10),
                     parentTop = parseInt(parentPos.top - blockPadding, 10),
                     parentBottom = parseInt(parentPos.top + parentDim.height - blockPadding, 10);
 
@@ -467,50 +467,50 @@ var WysijaForm = {
         });
     },
     initToolbarPosition: function() {
-        if(WysijaForm.toolbar.top === null) WysijaForm.toolbar.top = parseInt($(WysijaForm.options.container).positionedOffset().top);
-        if(WysijaForm.toolbar.y === null) WysijaForm.toolbar.y = parseInt(WysijaForm.toolbar.top);
+        if(MailPoetForm.toolbar.top === null) MailPoetForm.toolbar.top = parseInt($(MailPoetForm.options.container).positionedOffset().top);
+        if(MailPoetForm.toolbar.y === null) MailPoetForm.toolbar.y = parseInt(MailPoetForm.toolbar.top);
 
         if(isRtl) {
-            if(WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = 0;
+            if(MailPoetForm.toolbar.left === null) MailPoetForm.toolbar.left = 0;
         } else {
-            if(WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = parseInt($(WysijaForm.options.container).positionedOffset().left);
+            if(MailPoetForm.toolbar.left === null) MailPoetForm.toolbar.left = parseInt($(MailPoetForm.options.container).positionedOffset().left);
         }
-        if(WysijaForm.toolbar.x === null) WysijaForm.toolbar.x = parseInt(WysijaForm.toolbar.left + $(WysijaForm.options.container).getDimensions().width + 15);
+        if(MailPoetForm.toolbar.x === null) MailPoetForm.toolbar.x = parseInt(MailPoetForm.toolbar.left + $(MailPoetForm.options.container).getDimensions().width + 15);
 
     },
     setToolbarPosition: function() {
-        WysijaForm.initToolbarPosition();
+        MailPoetForm.initToolbarPosition();
 
-        var position = { top: WysijaForm.toolbar.y + 'px', visibility: 'visible' };
+        var position = { top: MailPoetForm.toolbar.y + 'px', visibility: 'visible' };
 
         if(isRtl) {
-            position.right = WysijaForm.toolbar.x + 'px';
+            position.right = MailPoetForm.toolbar.x + 'px';
         } else {
-            position.left = WysijaForm.toolbar.x + 'px';
+            position.left = MailPoetForm.toolbar.x + 'px';
         }
 
-        $(WysijaForm.options.toolbar).setStyle(position);
+        $(MailPoetForm.options.toolbar).setStyle(position);
     },
     updateToolbarPosition: function() {
         // init toolbar position (updates scroll and toolbar y)
-        WysijaForm.initToolbarPosition();
+        MailPoetForm.initToolbarPosition();
 
         // cancel previous effect
-        if(WysijaForm.toolbar.effect !== null) WysijaForm.toolbar.effect.cancel();
+        if(MailPoetForm.toolbar.effect !== null) MailPoetForm.toolbar.effect.cancel();
 
-        if(WysijaForm.scroll.top >= (WysijaForm.toolbar.top - 20)) {
-            WysijaForm.toolbar.y = parseInt(20 + WysijaForm.scroll.top);
+        if(MailPoetForm.scroll.top >= (MailPoetForm.toolbar.top - 20)) {
+            MailPoetForm.toolbar.y = parseInt(20 + MailPoetForm.scroll.top);
             // start effect
-            WysijaForm.toolbar.effect = new Effect.Move(WysijaForm.options.toolbar, {
-                x: WysijaForm.toolbar.x,
-                y: WysijaForm.toolbar.y,
+            MailPoetForm.toolbar.effect = new Effect.Move(MailPoetForm.options.toolbar, {
+                x: MailPoetForm.toolbar.x,
+                y: MailPoetForm.toolbar.y,
                 mode: 'absolute',
                 duration: 0.2
             });
         } else {
-            $(WysijaForm.options.toolbar).setStyle({
-                left: WysijaForm.toolbar.x + 'px',
-                top: WysijaForm.toolbar.top + 'px'
+            $(MailPoetForm.options.toolbar).setStyle({
+                left: MailPoetForm.toolbar.x + 'px',
+                top: MailPoetForm.toolbar.top + 'px'
             });
         }
     },
@@ -524,34 +524,34 @@ var WysijaForm = {
         },
         onDrop: function (draggable, droppable) {
             // custom data for images
-            droppable.fire('wjfe:item:drop', WysijaForm.getFieldData(draggable));
+            droppable.fire('wjfe:item:drop', MailPoetForm.getFieldData(draggable));
             $(droppable).removeClassName('hover');
         }
     },
     hideControls: function() {
         try {
-            return WysijaForm.getBlocks().invoke('hideControls');
+            return MailPoetForm.getBlocks().invoke('hideControls');
         } catch(e) { return; }
     },
     hideTools: function() {
         $$('.wysija_tools').invoke('hide');
-        WysijaForm.locks.showingTools = false;
+        MailPoetForm.locks.showingTools = false;
     },
     instances: {},
     get: function (element, type) {
         if(type === undefined) type = 'block';
         // identify element
         var id = element.identify();
-        var instance = WysijaForm.instances[id] || new WysijaForm[type.capitalize().camelize()](id);
+        var instance = MailPoetForm.instances[id] || new MailPoetForm[type.capitalize().camelize()](id);
 
-        WysijaForm.instances[id] = instance;
+        MailPoetForm.instances[id] = instance;
         return instance;
     },
     makeDroppable: function() {
-        Droppables.add('block_placeholder', WysijaForm.blockDropOptions);
+        Droppables.add('block_placeholder', MailPoetForm.blockDropOptions);
     },
     makeSortable: function () {
-        var body = $(WysijaForm.options.body);
+        var body = $(MailPoetForm.options.body);
         Sortable.create(body, {
             tag: 'div',
             only: 'mailpoet_form_block',
@@ -563,8 +563,8 @@ var WysijaForm = {
         Draggables.removeObserver(body);
         Draggables.addObserver({
             element: body,
-            onStart: WysijaForm.startBlockPositions,
-            onEnd: WysijaForm.setBlockPositions
+            onStart: MailPoetForm.startBlockPositions,
+            onEnd: MailPoetForm.setBlockPositions
         });
     },
     hideBlockControls: function() {
@@ -572,12 +572,12 @@ var WysijaForm = {
         this.getBlockElements().invoke('removeClassName', 'hover');
     },
     getBlocks: function () {
-        return WysijaForm.getBlockElements().map(function (element) {
-            return WysijaForm.get(element);
+        return MailPoetForm.getBlockElements().map(function (element) {
+            return MailPoetForm.get(element);
         });
     },
     getBlockElements: function () {
-        return $(WysijaForm.options.container).select('.mailpoet_form_block');
+        return $(MailPoetForm.options.container).select('.mailpoet_form_block');
     },
     startBlockPositions: function(event, target) {
         if(target.element.hasClassName('mailpoet_form_block')) {
@@ -586,7 +586,7 @@ var WysijaForm = {
                 target.element.writeAttribute('wysija_placeholder', target.element.previous('.block_placeholder').identify());
             }
         }
-        WysijaForm.locks.dragging = true;
+        MailPoetForm.locks.dragging = true;
     },
     encodeURIComponent: function(str) {
         // check if it's a url and if so, prevent encoding of protocol
@@ -603,7 +603,7 @@ var WysijaForm = {
     }
 };
 
-WysijaForm.DraggableItem = Class.create({
+MailPoetForm.DraggableItem = Class.create({
     initialize: function (element) {
         this.elementType = $(element).readAttribute('wysija_type');
         this.element = $(element).down() || $(element);
@@ -660,16 +660,16 @@ WysijaForm.DraggableItem = Class.create({
         return draggable;
     }
 });
-Object.extend(WysijaForm.DraggableItem, Observable).observe('a[class="mailpoet_form_field"]');
+Object.extend(MailPoetForm.DraggableItem, Observable).observe('a[class="mailpoet_form_field"]');
 
 
-WysijaForm.Block = Class.create({
+MailPoetForm.Block = Class.create({
     /* Invoked on load */
     initialize: function(element) {
         info('block -> init');
 
         this.element = $(element);
-        this.block = new WysijaForm.Widget(this.element);
+        this.block = new MailPoetForm.Widget(this.element);
 
         // enable block placeholder
         this.block.makeBlockDroppable();
@@ -702,7 +702,7 @@ WysijaForm.Block = Class.create({
     makeBlockDroppable: function() {
         if(this.isBlockDroppableEnabled() === false) {
             var block_placeholder = this.getBlockDroppable();
-            Droppables.add(block_placeholder.identify(), WysijaForm.blockDropOptions);
+            Droppables.add(block_placeholder.identify(), MailPoetForm.blockDropOptions);
             block_placeholder.addClassName('enabled');
         }
     },
@@ -745,7 +745,7 @@ WysijaForm.Block = Class.create({
             // setup events for block controls
             this.element.observe('mouseover', function() {
                 // special cases where controls shouldn't be displayed
-                if(WysijaForm.locks.dragging === true || WysijaForm.locks.selectingColor === true || WysijaForm.locks.showingTools === true) return;
+                if(MailPoetForm.locks.dragging === true || MailPoetForm.locks.selectingColor === true || MailPoetForm.locks.showingTools === true) return;
 
                 // set block flag
                 this.element.addClassName('hover');
@@ -761,7 +761,7 @@ WysijaForm.Block = Class.create({
 
             this.element.observe('mouseout', function() {
                 // special cases where controls shouldn't hide
-                if(WysijaForm.locks.dragging === true || WysijaForm.locks.selectingColor === true) return;
+                if(MailPoetForm.locks.dragging === true || MailPoetForm.locks.selectingColor === true) return;
 
                 // hide controls
                 this.hideControls();
@@ -790,7 +790,7 @@ WysijaForm.Block = Class.create({
                     // TODO: refactor
                     var block = $(event.target).up('.mailpoet_form_block') || null;
                     if(block !== null) {
-                        var field = WysijaForm.getFieldData(block);
+                        var field = MailPoetForm.getFieldData(block);
                         this.editSettings();
                     }
                 }.bind(this));
@@ -809,7 +809,7 @@ WysijaForm.Block = Class.create({
             afterFinish: function(effect) {
                 if(effect.element.next('.mailpoet_form_block') !== undefined && callback !== false) {
                     // show controls of next block to allow mass delete
-                    WysijaForm.get(effect.element.next('.mailpoet_form_block')).block.showControls();
+                    MailPoetForm.get(effect.element.next('.mailpoet_form_block')).block.showControls();
                 }
                 // remove placeholder
                 if(effect.element.previous('.block_placeholder') !== undefined) {
@@ -820,10 +820,10 @@ WysijaForm.Block = Class.create({
                 this.element.remove();
 
                 // reset block positions
-                WysijaForm.setBlockPositions();
+                MailPoetForm.setBlockPositions();
 
                 // toggle widgets
-                WysijaForm.toggleWidgets();
+                MailPoetForm.toggleWidgets();
 
                 // optional callback execution after completely removing block
                 if(callback !== undefined && typeof(callback) === 'function') {
@@ -831,19 +831,19 @@ WysijaForm.Block = Class.create({
                 }
 
                 // remove block instance
-                delete WysijaForm.instances[this.element.identify()];
+                delete MailPoetForm.instances[this.element.identify()];
             }.bind(this)
         });
     }
 });
 
 /* Invoked on item dropped */
-WysijaForm.Block.create = function(block, target) {
+MailPoetForm.Block.create = function(block, target) {
     if($('form_template_'+block.type) === null) {
         return false;
     }
 
-    var body = $(WysijaForm.options.body),
+    var body = $(MailPoetForm.options.body),
         block_template = Handlebars.compile($('form_template_block').innerHTML),
         template = Handlebars.compile($('form_template_'+block.type).innerHTML),
         output = '';
@@ -869,31 +869,31 @@ WysijaForm.Block.create = function(block, target) {
         //block = target.previous('.mailpoet_form_block');
     }
     // refresh sortable items
-    WysijaForm.makeSortable();
+    MailPoetForm.makeSortable();
 
     // refresh block positions
-    WysijaForm.setBlockPositions();
+    MailPoetForm.setBlockPositions();
 
     // position settings
-    WysijaForm.setSettingsPosition();
+    MailPoetForm.setSettingsPosition();
 };
 
 document.observe('wjfe:item:drop', function(event) {
     info('create block');
-    WysijaForm.Block.create(event.memo, event.target);
+    MailPoetForm.Block.create(event.memo, event.target);
 
     // hide block controls
     info('hide controls');
-    WysijaForm.hideBlockControls();
+    MailPoetForm.hideBlockControls();
 
     // toggle widgets
     setTimeout(function() {
-        WysijaForm.toggleWidgets();
+        MailPoetForm.toggleWidgets();
     }, 1);
 });
 
 /* Form Widget */
-WysijaForm.Widget = Class.create(WysijaForm.Block, {
+MailPoetForm.Widget = Class.create(MailPoetForm.Block, {
    initialize: function(element) {
        info('widget -> init');
        this.element = $(element);
@@ -926,7 +926,7 @@ WysijaForm.Widget = Class.create(WysijaForm.Block, {
         this.element.writeAttribute('wysija_params', JSON.stringify(params));
     },
     getData: function() {
-        var data = WysijaForm.getFieldData(this.element);
+        var data = MailPoetForm.getFieldData(this.element);
 
         // decode params
         if(data.params.length > 0) {
@@ -951,7 +951,7 @@ WysijaForm.Widget = Class.create(WysijaForm.Block, {
             data = $H(options).merge({ template: template(options) }).toObject();
         this.element.replace(block_template(data));
 
-        WysijaForm.init();
+        MailPoetForm.init();
     },
     editSettings: function() {
         MailPoet.Modal.popup({
@@ -969,12 +969,12 @@ WysijaForm.Widget = Class.create(WysijaForm.Block, {
     }
 });
 
-/* When dom is loaded, initialize WysijaForm */
-document.observe('dom:loaded', WysijaForm.init);
+/* When dom is loaded, initialize MailPoetForm */
+document.observe('dom:loaded', MailPoetForm.init);
 
 /* LOGGING */
 function info(value) {
-    if(WysijaForm.options.debug === false) return;
+    if(MailPoetForm.options.debug === false) return;
 
     if(!(window.console && console.log)) {
         (function() {
