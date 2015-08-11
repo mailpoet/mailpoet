@@ -69,7 +69,7 @@ class SubscriberCest {
 
     function onUpdateWorks () {
       $to_update = Subscriber::where('email', 'hello@world')->findOne();
-      if ($to_update === NULL) {
+      if (empty($to_update)) {
         $created = Subscriber::create();
         $created->first_name = 'Hello';
         $created->last_name = 'World';
@@ -77,14 +77,14 @@ class SubscriberCest {
         $beforeCreate = time();
         $created->save();
         $to_update = Subscriber::where('email', 'hello@world')->findOne();
-        //expect(is_string($to_update->created_at))->equals(true);
-        //expect(strtotime($to_update->created_at) >= $beforeCreate)->equals(true);
+        expect(is_string($to_update->created_at))->equals(true);
+        expect(strtotime($to_update->created_at) >= $beforeCreate)->equals(true);
       }
       $to_update->last_name = 'World!';
       $beforeUpdate = time();
       $to_update->save();
       $updated = Subscriber::where('email', 'hello@world')->findOne();
-      //expect(is_string($updated->updated_at))->equals(true);
+      expect(is_string($updated->updated_at))->equals(true);
       expect(strtotime($updated->updated_at) >= $beforeUpdate)->equals(true);
     }
 
