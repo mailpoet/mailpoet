@@ -1,5 +1,4 @@
 <?php
-use \MailPoet\Config\Env;
 
 $wordpress_path = getenv('WP_TEST_PATH');
 

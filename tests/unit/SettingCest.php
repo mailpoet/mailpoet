@@ -1,5 +1,4 @@
 <?php
-use \UnitTester;
 use \MailPoet\Models\Setting;
 
 class SettingCest {

@@ -10,6 +10,5 @@ modules:
         - WebDriver:
             url: 'http://localhost'
             browser: phantomjs
-            wait: 2
             restart: true
         - \Helper\Acceptance

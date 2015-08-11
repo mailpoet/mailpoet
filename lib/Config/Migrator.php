@@ -19,8 +19,9 @@ class Migrator {
   function up() {
     global $wpdb;
 
-    $migrate = function($model) {
-      dbDelta($this->$model());
+    $_this =  $this;
+    $migrate = function($model) use ($_this) {
+      dbDelta($_this->$model());
     };
 
     array_map($migrate, $this->models);
