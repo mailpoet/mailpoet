@@ -3,7 +3,8 @@
 ## Code.
 - Two spaces indentation.
 - CamelCase for classes.
-- camelCase for methods & variables.
+- camelCase for methods.
+- snake_case for variables and class properties.
 - Max line length at 80 chars.
 - Classes can be no longer than 100 LOC.
 - Methods can be no longer than 5 LOC.
