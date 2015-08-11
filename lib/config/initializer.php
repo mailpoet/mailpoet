@@ -272,7 +272,9 @@ class Initializer {
             'params' => array(
               'label' => __('Birthday'),
               'required' => true,
-              'date_format' => 'yyyy/mm/dd'
+              'date_format' => 'yyyy/mm/dd',
+              'date_type' => 'year_month_day',
+              'is_default_today' => true
             )
           ),
           array(
