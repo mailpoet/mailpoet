@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4b157c8484b1247df06b05f728db16bc",
+    "hash": "99a6abaeb9ef73071b63a330b58242cc",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -254,6 +254,55 @@
                 "parser"
             ],
             "time": "2013-05-04 14:32:03"
+        },
+        {
+            "name": "tag/sudzy",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mailpoet/sudzy.git",
+                "reference": "329e1b339baa1e662cb263e5bc30930456ab5227"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mailpoet/sudzy/zipball/329e1b339baa1e662cb263e5bc30930456ab5227",
+                "reference": "329e1b339baa1e662cb263e5bc30930456ab5227",
+                "shasum": ""
+            },
+            "require": {
+                "j4mie/paris": ">=1.4",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Sudzy": ".",
+                    "ValidationException": "Sudzy"
+                }
+            },
+            "license": [
+                "BSD"
+            ],
+            "authors": [
+                {
+                    "name": "Tom Gregory",
+                    "email": "tom@alt-tag.com",
+                    "homepage": "http://alt-tag.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Model validator for use with Paris (and Idiorm).",
+            "homepage": "https://github.com/tag/sudzy",
+            "keywords": [
+                "idiorm",
+                "model",
+                "paris",
+                "validator"
+            ],
+            "support": {
+                "source": "https://github.com/mailpoet/sudzy/tree/master"
+            },
+            "time": "2015-08-11 20:30:34"
         },
         {
             "name": "tburry/pquery",
@@ -1385,6 +1434,57 @@
                 "response"
             ],
             "time": "2015-05-04 20:22:00"
+        },
+        {
+            "name": "raveren/kint",
+            "version": "1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/raveren/kint.git",
+                "reference": "0cb1329798c85df500e4dfac607c5d6834c18431"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/raveren/kint/zipball/0cb1329798c85df500e4dfac607c5d6834c18431",
+                "reference": "0cb1329798c85df500e4dfac607c5d6834c18431",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "Kint.class.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rokas Šleinius",
+                    "homepage": "https://github.com/raveren"
+                },
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/raveren/kint/contributors"
+                }
+            ],
+            "description": "Kint - debugging helper for PHP developers",
+            "homepage": "https://github.com/raveren/kint",
+            "keywords": [
+                "debug",
+                "kint",
+                "php"
+            ],
+            "time": "2015-07-02 11:06:58"
         },
         {
             "name": "sebastian/comparator",
@@ -2896,9 +2996,18 @@
             "time": "2015-05-30 16:15:01"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "1.4",
+            "alias_normalized": "1.4.0.0",
+            "version": "1.5.4.0",
+            "package": "j4mie/paris"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "tag/sudzy": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
