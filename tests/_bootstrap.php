@@ -15,11 +15,10 @@ if ($wordpress_path) {
 global $wpdb;
 
 // clean database on each run
-$truncate_commands = $wpdb->get_results("SELECT concat('TRUNCATE TABLE `', TABLE_NAME, '`;')
+$truncate_commands = $wpdb->get_results("SELECT concat('TRUNCATE TABLE `', TABLE_NAME, '`;') as `truncate`
                               FROM INFORMATION_SCHEMA.TABLES
-                              WHERE TABLE_SCHEMA = '" . Env::$db_name . "' AND TABLE_NAME LIKE '" . Env::$db_prefix . "%'", ARRAY_A);
+                              WHERE TABLE_SCHEMA = '" . Env::$db_name . "' AND TABLE_NAME LIKE '" . Env::$db_prefix . "%'");
 foreach ($truncate_commands as $command) {
-  $wpdb->query(array_values($command)[0]);
+  $wpdb->query($command->truncate);
 }
-
 
