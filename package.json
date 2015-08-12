@@ -36,6 +36,7 @@
     "sinon": "1.14.1",
     "sinon-chai": "2.7.0",
     "stylus": "latest",
-    "swag": "~0.7.0"
+    "swag": "~0.7.0",
+    "webpack": "1.11.0"
   }
 }

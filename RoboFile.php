@@ -30,6 +30,10 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec(join(' ', $command));
   }
 
+  function bundleJavascript() {
+    $this->_exec('./node_modules/webpack/bin/webpack.js');
+  }
+
   function makepot() {
     $this->_exec('grunt makepot'.
                 ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
@@ -59,6 +63,11 @@ class RoboFile extends \Robo\Tasks {
       ->run();
     sleep(2);
     $this->_exec('vendor/bin/codecept run acceptance');
+  }
+
+  function testJavascript() {
+    // TODO: regenerate test bundle before running mocha tests
+    $this->_exec('./node_modules/mocha/bin/mocha -r tests/javascript/mochaTestHelper.js tests/javascript/newsletter_editor/testBundle.js');
   }
 
   function testAll() {
