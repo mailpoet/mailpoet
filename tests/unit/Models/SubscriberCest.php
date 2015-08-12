@@ -5,34 +5,20 @@ class SubscriberCest {
 
     function _before() {
 
-      $hello_world_subscriber = Subscriber::where('email', 'hello@world')->findOne();
-      if (!empty($hello_world_subscriber)) {
-        $hello_world_subscriber->delete();
-      }
-
       $this->data = array(
         'first_name' => 'John',
         'last_name' => 'Mailer',
         'email' => 'john@mailpoet.com'
       );
-      $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
-      if ($subscriber) {
-        $this->subscriber = $subscriber;
-        return;
-      }
 
       $this->subscriber = Subscriber::create();
-
       $this
         ->subscriber
         ->first_name = $this->data['first_name'];
-
       $this
         ->subscriber
         ->last_name = $this->data['last_name'];
-
       $this->subscriber->email = $this->data['email'];
-
       $this->subscriber->save();
     }
 
@@ -73,7 +59,7 @@ class SubscriberCest {
       expect($conflicted)->equals(true);
     }
 
-    function itHasTimestampsOnCreation () {
+    function itHasTimestampsOnCreation() {
       $to_create = Subscriber::create();
       $to_create->first_name = 'Hello';
       $to_create->last_name = 'World';
@@ -86,7 +72,7 @@ class SubscriberCest {
       $created->delete();
     }
 
-    function itUpdatesTimestampsOnUpdate () {
+    function itUpdatesTimestampsOnUpdate() {
       $created = Subscriber::create();
       $created->first_name = 'Hello';
       $created->last_name = 'World';
@@ -102,7 +88,7 @@ class SubscriberCest {
     }
 
     function _after() {
-      $subscriber = Subscriber::where('email', $this->data['email'])->findOne()->delete();
+      Subscriber::where('email', $this->data['email'])->findOne()->delete();
     }
 
 }
