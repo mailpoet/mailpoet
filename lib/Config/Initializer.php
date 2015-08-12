@@ -18,6 +18,7 @@ class Initializer {
     $this->setupRenderer();
     $this->setupLocalizer();
     $this->setupMenu();
+    $this->setupWidget();
   }
 
   function setupDB() {
@@ -53,5 +54,11 @@ class Initializer {
       Env::$assets_url
     );
     $menu->init();
+  }
+
+  function setupWidget() {
+    add_action('widgets_init', function() {
+      register_widget('\MailPoet\Form\Widget');
+    });
   }
 }
