@@ -34,7 +34,9 @@ class Widget extends \WP_Widget {
     $title = isset($instance['title']) ? strip_tags($instance['title']) : '';
     ?>
     <p>
-      <label for="<?php $this->get_field_id( 'title' ) ?>"><?php _e( 'Title:' ); ?></label>
+      <label for="<?php $this->get_field_id( 'title' ) ?>">
+        <?php _e( 'Title:' ); ?>
+      </label>
       <input
         type="text"
         class="widefat"
@@ -44,7 +46,9 @@ class Widget extends \WP_Widget {
       />
     </p>
     <p>
-      <a href="javascript:;" class="mailpoet_form_new"><?php _e("Create a new form"); ?></a>
+      <a href="javascript:;" class="mailpoet_form_new">
+        <?php _e("Create a new form"); ?>
+      </a>
     </p>
     <?php
   }
@@ -75,7 +79,11 @@ class Widget extends \WP_Widget {
     $form_type = 'widget';
     $output .= '<div class="mailpoet_form mailpoet_form_'.$form_type.'">';
 
-    $output .= '<form id="'.$form_id.'" method="post" action="'.admin_url('admin-post.php?action=mailpoet_form_subscribe').'" class="mailpoet_form mailpoet_form_'.$form_type.'" novalidate>';
+    $output .= '<form '.
+      'id="'.$form_id.'" '.
+      'method="post" '.
+      'action="'.admin_url('admin-post.php?action=mailpoet_form_subscribe').'" '.
+      'class="mailpoet_form mailpoet_form_'.$form_type.'" novalidate>';
 
     $output .= '  <p>';
     $output .= '    <label>';
