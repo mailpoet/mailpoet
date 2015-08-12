@@ -27,7 +27,7 @@ class SettingCest {
       $setting = Setting::where('name', 'sending_method')->findOne()->delete();
     }
 
-    function itHasTimestampsOnCreation () {
+    function itHasTimestampsOnCreation() {
       $to_create = Setting::create();
       $to_create->name = 'Hello';
       $to_create->value = 'World';
@@ -39,7 +39,7 @@ class SettingCest {
       $created->delete();
     }
 
-    function itUpdatesTimestampsOnUpdate () {
+    function itUpdatesTimestampsOnUpdate() {
       $created = Setting::create();
       $created->name = 'Hello';
       $created->value = 'World';
