@@ -2,7 +2,56 @@
 
 <% block content %>
   <h1><%= 'Settings' %></h1>
-  <p><%= __('First Name') %></p>
-  <p><%= __('Last Name') %></p>
-  <p><%= __('Email') %></p>
+
+  <form id="mailpoet_settings" novalidate>
+    <p>
+      <label>
+        <%= __('First Name') %>
+        <input type="text" name="first_name" />
+      </label>
+    </p>
+
+    <p>
+      <label>
+        <%= __('Last Name') %>
+        <input type="text" name="last_name" />
+      </label>
+    </p>
+
+    <p>
+      <label>
+        <%= __('Email') %>
+        <input type="email" name="email" />
+      </label>
+    </p>
+
+    <p>
+      <input type="submit" class="button-secondary"
+        value="<%= __('Submit') %>"
+      />
+    </p>
+  </form>
+
+  <script type="text/javascript">
+  jQuery(function($) {
+
+    function loadSettings() {
+      console.log('load settings...');
+    }
+
+    function saveSettings() {
+      console.log('save settings...');
+
+      return false;
+    }
+
+    // save settings on form submission
+    $(document).on('submit', '#mailpoet_settings', saveSettings);
+
+    // on dom loaded
+    $(function() {
+      loadSettings();
+    });
+  });
+  </script>
 <% endblock %>
