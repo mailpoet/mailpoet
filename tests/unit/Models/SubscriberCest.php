@@ -4,6 +4,7 @@ use \MailPoet\Models\Subscriber;
 class SubscriberCest {
 
   function _before() {
+    $this->before_time = time();
 
     $this->data = array(
       'first_name' => 'John',
@@ -59,36 +60,42 @@ class SubscriberCest {
     expect($conflicted)->equals(true);
   }
 
-  function itHasTimestampsOnCreation() {
-    $to_create = Subscriber::create();
-    $to_create->first_name = 'Hello';
-    $to_create->last_name = 'World';
-    $to_create->email = 'hello@world';
-    $beforeCreate = time();
-    $to_create->save();
-    $created = Subscriber::where('email', 'hello@world')->findOne();
-    expect(is_string($created->created_at))->equals(true);
-    expect(strtotime($created->created_at) >= $beforeCreate)->equals(true);
-    $created->delete();
+  function itHasACreatedAtOnCreation() {
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+    $time_difference = strtotime($subscriber->created_at) >= $this->before_time;
+    expect($time_difference)->equals(true);
   }
 
-  function itUpdatesTimestampsOnUpdate() {
-    $created = Subscriber::create();
-    $created->first_name = 'Hello';
-    $created->last_name = 'World';
-    $created->email = 'hello@world';
-    $created->save();
-    $created->last_name = 'World!';
-    $beforeUpdate = time();
-    $created->save();
-    $updated = Subscriber::where('email', 'hello@world')->findOne();
-    expect(is_string($updated->updated_at))->equals(true);
-    expect(strtotime($updated->updated_at) >= $beforeUpdate)->equals(true);
-    $updated->delete();
+  function itHasAnUpdatedAtOnCreation() {
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+    $time_difference = strtotime($subscriber->updated_at) >= $this->before_time;
+    expect($time_difference)->equals(true);
+  }
+
+  function itKeepsTheCreatedAtOnUpdate() {
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+
+    $old_created_at = $subscriber->created_at;
+
+    $subscriber->first_name = 'New Name';
+    $subscriber->save();
+
+    expect($old_created_at)->equals($subscriber->created_at);
+  }
+
+  function itUpdatesTheUpdatedAtOnUpdate() {
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+
+    $update_time = time();
+    $subscriber->first_name = 'New Name';
+    $subscriber->save();
+
+    $time_difference = strtotime($subscriber->updated_at) >= $update_time;
+
+    expect($time_difference)->equals(true);
   }
 
   function _after() {
     Subscriber::where('email', $this->data['email'])->findOne()->delete();
   }
-
 }

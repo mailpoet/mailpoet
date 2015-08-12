@@ -3,54 +3,55 @@ use \MailPoet\Models\Setting;
 
 class SettingCest {
 
-    function _before() {
-      $hello_setting = Setting::where('name', 'Hello')->findOne();
-      if (!empty($hello_setting)) {
-        $hello_setting->delete();
-      }
-      $setting = Setting::where('name', 'sending_method')->findOne();
-      if (empty($setting)) {
-        $setting = Setting::create();
-        $setting->name = 'sending_method';
-        $setting->value = 'smtp';
-        $setting->save();
-      }
-    }
+  function _before() {
+    $this->before_time = time();
+    $setting = Setting::create();
+    $setting->name = 'sending_method';
+    $setting->value = 'smtp';
+    $setting->save();
+  }
 
-    function itCanBeCreated() {
-      $setting = Setting::where('name', 'sending_method')->findOne();
-      expect($setting->id)->notNull();
-    }
+  function itCanBeCreated() {
+    $setting = Setting::where('name', 'sending_method')->findOne();
+    expect($setting->id)->notNull();
+  }
 
+  function itHasACreatedAtOnCreation() {
+    $setting = Setting::where('name', 'sending_method')->findOne();
+    $time_difference = strtotime($setting->created_at) >= $this->before_time;
+    expect($time_difference)->equals(true);
+  }
 
-    function _after() {
-      $setting = Setting::where('name', 'sending_method')->findOne()->delete();
-    }
+  function itHasAnUpdatedAtOnCreation() {
+    $setting = Setting::where('name', 'sending_method')->findOne();
+    $time_difference = strtotime($setting->updated_at) >= $this->before_time;
+    expect($time_difference)->equals(true);
+  }
 
-    function itHasTimestampsOnCreation() {
-      $to_create = Setting::create();
-      $to_create->name = 'Hello';
-      $to_create->value = 'World';
-      $beforeCreate = time();
-      $to_create->save();
-      $created = Setting::where('name', 'Hello')->findOne();
-      expect(is_string($created->created_at))->equals(true);
-      expect(strtotime($created->created_at) >= $beforeCreate)->equals(true);
-      $created->delete();
-    }
+  function itKeepsTheCreatedAtOnUpdate() {
+    $setting = Setting::where('name', 'sending_method')->findOne();
 
-    function itUpdatesTimestampsOnUpdate() {
-      $created = Setting::create();
-      $created->name = 'Hello';
-      $created->value = 'World';
-      $created->save();
-      $created->value = 'World!';
-      $beforeUpdate = time();
-      $created->save();
-      $updated = Setting::where('name', 'Hello')->findOne();
-      expect(is_string($updated->updated_at))->equals(true);
-      expect(strtotime($updated->updated_at) >= $beforeUpdate)->equals(true);
-      $updated->delete();
-    }
+    $old_created_at = $setting->created_at;
 
+    $setting->value = 'http_api';
+    $setting->save();
+
+    expect($old_created_at)->equals($setting->created_at);
+  }
+
+  function itUpdatesTheUpdatedAtOnUpdate() {
+    $setting = Setting::where('name', 'sending_method')->findOne();
+
+    $update_time = time();
+    $setting->value = 'http_api';
+    $setting->save();
+
+    $time_difference = strtotime($setting->updated_at) >= $update_time;
+
+    expect($time_difference)->equals(true);
+  }
+
+  function _after() {
+    Setting::where('name', 'sending_method')->findOne()->delete();
+  }
 }
