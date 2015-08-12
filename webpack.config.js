@@ -5,7 +5,7 @@ var path = require('path'),
 module.exports = {
   context: __dirname ,
   entry: {
-    mailpoet: './assets/js/mailpoet',
+    admin: './assets/js/admin.js',
   },
   output: {
     path: './assets/js/src',
@@ -41,5 +41,8 @@ module.exports = {
     alias: {
       'hbs': 'handlebars-loader'
     }
+  },
+  externals: {
+    'jquery': 'jQuery',
   }
 };
