@@ -4,6 +4,12 @@ use \MailPoet\Models\Subscriber;
 class SubscriberCest {
 
     function _before() {
+
+      $hello_world_subscriber = Subscriber::where('email', 'hello@world')->findOne();
+      if (!empty($hello_world_subscriber)) {
+        $hello_world_subscriber->delete();
+      }
+
       $this->data = array(
         'first_name' => 'John',
         'last_name' => 'Mailer',
@@ -67,25 +73,32 @@ class SubscriberCest {
       expect($conflicted)->equals(true);
     }
 
-    function onUpdateWorks () {
-      $to_update = Subscriber::where('email', 'hello@world')->findOne();
-      if (empty($to_update)) {
-        $created = Subscriber::create();
-        $created->first_name = 'Hello';
-        $created->last_name = 'World';
-        $created->email = 'hello@world';
-        $beforeCreate = time();
-        $created->save();
-        $to_update = Subscriber::where('email', 'hello@world')->findOne();
-        expect(is_string($to_update->created_at))->equals(true);
-        expect(strtotime($to_update->created_at) >= $beforeCreate)->equals(true);
-      }
-      $to_update->last_name = 'World!';
+    function itHasTimestampsOnCreation () {
+      $to_create = Subscriber::create();
+      $to_create->first_name = 'Hello';
+      $to_create->last_name = 'World';
+      $to_create->email = 'hello@world';
+      $beforeCreate = time();
+      $to_create->save();
+      $created = Subscriber::where('email', 'hello@world')->findOne();
+      expect(is_string($created->created_at))->equals(true);
+      expect(strtotime($created->created_at) >= $beforeCreate)->equals(true);
+      $created->delete();
+    }
+
+    function itUpdatesTimestampsOnUpdate () {
+      $created = Subscriber::create();
+      $created->first_name = 'Hello';
+      $created->last_name = 'World';
+      $created->email = 'hello@world';
+      $created->save();
+      $created->last_name = 'World!';
       $beforeUpdate = time();
-      $to_update->save();
+      $created->save();
       $updated = Subscriber::where('email', 'hello@world')->findOne();
       expect(is_string($updated->updated_at))->equals(true);
       expect(strtotime($updated->updated_at) >= $beforeUpdate)->equals(true);
+      $updated->delete();
     }
 
     function _after() {
