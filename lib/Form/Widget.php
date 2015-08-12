@@ -51,7 +51,6 @@ class Widget extends \WP_Widget {
 
   function widget($args, $instance = null) {
     extract($args);
-
     if($instance === null) { $instance = $args; }
 
     $title = apply_filters(
@@ -61,7 +60,7 @@ class Widget extends \WP_Widget {
       $this->id_base
     );
 
-     $output = '';
+    $output = '';
 
     // before widget
     $output .= (isset($before_widget) ? $before_widget : '');
@@ -77,11 +76,19 @@ class Widget extends \WP_Widget {
     $output .= '<div class="mailpoet_form mailpoet_form_'.$form_type.'">';
 
     $output .= '<form id="'.$form_id.'" method="post" action="'.admin_url('admin-post.php?action=mailpoet_form_subscribe').'" class="mailpoet_form mailpoet_form_'.$form_type.'" novalidate>';
-    $output .= '<p>';
-    $output .= '<label>';
-    $output .= __('E-mail').' <input type="email" name="email" />';
-    $output .= '</label>';
-    $output .= '</p>';
+
+    $output .= '  <p>';
+    $output .= '    <label>';
+    $output .=        __('E-mail').' <input type="email" name="email" />';
+    $output .= '    </label>';
+    $output .= '  </p>';
+
+    $output .= '  <p>';
+    $output .= '    <label>';
+    $output .= '      <input type="submit" value="'.esc_attr('Subscribe!').'" />';
+    $output .= '    </label>';
+    $output .= '  </p>';
+
     $output .= '</form>';
     $output .= '</div>';
 
