@@ -7,12 +7,9 @@ class CustomValidator {
   }
 
   function init() {
-    $this->validator->addValidator(
-        'isString',
-        function ($val) {
-          return is_string($val);
-        }
-    );
+    $this->validator->addValidator('isString', function ($val) {
+      return is_string($val);
+    });
 
     return $this->validator;
   }

@@ -1,10 +1,4 @@
 {
-  "repositories": [
-   {
-	"type": "vcs",
-	"url": "https://github.com/mailpoet/sudzy"
-   }
-  ],
   "require": {
     "php": ">=5.3.3",
     "twig/twig": "1.*",
@@ -12,9 +6,7 @@
     "cerdic/css-tidy": "*",
     "sunra/php-simple-html-dom-parser": "*",
     "tburry/pquery": "*",
-    "j4mie/paris": "1.5.4 as 1.4",
-	"tag/sudzy" : "dev-master"
-
+    "j4mie/paris": "1.5.4 as 1.4"
   },
   "require-dev": {
     "codeception/codeception": "*",
@@ -22,11 +14,12 @@
     "codegyre/robo": "*",
     "vlucas/phpdotenv": "*",
     "umpirsky/twig-gettext-extractor": "1.1.*",
-	"raveren/kint": "^1.0"
+    "raveren/kint": "^1.0"
   },  
   "autoload": {
     "psr-4": {
-      "MailPoet\\": "lib/"
+      "MailPoet\\": "lib/",
+	  "Sudzy\\": "lib/Util/Sudzy"
     }
   }
 }

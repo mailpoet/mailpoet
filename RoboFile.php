@@ -15,10 +15,15 @@ class RoboFile extends \Robo\Tasks {
 
   function watch() {
     $files = array(// global admin styles
-        'assets/css/src/admin.styl', // rtl specific styles
-        'assets/css/src/rtl.styl');
+                   'assets/css/src/admin.styl',
+                   // rtl specific styles
+                   'assets/css/src/rtl.styl'
+    );
 
-    $command = array('./node_modules/stylus/bin/stylus -u', ' nib -w' . join(' ', $files) . ' -o assets/css/');
+    $command = array(
+        './node_modules/stylus/bin/stylus -u',
+        ' nib -w' . join(' ', $files) . ' -o assets/css/'
+    );
     $this->_exec(join(' ', $command));
   }
 
@@ -31,8 +36,8 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testUnit() {
-    $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
+    $this->_exec('vendor/bin/codecept build');
     $this->_exec('vendor/bin/codecept run unit');
   }
 
@@ -40,15 +45,17 @@ class RoboFile extends \Robo\Tasks {
     if (!$unit) {
       throw new Exception("Your need to specify what you want to test (e.g.: test:unit-single models/SubscriberCest)");
     }
-    $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
+    $this->_exec('vendor/bin/codecept build');
     $this->_exec('vendor/bin/codecept run unit ' . $unit);
   }
 
   function testAcceptance() {
-    $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
-    $this->taskExec('phantomjs --webdriver=4444')->background()->run();
+    $this->_exec('vendor/bin/codecept build');
+    $this->taskExec('phantomjs --webdriver=4444')
+         ->background()
+         ->run();
     sleep(2);
     $this->_exec('vendor/bin/codecept run acceptance');
   }
@@ -56,7 +63,9 @@ class RoboFile extends \Robo\Tasks {
   function testAll() {
     $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
-    $this->taskexec('phantomjs --webdriver=4444')->background()->run();
+    $this->taskexec('phantomjs --webdriver=4444')
+         ->background()
+         ->run();
     sleep(2);
     $this->_exec('vendor/bin/codecept run');
   }
@@ -71,8 +80,13 @@ class RoboFile extends \Robo\Tasks {
     $dotenv = new Dotenv\Dotenv(__DIR__);
     $dotenv->load();
 
-    $this->taskWriteToFile('tests/acceptance.suite.yml')->textFromFile('tests/acceptance.suite.src')->run();
+    $this->taskWriteToFile('tests/acceptance.suite.yml')
+         ->textFromFile('tests/acceptance.suite.src')
+         ->run();
 
-    $this->taskReplaceInFile('tests/acceptance.suite.yml')->regex("/url.*/")->to('url: ' . "'" . getenv('WP_TEST_URL') . "'")->run();
+    $this->taskReplaceInFile('tests/acceptance.suite.yml')
+         ->regex("/url.*/")
+         ->to('url: ' . "'" . getenv('WP_TEST_URL') . "'")
+         ->run();
   }
 }
