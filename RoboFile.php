@@ -1,6 +1,5 @@
 <?php
 
-
 class RoboFile extends \Robo\Tasks {
   function install() {
     $this->_exec('./composer.phar install');
@@ -14,20 +13,37 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function watch() {
-    $files = array(
-      // global admin styles
+    $css_files = array(
       'assets/css/src/admin.styl',
-      // rtl specific styles
       'assets/css/src/rtl.styl'
     );
 
-    $command = array(
-      './node_modules/stylus/bin/stylus -u',
-      ' nib -w'.
-      join(' ', $files).
-      ' -o assets/css/'
-    );
-    $this->_exec(join(' ', $command));
+    $js_files = glob('assets/js/src/*.js');
+
+    $this->taskWatch()
+      ->monitor($js_files, function() {
+        $this->compileJavascript();
+      })
+      ->monitor($css_files, function() use($css_files) {
+        $this->compileStyles($css_files);
+      })
+      ->run();
+  }
+
+  function compileJavascript() {
+    $this->_exec('./node_modules/webpack/bin/webpack.js');
+  }
+
+  protected function compileStyles($files = array()) {
+    if(empty($files)) { return; }
+
+    $this->_exec(join(' ', array(
+      './node_modules/stylus/bin/stylus',
+      '-u nib',
+      '-w',
+      join(' ', $files),
+      '-o assets/css/'
+    )));
   }
 
   function makepot() {
@@ -59,6 +75,16 @@ class RoboFile extends \Robo\Tasks {
       ->run();
     sleep(2);
     $this->_exec('vendor/bin/codecept run acceptance');
+  }
+
+  function testJavascript() {
+    $this->compileJavascript();
+
+    $this->_exec(join(' ', array(
+      './node_modules/mocha/bin/mocha',
+      '-r tests/javascript/mochaTestHelper.js',
+      'tests/javascript/testBundles/**/*.js'
+    )));
   }
 
   function testAll() {
