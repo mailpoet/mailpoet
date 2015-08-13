@@ -37,20 +37,20 @@ npm install --production
 
 ./composer.phar install --no-dev
 
-# cleanup NPM packages declaration, debug log and composer files
-
-rm ./composer.*
-rm ./package.json
-rm ./npm-debug.log
-
-# go up to ./tmp and zip the plugin
+# go up to ./tmp and zip the plugin from a whitelist of folders and files and
 
 cd ..
-
-zip ../mailpoet.zip wysija-newsletters -rq
+zip -rq ../mailpoet.zip \
+	wysija-newsletters/vendor \
+	wysija-newsletters/assets \
+	wysija-newsletters/lib \
+	wysija-newsletters/views \
+	wysija-newsletters/index.php \
+	wysija-newsletters/mailpoet.php \
+	wysija-newsletters/LICENCE
 
 # go up the project sources and cleanup ./tmp
 
 cd ..
 
-rm ./tmp -r
+rm ./tmp -rf

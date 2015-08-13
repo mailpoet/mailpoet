@@ -23,7 +23,8 @@
     "select2": "3.5.1",
     "spectrum-colorpicker": "^1.6.2",
     "tinymce": "4.1.10",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "napa": "^1.2.0"
   },
   "devDependencies": {
     "chai": "2.2.0",
@@ -31,7 +32,6 @@
     "grunt": "^0.4.5",
     "jsdom": "3.1.2",
     "mocha": "2.2.1",
-    "napa": "^1.2.0",
     "nib": "latest",
     "sinon": "1.14.1",
     "sinon-chai": "2.7.0",
