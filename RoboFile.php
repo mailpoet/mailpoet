@@ -88,8 +88,8 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testAll() {
+    $this->loadEnv();  
     $this->_exec('vendor/bin/codecept build');
-    $this->loadEnv();
     $this
       ->taskexec('phantomjs --webdriver=4444')
       ->background()

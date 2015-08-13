@@ -7,18 +7,19 @@
     "sunra/php-simple-html-dom-parser": "*",
     "tburry/pquery": "*",
     "j4mie/paris": "1.5.4"
-
   },
   "require-dev": {
     "codeception/codeception": "*",
     "codeception/verify": "*",
     "codegyre/robo": "*",
     "vlucas/phpdotenv": "*",
-    "umpirsky/twig-gettext-extractor": "1.1.*"
-  },
+    "umpirsky/twig-gettext-extractor": "1.1.*",
+    "raveren/kint": "^1.0"
+  },  
   "autoload": {
     "psr-4": {
-      "MailPoet\\": "lib/"
+      "MailPoet\\": "lib/",
+      "Sudzy\\": "lib/Util/Sudzy"
     }
   }
 }
