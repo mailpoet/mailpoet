@@ -1,7 +1,6 @@
 <?php namespace MailPoet\Models;
 
 class CustomValidator {
-
   function __construct() {
     $this->validator = new \Sudzy\Engine();
   }

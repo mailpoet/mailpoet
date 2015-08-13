@@ -15,5 +15,4 @@ class Model extends \Sudzy\ValidModel {
     }
     parent::save();
   }
-
 }
