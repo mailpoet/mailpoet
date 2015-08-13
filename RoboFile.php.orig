@@ -18,6 +18,13 @@ class RoboFile extends \Robo\Tasks {
       'assets/css/src/rtl.styl'
     );
 
+<<<<<<< HEAD
+    $command = array(
+      './node_modules/stylus/bin/stylus -u',
+      ' nib -w' . join(' ', $files) . ' -o assets/css/'
+    );
+    $this->_exec(join(' ', $command));
+=======
     $js_files = glob('assets/js/src/*.js');
 
     $this->taskWatch()
@@ -44,33 +51,40 @@ class RoboFile extends \Robo\Tasks {
       join(' ', $files),
       '-o assets/css/'
     )));
+>>>>>>> origin/master
   }
 
   function makepot() {
-    $this->_exec('grunt makepot'.
-                ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
-                ' --base_path '.__DIR__
-    );
+    $this->_exec('grunt makepot' . ' --gruntfile '
+      . __DIR__ . '/tasks/makepot/makepot.js'
+      . ' --base_path ' . __DIR__);
   }
 
   function pushpot() {
-    $this->_exec('grunt pushpot'.
-                ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
-                ' --base_path '.__DIR__
-    );
+    $this->_exec('grunt pushpot' . ' --gruntfile '
+      . __DIR__ . '/tasks/makepot/makepot.js'
+      . ' --base_path ' . __DIR__);
   }
 
-  function testUnit($singleUnit = null) {
+  function testUnit() {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
-    $this->_exec('vendor/bin/codecept run unit ' . (($singleUnit) ? $singleUnit : ''));
+    $this->_exec('vendor/bin/codecept run unit');
+  }
+
+  function testUnitSingle($unit = null) {
+    if (!$unit) {
+      throw new Exception("Your need to specify what you want to test (e.g.: test:unit-single models/SubscriberCest)");
+    }
+    $this->loadEnv();
+    $this->_exec('vendor/bin/codecept build');
+    $this->_exec('vendor/bin/codecept run unit ' . $unit);
   }
 
   function testAcceptance() {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
-    $this
-      ->taskExec('phantomjs --webdriver=4444')
+    $this->taskExec('phantomjs --webdriver=4444')
       ->background()
       ->run();
     sleep(2);
@@ -88,10 +102,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testAll() {
-    $this->loadEnv();  
+    $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
-    $this
-      ->taskexec('phantomjs --webdriver=4444')
+    $this->taskexec('phantomjs --webdriver=4444')
       ->background()
       ->run();
     sleep(2);
@@ -108,15 +121,13 @@ class RoboFile extends \Robo\Tasks {
     $dotenv = new Dotenv\Dotenv(__DIR__);
     $dotenv->load();
 
-    $this
-      ->taskWriteToFile('tests/acceptance.suite.yml')
+    $this->taskWriteToFile('tests/acceptance.suite.yml')
       ->textFromFile('tests/acceptance.suite.src')
       ->run();
 
-    $this
-      ->taskReplaceInFile('tests/acceptance.suite.yml')
+    $this->taskReplaceInFile('tests/acceptance.suite.yml')
       ->regex("/url.*/")
-      ->to('url: ' . "'" . getenv('WP_TEST_URL'). "'")
+      ->to('url: ' . "'" . getenv('WP_TEST_URL') . "'")
       ->run();
   }
 }
