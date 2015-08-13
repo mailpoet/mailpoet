@@ -12,7 +12,7 @@ class Renderer {
     $file_system = new TwigFileSystem(Env::$views_path);
     $this->renderer = new TwigEnv(
       $file_system,
-      array('cache' => $this->getCachePath())
+      array('cache' => $this->detectCache())
     );
   }
 
@@ -49,8 +49,9 @@ class Renderer {
     $this->renderer->setLexer($lexer);
   }
 
-  function getCachePath() {
-    if(WP_DEBUG === true) { return false; }
-    return Env::$views_path . '/cache';
+  function detectCache() {
+    $cache_path = Env::$views_path . '/cache';
+    if (WP_DEBUG === false) return $cache_path;
+    return false;
   }
 }
