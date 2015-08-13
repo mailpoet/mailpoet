@@ -10,16 +10,14 @@ class Setting extends Model {
     parent::__construct();
 
     $this->addValidations("name", array(
-        "required"    => "name_is_blank",
-        "isString"    => "name_is_not_string",
-        "minLength|2" => "name_is_short"
+      "required"    => "name_is_blank",
+      "isString"    => "name_is_not_string",
+      "minLength|2" => "name_is_short"
     ));
     $this->addValidations("value", array(
-        "required"    => "value_is_blank",
-        "isString"    => "value_is_not_string",
-        "minLength|2" => "value_is_short"
+      "required"    => "value_is_blank",
+      "isString"    => "value_is_not_string",
+      "minLength|2" => "value_is_short"
     ));
-
   }
-
 }
