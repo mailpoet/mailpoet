@@ -32,25 +32,26 @@ class Widget extends \WP_Widget {
 
     // set title
     $title = isset($instance['title']) ? strip_tags($instance['title']) : '';
-    ?>
-    <p>
-      <label for="<?php $this->get_field_id( 'title' ) ?>">
-        <?php _e( 'Title:' ); ?>
-      </label>
-      <input
-        type="text"
-        class="widefat"
-        id="<?php echo $this->get_field_id('title') ?>"
-        name="<?php echo $this->get_field_name('title'); ?>"
-        value="<?php echo esc_attr($title); ?>"
-      />
-    </p>
-    <p>
-      <a href="javascript:;" class="mailpoet_form_new">
-        <?php _e("Create a new form"); ?>
-      </a>
-    </p>
-    <?php
+
+    $output = '';
+
+    $output .= '<p>';
+    $output .= '  <label for="'.$this->get_field_id('title').'">';
+    $output .= __('Title:' );
+    $output .= '  </label>';
+    $output .= '  <input type="text" class="widefat"';
+    $output .= '    id="'.$this->get_field_id('title').'"';
+    $output .= '    name="'.$this->get_field_name('title').'"';
+    $output .= '    value="'.esc_attr($title).'"';
+    $output .= '  />';
+    $output .= '</p>';
+    $output .= '<p>';
+    $output .= '  <a href="javascript:;" class="mailpoet_form_new">';
+    $output .= __('Create a new form');
+    $output .= '  </a>';
+    $output .= '</p>';
+
+    echo $output;
   }
 
   function widget($args, $instance = null) {
@@ -86,8 +87,10 @@ class Widget extends \WP_Widget {
       'class="mailpoet_form mailpoet_form_'.$form_type.'" novalidate>';
 
     $output .= '  <p>';
-    $output .= '    <label>';
-    $output .=        __('E-mail').' <input type="email" name="email" data-validation-engine="validate[required,custom[email]]"/>';
+    $output .= '    <label>'.__('E-mail');
+    $output .= '      <input type="email" name="email"';
+    $output .= '      data-validation-engine="validate[required,custom[email]]"';
+    $output .= '      />';
     $output .= '    </label>';
     $output .= '  </p>';
 
