@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# requires the following:
+# - zip
+# - npm
+
+mkdir ./tmp
+mkdir ./tmp/wysija-newsletters
+
+# copy assets, languages, sources and the LICENSE
+
+cp ./assets ./tmp/wysija-newsletters -r
+cp ./lang ./tmp/wysija-newsletters -r
+cp ./lib ./tmp/wysija-newsletters -r
+cp ./views ./tmp/wysija-newsletters -r
+cp index.php ./tmp/wysija-newsletters
+cp mailpoet.php ./tmp/wysija-newsletters
+cp LICENSE ./tmp/wysija-newsletters
+
+# copy NPM packages declaration and composer files (including the phar executable)
+
+cp composer.* ./tmp/wysija-newsletters
+cp package.json ./tmp/wysija-newsletters
+
+# make sure there are directories for composer's and node's modules
+
+mkdir ./tmp/wysija-newsletters/vendor
+mkdir ./tmp/wysija-newsletters/node_modules
+
+# move down to the plugin directory
+
+cd ./tmp/wysija-newsletters
+
+# install nodes and composer dependencies
+
+npm install --production
+
+./composer.phar install --no-dev
+
+# cleanup NPM packages declaration, debug log and composer files
+
+rm ./composer.*
+rm ./package.json
+rm ./npm-debug.log
+
+# go up to ./tmp and zip the plugin
+
+cd ..
+
+zip ../mailpoet.zip wysija-newsletters -rq
+
+# go up the project sources and cleanup ./tmp
+
+cd ..
+
+rm ./tmp -r
