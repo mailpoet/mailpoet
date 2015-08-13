@@ -10,7 +10,8 @@ $models = array(
     "Subscriber",
     "Setting"
 );
-$destroy = array_map(function ($model) {
+$destroy = function ($model) {
   Model::factory("\MailPoet\Models\\" . $model)
-       ->delete_many();
-}, $models);
+    ->delete_many();
+};
+array_map($destroy, $models);
