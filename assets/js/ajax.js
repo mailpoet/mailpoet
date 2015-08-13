@@ -1,4 +1,4 @@
-define('ajax', ['./mailpoet', 'jquery'], function(MailPoet, jQuery) {
+define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
   "use strict";
   /**
   * MailPoet Ajax

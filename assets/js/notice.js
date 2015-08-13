@@ -1,4 +1,4 @@
-define('notice', ['./mailpoet', 'jquery'], function(MailPoet, jQuery) {
+define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
   "use strict";
   /*==================================================================================================
 

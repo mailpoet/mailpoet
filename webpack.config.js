@@ -1,5 +1,6 @@
 var path = require('path'),
     fs = require('fs'),
+    webpack = require("webpack"),
     _ = require('underscore'),
     baseConfig;
 
@@ -7,12 +8,17 @@ baseConfig = {
   name: 'main',
   context: __dirname ,
   entry: {
-    admin: './assets/js/admin.js',
+    vendor: ['handlebars', 'handlebars_helpers'],
+    mailpoet: ['mailpoet', 'ajax', 'modal', 'notice'],
+    admin: 'admin.js',
   },
   output: {
     path: './assets/js/src',
     filename: '[name].js',
   },
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.js")
+  ],
   loaders: [
     {
       test: /\.js$/i,

@@ -1,10 +1,9 @@
 define('admin', [
-    './ajax',
-    'notice.js',
-    'modal.js',
-    'lib/handlebars.min.js',
-    'handlebars_helpers.js'
-  ], function() {
+    'mailpoet',
+    'jquery',
+    'handlebars',
+  ], function(MailPoet, jQuery, Handlebars) {
+  console.log('OVER HERE', MailPoet, jQuery, Handlebars);
   jQuery(function($) {
     // dom ready
     $(function() {

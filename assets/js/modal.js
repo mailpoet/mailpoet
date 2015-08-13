@@ -1,4 +1,4 @@
-define('modal', ['./mailpoet', 'jquery'], function(MailPoet, jQuery) {
+define('modal', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
   "use strict";
   /*==================================================================================================
 

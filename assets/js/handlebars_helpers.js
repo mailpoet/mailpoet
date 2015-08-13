@@ -1,4 +1,4 @@
-define('handlebars_helpers', ['lib/handlebars.min.js'], function(Handlebars) {
+define('handlebars_helpers', ['handlebars'], function(Handlebars) {
   // Handlebars helpers
   Handlebars.registerHelper('concat', function() {
       var size = (arguments.length - 1),
