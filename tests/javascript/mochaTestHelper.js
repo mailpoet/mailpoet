@@ -26,3 +26,5 @@ if (!global.document || !global.window) {
         return this.compareDocumentPosition(node) & 16;
     };
 }
+
+global.$ = global.jQuery = global.window.jQuery = require('../../node_modules/jquery/dist/jquery.js');

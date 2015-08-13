@@ -83,7 +83,7 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec(join(' ', array(
       './node_modules/mocha/bin/mocha',
       '-r tests/javascript/mochaTestHelper.js',
-      'tests/javascript/newsletter_editor/testBundle.js'
+      'tests/javascript/testBundles/**/*.js'
     )));
   }
 
