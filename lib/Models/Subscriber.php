@@ -8,17 +8,16 @@ class Subscriber extends Model {
 
   function __construct() {
     $this->addValidations('email', array(
-        'required' => "email_is_blank",
-        'isEmail'  => "email_is_invalid"
+      'required' => "email_is_blank",
+      'isEmail'  => "email_is_invalid"
     ));
     $this->addValidations('first_name', array(
-        'required'    => "first_name_is_blank",
-        'minLength|2' => "first_name_is_short"
+      'required'    => "first_name_is_blank",
+      'minLength|2' => "first_name_is_short"
     ));
     $this->addValidations('last_name', array(
-        'required'    => "last_name_is_blank",
-        'minLength|2' => "last_name_is_short"
+      'required'    => "last_name_is_blank",
+      'minLength|2' => "last_name_is_short"
     ));
   }
-
 }
