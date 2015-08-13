@@ -42,6 +42,7 @@ npm install --production
 cd ..
 zip -rq ../mailpoet.zip \
 	wysija-newsletters/vendor \
+	wysija-newsletters/lang \
 	wysija-newsletters/assets \
 	wysija-newsletters/lib \
 	wysija-newsletters/views \
