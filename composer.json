@@ -19,7 +19,7 @@
   "autoload": {
     "psr-4": {
       "MailPoet\\": "lib/",
-	  "Sudzy\\": "lib/Util/Sudzy"
+      "Sudzy\\": "lib/Util/Sudzy"
     }
   }
 }
