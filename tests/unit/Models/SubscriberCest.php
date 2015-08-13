@@ -4,6 +4,7 @@ use MailPoet\Models\Subscriber;
 class SubscriberCest {
 
   function _before() {
+    $this->before_time = time();
     $this->data = array(
         'first_name' => 'John',
         'last_name'  => 'Mailer',
@@ -80,6 +81,45 @@ class SubscriberCest {
     $conflict_subscriber = Subscriber::create();
     $conflict_subscriber->validateField('last_name', 'a');
     expect($conflict_subscriber->getValidationErrors()[0])->equals('last_name_is_short');
+  }
+
+  function itHasACreatedAtOnCreation() {
+    $subscriber = Subscriber::where('email', $this->data['email'])
+                            ->findOne();
+    $time_difference = strtotime($subscriber->created_at) >= $this->before_time;
+    expect($time_difference)->equals(true);
+  }
+
+  function itHasAnUpdatedAtOnCreation() {
+    $subscriber = Subscriber::where('email', $this->data['email'])
+                            ->findOne();
+    $time_difference = strtotime($subscriber->updated_at) >= $this->before_time;
+    expect($time_difference)->equals(true);
+  }
+
+  function itKeepsTheCreatedAtOnUpdate() {
+    $subscriber = Subscriber::where('email', $this->data['email'])
+                            ->findOne();
+
+    $old_created_at = $subscriber->created_at;
+
+    $subscriber->first_name = 'New Name';
+    $subscriber->save();
+
+    expect($old_created_at)->equals($subscriber->created_at);
+  }
+
+  function itUpdatesTheUpdatedAtOnUpdate() {
+    $subscriber = Subscriber::where('email', $this->data['email'])
+                            ->findOne();
+
+    $update_time = time();
+    $subscriber->first_name = 'New Name';
+    $subscriber->save();
+
+    $time_difference = strtotime($subscriber->updated_at) >= $update_time;
+
+    expect($time_difference)->equals(true);
   }
 
   function _after() {
