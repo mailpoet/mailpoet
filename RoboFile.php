@@ -16,28 +16,28 @@ class RoboFile extends \Robo\Tasks {
   function watch() {
     $files = array(
       // global admin styles
-        'assets/css/src/admin.styl',
+      'assets/css/src/admin.styl',
       // rtl specific styles
-        'assets/css/src/rtl.styl'
+      'assets/css/src/rtl.styl'
     );
 
     $command = array(
-        './node_modules/stylus/bin/stylus -u',
-        ' nib -w' . join(' ', $files) . ' -o assets/css/'
+      './node_modules/stylus/bin/stylus -u',
+      ' nib -w' . join(' ', $files) . ' -o assets/css/'
     );
     $this->_exec(join(' ', $command));
   }
 
   function makepot() {
     $this->_exec('grunt makepot' . ' --gruntfile '
-                 . __DIR__ . '/tasks/makepot/makepot.js'
-                 . ' --base_path ' . __DIR__);
+      . __DIR__ . '/tasks/makepot/makepot.js'
+      . ' --base_path ' . __DIR__);
   }
 
   function pushpot() {
     $this->_exec('grunt pushpot' . ' --gruntfile '
-                 . __DIR__ . '/tasks/makepot/makepot.js'
-                 . ' --base_path ' . __DIR__);
+      . __DIR__ . '/tasks/makepot/makepot.js'
+      . ' --base_path ' . __DIR__);
   }
 
   function testUnit() {
@@ -59,18 +59,18 @@ class RoboFile extends \Robo\Tasks {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
     $this->taskExec('phantomjs --webdriver=4444')
-         ->background()
-         ->run();
+      ->background()
+      ->run();
     sleep(2);
     $this->_exec('vendor/bin/codecept run acceptance');
   }
 
   function testAll() {
-    $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
+    $this->_exec('vendor/bin/codecept build');
     $this->taskexec('phantomjs --webdriver=4444')
-         ->background()
-         ->run();
+      ->background()
+      ->run();
     sleep(2);
     $this->_exec('vendor/bin/codecept run');
   }
@@ -86,12 +86,12 @@ class RoboFile extends \Robo\Tasks {
     $dotenv->load();
 
     $this->taskWriteToFile('tests/acceptance.suite.yml')
-         ->textFromFile('tests/acceptance.suite.src')
-         ->run();
+      ->textFromFile('tests/acceptance.suite.src')
+      ->run();
 
     $this->taskReplaceInFile('tests/acceptance.suite.yml')
-         ->regex("/url.*/")
-         ->to('url: ' . "'" . getenv('WP_TEST_URL') . "'")
-         ->run();
+      ->regex("/url.*/")
+      ->to('url: ' . "'" . getenv('WP_TEST_URL') . "'")
+      ->run();
   }
 }
