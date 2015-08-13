@@ -7,7 +7,8 @@ class CustomValidator {
   }
 
   function init() {
-    $this->validator->addValidator('isString', function ($val) {
+    $this->validator
+      ->addValidator('isString', function ($val) {
       return is_string($val);
     });
 
