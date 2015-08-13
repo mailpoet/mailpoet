@@ -27,4 +27,4 @@ if (!global.document || !global.window) {
     };
 }
 
-global.$ = global.jQuery = global.window.jQuery = require('../../node_modules/jquery/dist/jquery.js');
+global.$ = global.jQuery = global.window.jQuery = require('jquery');
