@@ -17,8 +17,7 @@ $models = array(
     "Subscriber",
     "Setting"
 );
-
-foreach ($models as $model) {
+$destroy = array_map(function ($model) {
   Model::factory("\MailPoet\Models\\" . $model)
        ->delete_many();
-}
+}, $models);
