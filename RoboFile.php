@@ -60,15 +60,15 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
-  function testUnit() {
-    $this->_exec('vendor/bin/codecept build');
+  function testUnit($singleUnit = null) {
     $this->loadEnv();
-    $this->_exec('vendor/bin/codecept run unit');
+    $this->_exec('vendor/bin/codecept build');
+    $this->_exec('vendor/bin/codecept run unit ' . (($singleUnit) ? $singleUnit : ''));
   }
 
   function testAcceptance() {
-    $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
+    $this->_exec('vendor/bin/codecept build');
     $this
       ->taskExec('phantomjs --webdriver=4444')
       ->background()
