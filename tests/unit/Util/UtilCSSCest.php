@@ -13,7 +13,7 @@ class UtilCSSCest {
     public function itCanParseCss() {
         $styles_array = array();
         try {
-            $url = dirname(__DIR__).'/../assets/css/admin.css';
+            $url = dirname(__DIR__).'/../../assets/css/admin.css';
             $css = $this->css->getCSS($url);
             $styles_array = $this->css->parseCSS($css);
         } catch(Exception $e) {}

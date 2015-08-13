@@ -93,6 +93,27 @@ $ ./do install
 $ ln -s node_modules/handlebars/dist/handlebars.min.js assets/js/lib/handlebars.min.js
 ```
 
+## Module loading and organization
+
+Our JS modules are stored in `assets/js/` folder. Modules should follow AMD module definition style:
+
+```js
+define('moduleName', ['dependency1', 'dependency2'], function(dependency1, dependency2){
+  // Module code here
+
+  return {
+    // Module exports here
+  };
+})
+```
+
+Module loader will look for `dependency1` in `node_modules/` dependencies, as well as in `assets/js`. So you can use dependencies, defined in `package.json`, without the need of providing an absolute path to it.
+Once found, dependencies will be injected into your module via function arguments.
+
+When it comes to loading modules on a real page, WebPack uses "entry points" to create different bundles. In order for the module to be included in a specific bundle, it must be reachable from that bundle's entry point. [A good example on WebPack's website](http://webpack.github.io/docs/code-splitting.html#split-app-and-vendor-code).
+
+Once javascript is compiled with `./do compile:javascript`, your module will be placed into a bundle. Including that bundle in a webpage will give provide you access to your module.
+
 ## Handlebars (`views/*.hbs`)
 
 ```html
