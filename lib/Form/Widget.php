@@ -87,7 +87,7 @@ class Widget extends \WP_Widget {
 
     $output .= '  <p>';
     $output .= '    <label>';
-    $output .=        __('E-mail').' <input type="email" name="email" />';
+    $output .=        __('E-mail').' <input type="email" name="email" data-validation-engine="validate[required,custom[email]]"/>';
     $output .= '    </label>';
     $output .= '  </p>';
 
