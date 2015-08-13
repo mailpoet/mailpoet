@@ -6,8 +6,8 @@ class SettingCest {
   function _before() {
     $this->before_time = time();
     $this->data = array(
-        'name'  => 'sending_method',
-        'value' => 'smtp'
+      'name'  => 'sending_method',
+      'value' => 'smtp'
     );
 
     $setting = Setting::create();
@@ -21,31 +21,31 @@ class SettingCest {
   }
 
   function nameShouldValidate() {
-    $invalid_setting = Setting::create();
-    $invalid_setting->validateField('name', '');
-    expect($invalid_setting->getValidationErrors()[0])->equals('name_is_blank');
+    $conflict_setting = Setting::create();
+    $conflict_setting->validateField('name', '');
+    expect($conflict_setting->getValidationErrors()[0])->equals('name_is_blank');
 
-    $invalid_setting = Setting::create();
-    $invalid_setting->validateField('name', 31337);
-    expect($invalid_setting->getValidationErrors()[0])->equals('name_is_not_string');
+    $conflict_setting = Setting::create();
+    $conflict_setting->validateField('name', 31337);
+    expect($conflict_setting->getValidationErrors()[0])->equals('name_is_not_string');
 
-    $invalid_setting = Setting::create();
-    $invalid_setting->validateField('name', 'a');
-    expect($invalid_setting->getValidationErrors()[0])->equals('name_is_short');
+    $conflict_setting = Setting::create();
+    $conflict_setting->validateField('name', 'a');
+    expect($conflict_setting->getValidationErrors()[0])->equals('name_is_short');
   }
 
   function valueShouldValidate() {
-    $invalid_setting = Setting::create();
-    $invalid_setting->validateField('value', '');
-    expect($invalid_setting->getValidationErrors()[0])->equals('value_is_blank');
+    $conflict_setting = Setting::create();
+    $conflict_setting->validateField('value', '');
+    expect($conflict_setting->getValidationErrors()[0])->equals('value_is_blank');
 
-    $invalid_setting = Setting::create();
-    $invalid_setting->validateField('value', 31337);
-    expect($invalid_setting->getValidationErrors()[0])->equals('value_is_not_string');
+    $conflict_setting = Setting::create();
+    $conflict_setting->validateField('value', 31337);
+    expect($conflict_setting->getValidationErrors()[0])->equals('value_is_not_string');
 
-    $invalid_setting = Setting::create();
-    $invalid_setting->validateField('value', 'a');
-    expect($invalid_setting->getValidationErrors()[0])->equals('value_is_short');
+    $conflict_setting = Setting::create();
+    $conflict_setting->validateField('value', 'a');
+    expect($conflict_setting->getValidationErrors()[0])->equals('value_is_short');
   }
 
   function itHasACreatedAtOnCreation() {

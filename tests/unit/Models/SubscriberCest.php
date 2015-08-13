@@ -6,9 +6,9 @@ class SubscriberCest {
   function _before() {
     $this->before_time = time();
     $this->data = array(
-        'first_name' => 'John',
-        'last_name'  => 'Mailer',
-        'email'      => 'john@mailpoet.com'
+      'first_name' => 'John',
+      'last_name'  => 'Mailer',
+      'email'      => 'john@mailpoet.com'
     );
 
     $this->subscriber = Subscriber::create();
@@ -17,26 +17,22 @@ class SubscriberCest {
   }
 
   function itCanBeCreated() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
-                            ->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
     expect($subscriber->id)->notNull();
   }
 
   function itHasAFirstName() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
-                            ->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
     expect($subscriber->first_name)->equals($this->data['first_name']);
   }
 
   function itHasALastName() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
-                            ->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
     expect($subscriber->last_name)->equals($this->data['last_name']);
   }
 
   function itHasAnEmail() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
-                            ->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
     expect($subscriber->email)->equals($this->data['email']);
   }
 
@@ -71,13 +67,13 @@ class SubscriberCest {
     $conflict_subscriber->validateField('first_name', 'a');
     expect($conflict_subscriber->getValidationErrors()[0])->equals('first_name_is_short');
   }
-  
-  
+
+
   function lastNameShouldValidate() {
     $conflict_subscriber = Subscriber::create();
     $conflict_subscriber->validateField('last_name', '');
     expect($conflict_subscriber->getValidationErrors()[0])->equals('last_name_is_blank');
-    
+
     $conflict_subscriber = Subscriber::create();
     $conflict_subscriber->validateField('last_name', 'a');
     expect($conflict_subscriber->getValidationErrors()[0])->equals('last_name_is_short');
@@ -85,21 +81,21 @@ class SubscriberCest {
 
   function itHasACreatedAtOnCreation() {
     $subscriber = Subscriber::where('email', $this->data['email'])
-                            ->findOne();
+      ->findOne();
     $time_difference = strtotime($subscriber->created_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itHasAnUpdatedAtOnCreation() {
     $subscriber = Subscriber::where('email', $this->data['email'])
-                            ->findOne();
+      ->findOne();
     $time_difference = strtotime($subscriber->updated_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itKeepsTheCreatedAtOnUpdate() {
     $subscriber = Subscriber::where('email', $this->data['email'])
-                            ->findOne();
+      ->findOne();
 
     $old_created_at = $subscriber->created_at;
 
@@ -110,8 +106,7 @@ class SubscriberCest {
   }
 
   function itUpdatesTheUpdatedAtOnUpdate() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
-                            ->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
 
     $update_time = time();
     $subscriber->first_name = 'New Name';
@@ -123,9 +118,7 @@ class SubscriberCest {
   }
 
   function _after() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
-                            ->findOne()
-                            ->delete();
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne()->delete();
   }
 
 }
