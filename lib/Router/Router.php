@@ -15,10 +15,10 @@ class Router {
   }
 
   function setup() {
+    $this->securityCheck();
+
     $endpoint = 'MailPoet\\Router\\'.ucfirst($_GET['mailpoet_endpoint']);
     $action = $_GET['mailpoet_action'];
-
-    $this->securityCheck();
 
     if(class_exists($endpoint) && method_exists($endpoint, $action)) {
 
@@ -56,6 +56,5 @@ class Router {
 
   function securityCheck($action = 'mailpoet') {
     if(!current_user_can('manage_options')) { wp_die(); }
-    if(!wp_verify_nonce($_GET['mailpoet_nonce'], $action)) { wp_die(); }
   }
 }

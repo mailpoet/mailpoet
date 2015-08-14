@@ -15,4 +15,10 @@ class Settings {
     );
     return $data;
   }
+
+  function save($params = array()) {
+    \MailPoet\WP\Nonce::check('mailpoet_settings_form');
+
+    return array('success' => true);
+  }
 }
