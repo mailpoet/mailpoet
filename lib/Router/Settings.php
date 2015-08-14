@@ -7,12 +7,12 @@ class Settings {
   function __construct() {
   }
 
-  function get($params) {
+  function get($params = array()) {
     $data = array(
       'first_name' => 'John',
       'last_name' => 'Mailer',
       'email' => 'john@mailpoet.com'
     );
-    echo json_encode($data);
+    return $data;
   }
 }

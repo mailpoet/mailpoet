@@ -5,12 +5,12 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
   **/
 
   MailPoet.Ajax = {
-      version: 0.1,
+      version: 0.2,
       options: {},
       defaults: {
         url: null,
-        controller: 'dummy',
-        action: 'test',
+        endpoint: null,
+        action: null,
         data: {},
         onSuccess: function(data, textStatus, xhr) {},
         onError: function(xhr, textStatus, errorThrown) {}
@@ -33,7 +33,7 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         }
 
         // routing
-        this.options.url += '&mailpoet_controller='+this.options.controller;
+        this.options.url += '&mailpoet_endpoint='+this.options.endpoint;
         this.options.url += '&mailpoet_action='+this.options.action;
       },
       request: function(method, options) {

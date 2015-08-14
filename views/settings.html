@@ -4,49 +4,11 @@
   <h1><%= 'Settings' %></h1>
 
   <form id="mailpoet_settings" novalidate>
-    <p>
-      <label>
-        <%= __('First Name') %>
-        <input type="text" name="first_name" />
-      </label>
-    </p>
 
-    <p>
-      <label>
-        <%= __('Last Name') %>
-        <input type="text" name="last_name" />
-      </label>
-    </p>
-
-    <p>
-      <label>
-        <%= __('Email') %>
-        <input type="email" name="email" />
-      </label>
-    </p>
-
-    <p>
-      <input type="submit" class="button-secondary"
-        value="<%= __('Submit') %>"
-      />
-    </p>
   </form>
 
   <script type="text/javascript">
   jQuery(function($) {
-
-    function loadSettings() {
-    var data = {
-      'endpoint': 'settings',
-      'action': 'get',
-      'args': ''
-    };
-
-    $.post(ajaxurl, data, function(response) {
-      alert('Server response from the AJAX URL ' + response);
-    });
-    }
-
     function saveSettings() {
       console.log('save settings...');
 
@@ -58,8 +20,24 @@
 
     // on dom loaded
     $(function() {
+
+      function loadSettings() {
+        MailPoet.Ajax.get({
+          endpoint: 'settings',
+          action: 'get',
+          onSuccess: function(response) {
+            var template = Handlebars.compile($('#settings_basics').html());
+            $('#mailpoet_settings').html(template(response));
+          }
+        });
+      }
+
       loadSettings();
     });
   });
   </script>
+<% endblock %>
+
+<% block templates %>
+  <%= partial('settings_basics', 'settings/templates/basics.hbs') %>
 <% endblock %>

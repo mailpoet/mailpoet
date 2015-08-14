@@ -3,23 +3,16 @@ webpackJsonp([1],[
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(1);
-	__webpack_require__(11);
-	__webpack_require__(12);
-	module.exports = __webpack_require__(13);
+	__webpack_require__(4);
+	__webpack_require__(5);
+	module.exports = __webpack_require__(6);
 
 
 /***/ },
 /* 1 */,
 /* 2 */,
 /* 3 */,
-/* 4 */,
-/* 5 */,
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(MailPoet, jQuery) {
@@ -29,12 +22,12 @@ webpackJsonp([1],[
 	  **/
 
 	  MailPoet.Ajax = {
-	      version: 0.1,
+	      version: 0.2,
 	      options: {},
 	      defaults: {
 	        url: null,
-	        controller: 'dummy',
-	        action: 'test',
+	        endpoint: null,
+	        action: null,
 	        data: {},
 	        onSuccess: function(data, textStatus, xhr) {},
 	        onError: function(xhr, textStatus, errorThrown) {}
@@ -57,7 +50,7 @@ webpackJsonp([1],[
 	        }
 
 	        // routing
-	        this.options.url += '&mailpoet_controller='+this.options.controller;
+	        this.options.url += '&mailpoet_endpoint='+this.options.endpoint;
 	        this.options.url += '&mailpoet_action='+this.options.action;
 	      },
 	      request: function(method, options) {
@@ -92,7 +85,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 12 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(MailPoet, jQuery) {
@@ -737,7 +730,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 13 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(MailPoet, jQuery) {
