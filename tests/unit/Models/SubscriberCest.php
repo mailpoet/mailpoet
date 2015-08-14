@@ -17,22 +17,26 @@ class SubscriberCest {
   }
 
   function itCanBeCreated() {
-    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])
+                            ->findOne();
     expect($subscriber->id)->notNull();
   }
 
   function itHasAFirstName() {
-    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])
+                            ->findOne();
     expect($subscriber->first_name)->equals($this->data['first_name']);
   }
 
   function itHasALastName() {
-    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])
+                            ->findOne();
     expect($subscriber->last_name)->equals($this->data['last_name']);
   }
 
   function itHasAnEmail() {
-    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])
+                            ->findOne();
     expect($subscriber->email)->equals($this->data['email']);
   }
 
@@ -81,21 +85,21 @@ class SubscriberCest {
 
   function itHasACreatedAtOnCreation() {
     $subscriber = Subscriber::where('email', $this->data['email'])
-      ->findOne();
+                            ->findOne();
     $time_difference = strtotime($subscriber->created_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itHasAnUpdatedAtOnCreation() {
     $subscriber = Subscriber::where('email', $this->data['email'])
-      ->findOne();
+                            ->findOne();
     $time_difference = strtotime($subscriber->updated_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itKeepsTheCreatedAtOnUpdate() {
     $subscriber = Subscriber::where('email', $this->data['email'])
-      ->findOne();
+                            ->findOne();
 
     $old_created_at = $subscriber->created_at;
 
@@ -106,7 +110,8 @@ class SubscriberCest {
   }
 
   function itUpdatesTheUpdatedAtOnUpdate() {
-    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])
+                            ->findOne();
 
     $update_time = time();
     $subscriber->first_name = 'New Name';
@@ -118,7 +123,9 @@ class SubscriberCest {
   }
 
   function _after() {
-    $subscriber = Subscriber::where('email', $this->data['email'])->findOne()->delete();
+    $subscriber = Subscriber::where('email', $this->data['email'])
+                            ->findOne()
+                            ->delete();
   }
 
 }
