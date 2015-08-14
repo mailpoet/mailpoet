@@ -19,7 +19,6 @@ npm install --production;
 cp -rf lang wysija-newsletters;
 cp -rf assets wysija-newsletters;
 cp -rf lib wysija-newsletters;
-# cp -rf node_modules wysija-newsletters;
 cp -rf vendor wysija-newsletters;
 cp -rf views wysija-newsletters;
 
