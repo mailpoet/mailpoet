@@ -15,24 +15,29 @@ class Router {
   }
 
   function setup() {
-    //$this->setToken();
-    $this->securityCheck();
-
-    $request_method = filter_input(
-      INPUT_SERVER,
-      'REQUEST_METHOD',
-      FILTER_SANITIZE_STRING
-    );
-
     $endpoint = 'MailPoet\\Router\\'.ucfirst($_GET['mailpoet_endpoint']);
     $action = $_GET['mailpoet_action'];
 
+    $this->securityCheck();
+
     if(class_exists($endpoint) && method_exists($endpoint, $action)) {
+
+      $request_method = filter_input(
+        INPUT_SERVER,
+        'REQUEST_METHOD',
+        FILTER_SANITIZE_STRING
+      );
+
       switch($request_method) {
         case 'GET':
           $params = array_diff_key(
             $_GET,
-            array_flip(array('action', 'mailpoet_endpoint', 'mailpoet_action'))
+            array_flip(array(
+              'action',
+              'mailpoet_endpoint',
+              'mailpoet_action',
+              'mailpoet_nonce'
+            ))
           );
         break;
 
@@ -49,13 +54,8 @@ class Router {
     wp_die();
   }
 
-  function setToken() {
-    $token = \wp_create_nonce('mailpoet_token');
-    \wp_localize_script($token);
-  }
-
-  function securityCheck() {
-    if (!\current_user_can('manage_options')) { wp_die(); }
-    //if (!\wp_verify_nonce($_POST['token'])) { wp_die(); }
+  function securityCheck($action = 'mailpoet') {
+    if(!current_user_can('manage_options')) { wp_die(); }
+    if(!wp_verify_nonce($_GET['mailpoet_nonce'], $action)) { wp_die(); }
   }
 }

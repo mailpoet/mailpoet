@@ -19,6 +19,7 @@ class Renderer {
   function init() {
     $this->setupTranslations();
     $this->setupHandlebars();
+    $this->setupWordPress();
     $this->setupGlobalVariables();
     $this->setupSyntax();
     return $this->renderer;
@@ -26,6 +27,10 @@ class Renderer {
 
   function setupTranslations() {
     $this->renderer->addExtension(new Twig\i18n(Env::$plugin_name));
+  }
+
+  function setupWordPress() {
+    $this->renderer->addExtension(new Twig\WordPress());
   }
 
   function setupHandlebars() {

@@ -4,7 +4,8 @@
   <h1><%= 'Settings' %></h1>
 
   <form id="mailpoet_settings" novalidate>
-
+    <%= nonce() %>
+    <div id="mailpoet_settings_basics"></div>
   </form>
 
   <script type="text/javascript">
@@ -27,7 +28,7 @@
           action: 'get',
           onSuccess: function(response) {
             var template = Handlebars.compile($('#settings_basics').html());
-            $('#mailpoet_settings').html(template(response));
+            $('#mailpoet_settings_basics').html(template(response));
           }
         });
       }
