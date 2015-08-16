@@ -48,15 +48,15 @@ class RoboFile extends \Robo\Tasks {
 
   function makepot() {
     $this->_exec('grunt makepot'.
-                ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
-                ' --base_path '.__DIR__
+      ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
+      ' --base_path '.__DIR__
     );
   }
 
   function pushpot() {
     $this->_exec('grunt pushpot'.
-                ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
-                ' --base_path '.__DIR__
+      ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
+      ' --base_path '.__DIR__
     );
   }
 
@@ -88,7 +88,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testAll() {
-    $this->loadEnv();  
+    $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
     $this
       ->taskexec('phantomjs --webdriver=4444')

@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# remove previouz build.
+rm wysija-newsletters.zip;
+
+# Create temp dir.
+mkdir wysija-newsletters;
+
+# Cleanup Composer and NPM.
+rm -rf vendor;
+rm -rf node_modules;
+rm composer.lock;
+
+# Install Composer and NPM  deps.
+./composer.phar install --no-dev;
+npm install --production;
+
+# Copy release folders.
+cp -rf lang wysija-newsletters;
+cp -rf assets wysija-newsletters;
+cp -rf lib wysija-newsletters;
+cp -rf vendor wysija-newsletters;
+cp -rf views wysija-newsletters;
+
+# Copy release files.
+cp LICENSE wysija-newsletters;
+cp index.php wysija-newsletters;
+cp mailpoet.php wysija-newsletters;
+cp readme.txt wysija-newsletters;
+cp uninstall.php wysija-newsletters;
+cp webpack.config.js wysija-newsletters;
+
+# Zip final release.
+zip -r wysija-newsletters.zip wysija-newsletters;
+
+# Remove temp dir.
+rm -rf wysija-newsletters;
+
+# Cleanup Composer and NPM.
+rm -rf vendor;
+rm -rf node_modules;
+rm composer.lock;
+
+# Reinstall dev dependencies.
+./composer.phar install;
+./do install;
