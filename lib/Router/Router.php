@@ -9,28 +9,35 @@ class Router {
 
   function init() {
     add_action(
+      'admin_head',
+      array($this, 'setToken')
+    );
+    add_action(
       'wp_ajax_mailpoet',
       array($this, 'setup')
     );
-    $this->setToken();
   }
 
   function setup() {
     $this->securityCheck();
-    $endpoint =  ucfirst($_POST['endpoint']);
-    $action = $_POST['action'];
+    $class = ucfirst($_POST['endpoint']);
+    $endpoint =  __NAMESPACE__ . "\\" . $class;
+    $method = $_POST['method'];
     $args = $_POST['args'];
-    $route = new $endpoint();
-    $route->$action($args);
+    $endpoint = new $endpoint();
+    $endpoint->$method(json_encode($args));
   }
 
   function setToken() {
     $token = wp_create_nonce('mailpoet_token');
-    wp_localize_script($token);
+    $global = '<script type="text/javascript">';
+    $global .= 'var mailpoet_token = "' . $token . '";';
+    $global .= "</script>/n";
+    echo $global;
   }
 
   function securityCheck() {
     if (!current_user_can('manage_options')) {die();}
-    if (!wp_verify_nonce($_POST['token'])) {die();}
+    if (!wp_verify_nonce($_POST['token'], 'mailpoet_token')) {die();}
   }
 }

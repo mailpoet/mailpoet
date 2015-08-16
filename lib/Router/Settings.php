@@ -13,6 +13,6 @@ class Settings {
       'last_name' => 'Mailer',
       'email' => 'john@mailpoet.com'
     );
-    echo json_encode($data);
+    wp_send_json($params);
   }
 }

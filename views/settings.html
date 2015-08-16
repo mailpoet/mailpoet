@@ -32,34 +32,24 @@
     </p>
   </form>
 
-  <script type="text/javascript">
-  jQuery(function($) {
-
-    function loadSettings() {
-    var data = {
-      'endpoint': 'settings',
-      'action': 'get',
-      'args': ''
-    };
-
-    $.post(ajaxurl, data, function(response) {
-      alert('Server response from the AJAX URL ' + response);
-    });
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+  $.ajax({
+    url: ajaxurl,
+    type: 'post',
+    data: {
+      action: 'mailpoet',
+      token: mailpoet_token,
+      endpoint: 'settings',
+      method: 'get',
+      args: {
+        first_name: 'John'
+      }
+    },
+    success : function(response) {
+      console.log(response);
     }
-
-    function saveSettings() {
-      console.log('save settings...');
-
-      return false;
-    }
-
-    // save settings on form submission
-    $(document).on('submit', '#mailpoet_settings', saveSettings);
-
-    // on dom loaded
-    $(function() {
-      loadSettings();
-    });
   });
-  </script>
+});
+</script>
 <% endblock %>
