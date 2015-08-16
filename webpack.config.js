@@ -41,7 +41,7 @@ baseConfig = {
     ],
     fallback: path.join(__dirname, 'node_modules'),
     alias: {
-      'handlebars': 'handlebars/runtime.js'
+      'handlebars': 'handlebars/dist/handlebars.js'
     }
   },
   resolveLoader: {
@@ -51,7 +51,7 @@ baseConfig = {
     }
   },
   externals: {
-    'jquery': 'jQuery',
+    'jquery': 'jQuery'
   }
 };
 
@@ -76,7 +76,7 @@ module.exports = [
       ],
       fallback: path.join(__dirname, 'node_modules'),
       alias: {
-        'handlebars': 'handlebars/runtime.js'
+        'handlebars': 'handlebars/dist/handlebars.js'
       }
     },
   })

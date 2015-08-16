@@ -2,7 +2,50 @@
 
 <% block content %>
   <h1><%= 'Settings' %></h1>
-  <p><%= __('First Name') %></p>
-  <p><%= __('Last Name') %></p>
-  <p><%= __('Email') %></p>
+
+  <form id="mailpoet_settings" novalidate>
+    <%= nonce('mailpoet_settings_form') %>
+    <div id="mailpoet_settings_basics"></div>
+  </form>
+
+  <script type="text/javascript">
+  jQuery(function($) {
+    function saveSettings() {
+
+      MailPoet.Ajax.get({
+        endpoint: 'settings',
+        action: 'save',
+        onSuccess: function(response) {
+
+        }
+      });
+
+      return false;
+    }
+
+    // save settings on form submission
+    $(document).on('submit', '#mailpoet_settings', saveSettings);
+
+    // on dom loaded
+    $(function() {
+
+      function loadSettings() {
+        MailPoet.Ajax.get({
+          endpoint: 'settings',
+          action: 'get',
+          onSuccess: function(response) {
+            var template = Handlebars.compile($('#settings_basics').html());
+            $('#mailpoet_settings_basics').html(template(response));
+          }
+        });
+      }
+
+      loadSettings();
+    });
+  });
+  </script>
+<% endblock %>
+
+<% block templates %>
+  <%= partial('settings_basics', 'settings/templates/basics.hbs') %>
 <% endblock %>

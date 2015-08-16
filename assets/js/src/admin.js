@@ -7,7 +7,6 @@ webpackJsonp([0],[
 	    __webpack_require__(2),
 	    __webpack_require__(3),
 	  ], __WEBPACK_AMD_DEFINE_RESULT__ = function(MailPoet, jQuery, Handlebars) {
-	  console.log('OVER HERE', MailPoet, jQuery, Handlebars);
 	  jQuery(function($) {
 	    // dom ready
 	    $(function() {
