@@ -19,7 +19,7 @@ class Mailer {
     $this->replyToAddress = 'staff@mailpoet.com';
   }
 
-  protected function generateMessage(array $subscriber) {
+  function generateMessage(array $subscriber) {
     return array(
       'from' => (array(
         'address' => $this->fromAddress,
