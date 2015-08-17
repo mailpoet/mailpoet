@@ -30,6 +30,10 @@ cp readme.txt wysija-newsletters;
 cp uninstall.php wysija-newsletters;
 cp webpack.config.js wysija-newsletters;
 
+# Cleanup CSS and JS assets sources
+rm -rf wysija-newsletters/assets/js/src
+rm -rf wysija-newsletters/assets/css/src
+
 # Zip final release.
 zip -r wysija-newsletters.zip wysija-newsletters;
 
