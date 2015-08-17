@@ -3,7 +3,7 @@ namespace MailPoet\Models;
 
 if (!defined('ABSPATH')) exit;
 
-class BaseModel extends \Sudzy\ValidModel {
+class Model extends \Sudzy\ValidModel {
   function __construct() {
     $customValidators = new CustomValidator();
     parent::__construct($customValidators->init());
