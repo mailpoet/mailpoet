@@ -7,11 +7,12 @@ require_once(getenv('WP_TEST_PATH') . '/wp-load.php');
 
 $console->writeln('Cleaning up database...');
 $models = array(
-    "Subscriber",
-    "Setting"
+  "Subscriber",
+  "Setting",
+  "Newsletter"
 );
 $destroy = function ($model) {
   Model::factory("\MailPoet\Models\\" . $model)
-    ->delete_many();
+       ->delete_many();
 };
 array_map($destroy, $models);

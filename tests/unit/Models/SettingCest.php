@@ -2,7 +2,7 @@
 use MailPoet\Models\Setting;
 
 class SettingCest {
-
+  
   function _before() {
     $this->before_time = time();
     $this->data = array(
@@ -16,7 +16,8 @@ class SettingCest {
   }
 
   function itCanBeCreated() {
-    $setting = Setting::where('name', $this->data['name'])->findOne();
+    $setting = Setting::where('name', $this->data['name'])
+      ->findOne();
     expect($setting->id)->notNull();
   }
 
@@ -49,19 +50,22 @@ class SettingCest {
   }
 
   function itHasACreatedAtOnCreation() {
-    $setting = Setting::where('name', 'sending_method')->findOne();
+    $setting = Setting::where('name', $this->data['name'])
+      ->findOne();
     $time_difference = strtotime($setting->created_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itHasAnUpdatedAtOnCreation() {
-    $setting = Setting::where('name', 'sending_method')->findOne();
+    $setting = Setting::where('name', $this->data['name'])
+      ->findOne();
     $time_difference = strtotime($setting->updated_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itKeepsTheCreatedAtOnUpdate() {
-    $setting = Setting::where('name', 'sending_method')->findOne();
+    $setting = Setting::where('name', $this->data['name'])
+      ->findOne();
     $old_created_at = $setting->created_at;
     $setting->value = 'http_api';
     $setting->save();
@@ -69,15 +73,18 @@ class SettingCest {
   }
 
   function itUpdatesTheUpdatedAtOnUpdate() {
-    $setting = Setting::where('name', 'sending_method')->findOne();
+    $setting = Setting::where('name', $this->data['name'])
+      ->findOne();
     $update_time = time();
     $setting->value = 'http_api';
     $setting->save();
     $time_difference = strtotime($setting->updated_at) >= $update_time;
     expect($time_difference)->equals(true);
   }
-
+  
   function _after() {
-    $setting = Setting::where('name', $this->data['name'])->findOne()->delete();
+    $setting = Setting::where('name', $this->data['name'])
+      ->findOne()
+      ->delete();
   }
 }

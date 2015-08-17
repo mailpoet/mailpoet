@@ -1,16 +1,17 @@
 <?php
 namespace MailPoet\Config;
+
 use MailPoet\Models;
 use MailPoet\Router;
 
-if(!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) exit;
 
 class Initializer {
   public function __construct($params = array(
-    'file' => '',
+    'file'    => '',
     'version' => '1.0.0'
   )) {
-  Env::init($params['file'], $params['version']);
+    Env::init($params['file'], $params['version']);
   }
 
   function init() {
@@ -29,9 +30,11 @@ class Initializer {
 
     $subscribers = Env::$db_prefix . 'subscribers';
     $settings = Env::$db_prefix . 'settings';
+    $newsletters = Env::$db_prefix . 'newsletters';
 
     define('MP_SUBSCRIBERS_TABLE', $subscribers);
     define('MP_SETTINGS_TABLE', $settings);
+    define('MP_NEWSLETTERS_TABLE', $newsletters);
   }
 
   function setupActivator() {
