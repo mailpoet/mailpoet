@@ -2,36 +2,18 @@
 use MailPoet\Mailer\Mailer;
 
 class MailerCest {
-  function itCanGenerateMessage() {
-    $newsletter = array(
+
+  function _before() {
+    $this->newsletter = array(
       'subject' => 'A test message',
       'body' => 'Test, one, two, three.'
     );
-    $mailer = new Mailer($newsletter, array());
-    $subscribers = array(
+    $this->subscribers = array(
       array(
-        'first_name' => 'Test',
-        'last_name' => 'MailPoet',
-        'email' => 'testmailpoet@gmail.com'
-      )
-    );
-    $message = $mailer->generateMessage($subscribers[0]);
-    expect($message['from']['address'])->equals('marco@mailpoet.com');
-    expect($message['from']['name'])->equals('');
-    expect($message['to']['address'])->equals('testmailpoet@gmail.com');
-    expect($message['to']['name'])->equals('Test MailPoet');
-    expect($message['reply_to']['address'])->equals('staff@mailpoet.com');
-    expect($message['reply_to']['name'])->equals('');
-    expect($message['subject'])->equals('A test message');
-    expect($message['html'])->equals('Test, one, two, three.');
-    expect($message['text'])->equals('');
-  }
-  function itCanSend() {
-    $newsletter = array(
-      'subject' => 'A test message',
-      'body' => 'Test, one, two, three.'
-    );
-    $subscribers = array(
+        'first_name' => 'Marco',
+        'last_name' => 'Lisci',
+        'email' => 'marco@mailpoet.com'
+      ),
       array(
         'first_name' => 'Test',
         'last_name' => 'MailPoet',
@@ -48,8 +30,20 @@ class MailerCest {
         'email' => 'jonathan@mailpoet.com'
       )
     );
-    $mailer = new Mailer($newsletter, $subscribers);
-    $result = $mailer->send();
-    expect($result)->equals(TRUE);
+    $this->mailer = new Mailer(
+      $this->newsletter,
+      $this->subscribers
+    );
+  }
+
+  function itCanGenerateACorrectMessage() {
+    $messages = $this->mailer->messages();
+    expect($messages[0]['to']['address'])
+      ->equals($this->subscribers[0]['email']);
+  }
+
+  function itCanSend() {
+    /* $result = $this->mailer->send(); */
+    /* expect($result)->equals(true); */
   }
 }

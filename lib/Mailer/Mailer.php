@@ -10,16 +10,23 @@ class Mailer {
 
   protected $newsletter;
   protected $subscribers;
-  protected $errors = array();
 
   function __construct(array $newsletter, array $subscribers) {
     $this->newsletter = $newsletter;
     $this->subscribers = $subscribers;
-    $this->fromAddress = 'marco@mailpoet.com';
-    $this->replyToAddress = 'staff@mailpoet.com';
+    $this->fromAddress = 'info@mailpoet.com';
+    $this->replyToAddress = 'info@mailpoet.com';
   }
 
-  function generateMessage(array $subscriber) {
+  function messages() {
+    $messages = array_map(
+      array($this, 'generateMessage'),
+      $this->subscribers
+    );
+    return $messages;
+  }
+
+  function generateMessage($subscriber) {
     return array(
       'from' => (array(
         'address' => $this->fromAddress,
@@ -38,25 +45,27 @@ class Mailer {
       'text' => ""
     );
   }
+
+  function auth() {
+    $auth = 'Basic ' . base64_encode('api:' . MAILPOET_BRIDGE_KEY);
+    return $auth;
+  }
+
   function send() {
-    $messages = array_map(
-      array($this, 'generateMessage'),
-      $this->subscribers
-    );
     $result = wp_remote_post(
       'https://bridge.mailpoet.com/api/messages', array(
         'timeout' => 10,
         'httpversion' => '1.0',
-        // 'sslverify' => false,
         'headers' => array(
           'method' => 'POST',
-          'Authorization' => 'Basic ' . base64_encode('api:'.MAILPOET_BRIDGE_KEY),
+          'Authorization' => $this->auth(),
           'Content-Type' => 'application/json'
         ),
-        'body' => json_encode($messages)
+        'body' => json_encode($this->messages())
       )
     );
-    return (wp_remote_retrieve_response_code($result) === 201);
+    $success = wp_remote_retrieve_response_code($result) === 201;
+    return ($success);
   }
 
 }
