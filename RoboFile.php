@@ -1,6 +1,17 @@
 <?php
 
 class RoboFile extends \Robo\Tasks {
+
+  private $css_files = array(
+    'assets/css/src/admin.styl',
+    'assets/css/src/rtl.styl'
+  );
+
+  private $js_files = array(
+    'assets/js/src/*.js',
+    'assets/js/src/**/*.js'
+  );
+
   function install() {
     $this->_exec('./composer.phar install');
     $this->_exec('npm install');
@@ -13,35 +24,35 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function watch() {
-    $css_files = array(
-      'assets/css/src/admin.styl',
-      'assets/css/src/rtl.styl'
-    );
-
-    $js_files = glob('assets/js/src/*.js');
+    $js_files = array();
+    array_map(function($path) use(&$js_files) {
+      $js_files = array_merge($js_files, glob($path));
+    }, $this->js_files);
 
     $this->taskWatch()
       ->monitor($js_files, function() {
-        $this->compileJavascript();
+        $this->compileJs();
       })
-      ->monitor($css_files, function() use($css_files) {
-        $this->compileStyles($css_files);
+      ->monitor($this->css_files, function() {
+        $this->compileCss();
       })
       ->run();
   }
 
-  function compileJavascript() {
+  function compileAll() {
+    $this->compileJs();
+    $this->compileCss();
+  }
+
+  function compileJs() {
     $this->_exec('./node_modules/webpack/bin/webpack.js');
   }
 
-  protected function compileStyles($files = array()) {
-    if(empty($files)) { return; }
-
+  function compileCss() {
     $this->_exec(join(' ', array(
       './node_modules/stylus/bin/stylus',
       '-u nib',
-      '-w',
-      join(' ', $files),
+      join(' ', $this->css_files),
       '-o assets/css/'
     )));
   }
@@ -78,7 +89,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testJavascript() {
-    $this->compileJavascript();
+    $this->compileJs();
 
     $this->_exec(join(' ', array(
       './node_modules/mocha/bin/mocha',

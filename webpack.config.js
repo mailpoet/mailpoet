@@ -13,7 +13,7 @@ baseConfig = {
     admin: 'admin.js',
   },
   output: {
-    path: './assets/js/src',
+    path: './assets/js',
     filename: '[name].js',
   },
   plugins: [
@@ -36,12 +36,12 @@ baseConfig = {
   resolve: {
     modulesDirectories: [
       'node_modules',
-      'assets/js',
+      'assets/js/src',
       'assets/css/lib'
     ],
     fallback: path.join(__dirname, 'node_modules'),
     alias: {
-      'handlebars': 'handlebars/runtime.js'
+      'handlebars': 'handlebars/dist/handlebars.js'
     }
   },
   resolveLoader: {
@@ -71,13 +71,14 @@ module.exports = [
     resolve: {
       modulesDirectories: [
         'node_modules',
-        'assets/js',
+        'assets/js/src',
         'tests/javascript/newsletter_editor'
       ],
       fallback: path.join(__dirname, 'node_modules'),
       alias: {
-        'handlebars': 'handlebars/runtime.js'
+        'handlebars': 'handlebars/dist/handlebars.js'
       }
     },
+    plugins: [],
   })
 ];
