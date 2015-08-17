@@ -25,7 +25,7 @@ class Router {
     $method = $_POST['method'];
     $args = $_POST['args'];
     $endpoint = new $endpoint();
-    $endpoint->$method(json_encode($args));
+    $endpoint->$method($args);
   }
 
   function setToken() {
