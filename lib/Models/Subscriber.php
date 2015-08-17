@@ -3,7 +3,7 @@ namespace MailPoet\Models;
 
 if (!defined('ABSPATH')) exit;
 
-class Subscriber extends Model {
+class Subscriber extends BaseModel {
   public static $_table = MP_SUBSCRIBERS_TABLE;
 
   function __construct() {
