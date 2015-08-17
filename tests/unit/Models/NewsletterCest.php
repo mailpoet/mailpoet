@@ -18,7 +18,7 @@ class NewsletterCest {
   
   function itCanBeCreated() {
     $newsletter = Newsletter::where('subject', $this->data['subject'])
-                            ->findOne();
+      ->findOne();
     expect($newsletter->id)->notNull();
   }
   
@@ -36,21 +36,21 @@ class NewsletterCest {
   
   function itHasACreatedAtOnCreation() {
     $newsletter = Newsletter::where('subject', $this->data['subject'])
-                            ->findOne();
+      ->findOne();
     $time_difference = strtotime($newsletter->created_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
   
   function itHasAnUpdatedAtOnCreation() {
     $newsletter = Newsletter::where('subject', $this->data['subject'])
-                            ->findOne();
+      ->findOne();
     $time_difference = strtotime($newsletter->updated_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
   
   function itKeepsTheCreatedAtOnUpdate() {
     $newsletter = Newsletter::where('subject', $this->data['subject'])
-                            ->findOne();
+      ->findOne();
     $old_created_at = $newsletter->created_at;
     $newsletter->subject = $this->data['subject'];
     $newsletter->save();
@@ -59,7 +59,7 @@ class NewsletterCest {
   
   function itUpdatesTheUpdatedAtOnUpdate() {
     $newsletter = Newsletter::where('subject', $this->data['subject'])
-                            ->findOne();
+      ->findOne();
     $update_time = time();
     $newsletter->subject = $this->data['subject'];
     $newsletter->save();
@@ -69,7 +69,7 @@ class NewsletterCest {
   
   function _after() {
     $newsletter = Newsletter::where('subject', $this->data['subject'])
-                            ->findOne()
-                            ->delete();
+      ->findOne()
+      ->delete();
   }
 }

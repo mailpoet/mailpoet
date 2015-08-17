@@ -17,7 +17,7 @@ class SettingCest {
 
   function itCanBeCreated() {
     $setting = Setting::where('name', $this->data['name'])
-                      ->findOne();
+      ->findOne();
     expect($setting->id)->notNull();
   }
 
@@ -51,21 +51,21 @@ class SettingCest {
 
   function itHasACreatedAtOnCreation() {
     $setting = Setting::where('name', $this->data['name'])
-                      ->findOne();
+      ->findOne();
     $time_difference = strtotime($setting->created_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itHasAnUpdatedAtOnCreation() {
     $setting = Setting::where('name', $this->data['name'])
-                      ->findOne();
+      ->findOne();
     $time_difference = strtotime($setting->updated_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itKeepsTheCreatedAtOnUpdate() {
     $setting = Setting::where('name', $this->data['name'])
-                      ->findOne();
+      ->findOne();
     $old_created_at = $setting->created_at;
     $setting->value = 'http_api';
     $setting->save();
@@ -74,7 +74,7 @@ class SettingCest {
 
   function itUpdatesTheUpdatedAtOnUpdate() {
     $setting = Setting::where('name', $this->data['name'])
-                      ->findOne();
+      ->findOne();
     $update_time = time();
     $setting->value = 'http_api';
     $setting->save();
@@ -84,7 +84,7 @@ class SettingCest {
   
   function _after() {
     $setting = Setting::where('name', $this->data['name'])
-                      ->findOne()
-                      ->delete();
+      ->findOne()
+      ->delete();
   }
 }
