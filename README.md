@@ -35,6 +35,11 @@ $ ./do update
 $ cp .env.sample .env
 ```
 
+- Compile assets.
+```sh
+$ ./do compile:all
+```
+
 # Tests.
 
 - Unit tests (using [verify](https://github.com/Codeception/Verify)):
