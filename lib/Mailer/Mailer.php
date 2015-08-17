@@ -51,21 +51,26 @@ class Mailer {
     return $auth;
   }
 
-  function send() {
-    $result = wp_remote_post(
-      'https://bridge.mailpoet.com/api/messages', array(
-        'timeout' => 10,
-        'httpversion' => '1.0',
-        'headers' => array(
-          'method' => 'POST',
-          'Authorization' => $this->auth(),
-          'Content-Type' => 'application/json'
-        ),
-        'body' => json_encode($this->messages())
-      )
+  function request() {
+    $request = array(
+      'timeout' => 10,
+      'httpversion' => '1.0',
+      'headers' => array(
+        'method' => 'POST',
+        'Authorization' => $this->auth(),
+        'Content-Type' => 'application/json'
+      ),
+      'body' => json_encode($this->messages())
     );
-    $success = wp_remote_retrieve_response_code($result) === 201;
-    return ($success);
+    return $request;
   }
 
+  function send() {
+    $result = wp_remote_post(
+      'https://bridge.mailpoet.com/api/messages',
+      $this->request()
+    );
+    $success = wp_remote_retrieve_response_code($result) === 201;
+    return $success;
+  }
 }
