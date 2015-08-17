@@ -19,7 +19,7 @@ class Mailer {
     $this->replyToAddress = 'staff@mailpoet.com';
   }
 
-  protected function mapToBridge(array $subscriber) {
+  protected function generateMessage(array $subscriber) {
     return array(
       'from' => (array(
         'address' => $this->fromAddress,
@@ -38,30 +38,10 @@ class Mailer {
       'text' => ""
     );
   }
-
-  protected function handle($result) {
-    switch (wp_remote_retrieve_response_code($result)) {
-      case 201:
-        return TRUE;
-      case 400:
-        $this->errors[] = 'data_not_accepted';
-        return FALSE;
-      case 401:
-        $this->errors[] = 'authenticate';
-        return FALSE;
-      case NULL:
-        $this->errors[] = 'api_unreachable';
-        return FALSE;
-      default:
-        $this->errors[] = 'unknown';
-        return FALSE;
-    }
-  }
-
   function send() {
     $messages = array_map(
-      array($this, 'mapToBridge'),
-      array_values($this->subscribers)
+      array($this, 'generateMessage'),
+      $this->subscribers
     );
     $result = wp_remote_post(
       'https://bridge.mailpoet.com/api/messages', array(
@@ -76,7 +56,7 @@ class Mailer {
         'body' => json_encode($messages)
       )
     );
-    return $this->handle($result);
+    return (wp_remote_retrieve_response_code($result) === 201);
   }
 
 }

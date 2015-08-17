@@ -8,7 +8,7 @@ class MailerCest {
       'body' => 'Test, one, two, three.'
     );
     $subscribers = array(
-      1 => array(
+      array(
         'first_name' => 'Test',
         'last_name' => 'MailPoet',
         'email' => 'testmailpoet@gmail.com'
