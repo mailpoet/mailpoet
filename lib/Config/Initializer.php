@@ -2,6 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Models;
+use MailPoet\Router;
 
 if (!defined('ABSPATH')) exit;
 
@@ -19,6 +20,7 @@ class Initializer {
     $this->setupRenderer();
     $this->setupLocalizer();
     $this->setupMenu();
+    $this->setupRouter();
   }
 
   function setupDB() {
@@ -56,5 +58,10 @@ class Initializer {
       Env::$assets_url
     );
     $menu->init();
+  }
+
+  function setupRouter() {
+    $router = new Router\Router();
+    $router->init();
   }
 }
