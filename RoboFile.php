@@ -7,7 +7,10 @@ class RoboFile extends \Robo\Tasks {
     'assets/css/src/rtl.styl'
   );
 
-  private $js_files = 'assets/js/src/*.js';
+  private $js_files = array(
+    'assets/js/src/*.js',
+    'assets/js/src/**/*.js'
+  );
 
   function install() {
     $this->_exec('./composer.phar install');
@@ -21,8 +24,13 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function watch() {
+    $js_files = array();
+    array_map(function($path) use(&$js_files) {
+      $js_files = array_merge($js_files, glob($path));
+    }, $this->js_files);
+
     $this->taskWatch()
-      ->monitor(glob($this->js_files), function() {
+      ->monitor($js_files, function() {
         $this->compileJs();
       })
       ->monitor($this->css_files, function() {
