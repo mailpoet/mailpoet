@@ -5,7 +5,8 @@ class RoboFile extends \Robo\Tasks {
   private $css_files = array(
     'assets/css/src/admin.styl',
     'assets/css/src/public.styl',
-    'assets/css/src/rtl.styl'
+    'assets/css/src/rtl.styl',
+    'assets/css/src/newsletter_editor/newsletter_editor.styl'
   );
 
   private $js_files = array(
