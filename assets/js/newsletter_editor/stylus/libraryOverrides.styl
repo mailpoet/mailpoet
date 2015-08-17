@@ -1,0 +1,119 @@
+/* Fix select2 z-index to work with MailPoet.Modal */
+.select2-drop
+    z-index: 101000
+
+/* Remove input field styles from select2 type input */
+.select2-container
+    border: none
+    padding: 0
+
+/* Fix inline TinyMCE toolbar to have minimal width instead of being close to 100% of the screen */
+div.mce-toolbar-grp.mce-container
+    position: absolute
+
+.mce-tinymce.mce-tinymce-inline
+    border-radius(3px)
+    background-color: $primary-background-color
+    border: 1px solid $content-border-color
+
+    box-shadow(0px 0px 3px 1px rgba(0, 0, 0, 0.05))
+
+.mce-window
+    /* Fix TinyMCE mailpoet_custom_fields window lack of hiding overflow */
+    div.mce-container-body.mce-abs-layout
+        overflow: hidden
+
+    /* Fix TinyMCE popup window's close button to not be covered by draggable section */
+    .mce-window-head div.mce-dragh
+        width: -webkit-calc( 100% - 36px )
+        width: calc( 100% - 36px )
+
+/* TinyMCE mailpoet_custom_fields toolbar icon */
+.mce-i-mailpoet_custom_fields:before
+    font: 400 20px/1 dashicons!important
+    content: "\f307"
+
+/* TinyMCE remove active border from the editor */
+.mce-edit-focus
+    outline: none
+
+/* Style "No search term specified" in TinyMCE link editor */
+#wp-link li, #wp-link div.query-notice
+  clear: both
+  margin-bottom: 0
+  border-bottom: 1px solid #f1f1f1
+  color: #333
+  padding: 4px 6px
+  cursor: pointer
+  position: relative
+
+/* Remove empty space between WP admin sidebar and content */
+#wpbody-content > *
+    margin-left: 20px
+
+#wpbody-content > .wrap
+    margin-left: 0
+
+#wpcontent
+    margin-left: 160px
+    padding-left: 0
+
+    .folded &
+        margin-left: 36px
+.wrap
+    margin-left: 0
+    margin-right: 0
+
+/* Reduce WP admin bar z-index in order for TinyMCE toolbar to be visible */
+#wpadminbar
+    z-index: 50000
+
+/* Allow horizontal scrolling on smaller (tablet/phone) sized screens */
+body
+    overflow-x: auto
+
+/* Hide the "Details" section of Wordpress Media manager */
+.media-sidebar
+    display: none
+
+#mailpoet-media-manager
+    .attachments-browser .attachments
+    .attachments-browser .uploader-inline
+        margin-right: 0
+
+    .attachments-browser .attachments
+    .attachments-browser .media-toolbar
+    .attachments-browser .uploader-inline
+        right: 0
+
+/* Remove max width from date selector in Wordpress Media Manager */
+#media-attachment-date-filters
+    max-width: calc(100% - 12px)
+
+/* Alter Spectrum color picker to leave only the color preview, without arrows */
+.sp-replacer
+    border-radius(3px)
+    padding: 0
+    border: 0
+    box-shadow(1px 2px darken($primary-background-color, 13%))
+
+.sp-preview
+    border-width: 0
+    margin-right: 0
+    width: 25px
+    height: 25px
+
+.sp-dd
+    display: none
+
+/* Sidepanel overrides */
+.mailpoet_panel_body
+    margin: 19px
+    padding: 0
+
+.mailpoet_panel_wrapper
+    background-color: $primary-background-color
+    border: 1px solid $content-border-color
+
+#mailpoet_modal_close
+    display: none

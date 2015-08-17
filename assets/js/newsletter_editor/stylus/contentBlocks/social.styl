@@ -1,0 +1,116 @@
+$social-block-vertical-padding = 11px
+
+$social-icon-width = 32px
+$active-social-icon-set-border-color = #adadad
+$active-social-icon-set-background-color = #daebf2
+$social-icon-set-hover-border-color = $primary-active-color
+
+$tool-inactive-color = #bbbbbb
+$tool-hover-color = #333333
+$tool-active-color = #d2d2d4
+
+$tool-width = 16px
+
+.mailpoet_social_block
+    padding-top: $social-block-vertical-padding
+    padding-bottom: $social-block-vertical-padding
+
+    .mailpoet_social
+        text-align: center
+
+.mailpoet_social
+    span
+        display: inline-block
+        padding: 2px 3px
+
+    span,
+    a,
+    img
+        vertical-align: top
+
+    a
+        cursor: all-scroll
+
+.mailpoet_social_icon_set
+    border: 1px solid transparent
+    padding: 5px
+    margin-bottom: 5px
+
+    &:hover
+        border: 1px solid $social-icon-set-hover-border-color
+
+    img
+        width: $social-icon-width
+        height: $social-icon-width
+        vertical-align: middle
+        padding: 2px 3px
+
+.mailpoet_active_icon_set
+    border: 1px dashed $active-social-icon-set-border-color
+    background-color: $active-social-icon-set-background-color
+
+
+.mailpoet_social_icon_settings
+    position: relative
+
+    padding: 28px 9px (18px - 10px) 9px
+    margin-bottom: 9px
+
+    background: $white-color
+    border: 1px solid $content-border-color
+
+.mailpoet_social_icon_settings_row
+    clear: both
+    overflow: auto
+    margin-bottom: 10px
+
+    line-height: 30px
+
+.mailpoet_social_icon_settings_label
+    margin-right: 5px
+
+    text-align: left
+
+    .mailpoet_social_icon_image
+        width: 30px
+        height: 30px
+
+    &.mailpoet_social_icon_image_label
+        line-height: initial
+
+.mailpoet_social_icon_settings_form_element
+    float: left
+    width: 100%
+
+    input, select
+        width: 100%
+        height: 30px
+        box-sizing: border-box
+        margin: 0
+        vertical-align: middle
+        display: inline-block
+
+
+.mailpoet_social_icon_settings_tool
+    position: absolute
+    top: 10px
+
+    .mailpoet_tool_icon
+        fill: $tool-inactive-color
+        width: $tool-width
+        height: $tool-width
+
+        &:hover
+            fill: $tool-hover-color
+
+        &:active
+            fill: $primary-active-color
+
+        &:active
+            filter-shadow(1px, 2px, 0px, $tool-active-color)
+
+.mailpoet_social_icon_settings_move_icon
+    right: 5px
+
+.mailpoet_social_icon_settings_delete_icon
+    right: 5px + 5px + $tool-width

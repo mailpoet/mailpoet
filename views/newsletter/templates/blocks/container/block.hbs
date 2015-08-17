@@ -1,0 +1,8 @@
+{{#ifCond model.styles.block.backgroundColor '!=' 'transparent'}}
+<style type="text/css">
+    .mailpoet_editor_view_{{ viewCid }} { background-color: {{ model.styles.block.backgroundColor }}; }
+    .mailpoet_editor_view_{{ viewCid }} .mailpoet_container { background-color: {{ model.styles.block.backgroundColor }}; }
+</style>
+{{/ifCond}}
+<div class="mailpoet_container {{#ifCond model.orientation '===' 'horizontal'}}mailpoet_container_horizontal{{/ifCond}}{{#ifCond model.orientation '===' 'vertical'}}mailpoet_container_vertical{{/ifCond}}"></div>
+<div class="mailpoet_tools"></div>

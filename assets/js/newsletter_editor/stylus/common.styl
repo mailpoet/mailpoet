@@ -1,0 +1,218 @@
+$link-color = $primary-active-background-color
+
+$select-border-color = $content-border-color
+$select-text-color = $primary-text-color
+
+$button-default-border-color = $structure-border-color
+$button-default-background-color = $primary-background-color
+$button-default-text-color = $primary-inactive-color
+
+$button-primary-border-color = $primary-active-color
+$button-primary-background-color = $primary-active-background-color
+$button-primary-hover-background-color = $primary-active-color-highlight
+$button-primary-text-color = $white-color
+
+$range-track-background-color = $white-color
+$range-track-border-color = $structure-border-color
+$range-track-height = 12px
+$range-thumb-background-color = $primary-inactive-color
+$range-thumb-border-color = #333
+$range-thumb-width = 13px
+$range-thumb-height = 26px
+$range-border-radius = 3px
+$range-thumb-hover-background-color = $primary-active-color
+
+a
+    color: $link-color
+    text-decoration: none
+
+.mailpoet_hidden
+    display: none !important
+
+input.mailpoet_color
+    width: 5em
+
+select.mailpoet_font-family
+    width: 8em
+
+select.mailpoet_font-size
+    width: 5em
+
+.mailpoet_input, .mailpoet_select
+    border-radius(1px)
+    box-shadow(none !important)
+    appearance: none
+
+    padding: $form-control-padding = 3px
+    line-height: 28px - $form-control-padding*2
+
+.mailpoet_input
+    width: 283px
+    border: 1px solid $select-border-color
+
+.mailpoet_input_small
+    width: 48px
+
+.mailpoet_input_medium
+    width: 150px
+
+.mailpoet_input_full
+    width: 100%
+    box-sizing: border-box
+
+.mailpoet_range
+    width: 283px
+    -webkit-appearance: none
+    padding: 0
+    vertical-align: middle
+
+    &:focus
+        outline: none
+    &::-webkit-slider-runnable-track
+        width: 100%
+        height: $range-track-height
+        cursor: pointer
+        animate: 0.2s
+        background: $range-track-background-color
+        border-radius($range-border-radius)
+        border: 1px solid $range-track-border-color
+    &::-webkit-slider-thumb
+        border: 1px solid $range-thumb-border-color
+        height: $range-thumb-height
+        width: $range-thumb-width
+        border-radius($range-border-radius)
+        background: $range-thumb-background-color
+        cursor: pointer
+        -webkit-appearance: none
+        margin-top: (-1 * $range-thumb-height / 3)
+    &:hover::-webkit-slider-thumb
+        background: $range-thumb-hover-background-color
+    &::-moz-range-track
+        width: 100%
+        height: $range-track-height
+        cursor: pointer
+        animate: 0.2s
+        background: $range-track-background-color
+        border-radius($range-border-radius)
+        border: 1px solid $range-track-border-color
+    &::-moz-range-thumb
+        border: 1px solid $range-thumb-border-color
+        height: $range-thumb-height
+        width: $range-thumb-width
+        border-radius($range-border-radius)
+        background: $range-thumb-background-color
+        cursor: pointer
+    &:hover::-moz-range-thumb
+        background: $range-thumb-hover-background-color
+    &::-ms-fill-lower
+        border: 1px solid $range-track-border-color
+        background: $range-track-background-color
+    &::-ms-fill-upper
+        border: 1px solid $range-track-border-color
+        background: $range-track-background-color
+    &::-ms-track
+        width: 100%
+        height: $range-track-height
+        cursor: pointer
+        animate: 0.2s
+        background: transparent
+        border-color: transparent
+        border-width: ($range-track-height * 2) 0
+        color: transparent
+    &::-ms-thumb
+        border: 1px solid $range-thumb-border-color
+        height: $range-thumb-height
+        width: $range-thumb-width
+        border-radius($range-border-radius)
+        background: $range-thumb-background-color
+        cursor: pointer
+    &:hover::-ms-thumb
+        background: $range-thumb-hover-background-color
+    &:focus::-ms-fill-lower
+        border: 1px solid $range-track-border-color
+        background: $range-track-background-color
+    &:focus::-ms-fill-upper
+        border: 1px solid $range-track-border-color
+        background: $range-track-background-color
+
+
+.mailpoet_range_small
+    width: 100px
+
+.mailpoet_range_medium
+    width: 180px
+
+.mailpoet_select
+    border-color: $select-border-color
+    color: $select-text-color
+    margin: 0
+
+.mailpoet_select_large
+    width: 139px
+
+.mailpoet_select_medium
+    width: 103px
+
+.mailpoet_select_small
+    width: 68px
+
+.mailpoet_select_half_width
+    width: 50%
+
+#mailpoet_editor_content ol
+#mailpoet_editor_content ul
+    list-style-position: inside
+    margin-left: 0
+#mailpoet_editor_content ul
+    list-style-type: disc
+
+.mailpoet_button
+    margin: 0
+    border: 1px solid $button-default-border-color
+    background-color: $button-default-background-color
+    padding: 6px 20px
+    color: $button-default-text-color
+    border-radius(3px)
+    line-height: normal
+
+    vertical-align: top
+
+.mailpoet_button_full
+    width: 100%
+    box-sizing: border-box
+
+.mailpoet_button_primary
+    border-color: $button-primary-border-color
+    background-color: $button-primary-background-color
+    color: $button-primary-text-color
+
+    &:hover
+        background-color: $button-primary-hover-background-color
+
+.mailpoet_button_group
+    display: inline
+
+    .mailpoet_button:first-child
+        margin-right: 0
+        padding: 6px 12px 6px
+        border-top-right-radius: 0
+        border-bottom-right-radius: 0
+
+    .mailpoet_button:last-child
+        margin-left: 0
+        padding-left: 10px
+        padding-right: 10px
+        border-left: 0
+        border-top-left-radius: 0
+        border-bottom-left-radius: 0
+
+.mailpoet_text_content p
+    margin: 0
+
+.mailpoet_separator
+    margin: 17px 20px
+
+.mailpoet_option_offset_left_small
+    margin-left: 10px
+input.mailpoet_option_offset_left_small
+    margin-left: 10px !important

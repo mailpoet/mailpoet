@@ -1,0 +1,159 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+  <div id="mailpoet_editor">
+    <div id="mailpoet_editor_heading"></div>
+    <div class="mailpoet_breadcrumbs">
+      <%= __('Select type') %> &gt; <%= __('Template') %> &gt; <strong><%= __('Designer') %></strong> &gt; <%= __('Send') %>
+    </div>
+    <div class="clearfix"></div>
+    <div id="mailpoet_editor_main_wrapper">
+      <div id="mailpoet_editor_styles">
+      </div>
+      <div id="mailpoet_editor_sidebar"></div>
+      <div id="mailpoet_editor_content_container">
+        <div class="mailpoet_newsletter_wrapper">
+          <div id="mailpoet_editor_content"></div>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div id="mailpoet_editor_bottom">
+    </div>
+  </div>
+
+  <div class="mailpoet_layer_overlay" style="display:none;"></div>
+
+  <div id="wp-link-backdrop" style="display: none"></div>
+  <div id="wp-link-wrap" class="wp-core-ui search-panel-visible" style="display: none">
+    <form id="wp-link" tabindex="-1">
+      <?php wp_nonce_field( 'internal-linking', '_ajax_linking_nonce', false ); ?>
+      <div id="link-modal-title">
+        <%= __( 'Insert/edit link' ) %>
+        <div id="wp-link-close" tabindex="0"></div>
+      </div>
+      <div id="link-selector">
+        <div id="link-options">
+          <div>
+            <label>
+              <span><%= __( 'Type' ) %></span>
+              <select id="url-type-field" name="urltype">
+                <option value="http://"><%= __( 'Link to a web page' ) %></option>
+                <option value="[viewInBrowserUrl]"><%= __( 'Browser version' ) %></option>
+                <option value="[unsubscribeUrl]"><%= __( 'Unsubcribe page' ) %></option>
+                <option value="[manageSubscriptionUrl]"><%= __( 'Manage your subscription page' ) %></option>
+              </select>
+            </label>
+          </div>
+          <div id="link-href-field">
+            <label><span><%= __( 'Link' ) %></span><input id="url-field" type="text" name="href" /></label>
+          </div>
+          <div class="mailpoet_hidden">
+            <label><span><%= __( 'Title' ) %></span><input id="link-title-field" type="text" name="linktitle" /></label>
+          </div>
+          <div class="link-target mailpoet_hidden">
+            <label><span>&nbsp;</span><input type="checkbox" id="link-target-checkbox" /> <%= __( 'Open link in a new window/tab' ) %></label>
+          </div>
+        </div>
+        <div id="search-panel">
+          <div class="link-search-wrapper">
+            <label>
+              <span class="search-label"><%= __( 'Search your content' ) %></span>
+              <input type="search" id="search-field" class="link-search-field" autocomplete="off" />
+              <span class="spinner"></span>
+            </label>
+          </div>
+          <div id="search-results" class="query-results">
+            <ul></ul>
+            <div class="river-waiting">
+              <span class="spinner"></span>
+            </div>
+          </div>
+          <div id="most-recent-results" class="query-results">
+            <div class="query-notice"><em><%= __( 'No search term specified. Showing recent items.' ) %></em></div>
+            <ul></ul>
+            <div class="river-waiting">
+              <span class="spinner"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="submitbox">
+        <div id="wp-link-update">
+          <input type="submit" value="<?php esc_attr_e( 'Add Link' ); ?>" class="button button-primary" id="wp-link-submit" name="wp-link-submit">
+        </div>
+        <div id="wp-link-cancel">
+          <a class="submitdelete deletion" href="#"><%= __( 'Cancel' ) %></a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+<% endblock %>
+
+<% block templates %>
+  <%= partial('newsletter_editor_template_tools_generic', 'newsletter/templates/blocks/base/toolsGeneric.hbs') %>
+
+  <%= partial('newsletter_editor_template_automated_latest_content_block', 'newsletter/templates/blocks/automatedLatestContent/block.hbs') %>
+  <%= partial('newsletter_editor_template_automated_latest_content_widget', 'newsletter/templates/blocks/automatedLatestContent/widget.hbs') %>
+  <%= partial('newsletter_editor_template_automated_latest_content_settings', 'newsletter/templates/blocks/automatedLatestContent/settings.hbs') %>
+  <%= partial('newsletter_editor_template_button_block', 'newsletter/templates/blocks/button/block.hbs') %>
+  <%= partial('newsletter_editor_template_button_widget', 'newsletter/templates/blocks/button/widget.hbs') %>
+  <%= partial('newsletter_editor_template_button_settings', 'newsletter/templates/blocks/button/settings.hbs') %>
+
+  <%= partial('newsletter_editor_template_container_block', 'newsletter/templates/blocks/container/block.hbs') %>
+  <%= partial('newsletter_editor_template_container_block', 'newsletter/templates/blocks/container/emptyBlock.hbs') %>
+  <%= partial('newsletter_editor_template_container_one_column_widget', 'newsletter/templates/blocks/container/oneColumnLayoutWidget.hbs') %>
+  <%= partial('newsletter_editor_template_container_two_column_widget', 'newsletter/templates/blocks/container/twoColumnLayoutWidget.hbs') %>
+  <%= partial('newsletter_editor_template_container_three_column_widget', 'newsletter/templates/blocks/container/threeColumnLayoutWidget.hbs') %>
+  <%= partial('newsletter_editor_template_container_settings', 'newsletter/templates/blocks/container/settings.hbs') %>
+
+  <%= partial('newsletter_editor_template_divider_block', 'newsletter/templates/blocks/divider/block.hbs') %>
+  <%= partial('newsletter_editor_template_divider_widget', 'newsletter/templates/blocks/divider/widget.hbs') %>
+  <%= partial('newsletter_editor_template_divider_settings', 'newsletter/templates/blocks/divider/settings.hbs') %>
+
+  <%= partial('newsletter_editor_template_footer_block', 'newsletter/templates/blocks/footer/block.hbs') %>
+  <%= partial('newsletter_editor_template_footer_widget', 'newsletter/templates/blocks/footer/widget.hbs') %>
+  <%= partial('newsletter_editor_template_footer_settings', 'newsletter/templates/blocks/footer/settings.hbs') %>
+
+  <%= partial('newsletter_editor_template_header_block', 'newsletter/templates/blocks/header/block.hbs') %>
+  <%= partial('newsletter_editor_template_header_widget', 'newsletter/templates/blocks/header/widget.hbs') %>
+  <%= partial('newsletter_editor_template_header_settings', 'newsletter/templates/blocks/header/settings.hbs') %>
+
+  <%= partial('newsletter_editor_template_image_block', 'newsletter/templates/blocks/image/block.hbs') %>
+  <%= partial('newsletter_editor_template_image_widget', 'newsletter/templates/blocks/image/widget.hbs') %>
+  <%= partial('newsletter_editor_template_image_settings', 'newsletter/templates/blocks/image/settings.hbs') %>
+
+  <%= partial('newsletter_editor_template_posts_block', 'newsletter/templates/blocks/posts/block.hbs') %>
+  <%= partial('newsletter_editor_template_posts_widget', 'newsletter/templates/blocks/posts/widget.hbs') %>
+  <%= partial('newsletter_editor_template_posts_settings', 'newsletter/templates/blocks/posts/settings.hbs') %>
+  <%= partial('newsletter_editor_template_posts_settings_display_options', 'newsletter/templates/blocks/posts/settingsDisplayOptions.hbs') %>
+  <%= partial('newsletter_editor_template_posts_settings_selection', 'newsletter/templates/blocks/posts/settingsSelection.hbs') %>
+  <%= partial('newsletter_editor_template_posts_settings_selection_empty', 'newsletter/templates/blocks/posts/settingsSelectionEmpty.hbs') %>
+  <%= partial('newsletter_editor_template_posts_settings_single_post', 'newsletter/templates/blocks/posts/settingsSinglePost.hbs') %>
+
+  <%= partial('newsletter_editor_template_social_block', 'newsletter/templates/blocks/social/block.hbs') %>
+  <%= partial('newsletter_editor_template_social_widget', 'newsletter/templates/blocks/social/widget.hbs') %>
+  <%= partial('newsletter_editor_template_social_settings', 'newsletter/templates/blocks/social/settings.hbs') %>
+  <%= partial('newsletter_editor_template_social_settings_icon', 'newsletter/templates/blocks/social/settingsIcon.hbs') %>
+  <%= partial('newsletter_editor_template_social_settings_icon_selector', 'newsletter/templates/blocks/social/settingsIconSelector.hbs') %>
+  <%= partial('newsletter_editor_template_social_settings_styles', 'newsletter/templates/blocks/social/settingsStyles.hbs') %>
+
+  <%= partial('newsletter_editor_template_spacer_block', 'newsletter/templates/blocks/spacer/block.hbs') %>
+  <%= partial('newsletter_editor_template_spacer_widget', 'newsletter/templates/blocks/spacer/widget.hbs') %>
+  <%= partial('newsletter_editor_template_spacer_settings', 'newsletter/templates/blocks/spacer/settings.hbs') %>
+
+  <%= partial('newsletter_editor_template_text_block', 'newsletter/templates/blocks/text/block.hbs') %>
+  <%= partial('newsletter_editor_template_text_widget', 'newsletter/templates/blocks/text/widget.hbs') %>
+  <%= partial('newsletter_editor_template_text_settings', 'newsletter/templates/blocks/text/settings.hbs') %>
+
+  <%= partial('newsletter_editor_template_heading', 'newsletter/templates/components/heading.hbs') %>
+  <%= partial('newsletter_editor_template_save', 'newsletter/templates/components/save.hbs') %>
+  <%= partial('newsletter_editor_template_styles', 'newsletter/templates/components/styles.hbs') %>
+
+  <%= partial('newsletter_editor_template_sidebar', 'newsletter/templates/components/sidebar/sidebar.hbs') %>
+  <%= partial('newsletter_editor_template_content', 'newsletter/templates/components/sidebar/content.hbs') %>
+  <%= partial('newsletter_editor_template_layout', 'newsletter/templates/components/sidebar/layout.hbs') %>
+  <%= partial('newsletter_editor_template_preview', 'newsletter/templates/components/sidebar/preview.hbs') %>
+  <%= partial('newsletter_editor_template_styles', 'newsletter/templates/components/sidebar/styles.hbs') %>
+<% endblock %>

@@ -50,6 +50,14 @@ class Menu {
       'mailpoet-settings',
       array($this, 'settings')
     );
+    add_submenu_page(
+      'mailpoet',
+      'Newsletter editor',
+      'Newsletter editor',
+      'manage_options',
+      'mailpoet-newsletter-editor',
+      array($this, 'newsletterEditor')
+    );
   }
 
   function home() {
@@ -70,5 +78,10 @@ class Menu {
   function newsletters() {
     $data = array();
     echo $this->renderer->render('newsletters.html', $data);
+  }
+
+  function newsletterEditor() {
+    $data = array();
+    echo $this->renderer->render('newsletter/editor.html', $data);
   }
 }

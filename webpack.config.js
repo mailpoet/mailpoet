@@ -14,7 +14,10 @@ baseConfig = {
     modulesDirectories: [
       'node_modules',
       'assets/js/src'
-    ]
+    ],
+    alias: {
+      'handlebars': 'handlebars/dist/handlebars.js',
+    },
   },
   node: {
     fs: 'empty'
