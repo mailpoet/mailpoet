@@ -15,29 +15,29 @@ class Migrator {
       'newsletters'
     );
   }
-  
+
   function up() {
     global $wpdb;
-    
+
     $_this = $this;
     $migrate = function($model) use($_this) {
       dbDelta($_this->$model());
     };
-    
+
     array_map($migrate, $this->models);
   }
-  
+
   function down() {
     global $wpdb;
-    
+
     $drop_table = function($model) {
       $table = $this->prefix . $model;
       $wpdb->query("DROP TABLE {$table}");
     };
-    
+
     array_map($drop_table, $this->models);
   }
-  
+
   function subscribers() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
@@ -51,7 +51,7 @@ class Migrator {
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
-  
+
   function settings() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
@@ -64,7 +64,7 @@ class Migrator {
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
-  
+
   function newsletters() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
@@ -76,15 +76,15 @@ class Migrator {
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
-  
+
   private function sqlify($model, $attributes) {
     $table = $this->prefix . $model;
-    
+
     $sql = array();
     $sql[] = "CREATE TABLE " . $table . " (";
     $sql = array_merge($sql, $attributes);
     $sql[] = ") " . $this->charset . ";";
-    
+
     return implode("\n", $sql);
   }
 }
