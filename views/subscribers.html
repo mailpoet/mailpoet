@@ -1,0 +1,26 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+  <h1><%= 'Subscribers' %></h1>
+
+<script type="text/javascript">
+jQuery(function($) {
+
+  // dom loaded
+  $(function() {
+
+    MailPoet.Ajax.post({
+      endpoint: 'subscribers',
+      action: 'get',
+      data: {
+        first_name: 'John'
+      },
+      onSuccess: function(response) {
+        // console.log(response);
+      }
+    });
+
+  });
+});
+</script>
+<% endblock %>

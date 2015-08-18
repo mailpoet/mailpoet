@@ -28,6 +28,22 @@ class Menu {
     );
     add_submenu_page(
       'mailpoet',
+      'Newsletters',
+      'Newsletters',
+      'manage_options',
+      'mailpoet-newsletters',
+      array($this, 'newsletters')
+    );
+    add_submenu_page(
+      'mailpoet',
+      'Subscribers',
+      'Subscribers',
+      'manage_options',
+      'mailpoet-subscribers',
+      array($this, 'subscribers')
+    );
+    add_submenu_page(
+      'mailpoet',
       'Settings',
       'Settings',
       'manage_options',
@@ -44,5 +60,15 @@ class Menu {
   function settings() {
     $data = array();
     echo $this->renderer->render('settings.html', $data);
+  }
+
+  function subscribers() {
+    $data = array();
+    echo $this->renderer->render('subscribers.html', $data);
+  }
+
+  function newsletters() {
+    $data = array();
+    echo $this->renderer->render('newsletters.html', $data);
   }
 }
