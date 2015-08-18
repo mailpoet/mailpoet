@@ -50,7 +50,7 @@ class MailerCest {
     expect($message['to']['name'])
       ->equals($subscriber['first_name'].' '.$subscriber['last_name']);
     expect($message['reply_to']['address'])
-      ->equals('');
+      ->equals('info@mailpoet.com');
     expect($message['reply_to']['name'])
       ->equals('');
     expect($message['subject'])
