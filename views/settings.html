@@ -3,53 +3,75 @@
 <% block content %>
   <h1><%= 'Settings' %></h1>
 
-  <form id="mailpoet_settings" novalidate>
-    <p>
-      <label>
-        <%= __('First Name') %>
-        <input type="text" name="first_name" />
-      </label>
-    </p>
+  <div id="mailpoet_settings"></div>
 
-    <p>
-      <label>
-        <%= __('Last Name') %>
-        <input type="text" name="last_name" />
-      </label>
-    </p>
+  <script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
 
-    <p>
-      <label>
-        <%= __('Email') %>
-        <input type="email" name="email" />
-      </label>
-    </p>
-
-    <p>
-      <input type="submit" class="button-secondary"
-        value="<%= __('Submit') %>"
-      />
-    </p>
-  </form>
-
-<script type="text/javascript">
-jQuery(document).ready(function($) {
-  $.ajax({
-    url: ajaxurl,
-    type: 'post',
-    data: {
-      action: 'mailpoet',
-      token: mailpoet_token,
-      endpoint: 'settings',
-      method: 'get',
-      args: {
-        first_name: 'John'
-      }
-    },
-    success : function(response) {
-      console.log(response);
+  <script type="text/jsx">
+    var settings = {
+      firstname: null,
+      lastname: null,
+      email: null
     }
+    var FormFields = React.createClass({
+      render: function() {
+        return (
+          <div>
+            <label><%= __('First Name') %></label>
+            <input type="text" ref="firstname" defaultValue={this.props.settings.firstname} />
+
+            <label><%= __('Last Name') %></label>
+            <input type="text" ref="lastname" defaultValue={this.props.settings.lastname} />
+
+            <label><%= __('Email') %></label>
+            <input type="email" ref="lastname" defaultValue={this.props.settings.lastname} />
+
+            <button class="btn-primary" onClick={this.save}><%= __('Save') %></button>
+          </div>
+        );
+      },
+      save: function(e) {
+        e.preventDefault();
+
+        // Get values via this.refs
+        var data = {
+          firstname: this.refs.firstname.getDOMNode().value,
+          lastname: this.refs.lastname.getDOMNode().value,
+          email: this.refs.email.getDOMNode().value,
+        };
+        console.log(data);
+        // this.props.saveValues(data);
+        //this.props.nextStep();
+      }
+    });
+
+    React.render(
+      <FormFields settings="{settings}"/>,
+      document.getElementById('mailpoet_settings')
+    );
+  </script>
+
+  <script type="text/javascript">
+
+  jQuery(function($) {
+    $(function() {
+      $.ajax({
+        url: ajaxurl,
+        type: 'post',
+        data: {
+          action: 'mailpoet',
+          token: mailpoet_token,
+          endpoint: 'settings',
+          method: 'get',
+          args: {
+            first_name: 'John'
+          }
+        },
+        success : function(response) {
+          console.log(response);
+        }
+      });
+    });
   });
-});
-</script>
+  </script>
 <% endblock %>

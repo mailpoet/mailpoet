@@ -2,11 +2,16 @@ define('admin', [
     'mailpoet',
     'jquery',
     'handlebars',
-  ], function(MailPoet, jQuery, Handlebars) {
+    'react'
+  ], function(MailPoet, jQuery, Handlebars, React) {
   jQuery(function($) {
     // dom ready
     $(function() {
 
     });
   });
+
+  // set globals
+  window.Handlebars = Handlebars;
+  window.React = React;
 });

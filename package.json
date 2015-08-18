@@ -9,6 +9,7 @@
     "interact.js": "taye/interact.js.git"
   },
   "dependencies": {
+    "babel-loader": "^5.3.2",
     "backbone": "1.2.0",
     "backbone.marionette": "2.4.2",
     "backbone.radio": "0.9.0",
@@ -19,12 +20,14 @@
     "handlebars": "3.0.3",
     "html2canvas": "latest",
     "moment": "^2.10.3",
+    "napa": "^1.2.0",
     "papaparse": "4.1.1",
+    "react": "^0.13.3",
+    "react-tools": "^0.13.3",
     "select2": "3.5.1",
     "spectrum-colorpicker": "^1.6.2",
     "tinymce": "4.1.10",
-    "underscore": "1.8.3",
-    "napa": "^1.2.0"
+    "underscore": "1.8.3"
   },
   "devDependencies": {
     "chai": "2.2.0",

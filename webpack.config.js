@@ -1,65 +1,40 @@
-var path = require('path'),
-    fs = require('fs'),
-    webpack = require("webpack"),
-    _ = require('underscore'),
-    baseConfig;
-
-baseConfig = {
-  name: 'main',
-  context: __dirname ,
-  entry: {
-    vendor: ['handlebars', 'handlebars_helpers'],
-    mailpoet: ['mailpoet', 'ajax', 'modal', 'notice'],
-    admin: 'admin.js',
-  },
-  output: {
-    path: './assets/js',
-    filename: '[name].js',
-  },
-  plugins: [
-    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.js")
-  ],
-  loaders: [
-    {
-      test: /\.js$/i,
-      loader: 'js'
-    },
-    {
-      test: /\.css$/i,
-      loader: 'css'
-    },
-    {
-      test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/i,
-      loader: 'file'
-    }
-  ],
-  resolve: {
-    modulesDirectories: [
-      'node_modules',
-      'assets/js/src',
-      'assets/css/lib'
-    ],
-    fallback: path.join(__dirname, 'node_modules'),
-    alias: {
-      'handlebars': 'handlebars/dist/handlebars.js'
-    }
-  },
-  resolveLoader: {
-    fallback: path.join(__dirname, 'node_modules'),
-    alias: {
-      'hbs': 'handlebars-loader'
-    }
-  },
-  externals: {
-    'jquery': 'jQuery',
-  }
-};
+var webpack = require('webpack');
 
 module.exports = [
-  baseConfig,
-
-  // Configuration specific for testing
-  _.extend({}, baseConfig, {
+  {
+    context: __dirname,
+    entry: {
+      vendor: ['handlebars', 'handlebars_helpers'],
+      mailpoet: ['mailpoet', 'ajax', 'modal', 'notice'],
+      admin: 'admin.js',
+      //settings: 'settings.jsx'
+    },
+    output: {
+      path: './assets/js',
+      filename: '[name].js',
+    },
+    module: {
+      loaders: [
+      {
+        test: /\.jsx$/,
+        loader: 'babel-loader'
+      }
+      ]
+    },
+    plugins: [
+      new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js')
+    ],
+    externals: {
+      'jquery': 'jQuery'
+    },
+    resolve: {
+      modulesDirectories: [
+        'node_modules',
+        'assets/js/src'
+      ],
+    }
+  },
+  {
     name: 'test',
     entry: {
       testAjax: 'testAjax.js',
@@ -73,12 +48,7 @@ module.exports = [
         'node_modules',
         'assets/js/src',
         'tests/javascript/newsletter_editor'
-      ],
-      fallback: path.join(__dirname, 'node_modules'),
-      alias: {
-        'handlebars': 'handlebars/dist/handlebars.js'
-      }
-    },
-    plugins: [],
-  })
+      ]
+    }
+  }
 ];
