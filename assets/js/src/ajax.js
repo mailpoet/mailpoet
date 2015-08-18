@@ -1,16 +1,12 @@
 define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
   "use strict";
-  /**
-  * MailPoet Ajax
-  **/
-
   MailPoet.Ajax = {
       version: 0.1,
       options: {},
       defaults: {
         url: null,
-        controller: 'dummy',
-        action: 'test',
+        endpoint: null,
+        action: null,
         data: {},
         onSuccess: function(data, textStatus, xhr) {},
         onError: function(xhr, textStatus, errorThrown) {}
@@ -28,39 +24,41 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         // merge options
         this.options = jQuery.extend({}, this.defaults, options);
 
+        // set default url
         if(this.options.url === null) {
-          this.options.url = ajaxurl+'?action=mailpoet_ajax';
+          this.options.url = ajaxurl;
         }
-
-        // routing
-        this.options.url += '&mailpoet_controller='+this.options.controller;
-        this.options.url += '&mailpoet_action='+this.options.action;
       },
       request: function(method, options) {
         // set options
         this.init(options);
 
+        // set request params
+        var params = {
+          action: 'mailpoet',
+          token: mailpoet_token,
+          endpoint: this.options.endpoint,
+          method: this.options.action,
+          data: this.options.data
+        };
+
         // make ajax request depending on method
         if(method === 'get') {
           jQuery.get(
             this.options.url,
-            this.options.data,
+            params,
             this.options.onSuccess,
             'json'
           );
         } else {
-          jQuery.ajax(
-            this.options.url,
-            {
-              data: JSON.stringify(this.options.data),
-              processData: false,
-              contentType: "application/json; charset=utf-8",
-              type : method,
-              dataType: 'json',
-              success : this.options.onSuccess,
-              error : this.options.onError
-            }
-          );
+          jQuery.ajax({
+            url: this.options.url,
+            type : 'post',
+            data: params,
+            dataType: 'json',
+            success : this.options.onSuccess,
+            error : this.options.onError
+          });
         }
       }
   };

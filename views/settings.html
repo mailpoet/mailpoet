@@ -33,22 +33,22 @@
   </form>
 
 <script type="text/javascript">
-jQuery(document).ready(function($) {
-  $.ajax({
-    url: ajaxurl,
-    type: 'post',
-    data: {
-      action: 'mailpoet',
-      token: mailpoet_token,
+jQuery(function($) {
+
+  // dom loaded
+  $(function() {
+
+    MailPoet.Ajax.post({
       endpoint: 'settings',
-      method: 'get',
-      args: {
+      action: 'get',
+      data: {
         first_name: 'John'
+      },
+      onSuccess: function(response) {
+        // console.log(response);
       }
-    },
-    success : function(response) {
-      console.log(response);
-    }
+    });
+
   });
 });
 </script>

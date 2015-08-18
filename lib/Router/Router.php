@@ -23,9 +23,9 @@ class Router {
     $class = ucfirst($_POST['endpoint']);
     $endpoint =  __NAMESPACE__ . "\\" . $class;
     $method = $_POST['method'];
-    $args = $_POST['args'];
+    $data = $_POST['data'];
     $endpoint = new $endpoint();
-    $endpoint->$method($args);
+    $endpoint->$method($data);
   }
 
   function setToken() {
