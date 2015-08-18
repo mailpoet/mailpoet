@@ -34,6 +34,14 @@ class Menu {
       'mailpoet-settings',
       array($this, 'settings')
     );
+    add_submenu_page(
+      'mailpoet',
+      'Subscribers',
+      'Subscribers',
+      'manage_options',
+      'mailpoet-subscribers',
+      array($this, 'subscribers')
+    );
   }
 
   function home() {
@@ -44,5 +52,10 @@ class Menu {
   function settings() {
     $data = array();
     echo $this->renderer->render('settings.html', $data);
+  }
+
+  function subscribers() {
+    $data = array();
+    echo $this->renderer->render('subscribers.html', $data);
   }
 }

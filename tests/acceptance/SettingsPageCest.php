@@ -6,12 +6,12 @@ class SettingsPageCest {
     $I->login();
   }
 
-  function iCanSeeTheSettingsPage(AcceptanceTester $I) {
+  function iCanSeeTheTitle(AcceptanceTester $I) {
     $I->amOnPage('/wp-admin/admin.php?page=mailpoet-settings');
     $I->see('Settings');
   }
 
-  function iCanGoToSettingsFromWelcomePage(AcceptanceTester $I) {
+  function iCanReachItFromTheWelcomePage(AcceptanceTester $I) {
     $I->amOnPage('/wp-admin/admin.php?page=mailpoet');
     $I->see('Welcome!');
     $I->click('Setup');
