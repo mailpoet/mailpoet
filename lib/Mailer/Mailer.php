@@ -55,8 +55,8 @@ class Mailer {
     $request = array(
       'timeout' => 10,
       'httpversion' => '1.0',
+      'method' => 'POST',
       'headers' => array(
-        'method' => 'POST',
         'Authorization' => $this->auth(),
         'Content-Type' => 'application/json'
       ),
