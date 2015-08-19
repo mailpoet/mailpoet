@@ -13,31 +13,35 @@ class SubscriberCest {
 
     $this->subscriber = Subscriber::create();
     $this->subscriber->hydrate($this->data);
-    $this->subscriber->save();
+    $this->saved = $this->subscriber->save();
   }
 
   function itCanBeCreated() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
-      ->findOne();
-    expect($subscriber->id)->notNull();
+    expect($this->saved)->equals(true);
   }
 
   function itHasAFirstName() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
+    $subscriber =
+      Subscriber::where('email', $this->data['email'])
       ->findOne();
-    expect($subscriber->first_name)->equals($this->data['first_name']);
+    expect($subscriber->first_name)
+      ->equals($this->data['first_name']);
   }
 
   function itHasALastName() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
+    $subscriber =
+      Subscriber::where('email', $this->data['email'])
       ->findOne();
-    expect($subscriber->last_name)->equals($this->data['last_name']);
+    expect($subscriber->last_name)
+      ->equals($this->data['last_name']);
   }
 
   function itHasAnEmail() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
+    $subscriber =
+      Subscriber::where('email', $this->data['email'])
       ->findOne();
-    expect($subscriber->email)->equals($this->data['email']);
+    expect($subscriber->email)
+      ->equals($this->data['email']);
   }
 
   function emailMustBeUnique() {
@@ -48,7 +52,8 @@ class SubscriberCest {
   }
 
   function _after() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
+    $subscriber =
+      Subscriber::where('email', $this->data['email'])
       ->findOne()
       ->delete();
   }

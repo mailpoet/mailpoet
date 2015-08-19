@@ -2,7 +2,6 @@
 use MailPoet\Models\Setting;
 
 class SettingCest {
-
   function _before() {
     $this->before_time = time();
     $this->data = array(
@@ -16,9 +15,7 @@ class SettingCest {
   }
 
   function itCanBeCreated() {
-    $setting = Setting::where('name', $this->data['name'])
-      ->findOne();
-    expect($setting->id)->notNull();
+   expect($this->result)->equals(true);
   }
 
   function itHasToBeValid() {
