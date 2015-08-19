@@ -6,7 +6,7 @@ class SettingCest {
   function _before() {
     $this->before_time = time();
     $this->data = array(
-      'name'  => 'sending_method',
+      'name' => 'sending_method',
       'value' => 'smtp'
     );
 
@@ -83,8 +83,8 @@ class SettingCest {
   }
   
   function _after() {
-    $setting = Setting::where('name', $this->data['name'])
-      ->findOne()
-      ->delete();
+    $deleteSettings = ORM::for_table(Setting::$_table)
+      ->delete_many();
   }
+
 }

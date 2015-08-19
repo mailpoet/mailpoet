@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-if (!defined('ABSPATH')) exit;
+if(!defined('ABSPATH')) exit;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;

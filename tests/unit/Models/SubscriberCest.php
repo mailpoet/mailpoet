@@ -7,8 +7,8 @@ class SubscriberCest {
     $this->before_time = time();
     $this->data = array(
       'first_name' => 'John',
-      'last_name'  => 'Mailer',
-      'email'      => 'john@mailpoet.com'
+      'last_name' => 'Mailer',
+      'email' => 'john@mailpoet.com'
     );
 
     $this->subscriber = Subscriber::create();
@@ -123,9 +123,8 @@ class SubscriberCest {
   }
 
   function _after() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
-      ->findOne()
-      ->delete();
+    $deloeteSubscribers = ORM::for_table(Subscriber::$_table)
+      ->delete_many();
   }
 
 }
