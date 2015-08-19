@@ -20,10 +20,13 @@ class Subscribers {
     $subscriber->save();
     return $to_create;
   }
-  function get() {
+  function selectAll() {
     $subscribers = \ORM::for_table(Subscriber::$_table)
       ->select(Subscriber::$_table.'.*')
       ->find_many();
     return $subscribers;
+  }
+  function get() {
+    wp_send_json($this->selectAll());
   }
 }

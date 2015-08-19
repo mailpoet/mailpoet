@@ -41,14 +41,14 @@ class SubscribersCest {
       expect($created)->equals(TRUE);
     }
   }
-  function itCanGetAllSubscribers() {
+  function itCanSelectAllSubscribers() {
     $marco = Subscriber::create();
     $marco->hydrate($this->existingSubscriber);
     $marco->save();
     foreach($this->newSubscribers as $row) {
       $this->subscribers->set($row);
     }
-    $all = $this->subscribers->get();
+    $all = $this->subscribers->selectAll();
     expect(count($all))->equals(3);
   }
   function _after() {
