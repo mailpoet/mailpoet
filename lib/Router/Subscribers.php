@@ -11,7 +11,7 @@ class Subscribers {
     $subscriber = Subscriber::where('email', $data['email'])
       ->findOne();
     $to_create = ($subscriber === FALSE);
-    if ($to_create === TRUE) {
+    if($to_create === TRUE) {
       $subscriber = Subscriber::create();
     } else {
       $data['id'] = $subscriber->id;
