@@ -2,7 +2,6 @@
 use MailPoet\Models\Setting;
 
 class SettingCest {
-  
   function _before() {
     $this->before_time = time();
     $this->data = array(
@@ -12,41 +11,19 @@ class SettingCest {
 
     $setting = Setting::create();
     $setting->hydrate($this->data);
-    $setting->save();
+    $this->result = $setting->save();
   }
 
   function itCanBeCreated() {
-    $setting = Setting::where('name', $this->data['name'])
-      ->findOne();
-    expect($setting->id)->notNull();
+   expect($this->result)->equals(true);
   }
 
-  function nameShouldValidate() {
-    $conflict_setting = Setting::create();
-    $conflict_setting->validateField('name', '');
-    expect($conflict_setting->getValidationErrors()[0])->equals('name_is_blank');
-
-    $conflict_setting = Setting::create();
-    $conflict_setting->validateField('name', 31337);
-    expect($conflict_setting->getValidationErrors()[0])->equals('name_is_not_string');
-
-    $conflict_setting = Setting::create();
-    $conflict_setting->validateField('name', 'a');
-    expect($conflict_setting->getValidationErrors()[0])->equals('name_is_short');
-  }
-
-  function valueShouldValidate() {
-    $conflict_setting = Setting::create();
-    $conflict_setting->validateField('value', '');
-    expect($conflict_setting->getValidationErrors()[0])->equals('value_is_blank');
-
-    $conflict_setting = Setting::create();
-    $conflict_setting->validateField('value', 31337);
-    expect($conflict_setting->getValidationErrors()[0])->equals('value_is_not_string');
-
-    $conflict_setting = Setting::create();
-    $conflict_setting->validateField('value', 'a');
-    expect($conflict_setting->getValidationErrors()[0])->equals('value_is_short');
+  function itHasToBeValid() {
+    expect($this->result)->equals(true);
+    $empty_model = Setting::create();
+    expect($empty_model->save())->equals(false);
+    $validations = $empty_model->getValidationErrors();
+    expect(count($validations))->equals(4);
   }
 
   function itHasACreatedAtOnCreation() {
@@ -81,7 +58,27 @@ class SettingCest {
     $time_difference = strtotime($setting->updated_at) >= $update_time;
     expect($time_difference)->equals(true);
   }
-  
+
+  function itCanCreateOrUpdate() {
+    $data = array(
+      'name'  => 'new',
+      'value' => 'data'
+    );
+
+    $result = Setting::createOrUpdate($data);
+    expect($result)->equals(true);
+    $record = Setting::where('name', $data['name'])
+      ->find_one();
+    expect($record->value)->equals($data['value']);
+
+    $data['value'] = 'new data';
+    $result = Setting::createOrUpdate($data);
+    expect($result)->equals(true);
+    $record = Setting::where('name', $data['name'])
+      ->find_one();
+    expect($record->value)->equals('new data');
+  }
+
   function _after() {
     $setting = Setting::where('name', $this->data['name'])
       ->findOne()
