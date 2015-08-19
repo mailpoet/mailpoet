@@ -13,7 +13,7 @@ class Settings {
     $settings = $this->filterParams($params);
     if(!$settings) return $this->returnInvalidParamsError();
 
-    $getSettings = Setting::where_in('name', array_map(function ($setting) { return $setting['name']; }, $settings))
+    $getSettings = Setting::where_in('name', array_map(function($setting) { return $setting['name']; }, $settings))
       ->find_array();
     return $this->returnResults($getSettings);
   }
@@ -30,7 +30,7 @@ class Settings {
     $validParamsWithNames = array();
     if(isset($params[0])) {
       $validParamsWithNames = array_map(
-        function ($setting) {
+        function($setting) {
           if(isset($setting['name'])) return $setting;
         },
         $params
