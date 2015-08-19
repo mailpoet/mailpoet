@@ -1,1 +1,0 @@
-../../../node_modules/spectrum-colorpicker/spectrum.js
