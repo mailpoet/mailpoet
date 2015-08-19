@@ -9,7 +9,9 @@ class RoboFile extends \Robo\Tasks {
 
   private $js_files = array(
     'assets/js/src/*.js',
-    'assets/js/src/**/*.js'
+    'assets/js/src/*.jsx',
+    'assets/js/src/**/*.js',
+    'assets/js/src/**/*.jsx'
   );
 
   function install() {

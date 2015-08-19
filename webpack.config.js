@@ -1,84 +1,77 @@
-var path = require('path'),
-    fs = require('fs'),
-    webpack = require("webpack"),
+var webpack = require('webpack'),
     _ = require('underscore'),
-    baseConfig;
+    baseConfig = {},
+    config = [];
 
 baseConfig = {
-  name: 'main',
-  context: __dirname ,
-  entry: {
-    vendor: ['handlebars', 'handlebars_helpers'],
-    mailpoet: ['mailpoet', 'ajax', 'modal', 'notice'],
-    admin: 'admin.js',
-  },
+  context: __dirname,
   output: {
     path: './assets/js',
     filename: '[name].js',
   },
+  resolve: {
+    modulesDirectories: [
+      'node_modules',
+      'assets/js/src'
+    ]
+  },
+  node: {
+    fs: 'empty'
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.jsx$/,
+        loader: 'babel-loader'
+      }
+    ]
+  }
+};
+
+// Admin
+config.push(_.extend({}, baseConfig, {
+  name: 'admin',
+  entry: {
+    vendor: ['handlebars', 'handlebars_helpers'],
+    mailpoet: ['mailpoet', 'ajax', 'modal', 'notice'],
+    admin: ['settings.jsx']
+  },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.js")
+    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js'),
   ],
-  loaders: [
-    {
-      test: /\.js$/i,
-      loader: 'js'
-    },
-    {
-      test: /\.css$/i,
-      loader: 'css'
-    },
-    {
-      test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/i,
-      loader: 'file'
-    }
-  ],
+  externals: {
+    'jquery': 'jQuery'
+  }
+}));
+
+// Public
+config.push(_.extend({}, baseConfig, {
+  name: 'public',
+  entry: {
+    public: 'public.js'
+  },
+  externals: {
+    'jquery': 'jQuery'
+  }
+}));
+
+// Test
+config.push(_.extend({}, baseConfig, {
+  name: 'test',
+  entry: {
+    testAjax: 'testAjax.js',
+  },
+  output: {
+    path: './tests/javascript/testBundles',
+    filename: '[name].js',
+  },
   resolve: {
     modulesDirectories: [
       'node_modules',
       'assets/js/src',
-      'assets/css/lib'
-    ],
-    fallback: path.join(__dirname, 'node_modules'),
-    alias: {
-      'handlebars': 'handlebars/dist/handlebars.js'
-    }
-  },
-  resolveLoader: {
-    fallback: path.join(__dirname, 'node_modules'),
-    alias: {
-      'hbs': 'handlebars-loader'
-    }
-  },
-  externals: {
-    'jquery': 'jQuery',
+      'tests/javascript/newsletter_editor'
+    ]
   }
-};
+}));
 
-module.exports = [
-  baseConfig,
-
-  // Configuration specific for testing
-  _.extend({}, baseConfig, {
-    name: 'test',
-    entry: {
-      testAjax: 'testAjax.js',
-    },
-    output: {
-      path: './tests/javascript/testBundles',
-      filename: '[name].js',
-    },
-    resolve: {
-      modulesDirectories: [
-        'node_modules',
-        'assets/js/src',
-        'tests/javascript/newsletter_editor'
-      ],
-      fallback: path.join(__dirname, 'node_modules'),
-      alias: {
-        'handlebars': 'handlebars/dist/handlebars.js'
-      }
-    },
-    plugins: [],
-  })
-];
+module.exports = config;
