@@ -1,5 +1,7 @@
 <?php
 
+namespace Sudzy;
+
 class ValidationException extends \Exception
 {
     protected $_validationErrors;

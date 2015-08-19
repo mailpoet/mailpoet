@@ -10,9 +10,21 @@ class Model extends \Sudzy\ValidModel {
   }
 
   function save() {
+    $this->setTimestamp();
+
+    try {
+      parent::save();
+      return true;
+    } catch (\Sudzy\ValidationException $e) {
+      return false;
+    } catch (Exception $e) {
+      return false;
+    }
+  }
+
+  private function setTimestamp() {
     if ($this->created_at === null) {
       $this->created_at = date("Y-m-d H:i:s");
     }
-    parent::save();
   }
 }

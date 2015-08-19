@@ -11,13 +11,25 @@ class Setting extends Model {
 
     $this->addValidations("name", array(
       "required"    => "name_is_blank",
-      "isString"    => "name_is_not_string",
-      "minLength|2" => "name_is_short"
+      "isString"    => "name_is_not_string"
     ));
     $this->addValidations("value", array(
       "required"    => "value_is_blank",
-      "isString"    => "value_is_not_string",
-      "minLength|2" => "value_is_short"
+      "isString"    => "value_is_not_string"
     ));
+  }
+
+  public static function createOrUpdate($model) {
+    $exists = Setting::where('name', $model['name'])
+      ->find_one();
+
+    if($exists === false) {
+      $new_model = Setting::create();
+      $new_model->hydrate($model);
+      return $new_model->save();
+    }
+
+    $exists->value = $model['value'];
+    return $exists->save();
   }
 }

@@ -73,7 +73,6 @@ class RoboFile extends \Robo\Tasks {
 
   function testUnit($singleUnit = null) {
     $this->loadEnv();
-    $this->compileAll();
     $this->_exec('vendor/bin/codecept build');
     $this->_exec('vendor/bin/codecept run unit ' . (($singleUnit) ? $singleUnit : ''));
   }

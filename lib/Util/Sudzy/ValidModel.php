@@ -143,7 +143,7 @@ abstract class ValidModel extends \Model
     protected function doValidationError($context)
     {
         if ($context == $this->_validationOptions['throw'])
-                throw new \ValidationException($this->_validationErrors);
+                throw new \Sudzy\ValidationException($this->_validationErrors);
     }
 
     protected function addValidationError($msg, $field = null)
