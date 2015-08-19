@@ -13,11 +13,11 @@ class Subscriber extends Model {
     ));
     $this->addValidations('first_name', array(
       'required'    => "first_name_is_blank",
-      'minLength|2' => "first_name_is_short"
+      "isString"    => "name_is_not_string"
     ));
     $this->addValidations('last_name', array(
       'required'    => "last_name_is_blank",
-      'minLength|2' => "last_name_is_short"
+      "isString"    => "name_is_not_string"
     ));
   }
 }

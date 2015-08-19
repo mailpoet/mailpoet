@@ -17,7 +17,7 @@ class Model extends \Sudzy\ValidModel {
       return true;
     } catch (\Sudzy\ValidationException $e) {
       return false;
-    } catch (Exception $e) {
+    } catch (\PDOException $e) {
       return false;
     }
   }
