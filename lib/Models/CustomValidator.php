@@ -1,4 +1,5 @@
-<?php namespace MailPoet\Models;
+<?php
+namespace MailPoet\Models;
 
 class CustomValidator {
   function __construct() {
