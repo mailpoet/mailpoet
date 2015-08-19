@@ -10,38 +10,33 @@ class Settings {
   }
 
   function get($params) {
-    $settingNames = array();
-    if(isset($params[0])) {
-      $settingNames = array_map(
-        function ($setting) {
-          if(isset($setting['name'])) return $setting['name'];
-        },
-        $params
-      );
-    } elseif(isset($params['name'])) $settingNames = array($params['name']);
+    $settings = $this->filterParams($params);
+    if(!$settings) return $this->returnInvalidParamsError();
 
-    if(!count($settingNames)) return $this->invalidParamsError();
-
-    $settings = Setting::where_in('name', $settingNames)
+    $getSettings = Setting::where_in('name', array_map(function ($setting) { return $setting['name']; }, $settings))
       ->find_array();
-    return $this->returnResults($settings);
+    return $this->returnResults($getSettings);
   }
 
   function set($params) {
-    $settings = array();
+    $settings = $this->filterParams($params);
+    if(!$settings) return $this->returnInvalidParamsError();
+
+    $createOrUpdateSettings = Setting::filter('createOrUpdate', $settings);
+    $this->returnResults($createOrUpdateSettings);
+  }
+
+  private function filterParams($params) {
+    $validParamsWithNames = array();
     if(isset($params[0])) {
-      $settings = array_map(
+      $validParamsWithNames = array_map(
         function ($setting) {
           if(isset($setting['name'])) return $setting;
         },
         $params
       );
-    } elseif(isset($params['name'])) $settings = array($params);
-
-    if(!count($settings)) return $this->invalidParamsError();
-
-    $createOrUpdateSettings = Setting::filter('createOrUpdate', $settings);
-    $this->returnResults($createOrUpdateSettings);
+    } elseif(isset($params['name'])) $validParamsWithNames = array($params);
+    return ($validParamsWithNames) ? $validParamsWithNames : false;
   }
 
   private function returnResults($results) {
@@ -52,7 +47,7 @@ class Settings {
     }
   }
 
-  private function invalidParamsError() {
+  private function returnInvalidParamsError() {
     return $this->returnResults(array('error' => 'invalid_params'));
   }
 }
