@@ -139,4 +139,6 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
   Handlebars.registerHelper('getNumber', function (string) {
       return parseInt(string, 10);
   });
+
+  window.Handlebars = Handlebars;
 });

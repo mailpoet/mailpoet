@@ -1,28 +1,36 @@
-EditorApplication.module("components.config", function(Module, App, Backbone, Marionette, $, _) {
-    "use strict";
+define('newsletter_editor/components/config', [
+    'newsletter_editor/App',
+    'backbone',
+    'backbone.supermodel',
+  ], function(EditorApplication, Backbone, SuperModel) {
 
-    Module.ConfigModel = Backbone.SuperModel.extend({
-        defaults: {
-            availableStyles: {},
-            socialIcons: {},
-            blockDefaults: {},
-            translations: {},
-            sidepanelWidth: '331px',
-            validation: {},
-            urls: {},
-        },
-    });
+  EditorApplication.module("components.config", function(Module, App, Backbone, Marionette, $, _) {
+      "use strict";
 
-    // Global and available styles for access in blocks and their settings
-    Module._config = {};
-    Module.getConfig = function() { return Module._config; };
-    Module.setConfig = function(options) { Module._config = new Module.ConfigModel(options, { parse: true }); return Module._config; };
+      Module.ConfigModel = SuperModel.extend({
+          defaults: {
+              availableStyles: {},
+              socialIcons: {},
+              blockDefaults: {},
+              translations: {},
+              sidepanelWidth: '331px',
+              validation: {},
+              urls: {},
+          },
+      });
 
-    App.on('before:start', function(options) {
-        // Expose config methods globally
-        App.getConfig = Module.getConfig;
-        App.setConfig = Module.setConfig;
+      // Global and available styles for access in blocks and their settings
+      Module._config = {};
+      Module.getConfig = function() { return Module._config; };
+      Module.setConfig = function(options) { Module._config = new Module.ConfigModel(options, { parse: true }); return Module._config; };
 
-        App.setConfig(options.config);
-    });
+      App.on('before:start', function(options) {
+          // Expose config methods globally
+          App.getConfig = Module.getConfig;
+          App.setConfig = Module.setConfig;
+
+          App.setConfig(options.config);
+      });
+  });
+
 });

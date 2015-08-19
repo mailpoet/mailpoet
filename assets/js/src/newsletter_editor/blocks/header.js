@@ -1,138 +1,148 @@
 /**
  * Header content block
  */
-EditorApplication.module("blocks.header", function(Module, App, Backbone, Marionette, $, _) {
-    "use strict";
+define('newsletter_editor/blocks/header', [
+    'newsletter_editor/App',
+    'backbone',
+    'backbone.supermodel',
+    'backbone.marionette',
+    'mailpoet',
+  ], function(EditorApplication, Backbone, SuperModel, Marionette, MailPoet) {
 
-    var base = App.module('blocks.base');
+  EditorApplication.module("blocks.header", function(Module, App, Backbone, Marionette, $, _) {
+      "use strict";
 
-    Module.HeaderBlockModel = base.BlockModel.extend({
-        defaults: function() {
-            return this._getDefaults({
-                type: 'header',
-                text: 'Display problems? <a href="[viewInBrowserUrl]">View it in your browser</a>',
-                styles: {
-                    block: {
-                        backgroundColor: 'transparent',
-                    },
-                    text: {
-                        fontColor: '#000000',
-                        fontFamily: 'Arial',
-                        fontSize: '12px',
-                        textAlign: 'center',
-                    },
-                    link: {
-                        fontColor: '#0000ff',
-                        textDecoration: 'underline',
-                    },
-                },
-            }, EditorApplication.getConfig().get('blockDefaults.header'));
-        },
-    });
+      var base = App.module('blocks.base');
 
-    Module.HeaderBlockView = base.BlockView.extend({
-        className: "mailpoet_block mailpoet_header_block mailpoet_droppable_block",
-        getTemplate: function() { return templates.headerBlock; },
-        modelEvents: {
-            'change:styles.block.backgroundColor change:styles.text.fontColor change:styles.text.fontFamily change:styles.text.fontSize change:styles.text.textAlign change:styles.link.fontColor change:styles.link.textDecoration': 'render',
-        },
-        onDragSubstituteBy: function() { return Module.HeaderWidgetView; },
-        onRender: function() {
-            this.toolsView = new Module.HeaderBlockToolsView({ model: this.model });
-            this.toolsRegion.show(this.toolsView);
-        },
-        onDomRefresh: function() {
-            this.attachTextEditor();
-        },
-        attachTextEditor: function() {
-            var that = this;
-            this.$('.mailpoet_content').tinymce({
-                inline: true,
+      Module.HeaderBlockModel = base.BlockModel.extend({
+          defaults: function() {
+              return this._getDefaults({
+                  type: 'header',
+                  text: 'Display problems? <a href="[viewInBrowserUrl]">View it in your browser</a>',
+                  styles: {
+                      block: {
+                          backgroundColor: 'transparent',
+                      },
+                      text: {
+                          fontColor: '#000000',
+                          fontFamily: 'Arial',
+                          fontSize: '12px',
+                          textAlign: 'center',
+                      },
+                      link: {
+                          fontColor: '#0000ff',
+                          textDecoration: 'underline',
+                      },
+                  },
+              }, EditorApplication.getConfig().get('blockDefaults.header'));
+          },
+      });
 
-                menubar: false,
-                toolbar: "bold italic link unlink forecolor mailpoet_custom_fields",
+      Module.HeaderBlockView = base.BlockView.extend({
+          className: "mailpoet_block mailpoet_header_block mailpoet_droppable_block",
+          getTemplate: function() { return templates.headerBlock; },
+          modelEvents: {
+              'change:styles.block.backgroundColor change:styles.text.fontColor change:styles.text.fontFamily change:styles.text.fontSize change:styles.text.textAlign change:styles.link.fontColor change:styles.link.textDecoration': 'render',
+          },
+          onDragSubstituteBy: function() { return Module.HeaderWidgetView; },
+          onRender: function() {
+              this.toolsView = new Module.HeaderBlockToolsView({ model: this.model });
+              this.toolsRegion.show(this.toolsView);
+          },
+          onDomRefresh: function() {
+              this.attachTextEditor();
+          },
+          attachTextEditor: function() {
+              var that = this;
+              this.$('.mailpoet_content').tinymce({
+                  inline: true,
 
-                valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br",
-                invalid_elements: "script",
-                style_formats: [
-                    {title: 'Paragraph', block: 'p'},
-                ],
+                  menubar: false,
+                  toolbar: "bold italic link unlink forecolor mailpoet_custom_fields",
 
-                plugins: "wplink textcolor mailpoet_custom_fields",
+                  valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br",
+                  invalid_elements: "script",
+                  style_formats: [
+                      {title: 'Paragraph', block: 'p'},
+                  ],
 
-                setup: function(editor) {
-                    editor.on('change', function(e) {
-                        that.model.set('text', editor.getContent());
-                    });
+                  plugins: "wplink textcolor mailpoet_custom_fields",
 
-                    editor.on('focus', function(e) {
-                        that.disableShowingTools();
-                    });
+                  setup: function(editor) {
+                      editor.on('change', function(e) {
+                          that.model.set('text', editor.getContent());
+                      });
 
-                    editor.on('blur', function(e) {
-                        that.enableShowingTools();
-                    });
-                },
+                      editor.on('focus', function(e) {
+                          that.disableShowingTools();
+                      });
 
-                mailpoet_custom_fields: App.getConfig().get('customFields').toJSON(),
-                mailpoet_custom_fields_window_title: App.getConfig().get('translations.customFieldsWindowTitle'),
-            });
-        },
-    });
+                      editor.on('blur', function(e) {
+                          that.enableShowingTools();
+                      });
+                  },
 
-    Module.HeaderBlockToolsView = base.BlockToolsView.extend({
-        getSettingsView: function() { return Module.HeaderBlockSettingsView; },
-    });
+                  mailpoet_custom_fields: App.getConfig().get('customFields').toJSON(),
+                  mailpoet_custom_fields_window_title: App.getConfig().get('translations.customFieldsWindowTitle'),
+              });
+          },
+      });
 
-    Module.HeaderBlockSettingsView = base.BlockSettingsView.extend({
-        getTemplate: function() { return templates.headerBlockSettings; },
-        events: function() {
-            return {
-                "change .mailpoet_field_header_text_color": _.partial(this.changeColorField, "styles.text.fontColor"),
-                "change .mailpoet_field_header_text_font_family": _.partial(this.changeField, "styles.text.fontFamily"),
-                "change .mailpoet_field_header_text_size": _.partial(this.changeField, "styles.text.fontSize"),
-                "change #mailpoet_field_header_link_color": _.partial(this.changeColorField, "styles.link.fontColor"),
-                "change #mailpoet_field_header_link_underline": function(event) {
-                this.model.set('styles.link.textDecoration', (event.target.checked) ? event.target.value : 'none');
-            },
-                "change .mailpoet_field_header_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
-                "change .mailpoet_field_header_alignment": _.partial(this.changeField, "styles.text.textAlign"),
-                "click .mailpoet_done_editing": "close",
-            };
-        },
-        behaviors: {
-            ColorPickerBehavior: {},
-        },
-        templateHelpers: function() {
-            return {
-                model: this.model.toJSON(),
-                availableStyles: App.getAvailableStyles().toJSON(),
-            };
-        },
-    });
+      Module.HeaderBlockToolsView = base.BlockToolsView.extend({
+          getSettingsView: function() { return Module.HeaderBlockSettingsView; },
+      });
 
-    Module.HeaderWidgetView = base.WidgetView.extend({
-        getTemplate: function() { return templates.headerInsertion; },
-        behaviors: {
-            DraggableBehavior: {
-                cloneOriginal: true,
-                drop: function() {
-                    return new Module.HeaderBlockModel();
-                },
-            }
-        },
-    });
+      Module.HeaderBlockSettingsView = base.BlockSettingsView.extend({
+          getTemplate: function() { return templates.headerBlockSettings; },
+          events: function() {
+              return {
+                  "change .mailpoet_field_header_text_color": _.partial(this.changeColorField, "styles.text.fontColor"),
+                  "change .mailpoet_field_header_text_font_family": _.partial(this.changeField, "styles.text.fontFamily"),
+                  "change .mailpoet_field_header_text_size": _.partial(this.changeField, "styles.text.fontSize"),
+                  "change #mailpoet_field_header_link_color": _.partial(this.changeColorField, "styles.link.fontColor"),
+                  "change #mailpoet_field_header_link_underline": function(event) {
+                  this.model.set('styles.link.textDecoration', (event.target.checked) ? event.target.value : 'none');
+              },
+                  "change .mailpoet_field_header_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
+                  "change .mailpoet_field_header_alignment": _.partial(this.changeField, "styles.text.textAlign"),
+                  "click .mailpoet_done_editing": "close",
+              };
+          },
+          behaviors: {
+              ColorPickerBehavior: {},
+          },
+          templateHelpers: function() {
+              return {
+                  model: this.model.toJSON(),
+                  availableStyles: App.getAvailableStyles().toJSON(),
+              };
+          },
+      });
 
-    App.on('before:start', function() {
-        App.registerBlockType('header', {
-            blockModel: Module.HeaderBlockModel,
-            blockView: Module.HeaderBlockView,
-        });
+      Module.HeaderWidgetView = base.WidgetView.extend({
+          getTemplate: function() { return templates.headerInsertion; },
+          behaviors: {
+              DraggableBehavior: {
+                  cloneOriginal: true,
+                  drop: function() {
+                      return new Module.HeaderBlockModel();
+                  },
+              }
+          },
+      });
 
-        App.registerWidget({
-            name: 'header',
-            widgetView: Module.HeaderWidgetView,
-            priority: 98,
-        });
-    });
+      App.on('before:start', function() {
+          App.registerBlockType('header', {
+              blockModel: Module.HeaderBlockModel,
+              blockView: Module.HeaderBlockView,
+          });
+
+          App.registerWidget({
+              name: 'header',
+              widgetView: Module.HeaderWidgetView,
+              priority: 98,
+          });
+      });
+  });
+
 });

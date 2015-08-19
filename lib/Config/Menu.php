@@ -82,6 +82,7 @@ class Menu {
 
   function newsletterEditor() {
     $data = array();
+    wp_enqueue_media();
     echo $this->renderer->render('newsletter/editor.html', $data);
   }
 }

@@ -4,7 +4,16 @@
  *
  * For more check: http://marionettejs.com/docs/marionette.behaviors.html#behaviorslookup
  */
-BehaviorsLookup = {};
-Backbone.Marionette.Behaviors.behaviorsLookup = function() {
+define('newsletter_editor/behaviors/behaviorsLookup', [
+    'backbone.marionette',
+  ], function(Marionette) {
+
+  var BehaviorsLookup = {};
+  Marionette.Behaviors.behaviorsLookup = function() {
     return BehaviorsLookup;
-};
+  };
+
+  window.BehaviorsLookup = BehaviorsLookup;
+
+  return BehaviorsLookup;
+});
