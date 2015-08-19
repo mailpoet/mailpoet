@@ -9,24 +9,35 @@
 
   <script type="text/jsx">
     var settings = {
-      firstname: null,
+      firstname: "Default",
       lastname: null,
       email: null
     }
     var FormFields = React.createClass({
       render: function() {
+        console.log('render', this.props);
         return (
           <div>
-            <label><%= __('First Name') %></label>
-            <input type="text" ref="firstname" defaultValue={this.props.settings.firstname} />
+            <p>
+              <label><%= __('First Name') %></label>
+              <input type="text" ref="firstname"
+                defaultValue={this.props.settings.firstname} />
+            </p>
 
-            <label><%= __('Last Name') %></label>
-            <input type="text" ref="lastname" defaultValue={this.props.settings.lastname} />
+            <p>
+              <label><%= __('Last Name') %></label>
+              <input type="text" ref="lastname"
+                defaultValue={this.props.settings.lastname} />
+            </p>
 
-            <label><%= __('Email') %></label>
-            <input type="email" ref="lastname" defaultValue={this.props.settings.lastname} />
+            <p>
+              <label><%= __('Email') %></label>
+              <input type="email" ref="email"
+                defaultValue={this.props.settings.email} />
+            </p>
 
-            <button class="btn-primary" onClick={this.save}><%= __('Save') %></button>
+            <a className="button button-primary"
+              onClick={this.save}><%= __('Save') %></a>
           </div>
         );
       },
@@ -40,13 +51,11 @@
           email: this.refs.email.getDOMNode().value,
         };
         console.log(data);
-        // this.props.saveValues(data);
-        //this.props.nextStep();
       }
     });
 
     React.render(
-      <FormFields settings="{settings}"/>,
+      <FormFields settings={settings} />,
       document.getElementById('mailpoet_settings')
     );
   </script>
@@ -68,7 +77,7 @@
           }
         },
         success : function(response) {
-          console.log(response);
+
         }
       });
     });
