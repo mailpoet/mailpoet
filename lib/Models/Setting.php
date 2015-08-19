@@ -20,4 +20,14 @@ class Setting extends Model {
       'minLength|2' => 'value_is_short'
     ));
   }
+
+  public static function createOrUpdate($orm, $settings) {
+    return $orm->raw_execute(
+      'INSERT IGNORE INTO `' . self::$_table . '` (`name`, `value`)
+      VALUES ' . rtrim(str_repeat('(?, ?), ', count($settings)), ', ') . '
+      ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)',
+      call_user_func_array(
+        'array_merge_recursive', array_map('array_values', $settings)
+      ));
+  }
 }

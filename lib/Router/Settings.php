@@ -10,9 +10,8 @@ class Settings {
   }
 
   function get($params) {
-
     $settingNames = array();
-    if(count($params) > 1) {
+    if(isset($params[0])) {
       $settingNames = array_map(
         function ($setting) {
           if(isset($setting['name'])) return $setting['name'];
@@ -21,19 +20,28 @@ class Settings {
       );
     } elseif(isset($params['name'])) $settingNames = array($params['name']);
 
-    if(count($settingNames)) {
-      return $this->returnResults(
-        Setting::where_in('name', $settingNames)
-          ->find_array()
-      );
-    }
+    if(!count($settingNames)) return $this->invalidParamsError();
 
-    return $this->returnResults(array('error' => 'invalid_params'));
-
+    $settings = Setting::where_in('name', $settingNames)
+      ->find_array();
+    return $this->returnResults($settings);
   }
 
   function set($params) {
+    $settings = array();
+    if(isset($params[0])) {
+      $settings = array_map(
+        function ($setting) {
+          if(isset($setting['name'])) return $setting;
+        },
+        $params
+      );
+    } elseif(isset($params['name'])) $settings = array($params);
 
+    if(!count($settings)) return $this->invalidParamsError();
+
+    $createOrUpdateSettings = Setting::filter('createOrUpdate', $settings);
+    $this->returnResults($createOrUpdateSettings);
   }
 
   private function returnResults($results) {
@@ -44,4 +52,7 @@ class Settings {
     }
   }
 
+  private function invalidParamsError() {
+    return $this->returnResults(array('error' => 'invalid_params'));
+  }
 }

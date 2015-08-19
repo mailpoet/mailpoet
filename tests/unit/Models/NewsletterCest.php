@@ -8,7 +8,7 @@ class NewsletterCest {
     $this->before_time = time();
     $this->data = array(
       'subject' => 'My First Newsletter',
-      'body'    => 'a verrryyyyy long body :)'
+      'body' => 'a verrryyyyy long body :)'
     );
     
     $newsletter = Newsletter::create();
@@ -68,8 +68,7 @@ class NewsletterCest {
   }
   
   function _after() {
-    $newsletter = Newsletter::where('subject', $this->data['subject'])
-      ->findOne()
-      ->delete();
+    $deleteNewsletters = ORM::for_table(Newsletter::$_table)
+      ->delete_many();
   }
 }
