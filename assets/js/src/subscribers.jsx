@@ -8,8 +8,12 @@ define('subscribers', ['react'], function(React) {
           );
     }
   });
-  React.render(
-      <CommentBox />,
-      document.getElementById('subscribers-container')
-      );
+
+  var element = document.getElementById('mailpoet_subscribers');
+  if (element) {
+    React.render(
+        <CommentBox />,
+        document.getElementById('mailpoet_subscribers')
+        );
+  }
 });
