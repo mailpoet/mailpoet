@@ -28,6 +28,11 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         if(this.options.url === null) {
           this.options.url = ajaxurl;
         }
+
+        // set default token
+        if(this.options.token === null) {
+          this.options.token = mailpoet_token;
+        }
       },
       request: function(method, options) {
         // set options
@@ -36,7 +41,7 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         // set request params
         var params = {
           action: 'mailpoet',
-          token: mailpoet_token,
+          token: this.options.token,
           endpoint: this.options.endpoint,
           method: this.options.action,
           data: this.options.data

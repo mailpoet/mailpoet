@@ -85,10 +85,14 @@ class Widget extends \WP_Widget {
       'action="'.admin_url('admin-post.php?action=mailpoet_form_subscribe').'" '.
       'class="mailpoet_form mailpoet_form_'.$form_type.'" novalidate>';
 
+    $output .= '<div class="mailpoet_message"></div>';
+
     $output .= '  <p>';
     $output .= '    <label>'.__('E-mail');
     $output .= '      <input type="email" name="email"';
     $output .= '      data-validation-engine="validate[required,custom[email]]"';
+    $output .= '      data-msg="'.__('This field is required.').'"';
+    $output .= '      required';
     $output .= '      />';
     $output .= '    </label>';
     $output .= '  </p>';

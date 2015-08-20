@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Router;
+use \MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -29,9 +30,8 @@ class Router {
   }
 
   function setToken() {
-    $token = wp_create_nonce('mailpoet_token');
     $global = '<script type="text/javascript">';
-    $global .= 'var mailpoet_token = "' . $token . '";';
+    $global .= 'var mailpoet_token = "'.Security::generateToken().'";';
     $global .= "</script>/n";
     echo $global;
   }

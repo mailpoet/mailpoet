@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Config;
+use \MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -18,19 +19,18 @@ class Widget {
   }
 
   function setupDependencies() {
-    wp_enqueue_script('mailpoet_vendor',
-      Env::$assets_url.'/js/vendor.js',
-      array(),
-      Env::$version,
-      true
-    );
-
     wp_enqueue_script('mailpoet_public',
       Env::$assets_url.'/js/public.js',
       array(),
       Env::$version,
       true
     );
+
+    wp_localize_script('mailpoet_public', 'MailPoetForm', array(
+      'ajax_url' => admin_url('admin-ajax.php'),
+      'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false),
+      'token' => Security::generateToken()
+    ));
   }
 
   function setupActions() {
