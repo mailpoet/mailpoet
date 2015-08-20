@@ -55,7 +55,7 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec(join(' ', array(
       './node_modules/stylus/bin/stylus',
       '--include ./node_modules',
-      '--include-css', 
+      '--include-css',
       '-u nib',
       join(' ', $this->css_files),
       '-o assets/css/'
@@ -76,13 +76,13 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
-  function testUnit($singleUnit = null) {
+  function testUnit($file = null) {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
-    $this->_exec('vendor/bin/codecept run unit ' . (($singleUnit) ? $singleUnit : ''));
+    $this->_exec('vendor/bin/codecept run unit '.(($file) ? $file : ''));
   }
 
-  function testAcceptance() {
+  function testAcceptance($file = null) {
     $this->loadEnv();
     $this->compileAll();
     $this->_exec('vendor/bin/codecept build');
@@ -91,7 +91,7 @@ class RoboFile extends \Robo\Tasks {
       ->background()
       ->run();
     sleep(2);
-    $this->_exec('vendor/bin/codecept run acceptance');
+    $this->_exec('vendor/bin/codecept run acceptance '.(($file) ? $file : ''));
   }
 
   function testJavascript() {
