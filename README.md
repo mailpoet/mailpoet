@@ -67,35 +67,12 @@ $ ./do test:debug
 - [Nib extension](http://tj.github.io/nib/)
 
 ```sh
-assets/css/lib -> link your dependencies here
 assets/css/src -> place your *.styl files here
 ```
 
 ### Watch for changes and recompile
 ```sh
 $ ./do watch
-```
-
-# JS
-
-Dependency example:
-
-- add "handlebars" as a dependency in the `package.json` file
-```json
-{
-  "dependencies": {
-    "handlebars": "3.0.3",
-  },
-```
-
-- Install dependencies.
-```sh
-$ ./do install
-```
-
-- Symlink the dependency:
-```sh
-$ ln -s node_modules/handlebars/dist/handlebars.min.js assets/js/lib/handlebars.min.js
 ```
 
 ## Module loading and organization
