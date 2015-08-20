@@ -7,8 +7,9 @@
 class_name: AcceptanceTester
 modules:
     enabled:
-        - WebDriver:
+      - \Helper\Acceptance
+      - WebDriver:
             url: 'http://localhost'
             browser: phantomjs
-            restart: true
-        - \Helper\Acceptance
+            capabilities:
+                webStorageEnabled: true

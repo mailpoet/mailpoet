@@ -1,1 +1,0 @@
-../../../../node_modules/codemirror/mode/php/php.js

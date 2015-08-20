@@ -4,12 +4,15 @@ class RoboFile extends \Robo\Tasks {
 
   private $css_files = array(
     'assets/css/src/admin.styl',
+    'assets/css/src/public.styl',
     'assets/css/src/rtl.styl'
   );
 
   private $js_files = array(
     'assets/js/src/*.js',
-    'assets/js/src/**/*.js'
+    'assets/js/src/*.jsx',
+    'assets/js/src/**/*.js',
+    'assets/js/src/**/*.jsx'
   );
 
   function install() {
@@ -51,6 +54,8 @@ class RoboFile extends \Robo\Tasks {
   function compileCss() {
     $this->_exec(join(' ', array(
       './node_modules/stylus/bin/stylus',
+      '--include ./node_modules',
+      '--include-css', 
       '-u nib',
       join(' ', $this->css_files),
       '-o assets/css/'
