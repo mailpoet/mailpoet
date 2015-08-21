@@ -22,7 +22,7 @@ define('settings', ['react/addons', 'jquery', 'mailpoet'], function(React, jQuer
         }.bind(this)
       });
     },
-    save: function(e) {
+    handleSubmit: function(e) {
       this.setState({ loading: true });
 
       e.preventDefault();
@@ -67,7 +67,7 @@ define('settings', ['react/addons', 'jquery', 'mailpoet'], function(React, jQuer
     },
     render: function() {
       return (
-        <form className="mailpoet_settings_form">
+        <form onSubmit={this.handleSubmit} className="mailpoet_settings_form">
           <p>
             <label>
               From name:
@@ -98,7 +98,6 @@ define('settings', ['react/addons', 'jquery', 'mailpoet'], function(React, jQuer
           <input
             ref="submit"
             type="submit"
-            onClick={this.save}
             className="button button-primary"
             disabled={this.state.loading}
             value="Save" />
