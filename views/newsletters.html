@@ -2,25 +2,7 @@
 
 <% block content %>
   <h1><%= 'Newsletters' %></h1>
-
-<script type="text/javascript">
-jQuery(function($) {
-
-  // dom loaded
-  $(function() {
-
-    MailPoet.Ajax.post({
-      endpoint: 'newsletters',
-      action: 'get',
-      data: {
-        first_name: 'John'
-      },
-      onSuccess: function(response) {
-        // console.log(response);
-      }
-    });
-
-  });
-});
-</script>
+  <div id="newsletters_list"></div>
+  <h2><%= 'New' %></h2>
+  <div id="newsletters_form"></div>
 <% endblock %>

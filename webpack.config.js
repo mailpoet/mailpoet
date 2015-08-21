@@ -34,7 +34,12 @@ config.push(_.extend({}, baseConfig, {
   entry: {
     vendor: ['handlebars', 'handlebars_helpers'],
     mailpoet: ['mailpoet', 'ajax', 'modal', 'notice'],
-    admin: ['settings.jsx', 'subscribers.jsx']
+    admin: [
+      'settings.jsx',
+      'subscribers.jsx',
+      'newsletters_list.jsx',
+      'newsletters_form.jsx'
+    ]
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js'),
