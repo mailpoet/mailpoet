@@ -28,6 +28,11 @@ class Assets extends \Twig_Extension {
         'javascript',
         array($this, 'generateJavascript'),
         array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
+        'image_url',
+        array($this, 'generateImageUrl'),
+        array('is_safe' => array('all'))
       )
     );
   }
@@ -55,5 +60,9 @@ class Assets extends \Twig_Extension {
     }
 
     return join("\n", $output);
+  }
+
+  public function generateImageUrl($path) {
+    return $this->_globals['assets_url'].'/img/'.$path;
   }
 }
