@@ -32,7 +32,7 @@ class Router {
   function setToken() {
     $global = '<script type="text/javascript">';
     $global .= 'var mailpoet_token = "'.Security::generateToken().'";';
-    $global .= "</script>";
+    $global .= '</script>';
     echo $global;
   }
 
