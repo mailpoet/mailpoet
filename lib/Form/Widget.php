@@ -65,6 +65,9 @@ class Widget extends \WP_Widget {
       $this->id_base
     );
 
+    $form_id = $this->id_base.'_'.$this->number;
+    $form_type = 'widget';
+
     $output = '';
 
     // before widget
@@ -73,11 +76,13 @@ class Widget extends \WP_Widget {
     // title
     $output .= $before_title.$title.$after_title;
 
-    // form
-    $form_id = $this->id_base.'_'.$this->number;
-    $form_type = 'widget';
-
+    // container
     $output .= '<div class="mailpoet_form mailpoet_form_'.$form_type.'">';
+
+    // styles
+    $styles = '.mailpoet_validate_success { color:#468847; }';
+    $styles .= '.mailpoet_validate_error { color:#B94A48; }';
+    $output .= '<style type="text/css">'.$styles.'</style>';
 
     $output .= '<form '.
       'id="'.$form_id.'" '.
