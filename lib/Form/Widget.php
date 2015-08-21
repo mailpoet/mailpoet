@@ -95,9 +95,10 @@ class Widget extends \WP_Widget {
     $output .= '  <p>';
     $output .= '    <label>'.__('E-mail');
     $output .= '      <input type="email" name="email"';
-    $output .= '      data-validation-engine="validate[required,custom[email]]"';
-    $output .= '      data-msg="'.__('This field is required.').'"';
-    $output .= '      required';
+    $output .= '      data-rule-required="true"';
+    $output .= '      data-rule-email="true"';
+    $output .= '      data-msg-required="'.__('Please enter your email address.').'"';
+    $output .= '      data-msg-email="'.__('Please enter a valid email address.').'"';
     $output .= '      />';
     $output .= '    </label>';
     $output .= '  </p>';
