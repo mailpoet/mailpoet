@@ -17,6 +17,7 @@
     "d3": "~3.5.5",
     "handlebars": "3.0.3",
     "html2canvas": "latest",
+    "jquery-validation": "^1.14.0",
     "moment": "^2.10.3",
     "napa": "^1.2.0",
     "papaparse": "4.1.1",

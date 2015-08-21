@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Router;
+use \MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -23,16 +24,15 @@ class Router {
     $class = ucfirst($_POST['endpoint']);
     $endpoint =  __NAMESPACE__ . "\\" . $class;
     $method = $_POST['method'];
-    $data = $_POST['data'];
+    $data = isset($_POST['data']) ? $_POST['data'] : array();
     $endpoint = new $endpoint();
     $endpoint->$method($data);
   }
 
   function setToken() {
-    $token = wp_create_nonce('mailpoet_token');
     $global = '<script type="text/javascript">';
-    $global .= 'var mailpoet_token = "' . $token . '";';
-    $global .= "</script>/n";
+    $global .= 'var mailpoet_token = "'.Security::generateToken().'";';
+    $global .= '</script>';
     echo $global;
   }
 

@@ -4,10 +4,10 @@ namespace MailPoet\Config;
 use MailPoet\Models;
 use MailPoet\Router;
 
-if (!defined('ABSPATH')) exit;
+if(!defined('ABSPATH')) exit;
 
 class Initializer {
-  public function __construct($params = array(
+  function __construct($params = array(
     'file'    => '',
     'version' => '1.0.0'
   )) {
@@ -21,6 +21,7 @@ class Initializer {
     $this->setupLocalizer();
     $this->setupMenu();
     $this->setupRouter();
+    $this->setupWidget();
   }
 
   function setupDB() {
@@ -63,5 +64,10 @@ class Initializer {
   function setupRouter() {
     $router = new Router\Router();
     $router->init();
+  }
+
+  function setupWidget() {
+    $widget = new Widget();
+    $widget->init();
   }
 }
