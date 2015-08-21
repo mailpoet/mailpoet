@@ -20,10 +20,7 @@ class NewsletterCest {
   }
 
   function _after() {
-    $newsletter =
-      Newsletter::where(
-        'subject',
-        $this->data['subject']
-      )->findOne()->delete();
+    ORM::for_table(Newsletter::$_table)
+      ->delete_many();
   }
 }

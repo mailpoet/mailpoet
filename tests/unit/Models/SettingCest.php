@@ -77,13 +77,10 @@ class SettingCest {
     $record = Setting::where('name', $data['name'])
       ->find_one();
     expect($record->value)->equals('new data');
-
-    $record->delete();
   }
 
   function _after() {
-    Setting::where('name', $this->data['name'])
-      ->findOne()
-      ->delete();
+    ORM::for_table(Setting::$_table)
+      ->delete_many();
   }
 }
