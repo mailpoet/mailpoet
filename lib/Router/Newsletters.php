@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Router;
 use \MailPoet\Models\Newsletter;
+use \MailPoet\Models\Subscriber;
+use \MailPoet\Mailer\Bridge;
 
 if(!defined('ABSPATH')) exit;
 
@@ -31,5 +33,12 @@ class Newsletters {
 
   function delete($id) {
 
+  }
+
+  function send($id) {
+    $newsletter = Newsletter::find_one($id)->as_array();
+    $subscribers = Subscriber::find_array();
+    $mailer = new Bridge($newsletter, $subscribers);
+    wp_send_json($mailer->send());
   }
 }

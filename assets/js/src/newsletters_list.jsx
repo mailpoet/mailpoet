@@ -1,12 +1,29 @@
 define('newsletters_list', ['react', 'jquery', 'mailpoet'], function(React, jQuery, MailPoet) {
 
   var Newsletter = React.createClass({
+    send: function(e) {
+      e.preventDefault();
+      MailPoet.Ajax.post({
+        endpoint: 'newsletters',
+        action: 'send',
+        data: this.props.newsletter.id,
+        onSuccess: function(response) {
+          alert('Sent!');
+        },
+        onError: function(response) {
+          alert('Cannot send. Set the settings and add some subscribers!');
+        }
+      })
+    },
+
     render: function() {
       return (
         <div className="newsletter">
-          <h3 className="subject">
-            {this.props.newsletter.subject}
-          </h3>
+          <p className="subject">
+            {this.props.newsletter.subject} - <a href="" onClick={this.send}>
+            Send
+            </a>
+          </p>
         </div>
       );
     }

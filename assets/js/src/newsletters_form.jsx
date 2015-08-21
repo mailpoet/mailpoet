@@ -7,7 +7,6 @@ define('newsletters_form', ['react', 'jquery', 'mailpoet'], function(React, jQue
         action: 'save',
         data: data,
         onSuccess: function(response) {
-          console.log(response);
         }.bind(this)
       })
     },
@@ -41,7 +40,7 @@ define('newsletters_form', ['react', 'jquery', 'mailpoet'], function(React, jQue
           <br />
           <textarea placeholder="Body" ref="body" />
           <br />
-          <input type="submit" value="Post" />
+          <input type="submit" value="Save" />
           </form>
           );
     }

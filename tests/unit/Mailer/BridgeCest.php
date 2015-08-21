@@ -96,6 +96,17 @@ class BridgeCest {
       ->equals('application/json');
   }
 
+  function itCannotSendWithoutSubscribers() {
+    $subscribers = array();
+
+    $mailer = new Bridge(
+      $this->newsletter,
+      $subscribers
+    );
+
+    expect($mailer->send())->equals(false);
+  }
+
   function itCanSend() {
     /* $result = $this->mailer->send(); */
     /* expect($result)->equals(true); */

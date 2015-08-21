@@ -1,4 +1,5 @@
 define('settings', ['react/addons', 'jquery', 'mailpoet'], function(React, jQuery, MailPoet) {
+
   var SettingsForm = React.createClass({
     mixins: [React.addons.LinkedStateMixin],
     load: function() {
@@ -82,7 +83,7 @@ define('settings', ['react/addons', 'jquery', 'mailpoet'], function(React, jQuer
               From email:
               <input
                 type="text"
-                valueLink={this.linkSettingValue('from_email')} />
+                valueLink={this.linkSettingValue('from_address')} />
             </label>
           </p>
 
