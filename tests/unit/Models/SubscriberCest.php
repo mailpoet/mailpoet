@@ -52,9 +52,7 @@ class SubscriberCest {
   }
 
   function _after() {
-    $subscriber =
-      Subscriber::where('email', $this->data['email'])
-      ->findOne()
-      ->delete();
+    ORM::for_table(Subscriber::$_table)
+      ->delete_many();
   }
 }
