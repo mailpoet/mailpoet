@@ -4,10 +4,9 @@
 define('newsletter_editor/blocks/divider', [
     'newsletter_editor/App',
     'backbone',
-    'backbone.supermodel',
     'backbone.marionette',
     'mailpoet',
-  ], function(EditorApplication, Backbone, SuperModel, Marionette, MailPoet) {
+  ], function(EditorApplication, Backbone, Marionette, MailPoet) {
 
   EditorApplication.module("blocks.divider", function(Module, App, Backbone, Marionette, $, _) {
       "use strict";

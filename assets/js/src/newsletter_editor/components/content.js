@@ -1,9 +1,8 @@
 define('newsletter_editor/components/content', [
     'newsletter_editor/App',
     'backbone',
-    'backbone.supermodel',
     'backbone.marionette',
-  ], function(EditorApplication, Backbone, SuperModel, Marionette) {
+  ], function(EditorApplication, Backbone, Marionette) {
 
   EditorApplication.module("components.content", function(Module, App, Backbone, Marionette, $, _) {
       "use strict";
@@ -11,7 +10,7 @@ define('newsletter_editor/components/content', [
       // Holds newsletter entry fields, such as subject or creation datetime.
       // Does not hold newsletter content nor newsletter styles, those are
       // handled by other components.
-      Module.NewsletterModel = SuperModel.extend({
+      Module.NewsletterModel = Backbone.SuperModel.extend({
           stale: ['data', 'styles'],
           initialize: function(options) {
               this.on('change', function() {
@@ -20,7 +19,7 @@ define('newsletter_editor/components/content', [
           },
           toJSON: function() {
               // Remove stale attributes from resulting JSON object
-              return _.omit(SuperModel.prototype.toJSON.call(this), this.stale);
+              return _.omit(Backbone.SuperModel.prototype.toJSON.call(this), this.stale);
           },
       });
 
@@ -63,7 +62,7 @@ define('newsletter_editor/components/content', [
           App.toJSON = Module.toJSON;
           App.getNewsletter = Module.getNewsletter;
 
-          Module.newsletter = new Module.NewsletterModel(options.newsletter);
+          Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['data', 'styles']));
       });
 
       App.on('start', function(options) {

@@ -1,17 +1,16 @@
 define('newsletter_editor/components/sidebar', [
     'newsletter_editor/App',
     'backbone',
-    'backbone.supermodel',
     'backbone.marionette',
     'sticky-kit',
-  ], function(EditorApplication, Backbone, SuperModel, Marionette) {
+  ], function(EditorApplication, Backbone, Marionette) {
 
   EditorApplication.module("components.sidebar", function(Module, App, Backbone, Marionette, $, _) {
       "use strict";
 
       // Widget handlers for use to create new content blocks via drag&drop
       Module._contentWidgets = new (Backbone.Collection.extend({
-          model: SuperModel.extend({
+          model: Backbone.SuperModel.extend({
               defaults: {
                   name: '',
                   priority: 100,
@@ -25,7 +24,7 @@ define('newsletter_editor/components/sidebar', [
 
       // Layout widget handlers for use to create new layout blocks via drag&drop
       Module._layoutWidgets = new (Backbone.Collection.extend({
-          model: SuperModel.extend({
+          model: Backbone.SuperModel.extend({
               defaults: {
                   name: '',
                   priority: 100,

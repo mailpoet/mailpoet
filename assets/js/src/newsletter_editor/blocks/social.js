@@ -4,10 +4,9 @@
 define('newsletter_editor/blocks/social', [
     'newsletter_editor/App',
     'backbone',
-    'backbone.supermodel',
     'backbone.marionette',
     'mailpoet',
-  ], function(EditorApplication, Backbone, SuperModel, Marionette, MailPoet) {
+  ], function(EditorApplication, Backbone, Marionette, MailPoet) {
 
   EditorApplication.module("blocks.social", function(Module, App, Backbone, Marionette, $, _) {
       "use strict";
@@ -15,7 +14,7 @@ define('newsletter_editor/blocks/social', [
       var base = App.module('blocks.base'),
           SocialBlockSettingsIconSelectorView, SocialBlockSettingsIconView, SocialBlockSettingsStylesView;
 
-      Module.SocialIconModel = SuperModel.extend({
+      Module.SocialIconModel = Backbone.SuperModel.extend({
           defaults: function() {
               var defaultValues = App.getConfig().get('socialIcons.custom');
               return {

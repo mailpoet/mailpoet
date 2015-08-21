@@ -18,9 +18,8 @@ baseConfig = {
     alias: {
       'handlebars': 'handlebars/dist/handlebars.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
+      'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
       'sticky-kit': 'sticky-kit/jquery.sticky-kit',
-      //'tinymce': 'tinymce/tinymce.jquery',
-      //'jquery.tinymce': 'tinymce/jquery.tinymce.min.js',
     }
   },
   node: {
@@ -31,6 +30,22 @@ baseConfig = {
       {
         test: /\.jsx$/,
         loader: 'babel-loader'
+      },
+      {
+        include: require.resolve('backbone'),
+        loader: 'expose-loader?Backbone',
+      },
+      {
+        include: require.resolve('underscore'),
+        loader: 'expose-loader?_',
+      },
+      {
+        include: require.resolve('backbone.supermodel'),
+        loader: 'imports-loader?Backbone=backbone!exports-loader?Backbone.SuperModel',
+      },
+      {
+        include: require.resolve('handlebars'),
+        loader: 'expose-loader?Handlebars',
       }
     ]
   }
@@ -54,7 +69,7 @@ config.push(_.extend({}, baseConfig, {
       'underscore',
       'backbone',
       'backbone.marionette',
-      'backbone.supermodel/build/backbone.supermodel.amd',
+      'backbone.supermodel',
       'interact.js',
       'backbone.radio',
       //'moment-with-locales',

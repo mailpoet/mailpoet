@@ -7,18 +7,17 @@
 define('newsletter_editor/blocks/base', [
     'newsletter_editor/App',
     'backbone',
-    'backbone.supermodel',
     'backbone.marionette',
     'mailpoet',
     'modal',
-  ], function(EditorApplication, Backbone, SuperModel, Marionette, MailPoet) {
+  ], function(EditorApplication, Backbone, Marionette, MailPoet) {
 
   EditorApplication.module("blocks.base", function(Module, App, Backbone, Marionette, $, _) {
       "use strict";
 
       var AugmentedView = Marionette.LayoutView.extend({});
 
-      Module.BlockModel = SuperModel.extend({
+      Module.BlockModel = Backbone.SuperModel.extend({
           stale: [], // Attributes to be removed upon saving
           initialize: function() {
               var that = this;
@@ -30,14 +29,14 @@ define('newsletter_editor/blocks/base', [
               var defaults = (_.isObject(configDefaults) && _.isFunction(configDefaults.toJSON)) ? configDefaults.toJSON() : configDefaults;
 
               // Patch the resulting JSON object and fix it's constructors to be Object.
-              // Otherwise SuperModel interprets it not as a simpleObject
+              // Otherwise Backbone.SuperModel interprets it not as a simpleObject
               // and misbehaves
               // TODO: Investigate for a better solution
               return JSON.parse(JSON.stringify(jQuery.extend(blockDefaults, defaults || {})));
           },
           toJSON: function() {
               // Remove stale attributes from resulting JSON object
-              return _.omit(SuperModel.prototype.toJSON.call(this), this.stale);
+              return _.omit(Backbone.SuperModel.prototype.toJSON.call(this), this.stale);
           },
       });
 

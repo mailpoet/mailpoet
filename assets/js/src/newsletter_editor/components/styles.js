@@ -1,14 +1,13 @@
 define('newsletter_editor/components/styles', [
     'newsletter_editor/App',
     'backbone',
-    'backbone.supermodel',
     'backbone.marionette',
-  ], function(EditorApplication, Backbone, SuperModel, Marionette) {
+  ], function(EditorApplication, Backbone, Marionette) {
 
   EditorApplication.module("components.styles", function(Module, App, Backbone, Marionette, $, _) {
       "use strict";
 
-      Module.StylesModel = SuperModel.extend({
+      Module.StylesModel = Backbone.SuperModel.extend({
           defaults: {
               text: {
                   fontColor: '#000000',
@@ -53,7 +52,7 @@ define('newsletter_editor/components/styles', [
           },
       });
 
-      Module._globalStyles = new SuperModel();
+      Module._globalStyles = new Backbone.SuperModel();
       Module.getGlobalStyles = function() {
           return Module._globalStyles;
       };

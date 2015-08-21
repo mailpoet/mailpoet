@@ -1,13 +1,12 @@
 define('newsletter_editor/components/config', [
     'newsletter_editor/App',
     'backbone',
-    'backbone.supermodel',
-  ], function(EditorApplication, Backbone, SuperModel) {
+  ], function(EditorApplication, Backbone) {
 
   EditorApplication.module("components.config", function(Module, App, Backbone, Marionette, $, _) {
       "use strict";
 
-      Module.ConfigModel = SuperModel.extend({
+      Module.ConfigModel = Backbone.SuperModel.extend({
           defaults: {
               availableStyles: {},
               socialIcons: {},
