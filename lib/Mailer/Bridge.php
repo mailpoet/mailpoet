@@ -1,21 +1,26 @@
 <?php
 namespace MailPoet\Mailer;
 
+use MailPoet\Models\Setting;
+
 if(!defined('ABSPATH')) exit;
 
-// TODO: remove
-define('MAILPOET_BRIDGE_KEY', 'Xc_1zr7aOxqfD5s5xZqGvnvUJ7yc6HBvGBxk4PD3V2U');
-
-class Mailer {
-
-  protected $newsletter;
-  protected $subscribers;
-
-  function __construct(array $newsletter, array $subscribers) {
+class Bridge {
+  function __construct($newsletter, $subscribers) {
     $this->newsletter = $newsletter;
     $this->subscribers = $subscribers;
-    $this->fromAddress = 'info@mailpoet.com';
-    $this->replyToAddress = 'info@mailpoet.com';
+
+    $this->from_name =
+      Setting::where('name', 'from_name')
+      ->findOne()->value;
+
+    $this->from_address =
+      Setting::where('name', 'from_address')
+      ->findOne()->value;
+
+    $this->api_key =
+      Setting::where('name', 'api_key')
+      ->findOne()->value;
   }
 
   function messages() {
@@ -28,26 +33,23 @@ class Mailer {
 
   function generateMessage($subscriber) {
     return array(
-      'from' => (array(
-        'address' => $this->fromAddress,
-        'name' => ''
-      )),
+      'subject' => $this->newsletter['subject'],
       'to' => (array(
         'address' => $subscriber['email'],
         'name' => $subscriber['first_name'].' '.$subscriber['last_name']
       )),
-      'reply_to' => (array(
-        'address' => $this->replyToAddress,
-        'name' => ''
+      'from' => (array(
+        'address' => $this->from_address,
+        'name' => $this->from_name
       )),
-      'subject' => $this->newsletter['subject'],
-      'html' => $this->newsletter['body'],
-      'text' => ""
+      'text' => "",
+      'html' => $this->newsletter['body']
     );
   }
 
   function auth() {
-    $auth = 'Basic ' . base64_encode('api:' . MAILPOET_BRIDGE_KEY);
+    $auth = 'Basic '
+      . base64_encode('api:' . $this->api_key);
     return $auth;
   }
 
@@ -70,7 +72,10 @@ class Mailer {
       'https://bridge.mailpoet.com/api/messages',
       $this->request()
     );
-    $success = wp_remote_retrieve_response_code($result) === 201;
+
+    $success =
+      (wp_remote_retrieve_response_code($result)===201);
+
     return $success;
   }
 }
