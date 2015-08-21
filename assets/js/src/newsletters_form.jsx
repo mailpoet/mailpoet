@@ -1,6 +1,12 @@
 define('newsletters_form', ['react', 'jquery', 'mailpoet'], function(React, jQuery, MailPoet) {
 
   var NewslettersForm = React.createClass({
+    getInitialState: function() {
+      return {
+        disabled: false
+      };
+    },
+
     post: function(data) {
       MailPoet.Ajax.post({
         endpoint: 'newsletters',
@@ -13,6 +19,9 @@ define('newsletters_form', ['react', 'jquery', 'mailpoet'], function(React, jQue
 
     handleSubmit: function(e) {
       e.preventDefault();
+      this.setState({
+        disabled: true
+      });
 
       var subject =
         React.findDOMNode(this.refs.subject);
@@ -30,6 +39,10 @@ define('newsletters_form', ['react', 'jquery', 'mailpoet'], function(React, jQue
 
       subject.value = '';
       body.value = '';
+      this.setState({
+        disabled: false
+      });
+
       return;
     },
 
@@ -40,7 +53,7 @@ define('newsletters_form', ['react', 'jquery', 'mailpoet'], function(React, jQue
           <br />
           <textarea placeholder="Body" ref="body" />
           <br />
-          <input type="submit" value="Save" />
+          <input type="submit" value="Save" disabled={this.state.locked} />
           </form>
           );
     }
