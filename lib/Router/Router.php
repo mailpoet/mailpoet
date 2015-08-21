@@ -24,7 +24,7 @@ class Router {
     $class = ucfirst($_POST['endpoint']);
     $endpoint =  __NAMESPACE__ . "\\" . $class;
     $method = $_POST['method'];
-    $data = $_POST['data'];
+    $data = isset($_POST['data']) ? $_POST['data'] : array();
     $endpoint = new $endpoint();
     $endpoint->$method($data);
   }

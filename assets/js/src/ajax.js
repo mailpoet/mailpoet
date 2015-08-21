@@ -1,12 +1,13 @@
 define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
   "use strict";
   MailPoet.Ajax = {
-      version: 0.1,
+      version: 0.5,
       options: {},
       defaults: {
         url: null,
         endpoint: null,
         action: null,
+        token: null,
         data: {},
         onSuccess: function(data, textStatus, xhr) {},
         onError: function(xhr, textStatus, errorThrown) {}
@@ -31,7 +32,7 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
 
         // set default token
         if(this.options.token === null) {
-          this.options.token = mailpoet_token;
+          this.options.token = window.mailpoet_token;
         }
       },
       request: function(method, options) {
@@ -44,7 +45,7 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           token: this.options.token,
           endpoint: this.options.endpoint,
           method: this.options.action,
-          data: this.options.data
+          data: this.options.data || {}
         };
 
         // make ajax request depending on method
@@ -65,6 +66,9 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
             error : this.options.onError
           });
         }
+
+        // clear options
+        this.options = {};
       }
   };
 });

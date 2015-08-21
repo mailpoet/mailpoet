@@ -1,4 +1,4 @@
-define('subscribers', ['react', 'jquery'], function(React, jQuery) {
+define('subscribers', ['react', 'jquery', 'mailpoet'], function(React, jQuery, MailPoet) {
 
   var data = [
   {
@@ -16,29 +16,23 @@ define('subscribers', ['react', 'jquery'], function(React, jQuery) {
   var Subscriber = React.createClass({
     render: function() {
       return (
-          <div className="subscriber">
+        <div className="subscriber">
           <h3 className="name">
-          {this.props.subscriber.first_name} {this.props.subscriber.last_name}
+            {this.props.subscriber.first_name} {this.props.subscriber.last_name}
           </h3>
           {this.props.subscriber.email}
-          </div>
-          );
+        </div>
+      );
     }
   });
 
   var SubscribersList = React.createClass({
     load: function() {
-      jQuery.ajax({
-        url: ajaxurl,
-        type: 'post',
-        data: {
-          action: 'mailpoet',
-          token: mailpoet_token,
-          endpoint: 'subscribers',
-          method: 'get',
-          data: ''
-        },
-        success : function(response) {
+      MailPoet.Ajax.post({
+        endpoint: 'subscribers',
+        action: 'get',
+        data: {},
+        onSuccess: function(response) {
           this.setState({data: response});
         }.bind(this)
       });
@@ -53,23 +47,23 @@ define('subscribers', ['react', 'jquery'], function(React, jQuery) {
     render: function() {
       var nodes = this.state.data.map(function (subscriber) {
         return (
-            <Subscriber key={subscriber.id} subscriber={subscriber} />
-            );
+          <Subscriber key={subscriber.id} subscriber={subscriber} />
+        );
       });
       return (
-          <div className="subscribersList">
-          {nodes}
-          </div>
-          );
+        <div className="subscribersList">
+        {nodes}
+        </div>
+      );
     }
   });
 
+  var element = jQuery('#mailpoet_subscribers');
 
-  var element = document.getElementById('mailpoet_subscribers');
-  if (element) {
+  if(element.length > 0) {
     React.render(
-        <SubscribersList data={data} pollInterval={2000} />,
-        document.getElementById('mailpoet_subscribers')
-        );
+      <SubscribersList data={data} pollInterval={2000} />,
+      element[0]
+    );
   }
 });
