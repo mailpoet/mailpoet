@@ -1,6 +1,7 @@
 define('subscribers.listing',
   ['react/addons', 'jquery', 'mailpoet', 'classnames'],
   function(React, jQuery, MailPoet, classNames) {
+
     var ListingGroups = React.createClass({
       render: function() {
         return (
@@ -62,28 +63,52 @@ define('subscribers.listing',
     });
 
     var ListingColumn = React.createClass({
+      handleSort: function() {
+        var sort_by = this.props.column.name,
+            sort_order = (this.props.column.sorted === 'asc') ? 'desc' : 'asc';
+        this.props.onSort(sort_by, sort_order);
+      },
       render: function() {
-        var order = '';
-        if(this.props.column.sortable) {
-          order = this.props.column.order || 'asc';
-        }
         var classes = classNames(
           'manage-column',
           { 'sortable': this.props.column.sortable },
-          order
+          this.props.column.sorted
         );
 
+        var label;
+
+        if(this.props.column.sortable === true) {
+          label = (
+            <a onClick={this.handleSort}>
+              <span>{ this.props.column.label }</span>
+              <span className="sorting-indicator"></span>
+            </a>
+          );
+        } else {
+          label = this.props.column.label;
+        }
         return (
           <th
             className={ classes }
-            id={ this.props.column.name }
-            scope="col">{ this.props.column.label }</th>
+            id={this.props.column.name }
+            scope="col">
+            {label}
+          </th>
         );
       }
     });
 
     var ListingHeader = React.createClass({
       render: function() {
+        var columns = this.props.columns.map(function(column) {
+              return (
+                <ListingColumn
+                  onSort={this.props.onSort}
+                  sort_by={this.props.sort_by}
+                  key={column.name}
+                  column={column} />
+              );
+        }.bind(this));
 
         return (
           <tr>
@@ -93,9 +118,7 @@ define('subscribers.listing',
               </label>
               <input type="checkbox" id="cb-select-all-1" />
             </td>
-            { this.props.columns.map(function(column) {
-              return (<ListingColumn key={column.name} column={column} />);
-            })}
+            {columns}
           </tr>
         );
       }
@@ -115,10 +138,7 @@ define('subscribers.listing',
             </th>
             <td className="title column-title has-row-actions column-primary page-title">
                 <strong>
-                  <a
-                    title="Edit “{ this.props.item.email }”"
-                    href="#"
-                    className="row-title">{ this.props.item.email }</a>
+                  <a className="row-title">{ this.props.item.email }</a>
                 </strong>
             </td>
             <td></td>
@@ -135,18 +155,28 @@ define('subscribers.listing',
 
     var ListingItems = React.createClass({
       render: function() {
-        return (
-          <tbody>
-            {this.props.items.map(function(item) {
-              return (
-                <ListingItem
-                  columns={this.props.columns}
-                  key={item.id}
-                  item={item} />
-              );
-            }.bind(this))}
-          </tbody>
-        );
+        if(this.props.items.length === 0) {
+          return (
+            <tbody>
+              <td
+                colSpan={this.props.columns.length + 1}
+                className="colspanchange">No subscribers found.</td>
+            </tbody>
+          );
+        } else {
+          return (
+            <tbody>
+              {this.props.items.map(function(item) {
+                return (
+                  <ListingItem
+                    columns={this.props.columns}
+                    key={item.id}
+                    item={item} />
+                );
+              }.bind(this))}
+            </tbody>
+          );
+        }
       }
     });
 
@@ -156,6 +186,8 @@ define('subscribers.listing',
           search: '',
           page: 1,
           limit: 10,
+          sort_by: 'email',
+          sort_order: 'asc',
           items: []
         };
       },
@@ -166,9 +198,6 @@ define('subscribers.listing',
         MailPoet.Ajax.post({
           endpoint: 'subscribers',
           action: 'get',
-          data: {
-            search: this.state.search
-          },
           onSuccess: function(response) {
             if(this.isMounted()) {
               this.setState({
@@ -179,11 +208,45 @@ define('subscribers.listing',
         });
       },
       handleSearch: function(search) {
-        this.setState({ search: search }, function() {
-          this.getItems();
-        }.bind(this));
+        this.setState({ search: search });
+      },
+      handleSort: function(sort_by, sort_order = 'asc') {
+        this.setState({
+          sort_by: sort_by,
+          sort_order: sort_order
+        });
       },
       render: function() {
+        var items = this.state.items,
+            search = this.state.search.trim().toLowerCase(),
+            sort_by =  this.state.sort_by,
+            sort_order =  this.state.sort_order;
+
+        // search
+        if(search.length > 0) {
+          items = items.filter(function(item){
+            return item.email.toLowerCase().match(search);
+          });
+        }
+
+        // sorting
+        items = items.sort(function(a, b) {
+          if(a[sort_by] === b[sort_by]) {
+            return 0;
+          } else {
+            if(sort_order === 'asc') {
+              return (a[sort_by] > b[sort_by]) ? 1 : -1;
+            } else {
+              return (a[sort_by] < b[sort_by]) ? 1 : -1;
+            }
+          }
+        });
+
+        columns = columns.map(function(column) {
+          column.sorted = (column.name === sort_by) ? sort_order : false;
+          return column;
+        });
+
         return (
           <div>
             <ListingSearch onSearch={this.handleSearch} />
@@ -193,15 +256,21 @@ define('subscribers.listing',
             <table className="wp-list-table widefat fixed">
               <thead>
                 <ListingHeader
+                  onSort={this.handleSort}
+                  sort_by={this.state.sort_by}
+                  sort_order={this.state.sort_order}
                   columns={this.props.columns} />
               </thead>
 
               <ListingItems
                 columns={this.props.columns}
-                items={this.state.items} />
+                items={items} />
 
               <tfoot>
                 <ListingHeader
+                  onSort={this.handleSort}
+                  sort_by={this.state.sort_by}
+                  sort_order={this.state.sort_order}
                   columns={this.props.columns} />
               </tfoot>
 
@@ -223,16 +292,17 @@ define('subscribers.listing',
       },
       {
         name: 'status',
-        label: 'Status',
-        sortable: true
+        label: 'Status'
       },
       {
         name: 'created_at',
-        label: 'Subscribed on'
+        label: 'Subscribed on',
+        sortable: true
       },
       {
         name: 'updated_at',
-        label: 'Last modified on'
+        label: 'Last modified on',
+        sortable: true
       },
     ];
 
