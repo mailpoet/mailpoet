@@ -9,7 +9,17 @@ class Subscribers {
   }
 
   function get() {
-    $collection = Subscriber::find_array();
+    if(isset($_POST['data'])) {
+      // search filter
+      $search = (isset($_POST['data']['search']))
+                  ? $_POST['data']['search']
+                  : '';
+
+      $collection = Subscriber::where_like('email', '%'.$search.'%')->find_array();
+    } else {
+      $collection = Subscriber::find_array();
+    }
+
     wp_send_json($collection);
   }
 
