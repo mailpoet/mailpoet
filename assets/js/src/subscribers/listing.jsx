@@ -137,11 +137,16 @@ define('subscribers.listing',
                 name="item[]" id="cb-select-1" />
             </th>
             <td className="title column-title has-row-actions column-primary page-title">
-                <strong>
-                  <a className="row-title">{ this.props.item.email }</a>
-                </strong>
+              <strong>
+                <a className="row-title">{ this.props.item.email }</a>
+              </strong>
             </td>
-            <td></td>
+            <td>
+              { this.props.item.first_name }
+            </td>
+            <td>
+              { this.props.item.last_name }
+            </td>
             <td className="date column-date">
               <abbr title="">{ this.props.item.created_at }</abbr>
             </td>
@@ -225,7 +230,9 @@ define('subscribers.listing',
         // search
         if(search.length > 0) {
           items = items.filter(function(item){
-            return item.email.toLowerCase().match(search);
+            return item.email.toLowerCase().match(search)
+              || item.first_name.toLowerCase().match(search)
+              || item.last_name.toLowerCase().match(search);
           });
         }
 
@@ -288,6 +295,16 @@ define('subscribers.listing',
       {
         name: 'email',
         label: 'Email',
+        sortable: true
+      },
+      {
+        name: 'first_name',
+        label: 'Firstname',
+        sortable: true
+      },
+      {
+        name: 'last_name',
+        label: 'Lastname',
         sortable: true
       },
       {
