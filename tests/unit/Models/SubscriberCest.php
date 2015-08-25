@@ -11,9 +11,17 @@ class SubscriberCest {
       'email'      => 'john@mailpoet.com'
     );
 
-    $this->subscriber = Subscriber::create();
-    $this->subscriber->hydrate($this->data);
+    for ($i=0; $i < 10000; $i++) {
+      $data = array(
+        'first_name' => 'John'.mt_rand(0,9999),
+      'last_name'  => 'Mailer'.mt_rand(0,9999),
+      'email'      => 'john'.mt_rand(0,9999).'@mailpoet.com'
+      );
+      $this->subscriber = Subscriber::create();
+    $this->subscriber->hydrate($data);
     $this->saved = $this->subscriber->save();
+    }
+
   }
 
   function itCanBeCreated() {

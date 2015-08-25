@@ -9,7 +9,14 @@ class Subscribers {
   }
 
   function get() {
-    $collection = Subscriber::find_array();
+    if(isset($_POST['data'])) {
+      $data = $_POST['data'];
+      $offset = (isset($data['offset']) ? (int)$data['offset'] : 0);
+      $limit = (isset($data['limit']) ? (int)$data['limit'] : 50);
+      $collection = Subscriber::offset($offset)->limit($limit)->find_array();
+    } else {
+      $collection = Subscriber::find_array();
+    }
     wp_send_json($collection);
   }
 

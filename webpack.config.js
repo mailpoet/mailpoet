@@ -1,5 +1,6 @@
 var webpack = require('webpack'),
     _ = require('underscore'),
+    path = require('path'),
     baseConfig = {},
     config = [];
 
@@ -35,7 +36,8 @@ config.push(_.extend({}, baseConfig, {
     vendor: ['handlebars', 'handlebars_helpers'],
     mailpoet: ['mailpoet', 'ajax', 'modal', 'notice'],
     admin: [
-      'subscribers/listing.jsx',
+      'subscribers/table.jsx',
+      // 'subscribers/listing.jsx',
       'settings.jsx',
       'subscribers.jsx',
       'newsletters_list.jsx',

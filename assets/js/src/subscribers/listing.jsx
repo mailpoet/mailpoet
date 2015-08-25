@@ -1,11 +1,24 @@
 define('subscribers.listing',
-  ['react/addons', 'jquery', 'mailpoet', 'classnames'],
-  function(React, jQuery, MailPoet, classNames) {
+  ['mailpoet', 'jquery', 'react/addons', 'classnames'],
+  function(MailPoet, jQuery, React, classNames) {
 
     var ListingGroups = React.createClass({
       render: function() {
         return (
-          <div></div>
+          <ul className="subsubsub">
+            <li>
+              <a className="current">
+                All
+                <span className="count">(0)</span>
+              </a> |
+            </li>
+            <li>
+              <a>
+                Subscribed
+                <span className="count">(0)</span>
+              </a>
+            </li>
+          </ul>
         );
       }
     });
@@ -49,7 +62,9 @@ define('subscribers.listing',
     var ListingPages = React.createClass({
       render: function() {
         return (
-          <div></div>
+          <div className="tablenav-pages">
+            <span className="displaying-num">{this.props.items.length} item(s)</span>
+          </div>
         );
       }
     });
@@ -257,8 +272,9 @@ define('subscribers.listing',
         return (
           <div>
             <ListingSearch onSearch={this.handleSearch} />
-            <div className="tablenav top">
-
+            <div className="tablenav top clearfix">
+              <ListingGroups />
+              <ListingPages items={items} />
             </div>
             <table className="wp-list-table widefat fixed">
               <thead>
@@ -283,7 +299,8 @@ define('subscribers.listing',
 
             </table>
             <div className="tablenav bottom">
-
+              <ListingGroups />
+              <ListingPages items={items} />
             </div>
           </div>
         );
