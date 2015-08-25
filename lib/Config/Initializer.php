@@ -28,6 +28,7 @@ class Initializer {
     \ORM::configure(Env::$db_source_name);
     \ORM::configure('username', Env::$db_username);
     \ORM::configure('password', Env::$db_password);
+    \ORM::configure('logging', WP_DEBUG);
 
     $subscribers = Env::$db_prefix . 'subscribers';
     $settings = Env::$db_prefix . 'settings';
