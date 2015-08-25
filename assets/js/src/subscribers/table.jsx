@@ -42,10 +42,50 @@ define('subscribers.table',
         };
       },
 
+      _renderLoadingMessage: function() {
+        if (this.state.loading) {
+          return (
+            <p>
+              Loading {this.state.limit} more items
+            </p>
+          );
+        } else {
+          return (
+            <p>{this.state.items.length} items</p>
+          );
+        }
+      },
+
       _renderItems: function() {
         return this.state.items.map(function(subscriber, index) {
           return (
-            <p key={index}>{subscriber.email}</p>
+            <tr>
+            <th className="check-column" scope="row">
+              <label htmlFor="cb-select-1" className="screen-reader-text">
+                Select { subscriber.email }</label>
+              <input
+                type="checkbox"
+                value={ subscriber.id }
+                name="item[]" id="cb-select-1" />
+            </th>
+            <td className="title column-title has-row-actions column-primary page-title">
+              <strong>
+                <a className="row-title">{ subscriber.email }</a>
+              </strong>
+            </td>
+            <td>
+              { subscriber.first_name }
+            </td>
+            <td>
+              { subscriber.last_name }
+            </td>
+            <td className="date column-date">
+              <abbr title="">{ subscriber.created_at }</abbr>
+            </td>
+            <td className="date column-date">
+              <abbr title="">{ subscriber.updated_at }</abbr>
+            </td>
+          </tr>
           );
         });
       },
@@ -55,16 +95,15 @@ define('subscribers.table',
           return (
             <Waypoint
               onEnter={this._loadMoreItems}
-              threshold={2.0} />
+              threshold={0.8} />
           );
         }
       },
 
       render: function() {
-        //MailPoet.Modal.loading(this.state.loading);
         return (
           <div>
-            <p>{this.state.items.length} items</p>
+            {this._renderLoadingMessage()}
             <div className="infinite-scroll-example">
               <div className="infinite-scroll-example__scrollable-parent">
                 {this._renderItems()}

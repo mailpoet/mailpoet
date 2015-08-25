@@ -40,10 +40,11 @@ define('subscribers.listing',
               <input
                 type="search"
                 ref="search"
-                id="search_input" />
+                id="search_input"
+                defaultValue={this.props.search} />
               <input
                 type="submit"
-                value="Search"
+                defaultValue="Search"
                 className="button" />
             </p>
           </form>
@@ -60,10 +61,80 @@ define('subscribers.listing',
     });
 
     var ListingPages = React.createClass({
+      setFirstPage: function() {
+        this.props.onSetPage(1);
+      },
+      setLastPage: function() {
+        var last_page = Math.ceil(this.props.count / this.props.limit);
+        this.props.onSetPage(last_page);
+      },
+      setPreviousPage: function() {
+        this.props.onSetPage(this.getPageValue(this.props.page - 1));
+      },
+      setNextPage: function() {
+        this.props.onSetPage(this.getPageValue(this.props.page + 1));
+      },
+      getPageValue: function(page) {
+        var last_page = Math.ceil(this.props.count / this.props.limit);
+        return Math.min(Math.max(1, Math.abs(~~page)), last_page);
+      },
+      handleSetPage: function() {
+        this.props.onSetPage(
+          this.getPageValue(this.refs.page.getDOMNode().value)
+        );
+      },
       render: function() {
         return (
           <div className="tablenav-pages">
-            <span className="displaying-num">{this.props.items.length} item(s)</span>
+            <span className="displaying-num">{this.props.count} item(s)</span>
+
+            <span className="pagination-links">
+              <a href="javascript:;"
+                onClick={this.setFirstPage}
+                className="first-page">
+                <span className="screen-reader-text">First page</span>
+                <span aria-hidden="true">«</span>
+              </a>
+              <a href="javascript:;"
+                onClick={this.setPreviousPage}
+                className="prev-page">
+                <span className="screen-reader-text">Previous page</span>
+                <span aria-hidden="true">‹</span>
+              </a>
+
+              <span className="paging-input">
+                <label
+                  className="screen-reader-text"
+                  htmlFor="current-page-selector">Current Page</label>
+                <input
+                  type="text"
+                  onChange={this.handleSetPage}
+                  aria-describedby="table-paging"
+                  size="1"
+                  ref="page"
+                  value={this.props.page}
+                  name="paged"
+                  id="current-page-selector"
+                  className="current-page" />
+                &nbsp;of&nbsp;
+                <span className="total-pages">
+                  {Math.ceil(this.props.count / this.props.limit)}
+                </span>
+              </span>
+
+              <a href="javascript:;"
+                onClick={this.setNextPage}
+                className="next-page">
+                <span className="screen-reader-text">Next page</span>
+                <span aria-hidden="true">›</span>
+              </a>
+              <a href="javascript:;"
+                onClick={this.setLastPage}
+                className="last-page">
+                <span className="screen-reader-text">Last page</span>
+                <span aria-hidden="true">»</span>
+              </a>
+            </span>
           </div>
         );
       }
@@ -148,7 +219,7 @@ define('subscribers.listing',
                 Select { this.props.item.email }</label>
               <input
                 type="checkbox"
-                value={ this.props.item.id }
+                defaultValue={ this.props.item.id }
                 name="item[]" id="cb-select-1" />
             </th>
             <td className="title column-title has-row-actions column-primary page-title">
@@ -205,6 +276,7 @@ define('subscribers.listing',
         return {
           search: '',
           page: 1,
+          count: 0,
           limit: 10,
           sort_by: 'email',
           sort_order: 'asc',
@@ -218,52 +290,47 @@ define('subscribers.listing',
         MailPoet.Ajax.post({
           endpoint: 'subscribers',
           action: 'get',
+          data: {
+            offset: (this.state.page - 1) * this.state.limit,
+            limit: this.state.limit,
+            search: this.state.search,
+            sort_by: this.state.sort_by,
+            sort_order: this.state.sort_order
+          },
           onSuccess: function(response) {
             if(this.isMounted()) {
               this.setState({
-                items: response
+                items: response.items,
+                count: response.count
               });
             }
           }.bind(this)
         });
       },
       handleSearch: function(search) {
-        this.setState({ search: search });
+        this.setState({ search: search }, function() {
+          this.getItems();
+        }.bind(this));
       },
       handleSort: function(sort_by, sort_order = 'asc') {
         this.setState({
           sort_by: sort_by,
           sort_order: sort_order
-        });
+        }, function() {
+          this.getItems();
+        }.bind(this));
+      },
+      handleSetPage: function(page) {
+        this.setState({ page: page }, function() {
+          this.getItems();
+        }.bind(this));
       },
       render: function() {
         var items = this.state.items,
-            search = this.state.search.trim().toLowerCase(),
             sort_by =  this.state.sort_by,
             sort_order =  this.state.sort_order;
 
-        // search
-        if(search.length > 0) {
-          items = items.filter(function(item){
-            return item.email.toLowerCase().match(search)
-              || item.first_name.toLowerCase().match(search)
-              || item.last_name.toLowerCase().match(search);
-          });
-        }
-
-        // sorting
-        items = items.sort(function(a, b) {
-          if(a[sort_by] === b[sort_by]) {
-            return 0;
-          } else {
-            if(sort_order === 'asc') {
-              return (a[sort_by] > b[sort_by]) ? 1 : -1;
-            } else {
-              return (a[sort_by] < b[sort_by]) ? 1 : -1;
-            }
-          }
-        });
-
+        // set sortable columns
         columns = columns.map(function(column) {
           column.sorted = (column.name === sort_by) ? sort_order : false;
           return column;
@@ -271,10 +338,18 @@ define('subscribers.listing',
 
         return (
           <div>
-            <ListingSearch onSearch={this.handleSearch} />
+            <ListingGroups />
+            <ListingSearch
+              onSearch={this.handleSearch}
+              search={this.state.search} />
             <div className="tablenav top clearfix">
-              <ListingGroups />
-              <ListingPages items={items} />
+              <ListingBulkActions />
+              <ListingFilters />
+              <ListingPages
+                count={this.state.count}
+                page={this.state.page}
+                limit={this.state.limit}
+                onSetPage={this.handleSetPage} />
             </div>
             <table className="wp-list-table widefat fixed">
               <thead>
@@ -299,8 +374,12 @@ define('subscribers.listing',
 
             </table>
             <div className="tablenav bottom">
-              <ListingGroups />
-              <ListingPages items={items} />
+              <ListingBulkActions />
+              <ListingPages
+                count={this.state.count}
+                page={this.state.page}
+                limit={this.state.limit}
+                onSetPage={this.handleSetPage} />
             </div>
           </div>
         );
@@ -325,10 +404,6 @@ define('subscribers.listing',
         sortable: true
       },
       {
-        name: 'status',
-        label: 'Status'
-      },
-      {
         name: 'created_at',
         label: 'Subscribed on',
         sortable: true
@@ -350,15 +425,3 @@ define('subscribers.listing',
     }
   }
 );
-/*
-<ListingGroups />
-<ListingSearch />
-<ListingBulkActions />
-<ListingFilters />
-<ListingPages />
-
-<ListingItems />
-
-<ListingBulkActions />
-<ListingPages />
-*/

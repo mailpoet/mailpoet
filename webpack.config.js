@@ -36,8 +36,7 @@ config.push(_.extend({}, baseConfig, {
     vendor: ['handlebars', 'handlebars_helpers'],
     mailpoet: ['mailpoet', 'ajax', 'modal', 'notice'],
     admin: [
-      'subscribers/table.jsx',
-      // 'subscribers/listing.jsx',
+      'subscribers/listing.jsx',
       'settings.jsx',
       'subscribers.jsx'
     ]
