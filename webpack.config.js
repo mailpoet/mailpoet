@@ -46,7 +46,7 @@ baseConfig = {
       {
         include: require.resolve('handlebars'),
         loader: 'expose-loader?Handlebars',
-      }
+      },
     ]
   }
 };
@@ -72,19 +72,10 @@ config.push(_.extend({}, baseConfig, {
       'backbone.supermodel',
       'interact.js',
       'backbone.radio',
-      //'moment-with-locales',
-      'tinymce/tinymce.jquery.js',
-      'tinymce/jquery.tinymce.min.js',
-      //'tinymce',
-      //'jquery.tinymce',
       'select2',
       'spectrum-colorpicker',
       'sticky-kit',
 
-
-
-      //'newsletter_editor/tinymce/wplink.js',
-      //'newsletter_editor/tinymce/mailpoet_custom_fields/plugin.js',
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
       'newsletter_editor/components/config.js',
@@ -117,7 +108,8 @@ config.push(_.extend({}, baseConfig, {
     new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js'),
   ],
   externals: {
-    'jquery': 'jQuery'
+    'jquery': 'jQuery',
+    'tinymce': 'tinymce'
   }
 }));
 

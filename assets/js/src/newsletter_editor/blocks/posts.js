@@ -76,14 +76,16 @@ define('newsletter_editor/blocks/posts', [
           },
           fetchAvailablePosts: function() {
               var that = this;
-              mailpoet_post_wpi('posts.php', this.toJSON(), function(response) {
-                  console.log('Posts fetched', arguments);
-                  that.get('_availablePosts').reset(response);
-                  that.get('_selectedPosts').reset(); // Empty out the collection
-                  that.trigger('change:_availablePosts');
-              }, function() {
-                  console.log('Posts fetchPosts error', arguments);
-              });
+              console.log('posts.fetchAvailablePosts disabled');
+              // TODO: Move this logic to new AJAX query format
+              //mailpoet_post_wpi('posts.php', this.toJSON(), function(response) {
+                  //console.log('Posts fetched', arguments);
+                  //that.get('_availablePosts').reset(response);
+                  //that.get('_selectedPosts').reset(); // Empty out the collection
+                  //that.trigger('change:_availablePosts');
+              //}, function() {
+                  //console.log('Posts fetchPosts error', arguments);
+              //});
           },
           /**
            * Batch more changes during a specific time, instead of fetching
@@ -110,12 +112,14 @@ define('newsletter_editor/blocks/posts', [
 
               if (data.posts.length === 0) return;
 
-              mailpoet_post_wpi('automated_latest_content.php', data, function(response) {
-                  console.log('Available posts fetched', arguments);
-                  collection.add(response, { at: index });
-              }, function() {
-                  console.log('Posts fetchPosts error', arguments);
-              });
+              console.log('posts._insertSelectedPosts disabled');
+              // TODO: Move query logic to new AJAX format
+              //mailpoet_post_wpi('automated_latest_content.php', data, function(response) {
+                  //console.log('Available posts fetched', arguments);
+                  //collection.add(response, { at: index });
+              //}, function() {
+                  //console.log('Posts fetchPosts error', arguments);
+              //});
           },
       });
 

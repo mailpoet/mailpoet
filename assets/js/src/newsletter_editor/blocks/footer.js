@@ -53,37 +53,37 @@ define('newsletter_editor/blocks/footer', [
           },
           attachTextEditor: function() {
               var that = this;
-              //this.$('.mailpoet_content').tinymce({
-                  //inline: true,
+              this.$('.mailpoet_content').tinymce({
+                  inline: true,
 
-                  //menubar: false,
-                  //toolbar: "bold italic link unlink forecolor mailpoet_custom_fields",
+                  menubar: false,
+                  toolbar: "bold italic link unlink forecolor mailpoet_custom_fields",
 
-                  //valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br",
-                  //invalid_elements: "script",
-                  //style_formats: [
-                      //{title: 'Paragraph', block: 'p'},
-                  //],
+                  valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br",
+                  invalid_elements: "script",
+                  style_formats: [
+                      {title: 'Paragraph', block: 'p'},
+                  ],
 
-                  //plugins: "wplink textcolor mailpoet_custom_fields",
+                  plugins: "wplink textcolor mailpoet_custom_fields",
 
-                  //setup: function(editor) {
-                      //editor.on('change', function(e) {
-                          //that.model.set('text', editor.getContent());
-                      //});
+                  setup: function(editor) {
+                      editor.on('change', function(e) {
+                          that.model.set('text', editor.getContent());
+                      });
 
-                      //editor.on('focus', function(e) {
-                          //that.disableShowingTools();
-                      //});
+                      editor.on('focus', function(e) {
+                          that.disableShowingTools();
+                      });
 
-                      //editor.on('blur', function(e) {
-                          //that.enableShowingTools();
-                      //});
-                  //},
+                      editor.on('blur', function(e) {
+                          that.enableShowingTools();
+                      });
+                  },
 
-                  //mailpoet_custom_fields: App.getConfig().get('customFields').toJSON(),
-                  //mailpoet_custom_fields_window_title: App.getConfig().get('translations.customFieldsWindowTitle'),
-              //});
+                  mailpoet_custom_fields: App.getConfig().get('customFields').toJSON(),
+                  mailpoet_custom_fields_window_title: App.getConfig().get('translations.customFieldsWindowTitle'),
+              });
           },
       });
 

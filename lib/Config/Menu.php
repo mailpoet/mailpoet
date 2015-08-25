@@ -83,6 +83,8 @@ class Menu {
   function newsletterEditor() {
     $data = array();
     wp_enqueue_media();
+    wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
+    wp_enqueue_style('editor', includes_url('css/editor.css'));
     echo $this->renderer->render('newsletter/editor.html', $data);
   }
 }

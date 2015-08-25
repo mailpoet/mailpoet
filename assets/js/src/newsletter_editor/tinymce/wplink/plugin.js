@@ -592,4 +592,3 @@ var wpLink;
 
     $( document ).ready( wpLink.init );
 })( jQuery );
-

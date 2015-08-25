@@ -159,13 +159,17 @@
   <%= partial('newsletter_editor_template_sidebar_preview', 'newsletter/templates/components/sidebar/preview.hbs') %>
   <%= partial('newsletter_editor_template_sidebar_styles', 'newsletter/templates/components/sidebar/styles.hbs') %>
 
-  <%= stylesheet(
-    'newsletter_editor.css'
-  ) %>
-
   <%= javascript(
     'vendor.js',
+    'lib/tinymce/tinymce.jquery.min.js',
+    'lib/tinymce/jquery.tinymce.min.js',
+    'lib/mailpoet_custom_fields/plugin.js',
+    'lib/wplink/plugin.js',
     'newsletter_editor.js'
+  ) %>
+
+  <%= stylesheet(
+    'newsletter_editor.css'
   ) %>
 
   <script type="text/javascript">
