@@ -9,8 +9,8 @@ define('subscribers.listing',
             <li>
               <a className="current">
                 All
-                <span className="count">(0)</span>
-              </a> |
+                <span className="count">({ this.props.count })</span>
+              </a>&nbsp;|&nbsp;
             </li>
             <li>
               <a>
@@ -65,78 +65,122 @@ define('subscribers.listing',
         this.props.onSetPage(1);
       },
       setLastPage: function() {
-        var last_page = Math.ceil(this.props.count / this.props.limit);
-        this.props.onSetPage(last_page);
+        this.props.onSetPage(this.getLastPage());
       },
       setPreviousPage: function() {
-        this.props.onSetPage(this.getPageValue(this.props.page - 1));
+        this.props.onSetPage(this.constrainPage(this.props.page - 1));
       },
       setNextPage: function() {
-        this.props.onSetPage(this.getPageValue(this.props.page + 1));
+        this.props.onSetPage(this.constrainPage(this.props.page + 1));
       },
-      getPageValue: function(page) {
-        var last_page = Math.ceil(this.props.count / this.props.limit);
-        return Math.min(Math.max(1, Math.abs(~~page)), last_page);
+      constrainPage: function(page) {
+        return Math.min(Math.max(1, Math.abs(~~page)), this.getLastPage());
       },
       handleSetPage: function() {
         this.props.onSetPage(
-          this.getPageValue(this.refs.page.getDOMNode().value)
+          this.constrainPage(this.refs.page.getDOMNode().value)
         );
       },
+      getLastPage: function() {
+        return Math.ceil(this.props.count / this.props.limit);
+      },
       render: function() {
-        return (
-          <div className="tablenav-pages">
-            <span className="displaying-num">{this.props.count} item(s)</span>
+        if(this.props.count === 0) {
+          return (<div></div>);
+        } else {
+          var firstPage = (
+            <span aria-hidden="true" className="tablenav-pages-navspan">«</span>
+          ),
+          previousPage = (
+            <span aria-hidden="true" className="tablenav-pages-navspan">‹</span>
+          ),
+          nextPage = (
+            <span aria-hidden="true" className="tablenav-pages-navspan">›</span>
+          ),
+          lastPage = (
+            <span aria-hidden="true" className="tablenav-pages-navspan">»</span>
+          );
 
-            <span className="pagination-links">
-              <a href="javascript:;"
-                onClick={this.setFirstPage}
-                className="first-page">
-                <span className="screen-reader-text">First page</span>
-                <span aria-hidden="true">«</span>
-              </a>
-              <a href="javascript:;"
-                onClick={this.setPreviousPage}
-                className="prev-page">
-                <span className="screen-reader-text">Previous page</span>
-                <span aria-hidden="true">‹</span>
-              </a>
+          if(this.props.count > this.props.limit) {
+            if(this.props.page > 1) {
+              previousPage = (
+                <a href="javascript:;"
+                  onClick={this.setPreviousPage}
+                  className="prev-page">
+                  <span className="screen-reader-text">Previous page</span>
+                  <span aria-hidden="true">‹</span>
+                </a>
+              );
+            }var last_page = Math.ceil(this.props.count / this.props.limit);
 
-              <span className="paging-input">
-                <label
-                  className="screen-reader-text"
-                  htmlFor="current-page-selector">Current Page</label>
-                <input
-                  type="text"
-                  onChange={this.handleSetPage}
-                  aria-describedby="table-paging"
-                  size="1"
-                  ref="page"
-                  value={this.props.page}
-                  name="paged"
-                  id="current-page-selector"
-                  className="current-page" />
-                &nbsp;of&nbsp;
-                <span className="total-pages">
-                  {Math.ceil(this.props.count / this.props.limit)}
+            if(this.props.page > 2) {
+              firstPage = (
+                <a href="javascript:;"
+                  onClick={this.setFirstPage}
+                  className="first-page">
+                  <span className="screen-reader-text">First page</span>
+                  <span aria-hidden="true">«</span>
+                </a>
+              );
+            }
+
+            if(this.props.page < this.getLastPage()) {
+              nextPage = (
+                <a href="javascript:;"
+                  onClick={this.setNextPage}
+                  className="next-page">
+                  <span className="screen-reader-text">Next page</span>
+                  <span aria-hidden="true">›</span>
+                </a>
+              );
+            }
+
+            if(this.props.page < this.getLastPage() - 1) {
+              lastPage = (
+                <a href="javascript:;"
+                  onClick={this.setLastPage}
+                  className="last-page">
+                  <span className="screen-reader-text">Last page</span>
+                  <span aria-hidden="true">»</span>
+                </a>
+              );
+            }
+          }
+
+          return (
+            <div className="tablenav-pages">
+              <span className="displaying-num">{this.props.count} item(s)</span>
+
+              <span className="pagination-links">
+                {firstPage}
+                {previousPage}
+                &nbsp;
+                <span className="paging-input">
+                  <label
+                    className="screen-reader-text"
+                    htmlFor="current-page-selector">Current Page</label>
+                  <input
+                    type="text"
+                    onChange={this.handleSetPage}
+                    aria-describedby="table-paging"
+                    size="1"
+                    ref="page"
+                    value={this.props.page}
+                    name="paged"
+                    id="current-page-selector"
+                    className="current-page" />
+                  &nbsp;of&nbsp;
+                  <span className="total-pages">
+                    {Math.ceil(this.props.count / this.props.limit)}
+                  </span>
                 </span>
+                &nbsp;
+                {nextPage}
+                {lastPage}
               </span>
-
-              <a href="javascript:;"
-                onClick={this.setNextPage}
-                className="next-page">
-                <span className="screen-reader-text">Next page</span>
-                <span aria-hidden="true">›</span>
-              </a>
-              <a href="javascript:;"
-                onClick={this.setLastPage}
-                className="last-page">
-                <span className="screen-reader-text">Last page</span>
-                <span aria-hidden="true">»</span>
-              </a>
-            </span>
-          </div>
-        );
+            </div>
+          );
+        }
       }
     });
 
@@ -338,7 +382,7 @@ define('subscribers.listing',
 
         return (
           <div>
-            <ListingGroups />
+            <ListingGroups count={this.state.count} />
             <ListingSearch
               onSearch={this.handleSearch}
               search={this.state.search} />
