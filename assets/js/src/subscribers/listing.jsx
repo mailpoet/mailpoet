@@ -88,7 +88,8 @@ define('subscribers.listing',
         if(this.props.count === 0) {
           return (<div></div>);
         } else {
-          var firstPage = (
+          var pagination,
+          firstPage = (
             <span aria-hidden="true" className="tablenav-pages-navspan">«</span>
           ),
           previousPage = (
@@ -111,7 +112,7 @@ define('subscribers.listing',
                   <span aria-hidden="true">‹</span>
                 </a>
               );
-            }var last_page = Math.ceil(this.props.count / this.props.limit);
+            }
 
             if(this.props.page > 2) {
               firstPage = (
@@ -145,12 +146,8 @@ define('subscribers.listing',
                 </a>
               );
             }
-          }
 
-          return (
-            <div className="tablenav-pages">
-              <span className="displaying-num">{this.props.count} item(s)</span>
-
+            pagination = (
               <span className="pagination-links">
                 {firstPage}
                 {previousPage}
@@ -178,6 +175,18 @@ define('subscribers.listing',
                 {nextPage}
                 {lastPage}
               </span>
+            );
+          }
+
+          var classes = classNames(
+            'tablenav-pages',
+            { 'one-page': (this.props.count <= this.props.limit) }
+          );
+
+          return (
+            <div className={classes}>
+              <span className="displaying-num">{ this.props.count } item(s)</span>
+              { pagination }
             </div>
           );
         }
