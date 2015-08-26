@@ -7,7 +7,7 @@
 define('newsletter_editor/behaviors/DraggableBehavior', [
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup',
-    'interact.js',
+    'interact',
   ], function(Marionette, BehaviorsLookup, interact) {
 
   BehaviorsLookup.DraggableBehavior = Marionette.Behavior.extend({

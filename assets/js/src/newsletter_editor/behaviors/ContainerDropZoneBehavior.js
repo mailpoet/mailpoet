@@ -9,7 +9,7 @@ define('newsletter_editor/behaviors/ContainerDropZoneBehavior', [
     'backbone.marionette',
     'underscore',
     'newsletter_editor/behaviors/BehaviorsLookup',
-    'interact.js',
+    'interact',
   ], function(Marionette, _, BehaviorsLookup, interact) {
 
   BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({

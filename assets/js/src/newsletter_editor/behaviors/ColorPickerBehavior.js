@@ -6,7 +6,7 @@
 define('newsletter_editor/behaviors/ColorPickerBehavior', [
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup',
-    'spectrum-colorpicker',
+    'spectrum',
   ], function(Marionette, BehaviorsLookup) {
 
   BehaviorsLookup.ColorPickerBehavior = Marionette.Behavior.extend({

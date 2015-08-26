@@ -16,7 +16,6 @@ define('newsletter_editor/components/save', [
 
 
           // save newsletter
-          console.log('save disabled');
           // TODO: Migrate logic to new AJAX format
           //mailpoet_post_wpi('newsletter_save.php', json, function(response) {
               //if(response.success !== undefined && response.success === true) {

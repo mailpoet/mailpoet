@@ -66,7 +66,6 @@ define('newsletter_editor/blocks/automatedLatestContent', [
           },
           fetchPosts: function() {
               var that = this;
-              console.log('automatedLatestContent.fetchPosts disabled');
               // TODO: Migrate to new AJAX queries
               //mailpoet_post_wpi('automated_latest_content.php', this.toJSON(), function(response) {
                   //console.log('ALC fetched', arguments);

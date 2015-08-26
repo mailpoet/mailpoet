@@ -220,7 +220,6 @@ define('newsletter_editor/components/sidebar', [
               // send test email
               MailPoet.Modal.loading(true);
 
-              console.log('sendPreview disabled');
               // TODO: Migrate logic to new AJAX format
               //mailpoet_post_wpi('newsletter_preview.php', data, function(response) {
                   //if(response.success !== undefined && response.success === true) {

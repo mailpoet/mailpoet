@@ -76,7 +76,6 @@ define('newsletter_editor/blocks/posts', [
           },
           fetchAvailablePosts: function() {
               var that = this;
-              console.log('posts.fetchAvailablePosts disabled');
               // TODO: Move this logic to new AJAX query format
               //mailpoet_post_wpi('posts.php', this.toJSON(), function(response) {
                   //console.log('Posts fetched', arguments);
@@ -112,7 +111,6 @@ define('newsletter_editor/blocks/posts', [
 
               if (data.posts.length === 0) return;
 
-              console.log('posts._insertSelectedPosts disabled');
               // TODO: Move query logic to new AJAX format
               //mailpoet_post_wpi('automated_latest_content.php', data, function(response) {
                   //console.log('Available posts fetched', arguments);

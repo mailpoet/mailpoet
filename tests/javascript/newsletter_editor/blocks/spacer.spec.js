@@ -1,133 +1,143 @@
-describe('Spacer', function () {
-    describe('model', function () {
-        var model;
+define('test/newsletter_editor/blocks/spacer', [
+    'newsletter_editor/App',
+    'newsletter_editor/blocks/spacer'
+  ], function(EditorApplication) {
 
-        beforeEach(function () {
-            global.stubChannel();
-            global.stubConfig({
-                blockDefaults: {},
-            });
-            global.stubAvailableStyles();
-            model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)();
-        });
+  describe('Spacer', function () {
+      describe('model', function () {
+          var model;
 
-        afterEach(function () {
-            delete EditorApplication.getChannel;
-        });
+          beforeEach(function () {
+              global.stubChannel(EditorApplication);
+              global.stubConfig(EditorApplication, {
+                  blockDefaults: {},
+              });
+              global.stubAvailableStyles(EditorApplication);
+              model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)();
+          });
 
-        it('has spacer type', function () {
-            expect(model.get('type')).to.equal('spacer');
-        });
+          afterEach(function () {
+              delete EditorApplication.getChannel;
+          });
 
-        it('has height', function () {
-            expect(model.get('styles.block.height')).to.match(/\d+px/);
-        });
+          it('has spacer type', function () {
+              expect(model.get('type')).to.equal('spacer');
+          });
 
-        it('has a background color', function () {
-            expect(model.get('styles.block.backgroundColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
-        });
+          it('has height', function () {
+              expect(model.get('styles.block.height')).to.match(/\d+px/);
+          });
 
-        it("changes attributes with set", function () {
-            var newValue = '33px';
-            model.set('styles.block.height', newValue);
-            expect(model.get('styles.block.height')).to.equal(newValue);
-        });
+          it('has a background color', function () {
+              expect(model.get('styles.block.backgroundColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
+          });
 
-        it("triggers autosave if any attribute changes", function () {
-            var mock = sinon.mock().exactly(2).withArgs('autoSave');
-            EditorApplication.getChannel = sinon.stub().returns({
-                trigger: mock,
-            });
+          it("changes attributes with set", function () {
+              var newValue = '33px';
+              model.set('styles.block.height', newValue);
+              expect(model.get('styles.block.height')).to.equal(newValue);
+          });
 
-            model.set('styles.block.backgroundColor', '#000000');
-            model.set('styles.block.height', '77px');
+          it("triggers autosave if any attribute changes", function () {
+              var mock = sinon.mock().exactly(2).withArgs('autoSave');
+              EditorApplication.getChannel = sinon.stub().returns({
+                  trigger: mock,
+              });
 
-            mock.verify();
-        });
+              model.set('styles.block.backgroundColor', '#000000');
+              model.set('styles.block.height', '77px');
 
-        it("uses defaults from config when they are set", function () {
-            global.stubConfig({
-                blockDefaults: {
-                    spacer: {
-                        styles: {
-                            block: {
-                                backgroundColor: '#567890',
-                                height: '19px',
-                            },
-                        },
-                    },
-                },
-            });
-            var model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)();
+              mock.verify();
+          });
 
-            expect(model.get('styles.block.backgroundColor')).to.equal('#567890');
-            expect(model.get('styles.block.height')).to.equal('19px');
-        });
-    });
+          it("uses defaults from config when they are set", function () {
+              global.stubConfig(EditorApplication, {
+                  blockDefaults: {
+                      spacer: {
+                          styles: {
+                              block: {
+                                  backgroundColor: '#567890',
+                                  height: '19px',
+                              },
+                          },
+                      },
+                  },
+              });
+              var model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)();
 
-    describe('block view', function () {
-        global.stubChannel();
-        global.stubConfig();
-        global.stubAvailableStyles();
-        var model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)(),
-            view;
+              expect(model.get('styles.block.backgroundColor')).to.equal('#567890');
+              expect(model.get('styles.block.height')).to.equal('19px');
+          });
+      });
 
-        beforeEach(function () {
-            global.stubChannel();
-            view = new (EditorApplication.module('blocks.spacer').SpacerBlockView)({model: model});
-        });
+      describe('block view', function () {
+          global.stubChannel(EditorApplication);
+          global.stubConfig(EditorApplication);
+          global.stubAvailableStyles(EditorApplication);
+          var model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)(),
+              view;
 
-        it('renders', function () {
-            expect(view.render).to.not.throw();
-            expect(view.$('.mailpoet_spacer')).to.have.length(1);
-            expect(view.$('.mailpoet_spacer').css('background-color')).to.equal(model.get('styles.block.backgroundColor'));
-            expect(view.$('.mailpoet_spacer').css('height')).to.equal(model.get('styles.block.height'));
-        });
+          beforeEach(function () {
+              global.stubChannel(EditorApplication);
+              view = new (EditorApplication.module('blocks.spacer').SpacerBlockView)({model: model});
+          });
 
-        it('rerenders if model attributes change', function () {
-            view.render();
+          it('renders', function () {
+              expect(view.render).to.not.throw();
+              expect(view.$('.mailpoet_spacer')).to.have.length(1);
+              expect(view.$('.mailpoet_spacer').css('background-color')).to.equal(model.get('styles.block.backgroundColor'));
+              expect(view.$('.mailpoet_spacer').css('height')).to.equal(model.get('styles.block.height'));
+          });
 
-            model.set('styles.block.height', '71px');
+          it('rerenders if model attributes change', function () {
+              view.render();
 
-            expect(view.$('.mailpoet_spacer').css('height')).to.equal('71px');
-        });
-    });
+              model.set('styles.block.height', '71px');
 
-    describe('settings view', function () {
-        global.stubChannel();
-        global.stubConfig();
+              expect(view.$('.mailpoet_spacer').css('height')).to.equal('71px');
+          });
+      });
 
-        var model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)(),
-            view;
+      describe('settings view', function () {
+          global.stubChannel(EditorApplication);
+          global.stubConfig(EditorApplication);
 
-        beforeEach(function () {
-            global.stubChannel();
-            view = new (EditorApplication.module('blocks.spacer').SpacerBlockSettingsView)({model: model});
-        });
+          var model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)(),
+              view;
 
-        it('renders', function () {
-            expect(view.render).to.not.throw();
-        });
+          beforeEach(function () {
+              global.stubChannel(EditorApplication);
+              view = new (EditorApplication.module('blocks.spacer').SpacerBlockSettingsView)({model: model});
+          });
 
-        describe('once rendered', function () {
-            global.stubChannel();
-            global.stubConfig();
-            var model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)(),
+          it('renders', function () {
+              expect(view.render).to.not.throw();
+          });
+
+          describe('once rendered', function () {
+              var view, model;
+              beforeEach(function() {
+                global.stubChannel(EditorApplication);
+                global.stubConfig(EditorApplication);
+                model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)();
                 view = new (EditorApplication.module('blocks.spacer').SpacerBlockSettingsView)({model: model});
-            view.render();
+                view.render();
+              });
 
-            it('updates the model when background color changes', function () {
-                view.$('.mailpoet_field_spacer_background_color').val('#123456').change();
-                expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
-            });
+              it('updates the model when background color changes', function () {
+                  view.$('.mailpoet_field_spacer_background_color').val('#123456').change();
+                  expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
+              });
 
-            it('closes the sidepanel after "Done" is clicked', function () {
-                var mock = sinon.mock().once();
-                global.MailPoet.Modal.cancel = mock;
-                view.$('.mailpoet_done_editing').click();
-                mock.verify();
-                delete(global.MailPoet.Modal.cancel);
-            });
-        });
-    });
+              it.skip('closes the sidepanel after "Done" is clicked', function () {
+                  var mock = sinon.mock().once();
+                  global.MailPoet.Modal.cancel = mock;
+                  view.$('.mailpoet_done_editing').click();
+                  mock.verify();
+                  delete(global.MailPoet.Modal.cancel);
+              });
+          });
+      });
+  });
+
 });
