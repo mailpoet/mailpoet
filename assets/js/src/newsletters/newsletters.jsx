@@ -3,12 +3,14 @@ define(
   [
     'react',
     'react-router',
-    'mailpoet'
+    'mailpoet',
+    'newsletters/form.jsx'
   ],
   function(
     React,
     Router,
-    MailPoet
+    MailPoet,
+    Form
   ) {
 
     var DefaultRoute = Router.DefaultRoute;
@@ -26,7 +28,7 @@ define(
                   <Link to="listing">Newsletters</Link>
                 </li>
                 <li>
-                  <Link to="single">Single</Link>
+                  <Link to="single">New</Link>
                 </li>
               </ul>
             </header>
@@ -41,7 +43,7 @@ define(
       render: function () {
         return (
           <div>
-            <h1>Listing</h1>
+            <h1>Newsletters</h1>
           </div>
         );
       }
@@ -51,7 +53,7 @@ define(
       render: function () {
         return (
           <div>
-            <h1>Single</h1>
+            <h1>New</h1>
           </div>
         );
       }
