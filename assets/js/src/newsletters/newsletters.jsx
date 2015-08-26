@@ -3,13 +3,11 @@ define(
   [
     'react',
     'react-router',
-    'mailpoet',
     'newsletters/form.jsx'
   ],
   function(
     React,
     Router,
-    MailPoet,
     Form
   ) {
 
@@ -28,7 +26,7 @@ define(
                   <Link to="listing">Newsletters</Link>
                 </li>
                 <li>
-                  <Link to="single">New</Link>
+                  <Link to="form">New</Link>
                 </li>
               </ul>
             </header>
@@ -49,20 +47,10 @@ define(
       }
     });
 
-    var Single = React.createClass({
-      render: function () {
-        return (
-          <div>
-            <h1>New</h1>
-          </div>
-        );
-      }
-    });
-
     var routes = (
       <Route name="app" path="/" handler={App}>
         <Route name="listing" handler={Listing}/>
-        <Route name="single" handler={Single}/>
+        <Route name="form" handler={Form}/>
         <DefaultRoute handler={Listing}/>
       </Route>
     );
