@@ -1,5 +1,5 @@
 define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
-  "use strict";
+  'use strict';
   MailPoet.Ajax = {
       version: 0.5,
       options: {},

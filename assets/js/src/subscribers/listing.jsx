@@ -2,6 +2,11 @@ define('subscribers.listing',
   ['mailpoet', 'jquery', 'react/addons', 'classnames'],
   function(MailPoet, jQuery, React, classNames) {
 
+    var ListingSearch = require('listing/search.jsx');
+    var ListingPages = require('listing/pages.jsx');
+    var ListingColumn = require('listing/column.jsx');
+    var ListingHeader = require('listing/header.jsx');
+
     var ListingGroups = React.createClass({
       render: function() {
         return (
@@ -23,35 +28,6 @@ define('subscribers.listing',
       }
     });
 
-    var ListingSearch = React.createClass({
-      handleSearch: function(e) {
-        e.preventDefault();
-        this.props.onSearch(
-          this.refs.search.getDOMNode().value
-        );
-      },
-      render: function() {
-        return (
-          <form name="search" onSubmit={this.handleSearch}>
-            <p className="search-box">
-              <label htmlFor="search_input" className="screen-reader-text">
-                Search
-              </label>
-              <input
-                type="search"
-                ref="search"
-                id="search_input"
-                defaultValue={this.props.search} />
-              <input
-                type="submit"
-                defaultValue="Search"
-                className="button" />
-            </p>
-          </form>
-        );
-      }
-    });
-
     var ListingFilters = React.createClass({
       render: function() {
         return (
@@ -60,222 +36,110 @@ define('subscribers.listing',
       }
     });
 
-    var ListingPages = React.createClass({
-      setFirstPage: function() {
-        this.props.onSetPage(1);
-      },
-      setLastPage: function() {
-        this.props.onSetPage(this.getLastPage());
-      },
-      setPreviousPage: function() {
-        this.props.onSetPage(this.constrainPage(this.props.page - 1));
-      },
-      setNextPage: function() {
-        this.props.onSetPage(this.constrainPage(this.props.page + 1));
-      },
-      constrainPage: function(page) {
-        return Math.min(Math.max(1, Math.abs(~~page)), this.getLastPage());
-      },
-      handleSetPage: function() {
-        this.props.onSetPage(
-          this.constrainPage(this.refs.page.getDOMNode().value)
-        );
-      },
-      getLastPage: function() {
-        return Math.ceil(this.props.count / this.props.limit);
-      },
-      render: function() {
-        if(this.props.count === 0) {
-          return (<div></div>);
-        } else {
-          var pagination,
-          firstPage = (
-            <span aria-hidden="true" className="tablenav-pages-navspan">«</span>
-          ),
-          previousPage = (
-            <span aria-hidden="true" className="tablenav-pages-navspan">‹</span>
-          ),
-          nextPage = (
-            <span aria-hidden="true" className="tablenav-pages-navspan">›</span>
-          ),
-          lastPage = (
-            <span aria-hidden="true" className="tablenav-pages-navspan">»</span>
-          );
-
-          if(this.props.count > this.props.limit) {
-            if(this.props.page > 1) {
-              previousPage = (
-                <a href="javascript:;"
-                  onClick={this.setPreviousPage}
-                  className="prev-page">
-                  <span className="screen-reader-text">Previous page</span>
-                  <span aria-hidden="true">‹</span>
-                </a>
-              );
-            }
-
-            if(this.props.page > 2) {
-              firstPage = (
-                <a href="javascript:;"
-                  onClick={this.setFirstPage}
-                  className="first-page">
-                  <span className="screen-reader-text">First page</span>
-                  <span aria-hidden="true">«</span>
-                </a>
-              );
-            }
-
-            if(this.props.page < this.getLastPage()) {
-              nextPage = (
-                <a href="javascript:;"
-                  onClick={this.setNextPage}
-                  className="next-page">
-                  <span className="screen-reader-text">Next page</span>
-                  <span aria-hidden="true">›</span>
-                </a>
-              );
-            }
-
-            if(this.props.page < this.getLastPage() - 1) {
-              lastPage = (
-                <a href="javascript:;"
-                  onClick={this.setLastPage}
-                  className="last-page">
-                  <span className="screen-reader-text">Last page</span>
-                  <span aria-hidden="true">»</span>
-                </a>
-              );
-            }
-
-            pagination = (
-              <span className="pagination-links">
-                {firstPage}
-                {previousPage}
-                &nbsp;
-                <span className="paging-input">
-                  <label
-                    className="screen-reader-text"
-                    htmlFor="current-page-selector">Current Page</label>
-                  <input
-                    type="text"
-                    onChange={this.handleSetPage}
-                    aria-describedby="table-paging"
-                    size="1"
-                    ref="page"
-                    value={this.props.page}
-                    name="paged"
-                    id="current-page-selector"
-                    className="current-page" />
-                  &nbsp;of&nbsp;
-                  <span className="total-pages">
-                    {Math.ceil(this.props.count / this.props.limit)}
-                  </span>
-                </span>
-                &nbsp;
-                {nextPage}
-                {lastPage}
-              </span>
+    var ListSelector = React.createClass({
+      getList: function(e) {
+        e.preventDefault();
+        MailPoet.Modal.popup({
+          title: 'Bulk action',
+          template: '',
+          onInit: function(modal) {
+            var target = modal.getContentContainer();
+            React.render(
+              <ListSelector />,
+              target[0]
             );
           }
+        })
+      },
+      render: function() {
+        return (
+          <div>
+            <select >
+              <option>Select a list</option>
+            </select>
+            <a onClick={this.getList}>Test me</a>
+          </div>
+        );
+      }
+    });
 
-          var classes = classNames(
-            'tablenav-pages',
-            { 'one-page': (this.props.count <= this.props.limit) }
-          );
-
-          return (
-            <div className={classes}>
-              <span className="displaying-num">{ this.props.count } item(s)</span>
-              { pagination }
-            </div>
-          );
-        }
+    var ListingBulkAction = React.createClass({
+      render: function() {
+        return (
+          <option value={this.props.action.action}>
+            { this.props.action.label }
+          </option>
+        );
       }
     });
 
     var ListingBulkActions = React.createClass({
-      render: function() {
-        return (
-          <div></div>
-        );
-      }
-    });
+      handleAction: function() {
+        var action = jQuery(this.refs.action.getDOMNode()).val();
+        console.log(action, this.props.selected);
 
-    var ListingColumn = React.createClass({
-      handleSort: function() {
-        var sort_by = this.props.column.name,
-            sort_order = (this.props.column.sorted === 'asc') ? 'desc' : 'asc';
-        this.props.onSort(sort_by, sort_order);
       },
       render: function() {
-        var classes = classNames(
-          'manage-column',
-          { 'sortable': this.props.column.sortable },
-          this.props.column.sorted
-        );
-
-        var label;
-
-        if(this.props.column.sortable === true) {
-          label = (
-            <a onClick={this.handleSort}>
-              <span>{ this.props.column.label }</span>
-              <span className="sorting-indicator"></span>
-            </a>
-          );
-        } else {
-          label = this.props.column.label;
-        }
         return (
-          <th
-            className={ classes }
-            id={this.props.column.name }
-            scope="col">
-            {label}
-          </th>
-        );
-      }
-    });
+          <div className="alignleft actions bulkactions">
+            <label
+              className="screen-reader-text"
+              htmlFor="bulk-action-selector-top">
+              Select bulk action
+            </label>
 
-    var ListingHeader = React.createClass({
-      render: function() {
-        var columns = this.props.columns.map(function(column) {
-              return (
-                <ListingColumn
-                  onSort={this.props.onSort}
-                  sort_by={this.props.sort_by}
-                  key={column.name}
-                  column={column} />
-              );
-        }.bind(this));
-
-        return (
-          <tr>
-            <td className="manage-column column-cb check-column" id="cb">
-              <label htmlFor="cb-select-all-1" className="screen-reader-text">
-                Select All
-              </label>
-              <input type="checkbox" id="cb-select-all-1" />
-            </td>
-            {columns}
-          </tr>
+            <select ref="action">
+              <option>Bulk Actions</option>
+              {this.props.actions.map(function(action, index) {
+                return (
+                  <ListingBulkAction
+                    action={action}
+                    key={index} />
+                );
+              }.bind(this))}
+            </select>
+            <input
+              onClick={this.handleAction}
+              type="submit"
+              defaultValue="Apply"
+              className="button action" />
+          </div>
         );
       }
     });
 
     var ListingItem = React.createClass({
+      handleSelect: function(e) {
+        var is_checked = jQuery(e.target).is(':checked');
+
+        this.props.onSelect(
+          parseInt(e.target.value, 10),
+          is_checked
+        );
+
+        return !e.target.checked;
+      },
       render: function() {
+        var rowClasses = classNames(
+          'title',
+          'column-title',
+          'has-row-actions',
+          'column-primary',
+          'page-title'
+        );
+
         return (
           <tr>
             <th className="check-column" scope="row">
-              <label htmlFor="cb-select-1" className="screen-reader-text">
-                Select { this.props.item.email }</label>
+              <label className="screen-reader-text">
+                { 'Select ' + this.props.item.email }</label>
               <input
                 type="checkbox"
                 defaultValue={ this.props.item.id }
-                name="item[]" id="cb-select-1" />
+                defaultChecked={ this.props.item.selected }
+                onChange={ this.handleSelect } />
             </th>
-            <td className="title column-title has-row-actions column-primary page-title">
+            <td className={rowClasses}>
               <strong>
                 <a className="row-title">{ this.props.item.email }</a>
               </strong>
@@ -311,9 +175,11 @@ define('subscribers.listing',
           return (
             <tbody>
               {this.props.items.map(function(item) {
+                item.selected = (this.props.selected.indexOf(item.id) !== -1);
                 return (
                   <ListingItem
                     columns={this.props.columns}
+                    onSelect={this.props.onSelect}
                     key={item.id}
                     item={item} />
                 );
@@ -334,7 +200,8 @@ define('subscribers.listing',
           limit: 10,
           sort_by: 'email',
           sort_order: 'asc',
-          items: []
+          items: [],
+          selected: []
         };
       },
       componentDidMount: function() {
@@ -377,6 +244,31 @@ define('subscribers.listing',
           this.getItems();
         }.bind(this));
       },
+      handleSelect: function(id, is_checked) {
+        var selected = this.state.selected;
+
+        if(is_checked) {
+          selected = jQuery.merge(selected, [ id ]);
+        } else {
+          selected.splice(selected.indexOf(id), 1);
+        }
+        this.setState({
+          selected: selected
+        });
+      },
+      handleSelectAll: function(is_checked) {
+        if(is_checked === false) {
+          this.setState({ selected: [] });
+        } else {
+          var selected = this.state.items.map(function(item) {
+            return ~~item.id;
+          });
+
+          this.setState({
+            selected: selected
+          });
+        }
+      },
       handleSetPage: function(page) {
         this.setState({ page: page }, function() {
           this.getItems();
@@ -408,7 +300,9 @@ define('subscribers.listing',
               onSearch={this.handleSearch}
               search={this.state.search} />
             <div className="tablenav top clearfix">
-              <ListingBulkActions />
+              <ListingBulkActions
+                actions={this.props.actions}
+                selected={this.state.selected} />
               <ListingFilters />
               <ListingPages
                 count={this.state.count}
@@ -420,6 +314,7 @@ define('subscribers.listing',
               <thead>
                 <ListingHeader
                   onSort={this.handleSort}
+                  onSelectAll={this.handleSelectAll}
                   sort_by={this.state.sort_by}
                   sort_order={this.state.sort_order}
                   columns={this.props.columns} />
@@ -427,11 +322,14 @@ define('subscribers.listing',
 
               <ListingItems
                 columns={this.props.columns}
+                selected={this.state.selected}
+                onSelect={this.handleSelect}
                 items={items} />
 
               <tfoot>
                 <ListingHeader
                   onSort={this.handleSort}
+                  onSelectAll={this.handleSelectAll}
                   sort_by={this.state.sort_by}
                   sort_order={this.state.sort_order}
                   columns={this.props.columns} />
@@ -439,7 +337,9 @@ define('subscribers.listing',
 
             </table>
             <div className="tablenav bottom">
-              <ListingBulkActions />
+              <ListingBulkActions
+                actions={this.props.actions}
+                selected={this.state.selected} />
               <ListingPages
                 count={this.state.count}
                 page={this.state.page}
@@ -480,11 +380,32 @@ define('subscribers.listing',
       },
     ];
 
+    var actions = [
+      {
+        label: 'Move to list...',
+        endpoint: 'subscribers',
+        action: 'move',
+
+      },
+      {
+        label: 'Add to list...',
+        endpoint: 'subscribers',
+        action: 'add',
+
+      },
+      {
+        label: 'Remove from list...',
+        endpoint: 'subscribers',
+        action: 'remove',
+
+      }
+    ];
+
     var element = jQuery('#mailpoet_subscribers_listing');
 
     if(element.length > 0) {
       React.render(
-        <Listing columns={columns} />,
+        <Listing columns={columns} actions={actions} />,
         element[0]
       );
     }
