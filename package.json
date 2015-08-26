@@ -22,6 +22,7 @@
     "napa": "^1.2.0",
     "papaparse": "4.1.1",
     "react": "^0.13.3",
+    "react-router": "^0.13.3",
     "select2": "3.5.1",
     "spectrum-colorpicker": "^1.6.2",
     "tinymce": "4.1.10",
