@@ -327,6 +327,7 @@ define('subscribers.listing',
     var Listing = React.createClass({
       getInitialState: function() {
         return {
+          loading: false,
           search: '',
           page: 1,
           count: 0,
@@ -340,6 +341,8 @@ define('subscribers.listing',
         this.getItems();
       },
       getItems: function() {
+        this.setState({ loading: true });
+
         MailPoet.Ajax.post({
           endpoint: 'subscribers',
           action: 'get',
@@ -354,7 +357,8 @@ define('subscribers.listing',
             if(this.isMounted()) {
               this.setState({
                 items: response.items,
-                count: response.count
+                count: response.count,
+                loading: false
               });
             }
           }.bind(this)
@@ -389,6 +393,14 @@ define('subscribers.listing',
           return column;
         });
 
+        var tableClasses = classNames(
+          'wp-list-table',
+          'widefat',
+          'fixed',
+          'striped',
+          { 'mailpoet_listing_loading': this.state.loading }
+        );
+
         return (
           <div>
             <ListingGroups count={this.state.count} />
@@ -404,7 +416,7 @@ define('subscribers.listing',
                 limit={this.state.limit}
                 onSetPage={this.handleSetPage} />
             </div>
-            <table className="wp-list-table widefat fixed">
+            <table className={tableClasses}>
               <thead>
                 <ListingHeader
                   onSort={this.handleSort}
