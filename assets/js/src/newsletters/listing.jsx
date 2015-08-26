@@ -1,4 +1,15 @@
-define('newsletters', ['react', 'jquery', 'mailpoet'], function(React, jQuery, MailPoet) {
+define(
+  'listing',
+  [
+    'react',
+    'jquery',
+    'mailpoet'
+  ],
+  function(
+    React,
+    jQuery,
+    MailPoet
+  ) {
 
   var Newsletter = React.createClass({
     send: function(e) {
