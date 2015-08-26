@@ -1,8 +1,7 @@
 define('admin', [
-    'mailpoet',
     'jquery'
   ],
-  function(MailPoet, jQuery) {
+  function(jQuery) {
     jQuery(function($) {
       // dom ready
       $(function() {

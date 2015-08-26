@@ -9,9 +9,11 @@ class Widget {
   }
 
   function init() {
-    add_action('widgets_init', array($this, 'registerWidget'));
-    add_action('widgets_init', array($this, 'setupActions'));
-    add_action('widgets_init', array($this, 'setupDependencies'));
+    if(!is_admin() && !is_login_page()) {
+      add_action('widgets_init', array($this, 'registerWidget'));
+      add_action('widgets_init', array($this, 'setupActions'));
+      add_action('widgets_init', array($this, 'setupDependencies'));
+    }
   }
 
   function registerWidget() {
