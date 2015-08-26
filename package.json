@@ -26,6 +26,7 @@
     "react-infinity": "^1.2.2",
     "react-prefixr": "^0.1.0",
     "react-waypoint": "^1.0.2",
+    "react-router": "^0.13.3",
     "select2": "3.5.1",
     "spectrum-colorpicker": "^1.6.2",
     "tinymce": "4.1.10",
