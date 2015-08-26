@@ -1,7 +1,15 @@
 define(
   'newsletters',
-  ['react', 'react-router', 'mailpoet'],
-  function(React, Router, MailPoet) {
+  [
+    'react',
+    'react-router',
+    'mailpoet'
+  ],
+  function(
+    React,
+    Router,
+    MailPoet
+  ) {
 
     var DefaultRoute = Router.DefaultRoute;
     var Link = Router.Link;
