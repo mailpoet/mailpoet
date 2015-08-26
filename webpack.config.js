@@ -39,8 +39,9 @@ config.push(_.extend({}, baseConfig, {
       'subscribers/listing.jsx',
       'settings.jsx',
       'subscribers.jsx',
-      'newsletters_list.jsx',
-      'newsletters_form.jsx'
+      'newsletters/newsletters.jsx',
+      'newsletters/listing.jsx',
+      'newsletters/form.jsx'
     ]
   },
   plugins: [
