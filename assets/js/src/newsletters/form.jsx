@@ -1,4 +1,15 @@
-define('newsletters_form', ['react', 'jquery', 'mailpoet'], function(React, jQuery, MailPoet) {
+define(
+  'newsletters_form',
+  [
+    'react',
+    'jquery',
+    'mailpoet'
+  ],
+  function(
+    React,
+    jQuery,
+    MailPoet
+  ) {
 
   var NewslettersForm = React.createClass({
     getInitialState: function() {
