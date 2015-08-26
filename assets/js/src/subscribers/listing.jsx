@@ -4,8 +4,8 @@ define('subscribers.listing',
 
     var ListingSearch = require('listing/search.jsx');
     var ListingPages = require('listing/pages.jsx');
-    var ListingColumn = require('listing/column.jsx');
     var ListingHeader = require('listing/header.jsx');
+    var ListingBulkActions = require('listing/bulk_actions.jsx');
 
     var ListingGroups = React.createClass({
       render: function() {
@@ -58,51 +58,6 @@ define('subscribers.listing',
               <option>Select a list</option>
             </select>
             <a onClick={this.getList}>Test me</a>
-          </div>
-        );
-      }
-    });
-
-    var ListingBulkAction = React.createClass({
-      render: function() {
-        return (
-          <option value={this.props.action.action}>
-            { this.props.action.label }
-          </option>
-        );
-      }
-    });
-
-    var ListingBulkActions = React.createClass({
-      handleAction: function() {
-        var action = jQuery(this.refs.action.getDOMNode()).val();
-        console.log(action, this.props.selected);
-
-      },
-      render: function() {
-        return (
-          <div className="alignleft actions bulkactions">
-            <label
-              className="screen-reader-text"
-              htmlFor="bulk-action-selector-top">
-              Select bulk action
-            </label>
-
-            <select ref="action">
-              <option>Bulk Actions</option>
-              {this.props.actions.map(function(action, index) {
-                return (
-                  <ListingBulkAction
-                    action={action}
-                    key={index} />
-                );
-              }.bind(this))}
-            </select>
-            <input
-              onClick={this.handleAction}
-              type="submit"
-              defaultValue="Apply"
-              className="button action" />
           </div>
         );
       }
@@ -382,22 +337,39 @@ define('subscribers.listing',
 
     var actions = [
       {
+        name: 'move',
         label: 'Move to list...',
-        endpoint: 'subscribers',
-        action: 'move',
+        onSelect: function(e) {
+          // display list selector
+          jQuery(e.target).after(
+            '<select id="bulk_action_list">'+
+              '<option value="">Select a list</option>'+
+              '<option value="1">List #1</option>'+
+              '<option value="2">List #2</option>'+
+              '<option value="3">List #3</option>'+
+            '</select>'
+          );
+        },
+        onApply: function(selected) {
+          var list = jQuery('#bulk_action_list').val();
 
+          MailPoet.Ajax.post({
+            endpoint: 'subscribers',
+            action: 'move',
+            data: {
+              selected: selected,
+              list: list
+            }
+          });
+        }
       },
       {
-        label: 'Add to list...',
-        endpoint: 'subscribers',
-        action: 'add',
-
+        name: 'add',
+        label: 'Add to list...'
       },
       {
-        label: 'Remove from list...',
-        endpoint: 'subscribers',
-        action: 'remove',
-
+        name: 'remove',
+        label: 'Remove from list...'
       }
     ];
 
