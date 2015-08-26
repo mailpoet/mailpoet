@@ -40,7 +40,7 @@ config.push(_.extend({}, baseConfig, {
       'settings.jsx',
       'subscribers.jsx',
       'newsletters/newsletters.jsx',
-      'newsletters/listing.jsx',
+      'newsletters/list.jsx',
       'newsletters/form.jsx'
     ]
   },

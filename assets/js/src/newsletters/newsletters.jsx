@@ -3,12 +3,14 @@ define(
   [
     'react',
     'react-router',
-    'newsletters/form.jsx'
+    'newsletters/form.jsx',
+    'newsletters/list.jsx'
   ],
   function(
     React,
     Router,
-    Form
+    Form,
+    List
   ) {
 
     var DefaultRoute = Router.DefaultRoute;
@@ -23,7 +25,7 @@ define(
             <header>
               <ul>
                 <li>
-                  <Link to="listing">Newsletters</Link>
+                  <Link to="list">Newsletters</Link>
                 </li>
                 <li>
                   <Link to="form">New</Link>
@@ -37,21 +39,11 @@ define(
       }
     });
 
-    var Listing = React.createClass({
-      render: function () {
-        return (
-          <div>
-            <h1>Newsletters</h1>
-          </div>
-        );
-      }
-    });
-
     var routes = (
       <Route name="app" path="/" handler={App}>
-        <Route name="listing" handler={Listing}/>
+        <Route name="list" handler={List}/>
         <Route name="form" handler={Form}/>
-        <DefaultRoute handler={Listing}/>
+        <DefaultRoute handler={List}/>
       </Route>
     );
 
