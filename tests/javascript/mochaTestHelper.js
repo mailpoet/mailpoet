@@ -10,21 +10,21 @@ global.expect = chai.expect;
 global.sinon = sinon;
 
 if (!global.document || !global.window) {
-    var jsdom = require('jsdom').jsdom;
+  var jsdom = require('jsdom').jsdom;
 
-    global.document = jsdom('<html><head><script></script></head><body></body></html>', {}, {
-        FetchExternalResources: ['script'],
-        ProcessExternalResources: ['script'],
-        MutationEvents: '2.0',
-        QuerySelector: false
-    });
+  global.document = jsdom('<html><head><script></script></head><body></body></html>', {}, {
+    FetchExternalResources: ['script'],
+    ProcessExternalResources: ['script'],
+    MutationEvents: '2.0',
+    QuerySelector: false
+  });
 
-    global.window = document.parentWindow;
-    global.navigator = global.window.navigator;
+  global.window = document.parentWindow;
+  global.navigator = global.window.navigator;
 
-    global.window.Node.prototype.contains = function (node) {
-        return this.compareDocumentPosition(node) & 16;
-    };
+  global.window.Node.prototype.contains = function (node) {
+    return this.compareDocumentPosition(node) & 16;
+  };
 }
 
 global.testHelpers = require('./loadHelpers.js');
@@ -35,14 +35,14 @@ global.Handlebars = global.window.Handlebars;
 
 // Stub out interact.js
 global.interact = function () {
-    return {
-        draggable: global.interact,
-        restrict: global.interact,
-        resizable: global.interact,
-        on: global.interact,
-        dropzone: global.interact,
-        preventDefault: global.interact,
-    };
+  return {
+    draggable: global.interact,
+    restrict: global.interact,
+    resizable: global.interact,
+    on: global.interact,
+    dropzone: global.interact,
+    preventDefault: global.interact,
+  };
 };
 
 jQuery.fn.spectrum = global.spectrum = function() { return this; };
@@ -51,20 +51,20 @@ jQuery.fn.stick_in_parent = function() { return this; };
 // Add global stubs for convenience
 // TODO: Extract those to a separate file
 global.stubChannel = function (EditorApplication, returnObject) {
-    EditorApplication.getChannel = sinon.stub().returns(_.defaults(returnObject || {}, {
-        trigger: function () {
-        },
-        on: function () {
-        },
-    }));
+  EditorApplication.getChannel = sinon.stub().returns(_.defaults(returnObject || {}, {
+    trigger: function () {
+    },
+    on: function () {
+    },
+  }));
 };
 global.stubConfig = function (EditorApplication, config) {
-    config = config || {};
-    EditorApplication.getConfig = sinon.stub().returns(new Backbone.SuperModel(config));
+  config = config || {};
+  EditorApplication.getConfig = sinon.stub().returns(new Backbone.SuperModel(config));
 };
 global.stubAvailableStyles = function (EditorApplication, styles) {
-    styles = styles || {};
-    EditorApplication.getAvailableStyles = sinon.stub().returns(new Backbone.SuperModel(styles));
+  styles = styles || {};
+  EditorApplication.getAvailableStyles = sinon.stub().returns(new Backbone.SuperModel(styles));
 };
 
 testHelpers.loadTemplate('blocks/base/toolsGeneric.hbs', window, {id: 'newsletter_editor_template_tools_generic'});

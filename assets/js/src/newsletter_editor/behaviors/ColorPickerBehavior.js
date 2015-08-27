@@ -20,5 +20,4 @@ define('newsletter_editor/behaviors/ColorPickerBehavior', [
       });
     },
   });
-
 });

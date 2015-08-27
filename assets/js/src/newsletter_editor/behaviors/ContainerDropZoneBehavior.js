@@ -424,5 +424,4 @@ define('newsletter_editor/behaviors/ContainerDropZoneBehavior', [
       return depth === 0 || (depth === 1 && orientation === 'horizontal' && childCount <= this.options.columnLimit);
     },
   });
-
 });
