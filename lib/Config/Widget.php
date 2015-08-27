@@ -9,8 +9,9 @@ class Widget {
   }
 
   function init() {
+    add_action('widgets_init', array($this, 'registerWidget'));
+
     if(!is_admin()) {
-      add_action('widgets_init', array($this, 'registerWidget'));
       add_action('widgets_init', array($this, 'setupActions'));
       add_action('widgets_init', array($this, 'setupDependencies'));
     }
