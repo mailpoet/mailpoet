@@ -107,11 +107,7 @@ class RoboFile extends \Robo\Tasks {
   function testAll() {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
-    $this
-      ->taskexec('phantomjs --webdriver=4444')
-      ->background()
-      ->run();
-    sleep(2);
+    $this->startPhantomJS();
     $this->_exec('vendor/bin/codecept run');
   }
 
@@ -119,6 +115,13 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept run unit --debug');
+  }
+
+  function testFailed() {
+    $this->loadEnv();
+    $this->_exec('vendor/bin/codecept build');
+    $this->startPhantomJS();
+    $this->_exec('vendor/bin/codecept run -g failed');
   }
 
   protected function loadEnv() {
@@ -135,5 +138,13 @@ class RoboFile extends \Robo\Tasks {
       ->regex("/url.*/")
       ->to('url: ' . "'" . getenv('WP_TEST_URL'). "'")
       ->run();
+  }
+
+  protected function startPhantomJS() {
+    $this
+      ->taskexec('phantomjs --webdriver=4444')
+      ->background()
+      ->run();
+    sleep(3);
   }
 }

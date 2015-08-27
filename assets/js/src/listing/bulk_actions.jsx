@@ -1,4 +1,4 @@
-define('listing.bulk_actions', ['react'], function(React) {
+define('bulk_actions', ['react'], function(React) {
 
   var ListingBulkActions = React.createClass({
     handleChangeAction: function(e) {

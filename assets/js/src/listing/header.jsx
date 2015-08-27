@@ -1,4 +1,4 @@
-define('listing.header', ['react', 'classnames'], function(React, classNames) {
+define('header', ['react', 'classnames'], function(React, classNames) {
   /*
     props:
       onSort: callback(sort_by, sort_order)
