@@ -9,7 +9,7 @@ class Widget {
   }
 
   function init() {
-    if(!is_admin() && !is_login_page()) {
+    if(!is_admin()) {
       add_action('widgets_init', array($this, 'registerWidget'));
       add_action('widgets_init', array($this, 'setupActions'));
       add_action('widgets_init', array($this, 'setupDependencies'));
