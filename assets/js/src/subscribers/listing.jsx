@@ -352,7 +352,7 @@ define(
     var actions = [
       {
         name: 'move',
-        label: 'Move to list...',
+        label: 'Move to...',
         onSelect: function(e) {
           // display list selector
           jQuery(e.target).after(
@@ -379,11 +379,11 @@ define(
       },
       {
         name: 'add',
-        label: 'Add to list...'
+        label: 'Add to...'
       },
       {
         name: 'remove',
-        label: 'Remove from list...'
+        label: 'Remove from...'
       }
     ];
 
