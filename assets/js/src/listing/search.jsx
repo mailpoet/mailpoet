@@ -1,4 +1,4 @@
-define('listing.search', ['react'], function(React) {
+define('search', ['react'], function(React) {
   /*
     props:
       onSearch  -> callback(search)

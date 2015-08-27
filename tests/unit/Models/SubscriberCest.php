@@ -11,17 +11,9 @@ class SubscriberCest {
       'email'      => 'john@mailpoet.com'
     );
 
-    for ($i=0; $i < 10000; $i++) {
-      $data = array(
-        'first_name' => 'John'.mt_rand(0,9999),
-      'last_name'  => 'Mailer'.mt_rand(0,9999),
-      'email'      => 'john'.mt_rand(0,9999).'@mailpoet.com'
-      );
-      $this->subscriber = Subscriber::create();
-    $this->subscriber->hydrate($data);
+    $this->subscriber = Subscriber::create();
+    $this->subscriber->hydrate($this->data);
     $this->saved = $this->subscriber->save();
-    }
-
   }
 
   function itCanBeCreated() {
@@ -60,9 +52,7 @@ class SubscriberCest {
   }
 
   function _after() {
-    $subscriber =
-      Subscriber::where('email', $this->data['email'])
-      ->findOne()
-      ->delete();
+    ORM::for_table(Subscriber::$_table)
+      ->delete_many();
   }
 }

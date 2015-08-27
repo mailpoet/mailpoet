@@ -1,11 +1,25 @@
-define('subscribers.listing',
-  ['mailpoet', 'jquery', 'react/addons', 'classnames'],
-  function(MailPoet, jQuery, React, classNames) {
-
-    var ListingSearch = require('listing/search.jsx');
-    var ListingPages = require('listing/pages.jsx');
-    var ListingHeader = require('listing/header.jsx');
-    var ListingBulkActions = require('listing/bulk_actions.jsx');
+define(
+  'listing',
+  [
+    'mailpoet',
+    'jquery',
+    'react',
+    'classnames',
+    'listing/bulk_actions.jsx',
+    'listing/header.jsx',
+    'listing/pages.jsx',
+    'listing/search.jsx'
+  ],
+  function(
+    MailPoet,
+    jQuery,
+    React,
+    classNames,
+    ListingBulkActions,
+    ListingHeader,
+    ListingPages,
+    ListingSearch
+  ) {
 
     var ListingGroups = React.createClass({
       render: function() {

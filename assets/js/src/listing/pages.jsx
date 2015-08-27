@@ -1,4 +1,4 @@
-define('listing.pages', ['react', 'classnames'], function(React, classNames) {
+define('pages', ['react', 'classnames'], function(React, classNames) {
   /*
     props:
       onSetPage -> callback(page)
