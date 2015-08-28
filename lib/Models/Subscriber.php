@@ -5,6 +5,9 @@ if (!defined('ABSPATH')) exit;
 
 class Subscriber extends Model {
   public static $_table = MP_SUBSCRIBERS_TABLE;
+  const STATE_SUBSCRIBED = 1;
+  const STATE_UNCONFIRMED = 0;
+  const STATE_UNSUBSCRIBED = -1;
 
   function __construct() {
     parent::__construct();

@@ -30,33 +30,6 @@ define(
       }
     });
 
-    var ListSelector = React.createClass({
-      getList: function(e) {
-        e.preventDefault();
-        MailPoet.Modal.popup({
-          title: 'Bulk action',
-          template: '',
-          onInit: function(modal) {
-            var target = modal.getContentContainer();
-            React.render(
-              <ListSelector />,
-              target[0]
-            );
-          }
-        })
-      },
-      render: function() {
-        return (
-          <div>
-            <select >
-              <option>Select a list</option>
-            </select>
-            <a onClick={this.getList}>Test me</a>
-          </div>
-        );
-      }
-    });
-
     var ListingItem = React.createClass({
       handleSelect: function(e) {
         var is_checked = jQuery(e.target).is(':checked');
@@ -137,7 +110,11 @@ define(
               <td
                 colSpan={this.props.columns.length + 1}
                 className="colspanchange">
-                { this.props.loading ? 'Loading...' : 'No records found.'}
+                {
+                  (this.props.loading === true)
+                  ? MailPoetI18n.loading
+                  : MailPoetI18n.noRecordFound
+                }
               </td>
             </tbody>
           );
@@ -168,8 +145,8 @@ define(
           page: 1,
           count: 0,
           limit: 10,
-          sort_by: 'email',
-          sort_order: 'asc',
+          sort_by: 'id',
+          sort_order: 'desc',
           items: [],
           groups: [],
           group: 'all',
@@ -242,7 +219,8 @@ define(
           group: group,
           filters: [],
           selected: [],
-          search: ''
+          search: '',
+          page: 1
         }, function() {
           this.getItems();
         }.bind(this));
@@ -271,7 +249,7 @@ define(
             sort_order =  this.state.sort_order;
 
         // set sortable columns
-        columns = columns.map(function(column) {
+        columns = this.props.columns.map(function(column) {
           column.sorted = (column.name === sort_by) ? sort_order : false;
           return column;
         });
@@ -283,7 +261,6 @@ define(
           'striped',
           { 'mailpoet_listing_loading': this.state.loading }
         );
-
         return (
           <div>
             <ListingGroups
@@ -346,85 +323,6 @@ define(
       }
     });
 
-
-    var columns = [
-      {
-        name: 'email',
-        label: 'Email',
-        sortable: true
-      },
-      {
-        name: 'first_name',
-        label: 'Firstname',
-        sortable: true
-      },
-      {
-        name: 'last_name',
-        label: 'Lastname',
-        sortable: true
-      },
-      {
-        name: 'status',
-        label: 'Status',
-        sortable: true
-      },
-      {
-        name: 'created_at',
-        label: 'Subscribed on',
-        sortable: true
-      },
-      {
-        name: 'updated_at',
-        label: 'Last modified on',
-        sortable: true
-      },
-    ];
-
-    var actions = [
-      {
-        name: 'move',
-        label: 'Move to list...',
-        onSelect: function(e) {
-          // display list selector
-          jQuery(e.target).after(
-            '<select id="bulk_action_list">'+
-              '<option value="">Select a list</option>'+
-              '<option value="1">List #1</option>'+
-              '<option value="2">List #2</option>'+
-              '<option value="3">List #3</option>'+
-            '</select>'
-          );
-        },
-        onApply: function(selected) {
-          var list = jQuery('#bulk_action_list').val();
-
-          MailPoet.Ajax.post({
-            endpoint: 'subscribers',
-            action: 'move',
-            data: {
-              selected: selected,
-              list: list
-            }
-          });
-        }
-      },
-      {
-        name: 'add',
-        label: 'Add to list...'
-      },
-      {
-        name: 'remove',
-        label: 'Remove from list...'
-      }
-    ];
-
-    var element = jQuery('#mailpoet_subscribers_listing');
-
-    if(element.length > 0) {
-      React.render(
-        <Listing columns={columns} actions={actions} />,
-        element[0]
-      );
-    }
+    return Listing;
   }
 );

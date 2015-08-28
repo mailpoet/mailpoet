@@ -20,11 +20,12 @@ define('search', ['react'], function(React) {
             </label>
             <input
               type="search"
+              id="search_input"
               ref="search"
               defaultValue={this.props.search} />
             <input
               type="submit"
-              defaultValue="Search"
+              defaultValue={MailPoetI18n.searchLabel}
               className="button" />
           </p>
         </form>

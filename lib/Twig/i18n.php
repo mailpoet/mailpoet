@@ -5,20 +5,20 @@ class i18n extends \Twig_Extension {
 
   private $_text_domain;
 
-  public function __construct($text_domain) {
+  function __construct($text_domain) {
     // set text domain
     $this->_text_domain = $text_domain;
   }
 
-  public function getName() {
+  function getName() {
     return 'i18n';
   }
 
-  public function getFunctions() {
+  function getFunctions() {
     // twig custom functions
     $twig_functions = array();
     // list of WP functions to map
-    $functions = array('__', '_n');
+    $functions = array('localize', '__', '_n');
 
     foreach($functions as $function) {
       $twig_functions[] = new \Twig_SimpleFunction(
@@ -30,13 +30,27 @@ class i18n extends \Twig_Extension {
     return $twig_functions;
   }
 
-  public function __() {
+  function localize() {
+    $args = func_get_args();
+    $translations = array_shift($args);
+    $output = array();
+
+    $output[] = '<script type="text/javascript">';
+    $output[] = ' var MailPoetI18n = MailPoetI18n || {}';
+    foreach($translations as $key => $translation) {
+      $output[] = 'MailPoetI18n[\''.$key.'\'] = "'.$translation.'";';
+    }
+    $output[] = '</script>';
+    return join("\n", $output);
+  }
+
+  function __() {
     $args = func_get_args();
 
     return call_user_func_array('__', $this->setTextDomain($args));
   }
 
-  public function _n() {
+  function _n() {
     $args = func_get_args();
 
     return call_user_func_array('_n', $this->setTextDomain($args));
