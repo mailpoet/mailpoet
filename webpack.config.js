@@ -38,7 +38,7 @@ config.push(_.extend({}, baseConfig, {
     admin: [
       'subscribers/listing.jsx',
       'settings.jsx',
-      'subscribers.jsx'
+      'newsletters/newsletters.jsx'
     ]
   },
   plugins: [

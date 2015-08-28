@@ -80,8 +80,7 @@ class SettingCest {
   }
 
   function _after() {
-    $setting = Setting::where('name', $this->data['name'])
-      ->findOne()
-      ->delete();
+    ORM::for_table(Setting::$_table)
+      ->delete_many();
   }
 }

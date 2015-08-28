@@ -136,7 +136,9 @@ define(
             <tbody>
               <td
                 colSpan={this.props.columns.length + 1}
-                className="colspanchange">No subscribers found.</td>
+                className="colspanchange">
+                { this.props.loading ? 'Loading...' : 'No records found.'}
+              </td>
             </tbody>
           );
         } else {
@@ -316,6 +318,7 @@ define(
                 columns={ this.props.columns }
                 selected={ this.state.selected }
                 onSelect={ this.handleSelect }
+                loading= { this.state.loading }
                 items={ items } />
 
               <tfoot>
