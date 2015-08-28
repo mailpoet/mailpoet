@@ -8,7 +8,8 @@ define(
     'listing/bulk_actions.jsx',
     'listing/header.jsx',
     'listing/pages.jsx',
-    'listing/search.jsx'
+    'listing/search.jsx',
+    'listing/groups.jsx'
   ],
   function(
     MailPoet,
@@ -18,30 +19,9 @@ define(
     ListingBulkActions,
     ListingHeader,
     ListingPages,
-    ListingSearch
+    ListingSearch,
+    ListingGroups
   ) {
-
-    var ListingGroups = React.createClass({
-      render: function() {
-        return (
-          <ul className="subsubsub">
-            <li>
-              <a className="current">
-                All
-                <span className="count">({ this.props.count })</span>
-              </a>&nbsp;|&nbsp;
-            </li>
-            <li>
-              <a>
-                Subscribed
-                <span className="count">(0)</span>
-              </a>
-            </li>
-          </ul>
-        );
-      }
-    });
-
     var ListingFilters = React.createClass({
       render: function() {
         return (
@@ -97,6 +77,22 @@ define(
           'page-title'
         );
 
+        var status;
+
+        switch(parseInt(this.props.item.status, 10)) {
+          case 1:
+            status = 'Subscribed';
+          break;
+
+          case 0:
+            status = 'Unconfirmed';
+          break;
+
+          case -1:
+            status = 'Unsubscribed';
+          break;
+        }
+
         return (
           <tr>
             <th className="check-column" scope="row">
@@ -118,6 +114,9 @@ define(
             </td>
             <td>
               { this.props.item.last_name }
+            </td>
+            <td>
+              { status }
             </td>
             <td className="date column-date">
               <abbr title="">{ this.props.item.created_at }</abbr>
@@ -170,6 +169,9 @@ define(
           sort_by: 'email',
           sort_order: 'asc',
           items: [],
+          groups: [],
+          group: 'all',
+          filters: [],
           selected: []
         };
       },
@@ -185,6 +187,7 @@ define(
           data: {
             offset: (this.state.page - 1) * this.state.limit,
             limit: this.state.limit,
+            group: this.state.group,
             search: this.state.search,
             sort_by: this.state.sort_by,
             sort_order: this.state.sort_order
@@ -193,6 +196,8 @@ define(
             if(this.isMounted()) {
               this.setState({
                 items: response.items,
+                filters: response.filters,
+                groups: response.groups,
                 count: response.count,
                 loading: false
               });
@@ -201,7 +206,9 @@ define(
         });
       },
       handleSearch: function(search) {
-        this.setState({ search: search }, function() {
+        this.setState({
+          search: search
+        }, function() {
           this.getItems();
         }.bind(this));
       },
@@ -224,6 +231,19 @@ define(
         this.setState({
           selected: selected
         });
+      },
+      handleGroup: function(group) {
+        // reset search
+        jQuery('#search_input').val('');
+
+        this.setState({
+          group: group,
+          filters: [],
+          selected: [],
+          search: ''
+        }, function() {
+          this.getItems();
+        }.bind(this));
       },
       handleSelectAll: function(is_checked) {
         if(is_checked === false) {
@@ -264,56 +284,59 @@ define(
 
         return (
           <div>
-            <ListingGroups count={this.state.count} />
+            <ListingGroups
+              groups={ this.state.groups }
+              selected={ this.state.group }
+              onSelect={ this.handleGroup } />
             <ListingSearch
-              onSearch={this.handleSearch}
-              search={this.state.search} />
+              onSearch={ this.handleSearch }
+              search={ this.state.search } />
             <div className="tablenav top clearfix">
               <ListingBulkActions
-                actions={this.props.actions}
-                selected={this.state.selected} />
-              <ListingFilters />
+                actions={ this.props.actions }
+                selected={ this.state.selected } />
+              <ListingFilters filters={ this.state.filters } />
               <ListingPages
-                count={this.state.count}
-                page={this.state.page}
-                limit={this.state.limit}
-                onSetPage={this.handleSetPage} />
+                count={ this.state.count }
+                page={ this.state.page }
+                limit={ this.state.limit }
+                onSetPage={ this.handleSetPage } />
             </div>
-            <table className={tableClasses}>
+            <table className={ tableClasses }>
               <thead>
                 <ListingHeader
-                  onSort={this.handleSort}
-                  onSelectAll={this.handleSelectAll}
-                  sort_by={this.state.sort_by}
-                  sort_order={this.state.sort_order}
-                  columns={this.props.columns} />
+                  onSort={ this.handleSort }
+                  onSelectAll={ this.handleSelectAll }
+                  sort_by={ this.state.sort_by }
+                  sort_order={ this.state.sort_order }
+                  columns={ this.props.columns } />
               </thead>
 
               <ListingItems
-                columns={this.props.columns}
-                selected={this.state.selected}
-                onSelect={this.handleSelect}
-                items={items} />
+                columns={ this.props.columns }
+                selected={ this.state.selected }
+                onSelect={ this.handleSelect }
+                items={ items } />
 
               <tfoot>
                 <ListingHeader
-                  onSort={this.handleSort}
-                  onSelectAll={this.handleSelectAll}
-                  sort_by={this.state.sort_by}
-                  sort_order={this.state.sort_order}
-                  columns={this.props.columns} />
+                  onSort={ this.handleSort }
+                  onSelectAll={ this.handleSelectAll }
+                  sort_by={ this.state.sort_by }
+                  sort_order={ this.state.sort_order }
+                  columns={ this.props.columns } />
               </tfoot>
 
             </table>
             <div className="tablenav bottom">
               <ListingBulkActions
-                actions={this.props.actions}
-                selected={this.state.selected} />
+                actions={ this.props.actions }
+                selected={ this.state.selected } />
               <ListingPages
-                count={this.state.count}
-                page={this.state.page}
-                limit={this.state.limit}
-                onSetPage={this.handleSetPage} />
+                count={ this.state.count }
+                page={ this.state.page }
+                limit={ this.state.limit }
+                onSetPage={ this.handleSetPage } />
             </div>
           </div>
         );
@@ -335,6 +358,11 @@ define(
       {
         name: 'last_name',
         label: 'Lastname',
+        sortable: true
+      },
+      {
+        name: 'status',
+        label: 'Status',
         sortable: true
       },
       {
