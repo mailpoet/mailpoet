@@ -49,10 +49,6 @@ baseConfig = {
         include: require.resolve('handlebars'),
         loader: 'expose-loader?Handlebars',
       },
-      {
-        include: require.resolve('handlebars'),
-        loader: 'expose-loader?Handlebars',
-      },
     ]
   }
 };
