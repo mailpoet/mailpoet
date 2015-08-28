@@ -25,7 +25,7 @@ define('search', ['react'], function(React) {
               defaultValue={this.props.search} />
             <input
               type="submit"
-              defaultValue="Search"
+              defaultValue={MailPoetI18n.searchLabel}
               className="button" />
           </p>
         </form>
