@@ -25,9 +25,6 @@ define(
               <span>
                 <Link className="add-new-h2" to="list">Subscribers</Link>
               </span>
-              <span>
-                <Link className="add-new-h2" to="new">New subscriber</Link>
-              </span>
             </h1>
 
             <RouteHandler/>
