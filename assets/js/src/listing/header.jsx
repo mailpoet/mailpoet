@@ -59,7 +59,6 @@ define('header', ['react', 'classnames'], function(React, classNames) {
         this.props.column.sorted,
         { 'sorted': (this.props.sort_by === this.props.column.name) }
       );
-
       var label;
 
       if(this.props.column.sortable === true) {

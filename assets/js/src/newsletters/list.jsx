@@ -3,78 +3,99 @@ define(
   [
     'react',
     'jquery',
-    'mailpoet'
+    'mailpoet',
+    'listing/listing.jsx',
+    'classnames'
   ],
   function(
     React,
     jQuery,
-    MailPoet
+    MailPoet,
+    Listing,
+    classNames
   ) {
 
-    var Newsletter = React.createClass({
-      send: function(e) {
-        e.preventDefault();
-        MailPoet.Ajax.post({
-          endpoint: 'newsletters',
-          action: 'send',
-          data: this.props.newsletter.id,
-          onSuccess: function(response) {
-            alert('Sent!');
-          },
-          onError: function(response) {
-            alert('Cannot send. Set the settings and add some subscribers!');
-          }
-        })
+    var columns = [
+      {
+        name: 'subject',
+        label: 'Subject',
+        sortable: true
       },
-
-      render: function() {
-        return (
-          <div className="newsletter">
-            <p className="subject">
-              {this.props.newsletter.subject} - <a href="" onClick={this.send}>
-                Send
-              </a>
-            </p>
-          </div>
-        );
+      {
+        name: 'created_at',
+        label: 'Created on',
+        sortable: true
+      },
+      {
+        name: 'updated_at',
+        label: 'Last modified on',
+        sortable: true
       }
-    });
+    ];
+
+    var actions = [
+    ];
 
     var List = React.createClass({
-      load: function() {
+      getItems: function(listing) {
         MailPoet.Ajax.post({
           endpoint: 'newsletters',
           action: 'get',
-          data: {},
+          data: {
+            offset: (listing.state.page - 1) * listing.state.limit,
+            limit: listing.state.limit,
+            group: listing.state.group,
+            search: listing.state.search,
+            sort_by: listing.state.sort_by,
+            sort_order: listing.state.sort_order
+          },
           onSuccess: function(response) {
-            this.setState({data: response});
-          }.bind(this)
+            if(listing.isMounted()) {
+              listing.setState({
+                items: response.items || [],
+                filters: response.filters || [],
+                groups: response.groups || [],
+                count: response.count || 0,
+                loading: false
+              });
+            }
+          }.bind(listing)
         });
       },
+      renderItem: function(newsletter) {
+        var rowClasses = classNames(
+          'manage-column',
+          'column-primary',
+          'has-row-actions'
+        );
 
-      getInitialState: function() {
-        return {data: []};
-      },
-
-      componentDidMount: function() {
-        this.load();
-        setInterval(this.load, 2000);
-      },
-
-      render: function() {
-        var nodes = this.state.data.map(function (newsletter) {
-          return (
-            <Newsletter key={newsletter.id} newsletter={newsletter} />
-          );
-        });
         return (
-          <div className="newslettersList">
-            <h1>Newsletters</h1>
-            {nodes}
+          <div>
+            <td className={ rowClasses }>
+              <strong>
+                <a>{ newsletter.subject }</a>
+              </strong>
+            </td>
+            <td className="column-date">
+              <abbr>{ newsletter.created_at }</abbr>
+            </td>
+            <td className="column-date">
+              <abbr>{ newsletter.updated_at }</abbr>
+            </td>
           </div>
+        );
+      },
+      render: function() {
+        return (
+          <Listing
+            onRenderItem={this.renderItem}
+            items={this.getItems}
+            columns={columns}
+            actions={actions} />
         );
       }
     });
 
     return List;
-  });
+  }
+);

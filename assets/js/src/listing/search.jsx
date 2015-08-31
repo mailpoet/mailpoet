@@ -22,6 +22,7 @@ define('search', ['react'], function(React) {
               type="search"
               id="search_input"
               ref="search"
+              name="s"
               defaultValue={this.props.search} />
             <input
               type="submit"

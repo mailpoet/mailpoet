@@ -22,16 +22,15 @@ define(
       render: function() {
         return (
           <div>
-            <header>
-              <ul>
-                <li>
-                  <Link to="list">Newsletters</Link>
-                </li>
-                <li>
-                  <Link to="form">New</Link>
-                </li>
-              </ul>
-            </header>
+            <h1>
+            { MailPoetI18n.pageTitle }
+              <span>
+                <Link className="add-new-h2" to="list">Newsletters</Link>
+              </span>
+              <span>
+                <Link className="add-new-h2" to="form">New newsletter</Link>
+              </span>
+            </h1>
 
             <RouteHandler/>
           </div>
@@ -49,8 +48,11 @@ define(
 
     var hook = document.getElementById('newsletters');
     if (hook) {
-      Router.run(routes, function(Handler) {
-        React.render(<Handler/>, hook);
+      Router.run(routes, function(Handler, state) {
+        React.render(
+          <Handler params={state.params} query={state.query} />,
+          hook
+        );
       });
     }
   });

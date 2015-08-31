@@ -4,13 +4,15 @@ define(
     'react',
     'jquery',
     'mailpoet',
-    'listing/listing.jsx'
+    'listing/listing.jsx',
+    'classnames'
   ],
   function(
     React,
     jQuery,
     MailPoet,
-    Listing
+    Listing,
+    classNames
   ) {
 
     var columns = [
@@ -85,9 +87,84 @@ define(
     ];
 
     var List = React.createClass({
+      getItems: function(listing) {
+        MailPoet.Ajax.post({
+          endpoint: 'subscribers',
+          action: 'get',
+          data: {
+            offset: (listing.state.page - 1) * listing.state.limit,
+            limit: listing.state.limit,
+            group: listing.state.group,
+            search: listing.state.search,
+            sort_by: listing.state.sort_by,
+            sort_order: listing.state.sort_order
+          },
+          onSuccess: function(response) {
+            if(listing.isMounted()) {
+              listing.setState({
+                items: response.items || [],
+                filters: response.filters || [],
+                groups: response.groups || [],
+                count: response.count || 0,
+                loading: false
+              });
+            }
+          }.bind(listing)
+        });
+      },
+      renderItem: function(subscriber) {
+        var rowClasses = classNames(
+          'manage-column',
+          'column-primary',
+          'has-row-actions'
+        );
+
+        var status;
+
+        switch(parseInt(subscriber.status, 10)) {
+          case 1:
+            status = 'Subscribed';
+          break;
+
+          case 0:
+            status = 'Unconfirmed';
+          break;
+
+          case -1:
+            status = 'Unsubscribed';
+          break;
+        }
+
+        return (
+          <div>
+            <td className={ rowClasses }>
+              <strong>
+                <a>{ subscriber.email }</a>
+              </strong>
+            </td>
+            <td className="column">
+              { subscriber.first_name }
+            </td>
+            <td className="column">
+              { subscriber.last_name }
+            </td>
+            <td className="column">
+              { status }
+            </td>
+            <td className="column-date">
+              <abbr>{ subscriber.created_at }</abbr>
+            </td>
+            <td className="column-date">
+              <abbr>{ subscriber.updated_at }</abbr>
+            </td>
+          </div>
+        );
+      },
       render: function() {
         return (
           <Listing
+            onRenderItem={this.renderItem}
+            items={this.getItems}
             columns={columns}
             actions={actions} />
         );

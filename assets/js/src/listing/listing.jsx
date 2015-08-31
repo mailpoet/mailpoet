@@ -30,7 +30,7 @@ define(
       }
     });
 
-    var ListingItem = React.createClass({
+     var ListingItem = React.createClass({
       handleSelect: function(e) {
         var is_checked = jQuery(e.target).is(':checked');
 
@@ -42,30 +42,6 @@ define(
         return !e.target.checked;
       },
       render: function() {
-        var rowClasses = classNames(
-          'title',
-          'column-title',
-          'has-row-actions',
-          'column-primary',
-          'page-title'
-        );
-
-        var status;
-
-        switch(parseInt(this.props.item.status, 10)) {
-          case 1:
-            status = 'Subscribed';
-          break;
-
-          case 0:
-            status = 'Unconfirmed';
-          break;
-
-          case -1:
-            status = 'Unsubscribed';
-          break;
-        }
-
         return (
           <tr>
             <th className="check-column" scope="row">
@@ -77,30 +53,12 @@ define(
                 defaultChecked={ this.props.item.selected }
                 onChange={ this.handleSelect } />
             </th>
-            <td className={rowClasses}>
-              <strong>
-                <a className="row-title">{ this.props.item.email }</a>
-              </strong>
-            </td>
-            <td>
-              { this.props.item.first_name }
-            </td>
-            <td>
-              { this.props.item.last_name }
-            </td>
-            <td>
-              { status }
-            </td>
-            <td className="date column-date">
-              <abbr title="">{ this.props.item.created_at }</abbr>
-            </td>
-            <td className="date column-date">
-              <abbr title="">{ this.props.item.updated_at }</abbr>
-            </td>
+            { this.props.onRenderItem(this.props.item) }
           </tr>
         );
       }
     });
+
 
     var ListingItems = React.createClass({
       render: function() {
@@ -125,10 +83,11 @@ define(
                 item.selected = (this.props.selected.indexOf(item.id) !== -1);
                 return (
                   <ListingItem
-                    columns={this.props.columns}
-                    onSelect={this.props.onSelect}
-                    key={item.id}
-                    item={item} />
+                    columns={ this.props.columns }
+                    onSelect={ this.props.onSelect }
+                    onRenderItem={ this.props.onRenderItem }
+                    key={ 'item-' + item.id }
+                    item={ item } />
                 );
               }.bind(this))}
             </tbody>
@@ -159,30 +118,7 @@ define(
       },
       getItems: function() {
         this.setState({ loading: true });
-
-        MailPoet.Ajax.post({
-          endpoint: 'subscribers',
-          action: 'get',
-          data: {
-            offset: (this.state.page - 1) * this.state.limit,
-            limit: this.state.limit,
-            group: this.state.group,
-            search: this.state.search,
-            sort_by: this.state.sort_by,
-            sort_order: this.state.sort_order
-          },
-          onSuccess: function(response) {
-            if(this.isMounted()) {
-              this.setState({
-                items: response.items,
-                filters: response.filters,
-                groups: response.groups,
-                count: response.count,
-                loading: false
-              });
-            }
-          }.bind(this)
-        });
+        this.props.items.bind(null, this)();
       },
       handleSearch: function(search) {
         this.setState({
@@ -243,6 +179,10 @@ define(
           this.getItems();
         }.bind(this));
       },
+      handleRenderItem: function(item) {
+        return this.props.onRenderItem(item);
+        // return this.props.onRenderItem(item);
+      },
       render: function() {
         var items = this.state.items,
             sort_by =  this.state.sort_by,
@@ -292,6 +232,7 @@ define(
               </thead>
 
               <ListingItems
+                onRenderItem={ this.handleRenderItem }
                 columns={ this.props.columns }
                 selected={ this.state.selected }
                 onSelect={ this.handleSelect }
