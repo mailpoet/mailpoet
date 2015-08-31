@@ -1,0 +1,131 @@
+$select-border-color = $content-border-color
+$select-text-color = $primary-text-color
+
+$sidebar-background-color = $primary-background-color
+$sidebar-active-heading-color = $primary-active-color
+$sidebar-inactive-heading-color = $primary-inactive-color
+$sidebar-text-color = $primary-text-color
+
+$widget-width = 70px
+$widget-background-color = $white-color
+$widget-shadow-color = darken($primary-background-color, 13%)
+$widget-icon-color = darken($primary-background-color, 31.5%)
+$widget-icon-hover-color = $primary-active-color
+$widget-icon-width = 30px
+
+#mailpoet_editor_sidebar
+  border-left: $content-border-color
+  border-bottom: $content-border-color
+  color: $sidebar-text-color
+
+  .mailpoet_sidebar_region
+    margin-bottom: 0
+    border-left: 1px solid $content-border-color
+    border-bottom: 1px solid $content-border-color
+    border-top: 0
+    border-right: 0
+
+    &.closed .mailpoet_region_content
+      max-height: 0px
+      overflow: hidden
+      margin-top: 0
+
+  .mailpoet_region_content
+    max-height: 2000px
+    transition: max-height 0.2s ease
+    padding: 0 20px
+    margin-top: 12px
+
+  &, .postbox
+    background-color: $sidebar-background-color
+
+  .postbox
+    padding-bottom: 20px
+
+    &.closed
+      padding-bottom: 0
+
+    &.closed h3
+      color: $sidebar-inactive-heading-color
+      cursor: pointer
+
+    h3
+    &:hover h3
+      margin: 0
+      padding: 17px 20px
+      text-transform: uppercase
+      color: $sidebar-active-heading-color
+
+    h3
+    .handlediv
+      cursor: auto
+      border: 0
+
+    .handlediv::before
+      top: 18px
+      right: 18px
+      font: 400 20px/1 dashicons
+      speak: none
+      display: inline-block
+      position: relative
+      -webkit-font-smoothing: antialiased
+      -moz-osx-font-smoothing: grayscale
+      text-decoration: none!important
+      content: '\f142'
+      color: $sidebar-active-heading-color
+
+    &.closed .handlediv::before
+      content: '\f140'
+      color: $sidebar-inactive-heading-color
+
+    &.closed:hover .handlediv::before
+      color: $sidebar-active-heading-color
+
+.mailpoet_widget
+  display: inline-block
+  width: $widget-width
+  text-align: center
+  float: left
+  padding: 0 13px 15px 13px
+
+  // Place 3 widgets per row
+  &:nth-child(3n+1)
+      clear: left
+
+  .mailpoet_widget_icon
+    width: $widget-width
+    height: $widget-width
+    background-color: $widget-background-color
+    border-radius(3px)
+    box-shadow(1px 2px $widget-shadow-color)
+    color: $widget-icon-color
+    fill: $widget-icon-color
+    text-align: center
+    line-height: $widget-width
+    box-sizing: border-box
+    margin-bottom: 9px
+
+    /* Vertically align widget icon glyphs */
+    & > *
+      vertical-align: middle
+      width: $widget-icon-width
+      height: $widget-icon-width
+      font-size: $widget-icon-width
+
+    &:hover
+      color: $widget-icon-hover-color
+      fill: $widget-icon-hover-color
+      border: 1px solid $widget-icon-hover-color
+
+  &.mailpoet_droppable_active
+    color: $widget-icon-hover-color
+    fill: $widget-icon-hover-color
+
+    .mailpoet_widget_icon
+      border: 1px solid $widget-icon-hover-color
+      color: $widget-icon-hover-color
+      fill: $widget-icon-hover-color
+      box-shadow(none)
+
+    .mailpoet_widget_title
+      display: none

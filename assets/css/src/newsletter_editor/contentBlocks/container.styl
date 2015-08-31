@@ -1,0 +1,76 @@
+.mailpoet_container
+  width: 100%
+  min-height: 15px
+  position: relative
+
+.mailpoet_container_block
+  margin-left: 0
+  margin-right: 0
+  position: relative
+  box-sizing: border-box
+  border: 0
+  padding-left: 0
+  padding-right: 0
+
+  &:hover
+    border: 0
+
+.mailpoet_container_vertical > *
+  width: 100%
+  box-sizing: border-box
+
+.mailpoet_container_horizontal > *
+  vertical-align: top
+
+/**
+ * Enforce column widths:
+ * 1 column: 20px + 560px + 20px
+ * 2 columns: 20px + 260px + 20px + 260px + 20px
+ * 3 columns: 20px + 160px + 20px + 20px + 160px + 20px + 20px + 160px + 20px
+ */
+
+#mailpoet_editor_content
+  .mailpoet_container
+    box-sizing: border-box
+    float: left
+
+  // One column
+  & > .mailpoet_container_block
+    width: $newsletter-width
+    border: 0
+
+  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block
+    margin-bottom: 0
+
+  .mailpoet_container_horizontal > .mailpoet_container_block
+    margin-bottom: 0
+    width: 20px + 560px + 20px
+
+  // More than one column
+  & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal
+
+    // Column number detection technique found here:
+    // http://stackoverflow.com/questions/8720931/can-css-detect-the-number-of-children-an-element-has
+
+    // Two columns
+    & > .mailpoet_block:first-child:nth-last-child(2)
+    & > .mailpoet_block:first-child:nth-last-child(2) ~ .mailpoet_block
+      //padding-left: 20px
+      //padding-right: 20px
+      width: 260px + 20px + 20px
+
+    // Three columns
+    & > .mailpoet_block:first-child:nth-last-child(3)
+    & > .mailpoet_block:first-child:nth-last-child(3) ~ .mailpoet_block
+      //padding-left: 20px
+      //padding-right: 20px
+      width: 160px + 20px + 20px
+
+.mailpoet_container_empty
+  text-align: center
+  background-color: #f2f2f2
+  margin: 20px
+  padding: 15px
+  box-shadow(inset 1px 2px 1px $primary-inactive-color)
+  color: #656565
+  border-radius(3px)

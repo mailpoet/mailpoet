@@ -1,0 +1,32 @@
+$block-hover-highlight-color = $primary-active-color
+
+.mailpoet_block
+  box-sizing: border-box
+  position: relative
+  float: left
+  background-color: inherit
+  box-sizing: border-box
+
+  margin-bottom: 20px
+
+  padding-left: 20px
+  padding-right: 20px
+
+  & > .mailpoet_block_highlight
+    position: absolute
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    pointer-events: none
+    border: 1px solid $transparent-color
+
+  &:hover > .mailpoet_block_highlight
+    border: 1px dashed $block-hover-highlight-color
+
+
+.mailpoet_block:last-child
+  margin-bottom: 0
+
+.mailpoet_content
+  position: relative

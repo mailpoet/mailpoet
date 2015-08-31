@@ -1,0 +1,32 @@
+<div class="handlediv" title="Click to toggle"><br></div>
+<h3><%= __('Preview') %></h3>
+<div class="mailpoet_region_content">
+    <div class="mailpoet_form_field">
+        <label>
+            <%= __('From name') %><br />
+            <input id="mailpoet_preview_from_name" class="mailpoet_input mailpoet_input_full" type="text" name="from_name" value="{{ from_name }}" />
+        </label>
+    </div>
+
+    <div class="mailpoet_form_field">
+        <label>
+            <%= __('From email') %><br />
+            <input id="mailpoet_preview_from_email" class="mailpoet_input mailpoet_input_full" type="text" name="from_email" value="{{ from_email }}" />
+        </label>
+    </div>
+
+    <div class="mailpoet_form_field">
+        <label>
+            <%= __('Send preview to') %><br />
+            <input id="mailpoet_preview_to_email" class="mailpoet_input mailpoet_input_full" type="text" name="to_email" value="{{ from_email }}" />
+        </label>
+    </div>
+
+    <div class="mailpoet_form_field">
+        <input type="button" id="mailpoet_send_preview" class="mailpoet_button mailpoet_button_full mailpoet_button_primary" value="<%= __('Send preview') %>" />
+    </div>
+
+    <hr class="mailpoet_separator" />
+
+    <input type="button" name="preview" class="mailpoet_button mailpoet_button_full mailpoet_button_primary mailpoet_show_preview" value="<%= __('View in browser') %>" />
+</div>

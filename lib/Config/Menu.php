@@ -50,6 +50,14 @@ class Menu {
       'mailpoet-settings',
       array($this, 'settings')
     );
+    add_submenu_page(
+      'mailpoet',
+      'Newsletter editor',
+      'Newsletter editor',
+      'manage_options',
+      'mailpoet-newsletter-editor',
+      array($this, 'newsletterEditor')
+    );
   }
 
   function home() {
@@ -70,5 +78,13 @@ class Menu {
   function newsletters() {
     $data = array();
     echo $this->renderer->render('newsletters.html', $data);
+  }
+
+  function newsletterEditor() {
+    $data = array();
+    wp_enqueue_media();
+    wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
+    wp_enqueue_style('editor', includes_url('css/editor.css'));
+    echo $this->renderer->render('newsletter/editor.html', $data);
   }
 }

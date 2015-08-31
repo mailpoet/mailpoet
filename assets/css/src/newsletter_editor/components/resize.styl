@@ -1,0 +1,50 @@
+$resize-active-color = $primary-active-color
+$resize-handle-background-color = $primary-active-color
+$resize-handle-font-color = $white-color
+
+$resize-handle-width = 30px
+$resize-handle-z-index = 2
+
+.mailpoet_resize_handle_container
+  position: absolute
+  bottom: 0
+  text-align: center
+  width: 100%
+
+.mailpoet_resize_handle
+  padding: 6px 15px 10px 6px
+  position: relative
+  top: 5px
+  background: $resize-handle-background-color
+  border-radius(3px)
+  display: inline-block
+  width: $resize-handle-width
+  cursor: ns-resize
+  z-index: $resize-handle-z-index
+
+  .mailpoet_resize_handle_text,
+  .mailpoet_resize_handle_icon
+    pointer-events: none
+
+.mailpoet_resize_handle_text
+  line-height: 1.5em
+  font-size: 11px
+  font-weight: bold
+  color: $resize-handle-font-color
+  text-align: center
+
+.mailpoet_resize_handle_icon
+  position: absolute
+  top: 9px
+  right: 1px
+
+  & > svg
+    width: 15px
+    height: 15px
+    fill: $resize-handle-font-color
+
+.mailpoet_block.mailpoet_resize_active > .mailpoet_block_highlight
+  border: 1px dashed $resize-active-color
+
+  .mailpoet_resize_handle
+    display: inline-block

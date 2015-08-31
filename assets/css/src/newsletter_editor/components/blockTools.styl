@@ -1,0 +1,123 @@
+$tool-inactive-color = #bbbbbb
+$tool-inactive-secondary-color = #ffffff
+$tool-hover-color = #333333
+$tool-hover-secondary-color = #ffffff
+$tool-active-color = #d2d2d4
+$tool-active-secondary-color = #ffffff
+
+$tool-width = 20px
+$master-column-tool-width = 24px
+$layer-selector-width = 30px
+
+.mailpoet_tools
+  position: absolute
+  top: 0
+  right: 0
+  display: none
+  z-index: 20
+  padding: 2px
+  text-align: right
+
+  a
+    vertical-align: top
+
+  .mailpoet_container_horizontal + &
+    left: 100%
+    padding-left: 5px
+
+    .mailpoet_tool
+      width: $master-column-tool-width
+      height: $master-column-tool-width
+
+      .mailpoet_tool_icon
+        width: $master-column-tool-width
+        height: $master-column-tool-width
+
+    .mailpoet_delete_block_activated
+      width: auto
+      height: auto
+
+.mailpoet_tool
+  display: inline-block
+  width: $tool-width
+  height: $tool-width
+  padding: 2px
+
+  &:hover
+    filter-shadow(1px, 2px, 0px, $tool-active-color)
+
+  .mailpoet_tool_icon
+    fill: $tool-inactive-color
+    width: $tool-width
+    height: $tool-width
+
+    .mailpoet_tool_icon_foreground
+      fill: $tool-inactive-secondary-color
+
+    &:hover
+      fill: $tool-hover-color
+
+      .mailpoet_tool_icon_foreground
+        fill: $tool-hover-secondary-color
+
+    &:active
+      fill: $primary-active-color
+
+      .mailpoet_tool_icon_foreground
+        fill: $tool-active-secondary-color
+
+  .mailpoet_delete_block_confirmation
+    position: absolute
+    top: 0
+    right: 0
+    width: 200px
+
+.mailpoet_delete_block
+  display: inline-block
+  padding: 2px
+  vertical-align: top
+
+  .mailpoet_tool
+    padding: 0
+
+  .mailpoet_delete_block_confirm,
+  .mailpoet_delete_block_cancel
+    display: none
+
+.mailpoet_delete_block_activated
+  width: auto
+  border-radius(3px)
+  background-color: $warning-background-color
+  padding: 3px 5px
+  line-height: 1.2em
+  height: auto
+
+  .mailpoet_delete_block_activate
+    display: none
+
+  .mailpoet_delete_block_confirm,
+  .mailpoet_delete_block_cancel
+    display: inline-block
+
+.mailpoet_delete_block_confirm
+  color: $warning-text-color
+
+  &:hover
+    color: $warning-text-color
+    text-decoration: underline
+
+.mailpoet_delete_block_cancel
+  color: $warning-alternate-text-color
+
+  &:hover
+    color: $warning-alternate-text-color
+    text-decoration: underline
+
+.mailpoet_newsletter_layer_selector
+  &.mailpoet_container_layer_active
+    .mailpoet_tool_icon
+      fill: $primary-active-color
+      z-index: 100001 !important
+
+      .mailpoet_tool_icon_foreground
+        fill: $white-color

@@ -1,0 +1,19 @@
+<div class="mailpoet_save_wrapper">
+    <div class="mailpoet_button_group">
+        <input type="button" name="save" value="<%= __('Save') %>" class="mailpoet_button mailpoet_button_primary mailpoet_save_button" /><button class="mailpoet_button mailpoet_button_primary mailpoet_save_show_options" ><span class="dashicons mailpoet_save_show_options_icon"></span></button>
+    </div>
+    <input type="button" name="next" value="<%= __('Next') %>" class="mailpoet_button mailpoet_button_primary mailpoet_save_next" />
+    <span class="mailpoet_save_error"></span>
+    <div class="mailpoet_editor_last_saved mailpoet_hidden"><%= __('Autosaved at:') %> <span class="mailpoet_autosaved_at"></span></div>
+    <br />
+    <ul class="mailpoet_save_options mailpoet_hidden">
+        <li class="mailpoet_save_option"><a href="javascript:;" class="mailpoet_save_template"><%= __('Save as template') %></a></li>
+        <li class="mailpoet_save_option"><a href="javascript:;" class="mailpoet_save_export"><%= __('Export as template') %></a></li>
+    </ul>
+    <div class="mailpoet_save_as_template_container mailpoet_hidden">
+        <p><b class="mailpoet_save_as_template_title"><%= __('Save as template') %></b></p>
+        <p><input type="text" name="template_name" value="" placeholder="<%= __('Insert template name') %>" class="mailpoet_input mailpoet_save_as_template_name" /></p>
+        <p><input type="text" name="template_description" value="" placeholder="<%= __('Insert template description') %>" class="mailpoet_input mailpoet_save_as_template_description" /></p>
+        <p><input type="button" name="save_as_template" value="<%= __('Save as template') %>" class="mailpoet_button mailpoet_button_full mailpoet_button_primary mailpoet_save_as_template" /></p>
+    </div>
+</div>

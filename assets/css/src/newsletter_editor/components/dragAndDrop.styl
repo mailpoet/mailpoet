@@ -1,0 +1,63 @@
+$drop-active-color = $primary-active-color
+
+$marker-width = 2px
+$marker-z-index = 1
+
+$draggable-widget-z-index = 2
+
+.mailpoet_drop_marker
+  background-color: $primary-active-color
+  position: absolute
+  min-width: $marker-width
+  min-height: $marker-width
+  z-index: $marker-z-index
+
+  box-shadow(0px 0px 1px 0px $primary-active-color)
+
+  &::before, &::after
+    position: absolute
+    margin-top: -18px
+    font: 400 40px/1 dashicons
+    color: $primary-active-color
+  &::before
+    left: -25px
+    content: "\f139"
+  &::after
+    right: -23px
+    content: "\f141";
+
+// Offset middle markers slightly above, so that the middle of the marker is
+// right on the boundary between two adjacent content blocks
+.mailpoet_drop_marker.mailpoet_drop_marker_middle
+.mailpoet_drop_marker.mailpoet_drop_marker_first.mailpoet_drop_marker_after
+.mailpoet_drop_marker.mailpoet_drop_marker_last.mailpoet_drop_marker_before
+  margin-top: -1 * ($marker-width / 2)
+
+// Offset the last marker up, so that the bottom of it matches the bottom of the
+// container
+.mailpoet_drop_marker.mailpoet_drop_marker_last.mailpoet_drop_marker_after
+  margin-top: -1 * $marker-width
+
+#mailpoet_editor .mailpoet_droppable_active
+  z-index: 21000
+
+.mailpoet_block.mailpoet_droppable_active
+  border: 1px dashed $drop-active-color !important
+  width: $newsletter-width
+
+  .mailpoet_tools
+    display: none !important
+
+.mailpoet_widget.mailpoet_droppable_active
+  padding: 0
+  margin: 0
+  z-index: $draggable-widget-z-index
+
+  .mailpoet_widget_icon
+    padding: 0
+    margin: 0
+
+.mailpoet_drop_active > .mailpoet_container > div > .mailpoet_container_empty
+  background-color: $primary-active-color
+  box-shadow(inset 1px 2px 1px $primary-inset-shadow-color)
+  color: $white-color
