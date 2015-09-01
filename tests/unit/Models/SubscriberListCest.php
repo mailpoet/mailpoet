@@ -1,17 +1,17 @@
 <?php
 
-use MailPoet\Models\RelationSubscriberList;
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberList;
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\SList;
 
-class SubscriberListCest {
+class SListCest {
   function _before() {
     $this->before_time = time();
     $this->data = array(
       'name' => 'some name',
     );
 
-    $this->list = SubscriberList::create();
+    $this->list = SList::create();
     $this->list->hydrate($this->data);
     $this->saved = $this->list->save();
   }
@@ -22,28 +22,28 @@ class SubscriberListCest {
 
   function itHasToBeValid() {
     expect($this->saved)->equals(true);
-    $empty_model = SubscriberList::create();
+    $empty_model = SList::create();
     expect($empty_model->save())->equals(false);
     $validations = $empty_model->getValidationErrors();
     expect(count($validations))->equals(2);
   }
 
   function itHasACreatedAtOnCreation() {
-    $list = SubscriberList::where('name', $this->data['name'])
+    $list = SList::where('name', $this->data['name'])
       ->findOne();
     $time_difference = strtotime($list->created_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itHasAnUpdatedAtOnCreation() {
-    $list = SubscriberList::where('name', $this->data['name'])
+    $list = SList::where('name', $this->data['name'])
       ->findOne();
     $time_difference = strtotime($list->updated_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itKeepsTheCreatedAtOnUpdate() {
-    $list = SubscriberList::where('name', $this->data['name'])
+    $list = SList::where('name', $this->data['name'])
       ->findOne();
     $old_created_at = $list->created_at;
     $list->name = 'new name';
@@ -52,7 +52,7 @@ class SubscriberListCest {
   }
 
   function itUpdatesTheUpdatedAtOnUpdate() {
-    $list = SubscriberList::where('name', $this->data['name'])
+    $list = SList::where('name', $this->data['name'])
       ->findOne();
     $update_time = time();
     $list->name = 'new name';
@@ -65,15 +65,15 @@ class SubscriberListCest {
     $data = array(
       'name' => 'some other new name'
     );
-    $createNewRecord = SubscriberList::createOrUpdate($data);
+    $createNewRecord = SList::createOrUpdate($data);
 
     $data = array(
       'name' => $this->data['name'],
       'name_updated' => 'updated name',
     );
-    $updateExistingRecord = SubscriberList::createOrUpdate($data);
+    $updateExistingRecord = SList::createOrUpdate($data);
 
-    $allRecords = SubscriberList::find_array();
+    $allRecords = SList::find_array();
     expect(count($allRecords))->equals(2);
     expect($allRecords[0]['name'])->equals($data['name_updated']);
   }
@@ -95,24 +95,24 @@ class SubscriberListCest {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriberData);
       $subscriber->save();
-      $association = RelationSubscriberList::create();
+      $association = SubscriberList::create();
       $association->subscriber_id = $subscriber->id;
       $association->list_id = $this->list->id;
       $association->save();
     }
 
-    $list = SubscriberList::find_one($this->list->id);
+    $list = SList::find_one($this->list->id);
     $subscribers = $list->subscribers()
       ->find_array();
     expect(count($subscribers))->equals(2);
   }
 
   function _after() {
-    ORM::for_table(SubscriberList::$_table)
+    ORM::for_table(SList::$_table)
       ->delete_many();
     ORM::for_table(Subscriber::$_table)
       ->delete_many();
-    ORM::for_table(RelationSubscriberList::$_table)
+    ORM::for_table(SubscriberList::$_table)
       ->delete_many();
   }
 

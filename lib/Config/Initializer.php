@@ -40,7 +40,7 @@ class Initializer {
     define('MP_SETTINGS_TABLE', $settings);
     define('MP_NEWSLETTERS_TABLE', $newsletters);
     define('MP_LISTS_TABLE', $lists);
-    define('MP_PIVOT_SUBSCRIBER_LIST_TABLE', $subscriber_list);
+    define('MP_SUBSCRIBER_LIST_TABLE', $subscriber_list);
   }
 
   function setupActivator() {
