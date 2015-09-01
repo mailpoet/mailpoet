@@ -59,15 +59,17 @@ define(
         if(this.props.items.length === 0) {
           return (
             <tbody>
-              <td
-                colSpan={this.props.columns.length + 1}
-                className="colspanchange">
-                {
-                  (this.props.loading === true)
-                  ? MailPoetI18n.loading
-                  : MailPoetI18n.noRecordFound
-                }
-              </td>
+              <tr className="no-items">
+                <td
+                  colSpan={ this.props.columns.length + 1 }
+                  className="colspanchange">
+                  {
+                    (this.props.loading === true)
+                    ? MailPoetI18n.loading
+                    : MailPoetI18n.noRecordFound
+                  }
+                </td>
+              </tr>
             </tbody>
           );
         } else {
