@@ -16,6 +16,6 @@ class Subscriber extends Model {
   }
 
   public function lists() {
-    return self::has_many_through(__NAMESPACE__ . '\SubscriberList', __NAMESPACE__ . '\PivotSubscriberList', 'subscriber_id', 'list_id');
+    return self::has_many_through(__NAMESPACE__ . '\SubscriberList', __NAMESPACE__ . '\RelationSubscriberList', 'subscriber_id', 'list_id');
   }
 }

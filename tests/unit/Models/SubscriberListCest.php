@@ -1,6 +1,6 @@
 <?php
 
-use MailPoet\Models\PivotSubscriberList;
+use MailPoet\Models\RelationSubscriberList;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberList;
 
@@ -95,7 +95,7 @@ class SubscriberListCest {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriberData);
       $subscriber->save();
-      $association = PivotSubscriberList::create();
+      $association = RelationSubscriberList::create();
       $association->subscriber_id = $subscriber->id;
       $association->list_id = $this->list->id;
       $association->save();
@@ -112,7 +112,7 @@ class SubscriberListCest {
       ->delete_many();
     ORM::for_table(Subscriber::$_table)
       ->delete_many();
-    ORM::for_table(PivotSubscriberList::$_table)
+    ORM::for_table(RelationSubscriberList::$_table)
       ->delete_many();
   }
 

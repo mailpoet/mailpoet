@@ -11,7 +11,7 @@ $models = array(
   "Setting",
   "Newsletter",
   "SubscriberList",
-  "PivotSubscriberList"
+  "RelationSubscriberList"
 );
 $destroy = function ($model) {
   Model::factory("\MailPoet\Models\\" . $model)
