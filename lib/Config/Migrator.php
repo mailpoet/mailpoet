@@ -12,7 +12,9 @@ class Migrator {
     $this->models = array(
       'subscribers',
       'settings',
-      'newsletters'
+      'newsletters',
+      'lists',
+      'pivot_subscriber_list'
     );
   }
 
@@ -70,6 +72,30 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'subject varchar(250) NOT NULL,',
       'body longtext,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function lists() {
+    $attributes = array(
+        'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+        'name varchar(90) NOT NULL,',
+        'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+        'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+        'PRIMARY KEY  (id),',
+        'UNIQUE KEY name (name)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function pivot_subscriber_list() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'list_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)'

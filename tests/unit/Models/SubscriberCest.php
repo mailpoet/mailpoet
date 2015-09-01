@@ -1,5 +1,7 @@
 <?php
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberList;
+use MailPoet\Models\PivotSubscriberList;
 
 class SubscriberCest {
 
@@ -7,8 +9,8 @@ class SubscriberCest {
     $this->before_time = time();
     $this->data = array(
       'first_name' => 'John',
-      'last_name'  => 'Mailer',
-      'email'      => 'john@mailpoet.com'
+      'last_name' => 'Mailer',
+      'email' => 'john@mailpoet.com'
     );
 
     $this->subscriber = Subscriber::create();
@@ -23,7 +25,7 @@ class SubscriberCest {
   function itHasAFirstName() {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
-      ->findOne();
+        ->findOne();
     expect($subscriber->first_name)
       ->equals($this->data['first_name']);
   }
@@ -31,7 +33,7 @@ class SubscriberCest {
   function itHasALastName() {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
-      ->findOne();
+        ->findOne();
     expect($subscriber->last_name)
       ->equals($this->data['last_name']);
   }
@@ -39,7 +41,7 @@ class SubscriberCest {
   function itHasAnEmail() {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
-      ->findOne();
+        ->findOne();
     expect($subscriber->email)
       ->equals($this->data['email']);
   }
@@ -51,8 +53,31 @@ class SubscriberCest {
     expect($saved)->equals(false);
   }
 
+  function itCanHaveAList() {
+    $listData = array(
+      'name' => 'some name'
+    );
+
+    $list = SubscriberList::create();
+    $list->hydrate($listData);
+    $list->save();
+    $association = PivotSubscriberList::create();
+    $association->subscriber_id = $this->subscriber->id;
+    $association->list_id = $list->id;
+    $association->save();
+
+    $subscriber = Subscriber::find_one($this->subscriber->id);
+    $subscriberList = $subscriber->lists()
+      ->find_one();
+    expect($subscriberList->id)->equals($list->id);
+  }
+
   function _after() {
     ORM::for_table(Subscriber::$_table)
+      ->delete_many();
+    ORM::for_table(SubscriberList::$_table)
+      ->delete_many();
+    ORM::for_table(PivotSubscriberList::$_table)
       ->delete_many();
   }
 }

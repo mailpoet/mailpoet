@@ -33,10 +33,14 @@ class Initializer {
     $subscribers = Env::$db_prefix . 'subscribers';
     $settings = Env::$db_prefix . 'settings';
     $newsletters = Env::$db_prefix . 'newsletters';
+    $lists = Env::$db_prefix . 'lists';
+    $subscriber_list = Env::$db_prefix . 'subscriber_list';
 
     define('MP_SUBSCRIBERS_TABLE', $subscribers);
     define('MP_SETTINGS_TABLE', $settings);
     define('MP_NEWSLETTERS_TABLE', $newsletters);
+    define('MP_LISTS_TABLE', $lists);
+    define('MP_PIVOT_SUBSCRIBER_LIST_TABLE', $subscriber_list);
   }
 
   function setupActivator() {

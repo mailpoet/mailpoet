@@ -9,10 +9,12 @@ $console->writeln('Cleaning up database...');
 $models = array(
   "Subscriber",
   "Setting",
-  "Newsletter"
+  "Newsletter",
+  "SubscriberList",
+  "PivotSubscriberList"
 );
 $destroy = function ($model) {
   Model::factory("\MailPoet\Models\\" . $model)
-       ->delete_many();
+    ->delete_many();
 };
 array_map($destroy, $models);
