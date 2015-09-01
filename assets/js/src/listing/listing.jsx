@@ -9,7 +9,8 @@ define(
     'listing/header.jsx',
     'listing/pages.jsx',
     'listing/search.jsx',
-    'listing/groups.jsx'
+    'listing/groups.jsx',
+    'listing/filters.jsx'
   ],
   function(
     MailPoet,
@@ -20,16 +21,9 @@ define(
     ListingHeader,
     ListingPages,
     ListingSearch,
-    ListingGroups
+    ListingGroups,
+    ListingFilters
   ) {
-    var ListingFilters = React.createClass({
-      render: function() {
-        return (
-          <div></div>
-        );
-      }
-    });
-
      var ListingItem = React.createClass({
       handleSelect: function(e) {
         var is_checked = jQuery(e.target).is(':checked');
@@ -181,7 +175,6 @@ define(
       },
       handleRenderItem: function(item) {
         return this.props.onRenderItem(item);
-        // return this.props.onRenderItem(item);
       },
       render: function() {
         var items = this.state.items,

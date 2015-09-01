@@ -1,4 +1,4 @@
-define('pages', ['react', 'classnames'], function(React, classNames) {
+define('groups', ['react', 'classnames'], function(React, classNames) {
   var ListingGroups = React.createClass({
     handleSelect: function(group) {
       return this.props.onSelect(group);
