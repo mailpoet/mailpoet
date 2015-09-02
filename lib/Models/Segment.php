@@ -3,7 +3,7 @@ namespace MailPoet\Models;
 
 if(!defined('ABSPATH')) exit;
 
-class SList extends Model {
+class Segment extends Model {
   public static $_table = MP_LISTS_TABLE;
 
   function __construct() {
@@ -30,6 +30,6 @@ class SList extends Model {
   }
 
   public function subscribers() {
-    return self::has_many_through(__NAMESPACE__ . '\Subscriber', __NAMESPACE__ . '\SubscriberList', 'list_id', 'subscriber_id');
+    return self::has_many_through(__NAMESPACE__ . '\Subscriber', __NAMESPACE__ . '\SubscriberSegment', 'list_id', 'subscriber_id');
   }
 }

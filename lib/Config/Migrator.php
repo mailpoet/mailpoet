@@ -14,7 +14,7 @@ class Migrator {
       'settings',
       'newsletters',
       'lists',
-      'subscriber_list'
+      'subscriber_segment'
     );
   }
 
@@ -91,7 +91,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function subscriber_list() {
+  function subscriber_segment() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'subscriber_id mediumint(9) NOT NULL,',

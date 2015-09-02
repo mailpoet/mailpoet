@@ -1,7 +1,7 @@
 <?php
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SList;
-use MailPoet\Models\SubscriberList;
+use MailPoet\Models\Segment;
+use MailPoet\Models\SubscriberSegment;
 
 class SubscriberCest {
 
@@ -58,10 +58,10 @@ class SubscriberCest {
       'name' => 'some name'
     );
 
-    $list = SList::create();
+    $list = Segment::create();
     $list->hydrate($listData);
     $list->save();
-    $association = SubscriberList::create();
+    $association = SubscriberSegment::create();
     $association->subscriber_id = $this->subscriber->id;
     $association->list_id = $list->id;
     $association->save();
@@ -75,9 +75,9 @@ class SubscriberCest {
   function _after() {
     ORM::for_table(Subscriber::$_table)
       ->delete_many();
-    ORM::for_table(SList::$_table)
+    ORM::for_table(Segment::$_table)
       ->delete_many();
-    ORM::for_table(SubscriberList::$_table)
+    ORM::for_table(SubscriberSegment::$_table)
       ->delete_many();
   }
 }

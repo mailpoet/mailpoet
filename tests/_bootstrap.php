@@ -10,8 +10,8 @@ $models = array(
   'Subscriber',
   'Setting',
   'Newsletter',
-  'SList',
-  'SubscriberList'
+  'Segment',
+  'SubscriberSegment'
 );
 $destroy = function ($model) {
   Model::factory('\MailPoet\Models\\' . $model)

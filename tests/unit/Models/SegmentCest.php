@@ -1,8 +1,8 @@
 <?php
 
-use MailPoet\Models\SubscriberList;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SList;
+use MailPoet\Models\Segment;
 
 class SListCest {
   function _before() {
@@ -11,7 +11,7 @@ class SListCest {
       'name' => 'some name',
     );
 
-    $this->list = SList::create();
+    $this->list = Segment::create();
     $this->list->hydrate($this->data);
     $this->saved = $this->list->save();
   }
@@ -22,28 +22,28 @@ class SListCest {
 
   function itHasToBeValid() {
     expect($this->saved)->equals(true);
-    $empty_model = SList::create();
+    $empty_model = Segment::create();
     expect($empty_model->save())->equals(false);
     $validations = $empty_model->getValidationErrors();
     expect(count($validations))->equals(2);
   }
 
   function itHasACreatedAtOnCreation() {
-    $list = SList::where('name', $this->data['name'])
+    $list = Segment::where('name', $this->data['name'])
       ->findOne();
     $time_difference = strtotime($list->created_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itHasAnUpdatedAtOnCreation() {
-    $list = SList::where('name', $this->data['name'])
+    $list = Segment::where('name', $this->data['name'])
       ->findOne();
     $time_difference = strtotime($list->updated_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itKeepsTheCreatedAtOnUpdate() {
-    $list = SList::where('name', $this->data['name'])
+    $list = Segment::where('name', $this->data['name'])
       ->findOne();
     $old_created_at = $list->created_at;
     $list->name = 'new name';
@@ -52,7 +52,7 @@ class SListCest {
   }
 
   function itUpdatesTheUpdatedAtOnUpdate() {
-    $list = SList::where('name', $this->data['name'])
+    $list = Segment::where('name', $this->data['name'])
       ->findOne();
     $update_time = time();
     $list->name = 'new name';
@@ -65,15 +65,15 @@ class SListCest {
     $data = array(
       'name' => 'some other new name'
     );
-    $createNewRecord = SList::createOrUpdate($data);
+    $createNewRecord = Segment::createOrUpdate($data);
 
     $data = array(
       'name' => $this->data['name'],
       'name_updated' => 'updated name',
     );
-    $updateExistingRecord = SList::createOrUpdate($data);
+    $updateExistingRecord = Segment::createOrUpdate($data);
 
-    $allRecords = SList::find_array();
+    $allRecords = Segment::find_array();
     expect(count($allRecords))->equals(2);
     expect($allRecords[0]['name'])->equals($data['name_updated']);
   }
@@ -95,24 +95,24 @@ class SListCest {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriberData);
       $subscriber->save();
-      $association = SubscriberList::create();
+      $association = SubscriberSegment::create();
       $association->subscriber_id = $subscriber->id;
       $association->list_id = $this->list->id;
       $association->save();
     }
 
-    $list = SList::find_one($this->list->id);
+    $list = Segment::find_one($this->list->id);
     $subscribers = $list->subscribers()
       ->find_array();
     expect(count($subscribers))->equals(2);
   }
 
   function _after() {
-    ORM::for_table(SList::$_table)
+    ORM::for_table(Segment::$_table)
       ->delete_many();
     ORM::for_table(Subscriber::$_table)
       ->delete_many();
-    ORM::for_table(SubscriberList::$_table)
+    ORM::for_table(SubscriberSegment::$_table)
       ->delete_many();
   }
 

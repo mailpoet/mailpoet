@@ -16,6 +16,6 @@ class Subscriber extends Model {
   }
 
   public function lists() {
-    return self::has_many_through(__NAMESPACE__ . '\SList', __NAMESPACE__ . '\SubscriberList', 'subscriber_id', 'list_id');
+    return self::has_many_through(__NAMESPACE__ . '\Segment', __NAMESPACE__ . '\SubscriberSegment', 'subscriber_id', 'list_id');
   }
 }
