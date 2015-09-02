@@ -7,8 +7,8 @@ class SubscriberCest {
     $this->before_time = time();
     $this->data = array(
       'first_name' => 'John',
-      'last_name'  => 'Mailer',
-      'email'      => 'john@mailpoet.com'
+      'last_name' => 'Mailer',
+      'email' => 'john@mailpoet.com'
     );
 
     $this->subscriber = Subscriber::create();
@@ -42,6 +42,14 @@ class SubscriberCest {
       ->findOne();
     expect($subscriber->email)
       ->equals($this->data['email']);
+  }
+
+  function itHasAStatus() {
+    $subscriber =
+      Subscriber::where('email', $this->data['email'])
+      ->findOne();
+
+    expect($subscriber->status)->equals('unconfirmed');
   }
 
   function emailMustBeUnique() {
