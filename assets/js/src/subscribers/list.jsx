@@ -119,7 +119,7 @@ define(
           'has-row-actions'
         );
 
-        var status;
+        var status = '';
 
         switch(parseInt(subscriber.status, 10)) {
           case 1:

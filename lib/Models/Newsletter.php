@@ -18,4 +18,21 @@ class Newsletter extends Model {
       'isString' => 'body_is_not_string'
     ));
   }
+
+  static function search($orm, $search = '') {
+    return $orm->where_like('subject', '%'.$search.'%');
+  }
+
+  static function groups() {
+    return array(
+      array(
+        'name' => 'all',
+        'label' => __('All'),
+        'count' => Newsletter::count()
+      )
+    );
+  }
+
+  static function group($orm, $group = null) {
+  }
 }
