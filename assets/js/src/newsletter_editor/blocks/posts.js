@@ -14,8 +14,9 @@ define('newsletter_editor/blocks/posts', [
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',
+    'backbone.radio',
     'mailpoet',
-  ], function(EditorApplication, Backbone, Marionette, MailPoet) {
+  ], function(EditorApplication, Backbone, Marionette, Radio, MailPoet) {
 
   EditorApplication.module("blocks.posts", function(Module, App, Backbone, Marionette, $, _) {
     "use strict";
@@ -68,7 +69,7 @@ define('newsletter_editor/blocks/posts', [
       initialize: function() {
         var that = this;
         // Attach Radio.Requests API primarily for highlighting
-        _.extend(this, Backbone.Radio.Requests);
+        _.extend(this, Radio.Requests);
 
         this.fetchAvailablePosts();
         this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', this._scheduleFetchAvailablePosts, this);
