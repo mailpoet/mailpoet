@@ -13,13 +13,13 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         onError: function(xhr, textStatus, errorThrown) {}
       },
       get: function(options) {
-        this.request('get', options);
+        return this.request('get', options);
       },
       post: function(options) {
-        this.request('post', options);
+        return this.request('post', options);
       },
       delete: function(options) {
-        this.request('delete', options);
+        return this.request('delete', options);
       },
       init: function(options) {
         // merge options
@@ -46,18 +46,18 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           endpoint: this.options.endpoint,
           method: this.options.action,
           data: this.options.data || {}
-        };
+        }, jqXHR;
 
         // make ajax request depending on method
         if(method === 'get') {
-          jQuery.get(
+          jqXHR = jQuery.get(
             this.options.url,
             params,
             this.options.onSuccess,
             'json'
           );
         } else {
-          jQuery.ajax({
+          jqXHR = jQuery.ajax({
             url: this.options.url,
             type : 'post',
             data: params,
@@ -69,6 +69,8 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
 
         // clear options
         this.options = {};
+
+        return jqXHR;
       }
   };
 });
