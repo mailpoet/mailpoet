@@ -4,7 +4,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
 
-class SListCest {
+class SegmentCest {
   function _before() {
     $this->before_time = time();
     $this->data = array(
