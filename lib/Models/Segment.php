@@ -4,7 +4,7 @@ namespace MailPoet\Models;
 if(!defined('ABSPATH')) exit;
 
 class Segment extends Model {
-  public static $_table = MP_LISTS_TABLE;
+  public static $_table = MP_SEGMENTS_TABLE;
 
   function __construct() {
     parent::__construct();
@@ -30,6 +30,6 @@ class Segment extends Model {
   }
 
   public function subscribers() {
-    return self::has_many_through(__NAMESPACE__ . '\Subscriber', __NAMESPACE__ . '\SubscriberSegment', 'list_id', 'subscriber_id');
+    return $this->has_many_through(__NAMESPACE__ . '\Subscriber', __NAMESPACE__ . '\SubscriberSegment', 'segment_id', 'subscriber_id');
   }
 }

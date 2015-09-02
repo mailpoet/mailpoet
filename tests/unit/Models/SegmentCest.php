@@ -11,9 +11,9 @@ class SegmentCest {
       'name' => 'some name',
     );
 
-    $this->list = Segment::create();
-    $this->list->hydrate($this->data);
-    $this->saved = $this->list->save();
+    $this->segment = Segment::create();
+    $this->segment->hydrate($this->data);
+    $this->saved = $this->segment->save();
   }
 
   function itCanBeCreated() {
@@ -29,35 +29,35 @@ class SegmentCest {
   }
 
   function itHasACreatedAtOnCreation() {
-    $list = Segment::where('name', $this->data['name'])
+    $segment = Segment::where('name', $this->data['name'])
       ->findOne();
-    $time_difference = strtotime($list->created_at) >= $this->before_time;
+    $time_difference = strtotime($segment->created_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itHasAnUpdatedAtOnCreation() {
-    $list = Segment::where('name', $this->data['name'])
+    $segment = Segment::where('name', $this->data['name'])
       ->findOne();
-    $time_difference = strtotime($list->updated_at) >= $this->before_time;
+    $time_difference = strtotime($segment->updated_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itKeepsTheCreatedAtOnUpdate() {
-    $list = Segment::where('name', $this->data['name'])
+    $segment = Segment::where('name', $this->data['name'])
       ->findOne();
-    $old_created_at = $list->created_at;
-    $list->name = 'new name';
-    $list->save();
-    expect($old_created_at)->equals($list->created_at);
+    $old_created_at = $segment->created_at;
+    $segment->name = 'new name';
+    $segment->save();
+    expect($old_created_at)->equals($segment->created_at);
   }
 
   function itUpdatesTheUpdatedAtOnUpdate() {
-    $list = Segment::where('name', $this->data['name'])
+    $segment = Segment::where('name', $this->data['name'])
       ->findOne();
     $update_time = time();
-    $list->name = 'new name';
-    $list->save();
-    $time_difference = strtotime($list->updated_at) >= $update_time;
+    $segment->name = 'new name';
+    $segment->save();
+    $time_difference = strtotime($segment->updated_at) >= $update_time;
     expect($time_difference)->equals(true);
   }
 
@@ -97,12 +97,12 @@ class SegmentCest {
       $subscriber->save();
       $association = SubscriberSegment::create();
       $association->subscriber_id = $subscriber->id;
-      $association->list_id = $this->list->id;
+      $association->segment_id = $this->segment->id;
       $association->save();
     }
 
-    $list = Segment::find_one($this->list->id);
-    $subscribers = $list->subscribers()
+    $segment = Segment::find_one($this->segment->id);
+    $subscribers = $segment->subscribers()
       ->find_array();
     expect(count($subscribers))->equals(2);
   }

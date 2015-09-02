@@ -53,23 +53,23 @@ class SubscriberCest {
     expect($saved)->equals(false);
   }
 
-  function itCanHaveAList() {
-    $listData = array(
+  function itCanHaveASegment() {
+    $segmentData = array(
       'name' => 'some name'
     );
 
-    $list = Segment::create();
-    $list->hydrate($listData);
-    $list->save();
+    $segment = Segment::create();
+    $segment->hydrate($segmentData);
+    $segment->save();
     $association = SubscriberSegment::create();
     $association->subscriber_id = $this->subscriber->id;
-    $association->list_id = $list->id;
+    $association->segment_id = $segment->id;
     $association->save();
 
     $subscriber = Subscriber::find_one($this->subscriber->id);
-    $subscriberList = $subscriber->lists()
+    $subscriberSegment = $subscriber->segments()
       ->find_one();
-    expect($subscriberList->id)->equals($list->id);
+    expect($subscriberSegment->id)->equals($segment->id);
   }
 
   function _after() {

@@ -33,13 +33,13 @@ class Initializer {
     $subscribers = Env::$db_prefix . 'subscribers';
     $settings = Env::$db_prefix . 'settings';
     $newsletters = Env::$db_prefix . 'newsletters';
-    $lists = Env::$db_prefix . 'lists';
+    $segments = Env::$db_prefix . 'segments';
     $subscriber_segment = Env::$db_prefix . 'subscriber_segment';
 
     define('MP_SUBSCRIBERS_TABLE', $subscribers);
     define('MP_SETTINGS_TABLE', $settings);
     define('MP_NEWSLETTERS_TABLE', $newsletters);
-    define('MP_LISTS_TABLE', $lists);
+    define('MP_SEGMENTS_TABLE', $segments);
     define('MP_SUBSCRIBER_SEGMENT_TABLE', $subscriber_segment);
   }
 
