@@ -6,10 +6,6 @@ if (!defined('ABSPATH')) exit;
 class Subscriber extends Model {
   public static $_table = MP_SUBSCRIBERS_TABLE;
 
-  const STATE_SUBSCRIBED = 1;
-  const STATE_UNCONFIRMED = 0;
-  const STATE_UNSUBSCRIBED = -1;
-
   function __construct() {
     parent::__construct();
 
@@ -36,43 +32,24 @@ class Subscriber extends Model {
       array(
         'name' => 'subscribed',
         'label' => __('Subscribed'),
-        'count' => Subscriber::where(
-            'status',
-            Subscriber::STATE_SUBSCRIBED
-          )->count()
+        'count' => Subscriber::where('status', 'subscribed')->count()
       ),
       array(
         'name' => 'unconfirmed',
         'label' => __('Unconfirmed'),
-        'count' => Subscriber::where(
-            'status',
-            Subscriber::STATE_UNCONFIRMED
-          )->count()
+        'count' => Subscriber::where('status', 'unconfirmed')->count()
       ),
       array(
         'name' => 'unsubscribed',
         'label' => __('Unsubscribed'),
-        'count' => Subscriber::where(
-            'status',
-            Subscriber::STATE_UNSUBSCRIBED
-          )->count()
+        'count' => Subscriber::where('status', 'unsubscribed')->count()
       )
     );
   }
 
   static function group($orm, $group = null) {
-    switch($group) {
-      case 'subscribed':
-        return $orm->where('status', Subscriber::STATE_SUBSCRIBED);
-      break;
-
-      case 'unconfirmed':
-        return $orm->where('status', Subscriber::STATE_UNCONFIRMED);
-      break;
-
-      case 'unsubscribed':
-        return $orm->where('status', Subscriber::STATE_UNSUBSCRIBED);
-      break;
+    if(in_array($group, array('subscribed', 'unconfirmed', 'unsubscribed'))) {
+      return $orm->where('status', $group);
     }
   }
 }
