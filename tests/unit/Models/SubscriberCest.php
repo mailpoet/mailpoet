@@ -1,5 +1,7 @@
 <?php
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\Segment;
+use MailPoet\Models\SubscriberSegment;
 
 class SubscriberCest {
 
@@ -7,8 +9,8 @@ class SubscriberCest {
     $this->before_time = time();
     $this->data = array(
       'first_name' => 'John',
-      'last_name'  => 'Mailer',
-      'email'      => 'john@mailpoet.com'
+      'last_name' => 'Mailer',
+      'email' => 'john@mailpoet.com'
     );
 
     $this->subscriber = Subscriber::create();
@@ -23,7 +25,7 @@ class SubscriberCest {
   function itHasAFirstName() {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
-      ->findOne();
+        ->findOne();
     expect($subscriber->first_name)
       ->equals($this->data['first_name']);
   }
@@ -31,7 +33,7 @@ class SubscriberCest {
   function itHasALastName() {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
-      ->findOne();
+        ->findOne();
     expect($subscriber->last_name)
       ->equals($this->data['last_name']);
   }
@@ -39,7 +41,7 @@ class SubscriberCest {
   function itHasAnEmail() {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
-      ->findOne();
+        ->findOne();
     expect($subscriber->email)
       ->equals($this->data['email']);
   }
@@ -51,8 +53,31 @@ class SubscriberCest {
     expect($saved)->equals(false);
   }
 
+  function itCanHaveASegment() {
+    $segmentData = array(
+      'name' => 'some name'
+    );
+
+    $segment = Segment::create();
+    $segment->hydrate($segmentData);
+    $segment->save();
+    $association = SubscriberSegment::create();
+    $association->subscriber_id = $this->subscriber->id;
+    $association->segment_id = $segment->id;
+    $association->save();
+
+    $subscriber = Subscriber::find_one($this->subscriber->id);
+    $subscriberSegment = $subscriber->segments()
+      ->find_one();
+    expect($subscriberSegment->id)->equals($segment->id);
+  }
+
   function _after() {
     ORM::for_table(Subscriber::$_table)
+      ->delete_many();
+    ORM::for_table(Segment::$_table)
+      ->delete_many();
+    ORM::for_table(SubscriberSegment::$_table)
       ->delete_many();
   }
 }
