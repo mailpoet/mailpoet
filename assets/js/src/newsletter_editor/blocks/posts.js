@@ -16,6 +16,7 @@ define('newsletter_editor/blocks/posts', [
     'backbone.marionette',
     'backbone.radio',
     'mailpoet',
+    'ajax',
   ], function(EditorApplication, Backbone, Marionette, Radio, MailPoet) {
 
   EditorApplication.module("blocks.posts", function(Module, App, Backbone, Marionette, $, _) {
@@ -255,41 +256,75 @@ define('newsletter_editor/blocks/posts', [
       onRender: function() {
         var that = this;
 
+        // Dynamically update available post types
+        App.module('components.wordpress').getPostTypes().done(_.bind(this._updateContentTypes, this));
+
         this.$('.mailpoet_posts_categories_and_tags').select2({
           multiple: true,
           allowClear: true,
-          ajax: {
-            url: App.getConfig().get('urls.termSearch'),
-            type: 'POST',
-            dataType: 'json',
-            delay: 250,
-            data: function(searchParameter, page) {
-              return JSON.stringify({
-                postType: that.model.get('contentType'),
-                search: searchParameter,
-                limit: 10, // TODO: Move this hardcoded limit to Config
-                page: page,
+          query: function(options) {
+            var taxonomies = [];
+            // Delegate data loading to our own endpoints
+            EditorApplication.module('components.wordpress').getTaxonomies(that.model.get('contentType')).then(function(tax) {
+              taxonomies = tax;
+              // Fetch available terms based on the list of taxonomies already fetched
+              var promise = EditorApplication.module('components.wordpress').getTerms({
+                search: options.term,
+                taxonomies: _.keys(taxonomies)
+              }).then(function(terms) {
+                return {
+                  taxonomies: taxonomies,
+                  terms: terms,
+                };
               });
-            },
+              return promise;
+            }).done(function(args) {
+              // Transform taxonomies and terms into select2 compatible format
+              options.callback({
+                results: _.map(
+                  args.terms,
+                  function(item) {
+                    return _.defaults({
+                      text: args.taxonomies[item.taxonomy].labels.singular_name + ': ' + item.name,
+                      id: item.term_id
+                    }, item);
+                  }
+                )
+              });
+            });
+          },
+          //ajax: {
+            //url: App.getConfig().get('urls.termSearch'),
+            //type: 'POST',
+            //dataType: 'json',
+            //delay: 250,
+            //data: function(searchParameter, page) {
+              //return JSON.stringify({
+                //postType: that.model.get('contentType'),
+                //search: searchParameter,
+                //limit: 10, // TODO: Move this hardcoded limit to Config
+                //page: page,
+              //});
+            //},
             /**
              * Parse results for select2.
              * Returns object, where `results` key holds a list of
              * select item objects
              */
-            results: function (data, page) {
-              return {
-                results: _.map(
-                  data.results,
-                  function(item) {
-                    return _.defaults({
-                      text: data.taxonomies[item.taxonomy].labels.singular_name + ': ' + item.name,
-                      id: item.term_id
-                    }, item);
-                  }
-                )
-              };
-            }
-          },
+            //results: function (data, page) {
+              //return {
+                //results: _.map(
+                  //data.results,
+                  //function(item) {
+                    //return _.defaults({
+                      //text: data.taxonomies[item.taxonomy].labels.singular_name + ': ' + item.name,
+                      //id: item.term_id
+                    //}, item);
+                  //}
+                //)
+              //};
+            //}
+          //},
         }).trigger( 'change' ).on({
           'change': function(e){
             var data = [];
@@ -319,6 +354,19 @@ define('newsletter_editor/blocks/posts', [
       },
       changeField: function(field, event) {
         this.model.set(field, jQuery(event.target).val());
+      },
+      _updateContentTypes: function(postTypes) {
+        var select = this.$('.mailpoet_settings_posts_content_type'),
+            selectedValue = this.model.get('contentType');
+
+        select.find('option').remove();
+        _.each(postTypes, function(type) {
+          select.append(jQuery('<option>', {
+            value: type.name,
+            text: type.labels.singular_name,
+          }));
+        });
+        select.val(selectedValue);
       },
     });
 
