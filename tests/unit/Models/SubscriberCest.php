@@ -52,6 +52,18 @@ class SubscriberCest {
     expect($subscriber->status)->equals('unconfirmed');
   }
 
+  function itCanChangeStatus() {
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
+    $subscriber->status = 'subscribed';
+    expect($subscriber->save())->equals(true);
+
+    $subscriber_updated = Subscriber::where(
+      'email',
+      $this->data['email']
+    )->findOne();
+    expect($subscriber_updated->status)->equals('subscribed');
+  }
+
   function emailMustBeUnique() {
     $conflict_subscriber = Subscriber::create();
     $conflict_subscriber->hydrate($this->data);
