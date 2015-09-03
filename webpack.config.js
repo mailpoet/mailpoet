@@ -84,6 +84,7 @@ config.push(_.extend({}, baseConfig, {
       'newsletter_editor/components/content.js',
       'newsletter_editor/components/heading.js',
       'newsletter_editor/components/save.js',
+      'newsletter_editor/components/wordpress.js',
       'newsletter_editor/behaviors/BehaviorsLookup.js',
       'newsletter_editor/behaviors/ColorPickerBehavior.js',
       'newsletter_editor/behaviors/ContainerDropZoneBehavior.js',
