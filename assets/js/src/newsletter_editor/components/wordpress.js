@@ -41,18 +41,17 @@ define('newsletter_editor/components/wordpress', [
       return taxonomiesCache[postType];
     };
 
-    Module.getTerms = function(taxonomies) {
-      if (!termsCache[taxonomies]) {
-        termsCache[taxonomies] = MailPoet.Ajax.post({
+    Module.getTerms = function(options) {
+      var key = JSON.stringify(options);
+      if (!termsCache[key]) {
+        termsCache[key] = MailPoet.Ajax.post({
           endpoint: 'wordpress',
           action: 'getTerms',
-          data: {
-            taxonomies: taxonomies,
-          },
+          data: options || {},
         });
       }
 
-      return termsCache[taxonomies];
+      return termsCache[key];
     };
 
     App.on('start', function(options) {
