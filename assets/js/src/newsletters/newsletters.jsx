@@ -28,7 +28,7 @@ define(
                 <Link className="add-new-h2" to="list">Newsletters</Link>
               </span>
               <span>
-                <Link className="add-new-h2" to="form">New newsletter</Link>
+                <Link className="add-new-h2" to="form">New</Link>
               </span>
             </h1>
 
