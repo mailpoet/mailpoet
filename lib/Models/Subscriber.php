@@ -16,6 +16,10 @@ class Subscriber extends Model {
   }
 
   static function search($orm, $search = '') {
+    if(strlen(trim($search) === 0)) {
+      return $orm;
+    }
+
     return $orm->where_raw(
       '(`email` LIKE ? OR `first_name` LIKE ? OR `last_name` LIKE ?)',
       array('%'.$search.'%', '%'.$search.'%', '%'.$search.'%')
@@ -48,8 +52,13 @@ class Subscriber extends Model {
   }
 
   static function group($orm, $group = null) {
-    if(in_array($group, array('subscribed', 'unconfirmed', 'unsubscribed'))) {
-      return $orm->where('status', $group);
+    if($group === null or !in_array(
+      $group,
+      array('subscribed', 'unconfirmed', 'unsubscribed')
+    )) {
+      return $orm;
     }
+
+    return $orm->where('status', $group);
   }
 }

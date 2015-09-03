@@ -19,6 +19,11 @@ class NewsletterCest {
     expect($this->saved)->equals(true);
   }
 
+  function itHasASearchFilter() {
+    $newsletter = Newsletter::filter('search', 'first')->findOne();
+    expect($newsletter->subject)->equals($this->data['subject']);
+  }
+
   function _after() {
     ORM::for_table(Newsletter::$_table)
       ->delete_many();
