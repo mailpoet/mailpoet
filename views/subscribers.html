@@ -1,6 +1,12 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-  <h1><%= __('Subscribers') %></h1>
-  <div id="mailpoet_subscribers_listing"></div>
+  <div id="subscribers"></div>
+
+  <%= localize({
+    'pageTitle': __('Subscribers'),
+    'searchLabel': __('Search'),
+    'loading': __('Loading subscribers...'),
+    'noRecordFound': __('No subscribers found.')
+  }) %>
 <% endblock %>

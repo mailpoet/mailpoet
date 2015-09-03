@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Router;
 use \MailPoet\Models\Subscriber;
+use \MailPoet\Listing;
 
 if(!defined('ABSPATH')) exit;
 
@@ -9,36 +10,11 @@ class Subscribers {
   }
 
   function get($data = array()) {
-    $offset = (isset($data['offset']) ? (int)$data['offset'] : 0);
-    $limit = (isset($data['limit']) ? (int)$data['limit'] : 50);
-    $search = (isset($data['search']) ? $data['search'] : null);
-    $sort_by = (isset($data['sort_by']) ? $data['sort_by'] : 'id');
-    $sort_order = (isset($data['sort_order']) ? $data['sort_order'] : 'desc');
-
-    $collection = Subscriber::{'order_by_'.$sort_order}($sort_by);
-
-    if($search !== null) {
-      $collection->where_raw(
-        '(`email` LIKE ? OR `first_name` LIKE ? OR `last_name` LIKE ?)',
-        array('%'.$search.'%', '%'.$search.'%', '%'.$search.'%')
-      );
-    }
-
-    // filters
-    $filters = array(
-
+    $listing = new Listing\Handler(
+      \Model::factory('\MailPoet\Models\Subscriber'),
+      $data
     );
-
-    $collection = array(
-      'count' => $collection->count(),
-      'filters' => $filters,
-      'items' => $collection
-        ->offset($offset)
-        ->limit($limit)
-        ->find_array()
-    );
-
-    wp_send_json($collection);
+    wp_send_json($listing->get());
   }
 
   function getAll() {

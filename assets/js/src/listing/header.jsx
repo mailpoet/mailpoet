@@ -19,14 +19,15 @@ define('header', ['react', 'classnames'], function(React, classNames) {
       );
     },
     render: function() {
-      var columns = this.props.columns.map(function(column) {
-            return (
-              <ListingColumn
-                onSort={this.props.onSort}
-                sort_by={this.props.sort_by}
-                key={column.name}
-                column={column} />
-            );
+      var columns = this.props.columns.map(function(column, index) {
+        column.is_primary = (index === 0);
+        return (
+          <ListingColumn
+            onSort={this.props.onSort}
+            sort_by={this.props.sort_by}
+            key={ 'column-' + index }
+            column={column} />
+        );
       }.bind(this));
 
       return (
@@ -55,11 +56,11 @@ define('header', ['react', 'classnames'], function(React, classNames) {
     render: function() {
       var classes = classNames(
         'manage-column',
+        { 'column-primary': this.props.column.is_primary },
         { 'sortable': this.props.column.sortable },
         this.props.column.sorted,
         { 'sorted': (this.props.sort_by === this.props.column.name) }
       );
-
       var label;
 
       if(this.props.column.sortable === true) {

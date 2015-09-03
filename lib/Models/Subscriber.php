@@ -15,6 +15,53 @@ class Subscriber extends Model {
     ));
   }
 
+  static function search($orm, $search = '') {
+    if(strlen(trim($search) === 0)) {
+      return $orm;
+    }
+
+    return $orm->where_raw(
+      '(`email` LIKE ? OR `first_name` LIKE ? OR `last_name` LIKE ?)',
+      array('%'.$search.'%', '%'.$search.'%', '%'.$search.'%')
+    );
+  }
+
+  static function groups() {
+    return array(
+      array(
+        'name' => 'all',
+        'label' => __('All'),
+        'count' => Subscriber::count()
+      ),
+      array(
+        'name' => 'subscribed',
+        'label' => __('Subscribed'),
+        'count' => Subscriber::where('status', 'subscribed')->count()
+      ),
+      array(
+        'name' => 'unconfirmed',
+        'label' => __('Unconfirmed'),
+        'count' => Subscriber::where('status', 'unconfirmed')->count()
+      ),
+      array(
+        'name' => 'unsubscribed',
+        'label' => __('Unsubscribed'),
+        'count' => Subscriber::where('status', 'unsubscribed')->count()
+      )
+    );
+  }
+
+  static function group($orm, $group = null) {
+    if($group === null or !in_array(
+      $group,
+      array('subscribed', 'unconfirmed', 'unsubscribed')
+    )) {
+      return $orm;
+    }
+
+    return $orm->where('status', $group);
+  }
+
   public function segments() {
     return $this->has_many_through(__NAMESPACE__ . '\Segment', __NAMESPACE__ . '\SubscriberSegment', 'subscriber_id', 'segment_id');
   }

@@ -31,6 +31,10 @@ define('bulk_actions', ['react'], function(React) {
       return null;
     },
     render: function() {
+      if(this.props.actions.length === 0) {
+        return null;
+      }
+
       return (
         <div className="alignleft actions bulkactions">
           <label

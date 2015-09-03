@@ -1,15 +1,13 @@
 define(
-  'newsletters',
+  'subscribers',
   [
     'react',
     'react-router',
-    'newsletters/form.jsx',
-    'newsletters/list.jsx'
+    'subscribers/list.jsx'
   ],
   function(
     React,
     Router,
-    Form,
     List
   ) {
 
@@ -25,10 +23,7 @@ define(
             <h1>
             { MailPoetI18n.pageTitle }
               <span>
-                <Link className="add-new-h2" to="list">Newsletters</Link>
-              </span>
-              <span>
-                <Link className="add-new-h2" to="form">New newsletter</Link>
+                <Link className="add-new-h2" to="list">Subscribers</Link>
               </span>
             </h1>
 
@@ -40,14 +35,13 @@ define(
 
     var routes = (
       <Route name="app" path="/" handler={App}>
-        <Route name="list" handler={List}/>
-        <Route name="form" handler={Form}/>
-        <DefaultRoute handler={List}/>
+        <Route name="list" handler={List} />
+        <DefaultRoute handler={List} />
       </Route>
     );
 
-    var hook = document.getElementById('newsletters');
-    if (hook) {
+    var hook = document.getElementById('subscribers');
+    if(hook) {
       Router.run(routes, function(Handler, state) {
         React.render(
           <Handler params={state.params} query={state.query} />,

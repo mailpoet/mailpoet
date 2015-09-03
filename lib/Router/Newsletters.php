@@ -3,6 +3,7 @@ namespace MailPoet\Router;
 use \MailPoet\Models\Newsletter;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Mailer\Bridge;
+use \MailPoet\Listing;
 
 if(!defined('ABSPATH')) exit;
 
@@ -10,7 +11,15 @@ class Newsletters {
   function __construct() {
   }
 
-  function get() {
+  function get($data = array()) {
+    $listing = new Listing\Handler(
+      \Model::factory('\MailPoet\Models\Newsletter'),
+      $data
+    );
+    wp_send_json($listing->get());
+  }
+
+  function getAll() {
     $collection = Newsletter::find_array();
     wp_send_json($collection);
   }
