@@ -20,11 +20,11 @@ class Setting extends Model {
   }
 
   public static function createOrUpdate($model) {
-    $exists = Setting::where('name', $model['name'])
+    $exists = self::where('name', $model['name'])
       ->find_one();
 
     if($exists === false) {
-      $new_model = Setting::create();
+      $new_model = self::create();
       $new_model->hydrate($model);
       return $new_model->save();
     }

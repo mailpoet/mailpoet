@@ -1,32 +1,21 @@
 <?php
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\Segment;
+use MailPoet\Models\SubscriberSegment;
 
 class SubscriberCest {
 
   function _before() {
+    $this->before_time = time();
     $this->data = array(
       'first_name' => 'John',
       'last_name' => 'Mailer',
-      'email' => 'jo@mailpoet.com'
+      'email' => 'john@mailpoet.com'
     );
 
     $this->subscriber = Subscriber::create();
     $this->subscriber->hydrate($this->data);
     $this->saved = $this->subscriber->save();
-
-    $subscribed = Subscriber::create();
-    $subscribed->hydrate(array(
-      'email' => 'marco@mailpoet.com',
-      'status' => 'subscribed'
-    ));
-    $subscribed->save();
-
-    $unsubscribed = Subscriber::create();
-    $unsubscribed->hydrate(array(
-      'email' => 'marco@mailpoet.com',
-      'status' => 'unsubscribed'
-    ));
-    $unsubscribed->save();
   }
 
   function itCanBeCreated() {
@@ -36,7 +25,7 @@ class SubscriberCest {
   function itHasAFirstName() {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
-      ->findOne();
+        ->findOne();
     expect($subscriber->first_name)
       ->equals($this->data['first_name']);
   }
@@ -44,7 +33,7 @@ class SubscriberCest {
   function itHasALastName() {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
-      ->findOne();
+        ->findOne();
     expect($subscriber->last_name)
       ->equals($this->data['last_name']);
   }
@@ -52,9 +41,16 @@ class SubscriberCest {
   function itHasAnEmail() {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
-      ->findOne();
+        ->findOne();
     expect($subscriber->email)
       ->equals($this->data['email']);
+  }
+
+  function emailMustBeUnique() {
+    $conflict_subscriber = Subscriber::create();
+    $conflict_subscriber->hydrate($this->data);
+    $saved = $conflict_subscriber->save();
+    expect($saved)->equals(false);
   }
 
   function itHasAStatus() {
@@ -105,15 +101,31 @@ class SubscriberCest {
     }
   }
 
-  function emailMustBeUnique() {
-    $conflict_subscriber = Subscriber::create();
-    $conflict_subscriber->hydrate($this->data);
-    $saved = $conflict_subscriber->save();
-    expect($saved)->equals(false);
+  function itCanHaveASegment() {
+    $segmentData = array(
+      'name' => 'some name'
+    );
+
+    $segment = Segment::create();
+    $segment->hydrate($segmentData);
+    $segment->save();
+    $association = SubscriberSegment::create();
+    $association->subscriber_id = $this->subscriber->id;
+    $association->segment_id = $segment->id;
+    $association->save();
+
+    $subscriber = Subscriber::find_one($this->subscriber->id);
+    $subscriberSegment = $subscriber->segments()
+      ->find_one();
+    expect($subscriberSegment->id)->equals($segment->id);
   }
 
   function _after() {
     ORM::for_table(Subscriber::$_table)
+      ->delete_many();
+    ORM::for_table(Segment::$_table)
+      ->delete_many();
+    ORM::for_table(SubscriberSegment::$_table)
       ->delete_many();
   }
 }
