@@ -47,7 +47,7 @@ class Migrator {
       'status varchar(12) NOT NULL DEFAULT "unconfirmed",',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY (id),',
+      'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
@@ -60,7 +60,7 @@ class Migrator {
       'value varchar(255) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY (id),',
+      'PRIMARY KEY  (id),',
       'UNIQUE KEY name (name)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
@@ -73,7 +73,7 @@ class Migrator {
       'body longtext,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY (id)'
+      'PRIMARY KEY  (id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }

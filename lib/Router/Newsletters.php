@@ -12,7 +12,10 @@ class Newsletters {
   }
 
   function get($data = array()) {
-    $listing = new Listing\Handler('Newsletter', $data);
+    $listing = new Listing\Handler(
+      \Model::factory('\MailPoet\Models\Newsletter'),
+      $data
+    );
     wp_send_json($listing->get());
   }
 

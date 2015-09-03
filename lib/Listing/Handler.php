@@ -9,7 +9,7 @@ class Handler {
   private $model = null;
 
   function __construct($model, $data = array()) {
-    $this->model = $this->getModel($model);
+    $this->model = $model;
     $this->data = array(
       // pagination
       'offset' => (isset($data['offset']) ? (int)$data['offset'] : 0),
@@ -26,10 +26,6 @@ class Handler {
     $this->setSearch();
     $this->setOrder();
     $this->setGroup();
-  }
-
-  private function getModel($model) {
-    return \Model::factory('\MailPoet\Models\\'.$model);
   }
 
   private function setSearch() {

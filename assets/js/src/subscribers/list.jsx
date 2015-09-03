@@ -121,16 +121,16 @@ define(
 
         var status = '';
 
-        switch(parseInt(subscriber.status, 10)) {
-          case 1:
+        switch(subscriber.status) {
+          case 'subscribed':
             status = 'Subscribed';
           break;
 
-          case 0:
+          case 'unconfirmed':
             status = 'Unconfirmed';
           break;
 
-          case -1:
+          case 'unsubscribed':
             status = 'Unsubscribed';
           break;
         }

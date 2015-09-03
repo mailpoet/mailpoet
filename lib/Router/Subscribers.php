@@ -10,7 +10,10 @@ class Subscribers {
   }
 
   function get($data = array()) {
-    $listing = new Listing\Handler('Subscriber', $data);
+    $listing = new Listing\Handler(
+      \Model::factory('\MailPoet\Models\Subscriber'),
+      $data
+    );
     wp_send_json($listing->get());
   }
 
