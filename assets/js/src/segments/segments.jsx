@@ -1,10 +1,10 @@
 define(
-  'subscribers',
+  'segments',
   [
     'react',
     'react-router',
-    'subscribers/list.jsx',
-    'subscribers/form.jsx'
+    'segments/list.jsx',
+    'segments/form.jsx'
   ],
   function(
     React,
@@ -42,7 +42,7 @@ define(
       </Route>
     );
 
-    var hook = document.getElementById('subscribers');
+    var hook = document.getElementById('segments');
     if(hook) {
       Router.run(routes, function(Handler, state) {
         React.render(

@@ -3,11 +3,8 @@
 class RoboFile extends \Robo\Tasks {
 
   private $css_files = array(
-    'assets/css/src/admin.styl',
-    'assets/css/src/newsletter_editor/newsletter_editor.styl',
-    'assets/css/src/public.styl',
-    'assets/css/src/rtl.styl',
-    'assets/css/src/newsletter_editor/newsletter_editor.styl'
+    'assets/css/src/*.styl',
+    'assets/css/src/**/*.styl'
   );
 
   private $js_files = array(
@@ -34,11 +31,16 @@ class RoboFile extends \Robo\Tasks {
       $js_files = array_merge($js_files, glob($path));
     }, $this->js_files);
 
+    $css_files = array();
+    array_map(function($path) use(&$css_files) {
+      $css_files = array_merge($css_files, glob($path));
+    }, $this->css_files);
+
     $this->taskWatch()
       ->monitor($js_files, function() {
         $this->compileJs();
       })
-      ->monitor($this->css_files, function() {
+      ->monitor($css_files, function() {
         $this->compileCss();
       })
       ->run();
@@ -54,12 +56,19 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function compileCss() {
+    $css_files = array(
+      'assets/css/src/admin.styl',
+      'assets/css/src/newsletter_editor/newsletter_editor.styl',
+      'assets/css/src/public.styl',
+      'assets/css/src/rtl.styl'
+    );
+
     $this->_exec(join(' ', array(
       './node_modules/stylus/bin/stylus',
       '--include ./node_modules',
       '--include-css',
       '-u nib',
-      join(' ', $this->css_files),
+      join(' ', $css_files),
       '-o assets/css/'
     )));
   }
