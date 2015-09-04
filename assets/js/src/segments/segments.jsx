@@ -1,9 +1,9 @@
 define(
-  'subscribers',
+  'segments',
   [
     'react',
     'react-router',
-    'subscribers/list.jsx'
+    'segments/list.jsx'
   ],
   function(
     React,
@@ -42,8 +42,8 @@ define(
       </Route>
     );
 
-    var hook = document.getElementById('subscribers');
-    if(hook) {
+    var hook = document.getElementById('segments');
+    if (hook) {
       Router.run(routes, function(Handler, state) {
         React.render(
           <Handler params={state.params} query={state.query} />,

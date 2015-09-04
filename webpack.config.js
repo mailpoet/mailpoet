@@ -62,7 +62,8 @@ config.push(_.extend({}, baseConfig, {
     admin: [
       'settings.jsx',
       'subscribers/subscribers.jsx',
-      'newsletters/newsletters.jsx'
+      'newsletters/newsletters.jsx',
+      'segments/segments.jsx'
     ],
     newsletter_editor: [
       'underscore',

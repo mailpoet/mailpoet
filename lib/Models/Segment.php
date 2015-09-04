@@ -30,6 +30,28 @@ class Segment extends Model {
   }
 
   public function subscribers() {
-    return $this->has_many_through(__NAMESPACE__ . '\Subscriber', __NAMESPACE__ . '\SubscriberSegment', 'segment_id', 'subscriber_id');
+    return $this->has_many_through(
+      __NAMESPACE__.'\Subscriber',
+      __NAMESPACE__.'\SubscriberSegment',
+      'segment_id',
+      'subscriber_id'
+    );
+  }
+
+  static function search($orm, $search = '') {
+    return $orm->where_like('name', '%'.$search.'%');
+  }
+
+  static function groups() {
+    return array(
+      array(
+        'name' => 'all',
+        'label' => __('All'),
+        'count' => Segment::count()
+      )
+    );
+  }
+
+  static function group($orm, $group = null) {
   }
 }

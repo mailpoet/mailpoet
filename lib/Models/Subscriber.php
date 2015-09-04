@@ -63,6 +63,11 @@ class Subscriber extends Model {
   }
 
   public function segments() {
-    return $this->has_many_through(__NAMESPACE__ . '\Segment', __NAMESPACE__ . '\SubscriberSegment', 'subscriber_id', 'segment_id');
+    return $this->has_many_through(
+      __NAMESPACE__.'\Segment',
+      __NAMESPACE__.'\SubscriberSegment',
+      'subscriber_id',
+      'segment_id'
+    );
   }
 }

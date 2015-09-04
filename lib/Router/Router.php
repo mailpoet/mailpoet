@@ -37,7 +37,7 @@ class Router {
   }
 
   function securityCheck() {
-    if (!current_user_can('manage_options')) {die();}
-    if (!wp_verify_nonce($_POST['token'], 'mailpoet_token')) {die();}
+    if(!current_user_can('manage_options')) { die(); }
+    if(!wp_verify_nonce($_POST['token'], 'mailpoet_token')) { die(); }
   }
 }
