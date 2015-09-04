@@ -209,6 +209,31 @@ define('test/newsletter_editor/blocks/automatedLatestContent', [
       var model, view;
 
       before(function () {
+        EditorApplication.module('components.wordpress').getPostTypes = function() {
+          var deferred = jQuery.Deferred();
+          deferred.resolve([
+            {
+              name: 'post',
+              labels: {
+                singular_name: 'Post',
+              },
+            },
+            {
+              name: 'page',
+              labels: {
+                singular_name: 'Page',
+              },
+            },
+            {
+              name: 'mailpoet_page',
+              labels: {
+                singular_name: 'Mailpoet page',
+              },
+            },
+          ]);
+          return deferred;
+        };
+
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication, {
           blockDefaults: {},
