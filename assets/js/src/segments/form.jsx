@@ -1,5 +1,5 @@
 define(
-  'newsletters_form',
+  'segments_form',
   [
     'react',
     'react-router',
@@ -29,11 +29,10 @@ define(
         this.setState({ loading: true });
 
         MailPoet.Ajax.post({
-          endpoint: 'newsletters',
+          endpoint: 'segments',
           action: 'save',
           data: {
-            subject: React.findDOMNode(this.refs.subject).value,
-            body: React.findDOMNode(this.refs.body).value
+            name: React.findDOMNode(this.refs.name).value
           }
         }).done(function(response) {
           this.setState({ loading: false });
@@ -56,10 +55,7 @@ define(
           <form onSubmit={ this.handleSubmit }>
             { errors }
             <p>
-              <input type="text" placeholder="Subject" ref="subject" />
-            </p>
-            <p>
-              <input type="text" placeholder="Body" ref="body" />
+              <input type="text" placeholder="Name" ref="name" />
             </p>
             <input
               className="button button-primary"

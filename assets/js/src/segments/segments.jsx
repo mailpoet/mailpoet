@@ -3,12 +3,14 @@ define(
   [
     'react',
     'react-router',
-    'segments/list.jsx'
+    'segments/list.jsx',
+    'segments/form.jsx'
   ],
   function(
     React,
     Router,
-    List
+    List,
+    Form
   ) {
 
     var DefaultRoute = Router.DefaultRoute;
@@ -22,11 +24,8 @@ define(
           <div>
             <h1>
               { MailPoetI18n.pageTitle }
-              <span>
-                <Link className="add-new-h2" to="list">
-                  { MailPoetI18n.pageTitle }
-                </Link>
-              </span>
+              &nbsp;
+              <Link className="add-new-h2" to="form">New</Link>
             </h1>
 
             <RouteHandler/>
@@ -38,12 +37,13 @@ define(
     var routes = (
       <Route name="app" path="/" handler={App}>
         <Route name="list" handler={List} />
+        <Route name="form" handler={Form} />
         <DefaultRoute handler={List} />
       </Route>
     );
 
     var hook = document.getElementById('segments');
-    if (hook) {
+    if(hook) {
       Router.run(routes, function(Handler, state) {
         React.render(
           <Handler params={state.params} query={state.query} />,
@@ -51,4 +51,5 @@ define(
         );
       });
     }
-  });
+  }
+);

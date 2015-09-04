@@ -1,5 +1,5 @@
 define(
-  'list',
+  'segments_list',
   [
     'react',
     'jquery',

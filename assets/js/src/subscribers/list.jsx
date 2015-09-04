@@ -1,5 +1,5 @@
 define(
-  'list',
+  'subscribers_list',
   [
     'react',
     'jquery',
@@ -53,27 +53,10 @@ define(
         name: 'move',
         label: 'Move to list...',
         onSelect: function(e) {
-          // display list selector
-          jQuery(e.target).after(
-            '<select id="bulk_action_list">'+
-              '<option value="">Select a list</option>'+
-              '<option value="1">List #1</option>'+
-              '<option value="2">List #2</option>'+
-              '<option value="3">List #3</option>'+
-            '</select>'
-          );
+          console.log(e);
         },
         onApply: function(selected) {
-          var list = jQuery('#bulk_action_list').val();
-
-          MailPoet.Ajax.post({
-            endpoint: 'subscribers',
-            action: 'move',
-            data: {
-              selected: selected,
-              list: list
-            }
-          });
+          console.log(selected);
         }
       },
       {
