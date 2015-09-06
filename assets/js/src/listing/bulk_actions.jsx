@@ -14,7 +14,7 @@ define('bulk_actions', ['react'], function(React) {
       var action = this.getSelectedAction();
 
       if(action !== null && action['onApply'] !== undefined) {
-        action.onApply(this.props.selected);
+        action.onApply();
       }
     },
     getSelectedAction: function() {

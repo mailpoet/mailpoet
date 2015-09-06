@@ -1,7 +1,7 @@
 define('groups', ['react', 'classnames'], function(React, classNames) {
   var ListingGroups = React.createClass({
     handleSelect: function(group) {
-      return this.props.onSelect(group);
+      return this.props.onSelectGroup(group);
     },
     render: function() {
       var count = this.props.groups.length;

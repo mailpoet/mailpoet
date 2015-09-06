@@ -25,10 +25,10 @@ define(
     ListingFilters
   ) {
      var ListingItem = React.createClass({
-      handleSelect: function(e) {
+      handleSelectItem: function(e) {
         var is_checked = jQuery(e.target).is(':checked');
 
-        this.props.onSelect(
+        this.props.onSelectItem(
           parseInt(e.target.value, 10),
           is_checked
         );
@@ -38,14 +38,14 @@ define(
       render: function() {
         return (
           <tr>
-            <th className="check-column" scope="row">
+            <th className="mailpoet_check_column" scope="row">
               <label className="screen-reader-text">
                 { 'Select ' + this.props.item.email }</label>
               <input
                 type="checkbox"
                 defaultValue={ this.props.item.id }
-                defaultChecked={ this.props.item.selected }
-                onChange={ this.handleSelect } />
+                checked={ this.props.item.selected }
+                onChange={ this.handleSelectItem } />
             </th>
             { this.props.onRenderItem(this.props.item) }
           </tr>
@@ -76,11 +76,13 @@ define(
           return (
             <tbody>
               {this.props.items.map(function(item) {
-                item.selected = (this.props.selected.indexOf(item.id) !== -1);
+                item.id = parseInt(item.id, 10);
+                item.selected = (this.props.selected_ids.indexOf(item.id) !== -1);
+
                 return (
                   <ListingItem
                     columns={ this.props.columns }
-                    onSelect={ this.props.onSelect }
+                    onSelectItem={ this.props.onSelectItem }
                     onRenderItem={ this.props.onRenderItem }
                     key={ 'item-' + item.id }
                     item={ item } />
@@ -106,7 +108,8 @@ define(
           groups: [],
           group: 'all',
           filters: [],
-          selected: []
+          selected_ids: [],
+          selected: false
         };
       },
       componentDidMount: function() {
@@ -131,17 +134,36 @@ define(
           this.getItems();
         }.bind(this));
       },
-      handleSelect: function(id, is_checked) {
-        var selected = this.state.selected;
+      handleSelectItem: function(id, is_checked) {
+        var selected_ids = this.state.selected_ids;
 
         if(is_checked) {
-          selected = jQuery.merge(selected, [ id ]);
+          selected_ids = jQuery.merge(selected_ids, [ id ]);
         } else {
-          selected.splice(selected.indexOf(id), 1);
+          selected_ids.splice(selected_ids.indexOf(id), 1);
         }
+
         this.setState({
-          selected: selected
+          selected: false,
+          selected_ids: selected_ids
         });
+      },
+      handleSelectItems: function(is_checked) {
+        if(is_checked === false) {
+          this.setState({
+            selected_ids: [],
+            selected: false
+          });
+        } else {
+          var selected_ids = this.state.items.map(function(item) {
+            return ~~item.id;
+          });
+
+          this.setState({
+            selected_ids: selected_ids,
+            selected: 'page'
+          });
+        }
       },
       handleGroup: function(group) {
         // reset search
@@ -150,25 +172,13 @@ define(
         this.setState({
           group: group,
           filters: [],
-          selected: [],
+          selected: false,
+          selected_ids: [],
           search: '',
           page: 1
         }, function() {
           this.getItems();
         }.bind(this));
-      },
-      handleSelectAll: function(is_checked) {
-        if(is_checked === false) {
-          this.setState({ selected: [] });
-        } else {
-          var selected = this.state.items.map(function(item) {
-            return ~~item.id;
-          });
-
-          this.setState({
-            selected: selected
-          });
-        }
       },
       handleSetPage: function(page) {
         this.setState({ page: page }, function() {
@@ -201,14 +211,13 @@ define(
             <ListingGroups
               groups={ this.state.groups }
               selected={ this.state.group }
-              onSelect={ this.handleGroup } />
+              onSelectGroup={ this.handleGroup } />
             <ListingSearch
               onSearch={ this.handleSearch }
               search={ this.state.search } />
             <div className="tablenav top clearfix">
               <ListingBulkActions
-                actions={ this.props.actions }
-                selected={ this.state.selected } />
+                actions={ this.props.actions } />
               <ListingFilters filters={ this.state.filters } />
               <ListingPages
                 count={ this.state.count }
@@ -220,7 +229,8 @@ define(
               <thead>
                 <ListingHeader
                   onSort={ this.handleSort }
-                  onSelectAll={ this.handleSelectAll }
+                  onSelectItems={ this.handleSelectItems }
+                  selected={ this.state.selected }
                   sort_by={ this.state.sort_by }
                   sort_order={ this.state.sort_order }
                   columns={ this.props.columns } />
@@ -229,15 +239,16 @@ define(
               <ListingItems
                 onRenderItem={ this.handleRenderItem }
                 columns={ this.props.columns }
-                selected={ this.state.selected }
-                onSelect={ this.handleSelect }
+                onSelectItem={ this.handleSelectItem }
+                selected_ids={ this.state.selected_ids }
                 loading= { this.state.loading }
                 items={ items } />
 
               <tfoot>
                 <ListingHeader
                   onSort={ this.handleSort }
-                  onSelectAll={ this.handleSelectAll }
+                  onSelectItems={ this.handleSelectItems }
+                  selected={ this.state.selected }
                   sort_by={ this.state.sort_by }
                   sort_order={ this.state.sort_order }
                   columns={ this.props.columns } />
@@ -246,8 +257,7 @@ define(
             </table>
             <div className="tablenav bottom">
               <ListingBulkActions
-                actions={ this.props.actions }
-                selected={ this.state.selected } />
+                actions={ this.props.actions } />
               <ListingPages
                 count={ this.state.count }
                 page={ this.state.page }

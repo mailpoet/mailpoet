@@ -2,7 +2,7 @@ define('header', ['react', 'classnames'], function(React, classNames) {
   /*
     props:
       onSort: callback(sort_by, sort_order)
-      onSelectAll: callback(is_checked)
+      onSelectItems: callback(is_checked)
       sort_by: (string) field name
       columns -> (array)
         column -> {
@@ -13,9 +13,9 @@ define('header', ['react', 'classnames'], function(React, classNames) {
         }
   */
   var ListingHeader = React.createClass({
-    handleSelectAll: function() {
-      return this.props.onSelectAll(
-        this.refs.select_all.getDOMNode().checked
+    handleSelectItems: function() {
+      return this.props.onSelectItems(
+        this.refs.toggle.getDOMNode().checked
       );
     },
     render: function() {
@@ -32,14 +32,15 @@ define('header', ['react', 'classnames'], function(React, classNames) {
 
       return (
         <tr>
-          <td className="manage-column column-cb check-column" id="cb">
+          <td className="manage-column column-cb mailpoet_check_column">
             <label className="screen-reader-text">
               { 'Select All' }
             </label>
             <input
               type="checkbox"
-              ref="select_all"
-              onChange={this.handleSelectAll} />
+              ref="toggle"
+              checked={ this.props.selected }
+              onChange={ this.handleSelectItems } />
           </td>
           {columns}
         </tr>
