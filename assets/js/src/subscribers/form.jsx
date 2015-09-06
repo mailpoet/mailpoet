@@ -33,8 +33,8 @@ define(
           action: 'save',
           data: {
             email: React.findDOMNode(this.refs.email).value,
-            firstname: React.findDOMNode(this.refs.firstname).value,
-            lastname: React.findDOMNode(this.refs.lastname).value
+            first_name: React.findDOMNode(this.refs.first_name).value,
+            last_name: React.findDOMNode(this.refs.last_name).value
           }
         }).done(function(response) {
           this.setState({ loading: false });
@@ -60,10 +60,10 @@ define(
               <input type="text" placeholder="Email" ref="email" />
             </p>
             <p>
-              <input type="text" placeholder="First name" ref="firstname" />
+              <input type="text" placeholder="First name" ref="first_name" />
             </p>
             <p>
-              <input type="text" placeholder="Last name" ref="lastname" />
+              <input type="text" placeholder="Last name" ref="last_name" />
             </p>
             <input
               className="button button-primary"
