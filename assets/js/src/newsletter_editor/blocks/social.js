@@ -1,7 +1,7 @@
 /**
  * Social icons content block
  */
-define('newsletter_editor/blocks/social', [
+define([
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',

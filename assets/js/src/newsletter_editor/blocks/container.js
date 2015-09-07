@@ -3,7 +3,7 @@
  * This is a special kind of block, as it can contain content blocks, as well
  * as other containers.
  */
-define('newsletter_editor/blocks/container', [
+define([
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',

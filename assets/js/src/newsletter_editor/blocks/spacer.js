@@ -1,7 +1,7 @@
 /**
  * Spacer content block
  */
-define('newsletter_editor/blocks/spacer', [
+define([
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',

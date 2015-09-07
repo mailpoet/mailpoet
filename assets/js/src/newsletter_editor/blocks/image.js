@@ -1,7 +1,7 @@
 /**
  * Image content block
  */
-define('newsletter_editor/blocks/image', [
+define([
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',

@@ -4,7 +4,7 @@
  * Allows View instances to be draggable.
  * Part of the drag&drop behavior.
  */
-define('newsletter_editor/behaviors/DraggableBehavior', [
+define([
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup',
     'interact',

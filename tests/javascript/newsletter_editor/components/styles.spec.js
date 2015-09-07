@@ -1,4 +1,4 @@
-define('test/newsletter_editor/components/config', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/components/config'
   ], function(EditorApplication) {

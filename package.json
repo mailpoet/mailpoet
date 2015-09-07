@@ -38,7 +38,7 @@
     "export-loader": "webpack/exports-loader.git",
     "import-loader": "webpack/imports-loader.git",
     "expose-loader": "webpack/expose-loader.git",
-    "rewire": "webpack/rewire.git",
+    "amd-inject-loader": "latest",
     "chai": "2.2.0",
     "chai-jq": "0.0.8",
     "grunt": "^0.4.5",

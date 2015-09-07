@@ -1,4 +1,4 @@
-define('test/newsletter_editor/blocks/social', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/social'
   ], function(EditorApplication) {

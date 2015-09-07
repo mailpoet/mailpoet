@@ -1,7 +1,7 @@
 /**
  * Text content block
  */
-define('newsletter_editor/blocks/text', [
+define([
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',

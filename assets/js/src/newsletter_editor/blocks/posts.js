@@ -10,7 +10,7 @@
  * This block depends on blocks.button and blocks.divider for block model and
  * block settings view.
  */
-define('newsletter_editor/blocks/posts', [
+define([
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',

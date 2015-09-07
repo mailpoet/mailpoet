@@ -4,7 +4,7 @@
  *
  * For more check: http://marionettejs.com/docs/marionette.behaviors.html#behaviorslookup
  */
-define('newsletter_editor/behaviors/behaviorsLookup', [
+define([
     'backbone.marionette',
   ], function(Marionette) {
 

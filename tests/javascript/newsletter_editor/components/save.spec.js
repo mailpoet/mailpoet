@@ -1,4 +1,4 @@
-define('test/newsletter_editor/components/save', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/components/save'
   ], function(EditorApplication) {

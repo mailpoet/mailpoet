@@ -1,7 +1,7 @@
 /**
  * Divider content block
  */
-define('newsletter_editor/blocks/divider', [
+define([
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',

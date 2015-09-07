@@ -3,7 +3,7 @@
  *
  * Allows sorting elements within a collection
  */
-define('newsletter_editor/behaviors/SortableBehavior', [
+define([
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup',
   ], function(Marionette, BehaviorsLookup) {

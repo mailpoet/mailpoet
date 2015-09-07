@@ -3,7 +3,7 @@
  *
  * Adds a color picker integration with the view
  */
-define('newsletter_editor/behaviors/ColorPickerBehavior', [
+define([
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup',
     'spectrum',

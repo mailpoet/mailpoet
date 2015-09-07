@@ -4,7 +4,7 @@
  * a BlockModel and a BlockView.
  * BlockToolsView, BlockSettingsView and BlockWidgetView are optional.
  */
-define('newsletter_editor/blocks/base', [
+define([
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',

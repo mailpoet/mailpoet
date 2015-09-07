@@ -1,4 +1,4 @@
-define('test/newsletter_editor/blocks/spacer', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/spacer'
   ], function(EditorApplication) {

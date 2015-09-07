@@ -1,4 +1,4 @@
-define('newsletter_editor/components/save', [
+define([
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',

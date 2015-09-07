@@ -1,4 +1,4 @@
-define('test/newsletter_editor/blocks/divider', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/divider'
   ], function(EditorApplication) {

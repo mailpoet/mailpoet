@@ -3,7 +3,7 @@
  *
  * Allows resizing elements within a block
  */
-define('newsletter_editor/behaviors/ResizableBehavior', [
+define([
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup',
     'interact',

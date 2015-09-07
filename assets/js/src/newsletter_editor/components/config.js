@@ -1,4 +1,4 @@
-define('newsletter_editor/components/config', [
+define([
     'newsletter_editor/App',
     'backbone',
   ], function(EditorApplication, Backbone) {

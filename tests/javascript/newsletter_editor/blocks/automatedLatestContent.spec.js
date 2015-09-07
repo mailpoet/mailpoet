@@ -1,4 +1,4 @@
-define('test/newsletter_editor/blocks/automatedLatestContent', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/automatedLatestContent'
   ], function(EditorApplication) {

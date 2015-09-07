@@ -1,7 +1,7 @@
 /**
  * Header content block
  */
-define('newsletter_editor/blocks/header', [
+define([
     'newsletter_editor/App',
     'backbone',
     'backbone.marionette',
