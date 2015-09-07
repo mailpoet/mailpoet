@@ -7,11 +7,11 @@
  * block settings view.
  */
 define([
-    'newsletter_editor/App',
     'backbone',
     'backbone.marionette',
-    'mailpoet',
-  ], function(EditorApplication, Backbone, Marionette, MailPoet) {
+    'newsletter_editor/App',
+    'newsletter_editor/components/wordpress',
+  ], function(Backbone, Marionette, EditorApplication, WordpressComponent) {
 
   EditorApplication.module("blocks.automatedLatestContent", function(Module, App, Backbone, Marionette, $, _) {
     "use strict";
@@ -156,7 +156,7 @@ define([
         var that = this;
 
         // Dynamically update available post types
-        App.module('components.wordpress').getPostTypes().done(_.bind(this._updateContentTypes, this));
+        WordpressComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
 
         this.$('.mailpoet_automated_latest_content_categories_and_tags').select2({
           multiple: true,
@@ -164,10 +164,10 @@ define([
           query: function(options) {
             var taxonomies = [];
             // Delegate data loading to our own endpoints
-            EditorApplication.module('components.wordpress').getTaxonomies(that.model.get('contentType')).then(function(tax) {
+            WordpressComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
               taxonomies = tax;
               // Fetch available terms based on the list of taxonomies already fetched
-              var promise = EditorApplication.module('components.wordpress').getTerms({
+              var promise = WordpressComponent.getTerms({
                 search: options.term,
                 taxonomies: _.keys(taxonomies)
               }).then(function(terms) {

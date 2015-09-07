@@ -1,6 +1,7 @@
 define([
     'newsletter_editor/App',
-    'mailpoet'
+    'mailpoet',
+    'ajax'
   ], function(EditorApplication, MailPoet) {
 
   var Module = {};
