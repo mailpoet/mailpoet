@@ -1,5 +1,4 @@
 define(
-  'listing',
   [
     'mailpoet',
     'jquery',
@@ -44,8 +43,11 @@ define(
               <input
                 type="checkbox"
                 defaultValue={ this.props.item.id }
-                checked={ this.props.item.selected }
-                onChange={ this.handleSelectItem } />
+                checked={
+                  this.props.item.selected || this.props.selection === 'all'
+                }
+                onChange={ this.handleSelectItem }
+                disabled={ this.props.selection === 'all' } />
             </th>
             { this.props.onRenderItem(this.props.item) }
           </tr>
@@ -73,8 +75,31 @@ define(
             </tbody>
           );
         } else {
+
+          var selectAllClasses = classNames(
+            'mailpoet_select_all',
+            { 'mailpoet_hidden': (
+                this.props.selection === false
+                || (this.props.count <= this.props.limit)
+              )
+            }
+          );
+
           return (
             <tbody>
+              <tr className={ selectAllClasses }>
+                <td colSpan={ this.props.columns.length + 1 }>
+                  { MailPoetI18n.selectAllLabel }&nbsp;
+                  <a
+                    onClick={ this.props.onSelectAll }
+                    href="javascript:;">{
+                      (this.props.selection !== 'all')
+                      ? MailPoetI18n.selectAllLink
+                      : MailPoetI18n.clearSelection
+                    }</a>
+                </td>
+              </tr>
+
               {this.props.items.map(function(item) {
                 item.id = parseInt(item.id, 10);
                 item.selected = (this.props.selected_ids.indexOf(item.id) !== -1);
@@ -84,6 +109,7 @@ define(
                     columns={ this.props.columns }
                     onSelectItem={ this.props.onSelectItem }
                     onRenderItem={ this.props.onRenderItem }
+                    selection={ this.props.selection }
                     key={ 'item-' + item.id }
                     item={ item } />
                 );
@@ -109,7 +135,7 @@ define(
           group: 'all',
           filters: [],
           selected_ids: [],
-          selected: false
+          selection: false
         };
       },
       componentDidMount: function() {
@@ -121,7 +147,9 @@ define(
       },
       handleSearch: function(search) {
         this.setState({
-          search: search
+          search: search,
+          selection: false,
+          selected_ids: []
         }, function() {
           this.getItems();
         }.bind(this));
@@ -129,8 +157,9 @@ define(
       handleSort: function(sort_by, sort_order = 'asc') {
         this.setState({
           sort_by: sort_by,
-          sort_order: sort_order
+          sort_order: sort_order,
         }, function() {
+          this.clearSelection();
           this.getItems();
         }.bind(this));
       },
@@ -144,16 +173,13 @@ define(
         }
 
         this.setState({
-          selected: false,
+          selection: false,
           selected_ids: selected_ids
         });
       },
       handleSelectItems: function(is_checked) {
         if(is_checked === false) {
-          this.setState({
-            selected_ids: [],
-            selected: false
-          });
+          this.clearSelection();
         } else {
           var selected_ids = this.state.items.map(function(item) {
             return ~~item.id;
@@ -161,9 +187,25 @@ define(
 
           this.setState({
             selected_ids: selected_ids,
-            selected: 'page'
+            selection: 'page'
           });
         }
+      },
+      handleSelectAll: function() {
+        if(this.state.selection === 'all') {
+          this.clearSelection();
+        } else {
+          this.setState({
+            selection: 'all',
+            selected_ids: []
+          });
+        }
+      },
+      clearSelection: function() {
+        this.setState({
+          selection: false,
+          selected_ids: []
+        });
       },
       handleGroup: function(group) {
         // reset search
@@ -172,16 +214,19 @@ define(
         this.setState({
           group: group,
           filters: [],
-          selected: false,
-          selected_ids: [],
           search: '',
           page: 1
         }, function() {
+          this.clearSelection();
           this.getItems();
         }.bind(this));
       },
       handleSetPage: function(page) {
-        this.setState({ page: page }, function() {
+        this.setState({
+          page: page,
+          selection: false,
+          selected_ids: []
+        }, function() {
           this.getItems();
         }.bind(this));
       },
@@ -210,7 +255,7 @@ define(
           <div>
             <ListingGroups
               groups={ this.state.groups }
-              selected={ this.state.group }
+              group={ this.state.group }
               onSelectGroup={ this.handleGroup } />
             <ListingSearch
               onSearch={ this.handleSearch }
@@ -230,7 +275,7 @@ define(
                 <ListingHeader
                   onSort={ this.handleSort }
                   onSelectItems={ this.handleSelectItems }
-                  selected={ this.state.selected }
+                  selection={ this.state.selection }
                   sort_by={ this.state.sort_by }
                   sort_order={ this.state.sort_order }
                   columns={ this.props.columns } />
@@ -240,15 +285,19 @@ define(
                 onRenderItem={ this.handleRenderItem }
                 columns={ this.props.columns }
                 onSelectItem={ this.handleSelectItem }
+                onSelectAll={ this.handleSelectAll }
                 selected_ids={ this.state.selected_ids }
-                loading= { this.state.loading }
+                selection={ this.state.selection }
+                loading={ this.state.loading }
+                count={ this.state.count }
+                limit={ this.state.limit }
                 items={ items } />
 
               <tfoot>
                 <ListingHeader
                   onSort={ this.handleSort }
                   onSelectItems={ this.handleSelectItems }
-                  selected={ this.state.selected }
+                  selection={ this.state.selection }
                   sort_by={ this.state.sort_by }
                   sort_order={ this.state.sort_order }
                   columns={ this.props.columns } />

@@ -1,5 +1,4 @@
 define(
-  'segments',
   [
     'react',
     'react-router',

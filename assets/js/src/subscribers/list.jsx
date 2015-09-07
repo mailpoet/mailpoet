@@ -1,5 +1,4 @@
 define(
-  'subscribers_list',
   [
     'react',
     'jquery',

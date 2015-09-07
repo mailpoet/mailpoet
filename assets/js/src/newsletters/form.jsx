@@ -1,5 +1,4 @@
 define(
-  'newsletters_form',
   [
     'react',
     'react-router',

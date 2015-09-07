@@ -1,9 +1,5 @@
-define('search', ['react'], function(React) {
-  /*
-    props:
-      onSearch  -> callback(search)
-      search    -> string
-  */
+define(['react'], function(React) {
+
   var ListingSearch = React.createClass({
     handleSearch: function(e) {
       e.preventDefault();

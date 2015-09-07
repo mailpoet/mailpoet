@@ -1,5 +1,4 @@
 define(
-  'subscribers_form',
   [
     'react',
     'react-router',

@@ -1,5 +1,4 @@
 define(
-  'subscribers',
   [
     'react',
     'react-router',

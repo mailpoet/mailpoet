@@ -1,5 +1,4 @@
 define(
-  'list',
   [
     'react',
     'jquery',

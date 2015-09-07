@@ -1,17 +1,5 @@
-define('header', ['react', 'classnames'], function(React, classNames) {
-  /*
-    props:
-      onSort: callback(sort_by, sort_order)
-      onSelectItems: callback(is_checked)
-      sort_by: (string) field name
-      columns -> (array)
-        column -> {
-          sorted: (string) asc | desc
-          sortable: (bool)
-          name: (string) field name
-          label: (string) displayed label
-        }
-  */
+define(['react', 'classnames'], function(React, classNames) {
+
   var ListingHeader = React.createClass({
     handleSelectItems: function() {
       return this.props.onSelectItems(
@@ -39,7 +27,7 @@ define('header', ['react', 'classnames'], function(React, classNames) {
             <input
               type="checkbox"
               ref="toggle"
-              checked={ this.props.selected }
+              checked={ this.props.selection }
               onChange={ this.handleSelectItems } />
           </td>
           {columns}
