@@ -95,7 +95,6 @@ class RoboFile extends \Robo\Tasks {
 
   function testAcceptance($file = null) {
     $this->loadEnv();
-    $this->compileAll();
     $this->_exec('vendor/bin/codecept build');
     $this
       ->taskExec('phantomjs --webdriver=4444')

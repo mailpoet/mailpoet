@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Inherited Methods
  * @method void wantToTest($text)
@@ -15,18 +14,19 @@
  * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = null)
  *
  * @SuppressWarnings(PHPMD)
-*/
-class AcceptanceTester extends \Codeception\Actor
-{
-    use _generated\AcceptanceTesterActions;
+ */
+class AcceptanceTester extends \Codeception\Actor {
+  use _generated\AcceptanceTesterActions;
 
-   /**
-    * Define custom actions here
-    */
-   public function login() {
-      $this->amOnPage('/wp-login.php');
-      $this->fillField('Username', getenv('WP_TEST_USER'));
-      $this->fillField('Password', getenv('WP_TEST_PASSWORD'));
-      $this->click('Log In');
-   }
+  /**
+   * Define custom actions here
+   */
+  public function login() {
+    if($this->loadSessionSnapshot('login')) return;
+    $this->amOnPage('/wp-login.php');
+    $this->fillField('Username', getenv('WP_TEST_USER'));
+    $this->fillField('Password', getenv('WP_TEST_PASSWORD'));
+    $this->click('Log In');
+    $this->saveSessionSnapshot('login');
+  }
 }
