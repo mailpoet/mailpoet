@@ -47,7 +47,17 @@ define(
       },
     ];
 
-    var actions = [
+    var item_actions = [
+      {
+        name: 'view',
+        label: 'View',
+        onClick: function() {
+          this.transitionTo('/');
+        }
+      }
+    ];
+
+    var bulk_actions = [
       {
         name: 'move',
         label: 'Move to list...',
@@ -148,10 +158,11 @@ define(
       render: function() {
         return (
           <Listing
-            onRenderItem={this.renderItem}
-            items={this.getItems}
-            columns={columns}
-            actions={actions} />
+            onRenderItem={ this.renderItem }
+            items={ this.getItems }
+            columns={ columns }
+            bulk_actions={ bulk_actions }
+            item_actions={ item_actions } />
         );
       }
     });

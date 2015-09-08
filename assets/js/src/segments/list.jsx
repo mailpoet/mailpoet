@@ -32,9 +32,6 @@ define(
       }
     ];
 
-    var actions = [
-    ];
-
     var List = React.createClass({
       getItems: function(listing) {
         MailPoet.Ajax.post({
@@ -89,8 +86,7 @@ define(
           <Listing
             onRenderItem={this.renderItem}
             items={this.getItems}
-            columns={columns}
-            actions={actions} />
+            columns={columns} />
         );
       }
     });

@@ -20,7 +20,7 @@ define(['react'], function(React) {
     getSelectedAction: function() {
       var selected_action = jQuery(this.refs.action.getDOMNode()).val();
       if(selected_action.length > 0) {
-        var action = this.props.actions.filter(function(action) {
+        var action = this.props.bulk_actions.filter(function(action) {
           return (action.name === selected_action);
         });
 
@@ -31,7 +31,7 @@ define(['react'], function(React) {
       return null;
     },
     render: function() {
-      if(this.props.actions.length === 0) {
+      if(this.props.bulk_actions.length === 0) {
         return null;
       }
 
@@ -45,7 +45,7 @@ define(['react'], function(React) {
 
           <select ref="action" onChange={this.handleChangeAction}>
             <option value="">Bulk Actions</option>
-            {this.props.actions.map(function(action, index) {
+            {this.props.bulk_actions.map(function(action, index) {
               return (
                 <option
                   value={action.name}

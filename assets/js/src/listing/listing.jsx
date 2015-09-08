@@ -35,8 +35,11 @@ define(
         return !e.target.checked;
       },
       render: function() {
-        return (
-          <tr>
+
+        var checkbox = false;
+
+        if(this.props.is_selectable === true) {
+          checkbox = (
             <th className="mailpoet_check_column" scope="row">
               <label className="screen-reader-text">
                 { 'Select ' + this.props.item.email }</label>
@@ -49,6 +52,12 @@ define(
                 onChange={ this.handleSelectItem }
                 disabled={ this.props.selection === 'all' } />
             </th>
+          );
+        }
+
+        return (
+          <tr>
+            { checkbox }
             { this.props.onRenderItem(this.props.item) }
           </tr>
         );
@@ -110,6 +119,7 @@ define(
                     onSelectItem={ this.props.onSelectItem }
                     onRenderItem={ this.props.onRenderItem }
                     selection={ this.props.selection }
+                    is_selectable={ this.props.is_selectable }
                     key={ 'item-' + item.id }
                     item={ item } />
                 );
@@ -244,6 +254,9 @@ define(
           return column;
         });
 
+        // bulk actions
+        var bulk_actions = this.props.bulk_actions || [];
+
         var tableClasses = classNames(
           'wp-list-table',
           'widefat',
@@ -262,7 +275,7 @@ define(
               search={ this.state.search } />
             <div className="tablenav top clearfix">
               <ListingBulkActions
-                actions={ this.props.actions } />
+                bulk_actions={ bulk_actions } />
               <ListingFilters filters={ this.state.filters } />
               <ListingPages
                 count={ this.state.count }
@@ -278,12 +291,14 @@ define(
                   selection={ this.state.selection }
                   sort_by={ this.state.sort_by }
                   sort_order={ this.state.sort_order }
-                  columns={ this.props.columns } />
+                  columns={ this.props.columns }
+                  is_selectable={ bulk_actions.length > 0 } />
               </thead>
 
               <ListingItems
                 onRenderItem={ this.handleRenderItem }
                 columns={ this.props.columns }
+                is_selectable={ bulk_actions.length > 0 }
                 onSelectItem={ this.handleSelectItem }
                 onSelectAll={ this.handleSelectAll }
                 selected_ids={ this.state.selected_ids }
@@ -300,13 +315,14 @@ define(
                   selection={ this.state.selection }
                   sort_by={ this.state.sort_by }
                   sort_order={ this.state.sort_order }
-                  columns={ this.props.columns } />
+                  columns={ this.props.columns }
+                  is_selectable={ bulk_actions.length > 0 } />
               </tfoot>
 
             </table>
             <div className="tablenav bottom">
               <ListingBulkActions
-                actions={ this.props.actions } />
+                bulk_actions={ bulk_actions } />
               <ListingPages
                 count={ this.state.count }
                 page={ this.state.page }

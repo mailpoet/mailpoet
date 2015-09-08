@@ -18,8 +18,10 @@ define(['react', 'classnames'], function(React, classNames) {
         );
       }.bind(this));
 
-      return (
-        <tr>
+      var checkbox = false;
+
+      if(this.props.is_selectable === true) {
+        checkbox = (
           <td className="manage-column column-cb mailpoet_check_column">
             <label className="screen-reader-text">
               { 'Select All' }
@@ -30,6 +32,12 @@ define(['react', 'classnames'], function(React, classNames) {
               checked={ this.props.selection }
               onChange={ this.handleSelectItems } />
           </td>
+        );
+      }
+
+      return (
+        <tr>
+          {checkbox}
           {columns}
         </tr>
       );
