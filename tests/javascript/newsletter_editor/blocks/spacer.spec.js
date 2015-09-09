@@ -1,7 +1,7 @@
-define('test/newsletter_editor/blocks/spacer', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/spacer'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, SpacerBlock) {
 
   describe('Spacer', function () {
     describe('model', function () {
@@ -13,7 +13,7 @@ define('test/newsletter_editor/blocks/spacer', [
           blockDefaults: {},
         });
         global.stubAvailableStyles(EditorApplication);
-        model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)();
+        model = new (SpacerBlock.SpacerBlockModel)();
       });
 
       afterEach(function () {
@@ -63,7 +63,7 @@ define('test/newsletter_editor/blocks/spacer', [
             },
           },
         });
-        var model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)();
+        var model = new (SpacerBlock.SpacerBlockModel)();
 
         expect(model.get('styles.block.backgroundColor')).to.equal('#567890');
         expect(model.get('styles.block.height')).to.equal('19px');
@@ -74,12 +74,12 @@ define('test/newsletter_editor/blocks/spacer', [
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)(),
+      var model = new (SpacerBlock.SpacerBlockModel)(),
         view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (EditorApplication.module('blocks.spacer').SpacerBlockView)({model: model});
+        view = new (SpacerBlock.SpacerBlockView)({model: model});
       });
 
       it('renders', function () {
@@ -102,12 +102,12 @@ define('test/newsletter_editor/blocks/spacer', [
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
 
-      var model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)(),
+      var model = new (SpacerBlock.SpacerBlockModel)(),
         view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (EditorApplication.module('blocks.spacer').SpacerBlockSettingsView)({model: model});
+        view = new (SpacerBlock.SpacerBlockSettingsView)({model: model});
       });
 
       it('renders', function () {
@@ -119,8 +119,8 @@ define('test/newsletter_editor/blocks/spacer', [
         beforeEach(function() {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
-        model = new (EditorApplication.module('blocks.spacer').SpacerBlockModel)();
-        view = new (EditorApplication.module('blocks.spacer').SpacerBlockSettingsView)({model: model});
+        model = new (SpacerBlock.SpacerBlockModel)();
+        view = new (SpacerBlock.SpacerBlockSettingsView)({model: model});
         view.render();
         });
 

@@ -1,7 +1,8 @@
-define('test/newsletter_editor/blocks/automatedLatestContent', [
+define([
     'newsletter_editor/App',
-    'newsletter_editor/blocks/automatedLatestContent'
-  ], function(EditorApplication) {
+    'newsletter_editor/blocks/automatedLatestContent',
+    'newsletter_editor/components/wordpress',
+  ], function(EditorApplication, AutomatedLatestContentBlock, WordpressComponent) {
 
   describe('Automated latest content', function () {
     describe('model', function () {
@@ -12,7 +13,7 @@ define('test/newsletter_editor/blocks/automatedLatestContent', [
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
         global.mailpoet_post_wpi = sinon.stub();
-        model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
+        model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
       });
 
       afterEach(function () {
@@ -151,7 +152,7 @@ define('test/newsletter_editor/blocks/automatedLatestContent', [
             },
           },
         });
-        var model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
+        var model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
 
         expect(model.get('amount')).to.equal('17');
         expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -191,8 +192,8 @@ define('test/newsletter_editor/blocks/automatedLatestContent', [
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-        model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
-        view = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockView)({model: model});
+        model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({model: model});
       });
 
       afterEach(function () {
@@ -209,6 +210,31 @@ define('test/newsletter_editor/blocks/automatedLatestContent', [
       var model, view;
 
       before(function () {
+        WordpressComponent.getPostTypes = function() {
+          var deferred = jQuery.Deferred();
+          deferred.resolve([
+            {
+              name: 'post',
+              labels: {
+                singular_name: 'Post',
+              },
+            },
+            {
+              name: 'page',
+              labels: {
+                singular_name: 'Page',
+              },
+            },
+            {
+              name: 'mailpoet_page',
+              labels: {
+                singular_name: 'Mailpoet page',
+              },
+            },
+          ]);
+          return deferred;
+        };
+
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication, {
           blockDefaults: {},
@@ -218,8 +244,8 @@ define('test/newsletter_editor/blocks/automatedLatestContent', [
       });
 
       beforeEach(function() {
-        model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
-        view = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockSettingsView)({model: model});
+        model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
       });
 
       after(function () {
@@ -232,8 +258,8 @@ define('test/newsletter_editor/blocks/automatedLatestContent', [
 
       describe('once rendered', function () {
         beforeEach(function() {
-          model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
-          view = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockSettingsView)({model: model});
+          model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+          view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
           view.render();
         });
 
@@ -342,8 +368,8 @@ define('test/newsletter_editor/blocks/automatedLatestContent', [
         describe('when "title only" display type is selected', function() {
           var model, view;
           beforeEach(function() {
-            model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
-            view = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockSettingsView)({model: model});
+            model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+            view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
             view.render();
             view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').change();
           });
@@ -355,8 +381,8 @@ define('test/newsletter_editor/blocks/automatedLatestContent', [
           describe('when "title as list" is selected', function() {
             var model, view;
             beforeEach(function() {
-              model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
-              view = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockSettingsView)({model: model});
+              model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+              view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
               view.render();
               view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').change();
               view.$('.mailpoet_automated_latest_content_title_format').val('ul').change();

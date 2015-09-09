@@ -3,7 +3,7 @@
  *
  * Allows resizing elements within a block
  */
-define('newsletter_editor/behaviors/ResizableBehavior', [
+define([
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup',
     'interact',
@@ -56,12 +56,12 @@ define('newsletter_editor/behaviors/ResizableBehavior', [
     },
     showResizeHandle: function() {
       if (typeof this.options.resizeHandleSelector === 'string') {
-        this.view.$(this.options.resizeHandleSelector).removeClass('mailpoet_hidden'); 
+        this.view.$(this.options.resizeHandleSelector).removeClass('mailpoet_hidden');
       }
     },
     hideResizeHandle: function() {
       if (typeof this.options.resizeHandleSelector === 'string') {
-        this.view.$(this.options.resizeHandleSelector).addClass('mailpoet_hidden'); 
+        this.view.$(this.options.resizeHandleSelector).addClass('mailpoet_hidden');
       }
     },
   });

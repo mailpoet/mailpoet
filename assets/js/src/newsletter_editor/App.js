@@ -1,4 +1,4 @@
-define('newsletter_editor/App', [
+define([
     'backbone',
     'backbone.marionette',
     'backbone.supermodel',

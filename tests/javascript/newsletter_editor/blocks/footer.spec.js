@@ -1,14 +1,14 @@
-define('test/newsletter_editor/blocks/footer', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/footer'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, FooterBlock) {
 
   describe('Footer', function () {
     describe('model', function () {
       var model;
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        model = new (EditorApplication.module('blocks.footer').FooterBlockModel)();
+        model = new (FooterBlock.FooterBlockModel)();
       });
 
       it('has a footer type', function () {
@@ -94,7 +94,7 @@ define('test/newsletter_editor/blocks/footer', [
             }
           },
         });
-        var model = new (EditorApplication.module('blocks.footer').FooterBlockModel)();
+        var model = new (FooterBlock.FooterBlockModel)();
 
         expect(model.get('text')).to.equal('some custom config text');
         expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
@@ -112,12 +112,12 @@ define('test/newsletter_editor/blocks/footer', [
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (EditorApplication.module('blocks.footer').FooterBlockModel)(),
+      var model = new (FooterBlock.FooterBlockModel)(),
         view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (EditorApplication.module('blocks.footer').FooterBlockView)({model: model});
+        view = new (FooterBlock.FooterBlockView)({model: model});
       });
 
       it('renders', function () {
@@ -132,8 +132,8 @@ define('test/newsletter_editor/blocks/footer', [
         fonts: ['Arial', 'Tahoma'],
         textSizes: ['16px', '20px'],
       });
-      var model = new (EditorApplication.module('blocks.footer').FooterBlockModel)(),
-        view = new (EditorApplication.module('blocks.footer').FooterBlockSettingsView)({model: model});
+      var model = new (FooterBlock.FooterBlockModel)(),
+        view = new (FooterBlock.FooterBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -149,8 +149,8 @@ define('test/newsletter_editor/blocks/footer', [
           fonts: ['Arial', 'Tahoma'],
           textSizes: ['16px', '20px'],
         });
-        model = new (EditorApplication.module('blocks.footer').FooterBlockModel)({});
-        view = new (EditorApplication.module('blocks.footer').FooterBlockSettingsView)({model: model});
+        model = new (FooterBlock.FooterBlockModel)({});
+        view = new (FooterBlock.FooterBlockSettingsView)({model: model});
         view.render();
       });
 

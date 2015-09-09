@@ -5,12 +5,13 @@
  * Allows CollectionView instances that use this behavior to act as drop zones and
  * accept droppables
  */
-define('newsletter_editor/behaviors/ContainerDropZoneBehavior', [
+define([
     'backbone.marionette',
     'underscore',
+    'jquery',
     'newsletter_editor/behaviors/BehaviorsLookup',
     'interact',
-  ], function(Marionette, _, BehaviorsLookup, interact) {
+  ], function(Marionette, _, jQuery, BehaviorsLookup, interact) {
 
   BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
     defaults: {

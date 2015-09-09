@@ -3,11 +3,11 @@
  *
  * Adds a color picker integration with the view
  */
-define('newsletter_editor/behaviors/ColorPickerBehavior', [
+define([
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup',
     'spectrum',
-  ], function(Marionette, BehaviorsLookup) {
+  ], function(Marionette, BehaviorsLookup, Spectrum) {
 
   BehaviorsLookup.ColorPickerBehavior = Marionette.Behavior.extend({
     onRender: function() {

@@ -1,7 +1,7 @@
-define('test/newsletter_editor/blocks/divider', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/divider'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, DividerBlock) {
 
   describe("Divider", function () {
     describe("model", function () {
@@ -13,7 +13,7 @@ define('test/newsletter_editor/blocks/divider', [
           blockDefaults: {},
         });
         global.stubAvailableStyles(EditorApplication);
-        model = new (EditorApplication.module('blocks.divider').DividerBlockModel)();
+        model = new (DividerBlock.DividerBlockModel)();
       });
 
       afterEach(function () {
@@ -81,7 +81,7 @@ define('test/newsletter_editor/blocks/divider', [
             },
           },
         });
-        var model = new (EditorApplication.module('blocks.divider').DividerBlockModel)();
+        var model = new (DividerBlock.DividerBlockModel)();
 
         expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
         expect(model.get('styles.block.padding')).to.equal('37px');
@@ -94,12 +94,12 @@ define('test/newsletter_editor/blocks/divider', [
     describe('block view', function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
-      var model = new (EditorApplication.module('blocks.divider').DividerBlockModel)(),
+      var model = new (DividerBlock.DividerBlockModel)(),
         view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (EditorApplication.module('blocks.divider').DividerBlockView)({model: model});
+        view = new (DividerBlock.DividerBlockView)({model: model});
       });
 
       it('renders', function () {
@@ -121,8 +121,8 @@ define('test/newsletter_editor/blocks/divider', [
       global.stubAvailableStyles(EditorApplication, {
         dividers: ['solid', 'inset'],
       });
-      var model = new (EditorApplication.module('blocks.divider').DividerBlockModel)(),
-        view = new (EditorApplication.module('blocks.divider').DividerBlockSettingsView)({model: model});
+      var model = new (DividerBlock.DividerBlockModel)(),
+        view = new (DividerBlock.DividerBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -140,8 +140,8 @@ define('test/newsletter_editor/blocks/divider', [
         });
 
         beforeEach(function () {
-          model = new (EditorApplication.module('blocks.divider').DividerBlockModel)();
-          view = new (EditorApplication.module('blocks.divider').DividerBlockSettingsView)({model: model});
+          model = new (DividerBlock.DividerBlockModel)();
+          view = new (DividerBlock.DividerBlockSettingsView)({model: model});
           view.render();
         });
 
@@ -182,7 +182,7 @@ define('test/newsletter_editor/blocks/divider', [
         });
 
         it('does not display "Apply to all" option when `hideApplyToAll` option is active', function() {
-          view = new (EditorApplication.module('blocks.divider').DividerBlockSettingsView)({
+          view = new (DividerBlock.DividerBlockSettingsView)({
             model: model,
             renderOptions: {
               hideApplyToAll: true,

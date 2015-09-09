@@ -1,7 +1,7 @@
-define('test/newsletter_editor/components/heading', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/components/heading'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, HeadingComponent) {
 
   describe('Heading', function() {
     describe('view', function() {
@@ -10,7 +10,7 @@ define('test/newsletter_editor/components/heading', [
         var model = new Backbone.SuperModel({
           newsletter_subject: 'a test subject',
         });
-        view = new (EditorApplication.module("components.heading").HeadingView)({
+        view = new (HeadingComponent.HeadingView)({
           model: model,
         });
       });
@@ -26,7 +26,7 @@ define('test/newsletter_editor/components/heading', [
             newsletter_subject: 'a test subject',
             newsletter_preheader: 'a test preheader',
           });
-          view = new (EditorApplication.module("components.heading").HeadingView)({
+          view = new (HeadingComponent.HeadingView)({
             model: model,
           });
           view.render();

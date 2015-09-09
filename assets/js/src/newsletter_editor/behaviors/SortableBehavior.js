@@ -3,10 +3,11 @@
  *
  * Allows sorting elements within a collection
  */
-define('newsletter_editor/behaviors/SortableBehavior', [
+define([
     'backbone.marionette',
+    'underscore',
     'newsletter_editor/behaviors/BehaviorsLookup',
-  ], function(Marionette, BehaviorsLookup) {
+  ], function(Marionette, _, BehaviorsLookup) {
 
   BehaviorsLookup.SortableBehavior = Marionette.Behavior.extend({
     onRender: function() {

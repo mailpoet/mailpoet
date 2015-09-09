@@ -1,7 +1,7 @@
-define('test/newsletter_editor/blocks/button', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/button'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, ButtonBlock) {
 
   describe("Button", function () {
     describe("model", function () {
@@ -12,7 +12,7 @@ define('test/newsletter_editor/blocks/button', [
         global.stubConfig(EditorApplication, {
           blockDefaults: {},
         });
-        model = new (EditorApplication.module('blocks.button').ButtonBlockModel)();
+        model = new (ButtonBlock.ButtonBlockModel)();
       });
 
       afterEach(function () {
@@ -119,7 +119,7 @@ define('test/newsletter_editor/blocks/button', [
             },
           },
         });
-        var model = new (EditorApplication.module('blocks.button').ButtonBlockModel)();
+        var model = new (ButtonBlock.ButtonBlockModel)();
 
         expect(model.get('text')).to.equal('Some new text');
         expect(model.get('url')).to.equal('http://somenewurl.com');
@@ -141,17 +141,17 @@ define('test/newsletter_editor/blocks/button', [
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        model = new (EditorApplication.module('blocks.button').ButtonBlockModel)();
+        model = new (ButtonBlock.ButtonBlockModel)();
       });
 
       it('renders', function () {
-        var view = new (EditorApplication.module('blocks.button').ButtonBlockView)({model: model});
+        var view = new (ButtonBlock.ButtonBlockView)({model: model});
         expect(view.render).to.not.throw();
         expect(view.$('.mailpoet_editor_button')).to.have.length(1);
       });
 
       it('rerenders when attributes change', function () {
-        var view = new (EditorApplication.module('blocks.button').ButtonBlockView)({model: model});
+        var view = new (ButtonBlock.ButtonBlockView)({model: model});
         view.render();
 
         model.set('text', 'Some new text');
@@ -164,7 +164,7 @@ define('test/newsletter_editor/blocks/button', [
 
         before(function () {
           global.stubChannel(EditorApplication);
-          model = new (EditorApplication.module('blocks.button').ButtonBlockModel)({
+          model = new (ButtonBlock.ButtonBlockModel)({
             text: 'Some button',
             url: 'http://example.org',
             styles: {
@@ -182,7 +182,7 @@ define('test/newsletter_editor/blocks/button', [
               },
             },
           });
-          view = new (EditorApplication.module('blocks.button').ButtonBlockView)({model: model});
+          view = new (ButtonBlock.ButtonBlockView)({model: model});
           view.render();
         });
 
@@ -248,14 +248,14 @@ define('test/newsletter_editor/blocks/button', [
           headingSizes: ['16px', '20px'],
         });
 
-        model = new (EditorApplication.module('blocks.button').ButtonBlockModel)({
+        model = new (ButtonBlock.ButtonBlockModel)({
           type: 'button',
           text: 'Some random text',
         });
       });
 
       it('renders', function () {
-        var view = new (EditorApplication.module('blocks.button').ButtonBlockSettingsView)({model: model});
+        var view = new (ButtonBlock.ButtonBlockSettingsView)({model: model});
         expect(view.render).to.not.throw();
       });
 
@@ -271,11 +271,11 @@ define('test/newsletter_editor/blocks/button', [
         });
 
         beforeEach(function() {
-          model = new (EditorApplication.module('blocks.button').ButtonBlockModel)({
+          model = new (ButtonBlock.ButtonBlockModel)({
             type: 'button',
             text: 'Some random text',
           });
-          view = new (EditorApplication.module('blocks.button').ButtonBlockSettingsView)({model: model});
+          view = new (ButtonBlock.ButtonBlockSettingsView)({model: model});
 
           view.render();
         });
@@ -387,7 +387,7 @@ define('test/newsletter_editor/blocks/button', [
         });
 
         it('does not display link option when `hideLink` option is active', function() {
-          view = new (EditorApplication.module('blocks.button').ButtonBlockSettingsView)({
+          view = new (ButtonBlock.ButtonBlockSettingsView)({
             model: model,
             renderOptions: {
               hideLink: true,
@@ -398,7 +398,7 @@ define('test/newsletter_editor/blocks/button', [
         });
 
         it('does not display "Apply to all" option when `hideApplyToAll` option is active', function() {
-          view = new (EditorApplication.module('blocks.button').ButtonBlockSettingsView)({
+          view = new (ButtonBlock.ButtonBlockSettingsView)({
             model: model,
             renderOptions: {
               hideApplyToAll: true,

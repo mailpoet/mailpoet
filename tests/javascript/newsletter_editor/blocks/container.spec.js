@@ -1,10 +1,10 @@
-define('test/newsletter_editor/blocks/container', [
+define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/container'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, ContainerBlock) {
 
   describe('Container', function () {
-    var ModelClass = EditorApplication.module('blocks.container').ContainerBlockModel;
+    var ModelClass = ContainerBlock.ContainerBlockModel;
 
     describe('model', function () {
       describe('by default', function () {
@@ -39,7 +39,7 @@ define('test/newsletter_editor/blocks/container', [
               },
             },
           });
-          var model = new (EditorApplication.module('blocks.container').ContainerBlockModel)();
+          var model = new (ContainerBlock.ContainerBlockModel)();
 
           expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
         });
@@ -55,7 +55,7 @@ define('test/newsletter_editor/blocks/container', [
         it('will recursively create children', function () {
           EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
 
-          model = new (EditorApplication.module('blocks.container').ContainerBlockModel)({
+          model = new (ContainerBlock.ContainerBlockModel)({
             type: 'container',
             blocks: [testModel],
           }, {parse: true});
@@ -100,8 +100,8 @@ define('test/newsletter_editor/blocks/container', [
     describe('block view', function () {
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (EditorApplication.module('blocks.container').ContainerBlockModel)(),
-        view = new (EditorApplication.module('blocks.container').ContainerBlockView)({model: model});
+      var model = new (ContainerBlock.ContainerBlockModel)(),
+        view = new (ContainerBlock.ContainerBlockView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -110,13 +110,13 @@ define('test/newsletter_editor/blocks/container', [
       describe('once rendered', function () {
 
         describe('on root level', function () {
-          var model = new (EditorApplication.module('blocks.container').ContainerBlockModel)(),
+          var model = new (ContainerBlock.ContainerBlockModel)(),
             view;
 
           beforeEach(function () {
             global.stubChannel(EditorApplication);
             global.stubAvailableStyles(EditorApplication);
-            view = new (EditorApplication.module('blocks.container').ContainerBlockView)({
+            view = new (ContainerBlock.ContainerBlockView)({
               model: model,
               renderOptions: {
                 depth: 0,
@@ -138,13 +138,13 @@ define('test/newsletter_editor/blocks/container', [
         });
 
         describe.skip('on non-root levels', function () {
-          var model = new (EditorApplication.module('blocks.container').ContainerBlockModel)(),
+          var model = new (ContainerBlock.ContainerBlockModel)(),
             view;
 
           beforeEach(function () {
             global.stubChannel(EditorApplication);
             global.stubAvailableStyles(EditorApplication);
-            view = new (EditorApplication.module('blocks.container').ContainerBlockView)({
+            view = new (ContainerBlock.ContainerBlockView)({
               model: model,
               renderOptions: {
                 depth: 1,
@@ -172,8 +172,8 @@ define('test/newsletter_editor/blocks/container', [
     describe('settings view', function () {
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (EditorApplication.module('blocks.container').ContainerBlockModel)(),
-        view = new (EditorApplication.module('blocks.container').ContainerBlockSettingsView)({model: model});
+      var model = new (ContainerBlock.ContainerBlockModel)(),
+        view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -184,8 +184,8 @@ define('test/newsletter_editor/blocks/container', [
       beforeEach(function() {
         global.stubChannel(EditorApplication);
         global.stubAvailableStyles(EditorApplication);
-        model = new (EditorApplication.module('blocks.container').ContainerBlockModel)();
-        view = new (EditorApplication.module('blocks.container').ContainerBlockSettingsView)({model: model});
+        model = new (ContainerBlock.ContainerBlockModel)();
+        view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
       });
 
         it('updates the model when background color changes', function () {
