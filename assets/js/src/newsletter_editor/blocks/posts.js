@@ -347,7 +347,7 @@ define([
           // Update ALC model
           that.model.set('terms', data);
 
-          $(this).data('selected', JSON.stringify(data));
+          jQuery(this).data('selected', JSON.stringify(data));
         }
       });
     },

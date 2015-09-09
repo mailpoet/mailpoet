@@ -208,7 +208,7 @@ define([
         },
       }).trigger( 'change' ).on({
         'change': function(e){
-          var data = $(this).data('selected');
+          var data = jQuery(this).data('selected');
 
           if (typeof data === 'string') {
             if (data === '') {
@@ -229,7 +229,7 @@ define([
           // Update ALC model
           that.model.set('terms', data);
 
-          $(this).data('selected', JSON.stringify(data));
+          jQuery(this).data('selected', JSON.stringify(data));
         }
       });
     },
