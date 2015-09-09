@@ -76,8 +76,8 @@ define(
                   className="colspanchange">
                   {
                     (this.props.loading === true)
-                    ? MailPoetI18n.loading
-                    : MailPoetI18n.noRecordFound
+                    ? MailPoetI18n.loadingItems
+                    : MailPoetI18n.noItemsFound
                   }
                 </td>
               </tr>
