@@ -1,7 +1,7 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/image'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, ImageBlock) {
 
   describe('Image', function () {
     describe('model', function () {
@@ -11,7 +11,7 @@ define([
         global.stubConfig(EditorApplication, {
           blockDefaults: {},
         });
-        model = new (EditorApplication.module('blocks.image').ImageBlockModel)();
+        model = new (ImageBlock.ImageBlockModel)();
       });
 
       it('has an image type', function () {
@@ -87,7 +87,7 @@ define([
             }
           },
         });
-        var model = new (EditorApplication.module('blocks.image').ImageBlockModel)();
+        var model = new (ImageBlock.ImageBlockModel)();
 
         expect(model.get('link')).to.equal('http://example.org/customConfigPage');
         expect(model.get('src')).to.equal('http://example.org/someCustomConfigImage.png');
@@ -103,11 +103,11 @@ define([
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (EditorApplication.module('blocks.image').ImageBlockModel)(),
+      var model = new (ImageBlock.ImageBlockModel)(),
         view;
 
       beforeEach(function () {
-        view = new (EditorApplication.module('blocks.image').ImageBlockView)({model: model});
+        view = new (ImageBlock.ImageBlockView)({model: model});
       });
 
       it('renders', function () {
@@ -116,7 +116,7 @@ define([
       });
 
       describe('once rendered', function () {
-        var model = new (EditorApplication.module('blocks.image').ImageBlockModel)({
+        var model = new (ImageBlock.ImageBlockModel)({
             link: 'http://example.org/somepath',
             src: 'http://example.org/someimage.png',
             alt: 'some alt',
@@ -126,7 +126,7 @@ define([
         beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication);
-          view = new (EditorApplication.module('blocks.image').ImageBlockView)({model: model});
+          view = new (ImageBlock.ImageBlockView)({model: model});
           view.render();
         });
 
@@ -153,8 +153,8 @@ define([
         global.stubConfig(EditorApplication, {
           blockDefaults: {},
         });
-        model = new (EditorApplication.module('blocks.image').ImageBlockModel)();
-        view = new (EditorApplication.module('blocks.image').ImageBlockSettingsView)({model: model});
+        model = new (ImageBlock.ImageBlockModel)();
+        view = new (ImageBlock.ImageBlockSettingsView)({model: model});
       });
 
       it('renders', function () {

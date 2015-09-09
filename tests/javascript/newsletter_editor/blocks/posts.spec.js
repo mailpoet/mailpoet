@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
-    'newsletter_editor/blocks/posts'
-  ], function(EditorApplication) {
+    'newsletter_editor/components/wordpress',
+    'newsletter_editor/blocks/posts',
+  ], function(EditorApplication, WordpressComponent, PostsBlock) {
 
   describe('Posts', function () {
     Backbone.Radio = {
@@ -19,7 +20,7 @@ define([
         global.stubConfig(EditorApplication);
         global.mailpoet_post_wpi = sinon.stub();
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
-        model = new (EditorApplication.module('blocks.posts').PostsBlockModel)();
+        model = new (PostsBlock.PostsBlockModel)();
       });
 
       afterEach(function () {
@@ -159,7 +160,7 @@ define([
             },
           },
         });
-        var model = new (EditorApplication.module('blocks.posts').PostsBlockModel)();
+        var model = new (PostsBlock.PostsBlockModel)();
 
         expect(model.get('amount')).to.equal('17');
         expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -198,8 +199,8 @@ define([
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
-        model = new (EditorApplication.module('blocks.posts').PostsBlockModel)();
-        view = new (EditorApplication.module('blocks.posts').PostsBlockView)({model: model});
+        model = new (PostsBlock.PostsBlockModel)();
+        view = new (PostsBlock.PostsBlockView)({model: model});
 
         // Disable auto-opening of settings view
         view.off('showSettings');
@@ -219,7 +220,7 @@ define([
       var model, view;
 
       before(function () {
-        EditorApplication.module('components.wordpress').getPostTypes = function() {
+        WordpressComponent.getPostTypes = function() {
           var deferred = jQuery.Deferred();
           deferred.resolve([
             {
@@ -249,8 +250,8 @@ define([
           blockDefaults: {},
         });
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
-        model = new (EditorApplication.module('blocks.posts').PostsBlockModel)();
-        view = new (EditorApplication.module('blocks.posts').PostsBlockSettingsView)({model: model});
+        model = new (PostsBlock.PostsBlockModel)();
+        view = new (PostsBlock.PostsBlockSettingsView)({model: model});
       });
 
       it('renders', function () {
@@ -354,9 +355,9 @@ define([
         describe('when "title only" display type is selected', function() {
           var model, view;
           beforeEach(function() {
-            model = new (EditorApplication.module('blocks.posts').PostsBlockModel)();
+            model = new (PostsBlock.PostsBlockModel)();
             model.request = sinon.stub().returns({$el: {}});
-            view = new (EditorApplication.module('blocks.posts').PostsBlockSettingsView)({model: model});
+            view = new (PostsBlock.PostsBlockSettingsView)({model: model});
             view.render();
             view.$('.mailpoet_posts_display_type').val('titleOnly').change();
           });
@@ -368,9 +369,9 @@ define([
           describe('when "title as list" is selected', function() {
             var model, view;
             beforeEach(function() {
-              model = new (EditorApplication.module('blocks.posts').PostsBlockModel)();
+              model = new (PostsBlock.PostsBlockModel)();
               model.request = sinon.stub().returns({$el: {}});
-              view = new (EditorApplication.module('blocks.posts').PostsBlockSettingsView)({model: model});
+              view = new (PostsBlock.PostsBlockSettingsView)({model: model});
               view.render();
               view.$('.mailpoet_posts_display_type').val('titleOnly').change();
               view.$('.mailpoet_posts_title_format').val('ul').change();

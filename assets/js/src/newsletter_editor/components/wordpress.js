@@ -1,8 +1,9 @@
 define([
     'newsletter_editor/App',
+    'underscore',
     'mailpoet',
     'ajax'
-  ], function(EditorApplication, MailPoet) {
+  ], function(App, _, MailPoet) {
 
   var Module = {};
   var postTypesCache,
@@ -50,7 +51,7 @@ define([
     return termsCache[key];
   };
 
-  EditorApplication.on('start', function(options) {
+  App.on('start', function(options) {
     // Prefetch post types
     Module.getPostTypes();
   });

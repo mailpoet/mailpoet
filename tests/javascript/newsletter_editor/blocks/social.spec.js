@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
-    'newsletter_editor/blocks/social'
-  ], function(EditorApplication) {
+    'newsletter_editor/blocks/social',
+    'backbone',
+  ], function(EditorApplication, SocialBlock, Backbone) {
 
   describe('Social', function () {
     describe('block model', function () {
@@ -9,7 +10,7 @@ define([
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
-        model = new (EditorApplication.module('blocks.social').SocialBlockModel)();
+        model = new (SocialBlock.SocialBlockModel)();
       });
 
       it('has a social type', function () {
@@ -32,7 +33,7 @@ define([
             },
           },
         });
-        var model = new (EditorApplication.module('blocks.social').SocialBlockModel)();
+        var model = new (SocialBlock.SocialBlockModel)();
 
         expect(model.get('iconSet')).to.equal('customConfigIconSet');
       });
@@ -53,7 +54,7 @@ define([
             }
           },
         });
-        model = new (EditorApplication.module('blocks.social').SocialIconModel)();
+        model = new (SocialBlock.SocialIconModel)();
       });
 
       it('has a socialIcon type', function () {
@@ -104,7 +105,7 @@ define([
             },
           },
         });
-        model = new (EditorApplication.module('blocks.social').SocialBlockModel)({
+        model = new (SocialBlock.SocialBlockModel)({
           type: 'social',
           iconSet: 'default',
           icons: [
@@ -120,7 +121,7 @@ define([
       });
 
       it('renders', function () {
-        var view = new (EditorApplication.module('blocks.social').SocialBlockView)({model: model});
+        var view = new (SocialBlock.SocialBlockView)({model: model});
         expect(view.render).to.not.throw();
         expect(view.$('.mailpoet_social')).to.have.length(1);
       });
@@ -130,7 +131,7 @@ define([
 
         before(function () {
           global.stubChannel(EditorApplication);
-          model = new (EditorApplication.module('blocks.social').SocialBlockModel)({
+          model = new (SocialBlock.SocialBlockModel)({
             type: 'social',
             iconSet: 'default',
             icons: [
@@ -150,7 +151,7 @@ define([
               },
             ],
           });
-          view = new (EditorApplication.module('blocks.social').SocialBlockView)({model: model});
+          view = new (SocialBlock.SocialBlockView)({model: model});
           view.render();
         });
 
@@ -188,7 +189,7 @@ define([
             },
           },
         });
-        model = new (EditorApplication.module('blocks.social').SocialBlockModel)({
+        model = new (SocialBlock.SocialBlockModel)({
           type: 'social',
           iconSet: 'default',
           icons: [
@@ -206,7 +207,7 @@ define([
       });
 
       it('renders', function () {
-        var view = new (EditorApplication.module('blocks.social').SocialBlockSettingsView)({model: model});
+        var view = new (SocialBlock.SocialBlockSettingsView)({model: model});
         expect(view.render).to.not.throw();
       });
 
@@ -231,7 +232,7 @@ define([
               },
             },
           });
-          model = new (EditorApplication.module('blocks.social').SocialBlockModel)({
+          model = new (SocialBlock.SocialBlockModel)({
             type: 'social',
             iconSet: 'default',
             icons: [
@@ -246,7 +247,7 @@ define([
               }
             ],
           });
-          view = new (EditorApplication.module('blocks.social').SocialBlockSettingsView)({model: model});
+          view = new (SocialBlock.SocialBlockSettingsView)({model: model});
           view.render();
         });
 

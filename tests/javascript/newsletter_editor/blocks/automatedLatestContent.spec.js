@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
-    'newsletter_editor/blocks/automatedLatestContent'
-  ], function(EditorApplication) {
+    'newsletter_editor/blocks/automatedLatestContent',
+    'newsletter_editor/components/wordpress',
+  ], function(EditorApplication, AutomatedLatestContentBlock, WordpressComponent) {
 
   describe('Automated latest content', function () {
     describe('model', function () {
@@ -12,7 +13,7 @@ define([
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
         global.mailpoet_post_wpi = sinon.stub();
-        model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
+        model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
       });
 
       afterEach(function () {
@@ -151,7 +152,7 @@ define([
             },
           },
         });
-        var model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
+        var model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
 
         expect(model.get('amount')).to.equal('17');
         expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -191,8 +192,8 @@ define([
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-        model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
-        view = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockView)({model: model});
+        model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({model: model});
       });
 
       afterEach(function () {
@@ -209,7 +210,7 @@ define([
       var model, view;
 
       before(function () {
-        EditorApplication.module('components.wordpress').getPostTypes = function() {
+        WordpressComponent.getPostTypes = function() {
           var deferred = jQuery.Deferred();
           deferred.resolve([
             {
@@ -243,8 +244,8 @@ define([
       });
 
       beforeEach(function() {
-        model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
-        view = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockSettingsView)({model: model});
+        model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
       });
 
       after(function () {
@@ -257,8 +258,8 @@ define([
 
       describe('once rendered', function () {
         beforeEach(function() {
-          model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
-          view = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockSettingsView)({model: model});
+          model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+          view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
           view.render();
         });
 
@@ -367,8 +368,8 @@ define([
         describe('when "title only" display type is selected', function() {
           var model, view;
           beforeEach(function() {
-            model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
-            view = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockSettingsView)({model: model});
+            model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+            view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
             view.render();
             view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').change();
           });
@@ -380,8 +381,8 @@ define([
           describe('when "title as list" is selected', function() {
             var model, view;
             beforeEach(function() {
-              model = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockModel)();
-              view = new (EditorApplication.module('blocks.automatedLatestContent').AutomatedLatestContentBlockSettingsView)({model: model});
+              model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+              view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
               view.render();
               view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').change();
               view.$('.mailpoet_automated_latest_content_title_format').val('ul').change();

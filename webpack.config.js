@@ -42,8 +42,8 @@ baseConfig = {
         loader: 'expose-loader?_',
       },
       {
-        include: require.resolve('backbone.supermodel'),
-        loader: 'imports-loader?Backbone=backbone!exports-loader?Backbone.SuperModel',
+        test: /backbone.supermodel/,
+        loader: 'exports-loader?Backbone.SuperModel',
       },
       {
         include: require.resolve('handlebars'),

@@ -1,7 +1,7 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/header'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, HeaderBlock) {
 
   describe('Header', function () {
     describe('model', function () {
@@ -11,7 +11,7 @@ define([
         global. stubConfig(EditorApplication, {
           blockDefaults: {},
         });
-        model = new (EditorApplication.module('blocks.header').HeaderBlockModel)();
+        model = new (HeaderBlock.HeaderBlockModel)();
       });
 
       it('has a header type', function () {
@@ -97,7 +97,7 @@ define([
             },
           },
         });
-        var model = new (EditorApplication.module('blocks.header').HeaderBlockModel)();
+        var model = new (HeaderBlock.HeaderBlockModel)();
 
         expect(model.get('text')).to.equal('some custom config text');
         expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
@@ -114,12 +114,12 @@ define([
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      var model = new (EditorApplication.module('blocks.header').HeaderBlockModel)(),
+      var model = new (HeaderBlock.HeaderBlockModel)(),
         view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
-        view = new (EditorApplication.module('blocks.header').HeaderBlockView)({model: model});
+        view = new (HeaderBlock.HeaderBlockView)({model: model});
       });
 
       it('renders', function () {
@@ -135,8 +135,8 @@ define([
         fonts: ['Arial', 'Tahoma'],
         textSizes: ['16px', '20px'],
       });
-      var model = new (EditorApplication.module('blocks.header').HeaderBlockModel)(),
-        view = new (EditorApplication.module('blocks.header').HeaderBlockSettingsView)({model: model});
+      var model = new (HeaderBlock.HeaderBlockModel)(),
+        view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -152,8 +152,8 @@ define([
           fonts: ['Arial', 'Tahoma'],
           textSizes: ['16px', '20px'],
         });
-        model = new (EditorApplication.module('blocks.header').HeaderBlockModel)({});
-        view = new (EditorApplication.module('blocks.header').HeaderBlockSettingsView)({model: model});
+        model = new (HeaderBlock.HeaderBlockModel)({});
+        view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
         view.render();
       });
 

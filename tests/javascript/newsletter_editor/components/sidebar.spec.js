@@ -1,13 +1,13 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/components/sidebar'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, SidebarComponent) {
 
   describe('Sidebar', function() {
     describe('content view', function() {
       var view;
       beforeEach(function() {
-        view = new (EditorApplication.module('components.sidebar').SidebarWidgetsView)({
+        view = new (SidebarComponent.SidebarWidgetsView)({
           collection: new Backbone.Collection([]),
         });
       });
@@ -20,7 +20,7 @@ define([
     describe('layout view', function() {
       var view;
       beforeEach(function() {
-        view = new (EditorApplication.module('components.sidebar').SidebarLayoutWidgetsView)({
+        view = new (SidebarComponent.SidebarLayoutWidgetsView)({
           collection: new Backbone.Collection([]),
         });
       });
@@ -33,7 +33,7 @@ define([
     describe('styles view', function() {
       var view;
       beforeEach(function() {
-        view = new (EditorApplication.module('components.sidebar').SidebarStylesView)({
+        view = new (SidebarComponent.SidebarStylesView)({
           model: new Backbone.SuperModel({}),
           availableStyles: new Backbone.SuperModel({}),
         });
@@ -83,7 +83,7 @@ define([
               '10px', '12px', '14px', '16px', '18px',
             ],
           });
-          view = new (EditorApplication.module('components.sidebar').SidebarStylesView)({
+          view = new (SidebarComponent.SidebarStylesView)({
             model: model,
             availableStyles: availableStyles,
           });
@@ -176,7 +176,7 @@ define([
     describe('preview view', function() {
       var view;
       beforeEach(function() {
-        view = new (EditorApplication.module('components.sidebar').SidebarPreviewView)();
+        view = new (SidebarComponent.SidebarPreviewView)();
       });
 
       it('renders', function() {

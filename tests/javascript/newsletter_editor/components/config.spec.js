@@ -1,14 +1,14 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/components/config'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, ConfigComponent) {
 
   describe('Config', function () {
     it('loads and stores configuration', function() {
-      EditorApplication.module('components.config').setConfig({
+      ConfigComponent.setConfig({
         testConfig: 'testValue',
       });
-      var model = EditorApplication.module('components.config').getConfig();
+      var model = ConfigComponent.getConfig();
       expect(model.get('testConfig')).to.equal('testValue');
     });
   });

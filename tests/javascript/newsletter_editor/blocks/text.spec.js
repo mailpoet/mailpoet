@@ -1,7 +1,7 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/text'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, TextBlock) {
 
   describe('Text', function () {
     describe('model', function () {
@@ -9,7 +9,7 @@ define([
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
-        model = new (EditorApplication.module('blocks.text').TextBlockModel)();
+        model = new (TextBlock.TextBlockModel)();
       });
 
       it('has a text type', function () {
@@ -28,7 +28,7 @@ define([
             },
           },
         });
-        var model = new (EditorApplication.module('blocks.text').TextBlockModel)();
+        var model = new (TextBlock.TextBlockModel)();
 
         expect(model.get('text')).to.equal('some custom config text');
       });
@@ -36,8 +36,8 @@ define([
 
     describe('block view', function () {
       global.stubConfig(EditorApplication);
-      var model = new (EditorApplication.module('blocks.text').TextBlockModel)(),
-        view = new (EditorApplication.module('blocks.text').TextBlockView)({model: model});
+      var model = new (TextBlock.TextBlockModel)(),
+        view = new (TextBlock.TextBlockView)({model: model});
 
       it('renders', function () {
         expect(view.render).to.not.throw();
@@ -45,12 +45,12 @@ define([
       });
 
       describe('once rendered', function () {
-        var model = new (EditorApplication.module('blocks.text').TextBlockModel)(),
+        var model = new (TextBlock.TextBlockModel)(),
           view;
 
         beforeEach(function () {
           global.stubConfig(EditorApplication);
-          view = new (EditorApplication.module('blocks.text').TextBlockView)({model: model});
+          view = new (TextBlock.TextBlockView)({model: model});
           view.render();
         });
 

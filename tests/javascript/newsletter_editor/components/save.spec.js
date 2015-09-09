@@ -1,7 +1,7 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/components/save'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, SaveComponent) {
 
   describe('Save', function() {
     describe('save method', function() {
@@ -12,7 +12,7 @@ define([
         });
         global.mailpoet_post_wpi = sinon.stub();
         EditorApplication.toJSON = sinon.stub();
-        EditorApplication.module("components.save").save();
+        SaveComponent.save();
         expect(spy.withArgs('beforeEditorSave').calledOnce).to.be.true;
       });
 
@@ -24,7 +24,7 @@ define([
           trigger: spy,
         });
         EditorApplication.toJSON = sinon.stub();
-        EditorApplication.module("components.save").save();
+        SaveComponent.save();
         expect(spy.withArgs('afterEditorSave').calledOnce).to.be.true;
       });
 
@@ -34,7 +34,7 @@ define([
         global.mailpoet_post_wpi = mock;
 
         EditorApplication.toJSON = sinon.stub().returns({});
-        EditorApplication.module("components.save").save();
+        SaveComponent.save();
 
         mock.verify();
       });
@@ -45,7 +45,7 @@ define([
       before(function() {
         EditorApplication._contentContainer = { isValid: sinon.stub().returns(true) };
         global.stubConfig(EditorApplication);
-        view = new (EditorApplication.module('components.save').SaveView)();
+        view = new (SaveComponent.SaveView)();
       });
 
       it('renders', function() {
@@ -56,7 +56,7 @@ define([
         var view;
         beforeEach(function() {
           EditorApplication._contentContainer = { isValid: sinon.stub().returns(true) };
-          view = new (EditorApplication.module('components.save').SaveView)();
+          view = new (SaveComponent.SaveView)();
           view.render();
         });
 

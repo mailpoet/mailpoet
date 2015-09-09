@@ -1,14 +1,14 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/components/content'
-  ], function(EditorApplication) {
+  ], function(EditorApplication, ContentComponent) {
 
   describe('Content', function() {
     describe('newsletter model', function() {
       var model;
 
       beforeEach(function() {
-        model = new (EditorApplication.module('components.content').NewsletterModel)({
+        model = new (ContentComponent.NewsletterModel)({
           styles: {
             style1: 'style1Value',
             style2: 'style2Value',
@@ -40,12 +40,12 @@ define([
       it('registers a block type view and model', function() {
         var blockModel = new Backbone.SuperModel(),
           blockView = new Backbone.View();
-        EditorApplication.module('components.content').registerBlockType('testType', {
+        ContentComponent.registerBlockType('testType', {
           blockModel: blockModel,
           blockView: blockView,
         });
-        expect(EditorApplication.module('components.content').getBlockTypeModel('testType')).to.deep.equal(blockModel);
-        expect(EditorApplication.module('components.content').getBlockTypeView('testType')).to.deep.equal(blockView);
+        expect(ContentComponent.getBlockTypeModel('testType')).to.deep.equal(blockModel);
+        expect(ContentComponent.getBlockTypeView('testType')).to.deep.equal(blockView);
       });
     });
 
@@ -77,7 +77,7 @@ define([
             },
           };
         };
-        var json = EditorApplication.module('components.content').toJSON();
+        var json = ContentComponent.toJSON();
         expect(json).to.deep.equal(_.extend({
           data: dataField,
           styles: stylesField

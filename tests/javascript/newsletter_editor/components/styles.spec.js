@@ -1,21 +1,21 @@
 define([
     'newsletter_editor/App',
-    'newsletter_editor/components/config'
-  ], function(EditorApplication) {
+    'newsletter_editor/components/styles'
+  ], function(EditorApplication, StylesComponent) {
 
   describe('Styles', function () {
     it('loads and stores globally available styles', function() {
-      EditorApplication.module('components.styles').setGlobalStyles({
+      StylesComponent.setGlobalStyles({
         testStyle: 'testValue',
       });
-      var model = EditorApplication.module('components.styles').getGlobalStyles();
+      var model = StylesComponent.getGlobalStyles();
       expect(model.get('testStyle')).to.equal('testValue');
     });
 
     describe('model', function() {
       var model;
       beforeEach(function() {
-        model = new (EditorApplication.module('components.styles').StylesModel)();
+        model = new (StylesComponent.StylesModel)();
       });
 
       it('triggers autoSave when changed', function() {
@@ -33,8 +33,8 @@ define([
     describe('view', function() {
       var model, view;
       beforeEach(function() {
-        model = new (EditorApplication.module('components.styles').StylesModel)();
-        view = new (EditorApplication.module('components.styles').StylesView)({ model: model });
+        model = new (StylesComponent.StylesModel)();
+        view = new (StylesComponent.StylesView)({ model: model });
       });
 
       it('renders', function() {

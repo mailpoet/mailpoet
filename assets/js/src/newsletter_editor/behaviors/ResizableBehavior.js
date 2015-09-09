@@ -56,12 +56,12 @@ define([
     },
     showResizeHandle: function() {
       if (typeof this.options.resizeHandleSelector === 'string') {
-        this.view.$(this.options.resizeHandleSelector).removeClass('mailpoet_hidden'); 
+        this.view.$(this.options.resizeHandleSelector).removeClass('mailpoet_hidden');
       }
     },
     hideResizeHandle: function() {
       if (typeof this.options.resizeHandleSelector === 'string') {
-        this.view.$(this.options.resizeHandleSelector).addClass('mailpoet_hidden'); 
+        this.view.$(this.options.resizeHandleSelector).addClass('mailpoet_hidden');
       }
     },
   });
