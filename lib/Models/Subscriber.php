@@ -70,4 +70,25 @@ class Subscriber extends Model {
       'segment_id'
     );
   }
+
+  public static function createOrUpdate($data = array()) {
+    $subscriber = false;
+
+    if(isset($data['id']) && (int)$data['id'] > 0) {
+      $subscriber = self::findOne((int)$data['id']);
+    }
+
+    if($subscriber === false) {
+      $subscriber = self::create();
+    }
+
+    $subscriber->hydrate($data);
+    $saved = $subscriber->save();
+
+    if($saved === false) {
+      return $subscriber->getValidationErrors();
+    } else {
+      return true;
+    }
+  }
 }

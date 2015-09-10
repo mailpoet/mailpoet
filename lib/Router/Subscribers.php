@@ -34,22 +34,10 @@ class Subscribers {
   }
 
   function save($data = array()) {
-    $id = (isset($data['id']) ? (int)$data['id'] : 0);
+    $result = Subscriber::createOrUpdate($data);
 
-    if($id > 0) {
-      // update
-      $model = Subscriber::findOne($id);
-      $model->hydrate($data);
-      $saved = $model->save();
-    } else {
-      // new
-      $model = Subscriber::create();
-      $model->hydrate($data);
-      $saved = $model->save();
-    }
-
-    if($saved === false) {
-      wp_send_json($model->getValidationErrors());
+    if($result !== true) {
+      wp_send_json($result);
     } else {
       wp_send_json(true);
     }
