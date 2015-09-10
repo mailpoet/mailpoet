@@ -1,0 +1,89 @@
+<?php
+namespace MailPoet\Newsletter;
+if(!defined('ABSPATH')) exit;
+
+class Renderer {
+
+  public $template = 'NewsletterTemplate.html';
+
+  function __construct($newsletterData) {
+    $this->data = $newsletterData;
+    $this->template = file_get_contents(dirname(__FILE__) . '/' . $this->template);
+  }
+
+  function renderAll() {
+    $newsletterContent = $this->renderContent($this->data['data']);
+    $newsletterStyles = $this->renderStyles($this->data['styles']);
+
+    $renderedTemplate = $this->renderTemplate($this->template, array(
+      $newsletterStyles,
+      $newsletterContent
+    ));
+    $renderedTemplateWithInlinedStyles = $this->inlineCSSStyles($renderedTemplate);
+
+    return $this->postProcessRenderedTemplate($renderedTemplateWithInlinedStyles);
+  }
+
+  function renderContent($content) {
+    $newsletterContent = '';
+    foreach ($content['blocks'] as $contentBlock) {
+      if(isset($contentBlock['blocks']) && is_array($contentBlock['blocks'])) {
+        $columnCount = count($contentBlock['blocks']);
+        $columnData = Blocks\Renderer::render($contentBlock);
+        $newsletterContent .= Columns\Renderer::render($columnCount, $columnData);
+      }
+    }
+
+    return $newsletterContent;
+  }
+
+  function renderStyles($styles) {
+    $newsletterStyles = '';
+    foreach ($styles as $selector => $style) {
+      switch ($selector) {
+      case 'text':
+        $selector = 'span.paragraph, ul, ol';
+      break;
+      case 'background':
+        $selector = '.mailpoet_content-wrapper';
+      break;
+      case 'link':
+        $selector = '.mailpoet_content-wrapper a';
+      break;
+      case 'newsletter':
+        $selector = '.mailpoet_container, .mailpoet_col-one, .mailpoet_col-two, .mailpoet_col-three';
+      break;
+      }
+      $newsletterStyles .= $selector . '{' . PHP_EOL;
+      foreach ($style as $attribute => $individualStyle) {
+        $newsletterStyles .= Blocks\Renderer::translateCSSAttribute($attribute) . ':' . $individualStyle . ';' . PHP_EOL;
+      }
+      $newsletterStyles .= '}' . PHP_EOL;
+    }
+
+    return $newsletterStyles;
+  }
+
+  function renderTemplate($template, $data) {
+    return preg_replace_callback('/{{\w+}}/', function ($matches) use (&$data) {
+      return array_shift($data);
+    }, $template);
+  }
+
+  function inlineCSSStyles($template) {
+    $inliner = new \MailPoet\Util\CSS();
+
+    return $inliner->inlineCSS(null, $template);
+  }
+
+  function postProcessRenderedTemplate($template) {
+    // remove padding from last element inside each column
+    $DOM = \pQuery::parseStr($template);
+    $lastColumnElement = $DOM->query('.mailpoet_col > tbody > tr:last-child > td');
+    foreach ($lastColumnElement as $element) {
+      $element->setAttribute('style', str_replace('padding-bottom:20px;', '', $element->attributes['style']));
+    }
+
+    return $DOM->__toString();
+  }
+}
