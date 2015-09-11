@@ -24,7 +24,6 @@ class PostsTransformer {
         $results[] = self::getPostTitle($post, $args);
       } else {
         $postJSON = self::postToEditorJson($post, $args);
-
         $results = array_merge($results, $postJSON);
 
         if ($use_divider && $index + 1 < $total_posts) {
@@ -60,7 +59,10 @@ class PostsTransformer {
           $content = $excerpts[0];
         } else {
           // Separator not present, try to shorten long posts
-          $content = self::postContentToExcerpt($post->post_content, self::MAX_EXCERPT_LENGTH);
+          $content = self::postContentToExcerpt(
+            $post->post_content,
+            self::MAX_EXCERPT_LENGTH
+          );
         }
       }
     } else {
@@ -76,9 +78,12 @@ class PostsTransformer {
     $content = self::stripShortCodes($content);
 
     // remove wysija nl shortcode
-    $content = preg_replace('/\<div class="wysija-register">(.*?)\<\/div>/','',$content);
+    $content = preg_replace(
+      '/\<div class="wysija-register">(.*?)\<\/div>/',
+      '',
+      $content
+    );
 
-    // convert embedded content if necessary
     $content = self::convertEmbeddedContent($content);
 
     // convert h4 h5 h6 to h3
@@ -89,16 +94,25 @@ class PostsTransformer {
     }
 
     // convert currency signs
-    $content = str_replace(array('$', '€', '£', '¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), $content);
+    $content = str_replace(
+      array('$', '€', '£', '¥'),
+      array('&#36;', '&euro;', '&pound;', '&#165;'),
+      $content
+    );
 
     // strip useless tags
-    $tags_not_being_stripped = array('<img>', '<p>','<em>','<span>','<b>','<strong>','<i>','<h1>','<h2>','<h3>','<a>','<ul>','<ol>','<li>','<br>');
+    $tags_not_being_stripped = array(
+      '<img>', '<p>', '<em>', '<span>', '<b>', '<strong>', '<i>', '<h1>',
+      '<h2>', '<h3>', '<a>', '<ul>', '<ol>', '<li>', '<br>'
+    );
     $content = strip_tags($content, implode('',$tags_not_being_stripped));
 
     $content = wpautop($content);
 
     if (!$hideReadMore && $args['readMoreType'] === 'link') {
-      $content .= '<p><a href="' . get_permalink($post->ID) . '" target="_blank">' . stripslashes($args['readMoreText']) . '</a></p>';
+      $content .= '<p><a href="' . get_permalink($post->ID)
+        . '" target="_blank">' . stripslashes($args['readMoreText'])
+        . '</a></p>';
     }
 
     // Append author and categories above and below contents
@@ -108,12 +122,18 @@ class PostsTransformer {
         $text = '';
 
         if ($args['showAuthor'] === $position_field) {
-          $text .= self::getPostAuthor($args['authorPrecededBy'], $post->post_author);
+          $text .= self::getPostAuthor(
+            $args['authorPrecededBy'],
+            $post->post_author
+          );
         }
 
         if ($args['showCategories'] === $position_field) {
           if (!empty($text)) $text .= '<br />';
-          $text .= self::getPostCategories($args['categoriesPrecededBy'], $post);
+          $text .= self::getPostCategories(
+            $args['categoriesPrecededBy'],
+            $post
+          );
         }
 
         if (!empty($text)) $text = '<p>' . $text . '</p>';
@@ -124,9 +144,45 @@ class PostsTransformer {
 
     $root = pQuery::parseStr($content);
 
-    // Step 1: Hoist image tags to root level, preserving order and inserting
-    // images before top ancestor
+    self::hoistImagesToRoot($root);
+    $structure = self::transformTagsToJson($args, $post, $root);
+    $updated_structure = self::mergeNeighboringBlocks($structure);
 
+    if ($args['titlePosition'] === 'inTextBlock') {
+      // Attach title to the first text block
+      $text_block_index = null;
+      foreach ($updated_structure as $index => $block) {
+        if ($block['type'] === 'text') {
+          $text_block_index = $index;
+          break;
+        }
+      }
+
+      $title = self::getPostTitle($post, $args);
+      if ($text_block_index === null) {
+        $updated_structure[] = array(
+          'type' => 'text',
+          'text' => $title,
+        );
+      } else {
+        $updated_structure[$text_block_index]['text'] = $title . $updated_structure[$text_block_index]['text'];
+      }
+    }
+
+    if (!$hideReadMore && $args['readMoreType'] === 'button') {
+      $button = $args['readMoreButton'];
+      $button['url'] = get_permalink($post->ID);
+      $updated_structure[] = $button;
+    }
+
+    return $updated_structure;
+  }
+
+  /**
+   * Hoists images to root level, preserves order
+   * and inserts tags before top ancestor
+   */
+  private static function hoistImagesToRoot($root) {
     foreach ($root->query('img') as $item) {
       $top_ancestor = self::findTopAncestor($item);
       $offset = $top_ancestor->index();
@@ -137,10 +193,13 @@ class PostsTransformer {
 
       $item->changeParent($root, $offset);
     }
+  }
 
-    // Step 2: Perform transformation: turn special tags to their respective
-    // JSON objects, turn other root children into text blocks
-
+  /**
+   * Transforms HTML tags into their respective JSON objects,
+   * turns other root children into text blocks
+   */
+  private static function transformTagsToJson($args, $post, $root) {
     $structure = array();
 
     // Prepend featured image if current post has one
@@ -148,7 +207,10 @@ class PostsTransformer {
       $thumbnail_id = get_post_thumbnail_id($post->ID);
 
       // get attachment data (src, width, height)
-      $image_info = wp_get_attachment_image_src($thumbnail_id, 'single-post-thumbnail');
+      $image_info = wp_get_attachment_image_src(
+        $thumbnail_id,
+        'single-post-thumbnail'
+      );
 
       // get alt text
       $alt_text = trim(strip_tags(get_post_meta($thumbnail_id, '_wp_attachment_image_alt', true)));
@@ -204,8 +266,14 @@ class PostsTransformer {
       }
     }
 
-    // Step 3: Merge neighboring text blocks into one, remove empty text blocks
+    return $structure;
+  }
 
+  /**
+   * Merges neighboring blocks when possible.
+   * E.g. 2 adjacent text blocks may be combined into one.
+   */
+  private static function mergeNeighboringBlocks($structure) {
     $updated_structure = array();
     $text_accumulator = '';
     foreach ($structure as $item) {
@@ -231,34 +299,6 @@ class PostsTransformer {
       );
     }
 
-
-    if ($args['titlePosition'] === 'inTextBlock') {
-      // Attach title to the first text block
-      $text_block_index = null;
-      foreach ($updated_structure as $index => $block) {
-        if ($block['type'] === 'text') {
-          $text_block_index = $index;
-          break;
-        }
-      }
-
-      $title = self::getPostTitle($post, $args);
-      if ($text_block_index === null) {
-        $updated_structure[] = array(
-          'type' => 'text',
-          'text' => $title,
-        );
-      } else {
-        $updated_structure[$text_block_index]['text'] = $title . $updated_structure[$text_block_index]['text'];
-      }
-    }
-
-    if (!$hideReadMore && $args['readMoreType'] === 'button') {
-      $button = $args['readMoreButton'];
-      $button['url'] = get_permalink($post->ID);
-      $updated_structure[] = $button;
-    }
-
     return $updated_structure;
   }
 
@@ -274,7 +314,11 @@ class PostsTransformer {
       return '';
     }
     // remove captions
-    $content = preg_replace("/\[caption.*?\](.*<\/a>)(.*?)\[\/caption\]/", '$1', $content);
+    $content = preg_replace(
+      "/\[caption.*?\](.*<\/a>)(.*?)\[\/caption\]/",
+      '$1',
+      $content
+    );
 
     // remove other shortcodes
     $content = preg_replace('/\[[^\[\]]*\]/', '', $content);
@@ -284,10 +328,18 @@ class PostsTransformer {
 
   private static function convertEmbeddedContent($content = '') {
     // remove embedded video and replace with links
-    $content = preg_replace('#<iframe.*?src=\"(.+?)\".*><\/iframe>#', '<a href="$1">'.__('Click here to view media.').'</a>', $content);
+    $content = preg_replace(
+      '#<iframe.*?src=\"(.+?)\".*><\/iframe>#',
+      '<a href="$1">'.__('Click here to view media.').'</a>',
+      $content
+    );
 
     // replace youtube links
-    $content = preg_replace('#http://www.youtube.com/embed/([a-zA-Z0-9_-]*)#Ui', 'http://www.youtube.com/watch?v=$1', $content);
+    $content = preg_replace(
+      '#http://www.youtube.com/embed/([a-zA-Z0-9_-]*)#Ui',
+      'http://www.youtube.com/watch?v=$1',
+      $content
+    );
 
     return $content;
   }
@@ -311,7 +363,11 @@ class PostsTransformer {
     $content = '';
 
     // Get categories
-    $categories = wp_get_post_terms($post->ID, get_object_taxonomies($post->post_type), array('fields' => 'names'));
+    $categories = wp_get_post_terms(
+      $post->ID,
+      get_object_taxonomies($post->post_type),
+      array('fields' => 'names')
+    );
     if(!empty($categories)) {
       // check if the user specified a label to be displayed before the author's name
       if(strlen(trim($preceded_by)) > 0) {

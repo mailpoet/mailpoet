@@ -81,7 +81,8 @@ class Wordpress {
         else if ($term['taxonomy'] === 'post_tag') $tags[] = $term['id'];
       }
 
-      foreach (array('post_tag' => $tags, 'category' => $categories) as $taxonomy => $terms) {
+      $taxonomies = array('post_tag' => $tags, 'category' => $categories);
+      foreach ($taxonomies as $taxonomy => $terms) {
         if (!empty($terms)) {
           $tax = array(
             'taxonomy' => $taxonomy,
@@ -94,8 +95,10 @@ class Wordpress {
       }
 
       if (!empty($taxonomies_query)) {
-        // With exclusion we want to use 'AND', because we want posts that don't have excluded tags/categories
-        // But with inclusion we want to use 'OR', because we want posts that have any of the included tags/categories
+        // With exclusion we want to use 'AND', because we want posts that
+        // don't have excluded tags/categories. But with inclusion we want to
+        // use 'OR', because we want posts that have any of the included
+        // tags/categories
         $taxonomies_query['relation'] = ($args['inclusionType'] === 'exclude') ? 'AND' : 'OR';
 
         return $taxonomies_query;
