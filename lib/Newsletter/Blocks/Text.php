@@ -31,11 +31,10 @@ class Text {
     // remove the last break line
     $element['text'] = preg_replace('/<br>([^<br>]*)$/s', '', $element['text']);
 
-    $template = '<tr>
-				   <td class="mailpoet_col mailpoet_text mailpoet_padded" valign="top">
-				     ' . $element['text'] . '
-				   </td>
-				 </tr>';
+    $template = '
+<tr>
+  <td class="mailpoet_col mailpoet_text mailpoet_padded" valign="top">' . $element['text'] . ' </td>
+</tr>';
 
     return $template;
   }

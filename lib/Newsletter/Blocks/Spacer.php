@@ -11,10 +11,10 @@ class Spacer {
       unset($element['styles']['block']['backgroundColor']);
     }
 
-    $template = '<tr>
-				   <td class="mailpoet_col mailpoet_spacer" style="' . BlocksRenderer::getBlockStyles($element) . '" valign="top">
-				   </td>
-				 </tr>';
+    $template = '
+<tr>
+  <td class="mailpoet_col mailpoet_spacer" style="' . BlocksRenderer::getBlockStyles($element) . '" valign="top"> </td>
+</tr>';
 
     return $template;
   }
