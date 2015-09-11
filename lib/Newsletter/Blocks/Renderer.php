@@ -2,7 +2,7 @@
 
 class Renderer {
 
-  static $typeFace = array(
+  public $typeFace = array(
     'Arial' => "Arial, 'Helvetica Neue', Helvetica, sans-serif",
     'Comic Sans MS' => "'Comic Sans MS', 'Marker Felt-Thin', Arial, sans-serif",
     'Courier New' => "'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace",
@@ -14,7 +14,7 @@ class Renderer {
     'Verdana' => "Verdana, Geneva, sans-serif"
   );
 
-  static $cssAtributesTable = array(
+  public $cssAtributesTable = array(
     'backgroundColor' => 'background-color',
     'fontColor' => 'color',
     'fontFamily' => 'font-family',
@@ -28,14 +28,14 @@ class Renderer {
     'lineHeight' => 'line-height'
   );
 
-  static function render($data, $column = null) {
+  function render($data, $column = null) {
     $blockContent = '';
     $blockCount = count($data['blocks']);
 
     foreach ($data['blocks'] as $i => $block) {
-      $blockContent .= self::createElementFromBlockType($block);
+      $blockContent .= $this->createElementFromBlockType($block);
       if(isset($block['blocks']) && is_array($block['blocks'])) {
-        $blockContent = self::render($block);
+        $blockContent = $this->render($block);
       }
 
       // vertical orientation denotes column container
@@ -47,7 +47,7 @@ class Renderer {
     return (isset($columns)) ? $columns : $blockContent;
   }
 
-  static function createElementFromBlockType($block) {
+  function createElementFromBlockType($block) {
     switch ($block['type']) {
     case 'header':
       $element = Header::render($block);
@@ -81,27 +81,27 @@ class Renderer {
     return $element;
   }
 
-  static function getBlockStyles($element, $ignore = false) {
+  function getBlockStyles($element, $ignore = false) {
     if(!isset($element['styles']['block'])) {
       return;
     }
 
-    return self::getStyles($element['styles'], 'block', $ignore);
+    return $this->getStyles($element['styles'], 'block', $ignore);
   }
 
-  static function getStyles($styles, $type, $ignore = false) {
+  function getStyles($styles, $type, $ignore = false) {
     $css = '';
     foreach ($styles[$type] as $attribute => $style) {
       if($ignore && in_array($attribute, $ignore)) {
         continue;
       }
-      $css .= self::translateCSSAttribute($attribute) . ': ' . $style . ' !important;';
+      $css .= $this->translateCSSAttribute($attribute) . ': ' . $style . ' !important;';
     }
 
     return $css;
   }
 
-  static function translateCSSAttribute($attribute) {
-    return (isset(self::$cssAtributesTable[$attribute])) ? self::$cssAtributesTable[$attribute] : $attribute;
+  function translateCSSAttribute($attribute) {
+    return (isset($this->cssAtributesTable[$attribute])) ? $this->cssAtributesTable[$attribute] : $attribute;
   }
 }

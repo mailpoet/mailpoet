@@ -2,19 +2,22 @@
 
 class Renderer {
 
-  static function render($columnsCount, $columnsData) {
-    $columnWidths = array(
-      1 => 600,
-      2 => 300,
-      3 => 200
-    );
-    $columnClasses = array(
-      1 => 'mailpoet_col-one',
-      2 => 'mailpoet_col-two',
-      3 => 'mailpoet_col-three'
-    );
-    $columnWidth = $columnWidths[$columnsCount];
-    $columnClass = $columnClasses[$columnsCount];
+  public $columnWidths = array(
+    1 => 600,
+    2 => 300,
+    3 => 200
+  );
+
+  public $columnClasses = array(
+    1 => 'mailpoet_col-one',
+    2 => 'mailpoet_col-two',
+    3 => 'mailpoet_col-three'
+  );
+
+  function render($columnsCount, $columnsData) {
+
+    $columnWidth = $this->columnWidths[$columnsCount];
+    $columnClass = $this->columnClasses[$columnsCount];
 
     // open column container
     $columnContainerTemplate = '
@@ -30,12 +33,14 @@ class Renderer {
               <tr>
                 <td width="' . $columnWidth . '" style="width: ' . $columnWidth . 'px;" valign="top">
         <![endif]-->';
+
     $columnOpenTemplate = '
 <table width="' . $columnWidth . '"
        border="0" cellpadding="0" cellspacing="0" align="left" class="mailpoet_force-row ' . $columnClass . ' mailpoet_col"
        style="width: ' . $columnWidth . 'px; border-spacing: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;
               table-layout: fixed; margin-left: auto; margin-right: auto;" bgcolor="#999999">
   <tbody>';
+
     $columnCloseTemplate = '
   </tbody>
 </table>

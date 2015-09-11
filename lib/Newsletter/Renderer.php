@@ -4,9 +4,13 @@ if(!defined('ABSPATH')) exit;
 
 class Renderer {
 
-  public $template = 'NewsletterTemplate.html';
+  public $template = 'Template.html';
 
   function __construct($newsletterData) {
+    $this->blocksRenderer = new Blocks\Renderer();
+    $this->columnsRenderer = new Columns\Renderer();
+    $this->DOMQuery = new \pQuery();
+    $this->CSSInliner = new \MailPoet\Util\CSS();
     $this->data = $newsletterData;
     $this->template = file_get_contents(dirname(__FILE__) . '/' . $this->template);
   }
@@ -29,8 +33,8 @@ class Renderer {
     foreach ($content['blocks'] as $contentBlock) {
       if(isset($contentBlock['blocks']) && is_array($contentBlock['blocks'])) {
         $columnCount = count($contentBlock['blocks']);
-        $columnData = Blocks\Renderer::render($contentBlock);
-        $newsletterContent .= Columns\Renderer::render($columnCount, $columnData);
+        $columnData = $this->blocksRenderer->render($contentBlock);
+        $newsletterContent .= $this->columnsRenderer->render($columnCount, $columnData);
       }
     }
 
@@ -56,7 +60,7 @@ class Renderer {
       }
       $newsletterStyles .= $selector . '{' . PHP_EOL;
       foreach ($style as $attribute => $individualStyle) {
-        $newsletterStyles .= Blocks\Renderer::translateCSSAttribute($attribute) . ':' . $individualStyle . ';' . PHP_EOL;
+        $newsletterStyles .= $this->blocksRenderer->translateCSSAttribute($attribute) . ':' . $individualStyle . ';' . PHP_EOL;
       }
       $newsletterStyles .= '}' . PHP_EOL;
     }
@@ -71,14 +75,12 @@ class Renderer {
   }
 
   function inlineCSSStyles($template) {
-    $inliner = new \MailPoet\Util\CSS();
-
-    return $inliner->inlineCSS(null, $template);
+    return $this->CSSInliner->inlineCSS(null, $template);
   }
 
   function postProcessRenderedTemplate($template) {
     // remove padding from last element inside each column
-    $DOM = \pQuery::parseStr($template);
+    $DOM = $this->DOMQuery->parseStr($template);
     $lastColumnElement = $DOM->query('.mailpoet_col > tbody > tr:last-child > td');
     foreach ($lastColumnElement as $element) {
       $element->setAttribute('style', str_replace('padding-bottom:20px;', '', $element->attributes['style']));

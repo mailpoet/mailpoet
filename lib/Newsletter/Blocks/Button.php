@@ -5,6 +5,8 @@ use MailPoet\Newsletter\Blocks\Renderer as BlocksRenderer;
 class Button {
 
   static function render($element) {
+    $blocksRenderer = new Renderer();
+
     $template = '
 <tr>
   <td class="mailpoet_col mailpoet_button mailpoet_padded" valign = "top" >
@@ -32,7 +34,7 @@ class Button {
             <![endif]-->
             <a class="mailpoet_button"
                href="' . $element['url'] . '"
-               style="display:inline-block;text-align:center;text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all;' . BlocksRenderer::getBlockStyles($element, array('textAlign')) . '"> ' . $element['text'] . '
+               style="display:inline-block;text-align:center;text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all;' . $blocksRenderer->getBlockStyles($element, array('textAlign')) . '"> ' . $element['text'] . '
             </a>
           </td>
         </tr>
