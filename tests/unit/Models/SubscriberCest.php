@@ -114,10 +114,32 @@ class SubscriberCest {
     $association->segment_id = $segment->id;
     $association->save();
 
-    $subscriber = Subscriber::find_one($this->subscriber->id);
-    $subscriberSegment = $subscriber->segments()
-      ->find_one();
+    $subscriber = Subscriber::findOne($this->subscriber->id);
+    $subscriberSegment = $subscriber->segments()->findOne();
     expect($subscriberSegment->id)->equals($segment->id);
+  }
+
+  function itCanCreateOrUpdate() {
+    $data = array(
+      'email'  => 'john.doe@mailpoet.com',
+      'first_name' => 'John',
+      'last_name' => 'Doe'
+    );
+
+    $result = Subscriber::createOrUpdate($data);
+    expect($result)->equals(true);
+
+    $record = Subscriber::where('email', $data['email'])
+      ->findOne();
+    expect($record->first_name)->equals($data['first_name']);
+    expect($record->last_name)->equals($data['last_name']);
+
+    $record->last_name = 'Mailer';
+    $result = Subscriber::createOrUpdate($record->asArray());
+    expect($result)->equals(true);
+
+    $record = Subscriber::where('email', $data['email'])->findOne();
+    expect($record->last_name)->equals('Mailer');
   }
 
   function _after() {
