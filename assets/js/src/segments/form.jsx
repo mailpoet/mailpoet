@@ -1,5 +1,4 @@
 define(
-  'segments_form',
   [
     'react',
     'react-router',

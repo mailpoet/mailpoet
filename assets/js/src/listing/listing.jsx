@@ -1,5 +1,4 @@
 define(
-  'listing',
   [
     'mailpoet',
     'jquery',
@@ -25,10 +24,10 @@ define(
     ListingFilters
   ) {
      var ListingItem = React.createClass({
-      handleSelect: function(e) {
+      handleSelectItem: function(e) {
         var is_checked = jQuery(e.target).is(':checked');
 
-        this.props.onSelect(
+        this.props.onSelectItem(
           parseInt(e.target.value, 10),
           is_checked
         );
@@ -36,17 +35,29 @@ define(
         return !e.target.checked;
       },
       render: function() {
-        return (
-          <tr>
-            <th className="check-column" scope="row">
+
+        var checkbox = false;
+
+        if(this.props.is_selectable === true) {
+          checkbox = (
+            <th className="mailpoet_check_column" scope="row">
               <label className="screen-reader-text">
                 { 'Select ' + this.props.item.email }</label>
               <input
                 type="checkbox"
                 defaultValue={ this.props.item.id }
-                defaultChecked={ this.props.item.selected }
-                onChange={ this.handleSelect } />
+                checked={
+                  this.props.item.selected || this.props.selection === 'all'
+                }
+                onChange={ this.handleSelectItem }
+                disabled={ this.props.selection === 'all' } />
             </th>
+          );
+        }
+
+        return (
+          <tr>
+            { checkbox }
             { this.props.onRenderItem(this.props.item) }
           </tr>
         );
@@ -65,23 +76,50 @@ define(
                   className="colspanchange">
                   {
                     (this.props.loading === true)
-                    ? MailPoetI18n.loading
-                    : MailPoetI18n.noRecordFound
+                    ? MailPoetI18n.loadingItems
+                    : MailPoetI18n.noItemsFound
                   }
                 </td>
               </tr>
             </tbody>
           );
         } else {
+
+          var selectAllClasses = classNames(
+            'mailpoet_select_all',
+            { 'mailpoet_hidden': (
+                this.props.selection === false
+                || (this.props.count <= this.props.limit)
+              )
+            }
+          );
+
           return (
             <tbody>
+              <tr className={ selectAllClasses }>
+                <td colSpan={ this.props.columns.length + 1 }>
+                  { MailPoetI18n.selectAllLabel }&nbsp;
+                  <a
+                    onClick={ this.props.onSelectAll }
+                    href="javascript:;">{
+                      (this.props.selection !== 'all')
+                      ? MailPoetI18n.selectAllLink
+                      : MailPoetI18n.clearSelection
+                    }</a>
+                </td>
+              </tr>
+
               {this.props.items.map(function(item) {
-                item.selected = (this.props.selected.indexOf(item.id) !== -1);
+                item.id = parseInt(item.id, 10);
+                item.selected = (this.props.selected_ids.indexOf(item.id) !== -1);
+
                 return (
                   <ListingItem
                     columns={ this.props.columns }
-                    onSelect={ this.props.onSelect }
+                    onSelectItem={ this.props.onSelectItem }
                     onRenderItem={ this.props.onRenderItem }
+                    selection={ this.props.selection }
+                    is_selectable={ this.props.is_selectable }
                     key={ 'item-' + item.id }
                     item={ item } />
                 );
@@ -106,7 +144,8 @@ define(
           groups: [],
           group: 'all',
           filters: [],
-          selected: []
+          selected_ids: [],
+          selection: false
         };
       },
       componentDidMount: function() {
@@ -118,7 +157,9 @@ define(
       },
       handleSearch: function(search) {
         this.setState({
-          search: search
+          search: search,
+          selection: false,
+          selected_ids: []
         }, function() {
           this.getItems();
         }.bind(this));
@@ -126,21 +167,54 @@ define(
       handleSort: function(sort_by, sort_order = 'asc') {
         this.setState({
           sort_by: sort_by,
-          sort_order: sort_order
+          sort_order: sort_order,
         }, function() {
+          this.clearSelection();
           this.getItems();
         }.bind(this));
       },
-      handleSelect: function(id, is_checked) {
-        var selected = this.state.selected;
+      handleSelectItem: function(id, is_checked) {
+        var selected_ids = this.state.selected_ids;
 
         if(is_checked) {
-          selected = jQuery.merge(selected, [ id ]);
+          selected_ids = jQuery.merge(selected_ids, [ id ]);
         } else {
-          selected.splice(selected.indexOf(id), 1);
+          selected_ids.splice(selected_ids.indexOf(id), 1);
         }
+
         this.setState({
-          selected: selected
+          selection: false,
+          selected_ids: selected_ids
+        });
+      },
+      handleSelectItems: function(is_checked) {
+        if(is_checked === false) {
+          this.clearSelection();
+        } else {
+          var selected_ids = this.state.items.map(function(item) {
+            return ~~item.id;
+          });
+
+          this.setState({
+            selected_ids: selected_ids,
+            selection: 'page'
+          });
+        }
+      },
+      handleSelectAll: function() {
+        if(this.state.selection === 'all') {
+          this.clearSelection();
+        } else {
+          this.setState({
+            selection: 'all',
+            selected_ids: []
+          });
+        }
+      },
+      clearSelection: function() {
+        this.setState({
+          selection: false,
+          selected_ids: []
         });
       },
       handleGroup: function(group) {
@@ -150,28 +224,19 @@ define(
         this.setState({
           group: group,
           filters: [],
-          selected: [],
           search: '',
           page: 1
         }, function() {
+          this.clearSelection();
           this.getItems();
         }.bind(this));
       },
-      handleSelectAll: function(is_checked) {
-        if(is_checked === false) {
-          this.setState({ selected: [] });
-        } else {
-          var selected = this.state.items.map(function(item) {
-            return ~~item.id;
-          });
-
-          this.setState({
-            selected: selected
-          });
-        }
-      },
       handleSetPage: function(page) {
-        this.setState({ page: page }, function() {
+        this.setState({
+          page: page,
+          selection: false,
+          selected_ids: []
+        }, function() {
           this.getItems();
         }.bind(this));
       },
@@ -189,6 +254,9 @@ define(
           return column;
         });
 
+        // bulk actions
+        var bulk_actions = this.props.bulk_actions || [];
+
         var tableClasses = classNames(
           'wp-list-table',
           'widefat',
@@ -200,15 +268,14 @@ define(
           <div>
             <ListingGroups
               groups={ this.state.groups }
-              selected={ this.state.group }
-              onSelect={ this.handleGroup } />
+              group={ this.state.group }
+              onSelectGroup={ this.handleGroup } />
             <ListingSearch
               onSearch={ this.handleSearch }
               search={ this.state.search } />
             <div className="tablenav top clearfix">
               <ListingBulkActions
-                actions={ this.props.actions }
-                selected={ this.state.selected } />
+                bulk_actions={ bulk_actions } />
               <ListingFilters filters={ this.state.filters } />
               <ListingPages
                 count={ this.state.count }
@@ -220,34 +287,42 @@ define(
               <thead>
                 <ListingHeader
                   onSort={ this.handleSort }
-                  onSelectAll={ this.handleSelectAll }
+                  onSelectItems={ this.handleSelectItems }
+                  selection={ this.state.selection }
                   sort_by={ this.state.sort_by }
                   sort_order={ this.state.sort_order }
-                  columns={ this.props.columns } />
+                  columns={ this.props.columns }
+                  is_selectable={ bulk_actions.length > 0 } />
               </thead>
 
               <ListingItems
                 onRenderItem={ this.handleRenderItem }
                 columns={ this.props.columns }
-                selected={ this.state.selected }
-                onSelect={ this.handleSelect }
-                loading= { this.state.loading }
+                is_selectable={ bulk_actions.length > 0 }
+                onSelectItem={ this.handleSelectItem }
+                onSelectAll={ this.handleSelectAll }
+                selected_ids={ this.state.selected_ids }
+                selection={ this.state.selection }
+                loading={ this.state.loading }
+                count={ this.state.count }
+                limit={ this.state.limit }
                 items={ items } />
 
               <tfoot>
                 <ListingHeader
                   onSort={ this.handleSort }
-                  onSelectAll={ this.handleSelectAll }
+                  onSelectItems={ this.handleSelectItems }
+                  selection={ this.state.selection }
                   sort_by={ this.state.sort_by }
                   sort_order={ this.state.sort_order }
-                  columns={ this.props.columns } />
+                  columns={ this.props.columns }
+                  is_selectable={ bulk_actions.length > 0 } />
               </tfoot>
 
             </table>
             <div className="tablenav bottom">
               <ListingBulkActions
-                actions={ this.props.actions }
-                selected={ this.state.selected } />
+                bulk_actions={ bulk_actions } />
               <ListingPages
                 count={ this.state.count }
                 page={ this.state.page }

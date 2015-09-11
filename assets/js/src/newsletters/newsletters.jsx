@@ -1,5 +1,4 @@
 define(
-  'newsletters',
   [
     'react',
     'react-router',

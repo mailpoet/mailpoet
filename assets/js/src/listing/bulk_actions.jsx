@@ -1,4 +1,4 @@
-define('bulk_actions', ['react'], function(React) {
+define(['react'], function(React) {
 
   var ListingBulkActions = React.createClass({
     handleChangeAction: function(e) {
@@ -14,13 +14,13 @@ define('bulk_actions', ['react'], function(React) {
       var action = this.getSelectedAction();
 
       if(action !== null && action['onApply'] !== undefined) {
-        action.onApply(this.props.selected);
+        action.onApply();
       }
     },
     getSelectedAction: function() {
       var selected_action = jQuery(this.refs.action.getDOMNode()).val();
       if(selected_action.length > 0) {
-        var action = this.props.actions.filter(function(action) {
+        var action = this.props.bulk_actions.filter(function(action) {
           return (action.name === selected_action);
         });
 
@@ -31,7 +31,7 @@ define('bulk_actions', ['react'], function(React) {
       return null;
     },
     render: function() {
-      if(this.props.actions.length === 0) {
+      if(this.props.bulk_actions.length === 0) {
         return null;
       }
 
@@ -45,7 +45,7 @@ define('bulk_actions', ['react'], function(React) {
 
           <select ref="action" onChange={this.handleChangeAction}>
             <option value="">Bulk Actions</option>
-            {this.props.actions.map(function(action, index) {
+            {this.props.bulk_actions.map(function(action, index) {
               return (
                 <option
                   value={action.name}

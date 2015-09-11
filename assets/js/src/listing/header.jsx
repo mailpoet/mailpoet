@@ -1,21 +1,9 @@
-define('header', ['react', 'classnames'], function(React, classNames) {
-  /*
-    props:
-      onSort: callback(sort_by, sort_order)
-      onSelectAll: callback(is_checked)
-      sort_by: (string) field name
-      columns -> (array)
-        column -> {
-          sorted: (string) asc | desc
-          sortable: (bool)
-          name: (string) field name
-          label: (string) displayed label
-        }
-  */
+define(['react', 'classnames'], function(React, classNames) {
+
   var ListingHeader = React.createClass({
-    handleSelectAll: function() {
-      return this.props.onSelectAll(
-        this.refs.select_all.getDOMNode().checked
+    handleSelectItems: function() {
+      return this.props.onSelectItems(
+        this.refs.toggle.getDOMNode().checked
       );
     },
     render: function() {
@@ -30,17 +18,26 @@ define('header', ['react', 'classnames'], function(React, classNames) {
         );
       }.bind(this));
 
-      return (
-        <tr>
-          <td className="manage-column column-cb check-column" id="cb">
+      var checkbox = false;
+
+      if(this.props.is_selectable === true) {
+        checkbox = (
+          <td className="manage-column column-cb mailpoet_check_column">
             <label className="screen-reader-text">
               { 'Select All' }
             </label>
             <input
               type="checkbox"
-              ref="select_all"
-              onChange={this.handleSelectAll} />
+              ref="toggle"
+              checked={ this.props.selection }
+              onChange={ this.handleSelectItems } />
           </td>
+        );
+      }
+
+      return (
+        <tr>
+          {checkbox}
           {columns}
         </tr>
       );

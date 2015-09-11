@@ -1,5 +1,4 @@
 define(
-  'segments_list',
   [
     'react',
     'jquery',
@@ -31,9 +30,6 @@ define(
         label: 'Last modified on',
         sortable: true
       }
-    ];
-
-    var actions = [
     ];
 
     var List = React.createClass({
@@ -90,8 +86,7 @@ define(
           <Listing
             onRenderItem={this.renderItem}
             items={this.getItems}
-            columns={columns}
-            actions={actions} />
+            columns={columns} />
         );
       }
     });

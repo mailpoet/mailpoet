@@ -1,11 +1,5 @@
-define('pages', ['react', 'classnames'], function(React, classNames) {
-  /*
-    props:
-      onSetPage -> callback(page)
-      page -> (int) current page
-      count -> (int) total number of items
-      limit -> (int) limit per page
-  */
+define(['react', 'classnames'], function(React, classNames) {
+
   var ListingPages = React.createClass({
     setFirstPage: function() {
       this.props.onSetPage(1);

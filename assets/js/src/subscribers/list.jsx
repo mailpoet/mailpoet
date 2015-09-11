@@ -1,19 +1,20 @@
 define(
-  'subscribers_list',
   [
     'react',
-    'jquery',
+    'react-router',
     'mailpoet',
     'listing/listing.jsx',
-    'classnames'
+    'classnames',
   ],
   function(
     React,
-    jQuery,
+    Router,
     MailPoet,
     Listing,
     classNames
   ) {
+
+    var Link = Router.Link;
 
     var columns = [
       {
@@ -48,16 +49,10 @@ define(
       },
     ];
 
-    var actions = [
+    var bulk_actions = [
       {
         name: 'move',
-        label: 'Move to list...',
-        onSelect: function(e) {
-          console.log(e);
-        },
-        onApply: function(selected) {
-          console.log(selected);
-        }
+        label: 'Move to list...'
       },
       {
         name: 'add',
@@ -73,7 +68,7 @@ define(
       getItems: function(listing) {
         MailPoet.Ajax.post({
           endpoint: 'subscribers',
-          action: 'get',
+          action: 'listing',
           data: {
             offset: (listing.state.page - 1) * listing.state.limit,
             limit: listing.state.limit,
@@ -124,6 +119,13 @@ define(
               <strong>
                 <a>{ subscriber.email }</a>
               </strong>
+
+              <div className="row-actions">
+                <span className="edit">
+                  <Link to="edit" params={{ id: subscriber.id }}>Edit</Link>
+                </span>
+              </div>
+
               <button className="toggle-row" type="button">
                 <span className="screen-reader-text">Show more details</span>
               </button>
@@ -149,10 +151,10 @@ define(
       render: function() {
         return (
           <Listing
-            onRenderItem={this.renderItem}
-            items={this.getItems}
-            columns={columns}
-            actions={actions} />
+            onRenderItem={ this.renderItem }
+            items={ this.getItems }
+            columns={ columns }
+            bulk_actions={ bulk_actions } />
         );
       }
     });

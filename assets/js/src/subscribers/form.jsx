@@ -1,16 +1,17 @@
 define(
-  'subscribers_form',
   [
     'react',
     'react-router',
     'jquery',
-    'mailpoet'
+    'mailpoet',
+    'classnames',
   ],
   function(
     React,
     Router,
     jQuery,
-    MailPoet
+    MailPoet,
+    classNames
   ) {
 
     var Form = React.createClass({
@@ -20,8 +21,49 @@ define(
       getInitialState: function() {
         return {
           loading: false,
-          errors: []
+          errors: [],
+          item: {}
         };
+      },
+      componentDidMount: function() {
+        if(this.props.params.id !== undefined) {
+          if(this.isMounted()) {
+            this.loadItem(this.props.params.id);
+          }
+        }
+      },
+      componentWillReceiveProps: function(props) {
+        if(props.params.id === undefined) {
+          this.setState({
+            loading: false,
+            item: {}
+          });
+        } else {
+          this.loadItem(props.params.id);
+        }
+      },
+      loadItem: function(id) {
+        this.setState({ loading: true });
+
+        MailPoet.Ajax.post({
+          endpoint: 'subscribers',
+          action: 'get',
+          data: { id: id }
+        }).done(function(response) {
+          if(response === false) {
+            this.setState({
+              loading: false,
+              item: {}
+            }, function() {
+              this.transitionTo('/new');
+            }.bind(this));
+          } else {
+            this.setState({
+              loading: false,
+              item: response
+            });
+          }
+        }.bind(this));
       },
       handleSubmit: function(e) {
         e.preventDefault();
@@ -31,20 +73,30 @@ define(
         MailPoet.Ajax.post({
           endpoint: 'subscribers',
           action: 'save',
-          data: {
-            email: React.findDOMNode(this.refs.email).value,
-            firstname: React.findDOMNode(this.refs.firstname).value,
-            lastname: React.findDOMNode(this.refs.lastname).value
-          }
+          data: this.state.item
         }).done(function(response) {
           this.setState({ loading: false });
 
           if(response === true) {
             this.transitionTo('/');
+            if(this.props.params.id !== undefined) {
+              MailPoet.Notice.success('Subscriber succesfully updated!');
+            } else {
+              MailPoet.Notice.success('Subscriber succesfully added!');
+            }
+
           } else {
             this.setState({ errors: response });
           }
         }.bind(this));
+      },
+      handleItemChange: function(e) {
+        var item = this.state.item;
+        item[e.target.name] = e.target.value;
+        this.setState({
+          item: item
+        });
+        return true;
       },
       render: function() {
         var errors = this.state.errors.map(function(error, index) {
@@ -53,17 +105,38 @@ define(
           );
         });
 
+        var formClasses = classNames(
+          { 'mailpoet_form_loading': this.state.loading }
+        );
+
         return (
-          <form onSubmit={ this.handleSubmit }>
+          <form
+            className={ formClasses }
+            onSubmit={ this.handleSubmit }>
             { errors }
             <p>
-              <input type="text" placeholder="Email" ref="email" />
+              <input
+                type="text"
+                placeholder="Email"
+                name="email"
+                value={ this.state.item.email }
+                onChange={ this.handleItemChange }/>
             </p>
             <p>
-              <input type="text" placeholder="First name" ref="firstname" />
+              <input
+                type="text"
+                placeholder="First name"
+                name="first_name"
+                value={ this.state.item.first_name }
+                onChange={ this.handleItemChange }/>
             </p>
             <p>
-              <input type="text" placeholder="Last name" ref="lastname" />
+              <input
+                type="text"
+                placeholder="Last name"
+                name="last_name"
+                value={ this.state.item.last_name }
+                onChange={ this.handleItemChange }/>
             </p>
             <input
               className="button button-primary"

@@ -1,4 +1,4 @@
-define('filters', ['react'], function(React) {
+define(['react'], function(React) {
 
   var ListingFilters = React.createClass({
     render: function() {
