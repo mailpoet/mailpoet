@@ -9,7 +9,8 @@ define([
   var postTypesCache,
       taxonomiesCache = {},
       termsCache = {},
-      postsCache = {};
+      postsCache = {},
+      transformedPostsCache = {};
 
   Module.getPostTypes = function() {
     if (!postTypesCache) {
@@ -63,6 +64,19 @@ define([
     }
 
     return postsCache[key];
+  };
+
+  Module.getTransformedPosts = function(options) {
+    var key = JSON.stringify(options);
+    if (!transformedPostsCache[key]) {
+      transformedPostsCache[key] = MailPoet.Ajax.post({
+        endpoint: 'wordpress',
+        action: 'getTransformedPosts',
+        data: options || {},
+      });
+    }
+
+    return transformedPostsCache[key];
   };
 
   App.on('start', function(options) {

@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Router;
 
+use \MailPoet\Newsletter\PostsTransformer;
+
 if(!defined('ABSPATH')) exit;
 
 class Wordpress {
@@ -43,7 +45,34 @@ class Wordpress {
       $parameters['s'] = $args['search'];
     }
 
-    if (isset($args['terms']) && is_array($args['terms']) && !empty($args['terms'])) {
+    $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
+
+    wp_send_json(get_posts($parameters));
+  }
+
+  function getTransformedPosts($args) {
+    $parameters = array(
+      'posts_per_page' => (isset($args['amount'])) ? (int)$args['amount'] : 10,
+      'post_type' => (isset($args['contentType'])) ? $args['contentType'] : 'post',
+      'orderby' => 'date',
+      'order' => ($args['sortBy'] === 'newest') ? 'DESC' : 'ASC',
+    );
+
+    if (isset($args['posts']) && is_array($args['posts'])) {
+      $parameters['post__in'] = $args['posts'];
+    }
+
+    $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
+
+    $posts = get_posts($parameters);
+
+    wp_send_json(PostsTransformer::transform($posts, $args));
+  }
+
+  private function constructTaxonomiesQuery($args) {
+    $taxonomies_query = array();
+
+    if (isset($args['terms']) && is_array($args['terms'])) {
       // Add filtering by tags and categories
       $tags = array();
       $categories = array();
@@ -52,7 +81,6 @@ class Wordpress {
         else if ($term['taxonomy'] === 'post_tag') $tags[] = $term['id'];
       }
 
-      $taxonomies_query = array();
       foreach (array('post_tag' => $tags, 'category' => $categories) as $taxonomy => $terms) {
         if (!empty($terms)) {
           $tax = array(
@@ -69,10 +97,11 @@ class Wordpress {
         // With exclusion we want to use 'AND', because we want posts that don't have excluded tags/categories
         // But with inclusion we want to use 'OR', because we want posts that have any of the included tags/categories
         $taxonomies_query['relation'] = ($args['inclusionType'] === 'exclude') ? 'AND' : 'OR';
-        $parameters['tax_query'] = $taxonomies_query;
+
+        return $taxonomies_query;
       }
     }
 
-    wp_send_json(get_posts($parameters));
+    return $taxonomies_query;
   }
 }
