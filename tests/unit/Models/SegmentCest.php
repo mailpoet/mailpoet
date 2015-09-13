@@ -23,7 +23,7 @@ class SegmentCest {
   function itHasToBeValid() {
     expect($this->saved)->equals(true);
     $empty_model = Segment::create();
-    expect($empty_model->save())->equals(false);
+    expect($empty_model->save())->notEquals(true);
     $validations = $empty_model->getValidationErrors();
     expect(count($validations))->equals(2);
   }

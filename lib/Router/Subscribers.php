@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Router;
-use \MailPoet\Models\Subscriber;
-use \MailPoet\Listing;
+
+use MailPoet\Listing;
+use MailPoet\Models\Subscriber;
 
 if(!defined('ABSPATH')) exit;
 
@@ -10,7 +11,7 @@ class Subscribers {
   }
 
   function get($data = array()) {
-    $id = (isset($data['id']) ? (int)$data['id'] : 0);
+    $id = (isset($data['id']) ? (int) $data['id'] : 0);
 
     $subscriber = Subscriber::findOne($id);
     if($subscriber === false) {
@@ -35,12 +36,7 @@ class Subscribers {
 
   function save($data = array()) {
     $result = Subscriber::createOrUpdate($data);
-
-    if($result !== true) {
-      wp_send_json($result);
-    } else {
-      wp_send_json(true);
-    }
+    wp_send_json($result);
   }
 
   function update($data) {

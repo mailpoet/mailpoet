@@ -27,13 +27,8 @@ class Newsletters {
   function save($args) {
     $model = Newsletter::create();
     $model->hydrate($args);
-    $saved = $model->save();
-
-    if(!$saved) {
-      wp_send_json($model->getValidationErrors());
-    }
-
-    wp_send_json(true);
+    $result = $model->save();
+    wp_send_json($result);
   }
 
   function update($args) {

@@ -83,12 +83,7 @@ class Subscriber extends Model {
     }
 
     $subscriber->hydrate($data);
-    $saved = $subscriber->save();
+    return $subscriber->save();
 
-    if($saved === false) {
-      return $subscriber->getValidationErrors();
-    } else {
-      return true;
-    }
   }
 }
