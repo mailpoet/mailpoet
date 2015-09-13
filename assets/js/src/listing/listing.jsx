@@ -72,7 +72,10 @@ define(
             <tbody>
               <tr className="no-items">
                 <td
-                  colSpan={ this.props.columns.length + 1 }
+                  colSpan={
+                    this.props.columns.length
+                    + (this.props.is_selectable ? 1 : 0)
+                  }
                   className="colspanchange">
                   {
                     (this.props.loading === true)
@@ -97,7 +100,10 @@ define(
           return (
             <tbody>
               <tr className={ selectAllClasses }>
-                <td colSpan={ this.props.columns.length + 1 }>
+                <td colSpan={
+                    this.props.columns.length
+                    + (this.props.is_selectable ? 1 : 0)
+                  }>
                   { MailPoetI18n.selectAllLabel }&nbsp;
                   <a
                     onClick={ this.props.onSelectAll }
