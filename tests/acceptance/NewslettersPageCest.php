@@ -17,7 +17,7 @@ class NewslettersPageCest {
   }
   
   function iCanAddNewsletterFromListingPage(AcceptanceTester $I) {
-    $I->see('No newsletters found');
+    $I->waitForElement('.no-items', $this->waitTime);
     $I->click('New', '#newsletters');
     $I->fillField('Subject', 'first newsletter');
     $I->fillField('Body', 'some body');

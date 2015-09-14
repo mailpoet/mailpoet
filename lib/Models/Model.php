@@ -16,15 +16,15 @@ class Model extends \Sudzy\ValidModel {
       parent::save();
       return true;
     } catch (\Sudzy\ValidationException $e) {
-      return false;
+      return array_unique($e->getValidationErrors());
     } catch (\PDOException $e) {
-      return false;
+      return $e->getMessage();
     }
   }
 
   private function setTimestamp() {
     if ($this->created_at === null) {
-      $this->created_at = date("Y-m-d H:i:s");
+      $this->created_at = date('Y-m-d H:i:s');
     }
   }
 }

@@ -50,7 +50,7 @@ class SubscriberCest {
     $conflict_subscriber = Subscriber::create();
     $conflict_subscriber->hydrate($this->data);
     $saved = $conflict_subscriber->save();
-    expect($saved)->equals(false);
+    expect($saved)->notEquals(true);
   }
 
   function itHasAStatus() {

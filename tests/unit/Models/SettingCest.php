@@ -21,7 +21,7 @@ class SettingCest {
   function itHasToBeValid() {
     expect($this->result)->equals(true);
     $empty_model = Setting::create();
-    expect($empty_model->save())->equals(false);
+    expect($empty_model->save())->notEquals(true);
     $validations = $empty_model->getValidationErrors();
     expect(count($validations))->equals(4);
   }
