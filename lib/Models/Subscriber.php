@@ -80,10 +80,18 @@ class Subscriber extends Model {
 
     if($subscriber === false) {
       $subscriber = self::create();
+      $subscriber->hydrate($data);
+    } else {
+      unset($data['id']);
+      $subscriber->set($data);
     }
 
-    $subscriber->hydrate($data);
-    return $subscriber->save();
+    $saved = $subscriber->save();
 
+    if($saved === false) {
+      return $subscriber->getValidationErrors();
+    } else {
+      return true;
+    }
   }
 }

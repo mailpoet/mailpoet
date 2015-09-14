@@ -1,71 +1,45 @@
 define(
   [
     'react',
-    'react-router',
-    'jquery',
-    'mailpoet'
+    'mailpoet',
+    'form/form.jsx'
   ],
   function(
     React,
-    Router,
-    jQuery,
-    MailPoet
+    MailPoet,
+    Form
   ) {
 
-    var Form = React.createClass({
-      mixins: [
-        Router.Navigation
-      ],
-      getInitialState: function() {
-        return {
-          loading: false,
-          errors: []
-        };
+    var fields = [
+      {
+        name: 'name',
+        label: 'Name',
+        type: 'text'
+      }
+    ];
+
+    var messages = {
+      updated: function() {
+        MailPoet.Notice.success('Segment succesfully updated!');
       },
-      handleSubmit: function(e) {
-        e.preventDefault();
+      created: function() {
+        MailPoet.Notice.success('Segment succesfully added!');
+      }
+    };
 
-        this.setState({ loading: true });
-
-        MailPoet.Ajax.post({
-          endpoint: 'segments',
-          action: 'save',
-          data: {
-            name: React.findDOMNode(this.refs.name).value
-          }
-        }).done(function(response) {
-          this.setState({ loading: false });
-
-          if(response === true) {
-            this.transitionTo('/');
-          } else {
-            this.setState({ errors: response });
-          }
-        }.bind(this));
-      },
+    var SegmentForm = React.createClass({
       render: function() {
-        var errors = this.state.errors.map(function(error, index) {
-          return (
-            <p key={'error-'+index} className="mailpoet_error">{ error }</p>
-          );
-        });
 
         return (
-          <form onSubmit={ this.handleSubmit }>
-            { errors }
-            <p>
-              <input type="text" placeholder="Name" ref="name" />
-            </p>
-            <input
-              className="button button-primary"
-              type="submit"
-              value="Save"
-              disabled={this.state.loading} />
-          </form>
+          <Form
+            endpoint="segments"
+            fields={ fields }
+            params={ this.props.params }
+            messages={ messages } />
         );
       }
     });
 
-    return Form;
+    return SegmentForm;
   }
 );

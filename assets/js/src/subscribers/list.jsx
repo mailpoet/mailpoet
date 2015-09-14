@@ -2,18 +2,15 @@ define(
   [
     'react',
     'react-router',
-    'mailpoet',
     'listing/listing.jsx',
     'classnames',
   ],
   function(
     React,
     Router,
-    MailPoet,
     Listing,
     classNames
   ) {
-
     var Link = Router.Link;
 
     var columns = [
@@ -65,31 +62,6 @@ define(
     ];
 
     var List = React.createClass({
-      getItems: function(listing) {
-        MailPoet.Ajax.post({
-          endpoint: 'subscribers',
-          action: 'listing',
-          data: {
-            offset: (listing.state.page - 1) * listing.state.limit,
-            limit: listing.state.limit,
-            group: listing.state.group,
-            search: listing.state.search,
-            sort_by: listing.state.sort_by,
-            sort_order: listing.state.sort_order
-          },
-          onSuccess: function(response) {
-            if(listing.isMounted()) {
-              listing.setState({
-                items: response.items || [],
-                filters: response.filters || [],
-                groups: response.groups || [],
-                count: response.count || 0,
-                loading: false
-              });
-            }
-          }.bind(listing)
-        });
-      },
       renderItem: function(subscriber) {
         var rowClasses = classNames(
           'manage-column',
@@ -151,6 +123,7 @@ define(
       render: function() {
         return (
           <Listing
+            endpoint="subscribers"
             onRenderItem={ this.renderItem }
             items={ this.getItems }
             columns={ columns }

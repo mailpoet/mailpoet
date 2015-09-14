@@ -1,18 +1,17 @@
 define(
   [
     'react',
-    'jquery',
-    'mailpoet',
+    'react-router',
     'listing/listing.jsx',
-    'classnames'
+    'classnames',
   ],
   function(
     React,
-    jQuery,
-    MailPoet,
+    Router,
     Listing,
     classNames
   ) {
+    var Link = Router.Link;
 
     var columns = [
       {
@@ -32,32 +31,7 @@ define(
       }
     ];
 
-    var List = React.createClass({
-      getItems: function(listing) {
-        MailPoet.Ajax.post({
-          endpoint: 'segments',
-          action: 'get',
-          data: {
-            offset: (listing.state.page - 1) * listing.state.limit,
-            limit: listing.state.limit,
-            group: listing.state.group,
-            search: listing.state.search,
-            sort_by: listing.state.sort_by,
-            sort_order: listing.state.sort_order
-          },
-          onSuccess: function(response) {
-            if(listing.isMounted()) {
-              listing.setState({
-                items: response.items || [],
-                filters: response.filters || [],
-                groups: response.groups || [],
-                count: response.count || 0,
-                loading: false
-              });
-            }
-          }.bind(listing)
-        });
-      },
+    var SegmentList = React.createClass({
       renderItem: function(segment) {
         var rowClasses = classNames(
           'manage-column',
@@ -71,6 +45,12 @@ define(
               <strong>
                 <a>{ segment.name }</a>
               </strong>
+
+              <div className="row-actions">
+                <span className="edit">
+                  <Link to="edit" params={{ id: segment.id }}>Edit</Link>
+                </span>
+              </div>
             </td>
             <td className="column-date" data-colname="Subscribed on">
               <abbr>{ segment.created_at }</abbr>
@@ -84,6 +64,7 @@ define(
       render: function() {
         return (
           <Listing
+            endpoint="segments"
             onRenderItem={this.renderItem}
             items={this.getItems}
             columns={columns} />
@@ -91,6 +72,6 @@ define(
       }
     });
 
-    return List;
+    return SegmentList;
   }
 );

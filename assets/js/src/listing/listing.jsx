@@ -159,7 +159,30 @@ define(
       },
       getItems: function() {
         this.setState({ loading: true });
-        this.props.items.bind(null, this)();
+
+        MailPoet.Ajax.post({
+          endpoint: this.props.endpoint,
+          action: 'listing',
+          data: {
+            offset: (this.state.page - 1) * this.state.limit,
+            limit: this.state.limit,
+            group: this.state.group,
+            search: this.state.search,
+            sort_by: this.state.sort_by,
+            sort_order: this.state.sort_order
+          },
+          onSuccess: function(response) {
+            if(this.isMounted()) {
+              this.setState({
+                items: response.items || [],
+                filters: response.filters || [],
+                groups: response.groups || [],
+                count: response.count || 0,
+                loading: false
+              });
+            }
+          }.bind(this)
+        });
       },
       handleSearch: function(search) {
         this.setState({

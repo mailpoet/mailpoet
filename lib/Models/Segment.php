@@ -15,20 +15,6 @@ class Segment extends Model {
     ));
   }
 
-  public static function createOrUpdate($model) {
-    $exists = self::where('name', $model['name'])
-      ->find_one();
-
-    if($exists === false) {
-      $new_model = self::create();
-      $new_model->name = $model['name'];
-      return $new_model->save();
-    }
-
-    $exists->name = $model['name_updated'];
-    return $exists->save();
-  }
-
   public function subscribers() {
     return $this->has_many_through(
       __NAMESPACE__.'\Subscriber',
@@ -53,5 +39,29 @@ class Segment extends Model {
   }
 
   static function group($orm, $group = null) {
+  }
+
+  public static function createOrUpdate($data = array()) {
+    $segment = false;
+
+    if(isset($data['id']) && (int)$data['id'] > 0) {
+      $segment = self::findOne((int)$data['id']);
+    }
+
+    if($segment === false) {
+      $segment = self::create();
+      $segment->hydrate($data);
+    } else {
+      unset($data['id']);
+      $segment->set($data);
+    }
+
+    $saved = $segment->save();
+
+    if($saved === false) {
+      return $segment->getValidationErrors();
+    } else {
+      return true;
+    }
   }
 }

@@ -10,7 +10,7 @@ abstract class ValidModel extends \Model
         'indexedErrors' => false,   // If True getValidationErrors will return an array with the index
                                     // being the field name and the value the error. If multiple errors
                                     // are triggered for a field only the first will be kept.
-        'throw' => self::ON_SAVE // One of self::ON_SET|ON_SAVE|NEVER. 
+        'throw' => self::ON_SAVE // One of self::ON_SET|ON_SAVE|NEVER.
                                   //  + ON_SET throws immediately when field is set()
                                   //  + ON_SAVE throws on save()
                                   //  + NEVER means an exception is never thrown; check for ->getValidaionErrors()
@@ -130,11 +130,17 @@ abstract class ValidModel extends \Model
 
     /**
     * Overload set; to call validateAndSet
-    * // TODO: handle multiple sets if $name is a field=>val array
     */
-    public function set($name, $value = null)
+    public function set($key, $value = null)
     {
-        $this->validateAndSet($name, $value);
+        if(is_array($key)) {
+            // multiple values
+            foreach($key as $field => $value) {
+                $this->validateAndSet($field, $value);
+            }
+        } else {
+            $this->validateAndSet($key, $value);
+        }
     }
 
 

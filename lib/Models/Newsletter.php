@@ -35,4 +35,28 @@ class Newsletter extends Model {
 
   static function group($orm, $group = null) {
   }
+
+  public static function createOrUpdate($data = array()) {
+    $newsletter = false;
+
+    if(isset($data['id']) && (int)$data['id'] > 0) {
+      $newsletter = self::findOne((int)$data['id']);
+    }
+
+    if($newsletter === false) {
+      $newsletter = self::create();
+      $newsletter->hydrate($data);
+    } else {
+      unset($data['id']);
+      $newsletter->set($data);
+    }
+
+    $saved = $newsletter->save();
+
+    if($saved === false) {
+      return $newsletter->getValidationErrors();
+    } else {
+      return true;
+    }
+  }
 }

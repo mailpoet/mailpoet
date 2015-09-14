@@ -1,75 +1,50 @@
 define(
   [
     'react',
-    'react-router',
-    'jquery',
-    'mailpoet'
+    'mailpoet',
+    'form/form.jsx'
   ],
   function(
     React,
-    Router,
-    jQuery,
-    MailPoet
+    MailPoet,
+    Form
   ) {
 
-    var Form = React.createClass({
-      mixins: [
-        Router.Navigation
-      ],
-      getInitialState: function() {
-        return {
-          loading: false,
-          errors: []
-        };
+    var fields = [
+      {
+        name: 'subject',
+        label: 'Subject',
+        type: 'text'
       },
-      handleSubmit: function(e) {
-        e.preventDefault();
+      {
+        name: 'body',
+        label: 'Body',
+        type: 'textarea'
+      }
+    ];
 
-        this.setState({ loading: true });
-
-        MailPoet.Ajax.post({
-          endpoint: 'newsletters',
-          action: 'save',
-          data: {
-            subject: React.findDOMNode(this.refs.subject).value,
-            body: React.findDOMNode(this.refs.body).value
-          }
-        }).done(function(response) {
-          this.setState({ loading: false });
-
-          if(response === true) {
-            this.transitionTo('/');
-          } else {
-            this.setState({ errors: response });
-          }
-        }.bind(this));
+    var messages = {
+      updated: function() {
+        MailPoet.Notice.success('Newsletter succesfully updated!');
       },
+      created: function() {
+        MailPoet.Notice.success('Newsletter succesfully added!');
+      }
+    };
+
+    var NewsletterForm = React.createClass({
       render: function() {
-        var errors = this.state.errors.map(function(error, index) {
-          return (
-            <p key={'error-'+index} className="mailpoet_error">{ error }</p>
-          );
-        });
 
         return (
-          <form onSubmit={ this.handleSubmit }>
-            { errors }
-            <p>
-              <input type="text" placeholder="Subject" ref="subject" />
-            </p>
-            <p>
-              <input type="text" placeholder="Body" ref="body" />
-            </p>
-            <input
-              className="button button-primary"
-              type="submit"
-              value="Save"
-              disabled={this.state.loading} />
-          </form>
+          <Form
+            endpoint="newsletters"
+            fields={ fields }
+            params={ this.props.params }
+            messages={ messages } />
         );
       }
     });
 
-    return Form;
+    return NewsletterForm;
   }
 );

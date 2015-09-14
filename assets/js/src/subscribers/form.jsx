@@ -1,41 +1,61 @@
 define(
   [
     'react',
-    'react-router',
-    'jquery',
     'mailpoet',
-    'classnames',
     'form/form.jsx'
   ],
   function(
     React,
-    Router,
-    jQuery,
     MailPoet,
-    classNames,
     Form
   ) {
 
     var fields = [
       {
         name: 'email',
-        label: 'E-mail'
+        label: 'E-mail',
+        type: 'text'
       },
       {
         name: 'first_name',
-        label: 'Firstname'
+        label: 'Firstname',
+        type: 'text'
       },
       {
         name: 'last_name',
-        label: 'Lastname'
+        label: 'Lastname',
+        type: 'text'
+      },
+      {
+        name: 'status',
+        label: 'Status',
+        type: 'select',
+        values: {
+          'subscribed': 'Subscribed',
+          'unconfirmed': 'Unconfirmed',
+          'unsubscribed': 'Unsubscribed'
+        }
       }
     ];
+
+    var messages = {
+      updated: function() {
+        MailPoet.Notice.success('Subscriber succesfully updated!');
+      },
+      created: function() {
+        MailPoet.Notice.success('Subscriber succesfully added!');
+      }
+    };
 
     var SubscriberForm = React.createClass({
       render: function() {
 
         return (
-          <Form fields={ fields } params={ this.props.params } />
+          <Form
+            endpoint="subscribers"
+            fields={ fields }
+            params={ this.props.params }
+            messages={ messages } />
         );
       }
     });
