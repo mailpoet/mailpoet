@@ -29,15 +29,11 @@ class Renderer {
   }
 
   function renderContent($content) {
-    $newsletterContent = '';
-    foreach ($content['blocks'] as $contentBlock) {
-      if(isset($contentBlock['blocks']) && is_array($contentBlock['blocks'])) {
-        $columnCount = count($contentBlock['blocks']);
-        $columnData = $this->blocksRenderer->render($contentBlock);
-        $newsletterContent .= $this->columnsRenderer->render($columnCount, $columnData);
-      }
-    }
-
+    array_map(function($contentBlock) use(&$newsletterContent) {
+      $columnCount = count($contentBlock['blocks']);
+      $columnData = $this->blocksRenderer->render($contentBlock);
+      $newsletterContent .= $this->columnsRenderer->render($columnCount, $columnData);
+    }, $content['blocks']);
     return $newsletterContent;
   }
 
@@ -69,7 +65,7 @@ class Renderer {
   }
 
   function renderTemplate($template, $data) {
-    return preg_replace_callback('/{{\w+}}/', function ($matches) use (&$data) {
+    return preg_replace_callback('/{{\w+}}/', function($matches) use(&$data) {
       return array_shift($data);
     }, $template);
   }

@@ -29,56 +29,23 @@ class Renderer {
   );
 
   function render($data, $column = null) {
-    $blockContent = '';
-    $blockCount = count($data['blocks']);
-
-    foreach ($data['blocks'] as $i => $block) {
+    array_map(function($block) use(&$blockContent, &$columns) {
       $blockContent .= $this->createElementFromBlockType($block);
-      if(isset($block['blocks']) && is_array($block['blocks'])) {
+      if(isset($block['blocks'])) {
         $blockContent = $this->render($block);
       }
-
       // vertical orientation denotes column container
-      if($block['type'] == 'container' && $block['orientation'] == 'vertical') {
+      if($block['type'] === 'container' && $block['orientation'] === 'vertical') {
         $columns[] = $blockContent;
       }
-    }
+    }, $data['blocks']);
 
     return (isset($columns)) ? $columns : $blockContent;
   }
 
   function createElementFromBlockType($block) {
-    switch ($block['type']) {
-    case 'header':
-      $element = Header::render($block);
-    break;
-    case 'image':
-      $element = Image::render($block);
-    break;
-    case 'text':
-      $element = Text::render($block);
-    break;
-    case 'button':
-      $element = Button::render($block);
-    break;
-    case 'divider':
-      $element = Divider::render($block);
-    break;
-    case 'spacer':
-      $element = Spacer::render($block);
-    break;
-    case 'social':
-      $element = Social::render($block);
-    break;
-    case 'footer':
-      $element = Footer::render($block);
-    break;
-    default:
-      $element = '';//'UNRECOGNIZED ELEMENT';
-    break;
-    }
-
-    return $element;
+    $blockClass = __NAMESPACE__ . '\\' . ucfirst($block['type']);
+    return (class_exists($blockClass)) ? $blockClass::render($block) : '';
   }
 
   function getBlockStyles($element, $ignore = false) {
@@ -89,16 +56,14 @@ class Renderer {
     return $this->getStyles($element['styles'], 'block', $ignore);
   }
 
-  function getStyles($styles, $type, $ignore = false) {
-    $css = '';
-    foreach ($styles[$type] as $attribute => $style) {
-      if($ignore && in_array($attribute, $ignore)) {
-        continue;
+  function getStyles($data, $type, $ignore = false) {
+    array_map(function($attribute, $style) use(&$styles, $ignore) {
+      if(!$ignore || !in_array($attribute, $ignore)) {
+        $styles .= $this->translateCSSAttribute($attribute) . ': ' . $style . ' !important;';
       }
-      $css .= $this->translateCSSAttribute($attribute) . ': ' . $style . ' !important;';
-    }
+    }, array_keys($data[$type]), $data[$type]);
 
-    return $css;
+    return $styles;
   }
 
   function translateCSSAttribute($attribute) {
