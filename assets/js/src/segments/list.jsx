@@ -1,18 +1,14 @@
 define(
   [
     'react',
-    'react-router',
     'listing/listing.jsx',
-    'classnames',
+    'classnames'
   ],
   function(
     React,
-    Router,
     Listing,
     classNames
   ) {
-    var Link = Router.Link;
-
     var columns = [
       {
         name: 'name',
@@ -32,7 +28,7 @@ define(
     ];
 
     var SegmentList = React.createClass({
-      renderItem: function(segment) {
+      renderItem: function(segment, actions) {
         var rowClasses = classNames(
           'manage-column',
           'column-primary',
@@ -45,12 +41,7 @@ define(
               <strong>
                 <a>{ segment.name }</a>
               </strong>
-
-              <div className="row-actions">
-                <span className="edit">
-                  <Link to="edit" params={{ id: segment.id }}>Edit</Link>
-                </span>
-              </div>
+              { actions }
             </td>
             <td className="column-date" data-colname="Subscribed on">
               <abbr>{ segment.created_at }</abbr>

@@ -4,28 +4,33 @@ use MailPoet\Models\Newsletter;
 
 class NewsletterCest {
   function _before() {
-    $this->before_time = time();
-    $this->data = array(
-      'subject' => 'My First Newsletter',
-      'body' => 'a verrryyyyy long body :)'
-    );
-
-    $newsletter = Newsletter::create();
-    $newsletter->hydrate($this->data);
-    $this->saved = $newsletter->save();
   }
 
-  function itCanBeCreated() {
-    expect($this->saved)->equals(true);
+  function itCanCreateOrUpdate() {
+    $is_created = Newsletter::createOrUpdate(array(
+      'subject' => 'new newsletter'
+    ));
+    expect($is_created)->equals(true);
+
+    $newsletter = Newsletter::where('subject', 'new newsletter')->findOne();
+    expect($newsletter->subject)->equals('new newsletter');
+
+    $is_updated = Newsletter::createOrUpdate(array(
+      'id' => $newsletter->id,
+      'subject' => 'updated newsletter'
+    ));
+    $newsletter = Newsletter::where('subject', 'updated newsletter')->findOne();
+    expect($newsletter->subject)->equals('updated newsletter');
   }
 
   function itHasASearchFilter() {
-    $newsletter = Newsletter::filter('search', 'first')->findOne();
-    expect($newsletter->subject)->equals($this->data['subject']);
+    Newsletter::createOrUpdate(array('subject' => 'search for "pineapple"'));
+    $newsletter = Newsletter::filter('search', 'pineapple')->findOne();
+    expect($newsletter->subject)->contains('pineapple');
   }
 
   function _after() {
     ORM::for_table(Newsletter::$_table)
-      ->delete_many();
+      ->deleteMany();
   }
 }

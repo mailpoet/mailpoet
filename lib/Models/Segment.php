@@ -4,18 +4,17 @@ namespace MailPoet\Models;
 if(!defined('ABSPATH')) exit;
 
 class Segment extends Model {
-  public static $_table = MP_SEGMENTS_TABLE;
+  static $_table = MP_SEGMENTS_TABLE;
 
   function __construct() {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => 'name_is_blank',
-      'isString' => 'name_is_not_string'
+      'required' => __('You need to specify a name.')
     ));
   }
 
-  public function subscribers() {
+  function subscribers() {
     return $this->has_many_through(
       __NAMESPACE__.'\Subscriber',
       __NAMESPACE__.'\SubscriberSegment',
@@ -41,7 +40,7 @@ class Segment extends Model {
   static function group($orm, $group = null) {
   }
 
-  public static function createOrUpdate($data = array()) {
+  static function createOrUpdate($data = array()) {
     $segment = false;
 
     if(isset($data['id']) && (int)$data['id'] > 0) {

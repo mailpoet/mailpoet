@@ -43,11 +43,14 @@ class Segments {
     }
   }
 
-  function update($args) {
-
-  }
-
   function delete($id) {
+    $segment = Segment::findOne($id);
+    if($segment !== false) {
+      $result = $segment->delete();
+    } else {
+      $result = false;
+    }
 
+    wp_send_json($result);
   }
 }

@@ -22,7 +22,8 @@ define(['react', 'classnames'], function(React, classNames) {
 
       if(this.props.is_selectable === true) {
         checkbox = (
-          <td className="manage-column column-cb mailpoet_check_column">
+          <td
+            className="manage-column column-cb check-column">
             <label className="screen-reader-text">
               { 'Select All' }
             </label>

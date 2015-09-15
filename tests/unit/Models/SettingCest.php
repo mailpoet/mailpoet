@@ -80,7 +80,7 @@ class SettingCest {
   }
 
   function _after() {
-    ORM::for_table(Setting::$_table)
-      ->delete_many();
+    ORM::forTable(Setting::$_table)
+      ->deleteMany();
   }
 }

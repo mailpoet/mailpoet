@@ -3,63 +3,64 @@
 use Helper\Acceptance;
 
 class NewslettersPageCest {
-  
+
   function _before(AcceptanceTester $I) {
     $I->login();
     $I->resizeWindow(1024, 768);
-    $this->firstElementInList = '//*[@id="newsletters"]/div/div/table/tbody/tr[1]';
-    $this->waitTime = 2;
+    $this->first_row = 'id("newsletters")//table/tbody/tr[2]';
+    $this->timeout = 3;
   }
-  
+
   function iCanSeeTheTitle(AcceptanceTester $I) {
     $I->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters');
     $I->see('Newsletters');
   }
-  
-  function iCanAddNewsletterFromListingPage(AcceptanceTester $I) {
-    $I->waitForElement('.no-items', $this->waitTime);
+
+  function iCanAddANewsletter(AcceptanceTester $I) {
+    $I->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters');
+    $I->see('No newsletters found');
     $I->click('New', '#newsletters');
-    $I->fillField('Subject', 'first newsletter');
+    $I->fillField('subject', 'first newsletter');
     $I->fillField('Body', 'some body');
     $I->click('Save');
-    $I->waitForText('1 item', $this->waitTime);
+    $I->waitForText('1 item', $this->timeout);
   }
-  
-  function iCanAddNewsletterFromNewNewsletterPage(AcceptanceTester $I) {
-    $I->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/form');
-    $I->fillField('Subject', 'second newsletter');
+
+  function iCanAddAnotherNewsletter(AcceptanceTester $I) {
+    $I->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletters#/new');
+    $I->fillField('subject', 'second newsletter');
     $I->fillField('Body', 'some body');
     $I->click('Save');
-    $I->waitForText('2 item', $this->waitTime);
+    $I->waitForText('2 item', $this->timeout);
   }
-  
+
   function iCanSortNewsletterBySubject(AcceptanceTester $I) {
     $I->click('Subject');
-    $I->waitForText('first', $this->waitTime, $this->firstElementInList);
+    $I->waitForText('first', $this->timeout, $this->first_row);
     $I->click('Subject');
-    $I->waitForText('second', $this->waitTime, $this->firstElementInList);
+    $I->waitForText('second', $this->timeout, $this->first_row);
   }
-  
+
   function iCanSortNewsletterByCreatedDate(AcceptanceTester $I) {
     $I->click('Created on');
-    $I->waitForText('first', $this->waitTime, $this->firstElementInList);
+    $I->waitForText('first', $this->timeout, $this->first_row);
     $I->click('Created on');
-    $I->waitForText('second', $this->waitTime, $this->firstElementInList);
+    $I->waitForText('second', $this->timeout, $this->first_row);
   }
-  
+
   function iCanSearchNewsletters(AcceptanceTester $I) {
-    $searchTerm = 'second';
-    $I->fillField('Search', $searchTerm);
+    $search_term = 'second';
+    $I->fillField('Search', $search_term);
     $I->click('Search');
-    $I->waitForText($searchTerm, $this->waitTime, $this->firstElementInList);
+    $I->waitForText($search_term, $this->timeout, $this->first_row);
   }
 
   function iCanSeeMobileView(AcceptanceTester $I) {
-    $listingHeadings = '//*[@id="newsletters"]/div/div/table/thead';
+    $listing_header = 'id("newsletters")//table/thead';
     $I->resizeWindow(640, 480);
-    $I->dontSee('Created on', $listingHeadings);
-    $I->dontSee('Last modified', $listingHeadings);
-    $I->see('Subject', $listingHeadings);
+    $I->dontSee('Created on', $listing_header);
+    $I->dontSee('Last modified', $listing_header);
+    $I->see('Subject', $listing_header);
   }
 
   function _after(AcceptanceTester $I) {

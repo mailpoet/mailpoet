@@ -39,11 +39,13 @@ class Subscribers {
     wp_send_json($result);
   }
 
-  function update($data) {
-
-  }
-
   function delete($id) {
-
+    $subscriber = Subscriber::findOne($id);
+    if($subscriber !== false) {
+      $result = $subscriber->delete();
+    } else {
+      $result = false;
+    }
+    wp_send_json($result);
   }
 }

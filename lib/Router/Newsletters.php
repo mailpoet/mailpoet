@@ -45,12 +45,15 @@ class Newsletters {
     }
   }
 
-  function update($args) {
-
-  }
-
   function delete($id) {
+    $newsletter = Newsletter::findOne($id);
+    if($newsletter !== false) {
+      $result = $newsletter->delete();
+    } else {
+      $result = false;
+    }
 
+    wp_send_json($result);
   }
 
   function send($id) {

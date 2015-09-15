@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-if (!defined('ABSPATH')) exit;
+if(!defined('ABSPATH')) exit;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
@@ -10,12 +10,7 @@ class Newsletter extends Model {
     parent::__construct();
 
     $this->addValidations('subject', array(
-      'required' => 'subject_is_blank',
-      'isString' => 'subject_is_not_string'
-    ));
-    $this->addValidations('body', array(
-      'required' => 'body_is_blank',
-      'isString' => 'body_is_not_string'
+      'required' => __('You need to specify a subject.')
     ));
   }
 
@@ -36,7 +31,7 @@ class Newsletter extends Model {
   static function group($orm, $group = null) {
   }
 
-  public static function createOrUpdate($data = array()) {
+  static function createOrUpdate($data = array()) {
     $newsletter = false;
 
     if(isset($data['id']) && (int)$data['id'] > 0) {

@@ -31,8 +31,8 @@ define(
         label: 'Status',
         type: 'select',
         values: {
-          'subscribed': 'Subscribed',
           'unconfirmed': 'Unconfirmed',
+          'subscribed': 'Subscribed',
           'unsubscribed': 'Unsubscribed'
         }
       }

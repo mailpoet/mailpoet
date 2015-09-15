@@ -62,7 +62,7 @@ class Subscriber extends Model {
     return $orm->where('status', $group);
   }
 
-  public function segments() {
+  function segments() {
     return $this->has_many_through(
       __NAMESPACE__.'\Segment',
       __NAMESPACE__.'\SubscriberSegment',
@@ -71,7 +71,7 @@ class Subscriber extends Model {
     );
   }
 
-  public static function createOrUpdate($data = array()) {
+  static function createOrUpdate($data = array()) {
     $subscriber = false;
 
     if(isset($data['id']) && (int)$data['id'] > 0) {

@@ -1,18 +1,14 @@
 define(
   [
     'react',
-    'react-router',
     'listing/listing.jsx',
-    'classnames',
+    'classnames'
   ],
   function(
     React,
-    Router,
     Listing,
     classNames
   ) {
-    var Link = Router.Link;
-
     var columns = [
       {
         name: 'subject',
@@ -32,7 +28,7 @@ define(
     ];
 
     var NewsletterList = React.createClass({
-      renderItem: function(newsletter) {
+      renderItem: function(newsletter, actions) {
         var rowClasses = classNames(
           'manage-column',
           'column-primary',
@@ -45,12 +41,7 @@ define(
               <strong>
                 <a>{ newsletter.subject }</a>
               </strong>
-
-              <div className="row-actions">
-                <span className="edit">
-                  <Link to="edit" params={{ id: newsletter.id }}>Edit</Link>
-                </span>
-              </div>
+              { actions }
             </td>
             <td className="column-date" data-colname="Subscribed on">
               <abbr>{ newsletter.created_at }</abbr>

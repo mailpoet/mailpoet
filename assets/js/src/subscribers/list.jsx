@@ -1,18 +1,14 @@
 define(
   [
     'react',
-    'react-router',
     'listing/listing.jsx',
-    'classnames',
+    'classnames'
   ],
   function(
     React,
-    Router,
     Listing,
     classNames
   ) {
-    var Link = Router.Link;
-
     var columns = [
       {
         name: 'email',
@@ -62,8 +58,8 @@ define(
     ];
 
     var List = React.createClass({
-      renderItem: function(subscriber) {
-        var rowClasses = classNames(
+      renderItem: function(subscriber, actions) {
+        var row_classes = classNames(
           'manage-column',
           'column-primary',
           'has-row-actions'
@@ -87,20 +83,11 @@ define(
 
         return (
           <div>
-            <td className={ rowClasses }>
+            <td className={ row_classes }>
               <strong>
                 <a>{ subscriber.email }</a>
               </strong>
-
-              <div className="row-actions">
-                <span className="edit">
-                  <Link to="edit" params={{ id: subscriber.id }}>Edit</Link>
-                </span>
-              </div>
-
-              <button className="toggle-row" type="button">
-                <span className="screen-reader-text">Show more details</span>
-              </button>
+              { actions }
             </td>
             <td className="column" data-colname="First name">
               { subscriber.first_name }
@@ -125,7 +112,6 @@ define(
           <Listing
             endpoint="subscribers"
             onRenderItem={ this.renderItem }
-            items={ this.getItems }
             columns={ columns }
             bulk_actions={ bulk_actions } />
         );

@@ -34,7 +34,6 @@ define(
 
     var NewsletterForm = React.createClass({
       render: function() {
-
         return (
           <Form
             endpoint="newsletters"
