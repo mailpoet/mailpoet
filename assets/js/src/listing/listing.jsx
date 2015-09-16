@@ -200,6 +200,8 @@ define(
       getItems: function() {
         this.setState({ loading: true });
 
+        this.clearSelection();
+
         MailPoet.Ajax.post({
           endpoint: this.props.endpoint,
           action: 'listing',
@@ -234,6 +236,27 @@ define(
           this.getItems();
         }.bind(this));
       },
+      handleBulkAction: function(selected_ids, params) {
+        this.setState({ loading: true });
+
+        var data = params || {};
+
+        data.selection = selected_ids;
+        data.listing = {
+          offset: 0,
+          limit: 0,
+          group: this.state.group,
+          search: this.state.search
+        }
+
+        MailPoet.Ajax.post({
+          endpoint: this.props.endpoint,
+          action: 'bulk_action',
+          data: data
+        }).done(function() {
+          this.getItems();
+        }.bind(this));
+      },
       handleSearch: function(search) {
         this.setState({
           search: search,
@@ -248,7 +271,6 @@ define(
           sort_by: sort_by,
           sort_order: sort_order,
         }, function() {
-          this.clearSelection();
           this.getItems();
         }.bind(this));
       },
@@ -268,7 +290,6 @@ define(
       },
       handleSelectItems: function(is_checked) {
         if(is_checked === false) {
-          this.clearSelection();
         } else {
           var selected_ids = this.state.items.map(function(item) {
             return ~~item.id;
@@ -282,7 +303,6 @@ define(
       },
       handleSelectAll: function() {
         if(this.state.selection === 'all') {
-          this.clearSelection();
         } else {
           this.setState({
             selection: 'all',
@@ -306,7 +326,6 @@ define(
           search: '',
           page: 1
         }, function() {
-          this.clearSelection();
           this.getItems();
         }.bind(this));
       },
@@ -354,7 +373,10 @@ define(
               search={ this.state.search } />
             <div className="tablenav top clearfix">
               <ListingBulkActions
-                bulk_actions={ bulk_actions } />
+                bulk_actions={ bulk_actions }
+                selection={ this.state.selection }
+                selected_ids={ this.state.selected_ids }
+                onBulkAction={ this.handleBulkAction } />
               <ListingFilters filters={ this.state.filters } />
               <ListingPages
                 count={ this.state.count }
@@ -381,8 +403,8 @@ define(
                 is_selectable={ bulk_actions.length > 0 }
                 onSelectItem={ this.handleSelectItem }
                 onSelectAll={ this.handleSelectAll }
-                selected_ids={ this.state.selected_ids }
                 selection={ this.state.selection }
+                selected_ids={ this.state.selected_ids }
                 loading={ this.state.loading }
                 count={ this.state.count }
                 limit={ this.state.limit }
@@ -402,7 +424,10 @@ define(
             </table>
             <div className="tablenav bottom">
               <ListingBulkActions
-                bulk_actions={ bulk_actions } />
+                bulk_actions={ bulk_actions }
+                selection={ this.state.selection }
+                selected_ids={ this.state.selected_ids }
+                onBulkAction={ this.handleBulkAction } />
               <ListingPages
                 count={ this.state.count }
                 page={ this.state.page }

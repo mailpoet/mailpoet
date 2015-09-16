@@ -29,7 +29,7 @@ class Handler {
   }
 
   private function setSearch() {
-    if($this->data['search'] === null) {
+    if(empty($this->data['search'])) {
       return;
     }
     return $this->model->filter('search', $this->data['search']);
@@ -47,6 +47,20 @@ class Handler {
     return $this->model->filter('group', $this->data['group']);
   }
 
+  function getSelection($ids = array()) {
+    if(!empty($ids)) {
+      $this->model->whereIn('id', $ids);
+    }
+    return $this->model;
+  }
+
+  function getSelectionIds($ids = array()) {
+    $subscribers = $this->getSelection($ids)->select('id')->findMany();
+    return array_map(function($subscriber) {
+      return (int)$subscriber->id;
+    }, $subscribers);
+  }
+
   function get() {
     return array(
       'count' => $this->model->count(),
@@ -55,7 +69,7 @@ class Handler {
       'items' => $this->model
         ->offset($this->data['offset'])
         ->limit($this->data['limit'])
-        ->find_array()
+        ->findArray()
     );
   }
 }

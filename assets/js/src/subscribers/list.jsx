@@ -2,12 +2,17 @@ define(
   [
     'react',
     'listing/listing.jsx',
-    'classnames'
+    'classnames',
+    'mailpoet',
+    'jquery',
+    'select2'
   ],
   function(
     React,
     Listing,
-    classNames
+    classNames,
+    MailPoet,
+    jQuery
   ) {
     var columns = [
       {
@@ -42,18 +47,154 @@ define(
       },
     ];
 
+    var ItemSelection = React.createClass({
+      getInitialState: function() {
+        return {
+          loading: false,
+          items: [],
+          selected: false,
+          multiple: false
+        }
+      },
+      componentDidMount: function() {
+        this.loadItems();
+      },
+      loadItems: function() {
+        this.setState({ loading: true });
+
+        MailPoet.Ajax.post({
+          endpoint: this.props.endpoint,
+          action: 'listing',
+          data: {
+            'offset': 0,
+            'limit': 5,
+            'search': '',
+            'sort_by': 'name',
+            'sort_order': 'asc'
+          }
+        })
+        .done(function(response) {
+          if(this.isMounted()) {
+            if(response === false) {
+              this.setState({
+                loading: false,
+                items: []
+              });
+            } else {
+              this.setState({
+                loading: false,
+                items: response.items
+              });
+            }
+          }
+        }.bind(this));
+      },
+      handleChange: function() {
+        var new_value = this.refs.selection.getDOMNode().value;
+
+        if(this.state.multiple === false) {
+          if(new_value.trim().length === 0) {
+            new_value = false;
+          }
+
+          this.setState({
+            selected: new_value
+          });
+        } else {
+          var selected_values = this.state.selected || [];
+
+          if(selected_values.indexOf(new_value) !== -1) {
+            // value already present so remove it
+            selected_values.splice(selected_values.indexOf(new_value), 1);
+          } else {
+            selected_values.push(new_value);
+          }
+
+          this.setState({
+            selected: selected_values
+          });
+        }
+      },
+      getSelected: function() {
+        return this.state.selected;
+      },
+      render: function() {
+        var options = this.state.items.map(function(item, index) {
+          return (
+            <option
+              key={ 'action-' + index }
+              value={ item.id }>
+              { item.name }
+            </option>
+          );
+        });
+
+        return (
+          <select
+            ref="selection"
+            id={ this.props.id }
+            value={ this.state.selected }
+            onChange={ this.handleChange }
+            multiple={ this.state.multiple }>
+            <option value="">Select a list</option>
+            { options }
+          </select>
+        );
+      }
+    });
+
     var bulk_actions = [
       {
         name: 'move',
-        label: 'Move to list...'
+        label: 'Move to list...',
+        onSelect: function() {
+          return (
+            <ItemSelection
+              endpoint="segments"
+              id="move_to_segment" />
+          );
+        },
+        getData: function() {
+          return {
+            segment_id: ~~(jQuery('#move_to_segment').val())
+          }
+        }
       },
       {
         name: 'add',
-        label: 'Add to list...'
+        label: 'Add to list...',
+        onSelect: function() {
+          return (
+            <ItemSelection
+              endpoint="segments"
+              id="add_to_segment" />
+          );
+        },
+        getData: function() {
+          return {
+            segment_id: ~~(jQuery('#add_to_segment').val())
+          }
+        }
       },
       {
         name: 'remove',
-        label: 'Remove from list...'
+        label: 'Remove from list...',
+        onSelect: function() {
+          return (
+            <ItemSelection
+              endpoint="segments"
+              id="remove_from_segment" />
+          );
+        },
+        getData: function() {
+          return {
+            segment_id: ~~(jQuery('#remove_from_segment').val())
+          }
+        }
+      },
+      {
+        name: 'trash',
+        label: 'Trash'
       }
     ];
 

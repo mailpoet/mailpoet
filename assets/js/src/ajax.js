@@ -35,18 +35,22 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           this.options.token = window.mailpoet_token;
         }
       },
-      request: function(method, options) {
-        // set options
-        this.init(options);
-
-        // set request params
-        var params = {
+      getParams: function() {
+        return {
           action: 'mailpoet',
           token: this.options.token,
           endpoint: this.options.endpoint,
           method: this.options.action,
           data: this.options.data || {}
-        }, jqXHR;
+        }
+      },
+      request: function(method, options) {
+        // set options
+        this.init(options);
+
+        // set request params
+        var params = this.getParams();
+        var jqXHR;
 
         // make ajax request depending on method
         if(method === 'get') {
