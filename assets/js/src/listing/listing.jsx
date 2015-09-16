@@ -3,6 +3,7 @@ define(
     'mailpoet',
     'jquery',
     'react',
+    'react-router',
     'classnames',
     'listing/bulk_actions.jsx',
     'listing/header.jsx',
@@ -15,6 +16,7 @@ define(
     MailPoet,
     jQuery,
     React,
+    Router,
     classNames,
     ListingBulkActions,
     ListingHeader,
@@ -23,7 +25,14 @@ define(
     ListingGroups,
     ListingFilters
   ) {
-     var ListingItem = React.createClass({
+    var Link = Router.Link;
+
+    var ListingItem = React.createClass({
+      getInitialState: function() {
+        return {
+          toggled: true
+        };
+      },
       handleSelectItem: function(e) {
         var is_checked = jQuery(e.target).is(':checked');
 
@@ -34,13 +43,18 @@ define(
 
         return !e.target.checked;
       },
+      handleDeleteItem: function(id) {
+        this.props.onDeleteItem(id);
+      },
+      handleToggleItem: function(id) {
+        this.setState({ toggled: !this.state.toggled });
+      },
       render: function() {
-
         var checkbox = false;
 
         if(this.props.is_selectable === true) {
           checkbox = (
-            <th className="mailpoet_check_column" scope="row">
+            <th className="check-column" scope="row">
               <label className="screen-reader-text">
                 { 'Select ' + this.props.item.email }</label>
               <input
@@ -55,10 +69,35 @@ define(
           );
         }
 
+        var item_actions = (
+          <div>
+            <div className="row-actions">
+              <span className="edit">
+                <Link to="edit" params={{ id: this.props.item.id }}>Edit</Link>
+              </span>
+              &nbsp;|&nbsp;
+              <span className="trash">
+                <a
+                  href="javascript:;"
+                  onClick={ this.handleDeleteItem.bind(null, this.props.item.id) }>
+                  Trash
+                </a>
+              </span>
+            </div>
+            <button
+              onClick={ this.handleToggleItem.bind(null, this.props.item.id) }
+              className="toggle-row" type="button">
+              <span className="screen-reader-text">Show more details</span>
+            </button>
+          </div>
+        );
+
+        var row_classes = classNames({ 'is-expanded': !this.state.toggled })
+
         return (
-          <tr>
+          <tr className={ row_classes }>
             { checkbox }
-            { this.props.onRenderItem(this.props.item) }
+            { this.props.onRenderItem(this.props.item, item_actions) }
           </tr>
         );
       }
@@ -72,7 +111,10 @@ define(
             <tbody>
               <tr className="no-items">
                 <td
-                  colSpan={ this.props.columns.length + 1 }
+                  colSpan={
+                    this.props.columns.length
+                    + (this.props.is_selectable ? 1 : 0)
+                  }
                   className="colspanchange">
                   {
                     (this.props.loading === true)
@@ -97,7 +139,10 @@ define(
           return (
             <tbody>
               <tr className={ selectAllClasses }>
-                <td colSpan={ this.props.columns.length + 1 }>
+                <td colSpan={
+                    this.props.columns.length
+                    + (this.props.is_selectable ? 1 : 0)
+                  }>
                   { MailPoetI18n.selectAllLabel }&nbsp;
                   <a
                     onClick={ this.props.onSelectAll }
@@ -118,6 +163,7 @@ define(
                     columns={ this.props.columns }
                     onSelectItem={ this.props.onSelectItem }
                     onRenderItem={ this.props.onRenderItem }
+                    onDeleteItem={ this.props.onDeleteItem }
                     selection={ this.props.selection }
                     is_selectable={ this.props.is_selectable }
                     key={ 'item-' + item.id }
@@ -153,7 +199,40 @@ define(
       },
       getItems: function() {
         this.setState({ loading: true });
-        this.props.items.bind(null, this)();
+
+        MailPoet.Ajax.post({
+          endpoint: this.props.endpoint,
+          action: 'listing',
+          data: {
+            offset: (this.state.page - 1) * this.state.limit,
+            limit: this.state.limit,
+            group: this.state.group,
+            search: this.state.search,
+            sort_by: this.state.sort_by,
+            sort_order: this.state.sort_order
+          }
+        }).done(function(response) {
+          if(this.isMounted()) {
+            this.setState({
+              items: response.items || [],
+              filters: response.filters || [],
+              groups: response.groups || [],
+              count: response.count || 0,
+              loading: false
+            });
+          }
+        }.bind(this));
+      },
+      handleDeleteItem: function(id) {
+        this.setState({ loading: true });
+
+        MailPoet.Ajax.post({
+          endpoint: this.props.endpoint,
+          action: 'delete',
+          data: id
+        }).done(function() {
+          this.getItems();
+        }.bind(this));
       },
       handleSearch: function(search) {
         this.setState({
@@ -240,8 +319,8 @@ define(
           this.getItems();
         }.bind(this));
       },
-      handleRenderItem: function(item) {
-        return this.props.onRenderItem(item);
+      handleRenderItem: function(item, actions) {
+        return this.props.onRenderItem(item, actions);
       },
       render: function() {
         var items = this.state.items,
@@ -297,6 +376,7 @@ define(
 
               <ListingItems
                 onRenderItem={ this.handleRenderItem }
+                onDeleteItem={ this.handleDeleteItem }
                 columns={ this.props.columns }
                 is_selectable={ bulk_actions.length > 0 }
                 onSelectItem={ this.handleSelectItem }

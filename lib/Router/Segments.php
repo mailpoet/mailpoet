@@ -10,6 +10,17 @@ class Segments {
   }
 
   function get($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : 0);
+
+    $segment = Segment::findOne($id);
+    if($segment === false) {
+      wp_send_json(false);
+    } else {
+      wp_send_json($segment->asArray());
+    }
+  }
+
+  function listing($data = array()) {
     $listing = new Listing\Handler(
       \Model::factory('\MailPoet\Models\Segment'),
       $data
@@ -22,18 +33,24 @@ class Segments {
     wp_send_json($collection);
   }
 
-  function save($args) {
-    $model = Segment::create();
-    $model->hydrate($args);
-    $result = $model->save();
-    wp_send_json($result);
-  }
+  function save($data = array()) {
+    $result = Segment::createOrUpdate($data);
 
-  function update($args) {
-
+    if($result !== true) {
+      wp_send_json($result);
+    } else {
+      wp_send_json(true);
+    }
   }
 
   function delete($id) {
+    $segment = Segment::findOne($id);
+    if($segment !== false) {
+      $result = $segment->delete();
+    } else {
+      $result = false;
+    }
 
+    wp_send_json($result);
   }
 }

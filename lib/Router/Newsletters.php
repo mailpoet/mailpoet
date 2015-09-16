@@ -12,6 +12,17 @@ class Newsletters {
   }
 
   function get($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : 0);
+
+    $newsletter = Newsletter::findOne($id);
+    if($newsletter === false) {
+      wp_send_json(false);
+    } else {
+      wp_send_json($newsletter->asArray());
+    }
+  }
+
+  function listing($data = array()) {
     $listing = new Listing\Handler(
       \Model::factory('\MailPoet\Models\Newsletter'),
       $data
@@ -24,19 +35,25 @@ class Newsletters {
     wp_send_json($collection);
   }
 
-  function save($args) {
-    $model = Newsletter::create();
-    $model->hydrate($args);
-    $result = $model->save();
-    wp_send_json($result);
-  }
+  function save($data = array()) {
+    $result = Newsletter::createOrUpdate($data);
 
-  function update($args) {
-
+    if($result !== true) {
+      wp_send_json($result);
+    } else {
+      wp_send_json(true);
+    }
   }
 
   function delete($id) {
+    $newsletter = Newsletter::findOne($id);
+    if($newsletter !== false) {
+      $result = $newsletter->delete();
+    } else {
+      $result = false;
+    }
 
+    wp_send_json($result);
   }
 
   function send($id) {

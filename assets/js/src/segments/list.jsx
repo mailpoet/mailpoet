@@ -1,19 +1,14 @@
 define(
   [
     'react',
-    'jquery',
-    'mailpoet',
     'listing/listing.jsx',
     'classnames'
   ],
   function(
     React,
-    jQuery,
-    MailPoet,
     Listing,
     classNames
   ) {
-
     var columns = [
       {
         name: 'name',
@@ -32,33 +27,8 @@ define(
       }
     ];
 
-    var List = React.createClass({
-      getItems: function(listing) {
-        MailPoet.Ajax.post({
-          endpoint: 'segments',
-          action: 'get',
-          data: {
-            offset: (listing.state.page - 1) * listing.state.limit,
-            limit: listing.state.limit,
-            group: listing.state.group,
-            search: listing.state.search,
-            sort_by: listing.state.sort_by,
-            sort_order: listing.state.sort_order
-          },
-          onSuccess: function(response) {
-            if(listing.isMounted()) {
-              listing.setState({
-                items: response.items || [],
-                filters: response.filters || [],
-                groups: response.groups || [],
-                count: response.count || 0,
-                loading: false
-              });
-            }
-          }.bind(listing)
-        });
-      },
-      renderItem: function(segment) {
+    var SegmentList = React.createClass({
+      renderItem: function(segment, actions) {
         var rowClasses = classNames(
           'manage-column',
           'column-primary',
@@ -71,6 +41,7 @@ define(
               <strong>
                 <a>{ segment.name }</a>
               </strong>
+              { actions }
             </td>
             <td className="column-date" data-colname="Subscribed on">
               <abbr>{ segment.created_at }</abbr>
@@ -84,6 +55,7 @@ define(
       render: function() {
         return (
           <Listing
+            endpoint="segments"
             onRenderItem={this.renderItem}
             items={this.getItems}
             columns={columns} />
@@ -91,6 +63,6 @@ define(
       }
     });
 
-    return List;
+    return SegmentList;
   }
 );

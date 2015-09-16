@@ -6,7 +6,6 @@ use MailPoet\Models\SubscriberSegment;
 class SubscriberCest {
 
   function _before() {
-    $this->before_time = time();
     $this->data = array(
       'first_name' => 'John',
       'last_name' => 'Mailer',
@@ -143,11 +142,11 @@ class SubscriberCest {
   }
 
   function _after() {
-    ORM::for_table(Subscriber::$_table)
-      ->delete_many();
-    ORM::for_table(Segment::$_table)
-      ->delete_many();
-    ORM::for_table(SubscriberSegment::$_table)
-      ->delete_many();
+    ORM::forTable(Subscriber::$_table)
+      ->deleteMany();
+    ORM::forTable(Segment::$_table)
+      ->deleteMany();
+    ORM::forTable(SubscriberSegment::$_table)
+      ->deleteMany();
   }
 }

@@ -62,7 +62,7 @@ class Subscriber extends Model {
     return $orm->where('status', $group);
   }
 
-  public function segments() {
+  function segments() {
     return $this->has_many_through(
       __NAMESPACE__.'\Segment',
       __NAMESPACE__.'\SubscriberSegment',
@@ -71,7 +71,7 @@ class Subscriber extends Model {
     );
   }
 
-  public static function createOrUpdate($data = array()) {
+  static function createOrUpdate($data = array()) {
     $subscriber = false;
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
@@ -80,10 +80,18 @@ class Subscriber extends Model {
 
     if($subscriber === false) {
       $subscriber = self::create();
+      $subscriber->hydrate($data);
+    } else {
+      unset($data['id']);
+      $subscriber->set($data);
     }
 
-    $subscriber->hydrate($data);
-    return $subscriber->save();
+    $saved = $subscriber->save();
 
+    if($saved === false) {
+      return $subscriber->getValidationErrors();
+    } else {
+      return true;
+    }
   }
 }

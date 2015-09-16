@@ -15,6 +15,6 @@ $models = array(
 );
 $destroy = function ($model) {
   Model::factory('\MailPoet\Models\\' . $model)
-    ->delete_many();
+    ->deleteMany();
 };
 array_map($destroy, $models);

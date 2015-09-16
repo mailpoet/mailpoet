@@ -25,7 +25,7 @@ class SegmentCest {
     $empty_model = Segment::create();
     expect($empty_model->save())->notEquals(true);
     $validations = $empty_model->getValidationErrors();
-    expect(count($validations))->equals(2);
+    expect(count($validations))->equals(1);
   }
 
   function itHasACreatedAtOnCreation() {
@@ -62,20 +62,20 @@ class SegmentCest {
   }
 
   function itCanCreateOrUpdate() {
-    $data = array(
-      'name' => 'some other new name'
-    );
-    $createNewRecord = Segment::createOrUpdate($data);
+    $is_created = Segment::createOrUpdate(array(
+      'name' => 'new list'
+    ));
+    expect($is_created)->equals(true);
 
-    $data = array(
-      'name' => $this->data['name'],
-      'name_updated' => 'updated name',
-    );
-    $updateExistingRecord = Segment::createOrUpdate($data);
+    $segment = Segment::where('name', 'new list')->findOne();
+    expect($segment->name)->equals('new list');
 
-    $allRecords = Segment::find_array();
-    expect(count($allRecords))->equals(2);
-    expect($allRecords[0]['name'])->equals($data['name_updated']);
+    $is_updated = Segment::createOrUpdate(array(
+      'id' => $segment->id,
+      'name' => 'updated list'
+    ));
+    $segment = Segment::where('name', 'updated list')->findOne();
+    expect($segment->name)->equals('updated list');
   }
 
   function itCanHaveMultipleSubscribers() {
@@ -108,12 +108,12 @@ class SegmentCest {
   }
 
   function _after() {
-    ORM::for_table(Segment::$_table)
-      ->delete_many();
-    ORM::for_table(Subscriber::$_table)
-      ->delete_many();
-    ORM::for_table(SubscriberSegment::$_table)
-      ->delete_many();
+    ORM::forTable(Segment::$_table)
+      ->deleteMany();
+    ORM::forTable(Subscriber::$_table)
+      ->deleteMany();
+    ORM::forTable(SubscriberSegment::$_table)
+      ->deleteMany();
   }
 
 

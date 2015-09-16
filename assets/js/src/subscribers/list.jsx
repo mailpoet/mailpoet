@@ -1,21 +1,14 @@
 define(
   [
     'react',
-    'react-router',
-    'mailpoet',
     'listing/listing.jsx',
-    'classnames',
+    'classnames'
   ],
   function(
     React,
-    Router,
-    MailPoet,
     Listing,
     classNames
   ) {
-
-    var Link = Router.Link;
-
     var columns = [
       {
         name: 'email',
@@ -65,33 +58,8 @@ define(
     ];
 
     var List = React.createClass({
-      getItems: function(listing) {
-        MailPoet.Ajax.post({
-          endpoint: 'subscribers',
-          action: 'listing',
-          data: {
-            offset: (listing.state.page - 1) * listing.state.limit,
-            limit: listing.state.limit,
-            group: listing.state.group,
-            search: listing.state.search,
-            sort_by: listing.state.sort_by,
-            sort_order: listing.state.sort_order
-          },
-          onSuccess: function(response) {
-            if(listing.isMounted()) {
-              listing.setState({
-                items: response.items || [],
-                filters: response.filters || [],
-                groups: response.groups || [],
-                count: response.count || 0,
-                loading: false
-              });
-            }
-          }.bind(listing)
-        });
-      },
-      renderItem: function(subscriber) {
-        var rowClasses = classNames(
+      renderItem: function(subscriber, actions) {
+        var row_classes = classNames(
           'manage-column',
           'column-primary',
           'has-row-actions'
@@ -115,20 +83,11 @@ define(
 
         return (
           <div>
-            <td className={ rowClasses }>
+            <td className={ row_classes }>
               <strong>
                 <a>{ subscriber.email }</a>
               </strong>
-
-              <div className="row-actions">
-                <span className="edit">
-                  <Link to="edit" params={{ id: subscriber.id }}>Edit</Link>
-                </span>
-              </div>
-
-              <button className="toggle-row" type="button">
-                <span className="screen-reader-text">Show more details</span>
-              </button>
+              { actions }
             </td>
             <td className="column" data-colname="First name">
               { subscriber.first_name }
@@ -151,8 +110,8 @@ define(
       render: function() {
         return (
           <Listing
+            endpoint="subscribers"
             onRenderItem={ this.renderItem }
-            items={ this.getItems }
             columns={ columns }
             bulk_actions={ bulk_actions } />
         );

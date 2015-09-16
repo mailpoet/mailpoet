@@ -2,20 +2,20 @@ define(
   [
     'react',
     'react-router',
-    'newsletters/form.jsx',
-    'newsletters/list.jsx'
+    'newsletters/list.jsx',
+    'newsletters/form.jsx'
   ],
   function(
     React,
     Router,
-    Form,
-    List
+    List,
+    Form
   ) {
-
     var DefaultRoute = Router.DefaultRoute;
     var Link = Router.Link;
     var Route = Router.Route;
     var RouteHandler = Router.RouteHandler;
+    var NotFoundRoute = Router.NotFoundRoute;
 
     var App = React.createClass({
       render: function() {
@@ -24,7 +24,7 @@ define(
             <h1>
               { MailPoetI18n.pageTitle }
               &nbsp;
-              <Link className="add-new-h2" to="form">New</Link>
+              <Link className="add-new-h2" to="new">New</Link>
             </h1>
 
             <RouteHandler/>
@@ -35,8 +35,9 @@ define(
 
     var routes = (
       <Route name="app" path="/" handler={App}>
-        <Route name="list" handler={List} />
-        <Route name="form" handler={Form} />
+        <Route name="new" path="/new" handler={Form} />
+        <Route name="edit" path="/edit/:id" handler={Form} />
+        <NotFoundRoute handler={List} />
         <DefaultRoute handler={List} />
       </Route>
     );
