@@ -1,0 +1,130 @@
+<?php
+namespace MailPoet\Newsletter\Editor;
+
+use \MailPoet\Newsletter\Editor\PostContentManager;
+use \MailPoet\Newsletter\Editor\MetaInformationManager;
+use \MailPoet\Newsletter\Editor\StructureTransformer;
+
+if(!defined('ABSPATH')) exit;
+
+class PostTransformer {
+
+  function __construct($args) {
+    $this->args = $args;
+  }
+
+  function transform($post) {
+    $content_manager = new PostContentManager($post);
+    $meta_manager = new MetaInformationManager();
+
+    $content = $content_manager->getContent($post, $this->args['displayType']);
+    $content = $meta_manager->appendMetaInformation($content, $post, $this->args);
+    $content = $content_manager->filterContent($content);
+
+    $structure_transformer = new StructureTransformer();
+    $structure = $structure_transformer->transform($content, (bool)$this->args['imagePadded']);
+
+    $featured_image = $this->getFeaturedImage($post, (bool)$this->args['imagePadded']);
+    if (is_array($featured_image)) {
+      $structure = array_merge(array($featured_image), $structure);
+    }
+
+    $structure = $this->appendPostTitle($structure, $post);
+    $structure = $this->appendReadMore($structure, $post->ID);
+
+    return $structure;
+  }
+
+  private function getFeaturedImage($post, $image_padded) {
+    if(has_post_thumbnail($post->ID)) {
+      $thumbnail_id = get_post_thumbnail_id($post->ID);
+
+      // get attachment data (src, width, height)
+      $image_info = wp_get_attachment_image_src(
+        $thumbnail_id,
+        'single-post-thumbnail'
+      );
+
+      // get alt text
+      $alt_text = trim(strip_tags(get_post_meta(
+        $thumbnail_id,
+        '_wp_attachment_image_alt',
+        true
+      )));
+      if(strlen($alt_text) === 0) {
+        // if the alt text is empty then use the post title
+        $alt_text = trim(strip_tags($post->post_title));
+      }
+
+      return array(
+        'type' => 'image',
+        'link' => '',
+        'src' => $image_info[0],
+        'alt' => $alt_text,
+        'padded' => $image_padded,
+        'width' => $image_info[1],
+        'height' => $image_info[2],
+        'styles' => array(
+          'block' => array(
+            'textAlign' => 'center',
+          ),
+        ),
+      );
+    }
+  }
+
+  private function appendPostTitle($structure, $post) {
+    if ($this->args['titlePosition'] === 'inTextBlock') {
+      // Attach title to the first text block
+      $text_block_index = null;
+      foreach ($structure as $index => $block) {
+        if ($block['type'] === 'text') {
+          $text_block_index = $index;
+          break;
+        }
+      }
+
+      $title = $this->getPostTitle($post);
+      if ($text_block_index === null) {
+        $structure[] = array(
+          'type' => 'text',
+          'text' => $title,
+        );
+      } else {
+        $structure[$text_block_index]['text'] = $title . $updated_structure[$text_block_index]['text'];
+      }
+    }
+
+    return $structure;
+  }
+
+  private function appendReadMore($structure, $post_id) {
+    if ($this->args['readMoreType'] === 'button') {
+      $button = $this->args['readMoreButton'];
+      $button['url'] = get_permalink($post_id);
+      $structure[] = $button;
+    }
+
+    return $structure;
+  }
+
+  private function getPostTitle($post) {
+    $title = $post->post_title;
+
+    if ((bool)$this->args['titleIsLink']) {
+      $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
+    }
+
+    if (in_array($this->args['titleFormat'], array('h1', 'h2', 'h3'))) {
+      $tag = $this->args['titleFormat'];
+    } elseif ($this->args['titleFormat'] === 'ul') {
+      $tag = 'li';
+    } else {
+      $tag = 'h1';
+    }
+
+    $alignment = (in_array($this->args['titleAlignment'], array('left', 'right', 'center'))) ? $this->args['titleAlignment'] : 'left';
+
+    return '<' . $tag . ' style="text-align: ' . $alignment . '">' . $title . '</' . $tag . '>';
+  }
+}

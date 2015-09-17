@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Router;
 
-use \MailPoet\Newsletter\PostsTransformer;
+use \MailPoet\Newsletter\Editor\Transformer;
 
 if(!defined('ABSPATH')) exit;
 
@@ -66,7 +66,8 @@ class Wordpress {
 
     $posts = get_posts($parameters);
 
-    wp_send_json(PostsTransformer::transform($posts, $args));
+    $transformer = new Transformer($args);
+    wp_send_json($transformer->transform($posts));
   }
 
   private function constructTaxonomiesQuery($args) {
