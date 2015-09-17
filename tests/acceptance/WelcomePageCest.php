@@ -6,11 +6,9 @@ class WelcomePageCest {
     $I->login();
   }
 
-  function iCanSeeTheTitle(AcceptanceTester $I) {
+  function iCanSeeTitle(AcceptanceTester $I) {
     $I->amOnPage('/wp-admin/admin.php?page=mailpoet');
     $I->see('Welcome!');
   }
 
-  function _after(AcceptanceTester $I) {
-  }
 }

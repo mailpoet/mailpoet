@@ -8,7 +8,7 @@ class FormWidgetCest {
     $I->resizeWindow(960, 600);
   }
 
-  function iCanAddTheWidget(AcceptanceTester $I) {
+  function iCanAddWidget(AcceptanceTester $I) {
     $I->amOnPage('/wp-admin/widgets.php');
 
     $I->see('MailPoet Subscription Form');
@@ -37,7 +37,7 @@ class FormWidgetCest {
     );
   }
 
-  function iSeeTheWidget(AcceptanceTester $I) {
+  function iCanSeeWidget(AcceptanceTester $I) {
     $I->amOnPage('/');
 
     $I->see('Subscribe to our Newsletter');
@@ -47,7 +47,7 @@ class FormWidgetCest {
     $I->seeElement('input', ['value' => 'Subscribe!']);
   }
 
-  function iCanDeleteTheWidget(AcceptanceTester $I) {return;
+  function iCanDeleteWidget(AcceptanceTester $I) {return;
     $I->amOnPage('/wp-admin/widgets.php');
 
     $I->see('MailPoet Subscription Form', '#widgets-right');

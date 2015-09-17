@@ -6,7 +6,7 @@ class SettingsPageCest {
     $I->login();
   }
 
-  function iCanSeeTheTitle(AcceptanceTester $I) {
+  function iCanSeeTitle(AcceptanceTester $I) {
     $I->amOnPage('/wp-admin/admin.php?page=mailpoet-settings');
     $I->see('Settings');
   }
@@ -18,6 +18,4 @@ class SettingsPageCest {
     $I->see('Settings');
   }
 
-  function _after(AcceptanceTester $I) {
-  }
 }
