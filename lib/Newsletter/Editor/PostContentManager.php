@@ -8,7 +8,9 @@ class PostContentManager {
   const MAX_EXCERPT_LENGTH = 60;
 
   function getContent($post, $displayType) {
-    if ($displayType === 'excerpt') {
+    if ($displayType === 'titleOnly') {
+      return '';
+    } elseif ($displayType === 'excerpt') {
       // get excerpt
       if(!empty($post->post_excerpt)) {
         return $post->post_excerpt;
@@ -41,6 +43,8 @@ class PostContentManager {
     );
     $content = strip_tags($content, implode('',$tags_not_being_stripped));
     $content = wpautop($content);
+
+    return $content;
   }
 
   private function generateExcerpt($content) {

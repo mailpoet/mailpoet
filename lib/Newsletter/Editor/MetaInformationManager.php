@@ -9,40 +9,41 @@ class MetaInformationManager {
     // Append author and categories above and below contents
     foreach (array('above', 'below') as $position) {
       $position_field = $position . 'Text';
-      $text = '';
+      $text = array();
 
       if ($args['showAuthor'] === $position_field) {
-        $text .= self::getPostAuthor(
-          $args['authorPrecededBy'],
-          $post->post_author
+        $text[] = self::getPostAuthor(
+          $post->post_author,
+          $args['authorPrecededBy']
         );
       }
 
       if ($args['showCategories'] === $position_field) {
-        if (!empty($text)) $text .= '<br />';
-        $text .= self::getPostCategories(
-          $args['categoriesPrecededBy'],
-          $post
+        $text[] = self::getPostCategories(
+          $post->ID,
+          $post->post_type,
+          $args['categoriesPrecededBy']
         );
       }
 
-      if (!empty($text)) $text = '<p>' . $text . '</p>';
-      if ($position === 'above') $content = $text . $content;
-      else if ($position === 'below') $content .= $text;
+      if (!empty($text)) {
+        $text = '<p>' . implode('<br />', $text) . '</p>';
+        if ($position === 'above') $content = $text . $content;
+        else if ($position === 'below') $content .= $text;
+      }
     }
 
     return $content;
   }
 
 
-  private static function getPostCategories($preceded_by, $post) {
+  private static function getPostCategories($post_id, $post_type, $preceded_by) {
     $preceded_by = trim($preceded_by);
-    $content = '';
 
     // Get categories
     $categories = wp_get_post_terms(
-      $post->ID,
-      get_object_taxonomies($post->post_type),
+      $post_id,
+      get_object_taxonomies($post_type),
       array('fields' => 'names')
     );
     if(!empty($categories)) {
@@ -51,13 +52,13 @@ class MetaInformationManager {
         $content = stripslashes($preceded_by) . ' ';
       }
 
-      $content .= join(', ', $categories);
+      return join(', ', $categories);
+    } else {
+      return '';
     }
-
-    return $content;
   }
 
-  private static function getPostAuthor($preceded_by, $author_id) {
+  private static function getPostAuthor($author_id, $preceded_by) {
     $author_name = get_the_author_meta('display_name', (int)$author_id);
 
     $preceded_by = trim($preceded_by);

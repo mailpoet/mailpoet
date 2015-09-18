@@ -24,20 +24,30 @@ class PostTransformer {
     $structure_transformer = new StructureTransformer();
     $structure = $structure_transformer->transform($content, (bool)$this->args['imagePadded']);
 
-    $featured_image = $this->getFeaturedImage($post, (bool)$this->args['imagePadded']);
-    if (is_array($featured_image)) {
-      $structure = array_merge(array($featured_image), $structure);
-    }
-
-    $structure = $this->appendPostTitle($structure, $post);
-    $structure = $this->appendReadMore($structure, $post->ID);
+    $structure = $this->appendFeaturedImage($post, (bool)$this->args['imagePadded'], $structure);
+    $structure = $this->appendPostTitle($post, $structure);
+    $structure = $this->appendReadMore($post->ID, $structure);
 
     return $structure;
   }
 
-  private function getFeaturedImage($post, $image_padded) {
-    if(has_post_thumbnail($post->ID)) {
-      $thumbnail_id = get_post_thumbnail_id($post->ID);
+  private function appendFeaturedImage($post, $image_padded, $structure) {
+    $featured_image = $this->getFeaturedImage(
+      $post->ID,
+      $post->post_title,
+      (bool)$image_padded
+    );
+
+    if (is_array($featured_image)) {
+      return array_merge(array($featured_image), $structure);
+    }
+
+    return $structure;
+  }
+
+  private function getFeaturedImage($post_id, $post_title, $image_padded) {
+    if(has_post_thumbnail($post_id)) {
+      $thumbnail_id = get_post_thumbnail_id($post_id);
 
       // get attachment data (src, width, height)
       $image_info = wp_get_attachment_image_src(
@@ -53,7 +63,7 @@ class PostTransformer {
       )));
       if(strlen($alt_text) === 0) {
         // if the alt text is empty then use the post title
-        $alt_text = trim(strip_tags($post->post_title));
+        $alt_text = trim(strip_tags($post_title));
       }
 
       return array(
@@ -73,7 +83,7 @@ class PostTransformer {
     }
   }
 
-  private function appendPostTitle($structure, $post) {
+  private function appendPostTitle($post, $structure) {
     if ($this->args['titlePosition'] === 'inTextBlock') {
       // Attach title to the first text block
       $text_block_index = null;
@@ -91,14 +101,14 @@ class PostTransformer {
           'text' => $title,
         );
       } else {
-        $structure[$text_block_index]['text'] = $title . $updated_structure[$text_block_index]['text'];
+        $structure[$text_block_index]['text'] = $title . $structure[$text_block_index]['text'];
       }
     }
 
     return $structure;
   }
 
-  private function appendReadMore($structure, $post_id) {
+  private function appendReadMore($post_id, $structure) {
     if ($this->args['readMoreType'] === 'button') {
       $button = $this->args['readMoreButton'];
       $button['url'] = get_permalink($post_id);

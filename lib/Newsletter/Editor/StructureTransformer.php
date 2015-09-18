@@ -45,18 +45,17 @@ class StructureTransformer {
    * turns other root children into text blocks
    */
   private function transformTagsToBlocks($root, $image_padded) {
-    $structure = array();
-
-    foreach ($root->children as $item) {
+    return array_map(function($item) use ($image_padded) {
       if ($item->tag === 'img' || $item->tag === 'a' && $item->query('img')) {
-        $link = '';
-        $image = $item;
         if ($item->tag === 'a') {
           $link = $item->getAttribute('href');
           $image = $item->children[0];
+        } else {
+          $link = '';
+          $image = $item;
         }
 
-        $structure[] = array(
+        return array(
           'type' => 'image',
           'link' => $link,
           'src' => $image->getAttribute('src'),
@@ -71,14 +70,13 @@ class StructureTransformer {
           ),
         );
       } else {
-        $structure[] = array(
+        return array(
           'type' => 'text',
           'text' => $item->toString(),
         );
       }
-    }
 
-    return $structure;
+    }, $root->children);
   }
 
   /**
