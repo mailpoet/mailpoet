@@ -241,12 +241,12 @@ define(
 
         var data = params || {};
 
-        data.selection = selected_ids;
         data.listing = {
           offset: 0,
           limit: 0,
           group: this.state.group,
-          search: this.state.search
+          search: this.state.search,
+          selection: selected_ids
         }
 
         MailPoet.Ajax.post({

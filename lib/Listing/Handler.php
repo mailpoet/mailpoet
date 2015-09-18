@@ -20,7 +20,9 @@ class Handler {
       'sort_by' => (isset($data['sort_by']) ? $data['sort_by'] : 'id'),
       'sort_order' => (isset($data['sort_order']) ? $data['sort_order'] : 'asc'),
       // grouping
-      'group' => (isset($data['group']) ? $data['group'] : null)
+      'group' => (isset($data['group']) ? $data['group'] : null),
+      // selection
+      'selection' => (isset($data['selection']) ? $data['selection'] : null)
     );
 
     $this->setSearch();
@@ -47,18 +49,18 @@ class Handler {
     return $this->model->filter('group', $this->data['group']);
   }
 
-  function getSelection($ids = array()) {
-    if(!empty($ids)) {
-      $this->model->whereIn('id', $ids);
+  function getSelection() {
+    if(!empty($this->data['selection'])) {
+      $this->model->whereIn('id', $this->data['selection']);
     }
     return $this->model;
   }
 
-  function getSelectionIds($ids = array()) {
-    $subscribers = $this->getSelection($ids)->select('id')->findMany();
-    return array_map(function($subscriber) {
-      return (int)$subscriber->id;
-    }, $subscribers);
+  function getSelectionIds() {
+    $models = $this->getSelection()->select('id')->findMany();
+    return array_map(function($model) {
+      return (int)$model->id;
+    }, $models);
   }
 
   function get() {

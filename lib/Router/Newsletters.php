@@ -62,4 +62,13 @@ class Newsletters {
     $mailer = new Bridge($newsletter, $subscribers);
     wp_send_json($mailer->send());
   }
+
+  function bulk_action($data = array()) {
+    $bulk_action = new Listing\BulkAction(
+      '\MailPoet\Models\Newsletter',
+      $data
+    );
+
+    wp_send_json($bulk_action->apply());
+  }
 }

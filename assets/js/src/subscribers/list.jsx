@@ -67,7 +67,7 @@ define(
           action: 'listing',
           data: {
             'offset': 0,
-            'limit': 5,
+            'limit': 100,
             'search': '',
             'sort_by': 'name',
             'sort_order': 'asc'
@@ -145,7 +145,7 @@ define(
 
     var bulk_actions = [
       {
-        name: 'move',
+        name: 'moveToList',
         label: 'Move to list...',
         onSelect: function() {
           return (
@@ -161,7 +161,7 @@ define(
         }
       },
       {
-        name: 'add',
+        name: 'addToList',
         label: 'Add to list...',
         onSelect: function() {
           return (
@@ -177,7 +177,7 @@ define(
         }
       },
       {
-        name: 'remove',
+        name: 'removeFromList',
         label: 'Remove from list...',
         onSelect: function() {
           return (
@@ -198,7 +198,7 @@ define(
       }
     ];
 
-    var List = React.createClass({
+    var SubscriberList = React.createClass({
       renderItem: function(subscriber, actions) {
         var row_classes = classNames(
           'manage-column',
@@ -259,6 +259,6 @@ define(
       }
     });
 
-    return List;
+    return SubscriberList;
   }
 );

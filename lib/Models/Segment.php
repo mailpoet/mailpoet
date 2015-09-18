@@ -57,10 +57,18 @@ class Segment extends Model {
 
     $saved = $segment->save();
 
-    if($saved === false) {
-      return $segment->getValidationErrors();
-    } else {
+    if($saved === true) {
       return true;
+    } else {
+      $errors = $segment->getValidationErrors();
+      if(!empty($errors)) {
+        return $errors;
+      }
     }
+    return false;
+  }
+
+  static function trash($listing) {
+    return $listing->getSelection()->deleteMany();
   }
 }

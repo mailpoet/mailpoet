@@ -15,7 +15,7 @@ class Subscriber extends Model {
     ));
   }
 
-  function delete() {
+   function delete() {
     // delete all relations to segments
     SubscriberSegment::where('subscriber_id', $this->id)->deleteMany();
 
@@ -95,10 +95,76 @@ class Subscriber extends Model {
 
     $saved = $subscriber->save();
 
-    if($saved === false) {
-      return $subscriber->getValidationErrors();
+    if($saved === true) {
+      return true;
     } else {
+      $errors = $subscriber->getValidationErrors();
+      if(!empty($errors)) {
+        return $errors;
+      }
+    }
+    return false;
+  }
+
+  static function moveToList($listing, $data = array()) {
+    $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
+    $segment = Segment::findOne($segment_id);
+
+    if($segment !== false) {
+      $subscribers = $listing->getSelection()->findMany();
+      foreach($subscribers as $subscriber) {
+        // remove subscriber from all segments
+        SubscriberSegment::where('subscriber_id', $subscriber->id)->deleteMany();
+
+        // create relation with segment
+        $association = SubscriberSegment::create();
+        $association->subscriber_id = $subscriber->id;
+        $association->segment_id = $segment->id;
+        $association->save();
+      }
       return true;
     }
+    return false;
+  }
+
+  static function removeFromList($listing, $data = array()) {
+    $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
+    $segment = Segment::findOne($segment_id);
+
+    if($segment !== false) {
+      // delete relations with segment
+      $subscriber_ids = $listing->getSelectionIds();
+      SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)
+        ->where('segment_id', $segment->id)
+        ->deleteMany();
+      return true;
+    }
+    return false;
+  }
+
+  static function addToList($listing, $data = array()) {
+    $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
+    $segment = Segment::findOne($segment_id);
+
+    if($segment !== false) {
+      $subscribers = $listing->getSelection()->findMany();
+      foreach($subscribers as $subscriber) {
+        // create relation with segment
+        $association = \MailPoet\Models\SubscriberSegment::create();
+        $association->subscriber_id = $subscriber->id;
+        $association->segment_id = $segment->id;
+        $association->save();
+      }
+      return true;
+    }
+    return false;
+  }
+
+  static function trash($listing) {
+    // delete relations with all segments
+    $subscriber_ids = $listing->getSelectionIds();
+    \MailPoet\Models\SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)->deleteMany();
+
+    return $listing->getSelection()->deleteMany();
   }
 }

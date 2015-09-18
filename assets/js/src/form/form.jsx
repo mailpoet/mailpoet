@@ -276,7 +276,11 @@ define(
               this.props.messages['created']();
             }
           } else {
-            this.setState({ errors: response });
+            if(response === false) {
+              // unknown error occurred
+            } else {
+              this.setState({ errors: response });
+            }
           }
         }.bind(this));
       },

@@ -27,6 +27,13 @@ define(
       }
     ];
 
+    var bulk_actions = [
+      {
+        name: 'trash',
+        label: 'Trash'
+      }
+    ];
+
     var SegmentList = React.createClass({
       renderItem: function(segment, actions) {
         var rowClasses = classNames(
@@ -57,8 +64,8 @@ define(
           <Listing
             endpoint="segments"
             onRenderItem={this.renderItem}
-            items={this.getItems}
-            columns={columns} />
+            columns={columns}
+            bulk_actions={ bulk_actions } />
         );
       }
     });

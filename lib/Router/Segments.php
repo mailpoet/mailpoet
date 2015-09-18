@@ -53,4 +53,13 @@ class Segments {
 
     wp_send_json($result);
   }
+
+  function bulk_action($data = array()) {
+    $bulk_action = new Listing\BulkAction(
+      '\MailPoet\Models\Segment',
+      $data
+    );
+
+    wp_send_json($bulk_action->apply());
+  }
 }
