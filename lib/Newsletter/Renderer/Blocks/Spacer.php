@@ -1,12 +1,12 @@
-<?php namespace MailPoet\Newsletter\Blocks;
+<?php namespace MailPoet\Newsletter\Renderer\Blocks;
 
-use MailPoet\Newsletter\Blocks\Renderer as BlocksRenderer;
+use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Spacer {
 
   static function render($element) {
 
-    $blocksRenderer = new Renderer();
+    $stylesHelper = new StylesHelper();
 
     // if the parent container (column) has background set and the divider element has a transparent background,
     // it will assume the newsletter background, not that of the parent container
@@ -15,9 +15,9 @@ class Spacer {
     }
 
     $template = '
-<tr>
-  <td class="mailpoet_col mailpoet_spacer" style="' . $blocksRenderer->getBlockStyles($element) . '" valign="top"> </td>
-</tr>';
+    <tr>
+      <td class="mailpoet_col mailpoet_spacer" style="' . $stylesHelper->getBlockStyles($element) . '" valign="top"> </td>
+    </tr>';
 
     return $template;
   }

@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Newsletter;
+namespace MailPoet\Newsletter\Renderer;
 if(!defined('ABSPATH')) exit;
 
 class Renderer {
@@ -9,6 +9,7 @@ class Renderer {
   function __construct($newsletterData) {
     $this->blocksRenderer = new Blocks\Renderer();
     $this->columnsRenderer = new Columns\Renderer();
+    $this->stylesHelper = new StylesHelper();
     $this->DOMQuery = new \pQuery();
     $this->CSSInliner = new \MailPoet\Util\CSS();
     $this->data = $newsletterData;
@@ -29,7 +30,7 @@ class Renderer {
   }
 
   function renderContent($content) {
-    array_map(function($contentBlock) use(&$newsletterContent) {
+    array_map(function ($contentBlock) use (&$newsletterContent) {
       $columnCount = count($contentBlock['blocks']);
       $columnData = $this->blocksRenderer->render($contentBlock);
       $newsletterContent .= $this->columnsRenderer->render($columnCount, $columnData);
@@ -56,7 +57,7 @@ class Renderer {
       }
       $newsletterStyles .= $selector . '{' . PHP_EOL;
       foreach ($style as $attribute => $individualStyle) {
-        $newsletterStyles .= $this->blocksRenderer->translateCSSAttribute($attribute) . ':' . $individualStyle . ';' . PHP_EOL;
+        $newsletterStyles .= $this->stylesHelper->translateCSSAttribute($attribute) . ':' . $individualStyle . ';' . PHP_EOL;
       }
       $newsletterStyles .= '}' . PHP_EOL;
     }
@@ -65,7 +66,7 @@ class Renderer {
   }
 
   function renderTemplate($template, $data) {
-    return preg_replace_callback('/{{\w+}}/', function($matches) use(&$data) {
+    return preg_replace_callback('/{{\w+}}/', function ($matches) use (&$data) {
       return array_shift($data);
     }, $template);
   }
