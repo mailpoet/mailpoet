@@ -1,10 +1,12 @@
 require_relative '../_init'
 
-describe 'subscribers edit' do
+describe 'subscribers new' do
   before do
     Admin::login
     click_on('Subscribers')
+  end
 
+  it 'can create a subscriber' do
     within '#subscribers' do
       click_on 'New'
       fill_in('E-mail', with: 'test@mailpoet.com')
@@ -19,20 +21,6 @@ describe 'subscribers edit' do
     page.must_have_content 'Test'
     page.must_have_content 'Last'
     page.must_have_content 'Unconfirmed'
-  end
-
-  it 'can edit a subscriber' do
-    find('#subscribers a', text: 'test@mailpoet.com').hover
-    find('#subscribers a', text: 'Edit').click
-
-    page.must_have_content 'Firstname'
-    fill_in('Firstname', with: 'First')
-    select('Subscribed', from: 'field_status')
-    click_on 'Save'
-
-    page.must_have_content 'Subscriber succesfully updated!'
-    page.must_have_content 'First'
-    # page.must_have_content('Subscribed', :prefer_exact)
   end
 
   after do
