@@ -34,6 +34,10 @@ describe 'newsletters list' do
     page.must_have_content '3 newsletter'
   end
 
+  it 'has a counter' do
+    page.must_have_content '3 item(s)'
+  end
+
   after do
     find('a', text: '1 newsletter').hover
     find('a', text: 'Trash').click
