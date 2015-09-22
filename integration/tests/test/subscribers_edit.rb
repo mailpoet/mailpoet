@@ -18,6 +18,7 @@ describe 'subscribers edit' do
     page.must_have_content 'test@mailpoet.com'
     page.must_have_content 'Test'
     page.must_have_content 'Last'
+    page.must_have_content 'Unconfirmed'
   end
 
   it 'can edit a subscriber' do
@@ -26,10 +27,12 @@ describe 'subscribers edit' do
 
     page.must_have_content 'Firstname'
     fill_in('Firstname', with: 'First')
+    select('Subscribed', from: 'field_status')
     click_on 'Save'
 
     page.must_have_content 'Subscriber succesfully updated!'
     page.must_have_content 'First'
+    page.must_have_content 'Subscribed'
   end
 
   after do
