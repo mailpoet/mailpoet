@@ -1,0 +1,56 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    capybara (2.5.0)
+      mime-types (>= 1.16)
+      nokogiri (>= 1.3.3)
+      rack (>= 1.0.0)
+      rack-test (>= 0.5.4)
+      xpath (~> 2.0)
+    capybara_minitest_spec (1.0.5)
+      capybara (>= 2)
+      minitest (>= 4)
+    cliver (0.3.2)
+    foreman (0.78.0)
+      thor (~> 0.19.1)
+    httparty (0.13.5)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
+    json (1.8.3)
+    mime-types (2.6.2)
+    mini_portile (0.6.2)
+    minitest (5.8.0)
+    multi_json (1.11.2)
+    multi_xml (0.5.5)
+    nokogiri (1.6.6.2)
+      mini_portile (~> 0.6.0)
+    poltergeist (1.6.0)
+      capybara (~> 2.1)
+      cliver (~> 0.3.1)
+      multi_json (~> 1.0)
+      websocket-driver (>= 0.2.0)
+    rack (1.6.4)
+    rack-test (0.6.3)
+      rack (>= 1.0)
+    rake (10.4.2)
+    thor (0.19.1)
+    websocket-driver (0.6.2)
+      websocket-extensions (>= 0.1.0)
+    websocket-extensions (0.1.2)
+    xpath (2.0.0)
+      nokogiri (~> 1.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  capybara
+  capybara_minitest_spec
+  foreman
+  httparty
+  minitest
+  poltergeist
+  rake
+
+BUNDLED WITH
+   1.10.5

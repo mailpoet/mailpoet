@@ -1,0 +1,15 @@
+source 'https://rubygems.org'
+
+group :app do
+  gem 'httparty'
+end
+
+group :test do
+  gem 'foreman'
+  gem 'rake'
+  gem 'minitest'
+  gem 'capybara'
+  gem 'capybara_minitest_spec'
+  gem 'poltergeist'
+end
+
