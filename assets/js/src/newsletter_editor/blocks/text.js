@@ -64,7 +64,7 @@ define([
             {title: 'Paragraph', block: 'p'},
           ],
 
-          plugins: "wplink code textcolor mailpoet_custom_fields",
+          plugins: "link code textcolor mailpoet_custom_fields",
 
           setup: function(editor) {
             editor.on('change', function(e) {
