@@ -15,6 +15,13 @@ define([
     describe('model', function () {
       var model;
 
+      before(function() {
+        WordpressComponent.getPosts = function() {
+          var deferred = jQuery.Deferred();
+          return deferred;
+        };
+      });
+
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);

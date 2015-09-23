@@ -9,10 +9,12 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/base',
+    'newsletter_editor/blocks/button',
+    'newsletter_editor/blocks/divider',
     'newsletter_editor/components/wordpress',
     'underscore',
     'jquery',
-  ], function(App, BaseBlock, WordpressComponent, _, jQuery) {
+  ], function(App, BaseBlock, ButtonBlock, DividerBlock, WordpressComponent, _, jQuery) {
 
   "use strict";
 
@@ -249,7 +251,7 @@ define([
       }
     },
     showButtonSettings: function(event) {
-      var buttonModule = App.module('blocks.button');
+      var buttonModule = ButtonBlock;
       (new buttonModule.ButtonBlockSettingsView({
         model: this.model.get('readMoreButton'),
         renderOptions: {
@@ -260,7 +262,7 @@ define([
       })).render();
     },
     showDividerSettings: function(event) {
-      var dividerModule = App.module('blocks.divider');
+      var dividerModule = DividerBlock;
       (new dividerModule.DividerBlockSettingsView({
         model: this.model.get('divider'),
         renderOptions: {

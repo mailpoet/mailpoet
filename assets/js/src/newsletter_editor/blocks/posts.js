@@ -20,7 +20,9 @@ define([
     'newsletter_editor/App',
     'newsletter_editor/components/wordpress',
     'newsletter_editor/blocks/base',
-  ], function(Backbone, Marionette, Radio, _, jQuery, MailPoet, App, WordpressComponent, BaseBlock) {
+    'newsletter_editor/blocks/button',
+    'newsletter_editor/blocks/divider',
+  ], function(Backbone, Marionette, Radio, _, jQuery, MailPoet, App, WordpressComponent, BaseBlock, ButtonBlock, DividerBlock) {
 
   "use strict";
 
@@ -81,15 +83,14 @@ define([
     },
     fetchAvailablePosts: function() {
       var that = this;
-      // TODO: Move this logic to new AJAX query format
-      //mailpoet_post_wpi('posts.php', this.toJSON(), function(response) {
-        //console.log('Posts fetched', arguments);
-        //that.get('_availablePosts').reset(response);
-        //that.get('_selectedPosts').reset(); // Empty out the collection
-        //that.trigger('change:_availablePosts');
-      //}, function() {
-        //console.log('Posts fetchPosts error', arguments);
-      //});
+      WordpressComponent.getPosts(this.toJSON()).done(function(posts) {
+        console.log('Posts fetched', arguments);
+        that.get('_availablePosts').reset(posts);
+        that.get('_selectedPosts').reset(); // Empty out the collection
+        that.trigger('change:_availablePosts');
+      }).fail(function() {
+        console.log('Posts fetchPosts error', arguments);
+      });
     },
     /**
      * Batch more changes during a specific time, instead of fetching
@@ -116,6 +117,12 @@ define([
 
       if (data.posts.length === 0) return;
 
+      WordpressComponent.getTransformedPosts(data).done(function(posts) {
+        console.log('Available posts fetched', arguments);
+        collection.add(posts, { at: index });
+      }).fail(function() {
+        console.log('Posts fetchPosts error', arguments);
+      });
       // TODO: Move query logic to new AJAX format
       //mailpoet_post_wpi('automated_latest_content.php', data, function(response) {
         //console.log('Available posts fetched', arguments);
@@ -438,7 +445,7 @@ define([
       };
     },
     showButtonSettings: function(event) {
-      var buttonModule = App.module('blocks.button');
+      var buttonModule = ButtonBlock;
       (new buttonModule.ButtonBlockSettingsView({
         model: this.model.get('readMoreButton'),
         renderOptions: {
@@ -449,7 +456,7 @@ define([
       })).render();
     },
     showDividerSettings: function(event) {
-      var dividerModule = App.module('blocks.divider');
+      var dividerModule = DividerBlock;
       (new dividerModule.DividerBlockSettingsView({
         model: this.model.get('divider'),
         renderOptions: {

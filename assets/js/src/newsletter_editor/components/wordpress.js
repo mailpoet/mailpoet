@@ -6,49 +6,52 @@ define([
   ], function(App, _, MailPoet) {
 
   var Module = {};
-  var postTypesCache,
-      taxonomiesCache = [],
-      termsCache = [];
+
+  Module._cachedQuery = _.memoize(function(args) {
+    return MailPoet.Ajax.post({
+      endpoint: 'wordpress',
+      action: args.action,
+      data: args.options || {},
+    });
+  }, JSON.stringify);
 
   Module.getPostTypes = function() {
-    if (!postTypesCache) {
-      postTypesCache = MailPoet.Ajax.post({
-        endpoint: 'wordpress',
-        action: 'getPostTypes',
-        data: {},
-      }).then(function(types) {
-        return _.values(types);
-      });
-    }
-
-    return postTypesCache;
+    return Module._cachedQuery({
+      action: 'getPostTypes',
+      options: {},
+    }).then(function(types) {
+      return _.values(types);
+    });
   };
 
   Module.getTaxonomies = function(postType) {
-    if (!taxonomiesCache[postType]) {
-      taxonomiesCache[postType] = MailPoet.Ajax.post({
-        endpoint: 'wordpress',
-        action: 'getTaxonomies',
-        data: {
-          postType: postType,
-        },
-      });
-    }
-
-    return taxonomiesCache[postType];
+    return Module._cachedQuery({
+      action: 'getTaxonomies',
+      options: {
+        postType: postType,
+      },
+    });
   };
 
   Module.getTerms = function(options) {
-    var key = JSON.stringify(options);
-    if (!termsCache[key]) {
-      termsCache[key] = MailPoet.Ajax.post({
-        endpoint: 'wordpress',
-        action: 'getTerms',
-        data: options || {},
-      });
-    }
+    return Module._cachedQuery({
+      action: 'getTerms',
+      options: options,
+    });
+  };
 
-    return termsCache[key];
+  Module.getPosts = function(options) {
+    return Module._cachedQuery({
+      action: 'getPosts',
+      options: options,
+    });
+  };
+
+  Module.getTransformedPosts = function(options) {
+    return Module._cachedQuery({
+      action: 'getTransformedPosts',
+      options: options,
+    });
   };
 
   App.on('start', function(options) {

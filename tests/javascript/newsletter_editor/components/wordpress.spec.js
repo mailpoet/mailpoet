@@ -178,4 +178,146 @@ define([
       mock.verify();
     });
   });
+
+  describe('getPosts', function() {
+    var injector;
+    beforeEach(function() {
+      injector = require('amd-inject-loader!newsletter_editor/components/wordpress');
+    });
+
+    it('sends options to endpoint', function() {
+      var spy,
+          post = function(params) {
+            var deferred = jQuery.Deferred();
+            deferred.resolve({});
+            return deferred;
+          },
+          module;
+      spy = sinon.spy(post);
+      module = injector({
+        "mailpoet": {
+          Ajax: {
+            post: spy,
+          },
+        },
+      });
+
+      module.getPosts({
+        type: 'posts',
+        search: 'some search term'
+      });
+      expect(spy.args[0][0].data).to.eql({
+        type: 'posts',
+        search: 'some search term'
+      });
+    });
+
+    it('fetches posts from the server', function() {
+      var module = injector({
+          "mailpoet": {
+            Ajax: {
+              post: function() {
+                var deferred = jQuery.Deferred();
+                deferred.resolve([{post_title: 'title 1'}, {post_title: 'post title 2'}]);
+                return deferred;
+              }
+            },
+          },
+        });
+      module.getPosts().done(function(posts) {
+        expect(posts).to.eql([{post_title: 'title 1'}, {post_title: 'post title 2'}]);
+      });
+    });
+
+    it('caches results', function() {
+      var deferred = jQuery.Deferred(),
+          mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
+          module = injector({
+            "mailpoet": {
+              Ajax: {
+                post: mock,
+              },
+            },
+          });
+      deferred.resolve({
+        type: 'posts',
+        search: 'some search term'
+      });
+      module.getPosts({});
+      module.getPosts({});
+
+      mock.verify();
+    });
+  });
+
+  describe('getTransformedPosts', function() {
+    var injector;
+    beforeEach(function() {
+      injector = require('amd-inject-loader!newsletter_editor/components/wordpress');
+    });
+
+    it('sends options to endpoint', function() {
+      var spy,
+          post = function(params) {
+            var deferred = jQuery.Deferred();
+            deferred.resolve({});
+            return deferred;
+          },
+          module;
+      spy = sinon.spy(post);
+      module = injector({
+        "mailpoet": {
+          Ajax: {
+            post: spy,
+          },
+        },
+      });
+
+      module.getTransformedPosts({
+        type: 'posts',
+        posts: [1, 2]
+      });
+      expect(spy.args[0][0].data).to.eql({
+        type: 'posts',
+        posts: [1, 2],
+      });
+    });
+
+    it('fetches transformed posts from the server', function() {
+      var module = injector({
+          "mailpoet": {
+            Ajax: {
+              post: function() {
+                var deferred = jQuery.Deferred();
+                deferred.resolve([{type: 'text', text: 'something'}, {type: 'text', text: 'something else'}]);
+                return deferred;
+              }
+            },
+          },
+        });
+      module.getTransformedPosts().done(function(posts) {
+        expect(posts).to.eql([{type: 'text', text: 'something'}, {type: 'text', text: 'something else'}]);
+      });
+    });
+
+    it('caches results', function() {
+      var deferred = jQuery.Deferred(),
+          mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
+          module = injector({
+            "mailpoet": {
+              Ajax: {
+                post: mock,
+              },
+            },
+          });
+      deferred.resolve({
+        type: 'posts',
+        posts: [1, 3],
+      });
+      module.getTransformedPosts({});
+      module.getTransformedPosts({});
+
+      mock.verify();
+    });
+  });
 });
