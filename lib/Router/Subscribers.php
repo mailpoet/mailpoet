@@ -27,7 +27,21 @@ class Subscribers {
       \Model::factory('\MailPoet\Models\Subscriber'),
       $data
     );
-    wp_send_json($listing->get());
+
+
+    $listing_data = $listing->get();
+
+    // fetch segments relations for each returned item
+    foreach($listing_data['items'] as &$item) {
+      $segments = SubscriberSegment::select('segment_id')
+        ->where('subscriber_id', $item['id'])
+        ->findMany();
+      $item['segments'] = array_map(function($relation) {
+        return $relation->segment_id;
+      }, $segments);
+    }
+
+    wp_send_json($listing_data);
   }
 
   function getAll() {

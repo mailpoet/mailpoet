@@ -1,6 +1,7 @@
 define(
   [
     'react',
+    'react-router',
     'listing/listing.jsx',
     'classnames',
     'mailpoet',
@@ -9,11 +10,14 @@ define(
   ],
   function(
     React,
+    Router,
     Listing,
     classNames,
     MailPoet,
     jQuery
   ) {
+    var Link = Router.Link;
+
     var columns = [
       {
         name: 'email',
@@ -36,6 +40,12 @@ define(
         sortable: true
       },
       {
+        name: 'lists',
+        label: 'Lists',
+        sortable: false
+      },
+
+      {
         name: 'created_at',
         label: 'Subscribed on',
         sortable: true
@@ -57,7 +67,16 @@ define(
         }
       },
       componentDidMount: function() {
-        this.loadItems();
+        // this.loadItems();
+        this.loadCachedItems();
+      },
+      loadCachedItems: function() {
+        if(typeof(window['mailpoet_'+this.props.endpoint]) !== 'undefined') {
+          var items = window['mailpoet_'+this.props.endpoint];
+          this.setState({
+            items: items
+          });
+        }
       },
       loadItems: function() {
         this.setState({ loading: true });
@@ -222,11 +241,19 @@ define(
           break;
         }
 
+        var segments = mailpoet_segments.filter(function(segment) {
+          return (jQuery.inArray(segment.id, subscriber.segments) !== -1);
+        }).map(function(segment) {
+          return segment.name;
+        }).join(', ');
+
         return (
           <div>
             <td className={ row_classes }>
               <strong>
-                <a>{ subscriber.email }</a>
+                <Link to="edit" params={{ id: subscriber.id }}>
+                  { subscriber.email }
+                </Link>
               </strong>
               { actions }
             </td>
@@ -238,6 +265,9 @@ define(
             </td>
             <td className="column" data-colname="Status">
               { status }
+            </td>
+            <td className="column" data-colname="Status">
+              { segments }
             </td>
             <td className="column-date" data-colname="Subscribed on">
               <abbr>{ subscriber.created_at }</abbr>

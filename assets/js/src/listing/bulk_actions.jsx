@@ -32,9 +32,15 @@ function(
       e.preventDefault();
 
       var action = this.getSelectedAction();
+
+      if(action === null) {
+        return;
+      }
+
       var selected_ids = (this.props.selection !== 'all')
         ? this.props.selected_ids
         : [];
+
       var data = (action['getData'] !== undefined)
         ? action.getData()
         : {};
@@ -78,17 +84,17 @@ function(
 
           <select ref="action" value={ this.state.action } onChange={this.handleChangeAction}>
             <option value="">Bulk Actions</option>
-            {this.props.bulk_actions.map(function(action, index) {
+            { this.props.bulk_actions.map(function(action, index) {
               return (
                 <option
                   value={ action.name }
                   key={ 'action-' + index }
                 >{ action.label }</option>
               );
-            }.bind(this))}
+            }.bind(this)) }
           </select>
           <input
-            onClick={this.handleApplyAction}
+            onClick={ this.handleApplyAction }
             type="submit"
             defaultValue="Apply"
             className="button action" />

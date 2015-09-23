@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Config;
+use \MailPoet\Models\Segment;
 
 if(!defined('ABSPATH')) exit;
 
@@ -80,6 +81,9 @@ class Menu {
 
   function subscribers() {
     $data = array();
+
+    $data['segments'] = Segment::findArray();
+
     echo $this->renderer->render('subscribers.html', $data);
   }
 

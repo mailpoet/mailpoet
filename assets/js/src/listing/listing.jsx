@@ -237,6 +237,10 @@ define(
         }.bind(this));
       },
       handleBulkAction: function(selected_ids, params) {
+        if(this.state.selection === false) {
+          return;
+        }
+
         this.setState({ loading: true });
 
         var data = params || {};
@@ -275,21 +279,29 @@ define(
         }.bind(this));
       },
       handleSelectItem: function(id, is_checked) {
-        var selected_ids = this.state.selected_ids;
+        var selected_ids = this.state.selected_ids,
+            selection = false;
 
         if(is_checked) {
           selected_ids = jQuery.merge(selected_ids, [ id ]);
+          // check whether all items on the page are selected
+          if(
+            jQuery('tbody .check-column :checkbox:not(:checked)').length === 0
+          ) {
+            selection = 'page';
+          }
         } else {
           selected_ids.splice(selected_ids.indexOf(id), 1);
         }
 
         this.setState({
-          selection: false,
+          selection: selection,
           selected_ids: selected_ids
         });
       },
       handleSelectItems: function(is_checked) {
         if(is_checked === false) {
+          this.clearSelection();
         } else {
           var selected_ids = this.state.items.map(function(item) {
             return ~~item.id;
