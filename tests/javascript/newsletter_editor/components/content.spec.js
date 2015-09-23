@@ -9,11 +9,11 @@ define([
 
       beforeEach(function() {
         model = new (ContentComponent.NewsletterModel)({
-          styles: {
+          globalStyles: {
             style1: 'style1Value',
             style2: 'style2Value',
           },
-          data: {
+          content: {
             data1: 'data1Value',
             data2: 'data2Value',
           },
@@ -50,13 +50,13 @@ define([
     });
 
     describe('transformation to json', function() {
-      it('includes data, styles and initial newsletter fields', function() {
+      it('includes content, globalStyles and initial newsletter fields', function() {
         var dataField = {
           containerModelField: 'containerModelValue',
         }, stylesField = {
           globalStylesField: 'globalStylesValue',
         }, newsletterFields = {
-          newsletter_subject: 'test newsletter subject',
+          subject: 'test newsletter subject',
         };
         EditorApplication._contentContainer = {
           toJSON: function() {
@@ -79,8 +79,8 @@ define([
         };
         var json = ContentComponent.toJSON();
         expect(json).to.deep.equal(_.extend({
-          data: dataField,
-          styles: stylesField
+          content: dataField,
+          globalStyles: stylesField
         }, newsletterFields));
       });
     });

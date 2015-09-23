@@ -67,10 +67,10 @@ define([
               fontColor: '#000005',
               textDecoration: 'none',
             },
-            newsletter: {
+            wrapper: {
               backgroundColor: '#090909',
             },
-            background: {
+            body: {
               backgroundColor: '#020202',
             },
           });
@@ -118,12 +118,12 @@ define([
 
         it('changes model if newsletter background color field changes', function() {
           view.$('#mailpoet_newsletter_background_color').val('#636237').change();
-          expect(model.get('newsletter.backgroundColor')).to.equal('#636237');
+          expect(model.get('wrapper.backgroundColor')).to.equal('#636237');
         });
 
         it('changes model if background color field changes', function() {
           view.$('#mailpoet_background_color').val('#878587').change();
-          expect(model.get('background.backgroundColor')).to.equal('#878587');
+          expect(model.get('body.backgroundColor')).to.equal('#878587');
         });
 
         it('changes model if text font family field changes', function() {

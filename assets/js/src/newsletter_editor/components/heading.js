@@ -19,8 +19,8 @@ define([
     },
     events: function() {
       return {
-        'keyup .mailpoet_input_title': _.partial(this.changeField, "newsletter_subject"),
-        'keyup .mailpoet_input_preheader': _.partial(this.changeField, "newsletter_preheader"),
+        'keyup .mailpoet_input_title': _.partial(this.changeField, "subject"),
+        'keyup .mailpoet_input_preheader': _.partial(this.changeField, "preheader"),
       };
     },
     changeField: function(field, event) {
