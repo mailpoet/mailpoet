@@ -157,8 +157,8 @@ define([
         "change #mailpoet_a_font_underline": function(event) {
           this.model.set('link.textDecoration', (event.target.checked) ? event.target.value : 'none');
         },
-        "change #mailpoet_newsletter_background_color": _.partial(this.changeColorField, 'newsletter.backgroundColor'),
-        "change #mailpoet_background_color": _.partial(this.changeColorField, 'background.backgroundColor'),
+        "change #mailpoet_newsletter_background_color": _.partial(this.changeColorField, 'wrapper.backgroundColor'),
+        "change #mailpoet_background_color": _.partial(this.changeColorField, 'body.backgroundColor'),
       };
     },
     templateHelpers: function() {

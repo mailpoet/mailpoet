@@ -11,7 +11,7 @@ define([
   // Does not hold newsletter content nor newsletter styles, those are
   // handled by other components.
   Module.NewsletterModel = SuperModel.extend({
-    stale: ['data', 'styles'],
+    stale: ['content', 'globalStyles'],
     initialize: function(options) {
       this.on('change', function() {
           App.getChannel().trigger('autoSave');
@@ -45,8 +45,8 @@ define([
 
   Module.toJSON = function() {
     return _.extend({
-      data: App._contentContainer.toJSON(),
-      styles: App.getGlobalStyles().toJSON(),
+      content: App._contentContainer.toJSON(),
+      globalStyles: App.getGlobalStyles().toJSON(),
     }, App.getNewsletter().toJSON());
   };
 

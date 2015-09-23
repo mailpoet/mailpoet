@@ -34,10 +34,10 @@ define([
         fontColor: '#21759B',
         textDecoration: 'underline',
       },
-      newsletter: {
+      wrapper: {
         backgroundColor: '#ffffff',
       },
-      background: {
+      body: {
         backgroundColor: '#cccccc',
       },
     },
@@ -72,7 +72,7 @@ define([
 
     App.getAvailableStyles = Module.getAvailableStyles;
 
-    this.setGlobalStyles(options.newsletter.styles);
+    this.setGlobalStyles(options.newsletter.globalStyles);
   });
 
   App.on('start', function(options) {

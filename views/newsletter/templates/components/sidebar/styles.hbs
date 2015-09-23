@@ -70,12 +70,12 @@
         <hr />
         <div class="mailpoet_form_field">
             <span>
-                <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="newsletter-color" value="{{ model.newsletter.backgroundColor }}" id="mailpoet_newsletter_background_color"></span>
+                <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="newsletter-color" value="{{ model.wrapper.backgroundColor }}" id="mailpoet_newsletter_background_color"></span>
             </span><label for="mailpoet_newsletter_background_color"><%= __('Newsletter') %></label>
         </div>
         <div class="mailpoet_form_field">
             <span>
-                <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="background-color" value="{{ model.background.backgroundColor }}" id="mailpoet_background_color"></span>
+                <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="background-color" value="{{ model.body.backgroundColor }}" id="mailpoet_background_color"></span>
             </span><label for="mailpoet_background_color"><%= __('Background') %></label>
         </div>
     </form>
