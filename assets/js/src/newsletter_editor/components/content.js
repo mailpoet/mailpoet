@@ -62,12 +62,12 @@ define([
     App.toJSON = Module.toJSON;
     App.getNewsletter = Module.getNewsletter;
 
-    Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['data', 'styles']));
+    Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['content', 'globalStyles']));
   });
 
   App.on('start', function(options) {
     // TODO: Other newsletter information will be needed as well.
-    App._contentContainer = new (this.getBlockTypeModel('container'))(options.newsletter.data, {parse: true});
+    App._contentContainer = new (this.getBlockTypeModel('container'))(options.newsletter.content, {parse: true});
     App._contentContainerView = new (this.getBlockTypeView('container'))({
       model: App._contentContainer,
       renderOptions: { depth: 0 },

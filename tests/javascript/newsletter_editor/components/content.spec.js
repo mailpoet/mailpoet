@@ -50,13 +50,13 @@ define([
     });
 
     describe('transformation to json', function() {
-      it('includes data, styles and initial newsletter fields', function() {
+      it('includes content, globalStyles and initial newsletter fields', function() {
         var dataField = {
           containerModelField: 'containerModelValue',
         }, stylesField = {
           globalStylesField: 'globalStylesValue',
         }, newsletterFields = {
-          newsletter_subject: 'test newsletter subject',
+          subject: 'test newsletter subject',
         };
         EditorApplication._contentContainer = {
           toJSON: function() {
