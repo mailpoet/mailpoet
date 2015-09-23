@@ -14,35 +14,35 @@ abstract class ValidModel extends \Model
                                   //  + ON_SET throws immediately when field is set()
                                   //  + ON_SAVE throws on save()
                                   //  + NEVER means an exception is never thrown; check for ->getValidaionErrors()
-    );
+        );
 
     const ON_SET   = 'set';
     const ON_SAVE  = 'save';
     const NEVER    = null;
 
     public function __construct($validatorInstance = null) {
-        $this->_validator = $validatorInstance;
+      $this->_validator = $validatorInstance;
     }
 
     public function setValidationOptions($options)
     {
-        $this->_validationOptions = array_merge($this->_validationOptions, $options);
+      $this->_validationOptions = array_merge($this->_validationOptions, $options);
     }
 
     public function addValidation($field, $validation, $message) {
-        if (!isset($this->_validations[$field])) {
-            $this->_validations[$field] = array();
-        }
-        $this->_validations[$field][] = array(
-            'validation' => $validation,
-            'message'     => $message
+      if (!isset($this->_validations[$field])) {
+        $this->_validations[$field] = array();
+      }
+      $this->_validations[$field][] = array(
+        'validation' => $validation,
+        'message'     => $message
         );
     }
 
     public function addValidations($field, $validators) {
-        foreach ($validators as $validation => $message) {
-            $this->addValidation($field, $validation, $message);
-        }
+      foreach ($validators as $validation => $message) {
+        $this->addValidation($field, $validation, $message);
+      }
     }
 
     // /**
@@ -65,39 +65,39 @@ abstract class ValidModel extends \Model
     **/
     public function validateField($field, $value)
     {
-        $this->setupValidationEngine();
+      $this->setupValidationEngine();
 
-        if (!isset($this->_validations[$field])) {
+      if (!isset($this->_validations[$field])) {
             return true; // No validations, return true by default
+          }
+
+          $success = true;
+          foreach ($this->_validations[$field] as $v) {
+            $checks = explode(' ', $v['validation']);
+            foreach ($checks as $check) {
+              $params = explode('|', $check);
+              $check  = array_shift($params);
+
+              if ($this->_validator->executeOne($check, $value, $params)) {
+                $success = $success && true;
+              } else {
+                $this->addValidationError($v['message'], $field);
+                $success = false;
+              }
+            }
+          }
+          return $success;
         }
 
-        $success = true;
-        foreach ($this->_validations[$field] as $v) {
-                $checks = explode(' ', $v['validation']);
-                foreach ($checks as $check) {
-                    $params = explode('|', $check);
-                    $check  = array_shift($params);
-
-                    if ($this->_validator->executeOne($check, $value, $params)) {
-                        $success = $success && true;
-                    } else {
-                        $this->addValidationError($v['message'], $field);
-                        $success = false;
-                    }
-                }
+        public function getValidationErrors()
+        {
+          return $this->_validationErrors;
         }
-        return $success;
-    }
 
-    public function getValidationErrors()
-    {
-        return $this->_validationErrors;
-    }
-
-    public function resetValidationErrors()
-    {
-        $this->_validationErrors = array();
-    }
+        public function resetValidationErrors()
+        {
+          $this->_validationErrors = array();
+        }
 
     ///////////////////
     // Overloaded methods
@@ -107,7 +107,7 @@ abstract class ValidModel extends \Model
     */
     public function __set($name, $value)
     {
-        $this->validateAndSet($name, $value);
+      $this->validateAndSet($name, $value);
     }
 
     /**
@@ -116,16 +116,17 @@ abstract class ValidModel extends \Model
     public function save()
     {
         if ($this->isNew()) { //Fields populated by create() or hydrate() don't pass through set()
-            foreach( array_keys($this->_validations) as $field) {
-                $this->validateField($field, $this->$field);
-            }
+        foreach( array_keys($this->_validations) as $field) {
+          $this->validateField($field, $this->$field);
         }
+      }
 
-        $errs = $this->getValidationErrors();
-        if (!empty($errs))
-            $this->doValidationError(self::ON_SAVE);
+      $errs = $this->getValidationErrors();
+      if (!empty($errs)) {
+        $this->doValidationError(self::ON_SAVE);
+      }
 
-        parent::save();
+      parent::save();
     }
 
     /**
@@ -133,14 +134,14 @@ abstract class ValidModel extends \Model
     */
     public function set($key, $value = null)
     {
-        if(is_array($key)) {
+      if(is_array($key)) {
             // multiple values
-            foreach($key as $field => $value) {
-                $this->validateAndSet($field, $value);
-            }
-        } else {
-            $this->validateAndSet($key, $value);
+        foreach($key as $field => $value) {
+          $this->validateAndSet($field, $value);
         }
+      } else {
+        $this->validateAndSet($key, $value);
+      }
     }
 
 
@@ -148,20 +149,21 @@ abstract class ValidModel extends \Model
     // Protected methods
     protected function doValidationError($context)
     {
-        if ($context == $this->_validationOptions['throw'])
-                throw new \Sudzy\ValidationException($this->_validationErrors);
+      if ($context == $this->_validationOptions['throw']) {
+        throw new \Sudzy\ValidationException($this->_validationErrors);
+      }
     }
 
     protected function addValidationError($msg, $field = null)
     {
-        if ($this->_validationOptions['indexedErrors'] && $field !== null) {
+      if ($this->_validationOptions['indexedErrors'] && $field !== null) {
             // Only keep the first error found on a field
-            if (!isset($this->_validationErrors[$field])) {
-                $this->_validationErrors[$field] = $msg;
-            }
-        } else {
-            $this->_validationErrors[] = $msg;
+        if (!isset($this->_validationErrors[$field])) {
+          $this->_validationErrors[$field] = $msg;
         }
+      } else {
+        $this->_validationErrors[] = $msg;
+      }
     }
 
     /**
@@ -169,12 +171,12 @@ abstract class ValidModel extends \Model
     */
     protected function validateAndSet($name, $value)
     {
-        if (!$this->validateField($name, $value)) $this->doValidationError(self::ON_SET);
-        parent::set($name, $value);
+      if (!$this->validateField($name, $value)) $this->doValidationError(self::ON_SET);
+      parent::set($name, $value);
     }
 
     protected function setupValidationEngine()
     {
-        if (null == $this->_validator) $this->_validator = new \Sudzy\Engine(); // Is lazy setup worth it?
+      if (null == $this->_validator) $this->_validator = new \Sudzy\Engine(); // Is lazy setup worth it?
     }
-}
+  }

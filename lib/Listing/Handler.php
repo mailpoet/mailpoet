@@ -20,7 +20,9 @@ class Handler {
       'sort_by' => (isset($data['sort_by']) ? $data['sort_by'] : 'id'),
       'sort_order' => (isset($data['sort_order']) ? $data['sort_order'] : 'asc'),
       // grouping
-      'group' => (isset($data['group']) ? $data['group'] : null)
+      'group' => (isset($data['group']) ? $data['group'] : null),
+      // selection
+      'selection' => (isset($data['selection']) ? $data['selection'] : null)
     );
 
     $this->setSearch();
@@ -29,7 +31,7 @@ class Handler {
   }
 
   private function setSearch() {
-    if($this->data['search'] === null) {
+    if(empty($this->data['search'])) {
       return;
     }
     return $this->model->filter('search', $this->data['search']);
@@ -47,6 +49,20 @@ class Handler {
     return $this->model->filter('group', $this->data['group']);
   }
 
+  function getSelection() {
+    if(!empty($this->data['selection'])) {
+      $this->model->whereIn('id', $this->data['selection']);
+    }
+    return $this->model;
+  }
+
+  function getSelectionIds() {
+    $models = $this->getSelection()->select('id')->findMany();
+    return array_map(function($model) {
+      return (int)$model->id;
+    }, $models);
+  }
+
   function get() {
     return array(
       'count' => $this->model->count(),
@@ -55,7 +71,7 @@ class Handler {
       'items' => $this->model
         ->offset($this->data['offset'])
         ->limit($this->data['limit'])
-        ->find_array()
+        ->findArray()
     );
   }
 }

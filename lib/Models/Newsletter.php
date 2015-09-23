@@ -48,10 +48,18 @@ class Newsletter extends Model {
 
     $saved = $newsletter->save();
 
-    if($saved === false) {
-      return $newsletter->getValidationErrors();
-    } else {
+    if($saved === true) {
       return true;
+    } else {
+      $errors = $newsletter->getValidationErrors();
+      if(!empty($errors)) {
+        return $errors;
+      }
     }
+    return false;
+  }
+
+  static function trash($listing) {
+    return $listing->getSelection()->deleteMany();
   }
 }

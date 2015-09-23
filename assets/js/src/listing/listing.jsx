@@ -200,6 +200,8 @@ define(
       getItems: function() {
         this.setState({ loading: true });
 
+        this.clearSelection();
+
         MailPoet.Ajax.post({
           endpoint: this.props.endpoint,
           action: 'listing',
@@ -234,6 +236,31 @@ define(
           this.getItems();
         }.bind(this));
       },
+      handleBulkAction: function(selected_ids, params) {
+        if(this.state.selection === false) {
+          return;
+        }
+
+        this.setState({ loading: true });
+
+        var data = params || {};
+
+        data.listing = {
+          offset: 0,
+          limit: 0,
+          group: this.state.group,
+          search: this.state.search,
+          selection: selected_ids
+        }
+
+        MailPoet.Ajax.post({
+          endpoint: this.props.endpoint,
+          action: 'bulk_action',
+          data: data
+        }).done(function() {
+          this.getItems();
+        }.bind(this));
+      },
       handleSearch: function(search) {
         this.setState({
           search: search,
@@ -248,21 +275,27 @@ define(
           sort_by: sort_by,
           sort_order: sort_order,
         }, function() {
-          this.clearSelection();
           this.getItems();
         }.bind(this));
       },
       handleSelectItem: function(id, is_checked) {
-        var selected_ids = this.state.selected_ids;
+        var selected_ids = this.state.selected_ids,
+            selection = false;
 
         if(is_checked) {
           selected_ids = jQuery.merge(selected_ids, [ id ]);
+          // check whether all items on the page are selected
+          if(
+            jQuery('tbody .check-column :checkbox:not(:checked)').length === 0
+          ) {
+            selection = 'page';
+          }
         } else {
           selected_ids.splice(selected_ids.indexOf(id), 1);
         }
 
         this.setState({
-          selection: false,
+          selection: selection,
           selected_ids: selected_ids
         });
       },
@@ -282,7 +315,6 @@ define(
       },
       handleSelectAll: function() {
         if(this.state.selection === 'all') {
-          this.clearSelection();
         } else {
           this.setState({
             selection: 'all',
@@ -306,7 +338,6 @@ define(
           search: '',
           page: 1
         }, function() {
-          this.clearSelection();
           this.getItems();
         }.bind(this));
       },
@@ -354,7 +385,10 @@ define(
               search={ this.state.search } />
             <div className="tablenav top clearfix">
               <ListingBulkActions
-                bulk_actions={ bulk_actions } />
+                bulk_actions={ bulk_actions }
+                selection={ this.state.selection }
+                selected_ids={ this.state.selected_ids }
+                onBulkAction={ this.handleBulkAction } />
               <ListingFilters filters={ this.state.filters } />
               <ListingPages
                 count={ this.state.count }
@@ -381,8 +415,8 @@ define(
                 is_selectable={ bulk_actions.length > 0 }
                 onSelectItem={ this.handleSelectItem }
                 onSelectAll={ this.handleSelectAll }
-                selected_ids={ this.state.selected_ids }
                 selection={ this.state.selection }
+                selected_ids={ this.state.selected_ids }
                 loading={ this.state.loading }
                 count={ this.state.count }
                 limit={ this.state.limit }
@@ -402,7 +436,10 @@ define(
             </table>
             <div className="tablenav bottom">
               <ListingBulkActions
-                bulk_actions={ bulk_actions } />
+                bulk_actions={ bulk_actions }
+                selection={ this.state.selection }
+                selected_ids={ this.state.selected_ids }
+                onBulkAction={ this.handleBulkAction } />
               <ListingPages
                 count={ this.state.count }
                 page={ this.state.page }

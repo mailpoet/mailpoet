@@ -18,6 +18,7 @@ class Renderer {
 
   function init() {
     $this->setupTranslations();
+    $this->setupFunctions();
     $this->setupHandlebars();
     $this->setupGlobalVariables();
     $this->setupSyntax();
@@ -26,6 +27,10 @@ class Renderer {
 
   function setupTranslations() {
     $this->renderer->addExtension(new Twig\i18n(Env::$plugin_name));
+  }
+
+  function setupFunctions() {
+    $this->renderer->addExtension(new Twig\Functions());
   }
 
   function setupHandlebars() {
@@ -51,7 +56,9 @@ class Renderer {
 
   function detectCache() {
     $cache_path = Env::$views_path . '/cache';
-    if (WP_DEBUG === false) return $cache_path;
+    if(WP_DEBUG === false) {
+      return $cache_path;
+    }
     return false;
   }
 }

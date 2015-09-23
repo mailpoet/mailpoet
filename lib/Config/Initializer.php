@@ -29,6 +29,9 @@ class Initializer {
     \ORM::configure('username', Env::$db_username);
     \ORM::configure('password', Env::$db_password);
     \ORM::configure('logging', WP_DEBUG);
+    \ORM::configure('driver_options', array(
+      \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
+    ));
 
     $subscribers = Env::$db_prefix . 'subscribers';
     $settings = Env::$db_prefix . 'settings';

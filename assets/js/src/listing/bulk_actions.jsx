@@ -1,11 +1,31 @@
-define(['react'], function(React) {
-
+define([
+  'react',
+  'mailpoet'
+],
+function(
+  React,
+  MailPoet
+) {
   var ListingBulkActions = React.createClass({
+    getInitialState: function() {
+      return {
+        action: false,
+        extra: false
+      }
+    },
     handleChangeAction: function(e) {
+      this.setState({
+        action: e.target.value,
+        extra: false
+      });
+
       var action = this.getSelectedAction();
 
+      // action on select callback
       if(action !== null && action['onSelect'] !== undefined) {
-        action.onSelect(e);
+        this.setState({
+          extra: action.onSelect(e)
+        });
       }
     },
     handleApplyAction: function(e) {
@@ -13,9 +33,28 @@ define(['react'], function(React) {
 
       var action = this.getSelectedAction();
 
-      if(action !== null && action['onApply'] !== undefined) {
-        action.onApply();
+      if(action === null) {
+        return;
       }
+
+      var selected_ids = (this.props.selection !== 'all')
+        ? this.props.selected_ids
+        : [];
+
+      var data = (action['getData'] !== undefined)
+        ? action.getData()
+        : {};
+
+      data.action = this.state.action;
+
+      if(data.action) {
+        this.props.onBulkAction(selected_ids, data);
+      }
+
+      this.setState({
+        action: false,
+        extra: false
+      });
     },
     getSelectedAction: function() {
       var selected_action = jQuery(this.refs.action.getDOMNode()).val();
@@ -43,22 +82,24 @@ define(['react'], function(React) {
             Select bulk action
           </label>
 
-          <select ref="action" onChange={this.handleChangeAction}>
+          <select ref="action" value={ this.state.action } onChange={this.handleChangeAction}>
             <option value="">Bulk Actions</option>
-            {this.props.bulk_actions.map(function(action, index) {
+            { this.props.bulk_actions.map(function(action, index) {
               return (
                 <option
-                  value={action.name}
-                  key={index}
+                  value={ action.name }
+                  key={ 'action-' + index }
                 >{ action.label }</option>
               );
-            }.bind(this))}
+            }.bind(this)) }
           </select>
           <input
-            onClick={this.handleApplyAction}
+            onClick={ this.handleApplyAction }
             type="submit"
             defaultValue="Apply"
             className="button action" />
+
+            { this.state.extra }
         </div>
       );
     }
