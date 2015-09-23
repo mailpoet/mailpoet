@@ -1,7 +1,6 @@
 <?php namespace MailPoet\Newsletter\Renderer\Columns;
 
 class Renderer {
-
   public $columnWidths = array(
     1 => 600,
     2 => 300,
@@ -15,7 +14,6 @@ class Renderer {
   );
 
   function render($columnsCount, $columnsData) {
-
     $columnWidth = $this->columnWidths[$columnsCount];
     $columnClass = $this->columnClasses[$columnsCount];
 

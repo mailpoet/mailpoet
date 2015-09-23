@@ -3,7 +3,6 @@
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Header {
-
   static function render($element) {
     $stylesHelper = new StylesHelper();
 
@@ -28,5 +27,4 @@ class Header {
     
     return $template;
   }
-
 }

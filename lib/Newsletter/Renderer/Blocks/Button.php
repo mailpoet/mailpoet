@@ -3,7 +3,6 @@
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Button {
-
   static function render($element) {
     $stylesHelper = new StylesHelper();
 
@@ -45,5 +44,4 @@ class Button {
 
     return $template;
   }
-
 }

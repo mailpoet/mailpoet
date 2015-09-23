@@ -3,7 +3,6 @@ namespace MailPoet\Newsletter\Renderer;
 if(!defined('ABSPATH')) exit;
 
 class Renderer {
-
   public $template = 'Template.html';
 
   function __construct($newsletterData) {
@@ -17,8 +16,8 @@ class Renderer {
   }
 
   function renderAll() {
-    $newsletterContent = $this->renderContent($this->data['data']);
-    $newsletterStyles = $this->renderStyles($this->data['styles']);
+    $newsletterContent = $this->renderContent($this->data['content']);
+    $newsletterStyles = $this->renderStyles($this->data['globalStyles']);
 
     $renderedTemplate = $this->renderTemplate($this->template, array(
       $newsletterStyles,
@@ -30,12 +29,12 @@ class Renderer {
   }
 
   function renderContent($content) {
-    array_map(function ($contentBlock) use (&$newsletterContent) {
+    $newsletterContent = array_map(function ($contentBlock) {
       $columnCount = count($contentBlock['blocks']);
       $columnData = $this->blocksRenderer->render($contentBlock);
-      $newsletterContent .= $this->columnsRenderer->render($columnCount, $columnData);
+      return $this->columnsRenderer->render($columnCount, $columnData);
     }, $content['blocks']);
-    return $newsletterContent;
+    return implode('', $newsletterContent);
   }
 
   function renderStyles($styles) {
@@ -45,13 +44,13 @@ class Renderer {
       case 'text':
         $selector = 'span.paragraph, ul, ol';
       break;
-      case 'background':
+      case 'body':
         $selector = '.mailpoet_content-wrapper';
       break;
       case 'link':
         $selector = '.mailpoet_content-wrapper a';
       break;
-      case 'newsletter':
+      case 'wrapper':
         $selector = '.mailpoet_container, .mailpoet_col-one, .mailpoet_col-two, .mailpoet_col-three';
       break;
       }

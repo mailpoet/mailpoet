@@ -1,7 +1,6 @@
 <?php namespace MailPoet\Newsletter\Renderer;
 
 class StylesHelper {
-
   public $cssAtributesTable = array(
     'backgroundColor' => 'background-color',
     'fontColor' => 'color',
@@ -16,22 +15,20 @@ class StylesHelper {
     'lineHeight' => 'line-height'
   );
 
-  function getBlockStyles($element, $ignore = false) {
+  function getBlockStyles($element) {
     if(!isset($element['styles']['block'])) {
       return;
     }
 
-    return $this->getStyles($element['styles'], 'block', $ignore);
+    return $this->getStyles($element['styles'], 'block');
   }
 
-  function getStyles($data, $type, $ignore = false) {
-    array_map(function ($attribute, $style) use (&$styles, $ignore) {
-      if(!$ignore || !in_array($attribute, $ignore)) {
-        $styles .= $this->translateCSSAttribute($attribute) . ': ' . $style . ' !important;';
-      }
+  function getStyles($data, $type) {
+    $styles = array_map(function ($attribute, $style)  {
+        return $this->translateCSSAttribute($attribute) . ': ' . $style . ' !important;';
     }, array_keys($data[$type]), $data[$type]);
 
-    return $styles;
+    return implode('', $styles);
   }
 
   function translateCSSAttribute($attribute) {

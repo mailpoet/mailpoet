@@ -1,7 +1,6 @@
 <?php namespace MailPoet\Newsletter\Renderer\Blocks;
 
 class Social {
-
   static function render($element) {
     $iconsBlock = '';
 
@@ -24,5 +23,4 @@ class Social {
 
     return $template;
   }
-
 }

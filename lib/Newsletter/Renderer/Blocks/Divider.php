@@ -1,7 +1,6 @@
 <?php namespace MailPoet\Newsletter\Renderer\Blocks;
 
 class Divider {
-
   static function render($element) {
     $template = '
     <tr>
@@ -21,5 +20,4 @@ class Divider {
 
     return $template;
   }
-
 }

@@ -1,7 +1,6 @@
 <?php namespace MailPoet\Newsletter\Renderer\Blocks;
 
 class Text {
-
   static $typeFace = array(
     'Arial' => "Arial, 'Helvetica Neue', Helvetica, sans-serif",
     'Comic Sans MS' => "'Comic Sans MS', 'Marker Felt-Thin', Arial, sans-serif",
@@ -112,5 +111,4 @@ EOD;
     
     return preg_replace($pattern, '', $html);
   }
-  
 }

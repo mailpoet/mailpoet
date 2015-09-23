@@ -3,7 +3,6 @@
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Footer {
-
   static function render($element) {
     $stylesHelper = new StylesHelper();
 
@@ -28,5 +27,4 @@ class Footer {
 
     return $template;
   }
-
 }

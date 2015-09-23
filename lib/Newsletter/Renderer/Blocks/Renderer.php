@@ -1,8 +1,7 @@
 <?php namespace MailPoet\Newsletter\Renderer\Blocks;
 
 class Renderer {
-
-  function render($data, $column = null) {
+  function render($data) {
     array_map(function ($block) use (&$blockContent, &$columns) {
       $blockContent .= $this->createElementFromBlockType($block);
       if(isset($block['blocks'])) {

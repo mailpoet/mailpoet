@@ -3,7 +3,6 @@
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Spacer {
-
   static function render($element) {
 
     $stylesHelper = new StylesHelper();
@@ -21,5 +20,4 @@ class Spacer {
 
     return $template;
   }
-
 }

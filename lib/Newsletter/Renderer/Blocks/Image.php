@@ -3,7 +3,6 @@
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Image {
-
   static function render($element) {
     $stylesHelper = new StylesHelper();
 
@@ -22,5 +21,4 @@ class Image {
 
     return $template;
   }
-
 }
