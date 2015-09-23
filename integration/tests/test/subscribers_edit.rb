@@ -13,26 +13,24 @@ describe 'subscribers edit' do
       select('Unconfirmed', from: 'field_status')
       click_on 'Save'
     end
-
-    page.must_have_content 'Subscriber succesfully added!'
-    page.must_have_content 'test@mailpoet.com'
-    page.must_have_content 'Test'
-    page.must_have_content 'Last'
-    page.must_have_content 'Unconfirmed'
+    click_on('Subscribers')
   end
 
   it 'can edit a subscriber' do
     find('#subscribers a', text: 'test@mailpoet.com').hover
     find('#subscribers a', text: 'Edit').click
 
-    page.must_have_content 'Firstname'
+    page.must_have_field('E-mail', with: 'test@mailpoet.com')
     fill_in('Firstname', with: 'First')
-    select('Subscribed', from: 'field_status')
+    select('Unsubscribed', from: 'field_status')
+    execute_script("$('#field_status').trigger('change'");
+
     click_on 'Save'
 
-    page.must_have_content 'Subscriber succesfully updated!'
-    page.must_have_content 'First'
-    # page.must_have_content('Subscribed', :prefer_exact)
+      page.must_have_content 'Subscriber succesfully updated!'
+    within '#subscribers tbody' do
+      page.must_have_content 'Unsubscribed'
+    end
   end
 
   after do
