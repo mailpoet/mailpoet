@@ -13,7 +13,7 @@ define([
     'newsletter_editor/blocks/divider',
     'newsletter_editor/components/wordpress',
     'underscore',
-    'jquery',
+    'jquery'
   ], function(App, BaseBlock, ButtonBlock, DividerBlock, WordpressComponent, _, jQuery) {
 
   "use strict";

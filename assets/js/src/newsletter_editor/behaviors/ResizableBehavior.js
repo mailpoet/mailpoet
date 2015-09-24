@@ -6,7 +6,7 @@
 define([
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup',
-    'interact',
+    'interact'
   ], function(Marionette, BehaviorsLookup, interact) {
 
   BehaviorsLookup.ResizableBehavior = Marionette.Behavior.extend({

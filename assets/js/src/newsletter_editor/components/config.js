@@ -1,6 +1,6 @@
 define([
     'newsletter_editor/App',
-    'backbone.supermodel',
+    'backbone.supermodel'
   ], function(App, SuperModel) {
 
   var Module = {};

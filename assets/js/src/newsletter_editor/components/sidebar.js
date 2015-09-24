@@ -5,7 +5,7 @@ define([
     'backbone.supermodel',
     'underscore',
     'jquery',
-    'sticky-kit',
+    'sticky-kit'
   ], function(App, Backbone, Marionette, SuperModel, _, jQuery, StickyKit) {
 
   "use strict";

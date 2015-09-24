@@ -21,7 +21,7 @@ define([
     'newsletter_editor/components/wordpress',
     'newsletter_editor/blocks/base',
     'newsletter_editor/blocks/button',
-    'newsletter_editor/blocks/divider',
+    'newsletter_editor/blocks/divider'
   ], function(Backbone, Marionette, Radio, _, jQuery, MailPoet, App, WordpressComponent, BaseBlock, ButtonBlock, DividerBlock) {
 
   "use strict";

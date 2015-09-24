@@ -2,7 +2,7 @@ define([
     'newsletter_editor/App',
     'newsletter_editor/components/wordpress',
     'backbone',
-    'backbone.marionette',
+    'backbone.marionette'
   ], function(App, Wordpress, Backbone, Marionette) {
 
   "use strict";

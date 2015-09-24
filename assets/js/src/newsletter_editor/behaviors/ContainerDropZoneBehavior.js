@@ -10,7 +10,7 @@ define([
     'underscore',
     'jquery',
     'newsletter_editor/behaviors/BehaviorsLookup',
-    'interact',
+    'interact'
   ], function(Marionette, _, jQuery, BehaviorsLookup, interact) {
 
   BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
