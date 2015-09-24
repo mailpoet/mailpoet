@@ -15,17 +15,19 @@ class StylesHelper {
     'lineHeight' => 'line-height'
   );
 
-  function getBlockStyles($element) {
+  function getBlockStyles($element, $ignoreSpecificStyles = false) {
     if(!isset($element['styles']['block'])) {
       return;
     }
 
-    return $this->getStyles($element['styles'], 'block');
+    return $this->getStyles($element['styles'], 'block', $ignoreSpecificStyles);
   }
 
-  function getStyles($data, $type) {
-    $styles = array_map(function ($attribute, $style)  {
+  function getStyles($data, $type, $ignoreSpecificStyles = false) {
+    $styles = array_map(function ($attribute, $style) use($ignoreSpecificStyles)  {
+      if(!$ignoreSpecificStyles || !in_array($attribute, $ignoreSpecificStyles)) {
         return $this->translateCSSAttribute($attribute) . ': ' . $style . ' !important;';
+      }
     }, array_keys($data[$type]), $data[$type]);
 
     return implode('', $styles);
