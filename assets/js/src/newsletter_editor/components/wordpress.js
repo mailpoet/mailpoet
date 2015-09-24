@@ -69,6 +69,13 @@ define([
     });
   };
 
+  Module.previewNewsletter = function(options) {
+    return Module._query({
+      action: 'preview',
+      options: options,
+    });
+  };
+
   App.on('start', function(options) {
     // Prefetch post types
     Module.getPostTypes();

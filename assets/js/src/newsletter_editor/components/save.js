@@ -1,8 +1,9 @@
 define([
     'newsletter_editor/App',
+    'newsletter_editor/components/wordpress',
     'backbone',
     'backbone.marionette',
-  ], function(App, Backbone, Marionette) {
+  ], function(App, Wordpress, Backbone, Marionette) {
 
   "use strict";
 
@@ -15,27 +16,26 @@ define([
 
     var json = App.toJSON();
 
-
     // save newsletter
-    // TODO: Migrate logic to new AJAX format
-    //mailpoet_post_wpi('newsletter_save.php', json, function(response) {
-      //if(response.success !== undefined && response.success === true) {
-        ////MailPoet.Notice.success("<?php _e('Newsletter has been saved.'); ?>");
-      //} else if(response.error !== undefined) {
-        //if(response.error.length === 0) {
-          //// TODO: Handle translations
-          //MailPoet.Notice.error("<?php _e('An unknown error occurred, please check your settings.'); ?>");
-        //} else {
-          //$(response.error).each(function(i, error) {
-            //MailPoet.Notice.error(error);
-          //});
-        //}
-      //}
-      //App.getChannel().trigger('afterEditorSave', json, response);
-    //}, function(error) {
-      //// TODO: Handle saving errors
-      //App.getChannel().trigger('afterEditorSave', {}, error);
-    //});
+    Wordpress.saveNewsletter(json).done(function(response) {
+      if(response.success !== undefined && response.success === true) {
+        // TODO: Handle translations
+        //MailPoet.Notice.success("<?php _e('Newsletter has been saved.'); ?>");
+      } else if(response.error !== undefined) {
+        if(response.error.length === 0) {
+          // TODO: Handle translations
+          MailPoet.Notice.error("<?php _e('An unknown error occurred, please check your settings.'); ?>");
+        } else {
+          $(response.error).each(function(i, error) {
+            MailPoet.Notice.error(error);
+          });
+        }
+      }
+      App.getChannel().trigger('afterEditorSave', json, response);
+    }).fail(function() {
+      // TODO: Handle saving errors
+      App.getChannel().trigger('afterEditorSave', {}, error);
+    });
   };
 
   Module.SaveView = Marionette.LayoutView.extend({
