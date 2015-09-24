@@ -11,7 +11,7 @@ use MailPoet\Newsletter\Renderer\Blocks\Text;
 use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnRenderer;
 use MailPoet\Newsletter\Renderer\Renderer;
 
-class RendererCest {
+class NewsletterRendererCest {
   function __construct() {
     $this->newsletterData = json_decode(file_get_contents(dirname(__FILE__) . '/RendererTestData.json'), true);
     $this->renderer = new Renderer($this->newsletterData);
