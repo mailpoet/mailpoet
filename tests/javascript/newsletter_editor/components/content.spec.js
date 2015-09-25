@@ -9,13 +9,15 @@ define([
 
       beforeEach(function() {
         model = new (ContentComponent.NewsletterModel)({
-          globalStyles: {
-            style1: 'style1Value',
-            style2: 'style2Value',
-          },
-          content: {
-            data1: 'data1Value',
-            data2: 'data2Value',
+          data: {
+            globalStyles: {
+              style1: 'style1Value',
+              style2: 'style2Value',
+            },
+            content: {
+              data1: 'data1Value',
+              data2: 'data2Value',
+            },
           },
           someField: 'someValue'
         });
@@ -30,7 +32,7 @@ define([
         mock.verify();
       });
 
-      it('does not include styles and data attributes in its JSON', function() {
+      it('does not include styles and content attributes in its JSON', function() {
         var json = model.toJSON();
         expect(json).to.deep.equal({someField: 'someValue'});
       });
@@ -79,8 +81,10 @@ define([
         };
         var json = ContentComponent.toJSON();
         expect(json).to.deep.equal(_.extend({
-          content: dataField,
-          globalStyles: stylesField
+          data: {
+            content: dataField,
+            globalStyles: stylesField
+          },
         }, newsletterFields));
       });
     });

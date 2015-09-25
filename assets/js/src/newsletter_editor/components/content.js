@@ -11,7 +11,7 @@ define([
   // Does not hold newsletter content nor newsletter styles, those are
   // handled by other components.
   Module.NewsletterModel = SuperModel.extend({
-    stale: ['content', 'globalStyles'],
+    stale: ['data'],
     initialize: function(options) {
       this.on('change', function() {
           App.getChannel().trigger('autoSave');
@@ -45,8 +45,10 @@ define([
 
   Module.toJSON = function() {
     return _.extend({
-      content: App._contentContainer.toJSON(),
-      globalStyles: App.getGlobalStyles().toJSON(),
+      data: {
+        content: App._contentContainer.toJSON(),
+        globalStyles: App.getGlobalStyles().toJSON(),
+      },
     }, App.getNewsletter().toJSON());
   };
 
@@ -62,12 +64,12 @@ define([
     App.toJSON = Module.toJSON;
     App.getNewsletter = Module.getNewsletter;
 
-    Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['content', 'globalStyles']));
+    Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['data']));
   });
 
   App.on('start', function(options) {
     // TODO: Other newsletter information will be needed as well.
-    App._contentContainer = new (this.getBlockTypeModel('container'))(options.newsletter.content, {parse: true});
+    App._contentContainer = new (this.getBlockTypeModel('container'))(options.newsletter.data.content, {parse: true});
     App._contentContainerView = new (this.getBlockTypeView('container'))({
       model: App._contentContainer,
       renderOptions: { depth: 0 },
