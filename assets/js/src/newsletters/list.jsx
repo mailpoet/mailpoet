@@ -34,8 +34,19 @@ define(
       }
     ];
 
+    var item_actions = [
+      {
+        name: 'edit',
+        label: 'Edit',
+        link: function(id) {
+          return '?page=mailpoet-newsletter-editor&id='+parseInt(id, 10);
+        }
+      }
+    ];
+
     var NewsletterList = React.createClass({
       renderItem: function(newsletter, actions) {
+
         var rowClasses = classNames(
           'manage-column',
           'column-primary',
@@ -65,7 +76,8 @@ define(
             endpoint="newsletters"
             onRenderItem={this.renderItem}
             columns={columns}
-            bulk_actions={ bulk_actions } />
+            bulk_actions={ bulk_actions }
+            item_actions={ item_actions } />
         );
       }
     });
