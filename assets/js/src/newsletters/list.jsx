@@ -1,14 +1,18 @@
 define(
   [
     'react',
+    'react-router',
     'listing/listing.jsx',
     'classnames'
   ],
   function(
     React,
+    Router,
     Listing,
     classNames
   ) {
+    var Link = Router.Link;
+
     var columns = [
       {
         name: 'subject',
@@ -37,9 +41,12 @@ define(
     var item_actions = [
       {
         name: 'edit',
-        label: 'Edit',
         link: function(id) {
-          return '?page=mailpoet-newsletter-editor&id='+parseInt(id, 10);
+          return (
+            <a href={ '?page=mailpoet-newsletter-editor&id=' + id }>
+              Edit
+            </a>
+          );
         }
       }
     ];

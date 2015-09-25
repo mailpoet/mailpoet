@@ -76,9 +76,7 @@ define(
           item_actions = custom_actions.map(function(action, index) {
             return (
               <span key={ 'action-'+index } className={ action.name }>
-                <a href={ action.link(this.props.item.id) }>
-                  { action.label }
-                </a>
+                { action.link(this.props.item.id) }
                 {(index < (custom_actions.length - 1)) ? ' | ' : ''}
               </span>
             );
