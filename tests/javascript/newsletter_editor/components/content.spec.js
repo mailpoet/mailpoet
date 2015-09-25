@@ -81,10 +81,10 @@ define([
         };
         var json = ContentComponent.toJSON();
         expect(json).to.deep.equal(_.extend({
-          body: {
+          body: JSON.stringify({
             content: dataField,
             globalStyles: stylesField
-          },
+          }),
         }, newsletterFields));
       });
     });
