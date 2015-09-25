@@ -1,14 +1,18 @@
 define(
   [
     'react',
+    'react-router',
     'listing/listing.jsx',
     'classnames'
   ],
   function(
     React,
+    Router,
     Listing,
     classNames
   ) {
+    var Link = Router.Link;
+
     var columns = [
       {
         name: 'subject',
@@ -34,8 +38,22 @@ define(
       }
     ];
 
+    var item_actions = [
+      {
+        name: 'edit',
+        link: function(id) {
+          return (
+            <a href={ '?page=mailpoet-newsletter-editor&id=' + id }>
+              Edit
+            </a>
+          );
+        }
+      }
+    ];
+
     var NewsletterList = React.createClass({
       renderItem: function(newsletter, actions) {
+
         var rowClasses = classNames(
           'manage-column',
           'column-primary',
@@ -65,7 +83,8 @@ define(
             endpoint="newsletters"
             onRenderItem={this.renderItem}
             columns={columns}
-            bulk_actions={ bulk_actions } />
+            bulk_actions={ bulk_actions }
+            item_actions={ item_actions } />
         );
       }
     });

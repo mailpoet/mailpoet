@@ -59,14 +59,30 @@ class Menu {
       'mailpoet-settings',
       array($this, 'settings')
     );
-    add_submenu_page(
-      'mailpoet',
-      __('Newsletter editor'),
-      __('Newsletter editor'),
-      'manage_options',
-      'mailpoet-newsletter-editor',
-      array($this, 'newsletterEditor')
+    // add_submenu_page(
+    //   'mailpoet',
+    //   __('Newsletter editor'),
+    //   __('Newsletter editor'),
+    //   'manage_options',
+    //   'mailpoet-newsletter-editor',
+    //   array($this, 'newletterEditor')
+    // );
+    $this->registered_pages();
+  }
+
+  function registered_pages() {
+    global $_registered_pages;
+    $pages = array(
+      //'mailpoet-form-editor' => 'formEditor',
+      'mailpoet-newsletter-editor' => array($this, 'newletterForm')
     );
+    foreach($pages as $menu_slug => $callback) {
+      $hookname = get_plugin_page_hookname($menu_slug, null);
+      if(!empty($hookname)) {
+        add_action($hookname, $callback);
+      }
+      $_registered_pages[$hookname] = true;
+    }
   }
 
   function home() {
@@ -97,11 +113,11 @@ class Menu {
     echo $this->renderer->render('newsletters.html', $data);
   }
 
-  function newsletterEditor() {
+  function newletterForm() {
     $data = array();
     wp_enqueue_media();
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
     wp_enqueue_style('editor', includes_url('css/editor.css'));
-    echo $this->renderer->render('newsletter/editor.html', $data);
+    echo $this->renderer->render('newsletter/form.html', $data);
   }
 }

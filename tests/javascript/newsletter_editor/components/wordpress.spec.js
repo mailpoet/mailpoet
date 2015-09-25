@@ -1,16 +1,12 @@
 define([
     'newsletter_editor/App',
-    'newsletter_editor/components/wordpress'
-  ], function(EditorApplication, Wordpress) {
+    'newsletter_editor/components/wordpress',
+    'amd-inject-loader!newsletter_editor/components/wordpress'
+  ], function(EditorApplication, Wordpress, WordpressInjector) {
 
   describe('getPostTypes', function() {
-    var injector;
-    beforeEach(function() {
-      injector = require('amd-inject-loader!newsletter_editor/components/wordpress');
-    });
-
     it('fetches post types from the server', function() {
-      var module = injector({
+      var module = WordpressInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
@@ -32,7 +28,7 @@ define([
     it('caches results', function() {
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
-          module = injector({
+          module = WordpressInjector({
             "mailpoet": {
               Ajax: {
                 post: mock,
@@ -51,11 +47,6 @@ define([
   });
 
   describe('getTaxonomies', function() {
-    var injector;
-    beforeEach(function() {
-      injector = require('amd-inject-loader!newsletter_editor/components/wordpress');
-    });
-
     it('sends post type to endpoint', function() {
       var spy,
           post = function(params) {
@@ -68,7 +59,7 @@ define([
           },
           module;
       spy = sinon.spy(post);
-      module = injector({
+      module = WordpressInjector({
         "mailpoet": {
           Ajax: {
             post: spy,
@@ -81,7 +72,7 @@ define([
     });
 
     it('fetches post types from the server', function() {
-      var module = injector({
+      var module = WordpressInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
@@ -100,7 +91,7 @@ define([
     it('caches results', function() {
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
-          module = injector({
+          module = WordpressInjector({
             "mailpoet": {
               Ajax: {
                 post: mock,
@@ -116,11 +107,6 @@ define([
   });
 
   describe('getTerms', function() {
-    var injector;
-    beforeEach(function() {
-      injector = require('amd-inject-loader!newsletter_editor/components/wordpress');
-    });
-
     it('sends terms to endpoint', function() {
       var spy,
           post = function(params) {
@@ -130,7 +116,7 @@ define([
           },
           module;
       spy = sinon.spy(post);
-      module = injector({
+      module = WordpressInjector({
         "mailpoet": {
           Ajax: {
             post: spy,
@@ -145,7 +131,7 @@ define([
     });
 
     it('fetches terms from the server', function() {
-      var module = injector({
+      var module = WordpressInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
@@ -164,7 +150,7 @@ define([
     it('caches results', function() {
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
-          module = injector({
+          module = WordpressInjector({
             "mailpoet": {
               Ajax: {
                 post: mock,
@@ -180,11 +166,6 @@ define([
   });
 
   describe('getPosts', function() {
-    var injector;
-    beforeEach(function() {
-      injector = require('amd-inject-loader!newsletter_editor/components/wordpress');
-    });
-
     it('sends options to endpoint', function() {
       var spy,
           post = function(params) {
@@ -194,7 +175,7 @@ define([
           },
           module;
       spy = sinon.spy(post);
-      module = injector({
+      module = WordpressInjector({
         "mailpoet": {
           Ajax: {
             post: spy,
@@ -213,7 +194,7 @@ define([
     });
 
     it('fetches posts from the server', function() {
-      var module = injector({
+      var module = WordpressInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
@@ -232,7 +213,7 @@ define([
     it('caches results', function() {
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
-          module = injector({
+          module = WordpressInjector({
             "mailpoet": {
               Ajax: {
                 post: mock,
@@ -251,11 +232,6 @@ define([
   });
 
   describe('getTransformedPosts', function() {
-    var injector;
-    beforeEach(function() {
-      injector = require('amd-inject-loader!newsletter_editor/components/wordpress');
-    });
-
     it('sends options to endpoint', function() {
       var spy,
           post = function(params) {
@@ -265,7 +241,7 @@ define([
           },
           module;
       spy = sinon.spy(post);
-      module = injector({
+      module = WordpressInjector({
         "mailpoet": {
           Ajax: {
             post: spy,
@@ -284,7 +260,7 @@ define([
     });
 
     it('fetches transformed posts from the server', function() {
-      var module = injector({
+      var module = WordpressInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
@@ -303,7 +279,7 @@ define([
     it('caches results', function() {
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
-          module = injector({
+          module = WordpressInjector({
             "mailpoet": {
               Ajax: {
                 post: mock,

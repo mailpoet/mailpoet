@@ -5,8 +5,9 @@ define([
     'jquery',
     'underscore',
     'handlebars',
-    'handlebars_helpers',
-    ], function(Backbone, Marionette, SuperModel, jQuery, _, Handlebars) {
+    'handlebars_helpers'
+  ], function(Backbone, Marionette, SuperModel, jQuery, _, Handlebars) {
+
   var app = new Marionette.Application(), AppView;
 
   // Decoupled communication between application components

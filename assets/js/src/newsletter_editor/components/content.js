@@ -1,7 +1,7 @@
 define([
     'newsletter_editor/App',
     'backbone.supermodel',
-    'underscore',
+    'underscore'
   ], function(App, SuperModel, _) {
   "use strict";
 

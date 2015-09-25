@@ -4,7 +4,7 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/base',
-    'underscore',
+    'underscore'
   ], function(App, BaseBlock, _) {
 
   "use strict";

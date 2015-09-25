@@ -5,7 +5,7 @@ define([
     'backbone.supermodel',
     'underscore',
     'jquery',
-    'sticky-kit',
+    'sticky-kit'
   ], function(App, Backbone, Marionette, SuperModel, _, jQuery, StickyKit) {
 
   "use strict";
@@ -225,23 +225,23 @@ define([
       MailPoet.Modal.loading(true);
 
       // TODO: Migrate logic to new AJAX format
-      //mailpoet_post_wpi('newsletter_preview.php', data, function(response) {
-        //if(response.success !== undefined && response.success === true) {
-          //MailPoet.Notice.success(App.getConfig().get('translations.testEmailSent'));
-        //} else if(response.error !== undefined) {
-          //if(response.error.length === 0) {
-            //MailPoet.Notice.error(App.getConfig().get('translations.unknownErrorOccurred'));
-          //} else {
-            //$(response.error).each(function(i, error) {
-              //MailPoet.Notice.error(error);
-            //});
-        //}
-      //}
-        //MailPoet.Modal.loading(false);
-    //}, function(error) {
-      //// an error occurred
-      //MailPoet.Modal.loading(false);
-    //});
+      Wordpress.previewNewsletter(data).done(function(response) {
+        if(response.success !== undefined && response.success === true) {
+          MailPoet.Notice.success(App.getConfig().get('translations.testEmailSent'));
+        } else if(response.error !== undefined) {
+          if(response.error.length === 0) {
+            MailPoet.Notice.error(App.getConfig().get('translations.unknownErrorOccurred'));
+          } else {
+            $(response.error).each(function(i, error) {
+              MailPoet.Notice.error(error);
+            });
+          }
+        }
+        MailPoet.Modal.loading(false);
+      }).fail(function(response) {
+        // an error occurred
+        MailPoet.Modal.loading(false);
+      });
     },
   });
 

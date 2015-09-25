@@ -1,40 +1,56 @@
 define([
     'newsletter_editor/App',
-    'newsletter_editor/components/save'
-  ], function(EditorApplication, SaveComponent) {
+    'newsletter_editor/components/save',
+    'amd-inject-loader!newsletter_editor/components/save'
+  ], function(EditorApplication, SaveComponent, SaveInjector) {
 
   describe('Save', function() {
     describe('save method', function() {
+      var module;
+      before(function() {
+        module = SaveInjector({
+          'newsletter_editor/components/wordpress': {
+            saveNewsletter: function() {
+                var deferred = jQuery.Deferred();
+                deferred.resolve({});
+                return deferred;
+            }
+          }
+        });
+      });
+
       it('triggers beforeEditorSave event', function() {
         var spy = sinon.spy();
         global.stubChannel(EditorApplication, {
           trigger: spy,
         });
-        global.mailpoet_post_wpi = sinon.stub();
         EditorApplication.toJSON = sinon.stub();
-        SaveComponent.save();
+        module.save();
         expect(spy.withArgs('beforeEditorSave').calledOnce).to.be.true;
       });
 
-      it.skip('triggers afterEditorSave event', function() {
+      it('triggers afterEditorSave event', function() {
         var stub = sinon.stub().callsArgWith(2, { success: true }),
           spy = sinon.spy();
-        global.mailpoet_post_wpi = stub;
         global.stubChannel(EditorApplication, {
           trigger: spy,
         });
         EditorApplication.toJSON = sinon.stub();
-        SaveComponent.save();
+        module.save();
         expect(spy.withArgs('afterEditorSave').calledOnce).to.be.true;
       });
 
-      it.skip('sends newsletter json to server for saving', function() {
-        var mock = sinon.mock({ mailpoet_post_wpi: function() {} }).expects('mailpoet_post_wpi').once();
+      it('sends newsletter json to server for saving', function() {
+        var mock = sinon.mock({ saveNewsletter: function() {} }).expects('saveNewsletter').once().returns(jQuery.Deferred());
+        var module = SaveInjector({
+          'newsletter_editor/components/wordpress': {
+            saveNewsletter: mock,
+          }
+        });
         global.stubChannel(EditorApplication);
-        global.mailpoet_post_wpi = mock;
 
         EditorApplication.toJSON = sinon.stub().returns({});
-        SaveComponent.save();
+        module.save();
 
         mock.verify();
       });

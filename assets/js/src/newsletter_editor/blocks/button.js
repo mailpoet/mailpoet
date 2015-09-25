@@ -6,7 +6,7 @@ define([
     'newsletter_editor/blocks/base',
     'mailpoet',
     'underscore',
-    'jquery',
+    'jquery'
   ], function(App, BaseBlock, MailPoet, _, jQuery) {
 
   "use strict";

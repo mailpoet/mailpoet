@@ -1,7 +1,7 @@
 define([
     'newsletter_editor/App',
     'backbone.marionette',
-    'backbone.supermodel',
+    'backbone.supermodel'
   ], function(App, Marionette, SuperModel) {
 
   "use strict";

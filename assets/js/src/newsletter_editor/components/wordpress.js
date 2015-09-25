@@ -7,13 +7,21 @@ define([
 
   var Module = {};
 
-  Module._cachedQuery = _.memoize(function(args) {
+  Module._query = function(args) {
     return MailPoet.Ajax.post({
       endpoint: 'wordpress',
       action: args.action,
       data: args.options || {},
     });
-  }, JSON.stringify);
+  };
+  Module._cachedQuery = _.memoize(Module._query, JSON.stringify);
+
+  Module.getNewsletter = function(options) {
+    return Module._query({
+      action: 'get',
+      options: options,
+    });
+  };
 
   Module.getPostTypes = function() {
     return Module._cachedQuery({
@@ -50,6 +58,20 @@ define([
   Module.getTransformedPosts = function(options) {
     return Module._cachedQuery({
       action: 'getTransformedPosts',
+      options: options,
+    });
+  };
+
+  Module.saveNewsletter = function(options) {
+    return Module._query({
+      action: 'save',
+      options: options,
+    });
+  };
+
+  Module.previewNewsletter = function(options) {
+    return Module._query({
+      action: 'preview',
       options: options,
     });
   };

@@ -9,7 +9,7 @@ define([
     'underscore',
     'jquery',
     'newsletter_editor/App',
-    'newsletter_editor/blocks/base',
+    'newsletter_editor/blocks/base'
   ], function(Backbone, Marionette, _, jQuery, App, BaseBlock) {
 
   "use strict";

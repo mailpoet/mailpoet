@@ -69,13 +69,31 @@ define(
           );
         }
 
-        var item_actions = (
+        var custom_actions = this.props.item_actions;
+        var item_actions = false;
+
+        if(custom_actions.length > 0) {
+          item_actions = custom_actions.map(function(action, index) {
+            return (
+              <span key={ 'action-'+index } className={ action.name }>
+                { action.link(this.props.item.id) }
+                {(index < (custom_actions.length - 1)) ? ' | ' : ''}
+              </span>
+            );
+          }.bind(this));
+        } else {
+          item_actions = (
+            <span className="edit">
+              <Link to="edit" params={{ id: this.props.item.id }}>Edit</Link>
+            </span>
+          );
+        }
+
+        var actions = (
           <div>
             <div className="row-actions">
-              <span className="edit">
-                <Link to="edit" params={{ id: this.props.item.id }}>Edit</Link>
-              </span>
-              &nbsp;|&nbsp;
+              { item_actions }
+              { ' | ' }
               <span className="trash">
                 <a
                   href="javascript:;"
@@ -97,7 +115,7 @@ define(
         return (
           <tr className={ row_classes }>
             { checkbox }
-            { this.props.onRenderItem(this.props.item, item_actions) }
+            { this.props.onRenderItem(this.props.item, actions) }
           </tr>
         );
       }
@@ -166,6 +184,7 @@ define(
                     onDeleteItem={ this.props.onDeleteItem }
                     selection={ this.props.selection }
                     is_selectable={ this.props.is_selectable }
+                    item_actions={ this.props.item_actions }
                     key={ 'item-' + item.id }
                     item={ item } />
                 );
@@ -367,6 +386,9 @@ define(
         // bulk actions
         var bulk_actions = this.props.bulk_actions || [];
 
+        // item actions
+        var item_actions = this.props.item_actions || [];
+
         var tableClasses = classNames(
           'wp-list-table',
           'widefat',
@@ -420,6 +442,7 @@ define(
                 loading={ this.state.loading }
                 count={ this.state.count }
                 limit={ this.state.limit }
+                item_actions={ item_actions }
                 items={ items } />
 
               <tfoot>
