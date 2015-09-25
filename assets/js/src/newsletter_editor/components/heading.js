@@ -3,7 +3,7 @@ define([
     'backbone',
     'backbone.marionette',
     'underscore',
-    'jquery',
+    'jquery'
   ], function(App, Backbone, Marionette, _, jQuery) {
 
   "use strict";

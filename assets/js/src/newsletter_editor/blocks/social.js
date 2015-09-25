@@ -8,7 +8,7 @@ define([
     'backbone.marionette',
     'backbone.supermodel',
     'underscore',
-    'jquery',
+    'jquery'
   ], function(App, BaseBlock, Backbone, Marionette, SuperModel, _, jQuery) {
 
   "use strict";

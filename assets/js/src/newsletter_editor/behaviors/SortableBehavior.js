@@ -6,7 +6,7 @@
 define([
     'backbone.marionette',
     'underscore',
-    'newsletter_editor/behaviors/BehaviorsLookup',
+    'newsletter_editor/behaviors/BehaviorsLookup'
   ], function(Marionette, _, BehaviorsLookup) {
 
   BehaviorsLookup.SortableBehavior = Marionette.Behavior.extend({
