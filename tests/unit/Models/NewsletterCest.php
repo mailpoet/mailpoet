@@ -6,8 +6,9 @@ class NewsletterCest {
   function _before() {
     $this->before_time = time();
     $this->data = array(
-      'subject'  => 'new newsletter',
-      'body' => 'json...'
+      'subject' => 'new newsletter',
+      'body' => 'body',
+      'preheader' => 'preaheader'
     );
 
     $newsletter = Newsletter::create();
@@ -15,19 +16,40 @@ class NewsletterCest {
     $this->result = $newsletter->save();
   }
 
-  function itHasToBeValid() {
+  function itCanBeCreated() {
     expect($this->result)->equals(true);
+  }
+
+  function itHasToBeValid() {
     $empty_model = Newsletter::create();
     expect($empty_model->save())->notEquals(true);
     $validations = $empty_model->getValidationErrors();
     expect(count($validations))->equals(2);
   }
 
+  function itHasSubject() {
+    $subscriber = Newsletter::where('subject', $this->data['subject'])
+      ->findOne();
+    expect($subscriber->subject)->equals($this->data['subject']);
+  }
+
+  function itHasBody() {
+    $subscriber = Newsletter::where('body', $this->data['body'])
+      ->findOne();
+    expect($subscriber->body)->equals($this->data['body']);
+  }
+
+  function itHasPreheader() {
+    $subscriber = Newsletter::where('preheader', $this->data['preheader'])
+      ->findOne();
+    expect($subscriber->preheader)->equals($this->data['preheader']);
+  }
+
   function itCanCreateOrUpdate() {
     $is_created = Newsletter::createOrUpdate(
       array(
         'subject' => 'new newsletter',
-        'body' => 'json...'
+        'body' => 'body'
       ));
     expect($is_created)->equals(true);
 
@@ -39,17 +61,17 @@ class NewsletterCest {
       array(
         'id' => $newsletter->id,
         'subject' => 'updated newsletter',
-        'body' => 'json...'
+        'body' => 'body'
       ));
     $newsletter = Newsletter::findOne($newsletter->id);
     expect($newsletter->subject)->equals('updated newsletter');
   }
 
-  function itHasASearchFilter() {
+  function itHasSearchFilter() {
     Newsletter::createOrUpdate(
       array(
         'subject' => 'search for "pineapple"',
-        'body' => 'json...'
+        'body' => 'body'
       ));
     $newsletter = Newsletter::filter('search', 'pineapple')
       ->findOne();

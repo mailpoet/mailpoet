@@ -19,7 +19,7 @@ class Newsletters {
     if($newsletter === false) {
       wp_send_json(false);
     } else {
-      wp_send_json($newsletter->asArray('subject', 'body', 'preheader'));
+      wp_send_json($newsletter->asArray());
     }
   }
 
