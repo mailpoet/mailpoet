@@ -1,9 +1,9 @@
 define([
     'newsletter_editor/App',
-    'newsletter_editor/components/wordpress',
+    'mailpoet',
     'backbone',
     'backbone.marionette'
-  ], function(App, Wordpress, Backbone, Marionette) {
+  ], function(App, MailPoet, Backbone, Marionette) {
 
   "use strict";
 
@@ -17,7 +17,11 @@ define([
     var json = App.toJSON();
 
     // save newsletter
-    Wordpress.saveNewsletter(json).done(function(response) {
+    MailPoet.Ajax.post({
+      endpoint: 'newsletters',
+      action: 'save',
+      data: json,
+    }).done(function(response) {
       if(response.success !== undefined && response.success === true) {
         // TODO: Handle translations
         //MailPoet.Notice.success("<?php _e('Newsletter has been saved.'); ?>");
@@ -32,9 +36,9 @@ define([
         }
       }
       App.getChannel().trigger('afterEditorSave', json, response);
-    }).fail(function() {
+    }).fail(function(response) {
       // TODO: Handle saving errors
-      App.getChannel().trigger('afterEditorSave', {}, error);
+      App.getChannel().trigger('afterEditorSave', {}, response);
     });
   };
 

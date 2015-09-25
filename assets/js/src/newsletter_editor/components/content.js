@@ -45,10 +45,10 @@ define([
 
   Module.toJSON = function() {
     return _.extend({
-      body: {
+      body: JSON.stringify({
         content: App._contentContainer.toJSON(),
         globalStyles: App.getGlobalStyles().toJSON(),
-      },
+      }),
     }, App.getNewsletter().toJSON());
   };
 
@@ -69,7 +69,8 @@ define([
 
   App.on('start', function(options) {
     // TODO: Other newsletter information will be needed as well.
-    App._contentContainer = new (this.getBlockTypeModel('container'))(options.newsletter.body.content, {parse: true});
+    var body = JSON.parse(options.newsletter.body);
+    App._contentContainer = new (this.getBlockTypeModel('container'))(body.content, {parse: true});
     App._contentContainerView = new (this.getBlockTypeView('container'))({
       model: App._contentContainer,
       renderOptions: { depth: 0 },
