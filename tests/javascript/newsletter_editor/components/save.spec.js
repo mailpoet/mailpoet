@@ -9,11 +9,13 @@ define([
       var module;
       before(function() {
         module = SaveInjector({
-          'newsletter_editor/components/wordpress': {
-            saveNewsletter: function() {
-                var deferred = jQuery.Deferred();
-                deferred.resolve({});
-                return deferred;
+          'mailpoet': {
+            Ajax: {
+              post: function() {
+                  var deferred = jQuery.Deferred();
+                  deferred.resolve({});
+                  return deferred;
+              }
             }
           }
         });
@@ -43,8 +45,10 @@ define([
       it('sends newsletter json to server for saving', function() {
         var mock = sinon.mock({ saveNewsletter: function() {} }).expects('saveNewsletter').once().returns(jQuery.Deferred());
         var module = SaveInjector({
-          'newsletter_editor/components/wordpress': {
-            saveNewsletter: mock,
+          'mailpoet': {
+            Ajax: {
+              post: mock,
+            }
           }
         });
         global.stubChannel(EditorApplication);

@@ -202,10 +202,14 @@ define([
     showPreview: function() {
       var json = App.toJSON();
 
-      mailpoet_post_json('newsletter_render.php', { data: json }, function(response) {
+      MailPoet.Ajax.post({
+        endpoint: 'newsletters',
+        action: 'render',
+        data: json,
+      }).done(function(response){
         console.log('Should open a new window');
-        window.open('data:text/html,' + encodeURIComponent(response), '_blank');
-      }, function(error) {
+        window.open('data:text/html,' + encodeURIComponent(response.rendered_body), '_blank');
+      }).fail(function(error) {
         console.log('Preview error', json);
         alert('Something went wrong, check console');
       });
