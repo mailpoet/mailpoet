@@ -12,10 +12,13 @@ class Newsletter extends Model {
     $this->addValidations('subject', array(
       'required' => __('You need to specify a subject.')
     ));
+    $this->addValidations('body', array(
+      'required' => __('Newsletter cannot be empty.')
+    ));
   }
 
   static function search($orm, $search = '') {
-    return $orm->where_like('subject', '%'.$search.'%');
+    return $orm->where_like('subject', '%' . $search . '%');
   }
 
   static function groups() {
@@ -34,8 +37,8 @@ class Newsletter extends Model {
   static function createOrUpdate($data = array()) {
     $newsletter = false;
 
-    if(isset($data['id']) && (int)$data['id'] > 0) {
-      $newsletter = self::findOne((int)$data['id']);
+    if(isset($data['id']) && (int) $data['id'] > 0) {
+      $newsletter = self::findOne((int) $data['id']);
     }
 
     if($newsletter === false) {
@@ -60,6 +63,7 @@ class Newsletter extends Model {
   }
 
   static function trash($listing) {
-    return $listing->getSelection()->deleteMany();
+    return $listing->getSelection()
+      ->deleteMany();
   }
 }
