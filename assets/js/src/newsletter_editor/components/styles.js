@@ -72,7 +72,7 @@ define([
 
     App.getAvailableStyles = Module.getAvailableStyles;
 
-    this.setGlobalStyles(options.newsletter.data.globalStyles);
+    this.setGlobalStyles(options.newsletter.body.globalStyles);
   });
 
   App.on('start', function(options) {

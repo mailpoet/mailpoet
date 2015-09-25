@@ -9,7 +9,7 @@ define([
 
       beforeEach(function() {
         model = new (ContentComponent.NewsletterModel)({
-          data: {
+          body: {
             globalStyles: {
               style1: 'style1Value',
               style2: 'style2Value',
@@ -81,7 +81,7 @@ define([
         };
         var json = ContentComponent.toJSON();
         expect(json).to.deep.equal(_.extend({
-          data: {
+          body: {
             content: dataField,
             globalStyles: stylesField
           },
