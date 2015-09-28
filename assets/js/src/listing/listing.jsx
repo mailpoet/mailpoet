@@ -256,7 +256,10 @@ define(
         }.bind(this));
       },
       handleBulkAction: function(selected_ids, params) {
-        if(this.state.selection === false) {
+        if(
+          this.state.selection === false
+          && this.state.selected_ids.length === 0
+        ) {
           return;
         }
 

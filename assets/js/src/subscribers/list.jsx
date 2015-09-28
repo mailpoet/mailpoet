@@ -266,7 +266,7 @@ define(
             <td className="column" data-colname="Status">
               { status }
             </td>
-            <td className="column" data-colname="Status">
+            <td className="column" data-colname="Lists">
               { segments }
             </td>
             <td className="column-date" data-colname="Subscribed on">
