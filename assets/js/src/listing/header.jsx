@@ -22,7 +22,7 @@ define(['react', 'classnames'], function(React, classNames) {
 
       if(this.props.is_selectable === true) {
         checkbox = (
-          <td
+          <th
             className="manage-column column-cb check-column">
             <label className="screen-reader-text">
               { 'Select All' }
@@ -32,7 +32,7 @@ define(['react', 'classnames'], function(React, classNames) {
               ref="toggle"
               checked={ this.props.selection }
               onChange={ this.handleSelectItems } />
-          </td>
+          </th>
         );
       }
 
