@@ -20,7 +20,7 @@ class NewsletterTemplates {
   }
 
   function getAll() {
-    $collection = NewsletterTemplate::find_array();
+    $collection = NewsletterTemplate::findArray();
     wp_send_json($collection);
   }
 
