@@ -79,12 +79,15 @@ define(
       },
       render: function() {
         return (
-          <Listing
-            endpoint="newsletters"
-            onRenderItem={this.renderItem}
-            columns={columns}
-            bulk_actions={ bulk_actions }
-            item_actions={ item_actions } />
+          <div>
+            <h1>Newsletters <Link className="add-new-h2" to="new">New</Link></h1>
+            <Listing
+              endpoint="newsletters"
+              onRenderItem={this.renderItem}
+              columns={columns}
+              bulk_actions={ bulk_actions }
+              item_actions={ item_actions } />
+          </div>
         );
       }
     });
