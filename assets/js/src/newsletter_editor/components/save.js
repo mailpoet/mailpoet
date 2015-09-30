@@ -42,6 +42,16 @@ define([
     });
   };
 
+  Module.saveTemplate = function(options) {
+    return MailPoet.Ajax.post({
+      endpoint: 'newsletterTemplates',
+      action: 'save',
+      data: _.extend(options || {}, {
+        body: App.getBody(),
+      }),
+    });
+  };
+
   Module.SaveView = Marionette.LayoutView.extend({
     getTemplate: function() { return templates.save; },
     events: {
@@ -94,6 +104,15 @@ define([
           templateDescription = this.$('.mailpoet_save_as_template_description').val();
 
       console.log('Saving template with ', templateName, templateDescription);
+      Module.saveTemplate({
+        name: templateName,
+        description: templateDescription,
+      }).done(function() {
+        console.log('Template saved', arguments);
+      }).fail(function() {
+        // TODO: Handle error messages
+        console.log('Template save failed', arguments);
+      });
 
       this.hideOptionContents();
     },
