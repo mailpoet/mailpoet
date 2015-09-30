@@ -1,13 +1,17 @@
 define(
   [
-  'react',
-  'mailpoet',
-  'react-router'
+    'react',
+    'mailpoet',
+    'react-router',
+    'classnames',
+    'newsletters/breadcrumb.jsx'
   ],
   function(
     React,
     MailPoet,
-    Router
+    Router,
+    classNames,
+    Breadcrumb
   ) {
     var NewsletterTemplates = React.createClass({
       mixins: [
@@ -26,7 +30,7 @@ define(
         this.setState({ loading: true });
 
         MailPoet.Ajax.post({
-          endpoint: 'newslettertemplates',
+          endpoint: 'newsletterTemplates',
           action: 'getAll',
         }).done(function(response) {
           if(this.isMounted()) {
@@ -37,22 +41,29 @@ define(
           }
         }.bind(this));
       },
-      handleSelectTemplate: function(id) {
-        console.log('select '+id);
+      handleSelectTemplate: function(template) {
+        console.log('select '+template.id);
       },
-      handlePreviewTemplate: function(id) {
-        console.log('preview '+id);
+      handlePreviewTemplate: function(template) {
+        console.log('preview '+template.id);
       },
-      handleDeleteTemplate: function(id) {
+      handleDeleteTemplate: function(template) {
         this.setState({ loading: true });
-
-        MailPoet.Ajax.post({
-          endpoint: 'newslettertemplates',
-          action: 'delete',
-          data: id
-        }).done(function(response) {
-          this.getTemplates();
-        }.bind(this));
+        if(
+          window.confirm(
+            'You are about to delete the template named "'+ template.name +'"'
+          )
+        ) {
+          MailPoet.Ajax.post({
+            endpoint: 'newsletterTemplates',
+            action: 'delete',
+            data: template.id
+          }).done(function(response) {
+            this.getTemplates();
+          }.bind(this));
+        } else {
+           this.setState({ loading: false });
+        }
       },
       render: function() {
         var templates = this.state.templates.map(function(template, index) {
@@ -69,14 +80,14 @@ define(
               <div className="mailpoet_actions">
                   <a
                     className="button button-primary"
-                    onClick={ this.handleSelectTemplate.bind(null, template.id) }
+                    onClick={ this.handleSelectTemplate.bind(null, template) }
                   >
                     Select
                   </a>
                   &nbsp;
                   <a
                     className="button button-secondary"
-                    onClick={ this.handlePreviewTemplate.bind(null, template.id) }
+                    onClick={ this.handlePreviewTemplate.bind(null, template) }
                   >
                     Preview
                   </a>
@@ -84,7 +95,7 @@ define(
               <div className="mailpoet_delete">
                 <a
                   href="javascript:;"
-                  onClick={ this.handleDeleteTemplate.bind(null, template.id) }
+                  onClick={ this.handleDeleteTemplate.bind(null, template) }
                 >
                   Delete
                 </a>
@@ -93,21 +104,19 @@ define(
           );
         }.bind(this));
 
+        var boxClasses = classNames(
+          'mailpoet_boxes',
+          'clearfix',
+          { 'mailpoet_boxes_loading': this.state.loading }
+        );
+
         return (
           <div>
             <h1>Select a template</h1>
 
-            <div className="mailpoet_breadcrumbs">
-              Select type
-              &nbsp;&gt;&nbsp;
-              <strong>Template</strong>
-              &nbsp;&gt;&nbsp;
-              Designer&nbsp;&gt;&nbsp;
-              Send
-            </div>
+            <Breadcrumb step="template" />
 
-
-            <ul className="mailpoet_boxes clearfix">
+            <ul className={ boxClasses }>
               { templates }
             </ul>
           </div>

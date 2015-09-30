@@ -1,13 +1,15 @@
 define(
   [
-  'react',
-  'mailpoet',
-  'react-router'
+    'react',
+    'mailpoet',
+    'react-router',
+    'newsletters/breadcrumb.jsx'
   ],
   function(
     React,
     MailPoet,
-    Router
+    Router,
+    Breadcrumb
   ) {
     var NewsletterTypes = React.createClass({
       mixins: [
@@ -23,14 +25,7 @@ define(
           <div>
             <h1>Pick a type of campaign</h1>
 
-            <div className="mailpoet_breadcrumbs">
-              <strong>Select type</strong>
-              &nbsp;&gt;&nbsp;
-              Template
-              &nbsp;&gt;&nbsp;
-              Designer&nbsp;&gt;&nbsp;
-              Send
-            </div>
+            <Breadcrumb step="type" />
 
             <ul className="mailpoet_boxes clearfix">
               <li data-type="standard">
