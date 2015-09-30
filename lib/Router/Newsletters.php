@@ -5,6 +5,7 @@ use MailPoet\Listing;
 use MailPoet\Mailer\Bridge;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Newsletter\Renderer\Renderer;
 
 if(!defined('ABSPATH')) exit;
@@ -77,5 +78,28 @@ class Newsletters {
       $data
     );
     wp_send_json($bulk_action->apply());
+  }
+
+  function create($data = array()) {
+    $newsletter = Newsletter::create();
+    $newsletter->type = $data['type'];
+    $newsletter->body = '{}';
+
+    // try to load template data
+    $template = NewsletterTemplate::findOne((int)$data['template']);
+    if($template !== false) {
+      $newsletter->body = $template->body;
+    }
+
+    $result = $newsletter->save();
+    if($result !== true) {
+      wp_send_json($newsletter->getValidationErrors());
+    } else {
+      wp_send_json(array(
+        'url' => admin_url(
+          'admin.php?page=mailpoet-newsletter-editor&id='.$newsletter->id()
+        )
+      ));
+    }
   }
 }

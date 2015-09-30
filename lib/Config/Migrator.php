@@ -73,6 +73,7 @@ class Migrator {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'subject varchar(250) NOT NULL,',
+      'type varchar(20) NOT NULL DEFAULT "standard",',
       'preheader varchar(250) NOT NULL,',
       'body longtext,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',

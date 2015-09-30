@@ -42,7 +42,22 @@ define(
         }.bind(this));
       },
       handleSelectTemplate: function(template) {
-        console.log('select '+template.id);
+        MailPoet.Ajax.post({
+          endpoint: 'newsletters',
+          action: 'create',
+          data: {
+            type: this.props.params.type,
+            template: template.id
+          }
+        }).done(function(response) {
+          if(response['url'] !== undefined) {
+            window.location = response['url'];
+          } else {
+            response.map(function(error) {
+              MailPoet.Notice.error(error);
+            });
+          }
+        }.bind(this));
       },
       handlePreviewTemplate: function(template) {
         console.log('preview '+template.id);
