@@ -1245,7 +1245,7 @@
         validateUnsubscribeLinkPresent: true, // TODO: Add validation based on whether Mailpoet MTA is used or not
       },
       urls: {
-        send: '?page=mailpoet-newsletters&action=send&newsletter=1', // TODO: Add saving path based on newsletter id
+        send: '<%= admin_url('admin.php?page=mailpoet-newsletters#/send/' ~ params('id')) %>',
         imageMissing: '<%= image_url(
           "newsletter_editor/image-missing.svg"
         ) %>',
