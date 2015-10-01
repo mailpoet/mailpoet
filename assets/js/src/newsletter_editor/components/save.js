@@ -83,7 +83,7 @@ define([
       this.validateNewsletter(json);
       // Update 'Last saved timer'
       this.$('.mailpoet_editor_last_saved').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_autosaved_at').text(response.time);
+      this.$('.mailpoet_autosaved_at').text('');
     },
     toggleSaveOptions: function() {
       this.$('.mailpoet_save_options').toggleClass('mailpoet_hidden');
