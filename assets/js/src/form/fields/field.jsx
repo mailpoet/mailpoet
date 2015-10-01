@@ -15,7 +15,7 @@ function(
   FormFieldCheckbox
 ) {
   var FormField = React.createClass({
-    renderField: function(data, inline = true) {
+    renderField: function(data, inline = false) {
       var description = false;
       if(data.field.description) {
         description = (
@@ -53,17 +53,17 @@ function(
 
       if(inline === true) {
         return (
-          <span>
+          <span key={ 'field-' + (data.index || 0) }>
             { field }
             { description }
           </span>
         );
       } else {
         return (
-          <div>
+          <p key={ 'field-' + (data.index || 0) }>
             { field }
             { description }
-          </div>
+          </p>
         );
       }
     },
@@ -71,8 +71,9 @@ function(
       var field = false;
 
       if(this.props.field['fields'] !== undefined) {
-        field = this.props.field.fields.map(function(subfield) {
+        field = this.props.field.fields.map(function(subfield, index) {
           return this.renderField({
+            index: index,
             field: subfield,
             item: this.props.item
           });

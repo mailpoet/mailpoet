@@ -61,30 +61,9 @@ function(
       }.bind(this));
     },
     handleChange: function() {
-      var new_value = this.refs.selection.getDOMNode().value;
-
-      if(this.props.multiple === false) {
-        if(new_value.trim().length === 0) {
-          new_value = false;
-        }
-
-        this.setState({
-          selected: new_value
-        });
-      } else {
-        var selected_values = this.state.selected || [];
-
-        if(selected_values.indexOf(new_value) !== -1) {
-          // value already present so remove it
-          selected_values.splice(selected_values.indexOf(new_value), 1);
-        } else {
-          selected_values.push(new_value);
-        }
-
-        this.setState({
-          selected: selected_values
-        });
-      }
+      this.setState({
+        selected: jQuery('#'+this.props.id).val()
+      });
     },
     getSelected: function() {
       return this.state.selected;
