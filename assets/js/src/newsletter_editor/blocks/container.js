@@ -41,6 +41,15 @@ define([
         return invalidBlock.validationError;
       }
     },
+    parse: function(response) {
+      // If container has any blocks - add them to a collection
+      if (response.type === 'container' && _.has(response, 'blocks')) {
+        response.blocks = new BlockCollection(response.blocks, {
+          parse: true,
+        });
+      }
+      return response;
+    },
   });
 
   BlockCollection = Backbone.Collection.extend({

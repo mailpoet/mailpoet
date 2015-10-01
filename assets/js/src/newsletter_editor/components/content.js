@@ -75,8 +75,8 @@ define([
   App.on('start', function(options) {
     // TODO: Other newsletter information will be needed as well.
     var body = JSON.parse(options.newsletter.body);
-    App._contentContainer = new (this.getBlockTypeModel('container'))(body.content, {parse: true});
-    App._contentContainerView = new (this.getBlockTypeView('container'))({
+    App._contentContainer = new (App.getBlockTypeModel('container'))(body.content, {parse: true});
+    App._contentContainerView = new (App.getBlockTypeView('container'))({
       model: App._contentContainer,
       renderOptions: { depth: 0 },
     });
