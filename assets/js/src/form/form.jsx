@@ -119,25 +119,13 @@ define(
         );
 
         var fields = this.props.fields.map(function(field, i) {
-          // if(field['fields'] !== undefined) {
-          //   return field.fields.map(function(subfield, j) {
-          //     return (
-          //       <FormField
-          //         field={ subfield }
-          //         item={ this.state.item }
-          //         onValueChange={ this.handleValueChange }
-          //         key={ 'subfield-'+j } />
-          //     );
-          //   }.bind(this));
-          // } else {
-            return (
-              <FormField
-                field={ field }
-                item={ this.state.item }
-                onValueChange={ this.handleValueChange }
-                key={ 'field-'+i } />
-            );
-          // }
+          return (
+            <FormField
+              field={ field }
+              item={ this.state.item }
+              onValueChange={ this.handleValueChange }
+              key={ 'field-'+i } />
+          );
         }.bind(this));
 
         return (
