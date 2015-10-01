@@ -128,8 +128,22 @@ define(
           );
         }.bind(this));
 
+        var actions = false;
+        if(this.props.children) {
+          actions = this.props.children;
+        } else {
+          actions = (
+            <input
+              className="button button-primary"
+              type="submit"
+              value="Save"
+              disabled={this.state.loading} />
+          );
+        }
+
         return (
           <form
+            id={ this.props.id }
             ref="form"
             className={ formClasses }
             onSubmit={
@@ -146,11 +160,7 @@ define(
               </tbody>
             </table>
 
-            <input
-              className="button button-primary"
-              type="submit"
-              value="Save"
-              disabled={this.state.loading} />
+            { actions }
           </form>
         );
       }

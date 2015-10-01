@@ -13,6 +13,9 @@ define(
     Selection,
     Breadcrumb
   ) {
+
+    var settings = window.mailpoet_settings || {};
+
     var fields = [
       {
         name: 'subject',
@@ -41,13 +44,13 @@ define(
             name: 'from_name',
             type: 'text',
             placeholder: 'John Doe',
-            size: 'auto'
+            defaultValue: settings.from_name
           },
           {
             name: 'from_email',
             type: 'text',
             placeholder: 'john.doe@email.com',
-            size: 'auto'
+            defaultValue: settings.from_address
           },
         ]
       },
@@ -61,14 +64,12 @@ define(
           {
             name: 'reply_to_name',
             type: 'text',
-            placeholder: 'John Doe',
-            size: 'auto'
+            placeholder: 'John Doe'
           },
           {
             name: 'reply_to_email',
             type: 'text',
-            placeholder: 'john.doe@email.com',
-            size: 'auto'
+            placeholder: 'john.doe@email.com'
           },
         ]
       }
@@ -81,6 +82,11 @@ define(
     };
 
     var NewsletterSend = React.createClass({
+      handleSend: function() {
+        console.log('send.');
+        console.log(jQuery('#mailpoet_newsletter').serializeArray());
+        console.log(jQuery('#mailpoet_segments').val());
+      },
       render: function() {
         return (
           <div>
@@ -89,10 +95,32 @@ define(
             <Breadcrumb step="send" />
 
             <Form
+              id="mailpoet_newsletter"
               endpoint="newsletters"
               fields={ fields }
               params={ this.props.params }
-              messages={ messages } />
+              messages={ messages }>
+
+              <p className="submit">
+                <input
+                  className="button button-primary"
+                  type="button"
+                  onClick={ this.handleSend }
+                  value="Send" />
+                &nbsp;
+                <input
+                  className="button button-secondary"
+                  type="submit"
+                  value="Save as draft and close" />
+                &nbsp;or simply&nbsp;
+                <a
+                  href={
+                    '?page=mailpoet-newsletter-editor&id='+this.props.params.id
+                  }>
+                  go back to design
+                </a>.
+              </p>
+            </Form>
           </div>
         );
       }
