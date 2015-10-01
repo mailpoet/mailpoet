@@ -67,7 +67,8 @@ define([
     initialize: function(options) {
       App.getChannel().on('beforeEditorSave', this.beforeSave, this);
       App.getChannel().on('afterEditorSave', this.afterSave, this);
-
+    },
+    onRender: function() {
       this.validateNewsletter(App.toJSON());
     },
     save: function() {
@@ -126,8 +127,10 @@ define([
     },
     next: function() {
       this.hideOptionContents();
-      console.log('Next');
-      window.location.href = App.getConfig().get('urls.send');
+      if(!this.$('.mailpoet_save_next').hasClass('button-disabled')) {
+        console.log('Next');
+        window.location.href = App.getConfig().get('urls.send');
+      }
     },
     validateNewsletter: function(jsonObject) {
       if (!App._contentContainer.isValid()) {
