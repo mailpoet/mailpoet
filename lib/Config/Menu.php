@@ -110,6 +110,9 @@ class Menu {
 
   function newsletters() {
     $data = array();
+
+    $data['segments'] = Segment::findArray();
+
     echo $this->renderer->render('newsletters.html', $data);
   }
 

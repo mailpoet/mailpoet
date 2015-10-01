@@ -4,14 +4,16 @@ define(
     'react-router',
     'newsletters/list.jsx',
     'newsletters/types.jsx',
-    'newsletters/templates.jsx'
+    'newsletters/templates.jsx',
+    'newsletters/send.jsx'
   ],
   function(
     React,
     Router,
     NewsletterList,
     NewsletterTypes,
-    NewsletterTemplates
+    NewsletterTemplates,
+    NewsletterSend
   ) {
     var DefaultRoute = Router.DefaultRoute;
     var Link = Router.Link;
@@ -31,6 +33,7 @@ define(
       <Route name="app" path="/" handler={App}>
         <Route name="new" path="/new" handler={ NewsletterTypes } />
         <Route name="template" path="/new/:type" handler={ NewsletterTemplates } />
+        <Route name="send" path="/send/:id" handler={ NewsletterSend } />
         <NotFoundRoute handler={ NewsletterList } />
         <DefaultRoute handler={ NewsletterList } />
       </Route>

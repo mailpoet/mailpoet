@@ -9,4 +9,8 @@
     'loadingItems': __('Loading newsletters...'),
     'noItemsFound': __('No newsletters found.')
   }) %>
+
+  <script type="text/javascript">
+    var mailpoet_segments = <%= json_encode(segments) %>;
+  </script>
 <% endblock %>

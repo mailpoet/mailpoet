@@ -60,7 +60,7 @@ define(
         }.bind(this));
       },
       handlePreviewTemplate: function(template) {
-        console.log('preview '+template.id);
+        console.log('preview template #'+template.id);
       },
       handleDeleteTemplate: function(template) {
         this.setState({ loading: true });
@@ -101,6 +101,7 @@ define(
                   </a>
                   &nbsp;
                   <a
+                    style={ { display: 'none' }}
                     className="button button-secondary"
                     onClick={ this.handlePreviewTemplate.bind(null, template) }
                   >
