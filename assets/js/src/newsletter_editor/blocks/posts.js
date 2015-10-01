@@ -123,13 +123,6 @@ define([
       }).fail(function() {
         console.log('Posts fetchPosts error', arguments);
       });
-      // TODO: Move query logic to new AJAX format
-      //mailpoet_post_wpi('automated_latest_content.php', data, function(response) {
-        //console.log('Available posts fetched', arguments);
-        //collection.add(response, { at: index });
-      //}, function() {
-        //console.log('Posts fetchPosts error', arguments);
-      //});
     },
   });
 
@@ -303,38 +296,6 @@ define([
             });
           });
         },
-        //ajax: {
-          //url: App.getConfig().get('urls.termSearch'),
-          //type: 'POST',
-          //dataType: 'json',
-          //delay: 250,
-          //data: function(searchParameter, page) {
-            //return JSON.stringify({
-              //postType: that.model.get('contentType'),
-              //search: searchParameter,
-              //limit: 10, // TODO: Move this hardcoded limit to Config
-              //page: page,
-            //});
-          //},
-          /**
-           * Parse results for select2.
-           * Returns object, where `results` key holds a list of
-           * select item objects
-           */
-          //results: function (data, page) {
-            //return {
-              //results: _.map(
-                //data.results,
-                //function(item) {
-                  //return _.defaults({
-                    //text: data.taxonomies[item.taxonomy].labels.singular_name + ': ' + item.name,
-                    //id: item.term_id
-                  //}, item);
-                //}
-              //)
-            //};
-          //}
-        //},
       }).trigger( 'change' ).on({
         'change': function(e){
           var data = [];
