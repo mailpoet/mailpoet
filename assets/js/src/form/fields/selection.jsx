@@ -15,12 +15,14 @@ function(
       }
     },
     componentWillMount: function() {
-    this.loadCachedItems();
+      this.loadCachedItems();
     },
     componentDidMount: function() {
-      jQuery('#'+this.props.id).select2({
-        width: '25em'
-      });
+      if(this.props.select2) {
+        jQuery('#'+this.props.id).select2({
+          width: '25em'
+        });
+      }
     },
     loadCachedItems: function() {
       if(typeof(window['mailpoet_'+this.props.endpoint]) !== 'undefined') {
@@ -29,36 +31,6 @@ function(
           items: items
         });
       }
-    },
-    loadItems: function() {
-      this.setState({ loading: true });
-
-      MailPoet.Ajax.post({
-        endpoint: this.props.endpoint,
-        action: 'listing',
-        data: {
-          'offset': 0,
-          'limit': 100,
-          'search': '',
-          'sort_by': 'name',
-          'sort_order': 'asc'
-        }
-      })
-      .done(function(response) {
-        if(this.isMounted()) {
-          if(response === false) {
-            this.setState({
-              loading: false,
-              items: []
-            });
-          } else {
-            this.setState({
-              loading: false,
-              items: response.items
-            });
-          }
-        }
-      }.bind(this));
     },
     handleChange: function() {
       this.setState({
@@ -82,11 +54,9 @@ function(
       return (
         <select
           ref="selection"
-          id={ this.props.id }
-          value={ this.state.selected }
-          onChange={ this.handleChange }
+          id={ this.props.id || 'mailpoet_field_selection'}
           placeholder={ this.props.placeholder }
-          multiple
+          multiple={ this.props.multiple }
         >
           { options }
         </select>

@@ -4,6 +4,7 @@ namespace MailPoet\Router;
 use MailPoet\Listing;
 use MailPoet\Mailer\Bridge;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Newsletter\Renderer\Renderer;
@@ -25,7 +26,7 @@ class Newsletters {
   }
 
   function getAll() {
-    $collection = Newsletter::find_array();
+    $collection = Newsletter::findArray();
     wp_send_json($collection);
   }
 
@@ -48,11 +49,43 @@ class Newsletters {
     wp_send_json($result);
   }
 
-  function send($id) {
-    $newsletter = Newsletter::find_one($id)
-      ->as_array();
-    $subscribers = Subscriber::find_array();
-    $mailer = new Bridge($newsletter, $subscribers);
+  function send($data = array()) {
+    $newsletter = Newsletter::findOne($data['id'])->asArray();
+
+    if(empty($data['segments'])) {
+      return wp_send_json(array(
+        'errors' => array(
+            __("You need to select a list.")
+          )
+      ));
+    }
+
+    $segments = Segment::whereIdIn($data['segments'])->findMany();
+    $subscribers = array();
+    foreach($segments as $segment) {
+      $segment_subscribers = $segment->subscribers()->findMany();
+      foreach($segment_subscribers as $segment_subscriber) {
+        $subscribers[$segment_subscriber->email] = $segment_subscriber
+          ->asArray();
+      }
+    }
+
+    if(empty($subscribers)) {
+      return wp_send_json(array(
+        'errors' => array(
+            __("No subscribers found.")
+          )
+      ));
+    }
+
+    // TO REMOVE once we add the columns from/reply_to
+    $newsletter = array_merge($newsletter, $data['newsletter']);
+    // END - TO REMOVE
+
+    $renderer = new Renderer(json_decode($newsletter['body'], true));
+    $newsletter['body'] = $renderer->renderAll();
+
+    $mailer = new Bridge($newsletter, array_values($subscribers));
     wp_send_json($mailer->send());
   }
 

@@ -9,14 +9,19 @@ class Setting extends Model {
   function __construct() {
     parent::__construct();
 
-    $this->addValidations("name", array(
-      "required"    => "name_is_blank",
-      "isString"    => "name_is_not_string"
+    $this->addValidations('name', array(
+      'required' => 'name_is_blank',
+      'isString' => 'name_is_not_string'
     ));
-    $this->addValidations("value", array(
-      "required"    => "value_is_blank",
-      "isString"    => "value_is_not_string"
-    ));
+  }
+
+  public static function getValue($key, $default = null) {
+    $setting = Setting::where('name', $key)->findOne();
+    if($setting === false) {
+      return $default;
+    } else {
+      return $setting->value;
+    }
   }
 
   public static function createOrUpdate($model) {
