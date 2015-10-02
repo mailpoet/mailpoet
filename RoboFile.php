@@ -2,18 +2,6 @@
 
 class RoboFile extends \Robo\Tasks {
 
-  private $css_files = array(
-    'assets/css/src/*.styl',
-    'assets/css/src/**/*.styl'
-  );
-
-  private $js_files = array(
-    'assets/js/src/*.js',
-    'assets/js/src/*.jsx',
-    'assets/js/src/**/*.js',
-    'assets/js/src/**/*.jsx'
-  );
-
   function install() {
     $this->_exec('./composer.phar install');
     $this->_exec('npm install');
@@ -25,16 +13,29 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('npm update');
   }
 
-  function watch() {
-    $js_files = array();
-    array_map(function($path) use(&$js_files) {
-      $js_files = array_merge($js_files, glob($path));
-    }, $this->js_files);
+  protected function rsearch($folder, $extensions = array()) {
+    $dir = new RecursiveDirectoryIterator($folder);
+    $iterator = new RecursiveIteratorIterator($dir);
 
-    $css_files = array();
-    array_map(function($path) use(&$css_files) {
-      $css_files = array_merge($css_files, glob($path));
-    }, $this->css_files);
+    $pattern = '/^.+\.('.join($extensions, '|').')$/i';
+
+    $files = new RegexIterator(
+      $iterator,
+      $pattern,
+      RecursiveRegexIterator::GET_MATCH
+    );
+
+    $list = array();
+    foreach($files as $file) {
+      $list[] = $file[0];
+    }
+
+    return $list;
+  }
+
+  function watch() {
+    $css_files = $this->rsearch('assets/css/src/', array('styl'));
+    $js_files = $this->rsearch('assets/js/src/', array('js', 'jsx'));
 
     $this->taskWatch()
       ->monitor($js_files, function() {

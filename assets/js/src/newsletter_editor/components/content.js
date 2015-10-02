@@ -43,12 +43,16 @@ define([
     }
   };
 
+  Module.getBody = function() {
+    return JSON.stringify({
+      content: App._contentContainer.toJSON(),
+      globalStyles: App.getGlobalStyles().toJSON(),
+    });
+  };
+
   Module.toJSON = function() {
     return _.extend({
-      body: JSON.stringify({
-        content: App._contentContainer.toJSON(),
-        globalStyles: App.getGlobalStyles().toJSON(),
-      }),
+      body: Module.getBody(),
     }, App.getNewsletter().toJSON());
   };
 
@@ -62,6 +66,7 @@ define([
     App.getBlockTypeModel = Module.getBlockTypeModel;
     App.getBlockTypeView = Module.getBlockTypeView;
     App.toJSON = Module.toJSON;
+    App.getBody = Module.getBody;
     App.getNewsletter = Module.getNewsletter;
 
     Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['body']));
@@ -70,8 +75,8 @@ define([
   App.on('start', function(options) {
     // TODO: Other newsletter information will be needed as well.
     var body = JSON.parse(options.newsletter.body);
-    App._contentContainer = new (this.getBlockTypeModel('container'))(body.content, {parse: true});
-    App._contentContainerView = new (this.getBlockTypeView('container'))({
+    App._contentContainer = new (App.getBlockTypeModel('container'))(body.content, {parse: true});
+    App._contentContainerView = new (App.getBlockTypeView('container'))({
       model: App._contentContainer,
       renderOptions: { depth: 0 },
     });

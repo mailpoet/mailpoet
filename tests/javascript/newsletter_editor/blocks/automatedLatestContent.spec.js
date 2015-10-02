@@ -12,7 +12,6 @@ define([
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
-        global.mailpoet_post_wpi = sinon.stub();
         model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
       });
 

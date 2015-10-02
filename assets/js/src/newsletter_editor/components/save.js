@@ -42,6 +42,16 @@ define([
     });
   };
 
+  Module.saveTemplate = function(options) {
+    return MailPoet.Ajax.post({
+      endpoint: 'newsletterTemplates',
+      action: 'save',
+      data: _.extend(options || {}, {
+        body: App.getBody(),
+      }),
+    });
+  };
+
   Module.SaveView = Marionette.LayoutView.extend({
     getTemplate: function() { return templates.save; },
     events: {
@@ -57,7 +67,8 @@ define([
     initialize: function(options) {
       App.getChannel().on('beforeEditorSave', this.beforeSave, this);
       App.getChannel().on('afterEditorSave', this.afterSave, this);
-
+    },
+    onRender: function() {
       this.validateNewsletter(App.toJSON());
     },
     save: function() {
@@ -72,7 +83,7 @@ define([
       this.validateNewsletter(json);
       // Update 'Last saved timer'
       this.$('.mailpoet_editor_last_saved').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_autosaved_at').text(response.time);
+      this.$('.mailpoet_autosaved_at').text('');
     },
     toggleSaveOptions: function() {
       this.$('.mailpoet_save_options').toggleClass('mailpoet_hidden');
@@ -94,6 +105,15 @@ define([
           templateDescription = this.$('.mailpoet_save_as_template_description').val();
 
       console.log('Saving template with ', templateName, templateDescription);
+      Module.saveTemplate({
+        name: templateName,
+        description: templateDescription,
+      }).done(function() {
+        console.log('Template saved', arguments);
+      }).fail(function() {
+        // TODO: Handle error messages
+        console.log('Template save failed', arguments);
+      });
 
       this.hideOptionContents();
     },
@@ -107,8 +127,10 @@ define([
     },
     next: function() {
       this.hideOptionContents();
-      console.log('Next');
-      window.location.href = App.getConfig().get('urls.send');
+      if(!this.$('.mailpoet_save_next').hasClass('button-disabled')) {
+        console.log('Next');
+        window.location.href = App.getConfig().get('urls.send');
+      }
     },
     validateNewsletter: function(jsonObject) {
       if (!App._contentContainer.isValid()) {

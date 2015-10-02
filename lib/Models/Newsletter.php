@@ -8,13 +8,6 @@ class Newsletter extends Model {
 
   function __construct() {
     parent::__construct();
-
-    $this->addValidations('subject', array(
-      'required' => __('You need to specify a subject.')
-    ));
-    $this->addValidations('body', array(
-      'required' => __('Newsletter cannot be empty.')
-    ));
   }
 
   static function search($orm, $search = '') {

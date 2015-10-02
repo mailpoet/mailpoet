@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Config;
 use \MailPoet\Models\Segment;
+use \MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
 
@@ -110,6 +111,13 @@ class Menu {
 
   function newsletters() {
     $data = array();
+
+    $data['segments'] = Segment::findArray();
+    $settings = Setting::findArray();
+    $data['settings'] = array();
+    foreach($settings as $setting) {
+      $data['settings'][$setting['name']] = $setting['value'];
+    }
     echo $this->renderer->render('newsletters.html', $data);
   }
 

@@ -25,7 +25,6 @@ define([
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
-        global.mailpoet_post_wpi = sinon.stub();
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
         model = new (PostsBlock.PostsBlockModel)();
       });

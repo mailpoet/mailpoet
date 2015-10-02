@@ -94,6 +94,27 @@ define([
           view.$('.mailpoet_save_show_options').click();
           expect(view.$('.mailpoet_save_options')).to.not.have.$class('mailpoet_hidden');
         });
+
+        it('triggers template saving when clicked on save as template button', function() {
+          var mock = sinon.mock({ post: function() {} }).expects('post').once().returns(jQuery.Deferred());
+          EditorApplication.getBody = sinon.stub();
+          var module = SaveInjector({
+            'mailpoet': {
+              Ajax: {
+                post: mock,
+              }
+            },
+            'newsletter_editor/App': EditorApplication,
+          });
+          var view = new (module.SaveView)();
+          view.render();
+
+          view.$('.mailpoet_save_as_template_name').val('A sample template');
+          view.$('.mailpoet_save_as_template_description').val('Sample template description');
+          view.$('.mailpoet_save_as_template').click();
+
+          mock.verify();
+        });
       });
     });
   });

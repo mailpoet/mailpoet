@@ -8,6 +8,7 @@ class NewsletterCest {
     $this->data = array(
       'subject' => 'new newsletter',
       'body' => 'body',
+      'type' => 'standard',
       'preheader' => 'preaheader'
     );
 
@@ -20,17 +21,16 @@ class NewsletterCest {
     expect($this->result)->equals(true);
   }
 
-  function itHasToBeValid() {
-    $empty_model = Newsletter::create();
-    expect($empty_model->save())->notEquals(true);
-    $validations = $empty_model->getValidationErrors();
-    expect(count($validations))->equals(2);
-  }
-
   function itHasSubject() {
     $subscriber = Newsletter::where('subject', $this->data['subject'])
       ->findOne();
     expect($subscriber->subject)->equals($this->data['subject']);
+  }
+
+  function itHasType() {
+    $subscriber = Newsletter::where('type', $this->data['type'])
+      ->findOne();
+    expect($subscriber->type)->equals($this->data['type']);
   }
 
   function itHasBody() {

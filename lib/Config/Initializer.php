@@ -36,6 +36,7 @@ class Initializer {
     $subscribers = Env::$db_prefix . 'subscribers';
     $settings = Env::$db_prefix . 'settings';
     $newsletters = Env::$db_prefix . 'newsletters';
+    $newsletter_templates = Env::$db_prefix . 'newsletter_templates';
     $segments = Env::$db_prefix . 'segments';
     $subscriber_segment = Env::$db_prefix . 'subscriber_segment';
 
@@ -44,6 +45,7 @@ class Initializer {
     define('MP_NEWSLETTERS_TABLE', $newsletters);
     define('MP_SEGMENTS_TABLE', $segments);
     define('MP_SUBSCRIBER_SEGMENT_TABLE', $subscriber_segment);
+    define('MP_NEWSLETTER_TEMPLATES_TABLE', $newsletter_templates);
   }
 
   function setupActivator() {

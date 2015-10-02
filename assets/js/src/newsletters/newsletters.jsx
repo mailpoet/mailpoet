@@ -3,13 +3,17 @@ define(
     'react',
     'react-router',
     'newsletters/list.jsx',
-    'newsletters/form.jsx'
+    'newsletters/types.jsx',
+    'newsletters/templates.jsx',
+    'newsletters/send.jsx'
   ],
   function(
     React,
     Router,
-    List,
-    Form
+    NewsletterList,
+    NewsletterTypes,
+    NewsletterTemplates,
+    NewsletterSend
   ) {
     var DefaultRoute = Router.DefaultRoute;
     var Link = Router.Link;
@@ -20,25 +24,18 @@ define(
     var App = React.createClass({
       render: function() {
         return (
-          <div>
-            <h1>
-              { MailPoetI18n.pageTitle }
-              &nbsp;
-              <Link className="add-new-h2" to="new">New</Link>
-            </h1>
-
-            <RouteHandler/>
-          </div>
+          <RouteHandler/>
         );
       }
     });
 
     var routes = (
       <Route name="app" path="/" handler={App}>
-        <Route name="new" path="/new" handler={Form} />
-        <Route name="edit" path="/edit/:id" handler={Form} />
-        <NotFoundRoute handler={List} />
-        <DefaultRoute handler={List} />
+        <Route name="new" path="/new" handler={ NewsletterTypes } />
+        <Route name="template" path="/new/:type" handler={ NewsletterTemplates } />
+        <Route name="send" path="/send/:id" handler={ NewsletterSend } />
+        <NotFoundRoute handler={ NewsletterList } />
+        <DefaultRoute handler={ NewsletterList } />
       </Route>
     );
 
@@ -46,7 +43,7 @@ define(
     if(hook) {
       Router.run(routes, function(Handler, state) {
         React.render(
-          <Handler params={state.params} query={state.query} />,
+          <Handler params={ state.params } query={ state.query } />,
           hook
         );
       });

@@ -18,6 +18,21 @@ define([
       base = BaseBlock,
       BlockCollection;
 
+  BlockCollection = Backbone.Collection.extend({
+    model: base.BlockModel,
+    initialize: function() {
+      this.on('add change remove', function() { App.getChannel().trigger('autoSave'); });
+    },
+    parse: function(response) {
+      var self = this;
+      return _.map(response, function(block) {
+        var Type = App.getBlockTypeModel(block.type);
+        // TODO: If type has no registered model, use a backup one
+        return new Type(block, {parse: true});
+      });
+    },
+  });
+
   Module.ContainerBlockModel = base.BlockModel.extend({
     relations: {
       blocks: BlockCollection,
@@ -41,20 +56,14 @@ define([
         return invalidBlock.validationError;
       }
     },
-  });
-
-  BlockCollection = Backbone.Collection.extend({
-    model: base.BlockModel,
-    initialize: function() {
-      this.on('add change remove', function() { App.getChannel().trigger('autoSave'); });
-    },
     parse: function(response) {
-      var self = this;
-      return _.map(response, function(block) {
-        var Type = App.getBlockTypeModel(block.type);
-        // TODO: If type has no registered model, use a backup one
-        return new Type(block, {parse: true});
-      });
+      // If container has any blocks - add them to a collection
+      if (response.type === 'container' && _.has(response, 'blocks')) {
+        response.blocks = new BlockCollection(response.blocks, {
+          parse: true,
+        });
+      }
+      return response;
     },
   });
 

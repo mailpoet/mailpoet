@@ -23,7 +23,7 @@ class SettingCest {
     $empty_model = Setting::create();
     expect($empty_model->save())->notEquals(true);
     $validations = $empty_model->getValidationErrors();
-    expect(count($validations))->equals(4);
+    expect(count($validations))->equals(2);
   }
 
   function itHasACreatedAtOnCreation() {

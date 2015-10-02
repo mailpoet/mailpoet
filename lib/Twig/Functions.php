@@ -31,6 +31,11 @@ class Functions extends \Twig_Extension {
         'params',
         array($this, 'params'),
         array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
+        'admin_url',
+        'admin_url',
+        array('is_safe' => array('all'))
       )
     );
   }
