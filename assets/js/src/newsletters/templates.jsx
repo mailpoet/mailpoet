@@ -34,6 +34,18 @@ define(
           action: 'getAll',
         }).done(function(response) {
           if(this.isMounted()) {
+
+            if(response.length === 0) {
+              response = [
+                {
+                  name:
+                    "MailPoet's Guide",
+                  description:
+                    "This is the standard template that comes with MailPoet.",
+                  readonly: true
+                }
+              ]
+            }
             this.setState({
               templates: response,
               loading: false
@@ -82,6 +94,17 @@ define(
       },
       render: function() {
         var templates = this.state.templates.map(function(template, index) {
+          var deleteLink = (
+            <div className="mailpoet_delete">
+              <a
+                href="javascript:;"
+                onClick={ this.handleDeleteTemplate.bind(null, template) }
+              >
+                Delete
+              </a>
+            </div>
+          );
+
           return (
             <li key={ 'template-'+index }>
               <div className="mailpoet_thumbnail">
@@ -108,14 +131,7 @@ define(
                     Preview
                   </a>
               </div>
-              <div className="mailpoet_delete">
-                <a
-                  href="javascript:;"
-                  onClick={ this.handleDeleteTemplate.bind(null, template) }
-                >
-                  Delete
-                </a>
-              </div>
+              { (template.readonly) ? false : deleteLink }
             </li>
           );
         }.bind(this));

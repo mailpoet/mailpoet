@@ -119,7 +119,8 @@ class Newsletters {
     $newsletter->body = '{}';
 
     // try to load template data
-    $template = NewsletterTemplate::findOne((int)$data['template']);
+    $template_id = (!empty($data['template']) ? (int)$data['template'] : 0);
+    $template = NewsletterTemplate::findOne($template_id);
     if($template !== false) {
       $newsletter->body = $template->body;
     }
