@@ -1,6 +1,7 @@
 define(
   [
     'react',
+    'react-router',
     'mailpoet',
     'form/form.jsx',
     'form/fields/selection.jsx',
@@ -8,6 +9,7 @@ define(
   ],
   function(
     React,
+    Router,
     MailPoet,
     Form,
     Selection,
@@ -32,7 +34,9 @@ define(
           <Selection
             placeholder="Select a list"
             id="mailpoet_segments"
-            endpoint="segments" />
+            endpoint="segments"
+            multiple={ true }
+            select2={ true } />
         )
       },
       {
@@ -77,15 +81,42 @@ define(
 
     var messages = {
       updated: function() {
-        MailPoet.Notice.success('Newsletter succesfully updated!');
+        MailPoet.Notice.success('The newsletter has been updated!');
       }
     };
 
     var NewsletterSend = React.createClass({
+      mixins: [
+        Router.Navigation
+      ],
       handleSend: function() {
-        console.log('send.');
-        console.log(jQuery('#mailpoet_newsletter').serializeArray());
-        console.log(jQuery('#mailpoet_segments').val());
+        MailPoet.Ajax.post({
+          endpoint: 'newsletters',
+          action: 'send',
+          data: {
+            id: this.props.params.id,
+            newsletter: jQuery('#mailpoet_newsletter').serializeObject(),
+            segments: jQuery('#mailpoet_segments').val()
+          }
+        }).done(function(response) {
+          if(response === true) {
+            this.transitionTo('/');
+            MailPoet.Notice.success(
+              'The newsletter has been sent!'
+            );
+          } else {
+            if(response.errors) {
+              MailPoet.Notice.error(
+                response.errors.join("<br />")
+              );
+            } else {
+              MailPoet.Notice.error(
+                'An error occurred while trying to send. '+
+                '<a href="?page=mailpoet-settings">Check your settings.</a>'
+              );
+            }
+          }
+        }.bind(this));
       },
       render: function() {
         return (

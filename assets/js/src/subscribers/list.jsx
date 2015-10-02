@@ -65,7 +65,7 @@ define(
         label: 'Move to list...',
         onSelect: function() {
           return (
-            <ItemSelection
+            <Selection
               endpoint="segments"
               id="move_to_segment" />
           );
@@ -81,7 +81,7 @@ define(
         label: 'Add to list...',
         onSelect: function() {
           return (
-            <ItemSelection
+            <Selection
               endpoint="segments"
               id="add_to_segment" />
           );
@@ -97,7 +97,7 @@ define(
         label: 'Remove from list...',
         onSelect: function() {
           return (
-            <ItemSelection
+            <Selection
               endpoint="segments"
               id="remove_from_segment" />
           );

@@ -6,21 +6,43 @@ use MailPoet\Models\Setting;
 if(!defined('ABSPATH')) exit;
 
 class Bridge {
+  protected $from_address = null;
+  protected $from_name = '';
+  protected $reply_to_address = null;
+  protected $reply_to_name = '';
+  protected $newsletter = null;
+  protected $subscribers = null;
+  protected $api_key = null;
+
   function __construct($newsletter, $subscribers) {
     $this->newsletter = $newsletter;
     $this->subscribers = $subscribers;
 
-    $this->from_name =
-      Setting::where('name', 'from_name')
-      ->findOne()->value;
+    $this->from_address = (
+        isset($this->newsletter['from_address'])
+      )
+      ? $this->newsletter['from_address']
+      : Setting::getValue('from_address');
 
-    $this->from_address =
-      Setting::where('name', 'from_address')
-      ->findOne()->value;
+    $this->from_name = (
+        isset($this->newsletter['from_name'])
+      )
+      ? $this->newsletter['from_name']
+      : Setting::getValue('from_name', '');
 
-    $this->api_key =
-      Setting::where('name', 'api_key')
-      ->findOne()->value;
+    $this->reply_to_address = (
+        isset($this->newsletter['reply_to_address'])
+      )
+      ? $this->newsletter['reply_to_address']
+      : Setting::getValue('reply_to_address');
+
+    $this->reply_to_name = (
+        isset($this->newsletter['reply_to_name'])
+      )
+      ? $this->newsletter['reply_to_name']
+      : Setting::getValue('reply_to_name', '');
+
+    $this->api_key = Setting::where('name', 'api_key')->findOne()->value;
   }
 
   function messages() {
@@ -32,19 +54,27 @@ class Bridge {
   }
 
   function generateMessage($subscriber) {
-    return array(
+    $message = array(
       'subject' => $this->newsletter['subject'],
-      'to' => (array(
+      'to' => array(
         'address' => $subscriber['email'],
         'name' => $subscriber['first_name'].' '.$subscriber['last_name']
-      )),
-      'from' => (array(
+      ),
+      'from' => array(
         'address' => $this->from_address,
         'name' => $this->from_name
-      )),
+      ),
       'text' => "",
       'html' => $this->newsletter['body']
     );
+
+    if($this->reply_to_address !== null) {
+      $message['reply_to'] = array(
+        'address' => $this->reply_to_address,
+        'name' => $this->reply_to_name
+      );
+    }
+    return $message;
   }
 
   function auth() {
@@ -74,7 +104,7 @@ class Bridge {
     );
 
     $success =
-      (wp_remote_retrieve_response_code($result)===201);
+      (wp_remote_retrieve_response_code($result) === 201);
 
     return $success;
   }
