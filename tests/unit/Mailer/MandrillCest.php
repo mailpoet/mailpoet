@@ -1,11 +1,11 @@
 <?php
 
-use MailPoet\Mailer\ElasticEmail;
+use MailPoet\Mailer\Mandrill;
 
-class ElasticEmailCest {
+class MandrillCest {
   function __construct() {
     $this->data = array(
-      'api_key' => '997f1f7f-41de-4d7f-a8cb-86c8481370fa',
+      'api_key' => '692ys1B7REEoZN7R-dYwNA',
       'from_email' => 'vlad@mailpoet.com',
       'from_name' => 'Vlad',
       'newsletter' => array(
@@ -29,7 +29,7 @@ class ElasticEmailCest {
       )
     );
 
-    $this->mailer = new ElasticEmail(
+    $this->mailer = new Mandrill(
       $this->data['api_key'],
       $this->data['from_email'],
       $this->data['from_name'],
@@ -38,42 +38,39 @@ class ElasticEmailCest {
   }
 
   function itCanGenerateSubscribers() {
-    $subscribers = explode(';', $this->mailer->getSubscribers());
+    $subscribers = $this->mailer->getSubscribers();
     expect(count($subscribers))->equals(3);
     // test proper handling of spaces between first/last name
-    expect($subscribers[0])->equals(
-      sprintf(
-        '%s <%s>',
-        $this->data['subscribers'][0]['last_name'],
-        $this->data['subscribers'][0]['email'])
+    expect($subscribers[0]['name'])->equals(
+      $this->data['subscribers'][0]['last_name']
     );
-    expect($subscribers[1])->equals(
-      sprintf(
-        '%s %s <%s>', $this->data['subscribers'][1]['first_name'],
-        $this->data['subscribers'][1]['last_name'],
-        $this->data['subscribers'][1]['email']
+    expect($subscribers[1]['name'])->equals(
+      sprintf('%s %s',
+              $this->data['subscribers'][1]['first_name'],
+              $this->data['subscribers'][1]['last_name']
       )
     );
   }
 
   function itCanGenerateBody() {
-    $urlEncodedBody = $this->mailer->getBody();
-    expect($urlEncodedBody)
-      ->contains(urlencode($this->data['newsletter']['subject']));
-
-    $body = explode('&', urldecode($urlEncodedBody));
-    expect($body[0])
-      ->equals("api_key=" . $this->data['api_key']);
-    expect($body[1])
-      ->equals("from=" . $this->data['from_email']);
-    expect($body[2])
-      ->equals("from_name=" . $this->data['from_name']);
-    expect($body[3])
-      ->contains($this->data['subscribers'][0]['email']);
-    expect($body[4])
-      ->equals("subject=" . $this->data['newsletter']['subject']);
-    expect($body[5])
-      ->equals("body_html=" . $this->data['newsletter']['body']);
+    $body = $this->mailer->getBody();
+    expect($body['key'])
+      ->equals($this->data['api_key']);
+    expect($body['message'])
+      ->equals(
+        array(
+          "html" => $this->data['newsletter']['body'],
+          "subject" => $this->data['newsletter']['subject'],
+          "from_email" => $this->data['from_email'],
+          "from_name" => $this->data['from_name'],
+          "to" => $this->mailer->getSubscribers(),
+          "headers" => array(
+            "Reply-To" => $this->data['from_email']
+          ),
+          "preserve_recipients" => false
+        ));
+    expect($body['async'])
+      ->false();
   }
 
   function itCanCreateRequest() {
@@ -85,13 +82,13 @@ class ElasticEmailCest {
     expect($request['method'])
       ->equals('POST');
     expect($request['headers']['Content-Type'])
-      ->equals('application/x-www-form-urlencoded');
+      ->equals('application/json');
     expect($request['body'])
-      ->equals($this->mailer->getBody());
+      ->equals(json_encode($this->mailer->getBody()));
   }
 
   function itCannotSendWithoutSubscribers() {
-    $mailer = new ElasticEmail(
+    $mailer = new Mandrill(
       $this->data['api_key'],
       $this->data['from_email'],
       $this->data['from_name'],
@@ -102,7 +99,7 @@ class ElasticEmailCest {
   }
 
   function itCannotSendWithoutProperAPIKey() {
-    $mailer = new ElasticEmail(
+    $mailer = new Mandrill(
       'someapikey',
       $this->data['from_email'],
       $this->data['from_name'],

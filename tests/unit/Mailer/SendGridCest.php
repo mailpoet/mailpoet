@@ -42,12 +42,17 @@ class SendGridCest {
     expect(count($subscribers))->equals(3);
     // test proper handling of spaces between first/last name
     expect($subscribers[0])->equals(
-      $this->data['subscribers'][0]['last_name'] . ' <' . $this->data['subscribers'][0]['email'] . '>'
+      sprintf(
+        '%s <%s>',
+        $this->data['subscribers'][0]['last_name'],
+        $this->data['subscribers'][0]['email'])
     );
     expect($subscribers[1])->equals(
-      $this->data['subscribers'][1]['first_name'] . ' ' .
-      $this->data['subscribers'][1]['last_name'] .
-      ' <' . $this->data['subscribers'][1]['email'] . '>'
+      sprintf(
+        '%s %s <%s>', $this->data['subscribers'][1]['first_name'],
+        $this->data['subscribers'][1]['last_name'],
+        $this->data['subscribers'][1]['email']
+      )
     );
   }
 
