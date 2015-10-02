@@ -18,6 +18,21 @@ define([
       base = BaseBlock,
       BlockCollection;
 
+  BlockCollection = Backbone.Collection.extend({
+    model: base.BlockModel,
+    initialize: function() {
+      this.on('add change remove', function() { App.getChannel().trigger('autoSave'); });
+    },
+    parse: function(response) {
+      var self = this;
+      return _.map(response, function(block) {
+        var Type = App.getBlockTypeModel(block.type);
+        // TODO: If type has no registered model, use a backup one
+        return new Type(block, {parse: true});
+      });
+    },
+  });
+
   Module.ContainerBlockModel = base.BlockModel.extend({
     relations: {
       blocks: BlockCollection,
@@ -49,21 +64,6 @@ define([
         });
       }
       return response;
-    },
-  });
-
-  BlockCollection = Backbone.Collection.extend({
-    model: base.BlockModel,
-    initialize: function() {
-      this.on('add change remove', function() { App.getChannel().trigger('autoSave'); });
-    },
-    parse: function(response) {
-      var self = this;
-      return _.map(response, function(block) {
-        var Type = App.getBlockTypeModel(block.type);
-        // TODO: If type has no registered model, use a backup one
-        return new Type(block, {parse: true});
-      });
     },
   });
 
