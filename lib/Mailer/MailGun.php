@@ -3,10 +3,11 @@ namespace MailPoet\Mailer;
 
 if(!defined('ABSPATH')) exit;
 
-class SendGrid {
-  function __construct($api_key, $from_email, $from_name, $newsletter,
-    $subscribers) {
-    $this->url = 'https://api.sendgrid.com/api/mail.send.json';
+class MailGun {
+  function __construct($domain, $api_key, $from_email, $from_name,
+    $newsletter, $subscribers) {
+    $this->url = 'https://api.mailgun.net/v3';
+    $this->domain = $domain;
     $this->api_key = $api_key;
     $this->newsletter = $newsletter;
     $this->subscribers = $subscribers;
@@ -15,12 +16,11 @@ class SendGrid {
 
   function send() {
     $result = wp_remote_post(
-      $this->url,
+      $this->url . '/' . $this->domain . '/messages',
       $this->request()
     );
     if(is_object($result) && get_class($result) === 'WP_Error') return false;
-    $result = json_decode($result['body'], true);
-    return (isset($result['errors']) === false);
+    return ($result['response']['code'] === 200);
   }
 
   function getSubscribers() {
@@ -36,30 +36,44 @@ class SendGrid {
       $subscriber = trim(preg_replace('!\s\s+!', ' ', $subscriber));
       return $subscriber;
     }, $this->subscribers);
-    return array_filter($subscribers);
+    $subscribers = array_filter($subscribers);
+
+    $subscribersData = array_map(function ($subscriber) {
+      return array($subscriber => array());
+    }, $subscribers);
+    $subscribersData = array_map('array_merge', $subscribersData);
+
+    return array(
+      'emails' => $subscribers,
+      'data' => $subscribersData
+    );
   }
 
   function getBody() {
+    $subscribers = $this->getSubscribers();
     $parameters = array(
-      'to' => $this->from,
       'from' => $this->from,
-      'x-smtpapi' => json_encode(array('to' => $this->getSubscribers())),
+      'to' => $subscribers['emails'],
+      'recipient-variables' => json_encode($subscribers['data']),
       'subject' => $this->newsletter['subject'],
-      'html' => $this->newsletter['body']
+      'text' => $this->newsletter['body']
     );
-    return urldecode(http_build_query($parameters));
+    $parameters = http_build_query($parameters);
+    $parameters = preg_replace('!\[\d+\]!', '', urldecode($parameters));
+    return $parameters;
   }
 
   function auth() {
-    return 'Bearer ' . $this->api_key;
+    return 'Basic ' . base64_encode('api:' . $this->api_key);
   }
 
   function request() {
     return array(
       'timeout' => 10,
-      'httpversion' => '1.1',
+      'httpversion' => '1.0',
       'method' => 'POST',
       'headers' => array(
+        'Content-Type' => 'application/x-www-form-urlencoded',
         'Authorization' => $this->auth()
       ),
       'body' => $this->getBody()
