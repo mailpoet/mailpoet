@@ -69,13 +69,12 @@ define([
     },
     fetchPosts: function() {
       var that = this;
-      // TODO: Migrate to new AJAX queries
-      //mailpoet_post_wpi('automated_latest_content.php', this.toJSON(), function(response) {
-        //console.log('ALC fetched', arguments);
-        //that.get('_container').get('blocks').reset(response, {parse: true});
-      //}, function() {
-        //console.log('ALC fetchPosts error', arguments);
-      //});
+      WordpressComponent.getTransformedPosts(this.toJSON()).done(function(content) {
+        console.log('ALC fetched', arguments);
+        that.get('_container').get('blocks').reset(content, {parse: true});
+      }).fail(function(error) {
+        console.log('ALC fetchPosts error', arguments);
+      });
     },
     /**
      * Batch more changes during a specific time, instead of fetching
