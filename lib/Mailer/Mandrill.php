@@ -4,7 +4,8 @@ namespace MailPoet\Mailer;
 if(!defined('ABSPATH')) exit;
 
 class Mandrill {
-  function __construct($api_key, $from_email, $from_name, $newsletter, $subscribers) {
+  function __construct($api_key, $from_email, $from_name, $newsletter,
+    $subscribers) {
     $this->url = 'https://mandrillapp.com/api/1.0/messages/send.json';
     $this->api_key = $api_key;
     $this->newsletter = $newsletter;
@@ -14,25 +15,28 @@ class Mandrill {
   }
 
   function send() {
-    if (!count($this->getSubscribers())) return false;
     $result = wp_remote_post(
       $this->url,
       $this->request()
     );
-    return (!preg_match('!invalid!', $result['body']) && $result['response']['code'] === 200);// ? true : false;
+    if(is_object($result) && get_class($result) === 'WP_Error') return false;
+    return (!preg_match('!invalid!', $result['body']) === true && $result['response']['code'] === 200);
   }
 
   function getSubscribers() {
     $subscribers = array_map(function ($subscriber) {
       if(!isset($subscriber['email'])) return;
-      $first_name = (isset($subscriber['first_name'])) ? $subscriber['first_name'] : '';
-      $last_name = (isset($subscriber['last_name'])) ? $subscriber['last_name'] : '';
-      $full_name = sprintf('%s %s', $first_name, $last_name);
+      $first_name = (isset($subscriber['first_name']))
+        ? $subscriber['first_name'] : '';
+      $last_name = (isset($subscriber['last_name']))
+        ? $subscriber['last_name'] : '';
+      $full_name = sprintf(
+        '%s %s', $first_name, $last_name
+      );
       $full_name = trim(preg_replace('!\s\s+!', ' ', $full_name));
       return array(
         'email' => $subscriber['email'],
-        'name' => $full_name,
-        'type' => 'to'
+        'name' => $full_name
       );
     }, $this->subscribers);
     return array_filter($subscribers);
