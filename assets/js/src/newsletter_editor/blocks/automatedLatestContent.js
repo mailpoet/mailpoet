@@ -335,7 +335,10 @@ define([
         cloneOriginal: true,
         drop: function() {
           return new Module.AutomatedLatestContentBlockModel({}, { parse: true });
-        }
+        },
+        onDrop: function(options) {
+          options.droppedView.triggerMethod('showSettings');
+        },
       }
     },
   });

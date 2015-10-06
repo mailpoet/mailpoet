@@ -87,6 +87,9 @@ define([
       AugmentedView.apply(this, arguments);
       this.$el.addClass('mailpoet_editor_view_' + this.cid);
     },
+    initialize: function() {
+      this.on('showSettings', this.showSettings);
+    },
     showTools: function(_event) {
       if (!this.showingToolsDisabled) {
         this.$('> .mailpoet_tools').show();
@@ -103,6 +106,9 @@ define([
     disableShowingTools: function() {
       this.showingToolsDisabled = true;
       this.hideTools();
+    },
+    showSettings: function(options) {
+      this.toolsView.triggerMethod('showSettings', options);
     },
     /**
      * Defines drop behavior of BlockView instance
@@ -141,6 +147,7 @@ define([
 
       // Automatically cancel deletion
       this.on('hideTools', this.hideDeletionConfirmation, this);
+      this.on('showSettings', this.changeSettings);
     },
     templateHelpers: function() {
       return {
@@ -149,9 +156,9 @@ define([
         tools: this.tools,
       };
     },
-    changeSettings: function() {
+    changeSettings: function(options) {
       var ViewType = this.getSettingsView();
-      (new ViewType({ model: this.model })).render();
+      (new ViewType(_.extend({ model: this.model }, options || {}))).render();
     },
     showDeletionConfirmation: function() {
       this.$('.mailpoet_delete_block').addClass('mailpoet_delete_block_activated');
