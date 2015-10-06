@@ -33,6 +33,52 @@ class Subscriber extends Model {
     );
   }
 
+  static function filters() {
+    $segments = Segment::orderByAsc('name')->findMany();
+    $segment_list = array();
+
+    $segment_list[] = array(
+      'label' => __('All lists'),
+      'value' => ''
+    );
+
+    foreach($segments as $segment) {
+      $subscribers_count = $segment->subscribers()->count();
+      if($subscribers_count > 0) {
+        $segment_list[] = array(
+          'label' => sprintf('%s (%d)', $segment->name, $subscribers_count),
+          'value' => $segment->id()
+        );
+      }
+    }
+
+    $filters = array(
+      array(
+        'name' => 'segment',
+        'options' => $segment_list
+      )
+    );
+
+    return $filters;
+  }
+
+  static function filterBy($orm, $filters = null) {
+    if(empty($filters)) {
+      return $orm;
+    }
+
+    foreach($filters as $filter) {
+      if($filter['name'] === 'segment') {
+        $segment = Segment::findOne($filter['value']);
+        if($segment !== false) {
+          $orm = $segment->subscribers();
+        }
+      }
+    }
+
+    return $orm;
+  }
+
   static function groups() {
     return array(
       array(
@@ -58,7 +104,7 @@ class Subscriber extends Model {
     );
   }
 
-  static function group($orm, $group = null) {
+  static function groupBy($orm, $group = null) {
     if($group === null or !in_array(
       $group,
       array('subscribed', 'unconfirmed', 'unsubscribed')

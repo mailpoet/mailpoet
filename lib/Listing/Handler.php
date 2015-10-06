@@ -21,13 +21,16 @@ class Handler {
       'sort_order' => (isset($data['sort_order']) ? $data['sort_order'] : 'asc'),
       // grouping
       'group' => (isset($data['group']) ? $data['group'] : null),
+      // filters
+      'filter' => (isset($data['filter']) ? $data['filter'] : null),
       // selection
       'selection' => (isset($data['selection']) ? $data['selection'] : null)
     );
 
     $this->setSearch();
-    $this->setOrder();
     $this->setGroup();
+    $this->setFilter();
+    $this->setOrder();
   }
 
   private function setSearch() {
@@ -39,25 +42,35 @@ class Handler {
 
   private function setOrder() {
     return $this->model
-      ->{'order_by_'.$this->data['sort_order']}($this->data['sort_by']);
+      ->tableAlias('model')
+      ->{'order_by_'.$this->data['sort_order']}(
+        'model.'.$this->data['sort_by']
+      );
   }
 
   private function setGroup() {
     if($this->data['group'] === null) {
       return;
     }
-    return $this->model->filter('group', $this->data['group']);
+    return $this->model->filter('groupBy', $this->data['group']);
+  }
+
+  private function setFilter() {
+    if($this->data['filter'] === null) {
+      return;
+    }
+    return $this->model->filter('filterBy', $this->data['filter']);
   }
 
   function getSelection() {
     if(!empty($this->data['selection'])) {
-      $this->model->whereIn('id', $this->data['selection']);
+      $this->model->whereIn('model.id', $this->data['selection']);
     }
     return $this->model;
   }
 
   function getSelectionIds() {
-    $models = $this->getSelection()->select('id')->findMany();
+    $models = $this->getSelection()->select('model.id')->findMany();
     return array_map(function($model) {
       return (int)$model->id;
     }, $models);
@@ -66,7 +79,7 @@ class Handler {
   function get() {
     return array(
       'count' => $this->model->count(),
-      'filters' => [],
+      'filters' => $this->model->filter('filters'),
       'groups' => $this->model->filter('groups'),
       'items' => $this->model
         ->offset($this->data['offset'])

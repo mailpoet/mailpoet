@@ -28,7 +28,6 @@ class Subscribers {
       $data
     );
 
-
     $listing_data = $listing->get();
 
     // fetch segments relations for each returned item
