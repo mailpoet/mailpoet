@@ -100,6 +100,9 @@ define([
       toolsRegion: '.mailpoet_tools',
       postsRegion: '.mailpoet_automated_latest_content_block_posts',
     },
+    events: _.extend(base.BlockView.prototype.events, {
+      'click .mailpoet_automated_latest_content_block_overlay': 'showSettings',
+    }),
     onDragSubstituteBy: function() { return Module.AutomatedLatestContentWidgetView; },
     onRender: function() {
       var ContainerView = App.getBlockTypeView('container'),
