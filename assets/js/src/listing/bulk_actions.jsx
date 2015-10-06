@@ -1,10 +1,8 @@
 define([
-  'react',
-  'mailpoet'
+  'react'
 ],
 function(
-  React,
-  MailPoet
+  React
 ) {
   var ListingBulkActions = React.createClass({
     getInitialState: function() {

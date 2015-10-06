@@ -23,6 +23,15 @@ class Segment extends Model {
     );
   }
 
+  function newsletters() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\Newsletter',
+      __NAMESPACE__.'\NewsletterSegment',
+      'segment_id',
+      'newsletter_id'
+    );
+  }
+
   static function search($orm, $search = '') {
     return $orm->where_like('name', '%'.$search.'%');
   }

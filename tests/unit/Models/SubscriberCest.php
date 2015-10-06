@@ -84,17 +84,17 @@ class SubscriberCest {
   }
 
   function itHasAGroupFilter() {
-    $subscribers = Subscriber::filter('group', 'unconfirmed')->findMany();
+    $subscribers = Subscriber::filter('groupBy', 'unconfirmed')->findMany();
     foreach($subscribers as $subscriber) {
       expect($subscriber->status)->equals('unconfirmed');
     }
 
-    $subscribers = Subscriber::filter('group', 'subscribed')->findMany();
+    $subscribers = Subscriber::filter('groupBy', 'subscribed')->findMany();
     foreach($subscribers as $subscriber) {
       expect($subscriber->status)->equals('subscribed');
     }
 
-    $subscribers = Subscriber::filter('group', 'unsubscribed')->findMany();
+    $subscribers = Subscriber::filter('groupBy', 'unsubscribed')->findMany();
     foreach($subscribers as $subscriber) {
       expect($subscriber->status)->equals('unsubscribed');
     }

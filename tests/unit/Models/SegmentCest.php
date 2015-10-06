@@ -3,6 +3,8 @@
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterSegment;
 
 class SegmentCest {
   function _before() {
@@ -78,7 +80,7 @@ class SegmentCest {
     expect($segment->name)->equals('updated list');
   }
 
-  function itCanHaveMultipleSubscribers() {
+  function itCanHaveManySubscribers() {
     $subscribersData = array(
       array(
         'first_name' => 'John',
@@ -91,7 +93,8 @@ class SegmentCest {
         'email' => 'mike@maipoet.com'
       )
     );
-    foreach ($subscribersData as $subscriberData) {
+
+    foreach($subscribersData as $subscriberData) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriberData);
       $subscriber->save();
@@ -101,10 +104,36 @@ class SegmentCest {
       $association->save();
     }
 
-    $segment = Segment::find_one($this->segment->id);
-    $subscribers = $segment->subscribers()
-      ->find_array();
+    $segment = Segment::findOne($this->segment->id);
+    $subscribers = $segment->subscribers()->findArray();
+
     expect(count($subscribers))->equals(2);
+  }
+
+  function itCanHaveManyNewsletters() {
+    $newslettersData = array(
+      array(
+        'subject' => 'My first newsletter'
+      ),
+      array(
+        'subject' => 'My second newsletter'
+      )
+    );
+
+    foreach($newslettersData as $newsletterData) {
+      $newsletter = Newsletter::create();
+      $newsletter->hydrate($newsletterData);
+      $newsletter->save();
+      $association = NewsletterSegment::create();
+      $association->newsletter_id = $newsletter->id;
+      $association->segment_id = $this->segment->id;
+      $association->save();
+    }
+
+    $segment = Segment::findOne($this->segment->id);
+    $newsletters = $segment->newsletters()->findArray();
+
+    expect(count($newsletters))->equals(2);
   }
 
   function _after() {

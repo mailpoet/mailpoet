@@ -209,6 +209,7 @@ define(
           groups: [],
           group: 'all',
           filters: [],
+          filter: [],
           selected_ids: [],
           selection: false
         };
@@ -228,6 +229,7 @@ define(
             offset: (this.state.page - 1) * this.state.limit,
             limit: this.state.limit,
             group: this.state.group,
+            filter: this.state.filter,
             search: this.state.search,
             sort_by: this.state.sort_by,
             sort_order: this.state.sort_order
@@ -270,6 +272,7 @@ define(
         data.listing = {
           offset: 0,
           limit: 0,
+          filter: this.state.filter,
           group: this.state.group,
           search: this.state.search,
           selection: selected_ids
@@ -350,13 +353,21 @@ define(
           selected_ids: []
         });
       },
+      handleFilter: function(filters) {
+        this.setState({
+          filter: filters,
+          page: 1
+        }, function() {
+          this.getItems();
+        }.bind(this));
+      },
       handleGroup: function(group) {
         // reset search
         jQuery('#search_input').val('');
 
         this.setState({
           group: group,
-          filters: [],
+          filter: [],
           search: '',
           page: 1
         }, function() {
@@ -414,7 +425,10 @@ define(
                 selection={ this.state.selection }
                 selected_ids={ this.state.selected_ids }
                 onBulkAction={ this.handleBulkAction } />
-              <ListingFilters filters={ this.state.filters } />
+              <ListingFilters
+                filters={ this.state.filters }
+                filter={ this.state.filter }
+                onSelectFilter={ this.handleFilter } />
               <ListingPages
                 count={ this.state.count }
                 page={ this.state.page }
