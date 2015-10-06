@@ -15,7 +15,8 @@ class Migrator {
       'newsletters',
       'newsletter_templates',
       'segments',
-      'subscriber_segment'
+      'subscriber_segment',
+      'newsletter_segment'
     );
   }
 
@@ -112,6 +113,18 @@ class Migrator {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'subscriber_id mediumint(9) NOT NULL,',
+      'segment_id mediumint(9) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function newsletter_segment() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'newsletter_id mediumint(9) NOT NULL,',
       'segment_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',

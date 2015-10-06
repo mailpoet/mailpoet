@@ -1,6 +1,8 @@
 <?php
 
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\Segment;
+use MailPoet\Models\NewsletterSegment;
 
 class NewsletterCest {
   function _before() {
@@ -9,7 +11,7 @@ class NewsletterCest {
       'subject' => 'new newsletter',
       'body' => 'body',
       'type' => 'standard',
-      'preheader' => 'preaheader'
+      'preheader' => 'preheader'
     );
 
     $newsletter = Newsletter::create();
@@ -22,27 +24,50 @@ class NewsletterCest {
   }
 
   function itHasSubject() {
-    $subscriber = Newsletter::where('subject', $this->data['subject'])
+    $newsletter = Newsletter::where('subject', $this->data['subject'])
       ->findOne();
-    expect($subscriber->subject)->equals($this->data['subject']);
+    expect($newsletter->subject)->equals($this->data['subject']);
   }
 
   function itHasType() {
-    $subscriber = Newsletter::where('type', $this->data['type'])
+    $newsletter = Newsletter::where('type', $this->data['type'])
       ->findOne();
-    expect($subscriber->type)->equals($this->data['type']);
+    expect($newsletter->type)->equals($this->data['type']);
   }
 
   function itHasBody() {
-    $subscriber = Newsletter::where('body', $this->data['body'])
+    $newsletter = Newsletter::where('body', $this->data['body'])
       ->findOne();
-    expect($subscriber->body)->equals($this->data['body']);
+    expect($newsletter->body)->equals($this->data['body']);
   }
 
   function itHasPreheader() {
-    $subscriber = Newsletter::where('preheader', $this->data['preheader'])
+    $newsletter = Newsletter::where('preheader', $this->data['preheader'])
       ->findOne();
-    expect($subscriber->preheader)->equals($this->data['preheader']);
+    expect($newsletter->preheader)->equals($this->data['preheader']);
+  }
+
+  function itCanHaveASegment() {
+    $segmentData = array(
+      'name' => 'my first list'
+    );
+
+    $segment = Segment::create();
+    $segment->hydrate($segmentData);
+    $segment->save();
+
+    $newsletter = Newsletter::create();
+    $newsletter->hydrate($this->data);
+    $newsletter->save();
+
+    $association = NewsletterSegment::create();
+    $association->newsletter_id = $newsletter->id();
+    $association->segment_id = $segment->id();
+    $association->save();
+
+    $newsletter = Newsletter::findOne($newsletter->id);
+    $newsletterSegment = $newsletter->segments()->findOne();
+    expect($newsletterSegment->id)->equals($segment->id);
   }
 
   function itCanCreateOrUpdate() {

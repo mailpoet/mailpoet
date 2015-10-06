@@ -27,9 +27,9 @@ class Handler {
       'selection' => (isset($data['selection']) ? $data['selection'] : null)
     );
 
+    $this->setFilter();
     $this->setSearch();
     $this->setGroup();
-    $this->setFilter();
     $this->setOrder();
   }
 

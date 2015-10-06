@@ -10,8 +10,70 @@ class Newsletter extends Model {
     parent::__construct();
   }
 
+  function segments() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\Segment',
+      __NAMESPACE__.'\NewsletterSegment',
+      'newsletter_id',
+      'segment_id'
+    );
+  }
+
   static function search($orm, $search = '') {
     return $orm->where_like('subject', '%' . $search . '%');
+  }
+
+  static function filters() {
+    $segments = Segment::orderByAsc('name')->findMany();
+    $segment_list = array();
+    $segment_list[] = array(
+      'label' => __('All lists'),
+      'value' => ''
+    );
+    foreach($segments as $segment) {
+      $newsletters_count = $segment->newsletters()->count();
+      if($newsletters_count > 0) {
+
+        $segment_list[] = array(
+          'label' => sprintf('%s (%d)', $segment->name, $newsletters_count),
+          'value' => $segment->id()
+        );
+      }
+    }
+
+    $filters = array(
+      array(
+        'name' => 'segment',
+        'options' => $segment_list
+      )
+    );
+
+    return $filters;
+  }
+
+  static function filterBy($orm, $filters = null) {
+    if(empty($filters)) {
+      return $orm;
+    }
+
+    foreach($filters as $filter) {
+      if($filter['name'] === 'segment') {
+
+        $segment = Segment::findOne($filter['value']);
+        if($segment !== false) {
+          $orm = $orm
+          ->select('model.*')
+          ->select('newsletter_segment.id', 'newsletter_segment_id')
+          ->join(
+            MP_NEWSLETTER_SEGMENT_TABLE,
+            'model.id = newsletter_segment.newsletter_id',
+            'newsletter_segment'
+          )
+          ->where('newsletter_segment.segment_id', (int)$filter['value']);
+        }
+      }
+    }
+    return $orm;
   }
 
   static function groups() {
