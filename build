@@ -16,7 +16,7 @@ rm composer.lock;
 
 # Copy release folders.
 cp -rf lang wysija-newsletters;
-cp -rf assets wysija-newsletters;
+cp -rfL assets wysija-newsletters;
 cp -rf lib wysija-newsletters;
 cp -rf vendor wysija-newsletters;
 cp -rf views wysija-newsletters;
