@@ -132,8 +132,8 @@ define([
     modelEvents: {},
     onDragSubstituteBy: function() { return Module.PostsWidgetView; },
     initialize: function() {
+      base.BlockView.prototype.initialize.apply(this, arguments);
       this.toolsView = new Module.PostsBlockToolsView({ model: this.model });
-      this.on('showSettings', this.showSettings);
       this.model.reply('blockView', this.notifyAboutSelf, this);
     },
     onRender: function() {
@@ -141,9 +141,6 @@ define([
         this.toolsRegion.show(this.toolsView);
       }
       this.trigger('showSettings');
-    },
-    showSettings: function(options) {
-      this.toolsView.triggerMethod('showSettings', options);
     },
     notifyAboutSelf: function() {
       return this;
@@ -155,19 +152,6 @@ define([
 
   Module.PostsBlockToolsView = base.BlockToolsView.extend({
     getSettingsView: function() { return Module.PostsBlockSettingsView; },
-    initialize: function() {
-      base.BlockToolsView.prototype.initialize.apply(this, arguments);
-      this.on('showSettings', this.changeSettings);
-      this.settingsView = new Module.PostsBlockSettingsView({ model: this.model });
-    },
-    changeSettings: function() {
-      this.settingsView.render();
-    },
-    onBeforeDestroy: function() {
-      this.settingsView.destroy();
-      this.off('showSettings');
-      MailPoet.Modal.close();
-    },
   });
 
   Module.PostsBlockSettingsView = base.BlockSettingsView.extend({

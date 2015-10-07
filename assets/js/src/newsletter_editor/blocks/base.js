@@ -189,7 +189,6 @@ define([
       });
     },
     close: function(event) {
-      MailPoet.Modal.cancel();
       this.destroy();
     },
     changeField: function(field, event) {
@@ -210,6 +209,9 @@ define([
         value = 'transparent';
       }
       this.model.set(field, value);
+    },
+    onBeforeDestroy: function() {
+      MailPoet.Modal.close();
     },
   });
 

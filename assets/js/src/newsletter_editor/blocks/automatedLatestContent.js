@@ -61,7 +61,7 @@ define([
       };
     },
     initialize: function() {
-      base.BlockModel.prototype.initialize.apply(this);
+      base.BlockView.prototype.initialize.apply(this, arguments);
       this.fetchPosts();
       this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:titlePosition change:titleAlignment change:titleIsLink change:imagePadded change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
       this.listenTo(this.get('readMoreButton'), 'change', this._scheduleFetchPosts);
