@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Mailer;
+namespace MailPoet\Mailer\API;
 
 use MailPoet\Models\Setting;
 
