@@ -12,7 +12,7 @@ class MailGunCest {
     );
     $this->from = 'Sender <do-not-reply@mailpoet.com>';
     $this->mailer = new MailGun($this->settings['domain'], $this->settings['api_key'], $this->from);
-    $this->mailer->subscriber = 'Recipient <mailpoet-test1@mailinator.com>';
+    $this->mailer->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->mailer->newsletter = array(
       'subject' => 'testing MailGun',
       'body' => array(

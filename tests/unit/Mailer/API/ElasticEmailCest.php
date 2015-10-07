@@ -12,7 +12,7 @@ class ElasticEmailCest {
     $this->fromEmail = 'do-not-reply@mailpoet.com';
     $this->fromName = 'Sender';
     $this->mailer = new ElasticEmail($this->settings['api_key'], $this->fromEmail, $this->fromName);
-    $this->mailer->subscriber = 'Recipient <mailpoet-test1@mailinator.com>';
+    $this->mailer->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->mailer->newsletter = array(
       'subject' => 'testing ElasticEmail',
       'body' => array(

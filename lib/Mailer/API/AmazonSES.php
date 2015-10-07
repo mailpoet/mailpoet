@@ -38,7 +38,6 @@ class AmazonSES {
       'Message.Subject.Data' => $this->newsletter['subject'],
       'Message.Body.Html.Data' => $this->newsletter['body']['html'],
       'Message.Body.Text.Data' => $this->newsletter['body']['text'],
-      'ReplyToAddresses.member.1' => $this->from,
       'ReturnPath' => $this->from
     );
     return urldecode(http_build_query($parameters));

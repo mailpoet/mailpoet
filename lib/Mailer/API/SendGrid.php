@@ -4,10 +4,11 @@ namespace MailPoet\Mailer\API;
 if(!defined('ABSPATH')) exit;
 
 class SendGrid {
-  function __construct($api_key, $from) {
+  function __construct($api_key, $from_email, $from_name) {
     $this->url = 'https://api.sendgrid.com/api/mail.send.json';
     $this->api_key = $api_key;
-    $this->from = $from;
+    $this->fromEmail = $from_email;
+    $this->fromName = $from_name;
   }
 
   function send($newsletter, $subscriber) {
@@ -25,7 +26,8 @@ class SendGrid {
   function getBody() {
     $parameters = array(
       'to' => $this->subscriber,
-      'from' => $this->from,
+      'from' => $this->fromEmail,
+      'fromname' => $this->fromName,
       'subject' => $this->newsletter['subject'],
       'html' => $this->newsletter['body']['html'],
       'text' => $this->newsletter['body']['text']

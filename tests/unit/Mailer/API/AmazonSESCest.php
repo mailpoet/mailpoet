@@ -13,7 +13,7 @@ class AmazonSESCest {
     );
     $this->from = 'Sender <vlad@mailpoet.com>';
     $this->mailer = new AmazonSES($this->settings['region'], $this->settings['access_key'], $this->settings['secret_key'], $this->from);
-    $this->mailer->subscriber = 'Recipient <mailpoet-test1@mailinator.com>';
+    $this->mailer->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->mailer->newsletter = array(
       'subject' => 'testing AmazonSES',
       'body' => array(
@@ -47,8 +47,6 @@ class AmazonSESCest {
     expect($body[6])
       ->equals('Message.Body.Text.Data=' . $this->mailer->newsletter['body']['text']);
     expect($body[7])
-      ->equals('ReplyToAddresses.member.1=' . $this->from);
-    expect($body[8])
       ->equals('ReturnPath=' . $this->from);
   }
 

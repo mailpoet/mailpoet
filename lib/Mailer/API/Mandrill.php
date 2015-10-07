@@ -46,10 +46,7 @@ class Mandrill {
         'to' => $this->subscriber,
         'subject' => $this->newsletter['subject'],
         'html' => $this->newsletter['body']['html'],
-        'text' => $this->newsletter['body']['text'],
-        'headers' => array(
-          'Reply-To' => $this->from_email
-        )
+        'text' => $this->newsletter['body']['text']
       ),
       'async' => false,
     );

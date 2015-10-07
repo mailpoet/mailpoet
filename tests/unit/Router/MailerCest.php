@@ -8,12 +8,17 @@ class MailerCest {
   }
 
   function itCanConstruct() {
-    expect($this->router->from)->equals('Sender <mailpoet-test1@mailinator.com>');
+    expect($this->router->from)->equals('Sender <mailpoet-phoenix-test@mailinator.com>');
   }
 
   function itCanTransformSubscriber() {
     expect($this->router->transformSubscriber('test@email.com'))
       ->equals('test@email.com');
+    expect($this->router->transformSubscriber(
+      array(
+        'email' => 'test@email.com'
+      ))
+    )->equals('test@email.com');
     expect($this->router->transformSubscriber(
       array(
         'first_name' => 'First',
@@ -36,7 +41,7 @@ class MailerCest {
   }
 
   function itCanConfigureMailer() {
-    $mailer = $this->router->configureMailer();
+    $mailer = $this->router->buildMailer();
     $class = 'Mailpoet\\Mailer\\' .
       $this->router->mailer['type'] . '\\' .
       $this->router->mailer['name'];
@@ -55,7 +60,7 @@ class MailerCest {
     $subscriber = array(
       'first_name' => 'First',
       'last_name' => 'Last',
-      'email' => 'mailpoet-test1@mailinator.com'
+      'email' => 'mailpoet-phoenix-test@mailinator.com'
     );
     expect($this->router->send($newsletter, $subscriber))->true();
   }

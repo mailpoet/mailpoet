@@ -9,9 +9,10 @@ class SendGridCest {
       'type' => 'API',
       'api_key' => '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'
     );
-    $this->from = 'Sender <do-not-reply@mailpoet.com>';
-    $this->mailer = new SendGrid($this->settings['api_key'], $this->from);
-    $this->mailer->subscriber = 'Recipient <mailpoet-test1@mailinator.com>';
+    $this->fromEmail = 'do-not-reply@mailpoet.com';
+    $this->fromName = 'Sender';
+    $this->mailer = new SendGrid($this->settings['api_key'], $this->fromEmail, $this->fromName);
+    $this->mailer->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->mailer->newsletter = array(
       'subject' => 'testing SendGrid',
       'body' => array(
@@ -26,12 +27,14 @@ class SendGridCest {
     expect($body[0])
       ->contains('to=' . $this->mailer->subscriber);
     expect($body[1])
-      ->equals('from=' . $this->from);
+      ->equals('from=' . $this->fromEmail);
     expect($body[2])
-      ->equals('subject=' . $this->mailer->newsletter['subject']);
+      ->equals('fromname=' . $this->fromName);
     expect($body[3])
-      ->equals('html=' . $this->mailer->newsletter['body']['html']);
+      ->equals('subject=' . $this->mailer->newsletter['subject']);
     expect($body[4])
+      ->equals('html=' . $this->mailer->newsletter['body']['html']);
+    expect($body[5])
       ->equals('text=' . $this->mailer->newsletter['body']['text']);
   }
   

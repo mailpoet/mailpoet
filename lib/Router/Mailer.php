@@ -13,11 +13,11 @@ class Mailer {
 
   function send($newsletter, $subscriber) {
     $subscriber = $this->transformSubscriber($subscriber);
-    $mailer = $this->configureMailer();
+    $mailer = $this->buildMailer();
     return wp_send_json($mailer->send($newsletter, $subscriber));
   }
 
-  function configureMailer() {
+  function buildMailer() {
     switch ($this->mailer['name']) {
     case 'AmazonSES':
       $mailer = new $this->mailer['class']($this->mailer['region'], $this->mailer['access_key'], $this->mailer['secret_key'], $this->from);
@@ -32,7 +32,7 @@ class Mailer {
       $mailer = new $this->mailer['class']($this->mailer['api_key'], $this->fromEmail, $this->fromName);
     break;
     case 'SendGrid':
-      $mailer = new $this->mailer['class']($this->mailer['api_key'], $this->from);
+      $mailer = new $this->mailer['class']($this->mailer['api_key'], $this->fromEmail, $this->fromName);
     break;
     }
     return $mailer;
@@ -42,6 +42,7 @@ class Mailer {
     if(!is_array($subscriber)) return $subscriber;
     $first_name = (isset($subscriber['first_name'])) ? $subscriber['first_name'] : '';
     $last_name = (isset($subscriber['last_name'])) ? $subscriber['last_name'] : '';
+    if (!$first_name && !$last_name) return $subscriber['email'];
     $subscriber = sprintf('%s %s <%s>', $first_name, $last_name, $subscriber['email']);
     $subscriber = trim(preg_replace('!\s\s+!', ' ', $subscriber));
     return $subscriber;
@@ -83,7 +84,7 @@ class Mailer {
       return array_merge($mailer, array('class' => sprintf('MailPoet\\Mailer\\%s\\%s', $mailer['type'], $mailer['name'])));
     }
     if($setting === 'from_name') return 'Sender';
-    if($setting === 'from_address') return 'mailpoet-test1@mailinator.com';
+    if($setting === 'from_address') return 'mailpoet-phoenix-test@mailinator.com';
     return Setting::where('name', $setting)
       ->findOne()->value;
   }

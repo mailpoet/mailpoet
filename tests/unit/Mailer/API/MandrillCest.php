@@ -12,7 +12,7 @@ class MandrillCest {
     $this->fromEmail = 'do-not-reply@mailpoet.com';
     $this->fromName = 'Sender';
     $this->mailer = new Mandrill($this->settings['api_key'], $this->fromEmail, $this->fromName);
-    $this->mailer->subscriber = 'Recipient <mailpoet-test1@mailinator.com>';
+    $this->mailer->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->mailer->newsletter = array(
       'subject' => 'testing Mandrill',
       'body' => array(
@@ -42,9 +42,6 @@ class MandrillCest {
     );
     expect($body['message']['text'])->equals(
       $this->mailer->newsletter['body']['text']
-    );
-    expect($body['message']['headers']['Reply-To'])->equals(
-      $this->fromEmail
     );
     expect($body['async'])->false();
   }
