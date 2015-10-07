@@ -8,7 +8,7 @@ class MailerCest {
   }
 
   function itCanConstruct() {
-    expect($this->router->from)->equals('Sender <mailpoet-phoenix-test@mailinator.com>');
+    expect($this->router->from)->equals('Sender <staff@mailpoet.com>');
   }
 
   function itCanTransformSubscriber() {

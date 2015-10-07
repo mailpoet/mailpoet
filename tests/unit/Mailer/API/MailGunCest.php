@@ -10,7 +10,7 @@ class MailGunCest {
       'api_key' => 'key-6cf5g5qjzenk-7nodj44gdt8phe6vam2',
       'domain' => 'mrcasual.com'
     );
-    $this->from = 'Sender <do-not-reply@mailpoet.com>';
+    $this->from = 'Sender <staff@mailpoet.com>';
     $this->mailer = new MailGun($this->settings['domain'], $this->settings['api_key'], $this->from);
     $this->mailer->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->mailer->newsletter = array(

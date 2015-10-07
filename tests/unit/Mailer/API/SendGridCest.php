@@ -9,7 +9,7 @@ class SendGridCest {
       'type' => 'API',
       'api_key' => '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'
     );
-    $this->fromEmail = 'do-not-reply@mailpoet.com';
+    $this->fromEmail = 'staff@mailpoet.com';
     $this->fromName = 'Sender';
     $this->mailer = new SendGrid($this->settings['api_key'], $this->fromEmail, $this->fromName);
     $this->mailer->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';

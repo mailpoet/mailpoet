@@ -9,7 +9,7 @@ class ElasticEmailCest {
       'type' => 'API',
       'api_key' => '997f1f7f-41de-4d7f-a8cb-86c8481370fa'
     );
-    $this->fromEmail = 'do-not-reply@mailpoet.com';
+    $this->fromEmail = 'staff@mailpoet.com';
     $this->fromName = 'Sender';
     $this->mailer = new ElasticEmail($this->settings['api_key'], $this->fromEmail, $this->fromName);
     $this->mailer->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';

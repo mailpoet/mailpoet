@@ -34,6 +34,9 @@ class Mailer {
     case 'SendGrid':
       $mailer = new $this->mailer['class']($this->mailer['api_key'], $this->fromEmail, $this->fromName);
     break;
+    case 'SMTP':
+      $mailer = new $this->mailer['class']($this->mailer['host'], $this->mailer['port'], $this->mailer['authentication'], $this->mailer['encryption'], $this->fromEmail, $this->fromName);
+    break;
     }
     return $mailer;
   }
@@ -42,7 +45,7 @@ class Mailer {
     if(!is_array($subscriber)) return $subscriber;
     $first_name = (isset($subscriber['first_name'])) ? $subscriber['first_name'] : '';
     $last_name = (isset($subscriber['last_name'])) ? $subscriber['last_name'] : '';
-    if (!$first_name && !$last_name) return $subscriber['email'];
+    if(!$first_name && !$last_name) return $subscriber['email'];
     $subscriber = sprintf('%s %s <%s>', $first_name, $last_name, $subscriber['email']);
     $subscriber = trim(preg_replace('!\s\s+!', ' ', $subscriber));
     return $subscriber;
@@ -78,13 +81,24 @@ class Mailer {
           'name' => 'SendGrid',
           'type' => 'API',
           'api_key' => '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'
+        ),
+        array(
+          'name' => 'SMTP',
+          'type' => 'SMTP',
+          'host' => 'email-smtp.us-west-2.amazonaws.com',
+          'port' => 587,
+          'authentication' => array(
+            'login' => 'AKIAIGPBLH6JWG5VCBQQ',
+            'password' => 'AudVHXHaYkvr54veCzqiqOxDiMMyfQW3/V6F1tYzGXY3'
+          ),
+          'encryption' => 'tls'
         )
       );
       $mailer = $mailers[array_rand($mailers)];
       return array_merge($mailer, array('class' => sprintf('MailPoet\\Mailer\\%s\\%s', $mailer['type'], $mailer['name'])));
     }
     if($setting === 'from_name') return 'Sender';
-    if($setting === 'from_address') return 'mailpoet-phoenix-test@mailinator.com';
+    if($setting === 'from_address') return 'staff@mailpoet.com';
     return Setting::where('name', $setting)
       ->findOne()->value;
   }

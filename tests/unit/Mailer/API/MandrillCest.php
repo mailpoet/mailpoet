@@ -9,7 +9,7 @@ class MandrillCest {
       'type' => 'API',
       'api_key' => '692ys1B7REEoZN7R-dYwNA'
     );
-    $this->fromEmail = 'do-not-reply@mailpoet.com';
+    $this->fromEmail = 'staff@mailpoet.com';
     $this->fromName = 'Sender';
     $this->mailer = new Mandrill($this->settings['api_key'], $this->fromEmail, $this->fromName);
     $this->mailer->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
@@ -58,6 +58,30 @@ class MandrillCest {
       ->equals('application/json');
     expect($request['body'])
       ->equals(json_encode($this->mailer->getBody()));
+  }
+
+  function itCanProcessSubscriber() {
+    expect($this->mailer->processSubscriber('test@test.com'))
+      ->equals(array(
+                 array(
+                   'email' => 'test@test.com',
+                   'name' => ''
+                 )
+               ));
+    expect($this->mailer->processSubscriber('First <test@test.com>'))
+      ->equals(array(
+                 array(
+                   'email' => 'test@test.com',
+                   'name' => 'First'
+                 )
+               ));
+    expect($this->mailer->processSubscriber('First Last <test@test.com>'))
+      ->equals(array(
+                 array(
+                   'email' => 'test@test.com',
+                   'name' => 'First Last'
+                 )
+               ));
   }
 
   function itCannotSendWithoutProperAPIKey() {
