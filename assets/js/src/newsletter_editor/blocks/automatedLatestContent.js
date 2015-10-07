@@ -238,6 +238,7 @@ define([
       });
     },
     onBeforeDestroy: function() {
+      base.BlockSettingsView.prototype.onBeforeDestroy.apply(this, arguments);
       // Force close select2 if it hasn't closed yet
       this.$('.mailpoet_automated_latest_content_categories_and_tags').select2('close');
     },

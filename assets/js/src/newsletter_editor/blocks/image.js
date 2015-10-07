@@ -327,6 +327,7 @@ define([
       this._mediaManager.open();
     },
     onBeforeDestroy: function() {
+      base.BlockSettingsView.prototype.onBeforeDestroy.apply(this, arguments);
       if (typeof this._mediaManager === 'object') {
         this._mediaManager.remove();
       }
