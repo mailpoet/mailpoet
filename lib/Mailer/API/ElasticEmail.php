@@ -4,11 +4,11 @@ namespace MailPoet\Mailer\API;
 if(!defined('ABSPATH')) exit;
 
 class ElasticEmail {
-  function __construct($api_key, $from_email, $from_name) {
+  function __construct($apiKey, $fromEmail, $fromName) {
     $this->url = 'https://api.elasticemail.com/mailer/send';
-    $this->api_key = $api_key;
-    $this->from_name = $from_name;
-    $this->from_email = $from_email;
+    $this->apiKey = $apiKey;
+    $this->fromEmail = $fromEmail;
+    $this->fromName = $fromName;
   }
 
   function send($newsletter, $subscriber) {
@@ -17,21 +17,22 @@ class ElasticEmail {
     $result = wp_remote_post(
       $this->url,
       $this->request());
-    if(is_object($result) && get_class($result) === 'WP_Error') return false;
-    return (!preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $result['body']) === false);
+    return (
+      !is_wp_error($result) === true &&
+      !preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $result['body']) === false
+    );
   }
 
   function getBody() {
-    $parameters = array(
-      'api_key' => $this->api_key,
-      'from' => $this->from_email,
-      'from_name' => $this->from_name,
+    return array(
+      'api_key' => $this->apiKey,
+      'from' => $this->fromEmail,
+      'from_name' => $this->fromName,
       'to' => $this->subscriber,
       'subject' => $this->newsletter['subject'],
       'body_html' => $this->newsletter['body']['html'],
       'body_text' => $this->newsletter['body']['text']
     );
-    return urldecode(http_build_query($parameters));
   }
 
   function request() {
@@ -39,7 +40,7 @@ class ElasticEmail {
       'timeout' => 10,
       'httpversion' => '1.0',
       'method' => 'POST',
-      'body' => $this->getBody()
+      'body' => urldecode(http_build_query($this->getBody()))
     );
   }
 }

@@ -3,7 +3,7 @@
 use MailPoet\Mailer\API\AmazonSES;
 
 class AmazonSESCest {
-  function __construct() {
+  function _before() {
     $this->settings = array(
       'name' => 'AmazonSES',
       'type' => 'API',
@@ -12,8 +12,13 @@ class AmazonSESCest {
       'region' => 'us-east-1',
     );
     $this->from = 'Sender <vlad@mailpoet.com>';
-    $this->mailer = new AmazonSES($this->settings['region'], $this->settings['access_key'], $this->settings['secret_key'], $this->from);
-    $this->mailer->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
+    $this->mailer = new AmazonSES(
+      $this->settings['region'],
+      $this->settings['access_key'],
+      $this->settings['secret_key'],
+      $this->from);
+    $this->mailer->subscriber =
+      'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->mailer->newsletter = array(
       'subject' => 'testing AmazonSES',
       'body' => array(
@@ -31,23 +36,19 @@ class AmazonSESCest {
   }
 
   function itCanGenerateBody() {
-    $body = explode('&', $this->mailer->getBody());
-    expect($body[0])
-      ->equals('Action=SendEmail');
-    expect($body[1])
-      ->equals('Version=2010-12-01');
-    expect($body[2])
-      ->equals('Source=' . $this->from);
-    expect($body[3])
-      ->contains('Destination.ToAddresses.member.1=' . $this->mailer->subscriber);
-    expect($body[4])
-      ->equals('Message.Subject.Data=' . $this->mailer->newsletter['subject']);
-    expect($body[5])
-      ->equals('Message.Body.Html.Data=' . $this->mailer->newsletter['body']['html']);
-    expect($body[6])
-      ->equals('Message.Body.Text.Data=' . $this->mailer->newsletter['body']['text']);
-    expect($body[7])
-      ->equals('ReturnPath=' . $this->from);
+    $body = $this->mailer->getBody();
+    expect($body['Action'])->equals('SendEmail');
+    expect($body['Version'])->equals('2010-12-01');
+    expect($body['Source'])->equals($this->from);
+    expect($body['Destination.ToAddresses.member.1'])
+      ->contains($this->mailer->subscriber);
+    expect($body['Message.Subject.Data'])
+      ->equals($this->mailer->newsletter['subject']);
+    expect($body['Message.Body.Html.Data'])
+      ->equals($this->mailer->newsletter['body']['html']);
+    expect($body['Message.Body.Text.Data'])
+      ->equals($this->mailer->newsletter['body']['text']);
+    expect($body['ReturnPath'])->equals($this->from);
   }
 
   function itCanCreateRequest() {
@@ -65,7 +66,7 @@ class AmazonSESCest {
     expect($request['headers']['X-Amz-Date'])
       ->equals($this->mailer->date);
     expect($request['body'])
-      ->equals($this->mailer->getBody());
+      ->equals(urldecode(http_build_query($this->mailer->getBody())));
   }
 
   function itCanCreateCanonicalRequest() {
@@ -80,7 +81,9 @@ class AmazonSESCest {
           'x-amz-date:' . $this->mailer->date,
           '',
           'host;x-amz-date',
-          hash($this->mailer->hashAlgorithm, $this->mailer->getBody())
+          hash($this->mailer->hashAlgorithm,
+               urldecode(http_build_query($this->mailer->getBody()))
+          )
         )
       );
   }
@@ -128,11 +131,10 @@ class AmazonSESCest {
   }
 
   function itCannotSendWithoutProperAccessKey() {
-    $mailer = clone $this->mailer;
-    $mailer->awsAccessKey = 'somekey';
-    $result = $mailer->send(
-      $mailer->newsletter,
-      $mailer->subscriber
+    $this->mailer->awsAccessKey = 'somekey';
+    $result = $this->mailer->send(
+      $this->mailer->newsletter,
+      $this->mailer->subscriber
     );
     expect($result)->false();
   }

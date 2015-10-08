@@ -4,9 +4,9 @@ namespace MailPoet\Mailer\API;
 if(!defined('ABSPATH')) exit;
 
 class AmazonSES {
-  function __construct($region, $access_key, $secret_key, $from) {
-    $this->awsAccessKey = $access_key;
-    $this->awsSecret_key = $secret_key;
+  function __construct($region, $accessKey, $secretKey, $from) {
+    $this->awsAccessKey = $accessKey;
+    $this->awsSecret_key = $secretKey;
     $this->awsRegion = $region;
     $this->awsEndpoint = sprintf('email.%s.amazonaws.com', $region);
     $this->awsSigningAlgorithm = 'AWS4-HMAC-SHA256';
@@ -26,11 +26,14 @@ class AmazonSES {
       $this->url,
       $this->request()
     );
-    return ($result['response']['code'] === 200);
+    return (
+      !is_wp_error($result) === true &&
+      wp_remote_retrieve_response_code($result) === 200
+    );
   }
 
   function getBody() {
-    $parameters = array(
+    return array(
       'Action' => 'SendEmail',
       'Version' => '2010-12-01',
       'Source' => $this->from,
@@ -40,7 +43,6 @@ class AmazonSES {
       'Message.Body.Text.Data' => $this->newsletter['body']['text'],
       'ReturnPath' => $this->from
     );
-    return urldecode(http_build_query($parameters));
   }
 
   function request() {
@@ -53,7 +55,7 @@ class AmazonSES {
         'Authorization' => $this->signRequest($this->getBody()),
         'X-Amz-Date' => $this->date
       ),
-      'body' => $this->getBody()
+      'body' => urldecode(http_build_query($this->getBody()))
     );
   }
 
@@ -85,7 +87,7 @@ class AmazonSES {
       'x-amz-date:' . $this->date,
       '',
       'host;x-amz-date',
-      hash($this->hashAlgorithm, $this->getBody())
+      hash($this->hashAlgorithm, urldecode(http_build_query($this->getBody())))
     ));
   }
 

@@ -3,7 +3,7 @@
 use MailPoet\Mailer\SMTP\SMTP;
 
 class SMTPCest {
-  function __construct() {
+  function _before() {
     $this->settings = array(
       'name' => 'SMTP',
       'type' => 'SMTP',
@@ -17,7 +17,14 @@ class SMTPCest {
     );
     $this->fromEmail = 'staff@mailpoet.com';
     $this->fromName = 'Sender';
-    $this->mailer = new SMTP($this->settings['host'], $this->settings['port'], $this->settings['authentication'], $this->settings['encryption'], $this->fromEmail, $this->fromName);
+    $this->mailer = new SMTP(
+      $this->settings['host'],
+      $this->settings['port'],
+      $this->settings['authentication'],
+      $this->settings['encryption'],
+      $this->fromEmail,
+      $this->fromName
+    );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
       'subject' => 'testing SMTP',
@@ -71,10 +78,9 @@ class SMTPCest {
   }
 
   function itCantSentWithoutProperAuthentication() {
-    $mailer = clone $this->mailer;
-    $mailer->smtpAuthentication['login'] = 'someone';
-    $mailer->mailer = $mailer->buildMailer();
-    $result = $mailer->send(
+    $this->mailer->authentication['login'] = 'someone';
+    $this->mailer->mailer = $this->mailer->buildMailer();
+    $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber
     );

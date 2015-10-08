@@ -3,12 +3,12 @@ namespace MailPoet\Mailer\API;
 
 if(!defined('ABSPATH')) exit;
 
-class Mandrill {
+class MailPoet {
   function __construct($apiKey, $fromEmail, $fromName) {
-    $this->url = 'https://mandrillapp.com/api/1.0/messages/send.json';
+    $this->url = 'https://bridge.mailpoet.com/api/messages';
     $this->apiKey = $apiKey;
-    $this->fromName = $fromName;
     $this->fromEmail = $fromEmail;
+    $this->fromName = $fromName;
   }
 
   function send($newsletter, $subscriber) {
@@ -20,8 +20,7 @@ class Mandrill {
     );
     return (
       !is_wp_error($result) === true &&
-      !preg_match('!invalid!', $result['body']) === true &&
-      wp_remote_retrieve_response_code($result) === 200
+      wp_remote_retrieve_response_code($result) === 201
     );
   }
 
@@ -33,35 +32,42 @@ class Mandrill {
       );
     }
     return array(
-        'email' => $subscriberData['email'],
-        'name' => (isset($subscriberData['name'])) ? $subscriberData['name'] : ''
+      'email' => $subscriberData['email'],
+      'name' => (isset($subscriberData['name'])) ? $subscriberData['name'] : ''
     );
   }
 
   function getBody() {
     return array(
-      'key' => $this->apiKey,
-      'message' => array(
-        'from_email' => $this->fromEmail,
-        'from_name' => $this->fromName,
-        'to' => array($this->subscriber),
-        'subject' => $this->newsletter['subject'],
-        'html' => $this->newsletter['body']['html'],
-        'text' => $this->newsletter['body']['text']
-      ),
-      'async' => false,
+      'to' => (array(
+        'address' => $this->subscriber['email'],
+        'name' => $this->subscriber['name']
+      )),
+      'from' => (array(
+        'address' => $this->fromEmail,
+        'name' => $this->fromName
+      )),
+      'subject' => $this->newsletter['subject'],
+      'html' => $this->newsletter['body']['html'],
+      'text' => $this->newsletter['body']['text']
     );
   }
 
+  function auth() {
+    return 'Basic ' . base64_encode('api:' . $this->apiKey);
+  }
+
   function request() {
-    return array(
+    $request = array(
       'timeout' => 10,
       'httpversion' => '1.0',
       'method' => 'POST',
       'headers' => array(
-        'Content-Type' => 'application/json'
+        'Content-Type' => 'application/json',
+        'Authorization' => $this->auth()
       ),
-      'body' => json_encode($this->getBody())
+      'body' => json_encode(array($this->getBody()))
     );
+    return $request;
   }
 }

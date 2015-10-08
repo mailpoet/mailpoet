@@ -4,10 +4,9 @@ namespace MailPoet\Mailer\API;
 if(!defined('ABSPATH')) exit;
 
 class MailGun {
-  function __construct($domain, $api_key, $from) {
-    $this->url = 'https://api.mailgun.net/v3';
-    $this->domain = $domain;
-    $this->api_key = $api_key;
+  function __construct($domain, $apiKey, $from) {
+    $this->url = sprintf('https://api.mailgun.net/v3/%s/messages', $domain);
+    $this->apiKey = $apiKey;
     $this->from = $from;
   }
 
@@ -15,26 +14,27 @@ class MailGun {
     $this->newsletter = $newsletter;
     $this->subscriber = $subscriber;
     $result = wp_remote_post(
-      $this->url . '/' . $this->domain . '/messages',
+      $this->url,
       $this->request()
     );
-    if(is_object($result) && get_class($result) === 'WP_Error') return false;
-    return ($result['response']['code'] === 200);
+    return (
+      !is_wp_error($result) === true &&
+      wp_remote_retrieve_response_code($result) === 200
+    );
   }
 
   function getBody() {
-    $parameters = array(
+    return array(
       'from' => $this->from,
       'to' => $this->subscriber,
       'subject' => $this->newsletter['subject'],
       'html' => $this->newsletter['body']['html'],
       'text' => $this->newsletter['body']['text']
     );
-    return urldecode(http_build_query($parameters));
   }
 
   function auth() {
-    return 'Basic ' . base64_encode('api:' . $this->api_key);
+    return 'Basic ' . base64_encode('api:' . $this->apiKey);
   }
 
   function request() {
@@ -46,7 +46,7 @@ class MailGun {
         'Content-Type' => 'application/x-www-form-urlencoded',
         'Authorization' => $this->auth()
       ),
-      'body' => $this->getBody()
+      'body' => urldecode(http_build_query($this->getBody()))
     );
   }
 }

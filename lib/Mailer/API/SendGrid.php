@@ -4,11 +4,11 @@ namespace MailPoet\Mailer\API;
 if(!defined('ABSPATH')) exit;
 
 class SendGrid {
-  function __construct($api_key, $from_email, $from_name) {
+  function __construct($apiKey, $fromEmail, $fromName) {
     $this->url = 'https://api.sendgrid.com/api/mail.send.json';
-    $this->api_key = $api_key;
-    $this->fromEmail = $from_email;
-    $this->fromName = $from_name;
+    $this->apiKey = $apiKey;
+    $this->fromEmail = $fromEmail;
+    $this->fromName = $fromName;
   }
 
   function send($newsletter, $subscriber) {
@@ -18,13 +18,16 @@ class SendGrid {
       $this->url,
       $this->request()
     );
-    if(is_object($result) && get_class($result) === 'WP_Error') return false;
-    $result = json_decode($result['body'], true);
-    return (!isset($result['errors']) === true);
+    return (
+      !is_wp_error($result) === true &&
+      !preg_match('!invalid!', $result['body']) === true &&
+      !isset(json_decode($result['body'], true)['errors']) === true &&
+      wp_remote_retrieve_response_code($result) === 200
+    );
   }
 
   function getBody() {
-    $parameters = array(
+    return array(
       'to' => $this->subscriber,
       'from' => $this->fromEmail,
       'fromname' => $this->fromName,
@@ -32,11 +35,10 @@ class SendGrid {
       'html' => $this->newsletter['body']['html'],
       'text' => $this->newsletter['body']['text']
     );
-    return urldecode(http_build_query($parameters));
   }
 
   function auth() {
-    return 'Bearer ' . $this->api_key;
+    return 'Bearer ' . $this->apiKey;
   }
 
   function request() {
@@ -47,7 +49,7 @@ class SendGrid {
       'headers' => array(
         'Authorization' => $this->auth()
       ),
-      'body' => $this->getBody()
+      'body' => urldecode(http_build_query($this->getBody()))
     );
   }
 }

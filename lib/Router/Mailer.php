@@ -28,6 +28,9 @@ class Mailer {
     case 'MailGun':
       $mailer = new $this->mailer['class']($this->mailer['domain'], $this->mailer['api_key'], $this->from);
     break;
+    case 'MailPoet':
+      $mailer = new $this->mailer['class']($this->mailer['api_key'], $this->fromEmail, $this->fromName);
+    break;
     case 'Mandrill':
       $mailer = new $this->mailer['class']($this->mailer['api_key'], $this->fromEmail, $this->fromName);
     break;
@@ -71,6 +74,11 @@ class Mailer {
           'type' => 'API',
           'api_key' => 'key-6cf5g5qjzenk-7nodj44gdt8phe6vam2',
           'domain' => 'mrcasual.com'
+        ),
+        array(
+          'name' => 'MailPoet',
+          'type' => 'API',
+          'api_key' => 'dhNSqj1XHkVltIliyQDvMiKzQShOA5rs0m_DdRUVZHU'
         ),
         array(
           'name' => 'Mandrill',
