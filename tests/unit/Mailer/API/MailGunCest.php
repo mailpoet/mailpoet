@@ -16,9 +16,8 @@ class MailGunCest {
       $this->settings['api_key'],
       $this->from
     );
-    $this->mailer->subscriber =
-      'Recipient <mailpoet-phoenix-test@mailinator.com>';
-    $this->mailer->newsletter = array(
+    $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
+    $this->newsletter = array(
       'subject' => 'testing MailGun',
       'body' => array(
         'html' => 'HTML body',
@@ -28,17 +27,12 @@ class MailGunCest {
   }
 
   function itCanGenerateBody() {
-    $body = $this->mailer->getBody();
-    expect($body['from'])
-      ->equals($this->from);
-    expect($body['to'])
-      ->equals($this->mailer->subscriber);
-    expect($body['subject'])
-      ->equals($this->mailer->newsletter['subject']);
-    expect($body['html'])
-      ->equals($this->mailer->newsletter['body']['html']);
-    expect($body['text'])
-      ->equals($this->mailer->newsletter['body']['text']);
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    expect($body['from'])->equals($this->from);
+    expect($body['to'])->equals($this->subscriber);
+    expect($body['subject'])->equals($this->newsletter['subject']);
+    expect($body['html'])->equals($this->newsletter['body']['html']);
+    expect($body['text'])->equals($this->newsletter['body']['text']);
   }
 
   function itCanDoBasicAuth() {
@@ -47,26 +41,23 @@ class MailGunCest {
   }
 
   function itCanCreateRequest() {
-    $request = $this->mailer->request();
-    expect($request['timeout'])
-      ->equals(10);
-    expect($request['httpversion'])
-      ->equals('1.0');
-    expect($request['method'])
-      ->equals('POST');
+    $request = $this->mailer->request($this->newsletter, $this->subscriber);
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    expect($request['timeout'])->equals(10);
+    expect($request['httpversion'])->equals('1.0');
+    expect($request['method'])->equals('POST');
     expect($request['headers']['Content-Type'])
       ->equals('application/x-www-form-urlencoded');
     expect($request['headers']['Authorization'])
       ->equals('Basic ' . base64_encode('api:' . $this->settings['api_key']));
-    expect($request['body'])
-      ->equals(urldecode(http_build_query($this->mailer->getBody())));
+    expect($request['body'])->equals(urldecode(http_build_query($body)));
   }
 
   function itCannotSendWithoutProperAPIKey() {
     $this->mailer->apiKey = 'someapi';
     $result = $this->mailer->send(
-      $this->mailer->newsletter,
-      $this->mailer->subscriber
+      $this->newsletter,
+      $this->subscriber
     );
     expect($result)->false();
   }
@@ -75,16 +66,16 @@ class MailGunCest {
     $this->mailer->url =
       str_replace($this->settings['domain'], 'somedomain', $this->mailer->url);
     $result = $this->mailer->send(
-      $this->mailer->newsletter,
-      $this->mailer->subscriber
+      $this->newsletter,
+      $this->subscriber
     );
     expect($result)->false();
   }
 
   function itCanSend() {
     $result = $this->mailer->send(
-      $this->mailer->newsletter,
-      $this->mailer->subscriber
+      $this->newsletter,
+      $this->subscriber
     );
     expect($result)->true();
   }

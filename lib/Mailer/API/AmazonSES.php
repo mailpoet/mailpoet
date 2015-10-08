@@ -20,11 +20,9 @@ class AmazonSES {
   }
 
   function send($newsletter, $subscriber) {
-    $this->newsletter = $newsletter;
-    $this->subscriber = $subscriber;
     $result = wp_remote_post(
       $this->url,
-      $this->request()
+      $this->request($newsletter, $subscriber)
     );
     return (
       !is_wp_error($result) === true &&
@@ -32,37 +30,38 @@ class AmazonSES {
     );
   }
 
-  function getBody() {
+  function getBody($newsletter, $subscriber) {
     return array(
       'Action' => 'SendEmail',
       'Version' => '2010-12-01',
       'Source' => $this->from,
-      'Destination.ToAddresses.member.1' => $this->subscriber,
-      'Message.Subject.Data' => $this->newsletter['subject'],
-      'Message.Body.Html.Data' => $this->newsletter['body']['html'],
-      'Message.Body.Text.Data' => $this->newsletter['body']['text'],
+      'Destination.ToAddresses.member.1' => $subscriber,
+      'Message.Subject.Data' => $newsletter['subject'],
+      'Message.Body.Html.Data' => $newsletter['body']['html'],
+      'Message.Body.Text.Data' => $newsletter['body']['text'],
       'ReturnPath' => $this->from
     );
   }
 
-  function request() {
+  function request($newsletter, $subscriber) {
+    $body = $this->getBody($newsletter, $subscriber);
     return array(
       'timeout' => 10,
       'httpversion' => '1.1',
       'method' => 'POST',
       'headers' => array(
         'Host' => $this->awsEndpoint,
-        'Authorization' => $this->signRequest($this->getBody()),
+        'Authorization' => $this->signRequest($body),
         'X-Amz-Date' => $this->date
       ),
-      'body' => urldecode(http_build_query($this->getBody()))
+      'body' => urldecode(http_build_query($body))
     );
   }
 
-  function signRequest() {
+  function signRequest($body) {
     $stringToSign = $this->createStringToSign(
       $this->getCredentialScope(),
-      $this->getCanonicalRequest()
+      $this->getCanonicalRequest($body)
     );
     $signature = hash_hmac($this->hashAlgorithm, $stringToSign, $this->getSigningKey());
 
@@ -78,7 +77,7 @@ class AmazonSES {
     return sprintf('%s/%s/%s/%s', $this->dateWithoutTime, $this->awsRegion, $this->awsService, $this->awsTerminationString);
   }
 
-  function getCanonicalRequest() {
+  function getCanonicalRequest($body) {
     return implode("\n", array(
       'POST',
       '/',
@@ -87,7 +86,7 @@ class AmazonSES {
       'x-amz-date:' . $this->date,
       '',
       'host;x-amz-date',
-      hash($this->hashAlgorithm, urldecode(http_build_query($this->getBody())))
+      hash($this->hashAlgorithm, urldecode(http_build_query($body)))
     ));
   }
 

@@ -17,9 +17,8 @@ class AmazonSESCest {
       $this->settings['access_key'],
       $this->settings['secret_key'],
       $this->from);
-    $this->mailer->subscriber =
-      'Recipient <mailpoet-phoenix-test@mailinator.com>';
-    $this->mailer->newsletter = array(
+    $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
+    $this->newsletter = array(
       'subject' => 'testing AmazonSES',
       'body' => array(
         'html' => 'HTML body',
@@ -36,41 +35,40 @@ class AmazonSESCest {
   }
 
   function itCanGenerateBody() {
-    $body = $this->mailer->getBody();
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     expect($body['Action'])->equals('SendEmail');
     expect($body['Version'])->equals('2010-12-01');
     expect($body['Source'])->equals($this->from);
     expect($body['Destination.ToAddresses.member.1'])
-      ->contains($this->mailer->subscriber);
+      ->contains($this->subscriber);
     expect($body['Message.Subject.Data'])
-      ->equals($this->mailer->newsletter['subject']);
+      ->equals($this->newsletter['subject']);
     expect($body['Message.Body.Html.Data'])
-      ->equals($this->mailer->newsletter['body']['html']);
+      ->equals($this->newsletter['body']['html']);
     expect($body['Message.Body.Text.Data'])
-      ->equals($this->mailer->newsletter['body']['text']);
+      ->equals($this->newsletter['body']['text']);
     expect($body['ReturnPath'])->equals($this->from);
   }
 
   function itCanCreateRequest() {
-    $request = $this->mailer->request();
-    expect($request['timeout'])
-      ->equals(10);
-    expect($request['httpversion'])
-      ->equals('1.1');
-    expect($request['method'])
-      ->equals('POST');
-    expect($request['headers']['Host'])
-      ->equals($this->mailer->awsEndpoint);
+    $request = $this->mailer->request($this->newsletter, $this->subscriber);
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    expect($request['timeout'])->equals(10);
+    expect($request['httpversion'])->equals('1.1');
+    expect($request['method'])->equals('POST');
+    expect($request['headers']['Host'])->equals($this->mailer->awsEndpoint);
     expect($request['headers']['Authorization'])
-      ->equals($this->mailer->signRequest($this->mailer->getBody()));
-    expect($request['headers']['X-Amz-Date'])
-      ->equals($this->mailer->date);
-    expect($request['body'])
-      ->equals(urldecode(http_build_query($this->mailer->getBody())));
+      ->equals($this->mailer->signRequest($body));
+    expect($request['headers']['X-Amz-Date'])->equals($this->mailer->date);
+    expect($request['body'])->equals(urldecode(http_build_query($body)));
   }
 
   function itCanCreateCanonicalRequest() {
-    $canonicalRequest = explode("\n", $this->mailer->getCanonicalRequest());
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    $canonicalRequest = explode(
+      "\n",
+      $this->mailer->getCanonicalRequest($body)
+    );
     expect($canonicalRequest)
       ->equals(
         array(
@@ -82,7 +80,7 @@ class AmazonSESCest {
           '',
           'host;x-amz-date',
           hash($this->mailer->hashAlgorithm,
-               urldecode(http_build_query($this->mailer->getBody()))
+               urldecode(http_build_query($body))
           )
         )
       );
@@ -100,8 +98,9 @@ class AmazonSESCest {
   }
 
   function itCanCreateStringToSign() {
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $credentialScope = $this->mailer->getCredentialScope();
-    $canonicalRequest = $this->mailer->getCanonicalRequest();
+    $canonicalRequest = $this->mailer->getCanonicalRequest($body);
     $stringToSing = $this->mailer->createStringToSign(
       $credentialScope,
       $canonicalRequest
@@ -119,7 +118,8 @@ class AmazonSESCest {
   }
 
   function itCanSignRequest() {
-    $signedRequest = $this->mailer->signRequest();
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    $signedRequest = $this->mailer->signRequest($body);
     expect($signedRequest)
       ->contains(
         $this->mailer->awsSigningAlgorithm . ' Credential=' .
@@ -127,22 +127,23 @@ class AmazonSESCest {
         $this->mailer->getCredentialScope() . ', ' .
         'SignedHeaders=host;x-amz-date, Signature='
       );
-    expect(preg_match('!Signature=[A-Fa-f0-9]{64}$!', $signedRequest))->equals(1);
+    expect(preg_match('!Signature=[A-Fa-f0-9]{64}$!', $signedRequest))
+      ->equals(1);
   }
 
   function itCannotSendWithoutProperAccessKey() {
     $this->mailer->awsAccessKey = 'somekey';
     $result = $this->mailer->send(
-      $this->mailer->newsletter,
-      $this->mailer->subscriber
+      $this->newsletter,
+      $this->subscriber
     );
     expect($result)->false();
   }
 
   function itCanSend() {
     $result = $this->mailer->send(
-      $this->mailer->newsletter,
-      $this->mailer->subscriber
+      $this->newsletter,
+      $this->subscriber
     );
     expect($result)->true();
   }

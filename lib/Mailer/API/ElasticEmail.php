@@ -12,35 +12,34 @@ class ElasticEmail {
   }
 
   function send($newsletter, $subscriber) {
-    $this->newsletter = $newsletter;
-    $this->subscriber = $subscriber;
     $result = wp_remote_post(
       $this->url,
-      $this->request());
+      $this->request($newsletter, $subscriber));
     return (
       !is_wp_error($result) === true &&
       !preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $result['body']) === false
     );
   }
 
-  function getBody() {
+  function getBody($newsletter, $subscriber) {
     return array(
       'api_key' => $this->apiKey,
       'from' => $this->fromEmail,
       'from_name' => $this->fromName,
-      'to' => $this->subscriber,
-      'subject' => $this->newsletter['subject'],
-      'body_html' => $this->newsletter['body']['html'],
-      'body_text' => $this->newsletter['body']['text']
+      'to' => $subscriber,
+      'subject' => $newsletter['subject'],
+      'body_html' => $newsletter['body']['html'],
+      'body_text' => $newsletter['body']['text']
     );
   }
 
-  function request() {
+  function request($newsletter, $subscriber) {
+    $body = $this->getBody($newsletter, $subscriber);
     return array(
       'timeout' => 10,
       'httpversion' => '1.0',
       'method' => 'POST',
-      'body' => urldecode(http_build_query($this->getBody()))
+      'body' => urldecode(http_build_query($body))
     );
   }
 }

@@ -12,11 +12,9 @@ class MailPoet {
   }
 
   function send($newsletter, $subscriber) {
-    $this->newsletter = $newsletter;
-    $this->subscriber = $this->processSubscriber($subscriber);
     $result = wp_remote_post(
       $this->url,
-      $this->request()
+      $this->request($newsletter, $this->processSubscriber($subscriber))
     );
     return (
       !is_wp_error($result) === true &&
@@ -37,19 +35,19 @@ class MailPoet {
     );
   }
 
-  function getBody() {
+  function getBody($newsletter, $subscriber) {
     return array(
       'to' => (array(
-        'address' => $this->subscriber['email'],
-        'name' => $this->subscriber['name']
+        'address' => $subscriber['email'],
+        'name' => $subscriber['name']
       )),
       'from' => (array(
         'address' => $this->fromEmail,
         'name' => $this->fromName
       )),
-      'subject' => $this->newsletter['subject'],
-      'html' => $this->newsletter['body']['html'],
-      'text' => $this->newsletter['body']['text']
+      'subject' => $newsletter['subject'],
+      'html' => $newsletter['body']['html'],
+      'text' => $newsletter['body']['text']
     );
   }
 
@@ -57,8 +55,9 @@ class MailPoet {
     return 'Basic ' . base64_encode('api:' . $this->apiKey);
   }
 
-  function request() {
-    $request = array(
+  function request($newsletter, $subscriber) {
+    $body = array($this->getBody($newsletter, $subscriber));
+    return array(
       'timeout' => 10,
       'httpversion' => '1.0',
       'method' => 'POST',
@@ -66,8 +65,7 @@ class MailPoet {
         'Content-Type' => 'application/json',
         'Authorization' => $this->auth()
       ),
-      'body' => json_encode(array($this->getBody()))
+      'body' => json_encode($body)
     );
-    return $request;
   }
 }

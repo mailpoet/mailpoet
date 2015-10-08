@@ -37,20 +37,15 @@ class SMTPCest {
 
   function itCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->getTransport()
-             ->getHost())
+    expect($mailer->getTransport()->getHost())
       ->equals($this->settings['host']);
-    expect($mailer->getTransport()
-             ->getPort())
+    expect($mailer->getTransport()->getPort())
       ->equals($this->settings['port']);
-    expect($mailer->getTransport()
-             ->getUsername())
+    expect($mailer->getTransport()->getUsername())
       ->equals($this->settings['authentication']['login']);
-    expect($mailer->getTransport()
-             ->getPassword())
+    expect($mailer->getTransport()->getPassword())
       ->equals($this->settings['authentication']['password']);
-    expect($mailer->getTransport()
-             ->getEncryption())
+    expect($mailer->getTransport()->getEncryption())
       ->equals($this->settings['encryption']);
   }
 

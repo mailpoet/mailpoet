@@ -11,11 +11,9 @@ class MailGun {
   }
 
   function send($newsletter, $subscriber) {
-    $this->newsletter = $newsletter;
-    $this->subscriber = $subscriber;
     $result = wp_remote_post(
       $this->url,
-      $this->request()
+      $this->request($newsletter, $subscriber)
     );
     return (
       !is_wp_error($result) === true &&
@@ -23,13 +21,13 @@ class MailGun {
     );
   }
 
-  function getBody() {
+  function getBody($newsletter, $subscriber) {
     return array(
       'from' => $this->from,
-      'to' => $this->subscriber,
-      'subject' => $this->newsletter['subject'],
-      'html' => $this->newsletter['body']['html'],
-      'text' => $this->newsletter['body']['text']
+      'to' => $subscriber,
+      'subject' => $newsletter['subject'],
+      'html' => $newsletter['body']['html'],
+      'text' => $newsletter['body']['text']
     );
   }
 
@@ -37,7 +35,8 @@ class MailGun {
     return 'Basic ' . base64_encode('api:' . $this->apiKey);
   }
 
-  function request() {
+  function request($newsletter, $subscriber) {
+    $body = $this->getBody($newsletter, $subscriber);
     return array(
       'timeout' => 10,
       'httpversion' => '1.0',
@@ -46,7 +45,7 @@ class MailGun {
         'Content-Type' => 'application/x-www-form-urlencoded',
         'Authorization' => $this->auth()
       ),
-      'body' => urldecode(http_build_query($this->getBody()))
+      'body' => urldecode(http_build_query($body))
     );
   }
 }

@@ -10,13 +10,11 @@ class Mandrill {
     $this->fromName = $fromName;
     $this->fromEmail = $fromEmail;
   }
-
+  
   function send($newsletter, $subscriber) {
-    $this->newsletter = $newsletter;
-    $this->subscriber = $this->processSubscriber($subscriber);
     $result = wp_remote_post(
       $this->url,
-      $this->request()
+      $this->request($newsletter, $this->processSubscriber($subscriber))
     );
     return (
       !is_wp_error($result) === true &&
@@ -24,7 +22,7 @@ class Mandrill {
       wp_remote_retrieve_response_code($result) === 200
     );
   }
-
+  
   function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriberData);
     if(!isset($subscriberData['email'])) {
@@ -33,27 +31,28 @@ class Mandrill {
       );
     }
     return array(
-        'email' => $subscriberData['email'],
-        'name' => (isset($subscriberData['name'])) ? $subscriberData['name'] : ''
+      'email' => $subscriberData['email'],
+      'name' => (isset($subscriberData['name'])) ? $subscriberData['name'] : ''
     );
   }
-
-  function getBody() {
+  
+  function getBody($newsletter, $subscriber) {
     return array(
       'key' => $this->apiKey,
       'message' => array(
         'from_email' => $this->fromEmail,
         'from_name' => $this->fromName,
-        'to' => array($this->subscriber),
-        'subject' => $this->newsletter['subject'],
-        'html' => $this->newsletter['body']['html'],
-        'text' => $this->newsletter['body']['text']
+        'to' => array($subscriber),
+        'subject' => $newsletter['subject'],
+        'html' => $newsletter['body']['html'],
+        'text' => $newsletter['body']['text']
       ),
       'async' => false,
     );
   }
-
-  function request() {
+  
+  function request($newsletter, $subscriber) {
+    $body = $this->getBody($newsletter, $subscriber);
     return array(
       'timeout' => 10,
       'httpversion' => '1.0',
@@ -61,7 +60,7 @@ class Mandrill {
       'headers' => array(
         'Content-Type' => 'application/json'
       ),
-      'body' => json_encode($this->getBody())
+      'body' => json_encode($body)
     );
   }
 }

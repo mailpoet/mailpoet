@@ -12,11 +12,9 @@ class SendGrid {
   }
 
   function send($newsletter, $subscriber) {
-    $this->newsletter = $newsletter;
-    $this->subscriber = $subscriber;
     $result = wp_remote_post(
       $this->url,
-      $this->request()
+      $this->request($newsletter, $subscriber)
     );
     return (
       !is_wp_error($result) === true &&
@@ -26,14 +24,14 @@ class SendGrid {
     );
   }
 
-  function getBody() {
+  function getBody($newsletter, $subscriber) {
     return array(
-      'to' => $this->subscriber,
+      'to' => $subscriber,
       'from' => $this->fromEmail,
       'fromname' => $this->fromName,
-      'subject' => $this->newsletter['subject'],
-      'html' => $this->newsletter['body']['html'],
-      'text' => $this->newsletter['body']['text']
+      'subject' => $newsletter['subject'],
+      'html' => $newsletter['body']['html'],
+      'text' => $newsletter['body']['text']
     );
   }
 
@@ -41,7 +39,8 @@ class SendGrid {
     return 'Bearer ' . $this->apiKey;
   }
 
-  function request() {
+  function request($newsletter, $subscriber) {
+    $body = $this->getBody($newsletter, $subscriber);
     return array(
       'timeout' => 10,
       'httpversion' => '1.1',
@@ -49,7 +48,7 @@ class SendGrid {
       'headers' => array(
         'Authorization' => $this->auth()
       ),
-      'body' => urldecode(http_build_query($this->getBody()))
+      'body' => urldecode(http_build_query($body))
     );
   }
 }

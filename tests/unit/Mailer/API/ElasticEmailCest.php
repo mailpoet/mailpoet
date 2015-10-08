@@ -16,9 +16,8 @@ class ElasticEmailCest {
       $this->fromEmail,
       $this->fromName
     );
-    $this->mailer->subscriber =
-      'Recipient <mailpoet-phoenix-test@mailinator.com>';
-    $this->mailer->newsletter = array(
+    $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
+    $this->newsletter = array(
       'subject' => 'testing ElasticEmail',
       'body' => array(
         'html' => 'HTML body',
@@ -28,48 +27,38 @@ class ElasticEmailCest {
   }
 
   function itCanGenerateBody() {
-    $body = $this->mailer->getBody();
-    expect($body['api_key'])
-      ->equals($this->settings['api_key']);
-    expect($body['from'])
-      ->equals($this->fromEmail);
-    expect($body['from_name'])
-      ->equals($this->fromName);
-    expect($body['to'])
-      ->contains($this->mailer->subscriber);
-    expect($body['subject'])
-      ->equals($this->mailer->newsletter['subject']);
-    expect($body['body_html'])
-      ->equals($this->mailer->newsletter['body']['html']);
-    expect($body['body_text'])
-      ->equals($this->mailer->newsletter['body']['text']);
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    expect($body['api_key'])->equals($this->settings['api_key']);
+    expect($body['from'])->equals($this->fromEmail);
+    expect($body['from_name'])->equals($this->fromName);
+    expect($body['to'])->contains($this->subscriber);
+    expect($body['subject'])->equals($this->newsletter['subject']);
+    expect($body['body_html'])->equals($this->newsletter['body']['html']);
+    expect($body['body_text'])->equals($this->newsletter['body']['text']);
   }
 
   function itCanCreateRequest() {
-    $request = $this->mailer->request();
-    expect($request['timeout'])
-      ->equals(10);
-    expect($request['httpversion'])
-      ->equals('1.0');
-    expect($request['method'])
-      ->equals('POST');
-    expect($request['body'])
-      ->equals(urldecode(http_build_query($this->mailer->getBody())));
+    $request = $this->mailer->request($this->newsletter, $this->subscriber);
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    expect($request['timeout'])->equals(10);
+    expect($request['httpversion'])->equals('1.0');
+    expect($request['method'])->equals('POST');
+    expect($request['body'])->equals(urldecode(http_build_query($body)));
   }
 
   function itCannotSendWithoutProperAPIKey() {
     $this->mailer->apiKey = 'someapi';
     $result = $this->mailer->send(
-      $this->mailer->newsletter,
-      $this->mailer->subscriber
+      $this->newsletter,
+      $this->subscriber
     );
     expect($result)->false();
   }
 
   function itCanSend() {
     $result = $this->mailer->send(
-      $this->mailer->newsletter,
-      $this->mailer->subscriber
+      $this->newsletter,
+      $this->subscriber
     );
     expect($result)->true();
   }
