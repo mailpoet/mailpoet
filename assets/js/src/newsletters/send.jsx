@@ -27,17 +27,14 @@ define(
         type: 'text'
       },
       {
-        name: 'list',
+        name: 'segments',
         label: 'Lists',
         tip: "The subscriber list that will be used for this campaign.",
-        field: (
-          <Selection
-            placeholder="Select a list"
-            id="mailpoet_segments"
-            endpoint="segments"
-            multiple={ true }
-            select2={ true } />
-        )
+        type: 'selection',
+        placeholder: "Select a list",
+        id: "mailpoet_segments",
+        endpoint: "segments",
+        multiple: true
       },
       {
         name: 'sender',

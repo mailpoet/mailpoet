@@ -116,7 +116,8 @@ class Migrator {
       'segment_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id)'
+      'PRIMARY KEY  (id)',
+      'UNIQUE KEY subscriber_segment (subscriber_id, segment_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -128,7 +129,8 @@ class Migrator {
       'segment_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id)'
+      'PRIMARY KEY  (id)',
+      'UNIQUE KEY newsletter_segment (newsletter_id, segment_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
