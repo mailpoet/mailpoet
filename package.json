@@ -4,8 +4,7 @@
     "install": "napa"
   },
   "napa": {
-    "sticky-kit": "leafo/sticky-kit.git",
-    "interact.js": "taye/interact.js.git"
+    "sticky-kit": "leafo/sticky-kit.git"
   },
   "dependencies": {
     "backbone": "1.2.3",
@@ -18,6 +17,7 @@
     "d3": "~3.5.5",
     "handlebars": "3.0.3",
     "html2canvas": "latest",
+    "interact.js": "latest",
     "jquery-validation": "^1.14.0",
     "moment": "^2.10.3",
     "napa": "^1.2.0",
