@@ -20,12 +20,6 @@ function(
       jQuery('#'+this.props.field.id).select2()
         .on('change', this.handleChange);
     },
-    componentDidUpdate: function() {
-      jQuery('#'+this.props.field.id).select2(
-        'val',
-        (this.props.item[this.props.field.name])
-      );
-    },
     loadCachedItems: function() {
       if(typeof(window['mailpoet_'+this.props.field.endpoint]) !== 'undefined') {
         var items = window['mailpoet_'+this.props.field.endpoint];
