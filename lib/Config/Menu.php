@@ -93,7 +93,35 @@ class Menu {
 
   function settings() {
     $data = array();
+    $flags = array();
+
+    // check if registration is enabled
+    if(is_multisite()) {
+        // get multisite registration option
+        $registration = apply_filters(
+          'wpmu_registration_enabled',
+          get_site_option('registration', 'all')
+        );
+
+        // check if users can register
+        $flags['registration_enabled'] = !(in_array($registration, array('none', 'blog')));
+    } else {
+        // check if users can register
+        $flags['registration_enabled'] = (bool)get_option('users_can_register', false);
+    }
+
+    $data['flags'] = $flags;
+
+    $data['segments'] = Segment::findArray();
+
+    $settings = Setting::findMany();
+    $data['settings'] = array();
+    foreach($settings as $setting) {
+      $data['settings'][$setting->name] = $setting->value;
+    }
+
     echo $this->renderer->render('settings.html', $data);
+
   }
 
   function subscribers() {
