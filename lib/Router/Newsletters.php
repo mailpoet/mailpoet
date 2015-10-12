@@ -2,9 +2,10 @@
 namespace MailPoet\Router;
 
 use MailPoet\Listing;
-use MailPoet\Mailer\Bridge;
+use MailPoet\Mailer\API\MailPoet;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Newsletter\Renderer\Renderer;
@@ -83,10 +84,24 @@ class Newsletters {
     // END - TO REMOVE
 
     $renderer = new Renderer(json_decode($newsletter['body'], true));
-    $newsletter['body'] = $renderer->renderAll();
+    $newsletter['body']['html'] = $renderer->renderAll();
+    $newsletter['body']['text'] = '';
 
-    $mailer = new Bridge($newsletter, array_values($subscribers));
-    wp_send_json($mailer->send());
+    $subscribers = Subscriber::find_array();
+    $fromEmail = Setting::where('name', 'from_address')->findOne()->value;
+    $fromName = Setting::where('name', 'from_name')->findOne()->value;
+    $apiKey = Setting::where('name', 'api_key')->findOne()->value;
+    $mailer = new MailPoet($apiKey, $fromEmail, $fromName);
+	
+    foreach ($subscribers as $subscriber) {
+      $result = $mailer->send(
+        $newsletter,
+        sprintf('%s %s <%s>', $subscriber['first_name'], $subscriber['last_name'], $subscriber['email'])
+      );
+      if ($result !== true) wp_send_json(false);
+    }
+	
+    wp_send_json(true);
   }
 
   function render($data = array()) {
