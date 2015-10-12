@@ -6,7 +6,8 @@
     "cerdic/css-tidy": "*",
     "sunra/php-simple-html-dom-parser": "*",
     "tburry/pquery": "*",
-    "j4mie/paris": "1.5.4"
+    "j4mie/paris": "1.5.4",
+    "swiftmailer/swiftmailer": "^5.4"
   },
   "require-dev": {
     "codeception/codeception": "*",
