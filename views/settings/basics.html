@@ -327,67 +327,30 @@
 </table>
 
 <script type="text/javascript">
-jQuery(function($) {
-  // on dom loaded
-  $(function() {
+  jQuery(function($) {
+    // on dom loaded
+    $(function() {
+      // select2 instances
+      $('#mailpoet_subscribe_on_comment_lists').select2();
+      $('#mailpoet_subscribe_on_register_lists').select2();
+      $('#mailpoet_subscription_edit_lists').select2();
+      $('#mailpoet_shortcode_archives_list').select2();
+      $('#mailpoet_shortcode_subscribers_list').select2();
 
-    // setup toggle checkboxes
-    function toggleContent() {
-      $('#'+$(this).data('toggle'))[
-        ($(this).is(':checked'))
-        ? 'show'
-        : 'hide'
-      ]();
-    }
-    $(document).on('click', 'input[data-toggle]', toggleContent);
-    $('input[data-toggle]').each(toggleContent);
+      // shortcodes
+      $('#mailpoet_shortcode_archives_list, #mailpoet_shortcode_subscribers_list')
+      .on('change', function() {
+        var shortcode = $(this).data('shortcode'),
+          values = $(this).val() || [];
 
-    // page preview
-    $('.mailpoet_page_preview').on('click', function() {
-      var selection = $(this).siblings('.mailpoet_page_selection');
+        if(values.length > 0) {
+          shortcode += ' list_id="';
+          shortcode += values.join(',');
+          shortcode += '"';
+        }
 
-      if(selection.length > 0) {
-        $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('preview-url'));
-        $(this).attr('target', '_blank');
-      } else {
-        $(this).attr('href', 'javascript:;');
-        $(this).removeAttr('target');
-      }
-    });
-
-    // page edit
-    $('.mailpoet_page_edit').on('click', function() {
-      var selection = $(this).siblings('.mailpoet_page_selection');
-      if(selection.length > 0) {
-        $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('edit-url'));
-        $(this).attr('target', '_blank');
-      } else {
-        $(this).attr('href', 'javascript:;');
-        $(this).removeAttr('target');
-      }
-    });
-
-    // select2 instances
-    $('#mailpoet_subscribe_on_comment_lists').select2();
-    $('#mailpoet_subscribe_on_register_lists').select2();
-    $('#mailpoet_subscription_edit_lists').select2();
-    $('#mailpoet_shortcode_archives_list').select2();
-    $('#mailpoet_shortcode_subscribers_list').select2();
-
-    // shortcodes
-    $('#mailpoet_shortcode_archives_list, #mailpoet_shortcode_subscribers_list')
-    .on('change', function() {
-      var shortcode = $(this).data('shortcode'),
-        values = $(this).val() || [];
-
-      if(values.length > 0) {
-        shortcode += ' list_id="';
-        shortcode += values.join(',');
-        shortcode += '"';
-      }
-
-      $('#' + $(this).data('output')).val('[' + shortcode + ']');
+        $('#' + $(this).data('output')).val('[' + shortcode + ']');
+      });
     });
   });
-});
 </script>

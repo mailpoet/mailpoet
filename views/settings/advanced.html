@@ -1,1 +1,181 @@
-advanced.html
+<table class="widefat fixed">
+  <thead>
+    <tr>
+      <th class="manage-column">
+        <%= __('Roles and permissions') %>
+      </th>
+      <% for role in roles %>
+        <th class="manage-column">
+          <%= role %>
+        </th>
+      <% endfor %>
+    </tr>
+  </thead>
+  <tbody>
+    <% for capability in capabilities %>
+    <tr class="<%= cycle(['alternate', ''], loop.index0) %>">
+      <td>
+        <%= capability.label %>
+      </td>
+      <% for role in capability.roles %>
+      <td>
+        <input
+          class="mailpoet_role_permission"
+          type="checkbox"
+          data-role="<%= role %>"
+          data-capability="<%= capability %>"
+          value="1"
+          <% if(role.is_capable) %>
+            checked="checked"
+          <% endif %>
+          <% if(role.is_disabled) %>
+            disabled="disabled"
+          <% endif %>
+        />
+      </td>
+      <% endfor %>
+    </tr>
+    <% endfor %>
+  </tbody>
+</table>
+
+<table class="form-table">
+  <tbody>
+    <!-- bounce email -->
+    <tr>
+      <th scope="row">
+        <label for="settings[bounce_email]">
+          <%= __('Bounce email') %>
+          <p class="description">
+            <%= __('To which address should all the bounced emails go?') %>
+          </p>
+      </th>
+      <td>
+        <p>
+          <input type="text"
+            id="settings[bounce_email]"
+            name="bounce_email"
+            value="<%= settings.bounce_email %>"
+            placeholder="bounce@mydomain.com"
+          />
+        </p>
+      </td>
+    </tr>
+    <!-- share anonymous data? -->
+    <tr>
+      <th scope="row">
+        <label>
+          <%= __('Share anonymous data') %>
+          <p class="description">
+            <%= __('Share anonymous data and help us improve the plugin.') %>
+            <a
+              href="http://support.mailpoet.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=advanced_settings"
+              target="_blank"
+            ><%= __('Read more.') %></a>
+          </p>
+        </label>
+      </th>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="analytics"
+              value="1"
+              <% if(settings.analytics) %>
+                checked="checked"
+              <% endif %>
+            /> <%= __('Yes') %>
+          </label>
+          &nbsp;
+          <label>
+            <input
+              type="radio"
+              name="analytics"
+              value=""
+              <% if not(settings.analytics) %>
+                checked="checked"
+              <% endif %>
+            /> <%= __('No') %>
+          </label>
+        </p>
+      </td>
+    </tr>
+    <!-- charset -->
+    <tr>
+      <th scope="row">
+        <label for="settings[newsletter_charset]">
+          <%= __('Charset') %>
+          <p class="description">
+            <%= __('Squares or weird characters are displayed in your emails? Select the encoding for your language.') %>
+          </p>
+        </label>
+      </th>
+      <td>
+        <p>
+          <select id="settings[newsletter_charset]" name="newsletter_charset">
+            <% for charset in charsets %>
+              <option
+                value="<%= charset %>"
+                <% if(settings.newsletter_charset == charset) %>
+                  selected="selected"
+                <% endif %>
+              ><%= charset %></option>
+            <% endfor %>
+          </select>
+        </p>
+      </td>
+    </tr>
+    <!-- debug mode -->
+    <tr>
+      <th scope="row">
+        <label>
+          <%= __('Debug mode') %>
+          <p class="description">
+            <%= __("Enable this to show MailPoet's errors. Our support might ask you to enable this if you seek their help.") %>
+          </p>
+        </label>
+      </th>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="debug"
+              value="1"
+              <% if(settings.debug) %>
+                checked="checked"
+              <% endif %>
+            /><%= __('Yes') %>
+          </label>
+          &nbsp;
+          <label>
+            <input
+              type="radio"
+              name="debug"
+              value=""
+              <% if not(settings.debug) %>
+                checked="checked"
+              <% endif %>
+            /><%= __('No') %>
+          </label>
+        </p>
+      </td>
+    </tr>
+    <!-- reinstall -->
+    <tr>
+      <th scope="row">
+        <label><%= __('Reinstall from scratch') %>
+        <p class="description"><%= __('Want to start all over again? This will wipe out MailPoet and reinstall anew.') %></p>
+      </th>
+      <td>
+        <p>
+          <a
+            id="mailpoet_reinstall"
+            class="button"
+            href="javascript:;"><%= __('Reinstall now...') %></a>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>

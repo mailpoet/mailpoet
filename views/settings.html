@@ -22,30 +22,31 @@
       </h2>
 
       <!-- basics -->
+
       <div id="mailpoet_settings_basics" class="mailpoet_panel">
-        <% include 'settings/basics.html' %>
+         <% include 'settings/basics.html' %>
       </div>
 
       <!-- signup confirmation -->
       <div id="mailpoet_settings_signup" class="mailpoet_panel">
         <% include 'settings/signup.html' %>
       </div>
-
+<#
       <!-- sending method -->
       <div id="mailpoet_settings_mta" class="mailpoet_panel">
         <% include 'settings/mta.html' %>
       </div>
-
+#>
       <!-- advanced -->
       <div id="mailpoet_settings_advanced" class="mailpoet_panel">
         <% include 'settings/advanced.html' %>
       </div>
-
+<#
       <!-- bounce -->
       <div id="mailpoet_settings_bounce" class="mailpoet_panel">
         <% include 'settings/bounce.html' %>
       </div>
-
+#>
       <p>
         <input
           type="submit"
@@ -58,6 +59,46 @@
   </div>
 
   <script type="text/javascript">
+    jQuery(function($) {
+      // on dom loaded
+      $(function() {
 
+        // setup toggle checkboxes
+        function toggleContent() {
+          $('#'+$(this).data('toggle'))[
+            ($(this).is(':checked'))
+            ? 'show'
+            : 'hide'
+          ]();
+        }
+        $(document).on('click', 'input[data-toggle]', toggleContent);
+        $('input[data-toggle]').each(toggleContent);
+
+        // page preview
+        $('.mailpoet_page_preview').on('click', function() {
+          var selection = $(this).siblings('.mailpoet_page_selection');
+
+          if(selection.length > 0) {
+            $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('preview-url'));
+            $(this).attr('target', '_blank');
+          } else {
+            $(this).attr('href', 'javascript:;');
+            $(this).removeAttr('target');
+          }
+        });
+
+        // page edit
+        $('.mailpoet_page_edit').on('click', function() {
+          var selection = $(this).siblings('.mailpoet_page_selection');
+          if(selection.length > 0) {
+            $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('edit-url'));
+            $(this).attr('target', '_blank');
+          } else {
+            $(this).attr('href', 'javascript:;');
+            $(this).removeAttr('target');
+          }
+        });
+      });
+    });
   </script>
 <% endblock %>

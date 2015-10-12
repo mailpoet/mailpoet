@@ -46,7 +46,7 @@ class Renderer {
 
   function setupSyntax() {
     $lexer = new TwigLexer($this->renderer, array(
-      'tag_comment' => array('<%#', '%>'),
+      'tag_comment' => array('<#', '#>'),
       'tag_block' => array('<%', '%>'),
       'tag_variable' => array('<%=', '%>'),
       'interpolation' => array('%{', '}')
