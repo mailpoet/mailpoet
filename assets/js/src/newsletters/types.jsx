@@ -48,6 +48,26 @@ define(
                   </a>
                 </div>
               </li>
+
+              <li data-type="welcome">
+                <div className="mailpoet_thumbnail"></div>
+
+                <div className="mailpoet_description">
+                  <h3>Welcome email</h3>
+                  <p>
+                    Send an email for new users.
+                  </p>
+                </div>
+
+                <div className="mailpoet_actions">
+                  <a
+                    className="button button-primary"
+                    onClick={ this.handleSelectType.bind(null, 'welcome') }
+                  >
+                    Set up
+                  </a>
+                </div>
+              </li>
             </ul>
           </div>
         );
