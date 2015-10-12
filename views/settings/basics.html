@@ -1,0 +1,393 @@
+<table class="form-table">
+  <tbody>
+    <!-- email addresses receiving notifications -->
+    <tr>
+      <th scope="row">
+        <label for="settings[notification_email]">
+          <%= __("Email notifications") %>
+          <p class="description">
+            <%= __('Enter the email addresses that should receive notifications (separate by comma).') %>
+          </p>
+        </label>
+      </th>
+      <td>
+        <p>
+          <input type="text"
+            id="settings[notification_email]"
+            name="notification_email"
+            value="<%= settings.notification_email %>"
+            placeholder="notification@mydomain.com"
+            class="regular-text" />
+        </p>
+        <p>
+          <label for="settings[notification_on_subscribe]">
+          <input type="checkbox" id="settings[notification_on_subscribe]"
+          name="notification_on_subscribe"
+          value="1"
+          <% if(settings.notification_on_subscribe) %>checked="checked"<% endif %> />
+          <%= __('When someone subscribes') %>
+          </label>
+        </p>
+        <p>
+          <label for="settings[notification_on_unsubscribe]">
+          <input type="checkbox"
+          id="settings[notification_on_unsubscribe]"
+          name="notification_on_unsubscribe"
+          value="1"
+          <% if(settings.notification_on_unsubscribe) %>checked="checked"<% endif %> />
+          <%= __('When someone unsubscribes') %>
+          </label>
+        </p>
+        <p>
+          <label for="settings[notification_daily_report]">
+          <input type="checkbox"
+          id="settings[notification_daily_report]"
+          name="notification_daily_report"
+          value="1"
+          <% if(settings.notification_daily_report) %>checked="checked"<% endif %> />
+          <%= __('Daily summary of emails sent') %>
+          </label>
+        </p>
+        <!-- email notification: from name & email -->
+        <p>
+          <label for="settings[from_name]"><%= __('From') %></label>
+          <input type="text"
+            id="settings[from_name]"
+            name="from_name"
+            value="<%= settings.from_name %>"
+            placeholder="<%= __('Your name') %>" />
+          <input type="text"
+            id="settings[from_email]"
+            name="from_email"
+            value="<%= settings.from_email %>"
+            placeholder="info@mydomain.com" />
+        </p>
+        <!-- email notification: reply_to name & email -->
+        <p>
+          <label for="settings[notification_reply_name]"><%= __('Reply-to') %></label>
+          <input type="text"
+            id="settings[notification_reply_name]"
+            name="notification_reply_name"
+            value="<%= settings.notification_reply_name %>"
+            placeholder="<%= __('Your name') %>" />
+          <input type="text"
+            id="settings[notification_reply_email]"
+            name="notification_reply_email"
+            value="<%= settings.notification_reply_email %>"
+            placeholder="info@mydomain.com" />
+        </p>
+      </td>
+    </tr>
+    <!-- ability to subscribe in comments -->
+    <!-- TODO: Check if registration is enabled (if not, display a message and disable setting) -->
+    <tr>
+      <th scope="row">
+        <label for="settings[subscribe_on_comment]">
+          <%= __('Subscribe in comments') %>
+          <p class="description"><%= __('Visitors who submit a comment on a post can click on a checkbox to subscribe.') %></p>
+        </label>
+      </th>
+      <td>
+        <p>
+          <input data-toggle="mailpoet_subscribe_on_comment" type="checkbox" value="1" id="settings[subscribe_on_comment]" name="subscribe_on_comment" <% if(settings.subscribe_on_comment) %>checked="checked"<% endif %> />
+        </p>
+        <div id="mailpoet_subscribe_on_comment">
+          <p>
+            <input
+              type="text"
+              id="settings[subscribe_on_comment_label]"
+              name="subscribe_on_comment_label"
+              class="regular-text"
+              <%if(settings.subscribe_on_comment_label) %>
+                  value="<%= settings.subscribe_on_comment_label %>"
+              <% else %>
+                value="<%= __('Yes, add me to your mailing list.') %>"
+              <% endif %>
+            />
+          </p>
+          <p>
+            <select
+              id="mailpoet_subscribe_on_comment_lists"
+              name="subscribe_on_comment_lists[]"
+              placeholder="<%= __('Choose a list') %>"
+              multiple
+            >
+              <% for segment in segments %>
+                <option
+                  value="<%= segment.id %>"
+                  <% if(segment.id in settings.subscribe_on_comment_lists) %>
+                    selected="selected"
+                  <% endif %>
+                ><%= segment.name %></option>
+              <% endfor %>
+            </select>
+          </p>
+        </div>
+      </td>
+    </tr>
+    <!-- ability to subscribe when registering -->
+    <!-- TODO: Only available for the main site of a multisite! -->
+    <!-- TODO: Check if registration is enabled (if not, display a message and disable setting) -->
+    <tr>
+      <th scope="row">
+        <label for="settings[subscribe_on_register]">
+          <%= __('Subscribe in registration form') %>
+          <p class="description">
+            <%= __('Allow users who register to your site to subscribe on a list of your choice.') %>
+          </p>
+        </label>
+      </th>
+      <td>
+        <% if(flags.registration_enabled == true) %>
+          <p>
+            <input
+              data-toggle="mailpoet_subscribe_in_form"
+              type="checkbox"
+              value="1"
+              id="settings[subscribe_on_register]"
+              name="subscribe_on_register"
+              <% if(settings.subscribe_on_register) %>
+                checked="checked"
+              <% endif %>
+            />
+          </p>
+
+          <div id="mailpoet_subscribe_in_form">
+            <p>
+              <input
+                type="text"
+                id="settings[subscribe_on_register_label]"
+                name="subscribe_on_register_label"
+                class="regular-text"
+                <%if(settings.subscribe_on_register_label) %>
+                  value="<%= settings.subscribe_on_register_label %>"
+                <% else %>
+                  value="<%= __('Yes, add me to your mailing list.') %>"
+                <% endif %>
+              />
+            </p>
+            <p>
+              <select
+                id="mailpoet_subscribe_on_register_lists"
+                name="subscribe_on_register_lists[]"
+                placeholder="<%= __('Choose a list') %>"
+                multiple
+              >
+                <% for segment in segments %>
+                  <option
+                    value="<%= segment.id %>"
+                    <% if(segment.id in settings.subscribe_on_register_lists) %>
+                      selected="selected"
+                    <% endif %>
+                  ><%= segment.name %></option>
+                <% endfor %>
+              </select>
+            </p>
+          </div>
+        <% else %>
+          <p>
+            <em><%= __('Registration is disabled on this site.') %></em>
+          </p>
+        <% endif %>
+      </td>
+    </tr>
+    <!-- manage subscriptions-->
+    <tr>
+      <th scope="row">
+        <label for="settings[subscription_edit]">
+          <%= __('Unsubscribe & Manage Subscription page') %>
+          <p class="description">
+            <%= __('The page your subscribers see when they click to
+            "Unsubscribe" or "Manage your subscription" in your emails.') %>
+          </p>
+        </label>
+      </th>
+      <td>
+        <p>
+          <select
+            class="mailpoet_page_selection"
+            name="subscription_edit_page"
+          >
+            <% for page in pages %>
+              <option
+                value="<%= page.ID %>"
+                data-preview-url="<%= page.preview_url|raw %>"
+                data-edit-url="<%= page.edit_url|raw %>"
+                <% if(page.ID == settings.subscription_edit_page) %>
+                  selected="selected"
+                <% endif %>
+              ><%= page.post_title %></option>
+            <% endfor %>
+          </select>
+          <a
+            class="mailpoet_page_preview"
+            href="javascript:;"
+            title="<%= __('Preview page') %>"
+          ><%= __('Preview') %></a>&nbsp;|&nbsp;<a
+            class="mailpoet_page_edit"
+            href="javascript:;"
+            title="<%= __('Edit page') %>"
+          ><%= __('Edit') %></a>
+        </p>
+        <p>
+          <label><%= __('Subscribers can choose from these lists :') %></label>
+        </p>
+        <p>
+          <select
+            id="mailpoet_subscription_edit_lists"
+            name="subscription_edit_lists[]"
+            placeholder="<%= __('Leave empty to show all lists') %>"
+            multiple
+          >
+            <% for segment in segments %>
+              <option
+                value="<%= segment.id %>"
+                <% if(segment.id in settings.subscription_edit_lists) %>
+                  selected="selected"
+                <% endif %>
+              ><%= segment.name %></option>
+            <% endfor %>
+          </select>
+        </p>
+      </td>
+    </tr>
+    <!-- shortcode: archive page  -->
+    <tr>
+      <th scope="row">
+        <label>
+          <%= __('Archive page shortcode') %>
+          <p class="description">
+            <%= __('Paste this shortcode in a page to display a list of past newsletters.') %>
+          </p>
+        </label>
+      </th>
+      <td>
+        <p>
+          <input
+            type="text"
+            class="regular-text"
+            id="mailpoet_shortcode_archives"
+            value="[mailpoet_archive]"
+            onClick="this.focus();this.select();"
+            readonly="readonly"
+          />
+        </p>
+        <p>
+          <select
+            id="mailpoet_shortcode_archives_list"
+            data-shortcode="mailpoet_archive"
+            data-output="mailpoet_shortcode_archives"
+            placeholder="<%= __('Leave empty to show all lists') %>"
+            multiple
+          >
+            <% for segment in segments %>
+              <option value="<%= segment.id %>"><%= segment.name %></option>
+            <% endfor %>
+          </select>
+        </p>
+      </td>
+    </tr>
+    <!-- shortcode: total number of subscribers -->
+    <tr>
+      <th scope="row">
+        <label>
+          <%= __('Shortcode to display total number of subscribers') %>
+          <p class="description">
+            <%= __('Paste this shortcode to display the number of confirmed subscribers in post or page.') %>
+          </p>
+        </label>
+      </th>
+      <td>
+        <p>
+          <input
+            type="text"
+            class="regular-text"
+            id="mailpoet_shortcode_subscribers"
+            value="[mailpoet_subscribers_count]"
+            onClick="this.focus();this.select();"
+            readonly="readonly"
+          />
+        </p>
+        <p>
+          <select
+            id="mailpoet_shortcode_subscribers_list"
+            data-shortcode="mailpoet_subscribers_count"
+            data-output="mailpoet_shortcode_subscribers"
+            placeholder="<%= __('Leave empty to show all lists') %>"
+            multiple
+          >
+            <% for segment in segments %>
+              <option value="<%= segment.id %>"><%= segment.name %></option>
+            <% endfor %>
+          </select>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<script type="text/javascript">
+jQuery(function($) {
+  // on dom loaded
+  $(function() {
+
+    // setup toggle checkboxes
+    function toggleContent() {
+      $('#'+$(this).data('toggle'))[
+        ($(this).is(':checked'))
+        ? 'show'
+        : 'hide'
+      ]();
+    }
+    $(document).on('click', 'input[data-toggle]', toggleContent);
+    $('input[data-toggle]').each(toggleContent);
+
+    // page preview
+    $('.mailpoet_page_preview').on('click', function() {
+      var selection = $(this).siblings('.mailpoet_page_selection');
+
+      if(selection.length > 0) {
+        $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('preview-url'));
+        $(this).attr('target', '_blank');
+      } else {
+        $(this).attr('href', 'javascript:;');
+        $(this).removeAttr('target');
+      }
+    });
+
+    // page edit
+    $('.mailpoet_page_edit').on('click', function() {
+      var selection = $(this).siblings('.mailpoet_page_selection');
+      if(selection.length > 0) {
+        $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('edit-url'));
+        $(this).attr('target', '_blank');
+      } else {
+        $(this).attr('href', 'javascript:;');
+        $(this).removeAttr('target');
+      }
+    });
+
+    // select2 instances
+    $('#mailpoet_subscribe_on_comment_lists').select2();
+    $('#mailpoet_subscribe_on_register_lists').select2();
+    $('#mailpoet_subscription_edit_lists').select2();
+    $('#mailpoet_shortcode_archives_list').select2();
+    $('#mailpoet_shortcode_subscribers_list').select2();
+
+    // shortcodes
+    $('#mailpoet_shortcode_archives_list, #mailpoet_shortcode_subscribers_list')
+    .on('change', function() {
+      var shortcode = $(this).data('shortcode'),
+        values = $(this).val() || [];
+
+      if(values.length > 0) {
+        shortcode += ' list_id="';
+        shortcode += values.join(',');
+        shortcode += '"';
+      }
+
+      $('#' + $(this).data('output')).val('[' + shortcode + ']');
+    });
+  });
+});
+</script>

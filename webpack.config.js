@@ -66,7 +66,6 @@ config.push(_.extend({}, baseConfig, {
       'jquery.serialize_object'
     ],
     admin: [
-      'settings/settings.jsx',
       'subscribers/subscribers.jsx',
       'newsletters/newsletters.jsx',
       'segments/segments.jsx'

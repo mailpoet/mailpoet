@@ -92,36 +92,61 @@ class Menu {
   }
 
   function settings() {
-    $data = array();
+    // Flags (available features on WP install)
     $flags = array();
 
     // check if registration is enabled
     if(is_multisite()) {
-        // get multisite registration option
-        $registration = apply_filters(
-          'wpmu_registration_enabled',
-          get_site_option('registration', 'all')
-        );
+      // get multisite registration option
+      $registration = apply_filters(
+        'wpmu_registration_enabled',
+        get_site_option('registration', 'all')
+      );
 
-        // check if users can register
-        $flags['registration_enabled'] = !(in_array($registration, array('none', 'blog')));
+      // check if users can register
+      $flags['registration_enabled'] =
+        !(in_array($registration, array('none', 'blog')));
     } else {
-        // check if users can register
-        $flags['registration_enabled'] = (bool)get_option('users_can_register', false);
+      // check if users can register
+      $flags['registration_enabled'] =
+        (bool)get_option('users_can_register', false);
     }
 
-    $data['flags'] = $flags;
+    // Segments
+    $segments = Segment::findArray();
 
-    $data['segments'] = Segment::findArray();
-
-    $settings = Setting::findMany();
-    $data['settings'] = array();
-    foreach($settings as $setting) {
-      $data['settings'][$setting->name] = $setting->value;
+    // Settings
+    $all_settings = Setting::findMany();
+    $settings = array();
+    foreach($all_settings as $setting) {
+      $settings[$setting->name] = $setting->value;
     }
+
+    // Current user
+    $current_user = wp_get_current_user();
+
+    // WP Pages
+    $mailpoet_pages = get_posts(array('post_type' => 'mailpoet_page'));
+    $pages = array_merge($mailpoet_pages, get_pages());
+    foreach($pages as $key => $page) {
+      // convert page object to array so that we can add some values
+      $page = (array)$page;
+      // get page's preview url
+      $page['preview_url'] = get_permalink($page['ID']);
+      // get page's edit url
+      $page['edit_url'] = get_edit_post_link($page['ID']);
+      // update page data
+      $pages[$key] = $page;
+    }
+
+    $data = array(
+      'segments' => $segments,
+      'pages' => $pages,
+      'flags' => $flags,
+      'current_user' => $current_user
+    );
 
     echo $this->renderer->render('settings.html', $data);
-
   }
 
   function subscribers() {

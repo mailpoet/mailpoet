@@ -1,15 +1,63 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-  <div id="mailpoet_settings"></div>
+  <div id="mailpoet_settings">
 
-  <%= localize({
-    'pageTitle': __('Settings')
-  }) %>
+    <h1 class="title"><%= __('Settings') %></h1>
+
+    <!-- settings form  -->
+    <form
+      id="mailpoet_settings_form"
+      name="mailpoet_settings_form"
+      class="mailpoet_form"
+      autocomplete="off"
+    >
+      <!-- tabs -->
+      <h2 class="nav-tab-wrapper" id="mailpoet_settings_tabs">
+        <a class="nav-tab nav-tab-active" href="#basics"><%= __('Basics') %></a>
+        <a class="nav-tab" href="#signup"><%= __('Signup Confirmation') %></a>
+        <a class="nav-tab" href="#mta"><%= __('Send With...') %></a>
+        <a class="nav-tab" href="#advanced"><%= __('Advanced') %></a>
+        <a class="nav-tab" href="#bounce"><%= __('Bounce Handling') %></a>
+      </h2>
+
+      <!-- basics -->
+      <div id="mailpoet_settings_basics" class="mailpoet_panel">
+        <% include 'settings/basics.html' %>
+      </div>
+
+      <!-- signup confirmation -->
+      <div id="mailpoet_settings_signup" class="mailpoet_panel">
+        <% include 'settings/signup.html' %>
+      </div>
+
+      <!-- sending method -->
+      <div id="mailpoet_settings_mta" class="mailpoet_panel">
+        <% include 'settings/mta.html' %>
+      </div>
+
+      <!-- advanced -->
+      <div id="mailpoet_settings_advanced" class="mailpoet_panel">
+        <% include 'settings/advanced.html' %>
+      </div>
+
+      <!-- bounce -->
+      <div id="mailpoet_settings_bounce" class="mailpoet_panel">
+        <% include 'settings/bounce.html' %>
+      </div>
+
+      <p>
+        <input
+          type="submit"
+          class="button button-primary"
+          name="submit"
+          value="<%= ('Save settings') %>"
+        />
+      </p>
+    </form>
+  </div>
 
   <script type="text/javascript">
-    var mailpoet_settings = <%= json_encode(settings) %>;
-    var mailpoet_segments = <%= json_encode(segments) %>;
-    var mailpoet_flags = <%= json_encode(flags) %>;
+
   </script>
 <% endblock %>
