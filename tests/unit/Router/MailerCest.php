@@ -43,15 +43,17 @@ class MailerCest {
   function itCanConfigureMailer() {
     $mailer = $this->router->buildMailer();
     $class = 'Mailpoet\\Mailer\\' .
-      $this->router->mailer['type'] . '\\' .
-      $this->router->mailer['name'];
+      ((isset($this->router->mailer['type'])) ?
+        $this->router->mailer['type'] . '\\' . $this->router->mailer['name'] :
+        $this->router->mailer['name']
+      );
     expect($mailer instanceof $class)->true();
     expect(method_exists($mailer, 'send'))->true();
   }
 
   function itCanSend() {
     $newsletter = array(
-      'subject' => 'testing Mailer router with '.$this->router->mailer['name'],
+      'subject' => 'testing Mailer router with ' . $this->router->mailer['name'],
       'body' => array(
         'html' => 'HTML body',
         'text' => 'TEXT body'

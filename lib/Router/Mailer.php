@@ -20,25 +20,54 @@ class Mailer {
   function buildMailer() {
     switch ($this->mailer['name']) {
     case 'AmazonSES':
-      $mailer = new $this->mailer['class']($this->mailer['region'], $this->mailer['access_key'], $this->mailer['secret_key'], $this->from);
+      $mailer = new $this->mailer['class'](
+        $this->mailer['region'],
+        $this->mailer['access_key'],
+        $this->mailer['secret_key'],
+        $this->from
+      );
     break;
     case 'ElasticEmail':
-      $mailer = new $this->mailer['class']($this->mailer['api_key'], $this->fromEmail, $this->fromName);
+      $mailer = new $this->mailer['class'](
+        $this->mailer['api_key'],
+        $this->fromEmail, $this->fromName
+      );
     break;
     case 'MailGun':
-      $mailer = new $this->mailer['class']($this->mailer['domain'], $this->mailer['api_key'], $this->from);
+      $mailer = new $this->mailer['class'](
+        $this->mailer['domain'],
+        $this->mailer['api_key'],
+        $this->from
+      );
     break;
     case 'MailPoet':
-      $mailer = new $this->mailer['class']($this->mailer['api_key'], $this->fromEmail, $this->fromName);
+      $mailer = new $this->mailer['class'](
+        $this->mailer['api_key'],
+        $this->fromEmail,
+        $this->fromName
+      );
     break;
     case 'Mandrill':
-      $mailer = new $this->mailer['class']($this->mailer['api_key'], $this->fromEmail, $this->fromName);
+      $mailer = new $this->mailer['class'](
+        $this->mailer['api_key'],
+        $this->fromEmail, $this->fromName
+      );
     break;
     case 'SendGrid':
-      $mailer = new $this->mailer['class']($this->mailer['api_key'], $this->fromEmail, $this->fromName);
+      $mailer = new $this->mailer['class'](
+        $this->mailer['api_key'],
+        $this->fromEmail,
+        $this->fromName
+      );
     break;
     case 'SMTP':
-      $mailer = new $this->mailer['class']($this->mailer['host'], $this->mailer['port'], $this->mailer['authentication'], $this->mailer['encryption'], $this->fromEmail, $this->fromName);
+      $mailer = new $this->mailer['class'](
+        $this->mailer['host'],
+        $this->mailer['port'],
+        $this->mailer['authentication'],
+        $this->mailer['encryption'],
+        $this->fromEmail,
+        $this->fromName);
     break;
     }
     return $mailer;
@@ -62,7 +91,7 @@ class Mailer {
           'type' => 'API',
           'access_key' => 'AKIAJM6Y5HMGXBLDNSRA',
           'secret_key' => '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',
-          'region' => 'us-east-1',
+          'region' => 'us-east-1'
         ),
         array(
           'name' => 'ElasticEmail',
@@ -77,7 +106,6 @@ class Mailer {
         ),
         array(
           'name' => 'MailPoet',
-          'type' => 'API',
           'api_key' => 'dhNSqj1XHkVltIliyQDvMiKzQShOA5rs0m_DdRUVZHU'
         ),
         array(
@@ -92,7 +120,6 @@ class Mailer {
         ),
         array(
           'name' => 'SMTP',
-          'type' => 'SMTP',
           'host' => 'email-smtp.us-west-2.amazonaws.com',
           'port' => 587,
           'authentication' => array(
@@ -100,10 +127,18 @@ class Mailer {
             'password' => 'AudVHXHaYkvr54veCzqiqOxDiMMyfQW3/V6F1tYzGXY3'
           ),
           'encryption' => 'tls'
+        ),
+        array(
+          'name' => 'WPMail'
         )
       );
       $mailer = $mailers[array_rand($mailers)];
-      return array_merge($mailer, array('class' => sprintf('MailPoet\\Mailer\\%s\\%s', $mailer['type'], $mailer['name'])));
+      $mailer['class'] = 'MailPoet\\Mailer\\' .
+        ((isset($mailer['type'])) ?
+          $mailer['type'] . '\\' . $mailer['name'] :
+          $mailer['name']
+        );
+      return $mailer;
     }
     if($setting === 'from_name') return 'Sender';
     if($setting === 'from_address') return 'staff@mailpoet.com';

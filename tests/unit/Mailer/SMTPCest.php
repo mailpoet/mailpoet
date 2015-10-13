@@ -1,12 +1,11 @@
 <?php
 
-use MailPoet\Mailer\SMTP\SMTP;
+use MailPoet\Mailer\SMTP;
 
 class SMTPCest {
   function _before() {
     $this->settings = array(
       'name' => 'SMTP',
-      'type' => 'SMTP',
       'host' => 'email-smtp.us-west-2.amazonaws.com',
       'port' => 587,
       'authentication' => array(
