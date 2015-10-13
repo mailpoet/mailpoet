@@ -28,8 +28,13 @@ class AmazonSESCest {
   }
 
   function itsConstructorWorks() {
-    expect($this->mailer->awsEndpoint)->equals('email.us-east-1.amazonaws.com');
-    expect($this->mailer->url)->equals('https://email.us-east-1.amazonaws.com');
+    expect($this->mailer->awsEndpoint)
+      ->equals(
+        sprintf('email.%s.amazonaws.com', $this->settings['region'])
+      );
+    expect($this->mailer->url)      ->equals(
+      sprintf('https://email.%s.amazonaws.com', $this->settings['region'])
+    );
     expect(preg_match('!^\d{8}T\d{6}Z$!', $this->mailer->date))->equals(1);
     expect(preg_match('!^\d{8}$!', $this->mailer->dateWithoutTime))->equals(1);
   }
