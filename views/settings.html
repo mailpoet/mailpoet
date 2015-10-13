@@ -3,7 +3,7 @@
 <% block content %>
   <div id="mailpoet_settings">
 
-    <h1 class="title"><%= __('Settings') %></h1>
+    <h2 class="title"><%= __('Settings') %></h2>
 
     <!-- settings form  -->
     <form
@@ -22,32 +22,31 @@
       </h2>
 
       <!-- basics -->
-
-      <div id="mailpoet_settings_basics" class="mailpoet_panel">
-         <% include 'settings/basics.html' %>
+      <div data-tab="basics" class="mailpoet_panel">
+        <% include 'settings/basics.html' %>
       </div>
 
       <!-- signup confirmation -->
-      <div id="mailpoet_settings_signup" class="mailpoet_panel">
+      <div data-tab="signup" class="mailpoet_panel">
         <% include 'settings/signup.html' %>
       </div>
-<#
+
       <!-- sending method -->
-      <div id="mailpoet_settings_mta" class="mailpoet_panel">
+      <div data-tab="mta" class="mailpoet_panel">
         <% include 'settings/mta.html' %>
       </div>
-#>
+
       <!-- advanced -->
-      <div id="mailpoet_settings_advanced" class="mailpoet_panel">
+      <div data-tab="advanced" class="mailpoet_panel">
         <% include 'settings/advanced.html' %>
       </div>
-<#
+
       <!-- bounce -->
-      <div id="mailpoet_settings_bounce" class="mailpoet_panel">
+      <div data-tab="bounce" class="mailpoet_panel">
         <% include 'settings/bounce.html' %>
       </div>
-#>
-      <p>
+
+      <p class="submit mailpoet_settings_submit">
         <input
           type="submit"
           class="button button-primary"
@@ -62,7 +61,6 @@
     jQuery(function($) {
       // on dom loaded
       $(function() {
-
         // setup toggle checkboxes
         function toggleContent() {
           $('#'+$(this).data('toggle'))[

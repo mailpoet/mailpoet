@@ -177,11 +177,17 @@ define(
       },
       render: function() {
         return (
-          <Listing
-            endpoint="subscribers"
-            onRenderItem={ this.renderItem }
-            columns={ columns }
-            bulk_actions={ bulk_actions } />
+          <div>
+            <h2 className="title">
+              Subscribers <Link className="add-new-h2" to="new">New</Link>
+            </h2>
+
+            <Listing
+              endpoint="subscribers"
+              onRenderItem={ this.renderItem }
+              columns={ columns }
+              bulk_actions={ bulk_actions } />
+          </div>
         );
       }
     });

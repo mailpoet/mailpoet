@@ -20,15 +20,7 @@ define(
     var App = React.createClass({
       render: function() {
         return (
-          <div>
-            <h1>
-              { MailPoetI18n.pageTitle }
-              &nbsp;
-              <Link className="add-new-h2" to="new">New</Link>
-            </h1>
-
-            <RouteHandler/>
-          </div>
+          <RouteHandler />
         );
       }
     });

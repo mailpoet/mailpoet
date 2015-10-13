@@ -113,7 +113,10 @@
           <% if(settings.signup_confirmation_email_subject) %>
             value="<%= settings.signup_confirmation_email_subject %>"
           <% else %>
-            value="<%= __('Confirm your subscription to %1$s') %>"
+            value="<%=
+              __('Confirm your subscription to %1$s')
+              | format(get_option('blogname'))
+            %>"
           <% endif %>
         />
       </td>

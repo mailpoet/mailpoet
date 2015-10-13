@@ -1,4 +1,4 @@
-<table class="widefat fixed">
+<table id="mailpoet_role_permissions" class="widefat fixed">
   <thead>
     <tr>
       <th class="manage-column">
@@ -85,7 +85,7 @@
               <% if(settings.analytics) %>
                 checked="checked"
               <% endif %>
-            /> <%= __('Yes') %>
+            /><%= __('Yes') %>
           </label>
           &nbsp;
           <label>
@@ -96,7 +96,7 @@
               <% if not(settings.analytics) %>
                 checked="checked"
               <% endif %>
-            /> <%= __('No') %>
+            /><%= __('No') %>
           </label>
         </p>
       </td>
