@@ -11,7 +11,7 @@ class UtilDKIMCest {
     expect($keys['public'])->notEmpty();
     expect($keys['private'])->notEmpty();
 
-    expect($keys['public'])->contains($public_header);
-    expect($keys['private'])->contains($private_header);
+    expect($keys['public'])->notContains($public_header);
+    expect($keys['private'])->notContains($private_header);
   }
 }
