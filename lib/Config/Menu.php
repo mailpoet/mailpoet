@@ -2,6 +2,8 @@
 namespace MailPoet\Config;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
+use \MailPoet\Settings\Hosts;
+use \MailPoet\Util\DKIM;
 
 if(!defined('ABSPATH')) exit;
 
@@ -195,14 +197,34 @@ class Menu {
       );
     }
 
+    // dkim: check if public/private keys have been generated
+    if(
+      empty($settings['dkim'])
+      or empty($settings['dkim']['public_key'])
+      or empty($settings['dkim']['private_key'])
+    ) {
+      // generate public/private keys
+      $keys = DKIM::generateKeys();
+      $settings['dkim'] = array(
+        'public_key' => $keys['public'],
+        'private_key' => $keys['private'],
+        'domain' => preg_replace('/^www\./', '', $_SERVER['SERVER_NAME'])
+      );
+    }
+
     $data = array(
+      'settings' => $settings,
       'segments' => $segments,
       'pages' => $pages,
       'flags' => $flags,
       'charsets' => $charsets,
       'current_user' => $current_user,
       'capabilities' => $capabilities,
-      'roles' => $roles
+      'roles' => $roles,
+      'hosts' => array(
+        'web' => Hosts::getWebHosts(),
+        'smtp' => Hosts::getSMTPHosts()
+      )
     );
 
     echo $this->renderer->render('settings.html', $data);

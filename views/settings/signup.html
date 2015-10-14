@@ -211,7 +211,7 @@
 
       function toggleSignupOptions() {
         var is_enabled =
-          parseInt($('.mailpoet_signup_confirmation:checked').val(), 10) === 1;
+          (parseInt($('.mailpoet_signup_confirmation:checked').val(), 10) === 1);
         $('#mailpoet_signup_options')[(is_enabled) ? 'show' : 'hide']();
       }
     });
