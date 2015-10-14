@@ -40,10 +40,10 @@ define(
 
     var messages = {
       updated: function() {
-        MailPoet.Notice.success('Subscriber succesfully updated!');
+        MailPoet.Notice.success('Subscriber successfully updated!');
       },
       created: function() {
-        MailPoet.Notice.success('Subscriber succesfully added!');
+        MailPoet.Notice.success('Subscriber successfully added!');
       }
     };
 
