@@ -21,4 +21,8 @@ class Settings {
 
     wp_send_json(in_array(false, $results));
   }
+
+  function save($data = array()) {
+    // TODO
+  }
 }

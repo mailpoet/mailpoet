@@ -46,8 +46,7 @@ class Functions extends \Twig_Extension {
         'sending_frequency',
         array($this, 'getSendingFrequency'),
         array('is_safe' => array('all'))
-      ),
-
+      )
     );
   }
 

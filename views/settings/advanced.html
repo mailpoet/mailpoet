@@ -4,7 +4,7 @@
       <th class="manage-column">
         <%= __('Roles and permissions') %>
       </th>
-      <% for role in roles %>
+      <% for role in permissions.roles %>
         <th class="manage-column">
           <%= role %>
         </th>
@@ -12,18 +12,18 @@
     </tr>
   </thead>
   <tbody>
-    <% for capability in capabilities %>
+    <% for capability in permissions.capabilities %>
     <tr class="<%= cycle(['alternate', ''], loop.index0) %>">
       <td>
         <%= capability.label %>
       </td>
-      <% for role in capability.roles %>
+      <% for role_key, role in capability.roles %>
       <td>
         <input
           class="mailpoet_role_permission"
           type="checkbox"
-          data-role="<%= role %>"
-          data-capability="<%= capability %>"
+          data-role="<%= role_key %>"
+          data-capability="<%= role.capability %>"
           value="1"
           <% if(role.is_capable) %>
             checked="checked"

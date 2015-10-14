@@ -22,6 +22,7 @@ class Initializer {
     $this->setupMenu();
     $this->setupRouter();
     $this->setupWidget();
+    $this->setupPermissions();
   }
 
   function setupDB() {
@@ -81,5 +82,10 @@ class Initializer {
   function setupWidget() {
     $widget = new Widget();
     $widget->init();
+  }
+
+  function setupPermissions() {
+    $permissions = new Permissions();
+    $permissions->init();
   }
 }

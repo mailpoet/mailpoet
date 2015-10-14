@@ -3,6 +3,7 @@ namespace MailPoet\Config;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
 use \MailPoet\Settings\Hosts;
+use \MailPoet\Settings\Permissions;
 use \MailPoet\Util\DKIM;
 
 if(!defined('ABSPATH')) exit;
@@ -151,51 +152,7 @@ class Menu {
       'ISO-8859-15', 'Windows-1251', 'Windows-1252'
     );
 
-    // Roles & Permissions
-    global $wp_roles;
-    $editable_roles = apply_filters('editable_roles', $wp_roles->roles);
-    $roles = array();
-    foreach($editable_roles as $role => $role_data) {
-      $roles[$role] = translate_user_role($role_data['name']);
-    }
 
-    $capabilities = array(
-      'mailpoet_newsletters' =>
-        __('Who can create newsletters?'),
-      'mailpoet_newsletter_styles' =>
-        __('Who can see the styles tab in the visual editor?'),
-      'mailpoet_subscribers' =>
-        __('Who can manage subscribers?'),
-      'mailpoet_settings' =>
-        __("Who can change MailPoet's settings?"),
-    );
-    $capabilities = apply_filters('mailpoet_capabilities', $capabilities);
-
-    // go over each capability
-    foreach($capabilities as $capability => $label) {
-      $capability_roles = array();
-      // go over each role and check permission
-      foreach($roles as $role_key => $role_data) {
-        // get role object based on role key
-        $role = get_role($role_key);
-
-        // assign role capability
-        $capability_roles[$role_key] = array(
-          'capability' => $capability,
-          'is_capable' => (
-            in_array($role_key, array('administrator', 'super_admin'))
-            || ($role->has_cap($capability))
-          ),
-          'is_disabled' =>(
-            in_array($role_key, array('administrator', 'super_admin'))
-          )
-        );
-      }
-      $capabilities[$capability] = array(
-        'label' => $label,
-        'roles' => $capability_roles
-      );
-    }
 
     // dkim: check if public/private keys have been generated
     if(
@@ -219,8 +176,7 @@ class Menu {
       'flags' => $flags,
       'charsets' => $charsets,
       'current_user' => $current_user,
-      'capabilities' => $capabilities,
-      'roles' => $roles,
+      'permissions' => Permissions::get(),
       'hosts' => array(
         'web' => Hosts::getWebHosts(),
         'smtp' => Hosts::getSMTPHosts()

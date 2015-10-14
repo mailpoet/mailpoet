@@ -62,6 +62,77 @@
     jQuery(function($) {
       // on dom loaded
       $(function() {
+        // save settings
+        $('.mailpoet_settings_submit').on('click', function(e) {
+          e.preventDefault();
+
+          // serialize form data
+          var data = $('#mailpoet_settings_form').serializeObject(),
+              permissions = $('.mailpoet_role_permission'),
+              data_permissions = [],
+              has_error = false;
+
+          // check if "subscribe in comments" is enabled
+          if(parseInt(data.subscribe_on_comment) === 1) {
+            if(data.subscribe_on_comment_lists === undefined) {
+              $('#subscribe_on_comment_lists').next('.mailpoet_error').show();
+              has_error = true;
+            } else {
+              $('#subscribe_on_comment_lists').next('.mailpoet_error').hide();
+            }
+          }
+
+
+          // check if "subscribe in registration form" is enabled
+          if(parseInt(data.subscribe_on_register) === 1) {
+              if(data.subscribe_on_register_lists === undefined) {
+                  $('#subscribe_on_register_lists').next('.mailpoet_error').show();
+                  has_error = true;
+              } else {
+                  $('#subscribe_on_register_lists').next('.mailpoet_error').hide();
+              }
+          }
+
+          // fail fast...
+          if(has_error === true) {
+              return false;
+          }
+
+          // format permissions
+          for(var i = permissions.length - 1; i >= 0; i--) {
+            var permission = $(permissions[i]);
+            data_permissions.push({
+              role: permission.data('role'),
+              capability: permission.data('capability'),
+              is_capable: (permission.is(':checked') ? 1 : 0)
+            });
+          };
+
+          // show loading screen
+          //MailPoet.Modal.loading(true);
+          console.log(data);
+          console.log(data_permissions);
+
+          // // save permissions
+          // mailpoet_post_wpi('settings_set_permissions.php', { permissions: data_permissions });
+
+          // // save settings
+          // mailpoet_post_json('settings_set.php', data, function(response) {
+          //     if(response.success !== undefined && response.success === true) {
+          //         // display success message
+          //         MailPoet.Notice.success("<?php _e('Settings saved.'); ?>");
+          //     } else if(response.error !== undefined) {
+          //         MailPoet.Notice.error("<?php _e('Settings could not be saved.'); ?>");
+          //     }
+
+          //     // hide loading screen
+          //     // MailPoet.Modal.loading(false);
+          // }, function(error) {
+          //     // hide loading screen
+          //     // MailPoet.Modal.loading(false);
+          // });
+        });
+
         // setup toggle checkboxes
         function toggleContent() {
           $('#'+$(this).data('toggle'))[
