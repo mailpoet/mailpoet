@@ -94,17 +94,6 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('vendor/bin/codecept run unit '.(($file) ? $file : ''));
   }
 
-  function testAcceptance($file = null) {
-    $this->loadEnv();
-    $this->_exec('vendor/bin/codecept build');
-    $this
-      ->taskExec('phantomjs --webdriver=4444')
-      ->background()
-      ->run();
-    sleep(2);
-    $this->_exec('vendor/bin/codecept run acceptance '.(($file) ? $file : ''));
-  }
-
   function testJavascript() {
     $this->compileJs();
 
@@ -113,13 +102,6 @@ class RoboFile extends \Robo\Tasks {
       '-r tests/javascript/mochaTestHelper.js',
       'tests/javascript/testBundles/**/*.js'
     )));
-  }
-
-  function testAll() {
-    $this->loadEnv();
-    $this->_exec('vendor/bin/codecept build');
-    $this->startPhantomJS();
-    $this->_exec('vendor/bin/codecept run');
   }
 
   function testDebug() {
@@ -138,24 +120,5 @@ class RoboFile extends \Robo\Tasks {
   protected function loadEnv() {
     $dotenv = new Dotenv\Dotenv(__DIR__);
     $dotenv->load();
-
-    $this
-      ->taskWriteToFile('tests/acceptance.suite.yml')
-      ->textFromFile('tests/acceptance.suite.src')
-      ->run();
-
-    $this
-      ->taskReplaceInFile('tests/acceptance.suite.yml')
-      ->regex("/url.*/")
-      ->to('url: ' . "'" . getenv('WP_TEST_URL'). "'")
-      ->run();
-  }
-
-  protected function startPhantomJS() {
-    $this
-      ->taskexec('phantomjs --webdriver=4444')
-      ->background()
-      ->run();
-    sleep(3);
   }
 }
