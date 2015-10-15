@@ -1,1 +1,283 @@
-TODO...
+<h3><%= __('How does it work?') %></h3>
+<ol>
+  <li>
+    <%= __('Create an email account dedicated solely to bounce handling.') %>
+  </li>
+  <li>
+    <%= __('Fill out the form below so we can connect to it.') %>
+  </li>
+  <li>
+    <%= __('Take it easy, the plugin does the rest.') %>
+  </li>
+</ol>
+
+<p class="description">
+  <%=
+    __('Need help? Check out %1$sour guide%2$s on how to fill out the form.')
+    | format(
+      '<a target="_blank" href="#todo/automated-bounce-handling-install-guide/">',
+      '</a>'
+    )
+    | raw
+  %>
+</p>
+<hr />
+<!-- bounce: settings -->
+<table class="form-table">
+  <tbody>
+    <!-- bounce: host -->
+    <tr>
+      <th scope="row">
+        <label for="settings[bounce_host]">
+          <%= __('Hostname') %>
+        </label>
+      </th>
+      <td>
+      <p>
+      <input
+        type="text"
+        id="settings[bounce_host]"
+        name="bounce[host]"
+        value="<%= settings.bounce.host %>"
+      />
+      </p>
+      </td>
+    </tr>
+    <!-- bounce: login -->
+    <tr>
+      <th scope="row">
+        <label for="settings[bounce_login]">
+          <%= __('Login') %>
+        </label>
+      </th>
+      <td>
+        <p>
+          <input type="text"
+            id="settings[bounce_login]"
+            name="bounce[login]"
+            value="<%= settings.bounce.login %>"
+            placeholder="" />
+        </p>
+      </td>
+    </tr>
+    <!-- bounce: password -->
+    <tr>
+      <th scope="row">
+        <label for="settings[bounce_password]">
+          <%= __('Password') %>
+        </label>
+      </th>
+      <td>
+        <p>
+          <input type="password"
+            id="settings[bounce_password]"
+            name="bounce[password]"
+            value="<%= settings.bounce.password %>"
+          />
+        </p>
+      </td>
+    </tr>
+    <!-- bounce: protocol -->
+    <tr>
+      <th scope="row">
+        <label for="settings[bounce_protocol]">
+          <%= __('Connection method') %>
+        </label>
+      </th>
+      <td>
+        <p>
+          <select
+            id="settings[bounce_protocol]"
+            name="bounce[protocol]"
+          >
+            <option
+              value="pop3"
+              <% if(settings.bounce.protocol == 'pop3') %>
+                selected="selected"
+              <% endif %>
+            >POP3</option>
+            <option
+              value="imap"
+              <% if(settings.bounce.protocol == 'imap') %>
+                selected="selected"
+              <% endif %>
+            >IMAP</option>
+            <option
+              value="pear"
+              <% if(settings.bounce.protocol == 'pear') %>
+                selected="selected"
+              <% endif %>
+            ><%= __('POP3 without imap extension') %></option>
+            <option
+              value="nntp"
+              <% if(settings.bounce.protocol == 'nntp') %>
+                selected="selected"
+              <% endif %>
+            >NNTP</option>
+          </select>
+        </p>
+      </td>
+    </tr>
+    <!-- bounce: port -->
+    <tr>
+      <th scope="row">
+        <label for="settings[bounce_port]">
+          <%= __('Port') %>
+        </label>
+      </th>
+      <td>
+        <p>
+          <input type="text"
+            id="settings[bounce_port]"
+            name="bounce[port]"
+            value="<%= settings.bounce.port %>"
+            size="3"
+          />
+        </p>
+      </td>
+    </tr>
+    <!-- bounce: SSL -->
+    <tr>
+      <th scope="row">
+        <label for="settings[bounce_secure]">
+          <%= __('Secure connection') %>
+        </label>
+      </th>
+      <td>
+        <select id="settings[bounce_secure]" name="bounce[secure]">
+          <option value=""><%= __('No') %></option>
+          <option
+            value="ssl"
+            <% if(settings.bounce.secure == 'ssl') %>
+              selected="selected"
+            <% endif %>
+          >SSL</option>
+          <option
+            value="tls"
+            <% if(settings.bounce.secure == 'tls') %>
+              selected="selected"
+            <% endif %>
+          >TLS</option>
+        </select>
+      </td>
+    </tr>
+    <!-- bounce: self-signed certificate -->
+    <tr>
+      <th scope="row">
+        <label><%= __('Self-signed certificate') %></label>
+      </th>
+      <td>
+        <label>
+          <input
+            type="radio"
+            name="bounce[authenticate]"
+            value=""
+            <% if not(settings.bounce.authenticate) %>
+              checked="checked"
+            <% endif %>
+          />
+        <%= __('No') %>
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="bounce[authenticate]"
+            value="1"
+            <% if(settings.bounce.authenticate) %>
+              checked="checked"
+            <% endif %>
+          />
+        <%= __('Yes') %>
+        </label>
+      </td>
+    </tr>
+    <!-- bounce: activation & frequency -->
+    <tr>
+      <th scope="row">
+        <label for="settings[bounce_enabled]">
+          <%= __('Activate bounce and check every...') %>
+        </label>
+      </th>
+      <td>
+        <div>
+          <p>
+            <input type="checkbox"
+              data-toggle="mailpoet_bounce_frequency"
+              id="settings[bounce_enabled]"
+              name="bounce[enabled]"
+              value="1"
+              <% if(settings.bounce.enabled) %>
+                checked="checked"
+              <% endif %>
+            />
+            <select
+              id="mailpoet_bounce_frequency"
+              name="bounce[frequency]"
+            >
+              <option
+                value="15"
+                <% if(settings.bounce.frequency == "15") %>
+                  selected="selected"
+                <% endif %>
+              ><%= __('15 minutes') %></option>
+              <option
+                value="30"
+                <% if(settings.bounce.frequency == "30") %>
+                  selected="selected"
+                <% endif %>
+              ><%= __('30 minutes') %></option>
+              <option
+                value="60"
+                <% if(settings.bounce.frequency == "60") %>
+                  selected="selected"
+                <% endif %>
+              ><%= __('1 hour') %></option>
+              <option
+                value="120"
+                <% if(settings.bounce.frequency == "120") %>
+                  selected="selected"
+                <% endif %>
+              ><%= __('2 hours') %></option>
+              <option
+                value="720"
+                <% if(settings.bounce.frequency == "720") %>
+                  selected="selected"
+                <% endif %>
+              ><%= __('Twice daily') %></option>
+              <option
+                value="1440"
+                <% if(settings.bounce.frequency == "1440") %>
+                  selected="selected"
+                <% endif %>
+              ><%= __('Day') %></option>
+            </select>
+          </p>
+        </div>
+      </td>
+    </tr>
+    <!-- bounce: test connection -->
+    <tr>
+      <th scope="row">
+        <label>
+          <a
+            id="mailpoet_bounce_test"
+            class="button-secondary"
+            href="javascript:;"
+          ><%= __('Does it work? Try to connect.') %></a>
+        </label>
+      </th>
+      <td id="mailpoet_bounce_test_result"></td>
+    </tr>
+  </tbody>
+</table>
+
+<script type="text/javascript">
+  jQuery(function($) {
+    // om dom loaded
+    $(function() {
+      $('#mailpoet_bounce_test').on('click', function() {
+        alert('[TODO] bounce -> test connection');
+      });
+    });
+  });
+</script>
