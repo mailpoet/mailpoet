@@ -285,31 +285,31 @@
                   min="1"
                   max="1000"
                   value="<%=
-                    settings.mta.frequency_emails
+                    settings.mta.frequency.emails
                     | default(default_frequency.website.emails)
                   %>"
                 />
                 <%= __('emails') %>
                 <select id="website_frequency_interval">
-                <% for interval in intervals %>
-                  <option
-                    value="<%= interval %>"
-                    <%
-                      if not(settings.mta.frequency_interval)
-                      and (interval == default_frequency.website.interval)
-                    %>
-                    selected="selected"
-                    <% endif %>
-                    <% if(settings.mta.frequency_interval == interval) %>
+                  <% for interval in intervals %>
+                    <option
+                      value="<%= interval %>"
+                      <%
+                        if not(settings.mta.frequency.interval)
+                        and (interval == default_frequency.website.interval)
+                      %>
                       selected="selected"
-                    <% endif %>
-                  >
-                    <%= sending_frequency(interval) %>
-                    <% if(interval == 15) %>
-                      (<%= __('recommended') %>)
-                    <% endif %>
-                  </option>
-                <% endfor %>
+                      <% endif %>
+                      <% if(settings.mta.frequency.interval == interval) %>
+                        selected="selected"
+                      <% endif %>
+                    >
+                      <%= sending_frequency(interval) %>
+                      <% if(interval == 15) %>
+                        (<%= __('recommended') %>)
+                      <% endif %>
+                    </option>
+                  <% endfor %>
                 </select>
                 <span id="mailpoet_website_daily_emails"></span>
               </p>
@@ -376,21 +376,22 @@
                 min="1"
                 max="1000"
                 value="<%=
-                  settings.mta.frequency_emails
+                  settings.mta.frequency.emails
                   | default(default_frequency.smtp.emails)
-                %>" />
+                %>"
+              />
               <%= __('emails') %>
               <select id="smtp_frequency_interval">
                 <% for interval in intervals %>
                   <option
                     value="<%= interval %>"
                     <%
-                      if not(settings.mta.frequency_interval)
+                      if not(settings.mta.frequency.interval)
                       and (interval == default_frequency.smtp.interval)
                     %>
                     selected="selected"
                     <% endif %>
-                    <% if(settings.mta.frequency_interval == interval) %>
+                    <% if(settings.mta.frequency.interval == interval) %>
                       selected="selected"
                     <% endif %>
                   >
@@ -648,6 +649,9 @@
 
 <script type="text/javascript">
   jQuery(function($) {
+    var sending_frequency_template =
+      Handlebars.compile($('#mailpoet_sending_frequency_template').html());
+
     // om dom loaded
     $(function() {
       // testing sending method
@@ -771,24 +775,13 @@
       renderSMTPSendingFrequency(provider);
     }
 
-    function renderSMTPSendingFrequency(provider) {
-      var emails =
-        $('#smtp_frequency_emails').val() || provider.data('emails');
-      var interval =
-        $('#smtp_frequency_interval').val() || provider.data('interval');
-
-      if(provider.val() !== 'manual') {
-        // update smtp frequency values
-        $('#smtp_frequency_emails').val(emails);
-        $('#smtp_frequency_interval').val(interval);
-      }
-
+    function renderSMTPSendingFrequency() {
       // set sending frequency
       setSendingFrequency({
         output: '#mailpoet_smtp_daily_emails',
         only_daily: true,
-        emails: emails,
-        interval: interval
+        emails: $('#smtp_frequency_emails').val(),
+        interval: $('#smtp_frequency_interval').val()
       });
     }
 
@@ -830,11 +823,6 @@
     }
 
     function updateSendingFrequency(method) {
-      // compile template
-      var template = Handlebars.compile(
-        $('#mailpoet_sending_frequency_template').html()
-      );
-
       // get emails
       var options = {
         only_daily: true,
@@ -844,7 +832,9 @@
 
       options.daily_emails = ~~((1440 / options.interval) * options.emails);
 
-      $('#mailpoet_'+method+'_daily_emails').html(template(options));
+      $('#mailpoet_'+method+'_daily_emails').html(
+        sending_frequency_template(options)
+      );
 
       // update actual sending frequency values
       $('#mta_frequency_emails').val(options.emails);
@@ -852,13 +842,10 @@
     }
 
     function setSendingFrequency(options) {
-      // compile template
-      var template = Handlebars.compile(
-        $('#mailpoet_sending_frequency_template').html()
-      );
-
       options.daily_emails = ~~((1440 / options.interval) * options.emails);
-      $(options.output).html(template(options));
+      $(options.output).html(
+        sending_frequency_template(options)
+      );
     }
 
     Handlebars.registerHelper('format_time', function(value, block) {
