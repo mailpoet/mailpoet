@@ -56,14 +56,15 @@ define(
       handleSelectTemplate: function(template) {
         MailPoet.Ajax.post({
           endpoint: 'newsletters',
-          action: 'create',
+          action: 'save',
           data: {
-            type: this.props.params.type,
-            template: template.id
+            id: this.props.params.id,
+            body: template.body
           }
         }).done(function(response) {
-          if(response['url'] !== undefined) {
-            window.location = response['url'];
+          if(response === true) {
+            // TODO: Move this URL elsewhere
+            window.location = 'admin.php?page=mailpoet-newsletter-editor&id=' + this.props.params.id;
           } else {
             response.map(function(error) {
               MailPoet.Notice.error(error);

@@ -177,11 +177,7 @@ class Newsletters {
     if($result !== true) {
       wp_send_json($newsletter->getValidationErrors());
     } else {
-      wp_send_json(array(
-        'url' => admin_url(
-          'admin.php?page=mailpoet-newsletter-editor&id='.$newsletter->id()
-        )
-      ));
+      wp_send_json($newsletter->asArray());
     }
   }
 }
