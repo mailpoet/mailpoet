@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Util;
+namespace MailPoet\Settings;
 
 class Charsets {
   static function getAll() {

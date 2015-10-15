@@ -162,13 +162,13 @@
           >
             <% for page in pages %>
               <option
-                value="<%= page.ID %>"
+                value="<%= page.id %>"
                 data-preview-url="<%= page.preview_url|raw %>"
                 data-edit-url="<%= page.edit_url|raw %>"
-                <% if(page.ID == settings.signup_confirmation.page) %>
+                <% if(page.id == settings.signup_confirmation.page) %>
                   selected="selected"
                 <% endif %>
-              ><%= page.post_title %></option>
+              ><%= page.title %></option>
             <% endfor %>
           </select>
           <a

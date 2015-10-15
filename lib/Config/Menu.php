@@ -4,9 +4,9 @@ use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
 use \MailPoet\Settings\Hosts;
 use \MailPoet\Settings\Pages;
+use \MailPoet\Settings\Charsets;
 use \MailPoet\Util\Permissions;
 use \MailPoet\Util\DKIM;
-use \MailPoet\Util\Charsets;
 
 if(!defined('ABSPATH')) exit;
 
