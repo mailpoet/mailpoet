@@ -67,41 +67,14 @@
           e.preventDefault();
 
           // serialize form data
-          var data = $('#mailpoet_settings_form').serializeObject(),
+          var settings_data = $('#mailpoet_settings_form').serializeObject(),
               permissions = $('.mailpoet_role_permission'),
-              data_permissions = [],
-              has_error = false;
-
-          // check if "subscribe in comments" is enabled
-          if(parseInt(data.subscribe_on_comment) === 1) {
-            if(data.subscribe_on_comment_lists === undefined) {
-              $('#subscribe_on_comment_lists').next('.mailpoet_error').show();
-              has_error = true;
-            } else {
-              $('#subscribe_on_comment_lists').next('.mailpoet_error').hide();
-            }
-          }
-
-
-          // check if "subscribe in registration form" is enabled
-          if(parseInt(data.subscribe_on_register) === 1) {
-              if(data.subscribe_on_register_lists === undefined) {
-                  $('#subscribe_on_register_lists').next('.mailpoet_error').show();
-                  has_error = true;
-              } else {
-                  $('#subscribe_on_register_lists').next('.mailpoet_error').hide();
-              }
-          }
-
-          // fail fast...
-          if(has_error === true) {
-              return false;
-          }
+              permissions_data = []
 
           // format permissions
           for(var i = permissions.length - 1; i >= 0; i--) {
             var permission = $(permissions[i]);
-            data_permissions.push({
+            permissions_data.push({
               role: permission.data('role'),
               capability: permission.data('capability'),
               is_capable: (permission.is(':checked') ? 1 : 0)
@@ -109,28 +82,38 @@
           };
 
           // show loading screen
-          //MailPoet.Modal.loading(true);
-          console.log(data);
-          console.log(data_permissions);
+          MailPoet.Modal.loading(true);
 
-          // // save permissions
-          // mailpoet_post_wpi('settings_set_permissions.php', { permissions: data_permissions });
+          MailPoet.Ajax.post({
+            endpoint: 'settings',
+            action: 'set',
+            data: settings_data
+          }).done(function(response) {
+            if(response === true) {
+              MailPoet.Ajax.post({
+                endpoint: 'permissions',
+                action: 'set',
+                data: permissions_data
+              });
 
-          // // save settings
-          // mailpoet_post_json('settings_set.php', data, function(response) {
-          //     if(response.success !== undefined && response.success === true) {
-          //         // display success message
-          //         MailPoet.Notice.success("<?php _e('Settings saved.'); ?>");
-          //     } else if(response.error !== undefined) {
-          //         MailPoet.Notice.error("<?php _e('Settings could not be saved.'); ?>");
-          //     }
-
-          //     // hide loading screen
-          //     // MailPoet.Modal.loading(false);
-          // }, function(error) {
-          //     // hide loading screen
-          //     // MailPoet.Modal.loading(false);
-          // });
+              MailPoet.Notice.success(
+                "<%= __('Settings saved.') %>",
+                { scroll: true }
+              );
+            } else {
+              MailPoet.Notice.error(
+                "<%= __('Settings could not be saved.') %>",
+                { scroll: true }
+              );
+            }
+            MailPoet.Modal.loading(false);
+          }).error(function(errors) {
+            MailPoet.Notice.error(
+              "<%= __('An error occurred. Check your settings.') %>",
+              { scroll: true }
+            );
+            MailPoet.Modal.loading(false);
+          });
         });
 
         // setup toggle checkboxes

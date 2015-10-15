@@ -17,9 +17,9 @@
             <input
               type="radio"
               class="mailpoet_signup_confirmation"
-              name="signup_confirmation"
+              name="signup_confirmation[enabled]"
               value="1"
-              <% if not(settings.signup_confirmation) %>
+              <% if(settings.signup_confirmation.enabled) %>
                 checked="checked"
               <% endif %>
             /><%= __('Yes') %>
@@ -29,9 +29,9 @@
             <input
               type="radio"
               class="mailpoet_signup_confirmation"
-              name="signup_confirmation"
+              name="signup_confirmation[enabled]"
               value=""
-              <% if(settings.signup_confirmation) %>
+              <% if not(settings.signup_confirmation.enabled) %>
                 checked="checked"
               <% endif %>
             /><%= __('No') %>
@@ -55,15 +55,15 @@
           <input
             type="text"
             id="settings[signup_confirmation_from_name]"
-            name="signup_confirmation_from_name"
-            value="<%= settings.signup_confirmation_from_name %>"
+            name="signup_confirmation[from][name]"
+            value="<%= settings.signup_confirmation.from.name %>"
             placeholder="<%= __('Your name') %>"
           />
           <input
             type="text"
             id="settings[signup_confirmation_from_email]"
-            name="signup_confirmation_from_email"
-            value="<%= settings.signup_confirmation_from_email %>"
+            name="signup_confirmation[from][address]"
+            value="<%= settings.signup_confirmation.from.address %>"
             placeholder="confirmation@mydomain.com"
             size="28"
           />
@@ -82,15 +82,15 @@
           <input
             type="text"
             id="settings[signup_confirmation_reply_name]"
-            name="signup_confirmation_reply_name"
-            value="<%= settings.signup_confirmation_reply_name %>"
+            name="signup_confirmation[reply_to][name]"
+            value="<%= settings.signup_confirmation.reply_to.name %>"
             placeholder="<%= __('Your name') %>"
             />
           <input
             type="text"
             id="settings[signup_confirmation_reply_email]"
-            name="signup_confirmation_reply_email"
-            value="<%= settings.signup_confirmation_reply_email %>"
+            name="signup_confirmation[reply_to][address]"
+            value="<%= settings.signup_confirmation.reply_to.address %>"
             placeholder="confirmation@mydomain.com"
             size="28"
             />
@@ -109,9 +109,9 @@
           size="52"
           type="text"
           id="settings[signup_confirmation_email_subject]"
-          name="signup_confirmation_email_subject"
-          <% if(settings.signup_confirmation_email_subject) %>
-            value="<%= settings.signup_confirmation_email_subject %>"
+          name="signup_confirmation[subject]"
+          <% if(settings.signup_confirmation.subject) %>
+            value="<%= settings.signup_confirmation.subject %>"
           <% else %>
             value="<%=
               __('Confirm your subscription to %1$s')
@@ -136,9 +136,9 @@
           cols="50"
           rows="15"
           id="settings[signup_confirmation_email_body]"
-          name="signup_confirmation_email_body"
-        ><% if(settings.signup_confirmation_email_body) %>
-            <%=- settings.signup_confirmation_email_body -%>
+          name="signup_confirmation[body]"
+        ><% if(settings.signup_confirmation.body) %>
+            <%=- settings.signup_confirmation.body -%>
           <% else %>
             <%=- __("Hello!\n\nHurray! You've subscribed to our site.\nWe need you to activate your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe team!") -%>
           <% endif %></textarea>
@@ -158,14 +158,14 @@
         <p>
           <select
             class="mailpoet_page_selection"
-            name="signup_confirmation_page"
+            name="signup_confirmation[page]"
           >
             <% for page in pages %>
               <option
                 value="<%= page.ID %>"
                 data-preview-url="<%= page.preview_url|raw %>"
                 data-edit-url="<%= page.edit_url|raw %>"
-                <% if(page.ID == settings.signup_confirmation_page) %>
+                <% if(page.ID == settings.signup_confirmation.page) %>
                   selected="selected"
                 <% endif %>
               ><%= page.post_title %></option>

@@ -14,17 +14,17 @@
         <p>
           <input type="text"
             id="settings[notification_email]"
-            name="notification_email"
-            value="<%= settings.notification_email %>"
+            name="notification[address]"
+            value="<%= settings.notification.address %>"
             placeholder="notification@mydomain.com"
             class="regular-text" />
         </p>
         <p>
           <label for="settings[notification_on_subscribe]">
           <input type="checkbox" id="settings[notification_on_subscribe]"
-          name="notification_on_subscribe"
+          name="notification[on_subscribe]"
           value="1"
-          <% if(settings.notification_on_subscribe) %>checked="checked"<% endif %> />
+          <% if(settings.notification.on_subscribe) %>checked="checked"<% endif %> />
           <%= __('When someone subscribes') %>
           </label>
         </p>
@@ -32,9 +32,9 @@
           <label for="settings[notification_on_unsubscribe]">
           <input type="checkbox"
           id="settings[notification_on_unsubscribe]"
-          name="notification_on_unsubscribe"
+          name="notification[on_unsubscribe]"
           value="1"
-          <% if(settings.notification_on_unsubscribe) %>checked="checked"<% endif %> />
+          <% if(settings.notification.on_unsubscribe) %>checked="checked"<% endif %> />
           <%= __('When someone unsubscribes') %>
           </label>
         </p>
@@ -42,9 +42,9 @@
           <label for="settings[notification_daily_report]">
           <input type="checkbox"
           id="settings[notification_daily_report]"
-          name="notification_daily_report"
+          name="notification[daily_report]"
           value="1"
-          <% if(settings.notification_daily_report) %>checked="checked"<% endif %> />
+          <% if(settings.notification.daily_report) %>checked="checked"<% endif %> />
           <%= __('Daily summary of emails sent') %>
           </label>
         </p>
@@ -53,13 +53,13 @@
           <label for="settings[from_name]"><%= __('From') %></label>
           <input type="text"
             id="settings[from_name]"
-            name="from_name"
-            value="<%= settings.from_name %>"
+            name="sender[name]"
+            value="<%= settings.sender.name %>"
             placeholder="<%= __('Your name') %>" />
           <input type="text"
             id="settings[from_email]"
-            name="from_email"
-            value="<%= settings.from_email %>"
+            name="sender[address]"
+            value="<%= settings.sender.address %>"
             placeholder="info@mydomain.com" />
         </p>
         <!-- email notification: reply_to name & email -->
@@ -67,13 +67,13 @@
           <label for="settings[notification_reply_name]"><%= __('Reply-to') %></label>
           <input type="text"
             id="settings[notification_reply_name]"
-            name="notification_reply_name"
-            value="<%= settings.notification_reply_name %>"
+            name="notification[reply_to][name]"
+            value="<%= settings.notification.reply_to.name %>"
             placeholder="<%= __('Your name') %>" />
           <input type="text"
             id="settings[notification_reply_email]"
-            name="notification_reply_email"
-            value="<%= settings.notification_reply_email %>"
+            name="notification[reply_to][address]"
+            value="<%= settings.notification.reply_to.address %>"
             placeholder="info@mydomain.com" />
         </p>
       </td>
@@ -89,17 +89,24 @@
       </th>
       <td>
         <p>
-          <input data-toggle="mailpoet_subscribe_on_comment" type="checkbox" value="1" id="settings[subscribe_on_comment]" name="subscribe_on_comment" <% if(settings.subscribe_on_comment) %>checked="checked"<% endif %> />
+          <input
+            data-toggle="mailpoet_subscribe_on_comment"
+            type="checkbox"
+            value="1"
+            id="settings[subscribe_on_comment]"
+            name="subscribe[on_comment][enabled]"
+            <% if(settings.subscribe.on_comment.enabled) %>checked="checked"<% endif %>
+          />
         </p>
         <div id="mailpoet_subscribe_on_comment">
           <p>
             <input
               type="text"
               id="settings[subscribe_on_comment_label]"
-              name="subscribe_on_comment_label"
+              name="subscribe[on_comment][label]"
               class="regular-text"
-              <%if(settings.subscribe_on_comment_label) %>
-                  value="<%= settings.subscribe_on_comment_label %>"
+              <%if(settings.subscribe.on_comment.label) %>
+                  value="<%= settings.subscribe.on_comment.label %>"
               <% else %>
                 value="<%= __('Yes, add me to your mailing list.') %>"
               <% endif %>
@@ -108,22 +115,19 @@
           <p>
             <select
               id="mailpoet_subscribe_on_comment_lists"
-              name="subscribe_on_comment_lists[]"
+              name="subscribe[on_comment][lists][]"
               placeholder="<%= __('Choose a list') %>"
               multiple
             >
               <% for segment in segments %>
                 <option
                   value="<%= segment.id %>"
-                  <% if(segment.id in settings.subscribe_on_comment_lists) %>
+                  <% if(segment.id in settings.subscribe.on_comment.lists) %>
                     selected="selected"
                   <% endif %>
                 ><%= segment.name %></option>
               <% endfor %>
             </select>
-            &nbsp;<span class="mailpoet_error">
-              <%= __('Please select a list.') %>
-            </span>
           </p>
         </div>
       </td>
@@ -148,8 +152,8 @@
               type="checkbox"
               value="1"
               id="settings[subscribe_on_register]"
-              name="subscribe_on_register"
-              <% if(settings.subscribe_on_register) %>
+              name="subscribe[on_register][enabled]"
+              <% if(settings.subscribe.on_register.enabled) %>
                 checked="checked"
               <% endif %>
             />
@@ -160,10 +164,10 @@
               <input
                 type="text"
                 id="settings[subscribe_on_register_label]"
-                name="subscribe_on_register_label"
+                name="subscribe[on_register][label]"
                 class="regular-text"
-                <%if(settings.subscribe_on_register_label) %>
-                  value="<%= settings.subscribe_on_register_label %>"
+                <%if(settings.subscribe.on_register.label) %>
+                  value="<%= settings.subscribe.on_register.label %>"
                 <% else %>
                   value="<%= __('Yes, add me to your mailing list.') %>"
                 <% endif %>
@@ -172,14 +176,14 @@
             <p>
               <select
                 id="mailpoet_subscribe_on_register_lists"
-                name="subscribe_on_register_lists[]"
+                name="subscribe[on_register][lists][]"
                 placeholder="<%= __('Choose a list') %>"
                 multiple
               >
                 <% for segment in segments %>
                   <option
                     value="<%= segment.id %>"
-                    <% if(segment.id in settings.subscribe_on_register_lists) %>
+                    <% if(segment.id in settings.subscribe.on_register.lists) %>
                       selected="selected"
                     <% endif %>
                   ><%= segment.name %></option>
@@ -209,14 +213,14 @@
         <p>
           <select
             class="mailpoet_page_selection"
-            name="subscription_edit_page"
+            name="subscription[page]"
           >
             <% for page in pages %>
               <option
                 value="<%= page.ID %>"
                 data-preview-url="<%= page.preview_url|raw %>"
                 data-edit-url="<%= page.edit_url|raw %>"
-                <% if(page.ID == settings.subscription_edit_page) %>
+                <% if(page.ID == settings.subscription.page) %>
                   selected="selected"
                 <% endif %>
               ><%= page.post_title %></option>
@@ -238,14 +242,14 @@
         <p>
           <select
             id="mailpoet_subscription_edit_lists"
-            name="subscription_edit_lists[]"
+            name="subscription[lists][]"
             placeholder="<%= __('Leave empty to show all lists') %>"
             multiple
           >
             <% for segment in segments %>
               <option
                 value="<%= segment.id %>"
-                <% if(segment.id in settings.subscription_edit_lists) %>
+                <% if(segment.id in settings.subscription.lists) %>
                   selected="selected"
                 <% endif %>
               ><%= segment.name %></option>

@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Settings;
+namespace MailPoet\Util;
 
 class Permissions {
   static function getCapabilities() {
@@ -30,7 +30,7 @@ class Permissions {
     return $roles;
   }
 
-  static function get() {
+  static function getAll() {
     $roles = static::getRoles();
     $capabilities = static::getCapabilities();
 
@@ -67,28 +67,31 @@ class Permissions {
   }
 
   static function set($permissions = array()) {
-    if(!empty($permissions)) {
-      foreach($permissions as $permission) {
-        // ignore administrator & superadmin roles
-        if(in_array(
-          $permission['role'],
-          array('administrator', 'superadmin'))
-        ) {
-          continue;
-        }
+    if(empty($permissions)) {
+      return false;
+    }
 
-        // get role
-        $role = get_role($permission['role']);
-        if((bool)$permission['is_capable'] === true) {
-          // add capability to role
-          $role->add_cap($permission['capability']);
-        } else {
-          // remove capability to role
-          if($role->has_cap($permission['capability'])) {
-            $role->remove_cap($permission['capability']);
-          }
+    foreach($permissions as $permission) {
+      // ignore administrator & superadmin roles
+      if(in_array(
+        $permission['role'],
+        array('administrator', 'superadmin'))
+      ) {
+        continue;
+      }
+
+      // get role
+      $role = get_role($permission['role']);
+      if((bool)$permission['is_capable'] === true) {
+        // add capability to role
+        $role->add_cap($permission['capability']);
+      } else {
+        // remove capability to role
+        if($role->has_cap($permission['capability'])) {
+          $role->remove_cap($permission['capability']);
         }
       }
     }
+    return true;
   }
 }

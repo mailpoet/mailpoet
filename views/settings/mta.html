@@ -14,21 +14,21 @@
 <input
   type="hidden"
   id="mta_method"
-  name="mta_method"
-  value="<%= settings.mta_method %>"
+  name="mta[method]"
+  value="<%= settings.mta.method %>"
 />
 <!-- mta: sending frequency -->
 <input
   type="hidden"
   id="mta_frequency_emails"
-  name="mta_frequency_emails"
-  value="<%= settings.mta_frequency_emails %>"
+  name="mta[frequency][emails]"
+  value="<%= settings.mta.frequency.emails %>"
 />
 <input
   type="hidden"
   id="mta_frequency_interval"
-  name="mta_frequency_interval"
-  value="<%= settings.mta_frequency_interval %>"
+  name="mta[frequency][interval]"
+  value="<%= settings.mta.frequency.interval %>"
 />
 <!-- dkim: public / private keys  -->
 <input
@@ -52,7 +52,7 @@
 <ul class="mailpoet_sending_methods clearfix">
   <li
     data-method="mailpoet"
-    <% if(settings.mta_method == 'mailpoet') %>class="mailpoet_active"<% endif %>
+    <% if(settings.mta.method == 'mailpoet') %>class="mailpoet_active"<% endif %>
   >
     <h3>
       <img
@@ -81,7 +81,7 @@
   </li>
   <li
     data-method="website"
-    <% if(settings.mta_method == 'website') %>class="mailpoet_active"<% endif %>
+    <% if(settings.mta.method == 'website') %>class="mailpoet_active"<% endif %>
   >
     <h3><%= __('Your own website') %></h3>
 
@@ -101,7 +101,7 @@
   </li>
   <li
     data-method="smtp"
-    <% if(settings.mta_method == 'smtp') %>class="mailpoet_active"<% endif %>
+    <% if(settings.mta.method == 'smtp') %>class="mailpoet_active"<% endif %>
   >
     <h3><%= __('Third party') %></h3>
 
@@ -156,16 +156,16 @@
       <tbody>
         <tr>
           <th scope="row">
-            <label for="mailpoet_account_key">
+            <label for="mailpoet_api_key">
               <%= __('Your key') %>
             </label>
           </th>
           <td>
             <input
               type="text"
-              id="mailpoet_account_key"
+              id="mailpoet_api_key"
               size="40"
-              name="account_key"
+              name="api_key"
               value="<%= settings.api_key %>"
             />
           </td>
@@ -193,11 +193,11 @@
             <p>
               <label>
                 <input type="radio"
-                name="mta_local_method"
+                name="mta[local_method]"
                 value="mail"
                   <%
-                    if not(settings.mta_local_method)
-                    or (settings.mta_local_method == 'mail')
+                    if not(settings.mta.local_method)
+                    or (settings.mta.local_method == 'mail')
                   %>checked="checked"<% endif %>
                 />PHP Mail
               </label>
@@ -207,10 +207,10 @@
             <p>
               <label>
                 <input type="radio"
-                  name="mta_local_method"
+                  name="mta[local_method]"
                   value="sendmail"
                   <%
-                    if(settings.mta_local_method == 'sendmail')
+                    if(settings.mta.local_method == 'sendmail')
                   %>checked="checked"<% endif %>
                 />Sendmail
               </label>
@@ -220,10 +220,10 @@
             <p>
               <label>
                 <input type="radio"
-                  name="mta_local_method"
+                  name="mta[local_method]"
                   value="wp_mail"
                   <%
-                    if(settings.mta_local_method == 'wp_mail')
+                    if(settings.mta.local_method == 'wp_mail')
                   %>checked="checked"<% endif %>
                 />WP Mail
               </label>
@@ -239,7 +239,10 @@
           <td>
             <p>
               <!-- sending frequency -->
-              <select id="mailpoet_web_host" name="web_host">
+              <select
+                id="mailpoet_web_host"
+                name="web_host"
+              >
                 <option value="auto">
                   <%= __('Safe default values') %>
                 </option>
@@ -329,13 +332,16 @@
       <tbody>
         <tr>
           <th scope="row">
-            <label for="mailpoet_mta_provider">
+            <label for="mailpoet_smtp_provider">
               <%= __('Provider') %>
             </label>
           </th>
           <td>
             <!-- smtp provider -->
-            <select id="mailpoet_mta_provider" name="mta_provider">
+            <select
+              id="mailpoet_smtp_provider"
+              name="smtp_provider"
+            >
               <option data-interval="5" data-emails="100" value="manual">
                 <%= __('Custom SMTP') %>
               </option>
@@ -346,7 +352,7 @@
                     value="<%= host_key %>"
                     data-emails="<%= host.emails %>"
                     data-interval="<%= host.interval %>"
-                    <% if(settings.smtp_host == host_key) %>
+                    <% if(settings.smtp_provider == host_key) %>
                       selected="selected"
                     <% endif %>
                   ><%= host.name %></option>
@@ -419,8 +425,8 @@
             <input
               type="text"
               id="settings[mta_smtp_host]"
-              name="mta_smtp_host"
-              value="<%= settings.mta.smtp_host %>" />
+              name="mta[smtp][host]"
+              value="<%= settings.mta.smtp.host %>" />
           </td>
         </tr>
         <!-- smtp: login -->
@@ -434,8 +440,8 @@
             <input
               type="text"
               id="settings[mta_smtp_login]"
-              name="mta_smtp_login"
-              value="<%= settings.mta.smtp_login %>"
+              name="mta[smtp][login]"
+              value="<%= settings.mta.smtp.login %>"
             />
           </td>
         </tr>
@@ -450,8 +456,8 @@
             <input
               type="password"
               id="settings[mta_smtp_password]"
-              name="mta_smtp_password"
-              value="<%= settings.mta.smtp_password %>"
+              name="mta[smtp][password]"
+              value="<%= settings.mta.smtp.password %>"
             />
           </td>
         </tr>
@@ -466,8 +472,8 @@
             <input
               type="text"
               id="settings[mta_smtp_port]"
-              name="mta_smtp_port"
-              value="<%= settings.mta.smtp_port %>"
+              name="mta[smtp][port]"
+              value="<%= settings.mta.smtp.port %>"
             />
           </td>
         </tr>
@@ -479,17 +485,17 @@
             </label>
           </th>
           <td>
-            <select id="settings[mta_smtp_secure]" name="mta_smtp_secure">
+            <select id="settings[mta_smtp_secure]" name="mta[smtp][secure]">
               <option value=""><%= __('No') %></option>
               <option
                 value="ssl"
-                <% if(settings.mta.smtp_secure == 'ssl') %>
+                <% if(settings.mta.smtp.secure == 'ssl') %>
                   selected="selected"
                 <% endif %>
               >SSL</option>
               <option
                 value="tls"
-                <% if(settings.mta.smtp_secure == 'tls') %>
+                <% if(settings.mta.smtp.secure == 'tls') %>
                   selected="selected"
                 <% endif %>
               >TLS</option>
@@ -511,8 +517,8 @@
               <input
                 type="radio"
                 value="1"
-                name="mta_smtp_authenticate"
-                <% if(settings.mta.smtp_authenticate) %>
+                name="mta[smtp][authenticate]"
+                <% if(settings.mta.smtp.authenticate) %>
                   checked="checked"
                 <% endif %>
               /><%= __('Yes') %>
@@ -522,8 +528,8 @@
               <input
                 type="radio"
                 value=""
-                name="mta_smtp_authenticate"
-                <% if not(settings.mta.smtp_authenticate) %>
+                name="mta[smtp][authenticate]"
+                <% if not(settings.mta.smtp.authenticate) %>
                   checked="checked"
                 <% endif %>
               /><%= __('No') %>
@@ -558,7 +564,7 @@
               type="checkbox"
               value="1"
               id="settings[dkim_enabled]"
-              name="dkim_enabled"
+              name="dkim[enabled]"
               <% if(settings.dkim.enabled) %>checked="checked"<% endif %>
             />
           </p>
@@ -664,7 +670,7 @@
       });
 
       // sending frequency update based on selected provider
-      $('#mailpoet_mta_provider').on('change keyup', setProviderForm);
+      $('#mailpoet_smtp_provider').on('change keyup', setProviderForm);
       $('#mailpoet_web_host').on('change keyup', renderHostSendingFrequency);
 
       // update manual sending frequency when values are changed
@@ -697,7 +703,7 @@
         } else {
           if(
             method === 'mailpoet'
-            && $('#mailpoet_account_key').val().trim().length === 0
+            && $('#mailpoet_api_key').val().trim().length === 0
           ) {
             MailPoet.Notice.error(
               "<%= __('You need to specify a MailPoet account key') %>"
@@ -740,7 +746,7 @@
       });
 
       // render sending frequency form
-      $('#mailpoet_mta_provider').trigger('change');
+      $('#mailpoet_smtp_provider').trigger('change');
       $('#mailpoet_web_host').trigger('change');
     });
 

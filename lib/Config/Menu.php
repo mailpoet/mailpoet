@@ -3,8 +3,10 @@ namespace MailPoet\Config;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
 use \MailPoet\Settings\Hosts;
-use \MailPoet\Settings\Permissions;
+use \MailPoet\Settings\Pages;
+use \MailPoet\Util\Permissions;
 use \MailPoet\Util\DKIM;
+use \MailPoet\Util\Charsets;
 
 if(!defined('ABSPATH')) exit;
 
@@ -95,10 +97,9 @@ class Menu {
   }
 
   function settings() {
-    // Flags (available features on WP install)
+    // flags (available features on WP install)
     $flags = array();
 
-    // check if registration is enabled
     if(is_multisite()) {
       // get multisite registration option
       $registration = apply_filters(
@@ -115,44 +116,7 @@ class Menu {
         (bool)get_option('users_can_register', false);
     }
 
-    // Segments
-    $segments = Segment::findArray();
-
-    // Settings
-    $all_settings = Setting::findMany();
-    $settings = array();
-    foreach($all_settings as $setting) {
-      $settings[$setting->name] = $setting->value;
-    }
-
-    // Current user
-    $current_user = wp_get_current_user();
-
-    // WP Pages
-    $mailpoet_pages = get_posts(array('post_type' => 'mailpoet_page'));
-    $pages = array_merge($mailpoet_pages, get_pages());
-    foreach($pages as $key => $page) {
-      // convert page object to array so that we can add some values
-      $page = (array)$page;
-      // get page's preview url
-      $page['preview_url'] = get_permalink($page['ID']);
-      // get page's edit url
-      $page['edit_url'] = get_edit_post_link($page['ID']);
-      // update page data
-      $pages[$key] = $page;
-    }
-
-    // Charsets
-    $charsets = array(
-      'UTF-8', 'UTF-7', 'BIG5', 'ISO-2022-JP',
-      'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3',
-      'ISO-8859-4', 'ISO-8859-5', 'ISO-8859-6',
-      'ISO-8859-7', 'ISO-8859-8', 'ISO-8859-9',
-      'ISO-8859-10', 'ISO-8859-13', 'ISO-8859-14',
-      'ISO-8859-15', 'Windows-1251', 'Windows-1252'
-    );
-
-
+    $settings = Setting::getAll();
 
     // dkim: check if public/private keys have been generated
     if(
@@ -171,12 +135,12 @@ class Menu {
 
     $data = array(
       'settings' => $settings,
-      'segments' => $segments,
-      'pages' => $pages,
+      'segments' => Segment::findArray(),
+      'pages' => Pages::getAll(),
       'flags' => $flags,
-      'charsets' => $charsets,
-      'current_user' => $current_user,
-      'permissions' => Permissions::get(),
+      'charsets' => Charsets::getAll(),
+      'current_user' => wp_get_current_user(),
+      'permissions' => Permissions::getAll(),
       'hosts' => array(
         'web' => Hosts::getWebHosts(),
         'smtp' => Hosts::getSMTPHosts()

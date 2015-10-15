@@ -51,7 +51,7 @@ function(
       return (
         <select
           ref="selection"
-          id={ this.props.field.id || 'mailpoet_field_selection'}
+          id={ this.props.field.id }
           placeholder={ this.props.field.placeholder }
           multiple={ this.props.field.multiple }
           onChange={ this.handleChange }
