@@ -22,10 +22,10 @@ define(
 
     var messages = {
       updated: function() {
-        MailPoet.Notice.success('Segment succesfully updated!');
+        MailPoet.Notice.success('Segment successfully updated!');
       },
       created: function() {
-        MailPoet.Notice.success('Segment succesfully added!');
+        MailPoet.Notice.success('Segment successfully added!');
       }
     };
 

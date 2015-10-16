@@ -1,18 +1,29 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/automatedLatestContent',
+    'amd-inject-loader!newsletter_editor/blocks/automatedLatestContent',
     'newsletter_editor/components/wordpress',
-  ], function(EditorApplication, AutomatedLatestContentBlock, WordpressComponent) {
+  ], function(EditorApplication, AutomatedLatestContentBlock, AutomatedLatestContentInjector, WordpressComponent) {
 
   describe('Automated latest content', function () {
     describe('model', function () {
-      var model;
+      var model, module;
+
+      before(function() {
+        module = AutomatedLatestContentInjector({
+          'newsletter_editor/components/wordpress': {
+            getTransformedPosts: function() {
+              return jQuery.Deferred();
+            }
+          },
+        });
+      });
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
-        model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+        model = new (module.AutomatedLatestContentBlockModel)();
       });
 
       afterEach(function () {
@@ -151,7 +162,7 @@ define([
             },
           },
         });
-        var model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
+        var model = new (module.AutomatedLatestContentBlockModel)();
 
         expect(model.get('amount')).to.equal('17');
         expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -184,15 +195,25 @@ define([
     });
 
     describe('block view', function () {
-      var model, view;
+      var model, view, module;
+
+      before(function() {
+        module = AutomatedLatestContentInjector({
+          'newsletter_editor/components/wordpress': {
+            getTransformedPosts: function() {
+              return jQuery.Deferred();
+            }
+          },
+        });
+      });
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-        model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
-        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockView)({model: model});
+        model = new (module.AutomatedLatestContentBlockModel)();
+        view = new (module.AutomatedLatestContentBlockView)({model: model});
       });
 
       afterEach(function () {
@@ -206,7 +227,20 @@ define([
     });
 
     describe('block settings view', function () {
-      var model, view;
+      var model, view, module;
+
+      before(function() {
+        module = AutomatedLatestContentInjector({
+          'newsletter_editor/components/wordpress': {
+            getTransformedPosts: function() {
+              return jQuery.Deferred();
+            },
+            getPostTypes: function() {
+              return jQuery.Deferred();
+            }
+          },
+        });
+      });
 
       before(function () {
         WordpressComponent.getPostTypes = function() {
@@ -243,8 +277,8 @@ define([
       });
 
       beforeEach(function() {
-        model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
-        view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
+        model = new (module.AutomatedLatestContentBlockModel)();
+        view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
       });
 
       after(function () {
@@ -257,8 +291,8 @@ define([
 
       describe('once rendered', function () {
         beforeEach(function() {
-          model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
-          view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
+          model = new (module.AutomatedLatestContentBlockModel)();
+          view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
           view.render();
         });
 
@@ -367,8 +401,8 @@ define([
         describe('when "title only" display type is selected', function() {
           var model, view;
           beforeEach(function() {
-            model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
-            view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
+            model = new (module.AutomatedLatestContentBlockModel)();
+            view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
             view.render();
             view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').change();
           });
@@ -380,8 +414,8 @@ define([
           describe('when "title as list" is selected', function() {
             var model, view;
             beforeEach(function() {
-              model = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockModel)();
-              view = new (AutomatedLatestContentBlock.AutomatedLatestContentBlockSettingsView)({model: model});
+              model = new (module.AutomatedLatestContentBlockModel)();
+              view = new (module.AutomatedLatestContentBlockSettingsView)({model: model});
               view.render();
               view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').change();
               view.$('.mailpoet_automated_latest_content_title_format').val('ul').change();

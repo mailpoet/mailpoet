@@ -16,7 +16,9 @@ class Migrator {
       'newsletter_templates',
       'segments',
       'subscriber_segment',
-      'newsletter_segment'
+      'newsletter_segment',
+      'custom_fields',
+      'subscriber_custom_field'
     );
   }
 
@@ -126,6 +128,31 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
       'segment_id mediumint(9) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function custom_fields() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'name varchar(90) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY name (name)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function subscriber_custom_field() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'custom_field_id mediumint(9) NOT NULL,',
+      'value varchar(255) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)'

@@ -35,9 +35,6 @@ define([
   Module.ImageBlockView = base.BlockView.extend({
     className: "mailpoet_block mailpoet_image_block mailpoet_droppable_block",
     getTemplate: function() { return templates.imageBlock; },
-    initialize: function() {
-      this.on('showSettings', this.showSettings);
-    },
     onDragSubstituteBy: function() { return Module.ImageWidgetView; },
     templateHelpers: function() {
       return {
@@ -56,29 +53,10 @@ define([
         this.$el.addClass('mailpoet_full_image');
       }
     },
-    showSettings: function(options) {
-      this.toolsView.triggerMethod('showSettings', options);
-    },
-    onBeforeDestroy: function() {
-      this.off('showSettings');
-    },
   });
 
   Module.ImageBlockToolsView = base.BlockToolsView.extend({
     getSettingsView: function() { return Module.ImageBlockSettingsView; },
-    initialize: function() {
-      base.BlockToolsView.prototype.initialize.apply(this, arguments);
-      this.on('showSettings', this.changeSettings);
-    },
-    changeSettings: function(options) {
-      (new Module.ImageBlockSettingsView({
-        model: this.model,
-        showImageManager: (options.showImageManager === true),
-      })).render();
-    },
-    onBeforeDestroy: function() {
-      this.off('showSettings');
-    },
   });
 
   Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
@@ -349,6 +327,7 @@ define([
       this._mediaManager.open();
     },
     onBeforeDestroy: function() {
+      base.BlockSettingsView.prototype.onBeforeDestroy.apply(this, arguments);
       if (typeof this._mediaManager === 'object') {
         this._mediaManager.remove();
       }

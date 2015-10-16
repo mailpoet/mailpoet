@@ -61,7 +61,7 @@ define([
       };
     },
     initialize: function() {
-      base.BlockModel.prototype.initialize.apply(this);
+      base.BlockView.prototype.initialize.apply(this, arguments);
       this.fetchPosts();
       this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:titlePosition change:titleAlignment change:titleIsLink change:imagePadded change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
       this.listenTo(this.get('readMoreButton'), 'change', this._scheduleFetchPosts);
@@ -69,13 +69,12 @@ define([
     },
     fetchPosts: function() {
       var that = this;
-      // TODO: Migrate to new AJAX queries
-      //mailpoet_post_wpi('automated_latest_content.php', this.toJSON(), function(response) {
-        //console.log('ALC fetched', arguments);
-        //that.get('_container').get('blocks').reset(response, {parse: true});
-      //}, function() {
-        //console.log('ALC fetchPosts error', arguments);
-      //});
+      WordpressComponent.getTransformedPosts(this.toJSON()).done(function(content) {
+        console.log('ALC fetched', arguments);
+        that.get('_container').get('blocks').reset(content, {parse: true});
+      }).fail(function(error) {
+        console.log('ALC fetchPosts error', arguments);
+      });
     },
     /**
      * Batch more changes during a specific time, instead of fetching
@@ -101,6 +100,9 @@ define([
       toolsRegion: '.mailpoet_tools',
       postsRegion: '.mailpoet_automated_latest_content_block_posts',
     },
+    events: _.extend(base.BlockView.prototype.events, {
+      'click .mailpoet_automated_latest_content_block_overlay': 'showSettings',
+    }),
     onDragSubstituteBy: function() { return Module.AutomatedLatestContentWidgetView; },
     onRender: function() {
       var ContainerView = App.getBlockTypeView('container'),
@@ -236,6 +238,7 @@ define([
       });
     },
     onBeforeDestroy: function() {
+      base.BlockSettingsView.prototype.onBeforeDestroy.apply(this, arguments);
       // Force close select2 if it hasn't closed yet
       this.$('.mailpoet_automated_latest_content_categories_and_tags').select2('close');
     },
@@ -336,7 +339,10 @@ define([
         cloneOriginal: true,
         drop: function() {
           return new Module.AutomatedLatestContentBlockModel({}, { parse: true });
-        }
+        },
+        onDrop: function(options) {
+          options.droppedView.triggerMethod('showSettings');
+        },
       }
     },
   });

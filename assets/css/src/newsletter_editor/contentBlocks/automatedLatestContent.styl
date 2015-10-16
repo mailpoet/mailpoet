@@ -6,7 +6,12 @@
   z-index: 19
   width: 100%
   height: 100%
-  background: rgba(255, 255, 255, 0.7)
+  background: rgba(255, 255, 255, 0)
+  transition: background .15s ease-out
+
+  &:hover
+    background: rgba(255, 255, 255, 0.7)
+    cursor: pointer
 
 .mailpoet_automated_latest_content_block_posts
   overflow: auto
