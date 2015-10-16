@@ -15,10 +15,27 @@ define(
       mixins: [
         Router.History
       ],
-      handleSelectType: function(type) {
+      setupNewsletter: function(type) {
         if(type !== undefined) {
           this.history.pushState(null, `/new/${type}`);
         }
+      },
+      createNewsletter: function(type) {
+        MailPoet.Ajax.post({
+          endpoint: 'newsletters',
+          action: 'create',
+          data: {
+            type: type,
+          }
+        }).done(function(response) {
+          if(response.id !== undefined) {
+            this.history.pushState(null, `/template/${response.id}`);
+          } else {
+            response.map(function(error) {
+              MailPoet.Notice.error(error);
+            });
+          }
+        }.bind(this));
       },
       render: function() {
         return (
@@ -42,7 +59,7 @@ define(
                 <div className="mailpoet_actions">
                   <a
                     className="button button-primary"
-                    onClick={ this.handleSelectType.bind(null, 'standard') }
+                    onClick={ this.createNewsletter.bind(null, 'standard') }
                   >
                     Create
                   </a>
@@ -62,7 +79,7 @@ define(
                 <div className="mailpoet_actions">
                   <a
                     className="button button-primary"
-                    onClick={ this.handleSelectType.bind(null, 'welcome') }
+                    onClick={ this.setupNewsletter.bind(null, 'welcome') }
                   >
                     Set up
                   </a>
