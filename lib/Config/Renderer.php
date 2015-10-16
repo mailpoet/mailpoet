@@ -12,11 +12,15 @@ class Renderer {
     $file_system = new TwigFileSystem(Env::$views_path);
     $this->renderer = new TwigEnv(
       $file_system,
-      array('cache' => $this->detectCache())
+      array(
+        'cache' => $this->detectCache(),
+        'debug' => WP_DEBUG
+      )
     );
   }
 
   function init() {
+    $this->setupDebug();
     $this->setupTranslations();
     $this->setupFunctions();
     $this->setupHandlebars();
@@ -46,7 +50,7 @@ class Renderer {
 
   function setupSyntax() {
     $lexer = new TwigLexer($this->renderer, array(
-      'tag_comment' => array('<%#', '%>'),
+      'tag_comment' => array('<#', '#>'),
       'tag_block' => array('<%', '%>'),
       'tag_variable' => array('<%=', '%>'),
       'interpolation' => array('%{', '}')
@@ -60,5 +64,11 @@ class Renderer {
       return $cache_path;
     }
     return false;
+  }
+
+  function setupDebug() {
+    if(WP_DEBUG === true) {
+      $this->renderer->addExtension(new \Twig_Extension_Debug());
+    }
   }
 }

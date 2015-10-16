@@ -1,6 +1,7 @@
 define([
   'react',
-  'jquery'
+  'jquery',
+  'select2'
 ],
 function(
   React,
@@ -9,43 +10,39 @@ function(
   var Selection = React.createClass({
     getInitialState: function() {
       return {
-        loading: false,
-        items: [],
-        selected: []
+        items: []
       }
     },
     componentWillMount: function() {
       this.loadCachedItems();
     },
     componentDidMount: function() {
-      if(this.props.select2) {
-        jQuery('#'+this.props.id).select2({
-          width: '25em'
-        });
-      }
+      jQuery('#'+this.props.field.id).select2()
+        .on('change', this.handleChange);
     },
     loadCachedItems: function() {
-      if(typeof(window['mailpoet_'+this.props.endpoint]) !== 'undefined') {
-        var items = window['mailpoet_'+this.props.endpoint];
+      if(typeof(window['mailpoet_'+this.props.field.endpoint]) !== 'undefined') {
+        var items = window['mailpoet_'+this.props.field.endpoint];
         this.setState({
           items: items
         });
       }
     },
     handleChange: function() {
-      this.setState({
-        selected: jQuery('#'+this.props.id).val()
+      return this.props.onValueChange({
+        target: {
+          value: jQuery('#'+this.props.field.id).select2('val'),
+          name: this.props.field.name
+        }
       });
-    },
-    getSelected: function() {
-      return this.state.selected;
     },
     render: function() {
       var options = this.state.items.map(function(item, index) {
         return (
           <option
-            key={ 'action-' + index }
-            value={ item.id }>
+            key={ item.id }
+            value={ item.id }
+          >
             { item.name }
           </option>
         );
@@ -54,12 +51,12 @@ function(
       return (
         <select
           ref="selection"
-          id={ this.props.id || 'mailpoet_field_selection'}
-          placeholder={ this.props.placeholder }
-          multiple={ this.props.multiple }
-        >
-          { options }
-        </select>
+          id={ this.props.field.id }
+          placeholder={ this.props.field.placeholder }
+          multiple={ this.props.field.multiple }
+          onChange={ this.handleChange }
+          defaultValue={ this.props.item[this.props.field.name] }
+        >{ options }</select>
       );
     }
   });

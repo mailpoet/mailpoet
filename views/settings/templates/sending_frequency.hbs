@@ -1,0 +1,14 @@
+{{#unless only_daily}}
+  <!-- number of emails & frequency  -->
+  <%=
+    __('%1$s emails')
+    | format('{{ emails }}')
+  %> {{ format_time interval }}.
+{{/unless}}
+
+<!--  number of emails per day -->
+<%=
+  __("That's <strong>%1$s emails</strong> per day.")
+  | format('{{ daily_emails }}')
+  | raw
+%>

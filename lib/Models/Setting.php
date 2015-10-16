@@ -20,8 +20,27 @@ class Setting extends Model {
     if($setting === false) {
       return $default;
     } else {
-      return $setting->value;
+      if(is_serialized($setting->value)) {
+        return unserialize($setting->value);
+      } else {
+        return $setting->value;
+      }
     }
+  }
+
+  public static function getAll() {
+    $settingsCollection = self::findMany();
+    $settings = array();
+    if(!empty($settingsCollection)) {
+      foreach($settingsCollection as $setting) {
+        $value = (is_serialized($setting->value)
+          ? unserialize($setting->value)
+          : $setting->value
+        );
+        $settings[$setting->name] = $value;
+      }
+    }
+    return $settings;
   }
 
   public static function createOrUpdate($model) {

@@ -8,6 +8,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\NewsletterTemplate;
+use MailPoet\Models\NewsletterSegment;
 use MailPoet\Newsletter\Renderer\Renderer;
 
 if(!defined('ABSPATH')) exit;
@@ -22,7 +23,12 @@ class Newsletters {
     if($newsletter === false) {
       wp_send_json(false);
     } else {
-      wp_send_json($newsletter->asArray());
+      $segments = $newsletter->segments()->findArray();
+      $newsletter = $newsletter->asArray();
+      $newsletter['segments'] = array_map(function($segment) {
+        return $segment['id'];
+      }, $segments);
+      wp_send_json($newsletter);
     }
   }
 
@@ -32,12 +38,26 @@ class Newsletters {
   }
 
   function save($data = array()) {
-    $result = Newsletter::createOrUpdate($data);
-    if($result !== true) {
-      wp_send_json($result);
-    } else {
-      wp_send_json(true);
+    if(isset($data['segments'])) {
+      $segment_ids = $data['segments'];
+      unset($data['segments']);
     }
+
+    $newsletter_id = Newsletter::createOrUpdate($data);
+
+    if($newsletter_id !== false && !empty($segment_ids)) {
+      // remove previous relationships with segments
+      NewsletterSegment::where('newsletter_id', $newsletter_id)->deleteMany();
+      // create relationship with segments
+      foreach($segment_ids as $segment_id) {
+        $relation = NewsletterSegment::create();
+        $relation->segment_id = $segment_id;
+        $relation->newsletter_id = $newsletter_id;
+        $relation->save();
+      }
+    }
+
+    wp_send_json(($newsletter_id !== false));
   }
 
   function delete($id) {

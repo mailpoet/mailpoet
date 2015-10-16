@@ -76,7 +76,8 @@ class NewsletterCest {
         'subject' => 'new newsletter',
         'body' => 'body'
       ));
-    expect($is_created)->equals(true);
+    expect($is_created)->notEquals(false);
+    expect($is_created)->greaterThan(0);
 
     $newsletter = Newsletter::where('subject', 'new newsletter')
       ->findOne();

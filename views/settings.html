@@ -1,7 +1,157 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-  <h1><%= __('Settings') %></h1>
+  <div id="mailpoet_settings">
 
-  <div id="mailpoet_settings"></div>
+    <h2 class="title"><%= __('Settings') %></h2>
+
+    <!-- settings form  -->
+    <form
+      id="mailpoet_settings_form"
+      name="mailpoet_settings_form"
+      class="mailpoet_form"
+      autocomplete="off"
+      novalidate
+    >
+      <!-- tabs -->
+      <h2 class="nav-tab-wrapper" id="mailpoet_settings_tabs">
+        <a class="nav-tab" href="#basics"><%= __('Basics') %></a>
+        <a class="nav-tab" href="#signup"><%= __('Signup Confirmation') %></a>
+        <a class="nav-tab" href="#mta"><%= __('Send With...') %></a>
+        <a class="nav-tab" href="#advanced"><%= __('Advanced') %></a>
+        <a class="nav-tab" href="#bounce"><%= __('Bounce Handling') %></a>
+      </h2>
+
+      <!-- basics -->
+      <div data-tab="basics" class="mailpoet_panel">
+        <% include 'settings/basics.html' %>
+      </div>
+
+      <!-- signup confirmation -->
+      <div data-tab="signup" class="mailpoet_panel">
+        <% include 'settings/signup.html' %>
+      </div>
+
+      <!-- sending method -->
+      <div data-tab="mta" class="mailpoet_panel">
+        <% include 'settings/mta.html' %>
+      </div>
+
+      <!-- advanced -->
+      <div data-tab="advanced" class="mailpoet_panel">
+        <% include 'settings/advanced.html' %>
+      </div>
+
+      <!-- bounce -->
+      <div data-tab="bounce" class="mailpoet_panel">
+        <% include 'settings/bounce.html' %>
+      </div>
+
+      <p class="submit mailpoet_settings_submit">
+        <input
+          type="submit"
+          class="button button-primary"
+          name="submit"
+          value="<%= ('Save settings') %>"
+        />
+      </p>
+    </form>
+  </div>
+
+  <script type="text/javascript">
+    jQuery(function($) {
+      // on dom loaded
+      $(function() {
+        // save settings
+        $('.mailpoet_settings_submit').on('click', function(e) {
+          e.preventDefault();
+
+          // serialize form data
+          var settings_data = $('#mailpoet_settings_form').serializeObject(),
+              permissions = $('.mailpoet_role_permission'),
+              permissions_data = []
+
+          // format permissions
+          for(var i = permissions.length - 1; i >= 0; i--) {
+            var permission = $(permissions[i]);
+            permissions_data.push({
+              role: permission.data('role'),
+              capability: permission.data('capability'),
+              is_capable: (permission.is(':checked') ? 1 : 0)
+            });
+          };
+
+          // show loading screen
+          MailPoet.Modal.loading(true);
+
+          MailPoet.Ajax.post({
+            endpoint: 'settings',
+            action: 'set',
+            data: settings_data
+          }).done(function(response) {
+            if(response === true) {
+              MailPoet.Ajax.post({
+                endpoint: 'permissions',
+                action: 'set',
+                data: permissions_data
+              });
+
+              MailPoet.Notice.success(
+                "<%= __('Settings saved.') %>",
+                { scroll: true }
+              );
+            } else {
+              MailPoet.Notice.error(
+                "<%= __('Settings could not be saved.') %>",
+                { scroll: true }
+              );
+            }
+            MailPoet.Modal.loading(false);
+          }).error(function(errors) {
+            MailPoet.Notice.error(
+              "<%= __('An error occurred. Check your settings.') %>",
+              { scroll: true }
+            );
+            MailPoet.Modal.loading(false);
+          });
+        });
+
+        // setup toggle checkboxes
+        function toggleContent() {
+          $('#'+$(this).data('toggle'))[
+            ($(this).is(':checked'))
+            ? 'show'
+            : 'hide'
+          ]();
+        }
+        $(document).on('click', 'input[data-toggle]', toggleContent);
+        $('input[data-toggle]').each(toggleContent);
+
+        // page preview
+        $('.mailpoet_page_preview').on('click', function() {
+          var selection = $(this).siblings('.mailpoet_page_selection');
+
+          if(selection.length > 0) {
+            $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('preview-url'));
+            $(this).attr('target', '_blank');
+          } else {
+            $(this).attr('href', 'javascript:;');
+            $(this).removeAttr('target');
+          }
+        });
+
+        // page edit
+        $('.mailpoet_page_edit').on('click', function() {
+          var selection = $(this).siblings('.mailpoet_page_selection');
+          if(selection.length > 0) {
+            $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('edit-url'));
+            $(this).attr('target', '_blank');
+          } else {
+            $(this).attr('href', 'javascript:;');
+            $(this).removeAttr('target');
+          }
+        });
+      });
+    });
+  </script>
 <% endblock %>
