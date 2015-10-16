@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0e2b177a6de46c3a1263386f1b803faf",
-    "content-hash": "a8f94cd2f301434c7bac1f383d9f975f",
+    "hash": "d72500818c46823a667d76239af98609",
+    "content-hash": "3297411fcec47a02bc4f456fbf3751d1",
     "packages": [
         {
             "name": "cerdic/css-tidy",
