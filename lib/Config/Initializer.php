@@ -8,7 +8,7 @@ if(!defined('ABSPATH')) exit;
 
 class Initializer {
   function __construct($params = array(
-    'file'    => '',
+    'file' => '',
     'version' => '1.0.0'
   )) {
     Env::init($params['file'], $params['version']);
@@ -40,6 +40,8 @@ class Initializer {
     $segments = Env::$db_prefix . 'segments';
     $subscriber_segment = Env::$db_prefix . 'subscriber_segment';
     $newsletter_segment = Env::$db_prefix . 'newsletter_segment';
+    $custom_fields = Env::$db_prefix . 'custom_fields';
+    $subscriber_custom_field = Env::$db_prefix . 'subscriber_custom_field';
 
     define('MP_SUBSCRIBERS_TABLE', $subscribers);
     define('MP_SETTINGS_TABLE', $settings);
@@ -48,6 +50,8 @@ class Initializer {
     define('MP_SUBSCRIBER_SEGMENT_TABLE', $subscriber_segment);
     define('MP_NEWSLETTER_TEMPLATES_TABLE', $newsletter_templates);
     define('MP_NEWSLETTER_SEGMENT_TABLE', $newsletter_segment);
+    define('MP_CUSTOM_FIELDS_TABLE', $custom_fields);
+    define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', $subscriber_custom_field);
   }
 
   function setupActivator() {
