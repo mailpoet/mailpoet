@@ -1,11 +1,13 @@
 define(
   [
     'react',
+    'react-router',
     'mailpoet',
     'form/form.jsx'
   ],
   function(
     React,
+    Router,
     MailPoet,
     Form
   ) {
@@ -27,15 +29,22 @@ define(
       }
     };
 
+    var Link = Router.Link;
+
     var SegmentForm = React.createClass({
       render: function() {
-
         return (
-          <Form
-            endpoint="segments"
-            fields={ fields }
-            params={ this.props.params }
-            messages={ messages } />
+          <div>
+            <h2 className="title">
+              Segment <Link className="add-new-h2" to="/">Back to list</Link>
+            </h2>
+
+            <Form
+              endpoint="segments"
+              fields={ fields }
+              params={ this.props.params }
+              messages={ messages } />
+          </div>
         );
       }
     });

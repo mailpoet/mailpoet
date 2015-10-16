@@ -1,11 +1,13 @@
 define(
   [
     'react',
+    'react-router',
     'listing/listing.jsx',
     'classnames'
   ],
   function(
     React,
+    Router,
     Listing,
     classNames
   ) {
@@ -34,6 +36,8 @@ define(
       }
     ];
 
+    var Link = Router.Link;
+
     var SegmentList = React.createClass({
       renderItem: function(segment, actions) {
         var rowClasses = classNames(
@@ -61,11 +65,17 @@ define(
       },
       render: function() {
         return (
-          <Listing
-            endpoint="segments"
-            onRenderItem={this.renderItem}
-            columns={columns}
-            bulk_actions={ bulk_actions } />
+          <div>
+            <h2 className="title">
+              Segments <Link className="add-new-h2" to="new">New</Link>
+            </h2>
+
+            <Listing
+              endpoint="segments"
+              onRenderItem={this.renderItem}
+              columns={columns}
+              bulk_actions={ bulk_actions } />
+          </div>
         );
       }
     });

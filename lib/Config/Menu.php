@@ -2,6 +2,11 @@
 namespace MailPoet\Config;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
+use \MailPoet\Settings\Hosts;
+use \MailPoet\Settings\Pages;
+use \MailPoet\Settings\Charsets;
+use \MailPoet\Util\Permissions;
+use \MailPoet\Util\DKIM;
 
 if(!defined('ABSPATH')) exit;
 
@@ -92,7 +97,56 @@ class Menu {
   }
 
   function settings() {
-    $data = array();
+    // flags (available features on WP install)
+    $flags = array();
+
+    if(is_multisite()) {
+      // get multisite registration option
+      $registration = apply_filters(
+        'wpmu_registration_enabled',
+        get_site_option('registration', 'all')
+      );
+
+      // check if users can register
+      $flags['registration_enabled'] =
+        !(in_array($registration, array('none', 'blog')));
+    } else {
+      // check if users can register
+      $flags['registration_enabled'] =
+        (bool)get_option('users_can_register', false);
+    }
+
+    $settings = Setting::getAll();
+
+    // dkim: check if public/private keys have been generated
+    if(
+      empty($settings['dkim'])
+      or empty($settings['dkim']['public_key'])
+      or empty($settings['dkim']['private_key'])
+    ) {
+      // generate public/private keys
+      $keys = DKIM::generateKeys();
+      $settings['dkim'] = array(
+        'public_key' => $keys['public'],
+        'private_key' => $keys['private'],
+        'domain' => preg_replace('/^www\./', '', $_SERVER['SERVER_NAME'])
+      );
+    }
+
+    $data = array(
+      'settings' => $settings,
+      'segments' => Segment::findArray(),
+      'pages' => Pages::getAll(),
+      'flags' => $flags,
+      'charsets' => Charsets::getAll(),
+      'current_user' => wp_get_current_user(),
+      'permissions' => Permissions::getAll(),
+      'hosts' => array(
+        'web' => Hosts::getWebHosts(),
+        'smtp' => Hosts::getSMTPHosts()
+      )
+    );
+
     echo $this->renderer->render('settings.html', $data);
   }
 

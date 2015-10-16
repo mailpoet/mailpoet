@@ -107,7 +107,7 @@ class Newsletter extends Model {
     $saved = $newsletter->save();
 
     if($saved === true) {
-      return true;
+      return $newsletter->id();
     } else {
       $errors = $newsletter->getValidationErrors();
       if(!empty($errors)) {

@@ -8,7 +8,8 @@ class CustomFieldCest {
   function _before() {
     $this->before_time = time();
     $this->data = array(
-      'name' => 'city',
+      'name' => 'DOB',
+      'type' => 'date',
     );
     $this->customField = CustomField::create();
     $this->customField->hydrate($this->data);
@@ -31,12 +32,24 @@ class CustomFieldCest {
     expect($this->saved)->equals(true);
   }
 
+  function itHasName() {
+    $customField = CustomField::where('name', $this->data['name'])
+      ->findOne();
+    expect($customField->name)->equals($this->data['name']);
+  }
+
+  function itHasType() {
+    $customField = CustomField::where('name', $this->data['name'])
+      ->findOne();
+    expect($customField->type)->equals($this->data['type']);
+  }
+
   function itHasToBeValid() {
     expect($this->saved)->equals(true);
     $empty_model = CustomField::create();
     expect($empty_model->save())->notEquals(true);
     $validations = $empty_model->getValidationErrors();
-    expect(count($validations))->equals(1);
+    expect(count($validations))->equals(2);
   }
 
   function itHasACreatedAtOnCreation() {
@@ -95,7 +108,7 @@ class CustomFieldCest {
     $association = SubscriberCustomField::create();
     $association->subscriber_id = $subscriber->id;
     $association->custom_field_id = $this->customField->id;
-    $association->value = 'test';
+    $association->value = '12/12/2012';
     $association->save();
     $customField = CustomField::findOne($this->customField->id);
     $subscriber = $customField->subscribers()

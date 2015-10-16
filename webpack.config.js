@@ -66,10 +66,10 @@ config.push(_.extend({}, baseConfig, {
       'jquery.serialize_object'
     ],
     admin: [
-      'settings.jsx',
       'subscribers/subscribers.jsx',
       'newsletters/newsletters.jsx',
-      'segments/segments.jsx'
+      'segments/segments.jsx',
+      'settings/tabs.js'
     ],
     newsletter_editor: [
       'underscore',

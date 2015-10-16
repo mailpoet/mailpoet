@@ -1,11 +1,13 @@
 define(
   [
     'react',
+    'react-router',
     'mailpoet',
     'form/form.jsx'
   ],
   function(
     React,
+    Router,
     MailPoet,
     Form
   ) {
@@ -47,15 +49,22 @@ define(
       }
     };
 
+    var Link = Router.Link;
+
     var SubscriberForm = React.createClass({
       render: function() {
-
         return (
-          <Form
-            endpoint="subscribers"
-            fields={ fields }
-            params={ this.props.params }
-            messages={ messages } />
+          <div>
+            <h2 className="title">
+              Subscriber <Link className="add-new-h2" to="/">Back to list</Link>
+            </h2>
+
+            <Form
+              endpoint="subscribers"
+              fields={ fields }
+              params={ this.props.params }
+              messages={ messages } />
+          </div>
         );
       }
     });

@@ -9,16 +9,24 @@ class Settings {
   }
 
   function get() {
-    $settings = Setting::find_array();
+    $settings = Setting::getAll();
     wp_send_json($settings);
   }
 
-  function set($args) {
-    $save = function($setting) {
-      Setting::createOrUpdate($setting);
-    };
-    $results = array_map($save, $args);
-
-    wp_send_json(in_array(false, $results));
+  function set($settings = array()) {
+    if(empty($settings)) {
+      wp_send_json(false);
+    } else {
+      foreach($settings as $name => $value) {
+        if(is_array($value)) {
+          $value = serialize($value);
+        }
+        Setting::createOrUpdate(array(
+          'name' => $name,
+          'value' => $value
+        ));
+      }
+      wp_send_json(true);
+    }
   }
 }

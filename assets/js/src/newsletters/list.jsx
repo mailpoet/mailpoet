@@ -80,7 +80,10 @@ define(
       render: function() {
         return (
           <div>
-            <h1>Newsletters <Link className="add-new-h2" to="new">New</Link></h1>
+            <h2 className="title">
+              Newsletters <Link className="add-new-h2" to="new">New</Link>
+            </h2>
+
             <Listing
               endpoint="newsletters"
               onRenderItem={this.renderItem}

@@ -4,7 +4,8 @@ define([
   'form/fields/textarea.jsx',
   'form/fields/select.jsx',
   'form/fields/radio.jsx',
-  'form/fields/checkbox.jsx'
+  'form/fields/checkbox.jsx',
+  'form/fields/selection.jsx'
 ],
 function(
   React,
@@ -12,7 +13,8 @@ function(
   FormFieldTextarea,
   FormFieldSelect,
   FormFieldRadio,
-  FormFieldCheckbox
+  FormFieldCheckbox,
+  FormFieldSelection
 ) {
   var FormField = React.createClass({
     renderField: function(data, inline = false) {
@@ -26,29 +28,33 @@ function(
       var field = false;
 
       if(data.field['field'] !== undefined) {
-        field = data.field.field;
-      } else{
-        switch(data.field.type) {
-          case 'text':
-            field = (<FormFieldText {...data} />);
-          break;
+        data.field = jQuery.merge(data.field, data.field.field);
+      }
 
-          case 'textarea':
-            field = (<FormFieldTextarea {...data} />);
-          break;
+      switch(data.field.type) {
+        case 'text':
+          field = (<FormFieldText {...data} />);
+        break;
 
-          case 'select':
-            field = (<FormFieldSelect {...data} />);
-          break;
+        case 'textarea':
+          field = (<FormFieldTextarea {...data} />);
+        break;
 
-          case 'radio':
-            field = (<FormFieldRadio {...data} />);
-          break;
+        case 'select':
+          field = (<FormFieldSelect {...data} />);
+        break;
 
-          case 'checkbox':
-            field = (<FormFieldCheckbox {...data} />);
-          break;
-        }
+        case 'radio':
+          field = (<FormFieldRadio {...data} />);
+        break;
+
+        case 'checkbox':
+          field = (<FormFieldCheckbox {...data} />);
+        break;
+
+        case 'selection':
+          field = (<FormFieldSelection {...data} />);
+        break;
       }
 
       if(inline === true) {
@@ -75,7 +81,8 @@ function(
           return this.renderField({
             index: index,
             field: subfield,
-            item: this.props.item
+            item: this.props.item,
+            onValueChange: this.props.onValueChange || false
           });
         }.bind(this));
       } else {
