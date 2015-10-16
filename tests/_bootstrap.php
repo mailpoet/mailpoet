@@ -7,10 +7,14 @@ require_once(getenv('WP_TEST_PATH') . '/wp-load.php');
 
 $console->writeln('Cleaning up database...');
 $models = array(
-  'Subscriber',
-  'Setting',
+  'CustomField',
   'Newsletter',
+  'NewsletterSegment',
+  'NewsletterTemplate',
   'Segment',
+  'Setting',
+  'Subscriber',
+  'SubscriberCustomField',
   'SubscriberSegment'
 );
 $destroy = function ($model) {

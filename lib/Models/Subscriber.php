@@ -132,6 +132,15 @@ class Subscriber extends Model {
     );
   }
 
+  function customFields() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\CustomField',
+      __NAMESPACE__.'\SubscriberCustomField',
+      'subscriber_id',
+      'custom_field_id'
+    )->select_expr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.value');
+  }
+
   static function createOrUpdate($data = array()) {
     $subscriber = false;
 
