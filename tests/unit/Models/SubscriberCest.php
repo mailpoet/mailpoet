@@ -120,9 +120,10 @@ class SubscriberCest {
     expect($subscriberSegment->id)->equals($segment->id);
   }
   
-  function itCanHaveCustomField() {
+  function itCanHaveCustomFields() {
     $customFieldData = array(
-      'name' => 'city'
+      'name' => 'DOB',
+      'type' => 'date',
     );
     $customField = CustomField::create();
     $customField->hydrate($customFieldData);
@@ -130,11 +131,11 @@ class SubscriberCest {
     $association = SubscriberCustomField::create();
     $association->subscriber_id = $this->subscriber->id;
     $association->custom_field_id = $customField->id;
+    $association->value = '12/12/2012';
     $association->save();
-    $subscriber = Subscriber::findOne($this->subscriber->id);
-    $subscriberCustomField = $subscriber->customFields()
-      ->findOne();
-    expect($subscriberCustomField->id)->equals($customField->id);
+    $subscriber = Subscriber::filter('withCustomFields')
+      ->findOne($this->subscriber->id);
+    expect($subscriber->DOB)->equals($association->value);
   }
 
   function itCanCreateOrUpdate() {

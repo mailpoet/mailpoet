@@ -8,9 +8,11 @@ class CustomField extends Model {
 
   function __construct() {
     parent::__construct();
-
     $this->addValidations('name', array(
       'required' => __('You need to specify a name.')
+    ));
+    $this->addValidations('type', array(
+      'required' => __('You need to specify a type.')
     ));
   }
 
@@ -20,6 +22,6 @@ class CustomField extends Model {
       __NAMESPACE__ . '\SubscriberCustomField',
       'custom_field_id',
       'subscriber_id'
-    );
+    )->select_expr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.value');
   }
 }
