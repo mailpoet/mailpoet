@@ -119,7 +119,7 @@ class SubscriberCest {
       ->findOne();
     expect($subscriberSegment->id)->equals($segment->id);
   }
-  
+
   function itCanHaveCustomFields() {
     $customFieldData = array(
       'name' => 'DOB',
@@ -133,9 +133,134 @@ class SubscriberCest {
     $association->custom_field_id = $customField->id;
     $association->value = '12/12/2012';
     $association->save();
-    $subscriber = Subscriber::filter('withCustomFields')
+    $subscriber = Subscriber::filter('filterWithCustomFields')
       ->findOne($this->subscriber->id);
     expect($subscriber->DOB)->equals($association->value);
+  }
+  
+  function itCanFilterCustomFields() {
+    $customFieldData = array(
+      array(
+        'name' => 'City',
+        'type' => 'text',
+      ),
+      array(
+        'name' => 'Country',
+        'type' => 'text',
+      )
+    );
+    foreach ($customFieldData as $data) {
+      $customField = CustomField::create();
+      $customField->hydrate($data);
+      $customField->save();
+      $createdCustomFields[] = $customField->asArray();
+    }
+    $subscriberCustomFieldData = array(
+      array(
+        'subscriber_id' => $this->subscriber->id,
+        'custom_field_id' => $createdCustomFields[0]['id'],
+        'value' => 'Paris'
+      ),
+      array(
+        'subscriber_id' => $this->subscriber->id,
+        'custom_field_id' => $createdCustomFields[1]['id'],
+        'value' => 'France'
+      )
+    );
+    foreach ($subscriberCustomFieldData as $data) {
+      $association = SubscriberCustomField::create();
+      $association->hydrate($data);
+      $association->save();
+      $createdAssociations[] = $association->asArray();
+    }
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Paris'
+        )
+      ))
+      ->findArray();
+    expect(empty($subscriber))->false();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Paris'
+        ),
+        array(
+          'name' => 'Country',
+          'value' => 'France'
+        )
+      ))
+      ->findArray();
+    expect(empty($subscriber))->false();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Paris'
+        ),
+        array(
+          'name' => 'Country',
+          'value' => 'Russia'
+        )
+      ), 'OR')
+      ->findArray();
+    expect(empty($subscriber))->false();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'is'
+        )
+      ), 'AND', 'LIKE')
+      ->findArray();
+    expect(empty($subscriber))->false();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Moscow'
+        )
+      ))
+      ->findArray();
+    expect(empty($subscriber))->true();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Paris'
+        ),
+        array(
+          'name' => 'Country',
+          'value' => 'Russia'
+        )
+      ))
+      ->findArray();
+    expect(empty($subscriber))->true();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Moscow'
+        ),
+        array(
+          'name' => 'Country',
+          'value' => 'Russia'
+        )
+      ), 'OR')
+      ->findArray();
+    expect(empty($subscriber))->true();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'zz'
+        )
+      ), 'AND', 'LIKE')
+      ->findArray();
+    expect(empty($subscriber))->true();
   }
 
   function itCanCreateOrUpdate() {
