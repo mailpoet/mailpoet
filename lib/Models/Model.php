@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Models;
 
-if (!defined('ABSPATH')) exit;
+if(!defined('ABSPATH')) exit;
 
 class Model extends \Sudzy\ValidModel {
   function __construct() {
@@ -11,7 +11,6 @@ class Model extends \Sudzy\ValidModel {
 
   function save() {
     $this->setTimestamp();
-
     try {
       parent::save();
       return true;
@@ -23,8 +22,20 @@ class Model extends \Sudzy\ValidModel {
   }
 
   private function setTimestamp() {
-    if ($this->created_at === null) {
+    if($this->created_at === null) {
       $this->created_at = date('Y-m-d H:i:s');
     }
+  }
+
+  static function filterSearchCustomFields($orm, $searchCriteria = array(), $searchCondition = 'AND', $searchSymbol = '=') {
+    $havingFields = array_filter(
+      array_map(function ($customField) use ($searchSymbol) {
+        return sprintf('`%s` %s ?', $customField['name'], $searchSymbol);
+      }, $searchCriteria)
+    );
+    $havingValues = array_map(function ($customField) use ($searchSymbol) {
+      return (strtolower($searchSymbol) === 'like') ? '%' . $customField['value'] . '%' : $customField['value'];
+    }, $searchCriteria);
+    return $orm->having_raw(implode(' ' . $searchCondition . ' ', $havingFields), array_values($havingValues));
   }
 }
