@@ -19,6 +19,15 @@ class Newsletter extends Model {
     );
   }
 
+  function options() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\NewsletterOptionField',
+      __NAMESPACE__.'\NewsletterOption',
+      'newsletter_id',
+      'option_field_id'
+    )->select_expr(MP_NEWSLETTER_OPTION_FIELDS_TABLE.'.value');
+  }
+
   static function search($orm, $search = '') {
     return $orm->where_like('subject', '%' . $search . '%');
   }
@@ -73,6 +82,28 @@ class Newsletter extends Model {
         }
       }
     }
+    return $orm;
+  }
+
+  static function filterWithOptions($orm) {
+    $orm = $orm->select(MP_NEWSLETTERS_TABLE.'.*');
+    $newsletterOptionFields = NewsletterOptionField::findArray();
+    foreach ($newsletterOptionFields as $newsletterOptionField) {
+      $orm = $orm->select_expr(
+        'IFNULL(GROUP_CONCAT(CASE WHEN ' .
+        MP_NEWSLETTER_OPTION_FIELDS_TABLE . '.id=' . $newsletterOptionField['id'] . ' THEN ' .
+        MP_NEWSLETTER_OPTIONS_TABLE . '.value END), NULL) as "' . $newsletterOptionFieldField['name'].'"');
+    }
+    $orm = $orm
+      ->left_outer_join(
+        MP_NEWSLETTER_OPTIONS_TABLE,
+        array(MP_NEWSLETTERS_TABLE.'.id', '=',
+          MP_NEWSLETTER_OPTIONS_TABLE.'.newsletter_id'))
+      ->left_outer_join(
+        MP_NEWSLETTER_OPTION_FIELDS_TABLE,
+        array(MP_NEWSLETTER_OPTION_FIELDS_TABLE.'.id','=',
+          MP_NEWSLETTER_OPTIONS_TABLE.'.option_field_id'))
+      ->group_by(MP_NEWSLETTERS_TABLE.'.id');
     return $orm;
   }
 

@@ -3,6 +3,8 @@
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
 use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Models\NewsletterOption;
 
 class NewsletterCest {
   function _before() {
@@ -102,6 +104,149 @@ class NewsletterCest {
     $newsletter = Newsletter::filter('search', 'pineapple')
       ->findOne();
     expect($newsletter->subject)->contains('pineapple');
+  }
+
+  function itCanHaveOptions() {
+    $newsletterOptionFieldData = array(
+      'name' => 'Event',
+      'newsletter_type' => 'welcome',
+    );
+    $optionField = NewsletterOptionField::create();
+    $optionField->hydrate($newsletterOptionFieldData);
+    $optionField->save();
+    $association = NewsletterOption::create();
+    $association->newsletter_id = $this->newsletter->id;
+    $association->option_field_id = $optionField->id;
+    $association->value = 'list';
+    $association->save();
+    $subscriber = Newsletter::filter('filterWithOptions')
+      ->findOne($this->subscriber->id);
+    expect($newsletter->Event)->equals($association->value);
+  }
+  
+  function itCanFilterOptions() {
+    $newsletterOptionFieldData = array(
+      array(
+        'name' => 'Event',
+        'newsletter_type' => 'welcome',
+      ),
+      array(
+        'name' => 'List',
+        'newsletter_type' => 'welcome',
+      )
+    );
+    foreach ($newsletterOptionFieldData as $data) {
+      $optionField = NewsletterOptionField::create();
+      $optionField->hydrate($data);
+      $optionField->save();
+      $createdOptionFields[] = $optionField->asArray();
+    }
+    $newsletterOptionData = array(
+      array(
+        'newsletter_id' => $this->newsletter->id,
+        'option_field_id' => $createdOptionFields[0]['id'],
+        'value' => 'list'
+      ),
+      array(
+        'newsletter_id' => $this->newsletter->id,
+        'option_field_id' => $createdOptionFields[1]['id'],
+        'value' => '1'
+      )
+    );
+    foreach ($newsletterOptionData as $data) {
+      $association = NewsletterOption::create();
+      $association->hydrate($data);
+      $association->save();
+      $createdAssociations[] = $association->asArray();
+    }
+    $newsletter = Newsletter::filter('filterWithOptions')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'Event',
+          'value' => 'list'
+        )
+      ))
+      ->findArray();
+    expect(empty($subscriber))->false();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Paris'
+        ),
+        array(
+          'name' => 'Country',
+          'value' => 'France'
+        )
+      ))
+      ->findArray();
+    expect(empty($subscriber))->false();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Paris'
+        ),
+        array(
+          'name' => 'Country',
+          'value' => 'Russia'
+        )
+      ), 'OR')
+      ->findArray();
+    expect(empty($subscriber))->false();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'is'
+        )
+      ), 'AND', 'LIKE')
+      ->findArray();
+    expect(empty($subscriber))->false();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Moscow'
+        )
+      ))
+      ->findArray();
+    expect(empty($subscriber))->true();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Paris'
+        ),
+        array(
+          'name' => 'Country',
+          'value' => 'Russia'
+        )
+      ))
+      ->findArray();
+    expect(empty($subscriber))->true();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'Moscow'
+        ),
+        array(
+          'name' => 'Country',
+          'value' => 'Russia'
+        )
+      ), 'OR')
+      ->findArray();
+    expect(empty($subscriber))->true();
+    $subscriber = Subscriber::filter('filterWithCustomFields')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'City',
+          'value' => 'zz'
+        )
+      ), 'AND', 'LIKE')
+      ->findArray();
+    expect(empty($subscriber))->true();
   }
 
   function _after() {
