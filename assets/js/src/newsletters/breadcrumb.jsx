@@ -13,7 +13,7 @@ define(
 
     var Breadcrumb = React.createClass({
       mixins: [
-        Router.Navigation
+        Router.History
       ],
       getInitialState: function() {
         return {

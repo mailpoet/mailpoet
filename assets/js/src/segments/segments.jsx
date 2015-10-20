@@ -1,47 +1,29 @@
-define(
-  [
-    'react',
-    'react-router',
-    'segments/list.jsx',
-    'segments/form.jsx'
-  ],
-  function(
-    React,
-    Router,
-    List,
-    Form
-  ) {
-    var DefaultRoute = Router.DefaultRoute;
-    var Link = Router.Link;
-    var Route = Router.Route;
-    var RouteHandler = Router.RouteHandler;
-    var NotFoundRoute = Router.NotFoundRoute;
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Router, Route, IndexRoute, Link } from 'react-router'
+import SegmentList from 'segments/list.jsx'
+import SegmentForm from 'segments/form.jsx'
+import createHashHistory from 'history/lib/createHashHistory'
 
-    var App = React.createClass({
-      render: function() {
-        return (
-          <RouteHandler />
-        );
-      }
-    });
+let history = createHashHistory({ queryKey: false })
 
-    var routes = (
-      <Route name="app" path="/" handler={App}>
-        <Route name="new" path="/new" handler={Form} />
-        <Route name="edit" path="/edit/:id" handler={Form} />
-        <NotFoundRoute handler={List} />
-        <DefaultRoute handler={List} />
-      </Route>
-    );
-
-    var hook = document.getElementById('segments');
-    if(hook) {
-      Router.run(routes, function(Handler, state) {
-        React.render(
-          <Handler params={state.params} query={state.query} />,
-          hook
-        );
-      });
-    }
+const App = React.createClass({
+  render() {
+    return this.props.children
   }
-);
+});
+
+let container = document.getElementById('segments');
+
+if(container) {
+  ReactDOM.render((
+    <Router history={ history }>
+      <Route path="/" component={ App }>
+        <IndexRoute component={ SegmentList } />
+        <Route path="new" component={ SegmentForm } />
+        <Route path="edit/:id" component={ SegmentForm } />
+        <Route path="*" component={ SegmentList } />
+      </Route>
+    </Router>
+  ), container);
+}

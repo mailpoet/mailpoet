@@ -148,7 +148,7 @@ define(
           <div>
             <td className={ row_classes }>
               <strong>
-                <Link to="edit" params={{ id: subscriber.id }}>
+                <Link to={ `/edit/${ subscriber.id }` }>
                   { subscriber.email }
                 </Link>
               </strong>
@@ -179,7 +179,7 @@ define(
         return (
           <div>
             <h2 className="title">
-              Subscribers <Link className="add-new-h2" to="new">New</Link>
+              Subscribers <Link className="add-new-h2" to="/new">New</Link>
             </h2>
 
             <Listing
