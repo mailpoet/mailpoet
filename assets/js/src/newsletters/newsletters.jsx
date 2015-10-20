@@ -1,52 +1,32 @@
-define(
-  [
-    'react',
-    'react-router',
-    'newsletters/list.jsx',
-    'newsletters/types.jsx',
-    'newsletters/templates.jsx',
-    'newsletters/send.jsx'
-  ],
-  function(
-    React,
-    Router,
-    NewsletterList,
-    NewsletterTypes,
-    NewsletterTemplates,
-    NewsletterSend
-  ) {
-    var DefaultRoute = Router.DefaultRoute;
-    var Link = Router.Link;
-    var Route = Router.Route;
-    var RouteHandler = Router.RouteHandler;
-    var NotFoundRoute = Router.NotFoundRoute;
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Router, Route, IndexRoute, Link } from 'react-router'
+import NewsletterList from 'newsletters/list.jsx'
+import NewsletterTypes from 'newsletters/types.jsx'
+import NewsletterTemplates from 'newsletters/templates.jsx'
+import NewsletterSend from 'newsletters/send.jsx'
+import createHashHistory from 'history/lib/createHashHistory'
 
-    var App = React.createClass({
-      render: function() {
-        return (
-          <RouteHandler />
-        );
-      }
-    });
+let history = createHashHistory({ queryKey: false })
 
-    var routes = (
-      <Route name="app" path="/" handler={App}>
-        <Route name="new" path="/new" handler={ NewsletterTypes } />
-        <Route name="template" path="/new/:type" handler={ NewsletterTemplates } />
-        <Route name="send" path="/send/:id" handler={ NewsletterSend } />
-        <NotFoundRoute handler={ NewsletterList } />
-        <DefaultRoute handler={ NewsletterList } />
-      </Route>
-    );
-
-    var hook = document.getElementById('newsletters');
-    if(hook) {
-      Router.run(routes, function(Handler, state) {
-        React.render(
-          <Handler params={ state.params } query={ state.query } />,
-          hook
-        );
-      });
-    }
+const App = React.createClass({
+  render() {
+    return this.props.children
   }
-);
+});
+
+let container = document.getElementById('newsletters');
+
+if(container) {
+  ReactDOM.render((
+    <Router history={ history }>
+      <Route path="/" component={ App }>
+        <IndexRoute component={ NewsletterList } />
+        <Route path="new" component={ NewsletterTypes } />
+        <Route path="new/:type" component={ NewsletterTemplates } />
+        <Route path="send/:id" component={ NewsletterSend } />
+        <Route path="*" component={ NewsletterList } />
+      </Route>
+    </Router>
+  ), container);
+}

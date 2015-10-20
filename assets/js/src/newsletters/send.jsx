@@ -84,7 +84,7 @@ define(
 
     var NewsletterSend = React.createClass({
       mixins: [
-        Router.Navigation
+        Router.History
       ],
       handleSend: function() {
         MailPoet.Ajax.post({
@@ -97,7 +97,8 @@ define(
           }
         }).done(function(response) {
           if(response === true) {
-            this.transitionTo('/');
+            this.history.pushState(null, '/');
+
             MailPoet.Notice.success(
               'The newsletter has been sent!'
             );

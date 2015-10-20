@@ -84,7 +84,7 @@ define(
         } else {
           item_actions = (
             <span className="edit">
-              <Link to="edit" params={{ id: this.props.item.id }}>Edit</Link>
+              <Link to={ `/edit/${ this.props.item.id }` }>Edit</Link>
             </span>
           );
         }
@@ -384,7 +384,8 @@ define(
         }.bind(this));
       },
       handleRenderItem: function(item, actions) {
-        return this.props.onRenderItem(item, actions);
+        var render = this.props.onRenderItem(item, actions);
+        return render.props.children;
       },
       render: function() {
         var items = this.state.items,

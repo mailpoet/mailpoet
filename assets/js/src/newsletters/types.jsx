@@ -13,11 +13,11 @@ define(
   ) {
     var NewsletterTypes = React.createClass({
       mixins: [
-        Router.Navigation
+        Router.History
       ],
       handleSelectType: function(type) {
         if(type !== undefined) {
-          this.transitionTo('/new/'+type);
+          this.history.pushState(null, `/new/${type}`);
         }
       },
       render: function() {

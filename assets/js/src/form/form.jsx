@@ -15,7 +15,7 @@ define(
   ) {
     var Form = React.createClass({
       mixins: [
-        Router.Navigation
+        Router.History
       ],
       getInitialState: function() {
         return {
@@ -55,7 +55,7 @@ define(
               loading: false,
               item: {}
             }, function() {
-              this.transitionTo('/new');
+              this.history.pushState(null, '/new');
             }.bind(this));
           } else {
             this.setState({
@@ -78,7 +78,7 @@ define(
           this.setState({ loading: false });
 
           if(response === true) {
-            this.transitionTo('/');
+            this.history.pushState(null, '/');
             if(this.props.params.id !== undefined) {
               this.props.messages['updated']();
             } else {
