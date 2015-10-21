@@ -27,7 +27,14 @@ function(
 
       if(this.props.field.select2 && Object.keys(this.props.item).length > 0) {
         var select2 = jQuery('#'+this.props.field.id).select2({
-          width: (this.props.width || '')
+          width: (this.props.width || ''),
+          templateResult: function(item) {
+            if (item.element && item.element.selected) {
+              return null;
+            } else {
+              return item.text;
+            }
+          }
         });
 
         select2.on('change', this.handleChange)
