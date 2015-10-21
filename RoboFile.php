@@ -47,6 +47,10 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  function watchJs() {
+    $this->_exec('./node_modules/webpack/bin/webpack.js --watch');
+  }
+
   function compileAll() {
     $this->compileJs();
     $this->compileCss();

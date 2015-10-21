@@ -6,6 +6,10 @@ var webpack = require('webpack'),
 
 baseConfig = {
   context: __dirname,
+  watch: {
+    aggregateTimeout: 300,
+    poll: true
+  },
   output: {
     path: './assets/js',
     filename: '[name].js',
@@ -84,7 +88,8 @@ config.push(_.extend({}, baseConfig, {
       'newsletters/newsletters.jsx',
       'segments/segments.jsx',
       'forms/forms.jsx',
-      'settings/tabs.js'
+      'settings/tabs.js',
+      'import/import.js'
     ],
     form_editor: [
       'form_editor/form_editor.js',
