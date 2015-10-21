@@ -53,10 +53,26 @@ class Subscribers {
     wp_send_json($result);
   }
 
-  function delete($id) {
+  function restore($id) {
     $subscriber = Subscriber::findOne($id);
     if($subscriber !== false) {
-      $result = $subscriber->delete();
+      $subscriber->set_expr('deleted_at', 'NULL');
+      $result = $subscriber->save();
+    } else {
+      $result = false;
+    }
+    wp_send_json($result);
+  }
+
+  function delete($data = array()) {
+    $subscriber = Subscriber::findOne($data['id']);
+    if($subscriber !== false) {
+      if(isset($data['confirm']) && (bool)$data['confirm'] === true) {
+        $result = $subscriber->delete();
+      } else {
+        $subscriber->set_expr('deleted_at', 'NOW()');
+        $result = $subscriber->save();
+      }
     } else {
       $result = false;
     }

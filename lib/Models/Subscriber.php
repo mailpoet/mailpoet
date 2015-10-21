@@ -69,18 +69,8 @@ class Subscriber extends Model {
 
     foreach($filters as $filter) {
       if($filter['name'] === 'segment') {
-
         $segment = Segment::findOne($filter['value']);
         if($segment !== false) {
-          /*$orm = $orm
-          ->select(MP_SUBSCRIBERS_TABLE.'.*')
-          ->select('subscriber_segment.id', 'subscriber_segment_id')
-          ->join(
-            MP_SUBSCRIBER_SEGMENT_TABLE,
-            MP_SUBSCRIBERS_TABLE.'.id = subscriber_segment.subscriber_id',
-            'subscriber_segment'
-          )
-          ->where('subscriber_segment.segment_id', (int)$filter['value']);*/
           $orm = $segment->subscribers();
         }
       }
@@ -93,35 +83,47 @@ class Subscriber extends Model {
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Subscriber::count()
+        'count' => Subscriber::whereNull('deleted_at')->count()
       ),
       array(
         'name' => 'subscribed',
         'label' => __('Subscribed'),
-        'count' => Subscriber::where('status', 'subscribed')->count()
+        'count' => Subscriber::whereNull('deleted_at')
+          ->where('status', 'subscribed')
+          ->count()
       ),
       array(
         'name' => 'unconfirmed',
         'label' => __('Unconfirmed'),
-        'count' => Subscriber::where('status', 'unconfirmed')->count()
+        'count' => Subscriber::whereNull('deleted_at')
+          ->where('status', 'unconfirmed')
+          ->count()
       ),
       array(
         'name' => 'unsubscribed',
         'label' => __('Unsubscribed'),
-        'count' => Subscriber::where('status', 'unsubscribed')->count()
+        'count' => Subscriber::whereNull('deleted_at')
+          ->where('status', 'unsubscribed')
+          ->count()
+      ),
+      array(
+        'name' => 'trash',
+        'label' => __('Trash'),
+        'count' => Subscriber::whereNotNull('deleted_at')->count()
       )
     );
   }
 
   static function groupBy($orm, $group = null) {
-    if($group === null or !in_array(
-      $group,
-      array('subscribed', 'unconfirmed', 'unsubscribed')
-    )) {
-      return $orm;
-    }
+    if($group === 'trash') {
+      return $orm->whereNotNull('deleted_at');
+    } else {
+      $orm = $orm->whereNull('deleted_at');
 
-    return $orm->where('status', $group);
+      if(in_array($group, array('subscribed', 'unsubscribed', 'unconfirmed'))) {
+        return $orm->where('status', $group);
+      }
+    }
   }
 
   static function filterWithCustomFields($orm) {
@@ -228,6 +230,54 @@ class Subscriber extends Model {
     return false;
   }
 
+  static function removeFromAllLists($listing) {
+    $segments = Segment::findMany();
+    $segment_ids = array_map(function($segment) {
+      return $segment->id();
+    }, $segments);
+
+    if(!empty($segment_ids)) {
+      // delete relations with segment
+      $subscriber_ids = $listing->getSelectionIds();
+      SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)
+        ->whereIn('segment_id', $segment_ids)
+        ->deleteMany();
+      return true;
+    }
+    return false;
+  }
+
+  static function confirmUnconfirmed($listing) {
+    $subscriber_ids = $listing->getSelectionIds();
+    $subscribers = Subscriber::whereIn('id', $subscriber_ids)
+      ->where('status', 'unconfirmed')
+      ->findMany();
+
+    if(!empty($subscribers)) {
+      foreach($subscribers as $subscriber) {
+        $subscriber->set('status', 'subscribed');
+        $subscriber->save();
+      }
+      return true;
+    }
+    return false;
+  }
+
+  static function resendConfirmationEmail($listing) {
+    $subscriber_ids = $listing->getSelectionIds();
+    $subscribers = Subscriber::whereIn('id', $subscriber_ids)
+      ->where('status', 'unconfirmed')
+      ->findMany();
+
+    if(!empty($subscribers)) {
+      foreach($subscribers as $subscriber) {
+        // TODO: resend confirmation email
+      }
+      return true;
+    }
+    return false;
+  }
+
   static function addToList($listing, $data = array()) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
@@ -246,11 +296,35 @@ class Subscriber extends Model {
     return false;
   }
 
-  static function trash($listing) {
-    // delete relations with all segments
-    $subscriber_ids = $listing->getSelectionIds();
-    \MailPoet\Models\SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)->deleteMany();
+  static function trash($listing, $data = array()) {
+    if(isset($data['confirm']) && (bool)$data['confirm'] === true) {
+      // delete relations with all segments
+      $subscribers = $listing->getSelection()->findMany();
 
-    return $listing->getSelection()->deleteMany();
+      if(!empty($subscribers)) {
+        foreach($subscribers as $subscriber) {
+          $subscriber->delete();
+        }
+        return true;
+      }
+      return false;
+    } else {
+      // soft delete
+      $subscribers = $listing->getSelection()->findResultSet();
+      if(!empty($subscribers)) {
+        $subscribers->set_expr('deleted_at', 'NOW()');
+        return $subscribers->save();
+      }
+      return false;
+    }
+  }
+
+  static function restore($listing, $data = array()) {
+    $subscribers = $listing->getSelection()->findResultSet();
+    if(!empty($subscribers)) {
+      $subscribers->set_expr('deleted_at', 'NULL');
+      return $subscribers->save();
+    }
+    return false;
   }
 }

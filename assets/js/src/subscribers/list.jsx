@@ -118,6 +118,14 @@ define(
         }
       },
       {
+        name: 'removeFromAllLists',
+        label: 'Remove from all lists'
+      },
+      {
+        name: 'confirmUnconfirmed',
+        label: 'Confirm unconfirmed'
+      },
+      {
         name: 'trash',
         label: 'Trash'
       }
@@ -153,14 +161,16 @@ define(
           return segment.name;
         }).join(', ');
 
+
+
+        var row_actions = false;
+
         return (
           <div>
             <td className={ row_classes }>
-              <strong>
-                <Link to={ `/edit/${ subscriber.id }` }>
-                  { subscriber.email }
-                </Link>
-              </strong>
+              <strong><Link to={ `/edit/${ subscriber.id }` }>
+                { subscriber.email }
+              </Link></strong>
               { actions }
             </td>
             <td className="column" data-colname="First name">

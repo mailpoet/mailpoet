@@ -54,6 +54,7 @@ class Migrator {
       'email varchar(150) NOT NULL,',
       'status varchar(12) NOT NULL DEFAULT "unconfirmed",',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email)'
@@ -82,6 +83,7 @@ class Migrator {
       'preheader varchar(250) NOT NULL,',
       'body longtext,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)'
     );
@@ -106,6 +108,7 @@ class Migrator {
         'id mediumint(9) NOT NULL AUTO_INCREMENT,',
         'name varchar(90) NOT NULL,',
         'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+        'deleted_at TIMESTAMP NULL DEFAULT NULL,',
         'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
         'PRIMARY KEY  (id),',
         'UNIQUE KEY name (name)'
@@ -170,8 +173,7 @@ class Migrator {
       'newsletter_type varchar(90) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id),',
-      'UNIQUE KEY name_newsletter_type (newsletter_type, name)'
+      'PRIMARY KEY  (id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
