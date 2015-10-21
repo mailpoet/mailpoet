@@ -3,6 +3,8 @@
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
 use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Models\NewsletterOption;
 
 class NewsletterCest {
   function _before() {
@@ -16,6 +18,7 @@ class NewsletterCest {
 
     $newsletter = Newsletter::create();
     $newsletter->hydrate($this->data);
+    $this->newsletter = $newsletter;
     $this->result = $newsletter->save();
   }
 
@@ -104,7 +107,101 @@ class NewsletterCest {
     expect($newsletter->subject)->contains('pineapple');
   }
 
+  function itCanHaveOptions() {
+    $newsletterOptionFieldData = array(
+      'name' => 'Event',
+      'newsletter_type' => 'welcome',
+    );
+    $optionField = NewsletterOptionField::create();
+    $optionField->hydrate($newsletterOptionFieldData);
+    $optionField->save();
+    $association = NewsletterOption::create();
+    $association->newsletter_id = $this->newsletter->id;
+    $association->option_field_id = $optionField->id;
+    $association->value = 'list';
+    $association->save();
+    $newsletter = Newsletter::filter('filterWithOptions')
+      ->findOne($this->newsletter->id);
+    expect($newsletter->Event)->equals($association->value);
+  }
+
+  function itCanFilterOptions() {
+    $newsletterOptionFieldData = array(
+      array(
+        'name' => 'Event',
+        'newsletter_type' => 'welcome',
+      ),
+      array(
+        'name' => 'List',
+        'newsletter_type' => 'welcome',
+      )
+    );
+    foreach ($newsletterOptionFieldData as $data) {
+      $optionField = NewsletterOptionField::create();
+      $optionField->hydrate($data);
+      $optionField->save();
+      $createdOptionFields[] = $optionField->asArray();
+    }
+    $newsletterOptionData = array(
+      array(
+        'newsletter_id' => $this->newsletter->id,
+        'option_field_id' => $createdOptionFields[0]['id'],
+        'value' => 'list'
+      ),
+      array(
+        'newsletter_id' => $this->newsletter->id,
+        'option_field_id' => $createdOptionFields[1]['id'],
+        'value' => '1'
+      )
+    );
+    foreach ($newsletterOptionData as $data) {
+      $association = NewsletterOption::create();
+      $association->hydrate($data);
+      $association->save();
+      $createdAssociations[] = $association->asArray();
+    }
+    $newsletter = Newsletter::filter('filterWithOptions')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'Event',
+          'value' => 'list'
+        )
+      ))
+      ->findArray();
+    expect(empty($newsletter))->false();
+    $newsletter = Newsletter::filter('filterWithOptions')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'Event',
+          'value' => 'list'
+        ),
+        array(
+          'name' => 'List',
+          'value' => '1'
+        )
+      ))
+      ->findArray();
+    expect(empty($newsletter))->false();
+    $newsletter = Newsletter::filter('filterWithOptions')
+      ->filter('filterSearchCustomFields', array(
+        array(
+          'name' => 'Event',
+          'value' => 'list'
+        ),
+        array(
+          'name' => 'List',
+          'value' => '2'
+        )
+      ))
+      ->findArray();
+    expect(empty($newsletter))->true();
+  }
+
   function _after() {
+    ORM::forTable(NewsletterOption::$_table)
+      ->deleteMany();
+    ORM::forTable(NewsletterOptionField::$_table)
+      ->deleteMany();
     ORM::for_table(Newsletter::$_table)
       ->deleteMany();
   }
