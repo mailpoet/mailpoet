@@ -20,7 +20,7 @@ class Migrator {
       'custom_fields',
       'subscriber_custom_field',
       'newsletter_option_fields',
-      'newsletter_options',
+      'newsletter_option',
     );
   }
 
@@ -171,12 +171,12 @@ class Migrator {
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY name (name)'
+      'UNIQUE KEY name_newsletter_type (newsletter_type, name)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletter_options() {
+  function newsletter_option() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',

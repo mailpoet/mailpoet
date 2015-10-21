@@ -41,7 +41,7 @@ class NewsletterOptionFieldCest {
   function itHasNewsletterType() {
     $optionField = NewsletterOptionField::where('name', $this->data['name'])
       ->findOne();
-    expect($optionField->type)->equals($this->data['newsletter_type']);
+    expect($optionField->newsletter_type)->equals($this->data['newsletter_type']);
   }
 
   function itHasToBeValid() {
@@ -107,7 +107,7 @@ class NewsletterOptionFieldCest {
     $newsletter->save();
     $association = NewsletterOption::create();
     $association->newsletter_id = $newsletter->id;
-    $association->option_field_id = $this->newsletterField->id;
+    $association->option_field_id = $this->optionField->id;
     $association->value = 'list';
     $association->save();
     $optionField = NewsletterOptionField::findOne($this->optionField->id);
@@ -117,11 +117,11 @@ class NewsletterOptionFieldCest {
   }
 
   function _after() {
-    ORM::forTable(Newsletter::$_table)
-      ->deleteMany();
     ORM::forTable(NewsletterOption::$_table)
       ->deleteMany();
     ORM::forTable(NewsletterOptionField::$_table)
+      ->deleteMany();
+    ORM::forTable(Newsletter::$_table)
       ->deleteMany();
   }
 }

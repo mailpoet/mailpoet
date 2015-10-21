@@ -44,7 +44,7 @@ class Initializer {
     $custom_fields = Env::$db_prefix . 'custom_fields';
     $subscriber_custom_field = Env::$db_prefix . 'subscriber_custom_field';
     $newsletter_option_fields = Env::$db_prefix . 'newsletter_option_fields';
-    $newsletter_options = Env::$db_prefix . 'newsletter_options';
+    $newsletter_option = Env::$db_prefix . 'newsletter_option';
 
     define('MP_SUBSCRIBERS_TABLE', $subscribers);
     define('MP_SETTINGS_TABLE', $settings);
@@ -56,7 +56,7 @@ class Initializer {
     define('MP_CUSTOM_FIELDS_TABLE', $custom_fields);
     define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', $subscriber_custom_field);
     define('MP_NEWSLETTER_OPTION_FIELDS_TABLE', $newsletter_option_fields);
-    define('MP_NEWSLETTER_OPTIONS_TABLE', $newsletter_options);
+    define('MP_NEWSLETTER_OPTION_TABLE', $newsletter_option);
   }
 
   function setupActivator() {

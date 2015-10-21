@@ -18,6 +18,7 @@ class NewsletterCest {
 
     $newsletter = Newsletter::create();
     $newsletter->hydrate($this->data);
+    $this->newsletter = $newsletter;
     $this->result = $newsletter->save();
   }
 
@@ -119,11 +120,11 @@ class NewsletterCest {
     $association->option_field_id = $optionField->id;
     $association->value = 'list';
     $association->save();
-    $subscriber = Newsletter::filter('filterWithOptions')
-      ->findOne($this->subscriber->id);
+    $newsletter = Newsletter::filter('filterWithOptions')
+      ->findOne($this->newsletter->id);
     expect($newsletter->Event)->equals($association->value);
   }
-  
+
   function itCanFilterOptions() {
     $newsletterOptionFieldData = array(
       array(
@@ -167,89 +168,40 @@ class NewsletterCest {
         )
       ))
       ->findArray();
-    expect(empty($subscriber))->false();
-    $subscriber = Subscriber::filter('filterWithCustomFields')
+    expect(empty($newsletter))->false();
+    $newsletter = Newsletter::filter('filterWithOptions')
       ->filter('filterSearchCustomFields', array(
         array(
-          'name' => 'City',
-          'value' => 'Paris'
+          'name' => 'Event',
+          'value' => 'list'
         ),
         array(
-          'name' => 'Country',
-          'value' => 'France'
+          'name' => 'List',
+          'value' => '1'
         )
       ))
       ->findArray();
-    expect(empty($subscriber))->false();
-    $subscriber = Subscriber::filter('filterWithCustomFields')
+    expect(empty($newsletter))->false();
+    $newsletter = Newsletter::filter('filterWithOptions')
       ->filter('filterSearchCustomFields', array(
         array(
-          'name' => 'City',
-          'value' => 'Paris'
+          'name' => 'Event',
+          'value' => 'list'
         ),
         array(
-          'name' => 'Country',
-          'value' => 'Russia'
-        )
-      ), 'OR')
-      ->findArray();
-    expect(empty($subscriber))->false();
-    $subscriber = Subscriber::filter('filterWithCustomFields')
-      ->filter('filterSearchCustomFields', array(
-        array(
-          'name' => 'City',
-          'value' => 'is'
-        )
-      ), 'AND', 'LIKE')
-      ->findArray();
-    expect(empty($subscriber))->false();
-    $subscriber = Subscriber::filter('filterWithCustomFields')
-      ->filter('filterSearchCustomFields', array(
-        array(
-          'name' => 'City',
-          'value' => 'Moscow'
+          'name' => 'List',
+          'value' => '2'
         )
       ))
       ->findArray();
-    expect(empty($subscriber))->true();
-    $subscriber = Subscriber::filter('filterWithCustomFields')
-      ->filter('filterSearchCustomFields', array(
-        array(
-          'name' => 'City',
-          'value' => 'Paris'
-        ),
-        array(
-          'name' => 'Country',
-          'value' => 'Russia'
-        )
-      ))
-      ->findArray();
-    expect(empty($subscriber))->true();
-    $subscriber = Subscriber::filter('filterWithCustomFields')
-      ->filter('filterSearchCustomFields', array(
-        array(
-          'name' => 'City',
-          'value' => 'Moscow'
-        ),
-        array(
-          'name' => 'Country',
-          'value' => 'Russia'
-        )
-      ), 'OR')
-      ->findArray();
-    expect(empty($subscriber))->true();
-    $subscriber = Subscriber::filter('filterWithCustomFields')
-      ->filter('filterSearchCustomFields', array(
-        array(
-          'name' => 'City',
-          'value' => 'zz'
-        )
-      ), 'AND', 'LIKE')
-      ->findArray();
-    expect(empty($subscriber))->true();
+    expect(empty($newsletter))->true();
   }
 
   function _after() {
+    ORM::forTable(NewsletterOption::$_table)
+      ->deleteMany();
+    ORM::forTable(NewsletterOptionField::$_table)
+      ->deleteMany();
     ORM::for_table(Newsletter::$_table)
       ->deleteMany();
   }
