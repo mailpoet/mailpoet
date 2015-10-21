@@ -210,7 +210,7 @@ define(
           search: '',
           page: 1,
           count: 0,
-          limit: 5,
+          limit: 10,
           sort_by: 'id',
           sort_order: 'desc',
           items: [],
