@@ -24,7 +24,7 @@ class Subscribers {
 
   function listing($data = array()) {
     $listing = new Listing\Handler(
-      \Model::factory('\MailPoet\Models\Subscriber'),
+      '\MailPoet\Models\Subscriber',
       $data
     );
 

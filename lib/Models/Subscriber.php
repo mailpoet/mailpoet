@@ -72,15 +72,16 @@ class Subscriber extends Model {
 
         $segment = Segment::findOne($filter['value']);
         if($segment !== false) {
-          $orm = $orm
-          ->select('model.*')
+          /*$orm = $orm
+          ->select(MP_SUBSCRIBERS_TABLE.'.*')
           ->select('subscriber_segment.id', 'subscriber_segment_id')
           ->join(
             MP_SUBSCRIBER_SEGMENT_TABLE,
-            'model.id = subscriber_segment.subscriber_id',
+            MP_SUBSCRIBERS_TABLE.'.id = subscriber_segment.subscriber_id',
             'subscriber_segment'
           )
-          ->where('subscriber_segment.segment_id', (int)$filter['value']);
+          ->where('subscriber_segment.segment_id', (int)$filter['value']);*/
+          $orm = $segment->subscribers();
         }
       }
     }

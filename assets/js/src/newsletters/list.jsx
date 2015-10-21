@@ -3,13 +3,15 @@ define(
     'react',
     'react-router',
     'listing/listing.jsx',
-    'classnames'
+    'classnames',
+    'jquery'
   ],
   function(
     React,
     Router,
     Listing,
-    classNames
+    classNames,
+    jQuery
   ) {
     var Link = Router.Link;
 
@@ -18,6 +20,10 @@ define(
         name: 'subject',
         label: 'Subject',
         sortable: true
+      },
+      {
+        name: 'segments',
+        label: 'Lists'
       },
       {
         name: 'created_at',
@@ -60,6 +66,12 @@ define(
           'has-row-actions'
         );
 
+        var segments = mailpoet_segments.filter(function(segment) {
+          return (jQuery.inArray(segment.id, newsletter.segments) !== -1);
+        }).map(function(segment) {
+          return segment.name;
+        }).join(', ');
+
         return (
           <div>
             <td className={ rowClasses }>
@@ -67,6 +79,9 @@ define(
                 <a>{ newsletter.subject }</a>
               </strong>
               { actions }
+            </td>
+            <td className="column" data-colname="Lists">
+              { segments }
             </td>
             <td className="column-date" data-colname="Subscribed on">
               <abbr>{ newsletter.created_at }</abbr>

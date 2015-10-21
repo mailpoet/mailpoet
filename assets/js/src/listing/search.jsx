@@ -4,7 +4,7 @@ define(['react'], function(React) {
     handleSearch: function(e) {
       e.preventDefault();
       this.props.onSearch(
-        this.refs.search.getDOMNode().value
+        this.refs.search.value
       );
     },
     render: function() {

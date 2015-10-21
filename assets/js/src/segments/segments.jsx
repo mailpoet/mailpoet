@@ -13,7 +13,7 @@ const App = React.createClass({
   }
 });
 
-let container = document.getElementById('segments');
+let container = document.getElementById('segments_container');
 
 if(container) {
   ReactDOM.render((

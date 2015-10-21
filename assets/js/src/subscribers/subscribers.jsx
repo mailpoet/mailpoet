@@ -13,7 +13,7 @@ const App = React.createClass({
   }
 });
 
-let container = document.getElementById('subscribers');
+let container = document.getElementById('subscribers_container');
 
 if(container) {
   ReactDOM.render((

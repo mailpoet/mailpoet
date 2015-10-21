@@ -1,7 +1,7 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-  <div id="subscribers"></div>
+  <div id="subscribers_container"></div>
 
   <%= localize({
     'pageTitle': __('Subscribers'),
@@ -9,6 +9,7 @@
     'loadingItems': __('Loading subscribers...'),
     'noItemsFound': __('No subscribers found.'),
     'selectAllLabel': __('All subscribers on this page are selected.'),
+    'selectedAllLabel': __('All %d subscribers are selected.'),
     'selectAllLink': __('Select all pages.'),
     'clearSelection': __('Clear selection.')
   }) %>

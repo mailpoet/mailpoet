@@ -37,7 +37,7 @@ define(
             loading: false,
             item: {}
           });
-          this.refs.form.getDOMNode().reset();
+          this.refs.form.reset();
         } else {
           this.loadItem(props.params.id);
         }
