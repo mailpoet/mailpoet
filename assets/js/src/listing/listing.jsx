@@ -340,6 +340,11 @@ define(
         this.setState({ loading: true });
 
         var data = params || {};
+        var callback = ((data['onSuccess'] !== undefined)
+          ? data['onSuccess']
+          : function() {}
+        );
+        delete data.onSuccess;
 
         data.listing = {
           offset: 0,
@@ -354,8 +359,9 @@ define(
           endpoint: this.props.endpoint,
           action: 'bulk_action',
           data: data
-        }).done(function() {
+        }).done(function(response) {
           this.getItems();
+          callback(response);
         }.bind(this));
       },
       handleSearch: function(search) {

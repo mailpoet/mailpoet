@@ -77,6 +77,13 @@ define(
           return {
             segment_id: ~~(jQuery('#move_to_segment').val())
           }
+        },
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers were moved to list <strong>%$2s</strong>.'
+            .replace('%$1d', ~~response.subscribers)
+            .replace('%$2s', response.segment)
+          );
         }
       },
       {
@@ -96,6 +103,13 @@ define(
           return {
             segment_id: ~~(jQuery('#add_to_segment').val())
           }
+        },
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers were added to list <strong>%$2s</strong>.'
+            .replace('%$1d', ~~response.subscribers)
+            .replace('%$2s', response.segment)
+          );
         }
       },
       {
@@ -115,19 +129,45 @@ define(
           return {
             segment_id: ~~(jQuery('#remove_from_segment').val())
           }
+        },
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers were removed from list <strong>%$2s</strong>.'
+            .replace('%$1d', ~~response.subscribers)
+            .replace('%$2s', response.segment)
+          );
         }
       },
       {
         name: 'removeFromAllLists',
-        label: 'Remove from all lists'
+        label: 'Remove from all lists',
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers were removed from all lists.'
+            .replace('%$1d', ~~response.subscribers)
+            .replace('%$2s', response.segment)
+          );
+        }
       },
       {
         name: 'confirmUnconfirmed',
-        label: 'Confirm unconfirmed'
+        label: 'Confirm unconfirmed',
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers have been confirmed.'
+            .replace('%$1d', ~~response.subscribers)
+          );
+        }
       },
       {
         name: 'trash',
-        label: 'Trash'
+        label: 'Trash',
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers were moved to the trash.'
+            .replace('%$1d', ~~response.subscribers)
+          );
+        }
       }
     ];
 

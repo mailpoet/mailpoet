@@ -45,6 +45,10 @@ function(
 
       data.action = this.state.action;
 
+      if(action['onSuccess'] !== undefined) {
+        data.onSuccess = action.onSuccess;
+      }
+
       if(data.action) {
         this.props.onBulkAction(selected_ids, data);
       }

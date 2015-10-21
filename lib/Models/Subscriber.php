@@ -199,6 +199,7 @@ class Subscriber extends Model {
     $segment = Segment::findOne($segment_id);
 
     if($segment !== false) {
+      $subscribers_count = 0;
       $subscribers = $listing->getSelection()->findMany();
       foreach($subscribers as $subscriber) {
         // remove subscriber from all segments
@@ -209,8 +210,13 @@ class Subscriber extends Model {
         $association->subscriber_id = $subscriber->id;
         $association->segment_id = $segment->id;
         $association->save();
+
+        $subscribers_count++;
       }
-      return true;
+      return array(
+        'subscribers' => $subscribers_count,
+        'segment' => $segment->name
+      );
     }
     return false;
   }
@@ -225,7 +231,11 @@ class Subscriber extends Model {
       SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)
         ->where('segment_id', $segment->id)
         ->deleteMany();
-      return true;
+
+      return array(
+        'subscribers' => count($subscriber_ids),
+        'segment' => $segment->name
+      );
     }
     return false;
   }
@@ -242,7 +252,10 @@ class Subscriber extends Model {
       SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)
         ->whereIn('segment_id', $segment_ids)
         ->deleteMany();
-      return true;
+
+      return array(
+        'subscribers' => count($subscriber_ids)
+      );
     }
     return false;
   }
@@ -254,11 +267,17 @@ class Subscriber extends Model {
       ->findMany();
 
     if(!empty($subscribers)) {
+      $subscribers_count = 0;
       foreach($subscribers as $subscriber) {
         $subscriber->set('status', 'subscribed');
-        $subscriber->save();
+        if($subscriber->save() === true) {
+          $subscribers_count++;
+        }
       }
-      return true;
+
+      return array(
+        'subscribers' => $subscribers_count
+      );
     }
     return false;
   }
@@ -283,15 +302,21 @@ class Subscriber extends Model {
     $segment = Segment::findOne($segment_id);
 
     if($segment !== false) {
+      $subscribers_count = 0;
       $subscribers = $listing->getSelection()->findMany();
       foreach($subscribers as $subscriber) {
         // create relation with segment
         $association = \MailPoet\Models\SubscriberSegment::create();
         $association->subscriber_id = $subscriber->id;
         $association->segment_id = $segment->id;
-        $association->save();
+        if($association->save()) {
+          $subscribers_count++;
+        }
       }
-      return true;
+      return array(
+        'subscribers' => $subscribers_count,
+        'segment' => $segment->name
+      );
     }
     return false;
   }
@@ -302,10 +327,15 @@ class Subscriber extends Model {
       $subscribers = $listing->getSelection()->findMany();
 
       if(!empty($subscribers)) {
+        $subscribers_count = 0;
         foreach($subscribers as $subscriber) {
-          $subscriber->delete();
+          if($subscriber->delete()) {
+            $subscribers_count++;
+          }
         }
-        return true;
+        return array(
+          'subscribers' => $subscribers_count
+        );
       }
       return false;
     } else {
@@ -313,7 +343,11 @@ class Subscriber extends Model {
       $subscribers = $listing->getSelection()->findResultSet();
       if(!empty($subscribers)) {
         $subscribers->set_expr('deleted_at', 'NOW()');
-        return $subscribers->save();
+        $subscribers->save();
+
+        return array(
+          'subscribers' => $subscribers->count()
+        );
       }
       return false;
     }
