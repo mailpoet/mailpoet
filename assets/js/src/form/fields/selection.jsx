@@ -10,32 +10,34 @@ function(
   var Selection = React.createClass({
     getInitialState: function() {
       return {
-        items: []
+        items: [],
+        initialized: false
       }
-    },
-    componentWillMount: function() {
-
     },
     componentDidMount: function() {
       this.loadCachedItems();
     },
+    componentDidUpdate: function() {
+      this.setupSelect2();
+    },
     setupSelect2: function() {
+      if(this.state.initialized === true) {
+        return;
+      }
+
       if(this.props.field.select2 && Object.keys(this.props.item).length > 0) {
-        console.log('do it!');
-        jQuery('#'+this.props.field.id).select2({
-          width: this.props.field.width
-        }).select2(
+        var select2 = jQuery('#'+this.props.field.id).select2({
+          width: (this.props.width || '')
+        });
+
+        select2.on('change', this.handleChange)
+
+        select2.select2(
           'val',
           this.props.item[this.props.field.name]
-        ).on('change', this.handleChange);
+        );
 
-        // set values
-        /*jQuery('#'+this.props.field.id).select2(
-          'val',
-          this.props.item[this.props.field.name]
-        );*/
-
-        console.log(this.props.item[this.props.field.name]);
+        this.setState({ initialized: true });
       }
     },
     loadCachedItems: function() {
@@ -77,8 +79,6 @@ function(
           ? this.props.item[this.props.field.name]
           : null
         );
-
-        this.setupSelect2();
 
         return (
           <select
