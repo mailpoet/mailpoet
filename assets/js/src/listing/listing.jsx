@@ -388,7 +388,6 @@ define(
         }.bind(this));
       },
       handleSetPage: function(page) {
-        console.log('listing > handleSetPage('+page+')');
         this.setState({
           page: page,
           selection: false,
