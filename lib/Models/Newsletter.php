@@ -62,11 +62,11 @@ class Newsletter extends Model {
         $segment = Segment::findOne($filter['value']);
         if($segment !== false) {
           $orm = $orm
-          ->select('model.*')
+          ->select(MP_NEWSLETTERS_TABLE.'.*')
           ->select('newsletter_segment.id', 'newsletter_segment_id')
           ->join(
             MP_NEWSLETTER_SEGMENT_TABLE,
-            'model.id = newsletter_segment.newsletter_id',
+            MP_NEWSLETTERS_TABLE.'.id = newsletter_segment.newsletter_id',
             'newsletter_segment'
           )
           ->where('newsletter_segment.segment_id', (int)$filter['value']);

@@ -1,25 +1,39 @@
 define(['react', 'classnames'], function(React, classNames) {
 
   var ListingPages = React.createClass({
+    getInitialState: function() {
+      return {
+        page: null
+      }
+    },
+    setPage: function(page) {
+      this.props.onSetPage(page);
+    },
     setFirstPage: function() {
-      this.props.onSetPage(1);
+      this.setPage(1);
     },
     setLastPage: function() {
-      this.props.onSetPage(this.getLastPage());
+      this.setPage(this.getLastPage());
     },
     setPreviousPage: function() {
-      this.props.onSetPage(this.constrainPage(this.props.page - 1));
+      this.setPage(this.constrainPage(this.props.page - 1));
     },
     setNextPage: function() {
-      this.props.onSetPage(this.constrainPage(this.props.page + 1));
+      this.setPage(this.constrainPage(this.props.page + 1));
     },
     constrainPage: function(page) {
       return Math.min(Math.max(1, Math.abs(~~page)), this.getLastPage());
     },
-    handleSetPage: function() {
-      this.props.onSetPage(
-        this.constrainPage(this.refs.page.getDOMNode().value)
-      );
+    handleSetManualPage: function(e) {
+      if(e.which === 13) {
+        this.setPage(this.state.page);
+        this.setState({ page: null });
+      }
+    },
+    handleChangeManualPage: function(e) {
+      this.setState({
+        page: this.constrainPage(e.target.value)
+      });
     },
     getLastPage: function() {
       return Math.ceil(this.props.count / this.props.limit);
@@ -46,7 +60,7 @@ define(['react', 'classnames'], function(React, classNames) {
           if(this.props.page > 1) {
             previousPage = (
               <a href="javascript:;"
-                onClick={this.setPreviousPage}
+                onClick={ this.setPreviousPage }
                 className="prev-page">
                 <span className="screen-reader-text">Previous page</span>
                 <span aria-hidden="true">‹</span>
@@ -57,7 +71,7 @@ define(['react', 'classnames'], function(React, classNames) {
           if(this.props.page > 2) {
             firstPage = (
               <a href="javascript:;"
-                onClick={this.setFirstPage}
+                onClick={ this.setFirstPage }
                 className="first-page">
                 <span className="screen-reader-text">First page</span>
                 <span aria-hidden="true">«</span>
@@ -68,7 +82,7 @@ define(['react', 'classnames'], function(React, classNames) {
           if(this.props.page < this.getLastPage()) {
             nextPage = (
               <a href="javascript:;"
-                onClick={this.setNextPage}
+                onClick={ this.setNextPage }
                 className="next-page">
                 <span className="screen-reader-text">Next page</span>
                 <span aria-hidden="true">›</span>
@@ -79,7 +93,7 @@ define(['react', 'classnames'], function(React, classNames) {
           if(this.props.page < this.getLastPage() - 1) {
             lastPage = (
               <a href="javascript:;"
-                onClick={this.setLastPage}
+                onClick={ this.setLastPage }
                 className="last-page">
                 <span className="screen-reader-text">Last page</span>
                 <span aria-hidden="true">»</span>
@@ -98,11 +112,12 @@ define(['react', 'classnames'], function(React, classNames) {
                   htmlFor="current-page-selector">Current Page</label>
                 <input
                   type="text"
-                  onChange={this.handleSetPage}
+                  onChange={ this.handleChangeManualPage }
+                  onKeyUp={ this.handleSetManualPage }
                   aria-describedby="table-paging"
                   size="1"
                   ref="page"
-                  value={this.props.page}
+                  value={ this.state.page || this.props.page }
                   name="paged"
                   id="current-page-selector"
                   className="current-page" />
@@ -124,7 +139,7 @@ define(['react', 'classnames'], function(React, classNames) {
         );
 
         return (
-          <div className={classes}>
+          <div className={ classes }>
             <span className="displaying-num">{ this.props.count } item(s)</span>
             { pagination }
           </div>

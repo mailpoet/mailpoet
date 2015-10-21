@@ -3,7 +3,7 @@ define(['react', 'classnames'], function(React, classNames) {
   var ListingHeader = React.createClass({
     handleSelectItems: function() {
       return this.props.onSelectItems(
-        this.refs.toggle.getDOMNode().checked
+        this.refs.toggle.checked
       );
     },
     render: function() {

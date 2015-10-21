@@ -161,7 +161,15 @@ define(
                     this.props.columns.length
                     + (this.props.is_selectable ? 1 : 0)
                   }>
-                  { MailPoetI18n.selectAllLabel }&nbsp;
+                  {
+                    (this.props.selection !== 'all')
+                    ? MailPoetI18n.selectAllLabel
+                    : MailPoetI18n.selectedAllLabel.replace(
+                      '%d',
+                      this.props.count
+                    )
+                  }
+                  &nbsp;
                   <a
                     onClick={ this.props.onSelectAll }
                     href="javascript:;">{
@@ -247,7 +255,10 @@ define(
         }.bind(this));
       },
       handleDeleteItem: function(id) {
-        this.setState({ loading: true });
+        this.setState({
+          loading: true,
+          page: 1
+        });
 
         MailPoet.Ajax.post({
           endpoint: this.props.endpoint,
@@ -289,6 +300,7 @@ define(
       handleSearch: function(search) {
         this.setState({
           search: search,
+          page: 1,
           selection: false,
           selected_ids: []
         }, function() {
@@ -340,6 +352,7 @@ define(
       },
       handleSelectAll: function() {
         if(this.state.selection === 'all') {
+          this.clearSelection();
         } else {
           this.setState({
             selection: 'all',

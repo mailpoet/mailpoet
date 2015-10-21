@@ -55,7 +55,7 @@ function(
       });
     },
     getSelectedAction: function() {
-      var selected_action = jQuery(this.refs.action.getDOMNode()).val();
+      var selected_action = this.refs.action.value;
       if(selected_action.length > 0) {
         var action = this.props.bulk_actions.filter(function(action) {
           return (action.name === selected_action);

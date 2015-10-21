@@ -34,7 +34,8 @@ define(
         placeholder: "Select a list",
         id: "mailpoet_segments",
         endpoint: "segments",
-        multiple: true
+        multiple: true,
+        select2: true
       },
       {
         name: 'sender',

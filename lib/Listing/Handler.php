@@ -8,8 +8,12 @@ class Handler {
   private $data = array();
   private $model = null;
 
-  function __construct($model, $data = array()) {
-    $this->model = $model;
+  function __construct($model_class, $data = array()) {
+    $class = new \ReflectionClass($model_class);
+    $this->table_name = $class->getStaticPropertyValue('_table');
+
+    $this->model = \Model::factory($model_class);
+
     $this->data = array(
       // pagination
       'offset' => (isset($data['offset']) ? (int)$data['offset'] : 0),
@@ -27,7 +31,7 @@ class Handler {
       'selection' => (isset($data['selection']) ? $data['selection'] : null)
     );
 
-    $this->setFilter();
+    $this->model = $this->setFilter();
     $this->setSearch();
     $this->setGroup();
     $this->setOrder();
@@ -42,10 +46,8 @@ class Handler {
 
   private function setOrder() {
     return $this->model
-      ->tableAlias('model')
       ->{'order_by_'.$this->data['sort_order']}(
-        'model.'.$this->data['sort_by']
-      );
+        $this->table_name.'.'.$this->data['sort_by']);
   }
 
   private function setGroup() {
@@ -57,20 +59,20 @@ class Handler {
 
   private function setFilter() {
     if($this->data['filter'] === null) {
-      return;
+      return $this->model;
     }
     return $this->model->filter('filterBy', $this->data['filter']);
   }
 
   function getSelection() {
     if(!empty($this->data['selection'])) {
-      $this->model->whereIn('model.id', $this->data['selection']);
+      $this->model->whereIn('id', $this->data['selection']);
     }
     return $this->model;
   }
 
   function getSelectionIds() {
-    $models = $this->getSelection()->select('model.id')->findMany();
+    $models = $this->getSelection()->select('id')->findMany();
     return array_map(function($model) {
       return (int)$model->id;
     }, $models);

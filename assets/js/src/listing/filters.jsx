@@ -7,7 +7,7 @@ function(
   var ListingFilters = React.createClass({
     handleFilterAction: function() {
       var filters = this.props.filters.map(function(filter, index) {
-        var value = this.refs['filter-'+index].getDOMNode().value;
+        var value = this.refs['filter-'+index].value;
         if(value) {
           return {
             'name': filter.name,

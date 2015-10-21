@@ -15,7 +15,7 @@ const App = React.createClass({
   }
 });
 
-let container = document.getElementById('newsletters');
+let container = document.getElementById('newsletters_container');
 
 if(container) {
   ReactDOM.render((

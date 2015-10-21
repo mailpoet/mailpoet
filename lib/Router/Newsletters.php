@@ -112,7 +112,7 @@ class Newsletters {
     $fromName = Setting::where('name', 'from_name')->findOne()->value;
     $apiKey = Setting::where('name', 'api_key')->findOne()->value;
     $mailer = new MailPoet($apiKey, $fromEmail, $fromName);
-	
+
     foreach ($subscribers as $subscriber) {
       $result = $mailer->send(
         $newsletter,
@@ -120,7 +120,7 @@ class Newsletters {
       );
       if ($result !== true) wp_send_json(false);
     }
-	
+
     wp_send_json(true);
   }
 
@@ -134,10 +134,23 @@ class Newsletters {
 
   function listing($data = array()) {
     $listing = new Listing\Handler(
-      \Model::factory('\MailPoet\Models\Newsletter'),
+      '\MailPoet\Models\Newsletter',
       $data
     );
-    wp_send_json($listing->get());
+
+    $listing_data = $listing->get();
+
+    // fetch segments relations for each returned item
+    foreach($listing_data['items'] as &$item) {
+      $segments = NewsletterSegment::select('segment_id')
+        ->where('newsletter_id', $item['id'])
+        ->findMany();
+      $item['segments'] = array_map(function($relation) {
+        return $relation->segment_id;
+      }, $segments);
+    }
+
+    wp_send_json($listing_data);
   }
 
   function bulk_action($data = array()) {

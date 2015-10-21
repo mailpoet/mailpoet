@@ -22,7 +22,7 @@ class Segments {
 
   function listing($data = array()) {
     $listing = new Listing\Handler(
-      \Model::factory('\MailPoet\Models\Segment'),
+      '\MailPoet\Models\Segment',
       $data
     );
     wp_send_json($listing->get());
