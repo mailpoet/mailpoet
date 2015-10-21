@@ -76,6 +76,14 @@ class Menu {
       'mailpoet-settings',
       array($this, 'settings')
     );
+    add_submenu_page(
+      'mailpoet',
+      __('Import'),
+      __('Import'),
+      'manage_options',
+      'mailpoet-import',
+      array($this, 'import')
+    );
     // add_submenu_page(
     //   'mailpoet',
     //   __('Newsletter editor'),
@@ -204,6 +212,10 @@ class Menu {
     echo $this->renderer->render('newsletter/form.html', $data);
   }
 
+  function import() {
+    echo $this->renderer->render('import.html');
+  }
+  
   function formEditor() {
     $id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     $form = Form::findOne($id);
