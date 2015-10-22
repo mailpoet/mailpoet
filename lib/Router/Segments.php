@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Router;
 use \MailPoet\Models\Segment;
+use \MailPoet\Models\SubscriberSegment;
 use \MailPoet\Listing;
 
 if(!defined('ABSPATH')) exit;
@@ -25,7 +26,39 @@ class Segments {
       '\MailPoet\Models\Segment',
       $data
     );
-    wp_send_json($listing->get());
+
+    $listing_data = $listing->get();
+
+    // fetch segments relations for each returned item
+    foreach($listing_data['items'] as &$item) {
+      $stats = SubscriberSegment::table_alias('relation')
+        ->where(
+          'relation.segment_id',
+          $item['id']
+        )
+        ->join(
+          MP_SUBSCRIBERS_TABLE,
+          'subscribers.id = relation.subscriber_id',
+          'subscribers'
+        )
+        ->select_expr(
+          'SUM(CASE status WHEN "subscribed" THEN 1 ELSE 0 END)',
+          'subscribed'
+        )
+        ->select_expr(
+          'SUM(CASE status WHEN "unsubscribed" THEN 1 ELSE 0 END)',
+          'unsubscribed'
+        )
+        ->select_expr(
+          'SUM(CASE status WHEN "unconfirmed" THEN 1 ELSE 0 END)',
+          'unconfirmed'
+        )
+        ->findOne()->asArray();
+
+      $item = array_merge($item, $stats);
+    }
+
+    wp_send_json($listing_data);
   }
 
   function getAll() {

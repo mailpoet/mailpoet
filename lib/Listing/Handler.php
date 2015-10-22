@@ -71,10 +71,6 @@ class Handler {
     return $this->model;
   }
 
-  function count() {
-    return (int)$this->model->count();
-  }
-
   function getSelectionIds() {
     $models = $this->getSelection()
       ->select('id')
@@ -86,18 +82,15 @@ class Handler {
   }
 
   function get() {
-    $items = $this->model;
-    if($this->data['limit'] > 0) {
-      $items = $items
-        ->offset($this->data['offset'])
-        ->limit($this->data['limit'])
-        ->findArray();
-    } else {
-      $items = $items->findArray();
-    }
+    $count = $this->model->count();
+
+    $items = $this->model
+      ->offset($this->data['offset'])
+      ->limit($this->data['limit'])
+      ->findArray();
 
     return array(
-      'count' => $this->model->count(),
+      'count' => $count,
       'filters' => $this->model->filter('filters'),
       'groups' => $this->model->filter('groups'),
       'items' => $items

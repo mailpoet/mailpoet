@@ -160,7 +160,7 @@ define(
             <Listing
               messages={ messages }
               search={ false }
-              limit={ 0 }
+              limit={ 1000 }
               endpoint="segments"
               onRenderItem={ this.renderItem }
               columns={ columns }
