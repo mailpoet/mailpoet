@@ -121,6 +121,22 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           // set message
           this.setMessage(this.options.message);
 
+          // position notice
+          this.element.insertAfter(jQuery('h2.title'));
+
+          // set class name
+          switch(this.options.type) {
+            case 'success':
+              this.element.addClass('updated');
+            break;
+            case 'system':
+              this.element.addClass('update-nag');
+            break;
+            case 'error':
+              this.element.addClass('error');
+            break;
+          }
+
           // make the notice appear
           this.element.fadeIn(200);
 

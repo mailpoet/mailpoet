@@ -43,8 +43,11 @@ define(
 
         return !e.target.checked;
       },
-      handleDeleteItem: function(id) {
-        this.props.onDeleteItem(id);
+      handleRestoreItem: function(id) {
+        this.props.onRestoreItem(id);
+      },
+      handleDeleteItem: function(id, confirm = false) {
+        this.props.onDeleteItem(id, confirm);
       },
       handleToggleItem: function(id) {
         this.setState({ toggled: !this.state.toggled });
@@ -89,26 +92,65 @@ define(
           );
         }
 
-        var actions = (
-          <div>
-            <div className="row-actions">
-              { item_actions }
-              { ' | ' }
-              <span className="trash">
-                <a
-                  href="javascript:;"
-                  onClick={ this.handleDeleteItem.bind(null, this.props.item.id) }>
-                  Trash
-                </a>
-              </span>
+        if(this.props.group === 'trash') {
+           var actions = (
+            <div>
+              <div className="row-actions">
+                <span>
+                  <a
+                    href="javascript:;"
+                    onClick={ this.handleRestoreItem.bind(
+                      null,
+                      this.props.item.id
+                    )}
+                  >Restore</a>
+                </span>
+                { ' | ' }
+                <span className="delete">
+                  <a
+                    className="submitdelete"
+                    href="javascript:;"
+                    onClick={ this.handleDeleteItem.bind(
+                      null,
+                      this.props.item.id,
+                      true
+                    )}
+                  >Delete permanently</a>
+                </span>
+              </div>
+              <button
+                onClick={ this.handleToggleItem.bind(null, this.props.item.id) }
+                className="toggle-row" type="button">
+                <span className="screen-reader-text">Show more details</span>
+              </button>
             </div>
-            <button
-              onClick={ this.handleToggleItem.bind(null, this.props.item.id) }
-              className="toggle-row" type="button">
-              <span className="screen-reader-text">Show more details</span>
-            </button>
-          </div>
-        );
+          );
+        } else {
+          var actions = (
+            <div>
+              <div className="row-actions">
+                { item_actions }
+                { ' | ' }
+                <span className="trash">
+                  <a
+                    href="javascript:;"
+                    onClick={ this.handleDeleteItem.bind(
+                      null,
+                      this.props.item.id,
+                      false
+                    ) }>
+                    Trash
+                  </a>
+                </span>
+              </div>
+              <button
+                onClick={ this.handleToggleItem.bind(null, this.props.item.id) }
+                className="toggle-row" type="button">
+                <span className="screen-reader-text">Show more details</span>
+              </button>
+            </div>
+          );
+        }
 
         var row_classes = classNames({ 'is-expanded': !this.state.toggled })
 
@@ -190,9 +232,11 @@ define(
                     onSelectItem={ this.props.onSelectItem }
                     onRenderItem={ this.props.onRenderItem }
                     onDeleteItem={ this.props.onDeleteItem }
+                    onRestoreItem={ this.props.onRestoreItem }
                     selection={ this.props.selection }
                     is_selectable={ this.props.is_selectable }
                     item_actions={ this.props.item_actions }
+                    group={ this.props.group }
                     key={ 'item-' + item.id }
                     item={ item } />
                 );
@@ -254,7 +298,27 @@ define(
           }
         }.bind(this));
       },
-      handleDeleteItem: function(id) {
+      handleRestoreItem: function(id) {
+        this.setState({
+          loading: true,
+          page: 1
+        });
+
+        MailPoet.Ajax.post({
+          endpoint: this.props.endpoint,
+          action: 'restore',
+          data: id
+        }).done(function(response) {
+          if(
+            this.props.messages !== undefined
+            && this.props.messages['onRestore'] !== undefined
+          ) {
+            this.props.messages.onRestore(response);
+          }
+          this.getItems();
+        }.bind(this));
+      },
+      handleDeleteItem: function(id, confirm = false) {
         this.setState({
           loading: true,
           page: 1
@@ -263,8 +327,27 @@ define(
         MailPoet.Ajax.post({
           endpoint: this.props.endpoint,
           action: 'delete',
-          data: id
-        }).done(function() {
+          data: {
+            id: id,
+            confirm: confirm
+          }
+        }).done(function(response) {
+          if(confirm === true) {
+            if(
+              this.props.messages !== undefined
+              && this.props.messages['onConfirmDelete'] !== undefined
+            ) {
+              this.props.messages.onConfirmDelete(response);
+            }
+          } else {
+            if(
+              this.props.messages !== undefined
+              && this.props.messages['onDelete'] !== undefined
+            ) {
+              this.props.messages.onDelete(response);
+            }
+          }
+
           this.getItems();
         }.bind(this));
       },
@@ -279,6 +362,11 @@ define(
         this.setState({ loading: true });
 
         var data = params || {};
+        var callback = ((data['onSuccess'] !== undefined)
+          ? data['onSuccess']
+          : function() {}
+        );
+        delete data.onSuccess;
 
         data.listing = {
           offset: 0,
@@ -293,8 +381,9 @@ define(
           endpoint: this.props.endpoint,
           action: 'bulk_action',
           data: data
-        }).done(function() {
+        }).done(function(response) {
           this.getItems();
+          callback(response);
         }.bind(this));
       },
       handleSearch: function(search) {
@@ -414,6 +503,24 @@ define(
         // bulk actions
         var bulk_actions = this.props.bulk_actions || [];
 
+        if(this.state.group === 'trash') {
+          bulk_actions = [
+            {
+              name: 'restore',
+              label: 'Restore',
+              onSuccess: this.props.messages.onRestore
+            },
+            {
+              name: 'trash',
+              label: 'Delete permanently',
+              onSuccess: this.props.messages.onConfirmDelete,
+              getData: function() {
+                return { confirm: true };
+              }
+            }
+          ];
+        }
+
         // item actions
         var item_actions = this.props.item_actions || [];
 
@@ -464,6 +571,7 @@ define(
               <ListingItems
                 onRenderItem={ this.handleRenderItem }
                 onDeleteItem={ this.handleDeleteItem }
+                onRestoreItem={ this.handleRestoreItem }
                 columns={ this.props.columns }
                 is_selectable={ bulk_actions.length > 0 }
                 onSelectItem={ this.handleSelectItem }
@@ -471,6 +579,7 @@ define(
                 selection={ this.state.selection }
                 selected_ids={ this.state.selected_ids }
                 loading={ this.state.loading }
+                group={ this.state.group }
                 count={ this.state.count }
                 limit={ this.state.limit }
                 item_actions={ item_actions }

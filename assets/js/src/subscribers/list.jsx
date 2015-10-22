@@ -59,6 +59,63 @@ define(
       },
     ];
 
+    var messages = {
+      onDelete: function(response) {
+        var count = ~~response.subscribers;
+        var message = null;
+
+        if(count === 1) {
+          message = (
+            '1 subscriber was moved to the trash.'
+          ).replace('%$1d', count);
+        } else if(count > 1) {
+          message = (
+            '%$1d subscribers were moved to the trash.'
+          ).replace('%$1d', count);
+        }
+
+        if(message !== null) {
+          MailPoet.Notice.success(message);
+        }
+      },
+      onConfirmDelete: function(response) {
+        var count = ~~response.subscribers;
+        var message = null;
+
+        if(count === 1) {
+          message = (
+            '1 subscriber was permanently deleted.'
+          ).replace('%$1d', count);
+        } else if(count > 1) {
+          message = (
+            '%$1d subscribers were permanently deleted.'
+          ).replace('%$1d', count);
+        }
+
+        if(message !== null) {
+          MailPoet.Notice.success(message);
+        }
+      },
+      onRestore: function(response) {
+        var count = ~~response.subscribers;
+        var message = null;
+
+        if(count === 1) {
+          message = (
+            '1 subscriber has been restored from the trash.'
+          ).replace('%$1d', count);
+        } else if(count > 1) {
+          message = (
+            '%$1d subscribers have been restored from the trash.'
+          ).replace('%$1d', count);
+        }
+
+        if(message !== null) {
+          MailPoet.Notice.success(message);
+        }
+      }
+    };
+
     var bulk_actions = [
       {
         name: 'moveToList',
@@ -77,6 +134,13 @@ define(
           return {
             segment_id: ~~(jQuery('#move_to_segment').val())
           }
+        },
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers were moved to list <strong>%$2s</strong>.'
+            .replace('%$1d', ~~response.subscribers)
+            .replace('%$2s', response.segment)
+          );
         }
       },
       {
@@ -96,6 +160,13 @@ define(
           return {
             segment_id: ~~(jQuery('#add_to_segment').val())
           }
+        },
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers were added to list <strong>%$2s</strong>.'
+            .replace('%$1d', ~~response.subscribers)
+            .replace('%$2s', response.segment)
+          );
         }
       },
       {
@@ -115,11 +186,45 @@ define(
           return {
             segment_id: ~~(jQuery('#remove_from_segment').val())
           }
+        },
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers were removed from list <strong>%$2s</strong>.'
+            .replace('%$1d', ~~response.subscribers)
+            .replace('%$2s', response.segment)
+          );
+        }
+      },
+      {
+        name: 'removeFromAllLists',
+        label: 'Remove from all lists',
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers were removed from all lists.'
+            .replace('%$1d', ~~response.subscribers)
+            .replace('%$2s', response.segment)
+          );
+        }
+      },
+      {
+        name: 'confirmUnconfirmed',
+        label: 'Confirm unconfirmed',
+        onSuccess: function(response) {
+          MailPoet.Notice.success(
+            '%$1d subscribers have been confirmed.'
+            .replace('%$1d', ~~response.subscribers)
+          );
         }
       },
       {
         name: 'trash',
-        label: 'Trash'
+        label: 'Trash',
+        getData: function() {
+          return {
+            confirm: false
+          }
+        },
+        onSuccess: messages.onDelete
       }
     ];
 
@@ -153,14 +258,14 @@ define(
           return segment.name;
         }).join(', ');
 
+        var row_actions = false;
+
         return (
           <div>
             <td className={ row_classes }>
-              <strong>
-                <Link to={ `/edit/${ subscriber.id }` }>
-                  { subscriber.email }
-                </Link>
-              </strong>
+              <strong><Link to={ `/edit/${ subscriber.id }` }>
+                { subscriber.email }
+              </Link></strong>
               { actions }
             </td>
             <td className="column" data-colname="First name">
@@ -195,7 +300,9 @@ define(
               endpoint="subscribers"
               onRenderItem={ this.renderItem }
               columns={ columns }
-              bulk_actions={ bulk_actions } />
+              bulk_actions={ bulk_actions }
+              messages={ messages }
+            />
           </div>
         );
       }

@@ -53,10 +53,28 @@ class Subscribers {
     wp_send_json($result);
   }
 
-  function delete($id) {
+  function restore($id) {
     $subscriber = Subscriber::findOne($id);
     if($subscriber !== false) {
-      $result = $subscriber->delete();
+      $subscriber->set_expr('deleted_at', 'NULL');
+      $result = array('subscribers' => (int)$subscriber->save());
+    } else {
+      $result = false;
+    }
+    wp_send_json($result);
+  }
+
+  function delete($data = array()) {
+    $subscriber = Subscriber::findOne($data['id']);
+    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
+    if($subscriber !== false) {
+      if($confirm_delete) {
+        $subscriber->delete();
+        $result = array('subscribers' => 1);
+      } else {
+        $subscriber->set_expr('deleted_at', 'NOW()');
+        $result = array('subscribers' => (int)$subscriber->save());
+      }
     } else {
       $result = false;
     }
