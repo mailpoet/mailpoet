@@ -308,7 +308,13 @@ define(
           endpoint: this.props.endpoint,
           action: 'restore',
           data: id
-        }).done(function() {
+        }).done(function(response) {
+          if(
+            this.props.messages !== undefined
+            && this.props.messages['onRestore'] !== undefined
+          ) {
+            this.props.messages.onRestore(response);
+          }
           this.getItems();
         }.bind(this));
       },
@@ -325,7 +331,23 @@ define(
             id: id,
             confirm: confirm
           }
-        }).done(function() {
+        }).done(function(response) {
+          if(confirm === true) {
+            if(
+              this.props.messages !== undefined
+              && this.props.messages['onConfirmDelete'] !== undefined
+            ) {
+              this.props.messages.onConfirmDelete(response);
+            }
+          } else {
+            if(
+              this.props.messages !== undefined
+              && this.props.messages['onDelete'] !== undefined
+            ) {
+              this.props.messages.onDelete(response);
+            }
+          }
+
           this.getItems();
         }.bind(this));
       },
@@ -485,11 +507,13 @@ define(
           bulk_actions = [
             {
               name: 'restore',
-              label: 'Restore'
+              label: 'Restore',
+              onSuccess: this.props.messages.onRestore
             },
             {
               name: 'trash',
               label: 'Delete permanently',
+              onSuccess: this.props.messages.onConfirmDelete,
               getData: function() {
                 return { confirm: true };
               }

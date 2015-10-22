@@ -9,7 +9,7 @@ class ListingCest {
 
   function itShouldReturnListingData() {
     $listing = new Listing\Handler(
-      \Model::factory('\MailPoet\Models\Subscriber'),
+      '\MailPoet\Models\Subscriber',
       array()
     );
 
@@ -27,7 +27,7 @@ class ListingCest {
     $I->generateSubscribers(30, array('status' => 'subscribed'));
 
     $listing = new Listing\Handler(
-      \Model::factory('\MailPoet\Models\Subscriber'),
+      '\MailPoet\Models\Subscriber',
       array('group' => 'subscribed')
     );
     $result = $listing->get();
@@ -42,7 +42,7 @@ class ListingCest {
     ));
 
     $listing = new Listing\Handler(
-      \Model::factory('\MailPoet\Models\Subscriber'),
+      '\MailPoet\Models\Subscriber',
       array(
         'search' => 'j.d'
       )

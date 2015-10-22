@@ -59,6 +59,63 @@ define(
       },
     ];
 
+    var messages = {
+      onDelete: function(response) {
+        var count = ~~response.subscribers;
+        var message = null;
+
+        if(count === 1) {
+          message = (
+            '1 subscriber was moved to the trash.'
+          ).replace('%$1d', count);
+        } else if(count > 1) {
+          message = (
+            '%$1d subscribers were moved to the trash.'
+          ).replace('%$1d', count);
+        }
+
+        if(message !== null) {
+          MailPoet.Notice.success(message);
+        }
+      },
+      onConfirmDelete: function(response) {
+        var count = ~~response.subscribers;
+        var message = null;
+
+        if(count === 1) {
+          message = (
+            '1 subscriber was permanently deleted.'
+          ).replace('%$1d', count);
+        } else if(count > 1) {
+          message = (
+            '%$1d subscribers were permanently deleted.'
+          ).replace('%$1d', count);
+        }
+
+        if(message !== null) {
+          MailPoet.Notice.success(message);
+        }
+      },
+      onRestore: function(response) {
+        var count = ~~response.subscribers;
+        var message = null;
+
+        if(count === 1) {
+          message = (
+            '1 subscriber has been restored from the trash.'
+          ).replace('%$1d', count);
+        } else if(count > 1) {
+          message = (
+            '%$1d subscribers have been restored from the trash.'
+          ).replace('%$1d', count);
+        }
+
+        if(message !== null) {
+          MailPoet.Notice.success(message);
+        }
+      }
+    };
+
     var bulk_actions = [
       {
         name: 'moveToList',
@@ -162,12 +219,12 @@ define(
       {
         name: 'trash',
         label: 'Trash',
-        onSuccess: function(response) {
-          MailPoet.Notice.success(
-            '%$1d subscribers were moved to the trash.'
-            .replace('%$1d', ~~response.subscribers)
-          );
-        }
+        getData: function() {
+          return {
+            confirm: false
+          }
+        },
+        onSuccess: messages.onDelete
       }
     ];
 
@@ -200,8 +257,6 @@ define(
         }).map(function(segment) {
           return segment.name;
         }).join(', ');
-
-
 
         var row_actions = false;
 
@@ -245,7 +300,9 @@ define(
               endpoint="subscribers"
               onRenderItem={ this.renderItem }
               columns={ columns }
-              bulk_actions={ bulk_actions } />
+              bulk_actions={ bulk_actions }
+              messages={ messages }
+            />
           </div>
         );
       }

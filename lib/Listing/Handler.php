@@ -71,10 +71,17 @@ class Handler {
     return $this->model;
   }
 
+  function count() {
+    return (int)$this->model->count();
+  }
+
   function getSelectionIds() {
-    $models = $this->getSelection()->select('id')->findMany();
+    $models = $this->getSelection()
+      ->select('id')
+      ->findArray();
+
     return array_map(function($model) {
-      return (int)$model->id;
+      return (int)$model['id'];
     }, $models);
   }
 

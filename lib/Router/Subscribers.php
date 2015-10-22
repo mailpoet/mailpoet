@@ -57,7 +57,7 @@ class Subscribers {
     $subscriber = Subscriber::findOne($id);
     if($subscriber !== false) {
       $subscriber->set_expr('deleted_at', 'NULL');
-      $result = $subscriber->save();
+      $result = array('subscribers' => (int)$subscriber->save());
     } else {
       $result = false;
     }
@@ -66,12 +66,14 @@ class Subscribers {
 
   function delete($data = array()) {
     $subscriber = Subscriber::findOne($data['id']);
+    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
     if($subscriber !== false) {
-      if(isset($data['confirm']) && (bool)$data['confirm'] === true) {
-        $result = $subscriber->delete();
+      if($confirm_delete) {
+        $subscriber->delete();
+        $result = array('subscribers' => 1);
       } else {
         $subscriber->set_expr('deleted_at', 'NOW()');
-        $result = $subscriber->save();
+        $result = array('subscribers' => (int)$subscriber->save());
       }
     } else {
       $result = false;

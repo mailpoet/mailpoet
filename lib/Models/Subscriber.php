@@ -322,9 +322,10 @@ class Subscriber extends Model {
   }
 
   static function trash($listing, $data = array()) {
-    if(isset($data['confirm']) && (bool)$data['confirm'] === true) {
+    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
+    if($confirm_delete) {
       // delete relations with all segments
-      $subscribers = $listing->getSelection()->findMany();
+      $subscribers = $listing->getSelection()->findResultSet();
 
       if(!empty($subscribers)) {
         $subscribers_count = 0;
@@ -340,25 +341,25 @@ class Subscriber extends Model {
       return false;
     } else {
       // soft delete
-      $subscribers = $listing->getSelection()->findResultSet();
-      if(!empty($subscribers)) {
-        $subscribers->set_expr('deleted_at', 'NOW()');
-        $subscribers->save();
+      $subscribers = $listing->getSelection()
+        ->findResultSet()
+        ->set_expr('deleted_at', 'NOW()')
+        ->save();
 
-        return array(
-          'subscribers' => $subscribers->count()
-        );
-      }
-      return false;
+      return array(
+        'subscribers' => $subscribers->count()
+      );
     }
   }
 
   static function restore($listing, $data = array()) {
-    $subscribers = $listing->getSelection()->findResultSet();
-    if(!empty($subscribers)) {
-      $subscribers->set_expr('deleted_at', 'NULL');
-      return $subscribers->save();
-    }
-    return false;
+    $subscribers = $listing->getSelection()
+      ->findResultSet()
+      ->set_expr('deleted_at', 'NULL')
+      ->save();
+
+    return array(
+      'subscribers' => $subscribers->count()
+    );
   }
 }
