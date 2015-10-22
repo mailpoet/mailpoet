@@ -18,10 +18,10 @@ define(
 
     var NewsletterStandard = React.createClass({
       mixins: [
-        Router.Navigation
+        Router.History
       ],
       showTemplateSelection: function(newsletterId) {
-        this.transitionTo('/template/' + newsletterId);
+        this.history.pushState(null, `/template/${newsletterId}`);
       },
       componentDidMount: function() {
         // No options for this type, create a newsletter upon mounting

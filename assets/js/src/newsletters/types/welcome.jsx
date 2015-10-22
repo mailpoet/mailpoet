@@ -66,7 +66,7 @@ define(
 
     var NewsletterWelcome = React.createClass({
       mixins: [
-        Router.Navigation
+        Router.History
       ],
       getInitialState: function() {
         return {
@@ -121,7 +121,7 @@ define(
         }.bind(this));
       },
       showTemplateSelection: function(newsletterId) {
-        this.transitionTo('/template/' + newsletterId);
+        this.history.pushState(null, `/template/${newsletterId}`);
       },
       render: function() {
         var roleListSelection, timeNumber;

@@ -25,9 +25,9 @@ if(container) {
       <Route path="/" component={ App }>
         <IndexRoute component={ NewsletterList } />
         <Route path="new" component={ NewsletterTypes } />
-        <Route name="standard" path="new/standard" handler={ NewsletterStandard } />
-        <Route name="welcome" path="new/welcome" handler={ NewsletterWelcome } />
-        <Route name="template" path="template/:id" handler={ NewsletterTemplates } />
+        <Route name="standard" path="new/standard" component={ NewsletterStandard } />
+        <Route name="welcome" path="new/welcome" component={ NewsletterWelcome } />
+        <Route name="template" path="template/:id" component={ NewsletterTemplates } />
         <Route path="send/:id" component={ NewsletterSend } />
         <Route path="*" component={ NewsletterList } />
       </Route>
