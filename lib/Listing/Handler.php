@@ -90,9 +90,11 @@ class Handler {
     if($this->data['limit'] > 0) {
       $items = $items
         ->offset($this->data['offset'])
-        ->limit($this->data['limit']);
-    } else
-    $items = $items->findArray();
+        ->limit($this->data['limit'])
+        ->findArray();
+    } else {
+      $items = $items->findArray();
+    }
 
     return array(
       'count' => $this->model->count(),
