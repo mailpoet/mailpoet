@@ -86,14 +86,19 @@ class Handler {
   }
 
   function get() {
+    $items = $this->model;
+    if($this->data['limit'] > 0) {
+      $items = $items
+        ->offset($this->data['offset'])
+        ->limit($this->data['limit']);
+    } else
+    $items = $items->findArray();
+
     return array(
       'count' => $this->model->count(),
       'filters' => $this->model->filter('filters'),
       'groups' => $this->model->filter('groups'),
-      'items' => $this->model
-        ->offset($this->data['offset'])
-        ->limit($this->data['limit'])
-        ->findArray()
+      'items' => $items
     );
   }
 }

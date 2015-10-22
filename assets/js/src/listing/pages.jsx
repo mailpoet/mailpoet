@@ -40,23 +40,23 @@ define(['react', 'classnames'], function(React, classNames) {
     },
     render: function() {
       if(this.props.count === 0) {
-        return (<div></div>);
+        return false;
       } else {
-        var pagination,
-        firstPage = (
+        var pagination = false;
+        var firstPage = (
           <span aria-hidden="true" className="tablenav-pages-navspan">«</span>
-        ),
-        previousPage = (
+        );
+        var previousPage = (
           <span aria-hidden="true" className="tablenav-pages-navspan">‹</span>
-        ),
-        nextPage = (
+        );
+        var nextPage = (
           <span aria-hidden="true" className="tablenav-pages-navspan">›</span>
-        ),
-        lastPage = (
+        );
+        var lastPage = (
           <span aria-hidden="true" className="tablenav-pages-navspan">»</span>
         );
 
-        if(this.props.count > this.props.limit) {
+        if(this.props.limit > 0 && this.props.count > this.props.limit) {
           if(this.props.page > 1) {
             previousPage = (
               <a href="javascript:;"

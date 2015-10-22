@@ -43,14 +43,31 @@ class Segments {
     }
   }
 
-  function delete($id) {
+  function restore($id) {
     $segment = Segment::findOne($id);
     if($segment !== false) {
-      $result = $segment->delete();
+      $segment->set_expr('deleted_at', 'NULL');
+      $result = array('segments' => (int)$segment->save());
     } else {
       $result = false;
     }
+    wp_send_json($result);
+  }
 
+  function delete($data = array()) {
+    $segment = Segment::findOne($data['id']);
+    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
+    if($segment !== false) {
+      if($confirm_delete) {
+        $segment->delete();
+        $result = array('segments' => 1);
+      } else {
+        $segment->set_expr('deleted_at', 'NOW()');
+        $result = array('segments' => (int)$segment->save());
+      }
+    } else {
+      $result = false;
+    }
     wp_send_json($result);
   }
 

@@ -19,7 +19,7 @@ class Subscriber extends Model {
     // delete all relations to segments
     SubscriberSegment::where('subscriber_id', $this->id)->deleteMany();
 
-    parent::delete();
+    return parent::delete();
   }
 
   static function search($orm, $search = '') {

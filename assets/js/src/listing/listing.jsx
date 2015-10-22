@@ -266,8 +266,26 @@ define(
           selection: false
         };
       },
+      componentDidUpdate: function(prevProps, prevState) {
+        // set group to "all" if trash gets emptied
+        if(
+          (prevState.group === 'trash' && prevState.count > 0)
+          &&
+          (this.state.group === 'trash' && this.state.count === 0)
+        ) {
+          this.handleGroup('all');
+        }
+      },
       componentDidMount: function() {
-        this.getItems();
+        if(this.props.limit !== undefined) {
+          this.setState({
+            limit: Math.abs(~~this.props.limit)
+          }, function() {
+            this.getItems();
+          }.bind(this));
+        } else {
+          this.getItems();
+        }
       },
       getItems: function() {
         this.setState({ loading: true });
@@ -504,6 +522,7 @@ define(
         var bulk_actions = this.props.bulk_actions || [];
 
         if(this.state.group === 'trash') {
+
           bulk_actions = [
             {
               name: 'restore',
@@ -531,15 +550,34 @@ define(
           'striped',
           { 'mailpoet_listing_loading': this.state.loading }
         );
+
+        // search
+        var search = (
+          <ListingSearch
+            onSearch={ this.handleSearch }
+            search={ this.state.search }
+          />
+        );
+        if(this.props.search === false) {
+          search = false;
+        }
+
+        // groups
+        var groups = (
+          <ListingGroups
+            groups={ this.state.groups }
+            group={ this.state.group }
+            onSelectGroup={ this.handleGroup }
+          />
+        );
+        if(this.props.groups === false) {
+          groups = false;
+        }
+
         return (
           <div>
-            <ListingGroups
-              groups={ this.state.groups }
-              group={ this.state.group }
-              onSelectGroup={ this.handleGroup } />
-            <ListingSearch
-              onSearch={ this.handleSearch }
-              search={ this.state.search } />
+            { groups }
+            { search }
             <div className="tablenav top clearfix">
               <ListingBulkActions
                 bulk_actions={ bulk_actions }
