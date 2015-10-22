@@ -28,7 +28,7 @@ define(
     var events = {
       name: 'event',
       values: {
-        'list': 'When someone subscribes to the list...',
+        'segment': 'When someone subscribes to the list...',
         'user': 'When a new Wordrpess user is added to your site...',
       }
     };
@@ -40,7 +40,7 @@ define(
       }
     ));
     var segmentField = {
-      name: 'list',
+      name: 'segment',
       values: availableSegmentValues,
     };
 
@@ -71,7 +71,7 @@ define(
       getInitialState: function() {
         return {
           event: 'segment',
-          list: 1,
+          segment: 1,
           role: 'subscriber',
           afterTimeNumber: 1,
           afterTimeType: 'immediate',
@@ -84,23 +84,23 @@ define(
       },
       handleSegmentChange: function(event) {
         this.setState({
-          list: event.target.value,
+          segment: event.target.value,
         });
       },
       handleRoleChange: function(event) {
         this.setState({
           role: event.target.value,
-        })
+        });
       },
       handleAfterTimeNumberChange: function(event) {
         this.setState({
           afterTimeNumber: event.target.value,
-        })
+        });
       },
       handleAfterTimeTypeChange: function(event) {
         this.setState({
           afterTimeType: event.target.value,
-        })
+        });
       },
       handleNext: function() {
         MailPoet.Ajax.post({
@@ -124,16 +124,16 @@ define(
         this.history.pushState(null, `/template/${newsletterId}`);
       },
       render: function() {
-        var roleListSelection, timeNumber;
+        var roleSegmentSelection, timeNumber;
         if (this.state.event === 'user') {
-          roleListSelection = (
+          roleSegmentSelection = (
             <Select
               field={roleField}
               item={this.state}
               onValueChange={this.handleRoleChange} />
           );
         } else {
-          roleListSelection = (
+          roleSegmentSelection = (
             <Select
               field={segmentField}
               item={this.state}
@@ -158,7 +158,7 @@ define(
               item={this.state}
               onValueChange={this.handleEventChange} />
 
-            {roleListSelection}
+            {roleSegmentSelection}
 
             {timeNumber}
 

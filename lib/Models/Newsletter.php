@@ -25,7 +25,7 @@ class Newsletter extends Model {
       __NAMESPACE__.'\NewsletterOption',
       'newsletter_id',
       'option_field_id'
-    )->select_expr(MP_NEWSLETTER_OPTIONS_TABLE.'.value');
+    )->select_expr(MP_NEWSLETTER_OPTION_TABLE.'.value');
   }
 
   static function search($orm, $search = '') {
