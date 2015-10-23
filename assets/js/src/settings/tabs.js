@@ -73,7 +73,7 @@ define(
     }));
 
     jQuery(document).ready(function() {
-      Backbone.history.start();
+      if (!Backbone.History.started) Backbone.history.start();
     });
   }
 );

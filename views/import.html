@@ -8,12 +8,18 @@
   <!-- STEP 2: subscriber manipulation -->
 
   <!-- STEP 3: results -->
-
 </div>
 
 <%= stylesheet('import.css') %>
+
+<%= localize({
+'noMailChimpLists': __('No active lists found.'),
+'serverError': __('Server error:'),
+'select': __('Select')
+}) %>
+
 <script type="text/javascript">
   var maximum_parse_size = <%= maximumParseSize %>,
-   maximum_parse_notice = "<%= __('Your CSV is over %s, and too big to process. Please split the file in two, or more.')|replace({'%s': maximumParseSize}) %>";
+      maximum_parse_notice = "<%= __('Your CSV is over %s, and too big to process. Please split the file in two, or more.')|replace({'%s': maximumParseSize}) %>";
 </script>
 <% endblock %>
