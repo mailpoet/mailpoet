@@ -164,6 +164,8 @@ class Menu {
   }
 
   function newsletters() {
+    global $wp_roles;
+
     $data = array();
 
     $data['segments'] = Segment::findArray();
@@ -172,6 +174,7 @@ class Menu {
     foreach($settings as $setting) {
       $data['settings'][$setting['name']] = $setting['value'];
     }
+    $data['roles'] = $wp_roles->get_names();
     echo $this->renderer->render('newsletters.html', $data);
   }
 

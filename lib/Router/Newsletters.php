@@ -9,6 +9,8 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Models\NewsletterOption;
 use MailPoet\Newsletter\Renderer\Renderer;
 
 if(!defined('ABSPATH')) exit;
@@ -24,10 +26,14 @@ class Newsletters {
       wp_send_json(false);
     } else {
       $segments = $newsletter->segments()->findArray();
+      $options = $newsletter->options()->findArray();
       $newsletter = $newsletter->asArray();
       $newsletter['segments'] = array_map(function($segment) {
         return $segment['id'];
       }, $segments);
+      $newsletter['options'] = $options;
+
+
       wp_send_json($newsletter);
     }
   }
@@ -43,17 +49,39 @@ class Newsletters {
       unset($data['segments']);
     }
 
+    if(isset($data['options'])) {
+      $options = $data['options'];
+      unset($data['options']);
+    }
+
     $newsletter_id = Newsletter::createOrUpdate($data);
 
-    if($newsletter_id !== false && !empty($segment_ids)) {
-      // remove previous relationships with segments
-      NewsletterSegment::where('newsletter_id', $newsletter_id)->deleteMany();
-      // create relationship with segments
-      foreach($segment_ids as $segment_id) {
-        $relation = NewsletterSegment::create();
-        $relation->segment_id = $segment_id;
-        $relation->newsletter_id = $newsletter_id;
-        $relation->save();
+    if($newsletter_id !== false) {
+      if(!empty($segment_ids)) {
+        // remove previous relationships with segments
+        NewsletterSegment::where('newsletter_id', $newsletter_id)->deleteMany();
+        // create relationship with segments
+        foreach($segment_ids as $segment_id) {
+          $relation = NewsletterSegment::create();
+          $relation->segment_id = $segment_id;
+          $relation->newsletter_id = $newsletter_id;
+          $relation->save();
+        }
+      }
+
+      if(!empty($options)) {
+        NewsletterOption::where('newsletter_id', $newsletter_id)->deletemany();
+        $optionFields = NewsletterOptionField::where('newsletter_type', $data['type'])->findArray();
+
+        foreach($optionFields as $optionField) {
+          if(isset($options[$optionField['name']])) {
+            $relation = NewsletterOption::create();
+            $relation->newsletter_id = $newsletter_id;
+            $relation->option_field_id = $optionField['id'];
+            $relation->value = $options[$optionField['name']];
+            $relation->save();
+          }
+        }
       }
     }
 
@@ -173,15 +201,29 @@ class Newsletters {
       $newsletter->body = $template->body;
     }
 
+    if(isset($data['options'])) {
+      $options = $data['options'];
+      unset($data['options']);
+    }
+
     $result = $newsletter->save();
     if($result !== true) {
       wp_send_json($newsletter->getValidationErrors());
     } else {
-      wp_send_json(array(
-        'url' => admin_url(
-          'admin.php?page=mailpoet-newsletter-editor&id='.$newsletter->id()
-        )
-      ));
+      if(!empty($options)) {
+        $optionFields = NewsletterOptionField::where('newsletter_type', $newsletter->type)->findArray();
+
+        foreach($optionFields as $optionField) {
+          if(isset($options[$optionField['name']])) {
+            $relation = NewsletterOption::create();
+            $relation->newsletter_id = $newsletter->id;
+            $relation->option_field_id = $optionField['id'];
+            $relation->value = $options[$optionField['name']];
+            $relation->save();
+          }
+        }
+      }
+      wp_send_json($newsletter->asArray());
     }
   }
 }
