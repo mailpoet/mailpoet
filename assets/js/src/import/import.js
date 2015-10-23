@@ -5,7 +5,8 @@ define(
    'jquery',
    'mailpoet',
    'handlebars',
-   'papaparse'
+   'papaparse',
+   'select2'
  ],
  function (
   Backbone,
@@ -53,6 +54,7 @@ define(
         subscribers_mailchimp_key = jQuery('#mailchimp_key'),
         subscribers_mailchimp_key_verify = jQuery('#mailchimp_key_verify'),
         subscribers_mailchimp_lists = jQuery('#mailchimp_lists'),
+        subscribers_mailchimp_lists_select = jQuery('#mailchimp_lists'),
         subscribers_mailchimp_process = jQuery('#method_mailchimp > div.mailpoet_method_process').find('a.mailpoet_process'),
         subscribers_file_local = jQuery('#file_local'),
         subscribers_file_process = jQuery('#method_file > div.mailpoet_method_process').find('a.mailpoet_process');
@@ -74,7 +76,6 @@ define(
        /*
         *  Paste
         */
-
        // display placeholder with multilines. there is no CSS solution that would make this possible.
        subscribers_paste_input.attr('value', subscribers_paste_input_placeholder).css('color', "#999");
        subscribers_paste_input.focus(function () {
@@ -109,7 +110,7 @@ define(
            MailPoet.Notice.error(maximum_parse_notice, {static: true});
            return;
          }
-         // show loading indicator and give it 20ms to execute before parsing data
+         // show loading indicator and give it 10ms to execute before parsing data
          MailPoet.Modal.loading(true);
          setTimeout(function () {
            Papa.parse(subscribers_paste_input.val(), csvParse());
@@ -119,7 +120,6 @@ define(
        /*
         *  CSV file
         */
-
        subscribers_file_local.change(function () {
          MailPoet.Notice.hide();
          if (this.value.trim() !== '') {
@@ -131,9 +131,8 @@ define(
        })
 
        subscribers_file_process.click(function () {
-
          if (subscribers_file_local.val().trim() !== '') {
-           // show loading indicator and give it 20ms to execute before parsing data
+           // show loading indicator and give it 10ms to execute before parsing data
            MailPoet.Modal.loading(true);
            setTimeout(function () {
              subscribers_file_local.parse({
@@ -164,34 +163,34 @@ define(
        });
 
        subscribers_mailchimp_key_verify.click(function () {
-
-         // show loading indicator
          MailPoet.Modal.loading(true);
-
          MailPoet.Ajax.post({
            endpoint: 'import',
            action: 'getMailChimpLists',
            data: {api_key: subscribers_mailchimp_key.val()}
          }).done(function (result) {
            if (result.status === 'success') {
+             subscribers_mailchimp_process.closest('table').show();
              jQuery('.mailpoet_mailchimp-key-status').html('').removeClass().addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-ok');
              if (result.data) {
-               subscribers_mailchimp_lists.find('input')
+               subscribers_mailchimp_lists.find('select')
                 .select2({
                   data: result.data,
                   width: '20em',
-                  dropdownCssClass: 'mailpoet_no-search',
                   placeholder: MailPoetI18n.select,
-                  formatSelection: function (item) {
+                  templateResult: function (item) {
                     return item.name;
                   },
-                  formatResult: function (item) {
+                  templateSelection: function (item) {
                     return item.name;
-                  },
-                  multiple: true
+                  }
                 })
                 .change(function () {
-                  subscribers_mailchimp_process.closest('table').toggle((jQuery(this).select2('val').length) ? true : false);
+                  if (jQuery(this).val() !== null) {
+                    subscribers_mailchimp_process.closest('table a').removeClass('disabled');
+                  } else {
+                    subscribers_mailchimp_process.closest('table a').addClass('disabled');
+                  }
                 })
                 .trigger('change');
                subscribers_mailchimp_lists.show();
@@ -199,15 +198,15 @@ define(
              else {
                jQuery('.mailpoet_mailchimp-key-status').html(MailPoetI18n.noMailChimpLists);
                subscribers_mailchimp_lists.hide();
-               subscribers_mailchimp_process.closest('table').hide();
+               subscribers_mailchimp_process.closest('table a').addClass('disabled');
              }
            }
            else {
              MailPoet.Notice.hide();
-             MailPoet.Notice.error(interpret_server_message(result.message));
+             MailPoet.Notice.error(result.message);
              jQuery('.mailpoet_mailchimp-key-status').removeClass().addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-error');
              subscribers_mailchimp_lists.hide();
-             subscribers_mailchimp_process.closest('table').hide();
+             subscribers_mailchimp_process.closest('table a').addClass('disabled');
            }
            // hide loading indicator
            MailPoet.Modal.loading(false);
@@ -220,37 +219,32 @@ define(
        });
 
        subscribers_mailchimp_process.click(function () {
-         // show loading indicator
+         if (subscribers_mailchimp_process.closest('table a').hasClass('disabled')) {
+           return;
+         }
          MailPoet.Modal.loading(true);
-
-         /*        mailpoet_get_json(
-          'subscribers_import_mailchimp.php',
-          {
-          'api_key': subscribers_mailchimp_key.val(),
-          'lists': jQuery('#mailchimp_lists_select').select2('val'),
-          'action': 'process'
-          },
-          function (result) {
-          if (result.status === 'success') {
-          data_container.step_1 = result;
-          router.navigate('step_2', {trigger: true});
-          }
-          else {
-          MailPoet.Notice.hide();
-          MailPoet.Notice.error(interpret_server_message(result.message));
-          }
-          // hide loading indicator
-          MailPoet.Modal.loading(false);
-          },
-          function (result) {
-          MailPoet.Modal.loading(false);
-          MailPoet.Notice.error(MailPoetI18n.serverError + result.statusText.toLowerCase() + '.');
-          }
-          );
-          subscribers_mailchimp_process.prop('disabled', false);*/
-
+         MailPoet.Ajax.post({
+           endpoint: 'import',
+           action: 'getMailChimpSubscribers',
+           data: {
+             api_key: subscribers_mailchimp_key.val(),
+             lists: subscribers_mailchimp_lists.find('select').val()
+           }
+         }).done(function (result) {
+           if (result.status === 'success') {
+             data_container.step_1 = result;
+             router.navigate('step_2', {trigger: true});
+           }
+           else {
+             MailPoet.Notice.hide();
+             MailPoet.Notice.error(result.message);
+           }
+           MailPoet.Modal.loading(false);
+         }).error(function (error) {
+           MailPoet.Modal.loading(false);
+           MailPoet.Notice.error(MailPoetI18n.serverError + result.statusText.toLowerCase() + '.');
+         });
        });
-
      });
 
      if (!Backbone.History.started) {

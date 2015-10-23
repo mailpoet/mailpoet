@@ -101,7 +101,6 @@ class Import {
     );
 
     $data['maximumParseSize'] = Helpers::get_maximum_post_size();
-
-    return $data;
+    return array_map('json_encode', $data);
   }
 }

@@ -10,4 +10,9 @@ class Import {
     $mailChimp = new MailChimp($data['api_key']);
     wp_send_json($mailChimp->getLists());
   }
+
+  function getMailChimpSubscribers($data) {
+    $mailChimp = new MailChimp($data['api_key'], $data['lists']);
+    wp_send_json($mailChimp->getSubscribers());
+  }
 }

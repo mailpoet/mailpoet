@@ -19,7 +19,13 @@
 }) %>
 
 <script type="text/javascript">
-  var maximum_parse_size = <%= maximumParseSize %>,
-      maximum_parse_notice = "<%= __('Your CSV is over %s, and too big to process. Please split the file in two, or more.')|replace({'%s': maximumParseSize}) %>";
+  var
+    maximum_parse_size = <%= maximumParseSize %>,
+    maximum_parse_notice = "<%= __('Your CSV is over %s, and too big to process. Please split the file in two, or more.')|replace({'%s': maximumParseSize}) %>",
+    data_container = {},
+    mailpoet_columns_select2 = <%= select2Fields|raw %>,
+    mailpoet_columns = <%= subscriberFields|raw %>,
+    mailpoet_lists = <%= segments|raw %>,
+    email_regex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-_]{0,61}[a-zA-Z0-9])+.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 </script>
 <% endblock %>
