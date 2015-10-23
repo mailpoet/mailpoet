@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Config;
+use MailPoet\Import\Import;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
 use \MailPoet\Models\Form;
@@ -212,9 +213,13 @@ class Menu {
     echo $this->renderer->render('newsletter/form.html', $data);
   }
 
-  function import() {
-    echo $this->renderer->render('import.html');
+ function import() {
+    $import = new Import();
+    $data = $import->bootstrapImportMenu();
+
+    echo $this->renderer->render('import.html', $data);
   }
+
   
   function formEditor() {
     $id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);

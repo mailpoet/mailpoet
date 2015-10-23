@@ -1,5 +1,19 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-  <div id="import"></div>
+<div id="mailpoet_subscribers_import" class="wrap">
+  <h2 class="title"><%= __('Import') %></h2>
+  <!-- STEP 1: method selection -->
+  <% include 'import/step1.html' %>
+  <!-- STEP 2: subscriber manipulation -->
+
+  <!-- STEP 3: results -->
+
+</div>
+
+<%= stylesheet('import.css') %>
+<script type="text/javascript">
+  var maximum_parse_size = <%= maximumParseSize %>,
+   maximum_parse_notice = "<%= __('Your CSV is over %s, and too big to process. Please split the file in two, or more.')|replace({'%s': maximumParseSize}) %>";
+</script>
 <% endblock %>

@@ -1,0 +1,154 @@
+<div id="step_1" class="_mailpoet_hidden">
+  <div class="inside">
+    <!-- Method selection -->
+    <table class="mailpoet_subscribers form-table">
+      <tbody>
+      <tr>
+        <th scope="row">
+          <%= __('How would you like to import subscribers?') %>
+        </th>
+        <td>
+          <div id="select_method">
+            <label>
+              <input type="radio" name="select_method"><span><%= __('Copy paste in a text box') %></span>
+            </label> <label>
+            <input type="radio" name="select_method"><span><%= __('Upload a file') %></span>
+          </label> <label>
+            <input type="radio" name="select_method"><span><%= __('Import from MailChimp') %></php></span>
+          </label>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- Paste -->
+    <div id="method_paste" class="mailpoet_hidden">
+      <table class="mailpoet_subscribers form-table">
+        <tbody>
+        <tr>
+          <th scope="row">
+            <label for="paste_input"> <%= __('Copy and paste your subscribers from Excel/Sheets') %>
+              <p class="description">
+                <%=
+                __('This needs to be in CSV style. See [link]examples in our support site[/link].')
+                |replace({
+                '[link]': '<a target="_blank" href="http://support.mailpoet.com/knowledgebase/importing-subscribers-with-a-csv-file/main.html?utm_source=wpadmin&utm_campaign=import">',
+                '[/link]': '</a>'
+                })
+                |raw
+                %>
+              </p>
+            </label>
+          </th>
+          <td>
+            <textarea id="paste_input" rows="15" data-placeholder="Email,Name\njohndoe@mailpoet.com,John Doe\njanedoe@mailpoet.com,Jane Doe\njohnny_smith@mailpoet.com,Johnny Smith" class="regular-text code"></textarea>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="mailpoet_method_process">
+        <!-- WILL BE INSERTED: Next button & spam notice template -->
+      </div>
+    </div>
+
+    <!-- CSV file -->
+    <div id="method_file" class="mailpoet_hidden">
+      <table class="mailpoet_subscribers form-table">
+        <tbody>
+        <tr>
+          <th scope="row">
+            <label for="file_local">
+              <%= __('Upload a file') %>
+
+              <p class="description">
+                <%=
+                __('This needs to be in CSV style. See [link]examples in our support site[/link].')
+                |replace({
+                '[link]': '<a target="_blank" href="http://support.mailpoet.com/knowledgebase/importing-subscribers-with-a-csv-file/main.html?utm_source=wpadmin&utm_campaign=import">',
+                '[/link]': '</a>'
+                })
+                |raw
+                %>
+              </p>
+            </label>
+          </th>
+          <td>
+            <input type="file" id="file_local">
+            &nbsp;
+            <%= __( 'total max upload file size : %s' )|replace({'%s': maximumParseSize}) %>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="mailpoet_method_process">
+        <!-- WILL BE INSERTED: Next button & spam notice template -->
+      </div>
+    </div>
+
+    <!-- Mailchimp -->
+    <div id="method_mailchimp" class="mailpoet_hidden">
+      <table class="mailpoet_subscribers form-table">
+        <tbody>
+        <tr>
+          <th scope="row">
+            <label for="mailchimp_key">
+              <%= __('Enter you MailChimp API key') %>
+            </label>
+          </th>
+          <td>
+            <input type="text" id="mailchimp_key">
+            <button id="mailchimp_key_verify" disabled><%= __('Verify') %></button>
+            <span class="mailpoet_mailchimp-key-status"></span>
+          </td>
+        </tr>
+        <tr id="mailchimp_lists" class="mailpoet_hidden">
+          <th scope="row">
+            <label>
+              <%= __('Select list(s)') %>
+            </label>
+          </th>
+          <td>
+            <input type="mailpoet_hidden" id="mailchimp_lists_select">
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="mailpoet_method_process">
+        <!-- WILL BE INSERTED: Next button & spam notice template -->
+      </div>
+    </div>
+
+    <!-- Next button & spam notice template -->
+    <script id="method_process_template" type="text/x-handlebars-template">
+      <table class="mailpoet_subscribers form-table mailpoet_hidden">
+        <tbody>
+        <tr>
+          <th scope="row">
+            <%= ('Did these subscribers ask to be in your list?') %>
+            <p class="description">
+              <%= ('If the answer is "no", consider yourself a spammer.') %>
+              <br/>
+              <%=
+              __('[link]Read more on support.mailpoet.com[/link].')
+              |replace({
+              '[link]': '<a target="_blank" href="http://support.mailpoet.com/knowledgebase/dont-import-subscribers-who-didnt-sign-up/#utm_source=wpadmin&utm_campaign=importwarning">',
+              '[/link]': '</a>'
+              })
+              |raw
+              %>
+            </p>
+          </th>
+        </tr>
+        <tr>
+          <th scope="row">
+            <a href="javascript:;"
+             class="button-primary wysija mailpoet_process"><%= ('Next step') %> </a>
+          </th>
+        </tr>
+        </tbody>
+      </table>
+    </script>
+    
+  </div>
+</div>

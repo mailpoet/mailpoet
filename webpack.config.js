@@ -27,7 +27,8 @@ baseConfig = {
       'interact$': 'interact.js/interact.js',
       'spectrum$': 'spectrum-colorpicker/spectrum.js',
       'blob$': 'blob/Blob.js',
-      'filesaver$': 'filesaver/FileSaver.js'
+      'filesaver$': 'filesaver/FileSaver.js',
+      'papaparse': 'papaparse/papaparse.min.js'
     },
   },
   node: {
