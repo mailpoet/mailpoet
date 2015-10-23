@@ -3,13 +3,15 @@ define(
     'react',
     'react-router',
     'listing/listing.jsx',
-    'classnames'
+    'classnames',
+    'mailpoet'
   ],
   function(
     React,
     Router,
     Listing,
-    classNames
+    classNames,
+    MailPoet
   ) {
     var columns = [
       {
@@ -49,10 +51,10 @@ define(
         var count = ~~response.segments;
         var message = null;
 
-        if(count === 1) {
+        if(count === 1 || response === true) {
           message = (
             '1 segment was moved to the trash.'
-          ).replace('%$1d', count);
+          );
         } else if(count > 1) {
           message = (
             '%$1d segments were moved to the trash.'
@@ -67,10 +69,10 @@ define(
         var count = ~~response.segments;
         var message = null;
 
-        if(count === 1) {
+        if(count === 1 || response === true) {
           message = (
             '1 segment was permanently deleted.'
-          ).replace('%$1d', count);
+          );
         } else if(count > 1) {
           message = (
             '%$1d segments were permanently deleted.'
@@ -85,10 +87,10 @@ define(
         var count = ~~response.segments;
         var message = null;
 
-        if(count === 1) {
+        if(count === 1 || response === true) {
           message = (
             '1 segment has been restored from the trash.'
-          ).replace('%$1d', count);
+          );
         } else if(count > 1) {
           message = (
             '%$1d segments have been restored from the trash.'
@@ -100,6 +102,48 @@ define(
         }
       }
     };
+
+    var Link = Router.Link;
+    var item_actions = [
+      {
+        name: 'edit',
+        link: function(item) {
+          return (
+            <Link to={ `/edit/${item.id}` }>Edit</Link>
+          );
+        }
+      },
+      {
+        name: 'duplicate_segment',
+        link: function(item) {
+          return (
+            <a
+              href="javascript:;"
+              onClick={ this.onDuplicate.bind(null, item) }
+            >Duplicate</a>
+          );
+        },
+        onDuplicate: function(item) {
+          MailPoet.Ajax.post({
+            endpoint: 'segments',
+            action: 'duplicate',
+            data: item.id
+          }).done(function() {
+            MailPoet.Notice.success(
+              ('List "%$1s" has been duplicated.').replace('%$1s', item.name)
+            );
+          });
+        }
+      },
+      {
+        name: 'view_subscribers',
+        link: function(item) {
+          return (
+            <a href={ item.subscribers_url }>View subscribers</a>
+          );
+        }
+      }
+    ];
 
     var bulk_actions = [
       {
@@ -164,7 +208,9 @@ define(
               endpoint="segments"
               onRenderItem={ this.renderItem }
               columns={ columns }
-              bulk_actions={ bulk_actions } />
+              bulk_actions={ bulk_actions }
+              item_actions={ item_actions }
+            />
           </div>
         );
       }

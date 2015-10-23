@@ -21,6 +21,37 @@ class Segment extends Model {
     return parent::delete();
   }
 
+  static function duplicate($id) {
+    $segment = self::findOne($id)->asArray();
+
+    if($segment !== false) {
+      unset($segment['id']);
+      $new_segment = self::create();
+      $new_segment->hydrate($segment);
+
+      $new_segment->set(
+        'name',
+        sprintf(__('Copy of %s'), $new_segment->name)
+      );
+      $new_segment->set_expr('created_at', 'NOW()');
+      $new_segment->set_expr('updated_at', 'NOW()');
+      $new_segment->save();
+
+      $relations = SubscriberSegment::select('subscriber_id')
+        ->where('segment_id', $id)
+        ->findResultSet();
+
+      foreach($relations as $relation) {
+        $new_relation = SubscriberSegment::create();
+        $new_relation->set('subscriber_id', $relation->subscriber_id);
+        $new_relation->set('segment_id', $new_segment->id());
+        $new_relation->save();
+      }
+      return true;
+    }
+    return false;
+  }
+
   function subscribers() {
     return $this->has_many_through(
       __NAMESPACE__.'\Subscriber',

@@ -9,7 +9,7 @@ let history = createHashHistory({ queryKey: false })
 
 const App = React.createClass({
   render() {
-    return this.props.children
+    return this.props.children;
   }
 });
 

@@ -79,7 +79,7 @@ define(
           item_actions = custom_actions.map(function(action, index) {
             return (
               <span key={ 'action-'+index } className={ action.name }>
-                { action.link(this.props.item.id) }
+                { action.link(this.props.item) }
                 {(index < (custom_actions.length - 1)) ? ' | ' : ''}
               </span>
             );
@@ -522,7 +522,6 @@ define(
         var bulk_actions = this.props.bulk_actions || [];
 
         if(this.state.group === 'trash') {
-
           bulk_actions = [
             {
               name: 'restore',
@@ -574,6 +573,9 @@ define(
           groups = false;
         }
 
+        // filters
+        var filter = this.state.filter;
+
         return (
           <div>
             { groups }
@@ -586,7 +588,7 @@ define(
                 onBulkAction={ this.handleBulkAction } />
               <ListingFilters
                 filters={ this.state.filters }
-                filter={ this.state.filter }
+                filter={ filter }
                 onSelectFilter={ this.handleFilter } />
               <ListingPages
                 count={ this.state.count }

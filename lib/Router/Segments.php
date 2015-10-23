@@ -56,6 +56,10 @@ class Segments {
         ->findOne()->asArray();
 
       $item = array_merge($item, $stats);
+
+      $item['subscribers_url'] = admin_url(
+        'admin.php?page=mailpoet-subscribers#segment='.$item['id']
+      );
     }
 
     wp_send_json($listing_data);
@@ -80,7 +84,7 @@ class Segments {
     $segment = Segment::findOne($id);
     if($segment !== false) {
       $segment->set_expr('deleted_at', 'NULL');
-      $result = array('segments' => (int)$segment->save());
+      $result = $segment->save();
     } else {
       $result = false;
     }
@@ -93,14 +97,19 @@ class Segments {
     if($segment !== false) {
       if($confirm_delete) {
         $segment->delete();
-        $result = array('segments' => 1);
+        $result = true;
       } else {
         $segment->set_expr('deleted_at', 'NOW()');
-        $result = array('segments' => (int)$segment->save());
+        $result = $segment->save();
       }
     } else {
       $result = false;
     }
+    wp_send_json($result);
+  }
+
+  function duplicate($id) {
+    $result = Segment::duplicate($id);
     wp_send_json($result);
   }
 

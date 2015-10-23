@@ -258,8 +258,6 @@ define(
           return segment.name;
         }).join(', ');
 
-        var row_actions = false;
-
         return (
           <div>
             <td className={ row_classes }>
