@@ -173,7 +173,8 @@ class Migrator {
       'newsletter_type varchar(90) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id)'
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY name_newsletter_type (newsletter_type,name)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
