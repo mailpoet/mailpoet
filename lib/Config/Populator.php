@@ -38,12 +38,6 @@ class Populator {
     array_map(array($this, 'populate'), $this->models);
   }
 
-  function down() {
-    global $wpdb;
-
-    // TODO: Remove inserted rows
-  }
-
   function newsletter_option_fields() {
     return array(
       array(
