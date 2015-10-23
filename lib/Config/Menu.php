@@ -213,12 +213,12 @@ class Menu {
     echo $this->renderer->render('newsletter/form.html', $data);
   }
 
- function import() {
+  function import() {
     $import = new Import();
     $data = $import->bootstrapImportMenu();
-
     echo $this->renderer->render('import.html', $data);
   }
+
 
   
   function formEditor() {

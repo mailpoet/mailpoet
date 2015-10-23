@@ -2,6 +2,7 @@
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
+use MailPoet\Util\Helpers;
 
 class Import {
 
@@ -98,6 +99,9 @@ class Import {
       $data['subscriberFields'],
       $data['subscriberCustomFields']
     );
+
+    $data['maximumParseSize'] = Helpers::get_maximum_post_size();
+
     return $data;
   }
 }

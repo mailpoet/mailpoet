@@ -168,94 +168,94 @@ define(
          // show loading indicator
          MailPoet.Modal.loading(true);
 
- /*        mailpoet_get_json(
-          'subscribers_import_mailchimp.php',
-          {
-            'api_key': subscribers_mailchimp_key.val(), 'action': 'get_lists'
-          },
-          function (result) {
-            if (result.status === 'success') {
-              jQuery('.mailpoet_mailchimp-key-status').html('').removeClass().addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-ok');
-              if (result.data) {
-                subscribers_mailchimp_lists.find('input')
-                 .select2({
-                   data: result.data,
-                   width: '20em',
-                   dropdownCssClass: 'mailpoet_no-search',
-                   placeholder: MailPoetI18n.select,
-                   formatSelection: function (item) {
-                     return item.name;
-                   },
-                   formatResult: function (item) {
-                     return item.name;
-                   },
-                   multiple: true
-                 })
-                 .change(function () {
-                   subscribers_mailchimp_process.closest('table').toggle((jQuery(this).select2('val').length) ? true : false);
-                 })
-                 .trigger('change');
-                subscribers_mailchimp_lists.show();
-              }
-              else {
-                jQuery('.mailpoet_mailchimp-key-status').html(MailPoetI18n.noMailChimpLists);
-                subscribers_mailchimp_lists.hide();
-                subscribers_mailchimp_process.closest('table').hide();
-              }
-            }
-            else {
-              MailPoet.Notice.hide();
-              MailPoet.Notice.error(interpret_server_message(result.message));
-              jQuery('.mailpoet_mailchimp-key-status').removeClass().addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-error');
-              subscribers_mailchimp_lists.hide();
-              subscribers_mailchimp_process.closest('table').hide();
-            }
-            // hide loading indicator
-            MailPoet.Modal.loading(false);
-          },
-          function (result) {
-            // hide loading indicator
-            MailPoet.Modal.loading(false);
-            MailPoet.Notice.error(MailPoetI18n.serverError + result.statusText.toLowerCase() + '.');
-          }
-         );*/
+         MailPoet.Ajax.post({
+           endpoint: 'import',
+           action: 'getMailChimpLists',
+           data: {api_key: subscribers_mailchimp_key.val()}
+         }).done(function (result) {
+           if (result.status === 'success') {
+             jQuery('.mailpoet_mailchimp-key-status').html('').removeClass().addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-ok');
+             if (result.data) {
+               subscribers_mailchimp_lists.find('input')
+                .select2({
+                  data: result.data,
+                  width: '20em',
+                  dropdownCssClass: 'mailpoet_no-search',
+                  placeholder: MailPoetI18n.select,
+                  formatSelection: function (item) {
+                    return item.name;
+                  },
+                  formatResult: function (item) {
+                    return item.name;
+                  },
+                  multiple: true
+                })
+                .change(function () {
+                  subscribers_mailchimp_process.closest('table').toggle((jQuery(this).select2('val').length) ? true : false);
+                })
+                .trigger('change');
+               subscribers_mailchimp_lists.show();
+             }
+             else {
+               jQuery('.mailpoet_mailchimp-key-status').html(MailPoetI18n.noMailChimpLists);
+               subscribers_mailchimp_lists.hide();
+               subscribers_mailchimp_process.closest('table').hide();
+             }
+           }
+           else {
+             MailPoet.Notice.hide();
+             MailPoet.Notice.error(interpret_server_message(result.message));
+             jQuery('.mailpoet_mailchimp-key-status').removeClass().addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-error');
+             subscribers_mailchimp_lists.hide();
+             subscribers_mailchimp_process.closest('table').hide();
+           }
+           // hide loading indicator
+           MailPoet.Modal.loading(false);
+         }).error(function (error) {
+           // hide loading indicator
+           MailPoet.Modal.loading(false);
+           MailPoet.Notice.error(MailPoetI18n.serverError + error.statusText.toLowerCase() + '.');
+         });
+         MailPoet.Modal.loading(false);
        });
 
        subscribers_mailchimp_process.click(function () {
          // show loading indicator
          MailPoet.Modal.loading(true);
 
- /*        mailpoet_get_json(
+         /*        mailpoet_get_json(
           'subscribers_import_mailchimp.php',
           {
-            'api_key': subscribers_mailchimp_key.val(),
-            'lists': jQuery('#mailchimp_lists_select').select2('val'),
-            'action': 'process'
+          'api_key': subscribers_mailchimp_key.val(),
+          'lists': jQuery('#mailchimp_lists_select').select2('val'),
+          'action': 'process'
           },
           function (result) {
-            if (result.status === 'success') {
-              data_container.step_1 = result;
-              router.navigate('step_2', {trigger: true});
-            }
-            else {
-              MailPoet.Notice.hide();
-              MailPoet.Notice.error(interpret_server_message(result.message));
-            }
-            // hide loading indicator
-            MailPoet.Modal.loading(false);
-          },
-          function (result) {
-            MailPoet.Modal.loading(false);
-            MailPoet.Notice.error(MailPoetI18n.serverError + result.statusText.toLowerCase() + '.');
+          if (result.status === 'success') {
+          data_container.step_1 = result;
+          router.navigate('step_2', {trigger: true});
           }
-         );
-         subscribers_mailchimp_process.prop('disabled', false);*/
+          else {
+          MailPoet.Notice.hide();
+          MailPoet.Notice.error(interpret_server_message(result.message));
+          }
+          // hide loading indicator
+          MailPoet.Modal.loading(false);
+          },
+          function (result) {
+          MailPoet.Modal.loading(false);
+          MailPoet.Notice.error(MailPoetI18n.serverError + result.statusText.toLowerCase() + '.');
+          }
+          );
+          subscribers_mailchimp_process.prop('disabled', false);*/
 
-       });       
-       
+       });
+
      });
 
-     if (!Backbone.History.started) Backbone.history.start();
+     if (!Backbone.History.started) {
+       Backbone.history.start();
+     }
    });
  }
 );
