@@ -58,7 +58,7 @@ class Segments {
       $item = array_merge($item, $stats);
 
       $item['subscribers_url'] = admin_url(
-        'admin.php?page=mailpoet-subscribers#segment='.$item['id']
+        'admin.php?page=mailpoet-subscribers#/filter[segment='.$item['id'].']'
       );
     }
 

@@ -60,10 +60,28 @@ class Newsletters {
     wp_send_json(($newsletter_id !== false));
   }
 
-  function delete($id) {
+  function delete($data = array()) {
+    $newsletter = newsletter::findOne($data['id']);
+    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
+    if($newsletter !== false) {
+      if($confirm_delete) {
+        $newsletter->delete();
+        $result = array('newsletters' => 1);
+      } else {
+        $newsletter->set_expr('deleted_at', 'NOW()');
+        $result = array('newsletters' => (int)$newsletter->save());
+      }
+    } else {
+      $result = false;
+    }
+    wp_send_json($result);
+  }
+
+  function restore($id) {
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
-      $result = $newsletter->delete();
+      $newsletter->set_expr('deleted_at', 'NULL');
+      $result = array('newsletters' => (int)$newsletter->save());
     } else {
       $result = false;
     }

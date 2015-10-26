@@ -36,7 +36,6 @@ class Subscriber extends Model {
   static function filters() {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
-
     $segment_list[] = array(
       'label' => __('All lists'),
       'value' => ''
@@ -53,10 +52,7 @@ class Subscriber extends Model {
     }
 
     $filters = array(
-      array(
-        'name' => 'segment',
-        'options' => $segment_list
-      )
+      'segment' => $segment_list
     );
 
     return $filters;
@@ -66,10 +62,9 @@ class Subscriber extends Model {
     if(empty($filters)) {
       return $orm;
     }
-
-    foreach($filters as $filter) {
-      if($filter['name'] === 'segment') {
-        $segment = Segment::findOne($filter['value']);
+    foreach($filters as $key => $value) {
+      if($key === 'segment') {
+        $segment = Segment::findOne($value);
         if($segment !== false) {
           $orm = $segment->subscribers();
         }
@@ -197,10 +192,9 @@ class Subscriber extends Model {
   static function moveToList($listing, $data = array()) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
-
     if($segment !== false) {
       $subscribers_count = 0;
-      $subscribers = $listing->getSelection()->findMany();
+      $subscribers = $listing->getSelection()->findResultSet();
       foreach($subscribers as $subscriber) {
         // remove subscriber from all segments
         SubscriberSegment::where('subscriber_id', $subscriber->id)->deleteMany();

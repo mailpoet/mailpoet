@@ -115,6 +115,7 @@ define(
       },
       {
         name: 'duplicate_segment',
+        refresh: true,
         link: function(item) {
           return (
             <a

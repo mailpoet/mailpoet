@@ -32,6 +32,12 @@ class Subscribers {
 
     // fetch segments relations for each returned item
     foreach($listing_data['items'] as &$item) {
+      // avatar
+      $item['avatar_url'] = get_avatar_url($item['email'], array(
+        'size' => 32
+      ));
+
+      // subscriber's segments
       $relations = SubscriberSegment::select('segment_id')
         ->where('subscriber_id', $item['id'])
         ->findMany();

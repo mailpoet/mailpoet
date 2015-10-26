@@ -36,9 +36,9 @@
     "underscore": "1.8.3"
   },
   "devDependencies": {
-    "export-loader": "webpack/exports-loader.git",
-    "import-loader": "webpack/imports-loader.git",
-    "expose-loader": "webpack/expose-loader.git",
+    "expose-loader": "latest",
+    "exports-loader": "latest",
+    "imports-loader": "latest",
     "babel-core": "^5.8.22",
     "babel-loader": "^5.3.2",
     "amd-inject-loader": "latest",

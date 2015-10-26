@@ -6,38 +6,48 @@ function(
 ) {
   var ListingFilters = React.createClass({
     handleFilterAction: function() {
-      var filters = this.props.filters.map(function(filter, index) {
-        var value = this.refs['filter-'+index].value;
-        if(value) {
-          return {
-            'name': filter.name,
-            'value': value
-          };
-        }
-      }.bind(this));
-      return this.props.onSelectFilter(filters);
+      var filters = this.props.filters;
+      var selected_filters = Object.keys(filters)
+        .map(function(filter, index) {
+          var value = this.refs.filter.value;
+          if(value) {
+            var output = {};
+            output[filter] = value;
+            return output;
+          }
+        }.bind(this)
+      );
+      return this.props.onSelectFilter(selected_filters);
     },
     handleChangeAction: function() {
-      return true;
+      return this.refs.filter.value;
     },
     render: function() {
-      var filters = this.props.filters
+      var filters = this.props.filters;
+      var selected_filters = this.props.filter;
+
+      var available_filters = Object.keys(filters)
         .filter(function(filter) {
           return !(
-            filter.options.length === 0
+            filters[filter].length === 0
             || (
-              filter.options.length === 1
-              && !filter.options[0].value
+              filters[filter].length === 1
+              && !filters[filter][0].value
             )
           );
         })
         .map(function(filter, i) {
+          var defaultValue = false;
+          if(selected_filters[filter] !== undefined) {
+            defaultValue = selected_filters[filter];
+          }
           return (
             <select
-              ref={ 'filter-'+i }
+              ref={ 'filter' }
               key={ 'filter-'+i }
+              defaultValue={ defaultValue }
               onChange={ this.handleChangeAction }>
-              { filter.options.map(function(option, j) {
+              { filters[filter].map(function(option, j) {
                 return (
                   <option
                     value={ option.value }
@@ -51,7 +61,7 @@ function(
 
       var button = false;
 
-      if(filters.length > 0) {
+      if(available_filters.length > 0) {
         button = (
           <input
             onClick={ this.handleFilterAction }
@@ -63,7 +73,7 @@ function(
 
       return (
         <div className="alignleft actions actions">
-          { filters }
+          { available_filters }
           { button }
         </div>
       );

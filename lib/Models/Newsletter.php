@@ -39,10 +39,10 @@ class Newsletter extends Model {
       'label' => __('All lists'),
       'value' => ''
     );
+
     foreach($segments as $segment) {
       $newsletters_count = $segment->newsletters()->count();
       if($newsletters_count > 0) {
-
         $segment_list[] = array(
           'label' => sprintf('%s (%d)', $segment->name, $newsletters_count),
           'value' => $segment->id()
@@ -51,34 +51,21 @@ class Newsletter extends Model {
     }
 
     $filters = array(
-      array(
-        'name' => 'segment',
-        'options' => $segment_list
-      )
+      'segment' => $segment_list
     );
 
     return $filters;
   }
 
   static function filterBy($orm, $filters = null) {
-    if(empty($filters)) {
+   if(empty($filters)) {
       return $orm;
     }
-
-    foreach($filters as $filter) {
-      if($filter['name'] === 'segment') {
-
-        $segment = Segment::findOne($filter['value']);
+    foreach($filters as $key => $value) {
+      if($key === 'segment') {
+        $segment = Segment::findOne($value);
         if($segment !== false) {
-          $orm = $orm
-          ->select(MP_NEWSLETTERS_TABLE.'.*')
-          ->select('newsletter_segment.id', 'newsletter_segment_id')
-          ->join(
-            MP_NEWSLETTER_SEGMENT_TABLE,
-            MP_NEWSLETTERS_TABLE.'.id = newsletter_segment.newsletter_id',
-            'newsletter_segment'
-          )
-          ->where('newsletter_segment.segment_id', (int)$filter['value']);
+          $orm = $segment->newsletters();
         }
       }
     }
@@ -112,12 +99,21 @@ class Newsletter extends Model {
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Newsletter::count()
+        'count' => Newsletter::whereNull('deleted_at')->count()
+      ),
+      array(
+        'name' => 'trash',
+        'label' => __('Trash'),
+        'count' => Newsletter::whereNotNull('deleted_at')->count()
       )
     );
   }
 
-  static function group($orm, $group = null) {
+  static function groupBy($orm, $group = null) {
+    if($group === 'trash') {
+      return $orm->whereNotNull('deleted_at');
+    }
+    return $orm->whereNull('deleted_at');
   }
 
   static function createOrUpdate($data = array()) {
@@ -148,8 +144,45 @@ class Newsletter extends Model {
     return false;
   }
 
-  static function trash($listing) {
-    return $listing->getSelection()
-      ->deleteMany();
+   static function trash($listing, $data = array()) {
+    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
+    if($confirm_delete) {
+      // delete relations with all segments
+      $newsletters = $listing->getSelection()->findResultSet();
+
+      if(!empty($newsletters)) {
+        $newsletters_count = 0;
+        foreach($newsletters as $newsletter) {
+          if($newsletter->delete()) {
+            $newsletters_count++;
+          }
+        }
+        return array(
+          'newsletters' => $newsletters_count
+        );
+      }
+      return false;
+    } else {
+      // soft delete
+      $newsletters = $listing->getSelection()
+        ->findResultSet()
+        ->set_expr('deleted_at', 'NOW()')
+        ->save();
+
+      return array(
+        'newsletters' => $newsletters->count()
+      );
+    }
+  }
+
+  static function restore($listing, $data = array()) {
+    $newsletters = $listing->getSelection()
+      ->findResultSet()
+      ->set_expr('deleted_at', 'NULL')
+      ->save();
+
+    return array(
+      'newsletters' => $newsletters->count()
+    );
   }
 }

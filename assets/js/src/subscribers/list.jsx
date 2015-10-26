@@ -233,7 +233,8 @@ define(
         var row_classes = classNames(
           'manage-column',
           'column-primary',
-          'has-row-actions'
+          'has-row-actions',
+          'column-username'
         );
 
         var status = '';
@@ -258,9 +259,23 @@ define(
           return segment.name;
         }).join(', ');
 
+        var avatar = false;
+        if(subscriber.avatar_url) {
+          avatar = (
+            <img
+              className="avatar"
+              src={ subscriber.avatar_url }
+              title=""
+              width="32"
+              height="32"
+            />
+          );
+        }
+
         return (
           <div>
             <td className={ row_classes }>
+             {  avatar }
               <strong><Link to={ `/edit/${ subscriber.id }` }>
                 { subscriber.email }
               </Link></strong>
@@ -295,6 +310,7 @@ define(
             </h2>
 
             <Listing
+              params={ this.props.params }
               endpoint="subscribers"
               onRenderItem={ this.renderItem }
               columns={ columns }

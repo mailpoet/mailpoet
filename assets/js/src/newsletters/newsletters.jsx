@@ -25,6 +25,7 @@ if(container) {
         <Route path="new" component={ NewsletterTypes } />
         <Route path="new/:type" component={ NewsletterTemplates } />
         <Route path="send/:id" component={ NewsletterSend } />
+        <Route path="filter[:filter]" component={ NewsletterList } />
         <Route path="*" component={ NewsletterList } />
       </Route>
     </Router>

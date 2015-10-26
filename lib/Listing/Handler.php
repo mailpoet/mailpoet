@@ -66,7 +66,7 @@ class Handler {
 
   function getSelection() {
     if(!empty($this->data['selection'])) {
-      $this->model->whereIn('id', $this->data['selection']);
+      $this->model->whereIn($this->table_name.'.id', $this->data['selection']);
     }
     return $this->model;
   }
