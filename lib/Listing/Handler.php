@@ -66,13 +66,9 @@ class Handler {
 
   function getSelection() {
     if(!empty($this->data['selection'])) {
-      $this->model->whereIn('id', $this->data['selection']);
+      $this->model->whereIn($this->table_name.'.id', $this->data['selection']);
     }
     return $this->model;
-  }
-
-  function count() {
-    return (int)$this->model->count();
   }
 
   function getSelectionIds() {
@@ -86,14 +82,18 @@ class Handler {
   }
 
   function get() {
+    $count = $this->model->count();
+
+    $items = $this->model
+      ->offset($this->data['offset'])
+      ->limit($this->data['limit'])
+      ->findArray();
+
     return array(
-      'count' => $this->model->count(),
+      'count' => $count,
       'filters' => $this->model->filter('filters'),
       'groups' => $this->model->filter('groups'),
-      'items' => $this->model
-        ->offset($this->data['offset'])
-        ->limit($this->data['limit'])
-        ->findArray()
+      'items' => $items
     );
   }
 }

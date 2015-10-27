@@ -37,19 +37,82 @@ define(
       }
     ];
 
+    var messages = {
+      onDelete: function(response) {
+        var count = ~~response.newsletters;
+        var message = null;
+
+        if(count === 1 || response === true) {
+          message = (
+            '1 newsletter was moved to the trash.'
+          );
+        } else if(count > 1) {
+          message = (
+            '%$1d newsletters were moved to the trash.'
+          ).replace('%$1d', count);
+        }
+
+        if(message !== null) {
+          MailPoet.Notice.success(message);
+        }
+      },
+      onConfirmDelete: function(response) {
+        var count = ~~response.newsletters;
+        var message = null;
+
+        if(count === 1 || response === true) {
+          message = (
+            '1 newsletter was permanently deleted.'
+          );
+        } else if(count > 1) {
+          message = (
+            '%$1d newsletters were permanently deleted.'
+          ).replace('%$1d', count);
+        }
+
+        if(message !== null) {
+          MailPoet.Notice.success(message);
+        }
+      },
+      onRestore: function(response) {
+        var count = ~~response.newsletters;
+        var message = null;
+
+        if(count === 1 || response === true) {
+          message = (
+            '1 newsletter has been restored from the trash.'
+          );
+        } else if(count > 1) {
+          message = (
+            '%$1d newsletters have been restored from the trash.'
+          ).replace('%$1d', count);
+        }
+
+        if(message !== null) {
+          MailPoet.Notice.success(message);
+        }
+      }
+    };
+
     var bulk_actions = [
       {
         name: 'trash',
-        label: 'Trash'
+        label: 'Trash',
+        getData: function() {
+          return {
+            confirm: false
+          }
+        },
+        onSuccess: messages.onDelete
       }
     ];
 
     var item_actions = [
       {
         name: 'edit',
-        link: function(id) {
+        link: function(item) {
           return (
-            <a href={ '?page=mailpoet-newsletter-editor&id=' + id }>
+            <a href={ `?page=mailpoet-newsletter-editor&id=${ item.id }` }>
               Edit
             </a>
           );
@@ -104,7 +167,8 @@ define(
               onRenderItem={this.renderItem}
               columns={columns}
               bulk_actions={ bulk_actions }
-              item_actions={ item_actions } />
+              item_actions={ item_actions }
+              messages={ messages } />
           </div>
         );
       }

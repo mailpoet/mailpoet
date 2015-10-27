@@ -17,6 +17,11 @@ define(
         name: 'name',
         label: 'Name',
         type: 'text'
+      },
+      {
+        name: 'description',
+        label: 'Description',
+        type: 'textarea'
       }
     ];
 

@@ -29,6 +29,7 @@ if(container) {
         <Route name="welcome" path="new/welcome" component={ NewsletterWelcome } />
         <Route name="template" path="template/:id" component={ NewsletterTemplates } />
         <Route path="send/:id" component={ NewsletterSend } />
+        <Route path="filter[:filter]" component={ NewsletterList } />
         <Route path="*" component={ NewsletterList } />
       </Route>
     </Router>

@@ -77,12 +77,23 @@ define(
 
         if(custom_actions.length > 0) {
           item_actions = custom_actions.map(function(action, index) {
-            return (
-              <span key={ 'action-'+index } className={ action.name }>
-                { action.link(this.props.item.id) }
-                {(index < (custom_actions.length - 1)) ? ' | ' : ''}
-              </span>
-            );
+            if(action.refresh) {
+              return (
+                <span
+                  onClick={ this.props.onRefreshItems }
+                  key={ 'action-'+index } className={ action.name }>
+                  { action.link(this.props.item) }
+                  {(index < (custom_actions.length - 1)) ? ' | ' : ''}
+                </span>
+              );
+            } else {
+              return (
+                <span key={ 'action-'+index } className={ action.name }>
+                  { action.link(this.props.item) }
+                  {(index < (custom_actions.length - 1)) ? ' | ' : ''}
+                </span>
+              );
+            }
           }.bind(this));
         } else {
           item_actions = (
@@ -233,6 +244,7 @@ define(
                     onRenderItem={ this.props.onRenderItem }
                     onDeleteItem={ this.props.onDeleteItem }
                     onRestoreItem={ this.props.onRestoreItem }
+                    onRefreshItems={ this.props.onRefreshItems }
                     selection={ this.props.selection }
                     is_selectable={ this.props.is_selectable }
                     item_actions={ this.props.item_actions }
@@ -248,6 +260,9 @@ define(
     });
 
     var Listing = React.createClass({
+      mixins: [
+        Router.History
+      ],
       getInitialState: function() {
         return {
           loading: false,
@@ -260,43 +275,78 @@ define(
           items: [],
           groups: [],
           group: 'all',
-          filters: [],
-          filter: [],
+          filters: {},
+          filter: {},
           selected_ids: [],
           selection: false
         };
       },
+      componentDidUpdate: function(prevProps, prevState) {
+        // set group to "all" if trash gets emptied
+        if(
+          (prevState.group === 'trash' && prevState.count > 0)
+          &&
+          (this.state.group === 'trash' && this.state.count === 0)
+        ) {
+          this.handleGroup('all');
+        }
+      },
       componentDidMount: function() {
-        this.getItems();
+        if(this.isMounted()) {
+          var state = this.state || {};
+          var params = this.props.params || {};
+
+          // set filters
+          if(params.filter !== undefined) {
+            var filter = {};
+            var pairs = params.filter
+              .split('&')
+              .map(function(pair) {
+                var [key, value] = pair.split('=');
+                filter[key] = value;
+              }
+            );
+
+            state.filter = filter;
+          }
+
+          if(this.props.limit !== undefined) {
+            state.limit = Math.abs(~~this.props.limit);
+          }
+
+          this.setState(state, function() {
+            this.getItems();
+          }.bind(this));
+        }
       },
       getItems: function() {
-        this.setState({ loading: true });
+        if(this.isMounted()) {
+          this.setState({ loading: true });
 
-        this.clearSelection();
+          this.clearSelection();
 
-        MailPoet.Ajax.post({
-          endpoint: this.props.endpoint,
-          action: 'listing',
-          data: {
-            offset: (this.state.page - 1) * this.state.limit,
-            limit: this.state.limit,
-            group: this.state.group,
-            filter: this.state.filter,
-            search: this.state.search,
-            sort_by: this.state.sort_by,
-            sort_order: this.state.sort_order
-          }
-        }).done(function(response) {
-          if(this.isMounted()) {
+          MailPoet.Ajax.post({
+            endpoint: this.props.endpoint,
+            action: 'listing',
+            data: {
+              offset: (this.state.page - 1) * this.state.limit,
+              limit: this.state.limit,
+              group: this.state.group,
+              filter: this.state.filter,
+              search: this.state.search,
+              sort_by: this.state.sort_by,
+              sort_order: this.state.sort_order
+            }
+          }).done(function(response) {
             this.setState({
               items: response.items || [],
-              filters: response.filters || [],
+              filters: response.filters || {},
               groups: response.groups || [],
               count: response.count || 0,
               loading: false
             });
-          }
-        }.bind(this));
+          }.bind(this));
+        }
       },
       handleRestoreItem: function(id) {
         this.setState({
@@ -489,16 +539,13 @@ define(
         var render = this.props.onRenderItem(item, actions);
         return render.props.children;
       },
+      handleRefreshItems: function() {
+        this.getItems();
+      },
       render: function() {
         var items = this.state.items,
             sort_by =  this.state.sort_by,
             sort_order =  this.state.sort_order;
-
-        // set sortable columns
-        columns = this.props.columns.map(function(column) {
-          column.sorted = (column.name === sort_by) ? sort_order : false;
-          return column;
-        });
 
         // bulk actions
         var bulk_actions = this.props.bulk_actions || [];
@@ -531,15 +578,34 @@ define(
           'striped',
           { 'mailpoet_listing_loading': this.state.loading }
         );
+
+        // search
+        var search = (
+          <ListingSearch
+            onSearch={ this.handleSearch }
+            search={ this.state.search }
+          />
+        );
+        if(this.props.search === false) {
+          search = false;
+        }
+
+        // groups
+        var groups = (
+          <ListingGroups
+            groups={ this.state.groups }
+            group={ this.state.group }
+            onSelectGroup={ this.handleGroup }
+          />
+        );
+        if(this.props.groups === false) {
+          groups = false;
+        }
+
         return (
           <div>
-            <ListingGroups
-              groups={ this.state.groups }
-              group={ this.state.group }
-              onSelectGroup={ this.handleGroup } />
-            <ListingSearch
-              onSearch={ this.handleSearch }
-              search={ this.state.search } />
+            { groups }
+            { search }
             <div className="tablenav top clearfix">
               <ListingBulkActions
                 bulk_actions={ bulk_actions }
@@ -548,7 +614,7 @@ define(
                 onBulkAction={ this.handleBulkAction } />
               <ListingFilters
                 filters={ this.state.filters }
-                filter={ this.state.filter }
+                filter={ this.state.filter }
                 onSelectFilter={ this.handleFilter } />
               <ListingPages
                 count={ this.state.count }
@@ -572,6 +638,7 @@ define(
                 onRenderItem={ this.handleRenderItem }
                 onDeleteItem={ this.handleDeleteItem }
                 onRestoreItem={ this.handleRestoreItem }
+                onRefreshItems={ this.handleRefreshItems }
                 columns={ this.props.columns }
                 is_selectable={ bulk_actions.length > 0 }
                 onSelectItem={ this.handleSelectItem }

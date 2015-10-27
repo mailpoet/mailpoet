@@ -70,10 +70,21 @@ define(
 
         this.setState({ loading: true });
 
+        // only get values from displayed fields
+        item = {};
+        this.props.fields.map(function(field) {
+          item[field.name] = this.state.item[field.name];
+        }.bind(this));
+
+        // set id if specified
+        if(this.props.params.id !== undefined) {
+          item.id = this.props.params.id;
+        }
+
         MailPoet.Ajax.post({
           endpoint: this.props.endpoint,
           action: 'save',
-          data: this.state.item
+          data: item
         }).done(function(response) {
           this.setState({ loading: false });
 

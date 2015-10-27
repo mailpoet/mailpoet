@@ -9,7 +9,7 @@ let history = createHashHistory({ queryKey: false })
 
 const App = React.createClass({
   render() {
-    return this.props.children
+    return this.props.children;
   }
 });
 
@@ -22,6 +22,7 @@ if(container) {
         <IndexRoute component={ SubscriberList } />
         <Route path="new" component={ SubscriberForm } />
         <Route path="edit/:id" component={ SubscriberForm } />
+        <Route path="filter[:filter]" component={ SubscriberList } />
         <Route path="*" component={ SubscriberList } />
       </Route>
     </Router>

@@ -9,6 +9,9 @@ define(['react', 'classnames'], function(React, classNames) {
     render: function() {
       var columns = this.props.columns.map(function(column, index) {
         column.is_primary = (index === 0);
+        column.sorted = (this.props.sort_by === column.name)
+          ? this.props.sort_order
+          : 'asc';
         return (
           <ListingColumn
             onSort={this.props.onSort}
