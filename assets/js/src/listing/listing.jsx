@@ -282,42 +282,100 @@ define(
         };
       },
       componentDidUpdate: function(prevProps, prevState) {
-        // set group to "all" if trash gets emptied
+        // reset group to "all" if trash gets emptied
         if(
+          // we were viewing the trash
           (prevState.group === 'trash' && prevState.count > 0)
           &&
+          // we are still viewing the trash but there are no items left
           (this.state.group === 'trash' && this.state.count === 0)
+          &&
+          // only do this when no filter is set
+          (Object.keys(this.state.filter).length === 0)
         ) {
           this.handleGroup('all');
         }
       },
+      getParam: function(param) {
+        var regex = /(.*)\[(.*)\]/
+        var matches = regex.exec(param)
+        return [matches[1], matches[2]]
+      },
+      initWithParams: function(params) {
+        let state = this.state || {}
+        let original_state = state
+         // check for url params
+        if(params.splat !== undefined) {
+          params.splat.split('/').map(param => {
+            let [key, value] = this.getParam(param);
+            switch(key) {
+              case 'filter':
+                let filters = {}
+                value.split('&').map(function(pair) {
+                    let [k, v] = pair.split('=')
+                    filters[k] = v
+                  }
+                )
+
+                state.filter = filters
+              break;
+              default:
+                state[key] = value
+            }
+          })
+        }
+        if(this.props.limit !== undefined) {
+          state.limit = Math.abs(~~this.props.limit);
+        }
+        this.setState(state, function() {
+          this.getItems();
+        }.bind(this));
+      },
+      setParams: function() {
+        var params = Object.keys(this.state)
+          .filter(key => {
+            return (
+              [
+                'group',
+                'filter',
+                'search',
+                'page',
+                'sort_by',
+                'sort_order'
+              ].indexOf(key) !== -1
+            )
+          })
+          .map(key => {
+            let value = this.state[key]
+            if(value === Object(value)) {
+              value = jQuery.param(value)
+            } else if(value === Boolean(value)) {
+              value = value.toString()
+            }
+
+            if(value !== '') {
+              return `${key}[${value}]`
+            }
+          })
+          .filter(key => { return (key !== undefined) })
+          .join('/');
+        params = '/'+params
+
+        if(this.props.location) {
+          if(this.props.location.pathname !== params) {
+            this.history.pushState(null, `${params}`)
+          }
+        }
+      },
       componentDidMount: function() {
         if(this.isMounted()) {
-          var state = this.state || {};
-          var params = this.props.params || {};
-
-          // set filters
-          if(params.filter !== undefined) {
-            var filter = {};
-            var pairs = params.filter
-              .split('&')
-              .map(function(pair) {
-                var [key, value] = pair.split('=');
-                filter[key] = value;
-              }
-            );
-
-            state.filter = filter;
-          }
-
-          if(this.props.limit !== undefined) {
-            state.limit = Math.abs(~~this.props.limit);
-          }
-
-          this.setState(state, function() {
-            this.getItems();
-          }.bind(this));
+          const params = this.props.params || {}
+          this.initWithParams(params)
         }
+      },
+      componentWillReceiveProps: function(nextProps) {
+        const params = nextProps.params || {}
+        //this.initWithParams(params)
       },
       getItems: function() {
         if(this.isMounted()) {
@@ -443,6 +501,7 @@ define(
           selection: false,
           selected_ids: []
         }, function() {
+          this.setParams();
           this.getItems();
         }.bind(this));
       },
@@ -451,6 +510,7 @@ define(
           sort_by: sort_by,
           sort_order: sort_order,
         }, function() {
+          this.setParams();
           this.getItems();
         }.bind(this));
       },
@@ -510,6 +570,7 @@ define(
           filter: filters,
           page: 1
         }, function() {
+          this.setParams();
           this.getItems();
         }.bind(this));
       },
@@ -519,10 +580,11 @@ define(
 
         this.setState({
           group: group,
-          filter: [],
+          filter: {},
           search: '',
           page: 1
         }, function() {
+          this.setParams();
           this.getItems();
         }.bind(this));
       },
@@ -532,6 +594,7 @@ define(
           selection: false,
           selected_ids: []
         }, function() {
+          this.setParams();
           this.getItems();
         }.bind(this));
       },
@@ -571,7 +634,8 @@ define(
         // item actions
         var item_actions = this.props.item_actions || [];
 
-        var tableClasses = classNames(
+        var table_classes = classNames(
+          'mailpoet_listing_table',
           'wp-list-table',
           'widefat',
           'fixed',
@@ -622,7 +686,7 @@ define(
                 limit={ this.state.limit }
                 onSetPage={ this.handleSetPage } />
             </div>
-            <table className={ tableClasses }>
+            <table className={ table_classes }>
               <thead>
                 <ListingHeader
                   onSort={ this.handleSort }

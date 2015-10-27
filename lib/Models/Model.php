@@ -23,7 +23,7 @@ class Model extends \Sudzy\ValidModel {
 
   private function setTimestamp() {
     if($this->created_at === null) {
-      $this->created_at = date('Y-m-d H:i:s');
+      $this->set_expr('created_at', 'NOW()');
     }
   }
 

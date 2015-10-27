@@ -7,6 +7,9 @@ define(['react'], function(React) {
         this.refs.search.value
       );
     },
+    componentWillReceiveProps: function(nextProps) {
+      this.refs.search.value = nextProps.search
+    },
     render: function() {
       if(this.props.search === false) {
         return false;

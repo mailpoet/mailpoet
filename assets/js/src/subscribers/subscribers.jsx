@@ -5,7 +5,7 @@ import SubscriberList from 'subscribers/list.jsx'
 import SubscriberForm from 'subscribers/form.jsx'
 import createHashHistory from 'history/lib/createHashHistory'
 
-let history = createHashHistory({ queryKey: false })
+const history = createHashHistory({ queryKey: false })
 
 const App = React.createClass({
   render() {
@@ -13,7 +13,7 @@ const App = React.createClass({
   }
 });
 
-let container = document.getElementById('subscribers_container');
+const container = document.getElementById('subscribers_container')
 
 if(container) {
   ReactDOM.render((
@@ -22,7 +22,6 @@ if(container) {
         <IndexRoute component={ SubscriberList } />
         <Route path="new" component={ SubscriberForm } />
         <Route path="edit/:id" component={ SubscriberForm } />
-        <Route path="filter[:filter]" component={ SubscriberList } />
         <Route path="*" component={ SubscriberList } />
       </Route>
     </Router>
