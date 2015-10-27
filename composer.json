@@ -7,7 +7,8 @@
     "sunra/php-simple-html-dom-parser": "*",
     "tburry/pquery": "*",
     "j4mie/paris": "1.5.4",
-    "swiftmailer/swiftmailer": "^5.4"
+    "swiftmailer/swiftmailer": "^5.4",
+    "phpseclib/phpseclib": "*"
   },
   "require-dev": {
     "codeception/codeception": "*",
