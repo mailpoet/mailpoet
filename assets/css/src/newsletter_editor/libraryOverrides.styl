@@ -1,11 +1,14 @@
 /* Fix select2 z-index to work with MailPoet.Modal */
-.select2-drop
+.select2-dropdown
   z-index: 101000
 
 /* Remove input field styles from select2 type input */
 .select2-container
   border: none
   padding: 0
+
+.mailpoet_editor_settings .select2-container
+  width: 100% !important
 
 /* Fix inline TinyMCE toolbar to have minimal width instead of being close to 100% of the screen */
 div.mce-toolbar-grp.mce-container

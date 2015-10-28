@@ -14,7 +14,11 @@
             <option value="private"><%= __('Private') %></option>
         </select></div>
     <div class="mailpoet_post_selection_filter_row">
-        <input type="hidden" class="mailpoet_input mailpoet_posts_categories_and_tags" value="{{json_encode terms}}" data-selected="{{json_encode terms}}" data-placeholder="<%= __('Filter by category or tag') %>" />
+        <select class="mailpoet_select mailpoet_posts_categories_and_tags" multiple="multiple">
+          {{#each terms}}
+            <option value="{{ id }}" selected="selected">{{ text }}</option>
+          {{/each}}
+        </select>
     </div>
 </div>
 <div class="mailpoet_post_selection_container">
