@@ -89,7 +89,12 @@ define(
           this.setState({ loading: false });
 
           if(response === true) {
-            this.history.pushState(null, '/');
+            if(this.props.onSuccess !== undefined) {
+              this.props.onSuccess()
+            } else {
+              this.history.pushState(null, '/')
+            }
+
             if(this.props.params.id !== undefined) {
               this.props.messages['updated']();
             } else {

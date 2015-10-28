@@ -104,6 +104,7 @@ define(['react', 'classnames'], function(React, classNames) {
           pagination = (
             <span className="pagination-links">
               {firstPage}
+              &nbsp;
               {previousPage}
               &nbsp;
               <span className="paging-input">
@@ -128,6 +129,7 @@ define(['react', 'classnames'], function(React, classNames) {
               </span>
               &nbsp;
               {nextPage}
+              &nbsp;
               {lastPage}
             </span>
           );
@@ -140,7 +142,7 @@ define(['react', 'classnames'], function(React, classNames) {
 
         return (
           <div className={ classes }>
-            <span className="displaying-num">{ this.props.count } item(s)</span>
+            <span className="displaying-num">{ this.props.count } items</span>
             { pagination }
           </div>
         );

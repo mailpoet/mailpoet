@@ -52,18 +52,26 @@ define(
     var Link = Router.Link;
 
     var SubscriberForm = React.createClass({
+      mixins: [
+        Router.History
+      ],
       render: function() {
         return (
           <div>
             <h2 className="title">
-              Subscriber <Link className="add-new-h2" to="/">Back to list</Link>
+              Subscriber <a
+                href="javascript:;"
+                className="add-new-h2"
+                onClick={ this.history.goBack }
+              >Back to list</a>
             </h2>
 
             <Form
               endpoint="subscribers"
               fields={ fields }
               params={ this.props.params }
-              messages={ messages } />
+              messages={ messages }
+              onSuccess={ this.history.goBack } />
           </div>
         );
       }

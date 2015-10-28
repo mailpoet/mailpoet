@@ -163,6 +163,7 @@ define(
             </h2>
 
             <Listing
+              params={ this.props.params }
               endpoint="newsletters"
               onRenderItem={this.renderItem}
               columns={columns}
