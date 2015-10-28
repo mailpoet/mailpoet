@@ -1,11 +1,24 @@
 /* Fix select2 z-index to work with MailPoet.Modal */
-.select2-drop
+.select2-dropdown
   z-index: 101000
 
 /* Remove input field styles from select2 type input */
 .select2-container
   border: none
   padding: 0
+
+/* Fix select2 input glow and margins that wordpress may insert */
+.select2 input,
+.select2 input:focus
+  border-color: none
+  box-shadow: none
+
+  margin: 0
+  padding: 0
+
+/* Fix width overrides for select2 */
+.mailpoet_editor_settings .select2-container
+  width: 100% !important
 
 /* Fix inline TinyMCE toolbar to have minimal width instead of being close to 100% of the screen */
 div.mce-toolbar-grp.mce-container

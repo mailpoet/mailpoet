@@ -14,8 +14,12 @@
 
 <div class="mailpoet_form_field">
     <div class="mailpoet_form_field_title"><%= __('Categories & tags:') %></div>
-    <div class="mailpoet_form_field_input_option">
-        <input type="hidden" class="mailpoet_input mailpoet_automated_latest_content_categories_and_tags" value="{{json_encode terms}}" data-selected="{{json_encode terms}}" />
+    <div class="mailpoet_form_field_select_option">
+        <select class="mailpoet_select mailpoet_automated_latest_content_categories_and_tags" multiple="multiple">
+          {{#each terms}}
+            <option value="{{ id }}" selected="selected">{{ text }}</option>
+          {{/each}}
+        </select>
     </div>
     <div class="mailpoet_form_field_radio_option">
         <label>

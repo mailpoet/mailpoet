@@ -166,81 +166,62 @@ define([
       this.$('.mailpoet_automated_latest_content_categories_and_tags').select2({
         multiple: true,
         allowClear: true,
-        query: function(options) {
-          var taxonomies = [];
-          // Delegate data loading to our own endpoints
-          WordpressComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
-            taxonomies = tax;
-            // Fetch available terms based on the list of taxonomies already fetched
-            var promise = WordpressComponent.getTerms({
-              search: options.term,
-              taxonomies: _.keys(taxonomies)
-            }).then(function(terms) {
-              return {
-                taxonomies: taxonomies,
-                terms: terms,
-              };
+        ajax: {
+          data: function (params) {
+            return {
+              term: params.term
+            };
+          },
+          transport: function(options, success, failure) {
+            var taxonomies,
+                promise = WordpressComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
+              taxonomies = tax;
+              // Fetch available terms based on the list of taxonomies already fetched
+              var promise = WordpressComponent.getTerms({
+                search: options.data.term,
+                taxonomies: _.keys(taxonomies)
+              }).then(function(terms) {
+                return {
+                  taxonomies: taxonomies,
+                  terms: terms,
+                };
+              });
+              return promise;
             });
+
+            promise.then(success);
+            promise.fail(failure);
             return promise;
-          }).done(function(args) {
+          },
+          processResults: function(data) {
             // Transform taxonomies and terms into select2 compatible format
-            options.callback({
+            return {
               results: _.map(
-                args.terms,
+                data.terms,
                 function(item) {
                   return _.defaults({
-                    text: args.taxonomies[item.taxonomy].labels.singular_name + ': ' + item.name,
+                    text: data.taxonomies[item.taxonomy].labels.singular_name + ': ' + item.name,
                     id: item.term_id
                   }, item);
                 }
               )
-            });
-          });
+            };
+          },
         },
-        initSelection: function(element, callback) {
-          // On external data load tell select2 which terms to preselect
-
-          callback(_.map(
-            that.model.get('terms').toJSON(),
-            function(item) {
-              return {
-                id: item.id,
-                text: item.text,
-              };
-            }
-          ));
+      }).on({
+        'select2:select': function(event) {
+          var terms = that.model.get('terms');
+          terms.add(event.params.data);
+          // Reset whole model in order for change events to propagate properly
+          that.model.set('terms', terms.toJSON());
         },
-      }).trigger( 'change' ).on({
-        'change': function(e){
-          var data = jQuery(this).data('selected');
-
-          if (typeof data === 'string') {
-            if (data === '') {
-              data = [];
-            } else {
-              data = JSON.parse(data);
-            }
-          }
-
-          if ( e.added ){
-            data.push(e.added);
-          } else {
-            data = _.filter(data, function(item) {
-              return item.id !== e.removed.id;
-            });
-          }
-
-          // Update ALC model
-          that.model.set('terms', data);
-
-          jQuery(this).data('selected', JSON.stringify(data));
-        }
-      });
-    },
-    onBeforeDestroy: function() {
-      base.BlockSettingsView.prototype.onBeforeDestroy.apply(this, arguments);
-      // Force close select2 if it hasn't closed yet
-      this.$('.mailpoet_automated_latest_content_categories_and_tags').select2('close');
+        'select2:unselect': function(event) {
+          var terms = that.model.get('terms');
+          terms.remove(event.params.data);
+          // Reset whole model in order for change events to propagate properly
+          that.model.set('terms', terms.toJSON());
+        },
+      }).trigger( 'change' );
     },
     toggleDisplayOptions: function(event) {
       var el = this.$('.mailpoet_automated_latest_content_display_options'),

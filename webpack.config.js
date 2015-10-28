@@ -21,7 +21,7 @@ baseConfig = {
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
       'sticky-kit': 'sticky-kit/jquery.sticky-kit',
       'interact$': 'interact.js/interact.js',
-      'spectrum$': 'spectrum-colorpicker/spectrum.js',
+      'spectrum$': 'spectrum-colorpicker/spectrum.js'
     },
   },
   node: {
