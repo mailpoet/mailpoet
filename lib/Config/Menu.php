@@ -43,6 +43,14 @@ class Menu {
     );
     add_submenu_page(
       'mailpoet',
+      __('Forms'),
+      __('Forms'),
+      'manage_options',
+      'mailpoet-forms',
+      array($this, 'forms')
+    );
+    add_submenu_page(
+      'mailpoet',
       __('Subscribers'),
       __('Subscribers'),
       'manage_options',
@@ -161,6 +169,13 @@ class Menu {
   function segments() {
     $data = array();
     echo $this->renderer->render('segments.html', $data);
+  }
+
+  function forms() {
+    $data = array();
+    $data['segments'] = Segment::findArray();
+
+    echo $this->renderer->render('forms.html', $data);
   }
 
   function newsletters() {

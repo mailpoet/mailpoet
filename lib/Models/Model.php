@@ -21,6 +21,29 @@ class Model extends \Sudzy\ValidModel {
     }
   }
 
+  static function restore($orm) {
+    $models = $orm->findResultSet();
+    if(empty($models)) return false;
+
+    $models->setExpr('deleted_at', 'NULL')->save();
+    return $models->count();
+  }
+
+  static function trash($orm, $confirm = false) {
+    $models = $orm->findResultSet();
+    if(empty($models)) return false;
+
+    if($confirm === true) {
+      foreach($models as $model) {
+        $model->delete();
+      }
+    } else {
+      $models = $orm->findResultSet();
+      $models->setExpr('deleted_at', 'NOW()')->save();
+    }
+    return $models->count();
+  }
+
   private function setTimestamp() {
     if($this->created_at === null) {
       $this->set_expr('created_at', 'NOW()');

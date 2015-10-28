@@ -202,8 +202,7 @@ class Migrator {
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'deleted_at TIMESTAMP NULL DEFAULT NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id),',
-      'UNIQUE KEY name (name)'
+      'PRIMARY KEY  (id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
