@@ -1,24 +1,17 @@
 <?php
 namespace MailPoet\Util;
+use \phpseclib\Crypt\RSA;
 
 class DKIM {
   static function generateKeys() {
     try {
-      $certificate = openssl_pkey_new(array('private_bits'  =>  1024));
+      $rsa = new RSA();
+      $rsa_keys = $rsa->createKey();
 
-      $keys = array('public' => '', 'private' => '');
-
-      // get private key
-      openssl_pkey_export($certificate, $keys['private']);
-
-      // get public key
-      $public = openssl_pkey_get_details($certificate);
-
-      // trim keys by removing BEGIN/END lines
-      $keys['public'] = self::trimKey($public['key']);
-      $keys['private'] = self::trimKey($keys['private']);
-
-      return $keys;
+      return array(
+        'public' => self::trimKey($rsa_keys['publickey']),
+        'private' => self::trimKey($rsa_keys['privatekey'])
+      );
     } catch(Exception $e) {
        return false;
     }
