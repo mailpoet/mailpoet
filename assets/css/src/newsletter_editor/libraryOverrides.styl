@@ -7,6 +7,16 @@
   border: none
   padding: 0
 
+/* Fix select2 input glow and margins that wordpress may insert */
+.select2 input,
+.select2 input:focus
+  border-color: none
+  box-shadow: none
+
+  margin: 0
+  padding: 0
+
+/* Fix width overrides for select2 */
 .mailpoet_editor_settings .select2-container
   width: 100% !important
 
