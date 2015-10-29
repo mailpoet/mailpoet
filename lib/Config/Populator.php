@@ -60,6 +60,27 @@ class Populator {
         'name' => 'afterTimeType',
         'newsletter_type' => 'welcome',
       ),
+
+      array(
+        'name' => 'intervalType',
+        'newsletter_type' => 'notification',
+      ),
+      array(
+        'name' => 'timeOfDay',
+        'newsletter_type' => 'notification',
+      ),
+      array(
+        'name' => 'weekDay',
+        'newsletter_type' => 'notification',
+      ),
+      array(
+        'name' => 'monthDay',
+        'newsletter_type' => 'notification',
+      ),
+      array(
+        'name' => 'nthWeekDay',
+        'newsletter_type' => 'notification',
+      ),
     );
   }
 

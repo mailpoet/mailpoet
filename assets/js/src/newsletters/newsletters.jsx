@@ -7,6 +7,7 @@ import NewsletterTemplates from 'newsletters/templates.jsx'
 import NewsletterSend from 'newsletters/send.jsx'
 import NewsletterStandard from 'newsletters/types/standard.jsx'
 import NewsletterWelcome from 'newsletters/types/welcome.jsx'
+import NewsletterNotification from 'newsletters/types/notification.jsx'
 import createHashHistory from 'history/lib/createHashHistory'
 
 let history = createHashHistory({ queryKey: false })
@@ -27,6 +28,7 @@ if(container) {
         <Route path="new" component={ NewsletterTypes } />
         <Route name="standard" path="new/standard" component={ NewsletterStandard } />
         <Route name="welcome" path="new/welcome" component={ NewsletterWelcome } />
+        <Route name="notification" path="new/notification" component={ NewsletterNotification } />
         <Route name="template" path="template/:id" component={ NewsletterTemplates } />
         <Route path="send/:id" component={ NewsletterSend } />
         <Route path="filter[:filter]" component={ NewsletterList } />

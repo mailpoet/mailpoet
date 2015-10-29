@@ -85,6 +85,26 @@ define(
                   </a>
                 </div>
               </li>
+
+              <li data-type="notification">
+                <div className="mailpoet_thumbnail"></div>
+
+                <div className="mailpoet_description">
+                  <h3>Post notifications</h3>
+                  <p>
+                    Automatically send posts immediately, daily, weekly or monthly. Filter by categories, if you like.
+                  </p>
+                </div>
+
+                <div className="mailpoet_actions">
+                  <a
+                    className="button button-primary"
+                    onClick={ this.setupNewsletter.bind(null, 'notification') }
+                  >
+                    Set up
+                  </a>
+                </div>
+              </li>
             </ul>
           </div>
         );
