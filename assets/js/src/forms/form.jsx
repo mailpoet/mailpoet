@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Router from 'react-router'
+import { Router, History } from 'react-router'
 import MailPoet from 'mailpoet'
 import Form from 'form/form.jsx'
 
@@ -29,7 +29,7 @@ const messages = {
 
 const FormForm = React.createClass({
   mixins: [
-    Router.History
+    History
   ],
   render() {
     return (

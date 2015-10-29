@@ -38,7 +38,7 @@ define(
     ];
 
     var messages = {
-      onDelete: function(response) {
+      onTrash: function(response) {
         var count = ~~response.newsletters;
         var message = null;
 
@@ -56,7 +56,7 @@ define(
           MailPoet.Notice.success(message);
         }
       },
-      onConfirmDelete: function(response) {
+      onDelete: function(response) {
         var count = ~~response.newsletters;
         var message = null;
 
@@ -98,12 +98,7 @@ define(
       {
         name: 'trash',
         label: 'Trash',
-        getData: function() {
-          return {
-            confirm: false
-          }
-        },
-        onSuccess: messages.onDelete
+        onSuccess: messages.onTrash
       }
     ];
 

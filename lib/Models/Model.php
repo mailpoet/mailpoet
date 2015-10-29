@@ -9,6 +9,10 @@ class Model extends \Sudzy\ValidModel {
     parent::__construct($customValidators->init());
   }
 
+  static function create() {
+    return parent::create();
+  }
+
   function save() {
     $this->setTimestamp();
     try {
@@ -21,27 +25,52 @@ class Model extends \Sudzy\ValidModel {
     }
   }
 
-  static function restore($orm) {
-    $models = $orm->findResultSet();
-    if(empty($models)) return false;
+  function trash() {
+    return $this->set_expr('deleted_at', 'NOW()')->save();
+  }
 
-    $models->setExpr('deleted_at', 'NULL')->save();
+  static function bulkTrash($orm) {
+    $models = $orm->findResultSet();
+    $models->set_expr('deleted_at', 'NOW()')->save();
     return $models->count();
   }
 
-  static function trash($orm, $confirm = false) {
-    $models = $orm->findResultSet();
-    if(empty($models)) return false;
-
-    if($confirm === true) {
-      foreach($models as $model) {
-        $model->delete();
-      }
-    } else {
-      $models = $orm->findResultSet();
-      $models->setExpr('deleted_at', 'NOW()')->save();
+  static function bulkDelete($orm) {
+    $models = $orm->findMany();
+    $count = 0;
+    foreach($models as $model) {
+      $model->delete();
+      $count++;
     }
+    return $count;
+  }
+
+  function restore() {
+    return $this->set_expr('deleted_at', 'NULl')->save();
+  }
+
+  static function bulkRestore($orm) {
+    $models = $orm->findResultSet();
+    $models->set_expr('deleted_at', 'NULL')->save();
     return $models->count();
+  }
+
+  function duplicate($data = array()) {
+    $model = get_called_class();
+    $model_data = array_merge($this->asArray(), $data);
+    unset($model_data['id']);
+
+    $duplicate =  $model::create();
+    $duplicate->hydrate($model_data);
+    $duplicate->set_expr('created_at', 'NOW()');
+    $duplicate->set_expr('updated_at', 'NOW()');
+    $duplicate->set_expr('deleted_at', 'NULL');
+
+    if($duplicate->save()) {
+      return $duplicate;
+    } else {
+      return false;
+    }
   }
 
   private function setTimestamp() {

@@ -36,6 +36,7 @@ function(
           let default_value = false;
           if(selected_filters[filter] !== undefined && selected_filters[filter]) {
             default_value = selected_filters[filter]
+
           } else {
             jQuery(`select[name="${filter}"]`).val('');
           }

@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router, Route, IndexRoute, Link } from 'react-router'
+import { Router, Route, IndexRoute } from 'react-router'
 import FormList from 'forms/list.jsx'
 import FormForm from 'forms/form.jsx'
 import createHashHistory from 'history/lib/createHashHistory'

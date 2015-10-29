@@ -66,7 +66,7 @@ class Subscriber extends Model {
       if($key === 'segment') {
         $segment = Segment::findOne($value);
         if($segment !== false) {
-          $orm = $segment->subscribers();
+          return $segment->subscribers();
         }
       }
     }
@@ -189,12 +189,11 @@ class Subscriber extends Model {
     return false;
   }
 
-  static function moveToList($listing, $data = array()) {
+  static function bulkMoveToList($orm, $data = array()) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
     if($segment !== false) {
-      $subscribers_count = 0;
-      $subscribers = $listing->getSelection()->findResultSet();
+      $subscribers = $orm->findResultSet();
       foreach($subscribers as $subscriber) {
         // remove subscriber from all segments
         SubscriberSegment::where('subscriber_id', $subscriber->id)->deleteMany();
@@ -204,37 +203,37 @@ class Subscriber extends Model {
         $association->subscriber_id = $subscriber->id;
         $association->segment_id = $segment->id;
         $association->save();
-
-        $subscribers_count++;
       }
       return array(
-        'subscribers' => $subscribers_count,
+        'subscribers' => $subscribers->count(),
         'segment' => $segment->name
       );
     }
     return false;
   }
 
-  static function removeFromList($listing, $data = array()) {
+  static function bulkRemoveFromList($orm, $data = array()) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
     if($segment !== false) {
       // delete relations with segment
-      $subscriber_ids = $listing->getSelectionIds();
-      SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)
-        ->where('segment_id', $segment->id)
-        ->deleteMany();
+      $subscribers = $orm->findResultSet();
+      foreach($subscribers as $subscriber) {
+        SubscriberSegment::where('subscriber_id', $subscriber->id)
+          ->where('segment_id', $segment->id)
+          ->deleteMany();
+      }
 
       return array(
-        'subscribers' => count($subscriber_ids),
+        'subscribers' => $subscribers->count(),
         'segment' => $segment->name
       );
     }
     return false;
   }
 
-  static function removeFromAllLists($listing) {
+  static function bulkRemoveFromAllLists($orm) {
     $segments = Segment::findMany();
     $segment_ids = array_map(function($segment) {
       return $segment->id();
@@ -242,62 +241,48 @@ class Subscriber extends Model {
 
     if(!empty($segment_ids)) {
       // delete relations with segment
-      $subscriber_ids = $listing->getSelectionIds();
-      SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)
-        ->whereIn('segment_id', $segment_ids)
-        ->deleteMany();
-
-      return array(
-        'subscribers' => count($subscriber_ids)
-      );
-    }
-    return false;
-  }
-
-  static function confirmUnconfirmed($listing) {
-    $subscriber_ids = $listing->getSelectionIds();
-    $subscribers = Subscriber::whereIn('id', $subscriber_ids)
-      ->where('status', 'unconfirmed')
-      ->findMany();
-
-    if(!empty($subscribers)) {
-      $subscribers_count = 0;
+      $subscribers = $orm->findResultSet();
       foreach($subscribers as $subscriber) {
-        $subscriber->set('status', 'subscribed');
-        if($subscriber->save() === true) {
-          $subscribers_count++;
-        }
+        SubscriberSegment::where('subscriber_id', $subscriber->id)
+          ->whereIn('segment_id', $segment_ids)
+          ->deleteMany();
       }
 
-      return array(
-        'subscribers' => $subscribers_count
-      );
+      return $subscribers->count();
     }
     return false;
   }
 
-  static function resendConfirmationEmail($listing) {
-    $subscriber_ids = $listing->getSelectionIds();
-    $subscribers = Subscriber::whereIn('id', $subscriber_ids)
+  static function bulkConfirmUnconfirmed($orm) {
+    $subscribers = $orm->findResultSet();
+    $subscribers->set('status', 'subscribed')->save();
+    return $subscribers->count();
+  }
+
+  static function bulkResendConfirmationEmail($orm) {
+    $subscribers = $orm
       ->where('status', 'unconfirmed')
-      ->findMany();
+      ->findResultSet();
 
     if(!empty($subscribers)) {
       foreach($subscribers as $subscriber) {
-        // TODO: resend confirmation email
+        // TODO: send confirmation email
+        // $subscriber->sendConfirmationEmail()
       }
-      return true;
+
+      return $subscribers->count();
     }
     return false;
   }
 
-  static function addToList($listing, $data = array()) {
+  static function bulkAddToList($orm, $data = array()) {
+
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
     if($segment !== false) {
       $subscribers_count = 0;
-      $subscribers = $listing->getSelection()->findMany();
+      $subscribers = $orm->findMany();
       foreach($subscribers as $subscriber) {
         // create relation with segment
         $association = \MailPoet\Models\SubscriberSegment::create();
@@ -313,47 +298,5 @@ class Subscriber extends Model {
       );
     }
     return false;
-  }
-
-  static function trash($listing, $data = array()) {
-    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
-    if($confirm_delete) {
-      // delete relations with all segments
-      $subscribers = $listing->getSelection()->findResultSet();
-
-      if(!empty($subscribers)) {
-        $subscribers_count = 0;
-        foreach($subscribers as $subscriber) {
-          if($subscriber->delete()) {
-            $subscribers_count++;
-          }
-        }
-        return array(
-          'subscribers' => $subscribers_count
-        );
-      }
-      return false;
-    } else {
-      // soft delete
-      $subscribers = $listing->getSelection()
-        ->findResultSet()
-        ->set_expr('deleted_at', 'NOW()')
-        ->save();
-
-      return array(
-        'subscribers' => $subscribers->count()
-      );
-    }
-  }
-
-  static function restore($listing, $data = array()) {
-    $subscribers = $listing->getSelection()
-      ->findResultSet()
-      ->set_expr('deleted_at', 'NULL')
-      ->save();
-
-    return array(
-      'subscribers' => $subscribers->count()
-    );
   }
 }

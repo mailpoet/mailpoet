@@ -66,7 +66,7 @@ class Segments {
   }
 
   function getAll() {
-    $collection = Segment::find_array();
+    $collection = Segment::findArray();
     wp_send_json($collection);
   }
 
@@ -81,36 +81,60 @@ class Segments {
   }
 
   function restore($id) {
+    $result = false;
+
     $segment = Segment::findOne($id);
     if($segment !== false) {
-      $segment->set_expr('deleted_at', 'NULL');
-      $result = $segment->save();
-    } else {
-      $result = false;
+      $result = $segment->restore();
     }
+
     wp_send_json($result);
   }
 
-  function delete($data = array()) {
-    $segment = Segment::findOne($data['id']);
-    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
+  function trash($id) {
+    $result = false;
+
+    $segment = Segment::findOne($id);
     if($segment !== false) {
-      if($confirm_delete) {
-        $segment->delete();
-        $result = true;
-      } else {
-        $segment->set_expr('deleted_at', 'NOW()');
-        $result = $segment->save();
-      }
-    } else {
-      $result = false;
+      $result = $segment->trash();
     }
+
+    wp_send_json($result);
+  }
+
+  function delete($id) {
+    $result = false;
+
+    $segment = Segment::findOne($id);
+    if($segment !== false) {
+      $segment->delete();
+      $result = 1;
+    }
+
     wp_send_json($result);
   }
 
   function duplicate($id) {
-    $result = Segment::duplicate($id);
+    $result = false;
+
+    $segment = Segment::findOne($id);
+    if($segment !== false) {
+      $data = array(
+        'name' => sprintf(__('Copy of %s'), $segment->name)
+      );
+      $result = $segment->duplicate($data)->asArray();
+    }
+
     wp_send_json($result);
+  }
+
+  function item_action($data = array()) {
+    $item_action = new Listing\ItemAction(
+      '\MailPoet\Models\Segment',
+      $data
+    );
+
+    wp_send_json($item_action->apply());
   }
 
   function bulk_action($data = array()) {

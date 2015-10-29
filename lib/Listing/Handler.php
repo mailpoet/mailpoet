@@ -4,16 +4,13 @@ namespace MailPoet\Listing;
 if(!defined('ABSPATH')) exit;
 
 class Handler {
-
   private $data = array();
   private $model = null;
 
   function __construct($model_class, $data = array()) {
     $class = new \ReflectionClass($model_class);
     $this->table_name = $class->getStaticPropertyValue('_table');
-
-    $this->model = \Model::factory($model_class);
-
+    $this->model = $model_class::select('*');
     $this->data = array(
       // pagination
       'offset' => (isset($data['offset']) ? (int)$data['offset'] : 0),
@@ -31,7 +28,7 @@ class Handler {
       'selection' => (isset($data['selection']) ? $data['selection'] : null)
     );
 
-    $this->model = $this->setFilter();
+    $this->setFilter();
     $this->setSearch();
     $this->setGroup();
     $this->setOrder();
@@ -59,9 +56,9 @@ class Handler {
 
   private function setFilter() {
     if($this->data['filter'] === null) {
-      return $this->model;
+      return;
     }
-    return $this->model->filter('filterBy', $this->data['filter']);
+    $this->model = $this->model->filter('filterBy', $this->data['filter']);
   }
 
   function getSelection() {
