@@ -990,18 +990,16 @@
             ],
             "authors": [
                 {
-                    "name": "Henrik Bjornskov",
-                    "email": "henrik@bjrnskov.dk",
-                    "homepage": "http://henrik.bjrnskov.dk"
+                    "name": "Yaroslav Kiliba",
+                    "email": "om.dattaya@gmail.com"
                 },
                 {
                     "name": "Konstantin Kudryashov",
-                    "email": "ever.zet@gmail.com",
-                    "homepage": "http://everzet.com"
+                    "email": "ever.zet@gmail.com"
                 },
                 {
-                    "name": "Yaroslav Kiliba",
-                    "email": "om.dattaya@gmail.com"
+                    "name": "Henrik Bjrnskov",
+                    "email": "henrik@bjrnskov.dk"
                 }
             ],
             "description": "Resource Watcher.",
