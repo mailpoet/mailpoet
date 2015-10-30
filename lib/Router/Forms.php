@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Router;
 use \MailPoet\Models\Form;
+use \MailPoet\Models\FormSegment;
 use \MailPoet\Listing;
 
 if(!defined('ABSPATH')) exit;
@@ -16,7 +17,13 @@ class Forms {
     if($form === false) {
       wp_send_json(false);
     } else {
-      wp_send_json($form->asArray());
+      $segments = $form->segments();
+      $form = $form->asArray();
+      $form['segments'] = array_map(function($segment) {
+        return $segment['id'];
+      }, $segments->findArray());
+
+      wp_send_json($form);
     }
   }
 
@@ -28,6 +35,17 @@ class Forms {
 
     $listing_data = $listing->get();
 
+    // fetch segments relations for each returned item
+    foreach($listing_data['items'] as &$item) {
+      // form's segments
+      $relations = FormSegment::select('segment_id')
+        ->where('form_id', $item['id'])
+        ->findMany();
+      $item['segments'] = array_map(function($relation) {
+        return $relation->segment_id;
+      }, $relations);
+    }
+
     wp_send_json($listing_data);
   }
 
@@ -37,51 +55,88 @@ class Forms {
   }
 
   function save($data = array()) {
-    $result = Form::createOrUpdate($data);
+    if(isset($data['segments'])) {
+      $segment_ids = $data['segments'];
+      unset($data['segments']);
+    }
 
-    if($result !== true) {
-      wp_send_json($result);
+    $form = Form::createOrUpdate($data);
+
+    if($form->id() && !empty($segment_ids)) {
+      // remove previous relationships with segments
+      FormSegment::where('form_id', $form->id())->deleteMany();
+
+      // create relationship with segments
+      foreach($segment_ids as $segment_id) {
+        $relation = FormSegment::create();
+        $relation->segment_id = $segment_id;
+        $relation->form_id = $form->id();
+        $relation->save();
+      }
+    }
+
+    if($form === false) {
+      wp_send_json($form->getValidationErrors());
     } else {
       wp_send_json(true);
     }
   }
 
   function restore($id) {
+    $result = false;
+
     $form = Form::findOne($id);
     if($form !== false) {
-      $form->set_expr('deleted_at', 'NULL');
-      $result = $form->save();
-    } else {
-      $result = false;
+      $result = $form->restore();
     }
+
     wp_send_json($result);
   }
 
-  function delete($data = array()) {
-    $form = Form::findOne($data['id']);
-    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
+  function trash($id) {
+    $result = false;
+
+    $form = Form::findOne($id);
     if($form !== false) {
-      if($confirm_delete) {
-        $form->delete();
-        $result = true;
-      } else {
-        $form->set_expr('deleted_at', 'NOW()');
-        $result = $form->save();
-      }
-    } else {
-      $result = false;
+      $result = $form->trash();
     }
+
+    wp_send_json($result);
+  }
+
+  function delete($id) {
+    $result = false;
+
+    $form = Form::findOne($id);
+    if($form !== false) {
+      $form->delete();
+      $result = 1;
+    }
+
     wp_send_json($result);
   }
 
   function duplicate($id) {
     $result = false;
 
-    $form = Form::duplicate($id);
+    $form = Form::findOne($id);
     if($form !== false) {
-      $result = $form;
+      $data = array(
+        'name' => sprintf(__('Copy of %s'), $form->name)
+      );
+      $result = $form->duplicate($data)->asArray();
     }
+
     wp_send_json($result);
+  }
+
+  function item_action($data = array()) {
+    $item_action = new Listing\ItemAction(
+      '\MailPoet\Models\Form',
+      $data
+    );
+
+    wp_send_json($item_action->apply());
   }
 
   function bulk_action($data = array()) {

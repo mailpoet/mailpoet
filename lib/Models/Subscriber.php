@@ -15,7 +15,16 @@ class Subscriber extends Model {
     ));
   }
 
-   function delete() {
+  function segments() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\Segment',
+      __NAMESPACE__.'\SubscriberSegment',
+      'subscriber_id',
+      'segment_id'
+    );
+  }
+
+  function delete() {
     // delete all relations to segments
     SubscriberSegment::where('subscriber_id', $this->id)->deleteMany();
 
@@ -42,7 +51,9 @@ class Subscriber extends Model {
     );
 
     foreach($segments as $segment) {
-      $subscribers_count = $segment->subscribers()->count();
+      $subscribers_count = $segment->subscribers()
+        ->whereNull('deleted_at')
+        ->count();
       if($subscribers_count > 0) {
         $segment_list[] = array(
           'label' => sprintf('%s (%d)', $segment->name, $subscribers_count),
@@ -141,15 +152,6 @@ class Subscriber extends Model {
           MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'))
       ->group_by(MP_SUBSCRIBERS_TABLE.'.id');
     return $orm;
-  }
-
-  function segments() {
-    return $this->has_many_through(
-      __NAMESPACE__.'\Segment',
-      __NAMESPACE__.'\SubscriberSegment',
-      'subscriber_id',
-      'segment_id'
-    );
   }
 
   function customFields() {

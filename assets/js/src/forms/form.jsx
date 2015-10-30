@@ -14,7 +14,8 @@ const fields = [
     name: 'segments',
     label: 'Lists',
     type: 'selection',
-    endpoint: 'segments'
+    endpoint: 'segments',
+    multiple: true
   }
 ]
 

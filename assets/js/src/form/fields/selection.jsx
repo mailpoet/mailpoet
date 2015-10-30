@@ -1,10 +1,12 @@
 define([
   'react',
+  'react-dom',
   'jquery',
   'select2'
 ],
 function(
   React,
+  ReactDOM,
   jQuery
 ) {
   var Selection = React.createClass({
@@ -21,12 +23,12 @@ function(
       this.setupSelect2();
     },
     setupSelect2: function() {
-      if(this.state.initialized === true) {
+      if(!this.props.field.multiple || this.state.initialized === true) {
         return;
       }
 
-      if(this.props.field.select2 && Object.keys(this.props.item).length > 0) {
-        var select2 = jQuery('#'+this.props.field.id).select2({
+      if(Object.keys(this.props.item).length > 0) {
+        var select2 = jQuery('#'+this.refs.select.id).select2({
           width: (this.props.width || ''),
           templateResult: function(item) {
             if (item.element && item.element.selected) {
@@ -37,8 +39,7 @@ function(
           }
         });
 
-        select2.on('change', this.handleChange)
-
+        select2.on('change', this.handleChange);
         select2.select2(
           'val',
           this.props.item[this.props.field.name]
@@ -55,11 +56,16 @@ function(
         });
       }
     },
-    handleChange: function() {
+    handleChange: function(e) {
       if(this.props.onValueChange !== undefined) {
+        if(this.props.field.multiple) {
+          value = jQuery('#'+this.refs.select.id).select2('val');
+        } else {
+          value = e.target.value;
+        }
         this.props.onValueChange({
          target: {
-            value: jQuery('#'+this.props.field.id).select2('val'),
+            value: value,
             name: this.props.field.name
           }
         });
@@ -89,7 +95,8 @@ function(
 
         return (
           <select
-            id={ this.props.field.id }
+            id={ this.props.field.id || this.props.field.name }
+            ref="select"
             placeholder={ this.props.field.placeholder }
             multiple={ this.props.field.multiple }
             onChange={ this.handleChange }

@@ -14,6 +14,15 @@ class Form extends Model {
     ));
   }
 
+  function segments() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\Segment',
+      __NAMESPACE__.'\FormSegment',
+      'form_id',
+      'segment_id'
+    );
+  }
+
   static function search($orm, $search = '') {
     return $orm->where_like('name', '%'.$search.'%');
   }
@@ -56,57 +65,28 @@ class Form extends Model {
       $form->set($data);
     }
 
-    $saved = $form->save();
-
-    if($saved === true) {
-      return true;
-    } else {
-      $errors = $form->getValidationErrors();
-      if(!empty($errors)) {
-        return $errors;
-      }
+    try {
+      $form->save();
+      return $form;
+    } catch(Exception $e) {
+      return $form->getValidationErrors();
     }
     return false;
   }
 
-  static function trash($listing, $data = array()) {
-    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
-    if($confirm_delete) {
-      // delete relations with all segments
-      $forms = $listing->getSelection()->findResultSet();
-      if(!empty($forms)) {
-        $forms_count = 0;
-        foreach($forms as $form) {
-          if($form->delete()) {
-            $forms_count++;
-          }
-        }
-        return array(
-          'segments' => $forms_count
-        );
+  function duplicate($data = array()) {
+    $duplicate = parent::duplicate($data);
+
+    if($duplicate !== false) {
+      foreach($this->segments()->findResultSet() as $relation) {
+        $new_relation = FormSegment::create();
+        $new_relation->set('segment_id', $relation->id);
+        $new_relation->set('form_id', $duplicate->id);
+        $new_relation->save();
       }
-      return false;
-    } else {
-      // soft delete
-      $forms = $listing->getSelection()
-        ->findResultSet()
-        ->set_expr('deleted_at', 'NOW()')
-        ->save();
 
-      return array(
-        'segments' => $forms->count()
-      );
+      return $duplicate;
     }
-  }
-
-  static function restore($listing, $data = array()) {
-    $forms = $listing->getSelection()
-      ->findResultSet()
-      ->set_expr('deleted_at', 'NULL')
-      ->save();
-
-    return array(
-      'segments' => $forms->count()
-    );
+    return false;
   }
 }

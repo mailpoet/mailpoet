@@ -34,11 +34,9 @@ define(
         };
       },
       handleSelectItem: function(e) {
-        var is_checked = jQuery(e.target).is(':checked');
-
         this.props.onSelectItem(
           parseInt(e.target.value, 10),
-          is_checked
+          e.target.checked
         );
 
         return !e.target.checked;
@@ -61,11 +59,12 @@ define(
         if(this.props.is_selectable === true) {
           checkbox = (
             <th className="check-column" scope="row">
-              <label className="screen-reader-text">
-                { 'Select ' + this.props.item.email }</label>
+              <label className="screen-reader-text">{
+                'Select ' + this.props.item[this.props.columns[0].name]
+              }</label>
               <input
                 type="checkbox"
-                defaultValue={ this.props.item.id }
+                value={ this.props.item.id }
                 checked={
                   this.props.item.selected || this.props.selection === 'all'
                 }
@@ -267,7 +266,7 @@ define(
                     is_selectable={ this.props.is_selectable }
                     item_actions={ this.props.item_actions }
                     group={ this.props.group }
-                    key={ 'item-' + index }
+                    key={ `item-${item.id}-${index}` }
                     item={ item } />
                 );
               }.bind(this))}
