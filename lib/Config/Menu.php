@@ -87,8 +87,8 @@ class Menu {
   function registered_pages() {
     global $_registered_pages;
     $pages = array(
-      //'mailpoet-form-editor' => 'formEditor',
-      'mailpoet-newsletter-editor' => array($this, 'newletterForm')
+      'mailpoet-form-editor' => array($this, 'formEditor'),
+      'mailpoet-newsletter-editor' => array($this, 'newletterEditor')
     );
     foreach($pages as $menu_slug => $callback) {
       $hookname = get_plugin_page_hookname($menu_slug, null);
@@ -193,11 +193,17 @@ class Menu {
     echo $this->renderer->render('newsletters.html', $data);
   }
 
-  function newletterForm() {
+  function newletterEditor() {
     $data = array();
     wp_enqueue_media();
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
     wp_enqueue_style('editor', includes_url('css/editor.css'));
     echo $this->renderer->render('newsletter/form.html', $data);
+  }
+
+  function formEditor() {
+    $data = array();
+    $data['segments'] = Segment::findArray();
+    echo $this->renderer->render('form/editor.html', $data);
   }
 }

@@ -10,6 +10,13 @@ class Newsletter extends Model {
     parent::__construct();
   }
 
+  function save() {
+    if(is_string($this->deleted_at) && strlen(trim($this->deleted_at)) === 0) {
+      $this->set_expr('deleted_at', 'NULL');
+    }
+    return parent::save();
+  }
+
   function segments() {
     return $this->has_many_through(
       __NAMESPACE__.'\Segment',
@@ -131,15 +138,11 @@ class Newsletter extends Model {
       $newsletter->set($data);
     }
 
-    $saved = $newsletter->save();
-
-    if($saved === true) {
-      return $newsletter->id();
-    } else {
-      $errors = $newsletter->getValidationErrors();
-      if(!empty($errors)) {
-        return $errors;
-      }
+    try {
+      $newsletter->save();
+      return $newsletter;
+    } catch(Exception $e) {
+      return $newsletter->getValidationErrors();
     }
     return false;
   }

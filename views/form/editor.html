@@ -2,7 +2,7 @@
 
 <% block title %>
   <h2 class="title">
-    <span id="mailpoet_form_name"><%= form.form_name %></span>
+    <span id="mailpoet_form_name"><%= form.name %></span>
     <input id="mailpoet_form_name_input" type="text" value="" style="display:none;" />
     <span>
       <a id="mailpoet_form_edit_name" class="button" href="javascript:;"><%= __('Edit name' ) %></a>
@@ -174,20 +174,9 @@
 
   <%= javascript(
     'lib/prototype.min.js',
-    'lib/select2.js',
     'lib/scriptaculous.min.js',
-    'lib/codemirror/codemirror.js',
-    'lib/codemirror/syntax_php.js',
-    'lib/codemirror/syntax_css.js',
-    'lib/jquery.serializeObject.js',
     'form_editor.js'
   )%>
-
-  <%= stylesheet(
-    'lib/select2/select2.css',
-    'lib/codemirror/codemirror.css',
-    'lib/codemirror/theme_neo.css'
-  ) %>
 
   <script type="text/javascript">
     jQuery(function($) {
