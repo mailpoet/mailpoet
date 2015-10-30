@@ -38,58 +38,58 @@ const columns = [
 ];
 
 const messages = {
-  onDelete: function(response) {
-    let count = ~~response.subscribers;
-    let message = null;
+  onTrash: function(response) {
+    if(response) {
+      var message = null;
+      if(~~response === 1) {
+        message = (
+          '1 subscriber was moved to the trash.'
+        );
+      } else if(~~response > 1) {
+        message = (
+          '%$1d subscribers were moved to the trash.'
+        ).replace('%$1d', ~~response);
+      }
 
-    if(count === 1) {
-      message = (
-        '1 subscriber was moved to the trash.'
-      ).replace('%$1d', count);
-    } else if(count > 1) {
-      message = (
-        '%$1d subscribers were moved to the trash.'
-      ).replace('%$1d', count);
-    }
-
-    if(message !== null) {
-      MailPoet.Notice.success(message);
+      if(message !== null) {
+        MailPoet.Notice.success(message);
+      }
     }
   },
-  onConfirmDelete: function(response) {
-    let count = ~~response.subscribers;
-    let message = null;
+  onDelete: function(response) {
+    if(response) {
+      var message = null;
+      if(~~response === 1) {
+        message = (
+          '1 subscriber was permanently deleted.'
+        );
+      } else if(~~response > 1) {
+        message = (
+          '%$1d subscribers were permanently deleted.'
+        ).replace('%$1d', ~~response);
+      }
 
-    if(count === 1) {
-      message = (
-        '1 subscriber was permanently deleted.'
-      ).replace('%$1d', count);
-    } else if(count > 1) {
-      message = (
-        '%$1d subscribers were permanently deleted.'
-      ).replace('%$1d', count);
-    }
-
-    if(message !== null) {
-      MailPoet.Notice.success(message);
+      if(message !== null) {
+        MailPoet.Notice.success(message);
+      }
     }
   },
   onRestore: function(response) {
-    let count = ~~response.subscribers;
-    let message = null;
+    if(response) {
+      var message = null;
+      if(~~response === 1) {
+        message = (
+          '1 subscriber has been restored from the trash.'
+        );
+      } else if(~~response > 1) {
+        message = (
+          '%$1d subscribers have been restored from the trash.'
+        ).replace('%$1d', ~~response);
+      }
 
-    if(count === 1) {
-      message = (
-        '1 subscriber has been restored from the trash.'
-      ).replace('%$1d', count);
-    } else if(count > 1) {
-      message = (
-        '%$1d subscribers have been restored from the trash.'
-      ).replace('%$1d', count);
-    }
-
-    if(message !== null) {
-      MailPoet.Notice.success(message);
+      if(message !== null) {
+        MailPoet.Notice.success(message);
+      }
     }
   }
 };
@@ -179,8 +179,7 @@ const bulk_actions = [
     onSuccess: function(response) {
       MailPoet.Notice.success(
         '%$1d subscribers were removed from all lists.'
-        .replace('%$1d', ~~response.subscribers)
-        .replace('%$2s', response.segment)
+        .replace('%$1d', ~~response)
       );
     }
   },
@@ -190,19 +189,14 @@ const bulk_actions = [
     onSuccess: function(response) {
       MailPoet.Notice.success(
         '%$1d subscribers have been confirmed.'
-        .replace('%$1d', ~~response.subscribers)
+        .replace('%$1d', ~~response)
       );
     }
   },
   {
     name: 'trash',
     label: 'Trash',
-    getData: function() {
-      return {
-        confirm: false
-      }
-    },
-    onSuccess: messages.onDelete
+    onSuccess: messages.onTrash
   }
 ];
 

@@ -17,48 +17,7 @@ class Segment extends Model {
   function delete() {
     // delete all relations to subscribers
     SubscriberSegment::where('segment_id', $this->id)->deleteMany();
-
-    return parent::delete();
-  }
-
-  static function duplicate($id) {
-    $segment = self::findOne($id)->asArray();
-
-    if($segment !== false) {
-      unset($segment['id']);
-      $new_segment = self::create();
-      $new_segment->hydrate($segment);
-
-      $new_segment->set(
-        'name',
-        sprintf(__('Copy of %s'), $new_segment->name)
-      );
-      $new_segment->set_expr('created_at', 'NOW()');
-      $new_segment->set_expr('updated_at', 'NOW()');
-      $new_segment->save();
-
-      $relations = SubscriberSegment::select('subscriber_id')
-        ->where('segment_id', $id)
-        ->findResultSet();
-
-      foreach($relations as $relation) {
-        $new_relation = SubscriberSegment::create();
-        $new_relation->set('subscriber_id', $relation->subscriber_id);
-        $new_relation->set('segment_id', $new_segment->id());
-        $new_relation->save();
-      }
-      return true;
-    }
-    return false;
-  }
-
-  function subscribers() {
-    return $this->has_many_through(
-      __NAMESPACE__.'\Subscriber',
-      __NAMESPACE__.'\SubscriberSegment',
-      'segment_id',
-      'subscriber_id'
-    );
+    parent::delete();
   }
 
   function newsletters() {
@@ -125,45 +84,28 @@ class Segment extends Model {
     return false;
   }
 
-  static function trash($listing, $data = array()) {
-    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
-    if($confirm_delete) {
-      // delete relations with all segments
-      $segments = $listing->getSelection()->findResultSet();
+  function duplicate($data = array()) {
+    $duplicate = parent::duplicate($data);
 
-      if(!empty($segments)) {
-        $segments_count = 0;
-        foreach($segments as $segment) {
-          if($segment->delete()) {
-            $segments_count++;
-          }
-        }
-        return array(
-          'segments' => $segments_count
-        );
+    if($duplicate !== false) {
+      foreach($this->subscribers()->findResultSet() as $relation) {
+        $new_relation = SubscriberSegment::create();
+        $new_relation->set('subscriber_id', $relation->id);
+        $new_relation->set('segment_id', $duplicate->id);
+        $new_relation->save();
       }
-      return false;
-    } else {
-      // soft delete
-      $segments = $listing->getSelection()
-        ->findResultSet()
-        ->set_expr('deleted_at', 'NOW()')
-        ->save();
 
-      return array(
-        'segments' => $segments->count()
-      );
+      return $duplicate;
     }
+    return false;
   }
 
-  static function restore($listing, $data = array()) {
-    $segments = $listing->getSelection()
-      ->findResultSet()
-      ->set_expr('deleted_at', 'NULL')
-      ->save();
-
-    return array(
-      'segments' => $segments->count()
+  function subscribers() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\Subscriber',
+      __NAMESPACE__.'\SubscriberSegment',
+      'segment_id',
+      'subscriber_id'
     );
   }
 }

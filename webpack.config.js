@@ -69,6 +69,7 @@ config.push(_.extend({}, baseConfig, {
       'subscribers/subscribers.jsx',
       'newsletters/newsletters.jsx',
       'segments/segments.jsx',
+      'forms/forms.jsx',
       'settings/tabs.js'
     ],
     newsletter_editor: [

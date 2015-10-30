@@ -41,58 +41,58 @@ var columns = [
 ];
 
 var messages = {
-  onDelete: function(response) {
-    var count = ~~response.segments;
-    var message = null;
+  onTrash: function(response) {
+    if(response) {
+      var message = null;
+      if(~~response === 1) {
+        message = (
+          '1 segment was moved to the trash.'
+        );
+      } else if(~~response > 1) {
+        message = (
+          '%$1d segments were moved to the trash.'
+        ).replace('%$1d', ~~response);
+      }
 
-    if(count === 1 || response === true) {
-      message = (
-        '1 segment was moved to the trash.'
-      );
-    } else if(count > 1) {
-      message = (
-        '%$1d segments were moved to the trash.'
-      ).replace('%$1d', count);
-    }
-
-    if(message !== null) {
-      MailPoet.Notice.success(message);
+      if(message !== null) {
+        MailPoet.Notice.success(message);
+      }
     }
   },
-  onConfirmDelete: function(response) {
-    var count = ~~response.segments;
-    var message = null;
+  onDelete: function(response) {
+    if(response) {
+      var message = null;
+      if(~~response === 1) {
+        message = (
+          '1 segment was permanently deleted.'
+        );
+      } else if(~~response > 1) {
+        message = (
+          '%$1d segments were permanently deleted.'
+        ).replace('%$1d', ~~response);
+      }
 
-    if(count === 1 || response === true) {
-      message = (
-        '1 segment was permanently deleted.'
-      );
-    } else if(count > 1) {
-      message = (
-        '%$1d segments were permanently deleted.'
-      ).replace('%$1d', count);
-    }
-
-    if(message !== null) {
-      MailPoet.Notice.success(message);
+      if(message !== null) {
+        MailPoet.Notice.success(message);
+      }
     }
   },
   onRestore: function(response) {
-    var count = ~~response.segments;
-    var message = null;
+    if(response) {
+      var message = null;
+      if(~~response === 1) {
+        message = (
+          '1 segment has been restored from the trash.'
+        );
+      } else if(~~response > 1) {
+        message = (
+          '%$1d segments have been restored from the trash.'
+        ).replace('%$1d', ~~response);
+      }
 
-    if(count === 1 || response === true) {
-      message = (
-        '1 segment has been restored from the trash.'
-      );
-    } else if(count > 1) {
-      message = (
-        '%$1d segments have been restored from the trash.'
-      ).replace('%$1d', count);
-    }
-
-    if(message !== null) {
-      MailPoet.Notice.success(message);
+      if(message !== null) {
+        MailPoet.Notice.success(message);
+      }
     }
   }
 };
@@ -100,6 +100,7 @@ var messages = {
 var item_actions = [
   {
     name: 'edit',
+    label: 'Edit',
     link: function(item) {
       return (
         <Link to={ `/edit/${item.id}` }>Edit</Link>
@@ -108,24 +109,17 @@ var item_actions = [
   },
   {
     name: 'duplicate_segment',
-    refresh: true,
-    link: function(item) {
-      return (
-        <a
-          href="javascript:;"
-          onClick={ this.onDuplicate.bind(null, item) }
-        >Duplicate</a>
-      );
-    },
-    onDuplicate: function(item) {
-      MailPoet.Ajax.post({
+    label: 'Duplicate',
+    onClick: function(item, refresh) {
+      return MailPoet.Ajax.post({
         endpoint: 'segments',
         action: 'duplicate',
         data: item.id
-      }).done(function() {
+      }).done(function(response) {
         MailPoet.Notice.success(
-          ('List "%$1s" has been duplicated.').replace('%$1s', item.name)
+          ('List "%$1s" has been duplicated.').replace('%$1s', response.name)
         );
+        refresh();
       });
     }
   },
@@ -143,12 +137,7 @@ var bulk_actions = [
   {
     name: 'trash',
     label: 'Trash',
-    getData: function() {
-      return {
-        confirm: false
-      }
-    },
-    onSuccess: messages.onDelete
+    onSuccess: messages.onTrash
   }
 ];
 

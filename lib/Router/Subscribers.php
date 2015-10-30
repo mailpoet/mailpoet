@@ -60,31 +60,46 @@ class Subscribers {
   }
 
   function restore($id) {
+    $result = false;
+
     $subscriber = Subscriber::findOne($id);
     if($subscriber !== false) {
-      $subscriber->set_expr('deleted_at', 'NULL');
-      $result = array('subscribers' => (int)$subscriber->save());
-    } else {
-      $result = false;
+      $result = $subscriber->restore();
     }
+
     wp_send_json($result);
   }
 
-  function delete($data = array()) {
-    $subscriber = Subscriber::findOne($data['id']);
-    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
+  function trash($id) {
+    $result = false;
+
+    $subscriber = Subscriber::findOne($id);
     if($subscriber !== false) {
-      if($confirm_delete) {
-        $subscriber->delete();
-        $result = array('subscribers' => 1);
-      } else {
-        $subscriber->set_expr('deleted_at', 'NOW()');
-        $result = array('subscribers' => (int)$subscriber->save());
-      }
-    } else {
-      $result = false;
+      $result = $subscriber->trash();
     }
+
     wp_send_json($result);
+  }
+
+  function delete($id) {
+    $result = false;
+
+    $subscriber = Subscriber::findOne($id);
+    if($subscriber !== false) {
+      $subscriber->delete();
+      $result = 1;
+    }
+
+    wp_send_json($result);
+  }
+
+  function item_action($data = array()) {
+    $item_action = new Listing\ItemAction(
+      '\MailPoet\Models\Segment',
+      $data
+    );
+
+    wp_send_json($item_action->apply());
   }
 
   function bulk_action($data = array()) {

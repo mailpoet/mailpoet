@@ -46,8 +46,11 @@ define(
       handleRestoreItem: function(id) {
         this.props.onRestoreItem(id);
       },
-      handleDeleteItem: function(id, confirm = false) {
-        this.props.onDeleteItem(id, confirm);
+      handleTrashItem: function(id) {
+        this.props.onTrashItem(id);
+      },
+      handleDeleteItem: function(id) {
+        this.props.onDeleteItem(id);
       },
       handleToggleItem: function(id) {
         this.setState({ toggled: !this.state.toggled });
@@ -86,10 +89,26 @@ define(
                   {(index < (custom_actions.length - 1)) ? ' | ' : ''}
                 </span>
               );
+            } else if(action.link) {
+              return (
+                <span
+                  key={ 'action-'+index } className={ action.name }>
+                  { action.link(this.props.item) }
+                  {(index < (custom_actions.length - 1)) ? ' | ' : ''}
+                </span>
+              );
             } else {
               return (
-                <span key={ 'action-'+index } className={ action.name }>
-                  { action.link(this.props.item) }
+                <span
+                  key={ 'action-'+index } className={ action.name }>
+                  <a href="javascript:;" onClick={
+                    (action.onClick !== undefined)
+                    ? action.onClick.bind(null,
+                        this.props.item,
+                        this.props.onRefreshItems
+                      )
+                    : false
+                  }>{ action.label }</a>
                   {(index < (custom_actions.length - 1)) ? ' | ' : ''}
                 </span>
               );
@@ -123,8 +142,7 @@ define(
                     href="javascript:;"
                     onClick={ this.handleDeleteItem.bind(
                       null,
-                      this.props.item.id,
-                      true
+                      this.props.item.id
                     )}
                   >Delete permanently</a>
                 </span>
@@ -145,10 +163,9 @@ define(
                 <span className="trash">
                   <a
                     href="javascript:;"
-                    onClick={ this.handleDeleteItem.bind(
+                    onClick={ this.handleTrashItem.bind(
                       null,
-                      this.props.item.id,
-                      false
+                      this.props.item.id
                     ) }>
                     Trash
                   </a>
@@ -233,7 +250,7 @@ define(
                 </td>
               </tr>
 
-              {this.props.items.map(function(item) {
+              {this.props.items.map(function(item, index) {
                 item.id = parseInt(item.id, 10);
                 item.selected = (this.props.selected_ids.indexOf(item.id) !== -1);
 
@@ -244,12 +261,13 @@ define(
                     onRenderItem={ this.props.onRenderItem }
                     onDeleteItem={ this.props.onDeleteItem }
                     onRestoreItem={ this.props.onRestoreItem }
+                    onTrashItem={ this.props.onTrashItem }
                     onRefreshItems={ this.props.onRefreshItems }
                     selection={ this.props.selection }
                     is_selectable={ this.props.is_selectable }
                     item_actions={ this.props.item_actions }
                     group={ this.props.group }
-                    key={ 'item-' + item.id }
+                    key={ 'item-' + index }
                     item={ item } />
                 );
               }.bind(this))}
@@ -426,7 +444,27 @@ define(
           this.getItems();
         }.bind(this));
       },
-      handleDeleteItem: function(id, confirm = false) {
+      handleTrashItem: function(id) {
+        this.setState({
+          loading: true,
+          page: 1
+        });
+
+        MailPoet.Ajax.post({
+          endpoint: this.props.endpoint,
+          action: 'trash',
+          data: id
+        }).done(function(response) {
+          if(
+            this.props.messages !== undefined
+            && this.props.messages['onTrash'] !== undefined
+          ) {
+            this.props.messages.onTrash(response);
+          }
+          this.getItems();
+        }.bind(this));
+      },
+      handleDeleteItem: function(id) {
         this.setState({
           loading: true,
           page: 1
@@ -435,31 +473,18 @@ define(
         MailPoet.Ajax.post({
           endpoint: this.props.endpoint,
           action: 'delete',
-          data: {
-            id: id,
-            confirm: confirm
-          }
+          data: id
         }).done(function(response) {
-          if(confirm === true) {
-            if(
-              this.props.messages !== undefined
-              && this.props.messages['onConfirmDelete'] !== undefined
-            ) {
-              this.props.messages.onConfirmDelete(response);
-            }
-          } else {
-            if(
-              this.props.messages !== undefined
-              && this.props.messages['onDelete'] !== undefined
-            ) {
-              this.props.messages.onDelete(response);
-            }
+          if(
+            this.props.messages !== undefined
+            && this.props.messages['onDelete'] !== undefined
+          ) {
+            this.props.messages.onDelete(response);
           }
-
           this.getItems();
         }.bind(this));
       },
-      handleBulkAction: function(selected_ids, params) {
+      handleBulkAction: function(selected_ids, params, callback) {
         if(
           this.state.selection === false
           && this.state.selected_ids.length === 0
@@ -470,12 +495,6 @@ define(
         this.setState({ loading: true });
 
         var data = params || {};
-        var callback = ((data['onSuccess'] !== undefined)
-          ? data['onSuccess']
-          : function() {}
-        );
-        delete data.onSuccess;
-
         data.listing = {
           offset: 0,
           limit: 0,
@@ -621,12 +640,9 @@ define(
               onSuccess: this.props.messages.onRestore
             },
             {
-              name: 'trash',
+              name: 'delete',
               label: 'Delete permanently',
-              onSuccess: this.props.messages.onConfirmDelete,
-              getData: function() {
-                return { confirm: true };
-              }
+              onSuccess: this.props.messages.onDelete
             }
           ];
         }
@@ -702,6 +718,7 @@ define(
                 onRenderItem={ this.handleRenderItem }
                 onDeleteItem={ this.handleDeleteItem }
                 onRestoreItem={ this.handleRestoreItem }
+                onTrashItem={ this.handleTrashItem }
                 onRefreshItems={ this.handleRefreshItems }
                 columns={ this.props.columns }
                 is_selectable={ bulk_actions.length > 0 }

@@ -143,46 +143,4 @@ class Newsletter extends Model {
     }
     return false;
   }
-
-   static function trash($listing, $data = array()) {
-    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
-    if($confirm_delete) {
-      // delete relations with all segments
-      $newsletters = $listing->getSelection()->findResultSet();
-
-      if(!empty($newsletters)) {
-        $newsletters_count = 0;
-        foreach($newsletters as $newsletter) {
-          if($newsletter->delete()) {
-            $newsletters_count++;
-          }
-        }
-        return array(
-          'newsletters' => $newsletters_count
-        );
-      }
-      return false;
-    } else {
-      // soft delete
-      $newsletters = $listing->getSelection()
-        ->findResultSet()
-        ->set_expr('deleted_at', 'NOW()')
-        ->save();
-
-      return array(
-        'newsletters' => $newsletters->count()
-      );
-    }
-  }
-
-  static function restore($listing, $data = array()) {
-    $newsletters = $listing->getSelection()
-      ->findResultSet()
-      ->set_expr('deleted_at', 'NULL')
-      ->save();
-
-    return array(
-      'newsletters' => $newsletters->count()
-    );
-  }
 }

@@ -1,0 +1,16 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+  <div id="forms_container"></div>
+
+  <%= localize({
+    'pageTitle': __('Forms'),
+    'searchLabel': __('Search'),
+    'loadingItems': __('Loading forms...'),
+    'noItemsFound': __('No forms found.')
+  }) %>
+
+  <script type="text/javascript">
+    var mailpoet_segments = <%= json_encode(segments) %>;
+  </script>
+<% endblock %>

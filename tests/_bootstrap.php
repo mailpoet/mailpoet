@@ -18,7 +18,11 @@ $models = array(
   'SubscriberSegment'
 );
 $destroy = function ($model) {
-  Model::factory('\MailPoet\Models\\' . $model)
-    ->deleteMany();
+  $class = new \ReflectionClass('\MailPoet\Models\\' . $model);
+  $table = $class->getStaticPropertyValue('_table');
+  $db = ORM::getDb();
+  $db->beginTransaction();
+  $db->exec('TRUNCATE '.$table);
+  $db->commit();
 };
 array_map($destroy, $models);

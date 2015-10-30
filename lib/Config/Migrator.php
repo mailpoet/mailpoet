@@ -21,6 +21,7 @@ class Migrator {
       'subscriber_custom_field',
       'newsletter_option_fields',
       'newsletter_option',
+      'forms'
     );
   }
 
@@ -187,6 +188,19 @@ class Migrator {
       'option_field_id mediumint(9) NOT NULL,',
       'value varchar(255) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function forms() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'name varchar(90) NOT NULL,',
+      'body longtext,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)'
     );
