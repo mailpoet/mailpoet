@@ -297,9 +297,9 @@ define([
             // Following advice from Becs, the target width should
             // be a double of one column width to render well on
             // retina screen devices
-            targetImageWidth = 1200,
+            targetImageWidth = 1320,
 
-            // For main image use the size, that's closest to being 600px in width
+            // For main image use the size, that's closest to being 660px in width
             sizeKeys = _.keys(sizes),
 
             // Pick the width that is closest to target width

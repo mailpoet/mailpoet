@@ -1,3 +1,8 @@
+$column-margin = 20px
+$one-column-width = $newsletter-width - (2 * $column-margin)
+$two-column-width = ($newsletter-width / 2) - (2 * $column-margin)
+$three-column-width = ($newsletter-width / 3) - (2 * $column-margin)
+
 .mailpoet_container
   width: 100%
   min-height: 15px
@@ -44,7 +49,7 @@
 
   .mailpoet_container_horizontal > .mailpoet_container_block
     margin-bottom: 0
-    width: 20px + 560px + 20px
+    width: $column-margin + $one-column-width + $column-margin
 
   // More than one column
   & > .mailpoet_container_block > .mailpoet_container > .mailpoet_container_block > .mailpoet_container_horizontal
@@ -57,14 +62,14 @@
     & > .mailpoet_block:first-child:nth-last-child(2) ~ .mailpoet_block
       //padding-left: 20px
       //padding-right: 20px
-      width: 260px + 20px + 20px
+      width: $column-margin + $two-column-width + $column-margin
 
     // Three columns
     & > .mailpoet_block:first-child:nth-last-child(3)
     & > .mailpoet_block:first-child:nth-last-child(3) ~ .mailpoet_block
       //padding-left: 20px
       //padding-right: 20px
-      width: 160px + 20px + 20px
+      width: $column-margin + $three-column-width + $column-margin
 
 .mailpoet_container_empty
   text-align: center
