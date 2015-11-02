@@ -75,12 +75,71 @@ class Forms {
       }
     }
 
-    if($form === false) {
-      wp_send_json($form->getValidationErrors());
+    if($form !== false && $form->id()) {
+      wp_send_json($form->id());
     } else {
-      wp_send_json(true);
+      wp_send_json($form);
     }
   }
+
+  function save_editor($data = array()) {
+    $form_id = (isset($data['id']) ? (int)$data['id'] : 0);
+    $form_data = (isset($data['form']) ? $data['form'] : array());
+
+    if(empty($form_data)) {
+      // error
+      wp_send_json(false);
+    } else {
+      // check if the form is displayed as a widget (we'll display a different "saved!" message in this case)
+      $is_widget = false;
+      $widgets = get_option('widget_mailpoet_form');
+      if(!empty($widgets)) {
+        foreach($widgets as $widget) {
+          if(isset($widget['form']) && (int)$widget['form'] === $form_id) {
+            $is_widget = true;
+            break;
+          }
+        }
+      }
+
+      // check if the user gets to pick his own lists or if it's selected by the admin
+      $has_list_selection = false;
+
+
+      $blocks = (isset($form_data['body']) ? $form_data['body'] : array());
+      if(!empty($blocks)) {
+        foreach ($blocks as $i => $block) {
+          if($block['type'] === 'list') {
+            $has_list_selection = true;
+            if(!empty($block['params']['values'])) {
+              $list_selection = array_map(function($segment) {
+                return (int)$segment['id'];
+              }, $block['params']['values']);
+            }
+            break;
+          }
+        }
+      }
+
+      // check list selectio
+      if($has_list_selection === true) {
+        $form_data['lists_selected_by'] = 'user';
+      } else {
+        $form_data['lists_selected_by'] = 'admin';
+      }
+    }
+
+    $form = Form::createOrUpdate(array(
+      'id' => $form_id,
+      'data' => $form_data
+    ));
+
+    // response
+    wp_send_json(array(
+      'result' => ($form !== false),
+      'is_widget' => $is_widget
+    ));
+}
 
   function restore($id) {
     $result = false;

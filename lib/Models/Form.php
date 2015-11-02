@@ -57,6 +57,10 @@ class Form extends Model {
       $form = self::findOne((int)$data['id']);
     }
 
+    if(!empty($data['data'])) {
+      $data['data'] = json_encode($data['data']);
+    }
+
     if($form === false) {
       $form = self::create();
       $form->hydrate($data);

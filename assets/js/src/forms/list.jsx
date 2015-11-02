@@ -86,7 +86,7 @@ const item_actions = [
     label: 'Edit',
     link: function(item) {
       return (
-        <Link to={ `/edit/${item.id}` }>Edit</Link>
+        <a href={ `admin.php?page=mailpoet-form-editor&id=${item.id}` }>Edit</a>
       );
     }
   },
@@ -117,7 +117,19 @@ const bulk_actions = [
 ];
 
 const FormList = React.createClass({
-  renderItem: function(form, actions) {
+  createForm() {
+    MailPoet.Ajax.post({
+      endpoint: 'forms',
+      action: 'save',
+      data: {
+        name: "New form"
+      }
+    }).done(function(response) {
+      window.location =
+        'admin.php?page=mailpoet-form-editor&id='+ parseInt(response, 10);
+    })
+  },
+  renderItem(form, actions) {
     let row_classes = classNames(
       'manage-column',
       'column-primary',
@@ -151,7 +163,11 @@ const FormList = React.createClass({
     return (
       <div>
         <h2 className="title">
-          Forms <Link className="add-new-h2" to="/new">New</Link>
+          Forms <a
+            className="add-new-h2"
+            href="javascript:;"
+            onClick={ this.createForm }
+          >New</a>
         </h2>
 
         <Listing

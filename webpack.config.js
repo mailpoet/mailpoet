@@ -36,6 +36,10 @@ baseConfig = {
         loader: 'babel-loader'
       },
       {
+        include: require.resolve('codemirror'),
+        loader: 'expose-loader?CodeMirror',
+      },
+      {
         include: require.resolve('backbone'),
         loader: 'expose-loader?Backbone',
       },
@@ -79,8 +83,8 @@ config.push(_.extend({}, baseConfig, {
       'settings/tabs.js'
     ],
     form_editor_lib: [
-      'select2',
-      'codemirror'
+      'codemirror',
+      'codemirror/mode/css/css'
     ],
     newsletter_editor: [
       'underscore',
@@ -159,7 +163,6 @@ config.push(_.extend({}, baseConfig, {
       'select2',
       'blob',
       'filesaver',
-
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
       'newsletter_editor/components/config.js',

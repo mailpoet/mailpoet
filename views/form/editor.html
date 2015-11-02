@@ -34,28 +34,31 @@
         <div>
           <!-- Form settings -->
           <form id="mailpoet_form_settings" action="" method="POST">
+            <input
+              type="hidden"
+              id="mailpoet_form_id"
+              value="<%= form.id | default(0) %>"
+            />
             <div id="mailpoet_settings_list_selection">
               <!-- Form settings: list selection -->
               <p>
-              <strong><%= __('This form adds subscribers to these lists:') %></strong>
+              <strong><%= __('This form adds subscribers to these segments:') %></strong>
               </p>
-              <select name="lists" data-placeholder="<%= __('Choose a list') %>" multiple>
+              <select
+                id="mailpoet_form_segments"
+                name="segments"
+                data-placeholder="<%= __('Choose a list') %>"
+                multiple
+              >
                 <% for segment in segments %>
-                  <option value="<%= segment.id %>"
-                    <% if segment.id in form.segments %>
-                      selected="selected"
-                    <% endif %>
-                  ><%= segment.name %></option>
+                  <option value="<%= segment.id %>"><%= segment.name %></option>
                 <% endfor %>
               </select>
-              <!-- error if user tries to save and has not selected a list -->
-              <p class="mailpoet_error" data-error="admin_no_list">
-                <%= __('You have to select at least 1 list') %>
-              </p>
             </div>
 
             <div id="mailpoet_on_success">
               <!-- Form settings: after submit -->
+              <input type="hidden" name="on_success" value="message" />
               <p>
                 <label><strong><%= __('After submit...') %></strong></label>
                 <label>
@@ -63,6 +66,7 @@
                     type="radio"
                     name="on_success"
                     value="message"
+                    <% if(on_success == 'message') %>checked="checked"<% endif %>
                   /><%= __('Show message') %>
                 </label>
                 &nbsp;
@@ -71,6 +75,7 @@
                     type="radio"
                     name="on_success"
                     value="page"
+                    <% if(on_success == 'page') %>checked="checked"<% endif %>
                   /><%= __('Go to page') %>
                 </label>
               </p>
@@ -93,10 +98,10 @@
               >
                 <select name="success_page">
                   <% for page in pages %>
-                    <option value="<%= page.ID %>"
-                      <%- if form.data.settings.success_page != page.ID %>
+                    <option value="<%= page.id %>"
+                      <%- if form.data.settings.success_page != page.id %>
                         <%=- ' selected="selected"' %>
-                      <%- endif %>><%= page.post_title %></option>
+                      <%- endif %>><%= page.title %></option>
                   <% endfor %>
                 </select>
               </p>
@@ -173,8 +178,10 @@
   </div>
 
   <%= javascript(
+    'vendor.js',
     'lib/prototype.min.js',
     'lib/scriptaculous.min.js',
+    'form_editor_lib.js',
     'form_editor.js'
   )%>
 
@@ -309,20 +316,26 @@
 
           // save change if necessary
           if(new_value !== '' && current_value !== new_value) {
-            console.log('TODO: form->save', {
-              form: <%= form.id | default(0) %>,
-              form_name: new_value,
+            MailPoet.Ajax.post({
+              endpoint: 'forms',
+              action: 'save',
+              data:  {
+                id: $('#mailpoet_form_id').val(),
+                name: new_value
+              }
+            }).done(function(response) {
+              MailPoet.Notice.success(
+                "<%= __('Form name successfully updated!') %>"
+              );
             });
-            MailPoet.Notice.success("<%= __('Form name successfully updated!') %>");
           }
         }
       }
 
       // on dom loaded
       $(function() {
-
         // load form
-        WysijaForm.load(<%= form | json_encode | raw %>);
+        WysijaForm.load(<%= form.data | raw %>);
 
         // save form
         $('#mailpoet_form_save').on('click', function() {
@@ -349,58 +362,35 @@
         mailpoet_form_export();
 
         function mailpoet_form_save(callback) {
-          console.log('TODO: form->save');
-
-          // if there is a callback, call it!
-          if(callback !== undefined) {
-            callback();
-          }
-          /*mailpoet_post_json('form_save.php', {
-            form: <%= form.form %>,
-            data: WysijaForm.save()
-          }, function(response) {
-            if(response.result === false) {
-              var error = null;
-              if(response.error !== undefined) {
-                // display custom error message
-                error = $('.mailpoet_error[data-error="'+response.error+'"]');
-              }
-
-              if(error !== null) {
-                $(error).show();
-              } else {
-                // display unknown error message
-                MailPoet.Notice.error("<%= __('An unknown error occurred. Please try again or get in touch with our support.') %>", { scroll: true });
-              }
-            } else {
-              // if there is a callback, call it!
-              if(callback !== undefined) {
-                callback();
-              } else {
-                // otherwise display a success message
-
-                  $success_message = str_replace(array(
-                                 '[link_widget]',
-                                 '[/link_widget]'
-                              ), array(
-                                  '<a href="'.admin_url('widgets.php').'" target="_blank">',
-                                  '</a>'
-                              ),
-                              __('Saved! Add this form to [link_widget]a widget[/link_widget].')
-                          );
-                ?>
-                var success_message = "<?php echo addslashes($success_message); ?>";
-
-                if(response.is_widget === true) {
-                  success_message = "<?php esc_html_e("Saved! The changes are already active in your widget."); ?>";
-                      }
-
-                      // display success message and scroll to it
-                      MailPoet.Notice.hide(true);
-                MailPoet.Notice.success(success_message, { scroll: true, static: true });
-              }
+          MailPoet.Ajax.post({
+            endpoint: 'forms',
+            action: 'save_editor',
+            data: {
+              id: $('#mailpoet_form_id').val(),
+              form: WysijaForm.save()
             }
-          });*/
+          }).done(function(response) {
+            var message = null;
+
+            if(response.is_widget === true) {
+              message = "<%= __('Saved! The changes are already active in your widget.') %>";
+            } else {
+              message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw %>";
+            }
+
+            if(message !== null) {
+              MailPoet.Notice.hide();
+              MailPoet.Notice.success(message, {
+                scroll: true,
+                static: true
+              });
+            }
+
+            // if there is a callback, call it!
+            if(callback !== undefined) {
+              callback();
+            }
+          });
         }
 
         // toolbar: on success toggle
@@ -505,15 +495,15 @@
         });
 
         // toolbar: list selection
-        var selected_lists = <%= form.segments | json_encode | raw %>;
-        var selected_lists_ids = [];
-        if(selected_lists !== null) {
-          selected_lists_ids = selected_lists.map(function(segment) {
+        var selected_segments = <%= form.segments | json_encode | raw %>;
+        var selected_segments_ids = [];
+        if(selected_segments !== null) {
+          selected_segments_ids = selected_segments.map(function(segment) {
             return parseInt(segment.id, 10);
           });
         }
         //  enable select2 for list selection
-        $('select[name="lists"]').select2({
+        $('#mailpoet_form_segments').select2({
           width:'100%',
           templateResult: function(item) {
             if(item.element && item.element.selected) {
@@ -522,7 +512,7 @@
               return item.text;
             }
           }
-        });
+        }).select2('val', <%= form.segments | json_encode | raw %>);
 
         // subscriber meta fields
         var meta_fields = [
