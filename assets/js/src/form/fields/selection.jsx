@@ -18,35 +18,38 @@ function(
     },
     componentDidMount: function() {
       this.loadCachedItems();
+      this.setupSelect2();
     },
     componentDidUpdate: function() {
       this.setupSelect2();
     },
     setupSelect2: function() {
-      if(!this.props.field.multiple || this.state.initialized === true) {
+      if(
+          !this.props.field.multiple
+          || this.state.initialized === true
+          || this.refs.select === undefined
+        ) {
         return;
       }
 
-      if(Object.keys(this.props.item).length > 0) {
-        var select2 = jQuery('#'+this.refs.select.id).select2({
-          width: (this.props.width || ''),
-          templateResult: function(item) {
-            if (item.element && item.element.selected) {
-              return null;
-            } else {
-              return item.text;
-            }
+      var select2 = jQuery('#'+this.refs.select.id).select2({
+        width: (this.props.width || ''),
+        templateResult: function(item) {
+          if(item.element && item.element.selected) {
+            return null;
+          } else {
+            return item.text;
           }
-        });
+        }
+      });
 
-        select2.on('change', this.handleChange);
-        select2.select2(
-          'val',
-          this.props.item[this.props.field.name]
-        );
+      select2.on('change', this.handleChange);
+      select2.select2(
+        'val',
+        this.props.item[this.props.field.name]
+      );
 
-        this.setState({ initialized: true });
-      }
+      this.setState({ initialized: true });
     },
     loadCachedItems: function() {
       if(typeof(window['mailpoet_'+this.props.field.endpoint]) !== 'undefined') {

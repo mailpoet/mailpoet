@@ -2,6 +2,7 @@
 namespace MailPoet\Config;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
+use \MailPoet\Models\Form;
 use \MailPoet\Settings\Hosts;
 use \MailPoet\Settings\Pages;
 use \MailPoet\Settings\Charsets;
@@ -203,6 +204,18 @@ class Menu {
 
   function formEditor() {
     $data = array();
+
+    $form = array(
+      'name' => __('My new form')
+    );
+
+    $id = (isset($_POST['id']) ? (int)$_POST['id'] : 0);
+    $form = Form::findOne($id);
+    if($form !== false) {
+      $form = $form->asArray();
+    }
+    $data['form'] = $form;
+
     $data['segments'] = Segment::findArray();
     echo $this->renderer->render('form/editor.html', $data);
   }

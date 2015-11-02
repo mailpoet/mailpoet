@@ -392,7 +392,7 @@ define(
       },
       componentWillReceiveProps: function(nextProps) {
         const params = nextProps.params || {}
-        //this.initWithParams(params)
+        this.initWithParams(params)
       },
       getItems: function() {
         if(this.isMounted()) {

@@ -78,8 +78,9 @@ config.push(_.extend({}, baseConfig, {
       'forms/forms.jsx',
       'settings/tabs.js'
     ],
-    form_editor: [
-      'select2'
+    form_editor_lib: [
+      'select2',
+      'codemirror'
     ],
     newsletter_editor: [
       'underscore',

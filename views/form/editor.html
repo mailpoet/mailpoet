@@ -40,12 +40,12 @@
               <strong><%= __('This form adds subscribers to these lists:') %></strong>
               </p>
               <select name="lists" data-placeholder="<%= __('Choose a list') %>" multiple>
-                <% for list in lists %>
-                  <option value="<%= list.id %>"
-                    <% if list.id in form.data.settings.lists %>
+                <% for segment in segments %>
+                  <option value="<%= segment.id %>"
+                    <% if segment.id in form.segments %>
                       selected="selected"
                     <% endif %>
-                  ><%= list.name %></option>
+                  ><%= segment.name %></option>
                 <% endfor %>
               </select>
               <!-- error if user tries to save and has not selected a list -->
@@ -310,7 +310,7 @@
           // save change if necessary
           if(new_value !== '' && current_value !== new_value) {
             console.log('TODO: form->save', {
-              form: <%= form.form %>,
+              form: <%= form.id | default(0) %>,
               form_name: new_value,
             });
             MailPoet.Notice.success("<%= __('Form name successfully updated!') %>");
@@ -505,11 +505,23 @@
         });
 
         // toolbar: list selection
-        var selected_lists = <%= selected_lists | json_encode | raw %>,
-          selected_lists_ids = selected_lists.map(function(list) { return parseInt(list.list, 10); });
+        var selected_lists = <%= form.segments | json_encode | raw %>;
+        var selected_lists_ids = [];
+        if(selected_lists !== null) {
+          selected_lists_ids = selected_lists.map(function(segment) {
+            return parseInt(segment.id, 10);
+          });
+        }
         //  enable select2 for list selection
         $('select[name="lists"]').select2({
-          width:'100%'
+          width:'100%',
+          templateResult: function(item) {
+            if(item.element && item.element.selected) {
+              return null;
+            } else {
+              return item.text;
+            }
+          }
         });
 
         // subscriber meta fields
