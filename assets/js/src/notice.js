@@ -47,6 +47,8 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           type: 'success',
           message: '',
           static: false,
+          hideClose: false,
+          addCustomClass: false,
           scroll: false,
           timeout: 2000,
           onOpen: null,
@@ -59,6 +61,9 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
 
           // clone element
           this.element = jQuery('#mailpoet_notice_'+this.options.type).clone();
+
+          // add custom identifier class to the element
+          if (this.options.addCustomClass) this.element.addClass('mailpoet_'+this.options.addCustomClass);
 
           // remove id from clone
           this.element.removeAttr('id');
@@ -73,7 +78,6 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           }
 
           // listen to remove event
-          var element = this.element;
           jQuery(this.element).on('close', function() {
               jQuery(this).fadeOut(200, function() {
                   // on close callback
@@ -148,7 +152,7 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           // if the notice is not static, it has to disappear after a timeout
           if(this.options.static === false) {
               this.element.delay(this.options.timeout).trigger('close');
-          } else {
+          } else if (this.options.hideClose === false) {
               this.element.append('<a href="javascript:;" class="mailpoet_notice_close"><span class="dashicons dashicons-dismiss"></span></a>');
               this.element.find('.mailpoet_notice_close').on('click', function() {
                   jQuery(this).trigger('close');
@@ -163,6 +167,14 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
       hide: function(all) {
           if(all !== undefined && all === true) {
               jQuery('.mailpoet_notice:not([id])').trigger('close');
+          } else if (all !== undefined && jQuery.isArray(all)) {
+              for (var noticeClass in all) {
+                  jQuery('.mailpoet_'+all[noticeClass])
+                   .trigger('close');
+              }
+          } if (all !== undefined) {
+              jQuery('.mailpoet_'+noticeClass)
+               .trigger('close');
           } else {
               jQuery('.mailpoet_notice.updated:not([id]), .mailpoet_notice.error:not([id])')
               .trigger('close');

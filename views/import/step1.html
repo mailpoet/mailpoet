@@ -1,4 +1,4 @@
-<div id="step_1" class="mailpoet_hidden">
+<div id="step1" class="mailpoet_hidden">
   <div class="inside">
     <!-- Method selection -->
     <table class="mailpoet_subscribers form-table">
@@ -76,7 +76,7 @@
           <td>
             <input type="file" id="file_local">
             &nbsp;
-            <%= __( 'total max upload file size : %s' )|replace({'%s': maximumParseSize}) %>
+            <%= __( 'total max upload file size : %s' )|replace({'%s': maxPostSize}) %>
           </td>
         </tr>
         </tbody>
@@ -109,7 +109,7 @@
             </label>
           </th>
           <td>
-            <select class ="mailchimp_lists_select" multiple="multiple"></select>
+            <select class="mailchimp_lists_select" data-placeholder="<%= __('Select') %>" multiple="multiple"></select>
           </td>
         </tr>
         </tbody>
@@ -143,12 +143,11 @@
         <tr>
           <th scope="row">
             <a href="javascript:;"
-             class="button-primary wysija mailpoet_process"><%= ('Next step') %> </a>
+             class="button-primary disabled   wysija mailpoet_process"><%= ('Next step') %> </a>
           </th>
         </tr>
         </tbody>
       </table>
     </script>
-    
   </div>
 </div>

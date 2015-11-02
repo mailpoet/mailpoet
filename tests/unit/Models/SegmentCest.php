@@ -11,6 +11,7 @@ class SegmentCest {
     $this->before_time = time();
     $this->data = array(
       'name' => 'some name',
+      'description' => 'some description'
     );
 
     $this->segment = Segment::create();
@@ -20,6 +21,20 @@ class SegmentCest {
 
   function itCanBeCreated() {
     expect($this->saved)->equals(true);
+  }
+
+  function itCanHaveName() {
+    expect($this->segment->name)->equals($this->data['name']);
+  }
+
+  function nameMustBeUnique() {
+    $segment = Segment::create();
+    $segment->hydrate($this->data);
+    expect($segment->save())->contains('Duplicate');
+  }
+
+  function itCanHaveDescription() {
+    expect($this->segment->description)->equals($this->data['description']);
   }
 
   function itHasToBeValid() {

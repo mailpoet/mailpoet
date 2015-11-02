@@ -1,0 +1,216 @@
+<div id="step2" class="mailpoet_hidden">
+  <div id="subscribers_data_parse_results">
+    <!-- Template data -->
+  </div>
+
+  <script id="subscribers_data_parse_results_template" type="text/x-handlebars-template">
+    <div class="notice">
+      <ul>
+        <li>{{{notice}}}</li>
+        <li><a class="mailpoet_subscribers_data_parse_results_details_show"
+         href="javascript:;"><%= __('Show more details.') %></a></li>
+      </ul>
+      <div class="mailpoet_subscribers_data_parse_results_details mailpoet_hidden">
+        <hr>
+        <ul>
+          {{#if duplicate}}
+          <li>{{{duplicate}}}</li>
+          {{/if}}
+          {{#if invalid}}
+          <li>{{{invalid}}}</li>
+          {{/if}}
+        </ul>
+      </div>
+    </div>
+  </script>
+
+  <div class="inside">
+    <br>
+    <!-- Subscribers Data -->
+    <div id="subscribers_data">
+      <table class="mailpoet_subscribers widefat fixed">
+        <!-- Template data -->
+      </table>
+    </div>
+
+    <table class="mailpoet_subscribers form-table">
+      <tbody>
+      <!-- MP3 Segments -->
+      <tr class="mailpoet_segments mailpoet_hidden">
+        <th scope="row">
+          <label>
+            <%= __('Pick one or many segments') %>
+            <p class="description"><%= __('Pick the segments you want to import those subscribers to.') %>
+          </label>
+        </th>
+        <td>
+          <select id="mailpoet_segments_select" data-placeholder="<%= __('Select') %>" multiple="multiple"></select>
+          <a href="javascript:;" class="mailpoet_create_segment"><%= __('Create new list') %></a>
+        </td>
+      </tr>
+      <tr class="mailpoet_no_segments mailpoet_hidden">
+        <th scope="row">
+          <%=
+          __('To add subscribers to a mailing segment, [link]create a list[/link].')
+          |replace({
+          '[link]': '<a href="javascript:;" class="mailpoet_create_segment">',
+          '[/link]': '</a>'
+          })
+          |raw
+          %>
+        </th>
+      </tr>
+      <tr>
+        <th scope="row">
+          <label>
+            <%= __("Update existing subscribers' information") %>
+          </label>
+        </th>
+        <td>
+          <label>
+            <input type="radio" name="subscriber_update_option" value="yes"
+             checked><span><%= __('Yes') %></span>
+          </label>
+          <label>
+            <input type="radio" name="subscriber_update_option"
+             value="no"><span><%= __('No') %></span>
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          <a href="javascript:;" id="step_2_process"
+           class="button-primary wysija disabled"><%= __('Next step') %> </a>
+        </th>
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- subscribers data template -->
+    <script id="subscribers_data_template" type="text/x-handlebars-template">
+      <thead>
+      <th>
+        <%= __('Match data') %>
+      </th>
+      {{#show_and_match_columns .}}
+      {{#.}}
+      <th>
+        <select class="mailpoet_subscribers_column_data_match" data-column-id="{{column_id}}" id="column_{{@index}}">
+      </th>
+      {{/.}}
+      {{/show_and_match_columns}}
+      </thead>
+      <tbody>
+      {{> subscribers_data_template_partial}}
+      </tbody>
+    </script>
+
+    <script id="subscribers_data_template_partial" type="text/x-handlebars-template">
+      {{#if header}}
+      <tr class="mailpoet_header">
+        <td></td>
+        {{#header}}
+        <td>
+          {{this}}
+        </td>
+        {{/header}}
+      </tr>
+      {{/if}}
+      {{#subscribers}}
+      <tr>
+        <td>
+          {{show_real_index @index}}
+        </td>
+        {{#.}}
+        <td>
+          {{{this}}}
+        </td>
+        {{/.}}
+      </tr>
+      {{/subscribers}}
+    </script>
+
+    <!-- New segment template -->
+    <script id="new_segment_template" type="text/x-handlebars-template">
+      <p>
+        <label><%= __('Name') %>:</label>
+        <input id="new_segment_name" type="text" name="name"/>
+      </p>
+      <p class="mailpoet_validation_error" data-error="segment_name_required">
+        <%= __('You need to specify a name') %>
+      </p>
+      <p class="mailpoet_validation_error" data-error="segment_name_not_unique">
+        <%= __('This name is already taken') %>
+      </p>
+      <p>
+        <label><%= __('Description') %>:</label>
+        <br/>
+        <textarea id="new_segment_description" cols="40" rows="3" name="description"/>
+      </p>
+
+      <hr/>
+
+      <p class="mailpoet_align_right">
+        <input type="submit" value="<%= __('Done') %>" id="new_segment_process"
+         class="button-primary "/>
+        <input type="submit" value="<%= __('Cancel') %>" id="new_segment_cancel"
+         class="button-primary"/>
+      </p>
+
+      </form>
+    </script>
+
+    <!-- New column template -->
+    <script id="new_column_template" type="text/x-handlebars-template">
+      <p>
+        <label><%= __('Field type') %>:</label>
+        <select id="new_column_type" name="type">
+          <option value="">--</option>
+          <option value="input">
+            <%= __('Text Input') %>
+          </option>
+          <option value="textarea">
+            <%= __('Text Area') %>
+          </option>
+          <option value="radio">
+            <%= __('Radio buttons') %>
+          </option>
+          <option value="checkbox">
+            <%= __('Checkbox') %>
+          </option>
+          <option value="select">
+            <%= __('Select') %>
+          </option>
+          <option value="date">
+            <%= __('Date') %>
+          </option>
+        </select>
+      </p>
+      <p class="mailpoet_validation_error" data-error="type_required">
+        <%= __('You need to select a type') %>
+      </p>
+
+      <p>
+        <label><%= __('Field name') %>:</label>
+        <input id="new_column_name" type="text" name="name" value="{{ name }}"/>
+      </p>
+      <p class="mailpoet_validation_error" data-error="name_required">
+        <%= __('You need to specify a name') %>
+      </p>
+      <p class="mailpoet_validation_error" data-error="name_not_unique">
+        <%= __('This name is already taken') %>
+      </p>
+
+      <hr/>
+
+      <p class="mailpoet_align_right">
+        <input type="submit" value="<%= __('Done') %>" id="new_column_process"
+         class="button-primary "/>
+        <input type="submit" value="<%= __('Cancel') %>" id="new_column_cancel"
+         class="button-primary"/>
+      </p>
+
+      </form>
+    </script>
+  </div>
+</div>

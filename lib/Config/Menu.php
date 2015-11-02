@@ -1,6 +1,6 @@
 <?php
 namespace MailPoet\Config;
-use MailPoet\Import\Import;
+use \MailPoet\Import\BootstrapMenu;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
 use \MailPoet\Models\Form;
@@ -214,10 +214,11 @@ class Menu {
   }
 
   function import() {
-    $import = new Import();
-    $data = $import->bootstrapImportMenu();
+    $import = new BootstrapMenu();
+    $data = $import->bootstrap();
     echo $this->renderer->render('import.html', $data);
   }
+
 
 
   

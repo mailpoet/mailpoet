@@ -1,106 +1,71 @@
 <?php namespace MailPoet\Import;
 
-use MailPoet\Models\CustomField;
-use MailPoet\Models\Segment;
-use MailPoet\Util\Helpers;
-
 class Import {
-
-  function getSegments() {
-    return Segment::findArray();
+  public function __construct($data) {
+    $this->subscribersData = $data['subscribers'];
+    $this->segments = $data['segments'];
+    $this->updateSubscribers = $data['updateSubscribers'];
+    $this->subscriberFields = $this->getSubscriberFields();
+    $this->subscriberCustomFields = $this->getCustomSubscriberFields();
+    $this->currentTime = time();
+    $this->profilerStart = microtime(true);
   }
 
-  function getSubscriberCustomFields() {
-    return CustomField::findArray();
+  function process() {
+    // :)
+    return array(
+      'status' => 'success',
+      'count' => count($this->subscribersData['subscriber_email'])
+    );
+    if(in_array('subscriber_status', $subscriberFields)) {
+      $this->subscribersData['subscriber_state'] = $this->filterSubscriberState(
+        $this->subscribersData['subscriber_state']
+      );
+    }
   }
 
   function getSubscriberFields() {
-    return array(
-      'subscriber_email' => __("Email"),
-      'subscriber_firstname' => __("First name"),
-      'subscriber_lastname' => __("Last name"),
-      'subscriber_confirmed_ip' => __("IP address"),
-      'subscriber_confirmed_at' => __("Subscription date"),
-      'subscriber_state' => __("Status")
-    );
-  }
-
-  function formatSubscriberFields($subscriberFields) {
-    return array_map(function ($fieldId, $fieldName) {
-      return array(
-        'id' => $fieldId,
-        'name' => $fieldName,
-        'type' => ($fieldId === 'subscriber_confirmed_at') ? 'date' : null,
-        'custom' => false
-      );
-    }, array_keys($subscriberFields), $subscriberFields);
-  }
-
-  function formatSubscriberCustomFields($subscriberCustomFields) {
     return array_map(function ($field) {
-      return array(
-        'id' => $field['id'],
-        'name' => $field['name'],
-        'label' => $field['name'],
-        'type' => $field['type'],
-        'custom' => true
-      );
-    }, $subscriberCustomFields);
+      if(!is_int($field)) return $field;
+    }, array_keys($this->subscribersData));
   }
 
-  function formatSelect2Fields($subscriberFields, $subscriberCustomFields) {
-    $data = array(
-      array(
-        'name' => __("Actions"),
-        'children' => array(
-          array(
-            'id' => 'ignore',
-            'name' => __("Ignore column..."),
-          ),
-          array(
-            'id' => 'create',
-            'name' => __("Create new column...")
-          ),
-        )
+  function getCustomSubscriberFields() {
+    return array_map(function ($field) {
+      if(is_int($field)) return $field;
+    }, array_keys($this->subscribersData));
+  }
+
+  function filterSubscriberState($data) {
+    $states = array(
+      'subscribed' => array(
+        'subscribed',
+        'confirmed',
+        1,
+        '1',
+        'true'
       ),
-      array(
-        'name' => __("System columns"),
-        'children' => $subscriberFields
+      'unsubscribed' => array(
+        'unsubscribed',
+        -1,
+        '-1',
+        'false'
       )
     );
 
-    if($subscriberCustomFields) {
-      array_push($data, array(
-        'name' => __("User columns"),
-        'children' => $subscriberCustomFields
-      ));
-    }
-    return $data;
+    return array_map(function ($state) use ($states) {
+      if(in_array(strtolower($state), $states['subscribed'])) {
+        return 1;
+      }
+      if(in_array(strtolower($state), $states['unsubscribed'])) {
+        return -1;
+      }
+      return 1; // make "subscribed" a default state
+    }, $data);
   }
 
-  function bootstrapImportMenu() {
-    $data['segments'] = array_map(function ($segment) {
-      return array(
-        'id' => $segment['id'],
-        'name' => $segment['name'],
-        'text' => $segment['name']
-      );
-    }, $this->getSegments());
-
-    $data['subscriberFields'] = $this->formatSubscriberFields(
-      $this->getSubscriberFields()
-    );
-
-    $data['subscriberCustomFields'] = $this->formatSubscriberCustomFields(
-      $this->getSubscriberCustomFields()
-    );
-
-    $data['select2Fields'] = $this->formatSelect2Fields(
-      $data['subscriberFields'],
-      $data['subscriberCustomFields']
-    );
-
-    $data['maximumParseSize'] = Helpers::get_maximum_post_size();
-    return array_map('json_encode', $data);
+  function timeExecution() {
+    $profilerEnd = microtime(true);
+    return ($profilerEnd - $this->profilerStart) / 60;
   }
 }

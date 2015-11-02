@@ -72,30 +72,24 @@ class Helpers {
     
     return $jqueryui_format;
   }
-  
-  /*
-   * Determine maximum post size in bytes
-   */
-  static function get_maximum_post_size() {
-    $maximum_post_size = ini_get('post_max_size');
-    $maximum_post_size_bytes = (int) $maximum_post_size;
-    $unit = strtolower($maximum_post_size[strlen($maximum_post_size) - 1]);
+
+  static function getMaxPostSize($bytes = false) {
+    $maxPostSize = ini_get('post_max_size');
+    if (!$bytes) return $maxPostSize;
+    $maxPostSizeBytes = (int) $maxPostSize;
+    $unit = strtolower($maxPostSize[strlen($maxPostSize) - 1]);
     switch ($unit) {
-    case 'g':
-      $maximum_post_size_bytes *= 1024;
-    case 'm':
-      $maximum_post_size_bytes *= 1024;
-    case 'k':
-      $maximum_post_size_bytes *= 1024;
+      case 'g':
+        $maxPostSizeBytes *= 1024;
+      case 'm':
+        $maxPostSizeBytes *= 1024;
+      case 'k':
+        $maxPostSizeBytes *= 1024;
     }
-    
-    return $maximum_post_size_bytes;
+    return $maxPostSizeBytes;
   }
-  
-  /*
-   * Flatten multidimensional array
-   */
-  static function flatten_array($array) {
+
+  static function flattenArray($array) {
     return call_user_func_array(
       'array_merge_recursive', array_map('array_values', $array)
     );
