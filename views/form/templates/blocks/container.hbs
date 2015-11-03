@@ -3,7 +3,7 @@
   wysija_field="{{ field }}"
   wysija_name="{{ name }}"
   wysija_unique="{{#if multiple}}0{{else}}1{{/if}}"
-  wysija_static="{{#if static}}1{{else}}0{{/if}}"
+  wysija_static="{{#ifCond static '==' 1}}1{{else}}0{{/ifCond}}"
   wysija_params="{{#if params}}{{ json_encode params }}{{/if}}">
   {{#ifCond type '!==' 'divider'}}
     <div class="wysija_settings" style="display:none;">
@@ -12,7 +12,9 @@
   {{/ifCond}}
   <ul class="wysija_controls clearfix" style="display: none;">
     <li class="handle_container"><a class="handle" href="javascript:;"><span></span></a></li>
-    {{#unless static}}<li><a class="remove" href="javascript:;"><span></span></a></li>{{/unless}}
+    {{#ifCond static '==' '0'}}
+      <li><a class="remove" href="javascript:;"><span></span></a></li>
+    {{/ifCond}}
   </ul>
   {{{ template }}}
 </div>

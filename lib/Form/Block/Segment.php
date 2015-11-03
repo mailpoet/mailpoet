@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Form\Block;
 
-class Lists extends Base {
+class Segment extends Base {
 
   static function render($block) {
     $html = '';
@@ -15,17 +15,17 @@ class Lists extends Base {
 
     if(!empty($block['params']['values'])) {
       // display values
-      foreach($block['params']['values'] as $list) {
-        if(!isset($list['id']) || !isset($list['name'])) continue;
+      foreach($block['params']['values'] as $segment) {
+        if(!isset($segment['id']) || !isset($segment['name'])) continue;
 
-        $is_checked = (isset($list['is_checked']) && $list['is_checked']) ? 'checked="checked"' : '';
+        $is_checked = (isset($segment['is_checked']) && $segment['is_checked']) ? 'checked="checked"' : '';
 
         $html .= '<label class="mailpoet_checkbox_label">';
         $html .= '<input type="checkbox" class="mailpoet_checkbox" ';
         $html .= 'name="'.$field_name.'" ';
-        $html .= 'value="'.$list['id'].'" '.$is_checked;
+        $html .= 'value="'.$segment['id'].'" '.$is_checked;
         $html .= $field_validation;
-        $html .= ' />'.$list['name'];
+        $html .= ' />'.$segment['name'];
         $html .= '</label>';
       }
     }

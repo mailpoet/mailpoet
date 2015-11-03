@@ -6,8 +6,7 @@ use MailPoet\Form\Util;
 if(!defined('ABSPATH')) exit;
 
 class Renderer {
-
-    // public: rendering method
+  // public: rendering method
   static function render($form = array()) {
     $html = static::renderStyles($form);
     $html .= static::renderHTML($form);
@@ -23,19 +22,18 @@ class Renderer {
   }
 
   static function renderHTML($form = array()) {
-    if(isset($form['data']['body']) && !empty($form['data']['body'])) {
-      // render blocks
-      return static::renderBlocks($form['data']['body']);
+    if(isset($form['body']) && !empty($form['body'])) {
+      return static::renderBlocks($form['body']);
     }
     return '';
   }
 
   static function getStyles($form = array()) {
-    if(isset($form['data']['styles'])
-    && strlen(trim($form['data']['styles'])) > 0) {
-      return strip_tags($form['data']['styles']);
+    if(isset($form['styles'])
+    && strlen(trim($form['styles'])) > 0) {
+      return strip_tags($form['styles']);
     } else {
-      return Util\Styles::getDefaults();
+      return Util\Styles::$defaults;
     }
   }
 
@@ -68,8 +66,8 @@ class Renderer {
         $html .= Block\Radio::render($block);
       break;
 
-      case 'list':
-        $html .= Block\Lists::render($block);
+      case 'segment':
+        $html .= Block\Segment::render($block);
       break;
 
       case 'date':

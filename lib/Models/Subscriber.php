@@ -94,23 +94,17 @@ class Subscriber extends Model {
       array(
         'name' => 'subscribed',
         'label' => __('Subscribed'),
-        'count' => Subscriber::whereNull('deleted_at')
-          ->where('status', 'subscribed')
-          ->count()
+        'count' => Subscriber::filter('subscribed')->count()
       ),
       array(
         'name' => 'unconfirmed',
         'label' => __('Unconfirmed'),
-        'count' => Subscriber::whereNull('deleted_at')
-          ->where('status', 'unconfirmed')
-          ->count()
+        'count' => Subscriber::filter('unconfirmed')->count()
       ),
       array(
         'name' => 'unsubscribed',
         'label' => __('Unsubscribed'),
-        'count' => Subscriber::whereNull('deleted_at')
-          ->where('status', 'unsubscribed')
-          ->count()
+        'count' => Subscriber::filter('unsubscribed')->count()
       ),
       array(
         'name' => 'trash',
@@ -124,11 +118,7 @@ class Subscriber extends Model {
     if($group === 'trash') {
       return $orm->whereNotNull('deleted_at');
     } else {
-      $orm = $orm->whereNull('deleted_at');
-
-      if(in_array($group, array('subscribed', 'unsubscribed', 'unconfirmed'))) {
-        return $orm->where('status', $group);
-      }
+      return $orm->filter($group);
     }
   }
 
@@ -300,5 +290,23 @@ class Subscriber extends Model {
       );
     }
     return false;
+  }
+
+  static function subscribed($orm) {
+    return $orm
+      ->whereNull('deleted_at')
+      ->where('status', 'subscribed');
+  }
+
+  static function unsubscribed($orm) {
+    return $orm
+      ->whereNull('deleted_at')
+      ->where('status', 'unsubscribed');
+  }
+
+  static function unconfirmed($orm) {
+    return $orm
+      ->whereNull('deleted_at')
+      ->where('status', 'unconfirmed');
   }
 }

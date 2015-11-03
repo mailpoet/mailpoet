@@ -1,5 +1,9 @@
 <?php
 namespace MailPoet\Form;
+use \MailPoet\Config\Renderer;
+use \MailPoet\Models\Form;
+use \MailPoet\Models\Subscriber;
+use \MailPoet\Form\Renderer as FormRenderer;
 
 if(!defined('ABSPATH')) exit;
 
@@ -44,14 +48,7 @@ class Widget extends \WP_Widget {
     $selected_form = isset($instance['form']) ? (int)($instance['form']) : 0;
 
     // get forms list
-    // TODO: update when ORM ready
-    // $forms = $mailpoet->forms()->select(array(
-    //   'filter' => array(
-    //     'form_deleted_at' => NULL
-    //   )
-    // ));
-    $forms = array();
-
+    $forms = Form::whereNull('deleted_at')->orderByAsc('name')->findArray();
     ?><p>
       <label for="<?php $this->get_field_id( 'title' ) ?>"><?php _e( 'Title:' ); ?></label>
       <input
@@ -66,9 +63,9 @@ class Widget extends \WP_Widget {
       <select class="widefat" id="<?php echo $this->get_field_id('form') ?>" name="<?php echo $this->get_field_name('form'); ?>">
         <?php
         foreach ($forms as $form) {
-          $is_selected = ($selected_form === (int)$form['form']) ? 'selected="selected"' : '';
+          $is_selected = ($selected_form === (int)$form['id']) ? 'selected="selected"' : '';
         ?>
-        <option value="<?php echo (int)$form['form']; ?>" <?php echo $is_selected; ?>><?php echo esc_html($form['form_name']); ?></option>
+        <option value="<?php echo (int)$form['id']; ?>" <?php echo $is_selected; ?>><?php echo esc_html($form['name']); ?></option>
         <?php }  ?>
       </select>
     </p>
@@ -79,11 +76,12 @@ class Widget extends \WP_Widget {
     jQuery(function($) {
       $(function() {
         $('.mailpoet_form_new').on('click', function() {
-          mailpoet_post_wpi('form_new.php', {}, function(response) {
-            if(response.form !== undefined) {
-              window.location.href = "<?php echo admin_url('admin.php?page=mailpoet-forms&action=edit&form='); ?>"+response.form;
-            } else {
-              MailPoet.Notice.error(response.error);
+          MailPoet.Ajax.post({
+            endpoint: 'forms',
+            action: 'create'
+          }).done(function(response) {
+            if(response !== false) {
+              window.location = response;
             }
           });
         });
@@ -106,49 +104,46 @@ class Widget extends \WP_Widget {
 
     $title = apply_filters(
       'widget_title',
-      empty($instance['title']) ? __( 'Newsletter' ) : $instance['title'],
+      !empty($instance['title']) ? $instance['title'] : '',
       $instance,
       $this->id_base
     );
 
     // get form
-    // TODO: fix when ORM is ready
-    // $form = $mailpoet->forms()->fetchById($instance['form']);
-    $form = null;
+    $form = Form::whereNull('deleted_at')->findOne($instance['form']);
 
     // if the form was not found, return nothing.
-    if($form === null) {
+    if($form === false) {
       return '';
     } else {
-      // init output
+      $form = $form->asArray();
+      $form_type = 'widget';
+      if(isset($instance['form_type']) && in_array(
+        $instance['form_type'],
+        array('html', 'php', 'iframe', 'shortcode')
+      )) {
+        $form_type = $instance['form_type'];
+      }
+
+      $settings = (isset($form['settings']) ? $form['settings'] : array());
+      $body = (isset($form['body']) ? $form['body'] : array());
       $output = '';
 
-      // before widget
-      $output .= (isset($before_widget) ? $before_widget : '');
+      if(!empty($body)) {
+        $data = array(
+          'form_id' => $this->id_base.'_'.$this->number,
+          'form_type' => $form_type,
+          'form' => $form,
+          'title' => $title,
+          'styles' => FormRenderer::renderStyles($form),
+          'html' => FormRenderer::renderHTML($form),
+          'before_widget' => $before_widget,
+          'after_widget' => $after_widget,
+          'before_title' => $before_title,
+          'after_title' => $after_title
+        );
 
-      if(isset($form['data'])) {
-        // title
-        $output .= (isset($before_title) ? $before_title : '');
-        $output .= (isset($title) ? $title : '');
-        $output .= (isset($after_title) ? $after_title : '');
-
-        // render form
-        $form_id = $this->id_base.'_'.$this->number;
-        if(isset($instance['form_type']) && in_array($instance['form_type'], array('html', 'php', 'iframe', 'shortcode'))) {
-          $form_type = $instance['form_type'];
-        } else {
-          $form_type = 'widget';
-        }
-
-        // form container
-        $output .= '<div class="mailpoet_form mailpoet_form_'.$form_type.'">';
-
-        // form styles
-        $output .= MailPoetFormRendering::renderStyles($form);
-
-        $output .= '<form id="'.$form_id.'" method="post" action="'.admin_url('admin-post.php?action=mailpoet_form_subscribe').'" class="mailpoet_form mailpoet_form_'.$form_type.'" novalidate>';
-
-        if(isset($_GET['mailpoet_form']) && (int)$_GET['mailpoet_form'] === $form['form']) {
+        /*if(isset($_GET['mailpoet_form']) && (int)$_GET['mailpoet_form'] === $form['id']) {
           // form messages (success / error)
           $output .= '<div class="mailpoet_message">';
           // success message
@@ -162,31 +157,14 @@ class Widget extends \WP_Widget {
           $output .= '</div>';
         } else {
           $output .= '<div class="mailpoet_message"></div>';
-        }
+        }*/
 
-        $output .= '<input type="hidden" name="form" value="'.$form['form'].'" />';
-
-          if(!isset($form['data']['settings']['lists_selected_by']) or (isset($form['data']['settings']['lists_selected_by']) && $form['data']['settings']['lists_selected_by'] !== 'user')) {
-            if(!empty($form['data']['settings']['lists'])) {
-              $output .= '<input type="hidden" name="lists" value="'.join(',', $form['data']['settings']['lists']).'" />';
-            }
-          }
-        $output .= MailPoetFormRendering::renderHTML($form);
-        $output .= '</form>';
-
-        $output .= '</div>';
-
-        // after widget
-        $output .= (isset($after_widget) ? $after_widget : '');
+        // render form
+        $renderer = new Renderer();
+        $renderer = $renderer->init();
+        $output = $renderer->render('form/widget.html', $data);
+        $output = do_shortcode($output);
       }
-
-      // shortcode: subscribers count
-      /*$subscribers_count = mailpoet_subscribers_count();
-      $output = str_replace(
-        array('[mailpoet_subscribers_count]', '[total_subscribers]'),
-        array($subscribers_count, $subscribers_count),
-        $output
-      );*/
 
       if($form_type === 'widget') {
         echo $output;
@@ -216,23 +194,6 @@ function mailpoet_form_shortcode($params = array()) {
 }
 
 /*
-// subscribers count shortcode
-add_shortcode('mailpoet_subscribers_count', 'mailpoet_subscribers_count');
-add_shortcode('wysija_subscribers_count', 'mailpoet_subscribers_count');
-
-
-function mailpoet_subscribers_count() {
-  $mailpoet = new MailPoetWPI();
-  // return the count of subscribers (STATE_SUBSCRIBED)
-  $subscribers_count = $mailpoet->subscribers()->count(array(
-    'filter' => array(
-      'subscriber_state' => MailPoetSubscribers::STATE_SUBSCRIBED
-    )
-  ));
-
-  return $subscribers_count;
-}
-
 add_action('wp_ajax_mailpoet_form_subscribe',     'mailpoet_form_subscribe');
 add_action('wp_ajax_nopriv_mailpoet_form_subscribe',  'mailpoet_form_subscribe');
 add_action('admin_post_nopriv_mailpoet_form_subscribe', 'mailpoet_form_subscribe');
@@ -253,7 +214,7 @@ if(isset($_GET['mailpoet_page']) && strlen(trim($_GET['mailpoet_page'])) > 0) {
 
       if($form !== null) {
         // render form
-        print MailPoetFormRendering::getExport('html', $form);
+        print FormRenderer::getExport('html', $form);
         exit;
       }
     break;
@@ -535,7 +496,7 @@ function mailpoet_form_subscribe() {
       }
 
       // get success message to display after subscription
-      $form_settings = (isset($form['data']['settings']) ? $form['data']['settings'] : null);
+      $form_settings = (isset($form['settings']) ? $form['settings'] : null);
 
       if($subscriber !== null && empty($errors)) {
         $success = true;

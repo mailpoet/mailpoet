@@ -204,17 +204,10 @@ class Menu {
   }
 
   function formEditor() {
-    $form = array(
-      'name' => __('My new form')
-    );
     $id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     $form = Form::findOne($id);
     if($form !== false) {
-      $segments = $form->segments();
       $form = $form->asArray();
-      $form['segments'] = array_map(function($segment) {
-        return $segment['id'];
-      }, $segments->findArray());
     }
 
     $data = array(

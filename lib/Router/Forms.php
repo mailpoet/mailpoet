@@ -1,8 +1,9 @@
 <?php
 namespace MailPoet\Router;
 use \MailPoet\Models\Form;
-use \MailPoet\Models\FormSegment;
+use \MailPoet\Form\Renderer as FormRenderer;
 use \MailPoet\Listing;
+use \MailPoet\Form\Util;
 
 if(!defined('ABSPATH')) exit;
 
@@ -17,12 +18,7 @@ class Forms {
     if($form === false) {
       wp_send_json(false);
     } else {
-      $segments = $form->segments();
       $form = $form->asArray();
-      $form['segments'] = array_map(function($segment) {
-        return $segment['id'];
-      }, $segments->findArray());
-
       wp_send_json($form);
     }
   }
@@ -38,12 +34,13 @@ class Forms {
     // fetch segments relations for each returned item
     foreach($listing_data['items'] as &$item) {
       // form's segments
-      $relations = FormSegment::select('segment_id')
-        ->where('form_id', $item['id'])
-        ->findMany();
-      $item['segments'] = array_map(function($relation) {
-        return $relation->segment_id;
-      }, $relations);
+      $form_settings = unserialize($item['settings']);
+
+      $item['segments'] = (
+        !empty($form_settings['segments'])
+        ? $form_settings['segments']
+        : array()
+      );
     }
 
     wp_send_json($listing_data);
@@ -54,26 +51,52 @@ class Forms {
     wp_send_json($collection);
   }
 
+  function create() {
+    // create new form
+    $form_data = array(
+      'name' => __('New form'),
+      'body' => array(
+        array(
+          'name' => __('Email'),
+          'type' => 'input',
+          'field' => 'email',
+          'static' => true,
+          'params' => array(
+            'label' => __('Email'),
+            'required' => true
+          )
+        ),
+        array(
+          'name' => __('Submit'),
+          'type' => 'submit',
+          'field' => 'submit',
+          'static' => true,
+          'params' => array(
+            'label' => __('Subscribe!')
+          )
+        )
+      ),
+      'settings' => array(
+        'on_success' => 'message',
+        'success_message' => __('Check your inbox or spam folder now to confirm your subscription.'),
+        'segments' => null,
+        'segments_selected_by' => 'admin'
+      )
+    );
+
+    $form = Form::createOrUpdate($form_data);
+
+    if($form !== false && $form->id()) {
+      wp_send_json(
+        admin_url('admin.php?page=mailpoet-form-editor&id='.$form->id())
+      );
+    } else {
+      wp_send_json(false);
+    }
+  }
+
   function save($data = array()) {
-    if(isset($data['segments'])) {
-      $segment_ids = $data['segments'];
-      unset($data['segments']);
-    }
-
     $form = Form::createOrUpdate($data);
-
-    if($form->id() && !empty($segment_ids)) {
-      // remove previous relationships with segments
-      FormSegment::where('form_id', $form->id())->deleteMany();
-
-      // create relationship with segments
-      foreach($segment_ids as $segment_id) {
-        $relation = FormSegment::create();
-        $relation->segment_id = $segment_id;
-        $relation->form_id = $form->id();
-        $relation->save();
-      }
-    }
 
     if($form !== false && $form->id()) {
       wp_send_json($form->id());
@@ -82,15 +105,40 @@ class Forms {
     }
   }
 
+  function preview($id) {
+    $form = Form::findOne($id);
+    if($form === false) {
+      wp_send_json(false);
+    } else {
+      $form = $form->asArray();
+
+      // html
+      $html = FormRenderer::renderHTML($form);
+
+      // convert shortcodes
+      $html = do_shortcode($html);
+
+      // styles
+      $css = new Util\Styles(FormRenderer::getStyles($form));
+
+      wp_send_json(array(
+        'html' => $html,
+        'css' => $css->render()
+      ));
+    }
+  }
+
   function save_editor($data = array()) {
     $form_id = (isset($data['id']) ? (int)$data['id'] : 0);
-    $form_data = (isset($data['form']) ? $data['form'] : array());
+    $body = (isset($data['body']) ? $data['body'] : array());
+    $settings = (isset($data['settings']) ? $data['settings'] : array());
+    $styles = (isset($data['styles']) ? $data['styles'] : array());
 
-    if(empty($form_data)) {
+    if(empty($body) || empty($settings)) {
       // error
       wp_send_json(false);
     } else {
-      // check if the form is displayed as a widget (we'll display a different "saved!" message in this case)
+      // check if the form is used as a widget
       $is_widget = false;
       $widgets = get_option('widget_mailpoet_form');
       if(!empty($widgets)) {
@@ -103,17 +151,17 @@ class Forms {
       }
 
       // check if the user gets to pick his own lists or if it's selected by the admin
-      $has_list_selection = false;
+      $has_segment_selection = false;
 
-
-      $blocks = (isset($form_data['body']) ? $form_data['body'] : array());
-      if(!empty($blocks)) {
-        foreach ($blocks as $i => $block) {
-          if($block['type'] === 'list') {
-            $has_list_selection = true;
+      if(!empty($body)) {
+        foreach ($body as $i => $block) {
+          if($block['type'] === 'segment') {
+            $has_segment_selection = true;
             if(!empty($block['params']['values'])) {
               $list_selection = array_map(function($segment) {
-                return (int)$segment['id'];
+                if(!empty($segment)) {
+                  return (int)$segment['id'];
+                }
               }, $block['params']['values']);
             }
             break;
@@ -122,16 +170,18 @@ class Forms {
       }
 
       // check list selectio
-      if($has_list_selection === true) {
-        $form_data['lists_selected_by'] = 'user';
+      if($has_segment_selection === true) {
+        $settings['segments_selected_by'] = 'user';
       } else {
-        $form_data['lists_selected_by'] = 'admin';
+        $settings['segments_selected_by'] = 'admin';
       }
     }
 
     $form = Form::createOrUpdate(array(
       'id' => $form_id,
-      'data' => $form_data
+      'body' => $body,
+      'settings' => $settings,
+      'styles' => $styles
     ));
 
     // response

@@ -1,0 +1,28 @@
+<% block content %>
+  <%= before_widget | raw %>
+
+  <% if(title) %>
+    <h2 class="widget-title"><%= title | raw %></h2>
+  <% endif %>
+
+  <div class="mailpoet_form mailpoet_form_<%= form_type %>">
+    <%= styles | raw %>
+    <form
+      id="<%= form_id %>"
+      method="post"
+      action="<%= admin_url('admin-post.php?action=mailpoet_form_subscribe') | raw %>"
+      class="mailpoet_form mailpoet_form_<%= form_type %>" novalidate
+    >
+      <div class="mailpoet_message"></div>
+
+      <input type="hidden" name="form" value="<%= form.id %>" />
+
+      <% if not(settings.segments_selected_by == 'user') %>
+        <input type="hidden" name="segments" value="<%= settings.segments | join(',') %>" />
+      <% endif %>
+
+      <%= html | raw %>
+    </form>
+  </div>
+  <%= after_widget | raw %>
+<% endblock %>

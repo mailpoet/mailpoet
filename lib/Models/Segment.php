@@ -29,15 +29,6 @@ class Segment extends Model {
     );
   }
 
-  function forms() {
-    return $this->has_many_through(
-      __NAMESPACE__.'\Form',
-      __NAMESPACE__.'\FormSegment',
-      'segment_id',
-      'form_id'
-    );
-  }
-
   static function search($orm, $search = '') {
     return $orm->where_like('name', '%'.$search.'%');
   }

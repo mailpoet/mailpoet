@@ -17,7 +17,6 @@ class Migrator {
       'segments',
       'subscriber_segment',
       'newsletter_segment',
-      'form_segment',
       'custom_fields',
       'subscriber_custom_field',
       'newsletter_option_fields',
@@ -143,18 +142,6 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function form_segment() {
-    $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'form_id mediumint(9) NOT NULL,',
-      'segment_id mediumint(9) NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id)'
-    );
-    return $this->sqlify(__FUNCTION__, $attributes);
-  }
-
   function custom_fields() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
@@ -211,7 +198,9 @@ class Migrator {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
-      'data longtext,',
+      'body longtext,',
+      'settings longtext,',
+      'styles longtext,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'deleted_at TIMESTAMP NULL DEFAULT NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',

@@ -42,7 +42,6 @@ class Initializer {
     $forms = Env::$db_prefix . 'forms';
     $subscriber_segment = Env::$db_prefix . 'subscriber_segment';
     $newsletter_segment = Env::$db_prefix . 'newsletter_segment';
-    $form_segment = Env::$db_prefix . 'form_segment';
     $custom_fields = Env::$db_prefix . 'custom_fields';
     $subscriber_custom_field = Env::$db_prefix . 'subscriber_custom_field';
     $newsletter_option_fields = Env::$db_prefix . 'newsletter_option_fields';
@@ -56,7 +55,6 @@ class Initializer {
     define('MP_SUBSCRIBER_SEGMENT_TABLE', $subscriber_segment);
     define('MP_NEWSLETTER_TEMPLATES_TABLE', $newsletter_templates);
     define('MP_NEWSLETTER_SEGMENT_TABLE', $newsletter_segment);
-    define('MP_FORM_SEGMENT_TABLE', $form_segment);
     define('MP_CUSTOM_FIELDS_TABLE', $custom_fields);
     define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', $subscriber_custom_field);
     define('MP_NEWSLETTER_OPTION_FIELDS_TABLE', $newsletter_option_fields);

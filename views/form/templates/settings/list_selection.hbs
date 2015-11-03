@@ -15,7 +15,7 @@
 <script type="text/javascript">
   <% autoescape false %>
   var selected_lists = {{#if params.values}}{{{ json_encode params.values }}}
-    {{else}}<%= default_list | json_encode %>{{/if}},
+    {{else}}{}{{/if}},
   available_lists = [
     <% for list in lists %>
       <%= list | json_encode %>,

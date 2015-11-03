@@ -14,13 +14,35 @@ class Form extends Model {
     ));
   }
 
-  function segments() {
-    return $this->has_many_through(
-      __NAMESPACE__.'\Segment',
-      __NAMESPACE__.'\FormSegment',
-      'form_id',
-      'segment_id'
+  function asArray() {
+    $model = parent::asArray();
+
+    $model['body'] = (
+      is_serialized($this->body)
+      ? unserialize($this->body)
+      : $this->body
     );
+    $model['settings'] = (
+      is_serialized($this->settings)
+      ? unserialize($this->settings)
+      : $this->settings
+    );
+
+    return $model;
+  }
+
+  function save() {
+    $this->set('body', (
+      is_serialized($this->body)
+      ? $this->body
+      : serialize($this->body)
+    ));
+    $this->set('settings', (
+      is_serialized($this->settings)
+      ? $this->settings
+      : serialize($this->settings)
+    ));
+    return parent::save();
   }
 
   static function search($orm, $search = '') {
@@ -57,10 +79,6 @@ class Form extends Model {
       $form = self::findOne((int)$data['id']);
     }
 
-    if(!empty($data['data'])) {
-      $data['data'] = json_encode($data['data']);
-    }
-
     if($form === false) {
       $form = self::create();
       $form->hydrate($data);
@@ -74,22 +92,6 @@ class Form extends Model {
       return $form;
     } catch(Exception $e) {
       return $form->getValidationErrors();
-    }
-    return false;
-  }
-
-  function duplicate($data = array()) {
-    $duplicate = parent::duplicate($data);
-
-    if($duplicate !== false) {
-      foreach($this->segments()->findResultSet() as $relation) {
-        $new_relation = FormSegment::create();
-        $new_relation->set('segment_id', $relation->id);
-        $new_relation->set('form_id', $duplicate->id);
-        $new_relation->save();
-      }
-
-      return $duplicate;
     }
     return false;
   }

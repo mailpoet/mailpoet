@@ -120,14 +120,12 @@ const FormList = React.createClass({
   createForm() {
     MailPoet.Ajax.post({
       endpoint: 'forms',
-      action: 'save',
-      data: {
-        name: "New form"
-      }
+      action: 'create'
     }).done(function(response) {
-      window.location =
-        'admin.php?page=mailpoet-form-editor&id='+ parseInt(response, 10);
-    })
+      if(response !== false) {
+        window.location = response;
+      }
+    });
   },
   renderItem(form, actions) {
     let row_classes = classNames(

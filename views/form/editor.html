@@ -42,7 +42,7 @@
             <div id="mailpoet_settings_list_selection">
               <!-- Form settings: list selection -->
               <p>
-              <strong><%= __('This form adds subscribers to these segments:') %></strong>
+              <strong><%= __('This form adds subscribers to these lists:') %></strong>
               </p>
               <select
                 id="mailpoet_form_segments"
@@ -58,7 +58,6 @@
 
             <div id="mailpoet_on_success">
               <!-- Form settings: after submit -->
-              <input type="hidden" name="on_success" value="message" />
               <p>
                 <label><strong><%= __('After submit...') %></strong></label>
                 <label>
@@ -66,7 +65,9 @@
                     type="radio"
                     name="on_success"
                     value="message"
-                    <% if(on_success == 'message') %>checked="checked"<% endif %>
+                    <% if(form.data.settings.on_success is empty or form.data.settings.on_success == 'message') %>
+                      checked="checked"
+                    <% endif %>
                   /><%= __('Show message') %>
                 </label>
                 &nbsp;
@@ -75,7 +76,9 @@
                     type="radio"
                     name="on_success"
                     value="page"
-                    <% if(on_success == 'page') %>checked="checked"<% endif %>
+                    <% if(form.data.settings.on_success == 'page') %>
+                      checked="checked"
+                    <% endif %>
                   /><%= __('Go to page') %>
                 </label>
               </p>
@@ -166,7 +169,14 @@
         <div>
           <textarea id="mailpoet_form_styles"><%= styles %></textarea>
         <br />
-        <p class="mailpoet_align_center"><a id="mailpoet_form_preview" href="javascript:;" class="button button-primary" style="width:100%;"><%= __('Preview') %></a></p>
+        <p class="mailpoet_align_center">
+          <a
+            id="mailpoet_form_preview"
+            href="javascript:;"
+            class="button button-primary"
+            style="width:100%;"
+          ><%= __('Preview') %></a>
+        </p>
       </div>
         </div>
 
@@ -236,7 +246,7 @@
           type: 'list',
           params: {
             label: "<%= __('Select list(s):') %>",
-            values: [ <%= default_list | json_encode | raw %> ] // default list
+            values: []
           },
           readonly: true
         },
@@ -335,7 +345,7 @@
       // on dom loaded
       $(function() {
         // load form
-        WysijaForm.load(<%= form.data | raw %>);
+        WysijaForm.load(<%= json_encode(form) | raw %>);
 
         // save form
         $('#mailpoet_form_save').on('click', function() {
@@ -350,26 +360,35 @@
         });
 
         function mailpoet_form_preview() {
-          console.log('TODO: form->preview');
-          /*
-          MailPoet.Modal.popup({
-            title: "<%= __('Form preview') %>",
-            template: $('#mailpoet_form_preview_template').html(),
-            data: response
-          });*/
+          MailPoet.Ajax.post({
+            endpoint: 'forms',
+            action: 'preview',
+            data: $('#mailpoet_form_id').val()
+          }).done(function(response) {
+            MailPoet.Modal.popup({
+              title: "<%= __('Form preview') %>",
+              template: $('#mailpoet_form_preview_template').html(),
+              data: response
+            });
+          })
         }
 
         mailpoet_form_export();
 
         function mailpoet_form_save(callback) {
+          var form = WysijaForm.save();
+          form.id = $('#mailpoet_form_id').val();
+
           MailPoet.Ajax.post({
             endpoint: 'forms',
             action: 'save_editor',
-            data: {
-              id: $('#mailpoet_form_id').val(),
-              form: WysijaForm.save()
-            }
+            data: form
           }).done(function(response) {
+            if(response === false) {
+              MailPoet.Notice.error("<%= __('An error occured, please reload the page and try again.') %>");
+              return;
+            }
+
             var message = null;
 
             if(response.is_widget === true) {
@@ -382,7 +401,7 @@
               MailPoet.Notice.hide();
               MailPoet.Notice.success(message, {
                 scroll: true,
-                static: true
+                static: (response.is_widget === false)
               });
             }
 
@@ -495,7 +514,7 @@
         });
 
         // toolbar: list selection
-        var selected_segments = <%= form.segments | json_encode | raw %>;
+        var selected_segments = <%= form.settings.segments | json_encode | raw %>;
         var selected_segments_ids = [];
         if(selected_segments !== null) {
           selected_segments_ids = selected_segments.map(function(segment) {
@@ -512,7 +531,7 @@
               return item.text;
             }
           }
-        }).select2('val', <%= form.segments | json_encode | raw %>);
+        }).select2('val', <%= form.settings.segments | json_encode | raw %>);
 
         // subscriber meta fields
         var meta_fields = [

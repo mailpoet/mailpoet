@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Config;
+use \MailPoet\Models\Subscriber;
 use \MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
@@ -14,11 +15,25 @@ class Widget {
     if(!is_admin()) {
       add_action('widgets_init', array($this, 'setupActions'));
       add_action('widgets_init', array($this, 'setupDependencies'));
+    } else {
+      add_action('widgets_init', array($this, 'setupAdminDependencies'));
     }
   }
 
   function registerWidget() {
     register_widget('\MailPoet\Form\Widget');
+
+    // subscribers count shortcode
+    add_shortcode('mailpoet_subscribers_count', array(
+      $this, 'getSubscribersCount'
+    ));
+    add_shortcode('wysija_subscribers_count', array(
+      $this, 'getSubscribersCount'
+    ));
+  }
+
+  function getSubscribersCount($params) {
+    return Subscriber::filter('subscribed')->count();
   }
 
   function setupDependencies() {
@@ -34,6 +49,21 @@ class Widget {
       'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false),
       'token' => Security::generateToken()
     ));
+  }
+
+  function setupAdminDependencies() {
+    wp_enqueue_script('mailpoet_vendor',
+      Env::$assets_url.'/js/vendor.js',
+      array(),
+      Env::$version,
+      true
+    );
+    wp_enqueue_script('mailpoet_admin',
+      Env::$assets_url.'/js/mailpoet.js',
+      array(),
+      Env::$version,
+      true
+    );
   }
 
   function setupActions() {

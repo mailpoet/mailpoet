@@ -51,9 +51,13 @@ class Handlebars extends \Twig_Extension {
 
     if($alias !== null) {
       $output[] = '<script type="text/javascript">';
-      $output[] = ' Handlebars.registerPartial(
-        "'.$alias.'",
-        jQuery("#'.$id.'").html());';
+      $output[] = 'jQuery(function($) {';
+        $output[] = '$(function() {';
+          $output[] = ' Handlebars.registerPartial(
+            "'.$alias.'",
+            jQuery("#'.$id.'").html());';
+          $output[] = '});';
+        $output[] = '});';
       $output[] = '</script>';
     }
     return join("\n", $output);
