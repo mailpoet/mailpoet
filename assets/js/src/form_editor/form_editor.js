@@ -296,7 +296,7 @@ var WysijaForm = {
       var settings_elements = $('mailpoet_form_settings').getElements();
       settings_elements.each(function(setting) {
         // skip lists
-        if(setting.name === 'lists') {
+        if(setting.name === 'segments') {
           return true;
         } else if(setting.name === 'on_success') {
           // if the input value is equal to the one stored in the settings
@@ -402,7 +402,7 @@ var WysijaForm = {
     });
 
     // hide list selection if a list widget has been dragged into the editor
-    $('mailpoet_settings_list_selection')[(($$('#' + WysijaForm.options.editor + ' [wysija_field="list"]').length > 0) === true) ? 'hide' : 'show']();
+    $('mailpoet_settings_segment_selection')[(($$('#' + WysijaForm.options.editor + ' [wysija_field="segment"]').length > 0) === true) ? 'hide' : 'show']();
   },
   setBlockPositions: function(event, target) {
     // release dragging lock
@@ -862,6 +862,18 @@ WysijaForm.Block.create = function(block, target) {
     template = Handlebars.compile($('form_template_' + block.type).innerHTML),
     output = '';
 
+  if(block.type === 'segment') {
+    if(block.params.values === undefined) {
+      var settings_segments = jQuery('#mailpoet_form_segments').val();
+      if(settings_segments.length > 0){
+        mailpoet_segments.filter(function(segment) {
+          return (settings_segments.indexOf(segment.id) !== -1);
+        });
+        block.params.values = mailpoet_segments;
+      }
+    }
+  }
+
   // set block template (depending on the block type)
   block.template = template(block);
   output = block_template(block);
@@ -873,13 +885,14 @@ WysijaForm.Block.create = function(block, target) {
   }
 
   // if the drop target was the bottom placeholder
+  var element = null;
   if(target.identify() === 'block_placeholder') {
     // insert block at the bottom
-    body.insert(output);
+    element = body.insert(output);
     //block = body.childElements().last();
   } else {
     // insert block before the drop target
-    target.insert({
+    element = target.insert({
       before: output
     });
     //block = target.previous('.mailpoet_form_block');

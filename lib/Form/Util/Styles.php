@@ -32,9 +32,14 @@ class Styles {
 .mailpoet_textarea,
 .mailpoet_select,
 .mailpoet_radio,
-.mailpoet_checkbox,
 .mailpoet_date {
   display:block;
+}
+
+.mailpoet_checkbox {
+  display:inline;
+  margin-right: 5px;
+  vertical-align:middle;
 }
 
 .mailpoet_validate_success {

@@ -79,6 +79,33 @@ class Form extends Model {
       $form = self::findOne((int)$data['id']);
     }
 
+    // check if the user gets to pick his own lists
+    // or if it's selected by the admin
+    $has_segment_selection = false;
+
+    if(!empty($body)) {
+      foreach ($body as $i => $block) {
+        if($block['type'] === 'segment') {
+          $has_segment_selection = true;
+          if(!empty($block['params']['values'])) {
+            $list_selection = array_map(function($segment) {
+              if(!empty($segment)) {
+                return (int)$segment['id'];
+              }
+            }, $block['params']['values']);
+          }
+          break;
+        }
+      }
+    }
+
+    // check list selectio
+    if($has_segment_selection === true) {
+      $settings['segments_selected_by'] = 'user';
+    } else {
+      $settings['segments_selected_by'] = 'admin';
+    }
+
     if($form === false) {
       $form = self::create();
       $form->hydrate($data);

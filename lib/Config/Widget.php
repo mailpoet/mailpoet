@@ -13,7 +13,7 @@ class Widget {
     add_action('widgets_init', array($this, 'registerWidget'));
 
     if(!is_admin()) {
-      add_action('widgets_init', array($this, 'setupActions'));
+      //$this->setupActions();
       add_action('widgets_init', array($this, 'setupDependencies'));
     } else {
       add_action('widgets_init', array($this, 'setupAdminDependencies'));
@@ -85,9 +85,9 @@ class Widget {
       'admin_post_mailpoet_form_subscribe',
       'mailpoet_form_subscribe'
     );
-    /*add_action(
+    add_action(
       'init',
       'mailpoet_form_subscribe'
-    );*/
+    );
   }
 }

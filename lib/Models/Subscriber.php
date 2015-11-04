@@ -168,17 +168,8 @@ class Subscriber extends Model {
       $subscriber->set($data);
     }
 
-    $saved = $subscriber->save();
-
-    if($saved === true) {
-      return true;
-    } else {
-      $errors = $subscriber->getValidationErrors();
-      if(!empty($errors)) {
-        return $errors;
-      }
-    }
-    return false;
+    $subscriber->save();
+    return $subscriber;
   }
 
   static function bulkMoveToList($orm, $data = array()) {

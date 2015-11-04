@@ -22,8 +22,8 @@ class Segment extends Base {
 
         $html .= '<label class="mailpoet_checkbox_label">';
         $html .= '<input type="checkbox" class="mailpoet_checkbox" ';
-        $html .= 'name="'.$field_name.'" ';
-        $html .= 'value="'.$segment['id'].'" '.$is_checked;
+        $html .= 'name="'.$field_name.'[]" ';
+        $html .= 'value="'.$segment['id'].'" '.$is_checked.' ';
         $html .= $field_validation;
         $html .= ' />'.$segment['name'];
         $html .= '</label>';
