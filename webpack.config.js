@@ -36,6 +36,10 @@ baseConfig = {
         loader: 'babel-loader'
       },
       {
+        test: /form_editor\.js$/,
+        loader: 'expose-loader?WysijaForm',
+      },
+      {
         include: require.resolve('codemirror'),
         loader: 'expose-loader?CodeMirror',
       },
@@ -82,7 +86,8 @@ config.push(_.extend({}, baseConfig, {
       'forms/forms.jsx',
       'settings/tabs.js'
     ],
-    form_editor_lib: [
+    form_editor: [
+      'form_editor/form_editor.js',
       'codemirror',
       'codemirror/mode/css/css'
     ],
