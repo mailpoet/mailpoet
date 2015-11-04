@@ -2,8 +2,9 @@ define([
     'newsletter_editor/App',
     'mailpoet',
     'backbone',
-    'backbone.marionette'
-  ], function(App, MailPoet, Backbone, Marionette) {
+    'backbone.marionette',
+    'jquery'
+  ], function(App, MailPoet, Backbone, Marionette, jQuery) {
 
   "use strict";
 
@@ -52,6 +53,34 @@ define([
     });
   };
 
+  Module.exportTemplate = function(options) {
+    if (!window.Blob || !window.URL) {
+      // TODO: Gracefully exit on incompatible browsers
+      console.log('Template export requires a browser with Blob and URL support.');
+      return;
+    }
+
+    var data = _.extend(options || {}, {
+      body: App.getBody(),
+    });
+
+    // Create a template file and force download it
+
+    var blob = new window.Blob([JSON.stringify(data)], { type: 'application/json' }),
+        url = window.URL.createObjectURL(blob),
+        anchor = document.createElement('a');
+
+    anchor.href = url;
+    anchor.download = 'template.json';
+    anchor.style.display = 'none';
+    document.body.appendChild(anchor);
+
+    anchor.click();
+
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(anchor);
+  };
+
   Module.SaveView = Marionette.LayoutView.extend({
     getTemplate: function() { return templates.save; },
     events: {
@@ -62,7 +91,8 @@ define([
       'click .mailpoet_save_template': 'toggleSaveAsTemplate',
       'click .mailpoet_save_as_template': 'saveAsTemplate',
       /* Export template */
-      'click .mailpoet_save_export': 'exportTemplate',
+      'click .mailpoet_save_export': 'toggleExportTemplate',
+      'click .mailpoet_export_template': 'exportTemplate',
     },
     initialize: function(options) {
       App.getChannel().on('beforeEditorSave', this.beforeSave, this);
@@ -117,12 +147,27 @@ define([
 
       this.hideOptionContents();
     },
+    toggleExportTemplate: function() {
+      this.$('.mailpoet_export_template_container').toggleClass('mailpoet_hidden');
+      this.toggleSaveOptions();
+    },
+    hideExportTemplate: function() {
+      this.$('.mailpoet_export_template_container').addClass('mailpoet_hidden');
+    },
     exportTemplate: function() {
-      console.log('Exporting template');
-      this.hideOptionContents();
+      var templateName = this.$('.mailpoet_export_template_name').val(),
+          templateDescription = this.$('.mailpoet_export_template_description').val();
+
+      console.log('Exporting template with ', templateName, templateDescription);
+      Module.exportTemplate({
+        name: templateName,
+        description: templateDescription,
+      });
+      this.hideExportTemplate();
     },
     hideOptionContents: function() {
       this.hideSaveAsTemplate();
+      this.hideExportTemplate();
       this.$('.mailpoet_save_options').addClass('mailpoet_hidden');
     },
     next: function() {
