@@ -200,69 +200,60 @@
   <script type="text/javascript">
     var mailpoet_segments = <%= json_encode(segments) %>;
 
+    var mailpoet_default_fields = [
+      {
+        id: 'divider',
+        name: "<%= __('Divider') %>",
+        type: 'divider',
+        multiple: true,
+        readonly: true
+      },
+      {
+        id: "first_name",
+        name: "<%= __('First name') %>",
+        type: 'input',
+        params: {
+          label: "<%= __('First name') %>"
+        },
+        readonly: true
+      },
+      {
+        id: "last_name",
+        name: "<%= __('Last name') %>",
+        type: 'input',
+        params: {
+          label: "<%= __('Last name') %>"
+        },
+        readonly: true
+      },
+      {
+        id: "segments",
+        name: "<%= __('List selection') %>",
+        type: 'segment',
+        params: {
+          label: "<%= __('Select list(s):') %>"
+        },
+        readonly: true
+      },
+      {
+        id: 'html',
+        name: "<%= __('Random text or HTML') %>",
+        type: 'html',
+        params: {
+            text: "<%= __('Subscribe to our newsletter and join our [mailpoet_subscribers_count] subscribers.') %>"
+        },
+        multiple: true,
+        readonly: true
+      }
+    ];
+
     jQuery(function($) {
-      // enable code mirror editor on styles textarea
-      MailPoet.CodeEditor = CodeMirror.fromTextArea(document.getElementById('mailpoet_form_styles'), {
-        lineNumbers: true,
-        tabMode: "indent",
-        matchBrackets: true,
-        theme: 'neo',
-        mode: 'css'
-      });
-
-      var default_fields = [
-        {
-          id: 'divider',
-          name: "<%= __('Divider') %>",
-          type: 'divider',
-          multiple: true,
-          readonly: true
-        },
-        {
-          id: "first_name",
-          name: "<%= __('First name') %>",
-          type: 'input',
-          params: {
-            label: "<%= __('First name') %>"
-          },
-          readonly: true
-        },
-        {
-          id: "last_name",
-          name: "<%= __('Last name') %>",
-          type: 'input',
-          params: {
-            label: "<%= __('Last name') %>"
-          },
-          readonly: true
-        },
-        {
-          id: "segments",
-          name: "<%= __('List selection') %>",
-          type: 'segment',
-          params: {
-            label: "<%= __('Select list(s):') %>"
-          },
-          readonly: true
-        },
-        {
-          id: 'html',
-          name: "<%= __('Random text or HTML') %>",
-          type: 'html',
-          params: {
-              text: "<%= __('Subscribe to our newsletter and join our [mailpoet_subscribers_count] subscribers.') %>"
-          },
-          multiple: true,
-          readonly: true
-        }
-      ];
-
       function mailpoet_form_fields() {
         // form editor: default fields
         var template = Handlebars.compile(jQuery('#form_template_fields').html());
 
         var data = {
-          fields: default_fields
+          fields: mailpoet_default_fields
         };
 
         return MailPoet.Ajax.post({
@@ -276,6 +267,16 @@
           jQuery('#mailpoet_toolbar_fields').html(template(data));
         });
       }
+      window.mailpoet_form_fields = mailpoet_form_fields;
+
+      // enable code mirror editor on styles textarea
+      MailPoet.CodeEditor = CodeMirror.fromTextArea(document.getElementById('mailpoet_form_styles'), {
+        lineNumbers: true,
+        tabMode: "indent",
+        matchBrackets: true,
+        theme: 'neo',
+        mode: 'css'
+      });
 
       // toolbar sections
       $(document).on('click', '.mailpoet_toolbar_section.closed', function() {
@@ -478,15 +479,26 @@
 
         // edit field
         $(document).on('click', '.mailpoet_form_field_edit', function() {
-          var field = $(this).data('field');
+          var id = $(this).data('id');
 
-          MailPoet.Modal.popup({
-            title: "<%= __('Edit field') %>",
-            template: $('#form_template_field_new').html(),
-            //url: mailpoet_api_url('subscriber_get_meta.php?field='+field),
-            onSuccess: function(data) {
+          MailPoet.Ajax.post({
+            endpoint: 'customFields',
+            action: 'get',
+            data: id
+          }).done(function(response) {
+            if(response !== false) {
+              MailPoet.Modal.popup({
+                title: "<%= __('Edit field') %>",
+                template: $('#form_template_field_new').html(),
+                data: response
+              });
+            }
+          });
+
+
+            /*onSuccess: function(data) {
               console.log('TODO: field->edit');
-              /*mailpoet_get_json('subscriber_get_meta.php', { field: data.field }, function(data) {
+              mailpoet_get_json('subscriber_get_meta.php', { field: data.field }, function(data) {
                 // update field in form
                 var block_id = $('.mailpoet_form_block[wysija_field="'+field+'"]');
                 if(block_id.length > 0) {
@@ -497,14 +509,13 @@
                 }
                 // toggle widgets
                 WysijaForm.toggleWidgets();
-              });*/
-            }
-          });
+              });
+            }*/
+
         });
 
         // delete field
         $(document).on('click', '.mailpoet_form_field_delete', function() {
-
           var id = $(this).data('id');
           var item = $(this).parent();
           var name = $(this).siblings('.mailpoet_form_field').attr('wysija_name');
@@ -577,9 +588,18 @@
   <%= partial('form_template_textarea', 'form/templates/blocks/textarea.hbs') %>
   <%= partial('form_template_html', 'form/templates/blocks/html.hbs') %>
   <%= partial('form_template_date', 'form/templates/blocks/date.hbs') %>
-  <%= partial('form_template_date_years', 'form/templates/blocks/date_years.hbs') %>
-  <%= partial('form_template_date_months', 'form/templates/blocks/date_months.hbs') %>
-  <%= partial('form_template_date_days', 'form/templates/blocks/date_days.hbs') %>
+  <%= partial('form_template_date_years',
+    'form/templates/blocks/date_years.hbs',
+    '_settings_date_years'
+  ) %>
+  <%= partial('form_template_date_months',
+    'form/templates/blocks/date_months.hbs',
+    '_settings_date_months'
+  ) %>
+  <%= partial('form_template_date_days',
+    'form/templates/blocks/date_days.hbs',
+    '_settings_date_days'
+  ) %>
 
   <!-- field settings -->
   <%= partial('form_template_field_settings', 'form/templates/settings/field.hbs') %>

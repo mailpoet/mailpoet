@@ -45,4 +45,33 @@ class CustomField extends Model {
       'subscriber_id'
     )->select_expr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.value');
   }
+
+  static function createOrUpdate($data = array()) {
+    $custom_field = false;
+
+    if(isset($data['id']) && (int)$data['id'] > 0) {
+      $custom_field = self::findOne((int)$data['id']);
+    }
+
+    // set name as label by default
+    if(empty($data['params']['label'])) {
+      $data['params']['label'] = $data['name'];
+    }
+
+    if($custom_field === false) {
+      $custom_field = self::create();
+      $custom_field->hydrate($data);
+    } else {
+      unset($data['id']);
+      $custom_field->set($data);
+    }
+
+    try {
+      $custom_field->save();
+      return $custom_field;
+    } catch(Exception $e) {
+      return $custom_field->getValidationErrors();
+    }
+    return false;
+  }
 }
