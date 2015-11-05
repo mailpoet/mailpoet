@@ -85,8 +85,7 @@ class Date extends Base {
     );
 
     // is default today
-    if(isset($block['params']['is_default_today'])
-    && (bool)$block['params']['is_default_today'] === true) {
+    if(!empty($block['params']['is_default_today'])) {
       $defaults['selected'] = (int)strftime('%m');
     }
 
@@ -113,8 +112,7 @@ class Date extends Base {
       'to' => (int)strftime('%Y')
     );
     // is default today
-    if(isset($block['params']['is_default_today'])
-    && (bool)$block['params']['is_default_today'] === true) {
+    if(!empty($block['params']['is_default_today'])) {
       $defaults['selected'] = (int)strftime('%Y');
     }
 
@@ -137,8 +135,7 @@ class Date extends Base {
       'selected' => null
     );
     // is default today
-    if(isset($block['params']['is_default_today'])
-    && (bool)$block['params']['is_default_today'] === true) {
+    if(!empty($block['params']['is_default_today'])) {
       $defaults['selected'] = (int)strftime('%d');
     }
 

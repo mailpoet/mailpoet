@@ -30,7 +30,7 @@ class Radio extends Base {
                 ? 'checked="checked"' : '';
       $html .= $field_validation;
 
-      $html .= ' />'.$option['value'];
+      $html .= ' />&nbsp;'.$option['value'];
 
       $html .= '</label>';
     }

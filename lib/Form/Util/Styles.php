@@ -21,8 +21,8 @@ class Styles {
 .mailpoet_textarea_label,
 .mailpoet_select_label,
 .mailpoet_radio_label,
-.mailpoet_list_label,
 .mailpoet_checkbox_label,
+.mailpoet_list_label,
 .mailpoet_date_label {
   display:block;
 }
@@ -31,7 +31,6 @@ class Styles {
 .mailpoet_input,
 .mailpoet_textarea,
 .mailpoet_select,
-.mailpoet_radio,
 .mailpoet_date {
   display:block;
 }

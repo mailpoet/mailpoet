@@ -270,26 +270,31 @@
       window.mailpoet_form_fields = mailpoet_form_fields;
 
       // enable code mirror editor on styles textarea
-      MailPoet.CodeEditor = CodeMirror.fromTextArea(document.getElementById('mailpoet_form_styles'), {
-        lineNumbers: true,
-        tabMode: "indent",
-        matchBrackets: true,
-        theme: 'neo',
-        mode: 'css'
-      });
+      MailPoet.CodeEditor = CodeMirror.fromTextArea(
+        document.getElementById('mailpoet_form_styles'),
+        {
+          lineNumbers: true,
+          tabMode: "indent",
+          matchBrackets: true,
+          theme: 'neo',
+          mode: 'css'
+        }
+      );
 
       // toolbar sections
       $(document).on('click', '.mailpoet_toolbar_section.closed', function() {
           // close currently opened section
           $('.mailpoet_toolbar_section:not(.closed)').addClass('closed');
           // open selected section after a mini delay
-          setTimeout(function() { $(this).removeClass('closed'); }.bind(this), 250);
+          setTimeout(function() {
+            $(this).removeClass('closed');
+          }.bind(this), 250);
           return false;
       });
 
       // toolbar: open default section
-       // TODO: data-section="settings"
-      $('.mailpoet_toolbar_section[data-section="fields"]').removeClass('closed');
+      $('.mailpoet_toolbar_section[data-section="settings"]')
+        .removeClass('closed');
 
       // form: edit name (in place editor)
       $('#mailpoet_form_edit_name').on('click', function() {
@@ -305,11 +310,14 @@
       })
 
       function mailpoet_edit_form_name() {
-        var is_editing = $('#mailpoet_form_name').data('mailpoet_editing') || false;
+        var is_editing = $('#mailpoet_form_name')
+          .data('mailpoet_editing') || false;
 
         if(!is_editing) {
           // set input value and show
-          $('#mailpoet_form_name_input').val($('#mailpoet_form_name').text()).show();
+          $('#mailpoet_form_name_input')
+            .val($('#mailpoet_form_name').text())
+            .show();
 
           // set editing mode
           $('#mailpoet_form_name').data('mailpoet_editing', true);
@@ -402,8 +410,10 @@
             data: form
           }).done(function(response) {
             if(response === false) {
-              MailPoet.Notice.error("<%= __('An error occured, please reload the page and try again.') %>");
-              return;
+              MailPoet.Notice.error(
+                "<%= __('An error occured, please reload the page and try again.') %>"
+              );
+              return false;
             }
 
             var message = null;
@@ -494,24 +504,6 @@
               });
             }
           });
-
-
-            /*onSuccess: function(data) {
-              console.log('TODO: field->edit');
-              mailpoet_get_json('subscriber_get_meta.php', { field: data.field }, function(data) {
-                // update field in form
-                var block_id = $('.mailpoet_form_block[wysija_field="'+field+'"]');
-                if(block_id.length > 0) {
-                  // redraw block
-                  WysijaForm.get(block_id[0]).block.redraw(data);
-                  // save form
-                  mailpoet_form_save();
-                }
-                // toggle widgets
-                WysijaForm.toggleWidgets();
-              });
-            }*/
-
         });
 
         // delete field
@@ -587,7 +579,6 @@
   <%= partial('form_template_checkbox', 'form/templates/blocks/checkbox.hbs') %>
   <%= partial('form_template_textarea', 'form/templates/blocks/textarea.hbs') %>
   <%= partial('form_template_html', 'form/templates/blocks/html.hbs') %>
-  <%= partial('form_template_date', 'form/templates/blocks/date.hbs') %>
   <%= partial('form_template_date_years',
     'form/templates/blocks/date_years.hbs',
     '_settings_date_years'
@@ -600,19 +591,42 @@
     'form/templates/blocks/date_days.hbs',
     '_settings_date_days'
   ) %>
+  <%= partial('form_template_date', 'form/templates/blocks/date.hbs') %>
 
   <!-- field settings -->
   <%= partial('form_template_field_settings', 'form/templates/settings/field.hbs') %>
 
-  <%= partial('field_settings_label', 'form/templates/settings/label.hbs', '_settings_label') %>
-  <%= partial('field_settings_label_within', 'form/templates/settings/label_within.hbs', '_settings_label_within') %>
-  <%= partial('field_settings_required', 'form/templates/settings/required.hbs', '_settings_required') %>
-  <%= partial('field_settings_validate', 'form/templates/settings/validate.hbs', '_settings_validate') %>
-  <%= partial('field_settings_values', 'form/templates/settings/values.hbs', '_settings_values') %>
-  <%= partial('field_settings_date_default', 'form/templates/settings/date_default.hbs', '_settings_date_default') %>
-  <%= partial('field_settings_submit', 'form/templates/settings/submit.hbs', '_settings_submit') %>
+  <%= partial('field_settings_label',
+    'form/templates/settings/label.hbs',
+    '_settings_label'
+  ) %>
+  <%= partial('field_settings_label_within',
+    'form/templates/settings/label_within.hbs',
+    '_settings_label_within'
+  ) %>
+  <%= partial('field_settings_required',
+    'form/templates/settings/required.hbs',
+    '_settings_required'
+  ) %>
+  <%= partial('field_settings_validate',
+    'form/templates/settings/validate.hbs',
+    '_settings_validate'
+  ) %>
+  <%= partial('field_settings_values',
+    'form/templates/settings/values.hbs',
+    '_settings_values'
+  ) %>
+  <%= partial('field_settings_date_default',
+    'form/templates/settings/date_default.hbs',
+    '_settings_date_default'
+  ) %>
+  <%= partial('field_settings_submit',
+    'form/templates/settings/submit.hbs',
+    '_settings_submit'
+  ) %>
 
-  <%= partial('field_settings_values_item', 'form/templates/settings/values_item.hbs') %>
+  <%= partial('field_settings_values_item',
+  'form/templates/settings/values_item.hbs') %>
   <%= partial(
     'field_settings_date_format',
     'form/templates/settings/date_formats.hbs',
@@ -623,14 +637,23 @@
     'form/templates/settings/date_types.hbs',
     '_settings_date_type'
   ) %>
-  <%= partial('field_settings_segment_selection_item', 'form/templates/settings/segment_selection_item.hbs') %>
-  <%= partial('field_settings_segment_selection', 'form/templates/settings/segment_selection.hbs', '_settings_segment_selection') %>
+  <%= partial('field_settings_segment_selection_item',
+    'form/templates/settings/segment_selection_item.hbs'
+  ) %>
+  <%= partial('field_settings_segment_selection',
+    'form/templates/settings/segment_selection.hbs',
+    '_settings_segment_selection'
+  ) %>
 
   <!-- custom field: new -->
-  <%= partial('form_template_field_new', 'form/templates/settings/field_new.hbs') %>
+  <%= partial('form_template_field_new',
+    'form/templates/settings/field_new.hbs'
+  ) %>
 
   <!-- form preview -->
-  <%= partial('mailpoet_form_preview_template', 'form/templates/preview.hbs') %>
+  <%= partial('mailpoet_form_preview_template',
+    'form/templates/preview.hbs'
+  ) %>
 
   <!-- field settings depending on field type -->
   <script id="form_template_field_input" type="text/x-handlebars-template">
