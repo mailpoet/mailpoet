@@ -34,7 +34,11 @@ class Forms {
     // fetch segments relations for each returned item
     foreach($listing_data['items'] as &$item) {
       // form's segments
-      $form_settings = unserialize($item['settings']);
+      $form_settings = (
+        (is_serialized($item['settings']))
+        ? unserialize($item['settings'])
+        : array()
+      );
 
       $item['segments'] = (
         !empty($form_settings['segments'])
@@ -128,7 +132,7 @@ class Forms {
     }
   }
 
-  function save_editor($data = array()) {
+  function saveEditor($data = array()) {
     $form_id = (isset($data['id']) ? (int)$data['id'] : 0);
     $body = (isset($data['body']) ? $data['body'] : array());
     $settings = (isset($data['settings']) ? $data['settings'] : array());
@@ -148,6 +152,31 @@ class Forms {
             break;
           }
         }
+      }
+
+      // check if the user gets to pick his own lists
+      // or if it's selected by the admin
+      $has_segment_selection = false;
+
+      foreach ($body as $i => $block) {
+        if($block['type'] === 'segment') {
+          $has_segment_selection = true;
+          if(!empty($block['params']['values'])) {
+            $list_selection = array_map(function($segment) {
+              if(!empty($segment)) {
+                return (int)$segment['id'];
+              }
+            }, $block['params']['values']);
+          }
+          break;
+        }
+      }
+
+      // check list selectio
+      if($has_segment_selection === true) {
+        $settings['segments_selected_by'] = 'user';
+      } else {
+        $settings['segments_selected_by'] = 'admin';
       }
     }
 
@@ -213,7 +242,7 @@ class Forms {
     wp_send_json($result);
   }
 
-  function item_action($data = array()) {
+  function itemAction($data = array()) {
     $item_action = new Listing\ItemAction(
       '\MailPoet\Models\Form',
       $data
@@ -222,7 +251,7 @@ class Forms {
     wp_send_json($item_action->apply());
   }
 
-  function bulk_action($data = array()) {
+  function bulkAction($data = array()) {
     $bulk_action = new Listing\BulkAction(
       '\MailPoet\Models\Form',
       $data

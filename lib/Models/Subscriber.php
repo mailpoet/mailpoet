@@ -117,6 +117,8 @@ class Subscriber extends Model {
   static function groupBy($orm, $group = null) {
     if($group === 'trash') {
       return $orm->whereNotNull('deleted_at');
+    } else if($group === 'all') {
+      return $orm->whereNull('deleted_at');
     } else {
       return $orm->filter($group);
     }
@@ -158,13 +160,13 @@ class Subscriber extends Model {
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
       $subscriber = self::findOne((int)$data['id']);
+      unset($data['id']);
     }
 
     if($subscriber === false) {
       $subscriber = self::create();
       $subscriber->hydrate($data);
     } else {
-      unset($data['id']);
       $subscriber->set($data);
     }
 

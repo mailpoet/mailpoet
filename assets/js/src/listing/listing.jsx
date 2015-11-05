@@ -505,7 +505,7 @@ define(
 
         MailPoet.Ajax.post({
           endpoint: this.props.endpoint,
-          action: 'bulk_action',
+          action: 'bulkAction',
           data: data
         }).done(function(response) {
           this.getItems();

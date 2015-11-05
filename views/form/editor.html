@@ -225,7 +225,7 @@
         },
         {
           name: "<%= __('First name') %>",
-          field: 'firstname',
+          field: 'first_name',
           type: 'input',
           params: {
             label: "<%= __('First name') %>"
@@ -234,7 +234,7 @@
         },
         {
           name: "<%= __('Last name') %>",
-          field: 'lastname',
+          field: 'last_name',
           type: 'input',
           params: {
             label: "<%= __('Last name') %>"
@@ -272,7 +272,7 @@
       });
 
       // toolbar: open default section
-      $('.mailpoet_toolbar_section[data-section="fields"]').removeClass('closed');
+      $('.mailpoet_toolbar_section[data-section="shortcodes"]').removeClass('closed');
 
       // form: edit name (in place editor)
       $('#mailpoet_form_edit_name').on('click', function() {
@@ -381,7 +381,7 @@
 
           MailPoet.Ajax.post({
             endpoint: 'forms',
-            action: 'save_editor',
+            action: 'saveEditor',
             data: form
           }).done(function(response) {
             if(response === false) {
@@ -425,9 +425,17 @@
           $('#mailpoet_on_success_'+value).show();
         }
 
-        function mailpoet_form_export(exports) {
+        function mailpoet_form_export() {
           var template = Handlebars.compile($('#form_template_exports').html());
-          $('#mailpoet_form_export').html(template({ exports: exports }));
+          MailPoet.Ajax.post({
+            endpoint: 'forms',
+            action: 'getExports',
+            data: $('#mailpoet_form_id').val()
+          }).done(function(response) {
+            if(response !== false) {
+              $('#mailpoet_form_export').html(template({ exports: response }));
+            }
+          });
         }
 
         $(document).on('click', '.mailpoet_form_export_toggle', function() {

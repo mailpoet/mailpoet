@@ -128,16 +128,7 @@ class Segments {
     wp_send_json($result);
   }
 
-  function item_action($data = array()) {
-    $item_action = new Listing\ItemAction(
-      '\MailPoet\Models\Segment',
-      $data
-    );
-
-    wp_send_json($item_action->apply());
-  }
-
-  function bulk_action($data = array()) {
+  function bulkAction($data = array()) {
     $bulk_action = new Listing\BulkAction(
       '\MailPoet\Models\Segment',
       $data

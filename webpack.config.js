@@ -146,7 +146,12 @@ config.push(_.extend({}, baseConfig, {
 config.push(_.extend({}, baseConfig, {
   name: 'public',
   entry: {
-    public: ['mailpoet', 'ajax', 'public.js']
+    public: [
+      'mailpoet',
+      'ajax',
+      'jquery.serialize_object',
+      'public.js'
+    ]
   },
   externals: {
     'jquery': 'jQuery'

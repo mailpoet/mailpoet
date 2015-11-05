@@ -8,31 +8,12 @@ define('public', ['mailpoet', 'jquery', 'jquery-validation'],
       return (window.location.hostname === link.hostname);
     }
 
-    function formatData(raw) {
-      var data = {};
-
-      $.each(raw, function(index, value) {
-        if(value.name.endsWith('[]')) {
-          var value_name = value.name.substr(0, value.name.length - 2);
-          // it's an array
-          if(data[value_name] === undefined) {
-            data[value_name] = [];
-          }
-            data[value_name].push(value.value);
-        } else {
-          data[value.name] = value.value;
-        }
-      });
-
-      return data;
-    }
-
     $(function() {
       // setup form validation
       $('form.mailpoet_form').each(function() {
         $(this).validate({
           submitHandler: function(form) {
-            var data = $(form).serializeArray() || {};
+            var data = $(form).serializeObject() || {};
 
             // clear messages
             $(form).find('.mailpoet_message').html('');
@@ -47,12 +28,12 @@ define('public', ['mailpoet', 'jquery', 'jquery-validation'],
                 url: MailPoetForm.ajax_url,
                 token: MailPoetForm.token,
                 endpoint: 'subscribers',
-                action: 'save',
-                data: formatData(data),
+                action: 'subscribe',
+                data: data,
                 onSuccess: function(response) {
-                  if(response !== true) {
+                  if(response.result !== true) {
                     // errors
-                    $.each(response, function(index, error) {
+                    $.each(response.errors, function(index, error) {
                       $(form)
                         .find('.mailpoet_message')
                         .append('<p class="mailpoet_validate_error">'+

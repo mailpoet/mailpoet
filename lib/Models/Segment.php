@@ -109,16 +109,7 @@ class Segment extends Model {
       $segment->set($data);
     }
 
-    $saved = $segment->save();
-
-    if($saved === true) {
-      return true;
-    } else {
-      $errors = $segment->getValidationErrors();
-      if(!empty($errors)) {
-        return $errors;
-      }
-    }
-    return false;
+    $segment->save();
+    return $segment;
   }
 }

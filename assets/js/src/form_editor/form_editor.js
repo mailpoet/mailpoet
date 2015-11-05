@@ -402,7 +402,10 @@ var WysijaForm = {
     });
 
     // hide list selection if a list widget has been dragged into the editor
-    $('mailpoet_settings_segment_selection')[(($$('#' + WysijaForm.options.editor + ' [wysija_field="segment"]').length > 0) === true) ? 'hide' : 'show']();
+    $('mailpoet_settings_segment_selection')[
+      (($$('#' + WysijaForm.options.editor + ' [wysija_field="segments"]').length > 0) === true)
+      ? 'hide' : 'show'
+    ]();
   },
   setBlockPositions: function(event, target) {
     // release dragging lock
@@ -865,11 +868,10 @@ WysijaForm.Block.create = function(block, target) {
   if(block.type === 'segment') {
     if(block.params.values === undefined) {
       var settings_segments = jQuery('#mailpoet_form_segments').val();
-      if(settings_segments.length > 0){
-        mailpoet_segments.filter(function(segment) {
+      if(settings_segments !== null && settings_segments.length > 0){
+        block.params.values = mailpoet_segments.filter(function(segment) {
           return (settings_segments.indexOf(segment.id) !== -1);
         });
-        block.params.values = mailpoet_segments;
       }
     }
   }

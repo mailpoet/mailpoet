@@ -11,22 +11,28 @@ if(!defined('ABSPATH')) exit;
 
 class Widget extends \WP_Widget {
   function __construct () {
-    add_action(
-      'wp_ajax_mailpoet_form_subscribe',
-      array($this, 'subscribe')
-    );
-    add_action(
-      'wp_ajax_nopriv_mailpoet_form_subscribe',
-      array($this, 'subscribe')
-    );
-    add_action(
-      'admin_post_nopriv_mailpoet_form_subscribe',
-      array($this, 'subscribe')
-    );
-    add_action(
-      'admin_post_mailpoet_form_subscribe',
-      array($this, 'subscribe')
-    );
+    // add_action(
+    //   'wp_ajax_mailpoet_form_subscribe',
+    //   array($this, 'subscribe')
+    // );
+    // add_action(
+    //   'wp_ajax_nopriv_mailpoet_form_subscribe',
+    //   array($this, 'subscribe')
+    // );
+    // add_action(
+    //   'admin_post_nopriv_mailpoet_form_subscribe',
+    //   array($this, 'subscribe')
+    // );
+    // add_action(
+    //   'admin_post_mailpoet_form_subscribe',
+    //   array($this, 'subscribe')
+    // );
+
+    // add_action(
+    //   'init',
+    //   array($this, 'subscribe')
+    // );
+
     return parent::__construct(
       'mailpoet_form',
       __("MailPoet Subscription Form"),
@@ -190,249 +196,6 @@ class Widget extends \WP_Widget {
       }
     }
   }
-
-  static function subscribe() {
-    // check to see if we're in an ajax request or post request
-    $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
-
-    if(isset($_GET['action']) && $_GET['action'] === 'mailpoet_form_subscribe') {
-      // input data
-      $data = array();
-
-      // output errors
-      $errors = array();
-
-      // get posted data
-      // ajax data
-      $data = json_decode(file_get_contents('php://input'), true);
-      // -or- post data
-      if($data === NULL && !empty($_POST)) { $data = $_POST; }
-
-      // create or update subscriber
-      $subscriber = Subscriber::where('email', $data['email'])->findOne();
-
-      // is signup confirmation enabled?
-      $signup_confirmation = Setting::getValue('signup_confirmation');
-      if($subscriber === false) {
-        // create new subscriber
-        $data['status'] = (
-          ($signup_confirmation['enabled'] === true)
-          ? 'unconfirmed' : 'subscribed'
-        );
-
-        // // set custom fields
-        // $meta_fields = $mailpoet->getOption('mailpoet_subscriber_meta', array());
-        // if(!empty($meta_fields)) {
-        //   // loop through data to see if any meta field has been passed
-        //   foreach($meta_fields as $field => $field_data) {
-        //     // check if it's a mandatory field
-        //     $is_required = (isset($field_data['params']['required']) && (bool)$field_data['params']['required'] === true);
-
-        //     if(array_key_exists($field, $data)) {
-        //       // check if it's a mandatory field
-        //       if($is_required === true && empty($data[$field])) {
-        //         // if it's missing, throw an error
-        //         $errors[] = sprintf(__('&quot;%s&quot; is required'), $field_data['name']);
-        //       } else {
-        //         // assign field to subscriber
-        //         $subscriber[$field] = $data[$field];
-        //       }
-        //     }
-        //   }
-        // }
-
-        if(empty($errors)) {
-          // insert new subscriber
-          $subscriber = Subscriber::createOrUpdate($data);
-          if($subscriber === false || !$subscriber->id()) {
-            $errors = array_merge($errors, $subscriber->getValidationErrors());
-          }
-        }
-      } else {
-        // restore deleted subscriber
-        if($subscriber->deleted_at !== NULL) {
-          // reset subscriber state (depends whether signup confirmation is enabled)
-          $subscriber
-            ->set('status', array(
-              ($signup_confirmation['enabled'] === true)
-              ? 'unconfirmed' : 'subscribed'
-            ))
-            ->setExpr('deleted_at', 'NULL');
-
-
-          if(!$subscriber->save()) {
-            $errors[] = __('An error occurred. Please try again later.');
-          }
-        }
-      }
-
-      // check if form id has been passed
-      if(isset($data['form']) && (int)$data['form'] > 0) {
-        // get form id
-        $form_id = (int)$data['form'];
-        // get form
-        $form = Form::findOne($form_id);
-
-        if($form === false || !$form->id()) {
-          $errors[] = __('This form does not exist. Please check your forms.');
-        } else {
-          // set subscriptions
-          if(empty($data['segments'])) {
-            $errors[] = __('You need to select a list');
-          } else {
-            // get segments
-            $segments = Segment::whereIn('id', $data['segments'])->findMany();
-            $segments_subscribed = array();
-            foreach($segments as $segment) {
-              if($segment->addSubscriber($subscriber->id())) {
-                $segments_subscribed[] = $segment->id;
-              }
-            }
-
-            // if signup confirmation is enabled and the subscriber is unconfirmed
-            if($signup_confirmation['enabled'] === true
-              && !empty($segments_subscribed)
-              && $subscriber->status !== 'subscribed'
-            ) {
-              // TODO: send confirmation email
-              // resend confirmation email
-              $is_sent = static::sendSignupConfirmation(
-                $subscriber->asArray(),
-                $segments->asArray()
-              );
-
-              // error message if the email could not be sent
-              if($is_sent === false) {
-                $errors[] = __('The signup confirmation email could not be sent. Please check your settings.');
-              }
-            }
-          }
-        }
-
-        // get success message to display after subscription
-        $form_settings = (
-          isset($form->settings)
-          ? unserialize($form->settings) : null
-        );
-
-        if($subscriber !== null && empty($errors)) {
-          $success = true;
-          $message = $form_settings['success_message'];
-        } else {
-          $success = false;
-          $message = join('<br />', $errors);
-        }
-
-        if($form_settings !== null) {
-
-          // url params for non ajax requests
-          if($doing_ajax === false) {
-            // get referer
-            $referer = (wp_get_referer() !== false) ? wp_get_referer() : $_SERVER['HTTP_REFERER'];
-
-            // redirection parameters
-            $params = array(
-              'mailpoet_form' => (int)$data['form']
-            );
-
-            // handle success/error messages
-            if($success === false) {
-              $params['mailpoet_error'] = urlencode($message);
-            } else {
-              $params['mailpoet_success'] = urlencode($message);
-            }
-          }
-
-          switch ($form_settings['on_success']) {
-            case 'page':
-              // response depending on context
-              if($doing_ajax === true) {
-                echo json_encode(array(
-                  'success' => $success,
-                  'page' => get_permalink($form_settings['success_page']),
-                  'message' => $message
-                ));
-              } else {
-                $redirect_to = ($success === false) ? $referer : get_permalink($form_settings['success_page']);
-                wp_redirect(add_query_arg($params, $redirect_to));
-              }
-            break;
-
-            case 'message':
-            default:
-              // response depending on context
-              if($doing_ajax === true) {
-                echo json_encode(array(
-                  'success' => $success,
-                  'message' => $message
-                ));
-              } else {
-                // redirect to previous page
-                wp_redirect(add_query_arg($params, $referer));
-              }
-            break;
-          }
-        }
-      }
-      exit();
-    }
-  }
-
-  static function sendSignupConfirmation(array $subscriber, array $segments) {
-    print "<pre>";
-    print_r($subscriber);
-    print_r($segments);
-    print "</pre>";
-    //$mailer = new MailPoetMailer($mailpoet->settings()->getAll());
-    $signup_confirmation = Setting::getValue('signup_confirmation');
-
-    $body = (
-      !empty($signup_confirmation['body'])
-      ? $signup_confirmation['body'] : ''
-    );
-
-    // check for lists_to_confirm tag
-    if(strpos($body, '[lists_to_confirm]') !== FALSE) {
-      // gather all names from lists
-      $segment_names = array_map(function($segment) { return $segment['list_name']; }, $segments);
-      // replace shortcode by list names in email's body
-      $body = str_replace('[lists_to_confirm]', join(', ', $segment_names), $body);
-    }
-
-    // check for activation_link tags
-    if(strpos($body, '[activation_link]') !== FALSE && strpos($body, '[/activation_link]') !== FALSE) {
-      // get confirmation page id
-      $confirmation_page_id = $mailpoet->settings()->get('signup_confirmation_page');
-
-      // generate confirmation link
-      $confirmation_link = add_query_arg(array(
-        'mailpoet_key' => $subscriber['subscriber_digest']
-      ), get_permalink($confirmation_page_id));
-
-      // we have both tags
-      $body = str_replace(
-        array('[activation_link]', '[/activation_link]'),
-        array('<a href="'.$confirmation_link.'">', '</a>'),
-        $body
-      );
-    } else {
-      // no activation link tags detected
-      // TODO...
-    }
-
-    // send confirmation email
-    return $mailer->send(array(
-      'from_email'  => $mailpoet->settings()->get('signup_confirmation_from_email'),
-      'from_name'   => $mailpoet->settings()->get('signup_confirmation_from_name'),
-      'reply_email' => $mailpoet->settings()->get('signup_confirmation_reply_email'),
-      'reply_name'  => $mailpoet->settings()->get('signup_confirmation_reply_name'),
-      'subject'   => $signup_confirmation['subject'],
-      'html'      => nl2br($signup_confirmation['body']),
-//      'text'      => '',
-      'to_email'    => $subscriber['subscriber_email'],
-      'to_name'   => $subscriber['subscriber_email'],
-    ));
-  }
 }
 
 // mailpoet shortcodes
@@ -452,13 +215,6 @@ function mailpoet_form_shortcode($params = array()) {
     ));
     }
 }
-
-/*
-add_action(
-  'init',
-  array(__NAMESPACE__.'\Widget', 'subscribe')
-);
-*/
 
 // set the content filter to replace the shortcode
 if(isset($_GET['mailpoet_page']) && strlen(trim($_GET['mailpoet_page'])) > 0) {

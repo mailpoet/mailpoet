@@ -15,7 +15,7 @@
     >
       <div class="mailpoet_message"></div>
 
-      <input type="hidden" name="form" value="<%= form.id %>" />
+      <input type="hidden" name="form_id" value="<%= form.id %>" />
 
       <% if not(settings.segments_selected_by == 'user') %>
         <input type="hidden" name="segments" value="<%= settings.segments | join(',') %>" />
