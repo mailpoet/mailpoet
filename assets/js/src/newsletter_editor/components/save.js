@@ -1,12 +1,13 @@
 define([
     'newsletter_editor/App',
     'mailpoet',
+    'notice',
     'backbone',
     'backbone.marionette',
     'jquery',
     'blob',
     'filesaver'
-  ], function(App, MailPoet, Backbone, Marionette, jQuery, Blob, FileSaver) {
+  ], function(App, MailPoet, Notice, Backbone, Marionette, jQuery, Blob, FileSaver) {
 
   "use strict";
 
@@ -144,12 +145,18 @@ define([
       var templateName = this.$('.mailpoet_export_template_name').val(),
           templateDescription = this.$('.mailpoet_export_template_description').val();
 
-      console.log('Exporting template with ', templateName, templateDescription);
-      Module.exportTemplate({
-        name: templateName,
-        description: templateDescription,
-      });
-      this.hideExportTemplate();
+      if (templateName === '') {
+        MailPoet.Notice.error(App.getConfig().get('translations.templateNameMissing'));
+      } else if (templateDescription === '') {
+        MailPoet.Notice.error(App.getConfig().get('translations.templateDescriptionMissing'));
+      } else {
+        console.log('Exporting template with ', templateName, templateDescription);
+        Module.exportTemplate({
+          name: templateName,
+          description: templateDescription,
+        });
+        this.hideExportTemplate();
+      }
     },
     hideOptionContents: function() {
       this.hideSaveAsTemplate();
