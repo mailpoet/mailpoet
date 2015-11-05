@@ -61,9 +61,9 @@ class Forms {
       'name' => __('New form'),
       'body' => array(
         array(
+          'id' => 'email',
           'name' => __('Email'),
           'type' => 'input',
-          'field' => 'email',
           'static' => true,
           'params' => array(
             'label' => __('Email'),
@@ -71,9 +71,9 @@ class Forms {
           )
         ),
         array(
+          'id' => 'submit',
           'name' => __('Submit'),
           'type' => 'submit',
-          'field' => 'submit',
           'static' => true,
           'params' => array(
             'label' => __('Subscribe!')
@@ -109,27 +109,32 @@ class Forms {
     }
   }
 
-  function preview($id) {
+  function previewEditor($data = array()) {
+    // html
+    $html = FormRenderer::renderHTML($data);
+
+    // convert shortcodes
+    $html = do_shortcode($html);
+
+    // styles
+    $css = new Util\Styles(FormRenderer::getStyles($data));
+
+    wp_send_json(array(
+      'html' => $html,
+      'css' => $css->render()
+    ));
+  }
+
+  function exportsEditor($id) {
+    $exports = false;
+
     $form = Form::findOne($id);
-    if($form === false) {
-      wp_send_json(false);
-    } else {
-      $form = $form->asArray();
 
-      // html
-      $html = FormRenderer::renderHTML($form);
-
-      // convert shortcodes
-      $html = do_shortcode($html);
-
-      // styles
-      $css = new Util\Styles(FormRenderer::getStyles($form));
-
-      wp_send_json(array(
-        'html' => $html,
-        'css' => $css->render()
-      ));
+    if($form !== false) {
+      $exports = Util\Export::getAll($form->asArray());
     }
+
+    wp_send_json($exports);
   }
 
   function saveEditor($data = array()) {
@@ -192,7 +197,7 @@ class Forms {
       'result' => ($form !== false),
       'is_widget' => $is_widget
     ));
-}
+  }
 
   function restore($id) {
     $result = false;
@@ -240,15 +245,6 @@ class Forms {
     }
 
     wp_send_json($result);
-  }
-
-  function itemAction($data = array()) {
-    $item_action = new Listing\ItemAction(
-      '\MailPoet\Models\Form',
-      $data
-    );
-
-    wp_send_json($item_action->apply());
   }
 
   function bulkAction($data = array()) {

@@ -17,10 +17,11 @@
 
       <input type="hidden" name="form_id" value="<%= form.id %>" />
 
-      <% if not(settings.segments_selected_by == 'user') %>
-        <input type="hidden" name="segments" value="<%= settings.segments | join(',') %>" />
+      <% if not(form.settings.segments_selected_by == 'user') %>
+        <% for segment in form.settings.segments %>
+        <input type="hidden" name="segments[]" value="<%= segment %>" />
+        <% endfor %>
       <% endif %>
-
       <%= html | raw %>
     </form>
   </div>

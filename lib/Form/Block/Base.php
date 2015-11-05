@@ -9,12 +9,12 @@ abstract class Base {
   protected static function getInputValidationRules($block) {
     $rules = array();
 
-    if($block['field'] === 'email') {
+    if($block['name'] === 'email') {
       $rules[] = 'required';
       $rules[] = 'custom[email]';
     }
 
-    if($block['field'] === 'list') {
+    if($block['name'] === 'list') {
       $rules[] = 'required';
     }
 
@@ -83,7 +83,7 @@ abstract class Base {
 
   // return field name depending on block data
   protected static function getFieldName($block = array()) {
-    return $block['field'];
+    return $block['id'];
   }
 
   protected static function getFieldLabel($block = array()) {

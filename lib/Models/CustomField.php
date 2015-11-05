@@ -16,6 +16,27 @@ class CustomField extends Model {
     ));
   }
 
+  function asArray() {
+    $model = parent::asArray();
+
+    $model['params'] = (
+      is_serialized($this->params)
+      ? unserialize($this->params)
+      : $this->params
+    );
+
+    return $model;
+  }
+
+  function save() {
+    $this->set('params', (
+      is_serialized($this->params)
+      ? $this->params
+      : serialize($this->params)
+    ));
+    return parent::save();
+  }
+
   function subscribers() {
     return $this->has_many_through(
       __NAMESPACE__ . '\Subscriber',

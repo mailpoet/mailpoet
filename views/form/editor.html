@@ -113,39 +113,42 @@
         </div>
       </div>
 
-        <!-- Toolbar: Shortcodes / Export -->
-        <div class="mailpoet_toolbar_section closed" data-section="shortcodes">
-          <a href="javascript:;" class="mailpoet_toggle"><br /></a>
-          <h3><%= __('Shortcodes') %></h3>
+      <!-- Toolbar: Shortcodes / Export -->
+      <div class="mailpoet_toolbar_section closed" data-section="shortcodes">
+        <a href="javascript:;" class="mailpoet_toggle"><br /></a>
+        <h3><%= __('Shortcodes') %></h3>
 
-          <div>
-            <!-- Form export links -->
-            <p>
-              <%= __("You can easily add this form to your theme's in the %sWidgets area%s")
-                | format('<a href="widgets.php" target="_blank">', '</a>')
-                | raw
-              %>
-           </p>
-            <p>
-              <%= __('%sHTML%s, %sPHP%s, %siframe%s and %sshortcode%s versions are also available.', 'wysija-newsletters')
-                | format(
-                  '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="html">',
-                  '</a>',
-                  '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="php">',
-                  '</a>',
-                  '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="iframe">',
-                  '</a>',
-                  '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="shortcode">',
-                  '</a>'
-                )
-                | raw
-              %>
-           </p>
+        <div>
+          <!-- Form export links -->
+          <p>
+            <%= __("You can easily add this form to your theme's in the [link]Widgets area[/link]")
+              | replace({
+                  '[link]': '<a href="widgets.php" target="_blank">',
+                  '[/link]': '</a>'
+                })
+              | raw
+            %>
+         </p>
+          <p>
+            <%= __('%sHTML%s, %sPHP%s, %siframe%s and %sshortcode%s versions are also available.', 'wysija-newsletters')
+              | format(
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="html">',
+                '</a>',
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="php">',
+                '</a>',
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="iframe">',
+                '</a>',
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="shortcode">',
+                '</a>'
+              )
+              | raw
+            %>
+         </p>
 
-            <!-- Form export -->
-            <div id="mailpoet_form_export"></div>
-          </div>
+          <!-- Form export -->
+          <div id="mailpoet_form_export"></div>
         </div>
+      </div>
 
         <!-- Toolbar: Fields -->
       <div class="mailpoet_toolbar_section closed" data-section="fields">
@@ -198,34 +201,26 @@
     var mailpoet_segments = <%= json_encode(segments) %>;
 
     jQuery(function($) {
-      function mailpoet_form_fields(data) {
-        var template = Handlebars.compile(jQuery('#form_template_fields').html());
+      // enable code mirror editor on styles textarea
+      MailPoet.CodeEditor = CodeMirror.fromTextArea(document.getElementById('mailpoet_form_styles'), {
+        lineNumbers: true,
+        tabMode: "indent",
+        matchBrackets: true,
+        theme: 'neo',
+        mode: 'css'
+      });
 
-        // render toolbar
-        jQuery('#mailpoet_toolbar_fields').html(template(data));
-
-        // enable code mirror editor on styles textarea
-         MailPoet.CodeEditor = CodeMirror.fromTextArea(document.getElementById('mailpoet_form_styles'), {
-          lineNumbers: true,
-          tabMode: "indent",
-            matchBrackets: true,
-            theme: 'neo',
-            mode: 'css',
-        });
-      }
-
-      // form editor: default fields
       var default_fields = [
         {
+          id: 'divider',
           name: "<%= __('Divider') %>",
-          field: 'divider',
           type: 'divider',
           multiple: true,
           readonly: true
         },
         {
+          id: "first_name",
           name: "<%= __('First name') %>",
-          field: 'first_name',
           type: 'input',
           params: {
             label: "<%= __('First name') %>"
@@ -233,8 +228,8 @@
           readonly: true
         },
         {
+          id: "last_name",
           name: "<%= __('Last name') %>",
-          field: 'last_name',
           type: 'input',
           params: {
             label: "<%= __('Last name') %>"
@@ -242,8 +237,8 @@
           readonly: true
         },
         {
+          id: "segments",
           name: "<%= __('List selection') %>",
-          field: 'segments',
           type: 'segment',
           params: {
             label: "<%= __('Select list(s):') %>"
@@ -251,8 +246,8 @@
           readonly: true
         },
         {
+          id: 'html',
           name: "<%= __('Random text or HTML') %>",
-          field: 'html',
           type: 'html',
           params: {
               text: "<%= __('Subscribe to our newsletter and join our [mailpoet_subscribers_count] subscribers.') %>"
@@ -261,6 +256,26 @@
           readonly: true
         }
       ];
+
+      function mailpoet_form_fields() {
+        // form editor: default fields
+        var template = Handlebars.compile(jQuery('#form_template_fields').html());
+
+        var data = {
+          fields: default_fields
+        };
+
+        return MailPoet.Ajax.post({
+          endpoint: 'customFields',
+          action: 'getAll',
+        }).done(function(response) {
+          if(response !== false) {
+            data.fields  = $.merge(response, data.fields);
+          }
+          // render toolbar
+          jQuery('#mailpoet_toolbar_fields').html(template(data));
+        });
+      }
 
       // toolbar sections
       $(document).on('click', '.mailpoet_toolbar_section.closed', function() {
@@ -272,7 +287,8 @@
       });
 
       // toolbar: open default section
-      $('.mailpoet_toolbar_section[data-section="shortcodes"]').removeClass('closed');
+       // TODO: data-section="settings"
+      $('.mailpoet_toolbar_section[data-section="fields"]').removeClass('closed');
 
       // form: edit name (in place editor)
       $('#mailpoet_form_edit_name').on('click', function() {
@@ -350,20 +366,22 @@
         // save form
         $('#mailpoet_form_save').on('click', function() {
           mailpoet_form_save();
+          mailpoet_form_export();
           return false;
         });
 
         // preview form
         $(document).on('click', '#mailpoet_form_preview', function() {
-          mailpoet_form_save(mailpoet_form_preview);
+          //mailpoet_form_save(mailpoet_form_preview);
+          mailpoet_form_preview();
           return false;
         });
 
         function mailpoet_form_preview() {
           MailPoet.Ajax.post({
             endpoint: 'forms',
-            action: 'preview',
-            data: $('#mailpoet_form_id').val()
+            action: 'previewEditor',
+            data: WysijaForm.save()
           }).done(function(response) {
             MailPoet.Modal.popup({
               title: "<%= __('Form preview') %>",
@@ -372,8 +390,6 @@
             });
           })
         }
-
-        mailpoet_form_export(<%= exports | json_encode | raw %>);
 
         function mailpoet_form_save(callback) {
           var form = WysijaForm.save();
@@ -429,7 +445,7 @@
           var template = Handlebars.compile($('#form_template_exports').html());
           MailPoet.Ajax.post({
             endpoint: 'forms',
-            action: 'getExports',
+            action: 'exportsEditor',
             data: $('#mailpoet_form_id').val()
           }).done(function(response) {
             if(response !== false) {
@@ -437,6 +453,7 @@
             }
           });
         }
+        mailpoet_form_export();
 
         $(document).on('click', '.mailpoet_form_export_toggle', function() {
           $('.mailpoet_form_export_output').hide();
@@ -487,27 +504,27 @@
 
         // delete field
         $(document).on('click', '.mailpoet_form_field_delete', function() {
-          var field = $(this).data('field');
 
-          if(window.confirm("<%= __('Do you really want to delete this custom field?') %>")) {
-            // delete field
-            console.log('TODO subscriber->meta->delete');
-            /*mailpoet_post_json('subscriber_delete_meta.php', { field: field }, function(response) {
-              var fields = (response.fields !== undefined) ? (response.fields || []) : [];
+          var id = $(this).data('id');
+          var item = $(this).parent();
+          var name = $(this).siblings('.mailpoet_form_field').attr('wysija_name');
 
-              // refresh toolbar
-              mailpoet_form_fields({
-                fields: $.merge(fields, default_fields)
-              });
-
-              // delete field in form
-              // remove any instance of the field present in the form
-              var blocks = $$('#mailpoet_form_body .mailpoet_form_block[wysija_field="'+field+'"]');
-              if(blocks.length > 0) {
-                var block = WysijaForm.get(blocks[0]);
-                block.removeBlock();
+          if(window.confirm(
+            "<%= __('Do you really want to delete this custom field?') %>"
+          )) {
+            MailPoet.Ajax.post({
+              endpoint: 'customFields',
+              action: 'delete',
+              data: id
+            }).done(function(response) {
+              if(response === true) {
+                item.remove();
+                mailpoet_form_fields();
+                MailPoet.Notice.success(
+                  "<%= __('Removed custom field “"+name+"“') %>"
+                );
               }
-            });*/
+            });
           }
         });
 
@@ -516,9 +533,12 @@
           // pop last element off the history
           WysijaHistory.dequeue();
 
-          // init wysija form
-          WysijaForm.init();
           return false;
+        });
+
+        // get form fields
+        mailpoet_form_fields().done(function() {
+          WysijaForm.init();
         });
 
         // toolbar: segment selection
@@ -535,19 +555,6 @@
             }
           }
         }).select2('val', <%= form.settings.segments | json_encode | raw %>);
-
-        // subscriber meta fields
-        var meta_fields = [
-          // {"name":"CF text input (mandatory + numbers only)","field":"627e1c8d4fe97712836484e0f2377abd","type":"input","params":{"required":"1","validate":"onlyNumberSp","label":"CF text input (mandatory + numbers only)"}},
-          // {"name":"CF text area (no validation)","field":"6607e6e447b89384c59adc124e979d6b","type":"textarea","params":{"required":"","validate":"","label":"CF text area (no validation)"}},
-          // {"name":"CF text area (letters only)","field":"47a9cae88f8b3b3e23a16990922e7905","type":"textarea","params":{"required":"","validate":"onlyLetterSp","label":"CF text area (letters only)"}},
-          // {"name":"CF radio (mandatory)","field":"5f01b4ccc146fdd6b889bab63dc1b5cd","type":"radio","params":{"values":[{"value":"un"},{"is_checked":"1","value":"deux"},{"value":"trois"}],"required":"1","label":"CF radio (mandatory)"}}
-        ];
-
-        // toolbar: fiels
-        mailpoet_form_fields({
-          fields: $.merge(meta_fields, default_fields)
-        });
       });
     });
   </script>
@@ -586,8 +593,16 @@
   <%= partial('field_settings_submit', 'form/templates/settings/submit.hbs', '_settings_submit') %>
 
   <%= partial('field_settings_values_item', 'form/templates/settings/values_item.hbs') %>
-  <%= partial('field_settings_date_formats', 'form/templates/settings/date_formats.hbs') %>
-  <%= partial('field_settings_date_type', 'form/templates/settings/date_types.hbs') %>
+  <%= partial(
+    'field_settings_date_format',
+    'form/templates/settings/date_formats.hbs',
+    '_settings_date_format'
+  ) %>
+  <%= partial(
+    'field_settings_date_type',
+    'form/templates/settings/date_types.hbs',
+    '_settings_date_type'
+  ) %>
   <%= partial('field_settings_segment_selection_item', 'form/templates/settings/segment_selection_item.hbs') %>
   <%= partial('field_settings_segment_selection', 'form/templates/settings/segment_selection.hbs', '_settings_segment_selection') %>
 

@@ -18,7 +18,7 @@ class Export {
         // generate url to load iframe's content
         $iframe_url = add_query_arg(array(
           'mailpoet_page' => 'mailpoet_form_iframe',
-          'mailpoet_form' => $form['form']
+          'mailpoet_form' => $form['id']
         ), site_url());
 
         // generate iframe
@@ -30,7 +30,7 @@ class Export {
         'class="mailpoet_form_iframe" '.
         'vspace="0" '.
         'tabindex="0" '.
-        //'style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" '. // TODO: need to find a solution for Height.
+        'onload="javascript:(this.style.height = this.contentWindow.document.body.scrollHeight + \'px\');"'.
         'marginwidth="0" '.
         'marginheight="0" '.
         'hspace="0" '.
@@ -40,7 +40,7 @@ class Export {
       case 'php':
         $output = array(
           '$form_widget = new \MailPoet\Form\Widget();',
-          'echo $form_widget->widget(array(\'form\' => '.(int)$form['form'].', \'form_type\' => \'php\'));'
+          'echo $form_widget->widget(array(\'form\' => '.(int)$form['id'].', \'form_type\' => \'php\'));'
           );
         return join("\n", $output);
       break;
@@ -77,14 +77,14 @@ class Export {
 
         $form_widget = new Widget();
         $output[] = $form_widget->widget(array(
-          'form' => (int)$form['form'],
+          'form' => (int)$form['id'],
           'form_type' => 'php'
         ));
         return join("\n", $output);
       break;
 
       case 'shortcode':
-        return '[mailpoet_form id="'.(int)$form['form'].'"]';
+        return '[mailpoet_form id="'.(int)$form['id'].'"]';
       break;
     }
   }

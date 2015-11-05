@@ -31,22 +31,10 @@
       </option>
     </select>
   </p>
-  <p class="mailpoet_error" data-error="type_required">
-    <%= __('You need to select a type.') %>
-  </p>
-
   <p>
     <label><%= __("Field's name:") %></label>
     <input type="text" name="name" value="{{ name }}" />
   </p>
-  <p class="mailpoet_error" data-error="name_required">
-    <%= __('You need to specify a name.') %>
-  </p>
-
-  <p class="mailpoet_error" data-error="name_already_exists">
-    <%= __('This name is already used.') %>
-  </p>
-
   <hr />
 
   <div class="field_type_form"></div>
@@ -71,6 +59,8 @@
       $('.mailpoet_error').hide();
 
       console.log(('TODO: subscriber->meta->edit'));
+
+      console.log(data);
       // mailpoet_post_json('subscriber_extend.php', data, function(response) {
       //   if(response.error !== undefined) {
       //     // there's an error!

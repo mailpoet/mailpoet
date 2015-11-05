@@ -1,8 +1,8 @@
 <div class="mailpoet_form_block"
   wysija_type="{{ type }}"
-  wysija_field="{{ field }}"
+  {{#if id}}wysija_id="{{ id }}"{{/if}}
   wysija_name="{{ name }}"
-  wysija_unique="{{#if multiple}}0{{else}}1{{/if}}"
+  wysija_unique="{{ unique }}"
   wysija_static="{{#ifCond static '==' 1}}1{{else}}0{{/ifCond}}"
   wysija_params="{{#if params}}{{ json_encode params }}{{/if}}">
   {{#ifCond type '!==' 'divider'}}

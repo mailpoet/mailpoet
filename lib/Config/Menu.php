@@ -3,6 +3,7 @@ namespace MailPoet\Config;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
 use \MailPoet\Models\Form;
+use \MailPoet\Form\Block;
 use \MailPoet\Form\Renderer as FormRenderer;
 use \MailPoet\Settings\Hosts;
 use \MailPoet\Settings\Pages;
@@ -214,7 +215,9 @@ class Menu {
       'form' => $form,
       'pages' => Pages::getAll(),
       'segments' => Segment::findArray(),
-      'styles' => FormRenderer::getStyles($form)
+      'styles' => FormRenderer::getStyles($form),
+      'date_types' => Block\Date::getDateTypes(),
+      'date_formats' => Block\Date::getDateFormats()
     );
 
     echo $this->renderer->render('form/editor.html', $data);

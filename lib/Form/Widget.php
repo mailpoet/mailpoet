@@ -6,6 +6,7 @@ use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Form\Renderer as FormRenderer;
+use \MailPoet\Form\Util;
 
 if(!defined('ABSPATH')) exit;
 
@@ -119,11 +120,11 @@ class Widget extends \WP_Widget {
    */
   function widget($args, $instance = null) {
     // turn $args into variables
-        extract($args);
+    extract($args);
 
-        if($instance === null) {
-          $instance = $args;
-        }
+    if($instance === null) {
+      $instance = $args;
+    }
 
     $title = apply_filters(
       'widget_title',
@@ -160,27 +161,27 @@ class Widget extends \WP_Widget {
           'title' => $title,
           'styles' => FormRenderer::renderStyles($form),
           'html' => FormRenderer::renderHTML($form),
-          'before_widget' => $before_widget,
-          'after_widget' => $after_widget,
-          'before_title' => $before_title,
-          'after_title' => $after_title
+          'before_widget' => (!empty($before_widget) ? $before_widget : ''),
+          'after_widget' => (!empty($after_widget) ? $after_widget : ''),
+          'before_title' => (!empty($before_title) ? $before_title : ''),
+          'after_title' => (!empty($after_title) ? $after_title : '')
         );
 
-        /*if(isset($_GET['mailpoet_form']) && (int)$_GET['mailpoet_form'] === $form['id']) {
-          // form messages (success / error)
-          $output .= '<div class="mailpoet_message">';
-          // success message
-          if(isset($_GET['mailpoet_success'])) {
-            $output .= '<p class="mailpoet_validate_success">'.strip_tags(urldecode($_GET['mailpoet_success']), '<a><strong><em><br><p>').'</p>';
-          }
-          // error message
-          if(isset($_GET['mailpoet_error'])) {
-            $output .= '<p class="mailpoet_validate_error">'.strip_tags(urldecode($_GET['mailpoet_error']), '<a><strong><em><br><p>').'</p>';
-          }
-          $output .= '</div>';
-        } else {
-          $output .= '<div class="mailpoet_message"></div>';
-        }*/
+        // if(isset($_GET['mailpoet_form']) && (int)$_GET['mailpoet_form'] === $form['id']) {
+        //   // form messages (success / error)
+        //   $output .= '<div class="mailpoet_message">';
+        //   // success message
+        //   if(isset($_GET['mailpoet_success'])) {
+        //     $output .= '<p class="mailpoet_validate_success">'.strip_tags(urldecode($_GET['mailpoet_success']), '<a><strong><em><br><p>').'</p>';
+        //   }
+        //   // error message
+        //   if(isset($_GET['mailpoet_error'])) {
+        //     $output .= '<p class="mailpoet_validate_error">'.strip_tags(urldecode($_GET['mailpoet_error']), '<a><strong><em><br><p>').'</p>';
+        //   }
+        //   $output .= '</div>';
+        // } else {
+        //   $output .= '<div class="mailpoet_message"></div>';
+        // }
 
         // render form
         $renderer = new Renderer();
@@ -226,7 +227,9 @@ if(isset($_GET['mailpoet_page']) && strlen(trim($_GET['mailpoet_page'])) > 0) {
 
       if($form !== false) {
         // render form
-        print FormRenderer::getExport('html', $form->asArray());
+        $output = Util\Export::get('html', $form->asArray());
+        // $output = do_shortcode($output);
+        print $output;
         exit;
       }
     break;

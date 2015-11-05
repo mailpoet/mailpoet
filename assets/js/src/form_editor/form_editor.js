@@ -196,7 +196,7 @@ var WysijaHistory = {
     // check if the field is unique
     if(parseInt(clone.readAttribute('wysija_unique'), 10) === 1) {
       // check if the field is already in the queue
-      $(WysijaHistory.container).select('[wysija_field="' + clone.readAttribute('wysija_field') + '"]').invoke('remove');
+      $(WysijaHistory.container).select('[wysija_name="' + clone.readAttribute('wysija_name') + '"]').invoke('remove');
     }
 
     // check history size
@@ -225,7 +225,7 @@ var WysijaHistory = {
     $(WysijaHistory.container).innerHTML = '';
   },
   remove: function(field) {
-    $(WysijaHistory.container).select('[wysija_field="' + field + '"]').invoke('remove');
+    $(WysijaHistory.container).select('[wysija_name="' + field + '"]').invoke('remove');
   }
 };
 
@@ -376,8 +376,8 @@ var WysijaForm = {
     // get basic field data
     var data = {
       type: element.readAttribute('wysija_type'),
-      field: element.readAttribute('wysija_field'),
       name: element.readAttribute('wysija_name'),
+      id: element.readAttribute('wysija_id'),
       unique: parseInt(element.readAttribute('wysija_unique') || 0, 10),
       static: parseInt(element.readAttribute('wysija_static') || 0, 10),
       element: element,
@@ -394,16 +394,16 @@ var WysijaForm = {
     $$('a[wysija_unique="1"]').invoke('removeClassName', 'disabled');
 
     // loop through each unique field already inserted in the editor and disable its toolbar equivalent
-    $$('#' + WysijaForm.options.editor + ' [wysija_unique="1"]').each(function(element) {
-      var field = $$('#' + WysijaForm.options.toolbar + ' [wysija_field="' + element.readAttribute('wysija_field') + '"]').first();
-      if(field !== undefined) {
-        field.addClassName('disabled');
+    $$('#' + WysijaForm.options.editor + ' [wysija_unique="1"]').map(function(element) {
+      var field = $$('#' + WysijaForm.options.toolbar + ' [wysija_id="' + element.readAttribute('wysija_id') + '"]');
+      if(field.length > 0) {
+        field.first().addClassName('disabled');
       }
     });
 
     // hide list selection if a list widget has been dragged into the editor
     $('mailpoet_settings_segment_selection')[
-      (($$('#' + WysijaForm.options.editor + ' [wysija_field="segments"]').length > 0) === true)
+      (($$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]').length > 0) === true)
       ? 'hide' : 'show'
     ]();
   },
@@ -958,12 +958,10 @@ WysijaForm.Widget = Class.create(WysijaForm.Block, {
   },
   getData: function() {
     var data = WysijaForm.getFieldData(this.element);
-
     // decode params
     if(data.params.length > 0) {
       data.params = JSON.parse(data.params);
     }
-
     return data;
   },
   getControls: function() {

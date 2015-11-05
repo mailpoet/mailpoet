@@ -204,14 +204,6 @@ class Newsletters {
     wp_send_json($listing_data);
   }
 
-  function itemAction($data = array()) {
-    $item_action = new Listing\ItemAction(
-      '\MailPoet\Models\Newsletter',
-      $data
-    );
-    wp_send_json($item_action->apply());
-  }
-
   function bulkAction($data = array()) {
     $bulk_action = new Listing\BulkAction(
       '\MailPoet\Models\Newsletter',

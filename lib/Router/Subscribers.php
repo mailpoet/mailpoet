@@ -88,10 +88,13 @@ class Subscribers {
       $errors[] = __('You need to select a list');
     }
 
+    $subscriber = false;
     if(!empty($errors)) {
       wp_send_json(array('errors' => $errors));
     } else {
-      $subscriber = Subscriber::where('email', $data['email'])->findOne();
+      if(!empty($data['email'])) {
+        $subscriber = Subscriber::where('email', $data['email'])->findOne();
+      }
     }
 
     $signup_confirmation = Setting::getValue('signup_confirmation', array());
@@ -180,14 +183,17 @@ class Subscribers {
       ? unserialize($form->settings) : null
     );
 
-    if($subscriber !== null && empty($errors)) {
-      $result = true;
-      $message = $form_settings['success_message'];
+    if(!empty($errors)) {
+      wp_send_json(array(
+        'result' => false,
+        'errors' => $errors
+      ));
     } else {
-      $result = false;
+      $result = true;
     }
 
     if($form_settings !== null) {
+      $message = $form_settings['success_message'];
 
       // url params for non ajax requests
       if($doing_ajax === false) {
