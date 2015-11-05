@@ -3,8 +3,10 @@ define([
     'mailpoet',
     'backbone',
     'backbone.marionette',
-    'jquery'
-  ], function(App, MailPoet, Backbone, Marionette, jQuery) {
+    'jquery',
+    'blob',
+    'filesaver'
+  ], function(App, MailPoet, Backbone, Marionette, jQuery, Blob, FileSaver) {
 
   "use strict";
 
@@ -54,31 +56,15 @@ define([
   };
 
   Module.exportTemplate = function(options) {
-    if (!window.Blob || !window.URL) {
-      // TODO: Gracefully exit on incompatible browsers
-      console.log('Template export requires a browser with Blob and URL support.');
-      return;
-    }
-
     var data = _.extend(options || {}, {
       body: App.getBody(),
     });
+    var blob = new Blob(
+      [JSON.stringify(data)],
+      { type: 'application/json;charset=utf-8' }
+    );
 
-    // Create a template file and force download it
-
-    var blob = new window.Blob([JSON.stringify(data)], { type: 'application/json' }),
-        url = window.URL.createObjectURL(blob),
-        anchor = document.createElement('a');
-
-    anchor.href = url;
-    anchor.download = 'template.json';
-    anchor.style.display = 'none';
-    document.body.appendChild(anchor);
-
-    anchor.click();
-
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(anchor);
+    FileSaver.saveAs(blob, 'template.json');
   };
 
   Module.SaveView = Marionette.LayoutView.extend({

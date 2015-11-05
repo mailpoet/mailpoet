@@ -21,7 +21,9 @@ baseConfig = {
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
       'sticky-kit': 'sticky-kit/jquery.sticky-kit',
       'interact$': 'interact.js/interact.js',
-      'spectrum$': 'spectrum-colorpicker/spectrum.js'
+      'spectrum$': 'spectrum-colorpicker/spectrum.js',
+      'blob$': 'blob/Blob.js',
+      'filesaver$': 'filesaver/FileSaver.js'
     },
   },
   node: {
@@ -40,6 +42,10 @@ baseConfig = {
       {
         include: require.resolve('underscore'),
         loader: 'expose-loader?_',
+      },
+      {
+        include: /Blob.js$/,
+        loader: 'exports-loader?window.Blob',
       },
       {
         test: /backbone.supermodel/,
@@ -82,6 +88,8 @@ config.push(_.extend({}, baseConfig, {
       'select2',
       'spectrum',
       'sticky-kit',
+      'blob',
+      'filesaver',
 
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
@@ -145,6 +153,8 @@ config.push(_.extend({}, baseConfig, {
       'backbone.supermodel',
       'backbone.radio',
       'select2',
+      'blob',
+      'filesaver',
 
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
@@ -209,6 +219,8 @@ config.push(_.extend({}, baseConfig, {
       'sticky-kit': 'sticky-kit/jquery.sticky-kit',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
+      'blob$': 'blob/Blob.js',
+      'filesaver$': 'filesaver/FileSaver.js'
     },
   },
   externals: {

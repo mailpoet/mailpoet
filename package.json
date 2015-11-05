@@ -4,6 +4,8 @@
     "install": "napa"
   },
   "napa": {
+    "blob": "eligrey/Blob.js.git",
+    "filesaver": "eligrey/FileSaver.js.git",
     "sticky-kit": "leafo/sticky-kit.git"
   },
   "dependencies": {
@@ -23,9 +25,9 @@
     "moment": "^2.10.3",
     "napa": "^1.2.0",
     "papaparse": "4.1.1",
-    "react": "0.14.0",
+    "react": "^0.14.1",
     "react-checkbox-group": "0.2.2",
-    "react-dom": "^0.14.0",
+    "react-dom": "^0.14.1",
     "react-infinity": "1.2.2",
     "react-prefixr": "0.1.0",
     "react-router": "^1.0.0-rc3",

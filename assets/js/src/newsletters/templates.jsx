@@ -1,6 +1,7 @@
 define(
   [
     'react',
+    'underscore',
     'mailpoet',
     'react-router',
     'classnames',
@@ -8,6 +9,7 @@ define(
   ],
   function(
     React,
+    _,
     MailPoet,
     Router,
     classNames,
@@ -33,12 +35,21 @@ define(
       handleSubmit: function(e) {
         e.preventDefault();
 
-        var reader = new FileReader(),
+        if (_.size(this.refs.templateFile.files) <= 0) return false;
+
+        var file = _.first(this.refs.templateFile.files),
+            reader = new FileReader(),
             saveTemplate = this.saveTemplate;
+
         reader.onload = function(e) {
-          saveTemplate(JSON.parse(e.target.result));
+          try {
+            saveTemplate(JSON.parse(e.target.result));
+          } catch (err) {
+            MailPoet.Notice.error('This template file appears to be malformed. Please try another one.');
+          }
         }.bind(this);
-        reader.readAsText(this.refs.templateFile.files[0]);
+
+        reader.readAsText(file);
       },
       render: function() {
         return (
