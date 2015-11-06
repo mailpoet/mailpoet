@@ -6,7 +6,7 @@
   {{#ifCond type '==' 'input'}}
     {{> _settings_label }}
     {{> _settings_label_within }}
-    {{#ifCond field 'in' 'firstname,lastname' }}
+    {{#ifCond field 'in' 'first_name,last_name' }}
       {{> _settings_required }}
     {{/ifCond}}
   {{/ifCond}}
@@ -31,9 +31,9 @@
     {{> _settings_label }}
   {{/ifCond}}
 
-  {{#ifCond type '==' 'list'}}
+  {{#ifCond type '==' 'segment'}}
     {{> _settings_label }}
-    {{> _settings_list_selection }}
+    {{> _settings_segment_selection }}
   {{/ifCond}}
 
   {{#ifCond type '==' 'select'}}

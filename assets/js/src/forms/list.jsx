@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router, Link, History } from 'react-router'
+import { Router, Link } from 'react-router'
 import Listing from 'listing/listing.jsx'
 import classNames from 'classnames'
 import MailPoet from 'mailpoet'
@@ -12,6 +12,11 @@ const columns = [
     sortable: true
   },
   {
+    name: 'segments',
+    label: 'Lists',
+    sortable: false
+  },
+  {
     name: 'created_at',
     label: 'Created on',
     sortable: true
@@ -20,57 +25,57 @@ const columns = [
 
 const messages = {
   onTrash: function(response) {
-    let count = ~~response.forms;
-    let message = null;
+    if(response) {
+      let message = null;
+      if(~~response === 1) {
+        message = (
+          '1 form was moved to the trash.'
+        );
+      } else if(~~response > 1) {
+        message = (
+          '%$1d forms were moved to the trash.'
+        ).replace('%$1d', ~~response);
+      }
 
-    if(count === 1 || response === true) {
-      message = (
-        '1 form was moved to the trash.'
-      );
-    } else if(count > 1) {
-      message = (
-        '%$1d forms were moved to the trash.'
-      ).replace('%$1d', count);
-    }
-
-    if(message !== null) {
-      MailPoet.Notice.success(message);
+      if(message !== null) {
+        MailPoet.Notice.success(message);
+      }
     }
   },
   onDelete: function(response) {
-    let count = ~~response.forms;
-    let message = null;
+    if(response) {
+      let message = null;
+      if(~~response === 1) {
+        message = (
+          '1 form was permanently deleted.'
+        );
+      } else if(~~response > 1) {
+        message = (
+          '%$1d forms were permanently deleted.'
+        ).replace('%$1d', ~~response);
+      }
 
-    if(count === 1 || response === true) {
-      message = (
-        '1 form was permanently deleted.'
-      );
-    } else if(count > 1) {
-      message = (
-        '%$1d forms were permanently deleted.'
-      ).replace('%$1d', count);
-    }
-
-    if(message !== null) {
-      MailPoet.Notice.success(message);
+      if(message !== null) {
+        MailPoet.Notice.success(message);
+      }
     }
   },
   onRestore: function(response) {
-    let count = ~~response.forms;
-    let message = null;
+    if(response) {
+      let message = null;
+      if(~~response === 1) {
+        message = (
+          '1 form has been restored from the trash.'
+        );
+      } else if(~~response > 1) {
+        message = (
+          '%$1d forms have been restored from the trash.'
+        ).replace('%$1d', ~~response);
+      }
 
-    if(count === 1 || response === true) {
-      message = (
-        '1 form has been restored from the trash.'
-      );
-    } else if(count > 1) {
-      message = (
-        '%$1d forms have been restored from the trash.'
-      ).replace('%$1d', count);
-    }
-
-    if(message !== null) {
-      MailPoet.Notice.success(message);
+      if(message !== null) {
+        MailPoet.Notice.success(message);
+      }
     }
   }
 };
@@ -78,32 +83,26 @@ const messages = {
 const item_actions = [
   {
     name: 'edit',
+    label: 'Edit',
     link: function(item) {
       return (
-        <Link to={ `/edit/${item.id}` }>Edit</Link>
+        <a href={ `admin.php?page=mailpoet-form-editor&id=${item.id}` }>Edit</a>
       );
     }
   },
   {
     name: 'duplicate_form',
-    refresh: true,
-    link: function(item) {
-      return (
-        <a
-          href="javascript:;"
-          onClick={ this.onDuplicate.bind(null, item) }
-        >Duplicate</a>
-      );
-    },
-    onDuplicate: function(item) {
-      MailPoet.Ajax.post({
+    label: 'Duplicate',
+    onClick: function(item, refresh) {
+      return MailPoet.Ajax.post({
         endpoint: 'forms',
         action: 'duplicate',
         data: item.id
-      }).done(function() {
+      }).done(function(response) {
         MailPoet.Notice.success(
-          ('List "%$1s" has been duplicated.').replace('%$1s', item.name)
+          ('Form "%$1s" has been duplicated.').replace('%$1s', response.name)
         );
+        refresh();
       });
     }
   }
@@ -113,17 +112,22 @@ const bulk_actions = [
   {
     name: 'trash',
     label: 'Trash',
-    getData: function() {
-      return {
-        confirm: false
-      }
-    },
-    onSuccess: messages.onDelete
+    onSuccess: messages.onTrash
   }
 ];
 
 const FormList = React.createClass({
-  renderItem: function(form, actions) {
+  createForm() {
+    MailPoet.Ajax.post({
+      endpoint: 'forms',
+      action: 'create'
+    }).done(function(response) {
+      if(response !== false) {
+        window.location = response;
+      }
+    });
+  },
+  renderItem(form, actions) {
     let row_classes = classNames(
       'manage-column',
       'column-primary',
@@ -157,10 +161,16 @@ const FormList = React.createClass({
     return (
       <div>
         <h2 className="title">
-          Forms <Link className="add-new-h2" to="/new">New</Link>
+          Forms <a
+            className="add-new-h2"
+            href="javascript:;"
+            onClick={ this.createForm }
+          >New</a>
         </h2>
 
         <Listing
+          location={ this.props.location }
+          params={ this.props.params }
           messages={ messages }
           search={ false }
           limit={ 1000 }

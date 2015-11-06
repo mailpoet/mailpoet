@@ -6,18 +6,13 @@
       <%= __('Nothing') %>
     </option>
 
-    <option {{#ifCond params.validate '==' 'onlyNumberSp'}}selected="selected"{{/ifCond}}
-      value="onlyNumberSp">
+    <option {{#ifCond params.validate '==' 'number'}}selected="selected"{{/ifCond}}
+      value="number">
       <%= __('Numbers only') %>
     </option>
 
-    <option {{#ifCond params.validate '==' 'onlyLetterSp'}}selected="selected"{{/ifCond}}
-      value="onlyLetterSp">
-      <%= __('Letters only') %>
-    </option>
-
-    <option {{#ifCond params.validate '==' 'onlyLetterNumber'}}selected="selected"{{/ifCond}}
-      value="onlyLetterNumber">
+    <option {{#ifCond params.validate '==' 'alphanum'}}selected="selected"{{/ifCond}}
+      value="alphanum">
       <%= __('Alphanumerical') %>
     </option>
 

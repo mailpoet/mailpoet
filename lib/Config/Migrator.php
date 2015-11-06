@@ -67,7 +67,7 @@ class Migrator {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(20) NOT NULL,',
-      'value varchar(255) NOT NULL,',
+      'value longtext,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
@@ -125,7 +125,8 @@ class Migrator {
       'segment_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id)'
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY subscriber_segment (subscriber_id,segment_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -137,7 +138,8 @@ class Migrator {
       'segment_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id)'
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY newsletter_segment (newsletter_id,segment_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -147,6 +149,7 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'type varchar(90) NOT NULL,',
+      'params longtext NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
@@ -199,6 +202,8 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'body longtext,',
+      'settings longtext,',
+      'styles longtext,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'deleted_at TIMESTAMP NULL DEFAULT NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',

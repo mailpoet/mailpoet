@@ -2,6 +2,9 @@
 namespace MailPoet\Config;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
+use \MailPoet\Models\Form;
+use \MailPoet\Form\Block;
+use \MailPoet\Form\Renderer as FormRenderer;
 use \MailPoet\Settings\Hosts;
 use \MailPoet\Settings\Pages;
 use \MailPoet\Settings\Charsets;
@@ -87,8 +90,8 @@ class Menu {
   function registered_pages() {
     global $_registered_pages;
     $pages = array(
-      //'mailpoet-form-editor' => 'formEditor',
-      'mailpoet-newsletter-editor' => array($this, 'newletterForm')
+      'mailpoet-form-editor' => array($this, 'formEditor'),
+      'mailpoet-newsletter-editor' => array($this, 'newletterEditor')
     );
     foreach($pages as $menu_slug => $callback) {
       $hookname = get_plugin_page_hookname($menu_slug, null);
@@ -193,11 +196,30 @@ class Menu {
     echo $this->renderer->render('newsletters.html', $data);
   }
 
-  function newletterForm() {
+  function newletterEditor() {
     $data = array();
     wp_enqueue_media();
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
     wp_enqueue_style('editor', includes_url('css/editor.css'));
     echo $this->renderer->render('newsletter/form.html', $data);
+  }
+
+  function formEditor() {
+    $id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
+    $form = Form::findOne($id);
+    if($form !== false) {
+      $form = $form->asArray();
+    }
+
+    $data = array(
+      'form' => $form,
+      'pages' => Pages::getAll(),
+      'segments' => Segment::findArray(),
+      'styles' => FormRenderer::getStyles($form),
+      'date_types' => Block\Date::getDateTypes(),
+      'date_formats' => Block\Date::getDateFormats()
+    );
+
+    echo $this->renderer->render('form/editor.html', $data);
   }
 }

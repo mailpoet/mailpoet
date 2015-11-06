@@ -1,9 +1,9 @@
 
 <form id="form_field_new" name="form_field_new" action="" method="post">
-  {{#if field}}<input type="hidden" id="field" name="field" value="{{ field }}" />{{/if}}
+  {{#if id}}<input type="hidden" id="field_id" name="id" value="{{ id }}" />{{/if}}
   <p>
-    <label for="type"><%= __('Select a field type:') %></label>
-    <select id="type" name="type">
+    <label for="field_type"><%= __('Select a field type:') %></label>
+    <select id="field_type" name="type">
       <option value="">--</option>
       <option
         {{#ifCond type '==' 'input'}}selected="selected"{{/ifCond}}
@@ -31,22 +31,10 @@
       </option>
     </select>
   </p>
-  <p class="mailpoet_error" data-error="type_required">
-    <%= __('You need to select a type.') %>
-  </p>
-
   <p>
     <label><%= __("Field's name:") %></label>
     <input type="text" name="name" value="{{ name }}" />
   </p>
-  <p class="mailpoet_error" data-error="name_required">
-    <%= __('You need to specify a name.') %>
-  </p>
-
-  <p class="mailpoet_error" data-error="name_already_exists">
-    <%= __('This name is already used.') %>
-  </p>
-
   <hr />
 
   <div class="field_type_form"></div>
@@ -63,54 +51,57 @@
       loadFieldForm();
     });
 
-    $('#form_field_new').on('submit', function() {
+    $('#form_field_new').on('submit', function(e) {
+      e.preventDefault();
+
       // get data
       var data = $(this).serializeObject();
+      MailPoet.Ajax.post({
+        endpoint: 'customFields',
+        action: 'save',
+        data: data
+      }).done(function(response) {
+        if(response.result === true) {
+          mailpoet_form_fields();
+          if(data.id) {
+            MailPoet.Notice.success(
+              "<%= __('Updated custom field “"+data.name+"“') %>"
+            );
+          } else {
+            MailPoet.Notice.success(
+              "<%= __('Added custom field “"+data.name+"“') %>"
+            );
+          }
 
-      // hide errors
-      $('.mailpoet_error').hide();
-
-      console.log(('TODO: subscriber->meta->edit'));
-      // mailpoet_post_json('subscriber_extend.php', data, function(response) {
-      //   if(response.error !== undefined) {
-      //     // there's an error!
-      //     $('.mailpoet_error[data-error="'+response.error+'"]').show();
-      //   } else {
-      //     // we should get the fields list in the response
-      //     if(response.fields !== undefined) {
-      //       // get fields (defaults to empty array)
-      //       var fields = response.fields || [];
-      //       // refresh toolbar
-      //       mailpoet_form_fields({
-      //         fields: $.merge(fields, default_fields)
-      //       });
-      //     }
+        } else {
+          if(response.errors.length > 0) {
+            for(error in response.errors) {
+              MailPoet.Notice.error(error);
+            }
+          }
+        }
+      });
 
       // close popup
-      MailPoet.Modal.success();
-      //   }
-      // });
-      return false;
+      return MailPoet.Modal.success();
     });
 
-    $('#form_field_new #type').on('change', function() {
-      if($(this).val() !== '') {
-        $('.mailpoet_error[data-error="type_required"]').hide();
-      }
-      // load template based on type
+    $('#form_field_new #field_type').on('change', function() {
       loadFieldForm($(this).val());
     });
 
     function loadFieldForm(type) {
-      type = (type === undefined) ? $('#form_field_new #type').val() : type;
+      type = (type === undefined) ? $('#form_field_new #field_type').val() : type;
       if(type !== '') {
         var template = Handlebars.compile($('#form_template_field_'+type).html()),
             data = {type: type},
-            field = $('#form_field_new #field').val();
+            field_id = $('#form_field_new #field_id').val();
 
-        if(field !== undefined && field.length > 0) {
-          var params = $('.mailpoet_form_field[wysija_field="'+field+'"]').attr('wysija_params');
-          data.params = JSON.parse(params);
+        if(field_id !== undefined && field_id.length > 0) {
+          var params = $('.mailpoet_form_field[wysija_id="'+field_id+'"]').attr('wysija_params');
+          if(params !== undefined) {
+            data.params = JSON.parse(params);
+          }
         }
         // render field template
         $('#form_field_new .field_type_form').html(template(data));

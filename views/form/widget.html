@@ -1,0 +1,33 @@
+<% block content %>
+  <%= before_widget | raw %>
+
+  <% if(title) %>
+    <h2 class="widget-title"><%= title | raw %></h2>
+  <% endif %>
+
+  <div class="mailpoet_form mailpoet_form_<%= form_type %>">
+    <%= styles | raw %>
+    <form
+      id="<%= form_id %>"
+      method="post"
+      <#
+      action="<%= admin_url('admin-post.php?action=mailpoet_form_subscribe') | raw %>"
+      #>
+      class="mailpoet_form mailpoet_form_<%= form_type %>"
+      novalidate
+      data-parsley-validate
+    >
+      <div class="mailpoet_message"></div>
+
+      <input type="hidden" name="form_id" value="<%= form.id %>" />
+
+      <% if not(form.settings.segments_selected_by == 'user') %>
+        <% for segment in form.settings.segments %>
+        <input type="hidden" name="segments[]" value="<%= segment %>" />
+        <% endfor %>
+      <% endif %>
+      <%= html | raw %>
+    </form>
+  </div>
+  <%= after_widget | raw %>
+<% endblock %>

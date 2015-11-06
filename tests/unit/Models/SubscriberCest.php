@@ -137,7 +137,7 @@ class SubscriberCest {
       ->findOne($this->subscriber->id);
     expect($subscriber->DOB)->equals($association->value);
   }
-  
+
   function itCanFilterCustomFields() {
     $customFieldData = array(
       array(
@@ -270,14 +270,17 @@ class SubscriberCest {
       'last_name' => 'Doe'
     );
     $result = Subscriber::createOrUpdate($data);
-    expect($result)->equals(true);
+    expect($result)->notEquals(false);
+    expect($result->getValidationErrors())->isEmpty();
+
     $record = Subscriber::where('email', $data['email'])
       ->findOne();
     expect($record->first_name)->equals($data['first_name']);
     expect($record->last_name)->equals($data['last_name']);
     $record->last_name = 'Mailer';
     $result = Subscriber::createOrUpdate($record->asArray());
-    expect($result)->equals(true);
+    expect($result)->notEquals(false);
+    expect($result->getValidationErrors())->isEmpty();
     $record = Subscriber::where('email', $data['email'])
       ->findOne();
     expect($record->last_name)->equals('Mailer');

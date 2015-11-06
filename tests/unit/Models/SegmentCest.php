@@ -67,7 +67,8 @@ class SegmentCest {
     $is_created = Segment::createOrUpdate(array(
       'name' => 'new list'
     ));
-    expect($is_created)->equals(true);
+    expect($is_created)->notEquals(false);
+    expect($is_created->getValidationErrors())->isEmpty();
 
     $segment = Segment::where('name', 'new list')->findOne();
     expect($segment->name)->equals('new list');
