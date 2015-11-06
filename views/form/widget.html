@@ -10,8 +10,12 @@
     <form
       id="<%= form_id %>"
       method="post"
+      <#
       action="<%= admin_url('admin-post.php?action=mailpoet_form_subscribe') | raw %>"
-      class="mailpoet_form mailpoet_form_<%= form_type %>" novalidate
+      #>
+      class="mailpoet_form mailpoet_form_<%= form_type %>"
+      novalidate
+      data-parsley-validate
     >
       <div class="mailpoet_message"></div>
 

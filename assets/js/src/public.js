@@ -1,7 +1,14 @@
-define('public', ['mailpoet', 'jquery', 'jquery-validation'],
-  function(MailPoet, $) {
-    'use strict';
-
+define([
+  'mailpoet',
+  'jquery',
+  'parsleyjs'
+],
+function(
+  MailPoet,
+  jQuery,
+  Parsley
+) {
+  jQuery(function($) {
     function isSameDomain(url) {
       var link = document.createElement('a');
       link.href = url;
@@ -11,59 +18,61 @@ define('public', ['mailpoet', 'jquery', 'jquery-validation'],
     $(function() {
       // setup form validation
       $('form.mailpoet_form').each(function() {
-        $(this).validate({
-          submitHandler: function(form) {
-            var data = $(form).serializeObject() || {};
+        var form = $(this);
 
-            // clear messages
-            $(form).find('.mailpoet_message').html('');
+        form.parsley().on('form:submit', function(parsley) {
 
-            // check if we're on the same domain
-            if(isSameDomain(MailPoetForm.ajax_url) === false) {
-              // non ajax post request
-              return true;
-            } else {
-              // ajax request
-              MailPoet.Ajax.post({
-                url: MailPoetForm.ajax_url,
-                token: MailPoetForm.token,
-                endpoint: 'subscribers',
-                action: 'subscribe',
-                data: data,
-                onSuccess: function(response) {
-                  if(response.result !== true) {
-                    // errors
-                    $.each(response.errors, function(index, error) {
-                      $(form)
-                        .find('.mailpoet_message')
-                        .append('<p class="mailpoet_validate_error">'+
-                          error+
-                        '</p>');
-                    });
-                  } else {
-                    // successfully subscribed
-                    if(response.page !== undefined) {
-                      // go to page
-                      window.location.href = response.page;
-                    } else if(response.message !== undefined) {
-                      // display success message
-                      $(form)
-                        .find('.mailpoet_message')
-                        .html('<p class="mailpoet_validate_success">'+
-                          response.message+
-                        '</p>');
-                    }
+          var data = form.serializeObject() || {};
 
-                    // reset form
-                    $(form).trigger('reset');
-                  }
+          // clear messages
+          form.find('.mailpoet_message').html('');
+
+          // check if we're on the same domain
+          if(isSameDomain(MailPoetForm.ajax_url) === false) {
+            // non ajax post request
+            return true;
+          } else {
+            // ajax request
+            MailPoet.Ajax.post({
+              url: MailPoetForm.ajax_url,
+              token: MailPoetForm.token,
+              endpoint: 'subscribers',
+              action: 'subscribe',
+              data: data
+            }).done(function(response) {
+              if(response.result !== true) {
+                // errors
+                $.each(response.errors, function(index, error) {
+                  form
+                    .find('.mailpoet_message')
+                    .append('<p class="mailpoet_validate_error">'+
+                      error+
+                    '</p>');
+                });
+              } else {
+                // successfully subscribed
+                if(response.page !== undefined) {
+                  // go to page
+                  window.location.href = response.page;
+                } else if(response.message !== undefined) {
+                  // display success message
+                  form
+                    .find('.mailpoet_message')
+                    .html('<p class="mailpoet_validate_success">'+
+                      response.message+
+                    '</p>');
                 }
-              });
-            }
-            return false;
+
+                // reset form
+                form.trigger('reset');
+                // reset validation
+                parsley.reset();
+              }
+            });
           }
+          return false;
         });
       });
     });
-  }
-);
+  });
+});

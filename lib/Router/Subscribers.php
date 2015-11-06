@@ -82,11 +82,16 @@ class Subscribers {
       $errors[] = __('This form does not exist.');
     }
 
-    $segments = Segment::whereIn('id', (array)$data['segments'])->findMany();
-    unset($data['segments']);
-    if(empty($segments)) {
+    if(empty($data['segments'])) {
       $errors[] = __('You need to select a list');
+    } else {
+      $segments = Segment::whereIn('id', (array)$data['segments'])->findMany();
+
+      if(empty($segments)) {
+        $errors[] = __('You need to select a list');
+      }
     }
+    unset($data['segments']);
 
     $subscriber = false;
     if(!empty($errors)) {

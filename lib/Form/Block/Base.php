@@ -3,24 +3,21 @@ namespace MailPoet\Form\Block;
 
 abstract class Base {
   protected static function getInputValidation($block) {
-    return 'data-validation-engine="'.static::getInputValidationRules($block).'"';
-  }
-
-  protected static function getInputValidationRules($block) {
     $rules = array();
+    $is_required = false;
 
-    if($block['name'] === 'email') {
-      $rules[] = 'required';
+    if($block['id'] === 'email') {
+      $is_required = true;
       $rules[] = 'custom[email]';
     }
 
-    if($block['name'] === 'list') {
-      $rules[] = 'required';
+    if($block['id'] === 'segments') {
+      $is_required = true;
     }
 
-    if(isset($block['params']['required'])
-    && (bool)$block['params']['required'] === true) {
-      $rules[] = 'required';
+    if(!empty($block['params']['required'])) {
+      $is_required = true;
+
     }
 
     if(isset($block['params']['validate'])) {
@@ -36,13 +33,19 @@ abstract class Base {
     }
 
     // generate string if there is at least one rule to validate against
-    if(empty($rules)) {
-      return '';
-    } else {
-      // make sure rules are not duplicated
+    $validation = '';
+
+    if(!empty($rules)) {
       $rules = array_unique($rules);
-      return 'validate['.join(',', $rules).']';
+      //return 'validate['.join(',', $rules).']';
+      // TODO: convert to Parsley format!
     }
+
+    if($is_required === true) {
+      $validation .= ' required';
+    }
+
+    return $validation;
   }
 
   protected static function renderLabel($block) {
