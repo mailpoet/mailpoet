@@ -4,60 +4,57 @@ namespace MailPoet\Form\Block;
 abstract class Base {
   protected static function getInputValidation($block) {
     $rules = array();
-    $is_required = false;
 
     if($block['id'] === 'email') {
-      $is_required = true;
-      $rules[] = 'custom[email]';
+      $rules['required'] = true;
+      $rules['error-message'] = __('You need to specify a valid email address');
     }
 
     if($block['id'] === 'segments') {
-      $is_required = true;
+      $rules['required'] = true;
+      $rules['mincheck'] = 1;
+      $rules['error-message'] = __('You need to select a list');
     }
 
     if(!empty($block['params']['required'])) {
-      $is_required = true;
-
+      $rules['required'] = true;
     }
 
-    if(isset($block['params']['validate'])) {
-      if(is_array($block['params']['validate'])) {
-        // handle multiple validation rules
-        foreach($block['params']['validate'] as $rule) {
-          $rules[] = 'custom['.$rule.']';
-        }
-      } else if(strlen(trim($block['params']['validate'])) > 0) {
-        // handle single validation rule
-        $rules[] = 'custom['.$block['params']['validate'].']';
+    if(!empty($block['params']['validate'])) {
+      if($block['params']['validate'] === 'phone') {
+        $rules['pattern'] = "^[\d\+\-\.\(\)\/\s]*$";
+        $rules['error-message'] = __('You need to specify a valid phone number');
+      } else {
+        $rules['type'] = $block['params']['validate'];
       }
     }
 
-    // generate string if there is at least one rule to validate against
     $validation = '';
 
     if(!empty($rules)) {
       $rules = array_unique($rules);
-      //return 'validate['.join(',', $rules).']';
-      // TODO: convert to Parsley format!
+      foreach($rules as $rule => $value) {
+        if(is_bool($value)) {
+          $value = ($value) ? 'true' : 'false';
+        }
+        $validation .= 'data-parsley-'.$rule.'="'.$value.'"';
+      }
     }
-
-    if($is_required === true) {
-      $validation .= ' required';
-    }
-
     return $validation;
   }
 
   protected static function renderLabel($block) {
     $html = '';
-    // if the label is displayed as a placeholder, we don't display a label outside
-    if(isset($block['params']['label_within'])
-    && $block['params']['label_within']) {
+    if(
+      isset($block['params']['label_within'])
+      && $block['params']['label_within']
+    ) {
       return $html;
     }
     if(isset($block['params']['label'])
       && strlen(trim($block['params']['label'])) > 0) {
-      $html .= '<label class="mailpoet_'.$block['type'].'_label">'.$block['params']['label'];
+      $html .= '<label class="mailpoet_'.$block['type'].'_label">';
+      $html .= $block['params']['label'];
 
       if(isset($block['params']['required']) && $block['params']['required']) {
         $html .= ' <span class="mailpoet_required">*</span>';
@@ -71,7 +68,10 @@ abstract class Base {
   protected static function renderInputPlaceholder($block) {
     $html = '';
     // if the label is displayed as a placeholder,
-    if(isset($block['params']['label_within']) && $block['params']['label_within']) {
+    if(
+      isset($block['params']['label_within'])
+      && $block['params']['label_within']
+    ) {
       // display only label
       $html .= ' placeholder="';
       $html .= static::getFieldLabel($block);
