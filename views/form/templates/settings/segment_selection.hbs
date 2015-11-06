@@ -20,11 +20,7 @@
       mailpoet_segment_selection_render();
 
       setInputNames();
-
-      // make segment selection sortable
-      Sortable.create('mailpoet_segment_selection', {
-        handles: $$('#mailpoet_segment_selection .handle')
-      });
+      setupSortableSegments();
 
       // add segment
       $('.mailpoet_segment_add').on('click', function() {
@@ -71,6 +67,16 @@
       });
     });
 
+    function setupSortableSegments() {
+      // make segment selection sortable
+      Sortable.create('mailpoet_segment_selection', {
+        handles: $$('#mailpoet_segment_selection .handle'),
+         onChange: function(item) {
+          setInputNames();
+        }
+      });
+    }
+
     function mailpoet_segment_available_render() {
       // clear available segments
       $('.mailpoet_segment_available').html('');
@@ -82,7 +88,9 @@
       // display available segments
       $.each(mailpoet_segments, function(i, segment) {
         if($.inArray(segment.id, selected_segment_ids) < 0) {
-          $('.mailpoet_segment_available').append('<option value="'+segment.id+'">'+segment.name+'</option>');
+          $('.mailpoet_segment_available').append(
+            '<option value="'+segment.id+'">'+segment.name+'</option>'
+          );
         }
       });
       mailpoet_segment_available_toggle();
@@ -90,9 +98,14 @@
 
     function mailpoet_segment_selection_render() {
       // segment item template
-      var template = Handlebars.compile($('#field_settings_segment_selection_item').html());
+      var template = Handlebars.compile(
+        $('#field_settings_segment_selection_item').html()
+      );
+
       // update view
-      $('#mailpoet_segment_selection').html(template({ segments: selected_segments }));
+      $('#mailpoet_segment_selection').html(
+        template({ segments: selected_segments })
+      );
 
       mailpoet_segment_available_toggle();
     }
