@@ -1,5 +1,5 @@
 import React from 'react'
-import { Router, Route, Link } from 'react-router'
+import { Router, Link } from 'react-router'
 
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
@@ -40,10 +40,10 @@ var columns = [
   }
 ];
 
-var messages = {
+const messages = {
   onTrash: function(response) {
     if(response) {
-      var message = null;
+      let message = null;
       if(~~response === 1) {
         message = (
           '1 segment was moved to the trash.'
@@ -61,7 +61,7 @@ var messages = {
   },
   onDelete: function(response) {
     if(response) {
-      var message = null;
+      let message = null;
       if(~~response === 1) {
         message = (
           '1 segment was permanently deleted.'
@@ -79,7 +79,7 @@ var messages = {
   },
   onRestore: function(response) {
     if(response) {
-      var message = null;
+      let message = null;
       if(~~response === 1) {
         message = (
           '1 segment has been restored from the trash.'
@@ -97,7 +97,7 @@ var messages = {
   }
 };
 
-var item_actions = [
+const item_actions = [
   {
     name: 'edit',
     label: 'Edit',
@@ -133,7 +133,7 @@ var item_actions = [
   }
 ];
 
-var bulk_actions = [
+const bulk_actions = [
   {
     name: 'trash',
     label: 'Trash',
@@ -141,7 +141,7 @@ var bulk_actions = [
   }
 ];
 
-var SegmentList = React.createClass({
+const SegmentList = React.createClass({
   renderItem: function(segment, actions) {
     var rowClasses = classNames(
       'manage-column',

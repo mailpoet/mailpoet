@@ -14,6 +14,37 @@ class Form extends Model {
     ));
   }
 
+  function asArray() {
+    $model = parent::asArray();
+
+    $model['body'] = (
+      is_serialized($this->body)
+      ? unserialize($this->body)
+      : $this->body
+    );
+    $model['settings'] = (
+      is_serialized($this->settings)
+      ? unserialize($this->settings)
+      : $this->settings
+    );
+
+    return $model;
+  }
+
+  function save() {
+    $this->set('body', (
+      is_serialized($this->body)
+      ? $this->body
+      : serialize($this->body)
+    ));
+    $this->set('settings', (
+      is_serialized($this->settings)
+      ? $this->settings
+      : serialize($this->settings)
+    ));
+    return parent::save();
+  }
+
   static function search($orm, $search = '') {
     return $orm->where_like('name', '%'.$search.'%');
   }
@@ -56,57 +87,7 @@ class Form extends Model {
       $form->set($data);
     }
 
-    $saved = $form->save();
-
-    if($saved === true) {
-      return true;
-    } else {
-      $errors = $form->getValidationErrors();
-      if(!empty($errors)) {
-        return $errors;
-      }
-    }
-    return false;
-  }
-
-  static function trash($listing, $data = array()) {
-    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
-    if($confirm_delete) {
-      // delete relations with all segments
-      $forms = $listing->getSelection()->findResultSet();
-      if(!empty($forms)) {
-        $forms_count = 0;
-        foreach($forms as $form) {
-          if($form->delete()) {
-            $forms_count++;
-          }
-        }
-        return array(
-          'segments' => $forms_count
-        );
-      }
-      return false;
-    } else {
-      // soft delete
-      $forms = $listing->getSelection()
-        ->findResultSet()
-        ->set_expr('deleted_at', 'NOW()')
-        ->save();
-
-      return array(
-        'segments' => $forms->count()
-      );
-    }
-  }
-
-  static function restore($listing, $data = array()) {
-    $forms = $listing->getSelection()
-      ->findResultSet()
-      ->set_expr('deleted_at', 'NULL')
-      ->save();
-
-    return array(
-      'segments' => $forms->count()
-    );
+    $form->save();
+    return $form;
   }
 }

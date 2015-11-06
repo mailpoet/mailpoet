@@ -16,6 +16,27 @@ class CustomField extends Model {
     ));
   }
 
+  function asArray() {
+    $model = parent::asArray();
+
+    $model['params'] = (
+      is_serialized($this->params)
+      ? unserialize($this->params)
+      : $this->params
+    );
+
+    return $model;
+  }
+
+  function save() {
+    $this->set('params', (
+      is_serialized($this->params)
+      ? $this->params
+      : serialize($this->params)
+    ));
+    return parent::save();
+  }
+
   function subscribers() {
     return $this->has_many_through(
       __NAMESPACE__ . '\Subscriber',
@@ -23,5 +44,34 @@ class CustomField extends Model {
       'custom_field_id',
       'subscriber_id'
     )->select_expr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.value');
+  }
+
+  static function createOrUpdate($data = array()) {
+    $custom_field = false;
+
+    if(isset($data['id']) && (int)$data['id'] > 0) {
+      $custom_field = self::findOne((int)$data['id']);
+    }
+
+    // set name as label by default
+    if(empty($data['params']['label'])) {
+      $data['params']['label'] = $data['name'];
+    }
+
+    if($custom_field === false) {
+      $custom_field = self::create();
+      $custom_field->hydrate($data);
+    } else {
+      unset($data['id']);
+      $custom_field->set($data);
+    }
+
+    try {
+      $custom_field->save();
+      return $custom_field;
+    } catch(Exception $e) {
+      return $custom_field->getValidationErrors();
+    }
+    return false;
   }
 }

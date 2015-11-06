@@ -36,6 +36,14 @@ baseConfig = {
         loader: 'babel-loader'
       },
       {
+        test: /form_editor\.js$/,
+        loader: 'expose-loader?WysijaForm',
+      },
+      {
+        include: require.resolve('codemirror'),
+        loader: 'expose-loader?CodeMirror',
+      },
+      {
         include: require.resolve('backbone'),
         loader: 'expose-loader?Backbone',
       },
@@ -77,6 +85,11 @@ config.push(_.extend({}, baseConfig, {
       'segments/segments.jsx',
       'forms/forms.jsx',
       'settings/tabs.js'
+    ],
+    form_editor: [
+      'form_editor/form_editor.js',
+      'codemirror',
+      'codemirror/mode/css/css'
     ],
     newsletter_editor: [
       'underscore',
@@ -133,8 +146,16 @@ config.push(_.extend({}, baseConfig, {
 config.push(_.extend({}, baseConfig, {
   name: 'public',
   entry: {
-    public: ['mailpoet', 'ajax', 'public.js']
+    public: [
+      'mailpoet',
+      'ajax',
+      'jquery.serialize_object',
+      'public.js'
+    ]
   },
+  /*plugins: [
+    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js'),
+  ],*/
   externals: {
     'jquery': 'jQuery'
   }
@@ -155,7 +176,6 @@ config.push(_.extend({}, baseConfig, {
       'select2',
       'blob',
       'filesaver',
-
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
       'newsletter_editor/components/config.js',

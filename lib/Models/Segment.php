@@ -29,6 +29,44 @@ class Segment extends Model {
     );
   }
 
+  function subscribers() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\Subscriber',
+      __NAMESPACE__.'\SubscriberSegment',
+      'segment_id',
+      'subscriber_id'
+    );
+  }
+
+  function duplicate($data = array()) {
+    $duplicate = parent::duplicate($data);
+
+    if($duplicate !== false) {
+      foreach($this->subscribers()->findResultSet() as $relation) {
+        $new_relation = SubscriberSegment::create();
+        $new_relation->set('subscriber_id', $relation->id);
+        $new_relation->set('segment_id', $duplicate->id);
+        $new_relation->save();
+      }
+
+      return $duplicate;
+    }
+    return false;
+  }
+
+  function addSubscriber($subscriber_id) {
+    $relation = SubscriberSegment::create();
+    $relation->set('subscriber_id', $subscriber_id);
+    $relation->set('segment_id', $this->id);
+    return $relation->save();
+  }
+
+  function removeSubscriber($subscriber_id) {
+    return SubscriberSegment::where('subscriber_id', $subscriber_id)
+      ->where('segment_id', $this->id)
+      ->delete();
+  }
+
   static function search($orm, $search = '') {
     return $orm->where_like('name', '%'.$search.'%');
   }
@@ -71,41 +109,7 @@ class Segment extends Model {
       $segment->set($data);
     }
 
-    $saved = $segment->save();
-
-    if($saved === true) {
-      return true;
-    } else {
-      $errors = $segment->getValidationErrors();
-      if(!empty($errors)) {
-        return $errors;
-      }
-    }
-    return false;
-  }
-
-  function duplicate($data = array()) {
-    $duplicate = parent::duplicate($data);
-
-    if($duplicate !== false) {
-      foreach($this->subscribers()->findResultSet() as $relation) {
-        $new_relation = SubscriberSegment::create();
-        $new_relation->set('subscriber_id', $relation->id);
-        $new_relation->set('segment_id', $duplicate->id);
-        $new_relation->save();
-      }
-
-      return $duplicate;
-    }
-    return false;
-  }
-
-  function subscribers() {
-    return $this->has_many_through(
-      __NAMESPACE__.'\Subscriber',
-      __NAMESPACE__.'\SubscriberSegment',
-      'segment_id',
-      'subscriber_id'
-    );
+    $segment->save();
+    return $segment;
   }
 }

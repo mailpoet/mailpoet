@@ -160,16 +160,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.13",
+            "version": "v5.2.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "45df3a88f7f46071e10d0b600f228d19f95911b3"
+                "reference": "e774bc9152de85547336e22b8926189e582ece95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/45df3a88f7f46071e10d0b600f228d19f95911b3",
-                "reference": "45df3a88f7f46071e10d0b600f228d19f95911b3",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/e774bc9152de85547336e22b8926189e582ece95",
+                "reference": "e774bc9152de85547336e22b8926189e582ece95",
                 "shasum": ""
             },
             "require": {
@@ -180,7 +180,8 @@
                 "phpunit/phpunit": "4.7.*"
             },
             "suggest": {
-                "league/oauth2-client": "Needed for Gmail's XOAUTH2 authentication system"
+                "league/oauth2-client": "Needed for XOAUTH2 authentication",
+                "league/oauth2-google": "Needed for Gmail XOAUTH2"
             },
             "type": "library",
             "autoload": {
@@ -216,7 +217,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2015-09-14 09:18:12"
+            "time": "2015-11-01 10:15:28"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -456,16 +457,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.23.0",
+            "version": "v1.23.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "5868cd822fd6cf626d5f805439575f9c323cee2a"
+                "reference": "d9b6333ae8dd2c8e3fd256e127548def0bc614c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/5868cd822fd6cf626d5f805439575f9c323cee2a",
-                "reference": "5868cd822fd6cf626d5f805439575f9c323cee2a",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/d9b6333ae8dd2c8e3fd256e127548def0bc614c6",
+                "reference": "d9b6333ae8dd2c8e3fd256e127548def0bc614c6",
                 "shasum": ""
             },
             "require": {
@@ -513,7 +514,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-10-29 23:29:01"
+            "time": "2015-11-05 12:49:06"
         }
     ],
     "packages-dev": [
@@ -739,16 +740,16 @@
         },
         {
             "name": "facebook/webdriver",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/facebook/php-webdriver.git",
-                "reference": "fe1bbbc5dde804d08a8593f1d9d0d3b05f5c84f5"
+                "reference": "d843e33fd19b49db5ac9daaef2610079daab0bad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/fe1bbbc5dde804d08a8593f1d9d0d3b05f5c84f5",
-                "reference": "fe1bbbc5dde804d08a8593f1d9d0d3b05f5c84f5",
+                "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/d843e33fd19b49db5ac9daaef2610079daab0bad",
+                "reference": "d843e33fd19b49db5ac9daaef2610079daab0bad",
                 "shasum": ""
             },
             "require": {
@@ -778,7 +779,7 @@
                 "selenium",
                 "webdriver"
             ],
-            "time": "2015-08-12 20:21:31"
+            "time": "2015-11-01 20:09:34"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -895,16 +896,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "4ef919b0cf3b1989523138b60163bbcb7ba1ff7e"
+                "reference": "4d0bdbe1206df7440219ce14c972aa57cc5e4982"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/4ef919b0cf3b1989523138b60163bbcb7ba1ff7e",
-                "reference": "4ef919b0cf3b1989523138b60163bbcb7ba1ff7e",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/4d0bdbe1206df7440219ce14c972aa57cc5e4982",
+                "reference": "4d0bdbe1206df7440219ce14c972aa57cc5e4982",
                 "shasum": ""
             },
             "require": {
@@ -949,7 +950,7 @@
                 "stream",
                 "uri"
             ],
-            "time": "2015-08-15 19:32:36"
+            "time": "2015-11-03 01:34:55"
         },
         {
             "name": "henrikbjorn/lurker",

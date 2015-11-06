@@ -15,7 +15,16 @@ class Subscriber extends Model {
     ));
   }
 
-   function delete() {
+  function segments() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\Segment',
+      __NAMESPACE__.'\SubscriberSegment',
+      'subscriber_id',
+      'segment_id'
+    );
+  }
+
+  function delete() {
     // delete all relations to segments
     SubscriberSegment::where('subscriber_id', $this->id)->deleteMany();
 
@@ -42,7 +51,9 @@ class Subscriber extends Model {
     );
 
     foreach($segments as $segment) {
-      $subscribers_count = $segment->subscribers()->count();
+      $subscribers_count = $segment->subscribers()
+        ->whereNull('deleted_at')
+        ->count();
       if($subscribers_count > 0) {
         $segment_list[] = array(
           'label' => sprintf('%s (%d)', $segment->name, $subscribers_count),
@@ -83,23 +94,17 @@ class Subscriber extends Model {
       array(
         'name' => 'subscribed',
         'label' => __('Subscribed'),
-        'count' => Subscriber::whereNull('deleted_at')
-          ->where('status', 'subscribed')
-          ->count()
+        'count' => Subscriber::filter('subscribed')->count()
       ),
       array(
         'name' => 'unconfirmed',
         'label' => __('Unconfirmed'),
-        'count' => Subscriber::whereNull('deleted_at')
-          ->where('status', 'unconfirmed')
-          ->count()
+        'count' => Subscriber::filter('unconfirmed')->count()
       ),
       array(
         'name' => 'unsubscribed',
         'label' => __('Unsubscribed'),
-        'count' => Subscriber::whereNull('deleted_at')
-          ->where('status', 'unsubscribed')
-          ->count()
+        'count' => Subscriber::filter('unsubscribed')->count()
       ),
       array(
         'name' => 'trash',
@@ -112,12 +117,10 @@ class Subscriber extends Model {
   static function groupBy($orm, $group = null) {
     if($group === 'trash') {
       return $orm->whereNotNull('deleted_at');
+    } else if($group === 'all') {
+      return $orm->whereNull('deleted_at');
     } else {
-      $orm = $orm->whereNull('deleted_at');
-
-      if(in_array($group, array('subscribed', 'unsubscribed', 'unconfirmed'))) {
-        return $orm->where('status', $group);
-      }
+      return $orm->filter($group);
     }
   }
 
@@ -143,15 +146,6 @@ class Subscriber extends Model {
     return $orm;
   }
 
-  function segments() {
-    return $this->has_many_through(
-      __NAMESPACE__.'\Segment',
-      __NAMESPACE__.'\SubscriberSegment',
-      'subscriber_id',
-      'segment_id'
-    );
-  }
-
   function customFields() {
     return $this->has_many_through(
       __NAMESPACE__.'\CustomField',
@@ -166,27 +160,18 @@ class Subscriber extends Model {
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
       $subscriber = self::findOne((int)$data['id']);
+      unset($data['id']);
     }
 
     if($subscriber === false) {
       $subscriber = self::create();
       $subscriber->hydrate($data);
     } else {
-      unset($data['id']);
       $subscriber->set($data);
     }
 
-    $saved = $subscriber->save();
-
-    if($saved === true) {
-      return true;
-    } else {
-      $errors = $subscriber->getValidationErrors();
-      if(!empty($errors)) {
-        return $errors;
-      }
-    }
-    return false;
+    $subscriber->save();
+    return $subscriber;
   }
 
   static function bulkMoveToList($orm, $data = array()) {
@@ -298,5 +283,23 @@ class Subscriber extends Model {
       );
     }
     return false;
+  }
+
+  static function subscribed($orm) {
+    return $orm
+      ->whereNull('deleted_at')
+      ->where('status', 'subscribed');
+  }
+
+  static function unsubscribed($orm) {
+    return $orm
+      ->whereNull('deleted_at')
+      ->where('status', 'unsubscribed');
+  }
+
+  static function unconfirmed($orm) {
+    return $orm
+      ->whereNull('deleted_at')
+      ->where('status', 'unconfirmed');
   }
 }

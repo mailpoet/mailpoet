@@ -54,29 +54,34 @@ class Newsletters {
       unset($data['options']);
     }
 
-    $newsletter_id = Newsletter::createOrUpdate($data);
+    $newsletter = Newsletter::createOrUpdate($data);
 
-    if($newsletter_id !== false) {
+    if($newsletter->id) {
       if(!empty($segment_ids)) {
-        // remove previous relationships with segments
-        NewsletterSegment::where('newsletter_id', $newsletter_id)->deleteMany();
-        // create relationship with segments
+        NewsletterSegment::where('newsletter_id', $newsletter->id)
+          ->deleteMany();
+
         foreach($segment_ids as $segment_id) {
           $relation = NewsletterSegment::create();
           $relation->segment_id = $segment_id;
-          $relation->newsletter_id = $newsletter_id;
+          $relation->newsletter_id = $newsletter->id;
           $relation->save();
         }
       }
 
       if(!empty($options)) {
-        NewsletterOption::where('newsletter_id', $newsletter_id)->deletemany();
-        $optionFields = NewsletterOptionField::where('newsletter_type', $data['type'])->findArray();
+        NewsletterOption::where('newsletter_id', $newsletter->id)
+          ->deleteMany();
+
+        $optionFields = NewsletterOptionField::where(
+          'newsletter_type',
+          $data['type']
+        )->findArray();
 
         foreach($optionFields as $optionField) {
           if(isset($options[$optionField['name']])) {
             $relation = NewsletterOption::create();
-            $relation->newsletter_id = $newsletter_id;
+            $relation->newsletter_id = $newsletter->id;
             $relation->option_field_id = $optionField['id'];
             $relation->value = $options[$optionField['name']];
             $relation->save();
@@ -85,7 +90,7 @@ class Newsletters {
       }
     }
 
-    wp_send_json(($newsletter_id !== false));
+    wp_send_json(($newsletter->id !== false));
   }
 
   function delete($data = array()) {
@@ -199,7 +204,7 @@ class Newsletters {
     wp_send_json($listing_data);
   }
 
-  function bulk_action($data = array()) {
+  function bulkAction($data = array()) {
     $bulk_action = new Listing\BulkAction(
       '\MailPoet\Models\Newsletter',
       $data
