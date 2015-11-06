@@ -1,9 +1,13 @@
 define([
     'newsletter_editor/App',
     'mailpoet',
+    'notice',
     'backbone',
-    'backbone.marionette'
-  ], function(App, MailPoet, Backbone, Marionette) {
+    'backbone.marionette',
+    'jquery',
+    'blob',
+    'filesaver'
+  ], function(App, MailPoet, Notice, Backbone, Marionette, jQuery, Blob, FileSaver) {
 
   "use strict";
 
@@ -52,6 +56,18 @@ define([
     });
   };
 
+  Module.exportTemplate = function(options) {
+    var data = _.extend(options || {}, {
+      body: App.getBody(),
+    });
+    var blob = new Blob(
+      [JSON.stringify(data)],
+      { type: 'application/json;charset=utf-8' }
+    );
+
+    FileSaver.saveAs(blob, 'template.json');
+  };
+
   Module.SaveView = Marionette.LayoutView.extend({
     getTemplate: function() { return templates.save; },
     events: {
@@ -62,7 +78,8 @@ define([
       'click .mailpoet_save_template': 'toggleSaveAsTemplate',
       'click .mailpoet_save_as_template': 'saveAsTemplate',
       /* Export template */
-      'click .mailpoet_save_export': 'exportTemplate',
+      'click .mailpoet_save_export': 'toggleExportTemplate',
+      'click .mailpoet_export_template': 'exportTemplate',
     },
     initialize: function(options) {
       App.getChannel().on('beforeEditorSave', this.beforeSave, this);
@@ -117,12 +134,33 @@ define([
 
       this.hideOptionContents();
     },
+    toggleExportTemplate: function() {
+      this.$('.mailpoet_export_template_container').toggleClass('mailpoet_hidden');
+      this.toggleSaveOptions();
+    },
+    hideExportTemplate: function() {
+      this.$('.mailpoet_export_template_container').addClass('mailpoet_hidden');
+    },
     exportTemplate: function() {
-      console.log('Exporting template');
-      this.hideOptionContents();
+      var templateName = this.$('.mailpoet_export_template_name').val(),
+          templateDescription = this.$('.mailpoet_export_template_description').val();
+
+      if (templateName === '') {
+        MailPoet.Notice.error(App.getConfig().get('translations.templateNameMissing'));
+      } else if (templateDescription === '') {
+        MailPoet.Notice.error(App.getConfig().get('translations.templateDescriptionMissing'));
+      } else {
+        console.log('Exporting template with ', templateName, templateDescription);
+        Module.exportTemplate({
+          name: templateName,
+          description: templateDescription,
+        });
+        this.hideExportTemplate();
+      }
     },
     hideOptionContents: function() {
       this.hideSaveAsTemplate();
+      this.hideExportTemplate();
       this.$('.mailpoet_save_options').addClass('mailpoet_hidden');
     },
     next: function() {

@@ -1,6 +1,7 @@
 define(
   [
     'react',
+    'underscore',
     'mailpoet',
     'react-router',
     'classnames',
@@ -8,11 +9,67 @@ define(
   ],
   function(
     React,
+    _,
     MailPoet,
     Router,
     classNames,
     Breadcrumb
   ) {
+
+    var ImportTemplate = React.createClass({
+      saveTemplate: function(template) {
+        MailPoet.Ajax.post({
+          endpoint: 'newsletterTemplates',
+          action: 'save',
+          data: template
+        }).done(function(response) {
+          if(response === true) {
+            this.props.onImport(template);
+          } else {
+            response.map(function(error) {
+              MailPoet.Notice.error(error);
+            });
+          }
+        }.bind(this));
+      },
+      handleSubmit: function(e) {
+        e.preventDefault();
+
+        if (_.size(this.refs.templateFile.files) <= 0) return false;
+
+        var file = _.first(this.refs.templateFile.files),
+            reader = new FileReader(),
+            saveTemplate = this.saveTemplate;
+
+        reader.onload = function(e) {
+          try {
+            saveTemplate(JSON.parse(e.target.result));
+          } catch (err) {
+            MailPoet.Notice.error('This template file appears to be malformed. Please try another one.');
+          }
+        }.bind(this);
+
+        reader.readAsText(file);
+      },
+      render: function() {
+        return (
+          <div>
+            <h2>Import a template</h2>
+            <form onSubmit={this.handleSubmit}>
+              <input type="file" placeholder="Select a .json file to upload" ref="templateFile" />
+
+              <p className="submit">
+                <input
+                  className="button button-primary"
+                  type="submit"
+                  value="Upload" />
+              </p>
+            </form>
+          </div>
+        );
+      },
+    });
+
     var NewsletterTemplates = React.createClass({
       mixins: [
         Router.History
@@ -93,6 +150,9 @@ define(
            this.setState({ loading: false });
         }
       },
+      handleTemplateImport: function() {
+        this.getTemplates();
+      },
       render: function() {
         var templates = this.state.templates.map(function(template, index) {
           var deleteLink = (
@@ -152,6 +212,8 @@ define(
             <ul className={ boxClasses }>
               { templates }
             </ul>
+
+            <ImportTemplate onImport={this.handleTemplateImport} />
           </div>
         );
       }
