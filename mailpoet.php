@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) exit;
 
 require 'vendor/autoload.php';
 
-define('MAILPOET_VERSION', '0.0.1');
+define('MAILPOET_VERSION', '0.0.3');
 
 $initializer = new Initializer(array(
     'file' => __FILE__,
