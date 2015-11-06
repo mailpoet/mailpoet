@@ -87,12 +87,7 @@ class Form extends Model {
       $form->set($data);
     }
 
-    try {
-      $form->save();
-      return $form;
-    } catch(Exception $e) {
-      return $form->getValidationErrors();
-    }
-    return false;
+    $form->save();
+    return $form;
   }
 }

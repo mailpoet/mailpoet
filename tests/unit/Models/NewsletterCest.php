@@ -80,7 +80,7 @@ class NewsletterCest {
         'body' => 'body'
       ));
     expect($is_created)->notEquals(false);
-    expect($is_created)->greaterThan(0);
+    expect($is_created->getValidationErrors())->isEmpty();
 
     $newsletter = Newsletter::where('subject', 'new newsletter')
       ->findOne();

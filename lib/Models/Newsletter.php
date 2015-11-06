@@ -138,12 +138,7 @@ class Newsletter extends Model {
       $newsletter->set($data);
     }
 
-    try {
-      $newsletter->save();
-      return $newsletter;
-    } catch(Exception $e) {
-      return $newsletter->getValidationErrors();
-    }
-    return false;
+    $newsletter->save();
+    return $newsletter;
   }
 }
