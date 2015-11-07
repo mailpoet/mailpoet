@@ -48,7 +48,7 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           message: '',
           static: false,
           hideClose: false,
-          addCustomClass: false,
+          id: null,
           scroll: false,
           timeout: 2000,
           onOpen: null,
@@ -62,8 +62,8 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           // clone element
           this.element = jQuery('#mailpoet_notice_'+this.options.type).clone();
 
-          // add custom identifier class to the element
-          if (this.options.addCustomClass) this.element.addClass('mailpoet_'+this.options.addCustomClass);
+          // add data-id to the element
+          if (this.options.id) this.element.attr('data-id', 'notice_' + this.options.id);
 
           // remove id from clone
           this.element.removeAttr('id');
@@ -168,12 +168,12 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           if(all !== undefined && all === true) {
               jQuery('.mailpoet_notice:not([id])').trigger('close');
           } else if (all !== undefined && jQuery.isArray(all)) {
-              for (var noticeClass in all) {
-                  jQuery('.mailpoet_'+all[noticeClass])
+              for (var id in all) {
+                  jQuery('[data-id="notice_' + all[id] + '"]')
                    .trigger('close');
               }
           } if (all !== undefined) {
-              jQuery('.mailpoet_'+noticeClass)
+              jQuery('[data-id="notice_' + all + '"]')
                .trigger('close');
           } else {
               jQuery('.mailpoet_notice.updated:not([id]), .mailpoet_notice.error:not([id])')

@@ -166,7 +166,8 @@ class Migrator {
       'value varchar(255) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id)'
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY subscriber_id_custom_field_id (subscriber_id,custom_field_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -192,7 +193,8 @@ class Migrator {
       'value varchar(255) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id)'
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY newsletter_id_option_field_id (newsletter_id,option_field_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }

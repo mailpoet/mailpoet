@@ -1,0 +1,32 @@
+<div id="step3" class="mailpoet_hidden">
+  <div id="subscribers_data_import_results" class="mailpoet_hidden notice">
+    <!-- Template data -->
+  </div>
+
+  <table class="mailpoet_subscribers form-table">
+    <tbody>
+    <tr>
+      <th scope="row">
+        <a href="javascript:;"
+         class="button-primary wysija mailpoet_import_again"><%= __('Import again') %></a>
+        <a href="javascript:;"
+         class="button-primary wysija mailpoet_view_subscribers"><%= __('View subscribers') %></a>
+      </th>
+    </tr>
+    </tbody>
+  </table>
+
+  <script id="subscribers_data_import_results_template" type="text/x-handlebars-template">
+    <ul>
+      {{#if added}}
+      <li>{{{added}}}</li>
+      {{/if}}
+      {{#if updated}}
+      <li>{{{updated}}}</li>
+      {{/if}}
+      {{#if noaction}}
+      <li><%= __('No new subscribers were found/added.') %></li>
+      {{/if}}
+    </ul>
+  </script>
+</div>

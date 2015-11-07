@@ -21,14 +21,13 @@ class Import {
   function addSegment($data) {
     $segment = Segment::createOrUpdate($data, $returnObject = true);
     wp_send_json(
-      (!is_array($segment)) ?
+      (!is_object($segment)) ?
         array(
-          'status' => 'error',
-          'message' => $segment
+          'result' => false,
         ) :
         array(
-          'status' => 'success',
-          'segment' => $segment
+          'result' => true,
+          'segment' => $segment->asArray()
         )
     );
   }
@@ -40,17 +39,27 @@ class Import {
     wp_send_json(
       (!$result) ?
         array(
-          'status' => 'error'
+          'result' => false
         ) :
         array(
-          'status' => 'success',
+          'result' => true,
           'customField' => $customField->asArray()
         )
     );
   }
 
   function process($data) {
+    $data = file_get_contents(dirname(__FILE__) . '/../../export.txt');
     $import = new \MailPoet\Import\Import(json_decode($data, true));
-    wp_send_json($import->process());
+    try {
+      wp_send_json($import->process());
+    } catch (\Exception $e) {
+      wp_send_json(
+        array(
+          'result' => false,
+          'error' => $e->getMessage()
+        )
+      );
+    }
   }
 }

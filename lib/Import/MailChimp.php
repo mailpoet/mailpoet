@@ -47,7 +47,7 @@ class MailChimp {
     }
 
     return array(
-      'status' => 'success',
+      'result' => true,
       'data' => $lists
     );
   }
@@ -108,12 +108,14 @@ class MailChimp {
     }
 
     return array(
-      'status' => 'success',
-      'data' => $subscribers,
-      'invalid' => false,
-      'duplicate' => false,
-      'header' => $header,
-      'count' => count($subscribers)
+      'result' => true,
+      'data' => array(
+        'subscribers' => $subscribers,
+        'invalid' => false,
+        'duplicate' => false,
+        'header' => $header,
+        'count' => count($subscribers)
+      )
     );
   }
 
@@ -128,24 +130,24 @@ class MailChimp {
 
   private function processError($error) {
     switch ($error) {
-    case 'API':
-      $message = __('Invalid API key.');
-    break;
-    case 'connection':
-      $message = __('Could not connect to your MailChimp account.');
-    break;
-    case 'headers':
-      $message = __('The selected lists do not have matching columns (headers).');
-    break;
-    case 'size':
-      $message = __('Information received from MailChimp is too large for processing. Please limit the number of lists.');
-    break;
-    case 'subscribers':
-      $message = __('Did not find any active subscribers.');
-    break;
-    case 'lists':
-      $message = __('Did not find any valid lists');
-    break;
+      case 'API':
+        $message = __('Invalid API key.');
+        break;
+      case 'connection':
+        $message = __('Could not connect to your MailChimp account.');
+        break;
+      case 'headers':
+        $message = __('The selected lists do not have matching columns (headers).');
+        break;
+      case 'size':
+        $message = __('Information received from MailChimp is too large for processing. Please limit the number of lists.');
+        break;
+      case 'subscribers':
+        $message = __('Did not find any active subscribers.');
+        break;
+      case 'lists':
+        $message = __('Did not find any valid lists');
+        break;
     }
     return array(
       'status' => 'error',

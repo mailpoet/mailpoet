@@ -38,12 +38,12 @@ class CustomField extends Model {
   }
 
   function subscribers() {
-    return $this->has_many_through(
+    return $this->hasManyThrough(
       __NAMESPACE__ . '\Subscriber',
       __NAMESPACE__ . '\SubscriberCustomField',
       'custom_field_id',
       'subscriber_id'
-    )->select_expr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.value');
+    )->selectExpr(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value');
   }
 
   static function createOrUpdate($data = array()) {

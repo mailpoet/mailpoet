@@ -8,6 +8,7 @@
   <!-- STEP 2: subscriber data manipulation -->
   <% include 'import/step2.html' %>
   <!-- STEP 3: results -->
+  <% include 'import/step3.html' %>
 </div>
 
 <%= stylesheet('import.css') %>
@@ -52,7 +53,9 @@
 'columnContainsInvalidDate': __('One of the columns contains an invalid date. Please fix before continuing.'),
 'listCreateError': __('Error adding a new segment:'),
 'columnContainsInvalidElement': __('One of the columns contains an invalid email. Please fix before continuing.'),
-'customFieldCreateError': __('Custom field could not be created.')
+'customFieldCreateError': __('Custom field could not be created.'),
+'subscribersAdded': __('%1$s subscribers added to %2$s.'),
+'subscribersUpdated': __('%1$s existing subscribers were updated and added to %2$s.')
 }) %>
 
 <script type="text/javascript">
