@@ -25,7 +25,7 @@
 'importNoticeDuplicate': __('%1$s emails appear more than once in your file : %2$s.'),
 'hideDetails': __('Hide details.'),
 'showDetails': __('Show more details.'),
-'listSelectionRequired': __('You need to select at least one list.'),
+'segmentSelectionRequired': __('You need to select at least one list.'),
 'addNewList': __('Add new list'),
 'addNewColumuserColumnsn': __('Add new list'),
 'userColumns': __('User columns'),
@@ -62,9 +62,9 @@
   var
     maxPostSize = '<%= maxPostSize %>',
     importData = {},
-    mailpoet_columns_select2 = <%= subscriberFieldsSelect2|raw %>,
-    mailpoet_columns = <%= subscriberFields|raw %>,
-    mailpoetLists = <%= segments|raw %>,
+    mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
+    mailpoetColumns = <%= subscriberFields|raw %>,
+    mailpoetSegments = <%= segments|raw %>,
     emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-_]{0,61}[a-zA-Z0-9])+.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 </script>
 <% endblock %>

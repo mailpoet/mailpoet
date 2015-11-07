@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Config;
+
 use \MailPoet\Import\BootstrapMenu;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
@@ -78,7 +79,7 @@ class Menu {
       array($this, 'settings')
     );
     add_submenu_page(
-      'mailpoet',
+      'null',
       __('Import'),
       __('Import'),
       'manage_options',
@@ -219,9 +220,6 @@ class Menu {
     echo $this->renderer->render('import.html', $data);
   }
 
-
-
-  
   function formEditor() {
     $id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     $form = Form::findOne($id);

@@ -304,9 +304,9 @@ class Subscriber extends Model {
       ->where('status', 'unconfirmed');
   }
   
-    static function createMultiple($columns, $values) {
+  static function createMultiple($columns, $values) {
     return self::rawExecute(
-      'INSERT IGNORE INTO `' . self::$_table . '` ' .
+      'INSERT INTO `' . self::$_table . '` ' .
       '(' . implode(', ', $columns) . ') ' .
       'VALUES ' . rtrim(
         str_repeat(
@@ -324,31 +324,46 @@ class Subscriber extends Model {
       'created_at'
     );
     $emailPosition = array_search('email', $columns);
-    $sql = function ($type) use ($columns, $subscribers, $emailPosition, $ignoreColumnsOnUpdate) {
-      return array_filter(
-        array_map(function ($columnPosition, $columnName) use ($type, $subscribers, $emailPosition, $ignoreColumnsOnUpdate) {
-          if(in_array($columnName, $ignoreColumnsOnUpdate)) return;
-          $query = array_map(
-            function ($subscriber) use ($type, $columnPosition, $emailPosition) {
-              return ($type === 'values') ?
-                array(
-                  $subscriber[$emailPosition],
-                  $subscriber[$columnPosition]
-                ) :
-                'WHEN email = ? THEN ?';
-            }, $subscribers);
-          return ($type === 'values') ?
-            Helpers::flattenArray($query) :
-            $columnName . '= (CASE ' . implode(' ', $query) . ' END)';
-        }, array_keys($columns), $columns)
-      );
-    };
+    $sql =
+      function ($type) use (
+        $columns,
+        $subscribers,
+        $emailPosition,
+        $ignoreColumnsOnUpdate
+      ) {
+        return array_filter(
+          array_map(function ($columnPosition, $columnName) use (
+            $type,
+            $subscribers,
+            $emailPosition,
+            $ignoreColumnsOnUpdate
+          ) {
+            if(in_array($columnName, $ignoreColumnsOnUpdate)) return;
+            $query = array_map(
+              function ($subscriber) use ($type, $columnPosition, $emailPosition) {
+                return ($type === 'values') ?
+                  array(
+                    $subscriber[$emailPosition],
+                    $subscriber[$columnPosition]
+                  ) :
+                  'WHEN email = ? THEN ?';
+              }, $subscribers);
+            return ($type === 'values') ?
+              Helpers::flattenArray($query) :
+              $columnName . '= (CASE ' . implode(' ', $query) . ' END)';
+          }, array_keys($columns), $columns)
+        );
+      };
     return self::rawExecute(
       'UPDATE `' . self::$_table . '` ' .
       'SET ' . implode(', ', $sql('statement')) . ', ' .
       'updated_at = "' . $currentTime . '" ' .
-      'WHERE email IN (' . rtrim(str_repeat('?,', count($subscribers)), ',') . ')',
-      array_merge(Helpers::flattenArray($sql('values')), Helpers::arrayColumn($subscribers, $emailPosition))
+      'WHERE email IN ' .
+      '(' . rtrim(str_repeat('?,', count($subscribers)), ',') . ')',
+      array_merge(
+        Helpers::flattenArray($sql('values')),
+        Helpers::arrayColumn($subscribers, $emailPosition)
+      )
     );
   }
 }

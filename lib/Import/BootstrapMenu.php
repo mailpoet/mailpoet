@@ -1,4 +1,5 @@
-<?php namespace MailPoet\Import;
+<?php
+namespace MailPoet\Import;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
@@ -17,14 +18,20 @@ class BootstrapMenu {
       's_email' => __('Email'),
       's_first_name' => __('First name'),
       's_last_name' => __('Last name'),
-      /*    's_confirmed_ip' => __('IP address'),
-            's_confirmed_at' => __('Subscription date'),*/
       's_status' => __('Status')
+      /*    's_confirmed_ip' => __('IP address')
+            's_confirmed_at' => __('Subscription date')*/
     );
   }
   
   function getSegments() {
-    return Segment::findArray();
+    return array_map(function ($segment) {
+      return array(
+        'id' => $segment['id'],
+        'name' => $segment['name'],
+        'subscriberCount' => $segment['subscribers']
+      );
+    }, Segment::filter('filterWithSubscriberCount')->findArray());
   }
   
   function getSubscriberCustomFields() {
@@ -84,12 +91,7 @@ class BootstrapMenu {
   }
   
   function bootstrap() {
-    $data['segments'] = array_map(function ($segment) {
-      return array(
-        'id' => $segment['id'],
-        'name' => $segment['name'],
-      );
-    }, $this->getSegments());
+    $data['segments'] = $this->segments;
     
     $data['subscriberFields'] = array_merge(
       $this->formatSubscriberFields(),

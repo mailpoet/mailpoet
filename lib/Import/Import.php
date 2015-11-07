@@ -1,7 +1,10 @@
-<?php namespace MailPoet\Import;
+<?php
+namespace MailPoet\Import;
 
+use MailPoet\Import\BootstrapMenu;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Util\Helpers;
 
 class Import {
@@ -23,42 +26,52 @@ class Import {
     list($subscribersData, $subscriberFields) = $this->extendSubscribersAndFields(
       $subscribersData, $subscriberFields
     );
-    list($existingSubscribers, $newSubscribers) = $this->splitSubscribers(
-      $subscribersData
-    );
+    list($existingSubscribers, $newSubscribers) =
+      $this->filterExistingAndNewSubscribers($subscribersData);
     $addedSubscribers = $updatedSubscribers = array();
-    if($newSubscribers) {
-      $addedSubscribers = $this->addOrUpdateSubscribers(
-        'create',
-        $newSubscribers,
-        $subscriberFields
-      );
-
-    }
-    if($existingSubscribers && $this->updateSubscribers) {
-      $updatedSubscribers = $this->addOrUpdateSubscribers(
-        'update',
-        $existingSubscribers,
-        $subscriberFields
-      );
-      if($addedSubscribers) {
-        $updatedSubscribers = array_diff_key(
-          $updatedSubscribers,
-          $addedSubscribers
+    try {
+      if($newSubscribers) {
+        $addedSubscribers = $this->addOrUpdateSubscribers(
+          'create',
+          $newSubscribers,
+          $subscriberFields
         );
+        $this->addSubscribersToSegments(array_keys($addedSubscribers));
       }
+      if($existingSubscribers && $this->updateSubscribers) {
+        $updatedSubscribers = $this->addOrUpdateSubscribers(
+          'update',
+          $existingSubscribers,
+          $subscriberFields
+        );
+        $this->addSubscribersToSegments(array_keys($updatedSubscribers));
+        if($addedSubscribers) {
+          // subtract added from updated subscribers when DB operation takes <1s
+          $updatedSubscribers = array_diff_key(
+            $updatedSubscribers,
+            $addedSubscribers
+          );
+        }
+      }
+    } catch (\PDOException $e) {
+      return array(
+        'result' => false,
+        'error' => $e->getMessage()
+      );
     }
+    $segments = new BootstrapMenu();
     return array(
       'result' => true,
       'data' => array(
         'added' => count($addedSubscribers),
         'updated' => count($updatedSubscribers),
+        'segments' => $segments->getSegments()
       ),
       'profile' => $this->timeExecution()
     );
   }
 
-  function splitSubscribers($subscribersData) {
+  function filterExistingAndNewSubscribers($subscribersData) {
     $existingRecords = array_filter(
       array_map(function ($subscriberEmails) {
         return Subscriber::selectMany(array('email'))
@@ -178,22 +191,18 @@ class Import {
     $subscriberFields = str_replace('s_', '', $subscriberFields);
     $currentTime = ($action === 'update') ? date('Y-m-d H:i:s') : $this->currentTime;
     foreach (array_chunk($subscribers, 200) as $data) {
-      try {
-        if($action == 'create') {
-          Subscriber::createMultiple(
-            $subscriberFields,
-            $data
-          );
-        }
-        if($action == 'update') {
-          Subscriber::updateMultiple(
-            $subscriberFields,
-            $data,
-            $currentTime
-          );
-        }
-      } catch (\PDOException $e) {
-        throw new \Exception($e->getMessage());
+      if($action == 'create') {
+        Subscriber::createMultiple(
+          $subscriberFields,
+          $data
+        );
+      }
+      if($action == 'update') {
+        Subscriber::updateMultiple(
+          $subscriberFields,
+          $data,
+          $currentTime
+        );
       }
     }
     $result = Helpers::arrayColumn( // return id=>email array of results
@@ -235,20 +244,22 @@ class Import {
           }, $count, $subscribersData[$column]);
       }, $this->subscriberCustomFields)[0];
     foreach (array_chunk($subscribers, 200) as $data) {
-      try {
-        if($action === 'create') {
-          SubscriberCustomField::createMultiple(
-            $data
-          );
-        }
-        if($action === 'update') {
-          SubscriberCustomField::updateMultiple(
-            $data
-          );
-        }
-      } catch (\PDOException $e) {
-        throw new \Exception($e->getMessage());
+      if($action === 'create') {
+        SubscriberCustomField::createMultiple(
+          $data
+        );
       }
+      if($action === 'update') {
+        SubscriberCustomField::updateMultiple(
+          $data
+        );
+      }
+    }
+  }
+
+  function addSubscribersToSegments($subscribers) {
+    foreach (array_chunk($subscribers, 200) as $data) {
+      SubscriberSegment::createMultiple($this->segments, $data);
     }
   }
 
