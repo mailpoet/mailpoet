@@ -76,17 +76,13 @@ class Helpers {
   static function getMaxPostSize($bytes = false) {
     $maxPostSize = ini_get('post_max_size');
     if(!$bytes) return $maxPostSize;
-    $maxPostSizeBytes = (int) $maxPostSize;
-    $unit = strtolower($maxPostSize[strlen($maxPostSize) - 1]);
-    switch ($unit) {
-      case 'g':
-        $maxPostSizeBytes *= 1024;
-      case 'm':
-        $maxPostSizeBytes *= 1024;
-      case 'k':
-        $maxPostSizeBytes *= 1024;
+    switch (substr ($maxPostSize, -1))
+    {
+      case 'M': case 'm': return (int)$maxPostSize * 1048576;
+      case 'K': case 'k': return (int)$maxPostSize * 1024;
+      case 'G': case 'g': return (int)$maxPostSize * 1073741824;
+      default: return $maxPostSize;
     }
-    return $maxPostSizeBytes;
   }
 
   static function flattenArray($array) {

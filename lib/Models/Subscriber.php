@@ -317,12 +317,13 @@ class Subscriber extends Model {
       Helpers::flattenArray($values)
     );
   }
-  
-  static function updateMultiple($columns, $subscribers, $currentTime) {
+
+  static function updateMultiple($columns, $subscribers, $currentTime = false) {
     $ignoreColumnsOnUpdate = array(
       'email',
       'created_at'
     );
+    $subscribers = array_map('array_values', $subscribers);
     $emailPosition = array_search('email', $columns);
     $sql =
       function ($type) use (
@@ -356,10 +357,10 @@ class Subscriber extends Model {
       };
     return self::rawExecute(
       'UPDATE `' . self::$_table . '` ' .
-      'SET ' . implode(', ', $sql('statement')) . ', ' .
-      'updated_at = "' . $currentTime . '" ' .
-      'WHERE email IN ' .
-      '(' . rtrim(str_repeat('?,', count($subscribers)), ',') . ')',
+      'SET ' . implode(', ', $sql('statement')) . ' '.
+      (($currentTime) ? ', updated_at = "' . $currentTime . '" ' : '') .
+        'WHERE email IN ' .
+        '(' . rtrim(str_repeat('?,', count($subscribers)), ',') . ')',
       array_merge(
         Helpers::flattenArray($sql('values')),
         Helpers::arrayColumn($subscribers, $emailPosition)

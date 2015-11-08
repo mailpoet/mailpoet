@@ -1,4 +1,5 @@
 <?php
+
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -19,7 +20,7 @@ class SubscriberCest {
   }
 
   function itCanBeCreated() {
-    expect($this->saved)->equals(true);
+    expect($this->saved)->true();
   }
 
   function itHasFirstName() {
@@ -53,7 +54,7 @@ class SubscriberCest {
     expect($saved)->notEquals(true);
   }
 
-  function itHasStatus() {
+  function itHasStatusDefaultStatusOfUnconfirmed() {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
         ->findOne();
@@ -284,6 +285,36 @@ class SubscriberCest {
     $record = Subscriber::where('email', $data['email'])
       ->findOne();
     expect($record->last_name)->equals('Mailer');
+  }
+
+  function itCanCreateOrUpdateMultipleRecords() {
+    ORM::forTable(Subscriber::$_table)->deleteMany();
+    $columns = array(
+      'first_name',
+      'last_name',
+      'email'
+    );
+    $values = array(
+      array(
+        'first_name' => 'Adam',
+        'last_name' => 'Smith',
+        'email' => 'adam@smith.com'
+      ),
+      array(
+        'first_name' => 'Mary',
+        'last_name' => 'Jane',
+        'email' => 'mary@jane.com'
+      )
+    );
+    Subscriber::createMultiple($columns, $values);
+    $subscribers = Subscriber::findArray();
+    expect(count($subscribers))->equals(2);
+    expect($subscribers[1]['email'])->equals($values[1]['email']);
+
+    $values[0]['first_name'] = 'John';
+    Subscriber::updateMultiple($columns, $values);
+    $subscribers = Subscriber::findArray();
+     expect($subscribers[0]['first_name'])->equals($values[0]['first_name']);
   }
 
   function _after() {

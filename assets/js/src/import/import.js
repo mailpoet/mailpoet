@@ -16,7 +16,7 @@ define(
   Handlebars,
   Papa
  ) {
-   if (typeof(importData) === 'undefined') {
+   if (!jQuery("#mailpoet_subscribers_import").length) {
      return;
    }
    jQuery(document).ready(function () {
@@ -182,7 +182,7 @@ define(
          }).done(function (request) {
            if (request.result === false) {
              MailPoet.Notice.hide();
-             MailPoet.Notice.error(request.message);
+             MailPoet.Notice.error(request.error);
              jQuery('.mailpoet_mailchimp-key-status')
               .removeClass()
               .addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-error');

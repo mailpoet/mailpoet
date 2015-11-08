@@ -2,7 +2,6 @@
 use MailPoet\Router\Mailer;
 
 class MailerCest {
-
   function __construct() {
     $this->router = new Mailer();
   }

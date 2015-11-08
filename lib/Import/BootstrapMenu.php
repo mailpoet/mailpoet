@@ -31,14 +31,15 @@ class BootstrapMenu {
         'name' => $segment['name'],
         'subscriberCount' => $segment['subscribers']
       );
-    }, Segment::filter('filterWithSubscriberCount')->findArray());
+    }, Segment::filter('filterWithSubscriberCount')
+         ->findArray());
   }
   
   function getSubscriberCustomFields() {
     return CustomField::findArray();
   }
   
-  function formatSubscriberFields() {
+  function formatSubscriberFields($subscriberFields) {
     return array_map(function ($fieldId, $fieldName) {
       return array(
         'id' => $fieldId,
@@ -46,22 +47,23 @@ class BootstrapMenu {
         'type' => ($fieldId === 's_confirmed_at') ? 'date' : null,
         'custom' => false
       );
-    }, array_keys($this->subscriberFields), $this->subscriberFields);
+    }, array_keys($subscriberFields), $subscriberFields);
   }
   
-  function formatSubscriberCustomFields() {
+  function formatSubscriberCustomFields($subscriberCustomFields) {
     return array_map(function ($field) {
       return array(
         'id' => $field['id'],
         'name' => $field['name'],
-        'label' => $field['name'],
         'type' => $field['type'],
         'custom' => true
       );
-    }, $this->subscriberCustomFields);
+    }, $subscriberCustomFields);
   }
   
-  function formatSubscriberFieldsSelect2() {
+  function formatFieldsForSelect2(
+    $subscriberFields,
+    $subscriberCustomFields) {
     $select2Fields = array(
       array(
         'name' => __('Actions'),
@@ -78,13 +80,15 @@ class BootstrapMenu {
       ),
       array(
         'name' => __('System columns'),
-        'children' => $this->formatSubscriberFields()
+        'children' => $this->formatSubscriberFields($subscriberFields)
       )
     );
     if($this->subscriberCustomFields) {
       array_push($select2Fields, array(
         'name' => __('User columns'),
-        'children' => $this->formatSubscriberCustomFields()
+        'children' => $this->formatSubscriberCustomFields(
+          $subscriberCustomFields
+        )
       ));
     }
     return $select2Fields;
@@ -92,14 +96,14 @@ class BootstrapMenu {
   
   function bootstrap() {
     $data['segments'] = $this->segments;
-    
     $data['subscriberFields'] = array_merge(
-      $this->formatSubscriberFields(),
-      $this->formatSubscriberCustomFields()
+      $this->formatSubscriberFields($this->subscriberFields),
+      $this->formatSubscriberCustomFields($this->subscriberCustomFields)
     );
-    
-    $data['subscriberFieldsSelect2'] = $this->formatSubscriberFieldsSelect2();
-    
+    $data['subscriberFieldsSelect2'] = $this->formatFieldsForSelect2(
+      $this->subscriberFields,
+      $this->subscriberCustomFields
+    );
     $data = array_map('json_encode', $data);
     $data['maxPostSizeBytes'] = Helpers::getMaxPostSize('bytes');
     $data['maxPostSize'] = Helpers::getMaxPostSize();

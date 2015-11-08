@@ -10,6 +10,7 @@ class CustomFieldCest {
     $this->data = array(
       'name' => 'DOB',
       'type' => 'date',
+      'params' => 'none'
     );
     $this->customField = CustomField::create();
     $this->customField->hydrate($this->data);
@@ -32,20 +33,19 @@ class CustomFieldCest {
     expect($this->saved)->equals(true);
   }
 
-  function itHasName() {
-    $customField = CustomField::where('name', $this->data['name'])
-      ->findOne();
-    expect($customField->name)->equals($this->data['name']);
+  function itCanHaveName() {
+    expect($this->customField->name)->equals($this->data['name']);
   }
 
-  function itHasType() {
-    $customField = CustomField::where('name', $this->data['name'])
-      ->findOne();
-    expect($customField->type)->equals($this->data['type']);
+  function itCanHaveType() {
+    expect($this->customField->type)->equals($this->data['type']);
+  }
+
+  function itCanHaveParams() {
+    expect(unserialize($this->customField->params))->equals($this->data['params']);
   }
 
   function itHasToBeValid() {
-    expect($this->saved)->equals(true);
     $empty_model = CustomField::create();
     expect($empty_model->save())->notEquals(true);
     $validations = $empty_model->getValidationErrors();
