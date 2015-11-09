@@ -106,12 +106,12 @@ class Newsletter extends Model {
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Newsletter::whereNull('deleted_at')->count()
+        'count' => Newsletter::getPublished()->count()
       ),
       array(
         'name' => 'trash',
         'label' => __('Trash'),
-        'count' => Newsletter::whereNotNull('deleted_at')->count()
+        'count' => Newsletter::getTrashed()->count()
       )
     );
   }

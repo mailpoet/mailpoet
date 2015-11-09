@@ -89,7 +89,7 @@ class Subscriber extends Model {
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Subscriber::whereNull('deleted_at')->count()
+        'count' => Subscriber::getPublished()->count()
       ),
       array(
         'name' => 'subscribed',
@@ -109,7 +109,7 @@ class Subscriber extends Model {
       array(
         'name' => 'trash',
         'label' => __('Trash'),
-        'count' => Subscriber::whereNotNull('deleted_at')->count()
+        'count' => Subscriber::getTrashed()->count()
       )
     );
   }

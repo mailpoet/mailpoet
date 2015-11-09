@@ -20,7 +20,17 @@ function(
       this.loadCachedItems();
       this.setupSelect2();
     },
-    componentDidUpdate: function() {
+    componentDidUpdate: function(prevProps, prevState) {
+      if(
+        (this.props.item !== undefined && prevProps.item !== undefined)
+        && (this.props.item.id !== prevProps.item.id)
+      ) {
+        jQuery('#'+this.refs.select.id).select2(
+          'val',
+          this.props.item[this.props.field.name]
+        );
+      }
+
       this.setupSelect2();
     },
     setupSelect2: function() {
@@ -81,37 +91,33 @@ function(
       return true;
     },
     render: function() {
-      if((this.props.item !== undefined && this.props.item.id === undefined)) {
-        return false;
-      } else {
-        var options = this.state.items.map(function(item, index) {
-          return (
-            <option
-              key={ item.id }
-              value={ item.id }
-            >
-              { item.name }
-            </option>
-          );
-        });
-
-        var default_value = (
-          (this.props.item !== undefined && this.props.field.name !== undefined)
-          ? this.props.item[this.props.field.name]
-          : null
-        );
-
+      var options = this.state.items.map(function(item, index) {
         return (
-          <select
-            id={ this.props.field.id || this.props.field.name }
-            ref="select"
-            placeholder={ this.props.field.placeholder }
-            multiple={ this.props.field.multiple }
-            onChange={ this.handleChange }
-            defaultValue={ default_value }
-          >{ options }</select>
+          <option
+            key={ item.id }
+            value={ item.id }
+          >
+            { item.name }
+          </option>
         );
-      }
+      });
+
+      var default_value = (
+        (this.props.item !== undefined && this.props.field.name !== undefined)
+        ? this.props.item[this.props.field.name]
+        : null
+      );
+
+      return (
+        <select
+          id={ this.props.field.id || this.props.field.name }
+          ref="select"
+          placeholder={ this.props.field.placeholder }
+          multiple={ this.props.field.multiple }
+          onChange={ this.handleChange }
+          defaultValue={ default_value }
+        >{ options }</select>
+      );
     }
   });
 

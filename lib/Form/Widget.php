@@ -72,7 +72,7 @@ class Widget extends \WP_Widget {
     $selected_form = isset($instance['form']) ? (int)($instance['form']) : 0;
 
     // get forms list
-    $forms = Form::whereNull('deleted_at')->orderByAsc('name')->findArray();
+    $forms = Form::getPublished()->orderByAsc('name')->findArray();
     ?><p>
       <label for="<?php $this->get_field_id( 'title' ) ?>"><?php _e( 'Title:' ); ?></label>
       <input
@@ -94,23 +94,20 @@ class Widget extends \WP_Widget {
       </select>
     </p>
     <p>
-      <a href="javascript:;" class="mailpoet_form_new"><?php _e("Create a new form"); ?></a>
+      <a href="javascript:;" onClick="createSubscriptionForm()" class="mailpoet_form_new"><?php _e("Create a new form"); ?></a>
     </p>
     <script type="text/javascript">
-    jQuery(function($) {
-      $(function() {
-        $('.mailpoet_form_new').on('click', function() {
-          MailPoet.Ajax.post({
-            endpoint: 'forms',
-            action: 'create'
-          }).done(function(response) {
-            if(response !== false) {
-              window.location = response;
-            }
-          });
+    function createSubscriptionForm() {
+        MailPoet.Ajax.post({
+          endpoint: 'forms',
+          action: 'create'
+        }).done(function(response) {
+          if(response !== false) {
+            window.location = response;
+          }
         });
-      });
-    });
+        return false;
+    }
     </script>
     <?php
   }
@@ -134,7 +131,7 @@ class Widget extends \WP_Widget {
     );
 
     // get form
-    $form = Form::whereNull('deleted_at')->findOne($instance['form']);
+    $form = Form::getPublished()->findOne($instance['form']);
 
     // if the form was not found, return nothing.
     if($form === false) {
