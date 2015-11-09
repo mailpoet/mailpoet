@@ -1,48 +1,62 @@
 <?php
-use \MailPoet\Config\Env;
+use MailPoet\Config\Env;
 
 class EnvCest {
   function _before() {
     Env::init('file', '1.0.0');
   }
 
-  function itCanReturnThePluginPrefix() {
+  function itCanReturnPluginPrefix() {
     expect(Env::$plugin_prefix)->equals('mailpoet_');
   }
 
-  function itCanReturnTheDbPrefix() {
+  function itCanReturnDbPrefix() {
     global $wpdb;
     $db_prefix = $wpdb->prefix . 'mailpoet_';
     expect(Env::$db_prefix)->equals($db_prefix);
   }
 
-  function itCanReturnTheDbHost() {
-    expect(Env::$db_host)->equals(DB_HOST);
+  function itCanReturnDbHost() {
+    if(preg_match('/(?=:\d+$)/', DB_HOST)) {
+      expect(Env::$db_host)->equals(explode(':', DB_HOST)[0]);
+    } else expect(Env::$db_host)->equals(DB_HOST);
   }
 
-  function itCanReturnTheDbName() {
+  function itCanReturnDbPort() {
+    if(preg_match('/(?=:\d+$)/', DB_HOST)) {
+      expect(Env::$db_port)->equals(explode(':', DB_HOST)[1]);
+    } else expect(Env::$db_port)->equals(3306);
+  }
+
+  function itCanReturnSocket() {
+    if(!preg_match('/(?=:\d+$)/', DB_HOST)
+      && preg_match('/:/', DB_HOST)
+    ) {
+      expect(Env::$db_socket)->true();
+    } else expect(Env::$db_socket)->false();
+  }
+
+  function itCanReturnDbName() {
     expect(Env::$db_name)->equals(DB_NAME);
   }
 
-  function itCanReturnTheDbUser() {
+  function itCanReturnDbUser() {
     expect(Env::$db_username)->equals(DB_USER);
   }
 
-  function itCanReturnTheDbPassword() {
+  function itCanReturnDbPassword() {
     expect(Env::$db_password)->equals(DB_PASSWORD);
   }
 
-  function itCanReturnTheDbCharset() {
+  function itCanReturnDbCharset() {
     global $wpdb;
     $charset = $wpdb->get_charset_collate();
     expect(Env::$db_charset)->equals($charset);
   }
 
-  function itCanGenerateTheDbSourceName() {
-    $source_name = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME;
+  function itCanGenerateDbSourceName() {
+    $source_name = ((!ENV::$db_socket) ? 'mysql:host=' : 'mysql:unix_socket=') .
+      ENV::$db_host . ';port=' . ENV::$db_port . ';dbname=' . DB_NAME;
     expect(Env::$db_source_name)->equals($source_name);
-  }
-
-  function _after() {
   }
 }

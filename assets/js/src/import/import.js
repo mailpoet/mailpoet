@@ -646,7 +646,7 @@ define(
              columnId = 'ignore'; // set default column type
             // if the column is not undefined and has a valid e-mail, set type as email
             if (columnData % 1 !== 0 && emailRegex.test(columnData)) {
-              columnId = 's_email';
+              columnId = 'email';
             } else if (subscribers.header) {
               var headerName = subscribers.header[i],
                header_name_match = mailpoetColumns.map(function (el) {
@@ -658,15 +658,15 @@ define(
               }// set column type using header name
               else if (headerName) {
                 if (/first|first name|given name/i.test(headerName)) {
-                  columnId = 's_first_name';
+                  columnId = 'first_name';
                 } else if (/last|last name/i.test(headerName)) {
-                  columnId = 's_last_name';
+                  columnId = 'last_name';
                 } else if (/status/i.test(headerName)) {
-                  columnId = 's_status';
+                  columnId = 'status';
                 } /*else if (/subscribed|subscription/i.test(headerName)) {
-                  columnId = 's_confirmed_at';
+                  columnId = 'confirmed_at';
                 } else if (/ip/i.test(headerName)) {
-                  columnId = 's_confirmed_ip';
+                  columnId = 'confirmed_ip';
                 }*/
               }
             }
@@ -891,7 +891,7 @@ define(
 
            // EMAIL filter: if the last value in the column doesn't have a valid
            // email, hide the next button
-           if (column.id === "s_email") {
+           if (column.id === "email") {
              if (!emailRegex.test(subscribersClone.subscribers[0][matchedColumn])) {
                preventNextStep = true;
                if (!jQuery('[data-id="notice_invalidEmail"]').length) {
@@ -1083,9 +1083,9 @@ define(
            .html()),
         exportMenuElement = jQuery('span.mailpoet_export'),
         importResults = {
-          added: (importData.step2.added)
-           ? MailPoetI18n.subscribersAdded
-           .replace('%1$s', '<strong>' + importData.step2.added + '</strong>')
+          created: (importData.step2.created)
+           ? MailPoetI18n.subscribersCreated
+           .replace('%1$s', '<strong>' + importData.step2.created + '</strong>')
            .replace('%2$s', '"' + importData.step2.segments.join('", "') + '"')
            : false,
           updated: (importData.step2.updated)
@@ -1093,7 +1093,7 @@ define(
            .replace('%1$s', '<strong>' + importData.step2.updated + '</strong>')
            .replace('%2$s', '"' + importData.step2.segments.join('", "') + '"')
            : false,
-          noaction: (!importData.step2.updated && !importData.step2.added)
+          noaction: (!importData.step2.updated && !importData.step2.created)
            ? true
            : false
         };
@@ -1111,9 +1111,9 @@ define(
          window.location.href = 'admin.php?page=mailpoet-subscribers';
        });
 
-       // if new subscribers were added and the export menu item is hidden
+       // if new subscribers were created and the export menu item is hidden
        // (it's shown only when there are subscribers), display it
-       if (importResults.added && exportMenuElement.not(':visible')) {
+       if (importResults.created && exportMenuElement.not(':visible')) {
          exportMenuElement.show();
        }
 

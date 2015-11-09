@@ -15,12 +15,12 @@ class BootstrapMenu {
   
   function getSubscriberFields() {
     return array(
-      's_email' => __('Email'),
-      's_first_name' => __('First name'),
-      's_last_name' => __('Last name'),
-      's_status' => __('Status')
-      /*    's_confirmed_ip' => __('IP address')
-            's_confirmed_at' => __('Subscription date')*/
+      'email' => __('Email'),
+      'first_name' => __('First name'),
+      'last_name' => __('Last name'),
+      'status' => __('Status')
+      /*    'confirmed_ip' => __('IP address')
+            'confirmed_at' => __('Subscription date')*/
     );
   }
   
@@ -44,7 +44,7 @@ class BootstrapMenu {
       return array(
         'id' => $fieldId,
         'name' => $fieldName,
-        'type' => ($fieldId === 's_confirmed_at') ? 'date' : null,
+        'type' => ($fieldId === 'confirmed_at') ? 'date' : null,
         'custom' => false
       );
     }, array_keys($subscriberFields), $subscriberFields);

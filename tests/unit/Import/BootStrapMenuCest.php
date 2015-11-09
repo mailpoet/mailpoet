@@ -34,6 +34,9 @@ class BootStrapMenuCest {
       'name' => 'DOB',
       'type' => 'date',
     );
+    $customField = CustomField::create();
+    $customField->hydrate($this->customFieldsData);
+    $customField->save();
     $this->bootStrapMenu = new BootstrapMenu();
   }
 
@@ -49,10 +52,10 @@ class BootStrapMenuCest {
   function itCanGetSubscriberFields() {
     $subsriberFields = $this->bootStrapMenu->getSubscriberFields();
     $fields = array(
-      's_email',
-      's_first_name',
-      's_last_name',
-      's_status'
+      'email',
+      'first_name',
+      'last_name',
+      'status'
     );
     foreach ($fields as $field) {
       expect(in_array($field, array_keys($subsriberFields)))->true();
@@ -78,9 +81,6 @@ class BootStrapMenuCest {
   }
 
   function itCanGetSubsciberCustomFields() {
-    $customField = CustomField::create();
-    $customField->hydrate($this->customFieldsData);
-    $customField->save();
     $subscriberCustomFields =
       $this->bootStrapMenu
         ->getSubscriberCustomFields();
@@ -89,9 +89,6 @@ class BootStrapMenuCest {
   }
 
   function itCanFormatSubsciberCustomFields() {
-    $customField = CustomField::create();
-    $customField->hydrate($this->customFieldsData);
-    $customField->save();
     $formattedSubscriberCustomFields =
       $this->bootStrapMenu->formatSubscriberCustomFields(
         $this->bootStrapMenu->getSubscriberCustomFields()
@@ -111,7 +108,7 @@ class BootStrapMenuCest {
 
   function itCanFormatFieldsForSelect2() {
     $bootStrapMenu = clone($this->bootStrapMenu);
-    $select2FieldsWithouCustomFields = array(
+    $select2FieldsWithoutCustomFields = array(
       array(
         'name' => 'Actions',
         'children' => array(
@@ -133,7 +130,7 @@ class BootStrapMenuCest {
       )
     );
     $select2FieldsWithCustomFields = array_merge(
-      $select2FieldsWithouCustomFields,
+      $select2FieldsWithoutCustomFields,
       array(
         array(
           'name' => __('User columns'),
@@ -152,10 +149,13 @@ class BootStrapMenuCest {
       $bootStrapMenu->subscriberFields,
       $bootStrapMenu->subscriberCustomFields
     );
-    expect($formattedFieldsForSelect2)->equals($select2FieldsWithouCustomFields);
+    expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
 
   function itCanBootstrap() {
+    $customField = CustomField::create();
+    $customField->hydrate($this->customFieldsData);
+    $customField->save();
     $bootstrap = clone($this->bootStrapMenu);
     $this->_createSegmentsAndSubscribers();
     $bootstrap->segments = $bootstrap->getSegments();
@@ -190,6 +190,8 @@ class BootStrapMenuCest {
 
   function _after() {
     ORM::forTable(Subscriber::$_table)
+      ->deleteMany();
+    ORM::forTable(CustomField::$_table)
       ->deleteMany();
     ORM::forTable(Segment::$_table)
       ->deleteMany();

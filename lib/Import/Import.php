@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Import;
 
-use MailPoet\Import\BootstrapMenu;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
@@ -12,8 +11,12 @@ class Import {
     $this->subscribersData = $data['subscribers'];
     $this->segments = $data['segments'];
     $this->updateSubscribers = $data['updateSubscribers'];
-    $this->subscriberFields = $this->getSubscriberFields();
-    $this->subscriberCustomFields = $this->getCustomSubscriberFields();
+    $this->subscriberFields = $this->getSubscriberFields(
+      array_keys($this->subscribersData)
+    );
+    $this->subscriberCustomFields = $this->getCustomSubscriberFields(
+      array_keys($this->subscribersData)
+    );
     $this->subscribersCount = count(reset($this->subscribersData));
     $this->currentTime = date('Y-m-d H:i:s');
     $this->profilerStart = microtime(true);
@@ -21,35 +24,39 @@ class Import {
 
   function process() {
     $subscriberFields = $this->subscriberFields;
+    $subscriberCustomFields = $this->subscriberCustomFields;
     $subscribersData = $this->subscribersData;
-    $subscribersData = $this->filterSubscriberState($subscribersData);
+    $subscribersData = $this->filterSubscriberStatus($subscribersData);
     list($subscribersData, $subscriberFields) = $this->extendSubscribersAndFields(
       $subscribersData, $subscriberFields
     );
     list($existingSubscribers, $newSubscribers) =
       $this->filterExistingAndNewSubscribers($subscribersData);
-    $addedSubscribers = $updatedSubscribers = array();
+    $createdSubscribers = $updatedSubscribers = array();
     try {
       if($newSubscribers) {
-        $addedSubscribers = $this->addOrUpdateSubscribers(
-          'create',
-          $newSubscribers,
-          $subscriberFields
-        );
-        $this->addSubscribersToSegments(array_keys($addedSubscribers));
+        $createdSubscribers =
+          $this->createOrUpdateSubscribers(
+            'create',
+            $newSubscribers,
+            $subscriberFields,
+            $subscriberCustomFields
+          );
       }
       if($existingSubscribers && $this->updateSubscribers) {
-        $updatedSubscribers = $this->addOrUpdateSubscribers(
-          'update',
-          $existingSubscribers,
-          $subscriberFields
-        );
-        $this->addSubscribersToSegments(array_keys($updatedSubscribers));
-        if($addedSubscribers) {
+        $updatedSubscribers =
+          $this->createOrUpdateSubscribers(
+            'update',
+           $existingSubscribers,
+            $subscriberFields,
+            $subscriberCustomFields
+          );
+        if($createdSubscribers) {
           // subtract added from updated subscribers when DB operation takes <1s
           $updatedSubscribers = array_diff_key(
             $updatedSubscribers,
-            $addedSubscribers
+            $createdSubscribers,
+            $subscriberCustomFields
           );
         }
       }
@@ -63,7 +70,7 @@ class Import {
     return array(
       'result' => true,
       'data' => array(
-        'added' => count($addedSubscribers),
+        'created' => count($createdSubscribers),
         'updated' => count($updatedSubscribers),
         'segments' => $segments->getSegments()
       ),
@@ -77,7 +84,7 @@ class Import {
         return Subscriber::selectMany(array('email'))
           ->whereIn('email', $subscriberEmails)
           ->findArray();
-      }, array_chunk($subscribersData['s_email'], 200))
+      }, array_chunk($subscribersData['email'], 200))
     );
     if(!$existingRecords) {
       return array(
@@ -88,7 +95,7 @@ class Import {
     $existingRecords = Helpers::flattenArray($existingRecords);
     $newRecords = array_keys(
       array_diff(
-        $subscribersData['s_email'],
+        $subscribersData['email'],
         $existingRecords
       )
     );
@@ -132,19 +139,23 @@ class Import {
     );
   }
 
-  function getSubscriberFields() {
-    return array_filter(
-      array_map(function ($field) {
-        if(!is_int($field)) return $field;
-      }, array_keys($this->subscribersData))
+  function getSubscriberFields($subscriberFields) {
+    return array_values(
+      array_filter(
+        array_map(function ($field) {
+          if(!is_int($field)) return $field;
+        }, $subscriberFields)
+      )
     );
   }
 
-  function getCustomSubscriberFields() {
-    return array_filter(
-      array_map(function ($field) {
-        if(is_int($field)) return $field;
-      }, array_keys($this->subscribersData))
+  function getCustomSubscriberFields($subscriberFields) {
+    return array_values(
+      array_filter(
+        array_map(function ($field) {
+          if(is_int($field)) return $field;
+        }, $subscriberFields)
+      )
     );
   }
 
@@ -152,9 +163,9 @@ class Import {
     return array_fill(0, $this->subscribersCount, $this->currentTime);
   }
 
-  function filterSubscriberState($subscribersData) {
-    if(!in_array('s_status', $this->subscriberFields)) return;
-    $states = array(
+  function filterSubscriberStatus($subscribersData) {
+    if(!in_array('status', $this->subscriberFields)) return;
+    $statuses = array(
       'subscribed' => array(
         'subscribed',
         'confirmed',
@@ -169,26 +180,30 @@ class Import {
         'false'
       )
     );
-    $subscribersData['s_status'] = array_map(function ($state) use ($states) {
-      if(in_array(strtolower($state), $states['subscribed'])) {
+    $subscribersData['status'] = array_map(function ($state) use ($statuses) {
+      if(in_array(strtolower($state), $statuses['subscribed'])) {
         return 1;
       }
-      if(in_array(strtolower($state), $states['unsubscribed'])) {
+      if(in_array(strtolower($state), $statuses['unsubscribed'])) {
         return -1;
       }
-      return 1; // make "subscribed" a default state
-    }, $subscribersData['s_status']);
+      return 1; // make "subscribed" a default status
+    }, $subscribersData['status']);
     return $subscribersData;
   }
 
-  function addOrUpdateSubscribers($action, $subscribersData, $subscriberFields) {
+  function createOrUpdateSubscribers(
+    $action,
+    $subscribersData,
+    $subscriberFields,
+    $subscriberCustomFields
+  ) {
     $subscribersCount = count(reset($subscribersData)) - 1;
     $subscribers = array_map(function ($index) use ($subscribersData, $subscriberFields) {
       return array_map(function ($field) use ($index, $subscribersData) {
         return $subscribersData[$field][$index];
       }, $subscriberFields);
     }, range(0, $subscribersCount));
-    $subscriberFields = str_replace('s_', '', $subscriberFields);
     $currentTime = ($action === 'update') ? date('Y-m-d H:i:s') : $this->currentTime;
     foreach (array_chunk($subscribers, 200) as $data) {
       if($action == 'create') {
@@ -215,17 +230,27 @@ class Import {
         ->findArray(),
       'email', 'id'
     );
-    if($this->subscriberCustomFields) {
-      $this->addOrUpdateCustomFields(
+    if($subscriberCustomFields) {
+      $this->createOrUpdateCustomFields(
         ($action === 'create') ? 'create' : 'update',
         $result,
-        $subscribersData
+        $subscribersData,
+        $subscriberCustomFields
       );
     }
+    $this->addSubscribersToSegments(
+      array_keys($result),
+      $this->segments
+    );
     return $result;
   }
 
-  function addOrUpdateCustomFields($action, $dbSubscribers, $subscribersData) {
+  function createOrUpdateCustomFields(
+    $action,
+    $dbSubscribers,
+    $subscribersData,
+    $subscriberCustomFields
+  ) {
     $subscribers = array_map(
       function ($column) use ($dbSubscribers, $subscribersData) {
         $count = range(0, count($subscribersData[$column]) - 1);
@@ -233,7 +258,7 @@ class Import {
           function ($index, $value)
           use ($dbSubscribers, $subscribersData, $column) {
             $subscriberId = array_search(
-              $subscribersData['s_email'][$index],
+              $subscribersData['email'][$index],
               $dbSubscribers
             );
             return array(
@@ -242,7 +267,7 @@ class Import {
               $value
             );
           }, $count, $subscribersData[$column]);
-      }, $this->subscriberCustomFields)[0];
+      }, $subscriberCustomFields)[0];
     foreach (array_chunk($subscribers, 200) as $data) {
       if($action === 'create') {
         SubscriberCustomField::createMultiple(
@@ -257,9 +282,9 @@ class Import {
     }
   }
 
-  function addSubscribersToSegments($subscribers) {
+  function addSubscribersToSegments($subscribers, $segments) {
     foreach (array_chunk($subscribers, 200) as $data) {
-      SubscriberSegment::createMultiple($this->segments, $data);
+      SubscriberSegment::createMultiple($segments, $data);
     }
   }
 

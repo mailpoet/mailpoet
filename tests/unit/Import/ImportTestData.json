@@ -999,7 +999,7 @@
          "China",
          "China"
       ],
-      "s_first_name":[
+      "first_name":[
          "Rose",
          "Samuel",
          "Louis",
@@ -1998,7 +1998,7 @@
          "Lillian",
          "Ryan"
       ],
-      "s_last_name":[
+      "last_name":[
          "Hansen",
          "Hall",
          "Freeman",
@@ -2997,7 +2997,7 @@
          "Clark",
          "Russell"
       ],
-      "s_email":[
+      "email":[
          "rhansen0@stanford.edu",
          "shall1@zdnet.com",
          "lfreeman2@gmpg.org",
@@ -3996,7 +3996,7 @@
          "lclarkrq@xinhuanet.com",
          "rrussellrr@bloomberg.com"
       ],
-      "s_status":[
+      "status":[
          "unsubscribed",
          "confirmed",
          "subscribed",
