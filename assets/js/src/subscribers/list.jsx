@@ -101,7 +101,10 @@ const bulk_actions = [
     onSelect: function() {
       let field = {
         id: 'move_to_segment',
-        endpoint: 'segments'
+        endpoint: 'segments',
+        filter: function(segment) {
+          return !!(!segment.deleted_at);
+        }
       };
 
       return (
@@ -127,7 +130,10 @@ const bulk_actions = [
     onSelect: function() {
       let field = {
         id: 'add_to_segment',
-        endpoint: 'segments'
+        endpoint: 'segments',
+        filter: function(segment) {
+          return !!(!segment.deleted_at);
+        }
       };
 
       return (

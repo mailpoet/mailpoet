@@ -88,7 +88,7 @@ define(
         }).done(function(response) {
           this.setState({ loading: false });
 
-          if(response === true) {
+          if(response.result === true) {
             if(this.props.onSuccess !== undefined) {
               this.props.onSuccess()
             } else {
@@ -101,10 +101,10 @@ define(
               this.props.messages['created']();
             }
           } else {
-            if(response === false) {
-              // unknown error occurred
-            } else {
-              this.setState({ errors: response });
+            if(response.result === false) {
+              if(response.errors.length > 0) {
+                this.setState({ errors: response.errors });
+              }
             }
           }
         }.bind(this));
@@ -121,13 +121,15 @@ define(
         return true;
       },
       render: function() {
-        var errors = this.state.errors.map(function(error, index) {
-          return (
-            <p key={ 'error-'+index } className="mailpoet_error">
-              { error }
-            </p>
-          );
-        });
+        if(this.state.errors !== undefined) {
+          var errors = this.state.errors.map(function(error, index) {
+            return (
+              <p key={ 'error-'+index } className="mailpoet_error">
+                { error }
+              </p>
+            );
+          });
+        }
 
         var formClasses = classNames(
           'mailpoet_form',

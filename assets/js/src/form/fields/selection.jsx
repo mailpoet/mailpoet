@@ -54,6 +54,11 @@ function(
     loadCachedItems: function() {
       if(typeof(window['mailpoet_'+this.props.field.endpoint]) !== 'undefined') {
         var items = window['mailpoet_'+this.props.field.endpoint];
+
+        if(this.props.field['filter'] !== undefined) {
+          items = items.filter(this.props.field.filter);
+        }
+
         this.setState({
           items: items
         });
@@ -76,7 +81,7 @@ function(
       return true;
     },
     render: function() {
-      if(this.state.items.length === 0) {
+      if((this.props.item !== undefined && this.props.item.id === undefined)) {
         return false;
       } else {
         var options = this.state.items.map(function(item, index) {

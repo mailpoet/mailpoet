@@ -68,7 +68,7 @@ class Segment extends Model {
   }
 
   static function search($orm, $search = '') {
-    return $orm->where_like('name', '%'.$search.'%');
+    return $orm->whereLike('name', '%'.$search.'%');
   }
 
   static function groups() {

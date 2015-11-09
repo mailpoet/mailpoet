@@ -15,16 +15,16 @@ function(
       this.setState({
         action: e.target.value,
         extra: false
-      });
+      }, function() {
+        var action = this.getSelectedAction();
 
-      var action = this.getSelectedAction();
-
-      // action on select callback
-      if(action !== null && action['onSelect'] !== undefined) {
-        this.setState({
-          extra: action.onSelect(e)
-        });
-      }
+        // action on select callback
+        if(action !== null && action['onSelect'] !== undefined) {
+          this.setState({
+            extra: action.onSelect(e)
+          });
+        }
+      }.bind(this));
     },
     handleApplyAction: function(e) {
       e.preventDefault();

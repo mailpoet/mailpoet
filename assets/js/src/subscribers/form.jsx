@@ -37,6 +37,17 @@ define(
           'subscribed': 'Subscribed',
           'unsubscribed': 'Unsubscribed'
         }
+      },
+      {
+        name: 'segments',
+        label: 'Lists',
+        type: 'selection',
+        placeholder: "Select a list",
+        endpoint: "segments",
+        multiple: true,
+        filter: function(segment) {
+          return !!(!segment.deleted_at);
+        }
       }
     ];
 

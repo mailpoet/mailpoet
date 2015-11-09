@@ -34,7 +34,10 @@ define(
         placeholder: "Select a list",
         id: "mailpoet_segments",
         endpoint: "segments",
-        multiple: true
+        multiple: true,
+        filter: function(segment) {
+          return !!(!segment.deleted_at);
+        }
       },
       {
         name: 'sender',

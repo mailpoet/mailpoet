@@ -33,7 +33,6 @@ class Newsletters {
       }, $segments);
       $newsletter['options'] = $options;
 
-
       wp_send_json($newsletter);
     }
   }
@@ -54,9 +53,16 @@ class Newsletters {
       unset($data['options']);
     }
 
+    $errors = array();
+    $result = false;
+
     $newsletter = Newsletter::createOrUpdate($data);
 
-    if($newsletter->id) {
+    if($newsletter !== false && !$newsletter->id()) {
+      $errors = $newsletter->getValidationErrors();
+    } else {
+      $result = true;
+
       if(!empty($segment_ids)) {
         NewsletterSegment::where('newsletter_id', $newsletter->id)
           ->deleteMany();
@@ -89,8 +95,10 @@ class Newsletters {
         }
       }
     }
-
-    wp_send_json(($newsletter->id !== false));
+    wp_send_json(array(
+      'result' => $result,
+      'errors' => $errors
+    ));
   }
 
   function delete($data = array()) {

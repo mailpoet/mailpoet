@@ -21,7 +21,14 @@ class Subscribers {
     if($subscriber === false) {
       wp_send_json(false);
     } else {
-      wp_send_json($subscriber->asArray());
+      $segments = $subscriber->segments()->findArray();
+
+      $subscriber = $subscriber->asArray();
+      $subscriber['segments'] = array_map(function($segment) {
+        return $segment['id'];
+      }, $segments);
+
+      wp_send_json($subscriber);
     }
   }
 
@@ -58,18 +65,40 @@ class Subscribers {
   }
 
   function save($data = array()) {
+    $errors = array();
     $result = false;
+    $segments = false;
+
+    if(array_key_exists('segments', $data)) {
+      $segments = $data['segments'];
+      unset($data['segments']);
+    }
 
     $subscriber = Subscriber::createOrUpdate($data);
 
     if($subscriber !== false && !$subscriber->id()) {
-      $result = array(
-        'errors' => $subscriber->getValidationErrors()
-      );
+      $errors = $subscriber->getValidationErrors();
     } else {
       $result = true;
+
+      if($segments !== false) {
+        SubscriberSegment::where('subscriber_id', $subscriber->id)
+          ->deleteMany();
+
+        if(!empty($segments)) {
+          foreach($segments as $segment_id) {
+            $relation = SubscriberSegment::create();
+            $relation->segment_id = $segment_id;
+            $relation->subscriber_id = $subscriber->id;
+            $relation->save();
+          }
+        }
+      }
     }
-    wp_send_json($result);
+    wp_send_json(array(
+      'result' => $result,
+      'errors' => $errors
+    ));
   }
 
   function subscribe($data = array()) {
