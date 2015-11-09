@@ -1,5 +1,7 @@
 <?php
 namespace MailPoet\Config;
+
+use \MailPoet\Import\BootstrapMenu;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
 use \MailPoet\Models\Form;
@@ -75,6 +77,14 @@ class Menu {
       'manage_options',
       'mailpoet-settings',
       array($this, 'settings')
+    );
+    add_submenu_page(
+      'null',
+      __('Import'),
+      __('Import'),
+      'manage_options',
+      'mailpoet-import',
+      array($this, 'import')
     );
     // add_submenu_page(
     //   'mailpoet',
@@ -202,6 +212,12 @@ class Menu {
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
     wp_enqueue_style('editor', includes_url('css/editor.css'));
     echo $this->renderer->render('newsletter/form.html', $data);
+  }
+
+  function import() {
+    $import = new BootstrapMenu();
+    $data = $import->bootstrap();
+    echo $this->renderer->render('import.html', $data);
   }
 
   function formEditor() {

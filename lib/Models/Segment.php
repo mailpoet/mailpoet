@@ -94,6 +94,18 @@ class Segment extends Model {
     }
   }
 
+  static function filterWithSubscriberCount($orm) {
+    $orm = $orm
+      ->selectMany(array(self::$_table.'.id', self::$_table.'.name'))
+      ->select_expr('COUNT('.MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id)', 'subscribers')
+      ->left_outer_join(
+        MP_SUBSCRIBER_SEGMENT_TABLE,
+        array(self::$_table.'.id', '=', MP_SUBSCRIBER_SEGMENT_TABLE.'.segment_id'))
+      ->group_by(self::$_table.'.id')
+      ->group_by(self::$_table.'.name');
+    return $orm;
+  }
+
   static function createOrUpdate($data = array()) {
     $segment = false;
 

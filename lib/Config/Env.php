@@ -17,6 +17,8 @@ class Env {
   public static $db_prefix;
   public static $db_source_name;
   public static $db_host;
+  public static $db_socket;
+  public static $db_port;
   public static $db_name;
   public static $db_username;
   public static $db_password;
@@ -35,18 +37,29 @@ class Env {
     self::$lib_path = self::$path . '/lib';
     self::$plugin_prefix = 'mailpoet_';
     self::$db_prefix = $wpdb->prefix . self::$plugin_prefix;
-    self::$db_source_name = self::dbSourceName();
     self::$db_host = DB_HOST;
+    self::$db_port = 3306;
+    self::$db_socket = false;
+    if (preg_match('/(?=:\d+$)/', DB_HOST)) {
+      list(self::$db_host, self::$db_port) = explode(':', DB_HOST);
+    }
+    else if (preg_match('/:/', DB_HOST)) {
+      self::$db_socket = true;
+    }
     self::$db_name = DB_NAME;
     self::$db_username = DB_USER;
     self::$db_password = DB_PASSWORD;
     self::$db_charset = $wpdb->get_charset_collate();
+    self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port);
   }
 
-  private static function dbSourceName() {
+  private static function dbSourceName($host, $socket,$port) {
     $source_name = array(
-      'mysql:host=',
-      DB_HOST,
+      (!$socket) ? 'mysql:host=' : 'mysql:unix_socket=',
+      $host,
+      ';',
+      'port=',
+      $port,
       ';',
       'dbname=',
       DB_NAME

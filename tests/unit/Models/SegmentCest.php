@@ -11,8 +11,28 @@ class SegmentCest {
     $this->before_time = time();
     $this->data = array(
       'name' => 'some name',
+      'description' => 'some description'
     );
-
+    $this->subscribersData = array(
+      array(
+        'first_name' => 'John',
+        'last_name' => 'Mailer',
+        'email' => 'john@mailpoet.com'
+      ),
+      array(
+        'first_name' => 'Mike',
+        'last_name' => 'Smith',
+        'email' => 'mike@maipoet.com'
+      )
+    );
+    $this->newslettersData = array(
+      array(
+        'subject' => 'My first newsletter'
+      ),
+      array(
+        'subject' => 'My second newsletter'
+      )
+    );
     $this->segment = Segment::create();
     $this->segment->hydrate($this->data);
     $this->saved = $this->segment->save();
@@ -20,6 +40,20 @@ class SegmentCest {
 
   function itCanBeCreated() {
     expect($this->saved)->equals(true);
+  }
+
+  function itCanHaveName() {
+    expect($this->segment->name)->equals($this->data['name']);
+  }
+
+  function nameMustBeUnique() {
+    $segment = Segment::create();
+    $segment->hydrate($this->data);
+    expect($segment->save())->contains('Duplicate');
+  }
+
+  function itCanHaveDescription() {
+    expect($this->segment->description)->equals($this->data['description']);
   }
 
   function itHasToBeValid() {
@@ -82,20 +116,7 @@ class SegmentCest {
   }
 
   function itCanHaveManySubscribers() {
-    $subscribersData = array(
-      array(
-        'first_name' => 'John',
-        'last_name' => 'Mailer',
-        'email' => 'john@mailpoet.com'
-      ),
-      array(
-        'first_name' => 'Mike',
-        'last_name' => 'Smith',
-        'email' => 'mike@maipoet.com'
-      )
-    );
-
-    foreach($subscribersData as $subscriberData) {
+    foreach($this->subscribersData as $subscriberData) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriberData);
       $subscriber->save();
@@ -112,16 +133,7 @@ class SegmentCest {
   }
 
   function itCanHaveManyNewsletters() {
-    $newslettersData = array(
-      array(
-        'subject' => 'My first newsletter'
-      ),
-      array(
-        'subject' => 'My second newsletter'
-      )
-    );
-
-    foreach($newslettersData as $newsletterData) {
+    foreach($this->newslettersData as $newsletterData) {
       $newsletter = Newsletter::create();
       $newsletter->hydrate($newsletterData);
       $newsletter->save();
@@ -137,6 +149,21 @@ class SegmentCest {
     expect(count($newsletters))->equals(2);
   }
 
+  function itCanReturnSubscriberCount() {
+    foreach($this->subscribersData as $subscriberData) {
+      $subscriber = Subscriber::create();
+      $subscriber->hydrate($subscriberData);
+      $subscriber->save();
+      $association = SubscriberSegment::create();
+      $association->subscriber_id = $subscriber->id;
+      $association->segment_id = $this->segment->id;
+      $association->save();
+    }
+
+    $segment = Segment::filter('filterWithSubscriberCount')->findArray();
+    expect($segment[0]['subscribers'])->equals(2);
+  }
+
   function _after() {
     ORM::forTable(Segment::$_table)
       ->deleteMany();
@@ -145,6 +172,4 @@ class SegmentCest {
     ORM::forTable(SubscriberSegment::$_table)
       ->deleteMany();
   }
-
-
 }

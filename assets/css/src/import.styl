@@ -1,0 +1,78 @@
+.mailpoet_hidden, .mailpoet_validation_error
+  display none
+
+.form-table
+  th
+    width 300px
+
+#paste_input
+  width 100%
+
+input[type="radio"]
+  margin-right 0.5em !important
+  & + span
+    margin-right 2.5em
+
+span
+  &.mailpoet_mailchimp-key-status
+    &.mailpoet_mailchimp-ok
+      &:before
+        content "\2713"
+        color #0e90d2
+        margin-left 15px
+    &.mailpoet_mailchimp-error
+      &:before
+        content "\2717"
+        color #900
+        margin-left 15px
+
+#subscribers_data
+  overflow auto
+  table
+    width auto
+  td
+    padding 0.5em
+  & > table
+    & > tbody
+      & > td
+        padding 0.5em
+      & > tr
+        &:nth-child(odd)
+          background #f9f9f9
+  .mailpoet_header
+    text-transform uppercase
+    font-weight 600
+    text-decoration underline
+
+#subscribers_data th:first-child, #subscribers_data td:first-child
+  width 10em !important
+  text-align center !important
+  padding 0 1em 0 1em !important
+  vertical-align inherit !important
+
+#subscribers_data
+  & > table
+    & > thead
+      & > tr
+        & > th
+          & > span
+            width 15em !important
+
+.mailpoet_data_match
+  color #0e90d2
+  margin-left 0.25em
+
+.mailpoet_import_error, .mailpoet_validation_error
+  color #900
+
+tr
+  &.mailpoet_segments
+    & > td
+      & > a
+        margin-left 15px
+
+span
+  &.select2-search
+    &.select2-search--dropdown
+      display none !important
+

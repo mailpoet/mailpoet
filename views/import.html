@@ -1,0 +1,70 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+<div id="mailpoet_subscribers_import" class="wrap">
+  <h2 class="title"><%= __('Import') %></h2>
+  <!-- STEP 1: method selection -->
+  <% include 'import/step1.html' %>
+  <!-- STEP 2: subscriber data manipulation -->
+  <% include 'import/step2.html' %>
+  <!-- STEP 3: results -->
+  <% include 'import/step3.html' %>
+</div>
+
+<%= stylesheet('import.css') %>
+
+<%= localize({
+'noMailChimpLists': __('No active lists found.'),
+'serverError': __('Server error:'),
+'select': __('Select'),
+'maxPostSizeNotice': __('Your CSV is over %s, and too big to process. Please split the file in two, or more.')|replace({'%s': maxPostSize}),
+'dataProcessingError': __("Your data couldn't be processed. Please make sure it is in the proper format."),
+'noValidRecords': __('No valid records were found.'),
+'importNoticeSkipped': __('%1$s records were skipped due to problems.'),
+'importNoticeInvalid': __('%1$s emails are not valid : %2$s.'),
+'importNoticeDuplicate': __('%1$s emails appear more than once in your file : %2$s.'),
+'hideDetails': __('Hide details.'),
+'showDetails': __('Show more details.'),
+'segmentSelectionRequired': __('You need to select at least one list.'),
+'addNewList': __('Add new list'),
+'addNewColumuserColumnsn': __('Add new list'),
+'userColumns': __('User columns'),
+'selectedValueAlreadyMatched': __('The selected value is already matched to another column.'),
+'confirmCorrespondingColumn': __('Can you confirm that this column is corresponding to that field?'),
+'columnContainInvalidElement': __('One of the columns contains an invalid email. Please fix before continuing.'),
+'january': __('January'),
+'february': __('February'),
+'march': __('March'),
+'april': __('April'),
+'may': __('May'),
+'june': __('June'),
+'july': __('July'),
+'august': __('August'),
+'september': __('September'),
+'october': __('October'),
+'november': __('November'),
+'december': __('December'),
+'noDateFieldMatch': __("Do not match as a 'date field' if most of the rows for that column return the same error."),
+'emptyDate': __('Date cannot be empty'),
+'verifyDateMatch': __('Verify that the date in blue matches the original one'),
+'pm': __('pm'),
+'am': __('am'),
+'dateMatchError': __('Error matching date.'),
+'columnContainsInvalidDate': __('One of the columns contains an invalid date. Please fix before continuing.'),
+'listCreateError': __('Error adding a new segment:'),
+'columnContainsInvalidElement': __('One of the columns contains an invalid email. Please fix before continuing.'),
+'customFieldCreateError': __('Custom field could not be created.'),
+'subscribersCreated': __('%1$s subscribers added to %2$s.'),
+'subscribersUpdated': __('%1$s existing subscribers were updated and added to %2$s.')
+}) %>
+
+<script type="text/javascript">
+  var
+    maxPostSize = '<%= maxPostSize %>',
+    importData = {},
+    mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
+    mailpoetColumns = <%= subscriberFields|raw %>,
+    mailpoetSegments = <%= segments|raw %>,
+    emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-_]{0,61}[a-zA-Z0-9])+.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+</script>
+<% endblock %>
