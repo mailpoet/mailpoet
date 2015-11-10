@@ -66,7 +66,8 @@ class RoboFile extends \Robo\Tasks {
       'assets/css/src/newsletter_editor/newsletter_editor.styl',
       'assets/css/src/public.styl',
       'assets/css/src/rtl.styl',
-      'assets/css/src/import.styl'
+      'assets/css/src/import.styl',
+      'assets/css/src/export.styl'
     );
 
     $this->_exec(join(' ', array(

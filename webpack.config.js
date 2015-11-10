@@ -96,6 +96,7 @@ config.push(_.extend({}, baseConfig, {
       'forms/forms.jsx',
       'settings/tabs.js',
       'import/import.js',
+      'export/export.js'      
       'helpscout'
     ],
     form_editor: [
