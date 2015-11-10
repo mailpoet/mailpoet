@@ -22,6 +22,7 @@ class Initializer {
     $this->setupMenu();
     $this->setupRouter();
     $this->setupWidget();
+    $this->setupAnalytics();
     $this->setupPermissions();
   }
 
@@ -91,6 +92,11 @@ class Initializer {
 
   function setupWidget() {
     $widget = new Widget();
+    $widget->init();
+  }
+
+  function setupAnalytics() {
+    $widget = new Analytics();
     $widget->init();
   }
 
