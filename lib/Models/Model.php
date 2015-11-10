@@ -90,4 +90,12 @@ class Model extends \Sudzy\ValidModel {
     }, $searchCriteria);
     return $orm->having_raw(implode(' ' . $searchCondition . ' ', $havingFields), array_values($havingValues));
   }
+
+  static function getPublished() {
+    return static::whereNull('deleted_at');
+  }
+
+  static function getTrashed() {
+    return static::whereNotNull('deleted_at');
+  }
 }

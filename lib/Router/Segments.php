@@ -71,13 +71,20 @@ class Segments {
   }
 
   function save($data = array()) {
-    $result = Segment::createOrUpdate($data);
+    $errors = array();
+    $result = false;
 
-    if($result !== true) {
-      wp_send_json($result);
+    $segment = Segment::createOrUpdate($data);
+
+    if($segment !== false && !$segment->id()) {
+      $errors = $segment->getValidationErrors();
     } else {
-      wp_send_json(true);
+      $result = true;
     }
+    wp_send_json(array(
+      'result' => $result,
+      'errors' => $errors
+    ));
   }
 
   function restore($id) {

@@ -20,7 +20,17 @@ function(
       this.loadCachedItems();
       this.setupSelect2();
     },
-    componentDidUpdate: function() {
+    componentDidUpdate: function(prevProps, prevState) {
+      if(
+        (this.props.item !== undefined && prevProps.item !== undefined)
+        && (this.props.item.id !== prevProps.item.id)
+      ) {
+        jQuery('#'+this.refs.select.id).select2(
+          'val',
+          this.props.item[this.props.field.name]
+        );
+      }
+
       this.setupSelect2();
     },
     setupSelect2: function() {
@@ -54,6 +64,11 @@ function(
     loadCachedItems: function() {
       if(typeof(window['mailpoet_'+this.props.field.endpoint]) !== 'undefined') {
         var items = window['mailpoet_'+this.props.field.endpoint];
+
+        if(this.props.field['filter'] !== undefined) {
+          items = items.filter(this.props.field.filter);
+        }
+
         this.setState({
           items: items
         });
@@ -76,37 +91,33 @@ function(
       return true;
     },
     render: function() {
-      if(this.state.items.length === 0) {
-        return false;
-      } else {
-        var options = this.state.items.map(function(item, index) {
-          return (
-            <option
-              key={ item.id }
-              value={ item.id }
-            >
-              { item.name }
-            </option>
-          );
-        });
-
-        var default_value = (
-          (this.props.item !== undefined && this.props.field.name !== undefined)
-          ? this.props.item[this.props.field.name]
-          : null
-        );
-
+      var options = this.state.items.map(function(item, index) {
         return (
-          <select
-            id={ this.props.field.id || this.props.field.name }
-            ref="select"
-            placeholder={ this.props.field.placeholder }
-            multiple={ this.props.field.multiple }
-            onChange={ this.handleChange }
-            defaultValue={ default_value }
-          >{ options }</select>
+          <option
+            key={ item.id }
+            value={ item.id }
+          >
+            { item.name }
+          </option>
         );
-      }
+      });
+
+      var default_value = (
+        (this.props.item !== undefined && this.props.field.name !== undefined)
+        ? this.props.item[this.props.field.name]
+        : null
+      );
+
+      return (
+        <select
+          id={ this.props.field.id || this.props.field.name }
+          ref="select"
+          placeholder={ this.props.field.placeholder }
+          multiple={ this.props.field.multiple }
+          onChange={ this.handleChange }
+          defaultValue={ default_value }
+        >{ options }</select>
+      );
     }
   });
 

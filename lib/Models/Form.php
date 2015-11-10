@@ -54,12 +54,12 @@ class Form extends Model {
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Form::whereNull('deleted_at')->count()
+        'count' => Form::getPublished()->count()
       ),
       array(
         'name' => 'trash',
         'label' => __('Trash'),
-        'count' => Form::whereNotNull('deleted_at')->count()
+        'count' => Form::getTrashed()->count()
       )
     );
   }

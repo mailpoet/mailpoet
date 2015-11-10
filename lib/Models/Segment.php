@@ -68,7 +68,7 @@ class Segment extends Model {
   }
 
   static function search($orm, $search = '') {
-    return $orm->where_like('name', '%'.$search.'%');
+    return $orm->whereLike('name', '%'.$search.'%');
   }
 
   static function groups() {
@@ -76,12 +76,12 @@ class Segment extends Model {
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Segment::whereNull('deleted_at')->count()
+        'count' => Segment::getPublished()->count()
       ),
       array(
         'name' => 'trash',
         'label' => __('Trash'),
-        'count' => Segment::whereNotNull('deleted_at')->count()
+        'count' => Segment::getTrashed()->count()
       )
     );
   }
