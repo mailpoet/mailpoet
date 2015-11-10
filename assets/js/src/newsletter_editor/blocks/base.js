@@ -203,6 +203,9 @@ define([
     changeBoolField: function(field, event) {
       this.model.set(field, (jQuery(event.target).val() === 'true') ? true : false);
     },
+    changeBoolCheckboxField: function(field, event) {
+      this.model.set(field, (!!jQuery(event.target).prop('checked')));
+    },
     changeColorField: function(field, event) {
       var value = jQuery(event.target).val();
       if (value === '') {

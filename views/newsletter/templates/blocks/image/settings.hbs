@@ -24,15 +24,9 @@
     </label>
 </div>
 <div class="mailpoet_form_field">
-    <div class="mailpoet_form_field_radio_option">
+    <div class="mailpoet_form_field_checkbox_option">
         <label>
-            <input type="radio" name="padded" class="mailpoet_field_image_padded" value="false" {{#unless padded}}CHECKED{{/unless}}/>
-            <%= __('Full width') %>
-        </label>
-    </div>
-    <div class="mailpoet_form_field_radio_option">
-        <label>
-            <input type="radio" name="padded" class="mailpoet_field_image_padded" value="true" {{#if padded}}CHECKED{{/if}}/>
+            <input type="checkbox" name="padded" class="mailpoet_field_image_padded" value="true" {{#if padded}}CHECKED{{/if}}/>
             <%= __('With padding') %>
         </label>
     </div>

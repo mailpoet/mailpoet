@@ -66,7 +66,7 @@ define([
         "keyup .mailpoet_field_image_link": _.partial(this.changeField, "link"),
         "keyup .mailpoet_field_image_address": _.partial(this.changeField, "src"),
         "keyup .mailpoet_field_image_alt_text": _.partial(this.changeField, "alt"),
-        "change .mailpoet_field_image_padded": _.partial(this.changeBoolField, "padded"),
+        "change .mailpoet_field_image_padded": _.partial(this.changeBoolCheckboxField, "padded"),
         "change .mailpoet_field_image_alignment": _.partial(this.changeField, "styles.block.textAlign"),
         "click .mailpoet_field_image_select_another_image": "showMediaManager",
         "click .mailpoet_done_editing": "close",

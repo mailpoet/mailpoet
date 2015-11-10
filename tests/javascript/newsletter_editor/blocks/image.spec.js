@@ -182,7 +182,7 @@ define([
 
         it('updates the model when padding changes', function () {
           var newValue = 'false';
-          view.$('.mailpoet_field_image_padded').val(newValue).change();
+          view.$('.mailpoet_field_image_padded').prop('checked', false).change();
           expect(model.get('padded')).to.equal(false);
         });
 
