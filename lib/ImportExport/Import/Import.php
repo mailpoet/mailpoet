@@ -1,6 +1,7 @@
 <?php
-namespace MailPoet\Import;
+namespace MailPoet\ImportExport\Import;
 
+use MailPoet\ImportExport\BootStrapMenu;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
@@ -66,7 +67,7 @@ class Import {
         'error' => $e->getMessage()
       );
     }
-    $segments = new BootstrapMenu();
+    $segments = new BootStrapMenu('import');
     return array(
       'result' => true,
       'data' => array(

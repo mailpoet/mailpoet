@@ -1,10 +1,10 @@
 <?php
 
-use MailPoet\Models\SubscriberSegment;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\Segment;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\Segment;
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 
 class SegmentCest {
   function _before() {
@@ -17,11 +17,13 @@ class SegmentCest {
       array(
         'first_name' => 'John',
         'last_name' => 'Mailer',
+        'status' => 0,
         'email' => 'john@mailpoet.com'
       ),
       array(
         'first_name' => 'Mike',
         'last_name' => 'Smith',
+        'status' => 1,
         'email' => 'mike@maipoet.com'
       )
     );
@@ -99,24 +101,27 @@ class SegmentCest {
 
   function itCanCreateOrUpdate() {
     $is_created = Segment::createOrUpdate(array(
-      'name' => 'new list'
-    ));
+                                            'name' => 'new list'
+                                          ));
     expect($is_created)->notEquals(false);
     expect($is_created->getValidationErrors())->isEmpty();
 
-    $segment = Segment::where('name', 'new list')->findOne();
+    $segment = Segment::where('name', 'new list')
+      ->findOne();
     expect($segment->name)->equals('new list');
 
-    $is_updated = Segment::createOrUpdate(array(
-      'id' => $segment->id,
-      'name' => 'updated list'
-    ));
-    $segment = Segment::where('name', 'updated list')->findOne();
+    $is_updated = Segment::createOrUpdate(
+      array(
+        'id' => $segment->id,
+        'name' => 'updated list'
+      ));
+    $segment = Segment::where('name', 'updated list')
+      ->findOne();
     expect($segment->name)->equals('updated list');
   }
 
   function itCanHaveManySubscribers() {
-    foreach($this->subscribersData as $subscriberData) {
+    foreach ($this->subscribersData as $subscriberData) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriberData);
       $subscriber->save();
@@ -125,15 +130,15 @@ class SegmentCest {
       $association->segment_id = $this->segment->id;
       $association->save();
     }
-
     $segment = Segment::findOne($this->segment->id);
-    $subscribers = $segment->subscribers()->findArray();
+    $subscribers = $segment->subscribers()
+      ->findArray();
 
     expect(count($subscribers))->equals(2);
   }
 
   function itCanHaveManyNewsletters() {
-    foreach($this->newslettersData as $newsletterData) {
+    foreach ($this->newslettersData as $newsletterData) {
       $newsletter = Newsletter::create();
       $newsletter->hydrate($newsletterData);
       $newsletter->save();
@@ -142,15 +147,15 @@ class SegmentCest {
       $association->segment_id = $this->segment->id;
       $association->save();
     }
-
     $segment = Segment::findOne($this->segment->id);
-    $newsletters = $segment->newsletters()->findArray();
+    $newsletters = $segment->newsletters()
+      ->findArray();
 
     expect(count($newsletters))->equals(2);
   }
 
-  function itCanReturnSubscriberCount() {
-    foreach($this->subscribersData as $subscriberData) {
+  function itCanGetSegmentsForImport() {
+    foreach ($this->subscribersData as $subscriberData) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriberData);
       $subscriber->save();
@@ -159,9 +164,27 @@ class SegmentCest {
       $association->segment_id = $this->segment->id;
       $association->save();
     }
-
-    $segment = Segment::filter('filterWithSubscriberCount')->findArray();
+    $segment = Segment::getSegmentsForImport();
     expect($segment[0]['subscribers'])->equals(2);
+  }
+
+  function itCanGetSegmentsForExport() {
+    foreach ($this->subscribersData as $index => $subscriberData) {
+      $subscriber = Subscriber::create();
+      $subscriber->hydrate($subscriberData);
+      $subscriber->save();
+      if(!$index) {
+        $association = SubscriberSegment::create();
+        $association->subscriber_id = $subscriber->id;
+        $association->segment_id = $this->segment->id;
+        $association->save();
+      }
+    }
+    $segments = Segment::getSegmentsForExport();
+    expect(count($segments))->equals(2);
+    expect($segments[0]['name'])->equals('Not In List');
+    $segments = Segment::getSegmentsForExport($withConfirmedSubscribers = true);
+    expect(count($segments))->equals(1);
   }
 
   function _after() {

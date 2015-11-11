@@ -1,6 +1,6 @@
 <?php
 
-use MailPoet\Import\Import;
+use MailPoet\ImportExport\Import\Import;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;

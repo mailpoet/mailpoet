@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Export;
+namespace MailPoet\ImportExport\ImportExport\Export;
 
 class Export {
   public function __construct($data) {
