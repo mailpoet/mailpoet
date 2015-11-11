@@ -119,11 +119,11 @@ define(
             body: template.body
           }
         }).done(function(response) {
-          if(response === true) {
+          if(response.result === true) {
             // TODO: Move this URL elsewhere
             window.location = 'admin.php?page=mailpoet-newsletter-editor&id=' + this.props.params.id;
           } else {
-            response.map(function(error) {
+            response.errors.map(function(error) {
               MailPoet.Notice.error(error);
             });
           }
