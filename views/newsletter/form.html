@@ -149,6 +149,10 @@
     'newsletter/templates/blocks/container/settings.hbs'
   ) %>
   <%= partial(
+    'newsletter_editor_template_container_column_settings',
+    'newsletter/templates/blocks/container/columnSettings.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_divider_block',
     'newsletter/templates/blocks/divider/block.hbs'
   ) %>
@@ -373,6 +377,9 @@
       ),
       containerBlockSettings: Handlebars.compile(
         jQuery('#newsletter_editor_template_container_settings').html()
+      ),
+      containerBlockColumnSettings: Handlebars.compile(
+        jQuery('#newsletter_editor_template_container_column_settings').html()
       ),
 
       buttonBlock: Handlebars.compile(
