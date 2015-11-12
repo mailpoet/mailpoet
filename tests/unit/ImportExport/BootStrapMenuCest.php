@@ -146,7 +146,7 @@ class BootStrapMenuCest {
       array(
         'name' => 'System columns',
         'children' => $bootStrapMenu->formatSubscriberFields(
-          $bootStrapMenu->subscriberFields
+          $bootStrapMenu->getSubscriberFields()
         )
       )
     );
@@ -156,7 +156,7 @@ class BootStrapMenuCest {
         array(
           'name' => __('User columns'),
           'children' => $bootStrapMenu->formatSubscriberCustomFields(
-            $bootStrapMenu->subscriberCustomFields
+            $bootStrapMenu->getSubscriberCustomFields()
           )
         )
       ));
@@ -165,10 +165,9 @@ class BootStrapMenuCest {
       $bootStrapMenu->getSubscriberCustomFields()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
-    $bootStrapMenu->subscriberCustomFields = false;
     $formattedFieldsForSelect2 = $bootStrapMenu->formatFieldsForSelect2(
       $bootStrapMenu->getSubscriberFields(),
-      $bootStrapMenu->getSubscriberCustomFields()
+      array()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
@@ -192,7 +191,7 @@ class BootStrapMenuCest {
       array(
         'name' => 'System columns',
         'children' => $bootStrapMenu->formatSubscriberFields(
-          $bootStrapMenu->subscriberFields
+          $bootStrapMenu->getSubscriberFields()
         )
       )
     );
@@ -202,7 +201,7 @@ class BootStrapMenuCest {
         array(
           'name' => __('User columns'),
           'children' => $bootStrapMenu->formatSubscriberCustomFields(
-            $bootStrapMenu->subscriberCustomFields
+            $bootStrapMenu->getSubscriberCustomFields()
           )
         )
       ));
@@ -211,10 +210,9 @@ class BootStrapMenuCest {
       $bootStrapMenu->getSubscriberCustomFields()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
-    $bootStrapMenu->subscriberCustomFields = false;
     $formattedFieldsForSelect2 = $bootStrapMenu->formatFieldsForSelect2(
       $bootStrapMenu->getSubscriberFields(),
-      $bootStrapMenu->getSubscriberCustomFields()
+      array()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
