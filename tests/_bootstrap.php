@@ -1,9 +1,10 @@
 <?php
 
-$console = new \Codeception\Lib\Console\Output([]);
+$wp_load_file = getenv('WP_TEST_PATH').'/wp-load.php';
+require_once($wp_load_file);
 
-$console->writeln('Loading WP core...');
-require_once(getenv('WP_TEST_PATH') . '/wp-load.php');
+$console = new \Codeception\Lib\Console\Output([]);
+$console->writeln('Loading WP core... ('.$wp_load_file.')');
 
 $console->writeln('Cleaning up database...');
 $models = array(

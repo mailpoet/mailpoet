@@ -11,7 +11,7 @@ define(['react', 'classnames'], function(React, classNames) {
         column.is_primary = (index === 0);
         column.sorted = (this.props.sort_by === column.name)
           ? this.props.sort_order
-          : 'asc';
+          : 'desc';
         return (
           <ListingColumn
             onSort={this.props.onSort}
@@ -32,6 +32,7 @@ define(['react', 'classnames'], function(React, classNames) {
             </label>
             <input
               type="checkbox"
+              name="select_all"
               ref="toggle"
               checked={ this.props.selection }
               onChange={ this.handleSelectItems } />

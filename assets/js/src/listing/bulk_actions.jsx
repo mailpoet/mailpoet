@@ -85,7 +85,12 @@ function(
             Select bulk action
           </label>
 
-          <select ref="action" value={ this.state.action } onChange={this.handleChangeAction}>
+          <select
+            name="bulk_actions"
+            ref="action"
+            value={ this.state.action }
+            onChange={this.handleChangeAction}
+          >
             <option value="">Bulk Actions</option>
             { this.props.bulk_actions.map(function(action, index) {
               return (
