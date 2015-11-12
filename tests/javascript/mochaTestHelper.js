@@ -83,6 +83,7 @@ testHelpers.loadTemplate('blocks/container/oneColumnLayoutWidget.hbs', window, {
 testHelpers.loadTemplate('blocks/container/twoColumnLayoutWidget.hbs', window, {id: 'newsletter_editor_template_container_two_column_widget'});
 testHelpers.loadTemplate('blocks/container/threeColumnLayoutWidget.hbs', window, {id: 'newsletter_editor_template_container_three_column_widget'});
 testHelpers.loadTemplate('blocks/container/settings.hbs', window, {id: 'newsletter_editor_template_container_settings'});
+testHelpers.loadTemplate('blocks/container/columnSettings.hbs', window, {id: 'newsletter_editor_template_container_column_settings'});
 
 testHelpers.loadTemplate('blocks/divider/block.hbs', window, {id: 'newsletter_editor_template_divider_block'});
 testHelpers.loadTemplate('blocks/divider/widget.hbs', window, {id: 'newsletter_editor_template_divider_widget'});
@@ -154,6 +155,7 @@ global.templates = {
   twoColumnLayoutInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_container_two_column_widget').html()),
   threeColumnLayoutInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_container_three_column_widget').html()),
   containerBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_container_settings').html()),
+  containerBlockColumnSettings: Handlebars.compile(jQuery('#newsletter_editor_template_container_column_settings').html()),
 
   buttonBlock: Handlebars.compile(jQuery('#newsletter_editor_template_button_block').html()),
   buttonInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_button_widget').html()),

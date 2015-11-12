@@ -162,10 +162,10 @@ define([
       this.toolsView = new Module.ContainerBlockToolsView({
         model: this.model,
         tools: {
-          settings: this.renderOptions.depth > 1,
+          settings: this.renderOptions.depth === 1,
           delete: this.renderOptions.depth === 1,
           move: this.renderOptions.depth === 1,
-          layerSelector: this.renderOptions.depth === 1,
+          layerSelector: false,
         },
       });
       this.toolsRegion.show(this.toolsView);
@@ -264,6 +264,41 @@ define([
     },
     behaviors: {
       ColorPickerBehavior: {},
+    },
+    regions: {
+      columnsSettingsRegion: '.mailpoet_container_columns_settings',
+    },
+    initialize: function() {
+      base.BlockSettingsView.prototype.initialize.apply(this, arguments);
+
+      this._columnsSettingsView = new (Module.ContainerBlockColumnsSettingsView)({
+        collection: this.model.get('blocks'),
+      });
+    },
+    onRender: function() {
+      this.columnsSettingsRegion.show(this._columnsSettingsView);
+    },
+  });
+
+  Module.ContainerBlockColumnsSettingsView = Marionette.CollectionView.extend({
+    getChildView: function() { return Module.ContainerBlockColumnSettingsView; },
+    childViewOptions: function(model, index) {
+      return {
+        columnIndex: index,
+      };
+    },
+  });
+
+  Module.ContainerBlockColumnSettingsView = Marionette.ItemView.extend({
+    getTemplate: function() { return templates.containerBlockColumnSettings; },
+    initialize: function(options) {
+      this.columnNumber = (options.columnIndex || 0) + 1;
+    },
+    templateHelpers: function() {
+      return {
+        model: this.model.toJSON(),
+        columnNumber: this.columnNumber,
+      };
     },
   });
 
