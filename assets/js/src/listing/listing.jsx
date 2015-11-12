@@ -421,7 +421,9 @@ define(
               loading: false
             }, function() {
               if(this.props['onGetItems'] !== undefined) {
-                  this.props.onGetItems(this.state.count);
+                  this.props.onGetItems(
+                    ~~(this.state.groups[0]['count'])
+                  );
               }
             }.bind(this));
           }.bind(this));
