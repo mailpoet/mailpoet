@@ -419,7 +419,11 @@ define(
               groups: response.groups || [],
               count: response.count || 0,
               loading: false
-            });
+            }, function() {
+              if(this.props['onGetItems'] !== undefined) {
+                  this.props.onGetItems(this.state.count);
+              }
+            }.bind(this));
           }.bind(this));
         }
       },
