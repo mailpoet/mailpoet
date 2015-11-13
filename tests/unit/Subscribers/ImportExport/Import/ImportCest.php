@@ -1,6 +1,6 @@
 <?php
 
-use MailPoet\Import\Import;
+use MailPoet\Subscribers\ImportExport\Import\Import;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
@@ -127,19 +127,19 @@ class ImportCest {
     expect($statuses)->equals(
       array(
         'status' => array(
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          -1,
-          -1,
-          -1,
-          -1,
-          1,
-          1
+          'confirmed',
+          'confirmed',
+          'confirmed',
+          'confirmed',
+          'confirmed',
+          'confirmed',
+          'confirmed',
+          'unsubscribed',
+          'unsubscribed',
+          'unsubscribed',
+          'unsubscribed',
+          'confirmed',
+          'confirmed'
         )
       )
     );

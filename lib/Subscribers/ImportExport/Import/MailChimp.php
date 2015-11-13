@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Import;
+namespace MailPoet\Subscribers\ImportExport\Import;
 
 use MailPoet\Util\Helpers;
 

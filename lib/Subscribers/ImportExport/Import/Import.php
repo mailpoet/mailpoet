@@ -1,6 +1,7 @@
 <?php
-namespace MailPoet\Import;
+namespace MailPoet\Subscribers\ImportExport\Import;
 
+use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
@@ -66,7 +67,7 @@ class Import {
         'error' => $e->getMessage()
       );
     }
-    $segments = new BootstrapMenu();
+    $segments = new BootStrapMenu('import');
     return array(
       'result' => true,
       'data' => array(
@@ -182,12 +183,12 @@ class Import {
     );
     $subscribersData['status'] = array_map(function ($state) use ($statuses) {
       if(in_array(strtolower($state), $statuses['subscribed'])) {
-        return 1;
+        return 'confirmed';
       }
       if(in_array(strtolower($state), $statuses['unsubscribed'])) {
-        return -1;
+        return 'unsubscribed';
       }
-      return 1; // make "subscribed" a default status
+      return 'confirmed'; // make "subscribed" a default status
     }, $subscribersData['status']);
     return $subscribersData;
   }

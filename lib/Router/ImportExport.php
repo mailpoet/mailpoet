@@ -1,13 +1,13 @@
 <?php
 namespace MailPoet\Router;
 
-use MailPoet\Import\MailChimp;
+use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 
 if(!defined('ABSPATH')) exit;
 
-class Import {
+class ImportExport {
   function getMailChimpLists($data) {
     $mailChimp = new MailChimp($data['api_key']);
     wp_send_json($mailChimp->getLists());
@@ -48,8 +48,13 @@ class Import {
     );
   }
 
-  function process($data) {
-    $import = new \MailPoet\Import\Import(json_decode($data, true));
+  function processImport($data) {
+    $import = new \MailPoet\Subscribers\ImportExport\Import\Import(json_decode($data, true));
     wp_send_json($import->process());
+  }
+
+  function processExport($data) {
+    $export = new \MailPoet\Subscribers\ImportExport\Export\Export(json_decode($data, true));
+    wp_send_json($export->process());
   }
 }

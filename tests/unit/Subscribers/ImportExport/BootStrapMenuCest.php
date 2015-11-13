@@ -1,6 +1,6 @@
 <?php
 
-use MailPoet\Import\BootstrapMenu;
+use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -22,11 +22,13 @@ class BootStrapMenuCest {
       array(
         'first_name' => 'John',
         'last_name' => 'Mailer',
+        'status' => 0,
         'email' => 'john@mailpoet.com'
       ),
       array(
         'first_name' => 'Mike',
         'last_name' => 'Smith',
+        'status' => 1,
         'email' => 'mike@maipoet.com'
       )
     );
@@ -37,20 +39,39 @@ class BootStrapMenuCest {
     $customField = CustomField::create();
     $customField->hydrate($this->customFieldsData);
     $customField->save();
-    $this->bootStrapMenu = new BootstrapMenu();
+    $this->bootStrapImportMenu = new BootStrapMenu('import');
+    $this->bootStrapExportMenu = new BootStrapMenu('export');
   }
 
-  function itCanGetSegments() {
+  function itCanGetSegmentsForImport() {
     $this->_createSegmentsAndSubscribers();
-    $segments = $this->bootStrapMenu->getSegments();
+    $segments = $this->bootStrapImportMenu->getSegments();
     expect(count($segments))->equals(2);
     expect($segments[0]['name'])->equals($this->segmentsData[0]['name']);
     expect($segments[0]['subscriberCount'])->equals(1);
-    expect($segments[1]['subscriberCount'])->equals(0);
+    expect($segments[1]['subscriberCount'])->equals(1);
+  }
+
+  function itCanGetSegmentsForExport() {
+    $this->_createSegmentsAndSubscribers();
+    $segments = $this->bootStrapExportMenu->getSegments();
+    expect(count($segments))->equals(2);
+    expect($segments[0]['name'])->equals($this->segmentsData[0]['name']);
+    expect($segments[0]['subscriberCount'])->equals(1);
+    expect($segments[1]['subscriberCount'])->equals(1);
+  }
+
+  function itCanGetSegmentsWithConfirmedSubscribersForExport() {
+    $this->_createSegmentsAndSubscribers();
+    $segments = $this->bootStrapExportMenu->getSegments(
+      $withConfirmedSubscribers = true
+    );
+    expect(count($segments))->equals(1);
+    expect($segments[0]['name'])->equals($this->segmentsData[1]['name']);
   }
 
   function itCanGetSubscriberFields() {
-    $subsriberFields = $this->bootStrapMenu->getSubscriberFields();
+    $subsriberFields = $this->bootStrapImportMenu->getSubscriberFields();
     $fields = array(
       'email',
       'first_name',
@@ -64,8 +85,8 @@ class BootStrapMenuCest {
 
   function itCanFormatSubsciberFields() {
     $formattedSubscriberFields =
-      $this->bootStrapMenu->formatSubscriberFields(
-        $this->bootStrapMenu->getSubscriberFields()
+      $this->bootStrapImportMenu->formatSubscriberFields(
+        $this->bootStrapImportMenu->getSubscriberFields()
       );
     $fields = array(
       'id',
@@ -82,7 +103,7 @@ class BootStrapMenuCest {
 
   function itCanGetSubsciberCustomFields() {
     $subscriberCustomFields =
-      $this->bootStrapMenu
+      $this->bootStrapImportMenu
         ->getSubscriberCustomFields();
     expect($subscriberCustomFields[0]['type'])
       ->equals($this->customFieldsData['type']);
@@ -90,8 +111,8 @@ class BootStrapMenuCest {
 
   function itCanFormatSubsciberCustomFields() {
     $formattedSubscriberCustomFields =
-      $this->bootStrapMenu->formatSubscriberCustomFields(
-        $this->bootStrapMenu->getSubscriberCustomFields()
+      $this->bootStrapImportMenu->formatSubscriberCustomFields(
+        $this->bootStrapImportMenu->getSubscriberCustomFields()
       );
     $fields = array(
       'id',
@@ -106,8 +127,8 @@ class BootStrapMenuCest {
     expect($formattedSubscriberCustomFields[0]['custom'])->true();
   }
 
-  function itCanFormatFieldsForSelect2() {
-    $bootStrapMenu = clone($this->bootStrapMenu);
+  function itCanFormatFieldsForSelect2Import() {
+    $bootStrapMenu = clone($this->bootStrapImportMenu);
     $select2FieldsWithoutCustomFields = array(
       array(
         'name' => 'Actions',
@@ -125,7 +146,7 @@ class BootStrapMenuCest {
       array(
         'name' => 'System columns',
         'children' => $bootStrapMenu->formatSubscriberFields(
-          $bootStrapMenu->subscriberFields
+          $bootStrapMenu->getSubscriberFields()
         )
       )
     );
@@ -135,40 +156,100 @@ class BootStrapMenuCest {
         array(
           'name' => __('User columns'),
           'children' => $bootStrapMenu->formatSubscriberCustomFields(
-            $bootStrapMenu->subscriberCustomFields
+            $bootStrapMenu->getSubscriberCustomFields()
           )
         )
       ));
     $formattedFieldsForSelect2 = $bootStrapMenu->formatFieldsForSelect2(
-      $bootStrapMenu->subscriberFields,
-      $bootStrapMenu->subscriberCustomFields
+      $bootStrapMenu->getSubscriberFields(),
+      $bootStrapMenu->getSubscriberCustomFields()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
-    $bootStrapMenu->subscriberCustomFields = false;
     $formattedFieldsForSelect2 = $bootStrapMenu->formatFieldsForSelect2(
-      $bootStrapMenu->subscriberFields,
-      $bootStrapMenu->subscriberCustomFields
+      $bootStrapMenu->getSubscriberFields(),
+      array()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
 
-  function itCanBootstrap() {
+  function itCanFormatFieldsForSelect2Export() {
+    $bootStrapMenu = clone($this->bootStrapExportMenu);
+    $select2FieldsWithoutCustomFields = array(
+      array(
+        'name' => 'Actions',
+        'children' => array(
+          array(
+            'id' => 'select',
+            'name' => __('Select all...'),
+          ),
+          array(
+            'id' => 'deselect',
+            'name' => __('Deselect all...')
+          ),
+        )
+      ),
+      array(
+        'name' => 'System columns',
+        'children' => $bootStrapMenu->formatSubscriberFields(
+          $bootStrapMenu->getSubscriberFields()
+        )
+      )
+    );
+    $select2FieldsWithCustomFields = array_merge(
+      $select2FieldsWithoutCustomFields,
+      array(
+        array(
+          'name' => __('User columns'),
+          'children' => $bootStrapMenu->formatSubscriberCustomFields(
+            $bootStrapMenu->getSubscriberCustomFields()
+          )
+        )
+      ));
+    $formattedFieldsForSelect2 = $bootStrapMenu->formatFieldsForSelect2(
+      $bootStrapMenu->getSubscriberFields(),
+      $bootStrapMenu->getSubscriberCustomFields()
+    );
+    expect($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
+    $formattedFieldsForSelect2 = $bootStrapMenu->formatFieldsForSelect2(
+      $bootStrapMenu->getSubscriberFields(),
+      array()
+    );
+    expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
+  }
+
+  function itCanBootStrapImport() {
     $customField = CustomField::create();
     $customField->hydrate($this->customFieldsData);
     $customField->save();
-    $bootstrap = clone($this->bootStrapMenu);
     $this->_createSegmentsAndSubscribers();
-    $bootstrap->segments = $bootstrap->getSegments();
-    $menu = $bootstrap->bootstrap();
-    expect(count(json_decode($menu['segments'], true)))->equals(2);
+    $import = clone($this->bootStrapImportMenu);
+    $importMenu = $import->bootstrap();
+    expect(count(json_decode($importMenu['segments'], true)))
+      ->equals(2);
     // email, first_name, last_name, status + 1 custom field
-    expect(count(json_decode($menu['subscriberFields'], true)))->equals(5);
+    expect(count(json_decode($importMenu['subscriberFields'], true)))
+      ->equals(5);
     // action, system columns, user columns
-    expect(count(json_decode($menu['subscriberFieldsSelect2'], true)))->equals(3);
-    expect($menu['maxPostSize'])->equals(ini_get('post_max_size'));
-    expect($menu['maxPostSizeBytes'])->equals(
+    expect(count(json_decode($importMenu['subscriberFieldsSelect2'], true)))
+      ->equals(3);
+    expect($importMenu['maxPostSize'])->equals(ini_get('post_max_size'));
+    expect($importMenu['maxPostSizeBytes'])->equals(
       (int) ini_get('post_max_size') * 1048576
     );
+  }
+
+  function itCanBootStrapExport() {
+    $customField = CustomField::create();
+    $customField->hydrate($this->customFieldsData);
+    $customField->save();
+    $this->_createSegmentsAndSubscribers();
+    $export = clone($this->bootStrapImportMenu);
+    $exportMenu = $export->bootstrap();
+    expect(count(json_decode($exportMenu['segments'], true)))
+      ->equals(2);
+    // action, system columns, user columns
+    expect(count(json_decode($exportMenu['subscriberFieldsSelect2'], true)))
+      ->equals(3);
   }
 
   function _createSegmentsAndSubscribers() {
@@ -177,13 +258,13 @@ class BootStrapMenuCest {
       $segment->hydrate($segmentData);
       $segment->save();
     }
-    foreach ($this->subscribersData as $index => $subscriberData) {
+    foreach ($this->subscribersData as $subscriberData) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriberData);
       $subscriber->save();
       $association = SubscriberSegment::create();
       $association->subscriber_id = $subscriber->id;
-      $association->segment_id = $index;
+      $association->segment_id = $subscriber->id;
       $association->save();
     };
   }

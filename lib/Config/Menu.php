@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config;
 
-use \MailPoet\Import\BootstrapMenu;
+use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
 use \MailPoet\Models\Form;
@@ -79,12 +79,20 @@ class Menu {
       array($this, 'settings')
     );
     add_submenu_page(
-      'null',
+      null,
       __('Import'),
       __('Import'),
       'manage_options',
       'mailpoet-import',
       array($this, 'import')
+    );
+    add_submenu_page(
+      null,
+      __('Export'),
+      __('Export'),
+      'manage_options',
+      'mailpoet-export',
+      array($this, 'export')
     );
     // add_submenu_page(
     //   'mailpoet',
@@ -229,9 +237,15 @@ class Menu {
   }
 
   function import() {
-    $import = new BootstrapMenu();
+    $import = new BootStrapMenu('import');
     $data = $import->bootstrap();
     echo $this->renderer->render('import.html', $data);
+  }
+
+  function export() {
+    $export = new BootStrapMenu('export');
+    $data = $export->bootstrap();
+    echo $this->renderer->render('export.html', $data);
   }
 
   function formEditor() {

@@ -1,0 +1,130 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+<div id="mailpoet_subscribers_export" class="wrap">
+  <h2 class="title">
+    <%= __('Export') %>
+    <a class="add-new-h2" href="?page=mailpoet-subscribers#/"><%= __('Back to list') %></a>
+  </h2>
+  <% if segments is empty %>
+  <div class="notice">
+    <ul>
+      <li><%= __("Yikes! Couldn't find any subscribers.") %></li>
+    </ul>
+  </div>
+  <% endif %>
+  <div class="inside">
+    <!-- Template data -->
+  </div>
+</div>
+<script id="mailpoet_subscribers_export_template" type="text/x-handlebars-template">
+  <div id="export_result_notice" class="notice mailpoet_hidden">
+    <ul>
+      <li></li>
+    </ul>
+  </div>
+  <table class="form-table">
+    <tbody>
+    {{#if segments}}
+    <tr>
+      <th scope="row">
+        <label for="export_lists">
+          <%= __('Pick a list') %>
+        </label>
+      </th>
+      <td>
+        <select id="export_lists" data-placeholder="<%= __('Select') %>" multiple="multiple"></select>
+      </td>
+    </tr>
+    {{/if}}
+    <tr>
+      <th scope="row">
+        <label for="export_columns">
+          <%= __('List of fields to export') %>
+        </label>
+      </th>
+      <td>
+        <select id="export_columns" data-placeholder="<%= __('Select') %>" multiple="multiple"></select>
+      </td>
+    </tr>
+    {{#if groupBySegmentOption}}
+    <tr class="mailpoet_group_by_list mailpoet_hidden">
+      <th scope="row">
+        <%= __('Group subscribers by list') %>
+      </th>
+      <td>
+        <input type="checkbox" name="option_group_by_list" checked>
+      </td>
+    </tr>
+    {{/if}}
+    {{#if exportConfirmedOption}}
+    <tr>
+      <th scope="row">
+        <%= __('Export confirmed subscribers only') %>
+      </th>
+      <td>
+        <div>
+          <label>
+            <input type="radio"
+             name="option_confirmed" value=1><%= __('Yes') %>
+          </label>
+          &nbsp;
+          <label>
+            <input type="radio"
+             name="option_confirmed" value=0 checked><%= __('No') %>
+          </label>
+        </div>
+      </td>
+    </tr>
+    {{/if}}
+    <tr>
+      <th scope="row">
+        <%= __('Format') %>
+      </th>
+      <td>
+        <label>
+          <input type="radio" name="option_format"
+           value="csv"
+           checked><%= __('CSV file') %>
+        </label>
+        &nbsp;
+        <label>
+          <input type="radio" name="option_format"
+           value="xlsx"><%= __('Excel') %>
+        </label>
+      </td>
+    </tr>
+    <tr class="mailpoet_export_process">
+      <th scope="row">
+        <a href="javascript:;"
+         class="button-primary button-disabled wysija mailpoet_export_process"><%= __('Export') %></a>
+      </th>
+    </tr>
+    </tbody>
+  </table>
+</script>
+</div>
+
+<%= stylesheet('importExport.css') %>
+
+<%= localize({
+  'serverError': __('Server error:'),
+  'exportMessage' : __('%1$s subscribers were exported. Get the exported file [link]here[/link].')
+}) %>
+
+<script type="text/javascript">
+  // define data variables
+  var
+    segments = <%= segments|raw %>,
+    segmentsWithConfirmedSubscribers =
+      <%= segmentsWithConfirmedSubscribers|raw %>,
+    subscriberFieldsSelect2 =
+      <%= subscriberFieldsSelect2|raw %>,
+    exportData = {
+     segments: segments.length || null,
+     segmentsWithConfirmedSubscribers: segmentsWithConfirmedSubscribers.length || null,
+     exportConfirmedOption: false,
+     groupBySegmentOption: (segments.length > 1 || segmentsWithConfirmedSubscribers.length > 1) ? true : null
+    };
+</script>
+<% endblock %>

@@ -276,12 +276,16 @@ const SubscriberList = React.createClass({
       </div>
     );
   },
+  onGetItems: function(count) {
+    jQuery('#mailpoet_export_button')[(count > 0) ? 'show' : 'hide']();
+  },
   render: function() {
     return (
       <div>
         <h2 className="title">
           Subscribers <Link className="add-new-h2" to="/new">New</Link>
           <a className="add-new-h2" href="?page=mailpoet-import#step1">Import</a>
+          <a id="mailpoet_export_button" className="add-new-h2" href="?page=mailpoet-export">Export</a>
         </h2>
 
         <Listing
@@ -292,6 +296,7 @@ const SubscriberList = React.createClass({
           columns={ columns }
           bulk_actions={ bulk_actions }
           messages={ messages }
+          onGetItems={ this.onGetItems }
         />
       </div>
     )

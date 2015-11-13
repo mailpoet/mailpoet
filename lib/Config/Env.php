@@ -11,6 +11,8 @@ class Env {
   public static $views_path;
   public static $assets_path;
   public static $assets_url;
+  public static $temp_name;
+  public static $temp_path;
   public static $languages_path;
   public static $lib_path;
   public static $plugin_prefix;
@@ -33,6 +35,8 @@ class Env {
     self::$views_path = self::$path . '/views';
     self::$assets_path = self::$path . '/assets';
     self::$assets_url = plugins_url('/assets', $file);
+    self::$temp_name = 'temp';
+    self::$temp_path = self::$path . '/' . self::$temp_name;
     self::$languages_path = self::$path . '/lang';
     self::$lib_path = self::$path . '/lib';
     self::$plugin_prefix = 'mailpoet_';
