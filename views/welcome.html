@@ -1,0 +1,13 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+  <div id="mailpoet_welcome">
+    <h2><%= __('Welcome welcome welcome!') %></h2>
+
+    <h3>Settings:</h3>
+    <%= dump(settings) %>
+
+    <h3>Current user:</h3>
+    <%= dump(current_user) %>
+  </div>
+<% endblock %>
