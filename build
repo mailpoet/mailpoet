@@ -11,17 +11,18 @@ mkdir wysija-newsletters;
 
 # Production libraries.
 rm -rf vendor;
+rm -rf node_modules;
 rm composer.lock;
 ./composer.phar install --no-dev;
 
 # Copy release folders.
-cp -rf lang wysija-newsletters;
-cp -rfL assets wysija-newsletters;
-cp -rf lib wysija-newsletters;
-cp -rf vendor wysija-newsletters;
-cp -rf views wysija-newsletters;
-rm -rf wysija-newsletters/assets/css/src;
-rm -rf wysija-newsletters/assets/js/src;
+cp -Rf lang wysija-newsletters;
+cp -RfL assets wysija-newsletters;
+cp -Rf lib wysija-newsletters;
+cp -Rf vendor wysija-newsletters;
+cp -Rf views wysija-newsletters;
+rm -Rf wysija-newsletters/assets/css/src;
+rm -Rf wysija-newsletters/assets/js/src;
 
 # Copy release files.
 cp LICENSE wysija-newsletters;
