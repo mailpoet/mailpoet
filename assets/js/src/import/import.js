@@ -176,13 +176,13 @@ define(
        mailChimpKeyVerifyButtonEelement.click(function () {
          MailPoet.Modal.loading(true);
          MailPoet.Ajax.post({
-           endpoint: 'import',
+           endpoint: 'ImportExport',
            action: 'getMailChimpLists',
            data: {api_key: mailChimpKeyInputElement.val()}
-         }).done(function (request) {
-           if (request.result === false) {
+         }).done(function (response) {
+           if (response.result === false) {
              MailPoet.Notice.hide();
-             MailPoet.Notice.error(request.error);
+             MailPoet.Notice.error(response.error);
              jQuery('.mailpoet_mailchimp-key-status')
               .removeClass()
               .addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-error');
@@ -193,12 +193,12 @@ define(
               .html('')
               .removeClass()
               .addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-ok');
-             if (!request.data) {
+             if (!response.data) {
                jQuery('.mailpoet_mailchimp-key-status').html(MailPoetI18n.noMailChimpLists);
                mailChimpListsContainerElement.hide();
                toggleNextStepButton(mailChimpProcessButtonElement, 'off');
              } else {
-               displayMailChimpLists(request.data);
+               displayMailChimpLists(response.data);
              }
            }
            MailPoet.Modal.loading(false);
@@ -217,20 +217,20 @@ define(
          }
          MailPoet.Modal.loading(true);
          MailPoet.Ajax.post({
-           endpoint: 'import',
+           endpoint: 'ImportExport',
            action: 'getMailChimpSubscribers',
            data: {
              api_key: mailChimpKeyInputElement.val(),
              lists: mailChimpListsContainerElement.find('select').val()
            }
-         }).done(function (request) {
-           if (request.result === true) {
-             importData.step1 = request.data;
+         }).done(function (response) {
+           if (response.result === true) {
+             importData.step1 = response.data;
              router.navigate('step2', {trigger: true});
            }
            else {
              MailPoet.Notice.hide();
-             MailPoet.Notice.error(request.message);
+             MailPoet.Notice.error(response.message);
            }
            MailPoet.Modal.loading(false);
          }).error(function () {
@@ -273,11 +273,12 @@ define(
        }
 
        function toggleNextStepButton(element, condition) {
+         var disabled = 'button-disabled';
          if (condition === 'on') {
-           element.closest('table a').removeClass('disabled');
+           element.closest('table a').removeClass(disabled);
            return;
          }
-         element.closest('table a').addClass('disabled');
+         element.closest('table a').addClass(disabled);
        }
 
        function parseCSV() {
@@ -531,7 +532,6 @@ define(
           .change(function () {
             var segmentSelectionNotice = jQuery('[data-id="notice_segmentSelection"]');
             if (!this.value) {
-              toggleNextStepButton('off');
               if (!segmentSelectionNotice.length) {
                 MailPoet.Notice.error(MailPoetI18n.segmentSelectionRequired, {
                   static: true,
@@ -540,11 +540,12 @@ define(
                   hideClose: true
                 });
               }
+              toggleNextStepButton('off');
             } else {
               jQuery('[data-id="notice_segmentSelection"]').remove();
-            }
-            if (!segmentSelectionNotice.length) {
-              toggleNextStepButton('on');
+              if (!jQuery('.mailpoet_notice.error:visible').length) {
+                toggleNextStepButton('on');
+              }
             }
           })
        }
@@ -581,25 +582,25 @@ define(
              jQuery('.mailpoet_validation_error[data-error="segment_name_required"]:visible').hide();
              MailPoet.Ajax
               .post({
-                endpoint: 'import',
+                endpoint: 'ImportExport',
                 action: 'addSegment',
                 data: {
                   name: segmentName,
                   description: segmentDescription
                 }
               })
-              .done(function (request) {
-                if (request.result === true) {
+              .done(function (response) {
+                if (response.result === true) {
                   mailpoetSegments.push({
-                    'id': request.segment.id,
-                    'name': request.segment.name
+                    'id': response.segment.id,
+                    'name': response.segment.name
                   });
 
                   var selected_values = segmentSelectElement.val();
                   if (selected_values === null) {
-                    selected_values = [request.segment.id]
+                    selected_values = [response.segment.id]
                   } else {
-                    selected_values.push(request.segment.id);
+                    selected_values.push(response.segment.id);
                   }
 
                   enableSegmentSelection(mailpoetSegments);
@@ -611,7 +612,7 @@ define(
                 else {
                   MailPoet.Modal.close();
                   MailPoet.Notice.error(
-                   MailPoetI18n.segmentCreateError + request.message + '.'
+                   MailPoetI18n.segmentCreateError + response.message + '.'
                   );
                 }
               })
@@ -663,11 +664,12 @@ define(
                   columnId = 'last_name';
                 } else if (/status/i.test(headerName)) {
                   columnId = 'status';
-                } /*else if (/subscribed|subscription/i.test(headerName)) {
-                  columnId = 'confirmed_at';
-                } else if (/ip/i.test(headerName)) {
-                  columnId = 'confirmed_ip';
-                }*/
+                }
+                /*else if (/subscribed|subscription/i.test(headerName)) {
+                 columnId = 'confirmed_at';
+                 } else if (/ip/i.test(headerName)) {
+                 columnId = 'confirmed_ip';
+                 }*/
               }
             }
             // make sure the column id has not been previously selected
@@ -714,7 +716,6 @@ define(
        jQuery('#subscribers_data > table').html(subscribersDataTemplate(subscribers));
 
        // filter displayed data
-       //  filter_subscribers_data();
        jQuery('select.mailpoet_subscribers_column_data_match')
         .select2({
           data: mailpoetColumnsSelect2,
@@ -779,17 +780,17 @@ define(
                  .loading(true);
                 MailPoet.Ajax
                  .post({
-                   endpoint: 'import',
+                   endpoint: 'ImportExport',
                    action: 'addCustomField',
                    data: {
                      name: name,
                      type: type
                    }
                  })
-                 .done(function (request) {
-                   if (request.result === true) {
+                 .done(function (response) {
+                   if (response.result === true) {
                      var new_column_data = {
-                       'id': request.customField.id,
+                       'id': response.customField.id,
                        'name': name,
                        'type': type,
                        'custom': true,
@@ -871,7 +872,8 @@ define(
 
        // filter subscribers' data to detect dates, emails, etc.
        function filterSubscribers() {
-         jQuery('[data-id="notice_invalidEmail"], [data-id="notice_invalidDate"]')
+         jQuery(
+          '[data-id="notice_invalidEmail"], [data-id="notice_invalidDate"]')
           .remove();
 
          var subscribersClone = jQuery.extend(true, {}, subscribers),
@@ -998,12 +1000,13 @@ define(
        }
 
        function toggleNextStepButton(condition) {
+         console.log(condition);
+         var disabled = 'button-disabled';
          if (condition === 'on') {
-           nextStepButton.removeClass('disabled');
+           nextStepButton.removeClass(disabled);
+           return;
          }
-         else {
-           nextStepButton.addClass('disabled');
-         }
+         nextStepButton.addClass(disabled);
        }
 
        nextStepButton.off().click(function () {
@@ -1034,24 +1037,24 @@ define(
           });
 
          MailPoet.Ajax.post({
-           endpoint: 'import',
-           action: 'process',
+           endpoint: 'ImportExport',
+           action: 'processImport',
            data: JSON.stringify({
              subscribers: subscribers,
              segments: segmentSelectElement.val(),
              updateSubscribers: (jQuery(':radio[name="subscriber_update_option"]:checked').val() === 'yes') ? true : false
            })
-         }).done(function (request) {
+         }).done(function (response) {
            MailPoet.Modal.loading(false);
-           if (request.result === false) {
-             MailPoet.Notice.error(request.error);
+           if (response.result === false) {
+             MailPoet.Notice.error(response.error);
            } else {
-             mailpoetSegments = request.data.segments;
-             request.data.segments = _.map(segmentSelectElement.select2('data'),
+             mailpoetSegments = response.data.segments;
+             response.data.segments = _.map(segmentSelectElement.select2('data'),
               function (data) {
                 return data.name;
               });
-             importData.step2 = request.data;
+             importData.step2 = response.data;
              enableSegmentSelection(mailpoetSegments);
              router.navigate('step3', {trigger: true});
            }

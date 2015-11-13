@@ -285,7 +285,6 @@ const SubscriberList = React.createClass({
         <h2 className="title">
           Subscribers <Link className="add-new-h2" to="/new">New</Link>
           <a className="add-new-h2" href="?page=mailpoet-import#step1">Import</a>
-
           <a id="mailpoet_export_button" className="add-new-h2" href="?page=mailpoet-export">Export</a>
         </h2>
 

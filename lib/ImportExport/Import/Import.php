@@ -183,12 +183,12 @@ class Import {
     );
     $subscribersData['status'] = array_map(function ($state) use ($statuses) {
       if(in_array(strtolower($state), $statuses['subscribed'])) {
-        return 1;
+        return 'confirmed';
       }
       if(in_array(strtolower($state), $statuses['unsubscribed'])) {
-        return -1;
+        return 'unsubscribed';
       }
-      return 1; // make "subscribed" a default status
+      return 'confirmed'; // make "subscribed" a default status
     }, $subscribersData['status']);
     return $subscribersData;
   }

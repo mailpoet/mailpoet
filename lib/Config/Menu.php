@@ -79,7 +79,7 @@ class Menu {
       array($this, 'settings')
     );
     add_submenu_page(
-      'null',
+      null,
       __('Import'),
       __('Import'),
       'manage_options',
@@ -87,7 +87,7 @@ class Menu {
       array($this, 'import')
     );
     add_submenu_page(
-      'mailpoet',
+      null,
       __('Export'),
       __('Export'),
       'manage_options',

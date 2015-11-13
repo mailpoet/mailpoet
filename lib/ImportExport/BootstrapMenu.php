@@ -6,7 +6,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Util\Helpers;
 
 class BootStrapMenu {
-  function __construct($action) {
+  function __construct($action = null) {
     $this->action = $action;
   }
 

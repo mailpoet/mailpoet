@@ -2,7 +2,10 @@
 
 <% block content %>
 <div id="mailpoet_subscribers_export" class="wrap">
-  <h2 class="title"><%= __('Export') %></h2>
+  <h2 class="title">
+    <%= __('Export') %>
+    <a class="add-new-h2" href="?page=mailpoet-subscribers#/"><%= __('Back to list') %></a>
+  </h2>
   <% if segments is empty %>
   <div class="notice">
     <ul>
@@ -25,7 +28,7 @@
     {{#if segments}}
     <tr>
       <th scope="row">
-        <label for="s2id_autogen2">
+        <label for="export_lists">
           <%= __('Pick a list') %>
         </label>
       </th>
@@ -36,7 +39,7 @@
     {{/if}}
     <tr>
       <th scope="row">
-        <label for="s2id_autogen1">
+        <label for="export_columns">
           <%= __('List of fields to export') %>
         </label>
       </th>
@@ -105,6 +108,8 @@
 <%= stylesheet('importExport.css') %>
 
 <%= localize({
+  'serverError': __('Server error:'),
+  'exportMessage' : __('%1$s subscribers were exported. Get the exported file [link]here[/link].')
 }) %>
 
 <script type="text/javascript">
@@ -118,11 +123,8 @@
     exportData = {
      segments: segments.length || null,
      segmentsWithConfirmedSubscribers: segmentsWithConfirmedSubscribers.length || null,
-     exportConfirmedOption: true,
+     exportConfirmedOption: false,
      groupBySegmentOption: (segments.length > 1 || segmentsWithConfirmedSubscribers.length > 1) ? true : null
-    },
-    export_location = '',
-    export_directory = '',
-    export_url = '';
+    };
 </script>
 <% endblock %>
