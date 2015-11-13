@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Router;
 
-use MailPoet\ImportExport\Import\MailChimp;
+use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 
@@ -49,12 +49,12 @@ class ImportExport {
   }
 
   function processImport($data) {
-    $import = new \MailPoet\ImportExport\Import\Import(json_decode($data, true));
+    $import = new \MailPoet\Subscribers\ImportExport\Import\Import(json_decode($data, true));
     wp_send_json($import->process());
   }
 
   function processExport($data) {
-    $export = new \MailPoet\ImportExport\Export\Export(json_decode($data, true));
+    $export = new \MailPoet\Subscribers\ImportExport\Export\Export(json_decode($data, true));
     wp_send_json($export->process());
   }
 }

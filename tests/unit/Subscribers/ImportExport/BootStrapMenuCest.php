@@ -1,6 +1,6 @@
 <?php
 
-use MailPoet\ImportExport\BootStrapMenu;
+use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;

@@ -1,6 +1,6 @@
 <?php
 
-use MailPoet\ImportExport\Export;
+use MailPoet\Subscribers\ImportExport\Export;
 
 class ExportCest {
   function __construct() {

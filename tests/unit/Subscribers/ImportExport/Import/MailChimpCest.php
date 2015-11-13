@@ -1,6 +1,6 @@
 <?php
 
-use MailPoet\ImportExport\Import\MailChimp;
+use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 
 class MailChimpCest {
   function __construct() {

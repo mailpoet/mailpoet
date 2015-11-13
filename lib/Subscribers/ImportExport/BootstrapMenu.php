@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\ImportExport;
+namespace MailPoet\Subscribers\ImportExport;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;

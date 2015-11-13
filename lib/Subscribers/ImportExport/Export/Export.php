@@ -1,8 +1,8 @@
 <?php
-namespace MailPoet\ImportExport\Export;
+namespace MailPoet\Subscribers\ImportExport\Export;
 
 use MailPoet\Config\Env;
-use MailPoet\ImportExport\BootStrapMenu;
+use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
