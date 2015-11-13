@@ -28,7 +28,8 @@ baseConfig = {
       'spectrum$': 'spectrum-colorpicker/spectrum.js',
       'blob$': 'blob/Blob.js',
       'filesaver$': 'filesaver/FileSaver.js',
-      'papaparse': 'papaparse/papaparse.min.js'
+      'papaparse': 'papaparse/papaparse.min.js',
+      'helpscout': 'helpscout.js',
     },
   },
   node: {
@@ -68,6 +69,10 @@ baseConfig = {
         include: require.resolve('handlebars'),
         loader: 'expose-loader?Handlebars',
       },
+      {
+        include: /helpscout.js$/,
+        loader: 'exports-loader?window.HS',
+      },
     ]
   }
 };
@@ -90,7 +95,8 @@ config.push(_.extend({}, baseConfig, {
       'segments/segments.jsx',
       'forms/forms.jsx',
       'settings/tabs.js',
-      'import/import.js'
+      'import/import.js',
+      'helpscout'
     ],
     form_editor: [
       'form_editor/form_editor.js',
