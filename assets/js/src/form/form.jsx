@@ -90,15 +90,15 @@ define(
 
           if(response.result === true) {
             if(this.props.onSuccess !== undefined) {
-              this.props.onSuccess()
+              this.props.onSuccess();
             } else {
               this.history.pushState(null, '/')
             }
 
             if(this.props.params.id !== undefined) {
-              this.props.messages['updated']();
+              this.props.messages.onUpdate();
             } else {
-              this.props.messages['created']();
+              this.props.messages.onCreate();
             }
           } else {
             if(response.result === false) {

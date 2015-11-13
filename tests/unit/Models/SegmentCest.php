@@ -171,5 +171,9 @@ class SegmentCest {
       ->deleteMany();
     ORM::forTable(SubscriberSegment::$_table)
       ->deleteMany();
+    ORM::forTable(Newsletter::$_table)
+      ->deleteMany();
+    ORM::forTable(NewsletterSegment::$_table)
+      ->deleteMany();
   }
 }

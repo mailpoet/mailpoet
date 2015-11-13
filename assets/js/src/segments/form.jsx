@@ -26,10 +26,10 @@ define(
     ];
 
     var messages = {
-      updated: function() {
+      onUpdate: function() {
         MailPoet.Notice.success('Segment successfully updated!');
       },
-      created: function() {
+      onCreate: function() {
         MailPoet.Notice.success('Segment successfully added!');
       }
     };
@@ -54,7 +54,7 @@ define(
               fields={ fields }
               params={ this.props.params }
               messages={ messages }
-              onSuccess={ this.history.goBack } />
+            />
           </div>
         );
       }

@@ -34,7 +34,7 @@ class Menu {
       'MailPoet',
       'manage_options',
       'mailpoet',
-      array($this, 'home'),
+      array($this, 'welcome'),
       $this->assets_url . '/img/menu_icon.png',
       30
     );
@@ -100,6 +100,7 @@ class Menu {
   function registered_pages() {
     global $_registered_pages;
     $pages = array(
+      'mailpoet-welcome' => array($this, 'welcome'),
       'mailpoet-form-editor' => array($this, 'formEditor'),
       'mailpoet-newsletter-editor' => array($this, 'newletterEditor')
     );
@@ -117,26 +118,16 @@ class Menu {
     echo $this->renderer->render('index.html', $data);
   }
 
+  function welcome() {
+    $data = array(
+      'settings' => Setting::getAll(),
+      'current_user' => wp_get_current_user()
+    );
+
+    echo $this->renderer->render('welcome.html', $data);
+  }
+
   function settings() {
-    // flags (available features on WP install)
-    $flags = array();
-
-    if(is_multisite()) {
-      // get multisite registration option
-      $registration = apply_filters(
-        'wpmu_registration_enabled',
-        get_site_option('registration', 'all')
-      );
-
-      // check if users can register
-      $flags['registration_enabled'] =
-        !(in_array($registration, array('none', 'blog')));
-    } else {
-      // check if users can register
-      $flags['registration_enabled'] =
-        (bool)get_option('users_can_register', false);
-    }
-
     $settings = Setting::getAll();
 
     // dkim: check if public/private keys have been generated
@@ -158,7 +149,7 @@ class Menu {
       'settings' => $settings,
       'segments' => Segment::getPublished()->findArray(),
       'pages' => Pages::getAll(),
-      'flags' => $flags,
+      'flags' => $this->_getFlags(),
       'charsets' => Charsets::getAll(),
       'current_user' => wp_get_current_user(),
       'permissions' => Permissions::getAll(),
@@ -169,6 +160,29 @@ class Menu {
     );
 
     echo $this->renderer->render('settings.html', $data);
+  }
+
+  private function _getFlags() {
+    // flags (available features on WP install)
+    $flags = array();
+
+    if(is_multisite()) {
+      // get multisite registration option
+      $registration = apply_filters(
+        'wpmu_registration_enabled',
+        get_site_option('registration', 'all')
+      );
+
+      // check if users can register
+      $flags['registration_enabled'] =
+        !(in_array($registration, array('none', 'blog')));
+    } else {
+      // check if users can register
+      $flags['registration_enabled'] =
+        (bool)get_option('users_can_register', false);
+    }
+
+    return $flags;
   }
 
   function subscribers() {
