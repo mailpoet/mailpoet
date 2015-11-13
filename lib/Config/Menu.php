@@ -34,7 +34,7 @@ class Menu {
       'MailPoet',
       'manage_options',
       'mailpoet',
-      array($this, 'home'),
+      array($this, 'welcome'),
       $this->assets_url . '/img/menu_icon.png',
       30
     );
