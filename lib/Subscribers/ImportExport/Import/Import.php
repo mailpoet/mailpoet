@@ -75,7 +75,7 @@ class Import {
         'updated' => count($updatedSubscribers),
         'segments' => $segments->getSegments()
       ),
-      'profile' => $this->timeExecution()
+      'profiler' => $this->timeExecution()
     );
   }
 

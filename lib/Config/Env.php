@@ -6,6 +6,7 @@ if(!defined('ABSPATH')) exit;
 class Env {
   public static $version;
   public static $plugin_name;
+  public static $plugin_url;
   public static $file;
   public static $path;
   public static $views_path;
@@ -29,9 +30,10 @@ class Env {
   public static function init($file, $version) {
     global $wpdb;
     self::$version = $version;
-    self::$plugin_name = 'mailpoet';
     self::$file = $file;
     self::$path = dirname(self::$file);
+    self::$plugin_name = 'mailpoet';
+    self::$plugin_url = plugins_url() . '/' . basename(Env::$path);
     self::$views_path = self::$path . '/views';
     self::$assets_path = self::$path . '/assets';
     self::$assets_url = plugins_url('/assets', $file);

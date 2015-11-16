@@ -1,0 +1,14 @@
+{
+  "exportConfirmedOption": false,
+  "exportFormatOption": "csv",
+  "groupBySegmentOption": true,
+  "segments": [
+    "0",
+    "1"
+  ],
+  "subscriberFields": [
+    "email",
+    "first_name",
+    "1"
+  ]
+}

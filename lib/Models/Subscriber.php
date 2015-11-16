@@ -135,20 +135,41 @@ class Subscriber extends Model {
         MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END), NULL) as "' . $customField['name'].'"');
     }
     $orm = $orm
-      ->left_outer_join(
+      ->leftOuterJoin(
         MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
         array(MP_SUBSCRIBERS_TABLE.'.id', '=',
           MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'))
-      ->left_outer_join(
+      ->leftOuterJoin(
         MP_CUSTOM_FIELDS_TABLE,
         array(MP_CUSTOM_FIELDS_TABLE.'.id','=',
           MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'))
-      ->group_by(MP_SUBSCRIBERS_TABLE.'.id');
+      ->groupBy(MP_SUBSCRIBERS_TABLE.'.id');
+    return $orm;
+  }
+
+  static function filterWithCustomFieldsForExport($orm) {
+    $orm = $orm->select(MP_SUBSCRIBERS_TABLE.'.*');
+    $customFields = CustomField::findArray();
+    foreach ($customFields as $customField) {
+      $orm = $orm->selectExpr(
+        'CASE WHEN ' .
+        MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
+        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END as "' . $customField['name'].'"');
+    }
+    $orm = $orm
+      ->leftOuterJoin(
+        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
+        array(MP_SUBSCRIBERS_TABLE.'.id', '=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'))
+      ->leftOuterJoin(
+        MP_CUSTOM_FIELDS_TABLE,
+        array(MP_CUSTOM_FIELDS_TABLE.'.id','=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'));
     return $orm;
   }
 
   function customFields() {
-    return $this->has_many_through(
+    return $this->hasManyThrough(
       __NAMESPACE__.'\CustomField',
       __NAMESPACE__.'\SubscriberCustomField',
       'subscriber_id',

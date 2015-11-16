@@ -2,11 +2,14 @@
 namespace MailPoet\Subscribers\ImportExport\Export;
 
 use MailPoet\Config\Env;
-use MailPoet\Subscribers\ImportExport\BootStrapMenu;
+use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Subscribers\ImportExport\BootStrapMenu;
+use MailPoet\Util\Helpers;
 use MailPoet\Util\XLSXWriter;
+use Symfony\Component\Console\Helper\Helper;
 
 class Export {
   public function __construct($data) {
@@ -18,23 +21,22 @@ class Export {
     $this->subscriberFields = $data['subscriberFields'];
     $this->profilerStart = microtime(true);
     $this->exportFile = sprintf(
-      Env::$temp_path . '/mailpoet_export_%s.%s',
+      Env::$temp_path . '/MailPoet_export_%s.%s',
       substr(md5(time()), 0, 4),
       $this->exportFormatOption
     );
     $this->exportFileURL = sprintf(
-      '%s/%s/%s/%s',
-      plugins_url(),
-      Env::$plugin_name,
+      '%s/%s/%s',
+      Env::$plugin_url,
       Env::$temp_name,
       basename($this->exportFile)
     );
   }
   
   function process() {
-    $subscribers = SubscriberSegment::
+    $subscribers = Subscriber::
     left_outer_join(
-      Subscriber::$_table,
+      SubscriberSegment::$_table,
       array(
         Subscriber::$_table . '.id',
         '=',
@@ -47,14 +49,33 @@ class Export {
           '=',
           SubscriberSegment::$_table . '.segment_id'
         ))
-      ->select(Segment::$_table . '.name', 'segment_name')
       ->orderByAsc('segment_name')
-      ->filter('filterWithCustomFields')
-      ->whereIn(SubscriberSegment::$_table . '.segment_id', $this->segments);
+      ->filter('filterWithCustomFieldsForExport');
+    if($this->subscribersWithoutSegment !== false) {
+      $subscribers = $subscribers
+        ->selectExpr('CASE WHEN ' . Segment::$_table . '.name IS NOT NULL ' .
+                     'THEN ' . Segment::$_table . '.name ' .
+                     'ELSE "' . __('Not In List') . '" END as segment_name'
+        )
+        ->whereRaw(
+          SubscriberSegment::$_table . '.segment_id IN (' . rtrim(str_repeat('?,', count($this->segments)), ',') . ') OR ' .
+          SubscriberSegment::$_table . '.segment_id IS NULL ',
+          $this->segments
+        );
+    } else {
+      $subscribers = $subscribers
+        ->select(Segment::$_table . '.name', 'segment_name')
+        ->whereIn(SubscriberSegment::$_table . '.segment_id', $this->segments);
+    }
     if(!$this->groupBySegmentOption) $subscribers = $subscribers->groupBy(Subscriber::$_table . '.id');
     if($this->exportConfirmedOption) $subscribers = $subscribers->where(Subscriber::$_table . '.status', 'confirmed');
     $subscribers = $subscribers->findArray();
-    $formattedSubscriberFields = $this->formatSubscriberFields($this->subscriberFields);
+    $subscriberCustomFields = Helpers::arrayColumn(
+      CustomField::findArray(),
+      'name',
+      'id'
+    );
+    $formattedSubscriberFields = $this->formatSubscriberFields($this->subscriberFields, $subscriberCustomFields);
     try {
       if($this->exportFormatOption === 'csv') {
         $CSVFile = fopen($this->exportFile, 'w');
@@ -64,34 +85,40 @@ class Export {
         // add UTF-8 BOM (3 bytes, hex EF BB BF) at the start of the file for Excel to automatically recognize the encoding
         fwrite($CSVFile, chr(0xEF) . chr(0xBB) . chr(0xBF));
         if($this->groupBySegmentOption) $formattedSubscriberFields[] = __('List');
-        fwrite($CSVFile, implode(",", array_map($formatCSV, $formattedSubscriberFields)) . "\n");
+        fwrite($CSVFile, implode(',', array_map($formatCSV, $formattedSubscriberFields)) . "\n");
         foreach ($subscribers as $subscriber) {
-          $row = array_map(function ($field) use ($subscriber) {
-            return $subscriber[$field];
+          $row = array_map(function ($field) use ($subscriber, $subscriberCustomFields) {
+            return (isset($subscriberCustomFields[$field])) ? $subscriberCustomFields[$field] : $subscriber[$field];
           }, $this->subscriberFields);
-          if($this->groupBySegmentOption) $row[] = $subscriber['segment_name'];
-          fwrite($CSVFile, implode(",", array_map($formatCSV, $row)) . "\n");
+          if($this->groupBySegmentOption) {
+            $row[] = $subscriber['segment_name'];
+          }
+          fwrite($CSVFile, implode(',', array_map($formatCSV, $row)) . "\n");
         }
         fclose($CSVFile);
       } else {
         $writer = new XLSXWriter();
         $writer->setAuthor('MailPoet (www.mailpoet.com)');
         $headerRow = array($formattedSubscriberFields);
-        $segment = null;
+        $lastSegment = false;
         $rows = array();
         foreach ($subscribers as $subscriber) {
-          if($segment && $segment != $subscriber['segment_name'] && $this->groupBySegmentOption) {
-            $writer->writeSheet(array_merge($headerRow, $rows), ucwords($segment));
+          if($lastSegment && $lastSegment !== $subscriber['segment_name'] && $this->groupBySegmentOption) {
+            $writer->writeSheet(array_merge($headerRow, $rows), ucwords($lastSegment));
             $rows = array();
           }
           // detect RTL language and set Excel to properly display the sheet
-          if(!$writer->rtl && preg_grep('/\p{Arabic}|\p{Hebrew}/u', $subscriber)) {
+          $arabicRegex = '/\p{Arabic}|\p{Hebrew}/u';
+          if(!$writer->rtl && (
+              preg_grep($arabicRegex, $subscriber) ||
+              preg_grep($arabicRegex, $formattedSubscriberFields))
+          ) {
             $writer->rtl = true;
           }
-          $rows[] = array_map(function ($field) use ($subscriber) {
-            return $subscriber[$field];
+          $rows[] = array_map(function ($field) use ($subscriber, $subscriberCustomFields) {
+            return (isset($subscriberCustomFields[$field])) ? $subscriber[$subscriberCustomFields[$field]] : $subscriber[$field];
           }, $this->subscriberFields);
-          $segment = $subscriber['segment_name'];
+          $lastSegment = $subscriber['segment_name'];
         }
         $writer->writeSheet(array_merge($headerRow, $rows), 'MailPoet');
         $writer->writeToFile($this->exportFile);
@@ -107,17 +134,19 @@ class Export {
       'data' => array(
         'totalExported' => count($subscribers),
         'exportFileURL' => $this->exportFileURL
-      )
+      ),
+      'profiler' => $this->timeExecution()
     );
   }
 
-  function formatSubscriberFields($subscriberFields) {
+  function formatSubscriberFields($subscriberFields, $subscriberCustomFields) {
     $bootStrapMenu = new BootStrapMenu();
     $translatedFields = $bootStrapMenu->getSubscriberFields();
-    return array_map(function ($field) use ($translatedFields) {
-      return (isset($translatedFields[$field])) ?
+    return array_map(function ($field) use ($translatedFields, $subscriberCustomFields) {
+      $field = (isset($translatedFields[$field])) ?
         ucfirst($translatedFields[$field]) :
         ucfirst($field);
+      return (isset($subscriberCustomFields[$field])) ? $subscriberCustomFields[$field] : $field;
     }, $subscriberFields);
   }
 
