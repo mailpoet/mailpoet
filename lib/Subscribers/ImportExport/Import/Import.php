@@ -165,7 +165,7 @@ class Import {
   }
 
   function filterSubscriberStatus($subscribersData) {
-    if(!in_array('status', $this->subscriberFields)) return;
+    if(!in_array('status', $this->subscriberFields)) return $subscribersData;
     $statuses = array(
       'subscribed' => array(
         'subscribed',
