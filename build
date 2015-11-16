@@ -11,7 +11,6 @@ mkdir wysija-newsletters;
 
 # Production libraries.
 rm -rf vendor;
-rm -rf node_modules;
 rm composer.lock;
 ./composer.phar install --no-dev;
 
