@@ -107,22 +107,20 @@ define([
     },
     _refreshTransformedPosts: function() {
       var that = this,
-        data = this.toJSON(),
-        index = this.collection.indexOf(this),
-        collection = this.get('_transformedPosts');
+        data = this.toJSON();
 
       data.posts = this.get('_selectedPosts').pluck('ID');
 
       if (data.posts.length === 0) {
-        that.get('_transformedPosts').get('blocks').reset();
+        this.get('_transformedPosts.blocks').reset();
         return;
       }
 
       WordpressComponent.getTransformedPosts(data).done(function(posts) {
-        console.log('Available posts fetched', arguments);
+        console.log('Transformed posts fetched', arguments);
         that.get('_transformedPosts').get('blocks').reset(posts, {parse: true});
       }).fail(function() {
-        console.log('Posts fetchPosts error', arguments);
+        console.log('Posts _refreshTransformedPosts error', arguments);
       });
     },
     _insertSelectedPosts: function() {
