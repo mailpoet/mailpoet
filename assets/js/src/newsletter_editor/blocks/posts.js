@@ -31,7 +31,7 @@ define([
       base = BaseBlock;
 
   Module.PostsBlockModel = base.BlockModel.extend({
-    stale: ['_selectedPosts', '_availablePosts'],
+    stale: ['_selectedPosts', '_availablePosts', '_transformedPosts'],
     defaults: function() {
       return this._getDefaults({
         type: 'posts',
@@ -63,6 +63,7 @@ define([
         divider: {},
         _selectedPosts: [],
         _availablePosts: [],
+        _transformedPosts: new (App.getBlockTypeModel('container'))(),
       }, App.getConfig().get('blockDefaults.posts'));
     },
     relations: function() {
@@ -71,15 +72,26 @@ define([
         divider: App.getBlockTypeModel('divider'),
         _selectedPosts: Backbone.Collection,
         _availablePosts: Backbone.Collection,
+        _transformedPosts: App.getBlockTypeModel('container'),
       };
     },
     initialize: function() {
-      var that = this;
+      var that = this,
+        POST_REFRESH_DELAY_MS = 500,
+        refreshAvailablePosts = _.debounce(this.fetchAvailablePosts.bind(this), POST_REFRESH_DELAY_MS),
+        refreshTransformedPosts = _.debounce(this._refreshTransformedPosts.bind(this), POST_REFRESH_DELAY_MS);
+
       // Attach Radio.Requests API primarily for highlighting
       _.extend(this, Radio.Requests);
 
       this.fetchAvailablePosts();
-      this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', this._scheduleFetchAvailablePosts, this);
+      this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailablePosts);
+
+      this.listenTo(this.get('_selectedPosts'), 'add remove reset', refreshTransformedPosts);
+      this.on('change:displayType change:titleFormat change:titlePosition change:titleAlignment change:titleIsLink change:imagePadded change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:showDivider', refreshTransformedPosts);
+      this.listenTo(this.get('readMoreButton'), 'change', refreshTransformedPosts);
+      this.listenTo(this.get('divider'), 'change', refreshTransformedPosts);
+
       this.on('insertSelectedPosts', this._insertSelectedPosts, this);
     },
     fetchAvailablePosts: function() {
@@ -93,20 +105,25 @@ define([
         console.log('Posts fetchPosts error', arguments);
       });
     },
-    /**
-     * Batch more changes during a specific time, instead of fetching
-     * ALC posts on each model change
-     */
-    _scheduleFetchAvailablePosts: function() {
-      var timeout = 500,
-        that = this;
-      if (this._fetchPostsTimer !== undefined) {
-        clearTimeout(this._fetchPostsTimer);
+    _refreshTransformedPosts: function() {
+      var that = this,
+        data = this.toJSON(),
+        index = this.collection.indexOf(this),
+        collection = this.get('_transformedPosts');
+
+      data.posts = this.get('_selectedPosts').pluck('ID');
+
+      if (data.posts.length === 0) {
+        that.get('_transformedPosts').get('blocks').reset();
+        return;
       }
-      this._fetchPostsTimer = setTimeout(function() {
-        that.fetchAvailablePosts();
-        that._fetchPostsTimer = undefined;
-      }, timeout);
+
+      WordpressComponent.getTransformedPosts(data).done(function(posts) {
+        console.log('Available posts fetched', arguments);
+        that.get('_transformedPosts').get('blocks').reset(posts, {parse: true});
+      }).fail(function() {
+        console.log('Posts fetchPosts error', arguments);
+      });
     },
     _insertSelectedPosts: function() {
       var that = this,
@@ -131,6 +148,9 @@ define([
     className: "mailpoet_block mailpoet_posts_block mailpoet_droppable_block",
     getTemplate: function() { return templates.postsBlock; },
     modelEvents: {},
+    regions: _.extend({
+      postsRegion: '.mailpoet_posts_block_posts',
+    }, base.BlockView.prototype.regions),
     onDragSubstituteBy: function() { return Module.PostsWidgetView; },
     initialize: function() {
       base.BlockView.prototype.initialize.apply(this, arguments);
@@ -142,6 +162,13 @@ define([
         this.toolsRegion.show(this.toolsView);
       }
       this.trigger('showSettings');
+
+      var ContainerView = App.getBlockTypeView('container'),
+        renderOptions = {
+          disableTextEditor: true,
+          disableDragAndDrop: true,
+        };
+      this.postsRegion.show(new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
     },
     notifyAboutSelf: function() {
       return this;
