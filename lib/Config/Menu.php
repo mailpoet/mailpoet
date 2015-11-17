@@ -34,7 +34,7 @@ class Menu {
       'MailPoet',
       'manage_options',
       'mailpoet',
-      array($this, 'welcome'),
+      array($this, 'home'),
       $this->assets_url . '/img/menu_icon.png',
       30
     );
@@ -94,31 +94,42 @@ class Menu {
       'mailpoet-export',
       array($this, 'export')
     );
-    // add_submenu_page(
-    //   'mailpoet',
-    //   __('Newsletter editor'),
-    //   __('Newsletter editor'),
-    //   'manage_options',
-    //   'mailpoet-newsletter-editor',
-    //   array($this, 'newletterEditor')
-    // );
-    $this->registered_pages();
-  }
 
-  function registered_pages() {
-    global $_registered_pages;
-    $pages = array(
-      'mailpoet-welcome' => array($this, 'welcome'),
-      'mailpoet-form-editor' => array($this, 'formEditor'),
-      'mailpoet-newsletter-editor' => array($this, 'newletterEditor')
+    add_submenu_page(
+      null,
+      __('Welcome'),
+      __('Welcome'),
+      'manage_options',
+      'mailpoet-welcome',
+      array($this, 'welcome')
     );
-    foreach($pages as $menu_slug => $callback) {
-      $hookname = get_plugin_page_hookname($menu_slug, null);
-      if(!empty($hookname)) {
-        add_action($hookname, $callback);
-      }
-      $_registered_pages[$hookname] = true;
-    }
+
+    add_submenu_page(
+      null,
+      __('Update'),
+      __('Update'),
+      'manage_options',
+      'mailpoet-update',
+      array($this, 'update')
+    );
+
+    add_submenu_page(
+      null,
+      __('Form editor'),
+      __('Form editor'),
+      'manage_options',
+      'mailpoet-form-editor',
+      array($this, 'formEditor')
+    );
+
+    add_submenu_page(
+      null,
+      __('Newsletter editor'),
+      __('Newsletter editor'),
+      'manage_options',
+      'mailpoet-newsletter-editor',
+      array($this, 'newletterEditor')
+    );
   }
 
   function home() {
@@ -133,6 +144,15 @@ class Menu {
     );
 
     echo $this->renderer->render('welcome.html', $data);
+  }
+
+  function update() {
+    $data = array(
+      'settings' => Setting::getAll(),
+      'current_user' => wp_get_current_user()
+    );
+
+    echo $this->renderer->render('update.html', $data);
   }
 
   function settings() {
