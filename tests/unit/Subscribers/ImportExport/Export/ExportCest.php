@@ -1,6 +1,7 @@
 <?php
 
 use MailPoet\Config\Env;
+use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
@@ -11,29 +12,35 @@ class ExportCest {
   function __construct() {
     $this->JSONdata = json_decode(file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
     $this->subscribersData = array(
-      'first_name' => array(
-        'Adam',
-        'Mary',
-        'John',
-        'Paul'
+      array(
+        'first_name' => 'Adam',
+        'last_name' => 'Smith',
+        'email' => 'adam@smith.com',
+        1 => 'Brazil'
       ),
-      'last_name' => array(
-        'Smith',
-        'Jane',
-        'Kookoo',
-        'Newman'
+      array(
+        'first_name' => 'Mary',
+        'last_name' => 'Jane',
+        'email' => 'mary@jane.com'
       ),
-      'email' => array(
-        'adam@smith.com',
-        'mary@jane.com',
-        'john@kookoo.com',
-        'paul@newman.com'
+      array(
+        'first_name' => 'John',
+        'last_name' => 'Kookoo',
+        'email' => 'john@kookoo.com'
       ),
-      1 => array(
-        'Brazil'
+      array(
+        'first_name' => 'Paul',
+        'last_name' => 'Newman',
+        'email' => 'paul@newman.com'
       )
     );
-    $this->segments = array(
+    $this->customFieldsData = array(
+      array(
+        'name' => 'Country',
+        'type' => 'text'
+      )
+    );
+    $this->segmentsData = array(
       array(
         'name' => 'Newspapers'
       ),
@@ -41,8 +48,28 @@ class ExportCest {
         'name' => 'Journals'
       )
     );
+    foreach ($this->subscribersData as $subscriber) {
+      $entity = Subscriber::create();
+      $entity->hydrate($subscriber);
+      $entity->save();
+    }
+    foreach ($this->segmentsData as $customField) {
+      $entity = Segment::create();
+      $entity->hydrate($customField);
+      $entity->save();
+    }
+    foreach ($this->customFieldsData as $customField) {
+      $entity = CustomField::create();
+      $entity->hydrate($customField);
+      $entity->save();
+    }
     $this->export = new Export($this->JSONdata);
   }
+
+  /*  function _before() {
+
+    }*/
+
 
   function itCanConstruct() {
     expect($this->export->exportConfirmedOption)
@@ -52,8 +79,13 @@ class ExportCest {
     expect($this->export->groupBySegmentOption)
       ->equals(true);
     expect($this->export->segments)
-      ->equals(array(0, 1));
-   expect($this->export->subscribersWithoutSegment)
+      ->equals(
+        array(
+          0,
+          1
+        )
+      );
+    expect($this->export->subscribersWithoutSegment)
       ->equals(0);
     expect($this->export->subscriberFields)
       ->equals(
@@ -65,20 +97,44 @@ class ExportCest {
       );
     expect(
       preg_match(
-        '|'.
-        Env::$temp_path.'/MailPoet_export_[a-f0-9]{4}.'.
+        '|' .
+        Env::$temp_path . '/MailPoet_export_[a-f0-9]{4}.' .
         $this->export->exportFormatOption .
         '|', $this->export->exportFile)
     )->equals(1);
     expect(
       preg_match(
-        '|'.
+        '|' .
         Env::$plugin_url . '/' .
         Env::$temp_name . '/' .
         basename($this->export->exportFile) .
         '|'
         , $this->export->exportFileURL)
     )->equals(1);
+  }
+
+  function itCanGetSubscribers() {
+
+
+  }
+
+  function itCanGetSubscriberCustomFields() {
+    $customFields = $this->export->getSubscriberCustomFields();
+    expect($customFields)->equals(
+      array(
+        1 => $this->customFieldsData[0]['name']
+      )
+    );
+  }
+
+  function itCanFormatSubscriberFields() {
+    $formattedSubscriberFields = $this->export->formatSubscriberFields(
+      $this->subscriberFields,
+      $this->export->getSubscriberCustomFields()
+    );
+
+    !d($formattedSubscriberFields);exit;
+
   }
 
   function itCanProcess() {
