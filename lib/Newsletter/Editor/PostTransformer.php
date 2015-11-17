@@ -121,7 +121,7 @@ class PostTransformer {
   private function getPostTitle($post) {
     $title = $post->post_title;
 
-    if ((bool)$this->args['titleIsLink']) {
+    if ($this->args['titleIsLink'] === 'true') {
       $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
     }
 
