@@ -50,9 +50,11 @@ class MetaInformationManager {
       // check if the user specified a label to be displayed before the author's name
       if(strlen($preceded_by) > 0) {
         $content = stripslashes($preceded_by) . ' ';
+      } else {
+        $content = '';
       }
 
-      return join(', ', $categories);
+      return $content . join(', ', $categories);
     } else {
       return '';
     }

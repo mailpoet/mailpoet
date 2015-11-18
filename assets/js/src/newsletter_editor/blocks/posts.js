@@ -241,6 +241,7 @@ define([
     insertPosts: function() {
       this.model.trigger('insertSelectedPosts');
       this.model.destroy();
+      this.close();
     },
   });
 
@@ -331,11 +332,6 @@ define([
           that.model.set('terms', terms.toJSON());
         },
       }).trigger( 'change' );
-    },
-    onBeforeDestroy: function() {
-      base.BlockSettingsView.prototype.onBeforeDestroy.apply(this, arguments);
-      // Force close select2 if it hasn't closed yet
-      this.$('.mailpoet_posts_categories_and_tags').select2('close');
     },
     changeField: function(field, event) {
       this.model.set(field, jQuery(event.target).val());
