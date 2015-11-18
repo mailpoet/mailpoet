@@ -55,7 +55,6 @@ class Segments {
         )
         ->findOne()->asArray();
 
-      !d(\ORM::get_last_query());exit;
       $item = array_merge($item, $stats);
 
       $item['subscribers_url'] = admin_url(

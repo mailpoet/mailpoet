@@ -17,7 +17,7 @@ class Segment extends Model {
   function delete() {
     // delete all relations to subscribers
     SubscriberSegment::where('segment_id', $this->id)->deleteMany();
-    parent::delete();
+    return parent::delete();
   }
 
   function newsletters() {
