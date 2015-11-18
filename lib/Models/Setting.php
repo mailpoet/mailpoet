@@ -28,6 +28,13 @@ class Setting extends Model {
     }
   }
 
+  public static function setValue($key, $value) {
+    return Setting::createOrUpdate(array(
+      'name' => $key,
+      'value' => $value
+    ));
+  }
+
   public static function getAll() {
     $settingsCollection = self::findMany();
     $settings = array();

@@ -24,6 +24,7 @@ class Initializer {
     $this->setupWidget();
     $this->setupAnalytics();
     $this->setupPermissions();
+    $this->setupChangelog();
   }
 
   function setupDB() {
@@ -103,5 +104,10 @@ class Initializer {
   function setupPermissions() {
     $permissions = new Permissions();
     $permissions->init();
+  }
+
+  function setupChangelog() {
+    $changelog = new Changelog();
+    $changelog->init();
   }
 }

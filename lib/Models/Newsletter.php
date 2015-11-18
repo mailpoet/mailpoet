@@ -14,7 +14,15 @@ class Newsletter extends Model {
     if(is_string($this->deleted_at) && strlen(trim($this->deleted_at)) === 0) {
       $this->set_expr('deleted_at', 'NULL');
     }
+
     return parent::save();
+  }
+
+  function delete() {
+    // delete all relations to segments
+    NewsletterSegment::where('newsletter_id', $this->id)->deleteMany();
+
+    return parent::delete();
   }
 
   function segments() {
@@ -126,8 +134,8 @@ class Newsletter extends Model {
   static function createOrUpdate($data = array()) {
     $newsletter = false;
 
-    if(isset($data['id']) && (int) $data['id'] > 0) {
-      $newsletter = self::findOne((int) $data['id']);
+    if(isset($data['id']) && (int)$data['id'] > 0) {
+      $newsletter = self::findOne((int)$data['id']);
     }
 
     if($newsletter === false) {

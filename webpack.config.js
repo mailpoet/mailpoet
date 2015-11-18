@@ -166,9 +166,6 @@ config.push(_.extend({}, baseConfig, {
       'public.js'
     ]
   },
-  /*plugins: [
-    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js'),
-  ],*/
   externals: {
     'jquery': 'jQuery'
   }

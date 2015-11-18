@@ -101,31 +101,51 @@ class Newsletters {
     ));
   }
 
-  function delete($data = array()) {
-    $newsletter = newsletter::findOne($data['id']);
-    $confirm_delete = filter_var($data['confirm'], FILTER_VALIDATE_BOOLEAN);
+  function restore($id) {
+    $result = false;
+
+    $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
-      if($confirm_delete) {
-        $newsletter->delete();
-        $result = array('newsletters' => 1);
-      } else {
-        $newsletter->set_expr('deleted_at', 'NOW()');
-        $result = array('newsletters' => (int)$newsletter->save());
-      }
-    } else {
-      $result = false;
+      $result = $newsletter->restore();
     }
+
     wp_send_json($result);
   }
 
-  function restore($id) {
+  function trash($id) {
+    $result = false;
+
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
-      $newsletter->set_expr('deleted_at', 'NULL');
-      $result = array('newsletters' => (int)$newsletter->save());
-    } else {
-      $result = false;
+      $result = $newsletter->trash();
     }
+
+    wp_send_json($result);
+  }
+
+  function delete($id) {
+    $result = false;
+
+    $newsletter = Newsletter::findOne($id);
+    if($newsletter !== false) {
+      $newsletter->delete();
+      $result = 1;
+    }
+
+    wp_send_json($result);
+  }
+
+  function duplicate($id) {
+    $result = false;
+
+    $newsletter = Newsletter::findOne($id);
+    if($newsletter !== false) {
+      $data = array(
+        'subject' => sprintf(__('Copy of %s'), $newsletter->subject)
+      );
+      $result = $newsletter->duplicate($data)->asArray();
+    }
+
     wp_send_json($result);
   }
 
