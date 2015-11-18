@@ -25,6 +25,7 @@ class Initializer {
     $this->setupAnalytics();
     $this->setupPermissions();
     $this->setupChangelog();
+    $this->setupPublicAPI();    
   }
 
   function setupDB() {
@@ -110,4 +111,9 @@ class Initializer {
     $changelog = new Changelog();
     $changelog->init();
   }
+  
+  function setupPublicAPI() {
+    $publicAPI = new PublicAPI();
+    $publicAPI->init();
+  }  
 }
