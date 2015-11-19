@@ -22,7 +22,7 @@ class PostTransformer {
     $content = $content_manager->filterContent($content);
 
     $structure_transformer = new StructureTransformer();
-    $structure = $structure_transformer->transform($content, (bool)$this->args['imagePadded']);
+    $structure = $structure_transformer->transform($content, $this->args['imagePadded'] === 'true');
 
     $structure = $this->appendFeaturedImage(
       $post,

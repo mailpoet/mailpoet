@@ -306,7 +306,7 @@ define([
       _.each(postTypes, function(type) {
         select.append(jQuery('<option>', {
           value: type.name,
-          text: type.labels.singular_name,
+          text: type.label,
         }));
       });
       select.val(selectedValue);

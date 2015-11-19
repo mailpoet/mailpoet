@@ -14,7 +14,7 @@ class PostListTransformer {
 
   function transform($posts) {
     $results = array();
-    $use_divider = (bool)$this->args['showDivider'];
+    $use_divider = $this->args['showDivider'] === 'true';
 
     foreach ($posts as $index => $post) {
       if ($use_divider && $index > 0) {
