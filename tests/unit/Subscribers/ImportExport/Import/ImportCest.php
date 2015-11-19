@@ -1,9 +1,9 @@
 <?php
 
-use MailPoet\Subscribers\ImportExport\Import\Import;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Subscribers\ImportExport\Import\Import;
 use MailPoet\Util\Helpers;
 
 class ImportCest {
@@ -108,38 +108,39 @@ class ImportCest {
   function itCanFilterSubscriberState() {
     $data = array(
       'status' => array(
-        'confirmed',
-        'subscribed',
+        //subscribed
         'subscribed',
         'confirmed',
         1,
         '1',
         'true',
+        //unconfirmed
+        'unconfirmed',
+        0,
+        "0",
+        //unsubscribed
         'unsubscribed',
         -1,
         '-1',
-        'false',
-        'something',
-        'else'
+        'false'
       ),
     );
     $statuses = $this->import->filterSubscriberStatus($data);
     expect($statuses)->equals(
       array(
         'status' => array(
-          'confirmed',
-          'confirmed',
-          'confirmed',
-          'confirmed',
-          'confirmed',
-          'confirmed',
-          'confirmed',
+          'subscribed',
+          'subscribed',
+          'subscribed',
+          'subscribed',
+          'subscribed',
+          'unconfirmed',
+          'unconfirmed',
+          'unconfirmed',
           'unsubscribed',
           'unsubscribed',
           'unsubscribed',
-          'unsubscribed',
-          'confirmed',
-          'confirmed'
+          'unsubscribed'
         )
       )
     );

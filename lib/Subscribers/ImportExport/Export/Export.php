@@ -153,7 +153,7 @@ class Export {
     }
     if($this->exportConfirmedOption) {
       $subscribers =
-        $subscribers->where(Subscriber::$_table . '.status', 'confirmed');
+        $subscribers->where(Subscriber::$_table . '.status', 'subscribed');
     }
     return $subscribers->findArray();
   }
