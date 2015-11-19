@@ -1,7 +1,7 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/components/wordpress',
-    'newsletter_editor/blocks/posts',
+    'newsletter_editor/blocks/posts'
   ], function(EditorApplication, WordpressComponent, PostsBlock) {
 
   describe('Posts', function () {
@@ -373,12 +373,7 @@ define([
           });
 
           describe('when "title as list" is selected', function() {
-            var model, view;
             beforeEach(function() {
-              model = new (PostsBlock.PostsBlockModel)();
-              model.request = sinon.stub().returns({$el: {}});
-              view = new (PostsBlock.PostsBlockSettingsView)({model: model});
-              view.render();
               view.$('.mailpoet_posts_display_type').val('titleOnly').change();
               view.$('.mailpoet_posts_title_format').val('ul').change();
             });

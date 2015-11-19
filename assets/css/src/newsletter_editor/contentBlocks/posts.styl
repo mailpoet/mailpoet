@@ -1,15 +1,12 @@
 .mailpoet_posts_block
-  box-shadow(none)
+  padding-left: 0
+  padding-right: 0
 
-  & > .mailpoet_content
-    font-size: 1em
-    text-align: center
-    background-color: $primary-active-color
-    margin: 20px 0
-    padding: 15px
-    box-shadow(inset 1px 2px 1px $primary-inset-shadow-color)
-    color: $white-color
-    border-radius(3px)
+.mailpoet_posts_block_posts
+  overflow: auto
+
+  & > .mailpoet_block
+    width: 100%
 
 .mailpoet_post_selection_filter_row
   margin-top: 5px

@@ -24,14 +24,24 @@ class PostTransformer {
     $structure_transformer = new StructureTransformer();
     $structure = $structure_transformer->transform($content, (bool)$this->args['imagePadded']);
 
-    $structure = $this->appendFeaturedImage($post, (bool)$this->args['imagePadded'], $structure);
+    $structure = $this->appendFeaturedImage(
+      $post,
+      $this->args['displayType'],
+      $this->args['imagePadded'] === 'true',
+      $structure
+    );
     $structure = $this->appendPostTitle($post, $structure);
     $structure = $this->appendReadMore($post->ID, $structure);
 
     return $structure;
   }
 
-  private function appendFeaturedImage($post, $image_padded, $structure) {
+  private function appendFeaturedImage($post, $display_type, $image_padded, $structure) {
+    if ($display_type === 'full') {
+      // No featured images for full posts
+      return $structure;
+    }
+
     $featured_image = $this->getFeaturedImage(
       $post->ID,
       $post->post_title,
@@ -68,7 +78,7 @@ class PostTransformer {
 
       return array(
         'type' => 'image',
-        'link' => '',
+        'link' => get_permalink($post_id),
         'src' => $image_info[0],
         'alt' => $alt_text,
         'padded' => $image_padded,
@@ -84,6 +94,8 @@ class PostTransformer {
   }
 
   private function appendPostTitle($post, $structure) {
+    $title = $this->getPostTitle($post);
+
     if ($this->args['titlePosition'] === 'inTextBlock') {
       // Attach title to the first text block
       $text_block_index = null;
@@ -94,7 +106,6 @@ class PostTransformer {
         }
       }
 
-      $title = $this->getPostTitle($post);
       if ($text_block_index === null) {
         $structure[] = array(
           'type' => 'text',
@@ -103,6 +114,14 @@ class PostTransformer {
       } else {
         $structure[$text_block_index]['text'] = $title . $structure[$text_block_index]['text'];
       }
+    } elseif ($this->args['titlePosition'] === 'aboveBlock') {
+      array_unshift(
+        $structure,
+        array(
+          'type' => 'text',
+          'text' => $title,
+        )
+      );
     }
 
     return $structure;
@@ -113,6 +132,15 @@ class PostTransformer {
       $button = $this->args['readMoreButton'];
       $button['url'] = get_permalink($post_id);
       $structure[] = $button;
+    } else {
+      $structure[] = array(
+        'type' => 'text',
+        'text' => sprintf(
+          '<a href="%s">%s</a>',
+          get_permalink($post_id),
+          $this->args['readMoreText']
+        ),
+      );
     }
 
     return $structure;
@@ -121,7 +149,7 @@ class PostTransformer {
   private function getPostTitle($post) {
     $title = $post->post_title;
 
-    if ((bool)$this->args['titleIsLink']) {
+    if ($this->args['titleIsLink'] === 'true') {
       $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
     }
 

@@ -214,6 +214,7 @@ define([
       this.model.set(field, value);
     },
     onBeforeDestroy: function() {
+      console.log('Calling close');
       MailPoet.Modal.close();
     },
   });
