@@ -23,7 +23,7 @@ baseConfig = {
       'handlebars': 'handlebars/dist/handlebars.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
-      'sticky-kit': 'sticky-kit/jquery.sticky-kit',
+      'sticky-kit': 'vendor_static/jquery.sticky-kit.js',
       'interact$': 'interact.js/interact.js',
       'spectrum$': 'spectrum-colorpicker/spectrum.js',
       'blob$': 'blob/Blob.js',
