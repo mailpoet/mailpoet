@@ -37,26 +37,6 @@
 
 <hr class="mailpoet_separator" />
 
-<div class="mailpoet_form_field">
-    <div class="mailpoet_form_field_radio_option">
-        <label>
-            <input type="radio" name="mailpoet_automated_latest_content_display_type" class="mailpoet_automated_latest_content_display_type" value="excerpt" {{#ifCond model.displayType '==' 'excerpt'}}CHECKED{{/ifCond}}/>
-            <%= __('Excerpt') %>
-        </label>
-    </div>
-    <div class="mailpoet_form_field_radio_option">
-        <label>
-            <input type="radio" name="mailpoet_automated_latest_content_display_type" class="mailpoet_automated_latest_content_display_type" value="full" {{#ifCond model.displayType '==' 'full'}}CHECKED{{/ifCond}}/>
-            <%= __('Full post') %>
-        </label>
-    </div>
-    <div class="mailpoet_form_field_radio_option">
-        <label>
-            <input type="radio" name="mailpoet_automated_latest_content_display_type" class="mailpoet_automated_latest_content_display_type" value="titleOnly" {{#ifCond model.displayType '==' 'titleOnly'}}CHECKED{{/ifCond}} />
-            <%= __('Title only') %>
-        </label>
-    </div>
-</div>
 
 <div class="mailpoet_form_field">
     <a href="javascript:;" class="mailpoet_automated_latest_content_show_display_options"><%= __('Display options') %></a>
@@ -64,6 +44,27 @@
 <div class="mailpoet_automated_latest_content_display_options mailpoet_hidden">
     <div class="mailpoet_form_field">
         <a href="javascript:;" class="mailpoet_automated_latest_content_hide_display_options"><%= __('Hide display options') %></a>
+    </div>
+
+    <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_automated_latest_content_display_type" class="mailpoet_automated_latest_content_display_type" value="excerpt" {{#ifCond model.displayType '==' 'excerpt'}}CHECKED{{/ifCond}}/>
+                <%= __('Excerpt') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_automated_latest_content_display_type" class="mailpoet_automated_latest_content_display_type" value="full" {{#ifCond model.displayType '==' 'full'}}CHECKED{{/ifCond}}/>
+                <%= __('Full post') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_automated_latest_content_display_type" class="mailpoet_automated_latest_content_display_type" value="titleOnly" {{#ifCond model.displayType '==' 'titleOnly'}}CHECKED{{/ifCond}} />
+                <%= __('Title only') %>
+            </label>
+        </div>
     </div>
 
     <div class="mailpoet_form_field">
@@ -251,7 +252,7 @@
     </div>
 
     <div class="mailpoet_form_field">
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_small mailpoet_form_field_title_inline"><%= __('Sort by') %></div>
+        <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('Sort by') %></div>
         <div class="mailpoet_form_field_radio_option">
             <label>
                 <input type="radio" name="mailpoet_automated_latest_content_sort_by" class="mailpoet_automated_latest_content_sort_by" value="newest" {{#ifCond model.sortBy '==' 'newest'}}CHECKED{{/ifCond}}/>
@@ -268,7 +269,7 @@
 
     <div class="mailpoet_automated_latest_content_non_title_list_options {{#ifCond model.displayType '==' 'titleOnly'}}{{#ifCond model.titleFormat '==' 'ul'}}mailpoet_hidden{{/ifCond}}{{/ifCond}}">
         <div class="mailpoet_form_field">
-            <div class="mailpoet_form_field_title mailpoet_form_field_title_small mailpoet_form_field_title_inline"><%= __('Show divider between posts') %></div>
+            <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('Show divider between posts') %></div>
             <div class="mailpoet_form_field_radio_option">
                 <label>
             <input type="radio" name="mailpoet_automated_latest_content_show_divider"class="mailpoet_automated_latest_content_show_divider" value="true" {{#if model.showDivider}}CHECKED{{/if}}/>
@@ -281,7 +282,7 @@
                     <%= __('No') %>
                 </label>
             </div>
-            <div class="mailpoet_form_field_input_option">
+            <div>
                 <a href="javascript:;" class="mailpoet_automated_latest_content_select_divider"><%= __('Select divider') %></a>
             </div>
         </div>
