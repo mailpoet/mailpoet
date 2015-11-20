@@ -20,7 +20,6 @@ class SMTP {
       $message = $this->createMessage($newsletter, $subscriber);
       $result = $this->mailer->send($message);
     } catch (\Exception $e) {
-      return $e->getMessage();
       $result = false;
     }
     return ($result === 1);
