@@ -1,0 +1,22 @@
+<% extends 'layout.html' %>
+<% block content %>
+<br>
+<a href="#" class="button-primary" id="queue" data-status="stopped">Start Queue</a>
+<script type="text/javascript">
+  jQuery(document).ready(function () {
+    jQuery('#queue[data-status="stopped"]').click(function () {
+      var element = jQuery(this);
+      MailPoet.Ajax
+       .head({
+         // TODO: update with WP site_url();
+         url: jQuery('location').attr('host') + '?mailpoet&action=start_queue',
+       })
+       .complete(function (xhr) {
+         if (xhr.getResponseHeader('X-MailPoet-Queue') === 'started') {
+           element.text('Started').attr('data-id', 'running');
+         }
+       });
+    });
+  });
+</script>
+<% endblock %>
