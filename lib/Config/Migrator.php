@@ -21,6 +21,7 @@ class Migrator {
       'subscriber_custom_field',
       'newsletter_option_fields',
       'newsletter_option',
+      'queue',
       'forms'
     );
   }
@@ -199,6 +200,21 @@ class Migrator {
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY newsletter_id_option_field_id (newsletter_id,option_field_id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function queue() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'newsletter_id mediumint(9) NOT NULL,',
+      'subscribers longtext,',
+      'total mediumint(9) NOT NULL DEFAULT 0,',
+      'processed mediumint(9) NOT NULL DEFAULT 0,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
+      'PRIMARY KEY  (id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
