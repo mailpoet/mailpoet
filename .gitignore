@@ -16,3 +16,4 @@ wysija-newsletters.zip
 tests/javascript/testBundles
 assets/css/*.css
 assets/js/*.js
+.vagrant

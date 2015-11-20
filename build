@@ -10,8 +10,6 @@ mkdir wysija-newsletters;
 ./do compile:all;
 
 # Production libraries.
-rm -rf vendor;
-rm composer.lock;
 ./composer.phar install --no-dev;
 
 # Copy release folders.
@@ -37,6 +35,4 @@ zip -r wysija-newsletters.zip wysija-newsletters;
 rm -rf wysija-newsletters;
 
 # Reinstall dev dependencies.
-rm composer.lock;
 ./composer.phar install;
-./do install;
