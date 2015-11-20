@@ -10,17 +10,13 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         token: null,
         data: {},
         onSuccess: function(data, textStatus, xhr) {},
-        onError: function(xhr, textStatus, errorThrown) {},
-        onComplete: function(xhr) {}
+        onError: function(xhr, textStatus, errorThrown) {}
       },
       get: function(options) {
         return this.request('get', options);
       },
       post: function(options) {
         return this.request('post', options);
-      },
-      head: function(options) {
-        return this.request('head', options);
       },
       delete: function(options) {
         return this.request('delete', options);
@@ -64,23 +60,14 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
             this.options.onSuccess,
             'json'
           );
-        }
-        else if (method === 'head') {
-          jqXHR = jQuery.ajax({
-            url: this.options.url,
-            type : 'head',
-            complete : this.options.onComplete
-          });
-        }
-        else {
+        } else {
           jqXHR = jQuery.ajax({
             url: this.options.url,
             type : 'post',
             data: params,
             dataType: 'json',
             success : this.options.onSuccess,
-            error : this.options.onError,
-            complete : this.options.onComplete
+            error : this.options.onError
           });
         }
 
