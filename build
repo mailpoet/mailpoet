@@ -7,6 +7,7 @@ rm wysija-newsletters.zip;
 mkdir wysija-newsletters;
 
 # Production assets.
+npm install;
 ./do compile:all;
 
 # Production libraries.
