@@ -2,18 +2,22 @@
 
 <% block content %>
   <div id="mailpoet_welcome">
-    <h2><%= __('Welcome welcome welcome!') %></h2>
+    <h2><%= __('Welcome!') %></h2>
 
-    <h3>Settings:</h3>
-    <%= dump(settings) %>
+    <p>Plugin version: <strong><%= settings.version %></strong></p>
 
-    <h3>Current user:</h3>
-    <%= dump(current_user) %>
+    <p>
+      Current user:
+      <strong><%= current_user.user_nicename %></strong>
+      &lt;<a href="mailto:<%= current_user.user_email %>">
+        <%=- current_user.user_email -%>
+      </a>&gt;
+    </p>
 
     <p>
       <a
         class="button button-primary"
-        href="<%= admin_url('admin.php?page=mailpoet') %>"
+        href="<%= redirect_url %>"
       >Take me to MailPoet</a>
     </p>
   </div>
