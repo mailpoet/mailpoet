@@ -138,18 +138,49 @@ class Menu {
   }
 
   function welcome() {
+    global $wp;
+    $current_url = home_url(add_query_arg($wp->query_string, $wp->request));
+    $redirect_url =
+      (!empty($_GET['mailpoet_redirect']))
+      ? urldecode($_GET['mailpoet_redirect'])
+      : wp_get_referer();
+
+    if(
+      $redirect_url === $current_url
+      or
+      strpos($redirect_url, 'mailpoet') === false
+    ) {
+      $redirect_url = admin_url('admin.php?page=mailpoet');
+    }
+
     $data = array(
       'settings' => Setting::getAll(),
-      'current_user' => wp_get_current_user()
+      'current_user' => wp_get_current_user(),
+      'redirect_url' => $redirect_url
     );
-
     echo $this->renderer->render('welcome.html', $data);
   }
 
   function update() {
+    global $wp;
+    $current_url = home_url(add_query_arg($wp->query_string, $wp->request));
+    $redirect_url =
+      (!empty($_GET['mailpoet_redirect']))
+      ? urldecode($_GET['mailpoet_redirect'])
+      : wp_get_referer();
+
+    if(
+      $redirect_url === $current_url
+      or
+      strpos($redirect_url, 'mailpoet') === false
+    ) {
+      $redirect_url = admin_url('admin.php?page=mailpoet');
+    }
+
     $data = array(
       'settings' => Setting::getAll(),
-      'current_user' => wp_get_current_user()
+      'current_user' => wp_get_current_user(),
+      'redirect_url' => $redirect_url
     );
 
     echo $this->renderer->render('update.html', $data);
