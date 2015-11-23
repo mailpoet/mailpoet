@@ -35,8 +35,8 @@ class Daemon {
       $queueData = array(
         'status' => 'started',
         'token' => $this->refreshedToken,
-        'executionCounter' => ($queueData['status'] === 'paused') ?
-          $queueData['executionCounter']
+        'counter' => ($queueData['status'] === 'paused') ?
+          $queueData['counter']
           : 0
       );
       $_SESSION['queue'] = array('result' => true);
@@ -69,9 +69,9 @@ class Daemon {
      */
     sleep(30);
     
-    // after each execution, read queue in case its status was modified
+    // after each execution, read queue in case it's status was modified
     list($queue, $queueData) = $this->getQueue();
-    $queueData['executionCounter']++;
+    $queueData['counter']++;
     $queueData['token'] = $this->refreshedToken;
     $queue->value = serialize($queueData);
     $queue->save();
@@ -108,14 +108,9 @@ class Daemon {
   
   function callSelf() {
     $payload = json_encode(array('token' => $this->refreshedToken));
-    $args = array(
-      'timeout' => 1,
-      'user-agent' => 'MailPoet (www.mailpoet.com)'
-    );
-    wp_remote_get(
-      Supervisor::getSiteUrl() .
-      '/?mailpoet-api&section=queue&action=run&payload=' . urlencode($payload),
-      $args
+    Supervisor::getRemoteUrl(
+      '/?mailpoet-api&section=queue&action=run&payload=' . urlencode($payload)
+
     );
     exit;
   }

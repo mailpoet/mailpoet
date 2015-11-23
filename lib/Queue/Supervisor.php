@@ -44,20 +44,10 @@ class Supervisor {
     if(!session_id()) session_start();
     $sessionId = session_id();
     session_write_close();
-    $args = array(
-      'timeout' => 1,
-      'user-agent' => 'MailPoet (www.mailpoet.com)'
-    );
-    $payload = json_encode(
-      array(
-        'session' => $sessionId
-      )
-    );
-    wp_remote_get(
-      self::getSiteUrl() .
-      '/?mailpoet-api&section=queue&action=start&payload=' .
-      urlencode($payload),
-      $args
+    $_SESSION['queue'] = null;
+    $payload = json_encode(array('session' => $sessionId));
+    self::getRemoteUrl(
+      '/?mailpoet-api&section=queue&action=start&payload=' . urlencode($payload)
     );
     session_start();
     $queueStatus = $_SESSION['queue'];
@@ -73,6 +63,17 @@ class Supervisor {
     return array(
       $queue,
       $queueData
+    );
+  }
+
+  static function getRemoteUrl($url) {
+    $args = array(
+      'timeout' => 1,
+      'user-agent' => 'MailPoet (www.mailpoet.com)'
+    );
+    wp_remote_get(
+      self::getSiteUrl() . $url,
+      $args
     );
   }
 
