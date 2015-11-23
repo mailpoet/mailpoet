@@ -77,9 +77,9 @@ class Supervisor {
   }
 
   static function getSiteUrl() {
-    if (!preg_match('!:\d+/!', site_url())) return site_url();
+    if(preg_match('!:\d+/!', site_url())) return site_url();
     preg_match('!http://(?P<host>.*?):(?P<port>\d+)!', site_url(), $server);
-    $fp = fsockopen($server['host'], $server['port'], $errno, $errstr, 1);
+    $fp = @fsockopen($server['host'], $server['port'], $errno, $errstr, 1);
     return ($fp) ?
       site_url() :
       preg_replace('/(?=:\d+):\d+/', '$1', site_url());
