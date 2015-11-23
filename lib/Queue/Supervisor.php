@@ -10,7 +10,9 @@ if(!defined('ABSPATH')) exit;
 class Supervisor {
   function __construct($forceStart = false) {
     $this->forceStart = $forceStart;
-    $this->checkDBReadiness();
+    if(!Env::isPluginActivated()) {
+      throw new \Exception('Database has not been configured.');
+    }
     list ($this->queue, $this->queueData) = $this->getQueue();
   }
 
@@ -74,22 +76,8 @@ class Supervisor {
     );
   }
 
-  function checkDBReadiness() {
-    $db = \ORM::forTable('')
-      ->rawQuery(
-        'SELECT COUNT(*) as settings FROM information_schema.tables ' .
-        'WHERE table_schema = "' . Env::$db_name . '" ' .
-        'AND table_name = "' . MP_SETTINGS_TABLE . '";'
-      )
-      ->findOne()
-      ->asArray();
-    if((int) $db['settings'] === 0) {
-      throw new \Exception('Database has not been configured.');
-    }
-  }
-
   static function getSiteUrl() {
-    if(!preg_match('!:/!', site_url())) return site_url();
+    if (!preg_match('!:\d+/!', site_url())) return site_url();
     preg_match('!http://(?P<host>.*?):(?P<port>\d+)!', site_url(), $server);
     $fp = fsockopen($server['host'], $server['port'], $errno, $errstr, 1);
     return ($fp) ?
