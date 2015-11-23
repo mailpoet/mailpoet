@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Router;
 
+use MailPoet\Queue\Daemon;
 use MailPoet\Queue\Supervisor;
 
 if(!defined('ABSPATH')) exit;
@@ -17,35 +18,27 @@ class Queue {
     );
   }
 
-  function pause() {
-    wp_send_json(
-      array(
-        'result' => ($this->updateQueueStatus('paused') ?
-          true :
-          false
-        )
-      )
-    );
-  }
-
-  function stop() {
-    wp_send_json(
-      array(
-        'result' => ($this->updateQueueStatus('stopped') ?
-          true :
-          false
-        )
-      )
-    );
-  }
-
-  private function updateQueueStatus($status) {
-    $queue = new \MailPoet\Queue\Queue();
-    if(!$queue->queue || $queue->queueData['status'] !== 'started') {
-      return false;
+  function update($data) {
+    switch ($data['action']) {
+      case 'stop':
+        $status = 'stopped';
+        break;
+      default:
+        $status = 'paused';
+        break;
     }
-    $queue->queueData['status'] = $status;
-    $queue->queue->value = serialize($queue->queueData);
-    return $queue->queue->save();
+    $queue = new Daemon();
+    if(!$queue->queue || $queue->queueData['status'] !== 'started') {
+      $result = false;
+    } else {
+      $queue->queueData['status'] = $status;
+      $queue->queue->value = serialize($queue->queueData);
+      $result = $queue->queue->save();
+    }
+    wp_send_json(
+      array(
+        'result' => $result
+      )
+    );
   }
 }

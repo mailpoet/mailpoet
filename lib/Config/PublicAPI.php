@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Queue\Queue;
+use MailPoet\Queue\Daemon;
 
 if(!defined('ABSPATH')) exit;
 
@@ -33,7 +33,7 @@ class PublicAPI {
   }
 
   function queue() {
-    $queue = new Queue($this->payload);
+    $queue = new Daemon($this->payload);
     if(method_exists($queue, $this->action)) {
       call_user_func(
         array(

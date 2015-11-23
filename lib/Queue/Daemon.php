@@ -8,7 +8,7 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 if(!defined('ABSPATH')) exit;
 
-class Queue {
+class Daemon {
   function __construct($payload = array()) {
     set_time_limit(0);
     ignore_user_abort();
@@ -18,9 +18,10 @@ class Queue {
   }
   
   function start() {
-    if(!isset($this->payload['token'])) {
-      $this->abortWithError('missing token');
+    if(!isset($this->payload['session'])) {
+      $this->abortWithError('missing session ID');
     }
+    $this->manageSession('start');
     $queue = $this->queue;
     $queueData = $this->queueData;
     if(!$queue) {
@@ -29,33 +30,30 @@ class Queue {
       $queue->value = serialize(array('status' => 'stopped'));
       $queue->save();
     }
-    if(!preg_match('!stopped|paused!', $queueData['status'])
-    ) {
+    if($queueData['status'] !== 'started') {
+      $_SESSION['queue'] = 'started';
       $queueData = array(
         'status' => 'started',
         'token' => $this->refreshedToken,
         'executionCounter' => ($queueData['status'] === 'paused') ?
           $queueData['executionCounter']
-          : 0,
-        'log' => array(
-          'token' => $this->payload['token'],
-          'message' => 'started'
-        )
+          : 0
       );
+      $_SESSION['queue'] = array('result' => true);
+      $this->manageSession('end');
       $queue->value = serialize($queueData);
       $queue->save();
       $this->callSelf();
     } else {
-      $queueData['log'] = array(
-        'token' => $this->payload['token'],
-        'status' => 'already started'
+      $_SESSION['queue'] = array(
+        'result' => false,
+        'error' => 'already started'
       );
-      $queue->value = serialize($queueData);
-      $queue->save();
     }
+    $this->manageSession('end');
   }
   
-  function process() {
+  function run() {
     if(!$this->queue || $this->queueData['status'] !== 'started') {
       $this->abortWithError('not running');
     }
@@ -88,7 +86,7 @@ class Queue {
     );
     wp_remote_get(
       site_url() .
-      '/?mailpoet-api&section=queue&action=process&payload=' . urlencode($payload),
+      '/?mailpoet-api&section=queue&action=run&payload=' . urlencode($payload),
       $args
     );
     exit;
@@ -121,5 +119,20 @@ class Queue {
   
   function refreshToken() {
     return Security::generateRandomString(5);
+  }
+
+  function manageSession($action) {
+    switch ($action) {
+      case 'start':
+        if(session_id()) {
+          session_write_close();
+        }
+        session_id($this->payload['session']);
+        session_start();
+        break;
+      case 'end':
+        session_write_close();
+        break;
+    }
   }
 }

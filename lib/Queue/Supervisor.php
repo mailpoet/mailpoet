@@ -4,7 +4,6 @@ namespace MailPoet\Queue;
 use Carbon\Carbon;
 use MailPoet\Config\Env;
 use MailPoet\Models\Setting;
-use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -20,8 +19,9 @@ class Supervisor {
       return $this->startQueue();
     } else {
       if(!$this->forceStart && ($this->queueData['status'] === 'paused' ||
-        $this->queueData['status'] === 'stopped'
-      )) {
+          $this->queueData['status'] === 'stopped'
+        )
+      ) {
         return;
       }
       $currentTime = Carbon::now('UTC');
@@ -39,14 +39,16 @@ class Supervisor {
   }
 
   function startQueue() {
+    if(!session_id()) session_start();
+    $sessionId = session_id();
+    session_write_close();
     $args = array(
       'timeout' => 1,
       'user-agent' => 'MailPoet (www.mailpoet.com)'
     );
-    $token = Security::generateRandomString(5);
     $payload = json_encode(
       array(
-        'token' => $token
+        'session' => $sessionId
       )
     );
     wp_remote_get(
@@ -55,8 +57,11 @@ class Supervisor {
       urlencode($payload),
       $args
     );
-    list ($queue, $queueData) = $this->getQueue();
-    return ($queueData && $queueData['token'] === $token) ? true : false;
+    session_start();
+    $queueStatus = $_SESSION['queue'];
+    unset($_SESSION['queue']);
+    session_write_close();
+    return $queueStatus;
   }
 
   function getQueue() {
