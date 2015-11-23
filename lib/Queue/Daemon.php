@@ -78,29 +78,6 @@ class Daemon {
     $this->callSelf();
   }
 
-  function callSelf() {
-    $payload = json_encode(array('token' => $this->refreshedToken));
-    $args = array(
-      'timeout' => 1,
-      'user-agent' => 'MailPoet (www.mailpoet.com)'
-    );
-    wp_remote_get(
-      Supervisor::getSiteUrl() .
-      '/?mailpoet-api&section=queue&action=run&payload=' . urlencode($payload),
-      $args
-    );
-    exit;
-  }
-  
-  function abortWithError($error) {
-    wp_send_json(
-      array(
-        'result' => false,
-        'error' => $error
-      ));
-    exit;
-  }
-  
   function getQueue() {
     $queue = Setting::where('name', 'queue')
       ->findOne();
@@ -109,14 +86,7 @@ class Daemon {
       ($queue) ? unserialize($queue->value) : null
     );
   }
-  
-  function checkAuthorization() {
-    if(!current_user_can('manage_options')) {
-      header('HTTP/1.0 401 Not Authorized');
-      exit;
-    }
-  }
-  
+
   function refreshToken() {
     return Security::generateRandomString(5);
   }
@@ -134,5 +104,28 @@ class Daemon {
         session_write_close();
         break;
     }
+  }
+  
+  function callSelf() {
+    $payload = json_encode(array('token' => $this->refreshedToken));
+    $args = array(
+      'timeout' => 1,
+      'user-agent' => 'MailPoet (www.mailpoet.com)'
+    );
+    wp_remote_get(
+      Supervisor::getSiteUrl() .
+      '/?mailpoet-api&section=queue&action=run&payload=' . urlencode($payload),
+      $args
+    );
+    exit;
+  }
+
+  function abortWithError($error) {
+    wp_send_json(
+      array(
+        'result' => false,
+        'error' => $error
+      ));
+    exit;
   }
 }
