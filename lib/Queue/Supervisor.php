@@ -52,7 +52,7 @@ class Supervisor {
       )
     );
     wp_remote_get(
-      site_url() .
+      self::getSiteUrl() .
       '/?mailpoet-api&section=queue&action=start&payload=' .
       urlencode($payload),
       $args
@@ -86,5 +86,14 @@ class Supervisor {
     if((int) $db['settings'] === 0) {
       throw new \Exception('Database has not been configured.');
     }
+  }
+
+  static function getSiteUrl() {
+    if(!preg_match('!:/!', site_url())) return site_url();
+    preg_match('!http://(?P<host>.*?):(?P<port>\d+)!', site_url(), $server);
+    $fp = fsockopen($server['host'], $server['port'], $errno, $errstr, 1);
+    return ($fp) ?
+      site_url() :
+      preg_replace('/(?=:\d+):\d+/', '$1', site_url());
   }
 }

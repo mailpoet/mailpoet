@@ -2,6 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Queue\Daemon;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -11,7 +12,7 @@ class PublicAPI {
     $this->api = isset($_GET['mailpoet-api']) ? true : false;
     $this->section = isset($_GET['section']) ? $_GET['section'] : false;
     $this->action = isset($_GET['action']) ?
-      str_replace('_', '', lcfirst(ucwords($_GET['action'], '_'))) :
+      Helpers::underscoreToCamelCase($_GET['action']) :
       false;
     $this->payload = isset($_GET['payload']) ?
       json_decode(urldecode($_GET['payload']), true) :

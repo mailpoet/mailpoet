@@ -85,7 +85,7 @@ class Daemon {
       'user-agent' => 'MailPoet (www.mailpoet.com)'
     );
     wp_remote_get(
-      site_url() .
+      Supervisor::getSiteUrl() .
       '/?mailpoet-api&section=queue&action=run&payload=' . urlencode($payload),
       $args
     );
