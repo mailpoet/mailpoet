@@ -4,22 +4,24 @@ namespace MailPoet\Queue;
 use Carbon\Carbon;
 use MailPoet\Config\Env;
 use MailPoet\Models\Setting;
+use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
 class Supervisor {
-  function __construct() {
+  function __construct($forceStart = false) {
+    $this->forceStart = $forceStart;
     $this->checkDBReadiness();
     list ($this->queue, $this->queueData) = $this->getQueue();
   }
 
   function checkQueue() {
     if(!$this->queue) {
-      $this->startQueue();
+      return $this->startQueue();
     } else {
-      if($this->queueData['status'] === 'paused' &&
+      if(!$this->forceStart && ($this->queueData['status'] === 'paused' ||
         $this->queueData['status'] === 'stopped'
-      ) {
+      )) {
         return;
       }
       $currentTime = Carbon::now('UTC');
@@ -32,13 +34,29 @@ class Supervisor {
       $this->queueData['status'] = 'paused';
       $this->queue->value = serialize($this->queueData);
       $this->queue->save();
-      $this->startQueue();
+      return $this->startQueue();
     }
   }
 
   function startQueue() {
-    stream_context_set_default(array('http' => array('method' => 'HEAD')));
-    get_headers(home_url() . '/?mailpoet-api&section=queue&action=start', 1);
+    $args = array(
+      'timeout' => 1,
+      'user-agent' => 'MailPoet (www.mailpoet.com)'
+    );
+    $token = Security::generateRandomString(5);
+    $payload = json_encode(
+      array(
+        'token' => $token
+      )
+    );
+    wp_remote_get(
+      site_url() .
+      '/?mailpoet-api&section=queue&action=start&payload=' .
+      urlencode($payload),
+      $args
+    );
+    list ($queue, $queueData) = $this->getQueue();
+    return ($queueData && $queueData['token'] === $token) ? true : false;
   }
 
   function getQueue() {
@@ -53,9 +71,10 @@ class Supervisor {
 
   function checkDBReadiness() {
     $db = \ORM::forTable('')
-      ->rawQuery('SELECT COUNT(*) as settings FROM information_schema.tables ' .
-                 'WHERE table_schema = "' . Env::$db_name . '" ' .
-                 'AND table_name = "' . MP_SETTINGS_TABLE . '";'
+      ->rawQuery(
+        'SELECT COUNT(*) as settings FROM information_schema.tables ' .
+        'WHERE table_schema = "' . Env::$db_name . '" ' .
+        'AND table_name = "' . MP_SETTINGS_TABLE . '";'
       )
       ->findOne()
       ->asArray();
