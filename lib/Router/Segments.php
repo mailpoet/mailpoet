@@ -2,6 +2,7 @@
 namespace MailPoet\Router;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\SubscriberSegment;
+use \MailPoet\Models\SegmentFilter;
 use \MailPoet\Listing;
 
 if(!defined('ABSPATH')) exit;
@@ -31,6 +32,18 @@ class Segments {
 
     // fetch segments relations for each returned item
     foreach($listing_data['items'] as &$item) {
+      $item['filters'] = SegmentFilter::table_alias('relation')
+        ->where(
+          'relation.segment_id',
+          $item['id']
+        )
+        ->join(
+          MP_FILTERS_TABLE,
+          'filters.id = relation.filter_id',
+          'filters'
+        )
+        ->findArray();
+
       $stats = SubscriberSegment::table_alias('relation')
         ->where(
           'relation.segment_id',

@@ -38,6 +38,15 @@ class Segment extends Model {
     );
   }
 
+  function segmentFilters() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\Filter',
+      __NAMESPACE__.'\SegmentFilter',
+      'segment_id',
+      'filter_id'
+    );
+  }
+
   function duplicate($data = array()) {
     $duplicate = parent::duplicate($data);
 
@@ -65,6 +74,10 @@ class Segment extends Model {
     return SubscriberSegment::where('subscriber_id', $subscriber_id)
       ->where('segment_id', $this->id)
       ->delete();
+  }
+
+  static function getWPUsers() {
+    return self::findOne(1);
   }
 
   static function search($orm, $search = '') {

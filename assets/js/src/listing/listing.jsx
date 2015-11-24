@@ -79,6 +79,12 @@ define(
 
         if(custom_actions.length > 0) {
           item_actions = custom_actions.map(function(action, index) {
+            if(action.onFilter !== undefined) {
+              if(action.onFilter(this.props.item) === false) {
+                return;
+              }
+            }
+
             if(action.refresh) {
               return (
                 <span
@@ -121,6 +127,12 @@ define(
           );
         }
 
+        var is_readonly = (
+          (this.props.onFilterItem !== undefined)
+          ? this.props.onFilterItem(this.props.item)
+          : false
+        );
+
         if(this.props.group === 'trash') {
            var actions = (
             <div>
@@ -158,17 +170,19 @@ define(
             <div>
               <div className="row-actions">
                 { item_actions }
-                { ' | ' }
-                <span className="trash">
-                  <a
-                    href="javascript:;"
-                    onClick={ this.handleTrashItem.bind(
-                      null,
-                      this.props.item.id
-                    ) }>
-                    Trash
-                  </a>
-                </span>
+                { (is_readonly) ? '' : (
+                  <span className="trash">
+                    { ' | ' }
+                    <a
+                      href="javascript:;"
+                      onClick={ this.handleTrashItem.bind(
+                        null,
+                        this.props.item.id
+                      ) }>
+                      Trash
+                    </a>
+                  </span>
+                )}
               </div>
               <button
                 onClick={ this.handleToggleItem.bind(null, this.props.item.id) }
@@ -258,6 +272,7 @@ define(
                     columns={ this.props.columns }
                     onSelectItem={ this.props.onSelectItem }
                     onRenderItem={ this.props.onRenderItem }
+                    onFilterItem={ this.props.onFilterItem }
                     onDeleteItem={ this.props.onDeleteItem }
                     onRestoreItem={ this.props.onRestoreItem }
                     onTrashItem={ this.props.onTrashItem }
@@ -721,6 +736,7 @@ define(
 
               <ListingItems
                 onRenderItem={ this.handleRenderItem }
+                onFilterItem={ this.props.onFilterItem }
                 onDeleteItem={ this.handleDeleteItem }
                 onRestoreItem={ this.handleRestoreItem }
                 onTrashItem={ this.handleTrashItem }

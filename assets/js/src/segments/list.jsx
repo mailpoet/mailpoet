@@ -121,6 +121,20 @@ const item_actions = [
         );
         refresh();
       });
+    },
+    onFilter: function(segment) {
+      return (segment.filters.length === 0);
+    }
+  },
+  {
+    name: 'sync_segment',
+    label: 'Update',
+    className: 'update',
+    onClick: function(item, refresh) {
+      console.log(item);
+    },
+    onFilter: function(segment) {
+      return (segment.filters.length > 0);
     }
   },
   {
@@ -142,13 +156,15 @@ const bulk_actions = [
 ];
 
 const SegmentList = React.createClass({
+  filterItem: function(segment) {
+    return !!(segment.filters.length > 0);
+  },
   renderItem: function(segment, actions) {
     var rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'
     );
-
     return (
       <div>
         <td className={ rowClasses }>
@@ -190,6 +206,7 @@ const SegmentList = React.createClass({
           limit={ 1000 }
           endpoint="segments"
           onRenderItem={ this.renderItem }
+          onFilterItem={ this.filterItem }
           columns={ columns }
           bulk_actions={ bulk_actions }
           item_actions={ item_actions }
