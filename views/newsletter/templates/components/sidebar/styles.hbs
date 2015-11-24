@@ -15,7 +15,7 @@
             {{#each availableStyles.textSizes}}
                 <option value="{{ this }}" {{#ifCond this '==' ../model.text.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
-            </select> <label for="mailpoet_text_font_color"><%= __('Text') %></label>
+            </select> <%= __('Text') %>
         </div>
         <div class="mailpoet_form_field">
             <span>
@@ -30,7 +30,7 @@
             {{#each availableStyles.headingSizes}}
                 <option value="{{ this }}" {{#ifCond this '==' ../model.h1.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
-            </select> <label for="mailpoet_h1_font_color"><%= __('Heading 1') %></label>
+            </select> <%= __('Heading 1') %>
         </div>
         <div class="mailpoet_form_field">
             <span>
@@ -45,7 +45,7 @@
             {{#each availableStyles.headingSizes}}
                 <option value="{{ this }}" {{#ifCond this '==' ../model.h2.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
-            </select> <label for="mailpoet_h2_font_color"><%= __('Heading 2') %></label>
+            </select> <%= __('Heading 2') %>
         </div>
         <div class="mailpoet_form_field">
             <span>
@@ -60,23 +60,23 @@
             {{#each availableStyles.headingSizes}}
                 <option value="{{ this }}" {{#ifCond this '==' ../model.h3.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
-            </select> <label for="mailpoet_h3_font_color"><%= __('Heading 3') %></label>
+            </select> <%= __('Heading 3') %>
         </div>
         <div class="mailpoet_form_field">
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="link-color" value="{{ model.link.fontColor }}" id="mailpoet_a_font_color"></span>
-            </span><label for="mailpoet_a_font_color"><%= __('Links') %></label> <input type="checkbox" name="underline" value="underline" id="mailpoet_a_font_underline" {{#ifCond model.link.textDecoration '==' 'underline'}}CHECKED{{/ifCond}} class="mailpoet_option_offset_left_small"/> <%= __('Underline') %>
+            </span><%= __('Links') %> <label><input type="checkbox" name="underline" value="underline" id="mailpoet_a_font_underline" {{#ifCond model.link.textDecoration '==' 'underline'}}CHECKED{{/ifCond}} class="mailpoet_option_offset_left_small"/> <%= __('Underline') %></label>
         </div>
         <hr />
         <div class="mailpoet_form_field">
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="newsletter-color" value="{{ model.wrapper.backgroundColor }}" id="mailpoet_newsletter_background_color"></span>
-            </span><label for="mailpoet_newsletter_background_color"><%= __('Newsletter') %></label>
+            </span><%= __('Newsletter') %>
         </div>
         <div class="mailpoet_form_field">
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="background-color" value="{{ model.body.backgroundColor }}" id="mailpoet_background_color"></span>
-            </span><label for="mailpoet_background_color"><%= __('Background') %></label>
+            </span><%= __('Background') %>
         </div>
     </form>
 </div>
