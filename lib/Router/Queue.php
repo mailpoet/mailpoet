@@ -32,7 +32,7 @@ class Queue {
       $result = false;
     } else {
       $queue->queueData['status'] = $status;
-      $queue->queue->value = serialize($queue->queueData);
+      $queue->queue->value = json_encode($queue->queueData);
       $result = $queue->queue->save();
     }
     wp_send_json(

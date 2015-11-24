@@ -27,7 +27,7 @@ class Daemon {
     if(!$queue) {
       $queue = Setting::create();
       $queue->name = 'queue';
-      $queue->value = serialize(array('status' => 'stopped'));
+      $queue->value = json_encode(array('status' => 'stopped'));
       $queue->save();
     }
     if($queueData['status'] !== 'started') {
@@ -41,7 +41,7 @@ class Daemon {
       );
       $_SESSION['queue'] = array('result' => true);
       $this->manageSession('end');
-      $queue->value = serialize($queueData);
+      $queue->value = json_encode($queueData);
       $queue->save();
       $this->callSelf();
     } else {
@@ -67,13 +67,13 @@ class Daemon {
      * LOGIC WILL HAPPEN HERE
      *
      */
-    sleep(30);
+    sleep(15);
     
     // after each execution, read queue in case it's status was modified
     list($queue, $queueData) = $this->getQueue();
     $queueData['counter']++;
     $queueData['token'] = $this->refreshedToken;
-    $queue->value = serialize($queueData);
+    $queue->value = json_encode($queueData);
     $queue->save();
     $this->callSelf();
   }
@@ -83,7 +83,7 @@ class Daemon {
       ->findOne();
     return array(
       ($queue) ? $queue : null,
-      ($queue) ? unserialize($queue->value) : null
+      ($queue) ? json_decode($queue->value, true) : null
     );
   }
 

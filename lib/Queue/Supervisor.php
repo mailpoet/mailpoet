@@ -32,9 +32,9 @@ class Supervisor {
         $this->queue->updated_at, 'UTC'
       );
       $timeSinceLastStart = $currentTime->diffInSeconds($lastUpdateTime);
-      if($timeSinceLastStart < 50) return;
+      if($timeSinceLastStart < 5) return;
       $this->queueData['status'] = 'paused';
-      $this->queue->value = serialize($this->queueData);
+      $this->queue->value = json_encode($this->queueData);
       $this->queue->save();
       return $this->startQueue();
     }
@@ -59,7 +59,7 @@ class Supervisor {
   function getQueue() {
     $queue = Setting::where('name', 'queue')
       ->findOne();
-    $queueData = ($queue) ? unserialize($queue->value) : false;
+    $queueData = ($queue) ? json_decode($queue->value, true) : false;
     return array(
       $queue,
       $queueData

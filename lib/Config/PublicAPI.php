@@ -21,26 +21,25 @@ class PublicAPI {
 
   function init() {
     if(!$this->api && !$this->section) return;
-    if(method_exists($this, $this->section)) {
-      call_user_func(
-        array(
-          $this,
-          $this->section
-        ));
-    } else {
-      header('HTTP/1.0 404 Not Found');
-    }
-    exit;
+    $this->_checkAndCallMethod($this, $this->section, $terminate = true);
   }
 
   function queue() {
     $queue = new Daemon($this->payload);
-    if(method_exists($queue, $this->action)) {
-      call_user_func(
-        array(
-          $queue,
-          $this->action
-        ));
+    $this->_checkAndCallMethod($queue, $this->action);
+  }
+
+  private function _checkAndCallMethod($class, $method, $terminate = false) {
+    if(!method_exists($class, $method)) {
+      if(!$terminate) return;
+      header('HTTP/1.0 404 Not Found');
+      exit;
     }
+    call_user_func(
+      array(
+        $class,
+        $method
+      )
+    );
   }
 }
