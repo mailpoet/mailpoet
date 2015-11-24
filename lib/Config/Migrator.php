@@ -97,6 +97,7 @@ class Migrator {
       'name varchar(250) NOT NULL,',
       'description varchar(250) NOT NULL,',
       'body longtext,',
+      'thumbnail longtext,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)'

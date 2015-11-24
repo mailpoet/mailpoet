@@ -29,7 +29,8 @@ baseConfig = {
       'blob$': 'blob/Blob.js',
       'filesaver$': 'filesaver/FileSaver.js',
       'papaparse': 'papaparse/papaparse.min.js',
-      'helpscout': 'helpscout.js'
+      'helpscout': 'helpscout.js',
+      'html2canvas': 'html2canvas/dist/html2canvas.js'
     },
   },
   node: {
@@ -72,6 +73,10 @@ baseConfig = {
       {
         include: /helpscout.js$/,
         loader: 'exports-loader?window.HS',
+      },
+      {
+        include: /html2canvas.js$/,
+        loader: 'expose-loader?html2canvas',
       },
     ]
   }

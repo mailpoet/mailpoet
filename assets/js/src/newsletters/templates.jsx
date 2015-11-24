@@ -164,11 +164,19 @@ define(
                 Delete
               </a>
             </div>
-          );
+          ), thumbnail = '';
+
+          if (typeof template.thumbnail === 'string'
+              && template.thumbnail.length > 0) {
+            thumbnail = (
+              <img src={ template.thumbnail } />
+            );
+          }
 
           return (
             <li key={ 'template-'+index }>
               <div className="mailpoet_thumbnail">
+                { thumbnail }
               </div>
 
               <div className="mailpoet_description">
