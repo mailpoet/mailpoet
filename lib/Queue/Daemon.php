@@ -15,6 +15,7 @@ class Daemon {
     list ($this->queue, $this->queueData) = $this->getQueue();
     $this->refreshedToken = $this->refreshToken();
     $this->payload = $payload;
+    $this->timer = microtime(true);
   }
   
   function start() {
@@ -36,8 +37,8 @@ class Daemon {
         'status' => 'started',
         'token' => $this->refreshedToken,
         'counter' => ($queueData['status'] === 'paused') ?
-          $queueData['counter']
-          : 0
+          $queueData['counter'] :
+          0
       );
       $_SESSION['queue'] = array('result' => true);
       $this->manageSession('end');
@@ -63,11 +64,8 @@ class Daemon {
       $this->abortWithError('invalid token');
     }
     
-    /*
-     * LOGIC WILL HAPPEN HERE
-     *
-     */
-    sleep(15);
+    $worker = new Worker();
+    $worker->process();
     
     // after each execution, read queue in case it's status was modified
     list($queue, $queueData) = $this->getQueue();

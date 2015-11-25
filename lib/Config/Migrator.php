@@ -21,7 +21,8 @@ class Migrator {
       'subscriber_custom_field',
       'newsletter_option_fields',
       'newsletter_option',
-      'queue',
+      'queues',
+      'newsletter_statistics',
       'forms'
     );
   }
@@ -204,13 +205,33 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function queue() {
+  function queues() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
       'subscribers longtext,',
-      'total mediumint(9) NOT NULL DEFAULT 0,',
-      'processed mediumint(9) NOT NULL DEFAULT 0,',
+      'status varchar(12) NOT NULL,',
+      'priority mediumint(9) NOT NULL DEFAULT 0,',
+      'count_total mediumint(9) NOT NULL DEFAULT 0,',
+      'count_processed mediumint(9) NOT NULL DEFAULT 0,',
+      'count_to_process mediumint(9) NOT NULL DEFAULT 0,',
+      'count_failed mediumint(9) NOT NULL DEFAULT 0,',
+      'processed_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
+      'PRIMARY KEY  (id)',
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function newsletter_statistics() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'newsletter_id mediumint(9) NOT NULL,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'queue_id mediumint(9) NOT NULL,',
+      'sent_at TIMESTAMP NOT NULL DEFAULT 0,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL DEFAULT NULL,',
