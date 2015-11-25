@@ -150,6 +150,13 @@ define(
            this.setState({ loading: false });
         }
       },
+      handleShowTemplate: function(template) {
+        MailPoet.Modal.popup({
+          title: template.name,
+          template: '<img src="{{ thumbnail }}" />',
+          data: template,
+        });
+      },
       handleTemplateImport: function() {
         this.getTemplates();
       },
@@ -169,7 +176,10 @@ define(
           if (typeof template.thumbnail === 'string'
               && template.thumbnail.length > 0) {
             thumbnail = (
-              <img src={ template.thumbnail } />
+              <a href="javascript:;" onClick={this.handleShowTemplate.bind(null, template)}>
+                <img src={ template.thumbnail } />
+                <div className="mailpoet_overlay"></div>
+              </a>
             );
           }
 
