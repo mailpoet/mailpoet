@@ -112,6 +112,9 @@ define(
             </a>
           );
         }
+      },
+      {
+        name: 'trash'
       }
     ];
 

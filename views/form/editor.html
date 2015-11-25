@@ -4,9 +4,15 @@
   <h2 class="title">
     <span id="mailpoet_form_name"><%= form.name %></span>
     <input id="mailpoet_form_name_input" type="text" value="" style="display:none;" />
-    <span>
-      <a id="mailpoet_form_edit_name" class="button" href="javascript:;"><%= __('Edit name' ) %></a>
-    </span>
+    <a
+      id="mailpoet_form_edit_name"
+      class="add-new-h2"
+      href="javascript:;"
+    ><%= __('Edit name' ) %></a>
+    <a
+      href="<%= admin_url('admin.php?page=mailpoet-forms') | raw %>"
+      class="add-new-h2"
+    ><%= __('List of forms' ) %></a>
   </h2>
 <% endblock %>
 
@@ -42,7 +48,7 @@
             <div id="mailpoet_settings_segment_selection">
               <!-- Form settings: list selection -->
               <p>
-              <strong><%= __('This form adds subscribers to these lists:') %></strong>
+                <strong><%= __('This form adds subscribers to these lists:') %></strong>
               </p>
               <select
                 id="mailpoet_form_segments"

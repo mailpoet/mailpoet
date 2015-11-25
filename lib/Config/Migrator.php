@@ -15,8 +15,6 @@ class Migrator {
       'newsletters',
       'newsletter_templates',
       'segments',
-      'filters',
-      'segment_filter',
       'subscriber_segment',
       'newsletter_segment',
       'custom_fields',
@@ -111,6 +109,7 @@ class Migrator {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
+      'type varchar(90) NOT NULL DEFAULT "default",',
       'description varchar(250) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'deleted_at TIMESTAMP NULL DEFAULT NULL,',
@@ -121,37 +120,12 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function filters() {
-    $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'name varchar(90) NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id),',
-      'UNIQUE KEY name (name)'
-    );
-    return $this->sqlify(__FUNCTION__, $attributes);
-  }
-
-  function segment_filter() {
-    $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'segment_id mediumint(9) NOT NULL,',
-      'filter_id mediumint(9) NOT NULL,',
-      'params longtext NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id),',
-      'UNIQUE KEY segment_filter (segment_id,filter_id)'
-    );
-    return $this->sqlify(__FUNCTION__, $attributes);
-  }
-
   function subscriber_segment() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'subscriber_id mediumint(9) NOT NULL,',
       'segment_id mediumint(9) NOT NULL,',
+      'status varchar(12) NOT NULL DEFAULT "subscribed",',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',

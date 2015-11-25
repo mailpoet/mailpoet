@@ -206,6 +206,21 @@ const bulk_actions = [
   }
 ];
 
+const item_actions = [
+  {
+    name: 'edit',
+    label: 'Edit',
+    link: function(item) {
+      return (
+        <Link to={ `/edit/${item.id}` }>Edit</Link>
+      );
+    }
+  },
+  {
+    name: 'trash'
+  }
+];
+
 const SubscriberList = React.createClass({
   renderItem: function(subscriber, actions) {
     let row_classes = classNames(
@@ -295,6 +310,7 @@ const SubscriberList = React.createClass({
           onRenderItem={ this.renderItem }
           columns={ columns }
           bulk_actions={ bulk_actions }
+          item_actions={ item_actions }
           messages={ messages }
           onGetItems={ this.onGetItems }
         />

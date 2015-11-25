@@ -122,19 +122,29 @@ const item_actions = [
         refresh();
       });
     },
-    onFilter: function(segment) {
-      return (segment.filters.length === 0);
+    display: function(segment) {
+      return (segment.type !== 'wp_users');
     }
   },
   {
-    name: 'sync_segment',
+    name: 'synchronize_segment',
     label: 'Update',
     className: 'update',
     onClick: function(item, refresh) {
-      console.log(item);
+      return MailPoet.Ajax.post({
+        endpoint: 'segments',
+        action: 'synchronize'
+      }).done(function(response) {
+        if(response === true) {
+          MailPoet.Notice.success(
+            ('List "%$1s" has been synchronized.').replace('%$1s', item.name)
+          );
+          refresh();
+        }
+      });
     },
-    onFilter: function(segment) {
-      return (segment.filters.length > 0);
+    display: function(segment) {
+      return (segment.type === 'wp_users');
     }
   },
   {
@@ -144,21 +154,19 @@ const item_actions = [
         <a href={ item.subscribers_url }>View subscribers</a>
       );
     }
+  },
+  {
+    name: 'trash',
+    display: function(segment) {
+      return (segment.type !== 'wp_users');
+    }
   }
 ];
 
 const bulk_actions = [
-  {
-    name: 'trash',
-    label: 'Trash',
-    onSuccess: messages.onTrash
-  }
 ];
 
 const SegmentList = React.createClass({
-  filterItem: function(segment) {
-    return !!(segment.filters.length > 0);
-  },
   renderItem: function(segment, actions) {
     var rowClasses = classNames(
       'manage-column',
@@ -206,7 +214,6 @@ const SegmentList = React.createClass({
           limit={ 1000 }
           endpoint="segments"
           onRenderItem={ this.renderItem }
-          onFilterItem={ this.filterItem }
           columns={ columns }
           bulk_actions={ bulk_actions }
           item_actions={ item_actions }

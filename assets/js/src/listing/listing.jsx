@@ -79,33 +79,48 @@ define(
 
         if(custom_actions.length > 0) {
           item_actions = custom_actions.map(function(action, index) {
-            if(action.onFilter !== undefined) {
-              if(action.onFilter(this.props.item) === false) {
+            if(action.display !== undefined) {
+              if(action.display(this.props.item) === false) {
                 return;
               }
             }
 
-            if(action.refresh) {
+            if(action.name === 'trash') {
+              return (
+                <span key={ 'action-'+index } className="trash">
+                  {(index > 0) ? ' | ' : ''}
+                  <a
+                    href="javascript:;"
+                    onClick={ this.handleTrashItem.bind(
+                      null,
+                      this.props.item.id
+                    ) }>
+                    Trash
+                  </a>
+                </span>
+              );
+            } else if(action.refresh) {
               return (
                 <span
                   onClick={ this.props.onRefreshItems }
                   key={ 'action-'+index } className={ action.name }>
+                  {(index > 0) ? ' | ' : ''}
                   { action.link(this.props.item) }
-                  {(index < (custom_actions.length - 1)) ? ' | ' : ''}
                 </span>
               );
             } else if(action.link) {
               return (
                 <span
                   key={ 'action-'+index } className={ action.name }>
+                  {(index > 0) ? ' | ' : ''}
                   { action.link(this.props.item) }
-                  {(index < (custom_actions.length - 1)) ? ' | ' : ''}
                 </span>
               );
             } else {
               return (
                 <span
                   key={ 'action-'+index } className={ action.name }>
+                  {(index > 0) ? ' | ' : ''}
                   <a href="javascript:;" onClick={
                     (action.onClick !== undefined)
                     ? action.onClick.bind(null,
@@ -114,7 +129,6 @@ define(
                       )
                     : false
                   }>{ action.label }</a>
-                  {(index < (custom_actions.length - 1)) ? ' | ' : ''}
                 </span>
               );
             }
@@ -126,12 +140,6 @@ define(
             </span>
           );
         }
-
-        var is_readonly = (
-          (this.props.onFilterItem !== undefined)
-          ? this.props.onFilterItem(this.props.item)
-          : false
-        );
 
         if(this.props.group === 'trash') {
            var actions = (
@@ -170,19 +178,6 @@ define(
             <div>
               <div className="row-actions">
                 { item_actions }
-                { (is_readonly) ? '' : (
-                  <span className="trash">
-                    { ' | ' }
-                    <a
-                      href="javascript:;"
-                      onClick={ this.handleTrashItem.bind(
-                        null,
-                        this.props.item.id
-                      ) }>
-                      Trash
-                    </a>
-                  </span>
-                )}
               </div>
               <button
                 onClick={ this.handleToggleItem.bind(null, this.props.item.id) }
@@ -272,7 +267,6 @@ define(
                     columns={ this.props.columns }
                     onSelectItem={ this.props.onSelectItem }
                     onRenderItem={ this.props.onRenderItem }
-                    onFilterItem={ this.props.onFilterItem }
                     onDeleteItem={ this.props.onDeleteItem }
                     onRestoreItem={ this.props.onRestoreItem }
                     onTrashItem={ this.props.onTrashItem }
@@ -652,7 +646,7 @@ define(
         // bulk actions
         var bulk_actions = this.props.bulk_actions || [];
 
-        if(this.state.group === 'trash') {
+        if(this.state.group === 'trash' && bulk_actions.length > 0) {
           bulk_actions = [
             {
               name: 'restore',
@@ -736,7 +730,6 @@ define(
 
               <ListingItems
                 onRenderItem={ this.handleRenderItem }
-                onFilterItem={ this.props.onFilterItem }
                 onDeleteItem={ this.handleDeleteItem }
                 onRestoreItem={ this.handleRestoreItem }
                 onTrashItem={ this.handleTrashItem }
