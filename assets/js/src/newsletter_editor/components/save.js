@@ -67,7 +67,7 @@ define([
       jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
     ).then(function(thumbnail) {
       var data = _.extend(options || {}, {
-        thumbnail: thumbnail.toDataURL(),
+        thumbnail: thumbnail.toDataURL('image/jpeg'),
         body: App.getBody(),
       });
       var blob = new Blob(
