@@ -173,4 +173,8 @@ class Segment extends Model {
     $segment->save();
     return $segment;
   }
+
+  static function getPublic() {
+    return self::getPublished()->where('type', 'default');
+  }
 }

@@ -206,7 +206,7 @@ class Menu {
 
     $data = array(
       'settings' => $settings,
-      'segments' => Segment::getPublished()->findArray(),
+      'segments' => Segment::getPublic()->findArray(),
       'pages' => Pages::getAll(),
       'flags' => $this->_getFlags(),
       'charsets' => Charsets::getAll(),
@@ -309,7 +309,7 @@ class Menu {
     $data = array(
       'form' => $form,
       'pages' => Pages::getAll(),
-      'segments' => Segment::getPublished()->findArray(),
+      'segments' => Segment::getPublic()->findArray(),
       'styles' => FormRenderer::getStyles($form),
       'date_types' => Block\Date::getDateTypes(),
       'date_formats' => Block\Date::getDateFormats()
