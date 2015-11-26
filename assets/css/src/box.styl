@@ -18,6 +18,38 @@
   height: 150px
   margin-right: 15px
   float: left
+  overflow: hidden
+  position: relative
+
+  img
+    min-width: 150px
+    min-height: 150px
+    height: auto
+    width: 110%
+    position: relative
+    top: 0
+    left: 50%
+    transform: translate(-50%, 0%)
+
+  .mailpoet_overlay
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    background-color: rgba(255, 255, 255, 0.0)
+
+    &:hover
+      background-color: rgba(255, 255, 255, 0.7)
+
+      &::after
+        content: " "
+        position: absolute
+        top: 0
+        left: 0
+        bottom: 0
+        right: 0
+        background: url(../img/preview_magnifying_glass.svg) no-repeat center center
 
 .mailpoet_boxes .mailpoet_description
   float:left

@@ -6,8 +6,9 @@ define([
     'backbone.marionette',
     'jquery',
     'blob',
-    'filesaver'
-  ], function(App, MailPoet, Notice, Backbone, Marionette, jQuery, Blob, FileSaver) {
+    'filesaver',
+    'html2canvas'
+  ], function(App, MailPoet, Notice, Backbone, Marionette, jQuery, Blob, FileSaver, html2canvas) {
 
   "use strict";
 
@@ -56,16 +57,26 @@ define([
     });
   };
 
-  Module.exportTemplate = function(options) {
-    var data = _.extend(options || {}, {
-      body: App.getBody(),
-    });
-    var blob = new Blob(
-      [JSON.stringify(data)],
-      { type: 'application/json;charset=utf-8' }
-    );
+  Module.getThumbnail = function(element, options) {
+    return html2canvas(element, options || {});
+  };
 
-    FileSaver.saveAs(blob, 'template.json');
+  Module.exportTemplate = function(options) {
+    var that = this;
+    return Module.getThumbnail(
+      jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
+    ).then(function(thumbnail) {
+      var data = _.extend(options || {}, {
+        thumbnail: thumbnail.toDataURL('image/jpeg'),
+        body: App.getBody(),
+      });
+      var blob = new Blob(
+        [JSON.stringify(data)],
+        { type: 'application/json;charset=utf-8' }
+      );
+
+      FileSaver.saveAs(blob, 'template.json');
+    });
   };
 
   Module.SaveView = Marionette.LayoutView.extend({

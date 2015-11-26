@@ -56,7 +56,7 @@ define([
   };
 
   Module.getTransformedPosts = function(options) {
-    return Module._query({
+    return Module._cachedQuery({
       action: 'getTransformedPosts',
       options: options,
     });

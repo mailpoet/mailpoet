@@ -150,6 +150,13 @@ define(
            this.setState({ loading: false });
         }
       },
+      handleShowTemplate: function(template) {
+        MailPoet.Modal.popup({
+          title: template.name,
+          template: '<img src="{{ thumbnail }}" />',
+          data: template,
+        });
+      },
       handleTemplateImport: function() {
         this.getTemplates();
       },
@@ -164,11 +171,22 @@ define(
                 Delete
               </a>
             </div>
-          );
+          ), thumbnail = '';
+
+          if (typeof template.thumbnail === 'string'
+              && template.thumbnail.length > 0) {
+            thumbnail = (
+              <a href="javascript:;" onClick={this.handleShowTemplate.bind(null, template)}>
+                <img src={ template.thumbnail } />
+                <div className="mailpoet_overlay"></div>
+              </a>
+            );
+          }
 
           return (
             <li key={ 'template-'+index }>
               <div className="mailpoet_thumbnail">
+                { thumbnail }
               </div>
 
               <div className="mailpoet_description">

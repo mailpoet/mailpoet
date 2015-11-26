@@ -1,29 +1,25 @@
 <h3><%= __('Header') %></h3>
 <div class="mailpoet_form_field">
-    <label>
-        <div class="mailpoet_form_field_input_option">
-            <input type="text" name="font-color" id="mailpoet_field_header_text_color" class="mailpoet_field_header_text_color mailpoet_color" value="{{ model.styles.text.fontColor }}" />
-            <select id="mailpoet_field_header_text_font_family" name="font-family" class="mailpoet_select mailpoet_select_medium mailpoet_field_header_text_font_family mailpoet_font_family">
-            {{#each availableStyles.fonts}}
-                <option value="{{ this }}" {{#ifCond this '==' ../model.styles.text.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
-            {{/each}}
-            </select>
-            <select id="mailpoet_field_header_text_size" name="font-size" class="mailpoet_select mailpoet_select_small mailpoet_field_header_text_size mailpoet_font_size">
-            {{#each availableStyles.textSizes}}
-                <option value="{{ this }}" {{#ifCond this '==' ../model.styles.text.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
-            {{/each}}
-            </select>
-        </div>
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Text') %></div>
-    </label>
+    <div class="mailpoet_form_field_input_option">
+        <input type="text" name="font-color" id="mailpoet_field_header_text_color" class="mailpoet_field_header_text_color mailpoet_color" value="{{ model.styles.text.fontColor }}" />
+        <select id="mailpoet_field_header_text_font_family" name="font-family" class="mailpoet_select mailpoet_select_medium mailpoet_field_header_text_font_family mailpoet_font_family">
+        {{#each availableStyles.fonts}}
+            <option value="{{ this }}" {{#ifCond this '==' ../model.styles.text.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
+        {{/each}}
+        </select>
+        <select id="mailpoet_field_header_text_size" name="font-size" class="mailpoet_select mailpoet_select_small mailpoet_field_header_text_size mailpoet_font_size">
+        {{#each availableStyles.textSizes}}
+            <option value="{{ this }}" {{#ifCond this '==' ../model.styles.text.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
+        {{/each}}
+        </select>
+    </div>
+    <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Text') %></div>
 </div>
 <div class="mailpoet_form_field">
-    <label>
-        <div class="mailpoet_form_field_input_option">
-            <input type="text" class="mailpoet_color" size="6" maxlength="6" name="link-color" value="{{ model.styles.link.fontColor }}" id="mailpoet_field_header_link_color" />
-        </div>
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Links') %></div>
-    </label>
+      <div class="mailpoet_form_field_input_option">
+          <input type="text" class="mailpoet_color" size="6" maxlength="6" name="link-color" value="{{ model.styles.link.fontColor }}" id="mailpoet_field_header_link_color" />
+      </div>
+      <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Links') %></div>
     <label>
         <div class="mailpoet_form_field_checkbox_option mailpoet_option_offset_left_small">
             <input type="checkbox" name="underline" value="underline" id="mailpoet_field_header_link_underline" {{#ifCond model.styles.link.textDecoration '==' 'underline'}}CHECKED{{/ifCond}}/> <%= __('Underline') %>
@@ -32,12 +28,10 @@
 </div>
 
 <div class="mailpoet_form_field">
-    <label>
-        <div class="mailpoet_form_field_input_option">
-            <input type="text" name="background-color" class="mailpoet_field_header_background_color mailpoet_color" value="{{ model.styles.block.backgroundColor }}" />
-        </div>
-        <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Background') %></div>
-    </label>
+    <div class="mailpoet_form_field_input_option">
+        <input type="text" name="background-color" class="mailpoet_field_header_background_color mailpoet_color" value="{{ model.styles.block.backgroundColor }}" />
+    </div>
+    <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Background') %></div>
 </div>
 
 <div class="mailpoet_form_field">
