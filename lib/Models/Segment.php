@@ -130,6 +130,7 @@ class Segment extends Model {
         array(self::$_table.'.id', '=', MP_SUBSCRIBER_SEGMENT_TABLE.'.segment_id'))
       ->group_by(self::$_table.'.id')
       ->group_by(self::$_table.'.name')
+      ->where(self::$_table.'.type', 'default')
       ->findArray();
   }
 
