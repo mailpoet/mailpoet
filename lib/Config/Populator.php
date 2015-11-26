@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Config;
 
+use MailPoet\Config\PopulatorData\Templates\SampleTemplate;
+
 if (!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -10,6 +12,7 @@ class Populator {
     $this->prefix = Env::$db_prefix;
     $this->models = array(
       'newsletter_option_fields',
+      'newsletter_templates',
     );
   }
 
@@ -81,6 +84,12 @@ class Populator {
         'name' => 'nthWeekDay',
         'newsletter_type' => 'notification',
       ),
+    );
+  }
+
+  private function newsletter_templates() {
+    return array(
+      (new SampleTemplate(Env::$assets_url))->get(),
     );
   }
 
