@@ -13,15 +13,16 @@ class Supervisor {
     if(!Env::isPluginActivated()) {
       throw new \Exception('Database has not been configured.');
     }
-    list ($this->queue, $this->queueData) = $this->getQueue();
+    list ($this->daemon, $this->daemonData) = $this->getDaemon();
   }
 
-  function checkQueue() {
-    if(!$this->queue) {
-      return $this->startQueue();
+  function checkDaemon() {
+    if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])) return;
+    if(!$this->daemon) {
+      return $this->startDaemon();
     } else {
-      if(!$this->forceStart && ($this->queueData['status'] === 'paused' ||
-          $this->queueData['status'] === 'stopped'
+      if(!$this->forceStart && ($this->daemonData['status'] === 'paused' ||
+          $this->daemonData['status'] === 'stopped'
         )
       ) {
         return;
@@ -29,40 +30,40 @@ class Supervisor {
       $currentTime = Carbon::now('UTC');
       $lastUpdateTime = Carbon::createFromFormat(
         'Y-m-d H:i:s',
-        $this->queue->updated_at, 'UTC'
+        $this->daemon->updated_at, 'UTC'
       );
       $timeSinceLastStart = $currentTime->diffInSeconds($lastUpdateTime);
       if($timeSinceLastStart < 5) return;
-      $this->queueData['status'] = 'paused';
-      $this->queue->value = json_encode($this->queueData);
-      $this->queue->save();
-      return $this->startQueue();
+      $this->daemonData['status'] = 'paused';
+      $this->daemon->value = json_encode($this->daemonData);
+      $this->daemon->save();
+      return $this->startDaemon();
     }
   }
 
-  function startQueue() {
+  function startDaemon() {
     if(!session_id()) session_start();
     $sessionId = session_id();
     session_write_close();
-    $_SESSION['queue'] = null;
+    $_SESSION['daemon'] = null;
     $payload = json_encode(array('session' => $sessionId));
     self::getRemoteUrl(
       '/?mailpoet-api&section=queue&action=start&payload=' . urlencode($payload)
     );
     session_start();
-    $queueStatus = $_SESSION['queue'];
-    unset($_SESSION['queue']);
+    $daemonStatus = $_SESSION['daemon'];
+    unset($_SESSION['daemon']);
     session_write_close();
-    return $queueStatus;
+    return $daemonStatus;
   }
 
-  function getQueue() {
-    $queue = Setting::where('name', 'queue')
+  function getDaemon() {
+    $daemon = Setting::where('name', 'daemon')
       ->findOne();
-    $queueData = ($queue) ? json_decode($queue->value, true) : false;
+    $daemonData = ($daemon) ? json_decode($daemon->value, true) : false;
     return array(
-      $queue,
-      $queueData
+      $daemon,
+      $daemonData
     );
   }
 

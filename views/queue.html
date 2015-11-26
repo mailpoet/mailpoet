@@ -1,0 +1,10 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+  <div id="queue_container"></div>
+  <script type="text/javascript">
+  </script>
+<script>
+  var queueDaemon = <%= daemon|raw %>
+</script>
+<% endblock %>

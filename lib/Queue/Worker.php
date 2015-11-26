@@ -28,8 +28,9 @@ class Worker {
       if(!isset($subscribers['processed'])) $subscribers['processed'] = array();
       $subscribersToProcess = $subscribers['to_process'];
       foreach ($subscribersToProcess as $subscriber) {
-        if(microtime(true) - $this->timer >= 28) break;
-        // TODO: remove
+        $elapsedTime = microtime(true) - $this->timer;
+        if($elapsedTime >= 28) break;
+        // TODO: hook up to mailer
         sleep(1);
         $newsletterStatistics = NewsletterStatistics::create();
         $newsletterStatistics->subscriber_id = $subscriber;

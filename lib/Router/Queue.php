@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Router;
 
+use MailPoet\Models\Setting;
 use MailPoet\Queue\Daemon;
 use MailPoet\Queue\Supervisor;
 
@@ -11,7 +12,7 @@ class Queue {
     $supervisor = new Supervisor();
     wp_send_json(
       array(
-        'result' => ($supervisor->checkQueue($forceStart = true)) ?
+        'result' => ($supervisor->checkDaemon($forceStart = true)) ?
           true :
           false
       )
@@ -27,18 +28,24 @@ class Queue {
         $status = 'paused';
         break;
     }
-    $queue = new Daemon();
-    if(!$queue->queue || $queue->queueData['status'] !== 'started') {
+    $daemon = new Daemon();
+    if(!$daemon->daemon || $daemon->daemonData['status'] !== 'started') {
       $result = false;
     } else {
-      $queue->queueData['status'] = $status;
-      $queue->queue->value = json_encode($queue->queueData);
-      $result = $queue->queue->save();
+      $daemon->daemonData['status'] = $status;
+      $daemon->daemon->value = json_encode($daemon->daemonData);
+      $result = $daemon->daemon->save();
     }
     wp_send_json(
       array(
         'result' => $result
       )
     );
+  }
+
+  function getQueueStatus() {
+    $daemon = new \MailPoet\Queue\BootStrapMenu();
+    wp_send_json($daemon->bootStrap());
+
   }
 }

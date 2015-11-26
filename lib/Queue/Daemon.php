@@ -12,7 +12,7 @@ class Daemon {
   function __construct($payload = array()) {
     set_time_limit(0);
     ignore_user_abort();
-    list ($this->queue, $this->queueData) = $this->getQueue();
+    list ($this->daemon, $this->daemonData) = $this->getDaemon();
     $this->refreshedToken = $this->refreshToken();
     $this->payload = $payload;
     $this->timer = microtime(true);
@@ -23,30 +23,30 @@ class Daemon {
       $this->abortWithError('missing session ID');
     }
     $this->manageSession('start');
-    $queue = $this->queue;
-    $queueData = $this->queueData;
-    if(!$queue) {
-      $queue = Setting::create();
-      $queue->name = 'queue';
-      $queue->value = json_encode(array('status' => 'stopped'));
-      $queue->save();
+    $daemon = $this->daemon;
+    $daemonData = $this->daemonData;
+    if(!$daemon) {
+      $daemon = Setting::create();
+      $daemon->name = 'daemon';
+      $daemon->value = json_encode(array('status' => 'stopped'));
+      $daemon->save();
     }
-    if($queueData['status'] !== 'started') {
-      $_SESSION['queue'] = 'started';
-      $queueData = array(
+    if($daemonData['status'] !== 'started') {
+      $_SESSION['daemon'] = 'started';
+      $daemonData = array(
         'status' => 'started',
         'token' => $this->refreshedToken,
-        'counter' => ($queueData['status'] === 'paused') ?
-          $queueData['counter'] :
+        'counter' => ($daemonData['status'] === 'paused') ?
+          $daemonData['counter'] :
           0
       );
-      $_SESSION['queue'] = array('result' => true);
+      $_SESSION['daemon'] = array('result' => true);
       $this->manageSession('end');
-      $queue->value = json_encode($queueData);
-      $queue->save();
+      $daemon->value = json_encode($daemonData);
+      $daemon->save();
       $this->callSelf();
     } else {
-      $_SESSION['queue'] = array(
+      $_SESSION['daemon'] = array(
         'result' => false,
         'error' => 'already started'
       );
@@ -55,33 +55,37 @@ class Daemon {
   }
   
   function run() {
-    if(!$this->queue || $this->queueData['status'] !== 'started') {
+    if(!$this->daemon || $this->daemonData['status'] !== 'started') {
       $this->abortWithError('not running');
     }
     if(!isset($this->payload['token']) ||
-      $this->payload['token'] !== $this->queueData['token']
+      $this->payload['token'] !== $this->daemonData['token']
     ) {
       $this->abortWithError('invalid token');
     }
     
     $worker = new Worker();
     $worker->process();
-    
-    // after each execution, read queue in case it's status was modified
-    list($queue, $queueData) = $this->getQueue();
-    $queueData['counter']++;
-    $queueData['token'] = $this->refreshedToken;
-    $queue->value = json_encode($queueData);
-    $queue->save();
+    $elapsedTime = microtime(true) - $this->timer;
+    if ($elapsedTime < 30) {
+      sleep(30 - $elapsedTime);
+    }
+
+    // after each execution, read daemon in case it's status was modified
+    list($daemon, $daemonData) = $this->getDaemon();
+    $daemonData['counter']++;
+    $daemonData['token'] = $this->refreshedToken;
+    $daemon->value = json_encode($daemonData);
+    $daemon->save();
     $this->callSelf();
   }
 
-  function getQueue() {
-    $queue = Setting::where('name', 'queue')
+  function getDaemon() {
+    $daemon = Setting::where('name', 'daemon')
       ->findOne();
     return array(
-      ($queue) ? $queue : null,
-      ($queue) ? json_decode($queue->value, true) : null
+      ($daemon) ? $daemon : null,
+      ($daemon) ? json_decode($daemon->value, true) : null
     );
   }
 

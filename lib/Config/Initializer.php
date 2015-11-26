@@ -137,7 +137,7 @@ class Initializer {
   function runQueueSupervisor() {
     try {
       $supervisor = new Supervisor();
-      $supervisor->checkQueue();
+      $supervisor->checkDaemon();
     } catch (\Exception $e) {
     }
   }
