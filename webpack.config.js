@@ -102,7 +102,8 @@ config.push(_.extend({}, baseConfig, {
       'settings/tabs.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
-      'helpscout'
+      'helpscout',
+      'queue.jsx'
     ],
     form_editor: [
       'form_editor/form_editor.js',

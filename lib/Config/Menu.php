@@ -1,17 +1,17 @@
 <?php
 namespace MailPoet\Config;
 
+use MailPoet\Form\Block;
+use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Models\Form;
+use MailPoet\Models\Segment;
+use MailPoet\Models\Setting;
+use MailPoet\Settings\Charsets;
+use MailPoet\Settings\Hosts;
+use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\BootStrapMenu;
-use \MailPoet\Models\Segment;
-use \MailPoet\Models\Setting;
-use \MailPoet\Models\Form;
-use \MailPoet\Form\Block;
-use \MailPoet\Form\Renderer as FormRenderer;
-use \MailPoet\Settings\Hosts;
-use \MailPoet\Settings\Pages;
-use \MailPoet\Settings\Charsets;
-use \MailPoet\Util\Permissions;
-use \MailPoet\Util\DKIM;
+use MailPoet\Util\DKIM;
+use MailPoet\Util\Permissions;
 
 if(!defined('ABSPATH')) exit;
 
@@ -24,7 +24,10 @@ class Menu {
   function init() {
     add_action(
       'admin_menu',
-      array($this, 'setup')
+      array(
+        $this,
+        'setup'
+      )
     );
   }
 
@@ -34,7 +37,10 @@ class Menu {
       'MailPoet',
       'manage_options',
       'mailpoet',
-      array($this, 'home'),
+      array(
+        $this,
+        'home'
+      ),
       $this->assets_url . '/img/menu_icon.png',
       30
     );
@@ -44,7 +50,10 @@ class Menu {
       __('Newsletters'),
       'manage_options',
       'mailpoet-newsletters',
-      array($this, 'newsletters')
+      array(
+        $this,
+        'newsletters'
+      )
     );
     add_submenu_page(
       'mailpoet',
@@ -52,7 +61,10 @@ class Menu {
       __('Forms'),
       'manage_options',
       'mailpoet-forms',
-      array($this, 'forms')
+      array(
+        $this,
+        'forms'
+      )
     );
     add_submenu_page(
       'mailpoet',
@@ -60,7 +72,10 @@ class Menu {
       __('Subscribers'),
       'manage_options',
       'mailpoet-subscribers',
-      array($this, 'subscribers')
+      array(
+        $this,
+        'subscribers'
+      )
     );
     add_submenu_page(
       'mailpoet',
@@ -68,7 +83,10 @@ class Menu {
       __('Segments'),
       'manage_options',
       'mailpoet-segments',
-      array($this, 'segments')
+      array(
+        $this,
+        'segments'
+      )
     );
     add_submenu_page(
       'mailpoet',
@@ -76,7 +94,10 @@ class Menu {
       __('Settings'),
       'manage_options',
       'mailpoet-settings',
-      array($this, 'settings')
+      array(
+        $this,
+        'settings'
+      )
     );
     add_submenu_page(
       null,
@@ -84,7 +105,10 @@ class Menu {
       __('Import'),
       'manage_options',
       'mailpoet-import',
-      array($this, 'import')
+      array(
+        $this,
+        'import'
+      )
     );
     add_submenu_page(
       null,
@@ -92,7 +116,10 @@ class Menu {
       __('Export'),
       'manage_options',
       'mailpoet-export',
-      array($this, 'export')
+      array(
+        $this,
+        'export'
+      )
     );
 
     add_submenu_page(
@@ -101,7 +128,10 @@ class Menu {
       __('Welcome'),
       'manage_options',
       'mailpoet-welcome',
-      array($this, 'welcome')
+      array(
+        $this,
+        'welcome'
+      )
     );
 
     add_submenu_page(
@@ -110,7 +140,10 @@ class Menu {
       __('Update'),
       'manage_options',
       'mailpoet-update',
-      array($this, 'update')
+      array(
+        $this,
+        'update'
+      )
     );
 
     add_submenu_page(
@@ -119,7 +152,10 @@ class Menu {
       __('Form editor'),
       'manage_options',
       'mailpoet-form-editor',
-      array($this, 'formEditor')
+      array(
+        $this,
+        'formEditor'
+      )
     );
 
     add_submenu_page(
@@ -128,7 +164,22 @@ class Menu {
       __('Newsletter editor'),
       'manage_options',
       'mailpoet-newsletter-editor',
-      array($this, 'newletterEditor')
+      array(
+        $this,
+        'newletterEditor'
+      )
+    );
+
+    add_submenu_page(
+      'mailpoet',
+      __('Queue'),
+      __('Queue'),
+      'manage_options',
+      'mailpoet-queue',
+      array(
+        $this,
+        'queue'
+      )
     );
   }
 
@@ -142,8 +193,8 @@ class Menu {
     $current_url = home_url(add_query_arg($wp->query_string, $wp->request));
     $redirect_url =
       (!empty($_GET['mailpoet_redirect']))
-      ? urldecode($_GET['mailpoet_redirect'])
-      : wp_get_referer();
+        ? urldecode($_GET['mailpoet_redirect'])
+        : wp_get_referer();
 
     if(
       $redirect_url === $current_url
@@ -166,8 +217,8 @@ class Menu {
     $current_url = home_url(add_query_arg($wp->query_string, $wp->request));
     $redirect_url =
       (!empty($_GET['mailpoet_redirect']))
-      ? urldecode($_GET['mailpoet_redirect'])
-      : wp_get_referer();
+        ? urldecode($_GET['mailpoet_redirect'])
+        : wp_get_referer();
 
     if(
       $redirect_url === $current_url
@@ -206,7 +257,8 @@ class Menu {
 
     $data = array(
       'settings' => $settings,
-      'segments' => Segment::getPublic()->findArray(),
+      'segments' => Segment::getPublished()
+        ->findArray(),
       'pages' => Pages::getAll(),
       'flags' => $this->_getFlags(),
       'charsets' => Charsets::getAll(),
@@ -234,11 +286,14 @@ class Menu {
 
       // check if users can register
       $flags['registration_enabled'] =
-        !(in_array($registration, array('none', 'blog')));
+        !(in_array($registration, array(
+          'none',
+          'blog'
+        )));
     } else {
       // check if users can register
       $flags['registration_enabled'] =
-        (bool)get_option('users_can_register', false);
+        (bool) get_option('users_can_register', false);
     }
 
     return $flags;
@@ -272,7 +327,7 @@ class Menu {
     $data['segments'] = Segment::findArray();
     $settings = Setting::findArray();
     $data['settings'] = array();
-    foreach($settings as $setting) {
+    foreach ($settings as $setting) {
       $data['settings'][$setting['name']] = $setting['value'];
     }
     $data['roles'] = $wp_roles->get_names();
@@ -300,7 +355,7 @@ class Menu {
   }
 
   function formEditor() {
-    $id = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
+    $id = (isset($_GET['id']) ? (int) $_GET['id'] : 0);
     $form = Form::findOne($id);
     if($form !== false) {
       $form = $form->asArray();
@@ -309,12 +364,19 @@ class Menu {
     $data = array(
       'form' => $form,
       'pages' => Pages::getAll(),
-      'segments' => Segment::getPublic()->findArray(),
+      'segments' => Segment::getPublished()
+        ->findArray(),
       'styles' => FormRenderer::getStyles($form),
       'date_types' => Block\Date::getDateTypes(),
       'date_formats' => Block\Date::getDateFormats()
     );
 
     echo $this->renderer->render('form/editor.html', $data);
+  }
+
+  function queue() {
+    $daemon = new \MailPoet\Queue\BootStrapMenu();
+    $data['daemon'] = json_encode($daemon->bootstrap());
+    echo $this->renderer->render('queue.html', $data);
   }
 }
