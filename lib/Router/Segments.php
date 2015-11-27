@@ -2,7 +2,9 @@
 namespace MailPoet\Router;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\SubscriberSegment;
+use \MailPoet\Models\SegmentFilter;
 use \MailPoet\Listing;
+use \MailPoet\Segments\WP;
 
 if(!defined('ABSPATH')) exit;
 
@@ -42,15 +44,15 @@ class Segments {
           'subscribers'
         )
         ->select_expr(
-          'SUM(CASE status WHEN "subscribed" THEN 1 ELSE 0 END)',
+          'SUM(CASE subscribers.status WHEN "subscribed" THEN 1 ELSE 0 END)',
           'subscribed'
         )
         ->select_expr(
-          'SUM(CASE status WHEN "unsubscribed" THEN 1 ELSE 0 END)',
+          'SUM(CASE subscribers.status WHEN "unsubscribed" THEN 1 ELSE 0 END)',
           'unsubscribed'
         )
         ->select_expr(
-          'SUM(CASE status WHEN "unconfirmed" THEN 1 ELSE 0 END)',
+          'SUM(CASE subscribers.status WHEN "unconfirmed" THEN 1 ELSE 0 END)',
           'unconfirmed'
         )
         ->findOne()->asArray();
@@ -131,6 +133,12 @@ class Segments {
       );
       $result = $segment->duplicate($data)->asArray();
     }
+
+    wp_send_json($result);
+  }
+
+  function synchronize() {
+    $result = WP::synchronizeUsers();
 
     wp_send_json($result);
   }

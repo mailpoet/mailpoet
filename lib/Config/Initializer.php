@@ -25,6 +25,8 @@ class Initializer {
     $this->setupAnalytics();
     $this->setupPermissions();
     $this->setupChangelog();
+
+    $this->setupHooks();
   }
 
   function setupDB() {
@@ -41,6 +43,8 @@ class Initializer {
     $newsletters = Env::$db_prefix . 'newsletters';
     $newsletter_templates = Env::$db_prefix . 'newsletter_templates';
     $segments = Env::$db_prefix . 'segments';
+    $filters = Env::$db_prefix . 'filters';
+    $segment_filter = Env::$db_prefix . 'segment_filter';
     $forms = Env::$db_prefix . 'forms';
     $subscriber_segment = Env::$db_prefix . 'subscriber_segment';
     $newsletter_segment = Env::$db_prefix . 'newsletter_segment';
@@ -53,6 +57,8 @@ class Initializer {
     define('MP_SETTINGS_TABLE', $settings);
     define('MP_NEWSLETTERS_TABLE', $newsletters);
     define('MP_SEGMENTS_TABLE', $segments);
+    define('MP_FILTERS_TABLE', $filters);
+    define('MP_SEGMENT_FILTER_TABLE', $segment_filter);
     define('MP_FORMS_TABLE', $forms);
     define('MP_SUBSCRIBER_SEGMENT_TABLE', $subscriber_segment);
     define('MP_NEWSLETTER_TEMPLATES_TABLE', $newsletter_templates);
@@ -110,4 +116,10 @@ class Initializer {
     $changelog = new Changelog();
     $changelog->init();
   }
+
+  function setupHooks() {
+    $hooks = new Hooks();
+    $hooks->init();
+  }
 }
+

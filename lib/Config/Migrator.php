@@ -50,6 +50,7 @@ class Migrator {
   function subscribers() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'wp_user_id bigint(20) NULL,',
       'first_name tinytext NOT NULL,',
       'last_name tinytext NOT NULL,',
       'email varchar(150) NOT NULL,',
@@ -107,14 +108,15 @@ class Migrator {
 
   function segments() {
     $attributes = array(
-        'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-        'name varchar(90) NOT NULL,',
-        'description varchar(250) NOT NULL,',
-        'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-        'deleted_at TIMESTAMP NULL DEFAULT NULL,',
-        'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-        'PRIMARY KEY  (id),',
-        'UNIQUE KEY name (name)'
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'name varchar(90) NOT NULL,',
+      'type varchar(90) NOT NULL DEFAULT "default",',
+      'description varchar(250) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY name (name)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -124,6 +126,7 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'subscriber_id mediumint(9) NOT NULL,',
       'segment_id mediumint(9) NOT NULL,',
+      'status varchar(12) NOT NULL DEFAULT "subscribed",',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',

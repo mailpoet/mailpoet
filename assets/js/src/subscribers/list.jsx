@@ -103,7 +103,9 @@ const bulk_actions = [
         id: 'move_to_segment',
         endpoint: 'segments',
         filter: function(segment) {
-          return !!(!segment.deleted_at);
+          return !!(
+            !segment.deleted_at && segment.type === 'default'
+          );
         }
       };
 
@@ -132,7 +134,9 @@ const bulk_actions = [
         id: 'add_to_segment',
         endpoint: 'segments',
         filter: function(segment) {
-          return !!(!segment.deleted_at);
+          return !!(
+            !segment.deleted_at && segment.type === 'default'
+          );
         }
       };
 
@@ -159,7 +163,12 @@ const bulk_actions = [
     onSelect: function() {
       let field = {
         id: 'remove_from_segment',
-        endpoint: 'segments'
+        endpoint: 'segments',
+        filter: function(segment) {
+          return !!(
+            segment.type === 'default'
+          );
+        }
       };
 
       return (
@@ -203,6 +212,21 @@ const bulk_actions = [
     name: 'trash',
     label: 'Trash',
     onSuccess: messages.onTrash
+  }
+];
+
+const item_actions = [
+  {
+    name: 'edit',
+    label: 'Edit',
+    link: function(item) {
+      return (
+        <Link to={ `/edit/${item.id}` }>Edit</Link>
+      );
+    }
+  },
+  {
+    name: 'trash'
   }
 ];
 
@@ -295,6 +319,7 @@ const SubscriberList = React.createClass({
           onRenderItem={ this.renderItem }
           columns={ columns }
           bulk_actions={ bulk_actions }
+          item_actions={ item_actions }
           messages={ messages }
           onGetItems={ this.onGetItems }
         />

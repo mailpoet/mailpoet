@@ -324,7 +324,7 @@ class Subscriber extends Model {
       ->whereNull('deleted_at')
       ->where('status', 'unconfirmed');
   }
-  
+
   static function createMultiple($columns, $values) {
     return self::rawExecute(
       'INSERT INTO `' . self::$_table . '` ' .

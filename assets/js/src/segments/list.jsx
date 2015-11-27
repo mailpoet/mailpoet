@@ -121,6 +121,30 @@ const item_actions = [
         );
         refresh();
       });
+    },
+    display: function(segment) {
+      return (segment.type !== 'wp_users');
+    }
+  },
+  {
+    name: 'synchronize_segment',
+    label: 'Update',
+    className: 'update',
+    onClick: function(item, refresh) {
+      return MailPoet.Ajax.post({
+        endpoint: 'segments',
+        action: 'synchronize'
+      }).done(function(response) {
+        if(response === true) {
+          MailPoet.Notice.success(
+            ('List "%$1s" has been synchronized.').replace('%$1s', item.name)
+          );
+          refresh();
+        }
+      });
+    },
+    display: function(segment) {
+      return (segment.type === 'wp_users');
     }
   },
   {
@@ -130,15 +154,16 @@ const item_actions = [
         <a href={ item.subscribers_url }>View subscribers</a>
       );
     }
+  },
+  {
+    name: 'trash',
+    display: function(segment) {
+      return (segment.type !== 'wp_users');
+    }
   }
 ];
 
 const bulk_actions = [
-  {
-    name: 'trash',
-    label: 'Trash',
-    onSuccess: messages.onTrash
-  }
 ];
 
 const SegmentList = React.createClass({
@@ -148,7 +173,6 @@ const SegmentList = React.createClass({
       'column-primary',
       'has-row-actions'
     );
-
     return (
       <div>
         <td className={ rowClasses }>

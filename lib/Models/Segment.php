@@ -38,6 +38,15 @@ class Segment extends Model {
     );
   }
 
+  function segmentFilters() {
+    return $this->has_many_through(
+      __NAMESPACE__.'\Filter',
+      __NAMESPACE__.'\SegmentFilter',
+      'segment_id',
+      'filter_id'
+    );
+  }
+
   function duplicate($data = array()) {
     $duplicate = parent::duplicate($data);
 
@@ -65,6 +74,23 @@ class Segment extends Model {
     return SubscriberSegment::where('subscriber_id', $subscriber_id)
       ->where('segment_id', $this->id)
       ->delete();
+  }
+
+  static function getWPUsers() {
+    $segment = self::where('type', 'wp_users')->findOne();
+
+    if($segment === false) {
+      // create the wp users list
+      $segment = self::create();
+      $segment->hydrate(array(
+        'name' => __('WordPress Users'),
+        'type' => 'wp_users'
+      ));
+      $segment->save();
+      return self::findOne($segment->id());
+    }
+
+    return $segment;
   }
 
   static function search($orm, $search = '') {
@@ -108,6 +134,7 @@ class Segment extends Model {
       ->whereNull(MP_SUBSCRIBERS_TABLE.'.deleted_at')
       ->group_by(self::$_table.'.id')
       ->group_by(self::$_table.'.name')
+      ->where(self::$_table.'.type', 'default')
       ->findArray();
   }
 
@@ -152,5 +179,9 @@ class Segment extends Model {
 
     $segment->save();
     return $segment;
+  }
+
+  static function getPublic() {
+    return self::getPublished()->where('type', 'default');
   }
 }

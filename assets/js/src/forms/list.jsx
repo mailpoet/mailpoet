@@ -105,6 +105,9 @@ const item_actions = [
         refresh();
       });
     }
+  },
+  {
+    name: 'trash'
   }
 ];
 
