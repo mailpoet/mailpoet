@@ -129,7 +129,7 @@ class Initializer {
     $hooks->init();
   }
   
-   function setupPublicAPI() {
+  function setupPublicAPI() {
     $publicAPI = new PublicAPI();
     $publicAPI->init();
   }
@@ -138,8 +138,6 @@ class Initializer {
     try {
       $supervisor = new Supervisor();
       $supervisor->checkDaemon();
-    } catch (\Exception $e) {
-    }
-  }
+    } catch (\Exception $e) {}
   }
 }

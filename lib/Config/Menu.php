@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
