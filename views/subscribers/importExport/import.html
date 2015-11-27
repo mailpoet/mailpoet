@@ -1,5 +1,4 @@
 <% extends 'layout.html' %>
-
 <% block content %>
 <div id="mailpoet_subscribers_import" class="wrap">
   <h2 class="title">
@@ -7,11 +6,11 @@
     <a class="add-new-h2" href="?page=mailpoet-subscribers#/"><%= __('Back to list') %></a>
   </h2>
   <!-- STEP 1: method selection -->
-  <% include 'import/step1.html' %>
+  <% include 'subscribers/importExport/import/step1.html' %>
   <!-- STEP 2: subscriber data manipulation -->
-  <% include 'import/step2.html' %>
+  <% include 'subscribers/importExport/import/step2.html' %>
   <!-- STEP 3: results -->
-  <% include 'import/step3.html' %>
+  <% include 'subscribers/importExport/import/step3.html' %>
 </div>
 
 <%= stylesheet('importExport.css') %>
@@ -64,6 +63,7 @@
 <script type="text/javascript">
   var
     maxPostSize = '<%= maxPostSize %>',
+    maxPostSizeBytes = '<%= maxPostSizeBytes %>',
     importData = {},
     mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
     mailpoetColumns = <%= subscriberFields|raw %>,

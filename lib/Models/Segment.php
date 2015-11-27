@@ -102,6 +102,10 @@ class Segment extends Model {
       ->left_outer_join(
         MP_SUBSCRIBER_SEGMENT_TABLE,
         array(self::$_table.'.id', '=', MP_SUBSCRIBER_SEGMENT_TABLE.'.segment_id'))
+      ->left_outer_join(
+        MP_SUBSCRIBERS_TABLE,
+        array(MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id', '=', MP_SUBSCRIBERS_TABLE.'.id'))
+      ->whereNull(MP_SUBSCRIBERS_TABLE.'.deleted_at')
       ->group_by(self::$_table.'.id')
       ->group_by(self::$_table.'.name')
       ->findArray();
@@ -114,16 +118,18 @@ class Segment extends Model {
       'LEFT JOIN ' . self::$_table . ' segments ON segments.id = relation.segment_id ' .
       'LEFT JOIN ' . MP_SUBSCRIBERS_TABLE . ' subscribers ON subscribers.id = relation.subscriber_id ' .
       (($withConfirmedSubscribers) ?
-        'WHERE subscribers.status = 1 ' :
+        'WHERE subscribers.status = "subscribed" ' :
         'WHERE relation.segment_id IS NOT NULL ') .
+      'AND subscribers.deleted_at IS NULL ' .
       'GROUP BY segments.id) ' .
       'UNION ALL ' .
       '(SELECT 0 as id, "' . __('Not In List') . '" as name, COUNT(*) as subscribers ' .
       'FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers ' .
       'LEFT JOIN ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation on relation.subscriber_id = subscribers.id ' .
       (($withConfirmedSubscribers) ?
-        'WHERE relation.subscriber_id is NULL AND subscribers.status = 1 ' :
+        'WHERE relation.subscriber_id is NULL AND subscribers.status = "subscribed" ' :
         'WHERE relation.subscriber_id is NULL ') .
+      'AND subscribers.deleted_at IS NULL ' .
       'HAVING subscribers) ' .
       'ORDER BY name'
     )->findArray();

@@ -9,7 +9,6 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\XLSXWriter;
-use Symfony\Component\Console\Helper\Helper;
 
 class Export {
   public function __construct($data) {
@@ -93,7 +92,12 @@ class Export {
           );
           $lastSegment = $subscriber['segment_name'];
         }
-        $writer->writeSheet(array_merge($headerRow, $rows), 'MailPoet');
+        $writer->writeSheet(
+          array_merge($headerRow, $rows),
+          ($this->groupBySegmentOption) ?
+            ucwords($subscriber['segment_name']) :
+            'MailPoet'
+        );
         $writer->writeToFile($this->exportFile);
       }
     } catch (Exception $e) {
@@ -155,6 +159,8 @@ class Export {
       $subscribers =
         $subscribers->where(Subscriber::$_table . '.status', 'subscribed');
     }
+    $subscribers = $subscribers->whereNull(Subscriber::$_table . '.deleted_at');
+
     return $subscribers->findArray();
   }
 

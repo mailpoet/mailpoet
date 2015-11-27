@@ -105,28 +105,39 @@ class ImportCest {
     expect($fields)->equals(array(39));
   }
 
-  function itCanFilterSubscriberState() {
-    $data = array(
+  function itCanFilterSubscriberStatus() {
+    $subscibersData = $this->subscribersData;
+    $subscriberFields = $this->subscriberFields;
+    list($subscibersData, $subsciberFields) =
+      $this->import->filterSubscriberStatus($subscibersData, $subscriberFields);
+    // subscribers' status was set to "subscribed" & status column was added
+    // to subscribers fields
+    expect(array_pop($subsciberFields))->equals('status');
+    expect($subscibersData['status'][0])->equals('subscribed');
+    expect(count($subscibersData['status']))->equals(2);
+    $subscriberFields[] = 'status';
+    $subscibersData = array(
       'status' => array(
-        //subscribed
+        #subscribed
         'subscribed',
         'confirmed',
         1,
         '1',
         'true',
-        //unconfirmed
+        #unconfirmed
         'unconfirmed',
         0,
         "0",
-        //unsubscribed
+        #unsubscribed
         'unsubscribed',
         -1,
         '-1',
         'false'
       ),
     );
-    $statuses = $this->import->filterSubscriberStatus($data);
-    expect($statuses)->equals(
+    list($subscibersData, $subsciberFields) =
+      $this->import->filterSubscriberStatus($subscibersData, $subscriberFields);
+    expect($subscibersData)->equals(
       array(
         'status' => array(
           'subscribed',
@@ -168,6 +179,41 @@ class ImportCest {
     $subscribers = Subscriber::findArray();
     expect($subscribers[1]['first_name'])
       ->equals($subscribersData['first_name'][1]);
+  }
+
+  function itCanDeleteTrashedSubscribers() {
+    $subscribersData = $this->subscribersData;
+    $subscriberFields = $this->subscriberFields;
+    $subscribersData['deleted_at'] = array(
+        null,
+        date('Y-m-d H:i:s')
+    );
+    $subscriberFields[] = 'deleted_at';
+    $this->import->createOrUpdateSubscribers(
+      'create',
+      $subscribersData,
+      $subscriberFields,
+      false
+    );
+    $dbSubscribers = Helpers::arrayColumn(
+      Subscriber::select('id')
+        ->findArray(),
+      'id'
+    );
+    expect(count($dbSubscribers))->equals(2);
+    $this->import->addSubscribersToSegments(
+      $dbSubscribers,
+      $this->segments
+    );
+    $subscribersSegments = SubscriberSegment::findArray();
+    expect(count($subscribersSegments))->equals(4);
+    $this->import->deleteExistingTrashedSubscribers(
+      $subscribersData
+    );
+    $subscribersSegments = SubscriberSegment::findArray();
+    $dbSubscribers = Subscriber::findArray();
+    expect(count($subscribersSegments))->equals(2);
+    expect(count($dbSubscribers))->equals(1);
   }
 
   function itCanCreateOrUpdateCustomFields() {
@@ -231,6 +277,22 @@ class ImportCest {
     expect(count($subscribersSegments))->equals(4);
   }
 
+  function itCanDeleteExistingTrashedSubscribers() {
+    $subscribersData = $this->subscribersData;
+    $subscriberFields = $this->subscriberFields;
+    $subscriberFields[] = 'deleted_at';
+    $subscribersData['deleted_at'] = array(
+      null,
+      date('Y-m-d H:i:s')
+    );
+    $this->import->createOrUpdateSubscribers(
+      'create',
+      $subscribersData,
+      $subscriberFields,
+      false
+    );
+  }
+
   function itCanProcess() {
     $import = clone($this->import);
     $result = $import->process();
@@ -253,11 +315,8 @@ class ImportCest {
   }
 
   function _after() {
-    ORM::forTable(Subscriber::$_table)
-      ->deleteMany();
-    ORM::forTable(SubscriberCustomField::$_table)
-      ->deleteMany();
-    ORM::forTable(SubscriberSegment::$_table)
-      ->deleteMany();
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
   }
 }

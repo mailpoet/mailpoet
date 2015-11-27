@@ -100,8 +100,8 @@ config.push(_.extend({}, baseConfig, {
       'segments/segments.jsx',
       'forms/forms.jsx',
       'settings/tabs.js',
-      'import/import.js',
-      'export/export.js',
+      'subscribers/importExport/import.js',
+      'subscribers/importExport/export.js',
       'helpscout'
     ],
     form_editor: [

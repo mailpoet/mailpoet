@@ -249,7 +249,7 @@ class Menu {
 
     $data['segments'] = Segment::findArray();
 
-    echo $this->renderer->render('subscribers.html', $data);
+    echo $this->renderer->render('subscribers/subscribers.html', $data);
   }
 
   function segments() {
@@ -290,13 +290,13 @@ class Menu {
   function import() {
     $import = new BootStrapMenu('import');
     $data = $import->bootstrap();
-    echo $this->renderer->render('import.html', $data);
+    echo $this->renderer->render('subscribers/importExport/import.html', $data);
   }
 
   function export() {
     $export = new BootStrapMenu('export');
     $data = $export->bootstrap();
-    echo $this->renderer->render('export.html', $data);
+    echo $this->renderer->render('subscribers/importExport/export.html', $data);
   }
 
   function formEditor() {
