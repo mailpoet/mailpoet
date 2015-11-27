@@ -131,10 +131,12 @@ const item_actions = [
     label: 'Update',
     className: 'update',
     onClick: function(item, refresh) {
-      return MailPoet.Ajax.post({
+      MailPoet.Modal.loading(true);
+      MailPoet.Ajax.post({
         endpoint: 'segments',
         action: 'synchronize'
       }).done(function(response) {
+        MailPoet.Modal.loading(false);
         if(response === true) {
           MailPoet.Notice.success(
             ('List "%$1s" has been synchronized.').replace('%$1s', item.name)
