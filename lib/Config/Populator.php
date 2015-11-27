@@ -54,7 +54,8 @@ class Populator {
       $wp_users_segment = Segment::create();
       $wp_users_segment->hydrate(array(
         'name' => __('WordPress Users'),
-        'description' => __('TODO: Description of the WordPress Users list'),
+        'description' =>
+          __('The list containing all of your WordPress users.'),
         'type' => 'wp_users'
       ));
       $wp_users_segment->save();
@@ -68,7 +69,8 @@ class Populator {
       $default_segment = Segment::create();
       $default_segment->hydrate(array(
         'name' => __('My First List'),
-        'description' => __('TODO: Description of the default list')
+        'description' =>
+          __('The list created automatically on install of MailPoet')
       ));
       $default_segment->save();
     }
