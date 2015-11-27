@@ -1,10 +1,10 @@
 <?php
 
-use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 
 class BootStrapMenuCest {
   function _before() {
@@ -22,13 +22,13 @@ class BootStrapMenuCest {
       array(
         'first_name' => 'John',
         'last_name' => 'Mailer',
-        'status' => 0,
+        'status' => 'unconfirmed',
         'email' => 'john@mailpoet.com'
       ),
       array(
         'first_name' => 'Mike',
         'last_name' => 'Smith',
-        'status' => 1,
+        'status' => 'subscribed',
         'email' => 'mike@maipoet.com'
       )
     );
@@ -50,6 +50,28 @@ class BootStrapMenuCest {
     expect($segments[0]['name'])->equals($this->segmentsData[0]['name']);
     expect($segments[0]['subscriberCount'])->equals(1);
     expect($segments[1]['subscriberCount'])->equals(1);
+  }
+
+  function itCanGetSegmentsForImportWithoutTrashedSubscribers() {
+    $this->_createSegmentsAndSubscribers();
+    $segments = $this->bootStrapImportMenu->getSegments();
+    expect(count($segments))->equals(2);
+    $subscriber = Subscriber::findOne(1);
+    $subscriber->deleted_at = date('Y-m-d H:i:s');
+    $subscriber->save();
+    $segments = $this->bootStrapImportMenu->getSegments();
+    expect(count($segments))->equals(1);
+  }
+
+  function itCanGetSegmentsForExportWithoutTrashedSubscribers() {
+    $this->_createSegmentsAndSubscribers();
+    $segments = $this->bootStrapExportMenu->getSegments();
+    expect(count($segments))->equals(2);
+    $subscriber = Subscriber::findOne(1);
+    $subscriber->deleted_at = date('Y-m-d H:i:s');
+    $subscriber->save();
+    $segments = $this->bootStrapExportMenu->getSegments();
+    expect(count($segments))->equals(1);
   }
 
   function itCanGetSegmentsForExport() {
@@ -270,13 +292,9 @@ class BootStrapMenuCest {
   }
 
   function _after() {
-    ORM::forTable(Subscriber::$_table)
-      ->deleteMany();
-    ORM::forTable(CustomField::$_table)
-      ->deleteMany();
-    ORM::forTable(Segment::$_table)
-      ->deleteMany();
-    ORM::forTable(SubscriberSegment::$_table)
-      ->deleteMany();
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
   }
 }

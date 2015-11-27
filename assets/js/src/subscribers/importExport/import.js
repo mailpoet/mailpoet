@@ -20,6 +20,7 @@ define(
      return;
    }
    jQuery(document).ready(function () {
+     jQuery('input[name="select_method"]').attr('checked', false);
      // configure router
      router = new (Backbone.Router.extend({
        routes: {
@@ -299,11 +300,11 @@ define(
             var test,
              cleanEmail =
               email
-                // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
-                // right trim non-printable characters (e.g., "email@email.com�")
+              // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
+              // right trim non-printable characters (e.g., "email@email.com�")
                .replace(/^["';.,\s]+|[^\x20-\x7E]+$|["';.,_\s]+$/g, '')
-                // remove spaces (e.g., "email @ email . com")
-                // remove urlencoded characters
+               // remove spaces (e.g., "email @ email . com")
+               // remove urlencoded characters
                .replace(/\s+|%\d+|,+/g, '')
                .toLowerCase();
 
@@ -1000,7 +1001,6 @@ define(
        }
 
        function toggleNextStepButton(condition) {
-         console.log(condition);
          var disabled = 'button-disabled';
          if (condition === 'on') {
            nextStepButton.removeClass(disabled);

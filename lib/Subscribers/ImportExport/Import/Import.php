@@ -1,10 +1,10 @@
 <?php
 namespace MailPoet\Subscribers\ImportExport\Import;
 
-use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Util\Helpers;
 
 class Import {
@@ -27,7 +27,9 @@ class Import {
     $subscriberFields = $this->subscriberFields;
     $subscriberCustomFields = $this->subscriberCustomFields;
     $subscribersData = $this->subscribersData;
-    $subscribersData = $this->filterSubscriberStatus($subscribersData);
+    list ($subscribersData, $subscriberFields) =
+      $this->filterSubscriberStatus($subscribersData, $subscriberFields);
+    $this->deleteExistingTrashedSubscribers($subscribersData);
     list($subscribersData, $subscriberFields) = $this->extendSubscribersAndFields(
       $subscribersData, $subscriberFields
     );
@@ -48,7 +50,7 @@ class Import {
         $updatedSubscribers =
           $this->createOrUpdateSubscribers(
             'update',
-           $existingSubscribers,
+            $existingSubscribers,
             $subscriberFields,
             $subscriberCustomFields
           );
@@ -84,6 +86,7 @@ class Import {
       array_map(function ($subscriberEmails) {
         return Subscriber::selectMany(array('email'))
           ->whereIn('email', $subscriberEmails)
+          ->whereNull('deleted_at')
           ->findArray();
       }, array_chunk($subscribersData['email'], 200))
     );
@@ -131,6 +134,25 @@ class Import {
     );
   }
 
+  function deleteExistingTrashedSubscribers($subscribersData) {
+    $existingTrashedRecords = array_filter(
+      array_map(function ($subscriberEmails) {
+        return Subscriber::selectMany(array('id'))
+          ->whereIn('email', $subscriberEmails)
+          ->whereNotNull('deleted_at')
+          ->findArray();
+      }, array_chunk($subscribersData['email'], 200))
+    );
+    if(!$existingTrashedRecords) return;
+    $existingTrashedRecords = Helpers::flattenArray($existingTrashedRecords);
+    foreach (array_chunk($existingTrashedRecords, 200) as $subscriberIds) {
+      Subscriber::whereIn('id', $subscriberIds)
+        ->deleteMany();
+      SubscriberSegment::whereIn('subscriber_id', $subscriberIds)
+        ->deleteMany();
+    }
+  }
+
   function extendSubscribersAndFields($subscribersData, $subscriberFields) {
     $subscribersData['created_at'] = $this->filterSubscriberCreatedAtDate();
     $subscriberFields[] = 'created_at';
@@ -164,8 +186,16 @@ class Import {
     return array_fill(0, $this->subscribersCount, $this->currentTime);
   }
 
-  function filterSubscriberStatus($subscribersData) {
-    if(!in_array('status', $this->subscriberFields)) return $subscribersData;
+  function filterSubscriberStatus($subscribersData, $subscriberFields) {
+    if(!in_array('status', $subscriberFields)) {
+      $subscribersData['status'] =
+        array_fill(0, count($subscribersData['email']), 'subscribed');
+      $subscriberFields[] = 'status';
+      return array(
+        $subscribersData,
+        $subscriberFields
+      );
+    }
     $statuses = array(
       'subscribed' => array(
         'subscribed',
@@ -198,7 +228,10 @@ class Import {
       }
       return 'subscribed'; // make "subscribed" a default status
     }, $subscribersData['status']);
-    return $subscribersData;
+    return array(
+      $subscribersData,
+      $subscriberFields
+    );
   }
 
   function createOrUpdateSubscribers(
