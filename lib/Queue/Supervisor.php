@@ -33,7 +33,7 @@ class Supervisor {
         $this->daemon->updated_at, 'UTC'
       );
       $timeSinceLastStart = $currentTime->diffInSeconds($lastUpdateTime);
-      if($timeSinceLastStart < 5) return;
+      if($timeSinceLastStart < 50) return;
       $this->daemonData['status'] = 'paused';
       $this->daemon->value = json_encode($this->daemonData);
       $this->daemon->save();

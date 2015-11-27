@@ -14,12 +14,13 @@ class Worker {
   }
   
   function process() {
-    $queues = Queue::orderByDesc('priority')
-      ->whereNotIn('status', array(
-        'paused',
-        'completed'
-      ))
-      ->findResultSet();
+    $queues =
+      Queue::orderByDesc('priority')
+        ->whereNotIn('status', array(
+          'paused',
+          'completed'
+        ))
+        ->findResultSet();
     foreach ($queues as $queue) {
       $newsletter = Newsletter::findOne($queue->newsletter_id)
         ->asArray();
