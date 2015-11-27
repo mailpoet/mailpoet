@@ -5,7 +5,8 @@
   },
   "napa": {
     "blob": "eligrey/Blob.js.git",
-    "filesaver": "eligrey/FileSaver.js.git"
+    "filesaver": "eligrey/FileSaver.js.git",
+    "sticky-kit": "leafo/sticky-kit.git"
   },
   "dependencies": {
     "backbone": "1.2.3",
