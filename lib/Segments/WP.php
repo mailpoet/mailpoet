@@ -6,7 +6,9 @@ use \MailPoet\Models\Segment;
 class WP {
   static function synchronizeUser($wp_user_id) {
     $wpUser = \get_userdata($wp_user_id);
-    if($wpUser === false) return;
+    $segment = Segment::getWPUsers();
+
+    if($wpUser === false or $segment === false) return;
 
     $subscriber = Subscriber::where('wp_user_id', $wpUser->ID)
       ->findOne();
@@ -46,8 +48,9 @@ class WP {
         $subscriber = Subscriber::createOrUpdate($data);
 
         if($subscriber !== false && $subscriber->id()) {
-          $segment = Segment::getWPUsers();
-          $segment->addSubscriber($subscriber->id());
+          if($segment !== false) {
+            $segment->addSubscriber($subscriber->id());
+          }
         }
       break;
     }
