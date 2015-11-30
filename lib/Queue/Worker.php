@@ -16,19 +16,23 @@ class Worker {
   function process() {
     $queues =
       Queue::orderByDesc('priority')
+        ->whereNull('deleted_at')
         ->whereNotIn('status', array(
           'paused',
           'completed'
         ))
         ->findResultSet();
-    foreach ($queues as $queue) {
-      $newsletter = Newsletter::findOne($queue->newsletter_id)
-        ->asArray();
+    foreach($queues as $queue) {
+      $newsletter = Newsletter::findOne($queue->newsletter_id);
+      if(!$newsletter) {
+        continue;
+      };
+      $newsletter = $newsletter->asArray();
       $subscribers = json_decode($queue->subscribers, true);
       if(!isset($subscribers['failed'])) $subscribers['failed'] = array();
       if(!isset($subscribers['processed'])) $subscribers['processed'] = array();
       $subscribersToProcess = $subscribers['to_process'];
-      foreach ($subscribersToProcess as $subscriber) {
+      foreach($subscribersToProcess as $subscriber) {
         $elapsedTime = microtime(true) - $this->timer;
         if($elapsedTime >= 28) break;
         // TODO: hook up to mailer
