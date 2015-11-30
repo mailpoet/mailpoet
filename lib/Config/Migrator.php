@@ -99,8 +99,9 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(250) NOT NULL,',
       'description varchar(250) NOT NULL,',
-      'body longtext,',
-      'thumbnail longtext,',
+      'body LONGTEXT,',
+      'thumbnail LONGTEXT,',
+      'readonly TINYINT(1) DEFAULT 0',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)'
