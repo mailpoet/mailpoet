@@ -28,7 +28,10 @@ class Daemon {
     if(!$daemon) {
       $daemon = Setting::create();
       $daemon->name = 'daemon';
-      $daemon->value = json_encode(array('status' => 'stopped'));
+      $daemon->value = json_encode(
+        array(
+          'status' => 'stopped',
+        ));
       $daemon->save();
     }
     if($daemonData['status'] !== 'started') {
@@ -36,7 +39,7 @@ class Daemon {
       $daemonData = array(
         'status' => 'started',
         'token' => $this->refreshedToken,
-        'counter' => ($daemonData['status'] === 'paused') ?
+        'counter' => $daemonData['status'] === 'paused' ?
           $daemonData['counter'] :
           0
       );
@@ -67,7 +70,7 @@ class Daemon {
     $worker = new Worker();
     $worker->process();
     $elapsedTime = microtime(true) - $this->timer;
-    if ($elapsedTime < 30) {
+    if($elapsedTime < 30) {
       sleep(30 - $elapsedTime);
     }
 
@@ -90,11 +93,11 @@ class Daemon {
   }
 
   function refreshToken() {
-    return Security::generateRandomString(5);
+    return Security::generateRandomString();
   }
 
   function manageSession($action) {
-    switch ($action) {
+    switch($action) {
       case 'start':
         if(session_id()) {
           session_write_close();
