@@ -2,6 +2,8 @@
 namespace MailPoet\Config;
 
 use MailPoet\Config\PopulatorData\Templates\SampleTemplate;
+use \MailPoet\Models\Segment;
+use \MailPoet\Segments\WP;
 
 if (!defined('ABSPATH')) exit;
 
@@ -39,6 +41,39 @@ class Populator {
     };
 
     array_map(array($this, 'populate'), $this->models);
+
+    $this->createDefaultSegments();
+  }
+
+  private function createDefaultSegments() {
+    // WP Users segment
+    $wp_users_segment = Segment::getWPUsers();
+
+    if($wp_users_segment === false) {
+      // create the wp users list
+      $wp_users_segment = Segment::create();
+      $wp_users_segment->hydrate(array(
+        'name' => __('WordPress Users'),
+        'description' =>
+          __('The list containing all of your WordPress users.'),
+        'type' => 'wp_users'
+      ));
+      $wp_users_segment->save();
+    }
+
+    // Synchronize WP Users
+    WP::synchronizeUsers();
+
+    // Default segment
+    if(Segment::where('type', 'default')->count() === 0) {
+      $default_segment = Segment::create();
+      $default_segment->hydrate(array(
+        'name' => __('My First List'),
+        'description' =>
+          __('The list created automatically on install of MailPoet')
+      ));
+      $default_segment->save();
+    }
   }
 
   function newsletter_option_fields() {
