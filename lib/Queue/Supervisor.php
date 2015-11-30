@@ -17,11 +17,11 @@ class Supervisor {
   }
 
   function checkDaemon() {
-    if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])) return;
     if(!$this->daemon) {
       return $this->startDaemon();
     } else {
-      if(!$this->forceStart && ($this->daemonData['status'] === 'paused' ||
+      if(!$this->forceStart && (
+          $this->daemonData['status'] === 'paused' ||
           $this->daemonData['status'] === 'stopped'
         )
       ) {
@@ -33,8 +33,13 @@ class Supervisor {
         $this->daemon->updated_at, 'UTC'
       );
       $timeSinceLastStart = $currentTime->diffInSeconds($lastUpdateTime);
-      if($timeSinceLastStart < 50) return;
-      $this->daemonData['status'] = 'paused';
+      if(!$this->forceStart && $timeSinceLastStart < 50) return;
+      if(
+        ($this->forceStart && $this->daemonData['status'] === 'paused') ||
+        !$this->forceStart
+      ) {
+        $this->daemonData['status'] = 'paused';
+      }
       $this->daemon->value = json_encode($this->daemonData);
       $this->daemon->save();
       return $this->startDaemon();
