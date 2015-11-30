@@ -1,7 +1,8 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Config\PopulatorData\Templates\SampleTemplate;
+use MailPoet\Config\PopulatorData\Templates\FranksRoastHouseTemplate;
+use MailPoet\Config\PopulatorData\Templates\BlankTemplate;
 use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
 
@@ -124,7 +125,8 @@ class Populator {
 
   private function newsletter_templates() {
     return array(
-      (new SampleTemplate(Env::$assets_url))->get(),
+      (new FranksRoastHouseTemplate(Env::$assets_url))->get(),
+      (new BlankTemplate(Env::$assets_url))->get(),
     );
   }
 
