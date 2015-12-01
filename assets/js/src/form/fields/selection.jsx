@@ -25,13 +25,10 @@ function(
         (this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)
       ) {
-        jQuery('#'+this.refs.select.id).select2(
-          'val',
-          this.props.item[this.props.field.name]
-        );
+        jQuery('#'+this.refs.select.id)
+          .val(this.props.item[this.props.field.name])
+          .trigger('change');
       }
-
-      this.setupSelect2();
     },
     setupSelect2: function() {
       if(
@@ -53,7 +50,19 @@ function(
         }
       });
 
+      var hasRemoved = false;
+      select2.on('select2:unselecting', function(e) {
+        hasRemoved = true;
+      });
+      select2.on('select2:opening', function(e) {
+        if(hasRemoved === true) {
+          hasRemoved = false;
+          e.preventDefault();
+        }
+      });
+
       select2.on('change', this.handleChange);
+
       select2.select2(
         'val',
         this.props.item[this.props.field.name]
@@ -77,7 +86,7 @@ function(
     handleChange: function(e) {
       if(this.props.onValueChange !== undefined) {
         if(this.props.field.multiple) {
-          value = jQuery('#'+this.refs.select.id).select2('val');
+          value = jQuery('#'+this.refs.select.id).val();
         } else {
           value = e.target.value;
         }
@@ -88,7 +97,6 @@ function(
           }
         });
       }
-      return true;
     },
     render: function() {
       var options = this.state.items.map(function(item, index) {
@@ -114,7 +122,6 @@ function(
           ref="select"
           placeholder={ this.props.field.placeholder }
           multiple={ this.props.field.multiple }
-          onChange={ this.handleChange }
           defaultValue={ default_value }
         >{ options }</select>
       );
