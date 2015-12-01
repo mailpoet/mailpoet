@@ -80,8 +80,11 @@ define(
     ];
 
     var messages = {
-      updated: function() {
-        MailPoet.Notice.success('The newsletter has been updated!');
+      onUpdate: function() {
+        MailPoet.Notice.success('Newsletter successfully updated!');
+      },
+      onCreate: function() {
+        MailPoet.Notice.success('Newsletter successfully added!');
       }
     };
 
