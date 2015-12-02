@@ -26,3 +26,25 @@ textarea.regular-text
 @media screen and (max-width: 782px)
   .select2-container
     width: 100% !important
+
+// progress bars
+progress-border-radius = 5px
+progress-background = #efefef
+progress-foreground = #69b1e9
+
+progress
+  background-color: progress-background;
+  height: 2em
+  border: 0
+  width: 100%
+
+progress::-webkit-progress-bar
+  background-color: progress-background;
+
+progress::-webkit-progress-value
+  background-color: progress-foreground
+  border-radius: progress-border-radius
+
+progress::-moz-progress-bar
+  background-color: progress-foreground
+  border-radius: progress-border-radius

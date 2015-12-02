@@ -22,6 +22,10 @@ define(
         sortable: true
       },
       {
+        name: 'status',
+        label: 'Status'
+      },
+      {
         name: 'segments',
         label: 'Lists'
       },
@@ -119,8 +123,28 @@ define(
     ];
 
     var NewsletterList = React.createClass({
-      renderItem: function(newsletter, actions) {
+      renderStatus: function(item) {
+        if(item.queue === null) {
+          return (
+            <span>Not sent yet.</span>
+          );
+        } else {
+          // calculate percentage done
+          var percentage = Math.round(
+            (item.queue.count_processed * 100) / (item.queue.count_total)
+          );
 
+          return (
+            <div>
+              <div className="mailpoet_progress blue">
+                  <span style={ { width: percentage + "%"} }></span>
+              </div>
+              { item.queue.count_processed } / { item.queue.count_total }
+            </div>
+          );
+        }
+      },
+      renderItem: function(newsletter, actions) {
         var rowClasses = classNames(
           'manage-column',
           'column-primary',
@@ -140,6 +164,9 @@ define(
                 <a>{ newsletter.subject }</a>
               </strong>
               { actions }
+            </td>
+            <td className="column" data-colname="Lists">
+              { this.renderStatus(newsletter) }
             </td>
             <td className="column" data-colname="Lists">
               { segments }

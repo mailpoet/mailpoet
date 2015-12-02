@@ -3,6 +3,8 @@ namespace MailPoet\Router;
 
 use MailPoet\Queue\Daemon;
 use MailPoet\Queue\Supervisor;
+use MailPoet\Models\Queue as SendingQueue;
+use MailPoet\Models\Segment;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -48,14 +50,27 @@ class Queue {
   }
 
   function addQueue($data) {
-    $queue = \MailPoet\Models\Queue::create();
+    $queue = SendingQueue::create();
+
     $queue->newsletter_id = $data['newsletter_id'];
+
+    $subscriber_ids = array();
+    $segments = Segment::whereIn('id', $data['segments'])->findMany();
+    foreach($segments as $segment) {
+      $subscriber_ids = array_merge($subscriber_ids, Helpers::arrayColumn(
+        $segment->subscribers()->findArray(),
+        'id'
+      ));
+    }
+
+    $subscriber_ids = array_unique($subscriber_ids);
     $queue->subscribers = json_encode(
       array(
-        'to_process' => $data['subscribers']
+        'to_process' => $subscriber_ids
       )
     );
-    $queue->count_total = $queue->count_to_process = count($data['subscribers']);
+
+    $queue->count_total = $queue->count_to_process = count($subscriber_ids);
     $queue->save();
     wp_send_json(
       !$queue->save() ?
@@ -72,7 +87,7 @@ class Queue {
 
   function addQueues($data) {
     $result = array_map(function ($queueData) {
-      $queue = \MailPoet\Models\Queue::create();
+      $queue = SendingQueue::create();
       $queue->newsletter_id = $queueData['newsletter_id'];
       $queue->subscribers = json_encode(
         array(
@@ -102,7 +117,7 @@ class Queue {
   }
 
   function deleteQueue($data) {
-    $queue = \MailPoet\Models\Queue::whereNull('deleted_at')
+    $queue = SendingQueue::whereNull('deleted_at')
       ->findOne($data['queue_id']);
     if(!$queue) {
       wp_send_json(
@@ -118,7 +133,7 @@ class Queue {
   }
 
   function deleteQueues($data) {
-    $queues = \MailPoet\Models\Queue::whereNull('deleted_at')
+    $queues = SendingQueue::whereNull('deleted_at')
       ->whereIn('id', $data['queue_ids'])
       ->findResultSet();
     if(!$queues->count()) {
@@ -137,7 +152,7 @@ class Queue {
   }
 
   function getQueueStatus($data) {
-    $queue = \MailPoet\Models\Queue::whereNull('deleted_at')
+    $queue = SendingQueue::whereNull('deleted_at')
       ->findOne($data['queue_id'])
       ->asArray();
     wp_send_json(
@@ -154,7 +169,7 @@ class Queue {
   }
 
   function getQueuesStatus($data) {
-    $queues = \MailPoet\Models\Queue::whereNull('deleted_at')
+    $queues = SendingQueue::whereNull('deleted_at')
       ->whereIn('id', $data['queue_ids'])
       ->findArray();
     wp_send_json(

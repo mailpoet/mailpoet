@@ -61,19 +61,25 @@ class Widget {
   }
 
   function setupAdminDependencies() {
-    wp_enqueue_script('mailpoet_vendor',
-      Env::$assets_url.'/js/vendor.js',
-      array(),
-      Env::$version,
-      true
-    );
+    if(
+      empty($_GET['page'])
+      or
+      isset($_GET['page']) && strpos($_GET['page'], 'mailpoet') === false
+    ) {
+      wp_enqueue_script('mailpoet_vendor',
+        Env::$assets_url.'/js/vendor.js',
+        array(),
+        Env::$version,
+        true
+      );
 
-    wp_enqueue_script('mailpoet_admin',
-      Env::$assets_url.'/js/mailpoet.js',
-      array(),
-      Env::$version,
-      true
-    );
+      wp_enqueue_script('mailpoet_admin',
+        Env::$assets_url.'/js/mailpoet.js',
+        array(),
+        Env::$version,
+        true
+      );
+    }
   }
 
   function setupActions() {
