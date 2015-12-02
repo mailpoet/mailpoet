@@ -94,16 +94,15 @@ define(
       ],
       handleSend: function() {
         MailPoet.Ajax.post({
-          endpoint: 'newsletters',
-          action: 'send',
+          endpoint: 'queue',
+          action: 'addQueue',
           data: {
-            id: this.props.params.id,
-            newsletter: jQuery('#mailpoet_newsletter').serializeObject(),
+            newsletter_id: this.props.params.id,
             segments: jQuery('#mailpoet_segments').val()
           }
         }).done(function(response) {
           if(response === true) {
-            this.history.pushState(null, '/');
+            //this.history.pushState(null, '/');
 
             MailPoet.Notice.success(
               'The newsletter has been sent!'
