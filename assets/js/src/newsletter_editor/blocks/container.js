@@ -75,7 +75,8 @@ define([
     getEmptyView: function() { return Module.ContainerBlockEmptyView; },
     emptyViewOptions: function() { return { renderOptions: this.renderOptions }; },
     modelEvents: {
-      'change': 'render'
+      'change': 'render',
+      'delete': 'deleteBlock',
     },
     events: {
       "mouseenter": "showTools",
@@ -136,6 +137,8 @@ define([
     },
     initialize: function(options) {
       this.renderOptions = _.defaults(options.renderOptions || {}, {});
+      this.on('dom:refresh', this.showBlock, this);
+      this._isFirstRender = true;
     },
     // Determines which view type should be used for a child
     getChildView: function(model) {
@@ -235,6 +238,36 @@ define([
         that.model.destroy();
         return newModel;
       };
+    },
+    showBlock: function() {
+      console.log('Show block', arguments, this);
+      if (this._isFirstRender) {
+        this.transitionIn();
+        this._isFirstRender = false;
+      }
+    },
+    deleteBlock: function() {
+      this.transitionOut().done(function() {
+        this.model.destroy();
+      }.bind(this));
+    },
+    transitionIn: function() {
+      return this._transition('mailpoet_block_transition_in');
+    },
+    transitionOut: function() {
+      return this._transition('mailpoet_block_transition_out');
+    },
+    _transition: function(className) {
+      var that = this,
+          promise = jQuery.Deferred();
+
+      this.$el.addClass(className);
+      this.$el.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd animationend', function() {
+        that.$el.removeClass('mailpoet_block_transition_out');
+        promise.resolve();
+        console.log('Transition fired', arguments, this);
+      });
+      return promise;
     },
   });
 

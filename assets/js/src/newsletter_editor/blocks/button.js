@@ -42,16 +42,12 @@ define([
   Module.ButtonBlockView = base.BlockView.extend({
     className: "mailpoet_block mailpoet_button_block mailpoet_droppable_block",
     getTemplate: function() { return templates.buttonBlock; },
-    modelEvents: {
-      'change': 'render',
-    },
     onDragSubstituteBy: function() { return Module.ButtonWidgetView; },
     initialize: function() {
       base.BlockView.prototype.initialize.apply(this, arguments);
-      var that = this;
 
       // Listen for attempts to change all dividers in one go
-      this._replaceButtonStylesHandler = function(data) { that.model.set(data); };
+      this._replaceButtonStylesHandler = function(data) { this.model.set(data); }.bind(this);
       App.getChannel().on('replaceAllButtonStyles', this._replaceButtonStylesHandler);
     },
     onRender: function() {

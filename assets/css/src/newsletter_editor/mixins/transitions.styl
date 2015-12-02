@@ -7,3 +7,45 @@ animation-slide-open-downwards()
     max-height: 0
     opacity: 0
     overflow-y: hidden
+
+animation-background-color()
+  transition: background 300ms cubic-bezier(0.420, 0.000, 0.580, 1.000) /* ease-in-out */
+
+animation-fade-in-and-scale-up()
+  animation-name: fadeInAndScaleUp
+  animation-duration: 500ms
+  animation-fill-mode: forwards
+
+animation-fade-out-and-scale-down()
+  animation-name: fadeOutAndScaleDown
+  animation-duration: 500ms
+  animation-fill-mode: forwards
+
+
+@keyframes fadeInAndScaleUp {
+  0% {
+    opacity: 0.3
+    max-height: 0
+    overflow: hidden
+  }
+
+  100% {
+    opacity: 1
+    max-height: 5000px
+    overflow: hidden
+  }
+}
+
+@keyframes fadeOutAndScaleDown {
+  0% {
+    opacity: 1
+    max-height: 5000px
+    overflow: hidden
+  }
+
+  100% {
+    opacity: 0.3
+    max-height: 0
+    overflow: hidden
+  }
+}
