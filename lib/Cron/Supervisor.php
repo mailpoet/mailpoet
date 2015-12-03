@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Queue;
+namespace MailPoet\Cron;
 
 use Carbon\Carbon;
 use MailPoet\Config\Env;
@@ -19,51 +19,41 @@ class Supervisor {
   function checkDaemon() {
     if(!$this->daemon) {
       return $this->startDaemon();
-    } else {
-      if(!$this->forceStart && (
-          $this->daemonData['status'] === 'paused' ||
-          $this->daemonData['status'] === 'stopped'
-        )
-      ) {
-        return;
-      }
-      $currentTime = Carbon::now('UTC');
-      $lastUpdateTime = Carbon::createFromFormat(
-        'Y-m-d H:i:s',
-        $this->daemon->updated_at, 'UTC'
-      );
-      $timeSinceLastStart = $currentTime->diffInSeconds($lastUpdateTime);
-      if(!$this->forceStart && $timeSinceLastStart < 50) return;
-      if(
-        ($this->forceStart && $this->daemonData['status'] === 'paused') ||
-        !$this->forceStart
-      ) {
-        $this->daemonData['status'] = 'paused';
-      }
-      $this->daemon->value = json_encode($this->daemonData);
-      $this->daemon->save();
-      return $this->startDaemon();
     }
+    if(!$this->forceStart && $this->daemonData['status'] === 'stopped') {
+      return;
+    }
+    $currentTime = Carbon::now('UTC');
+    $lastUpdateTime = Carbon::createFromFormat(
+      'Y-m-d H:i:s',
+      $this->daemon->updated_at, 'UTC'
+    );
+    $timeSinceLastStart = $currentTime->diffInSeconds($lastUpdateTime);
+    if($timeSinceLastStart < 40) return;
+    $this->daemonData['status'] = null;
+    $this->daemon->value = json_encode($this->daemonData);
+    $this->daemon->save();
+    return $this->startDaemon();
   }
 
   function startDaemon() {
     if(!session_id()) session_start();
     $sessionId = session_id();
     session_write_close();
-    $_SESSION['daemon'] = null;
+    $_SESSION['cron_daemon'] = null;
     $payload = json_encode(array('session' => $sessionId));
     self::getRemoteUrl(
       '/?mailpoet-api&section=queue&action=start&payload=' . urlencode($payload)
     );
     session_start();
-    $daemonStatus = $_SESSION['daemon'];
+    $daemonStatus = $_SESSION['cron_daemon'];
     unset($_SESSION['daemon']);
     session_write_close();
     return $daemonStatus;
   }
 
   function getDaemon() {
-    $daemon = Setting::where('name', 'daemon')
+    $daemon = Setting::where('name', 'cron_daemon')
       ->findOne();
     $daemonData = ($daemon) ? json_decode($daemon->value, true) : false;
     return array(

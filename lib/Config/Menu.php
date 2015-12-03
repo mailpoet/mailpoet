@@ -172,13 +172,13 @@ class Menu {
 
     add_submenu_page(
       'mailpoet',
-      __('Queue'),
-      __('Queue'),
+      __('Cron'),
+      __('Cron'),
       'manage_options',
-      'mailpoet-queue',
+      'mailpoet-cron',
       array(
         $this,
-        'queue'
+        'cron'
       )
     );
   }
@@ -374,9 +374,9 @@ class Menu {
     echo $this->renderer->render('form/editor.html', $data);
   }
 
-  function queue() {
-    $daemon = new \MailPoet\Queue\BootStrapMenu();
+  function cron() {
+    $daemon = new \MailPoet\Cron\BootStrapMenu();
     $data['daemon'] = json_encode($daemon->bootstrap());
-    echo $this->renderer->render('queue.html', $data);
+    echo $this->renderer->render('cron.html', $data);
   }
 }

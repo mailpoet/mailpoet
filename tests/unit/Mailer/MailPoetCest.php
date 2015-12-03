@@ -5,7 +5,7 @@ use MailPoet\Mailer\MailPoet;
 class MailPoetCest {
   function _before() {
     $this->settings = array(
-      'name' => 'MailPoet',
+      'method' => 'MailPoet',
       'api_key' => 'dhNSqj1XHkVltIliyQDvMiKzQShOA5rs0m_DdRUVZHU'
     );
     $this->fromEmail = 'staff@mailpoet.com';

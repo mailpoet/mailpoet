@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Queue;
+namespace MailPoet\Cron;
 
 use MailPoet\Models\Setting;
 use MailPoet\Util\Security;
@@ -27,29 +27,25 @@ class Daemon {
     $daemonData = $this->daemonData;
     if(!$daemon) {
       $daemon = Setting::create();
-      $daemon->name = 'daemon';
-      $daemon->value = json_encode(
-        array(
-          'status' => 'stopped',
-        ));
+      $daemon->name = 'cron_daemon';
+      $daemonData = array(
+        'status' => null,
+        'counter' => 0
+      );
+      $daemon->value = json_encode($daemonData);
       $daemon->save();
     }
     if($daemonData['status'] !== 'started') {
-      $_SESSION['daemon'] = 'started';
-      $daemonData = array(
-        'status' => 'started',
-        'token' => $this->refreshedToken,
-        'counter' => $daemonData['status'] === 'paused' ?
-          $daemonData['counter'] :
-          0
-      );
-      $_SESSION['daemon'] = array('result' => true);
+      $_SESSION['cron_daemon'] = 'started';
+      $daemonData['status'] = 'started';
+      $daemonData['token'] = $this->refreshedToken;
+      $_SESSION['cron_daemon'] = array('result' => true);
       $this->manageSession('end');
       $daemon->value = json_encode($daemonData);
       $daemon->save();
       $this->callSelf();
     } else {
-      $_SESSION['daemon'] = array(
+      $_SESSION['cron_daemon'] = array(
         'result' => false,
         'error' => 'already started'
       );
@@ -67,7 +63,7 @@ class Daemon {
       $this->abortWithError('invalid token');
     }
     
-    $worker = new Worker();
+    $worker = new Worker($this->timer);
     $worker->process();
     $elapsedTime = microtime(true) - $this->timer;
     if($elapsedTime < 30) {
@@ -84,7 +80,7 @@ class Daemon {
   }
 
   function getDaemon() {
-    $daemon = Setting::where('name', 'daemon')
+    $daemon = Setting::where('name', 'cron_daemon')
       ->findOne();
     return array(
       ($daemon) ? $daemon : null,
