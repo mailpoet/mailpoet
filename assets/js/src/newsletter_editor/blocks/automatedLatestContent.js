@@ -226,11 +226,11 @@ define([
     toggleDisplayOptions: function(event) {
       var el = this.$('.mailpoet_automated_latest_content_display_options'),
         showControl = this.$('.mailpoet_automated_latest_content_show_display_options');
-      if (el.hasClass('mailpoet_hidden')) {
-        el.removeClass('mailpoet_hidden');
+      if (el.hasClass('mailpoet_closed')) {
+        el.removeClass('mailpoet_closed');
         showControl.addClass('mailpoet_hidden');
       } else {
-        el.addClass('mailpoet_hidden');
+        el.addClass('mailpoet_closed');
         showControl.removeClass('mailpoet_hidden');
       }
     },

@@ -2,12 +2,6 @@
     <%= source('newsletter/templates/svg/block-tools/settings-column.svg') %>
 </a>{{/if}}{{#if tools.settings}}<a href="javascript:;" class="mailpoet_tool mailpoet_edit_block" title="<%= __('Edit settings') %>">
 <%= source('newsletter/templates/svg/block-tools/settings.svg') %>
-</a>{{/if}}{{#if tools.delete}}<div class="mailpoet_delete_block">
-    <a href="javascript:;" class="mailpoet_tool mailpoet_delete_block_activate" title="<%= __('Delete') %>">
-    <%= source('newsletter/templates/svg/block-tools/trash.svg') %>
-    </a>
-    <a href="javascript:;" class="mailpoet_delete_block_confirm" title="<%= __('Confirm deletion') %>"><%= __('Delete') %></a>
-    <a href="javascript:;" class="mailpoet_delete_block_cancel" title="<%= __('Cancel deletion') %>"><%= __('Cancel') %></a>
-</div>{{/if}}{{#if tools.move}}<a href="javascript:;" class="mailpoet_tool mailpoet_move_block" title="<%= __('Drag to move') %>">
+</a>{{/if}}{{#if tools.delete}}<div class="mailpoet_delete_block"><a href="javascript:;" class="mailpoet_tool mailpoet_delete_block_activate" title="<%= __('Delete') %>"><%= source('newsletter/templates/svg/block-tools/trash.svg') %></a><a href="javascript:;" class="mailpoet_delete_block_confirm" title="<%= __('Confirm deletion') %>"><%= __('Delete') %></a><a href="javascript:;" class="mailpoet_delete_block_cancel" title="<%= __('Cancel deletion') %>"><%= __('Cancel') %></a></div>{{/if}}{{#if tools.move}}<a href="javascript:;" class="mailpoet_tool mailpoet_move_block" title="<%= __('Drag to move') %>">
 <%= source('newsletter/templates/svg/block-tools/move.svg') %>
 </a>{{/if}}<div class="clearfix"></div>

@@ -48,6 +48,7 @@ define([
     },
     modelEvents: {
       'change': 'render',
+      'delete': 'deleteBlock',
     },
     events: {
       "mouseenter": "showTools",
@@ -88,7 +89,9 @@ define([
       this.$el.addClass('mailpoet_editor_view_' + this.cid);
     },
     initialize: function() {
-      this.on('showSettings', this.showSettings);
+      this.on('showSettings', this.showSettings, this);
+      this.on('dom:refresh', this.showBlock, this);
+      this._isFirstRender = true;
     },
     showTools: function(_event) {
       if (!this.showingToolsDisabled) {
@@ -120,6 +123,34 @@ define([
         //that.model.destroy();
         return newModel;
       };
+    },
+    showBlock: function() {
+      if (this._isFirstRender) {
+        this.transitionIn();
+        this._isFirstRender = false;
+      }
+    },
+    deleteBlock: function() {
+      this.transitionOut().done(function() {
+        this.model.destroy();
+      }.bind(this));
+    },
+    transitionIn: function() {
+      return this._transition('mailpoet_block_transition_in');
+    },
+    transitionOut: function() {
+      return this._transition('mailpoet_block_transition_out');
+    },
+    _transition: function(className) {
+      var that = this,
+          promise = jQuery.Deferred();
+
+      this.$el.addClass(className);
+      this.$el.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd animationend', function() {
+        that.$el.removeClass('mailpoet_block_transition_out');
+        promise.resolve();
+      });
+      return promise;
     },
   });
 
@@ -168,9 +199,9 @@ define([
     },
     deleteBlock: function(event) {
       event.preventDefault();
-      this.model.destroy();
+      this.model.trigger('delete');
       return false;
-    }
+    },
   });
 
   Module.BlockSettingsView = Marionette.LayoutView.extend({
