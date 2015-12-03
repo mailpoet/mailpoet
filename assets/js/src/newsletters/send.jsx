@@ -94,7 +94,7 @@ define(
       ],
       handleSend: function() {
         MailPoet.Ajax.post({
-          endpoint: 'queue',
+          endpoint: 'sendingQueue',
           action: 'addQueue',
           data: {
             newsletter_id: this.props.params.id,

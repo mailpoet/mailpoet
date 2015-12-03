@@ -7,7 +7,7 @@ use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
-class Queue {
+class Cron {
   function controlDaemon($data) {
     switch($data['action']) {
       case 'start':

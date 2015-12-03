@@ -77,11 +77,16 @@ class Env {
 
   static function isPluginActivated() {
     $activatesPlugins = get_option('active_plugins');
-    $isActivated =
+    $isActivated = (
       in_array(
         sprintf('%s/%s.php', basename(self::$path), self::$plugin_name),
         $activatesPlugins
-      );
+      ) ||
+      in_array(
+        sprintf('%s/%s.php', explode('/', plugin_basename(__FILE__))[0], self::$plugin_name),
+        $activatesPlugins
+      )
+    );
     return ($isActivated) ? true : false;
   }
 }

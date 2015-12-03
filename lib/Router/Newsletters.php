@@ -12,7 +12,7 @@ use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Newsletter\Renderer\Renderer;
-use MailPoet\Models\Queue as SendingQueue;
+use MailPoet\Models\SendingQueue;
 
 if(!defined('ABSPATH')) exit;
 
@@ -231,6 +231,7 @@ class Newsletters {
 
       // get queue
       $queue = SendingQueue::where('newsletter_id', $item['id'])
+        ->orderByDesc('updated_at')
         ->findOne();
       $item['queue'] = ($queue !== false) ? $queue->asArray() : null;
     }

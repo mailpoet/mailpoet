@@ -103,7 +103,7 @@ config.push(_.extend({}, baseConfig, {
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
       'helpscout',
-      'queue.jsx'
+      'cron.jsx'
     ],
     form_editor: [
       'form_editor/form_editor.js',

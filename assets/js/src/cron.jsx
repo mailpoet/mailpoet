@@ -2,22 +2,20 @@ define(
  [
    'react',
    'react-dom',
-   'mailpoet',
-   'classnames'
+   'mailpoet'
  ],
  function (
   React,
   ReactDOM,
-  MailPoet,
-  classNames
+  MailPoet
  ) {
-   var QueueControl = React.createClass({
+   var CronControl = React.createClass({
      getInitialState: function () {
-       return (queueDaemon) ? queueDaemon : null;
+       return (cronDaemon) ? cronDaemon : null;
      },
      getDaemonData: function () {
        MailPoet.Ajax.post({
-         endpoint: 'queue',
+         endpoint: 'cron',
          action: 'getDaemonStatus'
        }).done(function (response) {
          jQuery('.button-primary').removeClass('disabled');
@@ -37,7 +35,7 @@ define(
      controlDaemon: function (action) {
        jQuery('.button-primary').addClass('disabled');
        MailPoet.Ajax.post({
-         endpoint: 'queue',
+         endpoint: 'cron',
          action: 'controlDaemon',
          data: {'action': action}
        }).done(function (response) {
@@ -60,7 +58,7 @@ define(
            return (
             <div>
               <div>
-                Queue daemon is running.
+                Cron daemon is running.
                 <br/>
                 <br/>
                 It was started
@@ -89,11 +87,11 @@ define(
        }
      }
    });
-   let container = document.getElementById('queue_container');
+   let container = document.getElementById('cron_container');
    if (container) {
      ReactDOM.render(
-      <QueueControl />,
-      document.getElementById('queue_status')
+      <CronControl />,
+      document.getElementById('cron_status')
      )
    }
  }
