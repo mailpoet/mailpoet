@@ -125,7 +125,6 @@ define([
       };
     },
     showBlock: function() {
-      console.log('Show block', arguments, this);
       if (this._isFirstRender) {
         this.transitionIn();
         this._isFirstRender = false;
@@ -150,7 +149,6 @@ define([
       this.$el.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd animationend', function() {
         that.$el.removeClass('mailpoet_block_transition_out');
         promise.resolve();
-        console.log('Transition fired', arguments, this);
       });
       return promise;
     },

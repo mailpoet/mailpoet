@@ -76,13 +76,23 @@ $layer-selector-width = 30px
   display: inline-block
   padding: 2px
   vertical-align: top
+  animation-background-color()
 
   .mailpoet_tool
     padding: 0
 
+  .mailpoet_delete_block_activate
+    max-width: 100%
+    display: inline-block
+    opacity: 1
+
   .mailpoet_delete_block_confirm,
   .mailpoet_delete_block_cancel
-    display: none
+    max-width: 0
+    opacity: 0
+    overflow: hidden
+    display: inline-block
+    animation-fade-in-and-scale-horizontally()
 
 .mailpoet_delete_block_activated
   width: auto
@@ -93,11 +103,14 @@ $layer-selector-width = 30px
   height: auto
 
   .mailpoet_delete_block_activate
-    display: none
+    overflow: hidden
+    max-width: 0
+    opacity: 0
 
   .mailpoet_delete_block_confirm,
   .mailpoet_delete_block_cancel
-    display: inline-block
+    max-width: 100%
+    opacity: 1
 
 .mailpoet_delete_block_confirm
   color: $warning-text-color
