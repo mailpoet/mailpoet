@@ -5,17 +5,25 @@
   width: 100%
   margin: 0
   border-radius: 5px
+  position: relative
 
-.mailpoet_progress span
+.mailpoet_progress_label
+  position: absolute
+  width: 100%
+  text-align: center
+  display: inline-block
+  margin: 2px 0 0 0
+
+.mailpoet_progress_bar
+  position: absolute
   display: inline-block
   height: 100%
   border-radius: 3px
   box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset
-
-.blue span
   background-color: #34c2e3
   background-image: linear-gradient(top, #34c2e3, darken(#34c2e3, 20%))
 
-.orange span
-  background-color: #fecf23
-  background-image: linear-gradient(top, #fecf23, #fd9215)
+.mailpoet_progress_complete
+  .mailpoet_progress_bar
+    background-color: #fecf23
+    background-image: linear-gradient(top, #fecf23, #fd9215)

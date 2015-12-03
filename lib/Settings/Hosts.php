@@ -3,25 +3,25 @@ namespace MailPoet\Settings;
 
 class Hosts {
   private static $_smtp = array(
-    'amazon' => array(
+    'AmazonSES' => array(
       'name' => 'Amazon SES',
       'api' => false,
       'emails' => 100,
       'interval' => 5
     ),
-    'elasticemail' => array(
+    'ElasticEmail' => array(
       'name' => 'ElasticEmail',
       'api' => true,
       'emails' => 100,
       'interval' => 5
     ),
-    'mailgun' => array(
+    'MailGun' => array(
       'name' => 'MailGun',
       'api' => false,
       'emails' => 100,
       'interval' => 5
     ),
-    'sendgrid' => array(
+    'SendGrid' => array(
       'name' => 'SendGrid',
       'api' => true,
       'emails' => 100,

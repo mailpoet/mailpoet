@@ -1,13 +1,14 @@
 <?php
 namespace MailPoet\Router;
 
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
-  function addQueue($data) {
+  function add($data) {
     $queue = \MailPoet\Models\SendingQueue::where('newsletter_id', $data['newsletter_id'])
       ->whereNull('status')
       ->findArray();
@@ -18,6 +19,7 @@ class SendingQueue {
           'errors' => array(__('Send operation is already in progress.'))
         )
       );
+      exit;
     }
     $queue = \MailPoet\Models\SendingQueue::create();
     $queue->newsletter_id = $data['newsletter_id'];
@@ -39,18 +41,60 @@ class SendingQueue {
       )
     );
     $queue->count_total = $queue->count_to_process = count($subscriber_ids);
-    $queue->save();
-    wp_send_json(
-      !$queue->save() ?
+    $result = $queue->save();
+    if($result === false) {
+      $errors = array(__('Queue could not be created.'));
+
+      if(!empty($queue->getValidationErrors())) {
+        $errors = array_merge($errors, $queue->getValidationErrors());
+      }
+
+      wp_send_json(
         array(
           'result' => false,
-          'errors' => array(__('Queue could not be created.'))
-        ) :
+          'errors' => $errors
+        )
+      );
+    } else {
+      wp_send_json(
         array(
           'result' => true,
           'data' => array($queue->id)
         )
-    );
+      );
+    }
+  }
+
+  function pause($newsletter_id) {
+    $newsletter = Newsletter::findOne($newsletter_id);
+    $result = false;
+
+    if($newsletter !== false) {
+      $queue = $newsletter->getQueue();
+      if($queue !== false && $queue->id() > 0) {
+        $result = $queue->pause();
+      }
+    }
+
+    wp_send_json(array(
+      'result' => $result
+    ));
+  }
+
+  function resume($newsletter_id) {
+    $newsletter = Newsletter::findOne($newsletter_id);
+    $result = false;
+
+    if($newsletter !== false) {
+      $queue = $newsletter->getQueue();
+      if($queue !== false && $queue->id() > 0) {
+        $result = $queue->resume();
+      }
+    }
+
+    wp_send_json(array(
+      'result' => $result
+    ));
   }
 
   function addQueues($data) {

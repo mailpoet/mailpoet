@@ -36,7 +36,7 @@ define(
         } else {
           // hide DKIM option when using MailPoet's API
           jQuery('#mailpoet_mta_dkim')[
-            (method === 'mailpoet')
+            (method === 'MailPoet')
             ? 'hide'
             : 'show'
           ]();
