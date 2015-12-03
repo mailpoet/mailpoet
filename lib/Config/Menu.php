@@ -320,18 +320,25 @@ class Menu {
   }
 
   function newsletters() {
+    add_filter('heartbeat_received', array($this, 'getQueueStatus'), 10, 3);
+
     global $wp_roles;
 
     $data = array();
 
     $data['segments'] = Segment::findArray();
-    $settings = Setting::findArray();
-    $data['settings'] = array();
-    foreach ($settings as $setting) {
-      $data['settings'][$setting['name']] = $setting['value'];
-    }
+    $data['settings'] = Setting::getAll();
     $data['roles'] = $wp_roles->get_names();
     echo $this->renderer->render('newsletters.html', $data);
+  }
+
+  function getQueueStatus($response, $data, $screen_id) {
+    if(isset($data['mailpoet'])) {
+        $response['mailpoet'] = array(
+            'hello' => 'world'
+        );
+    }
+    return $response;
   }
 
   function newletterEditor() {
@@ -364,7 +371,7 @@ class Menu {
     $data = array(
       'form' => $form,
       'pages' => Pages::getAll(),
-      'segments' => Segment::getPublished()
+      'segments' => Segment::getPublic()
         ->findArray(),
       'styles' => FormRenderer::getStyles($form),
       'date_types' => Block\Date::getDateTypes(),

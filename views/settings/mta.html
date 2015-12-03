@@ -17,6 +17,7 @@
   name="mta[method]"
   value="<%= settings.mta.method %>"
 />
+
 <!-- mta: sending frequency -->
 <input
   type="hidden"
@@ -51,8 +52,8 @@
 <!-- smtp: available sending methods -->
 <ul class="mailpoet_sending_methods clearfix">
   <li
-    data-method="mailpoet"
-    <% if(settings.mta.method == 'mailpoet') %>class="mailpoet_active"<% endif %>
+    data-method="MailPoet"
+    <% if(settings.mta.method == 'MailPoet') %>class="mailpoet_active"<% endif %>
   >
     <h3>
       <img
@@ -76,7 +77,7 @@
     <div class="mailpoet_actions">
       <a
         class="button-secondary"
-        href="#mta/mailpoet"><%= __('Configure') %></a>
+        href="#mta/MailPoet"><%= __('Configure') %></a>
     </div>
   </li>
   <li
@@ -125,7 +126,7 @@
   <!-- Sending Method: MailPoet -->
   <div
     class="mailpoet_sending_method"
-    data-method="mailpoet"
+    data-method="MailPoet"
     style="display:none;"
   >
     <h3><%= __('Open a free account with MailPoet, and get:') %></h3>
@@ -165,8 +166,8 @@
               type="text"
               id="mailpoet_api_key"
               size="40"
-              name="api_key"
-              value="<%= settings.api_key %>"
+              name="mta[api_key]"
+              value="<%= settings.mta.api_key %>"
             />
           </td>
         </tr>
@@ -666,7 +667,6 @@
         )
           ? $('.mailpoet_sending_method:visible').data('method')
           : $('#mta_method').val();
-
         alert(
           'Sending a test email to: '+recipient+
           ' using sending method: '+mta_method

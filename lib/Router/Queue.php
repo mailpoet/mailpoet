@@ -92,6 +92,8 @@ class Queue {
     );
   }
 
+
+
   function addQueues($data) {
     $result = array_map(function ($queueData) {
       $queue = SendingQueue::create();

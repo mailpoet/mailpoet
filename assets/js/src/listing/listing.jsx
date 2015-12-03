@@ -397,6 +397,12 @@ define(
         if(this.isMounted()) {
           const params = this.props.params || {}
           this.initWithParams(params)
+
+          if(this.props.auto_refresh) {
+            jQuery(document).on('heartbeat-tick.mailpoet', function(e, data) {
+              this.getItems();
+            }.bind(this));
+          }
         }
       },
       componentWillReceiveProps: function(nextProps) {

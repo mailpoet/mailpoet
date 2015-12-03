@@ -77,7 +77,7 @@ baseConfig = {
       {
         include: /html2canvas.js$/,
         loader: 'expose-loader?html2canvas',
-      },
+      }
     ]
   }
 };
@@ -92,7 +92,8 @@ config.push(_.extend({}, baseConfig, {
       'ajax',
       'modal',
       'notice',
-      'jquery.serialize_object'
+      'jquery.serialize_object',
+      'parsleyjs'
     ],
     admin: [
       'subscribers/subscribers.jsx',

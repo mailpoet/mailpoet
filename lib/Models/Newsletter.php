@@ -43,6 +43,12 @@ class Newsletter extends Model {
     )->select_expr(MP_NEWSLETTER_OPTION_TABLE.'.value');
   }
 
+  function getQueue() {
+    return SendingQueue::where('newsletter_id', $this->id)
+      ->orderByDesc('updated_at')
+      ->findOne();
+  }
+
   static function search($orm, $search = '') {
     return $orm->where_like('subject', '%' . $search . '%');
   }

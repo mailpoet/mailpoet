@@ -123,23 +123,89 @@ define(
     ];
 
     var NewsletterList = React.createClass({
+      pauseSending: function(item) {
+        MailPoet.Ajax.post({
+          endpoint: 'sendingQueue',
+          action: 'pause',
+          data: item.id
+        }).done(function() {
+          jQuery('#resume_'+item.id).show();
+          jQuery('#pause_'+item.id).hide();
+        });
+      },
+      resumeSending: function(item) {
+        MailPoet.Ajax.post({
+          endpoint: 'sendingQueue',
+          action: 'resume',
+          data: item.id
+        }).done(function() {
+          jQuery('#pause_'+item.id).show();
+          jQuery('#resume_'+item.id).hide();
+        });
+      },
       renderStatus: function(item) {
         if(item.queue === null) {
           return (
             <span>Not sent yet.</span>
           );
         } else {
+          var progressClasses = classNames(
+            'mailpoet_progress',
+            { 'mailpoet_progress_complete': item.queue.status === 'completed'}
+          );
+
           // calculate percentage done
           var percentage = Math.round(
             (item.queue.count_processed * 100) / (item.queue.count_total)
           );
 
+          var label = false;
+
+          if(item.queue.status === 'completed') {
+            label = (
+              <span>
+                Sent to {
+                  item.queue.count_processed - item.queue.count_failed
+                } out of { item.queue.count_total }.
+              </span>
+            );
+          } else {
+            label = (
+              <span>
+                { item.queue.count_processed } / { item.queue.count_total }
+                &nbsp;&nbsp;
+                <a
+                  id={ 'resume_'+item.id }
+                  className="button"
+                  style={{ display: (item.queue.status === 'paused') ? 'inline-block': 'none' }}
+                  href="javascript:;"
+                  onClick={ this.resumeSending.bind(null, item) }
+                >Resume</a>
+                <a
+                  id={ 'pause_'+item.id }
+                  className="button mailpoet_pause"
+                  style={{ display: (item.queue.status === null) ? 'inline-block': 'none' }}
+                  href="javascript:;"
+                  onClick={ this.pauseSending.bind(null, item) }
+                >Pause</a>
+              </span>
+            );
+          }
+
           return (
             <div>
-              <div className="mailpoet_progress blue">
-                  <span style={ { width: percentage + "%"} }></span>
+              <div className={ progressClasses }>
+                  <span
+                    className="mailpoet_progress_bar"
+                    style={ { width: percentage + "%"} }
+                  ></span>
+                  <span className="mailpoet_progress_label">
+                    { percentage + "%" }
+                  </span>
               </div>
-              { item.queue.count_processed } / { item.queue.count_total }
+              <p style={{ textAlign:'center' }}>
+                { label }
+              </p>
             </div>
           );
         }
@@ -194,7 +260,8 @@ define(
               columns={columns}
               bulk_actions={ bulk_actions }
               item_actions={ item_actions }
-              messages={ messages } />
+              messages={ messages }
+              auto_refresh={ true } />
           </div>
         );
       }
