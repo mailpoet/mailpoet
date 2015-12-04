@@ -96,7 +96,13 @@ define([
         });
 
         it('triggers template saving when clicked on save as template button', function() {
-          var mock = sinon.mock({ post: function() {} }).expects('post').once().returns(jQuery.Deferred());
+          var mock = sinon.mock({ post: function() {} }).expects('post').once().returns(jQuery.Deferred()),
+            html2canvasMock = jQuery.Deferred();
+
+          html2canvasMock.resolve({
+            toDataURL: function() { return 'somedataurl'; },
+          });
+
           EditorApplication.getBody = sinon.stub();
           var module = SaveInjector({
             'mailpoet': {
@@ -105,6 +111,7 @@ define([
               }
             },
             'newsletter_editor/App': EditorApplication,
+            'html2canvas': function() { return html2canvasMock; },
           });
           var view = new (module.SaveView)();
           view.render();

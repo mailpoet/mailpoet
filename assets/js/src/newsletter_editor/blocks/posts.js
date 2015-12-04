@@ -222,8 +222,8 @@ define([
     },
     switchToDisplayOptions: function() {
       // Switch content view
-      this.$('.mailpoet_settings_posts_selection').addClass('mailpoet_hidden');
-      this.$('.mailpoet_settings_posts_display_options').removeClass('mailpoet_hidden');
+      this.$('.mailpoet_settings_posts_selection').addClass('mailpoet_closed');
+      this.$('.mailpoet_settings_posts_display_options').removeClass('mailpoet_closed');
 
       // Switch controls
       this.$('.mailpoet_settings_posts_show_display_options').addClass('mailpoet_hidden');
@@ -231,8 +231,8 @@ define([
     },
     switchToPostSelection: function() {
       // Switch content view
-      this.$('.mailpoet_settings_posts_display_options').addClass('mailpoet_hidden');
-      this.$('.mailpoet_settings_posts_selection').removeClass('mailpoet_hidden');
+      this.$('.mailpoet_settings_posts_display_options').addClass('mailpoet_closed');
+      this.$('.mailpoet_settings_posts_selection').removeClass('mailpoet_closed');
 
       // Switch controls
       this.$('.mailpoet_settings_posts_show_post_selection').addClass('mailpoet_hidden');

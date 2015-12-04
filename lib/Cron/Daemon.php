@@ -17,7 +17,7 @@ class Daemon {
     $this->payload = $payload;
     $this->timer = microtime(true);
   }
-  
+
   function start() {
     if(!isset($this->payload['session'])) {
       $this->abortWithError('missing session ID');
@@ -52,7 +52,7 @@ class Daemon {
     }
     $this->manageSession('end');
   }
-  
+
   function run() {
     if(!$this->daemon || $this->daemonData['status'] !== 'started') {
       $this->abortWithError('not running');
@@ -62,9 +62,13 @@ class Daemon {
     ) {
       $this->abortWithError('invalid token');
     }
-    
-    $worker = new Worker($this->timer);
-    $worker->process();
+
+    try {
+      $worker = new Worker($this->timer);
+      $worker->process();
+    } catch(Exception $e) {
+    }
+
     $elapsedTime = microtime(true) - $this->timer;
     if($elapsedTime < 30) {
       sleep(30 - $elapsedTime);
@@ -76,7 +80,7 @@ class Daemon {
     $daemonData['token'] = $this->refreshedToken;
     $daemon->value = json_encode($daemonData);
     $daemon->save();
-    $this->callSelf();
+    if($daemonData['status'] === 'strated') $this->callSelf();
   }
 
   function getDaemon() {
@@ -106,7 +110,7 @@ class Daemon {
         break;
     }
   }
-  
+
   function callSelf() {
     $payload = json_encode(array('token' => $this->refreshedToken));
     Supervisor::getRemoteUrl(

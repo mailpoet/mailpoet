@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "backbone": "1.2.3",
-    "backbone.marionette": "2.4.3",
+    "backbone.marionette": "2.4.4",
     "backbone.radio": "0.9.0",
     "backbone.supermodel": "1.2.0",
     "c3": "~0.4.10",
