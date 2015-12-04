@@ -6,6 +6,8 @@ function(
 ) {
   var FormFieldText = React.createClass({
     render: function() {
+      var value = this.props.item[this.props.field.name];
+      if(!value) { value = null; }
       return (
         <input
           type="text"
@@ -17,7 +19,7 @@ function(
           }
           name={ this.props.field.name }
           id={ 'field_'+this.props.field.name }
-          value={ this.props.item[this.props.field.name] }
+          value={ value }
           placeholder={ this.props.field.placeholder }
           defaultValue={ this.props.field.defaultValue }
           onChange={ this.props.onValueChange }

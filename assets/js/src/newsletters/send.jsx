@@ -45,7 +45,7 @@ define(
         tip: "Name & email of yourself or your company.",
         fields: [
           {
-            name: 'from_name',
+            name: 'sender_name',
             type: 'text',
             placeholder: 'John Doe',
             defaultValue: (settings.sender !== undefined) ? settings.sender.name : '',
@@ -54,7 +54,7 @@ define(
             }
           },
           {
-            name: 'from_email',
+            name: 'sender_address',
             type: 'text',
             placeholder: 'john.doe@email.com',
             defaultValue: (settings.sender !== undefined) ? settings.sender.address : '',
@@ -75,12 +75,14 @@ define(
           {
             name: 'reply_to_name',
             type: 'text',
-            placeholder: 'John Doe'
+            placeholder: 'John Doe',
+            defaultValue: (settings.reply_to !== undefined) ? settings.reply_to.name : '',
           },
           {
-            name: 'reply_to_email',
+            name: 'reply_to_address',
             type: 'text',
-            placeholder: 'john.doe@email.com'
+            placeholder: 'john.doe@email.com',
+            defaultValue: (settings.reply_to !== undefined) ? settings.reply_to.address : ''
           },
         ]
       }
@@ -135,6 +137,9 @@ define(
           jQuery('#mailpoet_newsletter').parsley();
         }
       },
+      isValid: function() {
+        return (jQuery('#mailpoet_newsletter').parsley().validate());
+      },
       render: function() {
         return (
           <div>
@@ -147,7 +152,8 @@ define(
               endpoint="newsletters"
               fields={ fields }
               params={ this.props.params }
-              messages={ messages }>
+              messages={ messages }
+              isValid={ this.isValid }>
 
               <p className="submit">
                 <input

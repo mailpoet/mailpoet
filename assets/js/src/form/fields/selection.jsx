@@ -123,6 +123,7 @@ function(
           placeholder={ this.props.field.placeholder }
           multiple={ this.props.field.multiple }
           defaultValue={ default_value }
+          {...this.props.field.validation}
         >{ options }</select>
       );
     }
