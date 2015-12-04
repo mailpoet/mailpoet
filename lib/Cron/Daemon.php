@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Cron;
 
+use MailPoet\Cron\Workers\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Security;
 
@@ -64,8 +65,8 @@ class Daemon {
     }
 
     try {
-      $worker = new Worker($this->timer);
-      $worker->process();
+      $sendingQueue = new SendingQueue($this->timer);
+      $sendingQueue->process();
     } catch(Exception $e) {
     }
 

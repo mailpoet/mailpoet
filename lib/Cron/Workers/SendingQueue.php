@@ -1,41 +1,63 @@
 <?php
-namespace MailPoet\Cron;
+namespace MailPoet\Cron\Workers;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterStatistics;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Router\Mailer;
 
 if(!defined('ABSPATH')) exit;
 
-class Worker {
+class SendingQueue {
   function __construct($timer = false) {
     $this->timer = ($timer) ? $timer : microtime(true);
   }
 
   function process() {
     $queues =
-      SendingQueue::orderByDesc('priority')
+      \MailPoet\Models\SendingQueue::orderByDesc('priority')
         ->whereNull('deleted_at')
         ->whereNull('status')
         ->findResultSet();
-    $mailer = new Mailer();
-    $mailerMethod = $mailer->buildMailer();
     foreach($queues as $queue) {
       $newsletter = Newsletter::findOne($queue->newsletter_id);
       if(!$newsletter) {
         continue;
       };
       $newsletter = $newsletter->asArray();
+      $mailer = new Mailer($httpRequest = false);
+      if(!empty($newsletter['sender_address']) &&
+        !empty($newsletter['sender_name'])
+      ) {
+        $mailer->fromName = $newsletter['sender_name'];
+        $mailer->fromEmail = $newsletter['sender_address'];
+        $mailer->fromNameEmail = sprintf(
+          '%s <%s>',
+          $mailer->fromName,
+          $mailer->fromEmail
+        );
+      }
+      if(!empty($newsletter['reply_to_address']) &&
+        !empty($newsletter['reply_to_name'])
+      ) {
+        $mailer->replyToName = $newsletter['reply_to_name'];
+        $mailer->replyToEmail = $newsletter['reply_to_address'];
+        $mailer->replyToNameEmail = sprintf(
+          '%s <%s>',
+          $mailer->replyToName,
+          $mailer->replyToEmail
+        );
+      }
+      $mailer->mailer = $mailer->buildMailer();
       $renderer = new Renderer(json_decode($newsletter['body'], true));
       $newsletter = array(
         'subject' => $newsletter['subject'],
         'id' => $newsletter['id'],
         'body' => array(
           'html' => $renderer->renderAll(),
-          'text' => '' // TODO: add text body
+          'text' => ''
+          // TODO: add text body
         )
       );
       $subscribers = json_decode($queue->subscribers, true);
@@ -48,7 +70,7 @@ class Worker {
         foreach($dbSubscribers as $i => $dbSubscriber) {
           $this->checkExecutionTimer();
           // TODO: replace shortcodes in the newsletter
-          $result = $mailerMethod->send(
+          $result = $mailer->mailer->send(
             $newsletter,
             $mailer->transformSubscriber($dbSubscriber)
           );
@@ -87,6 +109,6 @@ class Worker {
 
   function checkExecutionTimer() {
     $elapsedTime = microtime(true) - $this->timer;
-    if ($elapsedTime >= 28) throw new \Exception('Maximum execution time reached.');
+    if($elapsedTime >= 28) throw new \Exception('Maximum execution time reached.');
   }
 }

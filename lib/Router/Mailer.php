@@ -8,9 +8,7 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 if(!defined('ABSPATH')) exit;
 
 class Mailer {
-  function __construct() {
-    list($this->fromName, $this->fromEmail, $this->fromNameEmail)
-      = $this->getSetting('sender');
+  function __construct($httpRequest = true) {
     $this->mailerType = array(
       'AmazonSES' => 'API',
       'ElasticEmail' => 'API',
@@ -21,84 +19,126 @@ class Mailer {
       'SMTP' => null,
       'WPMail' => null
     );
-
-    $this->mailer = $this->getSetting('mailer');
+    if(!$httpRequest) {
+      list($this->fromName, $this->fromEmail, $this->fromNameEmail)
+        = $this->getSetting('sender');
+      $this->mailer = $this->getSetting('mailer');
+    }
   }
 
-  function send($newsletter, $subscriber) {
-    $subscriber = $this->transformSubscriber($subscriber);
-    $mailer = $this->buildMailer();
-    return $mailer->send($newsletter, $subscriber);
+  function send($data) {
+    $subscriber = $this->transformSubscriber($data['subscriber']);
+    list($fromName, $fromEmail, $fromNameEmail)
+      = $this->getSetting('sender');
+    $data['mailer']['class'] = 'MailPoet\\Mailer\\' .
+      (($this->mailerType[$data['mailer']['method']]) ?
+        $this->mailerType[$data['mailer']['method']] . '\\' . $data['mailer']['method'] :
+        $data['mailer']['method']
+      );
+    $mailer = $this->buildMailer(
+      $data['mailer'],
+      $fromName,
+      $fromEmail,
+      $fromNameEmail
+    );
+    if(!empty($newsletter['sender_address']) &&
+      !empty($newsletter['sender_name'])
+    ) {
+      $mailer->fromName = $newsletter['sender_name'];
+      $mailer->fromEmail = $newsletter['sender_address'];
+      $mailer->fromNameEmail = sprintf(
+        '%s <%s>',
+        $mailer->fromName,
+        $mailer->fromEmail
+      );
+    }
+    if(!empty($newsletter['reply_to_address']) &&
+      !empty($newsletter['reply_to_name'])
+    ) {
+      $mailer->replyToName = $newsletter['reply_to_name'];
+      $mailer->replyToEmail = $newsletter['reply_to_address'];
+      $mailer->replyToNameEmail = sprintf(
+        '%s <%s>',
+        $mailer->replyToName,
+        $mailer->replyToEmail
+      );
+    }
+    return $mailer->send($data['newsletter'], $subscriber);
   }
 
-  function buildMailer() {
-    switch($this->mailer['method']) {
+  function buildMailer($mailer = false, $fromName = false, $fromEmail = false, $fromNameEmail = false) {
+    if(!$mailer) $mailer = $this->mailer;
+    if(!$fromName) $fromName = $this->fromName;
+    if(!$fromEmail) $fromEmail = $this->fromEmail;
+    if(!$fromNameEmail) $fromNameEmail = $this->fromNameEmail;
+    switch($mailer['method']) {
       case 'AmazonSES':
-        $mailer = new $this->mailer['class'](
-          $this->mailer['region'],
-          $this->mailer['access_key'],
-          $this->mailer['secret_key'],
-          $this->fromNameEmail
+        $mailerInstance = new $mailer['class'](
+          $mailer['region'],
+          $mailer['access_key'],
+          $mailer['secret_key'],
+          $fromNameEmail
         );
         break;
       case 'ElasticEmail':
-        $mailer = new $this->mailer['class'](
-          $this->mailer['api_key'],
-          $this->fromEmail, $this->fromName
+        $mailerInstance = new $mailer['class'](
+          $mailer['api_key'],
+          $fromEmail, $fromName
         );
         break;
       case 'MailGun':
-        $mailer = new $this->mailer['class'](
-          $this->mailer['domain'],
-          $this->mailer['api_key'],
-          $this->fromNameEmail
+        $mailerInstance = new $mailer['class'](
+          $mailer['domain'],
+          $mailer['api_key'],
+          $fromNameEmail
         );
         break;
       case 'MailPoet':
-        $mailer = new $this->mailer['class'](
-          $this->mailer['api_key'],
-          $this->fromEmail,
-          $this->fromName
+        $mailerInstance = new $mailer['class'](
+          $mailer['api_key'],
+          $fromEmail,
+          $fromName
         );
         break;
       case 'Mandrill':
-        $mailer = new $this->mailer['class'](
-          $this->mailer['api_key'],
-          $this->fromEmail, $this->fromName
+        $mailerInstance = new $mailer['class'](
+          $mailer['api_key'],
+          $fromEmail, $fromName
         );
         break;
       case 'SendGrid':
-        $mailer = new $this->mailer['class'](
-          $this->mailer['api_key'],
-          $this->fromEmail,
-          $this->fromName
+        $mailerInstance = new $mailer['class'](
+          $mailer['api_key'],
+          $fromEmail,
+          $fromName
         );
         break;
       case 'WPMail':
-        $mailer = new $this->mailer['class'](
-          $this->fromEmail,
-          $this->fromName
+        $mailerInstance = new $mailer['class'](
+          $fromEmail,
+          $fromName
         );
         break;
       case 'SMTP':
-        $mailer = new $this->mailer['class'](
-          $this->mailer['host'],
-          $this->mailer['port'],
-          $this->mailer['authentication'],
-          $this->mailer['encryption'],
-          $this->fromEmail,
-          $this->fromName
+        $mailerInstance = new $mailer['class'](
+          $mailer['host'],
+          $mailer['port'],
+          $mailer['authentication'],
+          $mailer['encryption'],
+          $fromEmail,
+          $fromName
         );
         break;
       default:
         throw new \Exception('Mailing method does not exist.');
         break;
     }
-    return $mailer;
+    return $mailerInstance;
   }
 
   function transformSubscriber($subscriber) {
     if(!is_array($subscriber)) return $subscriber;
+    if(isset($subscriber['address'])) $subscriber['email'] = $subscriber['address'];
     $first_name = (isset($subscriber['first_name'])) ? $subscriber['first_name'] : '';
     $last_name = (isset($subscriber['last_name'])) ? $subscriber['last_name'] : '';
     if(!$first_name && !$last_name) return $subscriber['email'];
@@ -118,7 +158,7 @@ class Mailer {
             $mailer['method']
           );
         return $mailer;
-        break;;
+        break;
       case 'sender':
         $sender = Setting::getValue($setting, null);
         if(!$sender) throw new \Exception('Sender name and email are not configured.');
