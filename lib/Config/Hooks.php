@@ -38,5 +38,19 @@ class Hooks {
       '\MailPoet\Segments\WP::synchronizeUser',
       1
     );
+
+    add_filter(
+      'image_size_names_choose',
+      array(
+        $this,
+        'appendImageSizes'
+      )
+    );
+  }
+
+  function appendImageSizes($sizes) {
+    return array_merge($sizes, array(
+      'mailpoet_newsletter_max' => __('MailPoet Newsletter'),
+    ));
   }
 }
