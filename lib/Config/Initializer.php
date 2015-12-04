@@ -29,6 +29,7 @@ class Initializer {
     $this->setupPublicAPI();
     $this->runQueueSupervisor();
     $this->setupHooks();
+    $this->setupImages();
   }
 
   function setupDB() {
@@ -139,5 +140,9 @@ class Initializer {
       $supervisor = new Supervisor();
       $supervisor->checkDaemon();
     } catch (\Exception $e) {}
+  }
+
+  function setupImages() {
+    add_image_size('mailpoet_newsletter_max', 1320);
   }
 }
