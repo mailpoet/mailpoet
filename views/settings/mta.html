@@ -742,15 +742,30 @@
         // get test email and include it in data
         var recipient = $('#mailpoet_mta_test_email').val();
         // get currently selected method
-        var mta_method = (
-          $('.mailpoet_sending_method:visible').data('method') !== undefined
-        )
-          ? $('.mailpoet_sending_method:visible').data('method')
-          : $('#mta_method').val();
-        alert(
-          'Sending a test email to: '+recipient+
-          ' using sending method: '+mta_method
+        var method = getMethodFromGroup(
+          ($('.mailpoet_sending_method:visible').data('group') !== undefined)
+          ? $('.mailpoet_sending_method:visible').data('group')
+          : $('#mta_group').val()
         );
+
+        MailPoet.Ajax.post({
+          endpoint: 'mailer',
+          action: 'send',
+          data: {
+            newsletter: {
+              subject: "<%= __('Sending method test.') %>",
+              body: {
+                html: '',
+                text: "<%= __('Yup, it works. You can start blasting away emails to the moon.') %>"
+              }
+            },
+            subscriber: {
+              first_name: "<%= current_user.display_name %>",
+              last_name: "",
+              email: recipient
+            }
+          }
+        });
       });
 
       // sending frequency update based on selected provider
@@ -822,24 +837,28 @@
         // set smtp method value
         $('#mta_group').val(group);
 
-        var method = '';
-
-        switch(group) {
-          case 'mailpoet':
-            method = 'MailPoet';
-          break;
-          case 'website':
-            method = 'WPMail';
-          break;
-          case 'smtp':
-            method = $('#mailpoet_smtp_provider').val();
-            if(method === 'manual') {
-              method = 'SMTP';
-            }
-          break;
-        }
+        var method = getMethodFromGroup(group);
 
         $('#mta_method').val(method);
+      }
+
+      function getMethodFromGroup(group) {
+        var group = group || 'website';
+        switch(group) {
+          case 'mailpoet':
+            return 'MailPoet';
+          break;
+          case 'website':
+            return 'WPMail';
+          break;
+          case 'smtp':
+            var method = $('#mailpoet_smtp_provider').val();
+            if(method === 'manual') {
+              return 'SMTP';
+            }
+            return method;
+          break;
+        }
       }
 
       // cancel configuration of a sending method
