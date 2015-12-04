@@ -37,6 +37,9 @@ define(
         multiple: true,
         filter: function(segment) {
           return !!(!segment.deleted_at);
+        },
+        validation: {
+          'data-parsley-required': true
         }
       },
       {
