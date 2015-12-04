@@ -4,11 +4,13 @@ namespace MailPoet\Mailer;
 if(!defined('ABSPATH')) exit;
 
 class SMTP {
-  function __construct($host, $port, $authentication, $encryption,
+  function __construct($host, $port, $authentication, $login = null, $password = null, $encryption,
     $fromEmail, $fromName) {
     $this->host = $host;
     $this->port = $port;
     $this->authentication = $authentication;
+    $this->login = $login;
+    $this->password = $password;
     $this->encryption = $encryption;
     $this->fromName = $fromName;
     $this->fromEmail = $fromEmail;
@@ -20,6 +22,7 @@ class SMTP {
       $message = $this->createMessage($newsletter, $subscriber);
       $result = $this->mailer->send($message);
     } catch(\Exception $e) {
+      !d($e->getMessage());exit;
       $result = false;
     }
     return ($result === 1);
@@ -31,8 +34,8 @@ class SMTP {
     $transport->setTimeout(10);
     if($this->authentication) {
       $transport
-        ->setUsername($this->authentication['login'])
-        ->setPassword($this->authentication['password']);
+        ->setUsername($this->login)
+        ->setPassword($this->password);
     }
     return \Swift_Mailer::newInstance($transport);
   }

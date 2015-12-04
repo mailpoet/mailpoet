@@ -137,6 +137,8 @@ class Mailer {
           $mailer['host'],
           $mailer['port'],
           $mailer['authentication'],
+          $mailer['login'],
+          $mailer['password'],
           $mailer['encryption'],
           $fromEmail,
           $fromName
