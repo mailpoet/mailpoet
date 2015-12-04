@@ -5,27 +5,43 @@ class Hosts {
   private static $_smtp = array(
     'AmazonSES' => array(
       'name' => 'Amazon SES',
-      'api' => false,
       'emails' => 100,
-      'interval' => 5
+      'interval' => 5,
+      'fields' => array(
+        'region',
+        'access_key',
+        'secret_key'
+      ),
+      'regions' => array(
+        'US East (N. Virginia)' => 'us-east-1.amazonaws.com',
+        'US West (Oregon)' => 'us-west-2.amazonaws.com',
+        'EU (Ireland)' => 'eu-west-1.amazonaws.com'
+      )
     ),
     'ElasticEmail' => array(
       'name' => 'ElasticEmail',
-      'api' => true,
       'emails' => 100,
-      'interval' => 5
+      'interval' => 5,
+      'fields' => array(
+        'api_key'
+      )
     ),
     'MailGun' => array(
       'name' => 'MailGun',
-      'api' => false,
       'emails' => 100,
-      'interval' => 5
+      'interval' => 5,
+      'fields' => array(
+        'domain',
+        'api_key'
+      )
     ),
     'SendGrid' => array(
       'name' => 'SendGrid',
-      'api' => true,
       'emails' => 100,
-      'interval' => 5
+      'interval' => 5,
+      'fields' => array(
+        'api_key'
+      )
     )
   );
 
