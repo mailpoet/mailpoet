@@ -31,3 +31,11 @@
   'mailpoet.js',
   'admin.js'
 )%>
+
+<script>
+  HS.beacon.config({
+    icon: 'message',
+    zIndex: 50000,
+    instructions: '<%= __('Want to give feedback to the MailPoet team? Write them right here with as much information as possible.') %>',
+  });
+</script>
