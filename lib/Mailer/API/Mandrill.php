@@ -37,18 +37,23 @@ class Mandrill {
   }
   
   function getBody($newsletter, $subscriber) {
-    return array(
+    $body = array(
       'key' => $this->apiKey,
       'message' => array(
         'from_email' => $this->fromEmail,
         'from_name' => $this->fromName,
         'to' => array($subscriber),
-        'subject' => $newsletter['subject'],
-        'html' => $newsletter['body']['html'],
-        'text' => $newsletter['body']['text']
+        'subject' => $newsletter['subject']
       ),
       'async' => false,
     );
+    if(!empty($newsletter['body']['html'])) {
+      $body['message']['html'] = $newsletter['body']['html'];
+    }
+    if(!empty($newsletter['body']['text'])) {
+      $body['message']['text'] = $newsletter['body']['text'];
+    }
+    return $body;
   }
   
   function request($newsletter, $subscriber) {

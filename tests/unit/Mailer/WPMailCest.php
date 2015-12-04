@@ -5,7 +5,7 @@ use MailPoet\Mailer\WPMail;
 class WPMailCest {
   function _before() {
     $this->settings = array(
-      'name' => 'WPMail'
+      'method' => 'WPMail'
     );
     $this->fromEmail = 'staff@mailpoet.com';
     $this->fromName = 'Sender';

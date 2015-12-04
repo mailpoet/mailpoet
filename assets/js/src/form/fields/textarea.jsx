@@ -15,7 +15,9 @@ function(
           value={ this.props.item[this.props.field.name] }
           placeholder={ this.props.field.placeholder }
           defaultValue={ this.props.field.defaultValue }
-          onChange={ this.props.onValueChange } />
+          onChange={ this.props.onValueChange }
+          {...this.props.field.validation}
+        />
       );
     }
   });

@@ -38,18 +38,21 @@
     right: 0
     bottom: 0
     background-color: rgba(255, 255, 255, 0.0)
+    opacity: 0
+    transition: all 200ms cubic-bezier(0.420, 0.000, 0.580, 1.000) /* ease-in-out */
 
     &:hover
       background-color: rgba(255, 255, 255, 0.7)
+      opacity: 1
 
-      &::after
-        content: " "
-        position: absolute
-        top: 0
-        left: 0
-        bottom: 0
-        right: 0
-        background: url(../img/preview_magnifying_glass.svg) no-repeat center center
+    &::after
+      content: " "
+      position: absolute
+      top: 0
+      left: 0
+      bottom: 0
+      right: 0
+      background: url(../img/preview_magnifying_glass.svg) no-repeat center center
 
 .mailpoet_boxes .mailpoet_description
   float:left

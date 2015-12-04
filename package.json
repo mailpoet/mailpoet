@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "backbone": "1.2.3",
-    "backbone.marionette": "2.4.3",
+    "backbone.marionette": "2.4.4",
     "backbone.radio": "0.9.0",
     "backbone.supermodel": "1.2.0",
     "c3": "~0.4.10",
@@ -24,7 +24,7 @@
     "moment": "^2.10.3",
     "napa": "^1.2.0",
     "papaparse": "4.1.1",
-    "parsley": "^0.1.0",
+    "parsleyjs": "^2.1.2",
     "react": "^0.14.1",
     "react-checkbox-group": "0.2.2",
     "react-dom": "^0.14.1",

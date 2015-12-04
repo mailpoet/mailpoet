@@ -10,13 +10,21 @@
   }
 } %>
 
-<!-- smtp: method -->
+<!-- mta: group -->
+<input
+  type="hidden"
+  id="mta_group"
+  name="mta_group"
+  value="<%= settings.mta_group %>"
+/>
+<!-- mta: method -->
 <input
   type="hidden"
   id="mta_method"
   name="mta[method]"
   value="<%= settings.mta.method %>"
 />
+
 <!-- mta: sending frequency -->
 <input
   type="hidden"
@@ -51,8 +59,8 @@
 <!-- smtp: available sending methods -->
 <ul class="mailpoet_sending_methods clearfix">
   <li
-    data-method="mailpoet"
-    <% if(settings.mta.method == 'mailpoet') %>class="mailpoet_active"<% endif %>
+    data-group="mailpoet"
+    <% if(settings.mta_group == 'mailpoet') %>class="mailpoet_active"<% endif %>
   >
     <h3>
       <img
@@ -80,8 +88,8 @@
     </div>
   </li>
   <li
-    data-method="website"
-    <% if(settings.mta.method == 'website') %>class="mailpoet_active"<% endif %>
+    data-group="website"
+    <% if(settings.mta_group == 'website') %>class="mailpoet_active"<% endif %>
   >
     <h3><%= __('Your own website') %></h3>
 
@@ -100,8 +108,8 @@
     </div>
   </li>
   <li
-    data-method="smtp"
-    <% if(settings.mta.method == 'smtp') %>class="mailpoet_active"<% endif %>
+    data-group="smtp"
+    <% if(settings.mta_group == 'smtp') %>class="mailpoet_active"<% endif %>
   >
     <h3><%= __('Third party') %></h3>
 
@@ -125,7 +133,7 @@
   <!-- Sending Method: MailPoet -->
   <div
     class="mailpoet_sending_method"
-    data-method="mailpoet"
+    data-group="mailpoet"
     style="display:none;"
   >
     <h3><%= __('Open a free account with MailPoet, and get:') %></h3>
@@ -163,10 +171,10 @@
           <td>
             <input
               type="text"
+              class="regular-text"
               id="mailpoet_api_key"
-              size="40"
-              name="api_key"
-              value="<%= settings.api_key %>"
+              name="mta[mailpoet_api_key]"
+              value="<%=- settings.mta.mailpoet_api_key -%>"
             />
           </td>
         </tr>
@@ -177,60 +185,11 @@
   <!-- Sending Method: Website -->
   <div
     class="mailpoet_sending_method"
-    data-method="website"
+    data-group="website"
     style="display:none;"
   >
     <table class="form-table">
       <tbody>
-        <tr>
-          <th scope="row">
-            <label for="mailpoet_mta_local_method">
-              <%= __('Delivery method') %>
-            </label>
-          </th>
-          <td>
-            <!-- local sending method: mail / sendmail / wp_mail -->
-            <p>
-              <label>
-                <input type="radio"
-                name="mta[local_method]"
-                value="mail"
-                  <%
-                    if not(settings.mta.local_method)
-                    or (settings.mta.local_method == 'mail')
-                  %>checked="checked"<% endif %>
-                />PHP Mail
-              </label>
-            </p>
-            <p class="description"><%= __('This email engine works on 95&#37; of servers.') %></p>
-
-            <p>
-              <label>
-                <input type="radio"
-                  name="mta[local_method]"
-                  value="sendmail"
-                  <%
-                    if(settings.mta.local_method == 'sendmail')
-                  %>checked="checked"<% endif %>
-                />Sendmail
-              </label>
-            </p>
-            <p class="description"><%= __('This method works on 5&#37; of servers.') %></p>
-
-            <p>
-              <label>
-                <input type="radio"
-                  name="mta[local_method]"
-                  value="wp_mail"
-                  <%
-                    if(settings.mta.local_method == 'wp_mail')
-                  %>checked="checked"<% endif %>
-                />WP Mail
-              </label>
-            </p>
-          </td>
-        </tr>
-        <tr>
           <th scope="row">
             <label for="mailpoet_web_host">
               <%= __('Sending frequency') %>
@@ -327,7 +286,7 @@
   </div>
 
   <!-- Sending Method: SMTP -->
-  <div class="mailpoet_sending_method" data-method="smtp" style="display:none;">
+  <div class="mailpoet_sending_method" data-group="smtp" style="display:none;">
     <table class="form-table">
       <tbody>
         <tr>
@@ -352,6 +311,7 @@
                     value="<%= host_key %>"
                     data-emails="<%= host.emails %>"
                     data-interval="<%= host.interval %>"
+                    data-fields="<%= host.fields | join(',') %>"
                     <% if(settings.smtp_provider == host_key) %>
                       selected="selected"
                     <% endif %>
@@ -413,9 +373,9 @@
           </td>
         </tr>
         <!-- smtp: host -->
-        <tr class="mailpoet_smtp_field">
+        <tr class="mailpoet_smtp_field" data-field="host">
           <th scope="row">
-            <label for="settings[mta_smtp_host]">
+            <label for="settings[mta_host]">
               <%= __('SMTP Hostname') %>
               <p class="description">
                 <%= __('e.g.:smtp.mydomain.com') %>
@@ -425,78 +385,190 @@
           <td>
             <input
               type="text"
-              id="settings[mta_smtp_host]"
-              name="mta[smtp][host]"
-              value="<%= settings.mta.smtp.host %>" />
+              class="regular-text"
+              id="settings[mta_host]"
+              name="mta[host]"
+              value="<%= settings.mta.host %>" />
           </td>
         </tr>
-        <!-- smtp: login -->
-        <tr id="mta_smtp_login" class="mailpoet_smtp_field">
+        <!-- smtp: port -->
+        <tr class="mailpoet_smtp_field" data-field="port">
           <th scope="row">
-            <label for="settings[mta_smtp_login]">
+            <label for="settings[mta_port]">
+              <%= __('SMTP Port') %>
+              <p class="description">
+              </p>
+            </label>
+          </th>
+          <td>
+            <input
+              type="number"
+              max="65535"
+              min="1"
+              maxlength="5"
+              style="width:5em;"
+              id="settings[mta_port]"
+              name="mta[port]"
+              value="<%= settings.mta.port %>"
+            />
+          </td>
+        </tr>
+
+        <!-- smtp: amazon region -->
+        <tr class="mailpoet_smtp_field" data-field="region">
+          <th scope="row">
+            <label for="settings[mta_region]">
+              <%= __('Region') %>
+            </label>
+          </th>
+          <td>
+            <select
+              id="settings[mta_region]"
+              name="mta[region]"
+              value="<% if(settings.mta_group == 'smtp') %>
+                <%=- settings.mta.region -%>
+              <% endif %>"
+            >
+              <% for region, server in hosts.smtp.AmazonSES.regions %>
+                <option value="<%= server %>"><%= region %></option>
+              <% endfor %>
+            </select>
+          </td>
+        </tr>
+
+        <!-- smtp: amazon access_key -->
+        <tr class="mailpoet_smtp_field" data-field="access_key">
+          <th scope="row">
+            <label for="settings[mta_access_key]">
+              <%= __('Access Key') %>
+            </label>
+          </th>
+          <td>
+            <input
+              type="text"
+              class="regular-text"
+              id="settings[mta_access_key]"
+
+              name="mta[access_key]"
+              value="<% if(settings.mta_group == 'smtp') %>
+                <%=- settings.mta.access_key -%>
+              <% endif %>"
+            />
+          </td>
+        </tr>
+
+        <!-- smtp: amazon secret_key -->
+        <tr class="mailpoet_smtp_field" data-field="secret_key">
+          <th scope="row">
+            <label for="settings[mta_secret_key]">
+              <%= __('Secret Key') %>
+            </label>
+          </th>
+          <td>
+            <input
+              type="text"
+              class="regular-text"
+              id="settings[mta_secret_key]"
+
+              name="mta[secret_key]"
+              value="<% if(settings.mta_group == 'smtp') %>
+                <%=- settings.mta.secret_key -%>
+              <% endif %>"
+            />
+          </td>
+        </tr>
+
+        <!-- smtp: domain -->
+        <tr class="mailpoet_smtp_field" data-field="domain">
+          <th scope="row">
+            <label for="settings[mta_domain]">
+              <%= __('Domain') %>
+              <p class="description">
+                <%= __('e.g.:smtp.mydomain.com') %>
+              </p>
+            </label>
+          </th>
+          <td>
+            <input
+              type="text"
+              class="regular-text"
+              id="settings[mta_host]"
+              name="mta[host]"
+              value="<%= settings.mta.host %>" />
+          </td>
+        </tr>
+
+        <!-- smtp: api key -->
+        <tr class="mailpoet_smtp_field" data-field="api_key">
+          <th scope="row">
+            <label for="settings[mta_api_key]">
+              <%= __('API Key') %>
+            </label>
+          </th>
+          <td>
+            <input
+              type="text"
+              class="regular-text"
+              id="settings[mta_api_key]"
+              name="mta[api_key]"
+              value="<%=- settings.mta.api_key -%>"
+            />
+          </td>
+        </tr>
+
+        <!-- smtp: login -->
+        <tr id="mta_login" class="mailpoet_smtp_field" data-field="login">
+          <th scope="row">
+            <label for="settings[mta_login]">
               <%= __('Login') %>
             </label>
           </th>
           <td>
             <input
               type="text"
-              id="settings[mta_smtp_login]"
-              name="mta[smtp][login]"
-              value="<%= settings.mta.smtp.login %>"
+              class="regular-text"
+              id="settings[mta_login]"
+              name="mta[login]"
+              value="<%= settings.mta.login %>"
             />
           </td>
         </tr>
         <!-- smtp: password -->
-        <tr id="mta_smtp_password" class="mailpoet_smtp_field">
+        <tr id="mta_password" class="mailpoet_smtp_field" data-field="password">
           <th scope="row">
-            <label for="settings[mta_smtp_password]">
-              <%= __('Password / API key') %>
+            <label for="settings[mta_password]">
+              <%= __('Password') %>
             </label>
           </th>
           <td>
             <input
               type="password"
-              id="settings[mta_smtp_password]"
-              name="mta[smtp][password]"
-              value="<%= settings.mta.smtp.password %>"
-            />
-          </td>
-        </tr>
-        <!-- smtp: port -->
-        <tr class="mailpoet_smtp_field">
-          <th scope="row">
-            <label for="settings[mta_smtp_port]">
-              <%= __('SMTP Port') %>
-            </label>
-          </th>
-          <td>
-            <input
-              type="text"
-              id="settings[mta_smtp_port]"
-              name="mta[smtp][port]"
-              value="<%= settings.mta.smtp.port %>"
+              class="regular-text"
+              id="settings[mta_password]"
+              name="mta[password]"
+              value="<%= settings.mta.password %>"
             />
           </td>
         </tr>
         <!-- smtp: security protocol -->
-        <tr class="mailpoet_smtp_field">
+        <tr class="mailpoet_smtp_field" data-field="encryption">
           <th scope="row">
-            <label for="settings[mta_smtp_secure]">
+            <label for="settings[mta_encryption]">
               <%= __('Secure connection') %>
             </label>
           </th>
           <td>
-            <select id="settings[mta_smtp_secure]" name="mta[smtp][secure]">
+            <select id="settings[mta_encryption]" name="mta[encryption]">
               <option value=""><%= __('No') %></option>
               <option
                 value="ssl"
-                <% if(settings.mta.smtp.secure == 'ssl') %>
+                <% if(settings.mta.encryption == 'ssl') %>
                   selected="selected"
                 <% endif %>
               >SSL</option>
               <option
                 value="tls"
-                <% if(settings.mta.smtp.secure == 'tls') %>
+                <% if(settings.mta.encryption == 'tls') %>
                   selected="selected"
                 <% endif %>
               >TLS</option>
@@ -504,7 +576,7 @@
           </td>
         </tr>
         <!-- smtp: authentication -->
-        <tr class="mailpoet_smtp_field">
+        <tr class="mailpoet_smtp_field" data-field="authentication">
           <th scope="row">
             <label>
               <%= __('Authentication') %>
@@ -518,8 +590,10 @@
               <input
                 type="radio"
                 value="1"
-                name="mta[smtp][authenticate]"
-                <% if(settings.mta.smtp.authenticate) %>
+                name="mta[authentication]"
+                <%
+                  if not(settings.mta.authentication)
+                  or (settings.mta.authentication == "1") %>
                   checked="checked"
                 <% endif %>
               /><%= __('Yes') %>
@@ -528,9 +602,9 @@
             <label>
               <input
                 type="radio"
-                value=""
-                name="mta[smtp][authenticate]"
-                <% if not(settings.mta.smtp.authenticate) %>
+                value="-1"
+                name="mta[authentication]"
+                <% if(settings.mta.authentication == "-1") %>
                   checked="checked"
                 <% endif %>
               /><%= __('No') %>
@@ -583,6 +657,7 @@
                   <%= __('Key') %>
                   <input
                     type="text"
+                    class="regular-text"
                     onClick="this.focus();this.select();"
                     readonly="readonly"
                     value="wys._domainkey"
@@ -594,7 +669,8 @@
                   <%= __('Value') %>
                   <input
                     type="text"
-                    size="40"
+                    class="regular-text"
+
                     onClick="this.focus();this.select();"
                     readonly="readonly"
                     value="v=DKIM1;s=email;t=s;p=<%= settings.dkim.public_key %>"
@@ -660,17 +736,39 @@
         var data = $('#mailpoet_settings_form').serializeObject();
         // get test email and include it in data
         var recipient = $('#mailpoet_mta_test_email').val();
-        // get currently selected method
-        var mta_method = (
-          $('.mailpoet_sending_method:visible').data('method') !== undefined
-        )
-          ? $('.mailpoet_sending_method:visible').data('method')
-          : $('#mta_method').val();
 
-        alert(
-          'Sending a test email to: '+recipient+
-          ' using sending method: '+mta_method
+        var settings = jQuery('#mailpoet_settings_form').serializeObject();
+        var mailer = settings.mta;
+        mailer.method = getMethodFromGroup(
+          ($('.mailpoet_sending_method:visible').data('group') !== undefined)
+          ? $('.mailpoet_sending_method:visible').data('group')
+          : $('#mta_group').val()
         );
+
+        MailPoet.Ajax.post({
+          endpoint: 'mailer',
+          action: 'send',
+          data: {
+            mailer: mailer,
+            newsletter: {
+              subject: "<%= __('Sending method test.') %>",
+              body: {
+                text: "<%= __('Yup, it works. You can start blasting away emails to the moon.') %>"
+              }
+            },
+            subscriber: {
+              first_name: "<%= current_user.display_name %>",
+              last_name: "",
+              email: recipient
+            }
+          }
+        }).done(function(response) {
+          if(response.result === true) {
+            MailPoet.Notice.success("The email has been sent! Check your inbox.");
+          } else {
+            MailPoet.Notice.error("The email could not be sent. Please check your settings.");
+          }
+        });
       });
 
       // sending frequency update based on selected provider
@@ -695,18 +793,18 @@
       // save configuration of a sending method
       $('.mailpoet_mta_setup_save').on('click', function() {
         // get selected method
-        var method = $('.mailpoet_sending_method:visible').data('method'),
-          emails = $('#'+method+'_frequency_emails').val(),
-          interval = $('#'+method+'_frequency_interval').val();
+        var group = $('.mailpoet_sending_method:visible').data('group'),
+          emails = $('#'+group+'_frequency_emails').val(),
+          interval = $('#'+group+'_frequency_interval').val();
 
         // set sending method
-        if(method === undefined) {
+        if(group === undefined) {
           MailPoet.Notice.error(
             "<%= __('You have selected an invalid sending method.') %>"
           );
         } else {
           if(
-            method === 'mailpoet'
+            group === 'mailpoet'
             && $('#mailpoet_api_key').val().trim().length === 0
           ) {
             MailPoet.Notice.error(
@@ -716,7 +814,7 @@
           }
 
           // set new sending method active
-          setSendingMethod(method);
+          setSendingMethodGroup(group);
 
           // update sending frequency values
           $('#mta_frequency_emails').val(emails);
@@ -730,17 +828,40 @@
         }
       });
 
-      function setSendingMethod(method) {
+      function setSendingMethodGroup(group) {
         // deactivate other sending methods
         $('.mailpoet_sending_methods .mailpoet_active')
           .removeClass('mailpoet_active');
 
         // set active sending method
-        $('.mailpoet_sending_methods li[data-method="'+method+'"]')
+        $('.mailpoet_sending_methods li[data-group="'+group+'"]')
           .addClass('mailpoet_active');
 
         // set smtp method value
+        $('#mta_group').val(group);
+
+        var method = getMethodFromGroup(group);
+
         $('#mta_method').val(method);
+      }
+
+      function getMethodFromGroup(group) {
+        var group = group || 'website';
+        switch(group) {
+          case 'mailpoet':
+            return 'MailPoet';
+          break;
+          case 'website':
+            return 'WPMail';
+          break;
+          case 'smtp':
+            var method = $('#mailpoet_smtp_provider').val();
+            if(method === 'manual') {
+              return 'SMTP';
+            }
+            return method;
+          break;
+        }
       }
 
       // cancel configuration of a sending method
@@ -757,19 +878,26 @@
     function setProviderForm() {
       // check provider
       var provider = $(this).find('option:selected').first();
+      var fields = provider.data('fields');
 
-      if(provider.val() === 'sendgrid') {
-        $('.mailpoet_smtp_field').hide();
-        // show only login & password fields
-        $('#mta_smtp_login, #mta_smtp_password').show();
-      } else if(provider.val() === 'elasticemail') {
-        $('.mailpoet_smtp_field').hide();
-        // show only password field
-        $('#mta_smtp_password').show();
+      if(fields === undefined) {
+        fields = [
+          'host',
+          'port',
+          'login',
+          'password',
+          'authentication',
+          'encryption'
+        ];
       } else {
-        // display all fields
-        $('.mailpoet_smtp_field').show();
+        fields = fields.split(',');
       }
+
+      $('.mailpoet_smtp_field').hide();
+
+      fields.map(function(field) {
+        $('.mailpoet_smtp_field[data-field="'+field+'"]').show();
+      });
 
       // update sending frequency
       renderSMTPSendingFrequency(provider);
@@ -791,6 +919,8 @@
         host.data('emails') || <%= default_frequency.website.emails %>;
       var interval =
         host.data('interval') || <%= default_frequency.website.interval %>;
+      var fields =
+        host.data('fields') || '';
 
       if(host.val() === 'manual' ) {
         // hide  sending frequency

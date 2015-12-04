@@ -1,0 +1,10 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+<div id="cron_container">
+  <div id="cron_status"></div>
+</div>
+<script>
+  var cronDaemon = <%= daemon|raw %>
+</script>
+<% endblock %>

@@ -99,7 +99,7 @@ define(
                     "MailPoet's Guide",
                   description:
                     "This is the standard template that comes with MailPoet.",
-                  readonly: true
+                  readonly: "1"
                 }
               ]
             }
@@ -210,7 +210,7 @@ define(
                     Preview
                   </a>
               </div>
-              { (template.readonly) ? false : deleteLink }
+              { (template.readonly === "1") ? false : deleteLink }
             </li>
           );
         }.bind(this));

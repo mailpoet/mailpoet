@@ -20,7 +20,7 @@ class WPMail {
   }
 
   function addFilters() {
-    foreach ($this->filters as $filter => $method) {
+    foreach($this->filters as $filter => $method) {
       add_filter($filter, array(
         $this,
         $method
@@ -29,7 +29,7 @@ class WPMail {
   }
 
   function removeFilters() {
-    foreach ($this->filters as $filter => $method) {
+    foreach($this->filters as $filter => $method) {
       remove_filter($filter, array(
         $this,
         $method
@@ -51,7 +51,10 @@ class WPMail {
 
   function send($newsletter, $subscriber) {
     $this->addFilters();
-    $result = wp_mail($subscriber, $newsletter['subject'], $newsletter['body']['html']);
+    $result = wp_mail(
+      $subscriber, $newsletter['subject'],
+      (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text']
+    );
     $this->removeFilters();
     return ($result === true);
   }

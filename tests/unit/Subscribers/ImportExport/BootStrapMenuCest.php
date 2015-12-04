@@ -43,7 +43,7 @@ class BootStrapMenuCest {
     $this->bootStrapExportMenu = new BootStrapMenu('export');
   }
 
-  function itCanGetSegmentsForImport() {
+  function itCanGetSegmentsWithSubscriberCount() {
     $this->_createSegmentsAndSubscribers();
     $segments = $this->bootStrapImportMenu->getSegments();
     expect(count($segments))->equals(2);

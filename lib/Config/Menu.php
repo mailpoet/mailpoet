@@ -3,6 +3,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
@@ -172,13 +173,13 @@ class Menu {
 
     add_submenu_page(
       'mailpoet',
-      __('Queue'),
-      __('Queue'),
+      __('Cron'),
+      __('Cron'),
       'manage_options',
-      'mailpoet-queue',
+      'mailpoet-cron',
       array(
         $this,
-        'queue'
+        'cron'
       )
     );
   }
@@ -325,17 +326,22 @@ class Menu {
     $data = array();
 
     $data['segments'] = Segment::findArray();
-    $settings = Setting::findArray();
-    $data['settings'] = array();
-    foreach ($settings as $setting) {
-      $data['settings'][$setting['name']] = $setting['value'];
-    }
+    $data['settings'] = Setting::getAll();
     $data['roles'] = $wp_roles->get_names();
     echo $this->renderer->render('newsletters.html', $data);
   }
 
   function newletterEditor() {
-    $data = array();
+    $custom_fields = array_map(function($field) {
+      return array(
+        'text' =>  $field['name'],
+        'shortcode' => 'field:' . $field['id'],
+      );
+    }, CustomField::findArray());
+
+    $data = array(
+      'customFields' => $custom_fields,
+    );
     wp_enqueue_media();
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
     wp_enqueue_style('editor', includes_url('css/editor.css'));
@@ -364,7 +370,7 @@ class Menu {
     $data = array(
       'form' => $form,
       'pages' => Pages::getAll(),
-      'segments' => Segment::getPublished()
+      'segments' => Segment::getPublic()
         ->findArray(),
       'styles' => FormRenderer::getStyles($form),
       'date_types' => Block\Date::getDateTypes(),
@@ -374,9 +380,9 @@ class Menu {
     echo $this->renderer->render('form/editor.html', $data);
   }
 
-  function queue() {
-    $daemon = new \MailPoet\Queue\BootStrapMenu();
+  function cron() {
+    $daemon = new \MailPoet\Cron\BootStrapMenu();
     $data['daemon'] = json_encode($daemon->bootstrap());
-    echo $this->renderer->render('queue.html', $data);
+    echo $this->renderer->render('cron.html', $data);
   }
 }

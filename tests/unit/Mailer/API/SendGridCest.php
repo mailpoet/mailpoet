@@ -5,7 +5,7 @@ use MailPoet\Mailer\API\SendGrid;
 class SendGridCest {
   function _before() {
     $this->settings = array(
-      'name' => 'SendGrid',
+      'method' => 'SendGrid',
       'type' => 'API',
       'api_key' => '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'
     );

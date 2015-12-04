@@ -37,6 +37,9 @@ define(
         multiple: true,
         filter: function(segment) {
           return !!(!segment.deleted_at);
+        },
+        validation: {
+          'data-parsley-required': true
         }
       },
       {
@@ -45,17 +48,24 @@ define(
         tip: "Name & email of yourself or your company.",
         fields: [
           {
-            name: 'from_name',
+            name: 'sender_name',
             type: 'text',
             placeholder: 'John Doe',
-            defaultValue: settings.from_name
+            defaultValue: (settings.sender !== undefined) ? settings.sender.name : '',
+            validation: {
+              'data-parsley-required': true
+            }
           },
           {
-            name: 'from_email',
+            name: 'sender_address',
             type: 'text',
             placeholder: 'john.doe@email.com',
-            defaultValue: settings.from_address
-          },
+            defaultValue: (settings.sender !== undefined) ? settings.sender.address : '',
+            validation: {
+              'data-parsley-required': true,
+              'data-parsley-type': 'email'
+            }
+          }
         ]
       },
       {
@@ -68,20 +78,25 @@ define(
           {
             name: 'reply_to_name',
             type: 'text',
-            placeholder: 'John Doe'
+            placeholder: 'John Doe',
+            defaultValue: (settings.reply_to !== undefined) ? settings.reply_to.name : '',
           },
           {
-            name: 'reply_to_email',
+            name: 'reply_to_address',
             type: 'text',
-            placeholder: 'john.doe@email.com'
+            placeholder: 'john.doe@email.com',
+            defaultValue: (settings.reply_to !== undefined) ? settings.reply_to.address : ''
           },
         ]
       }
     ];
 
     var messages = {
-      updated: function() {
-        MailPoet.Notice.success('The newsletter has been updated!');
+      onUpdate: function() {
+        MailPoet.Notice.success('Newsletter successfully updated!');
+      },
+      onCreate: function() {
+        MailPoet.Notice.success('Newsletter successfully added!');
       }
     };
 
@@ -90,34 +105,43 @@ define(
         Router.History
       ],
       handleSend: function() {
-        MailPoet.Ajax.post({
-          endpoint: 'newsletters',
-          action: 'send',
-          data: {
-            id: this.props.params.id,
-            newsletter: jQuery('#mailpoet_newsletter').serializeObject(),
-            segments: jQuery('#mailpoet_segments').val()
-          }
-        }).done(function(response) {
-          if(response === true) {
-            this.history.pushState(null, '/');
+        if(jQuery('#mailpoet_newsletter').parsley().validate() === true) {
+          MailPoet.Ajax.post({
+            endpoint: 'sendingQueue',
+            action: 'add',
+            data: {
+              newsletter_id: this.props.params.id,
+              segments: jQuery('#mailpoet_segments').val()
+            }
+          }).done(function(response) {
+            if(response.result === true) {
+              this.history.pushState(null, '/');
 
-            MailPoet.Notice.success(
-              'The newsletter has been sent!'
-            );
-          } else {
-            if(response.errors) {
-              MailPoet.Notice.error(
-                response.errors.join("<br />")
+              MailPoet.Notice.success(
+                'The newsletter is being sent...'
               );
             } else {
-              MailPoet.Notice.error(
-                'An error occurred while trying to send. '+
-                '<a href="?page=mailpoet-settings">Check your settings.</a>'
-              );
+              if(response.errors) {
+                MailPoet.Notice.error(
+                  response.errors.join("<br />")
+                );
+              } else {
+                MailPoet.Notice.error(
+                  'An error occurred while trying to send. '+
+                  '<a href="?page=mailpoet-settings">Check your settings.</a>'
+                );
+              }
             }
-          }
-        }.bind(this));
+          }.bind(this));
+        }
+      },
+      componentDidMount: function() {
+        if(this.isMounted()) {
+          jQuery('#mailpoet_newsletter').parsley();
+        }
+      },
+      isValid: function() {
+        return (jQuery('#mailpoet_newsletter').parsley().validate());
       },
       render: function() {
         return (
@@ -131,7 +155,8 @@ define(
               endpoint="newsletters"
               fields={ fields }
               params={ this.props.params }
-              messages={ messages }>
+              messages={ messages }
+              isValid={ this.isValid }>
 
               <p className="submit">
                 <input

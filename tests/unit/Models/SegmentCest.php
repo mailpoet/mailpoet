@@ -154,7 +154,7 @@ class SegmentCest {
     expect(count($newsletters))->equals(2);
   }
 
-  function itCanGetSegmentsForImport() {
+  function itCanGetSegmentsWithSubscriberCount() {
     foreach ($this->subscribersData as $subscriberData) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate($subscriberData);
@@ -164,7 +164,7 @@ class SegmentCest {
       $association->segment_id = $this->segment->id;
       $association->save();
     }
-    $segment = Segment::getSegmentsForImport();
+    $segment = Segment::getSegmentsWithSubscriberCount();
     expect($segment[0]['subscribers'])->equals(2);
   }
 

@@ -47,18 +47,34 @@ define([
     });
   };
 
-  Module.saveTemplate = function(options) {
-    return MailPoet.Ajax.post({
-      endpoint: 'newsletterTemplates',
-      action: 'save',
-      data: _.extend(options || {}, {
-        body: App.getBody(),
-      }),
-    });
-  };
-
   Module.getThumbnail = function(element, options) {
     return html2canvas(element, options || {});
+  };
+
+  Module.saveTemplate = function(options) {
+    var that = this,
+        promise = jQuery.Deferred();
+
+    promise.then(function(thumbnail) {
+      var data = _.extend(options || {}, {
+        thumbnail: thumbnail.toDataURL('image/jpeg'),
+        body: App.getBody(),
+      });
+
+      return MailPoet.Ajax.post({
+        endpoint: 'newsletterTemplates',
+        action: 'save',
+        data: data,
+      });
+    });
+
+    Module.getThumbnail(
+      jQuery('#mailpoet_editor_content > .mailpoet_block').get(0)
+    ).then(function(thumbnail) {
+      promise.resolve(thumbnail);
+    });
+
+    return promise;
   };
 
   Module.exportTemplate = function(options) {

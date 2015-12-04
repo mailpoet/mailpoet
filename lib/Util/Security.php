@@ -8,7 +8,14 @@ class Security {
     return wp_create_nonce('mailpoet_token');
   }
 
-  static function generateRandomString($length) {
-    return substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
+  static function generateRandomString($length = 5) {
+    // non-cryptographically strong random generator
+    return substr(
+      md5(
+        uniqid(
+          mt_rand(), true)
+      ),
+      0,
+      (!is_int($length) || $length <= 5 || $length >= 32) ? 5 : $length);
   }
 }

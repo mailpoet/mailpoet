@@ -22,13 +22,18 @@ class MailGun {
   }
 
   function getBody($newsletter, $subscriber) {
-    return array(
+    $body = array(
       'from' => $this->from,
       'to' => $subscriber,
-      'subject' => $newsletter['subject'],
-      'html' => $newsletter['body']['html'],
-      'text' => $newsletter['body']['text']
+      'subject' => $newsletter['subject']
     );
+    if(!empty($newsletter['body']['html'])) {
+      $body['html'] = $newsletter['body']['html'];
+    }
+    if(!empty($newsletter['body']['text'])) {
+      $body['text'] = $newsletter['body']['text'];
+    }
+    return $body;
   }
 
   function auth() {

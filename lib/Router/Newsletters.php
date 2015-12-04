@@ -12,6 +12,7 @@ use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Models\SendingQueue;
 
 if(!defined('ABSPATH')) exit;
 
@@ -219,14 +220,20 @@ class Newsletters {
 
     $listing_data = $listing->get();
 
-    // fetch segments relations for each returned item
     foreach($listing_data['items'] as &$item) {
+      // get segments
       $segments = NewsletterSegment::select('segment_id')
         ->where('newsletter_id', $item['id'])
         ->findMany();
       $item['segments'] = array_map(function($relation) {
         return $relation->segment_id;
       }, $segments);
+
+      // get queue
+      $queue = SendingQueue::where('newsletter_id', $item['id'])
+        ->orderByDesc('updated_at')
+        ->findOne();
+      $item['queue'] = ($queue !== false) ? $queue->asArray() : null;
     }
 
     wp_send_json($listing_data);

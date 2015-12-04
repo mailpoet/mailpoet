@@ -47,6 +47,15 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  function watchCss() {
+    $css_files = $this->rsearch('assets/css/src/', array('styl'));
+    $this->taskWatch()
+      ->monitor($css_files, function() {
+        $this->compileCss();
+      })
+      ->run();
+  }
+
   function watchJs() {
     $this->_exec('./node_modules/webpack/bin/webpack.js --watch');
   }
