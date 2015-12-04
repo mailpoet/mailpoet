@@ -22,15 +22,20 @@ class ElasticEmail {
   }
 
   function getBody($newsletter, $subscriber) {
-    return array(
+    $body = array(
       'api_key' => $this->apiKey,
       'from' => $this->fromEmail,
       'from_name' => $this->fromName,
       'to' => $subscriber,
-      'subject' => $newsletter['subject'],
-      'body_html' => $newsletter['body']['html'],
-      'body_text' => $newsletter['body']['text']
+      'subject' => $newsletter['subject']
     );
+    if(!empty($newsletter['body']['html'])) {
+      $body['body_html'] = $newsletter['body']['html'];
+    }
+    if(!empty($newsletter['body']['text'])) {
+      $body['body_text'] = $newsletter['body']['text'];
+    }
+    return $body;
   }
 
   function request($newsletter, $subscriber) {

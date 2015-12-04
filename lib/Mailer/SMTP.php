@@ -19,7 +19,7 @@ class SMTP {
     try {
       $message = $this->createMessage($newsletter, $subscriber);
       $result = $this->mailer->send($message);
-    } catch (\Exception $e) {
+    } catch(\Exception $e) {
       $result = false;
     }
     return ($result === 1);
@@ -39,12 +39,17 @@ class SMTP {
 
 
   function createMessage($newsletter, $subscriber) {
-    return \Swift_Message::newInstance()
+    $message = \Swift_Message::newInstance()
       ->setFrom(array($this->fromEmail => $this->fromName))
       ->setTo($this->processSubscriber($subscriber))
-      ->setSubject($newsletter['subject'])
-      ->setBody($newsletter['body']['html'], 'text/html')
-      ->addPart($newsletter['body']['text'], 'text/plain');
+      ->setSubject($newsletter['subject']);
+    if(!empty($newsletter['body']['html'])) {
+      $message = $message->setBody($newsletter['body']['html'], 'text/html');
+    }
+    if(!empty($newsletter['body']['text'])) {
+      $message = $message->addPart($newsletter['body']['text'], 'text/plain');
+    }
+    return $message;
   }
 
   function processSubscriber($subscriber) {

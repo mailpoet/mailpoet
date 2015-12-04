@@ -47,11 +47,9 @@ class MailPoet {
       )),
       'subject' => $newsletter['subject']
     );
-
     if(!empty($newsletter['body']['html'])) {
       $body['html'] = $newsletter['body']['html'];
     }
-
     if(!empty($newsletter['body']['text'])) {
       $body['text'] = $newsletter['body']['text'];
     }
