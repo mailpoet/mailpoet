@@ -68,12 +68,25 @@ define(
       handleSubmit: function(e) {
         e.preventDefault();
 
+        // handle validation
+        if(this.props.isValid !== undefined) {
+          if(this.props.isValid() === false) {
+            return;
+          }
+        }
+
         this.setState({ loading: true });
 
         // only get values from displayed fields
-        item = {};
+        var item = {};
         this.props.fields.map(function(field) {
-          item[field.name] = this.state.item[field.name];
+          if(field['fields'] !== undefined) {
+            field.fields.map(function(subfield) {
+              item[subfield.name] = this.state.item[subfield.name];
+            }.bind(this));
+          } else {
+            item[field.name] = this.state.item[field.name];
+          }
         }.bind(this));
 
         // set id if specified

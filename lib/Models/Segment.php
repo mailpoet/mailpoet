@@ -107,7 +107,7 @@ class Segment extends Model {
     }
   }
 
-  static function getSegmentsForImport() {
+  static function getSegmentsWithSubscriberCount() {
     return self::selectMany(array(self::$_table.'.id', self::$_table.'.name'))
       ->select_expr(
         'COUNT('.MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id)', 'subscribers'

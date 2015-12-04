@@ -12,7 +12,7 @@ class BootStrapMenu {
 
   function getSegments($withConfirmedSubscribers = false) {
     $segments = ($this->action === 'import') ?
-      Segment::getSegmentsForImport() :
+      Segment::getSegmentsWithSubscriberCount() :
       Segment::getSegmentsForExport($withConfirmedSubscribers);
     return array_map(function ($segment) {
       return array(

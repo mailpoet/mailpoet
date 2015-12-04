@@ -1,67 +1,32 @@
 <?php
 namespace MailPoet\Router;
 
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
-class Queue {
-  function controlDaemon($data) {
-    switch($data['action']) {
-      case 'start':
-        $supervisor = new Supervisor($forceStart = true);
-        wp_send_json(
-          array(
-            'result' => $supervisor->checkDaemon() ?
-              true :
-              false
-          )
-        );
-        break;
-      case 'stop':
-        $status = 'stopped';
-        break;
-      default:
-        $status = 'paused';
-        break;
-    }
-    $daemon = new Daemon();
-    if(!$daemon->daemon || $daemon->daemonData['status'] !== 'started') {
-      $result = false;
-    } else {
-      $daemon->daemonData['status'] = $status;
-      $daemon->daemon->value = json_encode($daemon->daemonData);
-      $result = $daemon->daemon->save();
-    }
-    wp_send_json(
-      array(
-        'result' => $result
-      )
-    );
-  }
-
-  function getDaemonStatus() {
-    $daemon = new \MailPoet\Cron\BootStrapMenu();
-    wp_send_json($daemon->bootStrap());
-  }
-
-  function addQueue($data) {
-    $queue = SendingQueue::where('newsletter_id', $data['newsletter_id'])
+class SendingQueue {
+  function add($data) {
+    $queue = \MailPoet\Models\SendingQueue::where('newsletter_id', $data['newsletter_id'])
       ->whereNull('status')
       ->findArray();
-
-    !d($queue);
-    exit;
-    $queue = SendingQueue::create();
-
+    if(count($queue)) {
+      wp_send_json(
+        array(
+          'result' => false,
+          'errors' => array(__('Send operation is already in progress.'))
+        )
+      );
+      exit;
+    }
+    $queue = \MailPoet\Models\SendingQueue::create();
     $queue->newsletter_id = $data['newsletter_id'];
-
-
     $subscriber_ids = array();
     $segments = Segment::whereIn('id', $data['segments'])
       ->findMany();
+
     foreach($segments as $segment) {
       $subscriber_ids = array_merge($subscriber_ids, Helpers::arrayColumn(
         $segment->subscribers()
@@ -69,34 +34,84 @@ class Queue {
         'id'
       ));
     }
-
     $subscriber_ids = array_unique($subscriber_ids);
     $queue->subscribers = json_encode(
       array(
         'to_process' => $subscriber_ids
       )
     );
-
     $queue->count_total = $queue->count_to_process = count($subscriber_ids);
-    $queue->save();
-    wp_send_json(
-      !$queue->save() ?
+    $result = $queue->save();
+    if($result === false) {
+      $errors = array(__('Queue could not be created.'));
+
+      if(!empty($queue->getValidationErrors())) {
+        $errors = array_merge($errors, $queue->getValidationErrors());
+      }
+
+      wp_send_json(
         array(
           'result' => false,
-          'error' => 'Queue could not be created.'
-        ) :
+          'errors' => $errors
+        )
+      );
+    } else {
+      wp_send_json(
         array(
           'result' => true,
           'data' => array($queue->id)
         )
-    );
+      );
+    }
   }
 
+  function pause($newsletter_id) {
+    $newsletter = Newsletter::findOne($newsletter_id);
+    $result = false;
 
+    if($newsletter !== false) {
+      $queue = $newsletter->getQueue();
+      if($queue !== false && $queue->id() > 0) {
+        $result = $queue->pause();
+      }
+    }
+
+    wp_send_json(array(
+      'result' => $result
+    ));
+  }
+
+  function resume($newsletter_id) {
+    $newsletter = Newsletter::findOne($newsletter_id);
+    $result = false;
+
+    if($newsletter !== false) {
+      $queue = $newsletter->getQueue();
+      if($queue !== false && $queue->id() > 0) {
+        $result = $queue->resume();
+      }
+    }
+
+    wp_send_json(array(
+      'result' => $result
+    ));
+  }
 
   function addQueues($data) {
+    $newsletterIds = Helpers::arrayColumn($data, 'newsletter_id');
+    $queues = \MailPoet\Models\SendingQueue::whereIn('newsletter_id', $newsletterIds)
+      ->whereNull('status')
+      ->findArray();
+    if(count($queues)) {
+      wp_send_json(
+        array(
+          'result' => false,
+          'errors' => array(__('Send operation is already in progress.'))
+        )
+      );
+    }
     $result = array_map(function ($queueData) {
-      $queue = SendingQueue::create();
+      $queue = \MailPoet\Models\SendingQueue::create();
       $queue->newsletter_id = $queueData['newsletter_id'];
       $queue->subscribers = json_encode(
         array(
@@ -115,7 +130,7 @@ class Queue {
       count($data) != count($result) ?
         array(
           'result' => false,
-          'error' => __('Some queues could not be created.'),
+          'errors' => array(__('Some queues could not be created.')),
           'data' => $result
         ) :
         array(
@@ -126,13 +141,13 @@ class Queue {
   }
 
   function deleteQueue($data) {
-    $queue = SendingQueue::whereNull('deleted_at')
+    $queue = \MailPoet\Models\SendingQueue::whereNull('deleted_at')
       ->findOne($data['queue_id']);
     if(!$queue) {
       wp_send_json(
         array(
           'result' => false,
-          'error' => __('Queue not found.')
+          'errors' => array(__('Queue not found.'))
         )
       );
     }
@@ -142,14 +157,14 @@ class Queue {
   }
 
   function deleteQueues($data) {
-    $queues = SendingQueue::whereNull('deleted_at')
+    $queues = \MailPoet\Models\SendingQueue::whereNull('deleted_at')
       ->whereIn('id', $data['queue_ids'])
       ->findResultSet();
     if(!$queues->count()) {
       wp_send_json(
         array(
           'result' => false,
-          'error' => __('Queues not found.')
+          'errors' => array(__('Queues not found.'))
         )
       );
     }
@@ -161,14 +176,14 @@ class Queue {
   }
 
   function getQueueStatus($data) {
-    $queue = SendingQueue::whereNull('deleted_at')
+    $queue = \MailPoet\Models\SendingQueue::whereNull('deleted_at')
       ->findOne($data['queue_id'])
       ->asArray();
     wp_send_json(
       !$queue ?
         array(
           'result' => false,
-          'error' => __('Queue not found.')
+          'errors' => array(__('Queue not found.'))
         ) :
         array(
           'result' => true,
@@ -178,14 +193,14 @@ class Queue {
   }
 
   function getQueuesStatus($data) {
-    $queues = SendingQueue::whereNull('deleted_at')
+    $queues = \MailPoet\Models\SendingQueue::whereNull('deleted_at')
       ->whereIn('id', $data['queue_ids'])
       ->findArray();
     wp_send_json(
       !$queues ?
         array(
           'result' => false,
-          'error' => __('Queue not found.')
+          'errors' => array(__('Queue not found.'))
         ) :
         array(
           'result' => true,

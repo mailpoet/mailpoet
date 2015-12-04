@@ -15,10 +15,10 @@ define(
 
     MailPoet.Router = new (Backbone.Router.extend({
       routes: {
-        'mta(/:method)': 'sendingMethod',
+        'mta(/:group)': 'sendingMethodGroup',
         '(:tab)': 'tabs',
       },
-      sendingMethod: function(method) {
+      sendingMethodGroup: function(group) {
         // display mta tab
         this.tabs('mta');
 
@@ -30,13 +30,13 @@ define(
         // hide "save settings" button
         jQuery('.mailpoet_settings_submit').hide();
 
-        if(method === null) {
+        if(group === null) {
           // show sending methods
           jQuery('.mailpoet_sending_methods').fadeIn();
         } else {
           // hide DKIM option when using MailPoet's API
           jQuery('#mailpoet_mta_dkim')[
-            (method === 'mailpoet')
+            (group === 'mailpoet')
             ? 'hide'
             : 'show'
           ]();
@@ -45,7 +45,7 @@ define(
           jQuery('.mailpoet_sending_methods').hide();
 
           // display selected sending method's settings
-          jQuery('.mailpoet_sending_method[data-method="'+ method +'"]').show();
+          jQuery('.mailpoet_sending_method[data-group="'+ group +'"]').show();
           jQuery('#mailpoet_sending_method_setup').fadeIn();
         }
       },

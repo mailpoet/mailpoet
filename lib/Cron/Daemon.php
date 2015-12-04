@@ -1,6 +1,7 @@
 <?php
-namespace MailPoet\Queue;
+namespace MailPoet\Cron;
 
+use MailPoet\Cron\Workers\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Security;
 
@@ -17,7 +18,7 @@ class Daemon {
     $this->payload = $payload;
     $this->timer = microtime(true);
   }
-  
+
   function start() {
     if(!isset($this->payload['session'])) {
       $this->abortWithError('missing session ID');
@@ -27,33 +28,32 @@ class Daemon {
     $daemonData = $this->daemonData;
     if(!$daemon) {
       $daemon = Setting::create();
-      $daemon->name = 'daemon';
-      $daemon->value = json_encode(array('status' => 'stopped'));
+      $daemon->name = 'cron_daemon';
+      $daemonData = array(
+        'status' => null,
+        'counter' => 0
+      );
+      $daemon->value = json_encode($daemonData);
       $daemon->save();
     }
     if($daemonData['status'] !== 'started') {
-      $_SESSION['daemon'] = 'started';
-      $daemonData = array(
-        'status' => 'started',
-        'token' => $this->refreshedToken,
-        'counter' => ($daemonData['status'] === 'paused') ?
-          $daemonData['counter'] :
-          0
-      );
-      $_SESSION['daemon'] = array('result' => true);
+      $_SESSION['cron_daemon'] = 'started';
+      $daemonData['status'] = 'started';
+      $daemonData['token'] = $this->refreshedToken;
+      $_SESSION['cron_daemon'] = array('result' => true);
       $this->manageSession('end');
       $daemon->value = json_encode($daemonData);
       $daemon->save();
       $this->callSelf();
     } else {
-      $_SESSION['daemon'] = array(
+      $_SESSION['cron_daemon'] = array(
         'result' => false,
         'error' => 'already started'
       );
     }
     $this->manageSession('end');
   }
-  
+
   function run() {
     if(!$this->daemon || $this->daemonData['status'] !== 'started') {
       $this->abortWithError('not running');
@@ -63,11 +63,15 @@ class Daemon {
     ) {
       $this->abortWithError('invalid token');
     }
-    
-    $worker = new Worker();
-    $worker->process();
+
+    try {
+      $sendingQueue = new SendingQueue($this->timer);
+      $sendingQueue->process();
+    } catch(Exception $e) {
+    }
+
     $elapsedTime = microtime(true) - $this->timer;
-    if ($elapsedTime < 30) {
+    if($elapsedTime < 30) {
       sleep(30 - $elapsedTime);
     }
 
@@ -77,11 +81,11 @@ class Daemon {
     $daemonData['token'] = $this->refreshedToken;
     $daemon->value = json_encode($daemonData);
     $daemon->save();
-    $this->callSelf();
+    if($daemonData['status'] === 'strated') $this->callSelf();
   }
 
   function getDaemon() {
-    $daemon = Setting::where('name', 'daemon')
+    $daemon = Setting::where('name', 'cron_daemon')
       ->findOne();
     return array(
       ($daemon) ? $daemon : null,
@@ -90,11 +94,11 @@ class Daemon {
   }
 
   function refreshToken() {
-    return Security::generateRandomString(5);
+    return Security::generateRandomString();
   }
 
   function manageSession($action) {
-    switch ($action) {
+    switch($action) {
       case 'start':
         if(session_id()) {
           session_write_close();
@@ -107,7 +111,7 @@ class Daemon {
         break;
     }
   }
-  
+
   function callSelf() {
     $payload = json_encode(array('token' => $this->refreshedToken));
     Supervisor::getRemoteUrl(

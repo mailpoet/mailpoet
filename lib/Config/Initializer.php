@@ -2,7 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Models;
-use MailPoet\Queue\Supervisor;
+use MailPoet\Cron\Supervisor;
 use MailPoet\Router;
 
 if(!defined('ABSPATH')) exit;
@@ -56,7 +56,7 @@ class Initializer {
     $subscriber_custom_field = Env::$db_prefix . 'subscriber_custom_field';
     $newsletter_option_fields = Env::$db_prefix . 'newsletter_option_fields';
     $newsletter_option = Env::$db_prefix . 'newsletter_option';
-    $queues = Env::$db_prefix . 'queues';
+    $sending_queues = Env::$db_prefix . 'sending_queues';
     $newsletter_statistics = Env::$db_prefix . 'newsletter_statistics';
 
     define('MP_SUBSCRIBERS_TABLE', $subscribers);
@@ -73,7 +73,7 @@ class Initializer {
     define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', $subscriber_custom_field);
     define('MP_NEWSLETTER_OPTION_FIELDS_TABLE', $newsletter_option_fields);
     define('MP_NEWSLETTER_OPTION_TABLE', $newsletter_option);
-    define('MP_QUEUES_TABLE', $queues);
+    define('MP_SENDING_QUEUE_TABLE', $sending_queues);
     define('MP_NEWSLETTER_STATISTICS_TABLE', $newsletter_statistics);
   }
 
@@ -129,7 +129,7 @@ class Initializer {
     $hooks = new Hooks();
     $hooks->init();
   }
-  
+
   function setupPublicAPI() {
     $publicAPI = new PublicAPI();
     $publicAPI->init();

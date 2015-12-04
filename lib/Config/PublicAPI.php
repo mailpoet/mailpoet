@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Queue\Daemon;
+use MailPoet\Cron\Daemon;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;

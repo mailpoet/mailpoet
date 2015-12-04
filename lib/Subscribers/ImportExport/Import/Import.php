@@ -63,7 +63,7 @@ class Import {
           );
         }
       }
-    } catch (\PDOException $e) {
+    } catch(\PDOException $e) {
       return array(
         'result' => false,
         'error' => $e->getMessage()
@@ -145,7 +145,7 @@ class Import {
     );
     if(!$existingTrashedRecords) return;
     $existingTrashedRecords = Helpers::flattenArray($existingTrashedRecords);
-    foreach (array_chunk($existingTrashedRecords, 200) as $subscriberIds) {
+    foreach(array_chunk($existingTrashedRecords, 200) as $subscriberIds) {
       Subscriber::whereIn('id', $subscriberIds)
         ->deleteMany();
       SubscriberSegment::whereIn('subscriber_id', $subscriberIds)
@@ -247,7 +247,7 @@ class Import {
       }, $subscriberFields);
     }, range(0, $subscribersCount));
     $currentTime = ($action === 'update') ? date('Y-m-d H:i:s') : $this->currentTime;
-    foreach (array_chunk($subscribers, 200) as $data) {
+    foreach(array_chunk($subscribers, 100) as $data) {
       if($action == 'create') {
         Subscriber::createMultiple(
           $subscriberFields,
@@ -310,7 +310,7 @@ class Import {
             );
           }, $count, $subscribersData[$column]);
       }, $subscriberCustomFields)[0];
-    foreach (array_chunk($subscribers, 200) as $data) {
+    foreach(array_chunk($subscribers, 200) as $data) {
       if($action === 'create') {
         SubscriberCustomField::createMultiple(
           $data
@@ -325,7 +325,7 @@ class Import {
   }
 
   function addSubscribersToSegments($subscribers, $segments) {
-    foreach (array_chunk($subscribers, 200) as $data) {
+    foreach(array_chunk($subscribers, 200) as $data) {
       SubscriberSegment::createMultiple($segments, $data);
     }
   }

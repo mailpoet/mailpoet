@@ -1,80 +1,159 @@
 <?php
 namespace MailPoet\Router;
 
+use MailPoet\Models\Setting;
+
+require_once(ABSPATH . 'wp-includes/pluggable.php');
+
 if(!defined('ABSPATH')) exit;
 
 class Mailer {
-  function __construct() {
-    $this->fromName = $this->getSetting('from_name');
-    $this->fromEmail = $this->getSetting('from_address');
-    $this->mailer = $this->getSetting('mailer');
-    $this->from = sprintf('%s <%s>', $this->fromName, $this->fromEmail);
-  }
-
-  function send($newsletter, $subscriber) {
-    $subscriber = $this->transformSubscriber($subscriber);
-    $mailer = $this->buildMailer();
-    return wp_send_json($mailer->send($newsletter, $subscriber));
-  }
-
-  function buildMailer() {
-    switch ($this->mailer['name']) {
-    case 'AmazonSES':
-      $mailer = new $this->mailer['class'](
-        $this->mailer['region'],
-        $this->mailer['access_key'],
-        $this->mailer['secret_key'],
-        $this->from
-      );
-    break;
-    case 'ElasticEmail':
-      $mailer = new $this->mailer['class'](
-        $this->mailer['api_key'],
-        $this->fromEmail, $this->fromName
-      );
-    break;
-    case 'MailGun':
-      $mailer = new $this->mailer['class'](
-        $this->mailer['domain'],
-        $this->mailer['api_key'],
-        $this->from
-      );
-    break;
-    case 'MailPoet':
-      $mailer = new $this->mailer['class'](
-        $this->mailer['api_key'],
-        $this->fromEmail,
-        $this->fromName
-      );
-    break;
-    case 'Mandrill':
-      $mailer = new $this->mailer['class'](
-        $this->mailer['api_key'],
-        $this->fromEmail, $this->fromName
-      );
-    break;
-    case 'SendGrid':
-      $mailer = new $this->mailer['class'](
-        $this->mailer['api_key'],
-        $this->fromEmail,
-        $this->fromName
-      );
-    break;
-    case 'SMTP':
-      $mailer = new $this->mailer['class'](
-        $this->mailer['host'],
-        $this->mailer['port'],
-        $this->mailer['authentication'],
-        $this->mailer['encryption'],
-        $this->fromEmail,
-        $this->fromName);
-    break;
+  function __construct($httpRequest = true) {
+    $this->mailerType = array(
+      'AmazonSES' => 'API',
+      'ElasticEmail' => 'API',
+      'MailGun' => 'API',
+      'Mandrill' => 'API',
+      'SendGrid' => 'API',
+      'MailPoet' => null,
+      'SMTP' => null,
+      'WPMail' => null
+    );
+    if(!$httpRequest) {
+      list($this->fromName, $this->fromEmail, $this->fromNameEmail)
+        = $this->getSetting('sender');
+      $this->mailer = $this->getSetting('mailer');
     }
-    return $mailer;
+  }
+
+  function send($data) {
+    $subscriber = $this->transformSubscriber($data['subscriber']);
+    list($fromName, $fromEmail, $fromNameEmail)
+      = $this->getSetting('sender');
+    if(!$fromName && !$fromEmail) {
+      wp_send_json(
+        array(
+          'result' => false,
+          'errors' => array(__('Please configure your name and e-mail address.'))
+        )
+      );
+    }
+    $data['mailer']['class'] = 'MailPoet\\Mailer\\' .
+      (($this->mailerType[$data['mailer']['method']]) ?
+        $this->mailerType[$data['mailer']['method']] . '\\' . $data['mailer']['method'] :
+        $data['mailer']['method']
+      );
+    $mailer = $this->buildMailer(
+      $data['mailer'],
+      $fromName,
+      $fromEmail,
+      $fromNameEmail
+    );
+    if(!empty($newsletter['sender_address']) &&
+      !empty($newsletter['sender_name'])
+    ) {
+      $mailer->fromName = $newsletter['sender_name'];
+      $mailer->fromEmail = $newsletter['sender_address'];
+      $mailer->fromNameEmail = sprintf(
+        '%s <%s>',
+        $mailer->fromName,
+        $mailer->fromEmail
+      );
+    }
+    if(!empty($newsletter['reply_to_address']) &&
+      !empty($newsletter['reply_to_name'])
+    ) {
+      $mailer->replyToName = $newsletter['reply_to_name'];
+      $mailer->replyToEmail = $newsletter['reply_to_address'];
+      $mailer->replyToNameEmail = sprintf(
+        '%s <%s>',
+        $mailer->replyToName,
+        $mailer->replyToEmail
+      );
+    }
+    $result = $mailer->send($data['newsletter'], $subscriber);
+    wp_send_json(
+      array(
+        'result' => ($result) ? true : false
+      )
+    );
+  }
+
+  function buildMailer($mailer = false, $fromName = false, $fromEmail = false, $fromNameEmail = false) {
+    if(!$mailer) $mailer = $this->mailer;
+    if(!$fromName) $fromName = $this->fromName;
+    if(!$fromEmail) $fromEmail = $this->fromEmail;
+    if(!$fromNameEmail) $fromNameEmail = $this->fromNameEmail;
+    switch($mailer['method']) {
+      case 'AmazonSES':
+        $mailerInstance = new $mailer['class'](
+          $mailer['region'],
+          $mailer['access_key'],
+          $mailer['secret_key'],
+          $fromNameEmail
+        );
+        break;
+      case 'ElasticEmail':
+        $mailerInstance = new $mailer['class'](
+          $mailer['api_key'],
+          $fromEmail, $fromName
+        );
+        break;
+      case 'MailGun':
+        $mailerInstance = new $mailer['class'](
+          $mailer['domain'],
+          $mailer['api_key'],
+          $fromNameEmail
+        );
+        break;
+      case 'MailPoet':
+        $mailerInstance = new $mailer['class'](
+          $mailer['mailpoet_api_key'],
+          $fromEmail,
+          $fromName
+        );
+        break;
+      case 'Mandrill':
+        $mailerInstance = new $mailer['class'](
+          $mailer['api_key'],
+          $fromEmail, $fromName
+        );
+        break;
+      case 'SendGrid':
+        $mailerInstance = new $mailer['class'](
+          $mailer['api_key'],
+          $fromEmail,
+          $fromName
+        );
+        break;
+      case 'WPMail':
+        $mailerInstance = new $mailer['class'](
+          $fromEmail,
+          $fromName
+        );
+        break;
+      case 'SMTP':
+        $mailerInstance = new $mailer['class'](
+          $mailer['host'],
+          $mailer['port'],
+          $mailer['authentication'],
+          $mailer['login'],
+          $mailer['password'],
+          $mailer['encryption'],
+          $fromEmail,
+          $fromName
+        );
+        break;
+      default:
+        throw new \Exception('Mailing method does not exist.');
+        break;
+    }
+    return $mailerInstance;
   }
 
   function transformSubscriber($subscriber) {
     if(!is_array($subscriber)) return $subscriber;
+    if(isset($subscriber['address'])) $subscriber['email'] = $subscriber['address'];
     $first_name = (isset($subscriber['first_name'])) ? $subscriber['first_name'] : '';
     $last_name = (isset($subscriber['last_name'])) ? $subscriber['last_name'] : '';
     if(!$first_name && !$last_name) return $subscriber['email'];
@@ -84,65 +163,29 @@ class Mailer {
   }
 
   function getSetting($setting) {
-    if($setting === 'mailer') {
-      $mailers = array(
-        array(
-          'name' => 'AmazonSES',
-          'type' => 'API',
-          'access_key' => 'AKIAJM6Y5HMGXBLDNSRA',
-          'secret_key' => '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',
-          'region' => 'us-east-1'
-        ),
-        array(
-          'name' => 'ElasticEmail',
-          'type' => 'API',
-          'api_key' => '997f1f7f-41de-4d7f-a8cb-86c8481370fa'
-        ),
-        array(
-          'name' => 'MailGun',
-          'type' => 'API',
-          'api_key' => 'key-6cf5g5qjzenk-7nodj44gdt8phe6vam2',
-          'domain' => 'mrcasual.com'
-        ),
-        array(
-          'name' => 'MailPoet',
-          'api_key' => 'dhNSqj1XHkVltIliyQDvMiKzQShOA5rs0m_DdRUVZHU'
-        ),
-        array(
-          'name' => 'Mandrill',
-          'type' => 'API',
-          'api_key' => '692ys1B7REEoZN7R-dYwNA'
-        ),
-        array(
-          'name' => 'SendGrid',
-          'type' => 'API',
-          'api_key' => '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'
-        ),
-        array(
-          'name' => 'SMTP',
-          'host' => 'email-smtp.us-west-2.amazonaws.com',
-          'port' => 587,
-          'authentication' => array(
-            'login' => 'AKIAIGPBLH6JWG5VCBQQ',
-            'password' => 'AudVHXHaYkvr54veCzqiqOxDiMMyfQW3/V6F1tYzGXY3'
-          ),
-          'encryption' => 'tls'
-        ),
-        array(
-          'name' => 'WPMail'
-        )
-      );
-      $mailer = $mailers[array_rand($mailers)];
-      $mailer['class'] = 'MailPoet\\Mailer\\' .
-        ((isset($mailer['type'])) ?
-          $mailer['type'] . '\\' . $mailer['name'] :
-          $mailer['name']
+    switch($setting) {
+      case 'mailer':
+        $mailer = Setting::getValue('mta', null);
+        if(!$mailer || !isset($mailer['method'])) throw new \Exception('Mailing method is not configured.');
+        $mailer['class'] = 'MailPoet\\Mailer\\' .
+          (($this->mailerType[$mailer['method']]) ?
+            $this->mailerType[$mailer['method']] . '\\' . $mailer['method'] :
+            $mailer['method']
+          );
+        return $mailer;
+        break;
+      case 'sender':
+        $sender = Setting::getValue($setting, null);
+        if(!$sender) throw new \Exception('Sender name and email are not configured.');
+        return array(
+          $sender['name'],
+          $sender['address'],
+          sprintf('%s <%s>', $sender['name'], $sender['address'])
         );
-      return $mailer;
+        break;
+      default:
+        return Setting::getValue($setting, null);
+        break;
     }
-    if($setting === 'from_name') return 'Sender';
-    if($setting === 'from_address') return 'staff@mailpoet.com';
-    return Setting::where('name', $setting)
-      ->findOne()->value;
   }
 }

@@ -31,16 +31,21 @@ class AmazonSES {
   }
 
   function getBody($newsletter, $subscriber) {
-    return array(
+    $body = array(
       'Action' => 'SendEmail',
       'Version' => '2010-12-01',
       'Source' => $this->from,
       'Destination.ToAddresses.member.1' => $subscriber,
       'Message.Subject.Data' => $newsletter['subject'],
-      'Message.Body.Html.Data' => $newsletter['body']['html'],
-      'Message.Body.Text.Data' => $newsletter['body']['text'],
       'ReturnPath' => $this->from
     );
+    if(!empty($newsletter['body']['html'])) {
+      $body['Message.Body.Html.Data'] = $newsletter['body']['html'];
+    }
+    if(!empty($newsletter['body']['text'])) {
+      $body['Message.Body.Text.Data'] = $newsletter['body']['text'];
+    }
+    return $body;
   }
 
   function request($newsletter, $subscriber) {

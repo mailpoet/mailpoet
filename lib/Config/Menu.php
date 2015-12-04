@@ -173,13 +173,13 @@ class Menu {
 
     add_submenu_page(
       'mailpoet',
-      __('Queue'),
-      __('Queue'),
+      __('Cron'),
+      __('Cron'),
       'manage_options',
-      'mailpoet-queue',
+      'mailpoet-cron',
       array(
         $this,
-        'queue'
+        'cron'
       )
     );
   }
@@ -326,11 +326,7 @@ class Menu {
     $data = array();
 
     $data['segments'] = Segment::findArray();
-    $settings = Setting::findArray();
-    $data['settings'] = array();
-    foreach ($settings as $setting) {
-      $data['settings'][$setting['name']] = $setting['value'];
-    }
+    $data['settings'] = Setting::getAll();
     $data['roles'] = $wp_roles->get_names();
     echo $this->renderer->render('newsletters.html', $data);
   }
@@ -374,7 +370,7 @@ class Menu {
     $data = array(
       'form' => $form,
       'pages' => Pages::getAll(),
-      'segments' => Segment::getPublished()
+      'segments' => Segment::getPublic()
         ->findArray(),
       'styles' => FormRenderer::getStyles($form),
       'date_types' => Block\Date::getDateTypes(),
@@ -384,9 +380,9 @@ class Menu {
     echo $this->renderer->render('form/editor.html', $data);
   }
 
-  function queue() {
-    $daemon = new \MailPoet\Queue\BootStrapMenu();
+  function cron() {
+    $daemon = new \MailPoet\Cron\BootStrapMenu();
     $data['daemon'] = json_encode($daemon->bootstrap());
-    echo $this->renderer->render('queue.html', $data);
+    echo $this->renderer->render('cron.html', $data);
   }
 }

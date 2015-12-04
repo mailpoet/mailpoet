@@ -21,7 +21,7 @@ class Migrator {
       'subscriber_custom_field',
       'newsletter_option_fields',
       'newsletter_option',
-      'queues',
+      'sending_queues',
       'newsletter_statistics',
       'forms'
     );
@@ -84,6 +84,10 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'subject varchar(250) NOT NULL,',
       'type varchar(20) NOT NULL DEFAULT "standard",',
+      'sender_address varchar(150) NOT NULL,',
+      'sender_name varchar(150) NOT NULL,',
+      'reply_to_address varchar(150) NOT NULL,',
+      'reply_to_name varchar(150) NOT NULL,',
       'preheader varchar(250) NOT NULL,',
       'body longtext,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
@@ -206,12 +210,12 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function queues() {
+  function sending_queues() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
       'subscribers longtext,',
-      'status varchar(12) NOT NULL,',
+      'status varchar(12) NULL DEFAULT NULL,',
       'priority mediumint(9) NOT NULL DEFAULT 0,',
       'count_total mediumint(9) NOT NULL DEFAULT 0,',
       'count_processed mediumint(9) NOT NULL DEFAULT 0,',
