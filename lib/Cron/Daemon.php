@@ -62,9 +62,11 @@ class Daemon {
     ) {
       $this->abortWithError('invalid token');
     }
-    
-    $worker = new Worker($this->timer);
-    $worker->process();
+    try {
+      $worker = new Worker($this->timer);
+      $worker->process();
+    } catch(Exception $e) {
+    }
     $elapsedTime = microtime(true) - $this->timer;
     if($elapsedTime < 30) {
       sleep(30 - $elapsedTime);
@@ -76,7 +78,7 @@ class Daemon {
     $daemonData['token'] = $this->refreshedToken;
     $daemon->value = json_encode($daemonData);
     $daemon->save();
-    $this->callSelf();
+    if($daemonData['status'] === 'strated') $this->callSelf();
   }
 
   function getDaemon() {
