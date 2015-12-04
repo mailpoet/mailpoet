@@ -1230,12 +1230,9 @@
             shortcode: 'global:browser',
           }
         ],
-        '<%= __('Custom fields') %>': [
-          {
-            text: '<%= __('Temporary sample custom field') %>',
-            shortcode: 'custom:samplefield',
-          }
-        ]
+        <% if customFields %>
+        '<%= __('Custom fields') %>': <%= json_encode(customFields) %>,
+        <% endif %>
       },
       translations: {
         customFieldsWindowTitle:

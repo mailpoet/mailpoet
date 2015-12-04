@@ -3,6 +3,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
@@ -335,7 +336,16 @@ class Menu {
   }
 
   function newletterEditor() {
-    $data = array();
+    $custom_fields = array_map(function($field) {
+      return array(
+        'text' =>  $field['name'],
+        'shortcode' => 'custom:' . $field['id'],
+      );
+    }, CustomField::findArray());
+
+    $data = array(
+      'customFields' => $custom_fields,
+    );
     wp_enqueue_media();
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
     wp_enqueue_style('editor', includes_url('css/editor.css'));
