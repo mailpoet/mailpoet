@@ -173,10 +173,8 @@
               type="text"
               class="regular-text"
               id="mailpoet_api_key"
-              name="mta[api_key]"
-              value="<% if(settings.mta_group == 'mailpoet')%>
-                <%=- settings.mta.api_key -%>
-              <% endif %>"
+              name="mta[mailpoet_api_key]"
+              value="<%=- settings.mta.mailpoet_api_key -%>"
             />
           </td>
         </tr>
@@ -512,11 +510,8 @@
               type="text"
               class="regular-text"
               id="settings[mta_api_key]"
-
               name="mta[api_key]"
-              value="<% if(settings.mta_group == 'smtp') %>
-                <%=- settings.mta.api_key -%>
-              <% endif %>"
+              value="<%=- settings.mta.api_key -%>"
             />
           </td>
         </tr>
@@ -741,8 +736,10 @@
         var data = $('#mailpoet_settings_form').serializeObject();
         // get test email and include it in data
         var recipient = $('#mailpoet_mta_test_email').val();
-        // get currently selected method
-        var method = getMethodFromGroup(
+
+        var settings = jQuery('#mailpoet_settings_form').serializeObject();
+        var mailer = settings.mta;
+        mailer.method = getMethodFromGroup(
           ($('.mailpoet_sending_method:visible').data('group') !== undefined)
           ? $('.mailpoet_sending_method:visible').data('group')
           : $('#mta_group').val()
@@ -752,10 +749,11 @@
           endpoint: 'mailer',
           action: 'send',
           data: {
+            mailer: mailer,
             newsletter: {
               subject: "<%= __('Sending method test.') %>",
               body: {
-                html: '',
+                html: "<%= __('Yup, it works. You can start blasting away emails to the moon.') %>",
                 text: "<%= __('Yup, it works. You can start blasting away emails to the moon.') %>"
               }
             },
@@ -764,6 +762,12 @@
               last_name: "",
               email: recipient
             }
+          }
+        }).done(function(response) {
+          if(response.result === true) {
+            MailPoet.Notice.success("The email has been sent! Check your inbox.");
+          } else {
+            MailPoet.Notice.error("The email could not be sent. Please check your settings.");
           }
         });
       });

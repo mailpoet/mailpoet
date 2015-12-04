@@ -108,7 +108,7 @@ class Mailer {
         break;
       case 'MailPoet':
         $mailerInstance = new $mailer['class'](
-          $mailer['api_key'],
+          $mailer['mailpoet_api_key'],
           $fromEmail,
           $fromName
         );
