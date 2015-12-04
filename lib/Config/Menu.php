@@ -339,7 +339,7 @@ class Menu {
     $custom_fields = array_map(function($field) {
       return array(
         'text' =>  $field['name'],
-        'shortcode' => 'custom:' . $field['id'],
+        'shortcode' => 'field:' . $field['id'],
       );
     }, CustomField::findArray());
 
