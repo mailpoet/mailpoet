@@ -30,6 +30,14 @@ class Mailer {
     $subscriber = $this->transformSubscriber($data['subscriber']);
     list($fromName, $fromEmail, $fromNameEmail)
       = $this->getSetting('sender');
+    if(!$fromName && !$fromEmail) {
+      wp_send_json(
+        array(
+          'result' => false,
+          'errors' => array(__('Please configure your name and e-mail address.'))
+        )
+      );
+    }
     $data['mailer']['class'] = 'MailPoet\\Mailer\\' .
       (($this->mailerType[$data['mailer']['method']]) ?
         $this->mailerType[$data['mailer']['method']] . '\\' . $data['mailer']['method'] :
@@ -63,7 +71,12 @@ class Mailer {
         $mailer->replyToEmail
       );
     }
-    return $mailer->send($data['newsletter'], $subscriber);
+    $result = $mailer->send($data['newsletter'], $subscriber);
+    wp_send_json(
+      array(
+        'result' => ($result) ? true : false
+      )
+    );
   }
 
   function buildMailer($mailer = false, $fromName = false, $fromEmail = false, $fromNameEmail = false) {
