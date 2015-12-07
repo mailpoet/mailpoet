@@ -25,8 +25,12 @@ class PublicAPI {
   }
 
   function queue() {
-    $queue = new Daemon($this->payload);
-    $this->_checkAndCallMethod($queue, $this->action);
+    try {
+      $queue = new Daemon($this->payload);
+      $this->_checkAndCallMethod($queue, $this->action);
+    } catch(\Exception $e) {
+      // mailer configuration error
+    }
   }
 
   private function _checkAndCallMethod($class, $method, $terminate = false) {
