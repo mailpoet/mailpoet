@@ -147,7 +147,7 @@ define([
 
       this.$el.addClass(className);
       this.$el.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd animationend', function() {
-        that.$el.removeClass('mailpoet_block_transition_out');
+        that.$el.removeClass(className);
         promise.resolve();
       });
       return promise;
