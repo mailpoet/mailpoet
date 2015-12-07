@@ -9,6 +9,19 @@ if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
   function add($data) {
+    // check if mailer is properly configured
+    try {
+      new Mailer(false);
+    } catch(\Exception $e) {
+      wp_send_json(
+        array(
+          'result' => false,
+          'errors' => array($e->getMessage())
+        )
+      );
+      exit;
+    }
+
     $queue = \MailPoet\Models\SendingQueue::where('newsletter_id', $data['newsletter_id'])
       ->whereNull('status')
       ->findArray();
@@ -34,6 +47,17 @@ class SendingQueue {
         'id'
       ));
     }
+
+    if(empty($subscriber_ids)) {
+      wp_send_json(
+        array(
+          'result' => false,
+          'errors' => array(__('There are no subscribers.'))
+        )
+      );
+      exit;
+    }
+
     $subscriber_ids = array_unique($subscriber_ids);
     $queue->subscribers = json_encode(
       array(

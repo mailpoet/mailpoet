@@ -381,8 +381,6 @@ class Menu {
   }
 
   function cron() {
-    $daemon = new \MailPoet\Cron\BootStrapMenu();
-    $data['daemon'] = json_encode($daemon->bootstrap());
-    echo $this->renderer->render('cron.html', $data);
+    echo $this->renderer->render('cron.html');
   }
 }

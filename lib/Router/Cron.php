@@ -11,14 +11,13 @@ class Cron {
   function controlDaemon($data) {
     switch($data['action']) {
       case 'start':
-        $supervisor = new Supervisor($forceStart = true);
+        $supervisor = new \MailPoet\Cron\Supervisor($forceStart = true);
         wp_send_json(
           array(
-            'result' => $supervisor->checkDaemon() ?
-              true :
-              false
+            'result' => $supervisor->checkDaemon()
           )
         );
+        exit;
         break;
       case 'stop':
         $status = 'stopped';
@@ -27,7 +26,7 @@ class Cron {
         $status = 'paused';
         break;
     }
-    $daemon = new Daemon();
+    $daemon = new \MailPoet\Cron\Daemon();
     if(!$daemon->daemon || $daemon->daemonData['status'] !== 'started') {
       $result = false;
     } else {
