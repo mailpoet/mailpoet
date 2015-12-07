@@ -28,6 +28,7 @@ class Initializer {
     $this->setupChangelog();
     $this->setupPublicAPI();
     $this->runQueueSupervisor();
+    $this->setupShortcodes();
     $this->setupHooks();
     $this->setupImages();
   }
@@ -125,6 +126,10 @@ class Initializer {
     $changelog->init();
   }
 
+  function setupShortcodes() {
+    $shortcodes = new Shortcodes();
+    $shortcodes->init();
+  }
   function setupHooks() {
     $hooks = new Hooks();
     $hooks->init();

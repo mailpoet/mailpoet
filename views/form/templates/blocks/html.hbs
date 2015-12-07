@@ -1,9 +1,7 @@
 {{#if params.text}}
-  <p>
-    {{#if params.nl2br}}
-      {{{ nl2br params.text }}}
-    {{else}}
-      {{{ params.text }}}
-    {{/if}}
-  </p>
+  {{#ifCond params.nl2br '==' '1'}}
+    {{{ nl2br params.text }}}
+  {{else}}
+    {{{ params.text }}}
+  {{/ifCond}}
 {{/if}}

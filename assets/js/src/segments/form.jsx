@@ -42,11 +42,7 @@ define(
         return (
           <div>
             <h2 className="title">
-              Segment <a
-                href="javascript:;"
-                className="add-new-h2"
-                onClick={ this.history.goBack }
-              >Back to list</a>
+              Segment
             </h2>
 
             <Form

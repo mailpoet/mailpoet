@@ -70,11 +70,7 @@ define(
         return (
           <div>
             <h2 className="title">
-              Subscriber <a
-                href="javascript:;"
-                className="add-new-h2"
-                onClick={ this.history.goBack }
-              >Back to list</a>
+              Subscriber
             </h2>
 
             <Form

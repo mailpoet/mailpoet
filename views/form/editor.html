@@ -9,10 +9,6 @@
       class="add-new-h2"
       href="javascript:;"
     ><%= __('Edit name' ) %></a>
-    <a
-      href="<%= admin_url('admin.php?page=mailpoet-forms') | raw %>"
-      class="add-new-h2"
-    ><%= __('List of forms' ) %></a>
   </h2>
 <% endblock %>
 
@@ -122,29 +118,36 @@
       <!-- Toolbar: Shortcodes / Export -->
       <div class="mailpoet_toolbar_section closed" data-section="shortcodes">
         <a href="javascript:;" class="mailpoet_toggle"><br /></a>
-        <h3><%= __('Shortcodes') %></h3>
+        <h3><%= __('Position') %></h3>
 
         <div>
           <!-- Form export links -->
           <p>
-            <%= __("You can easily add this form to your theme's in the [link]Widgets area[/link]")
+            <%= __("Add this form to your sidebar or footer in the [link]Widgets[/link].")
               | replace({
                   '[link]': '<a href="widgets.php" target="_blank">',
                   '[/link]': '</a>'
                 })
               | raw
             %>
-         </p>
+          </p>
           <p>
-            <%= __('%sHTML%s, %sPHP%s, %siframe%s and %sshortcode%s versions are also available.', 'wysija-newsletters')
+            <%= __("Copy and paste this [link]shortcode[/link] into a post or page alternatively.")
+              | replace({
+                  '[link]': '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="shortcode">',
+                  '[/link]': '</a>'
+                })
+              | raw
+            %>
+          </p>
+          <p>
+            <%= __('%sHTML%s, %sPHP%s and %siframe%s versions are also available.', 'wysija-newsletters')
               | format(
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="html">',
                 '</a>',
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="php">',
                 '</a>',
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="iframe">',
-                '</a>',
-                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="shortcode">',
                 '</a>'
               )
               | raw
@@ -519,7 +522,7 @@
           var name = $(this).siblings('.mailpoet_form_field').attr('wysija_name');
 
           if(window.confirm(
-            "<%= __('Do you really want to delete this custom field?') %>"
+            "<%= __('Deleting this field here will delete the data associated to it for all you users. Confirm you want to delete.') %>"
           )) {
             MailPoet.Ajax.post({
               endpoint: 'customFields',
