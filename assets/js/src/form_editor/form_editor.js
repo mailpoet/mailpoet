@@ -231,7 +231,7 @@ var WysijaHistory = {
 
 /* MailPoet Form */
 var WysijaForm = {
-  version: '0.6',
+  version: '0.7',
   options: {
     container: 'mailpoet_form_container',
     editor: 'mailpoet_form_editor',

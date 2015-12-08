@@ -118,7 +118,7 @@
       <!-- Toolbar: Shortcodes / Export -->
       <div class="mailpoet_toolbar_section closed" data-section="shortcodes">
         <a href="javascript:;" class="mailpoet_toggle"><br /></a>
-        <h3><%= __('Position') %></h3>
+        <h3><%= __('Form Placement') %></h3>
 
         <div>
           <!-- Form export links -->
@@ -257,6 +257,14 @@
     ];
 
     jQuery(function($) {
+      function mailpoet_form_toggle_segments() {
+        // hide list selection if a list widget has been dragged into the editor
+        $('mailpoet_settings_segment_selection')[
+          (($$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]').length > 0) === true)
+          ? 'hide' : 'show'
+        ]();
+      }
+
       function mailpoet_form_fields() {
         // form editor: default fields
         var template = Handlebars.compile(jQuery('#form_template_fields').html());
@@ -272,8 +280,13 @@
           if(response !== false) {
             data.fields  = $.merge(response, data.fields);
           }
+
           // render toolbar
           jQuery('#mailpoet_toolbar_fields').html(template(data));
+
+          setTimeout(function() {
+            WysijaForm.init();
+          }, 1);
         });
       }
       window.mailpoet_form_fields = mailpoet_form_fields;
@@ -302,7 +315,7 @@
       });
 
       // toolbar: open default section
-      $('.mailpoet_toolbar_section[data-section="settings"]')
+      $('.mailpoet_toolbar_section[data-section="fields"]')
         .removeClass('closed');
 
       // form: edit name (in place editor)
@@ -468,7 +481,7 @@
             action: 'exportsEditor',
             data: $('#mailpoet_form_id').val()
           }).done(function(response) {
-            if(response !== false) {
+            if(response.result !== false) {
               $('#mailpoet_form_export').html(template({ exports: response }));
             }
           });
@@ -486,11 +499,7 @@
           // open popup
           MailPoet.Modal.popup({
             title: "<%= __('Add new field') %>",
-            template: $('#form_template_field_new').html(),
-            onSuccess: function(data) {
-              // toggle widgets
-              WysijaForm.toggleWidgets();
-            }
+            template: $('#form_template_field_new').html()
           });
 
           return false;
@@ -505,7 +514,7 @@
             action: 'get',
             data: id
           }).done(function(response) {
-            if(response !== false) {
+            if(response.result !== false) {
               MailPoet.Modal.popup({
                 title: "<%= __('Edit field') %>",
                 template: $('#form_template_field_new').html(),
@@ -528,8 +537,8 @@
               endpoint: 'customFields',
               action: 'delete',
               data: id
-            }).done(function(response) {
-              if(response === true) {
+            }).done(function(result) {
+              if(result === true) {
                 item.remove();
                 mailpoet_form_fields();
                 MailPoet.Notice.success(
@@ -549,15 +558,13 @@
         });
 
         // get form fields
-        mailpoet_form_fields().done(function() {
-          WysijaForm.init();
-        });
+        mailpoet_form_fields();
 
         // toolbar: segment selection
         var selected_segments = <%= form.settings.segments | json_encode | raw %>;
 
         //  enable select2 for segment selection
-        $('#mailpoet_form_segments').select2({
+        var select2 = $('#mailpoet_form_segments').select2({
           width:'100%',
           templateResult: function(item) {
             if(item.element && item.element.selected) {
@@ -566,7 +573,23 @@
               return item.text;
             }
           }
-        }).select2('val', <%= form.settings.segments | json_encode | raw %>);
+        });
+
+        var hasRemoved = false;
+        select2.on('select2:unselecting', function(e) {
+          hasRemoved = true;
+        });
+        select2.on('select2:opening', function(e) {
+          if(hasRemoved === true) {
+            hasRemoved = false;
+            e.preventDefault();
+          }
+        });
+
+        // set selected values
+        $('#mailpoet_form_segments')
+          .val(<%= form.settings.segments | json_encode | raw %>)
+          .trigger('change');
       });
     });
   </script>

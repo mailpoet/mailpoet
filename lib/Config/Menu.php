@@ -374,7 +374,8 @@ class Menu {
         ->findArray(),
       'styles' => FormRenderer::getStyles($form),
       'date_types' => Block\Date::getDateTypes(),
-      'date_formats' => Block\Date::getDateFormats()
+      'date_formats' => Block\Date::getDateFormats(),
+      'month_names' => Block\Date::getMonthNames()
     );
 
     echo $this->renderer->render('form/editor.html', $data);

@@ -29,7 +29,13 @@ abstract class Base {
       }
     }
 
-    $validation = '';
+    if($block['type'] === 'radio') {
+      $rules['group'] = 'custom_field_'.$block['id'];
+      $rules['errors-container'] = '.mailpoet_error_'.$block['id'];
+      $rules['required-message'] = __('You need to select at least one option.');
+    }
+
+    $validation = array();
 
     if(!empty($rules)) {
       $rules = array_unique($rules);
@@ -37,10 +43,10 @@ abstract class Base {
         if(is_bool($value)) {
           $value = ($value) ? 'true' : 'false';
         }
-        $validation .= 'data-parsley-'.$rule.'="'.$value.'"';
+        $validation[] = 'data-parsley-'.$rule.'="'.$value.'"';
       }
     }
-    return $validation;
+    return join(' ', $validation);
   }
 
   protected static function renderLabel($block) {
@@ -86,7 +92,11 @@ abstract class Base {
 
   // return field name depending on block data
   protected static function getFieldName($block = array()) {
-    return $block['id'];
+    if((int)$block['id'] > 0) {
+      return 'cf_'.$block['id'];
+    } else {
+      return $block['id'];
+    }
   }
 
   protected static function getFieldLabel($block = array()) {
@@ -98,6 +108,6 @@ abstract class Base {
   protected static function getFieldValue($block = array()) {
     return (isset($block['params']['value'])
             && strlen(trim($block['params']['value'])) > 0)
-            ? trim($block['params']['value']) : '';
+            ? esc_attr(trim($block['params']['value'])) : '';
   }
 }

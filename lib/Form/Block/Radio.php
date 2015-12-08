@@ -9,13 +9,11 @@ class Radio extends Base {
     $field_name = static::getFieldName($block);
     $field_validation = static::getInputValidation($block);
 
-    // TODO: check if it still makes sense
-    // create hidden default value
-    // $html .= '<input type="hidden"name="'.$field_name.'" value="0" '.static::getInputValidation($block).'/>';
-
     $html .= '<p class="mailpoet_paragraph">';
 
     $html .= static::renderLabel($block);
+
+    $html .= '<span class="mailpoet_error_'.$block['id'].'"></span>';
 
     foreach($block['params']['values'] as $option) {
       $html .= '<label class="mailpoet_radio_label">';
@@ -24,13 +22,13 @@ class Radio extends Base {
 
       $html .= 'name="'.$field_name.'" ';
 
-      $html .= 'value="'.$option['value'].'" ';
+      $html .= 'value="'.esc_attr($option['value']).'" ';
 
       $html .= (isset($option['is_checked']) && $option['is_checked'])
                 ? 'checked="checked"' : '';
       $html .= $field_validation;
 
-      $html .= ' />&nbsp;'.$option['value'];
+      $html .= ' />&nbsp;'.esc_attr($option['value']);
 
       $html .= '</label>';
     }

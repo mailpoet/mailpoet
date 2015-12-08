@@ -4,8 +4,9 @@
 <select id="{{ id }}_years">
   <% for year in currentYear..minYear %>
     <option
-      {{#if params.is_default_today}}
-        {{#ifCond year "==" "<%= year %>"}}selected="selected"{{/ifCond}}
-      {{/if}}><%= year %></option>
+      <% if(currentYear == year) %>
+      {{#if params.is_default_today}}selected="selected"{{/if}}
+      <% endif %>
+    ><%= year %></option>
   <% endfor %>
 </select>
