@@ -139,6 +139,7 @@ class Forms {
 
   function saveEditor($data = array()) {
     $form_id = (isset($data['id']) ? (int)$data['id'] : 0);
+    $name = (isset($data['name']) ? $data['name'] : array());
     $body = (isset($data['body']) ? $data['body'] : array());
     $settings = (isset($data['settings']) ? $data['settings'] : array());
     $styles = (isset($data['styles']) ? $data['styles'] : array());
@@ -187,6 +188,7 @@ class Forms {
 
     $form = Form::createOrUpdate(array(
       'id' => $form_id,
+      'name' => $name,
       'body' => $body,
       'settings' => $settings,
       'styles' => $styles

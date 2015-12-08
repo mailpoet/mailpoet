@@ -2,13 +2,12 @@
 
 <% block title %>
   <h2 class="title">
-    <span id="mailpoet_form_name"><%= form.name %></span>
-    <input id="mailpoet_form_name_input" type="text" value="" style="display:none;" />
-    <a
-      id="mailpoet_form_edit_name"
-      class="add-new-h2"
-      href="javascript:;"
-    ><%= __('Edit name' ) %></a>
+    <input
+      type="text"
+      placeholder="<%= __('Click to change the form name!') %>"
+      id="mailpoet_form_name"
+      value="<%= form.name %>"
+    />
   </h2>
 <% endblock %>
 
@@ -399,6 +398,14 @@
           mailpoet_form_save();
           mailpoet_form_export();
           return false;
+        });
+
+        // edit name
+        $('#mailpoet_form_name').on('keyup', function(e) {
+          if(e.which === 13) {
+            $('#mailpoet_form_save').trigger('click');
+            this.blur();
+          }
         });
 
         // preview form
