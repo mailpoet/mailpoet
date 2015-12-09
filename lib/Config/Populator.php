@@ -3,6 +3,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Config\PopulatorData\Templates\FranksRoastHouseTemplate;
 use MailPoet\Config\PopulatorData\Templates\BlankTemplate;
+use MailPoet\Config\PopulatorData\Templates\WelcomeTemplate;
 use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
 use \MailPoet\Models\Setting;
@@ -153,6 +154,7 @@ class Populator {
     return array(
       (new FranksRoastHouseTemplate(Env::$assets_url))->get(),
       (new BlankTemplate(Env::$assets_url))->get(),
+      (new WelcomeTemplate(Env::$assets_url))->get(),
     );
   }
 
