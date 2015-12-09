@@ -1,10 +1,10 @@
-<% set currentDay = 'now'|date("d") %>
-
+<% set currentDay = 'now' | date('d') | number_format %>
 <select id="{{ id }}_days">
   <% for day in 1..31 %>
     <option
-      {{#if params.is_default_today}}
-        {{#ifCond day "==" "<%= currentDay %>"}}selected="selected"{{/ifCond}}
-      {{/if}}><%= day %></option>
+    <% if(currentDay == day) %>
+      {{#if params.is_default_today}}selected="selected"{{/if}}
+    <% endif %>
+    ><%= day %></option>
   <% endfor %>
 </select>

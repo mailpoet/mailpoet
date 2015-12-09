@@ -1,9 +1,20 @@
 
-<form id="form_field_new" name="form_field_new" action="" method="post">
+<form
+  id="form_field_new"
+  name="form_field_new"
+  action=""
+  method="post"
+  data-parsley-validate="true"
+>
   {{#if id}}<input type="hidden" id="field_id" name="id" value="{{ id }}" />{{/if}}
   <p>
     <label for="field_type"><%= __('Select a field type:') %></label>
-    <select id="field_type" name="type">
+    <select
+      id="field_type"
+      name="type"
+      data-parsley-required="true"
+      data-parsley-required-message="<%= __('You need to specify a type') %>"
+    >
       <option value="">--</option>
       <option
         {{#ifCond type '==' 'input'}}selected="selected"{{/ifCond}}
@@ -33,7 +44,13 @@
   </p>
   <p>
     <label><%= __("Field's name:") %></label>
-    <input type="text" name="name" value="{{ name }}" />
+    <input
+      type="text"
+      name="name"
+      value="{{ name }}"
+      data-parsley-required="true"
+      data-parsley-required-message="<%= __('You need to specify a name') %>"
+    />
   </p>
   <hr />
 
@@ -49,41 +66,41 @@
 
     $(function() {
       loadFieldForm();
-    });
 
-    $('#form_field_new').on('submit', function(e) {
-      e.preventDefault();
+      $('#form_field_new').parsley().on('form:submit', function(parsley) {
+        // get data
+        var data = $(this.$element).serializeObject();
 
-      // get data
-      var data = $(this).serializeObject();
-      MailPoet.Ajax.post({
-        endpoint: 'customFields',
-        action: 'save',
-        data: data
-      }).done(function(response) {
-        if(response.result === true) {
-          mailpoet_form_fields();
-          if(data.id) {
-            MailPoet.Notice.success(
-              "<%= __('Updated custom field “"+data.name+"“') %>"
-            );
+        // save custom field
+        MailPoet.Ajax.post({
+          endpoint: 'customFields',
+          action: 'save',
+          data: data
+        }).done(function(response) {
+          if(response.result === true) {
+            mailpoet_form_fields();
+            if(data.id) {
+              MailPoet.Notice.success(
+                "<%= __('Updated custom field “"+data.name+"“') %>"
+              );
+            } else {
+              MailPoet.Notice.success(
+                "<%= __('Added custom field “"+data.name+"“') %>"
+              );
+            }
+
+            // close popup
+            MailPoet.Modal.success();
           } else {
-            MailPoet.Notice.success(
-              "<%= __('Added custom field “"+data.name+"“') %>"
-            );
-          }
-
-        } else {
-          if(response.errors.length > 0) {
-            for(error in response.errors) {
-              MailPoet.Notice.error(error);
+            if(response.errors.length > 0) {
+              $(response.errors).each(function(i, error) {
+                MailPoet.Notice.error(error);
+              });
             }
           }
-        }
+        });
+        return false;
       });
-
-      // close popup
-      return MailPoet.Modal.success();
     });
 
     $('#form_field_new #field_type').on('change', function() {

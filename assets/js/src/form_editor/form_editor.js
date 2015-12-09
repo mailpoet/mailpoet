@@ -231,7 +231,7 @@ var WysijaHistory = {
 
 /* MailPoet Form */
 var WysijaForm = {
-  version: '0.6',
+  version: '0.7',
   options: {
     container: 'mailpoet_form_container',
     editor: 'mailpoet_form_editor',
@@ -317,6 +317,7 @@ var WysijaForm = {
   save: function() {
     var position = 1,
       data = {
+        'name': $F('mailpoet_form_name'),
         'settings': $('mailpoet_form_settings').serialize(true),
         'body': [],
         'styles': (MailPoet.CodeEditor !== undefined) ? MailPoet.CodeEditor.getValue() : null

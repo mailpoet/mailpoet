@@ -4,6 +4,7 @@ namespace MailPoet\Router;
 use MailPoet\Listing;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Form;
@@ -140,32 +141,37 @@ class Subscribers {
         ? 'unconfirmed' : 'subscribed'
       );
 
-      // // set custom fields
-      // $meta_fields = $mailpoet->getOption('mailpoet_subscriber_meta', array());
-      // if(!empty($meta_fields)) {
-      //   // loop through data to see if any meta field has been passed
-      //   foreach($meta_fields as $field => $field_data) {
-      //     // check if it's a mandatory field
-      //     $is_required = (isset($field_data['params']['required']) && (bool)$field_data['params']['required'] === true);
-
-      //     if(array_key_exists($field, $data)) {
-      //       // check if it's a mandatory field
-      //       if($is_required === true && empty($data[$field])) {
-      //         // if it's missing, throw an error
-      //         $errors[] = sprintf(__('&quot;%s&quot; is required'), $field_data['name']);
-      //       } else {
-      //         // assign field to subscriber
-      //         $subscriber[$field] = $data[$field];
-      //       }
-      //     }
-      //   }
-      // }
+      // custom fields
+      $custom_fields = array();
+      foreach($data as $key => $value) {
+        if(strpos($key, 'cf_') === 0) {
+          $custom_fields[substr($key, 3)] = $value;
+          unset($data[$key]);
+        }
+      }
 
       // insert new subscriber
       $subscriber = Subscriber::createOrUpdate($data);
 
       if($subscriber === false || !$subscriber->id()) {
         $errors = array_merge($errors, $subscriber->getValidationErrors());
+      } else {
+        // add custom fields
+        if(!empty($custom_fields)) {
+          foreach($custom_fields as $custom_field_id => $value) {
+            if(is_array($value)) {
+              // date
+              $value = mktime(0, 0, 0, $value['month'], $value['day'], $value['year']);
+            }
+            $subscriber_custom_field = SubscriberCustomField::create();
+            $subscriber_custom_field->hydrate(array(
+              'subscriber_id' => $subscriber->id(),
+              'custom_field_id' => $custom_field_id,
+              'value' => $value
+            ));
+            $subscriber_custom_field->save();
+          }
+        }
       }
     } else {
       $subscriber->set('status', (

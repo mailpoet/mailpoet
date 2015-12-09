@@ -36,9 +36,9 @@ class Widget extends \WP_Widget {
 
     return parent::__construct(
       'mailpoet_form',
-      __("MailPoet Subscription Form"),
+      __('MailPoet Form'),
       array(
-        'title' => __("Newsletter subscription form"),
+        'description' => __('Add a newsletter subscription form.')
       )
     );
   }
@@ -194,24 +194,6 @@ class Widget extends \WP_Widget {
       }
     }
   }
-}
-
-// mailpoet shortcodes
-// form shortcode
-add_shortcode('mailpoet_form',  'mailpoet_form_shortcode');
-add_shortcode('wysija_form',  'mailpoet_form_shortcode');
-
-function mailpoet_form_shortcode($params = array()) {
-  // IMPORTANT: this is to make sure MagicMember won't scan our form and find [user_list] as a code they should replace.
-    remove_shortcode('user_list');
-
-    if(isset($params['id']) && (int)$params['id'] > 0) {
-        $form_widget = new \MailPoet\Form\Widget();
-    return $form_widget->widget(array(
-      'form' => (int)$params['id'],
-      'form_type' => 'shortcode'
-    ));
-    }
 }
 
 // set the content filter to replace the shortcode

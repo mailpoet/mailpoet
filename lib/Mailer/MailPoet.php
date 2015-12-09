@@ -70,7 +70,7 @@ class MailPoet {
         'Content-Type' => 'application/json',
         'Authorization' => $this->auth()
       ),
-      'body' => json_encode($body)
+      'body' => $body
     );
   }
 }
