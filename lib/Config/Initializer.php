@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Models;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Router;
+use MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
 

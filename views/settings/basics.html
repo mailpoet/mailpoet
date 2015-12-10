@@ -38,16 +38,6 @@
           <%= __('When someone unsubscribes') %>
           </label>
         </p>
-        <p>
-          <label for="settings[notification_daily_report]">
-          <input type="checkbox"
-          id="settings[notification_daily_report]"
-          name="notification[daily_report]"
-          value="1"
-          <% if(settings.notification.daily_report) %>checked="checked"<% endif %> />
-          <%= __('Daily summary of emails sent') %>
-          </label>
-        </p>
         <!-- email notification: from name & email -->
         <p>
           <label for="settings[from_name]"><%= __('From') %></label>
