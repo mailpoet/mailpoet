@@ -60,11 +60,17 @@
 
 .mailpoet_boxes .mailpoet_description
   float:left
-  width: 235px
+  width: 245px
+  max-height: calc(110px - 2em)
   padding-bottom: 2em
+  overflow: hidden
 
 .mailpoet_boxes .mailpoet_description h3
-  margin:0 0 1em 0
+  margin: 0 0 1em 0
+  overflow: hidden
+  white-space: nowrap
+  text-overflow: ellipsis
+  max-width: 220px
 
 .mailpoet_boxes .mailpoet_actions
   position: absolute
