@@ -49,6 +49,7 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           static: false,
           hideClose: false,
           id: null,
+          positionAfter: false,
           scroll: false,
           timeout: 2000,
           onOpen: null,
@@ -69,7 +70,16 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           this.element.removeAttr('id');
 
           // insert notice after its parent
-          jQuery('#mailpoet_notice_'+this.options.type).after(this.element);
+          var positionAfter;
+          if (typeof this.options.positionAfter === 'object') {
+            positionAfter = this.options.positionAfter;
+          } else if (typeof this.options.positionAfter === 'string') {
+            positionAfter = jQuery(this.options.positionAfter);
+          } else {
+            positionAfter = jQuery('#mailpoet_notice_'+this.options.type);
+          }
+          console.log('positionAfter', typeof this.options.positionAfter);
+          positionAfter.after(this.element);
 
           // setup onClose callback
           var onClose = null;
