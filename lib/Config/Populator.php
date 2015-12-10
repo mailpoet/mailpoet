@@ -5,6 +5,7 @@ use MailPoet\Config\PopulatorData\Templates\FranksRoastHouseTemplate;
 use MailPoet\Config\PopulatorData\Templates\BlankTemplate;
 use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
+use \MailPoet\Models\Setting;
 
 if (!defined('ABSPATH')) exit;
 
@@ -44,6 +45,31 @@ class Populator {
     array_map(array($this, 'populate'), $this->models);
 
     $this->createDefaultSegments();
+    $this->createDefaultSettings();
+  }
+
+  private function createDefaultSettings() {
+    $current_user = wp_get_current_user();
+
+    // user name
+    $user_name = '';
+    if($current_user->user_firstname) {
+      $user_name = $current_user->user_firstname;
+    }
+    if($current_user->user_lastname) {
+      if($user_name) {
+        $user_name .= ' '.$current_user->user_lastname;
+      }
+    }
+    if(!$user_name) {
+      $user_name = $current_user->display_name;
+    }
+
+    // default from name & address
+    Setting::setValue('sender', array(
+      'name' => $user_name,
+      'address' => $current_user->user_email
+    ));
   }
 
   private function createDefaultSegments() {
