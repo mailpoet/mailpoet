@@ -17,13 +17,13 @@ class SegmentCest {
       array(
         'first_name' => 'John',
         'last_name' => 'Mailer',
-        'status' => 0,
+        'status' => 'unsubscribed',
         'email' => 'john@mailpoet.com'
       ),
       array(
         'first_name' => 'Mike',
         'last_name' => 'Smith',
-        'status' => 1,
+        'status' => 'subscribed',
         'email' => 'mike@maipoet.com'
       )
     );

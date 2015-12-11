@@ -47,9 +47,9 @@ class MailPoetCest {
     expect($request['method'])->equals('POST');
     expect($request['headers']['Content-Type'])->equals('application/json');
     expect($request['headers']['Authorization'])->equals($this->mailer->auth());
-    expect($request['body'])->equals(json_encode($body));
+    expect($request['body'])->equals($body);
   }
-  
+
   function itCanProcessSubscriber() {
     expect($this->mailer->processSubscriber('test@test.com'))
       ->equals(

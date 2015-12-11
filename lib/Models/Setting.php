@@ -32,6 +32,7 @@ class Setting extends Model {
     if(is_array($value)) {
       $value = serialize($value);
     }
+
     return Setting::createOrUpdate(array(
       'name' => $key,
       'value' => $value

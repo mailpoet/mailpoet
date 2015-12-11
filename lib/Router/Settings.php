@@ -18,13 +18,7 @@ class Settings {
       wp_send_json(false);
     } else {
       foreach($settings as $name => $value) {
-        if(is_array($value)) {
-          $value = serialize($value);
-        }
-        Setting::createOrUpdate(array(
-          'name' => $name,
-          'value' => $value
-        ));
+        Setting::setValue($name, $value);
       }
       wp_send_json(true);
     }
