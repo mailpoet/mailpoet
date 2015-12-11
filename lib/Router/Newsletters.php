@@ -250,6 +250,7 @@ class Newsletters {
   function create($data = array()) {
     $newsletter = Newsletter::create();
     $newsletter->type = $data['type'];
+    $newsletter->subject = $data['subject'];
     $newsletter->body = '{}';
 
     // try to load template data

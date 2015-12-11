@@ -26,6 +26,7 @@ define(
           action: 'create',
           data: {
             type: type,
+            subject: 'Draft newsletter',
           }
         }).done(function(response) {
           if(response.id !== undefined) {
