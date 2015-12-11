@@ -33,6 +33,7 @@ class Newsletters {
         return $segment['id'];
       }, $segments);
       $newsletter['options'] = $options;
+      $newsletter['body'] = json_decode($newsletter['body']);
 
       wp_send_json($newsletter);
     }
@@ -40,6 +41,10 @@ class Newsletters {
 
   function getAll() {
     $collection = Newsletter::findArray();
+    $collection = array_map(function($item) {
+      $item['body'] = json_decode($item['body']);
+      return $item;
+    }, $collection);
     wp_send_json($collection);
   }
 
@@ -52,6 +57,10 @@ class Newsletters {
     if(isset($data['options'])) {
       $options = $data['options'];
       unset($data['options']);
+    }
+
+    if (isset($data['body'])) {
+      $data['body'] = json_encode($data['body']);
     }
 
     $errors = array();
@@ -282,6 +291,7 @@ class Newsletters {
           }
         }
       }
+      $newsletter->body = json_decode($newsletter->body);
       wp_send_json($newsletter->asArray());
     }
   }

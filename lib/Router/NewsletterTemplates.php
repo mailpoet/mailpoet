@@ -15,16 +15,25 @@ class NewsletterTemplates {
     if($template === false) {
       wp_send_json(false);
     } else {
+      $template->body = json_decode($template->body);
       wp_send_json($template->asArray());
     }
   }
 
   function getAll() {
     $collection = NewsletterTemplate::findArray();
+    $collection = array_map(function($item) {
+      $item['body'] = json_decode($item['body']);
+      return $item;
+    }, $collection);
     wp_send_json($collection);
   }
 
   function save($data = array()) {
+    if (isset($data['body'])) {
+      $data['body'] = json_encode($data['body']);
+    }
+
     $result = NewsletterTemplate::createOrUpdate($data);
     if($result !== true) {
       wp_send_json($result);
