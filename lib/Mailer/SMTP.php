@@ -22,7 +22,6 @@ class SMTP {
       $message = $this->createMessage($newsletter, $subscriber);
       $result = $this->mailer->send($message);
     } catch(\Exception $e) {
-      !d($e->getMessage());exit;
       $result = false;
     }
     return ($result === 1);
@@ -64,7 +63,7 @@ class SMTP {
     }
     return array(
       $subscriberData['email'] =>
-        (isset($subscriberData['name'])) ? $subscriberData['name'] : '',
+        (isset($subscriberData['name'])) ? $subscriberData['name'] : ''
     );
   }
 }

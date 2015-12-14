@@ -8,10 +8,9 @@ class SMTPCest {
       'method' => 'SMTP',
       'host' => 'email-smtp.us-west-2.amazonaws.com',
       'port' => 587,
-      'authentication' => array(
-        'login' => 'AKIAIGPBLH6JWG5VCBQQ',
-        'password' => 'AudVHXHaYkvr54veCzqiqOxDiMMyfQW3/V6F1tYzGXY3'
-      ),
+      'login' => 'AKIAIGPBLH6JWG5VCBQQ',
+      'password' => 'AudVHXHaYkvr54veCzqiqOxDiMMyfQW3/V6F1tYzGXY3',
+      'authentication' => '1',
       'encryption' => 'tls'
     );
     $this->fromEmail = 'staff@mailpoet.com';
@@ -20,6 +19,8 @@ class SMTPCest {
       $this->settings['host'],
       $this->settings['port'],
       $this->settings['authentication'],
+      $this->settings['login'],
+      $this->settings['password'],
       $this->settings['encryption'],
       $this->fromEmail,
       $this->fromName
@@ -41,9 +42,9 @@ class SMTPCest {
     expect($mailer->getTransport()->getPort())
       ->equals($this->settings['port']);
     expect($mailer->getTransport()->getUsername())
-      ->equals($this->settings['authentication']['login']);
+      ->equals($this->settings['login']);
     expect($mailer->getTransport()->getPassword())
-      ->equals($this->settings['authentication']['password']);
+      ->equals($this->settings['password']);
     expect($mailer->getTransport()->getEncryption())
       ->equals($this->settings['encryption']);
   }
@@ -72,7 +73,7 @@ class SMTPCest {
   }
 
   function itCantSentWithoutProperAuthentication() {
-    $this->mailer->authentication['login'] = 'someone';
+    $this->mailer->login = 'someone';
     $this->mailer->mailer = $this->mailer->buildMailer();
     $result = $this->mailer->send(
       $this->newsletter,

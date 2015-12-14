@@ -1,24 +1,158 @@
 <% extends 'layout.html' %>
 
 <% block content %>
+<style type="text/css">
+  #mailpoet_welcome {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;}
+  #mailpoet_welcome *,
+  #mailpoet_welcome *:before,
+  #mailpoet_welcome *:after {
+    box-sizing: inherit;
+    padding-box:inherit;
+  }
+  #mailpoet_welcome h3.changes {color:#ff5300;}
+  #mailpoet_welcome .welcome_sub {
+    border-top:1px solid #999;
+    margin-top:20px;
+    width: 100%;
+    max-width:710px;
+  }
+  #mailpoet_welcome .welcome_slim {
+    width: 33%;
+    max-width:300px;
+    padding:20px 20px 20px 0;
+  }
+  #mailpoet_welcome .welcome_wide {
+    width:66%;
+    max-width:600px;
+    padding:20px 20px 20px 0;
+  }
+  #mailpoet_welcome .welcome_slim label {
+    display:inline-block;
+    padding-left:5px;
+    margin-top:-4px;
+  }
+  #mailpoet_welcome .welcome_slim,
+  .welcome_wide,
+  .welcome_slim div,
+  .welcome_wide
+   div {
+    float:left;
+  }
+  #mailpoet_welcome .signup {
+    width:44%;
+    max-width:380px;
+    padding-right:20px;
+  }
+  #mailpoet_welcome .signup_tips {
+    width:56%;
+  }
+  #mailpoet_welcome .signup_tips ul {
+    list-style: disc outside;
+    margin-left:18px;
+  }
+  #mailpoet_welcome .signup_tips p:first-child {
+    margin-top:0 !important;
+  }
+  #mailpoet_welcome .welcome_sub .button_thanks {
+    background-color: #ff5300;
+    box-shadow:inset 0 1px 0 rgba(255,120,55,.5),0 1px 0 rgba(0,0,0,.15);
+    padding:5px 25px;
+    border-color: #df4a02;
+    text-align: right;
+    height:auto;
+  }
+  #mailpoet_welcome .welcome_sub .button_thanks:hover,
+  .welcome_sub .button_thanks:active {
+    background-color: #df4a02;border-color: #c54102;
+    box-shadow:inset 0 1px 0 rgba(255,120,55,.5),0 1px 0 rgba(0,0,0,.15);
+  }
+  #mailpoet_welcome .welcome_wide + p {
+    display:block;
+    text-align: right;
+  }
+</style>
   <div id="mailpoet_welcome">
-    <h2><%= __('Welcome!') %></h2>
+    <h2>
+      <%= __('Welcome to MailPoet') %> <%= settings.version %> <%=__('BETA') %>
+    </h2>
+    <p>You’re one our extra special testers! We salute you.</p>
+    <h3 class="changes">Big changes...watch the video!</h3>
+    <iframe src="https://player.vimeo.com/video/130151897?title=0&byline=0&portr
+    ait=0" width="710" height="399" frameborder="0" webkitallowfullscreen
+    mozallowfullscreen allowfullscreen></iframe>
 
-    <p>Plugin version: <strong><%= settings.version %></strong></p>
-
-    <p>
-      Current user:
-      <strong><%= current_user.user_nicename %></strong>
-      &lt;<a href="mailto:<%= current_user.user_email %>">
-        <%=- current_user.user_email -%>
-      </a>&gt;
-    </p>
-
-    <p>
-      <a
-        class="button button-primary"
+    <div class="welcome_sub">
+      <div class="welcome_slim">
+        <h3>You can make us better</h3>
+        <p>Help improve MailPoet by sharing your data anonymously with us.</p>
+        <p>We look at how people use MailPoet and what features they like and
+          don't like.<br><a href="http://support.mailpoet.com/knowledgebase/shar
+          e-your-data/?utm_source=wpadmin&utm_campaign=welcome_page">Find out
+          more</a>.</p>
+        <p>
+          <label>
+            <input
+              type="checkbox"
+              id="mailpoet_analytics_enabled"
+              value="1"
+              <% if(settings.analytics.enabled) %>checked="checked"<% endif %>
+            />&nbsp;Yes, I want to help!</label>
+        <form>
+      </div>
+      <div class="welcome_wide">
+        <h3>Are you subscribed to our newsletter?</h3>
+        <div class="signup">
+          <iframe width="100%" scrolling="no" frameborder="0"
+          src="http://www.mailpoet.com/?wysija-page=1&controller=subscribers&act
+ion=wysija_outter&wysija_form=5&external_site=1&wysijap=subscriptions-3" class="
+iframe-wysija" vspace="0" tabindex="0" style="position: static; top: 0pt; margin
+: 0px; border-style: none; height: 180px; left: 0pt; visibility: visible; backgr
+ound-color: #f1f1f1!important;" marginwidth="0" marginheight="0" hspace="0"
+allowtransparency="true" title="Subscription Wysija"></iframe>
+        </div>
+        <div class="signup_tips">
+          <p>Sign up for:
+            <ul>
+              <li>Tips to get the best from MailPoet</li>
+              <li>Special offers</li>
+              <li>Important plugin updates</li>
+            </ul>
+          </p>
+            <p>View an <a target="_blank" href="http://www.mailpoet.com/?wysija-
+page=1&controller=email&action=view&email_id=1181&wysijap=subscriptions-3">an
+example blog post email</a> and <a target="_blank" href="http://www.mailpoet.com
+/?wysija-page=1&controller=email&action=view&email_id=64&wysijap=subscriptions-2
+">an example newsletter</a>.</p>
+        </div>
+        <!--//signup tips-->
+      </div>
+      <!--//welcome_wide-->
+       <p><a class="button button-primary button_thanks"
         href="<%= redirect_url %>"
-      >Take me to MailPoet</a>
-    </p>
+      >Get Started</a></p>
+    </div>
+   <!--//welcome_sub-->
+
   </div>
+  <!--//mailpoet_welcome-->
+
+  <script type="text/javascript">
+  jQuery(function($) {
+    $(function() {
+      $('#mailpoet_analytics_enabled').on('click', function() {
+        var is_enabled = $(this).is(':checked') ? '1' : '';
+        MailPoet.Ajax.post({
+          endpoint: 'settings',
+          action: 'set',
+          data: {
+            analytics: { enabled: (is_enabled)}
+          }
+        })
+      })
+    });
+  });
+  </script>
 <% endblock %>
