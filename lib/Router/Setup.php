@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Router;
 use \MailPoet\Config\Activator;
-use \MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
 
