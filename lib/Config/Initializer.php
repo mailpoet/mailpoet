@@ -113,6 +113,7 @@ class Initializer {
   }
 
   function setupAnalytics() {
+
     $widget = new Analytics();
     $widget->init();
   }

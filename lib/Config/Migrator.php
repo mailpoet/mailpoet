@@ -41,7 +41,7 @@ class Migrator {
   function down() {
     global $wpdb;
 
-    $drop_table = function($model) {
+    $drop_table = function($model) use($wpdb) {
       $table = $this->prefix . $model;
       $wpdb->query("DROP TABLE {$table}");
     };
