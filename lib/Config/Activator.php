@@ -23,4 +23,9 @@ class Activator {
     $populator = new Populator();
     $populator->up();
   }
+
+  function deactivate() {
+    $migrator = new Migrator();
+    $migrator->down();
+  }
 }

@@ -10,7 +10,8 @@ class Analytics {
   }
 
   function init() {
-    add_action('admin_enqueue_scripts', array($this, 'setupAdminDependencies'));
+    // review: this creates a fatal error when mailpoet tables are dropped.
+    //add_action('admin_enqueue_scripts', array($this, 'setupAdminDependencies'));
   }
 
   function setupAdminDependencies() {
