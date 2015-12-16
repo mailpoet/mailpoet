@@ -70,9 +70,10 @@ define([
   };
 
   Module.previewNewsletter = function(options) {
-    return Module._query({
+    return MailPoet.Ajax.post({
+      endpoint: 'newsletters',
       action: 'preview',
-      options: options,
+      data: options || {},
     });
   };
 

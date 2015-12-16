@@ -95,7 +95,7 @@ define([
           expect(view.$('.mailpoet_save_options')).to.not.have.$class('mailpoet_hidden');
         });
 
-        it('triggers template saving when clicked on save as template button', function() {
+        it('triggers template saving when clicked on "save as template" button', function() {
           var mock = sinon.mock({ post: function() {} }).expects('post').once().returns(jQuery.Deferred()),
             html2canvasMock = jQuery.Deferred();
 
@@ -108,7 +108,11 @@ define([
             'mailpoet': {
               Ajax: {
                 post: mock,
-              }
+              },
+              Notice: {
+                success: function() {},
+                error: function() {},
+              },
             },
             'newsletter_editor/App': EditorApplication,
             'html2canvas': function() { return html2canvasMock; },

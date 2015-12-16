@@ -1,12 +1,12 @@
 define([
     'newsletter_editor/App',
-    'newsletter_editor/components/wordpress',
-    'amd-inject-loader!newsletter_editor/components/wordpress'
-  ], function(EditorApplication, Wordpress, WordpressInjector) {
+    'newsletter_editor/components/communication',
+    'amd-inject-loader!newsletter_editor/components/communication'
+  ], function(EditorApplication, Communication, CommunicationInjector) {
 
   describe('getPostTypes', function() {
     it('fetches post types from the server', function() {
-      var module = WordpressInjector({
+      var module = CommunicationInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
@@ -28,7 +28,7 @@ define([
     it('caches results', function() {
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
-          module = WordpressInjector({
+          module = CommunicationInjector({
             "mailpoet": {
               Ajax: {
                 post: mock,
@@ -59,7 +59,7 @@ define([
           },
           module;
       spy = sinon.spy(post);
-      module = WordpressInjector({
+      module = CommunicationInjector({
         "mailpoet": {
           Ajax: {
             post: spy,
@@ -72,7 +72,7 @@ define([
     });
 
     it('fetches post types from the server', function() {
-      var module = WordpressInjector({
+      var module = CommunicationInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
@@ -91,7 +91,7 @@ define([
     it('caches results', function() {
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
-          module = WordpressInjector({
+          module = CommunicationInjector({
             "mailpoet": {
               Ajax: {
                 post: mock,
@@ -116,7 +116,7 @@ define([
           },
           module;
       spy = sinon.spy(post);
-      module = WordpressInjector({
+      module = CommunicationInjector({
         "mailpoet": {
           Ajax: {
             post: spy,
@@ -131,7 +131,7 @@ define([
     });
 
     it('fetches terms from the server', function() {
-      var module = WordpressInjector({
+      var module = CommunicationInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
@@ -150,7 +150,7 @@ define([
     it('caches results', function() {
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
-          module = WordpressInjector({
+          module = CommunicationInjector({
             "mailpoet": {
               Ajax: {
                 post: mock,
@@ -175,7 +175,7 @@ define([
           },
           module;
       spy = sinon.spy(post);
-      module = WordpressInjector({
+      module = CommunicationInjector({
         "mailpoet": {
           Ajax: {
             post: spy,
@@ -194,7 +194,7 @@ define([
     });
 
     it('fetches posts from the server', function() {
-      var module = WordpressInjector({
+      var module = CommunicationInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
@@ -213,7 +213,7 @@ define([
     it('caches results', function() {
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
-          module = WordpressInjector({
+          module = CommunicationInjector({
             "mailpoet": {
               Ajax: {
                 post: mock,
@@ -241,7 +241,7 @@ define([
           },
           module;
       spy = sinon.spy(post);
-      module = WordpressInjector({
+      module = CommunicationInjector({
         "mailpoet": {
           Ajax: {
             post: spy,
@@ -260,7 +260,7 @@ define([
     });
 
     it('fetches transformed posts from the server', function() {
-      var module = WordpressInjector({
+      var module = CommunicationInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
@@ -279,7 +279,7 @@ define([
     it('caches results', function() {
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
-          module = WordpressInjector({
+          module = CommunicationInjector({
             "mailpoet": {
               Ajax: {
                 post: mock,

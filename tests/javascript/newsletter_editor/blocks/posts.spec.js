@@ -1,8 +1,8 @@
 define([
     'newsletter_editor/App',
-    'newsletter_editor/components/wordpress',
+    'newsletter_editor/components/communication',
     'newsletter_editor/blocks/posts'
-  ], function(EditorApplication, WordpressComponent, PostsBlock) {
+  ], function(EditorApplication, CommunicationComponent, PostsBlock) {
 
   describe('Posts', function () {
     Backbone.Radio = {
@@ -16,7 +16,7 @@ define([
       var model;
 
       before(function() {
-        WordpressComponent.getPosts = function() {
+        CommunicationComponent.getPosts = function() {
           var deferred = jQuery.Deferred();
           return deferred;
         };
@@ -226,7 +226,7 @@ define([
       var model, view;
 
       before(function () {
-        WordpressComponent.getPostTypes = function() {
+        CommunicationComponent.getPostTypes = function() {
           var deferred = jQuery.Deferred();
           deferred.resolve([
             {

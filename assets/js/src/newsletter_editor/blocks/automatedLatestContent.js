@@ -11,10 +11,10 @@ define([
     'newsletter_editor/blocks/base',
     'newsletter_editor/blocks/button',
     'newsletter_editor/blocks/divider',
-    'newsletter_editor/components/wordpress',
+    'newsletter_editor/components/communication',
     'underscore',
     'jquery'
-  ], function(App, BaseBlock, ButtonBlock, DividerBlock, WordpressComponent, _, jQuery) {
+  ], function(App, BaseBlock, ButtonBlock, DividerBlock, CommunicationComponent, _, jQuery) {
 
   "use strict";
 
@@ -69,7 +69,7 @@ define([
     },
     fetchPosts: function() {
       var that = this;
-      WordpressComponent.getTransformedPosts(this.toJSON()).done(function(content) {
+      CommunicationComponent.getTransformedPosts(this.toJSON()).done(function(content) {
         console.log('ALC fetched', arguments);
         that.get('_container').get('blocks').reset(content, {parse: true});
       }).fail(function(error) {
@@ -161,7 +161,7 @@ define([
       var that = this;
 
       // Dynamically update available post types
-      WordpressComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
+      CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
 
       this.$('.mailpoet_automated_latest_content_categories_and_tags').select2({
         multiple: true,
@@ -174,10 +174,10 @@ define([
           },
           transport: function(options, success, failure) {
             var taxonomies,
-                promise = WordpressComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
+                promise = CommunicationComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
               taxonomies = tax;
               // Fetch available terms based on the list of taxonomies already fetched
-              var promise = WordpressComponent.getTerms({
+              var promise = CommunicationComponent.getTerms({
                 search: options.data.term,
                 taxonomies: _.keys(taxonomies)
               }).then(function(terms) {

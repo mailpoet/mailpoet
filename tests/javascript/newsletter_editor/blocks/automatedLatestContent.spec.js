@@ -2,8 +2,8 @@ define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/automatedLatestContent',
     'amd-inject-loader!newsletter_editor/blocks/automatedLatestContent',
-    'newsletter_editor/components/wordpress',
-  ], function(EditorApplication, AutomatedLatestContentBlock, AutomatedLatestContentInjector, WordpressComponent) {
+    'newsletter_editor/components/communication',
+  ], function(EditorApplication, AutomatedLatestContentBlock, AutomatedLatestContentInjector, CommunicationComponent) {
 
   describe('Automated latest content', function () {
     describe('model', function () {
@@ -11,7 +11,7 @@ define([
 
       before(function() {
         module = AutomatedLatestContentInjector({
-          'newsletter_editor/components/wordpress': {
+          'newsletter_editor/components/communication': {
             getTransformedPosts: function() {
               return jQuery.Deferred();
             }
@@ -199,7 +199,7 @@ define([
 
       before(function() {
         module = AutomatedLatestContentInjector({
-          'newsletter_editor/components/wordpress': {
+          'newsletter_editor/components/communication': {
             getTransformedPosts: function() {
               return jQuery.Deferred();
             }
@@ -231,7 +231,7 @@ define([
 
       before(function() {
         module = AutomatedLatestContentInjector({
-          'newsletter_editor/components/wordpress': {
+          'newsletter_editor/components/communication': {
             getTransformedPosts: function() {
               return jQuery.Deferred();
             },
@@ -243,7 +243,7 @@ define([
       });
 
       before(function () {
-        WordpressComponent.getPostTypes = function() {
+        CommunicationComponent.getPostTypes = function() {
           var deferred = jQuery.Deferred();
           deferred.resolve([
             {

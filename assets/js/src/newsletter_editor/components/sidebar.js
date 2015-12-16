@@ -1,12 +1,13 @@
 define([
     'newsletter_editor/App',
+    'newsletter_editor/components/communication',
     'backbone',
     'backbone.marionette',
     'backbone.supermodel',
     'underscore',
     'jquery',
     'sticky-kit'
-  ], function(App, Backbone, Marionette, SuperModel, _, jQuery, StickyKit) {
+  ], function(App, CommunicationComponent, Backbone, Marionette, SuperModel, _, jQuery, StickyKit) {
 
   "use strict";
 
@@ -229,7 +230,7 @@ define([
       MailPoet.Modal.loading(true);
 
       // TODO: Migrate logic to new AJAX format
-      Wordpress.previewNewsletter(data).done(function(response) {
+      CommunicationComponent.previewNewsletter(data).done(function(response) {
         if(response.success !== undefined && response.success === true) {
           MailPoet.Notice.success(App.getConfig().get('translations.testEmailSent'));
         } else if(response.error !== undefined) {
