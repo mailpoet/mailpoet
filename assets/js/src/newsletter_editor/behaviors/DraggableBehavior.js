@@ -47,7 +47,6 @@ define([
         autoScroll: true,
 
         onstart: function(event) {
-          console.log('Drag start', event, this);
 
           if (that.options.cloneOriginal === true) {
             // Use substitution instead of a clone

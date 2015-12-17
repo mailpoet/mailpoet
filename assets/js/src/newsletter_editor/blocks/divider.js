@@ -57,11 +57,9 @@ define([
       this.listenTo(this.model, 'change:styles.block.padding', this.changePadding);
     },
     templateHelpers: function() {
-      return {
-        model: this.model.toJSON(),
-        viewCid: this.cid,
+      return _.extend({
         totalHeight: parseInt(this.model.get('styles.block.padding'), 10)*2 + parseInt(this.model.get('styles.block.borderWidth')) + 'px',
-      };
+      }, base.BlockView.prototype.templateHelpers.apply(this));
     },
     onRender: function() {
       this.toolsView = new Module.DividerBlockToolsView({ model: this.model });

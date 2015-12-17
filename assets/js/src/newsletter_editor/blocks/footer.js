@@ -39,9 +39,9 @@ define([
   Module.FooterBlockView = base.BlockView.extend({
     className: "mailpoet_block mailpoet_footer_block mailpoet_droppable_block",
     getTemplate: function() { return templates.footerBlock; },
-    modelEvents: {
+    modelEvents: _.extend({
       'change:styles.block.backgroundColor change:styles.text.fontColor change:styles.text.fontFamily change:styles.text.fontSize change:styles.text.textAlign change:styles.link.fontColor change:styles.link.textDecoration': 'render',
-    },
+    }, base.BlockView.prototype.modelEvents),
     onDragSubstituteBy: function() { return Module.FooterWidgetView; },
     onRender: function() {
       this.toolsView = new Module.FooterBlockToolsView({ model: this.model });

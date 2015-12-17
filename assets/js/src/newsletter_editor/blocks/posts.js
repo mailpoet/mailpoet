@@ -145,13 +145,14 @@ define([
   Module.PostsBlockView = base.BlockView.extend({
     className: "mailpoet_block mailpoet_posts_block mailpoet_droppable_block",
     getTemplate: function() { return templates.postsBlock; },
-    modelEvents: {},
+    modelEvents: {}, // Forcefully disable all events
     regions: _.extend({
       postsRegion: '.mailpoet_posts_block_posts',
     }, base.BlockView.prototype.regions),
     onDragSubstituteBy: function() { return Module.PostsWidgetView; },
     initialize: function() {
       base.BlockView.prototype.initialize.apply(this, arguments);
+
       this.toolsView = new Module.PostsBlockToolsView({ model: this.model });
       this.model.reply('blockView', this.notifyAboutSelf, this);
     },

@@ -175,12 +175,9 @@ define([
       _event.stopPropagation();
     },
     getDropFunc: function() {
-      var that = this;
       return function() {
-        var newModel = that.model.clone();
-        //that.model.destroy();
-        return newModel;
-      };
+        return this.model.clone();
+      }.bind(this);
     },
     _buildRegions: function(regions) {
       var that = this;
