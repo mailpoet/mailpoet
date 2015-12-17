@@ -232,12 +232,9 @@ define([
       _.extend(this, this._buildRegions(this.regions));
     },
     getDropFunc: function() {
-      var that = this;
       return function() {
-        var newModel = that.model.clone();
-        that.model.destroy();
-        return newModel;
-      };
+        return this.model.clone();
+      }.bind(this);
     },
     showBlock: function() {
       if (this._isFirstRender) {
