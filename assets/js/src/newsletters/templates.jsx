@@ -153,7 +153,7 @@ define(
       handleShowTemplate: function(template) {
         MailPoet.Modal.popup({
           title: template.name,
-          template: '<img src="{{ thumbnail }}" />',
+          template: '<div class="mailpoet_boxes_preview" style="background-color: {{ body.globalStyles.body.backgroundColor }}"><img src="{{ thumbnail }}" /></div>',
           data: template,
         });
       },

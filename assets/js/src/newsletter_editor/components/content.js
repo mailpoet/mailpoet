@@ -44,10 +44,10 @@ define([
   };
 
   Module.getBody = function() {
-    return JSON.stringify({
+    return {
       content: App._contentContainer.toJSON(),
       globalStyles: App.getGlobalStyles().toJSON(),
-    });
+    };
   };
 
   Module.toJSON = function() {
@@ -73,8 +73,7 @@ define([
   });
 
   App.on('start', function(options) {
-    // TODO: Other newsletter information will be needed as well.
-    var body = JSON.parse(options.newsletter.body);
+    var body = options.newsletter.body;
     App._contentContainer = new (App.getBlockTypeModel('container'))(body.content, {parse: true});
     App._contentContainerView = new (App.getBlockTypeView('container'))({
       model: App._contentContainer,

@@ -18,12 +18,12 @@ define([
     'jquery',
     'mailpoet',
     'newsletter_editor/App',
-    'newsletter_editor/components/wordpress',
+    'newsletter_editor/components/communication',
     'newsletter_editor/blocks/base',
     'newsletter_editor/blocks/button',
     'newsletter_editor/blocks/divider',
     'select2'
-  ], function(Backbone, Marionette, Radio, _, jQuery, MailPoet, App, WordpressComponent, BaseBlock, ButtonBlock, DividerBlock) {
+  ], function(Backbone, Marionette, Radio, _, jQuery, MailPoet, App, CommunicationComponent, BaseBlock, ButtonBlock, DividerBlock) {
 
   "use strict";
 
@@ -96,7 +96,7 @@ define([
     },
     fetchAvailablePosts: function() {
       var that = this;
-      WordpressComponent.getPosts(this.toJSON()).done(function(posts) {
+      CommunicationComponent.getPosts(this.toJSON()).done(function(posts) {
         console.log('Posts fetched', arguments);
         that.get('_availablePosts').reset(posts);
         that.get('_selectedPosts').reset(); // Empty out the collection
@@ -116,7 +116,7 @@ define([
         return;
       }
 
-      WordpressComponent.getTransformedPosts(data).done(function(posts) {
+      CommunicationComponent.getTransformedPosts(data).done(function(posts) {
         console.log('Transformed posts fetched', arguments);
         that.get('_transformedPosts').get('blocks').reset(posts, {parse: true});
       }).fail(function() {
@@ -133,7 +133,7 @@ define([
 
       if (data.posts.length === 0) return;
 
-      WordpressComponent.getTransformedPosts(data).done(function(posts) {
+      CommunicationComponent.getTransformedPosts(data).done(function(posts) {
         console.log('Available posts fetched', arguments);
         collection.add(posts, { at: index });
       }).fail(function() {
@@ -271,7 +271,7 @@ define([
       var that = this;
 
       // Dynamically update available post types
-      WordpressComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
+      CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
 
       this.$('.mailpoet_posts_categories_and_tags').select2({
         multiple: true,
@@ -284,10 +284,10 @@ define([
           },
           transport: function(options, success, failure) {
             var taxonomies,
-                promise = WordpressComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
+                promise = CommunicationComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
               taxonomies = tax;
               // Fetch available terms based on the list of taxonomies already fetched
-              var promise = WordpressComponent.getTerms({
+              var promise = CommunicationComponent.getTerms({
                 search: options.data.term,
                 taxonomies: _.keys(taxonomies)
               }).then(function(terms) {
