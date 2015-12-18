@@ -8,7 +8,6 @@ MailPoet done the right way.
 ```
 php
 nodejs
-phantomjs
 wordpress
 ```
 
@@ -45,16 +44,6 @@ $ ./do compile:all
 - Unit tests (using [verify](https://github.com/Codeception/Verify)):
 ```sh
 $ ./do test:unit
-```
-
-- Acceptance tests:
-```sh
-$ ./do test:acceptance
-```
-
-- Run all tests:
-```sh
-$ ./do test:all
 ```
 
 - Debug tests:
