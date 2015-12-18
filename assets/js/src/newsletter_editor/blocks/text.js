@@ -26,6 +26,8 @@ define([
     getTemplate: function() { return templates.textBlock; },
     modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'), // Prevent rerendering on model change due to text editor redrawing
     initialize: function(options) {
+      base.BlockView.prototype.initialize.apply(this, arguments);
+
       this.renderOptions = _.defaults(options.renderOptions || {}, {
         disableTextEditor: false,
       });

@@ -117,12 +117,9 @@ define([
      * Defines drop behavior of BlockView instance
      */
     getDropFunc: function() {
-      var that = this;
       return function() {
-        var newModel = that.model.clone();
-        //that.model.destroy();
-        return newModel;
-      };
+        return this.model.clone();
+      }.bind(this);
     },
     showBlock: function() {
       if (this._isFirstRender) {
@@ -142,14 +139,13 @@ define([
       return this._transition('mailpoet_block_transition_out');
     },
     _transition: function(className) {
-      var that = this,
-          promise = jQuery.Deferred();
+      var promise = jQuery.Deferred();
 
       this.$el.addClass(className);
       this.$el.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd animationend', function() {
-        that.$el.removeClass(className);
+        this.$el.removeClass(className);
         promise.resolve();
-      });
+      }.bind(this));
       return promise;
     },
   });
@@ -207,16 +203,14 @@ define([
   Module.BlockSettingsView = Marionette.LayoutView.extend({
     className: 'mailpoet_editor_settings',
     initialize: function() {
-      var that = this;
-
       MailPoet.Modal.panel({
         element: this.$el,
         template: '',
         position: 'right',
         width: App.getConfig().get('sidepanelWidth'),
         onCancel: function() {
-          that.destroy();
-        },
+          this.destroy();
+        }.bind(this),
       });
     },
     close: function(event) {

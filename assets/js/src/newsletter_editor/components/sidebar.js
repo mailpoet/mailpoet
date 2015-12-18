@@ -91,7 +91,6 @@ define([
       });
     },
     onDomRefresh: function() {
-      var that = this;
       this.$el.parent().stick_in_parent({
         offset_top: 32,
       });
@@ -170,10 +169,8 @@ define([
     },
     initialize: function(options) {
       this.availableStyles = options.availableStyles;
-      var that = this;
     },
     onRender: function() {
-      var that = this;
       this.$('.mailpoet_color').spectrum({
         clickoutFiresChange: true,
         showInput: true,

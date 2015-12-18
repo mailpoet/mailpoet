@@ -37,11 +37,9 @@ define([
     getTemplate: function() { return templates.imageBlock; },
     onDragSubstituteBy: function() { return Module.ImageWidgetView; },
     templateHelpers: function() {
-      return {
-        model: this.model.toJSON(),
-        viewCid: this.cid,
+      return _.extend({
         imageMissingSrc: App.getConfig().get('urls.imageMissing'),
-      };
+      }, base.BlockView.prototype.templateHelpers.apply(this));
     },
     onRender: function() {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
