@@ -8,6 +8,7 @@ use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 
 class BootStrapMenuCest {
   function _before() {
+    $this->_after();
     $this->segmentsData = array(
       array(
         'name' => 'first',
@@ -44,13 +45,12 @@ class BootStrapMenuCest {
   }
 
   function itCanGetSegmentsWithSubscriberCount() {
-    // TOFIX.
-    /*$this->_createSegmentsAndSubscribers();
+    $this->_createSegmentsAndSubscribers();
     $segments = $this->bootStrapImportMenu->getSegments();
     expect(count($segments))->equals(2);
     expect($segments[0]['name'])->equals($this->segmentsData[0]['name']);
     expect($segments[0]['subscriberCount'])->equals(1);
-    expect($segments[1]['subscriberCount'])->equals(1);*/
+    expect($segments[1]['subscriberCount'])->equals(1);
   }
 
   function itCanGetSegmentsForImportWithoutTrashedSubscribers() {
@@ -293,9 +293,9 @@ class BootStrapMenuCest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
   }
 }

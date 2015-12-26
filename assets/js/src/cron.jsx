@@ -1,66 +1,64 @@
 define(
-  [
-    'react',
-    'react-dom',
-    'mailpoet'
-  ],
-  function(
-    React,
-    ReactDOM,
-    MailPoet
-  ) {
-  var CronControl = React.createClass({
-    getInitialState: function() {
-      return {
-        status: 'loading'
-      };
-    },
-    getDaemonData: function() {
-      MailPoet.Ajax.post({
+ [
+   'react',
+   'react-dom',
+   'mailpoet'
+ ],
+ function (
+  React,
+  ReactDOM,
+  MailPoet
+ ) {
+   var CronControl = React.createClass({
+     getInitialState: function () {
+       return {
+         status: 'loading'
+       };
+     },
+     getCronData: function () {
+       MailPoet.Ajax.post({
           endpoint: 'cron',
-          action: 'getDaemonStatus'
+          action: 'getStatus'
         })
-        .done(function(response) {
+        .done(function (response) {
           jQuery('.button-primary')
-            .removeClass('disabled');
-          if(response.status !== undefined) {
+           .removeClass('disabled');
+          if (response.status !== undefined) {
             this.setState(response);
           } else {
             this.replaceState();
           }
         }.bind(this));
-    },
-    componentDidMount: function() {
-      if(this.isMounted()) {
-        this.getDaemonData();
-        setInterval(this.getDaemonData, 5000);
-      }
-    },
-    controlDaemon: function(action) {
-      jQuery('.button-primary')
+     },
+     componentDidMount: function () {
+       if (this.isMounted()) {
+         this.getCronData();
+         setInterval(this.getCronData, 5000);
+       }
+     },
+     controlCron: function (action) {
+       if (jQuery('.button-primary').hasClass('disabled')) {
+         return;
+       }
+       jQuery('.button-primary')
         .addClass('disabled');
-      MailPoet.Ajax.post({
-        endpoint: 'cron',
-        action: 'controlDaemon',
-        data: {
-          'action': action
-        }
-      })
-      .done(function(response) {
-        if(!response.result) {
-          //this.replaceState();
-        } else {
-          //this.setState(response);
-        }
-      }.bind(this));
-    },
-    render: function() {
-      if(this.state.status === 'loading') {
-        return(<div>Loading daemon status...</div>);
-      }
-      switch(this.state.status) {
-        case 'started':
-          return(
+       MailPoet.Ajax.post({
+          endpoint: 'cron',
+          action: action
+        })
+        .done(function (response) {
+          if (!response.result) {
+            MailPoet.Notice.error(MailPoetI18n.daemonControlError);
+          }
+        }.bind(this));
+     },
+     render: function () {
+       if (this.state.status === 'loading') {
+         return (<div>Loading daemon status...</div>);
+       }
+       switch (this.state.status) {
+         case 'started':
+           return (
             <div>
               Cron daemon is running.
               <br/>
@@ -71,32 +69,38 @@ define(
               <strong> {this.state.counter} </strong> times (once every 30 seconds, unless it was interrupted and restarted).
               <br />
               <br />
-              <a href="#" className="button-primary" onClick={this.controlDaemon.bind(null, 'stop')}>Stop</a>&nbsp;&nbsp;
-              <a href="#" className="button-primary" onClick={this.controlDaemon.bind(null, 'pause')}>Pause</a>
+              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'stop')}>Stop</a>
             </div>
-          );
-        break;
-        case 'paused':
-        case 'stopped':
-          return(
+           );
+           break;
+         case 'starting':
+         case 'stopping':
+           return (
+            <div>
+              Daemon is {this.state.status}
+            </div>
+           );
+           break;
+         case 'stopped':
+           return (
             <div>
               Daemon is {this.state.status}
               <br />
               <br />
-              <a href="#" className="button-primary" onClick={this.controlDaemon.bind(null, 'start')}>Start</a>
+              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'start')}>Start</a>
             </div>
-          );
-        break;
-      }
-    }
-  });
+           );
+           break;
+       }
+     }
+   });
 
-  const container = document.getElementById('cron_container');
+   const container = document.getElementById('cron_container');
 
-  if(container) {
-    ReactDOM.render(
+   if (container) {
+     ReactDOM.render(
       <CronControl />,
       container
-    );
-  }
-});
+     );
+   }
+ });

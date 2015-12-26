@@ -8,14 +8,14 @@ if(!defined('ABSPATH')) exit;
 
 class PublicAPI {
   function __construct() {
-    # http://example.com/?mailpoet-api&section=&action=&payload=
+    # http://example.com/?mailpoet-api&section=&action=&request_payload=
     $this->api = isset($_GET['mailpoet-api']) ? true : false;
     $this->section = isset($_GET['section']) ? $_GET['section'] : false;
     $this->action = isset($_GET['action']) ?
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
-    $this->payload = isset($_GET['payload']) ?
-      json_decode(urldecode($_GET['payload']), true) :
+    $this->requestPayload = isset($_GET['request_payload']) ?
+      json_decode(urldecode($_GET['request_payload']), true) :
       false;
   }
 
@@ -26,10 +26,9 @@ class PublicAPI {
 
   function queue() {
     try {
-      $queue = new Daemon($this->payload);
+      $queue = new Daemon($this->requestPayload);
       $this->_checkAndCallMethod($queue, $this->action);
     } catch(\Exception $e) {
-      // mailer configuration error
     }
   }
 

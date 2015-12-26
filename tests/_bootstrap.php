@@ -16,7 +16,8 @@ $models = array(
   'Setting',
   'Subscriber',
   'SubscriberCustomField',
-  'SubscriberSegment'
+  'SubscriberSegment',
+  'SendingQueue'
 );
 $destroy = function ($model) {
   $class = new \ReflectionClass('\MailPoet\Models\\' . $model);
