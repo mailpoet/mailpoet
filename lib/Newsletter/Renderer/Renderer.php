@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Renderer;
-if(!defined('ABSPATH')) exit;
+
+if (!defined('ABSPATH')) exit;
 
 class Renderer {
   public $template = 'Template.html';
@@ -8,7 +9,6 @@ class Renderer {
   function __construct($newsletterData) {
     $this->blocksRenderer = new Blocks\Renderer();
     $this->columnsRenderer = new Columns\Renderer();
-    $this->stylesHelper = new StylesHelper();
     $this->DOMQuery = new \pQuery();
     $this->CSSInliner = new \MailPoet\Util\CSS();
     $this->data = $newsletterData;
@@ -17,51 +17,75 @@ class Renderer {
 
   function render() {
     $newsletterContent = $this->renderContent($this->data['content']);
-    $newsletterStyles = $this->renderStyles($this->data['globalStyles']);
-
+    $newsletterStyles = $this->renderGlobalStyles($this->data['globalStyles']);
+    $newsletterTitle = '';
+    $newsletterPreheader = '';
     $renderedTemplate = $this->renderTemplate($this->template, array(
+      $newsletterTitle,
       $newsletterStyles,
+      $newsletterPreheader,
       $newsletterContent
     ));
     $renderedTemplateWithInlinedStyles = $this->inlineCSSStyles($renderedTemplate);
-
-    return $this->postProcessRenderedTemplate($renderedTemplateWithInlinedStyles);
+    return $this->postProcessTemplate($renderedTemplateWithInlinedStyles);
   }
 
   function renderContent($content) {
-    $newsletterContent = array_map(function ($contentBlock) {
+    $content = array_map(function ($contentBlock) {
       $columnCount = count($contentBlock['blocks']);
-      $columnData = $this->blocksRenderer->render($contentBlock);
-      return $this->columnsRenderer->render($columnCount, $columnData);
+      $columnData = $this->blocksRenderer->render($contentBlock, $columnCount);
+      return $this->columnsRenderer->render(
+        $contentBlock['styles'],
+        $columnCount,
+        $columnData
+      );
     }, $content['blocks']);
-    return implode('', $newsletterContent);
+    return implode('', $content);
   }
 
-  function renderStyles($styles) {
-    $newsletterStyles = '';
+  function renderGlobalStyles($styles) {
+    $css = '';
     foreach ($styles as $selector => $style) {
       switch ($selector) {
+      case 'h1':
+        $selector = 'h1';
+      break;
+      case 'h2':
+        $selector = 'h2';
+      break;
+      case 'h3':
+        $selector = 'h3';
+      break;
       case 'text':
-        $selector = 'span.paragraph, ul, ol';
+        $selector = '.mailpoet_paragraph';
       break;
       case 'body':
-        $selector = '.mailpoet_content-wrapper';
+        $selector = 'body, .mailpoet_content-wrapper';
       break;
       case 'link':
         $selector = '.mailpoet_content-wrapper a';
       break;
       case 'wrapper':
-        $selector = '.mailpoet_container, .mailpoet_col-one, .mailpoet_col-two, .mailpoet_col-three';
+        $selector = '.mailpoet_content';
       break;
       }
-      $newsletterStyles .= $selector . '{' . PHP_EOL;
-      foreach ($style as $attribute => $individualStyle) {
-        $newsletterStyles .= $this->stylesHelper->translateCSSAttribute($attribute) . ':' . $individualStyle . ';' . PHP_EOL;
+      if (isset($style['fontSize'])) {
+        $css .= StylesHelper::setFontAndLineHeight(
+          (int) $style['fontSize'],
+          $selector
+        );
+        unset($style['fontSize']);
       }
-      $newsletterStyles .= '}' . PHP_EOL;
+      if (isset($style['fontFamily'])) {
+        $css .= StylesHelper::setFontFamily(
+          $style['fontFamily'],
+          $selector
+        );
+        unset($style['fontFamily']);
+      }
+      $css .= StylesHelper::setStyle($style, $selector);
     }
-
-    return $newsletterStyles;
+    return $css;
   }
 
   function renderTemplate($template, $data) {
@@ -74,14 +98,11 @@ class Renderer {
     return $this->CSSInliner->inlineCSS(null, $template);
   }
 
-  function postProcessRenderedTemplate($template) {
-    // remove padding from last element inside each column
+  function postProcessTemplate($template) {
+    // replace all !important tags except for in the body tag
     $DOM = $this->DOMQuery->parseStr($template);
-    $lastColumnElement = $DOM->query('.mailpoet_col > tbody > tr:last-child > td');
-    foreach ($lastColumnElement as $element) {
-      $element->setAttribute('style', str_replace('padding-bottom:20px;', '', $element->attributes['style']));
-    }
-
+    $lastColumnElement = $DOM->query('.mailpoet_template');
+    $lastColumnElement->html(str_replace('!important', '', $lastColumnElement->html()));
     return $DOM->__toString();
   }
 }

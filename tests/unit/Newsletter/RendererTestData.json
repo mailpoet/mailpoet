@@ -9,13 +9,7 @@
     },
     "blocks": [
       {
-        "type": "container",
         "orientation": "horizontal",
-        "styles": {
-          "block": {
-            "backgroundColor": "transparent"
-          }
-        },
         "blocks": [
           {
             "type": "container",
@@ -28,13 +22,13 @@
             "blocks": [
               {
                 "type": "header",
-                "text": "<p>Display problems? <a href=\"[viewInBrowserUrl]\">View it in your browser</a>.&nbsp;If I add a lot of text to test what happens... Well, nothing really (exciting) happens. Things don't break.</p>",
+                "text": "Display problems?&nbsp;<a href=\"[viewInBrowserUrl]\">View it in your browser</a>",
                 "styles": {
                   "block": {
-                    "backgroundColor": "#333333"
+                    "backgroundColor": "#ffffff"
                   },
                   "text": {
-                    "fontColor": "#aaaaaa",
+                    "fontColor": "#222222",
                     "fontFamily": "Arial",
                     "fontSize": "12px",
                     "textAlign": "center"
@@ -47,11 +41,11 @@
               },
               {
                 "type": "image",
-                "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/600x250.jpg",
-                "alt": "600x250",
+                "link": "",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/660.png",
+                "alt": "660",
                 "padded": true,
-                "width": "600px",
+                "width": "660px",
                 "height": "250px",
                 "styles": {
                   "block": {
@@ -61,7 +55,7 @@
               },
               {
                 "type": "text",
-                "text": "<h1 style=\"text-align: left;\">1/1 Column</h1>\n<h1 style=\"text-align: center;\">1/1 Column</h1>\n<h1 style=\"text-align: right;\">1/1 Column</h1>\n<h1 style=\"text-align: center;\"><a href=\"../?p=231\" title=\"With multiple images\">1/1 Column</a></h1>\n<h2>Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3) <a href=\"../?p=223\" title=\"A classic embed object for Flash\">with link</a></h3>\n<h3><strong>Heading</strong> <em>(size 3)</em></h3>\n<p>Paragraph under heading to test line-height.</p>\n<p><strong>Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em> Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</p>\n<p style=\"text-align: center;\"><strong>Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle.</strong> <em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em> Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: right;\"><strong>Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin.</strong> <em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em> Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: justify;\"><strong>Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa.</strong>&nbsp;<em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em>&nbsp;Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p><strong>Alcatra flank ground round corned beef tenderloin prosciutto chicken sirloin, venison leberkas turducken shoulder pastrami bresaola.</strong> <em>Chicken leberkas t-bone pork loin drumstick flank. T-bone flank venison alcatra andouille brisket short ribs shankle biltong pancetta pork belly bacon.</em> Tri-tip biltong ham hock jowl chicken. Spare ribs beef ribs shankle corned beef short loin picanha prosciutto bacon ham rump tri-tip doner ground round cupim. Meatloaf andouille bresaola strip steak kevin, pork turducken.</p>\n<p>Jowl <span style=\"color: #ff0000;\">strip steak</span> pork <span style=\"color: #0000ff;\">belly jerky</span> short <span style=\"color: #008000;\">ribs filet</span> mignon. Kielbasa ham shoulder turducken sausage jerky beef <span style=\"color: #ff0000;\">h</span><span style=\"color: #0000ff;\">a</span><span style=\"color: #008000;\">m</span></p>\n<p><a href=\"../?p=1\" title=\"Hello world!\">Alcatra hamburger</a> jowl shank jerky.&nbsp;</p>\n<ul>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ul>\n<ol>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ol>\n<blockquote><p><span style=\"background-color: inherit;\"></span>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.&nbsp;</p>\n<p>&mdash; Mr. Bacon</p></blockquote>"
+                "text": "<h1 style=\"text-align: left;\">1/1 Column</h1>\n<h1 style=\"text-align: center;\">1/1 Column</h1>\n<h1 style=\"text-align: right;\">1/1 Column</h1>\n<h1><a href=\"http://www.example.com\">1/1 Column</a></h1>\n<h2>Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3) <a href=\"http://www.example.org\">with link</a></h3>\n<h3><strong>Heading</strong> (size 3)</h3>\n<p>Paragraph under heading to test line-height.</p>\n<p style=\"text-align: left;\"><strong>Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em> Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak.</p>\n<p style=\"text-align: left;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: center;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle. <em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em> Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: center;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, <span style=\"color: #ffff00;\">kevin cupim landjaeger pork loin tenderloin</span> ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: right;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin. <em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em> Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: right;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: justify;\">Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa. <em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em> Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p style=\"text-align: justify;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em> <a href=\"http://www.example.org\">Alcatra hamburger</a><br /><br /></p>\n<ul>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ul>\n<ol>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ol>\n<blockquote>\n<p>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.</p>\n</blockquote>"
               },
               {
                 "type": "divider",
@@ -87,7 +81,7 @@
               {
                 "type": "button",
                 "text": "Button",
-                "url": "http://example.org",
+                "url": "http://example.com",
                 "styles": {
                   "block": {
                     "backgroundColor": "#666666",
@@ -99,28 +93,20 @@
                     "lineHeight": "30px",
                     "fontColor": "#ffffff",
                     "fontFamily": "Arial",
-                    "fontSize": "13px",
+                    "fontSize": "14px",
                     "textAlign": "center"
                   }
                 }
               },
               {
                 "type": "social",
+                "iconSet": "default",
                 "icons": [
                   {
                     "type": "socialIcon",
-                    "iconType": "custom",
-                    "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/custom.png",
-                    "height": "32px",
-                    "width": "32px",
-                    "text": "Custom"
-                  },
-                  {
-                    "type": "socialIcon",
                     "iconType": "facebook",
-                    "link": "http://www.facebook.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Facebook.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Facebook.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Facebook"
@@ -128,8 +114,8 @@
                   {
                     "type": "socialIcon",
                     "iconType": "twitter",
-                    "link": "http://www.twitter.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Twitter.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Twitter.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Twitter"
@@ -138,7 +124,7 @@
                     "type": "socialIcon",
                     "iconType": "google-plus",
                     "link": "http://plus.google.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Google-Plus.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Google-Plus.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Google Plus"
@@ -147,7 +133,7 @@
                     "type": "socialIcon",
                     "iconType": "youtube",
                     "link": "http://www.youtube.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Youtube.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Youtube.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Youtube"
@@ -156,7 +142,7 @@
                     "type": "socialIcon",
                     "iconType": "website",
                     "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Website.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Website.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Website"
@@ -165,7 +151,7 @@
                     "type": "socialIcon",
                     "iconType": "email",
                     "link": "mailto:mail@example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Email.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Email.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Email"
@@ -174,7 +160,7 @@
                     "type": "socialIcon",
                     "iconType": "instagram",
                     "link": "http://instagram.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Instagram.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Instagram.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Instagram"
@@ -183,7 +169,7 @@
                     "type": "socialIcon",
                     "iconType": "pinterest",
                     "link": "http://www.pinterest.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Pinterest.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Pinterest.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Pinterest"
@@ -192,21 +178,29 @@
                     "type": "socialIcon",
                     "iconType": "linkedin",
                     "link": "http://www.linkedin.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/LinkedIn.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/LinkedIn.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "LinkedIn"
+                  },
+                  {
+                    "type": "socialIcon",
+                    "iconType": "custom",
+                    "link": "http://example.org",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/custom.png",
+                    "height": "32px",
+                    "width": "32px",
+                    "text": "Custom"
                   }
-                ],
-                "iconSet": "default"
+                ]
               },
               {
                 "type": "image",
                 "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/600x250.jpg",
-                "alt": "600x250",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/660.png",
+                "alt": "660",
                 "padded": false,
-                "width": "600px",
+                "width": "660px",
                 "height": "250px",
                 "styles": {
                   "block": {
@@ -216,20 +210,20 @@
               }
             ]
           }
-        ]
-      },
-      {
-        "orientation": "horizontal",
+        ],
         "type": "container",
         "styles": {
           "block": {
-            "backgroundColor": "transparent"
+            "backgroundColor": "#999999"
           }
-        },
+        }
+      },
+      {
+        "orientation": "horizontal",
         "blocks": [
           {
-            "orientation": "vertical",
             "type": "container",
+            "orientation": "vertical",
             "styles": {
               "block": {
                 "backgroundColor": "transparent"
@@ -238,11 +232,11 @@
             "blocks": [
               {
                 "type": "image",
-                "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/300x125.jpg",
-                "alt": "300x125",
+                "link": "",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/330x125.png",
+                "alt": "330x125",
                 "padded": true,
-                "width": "300px",
+                "width": "330px",
                 "height": "125px",
                 "styles": {
                   "block": {
@@ -252,7 +246,7 @@
               },
               {
                 "type": "text",
-                "text": "<h1>1/2 Column</h1>\n<h1 style=\"text-align: center;\">1/2 Column</h1>\n<h1 style=\"text-align: right;\">1/2 Column</h1>\n<h1 style=\"text-align: center;\"><a href=\"../?p=231\" title=\"With multiple images\">1/2 Column</a></h1>\n<h2>Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3)&nbsp;<a href=\"../?p=223\" title=\"A classic embed object for Flash\">with link</a></h3>\n<h3>Heading&nbsp;<em>(size 3)</em></h3>\n<p>Paragraph under heading to test line-height.</p>\n<p><span style=\"font-weight: 600;\">Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</span>&nbsp;<em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em>&nbsp;Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</p>\n<p style=\"text-align: center;\"><span style=\"font-weight: 600;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle.</span>&nbsp;<em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em>&nbsp;Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: right;\"><span style=\"font-weight: 600;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin.</span>&nbsp;<em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em>&nbsp;Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: justify;\"><span style=\"font-weight: 600;\">Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa.</span>&nbsp;<em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em>&nbsp;Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p><span style=\"font-weight: 600;\">Alcatra flank ground round corned beef tenderloin prosciutto chicken sirloin, venison leberkas turducken shoulder pastrami bresaola.</span>&nbsp;<em>Chicken leberkas t-bone pork loin drumstick flank. T-bone flank venison alcatra andouille brisket short ribs shankle biltong pancetta pork belly bacon.</em>&nbsp;Tri-tip biltong ham hock jowl chicken. Spare ribs beef ribs shankle corned beef short loin picanha prosciutto bacon ham rump tri-tip doner ground round cupim. Meatloaf andouille bresaola strip steak kevin, pork turducken.</p>\n<p>Jowl&nbsp;<span style=\"color: #ff0000;\">strip steak</span>&nbsp;pork&nbsp;<span style=\"color: #0000ff;\">belly jerky</span>&nbsp;short&nbsp;<span style=\"color: #008000;\">ribs filet</span>&nbsp;mignon. Kielbasa ham shoulder turducken sausage jerky beef&nbsp;<span style=\"color: #ff0000;\">h</span><span style=\"color: #0000ff;\">a</span><span style=\"color: #008000;\">m</span></p>\n<p><a href=\"../?p=1\" title=\"Hello world!\">Alcatra hamburger</a>&nbsp;jowl shank jerky.&nbsp;</p>\n<ul>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ul>\n<ol>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ol>\n<blockquote><p><span style=\"background-color: inherit;\"></span>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.&nbsp;</p>\n<p>&mdash; Mr. Bacon</p></blockquote>"
+                "text": "<h1 style=\"text-align: left;\">1/2 Column</h1>\n<h1 style=\"text-align: center;\">1/2 Column</h1>\n<h1 style=\"text-align: right;\">1/2 Column</h1>\n<h1 style=\"text-align: left;\"><a href=\"http://www.google.co.uk\">1/2 Column</a></h1>\n<h2 style=\"text-align: left;\">Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3) <a href=\"http://www.example.com\">with link</a></h3>\n<h3><strong>Heading</strong> (size 3)</h3>\n<p style=\"text-align: left;\">Paragraph under heading to test line-height.</p>\n<p><strong>Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em> Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak.</p>\n<p><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin <span style=\"color: #993300;\">cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone</span> pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: center;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle. <em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em> Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: center;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: right;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin. <em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em> Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: right;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: justify;\">Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa. <em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em> Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p style=\"text-align: justify;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em> <a href=\"http://www.example.org\">Alcatra hamburger</a></p>\n<ul>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ul>\n<ol>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ol>\n<blockquote>\n<p style=\"text-align: justify;\">Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.</p>\n</blockquote>"
               },
               {
                 "type": "divider",
@@ -290,28 +284,20 @@
                     "lineHeight": "30px",
                     "fontColor": "#ffffff",
                     "fontFamily": "Arial",
-                    "fontSize": "13px",
+                    "fontSize": "14px",
                     "textAlign": "center"
                   }
                 }
               },
               {
                 "type": "social",
+                "iconSet": "default",
                 "icons": [
                   {
                     "type": "socialIcon",
-                    "iconType": "custom",
-                    "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/custom.png",
-                    "height": "32px",
-                    "width": "32px",
-                    "text": "Custom"
-                  },
-                  {
-                    "type": "socialIcon",
                     "iconType": "facebook",
-                    "link": "http://www.facebook.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Facebook.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Facebook.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Facebook"
@@ -319,8 +305,8 @@
                   {
                     "type": "socialIcon",
                     "iconType": "twitter",
-                    "link": "http://www.twitter.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Twitter.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Twitter.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Twitter"
@@ -329,7 +315,7 @@
                     "type": "socialIcon",
                     "iconType": "google-plus",
                     "link": "http://plus.google.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Google-Plus.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Google-Plus.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Google Plus"
@@ -338,7 +324,7 @@
                     "type": "socialIcon",
                     "iconType": "youtube",
                     "link": "http://www.youtube.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Youtube.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Youtube.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Youtube"
@@ -347,7 +333,7 @@
                     "type": "socialIcon",
                     "iconType": "website",
                     "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Website.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Website.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Website"
@@ -356,7 +342,7 @@
                     "type": "socialIcon",
                     "iconType": "email",
                     "link": "mailto:mail@example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Email.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Email.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Email"
@@ -365,7 +351,7 @@
                     "type": "socialIcon",
                     "iconType": "instagram",
                     "link": "http://instagram.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Instagram.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Instagram.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Instagram"
@@ -374,7 +360,7 @@
                     "type": "socialIcon",
                     "iconType": "pinterest",
                     "link": "http://www.pinterest.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Pinterest.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Pinterest.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Pinterest"
@@ -383,21 +369,29 @@
                     "type": "socialIcon",
                     "iconType": "linkedin",
                     "link": "http://www.linkedin.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/LinkedIn.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/LinkedIn.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "LinkedIn"
+                  },
+                  {
+                    "type": "socialIcon",
+                    "iconType": "custom",
+                    "link": "http://example.org",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/custom.png",
+                    "height": "32px",
+                    "width": "32px",
+                    "text": "Custom"
                   }
-                ],
-                "iconSet": "default"
+                ]
               },
               {
                 "type": "image",
                 "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/300x125.jpg",
-                "alt": "300x125",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/330x125.png",
+                "alt": "330x125",
                 "padded": false,
-                "width": "300px",
+                "width": "330px",
                 "height": "125px",
                 "styles": {
                   "block": {
@@ -408,8 +402,8 @@
             ]
           },
           {
-            "orientation": "vertical",
             "type": "container",
+            "orientation": "vertical",
             "styles": {
               "block": {
                 "backgroundColor": "transparent"
@@ -418,12 +412,12 @@
             "blocks": [
               {
                 "type": "image",
-                "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/300x125.jpg",
-                "alt": "300x125",
+                "link": "",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/330x125-copy-150x57.png",
+                "alt": "330x125 copy",
                 "padded": true,
-                "width": "300px",
-                "height": "125px",
+                "width": "150px",
+                "height": "57px",
                 "styles": {
                   "block": {
                     "textAlign": "center"
@@ -432,7 +426,7 @@
               },
               {
                 "type": "text",
-                "text": "<h1>1/2 Column</h1>\n<h1 style=\"text-align: center;\">1/2 Column</h1>\n<h1 style=\"text-align: right;\">1/2 Column</h1>\n<h1 style=\"text-align: center;\"><a href=\"../?p=231\" title=\"With multiple images\">1/2 Column</a></h1>\n<h2>Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3)&nbsp;<a href=\"../?p=223\" title=\"A classic embed object for Flash\">with link</a></h3>\n<h3>Heading&nbsp;<em>(size 3)</em></h3>\n<p>Paragraph under heading to test line-height.</p>\n<p><span style=\"font-weight: 600;\">Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</span>&nbsp;<em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em>&nbsp;Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</p>\n<p style=\"text-align: center;\"><span style=\"font-weight: 600;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle.</span>&nbsp;<em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em>&nbsp;Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: right;\"><span style=\"font-weight: 600;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin.</span>&nbsp;<em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em>&nbsp;Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: justify;\"><span style=\"font-weight: 600;\">Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa.</span>&nbsp;<em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em>&nbsp;Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p><span style=\"font-weight: 600;\">Alcatra flank ground round corned beef tenderloin prosciutto chicken sirloin, venison leberkas turducken shoulder pastrami bresaola.</span>&nbsp;<em>Chicken leberkas t-bone pork loin drumstick flank. T-bone flank venison alcatra andouille brisket short ribs shankle biltong pancetta pork belly bacon.</em>&nbsp;Tri-tip biltong ham hock jowl chicken. Spare ribs beef ribs shankle corned beef short loin picanha prosciutto bacon ham rump tri-tip doner ground round cupim. Meatloaf andouille bresaola strip steak kevin, pork turducken.</p>\n<p>Jowl&nbsp;<span style=\"color: #ff0000;\">strip steak</span>&nbsp;pork&nbsp;<span style=\"color: #0000ff;\">belly jerky</span>&nbsp;short&nbsp;<span style=\"color: #008000;\">ribs filet</span>&nbsp;mignon. Kielbasa ham shoulder turducken sausage jerky beef&nbsp;<span style=\"color: #ff0000;\">h</span><span style=\"color: #0000ff;\">a</span><span style=\"color: #008000;\">m</span></p>\n<p><a href=\"../?p=1\" title=\"Hello world!\">Alcatra hamburger</a>&nbsp;jowl shank jerky.&nbsp;</p>\n<ul>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ul>\n<ol>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ol>\n<blockquote><p><span style=\"background-color: inherit;\"></span>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.&nbsp;</p>\n<p>&mdash; Mr. Bacon</p></blockquote>"
+                "text": "<h1 style=\"text-align: left;\">1/2 Column</h1>\n<h1 style=\"text-align: center;\">1/2 Column</h1>\n<h1 style=\"text-align: right;\">1/2 Column</h1>\n<h1 style=\"text-align: left;\"><a href=\"http://www.google.co.uk\">1/2 Column</a></h1>\n<h2 style=\"text-align: left;\">Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3) <a href=\"http://www.example.com\">with link</a></h3>\n<h3><strong>Heading</strong> (size 3)</h3>\n<p style=\"text-align: left;\">Paragraph under heading to test line-height.</p>\n<p><strong>Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em> Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak.</p>\n<p><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: center;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle. <em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em> Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: center;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: right;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin. <em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em> Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: right;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: justify;\">Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa. <em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em> Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p style=\"text-align: justify;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em> <a href=\"http://www.example.org\">Alcatra hamburger</a></p>\n<ul>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ul>\n<ol>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ol>\n<blockquote>\n<p>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.</p>\n</blockquote>"
               },
               {
                 "type": "divider",
@@ -443,15 +437,6 @@
                     "borderStyle": "solid",
                     "borderWidth": "3px",
                     "borderColor": "#000000"
-                  }
-                }
-              },
-              {
-                "type": "spacer",
-                "styles": {
-                  "block": {
-                    "backgroundColor": "transparent",
-                    "height": "50px"
                   }
                 }
               },
@@ -470,28 +455,20 @@
                     "lineHeight": "30px",
                     "fontColor": "#ffffff",
                     "fontFamily": "Arial",
-                    "fontSize": "13px",
+                    "fontSize": "14px",
                     "textAlign": "center"
                   }
                 }
               },
               {
                 "type": "social",
+                "iconSet": "default",
                 "icons": [
                   {
                     "type": "socialIcon",
-                    "iconType": "custom",
-                    "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/custom.png",
-                    "height": "32px",
-                    "width": "32px",
-                    "text": "Custom"
-                  },
-                  {
-                    "type": "socialIcon",
                     "iconType": "facebook",
-                    "link": "http://www.facebook.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Facebook.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Facebook.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Facebook"
@@ -499,8 +476,8 @@
                   {
                     "type": "socialIcon",
                     "iconType": "twitter",
-                    "link": "http://www.twitter.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Twitter.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Twitter.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Twitter"
@@ -509,7 +486,7 @@
                     "type": "socialIcon",
                     "iconType": "google-plus",
                     "link": "http://plus.google.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Google-Plus.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Google-Plus.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Google Plus"
@@ -518,7 +495,7 @@
                     "type": "socialIcon",
                     "iconType": "youtube",
                     "link": "http://www.youtube.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Youtube.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Youtube.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Youtube"
@@ -527,7 +504,7 @@
                     "type": "socialIcon",
                     "iconType": "website",
                     "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Website.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Website.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Website"
@@ -536,7 +513,7 @@
                     "type": "socialIcon",
                     "iconType": "email",
                     "link": "mailto:mail@example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Email.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Email.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Email"
@@ -545,7 +522,7 @@
                     "type": "socialIcon",
                     "iconType": "instagram",
                     "link": "http://instagram.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Instagram.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Instagram.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Instagram"
@@ -554,7 +531,7 @@
                     "type": "socialIcon",
                     "iconType": "pinterest",
                     "link": "http://www.pinterest.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Pinterest.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Pinterest.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Pinterest"
@@ -563,44 +540,61 @@
                     "type": "socialIcon",
                     "iconType": "linkedin",
                     "link": "http://www.linkedin.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/LinkedIn.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/LinkedIn.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "LinkedIn"
+                  },
+                  {
+                    "type": "socialIcon",
+                    "iconType": "custom",
+                    "link": "http://example.org",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/custom.png",
+                    "height": "32px",
+                    "width": "32px",
+                    "text": "Custom"
                   }
-                ],
-                "iconSet": "default"
+                ]
               },
               {
                 "type": "image",
                 "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/300x125.jpg",
-                "alt": "300x125",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/330x125.png",
+                "alt": "330x125",
                 "padded": false,
-                "width": "300px",
+                "width": "330px",
                 "height": "125px",
                 "styles": {
                   "block": {
                     "textAlign": "center"
+                  }
+                }
+              },
+              {
+                "type": "spacer",
+                "styles": {
+                  "block": {
+                    "backgroundColor": "transparent",
+                    "height": "50px"
                   }
                 }
               }
             ]
           }
-        ]
-      },
-      {
-        "orientation": "horizontal",
+        ],
         "type": "container",
         "styles": {
           "block": {
-            "backgroundColor": "transparent"
+            "backgroundColor": "#c5806b"
           }
-        },
+        }
+      },
+      {
+        "orientation": "horizontal",
         "blocks": [
           {
-            "orientation": "vertical",
             "type": "container",
+            "orientation": "vertical",
             "styles": {
               "block": {
                 "backgroundColor": "transparent"
@@ -609,12 +603,12 @@
             "blocks": [
               {
                 "type": "image",
-                "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/200x83.jpg",
-                "alt": "200x83",
+                "link": "",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83-copy.png",
+                "alt": "220x83 copy",
                 "padded": true,
-                "width": "200px",
-                "height": "83px",
+                "width": "100px",
+                "height": "38px",
                 "styles": {
                   "block": {
                     "textAlign": "center"
@@ -623,7 +617,7 @@
               },
               {
                 "type": "text",
-                "text": "<h1>1/3 Column</h1>\n<h1 style=\"text-align: center;\">1/3 Column</h1>\n<h1 style=\"text-align: right;\">1/3 Column</h1>\n<h1 style=\"text-align: center;\"><a href=\"../?p=231\" title=\"With multiple images\">1/3 Column</a></h1>\n<h2>Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3)&nbsp;<a href=\"../?p=223\" title=\"A classic embed object for Flash\">with link</a></h3>\n<h3>Heading&nbsp;<em>(size 3)</em></h3>\n<p>Paragraph under heading to test line-height.</p>\n<p><span style=\"font-weight: 600;\">Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</span>&nbsp;<em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em>&nbsp;Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</p>\n<p style=\"text-align: center;\"><span style=\"font-weight: 600;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle.</span>&nbsp;<em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em>&nbsp;Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: right;\"><span style=\"font-weight: 600;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin.</span>&nbsp;<em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em>&nbsp;Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: justify;\"><span style=\"font-weight: 600;\">Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa.</span>&nbsp;<em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em>&nbsp;Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p><span style=\"font-weight: 600;\">Alcatra flank ground round corned beef tenderloin prosciutto chicken sirloin, venison leberkas turducken shoulder pastrami bresaola.</span>&nbsp;<em>Chicken leberkas t-bone pork loin drumstick flank. T-bone flank venison alcatra andouille brisket short ribs shankle biltong pancetta pork belly bacon.</em>&nbsp;Tri-tip biltong ham hock jowl chicken. Spare ribs beef ribs shankle corned beef short loin picanha prosciutto bacon ham rump tri-tip doner ground round cupim. Meatloaf andouille bresaola strip steak kevin, pork turducken.</p>\n<p>Jowl&nbsp;<span style=\"color: #ff0000;\">strip steak</span>&nbsp;pork&nbsp;<span style=\"color: #0000ff;\">belly jerky</span>&nbsp;short&nbsp;<span style=\"color: #008000;\">ribs filet</span>&nbsp;mignon. Kielbasa ham shoulder turducken sausage jerky beef&nbsp;<span style=\"color: #ff0000;\">h</span><span style=\"color: #0000ff;\">a</span><span style=\"color: #008000;\">m</span></p>\n<p><a href=\"../?p=1\" title=\"Hello world!\">Alcatra hamburger</a>&nbsp;jowl shank jerky.&nbsp;</p>\n<ul>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ul>\n<ol>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ol>\n<blockquote><p><span style=\"background-color: inherit;\"></span>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.&nbsp;</p>\n<p>&mdash; Mr. Bacon</p></blockquote>"
+                "text": "<h1>1/3 Column</h1>\n<h1 style=\"text-align: center;\">1/3 Column</h1>\n<h1 style=\"text-align: right;\">1/3 Column</h1>\n<h1><a href=\"http://www.example.org\">1/3 Column</a></h1>\n<h2>Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3) <a href=\"http://www.google.co.uk\">with link</a></h3>\n<h3><strong>Heading</strong> (size 3)</h3>\n<p>Paragraph under heading to test line-height.</p>\n<p><strong>Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em> Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak.</p>\n<p><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: center;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle. <em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em> Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: center;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: right;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin. <em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em> Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: right;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: justify;\"><br />Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa. <em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em> Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p style=\"text-align: justify;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin.</em> Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim. <a href=\"http://www.example.org\">Alcatra hamburger</a></p>\n<ul>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ul>\n<ol>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ol>\n<blockquote>\n<p>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.<br /><br /></p>\n</blockquote>"
               },
               {
                 "type": "divider",
@@ -661,28 +655,20 @@
                     "lineHeight": "30px",
                     "fontColor": "#ffffff",
                     "fontFamily": "Arial",
-                    "fontSize": "13px",
+                    "fontSize": "14px",
                     "textAlign": "center"
                   }
                 }
               },
               {
                 "type": "social",
+                "iconSet": "default",
                 "icons": [
                   {
                     "type": "socialIcon",
-                    "iconType": "custom",
-                    "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/custom.png",
-                    "height": "32px",
-                    "width": "32px",
-                    "text": "Custom"
-                  },
-                  {
-                    "type": "socialIcon",
                     "iconType": "facebook",
-                    "link": "http://www.facebook.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Facebook.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Facebook.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Facebook"
@@ -690,8 +676,8 @@
                   {
                     "type": "socialIcon",
                     "iconType": "twitter",
-                    "link": "http://www.twitter.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Twitter.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Twitter.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Twitter"
@@ -700,7 +686,7 @@
                     "type": "socialIcon",
                     "iconType": "google-plus",
                     "link": "http://plus.google.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Google-Plus.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Google-Plus.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Google Plus"
@@ -709,7 +695,7 @@
                     "type": "socialIcon",
                     "iconType": "youtube",
                     "link": "http://www.youtube.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Youtube.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Youtube.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Youtube"
@@ -718,7 +704,7 @@
                     "type": "socialIcon",
                     "iconType": "website",
                     "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Website.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Website.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Website"
@@ -727,7 +713,7 @@
                     "type": "socialIcon",
                     "iconType": "email",
                     "link": "mailto:mail@example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Email.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Email.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Email"
@@ -736,7 +722,7 @@
                     "type": "socialIcon",
                     "iconType": "instagram",
                     "link": "http://instagram.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Instagram.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Instagram.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Instagram"
@@ -745,7 +731,7 @@
                     "type": "socialIcon",
                     "iconType": "pinterest",
                     "link": "http://www.pinterest.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Pinterest.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Pinterest.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Pinterest"
@@ -754,21 +740,29 @@
                     "type": "socialIcon",
                     "iconType": "linkedin",
                     "link": "http://www.linkedin.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/LinkedIn.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/LinkedIn.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "LinkedIn"
+                  },
+                  {
+                    "type": "socialIcon",
+                    "iconType": "custom",
+                    "link": "http://example.org",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/custom.png",
+                    "height": "32px",
+                    "width": "32px",
+                    "text": "Custom"
                   }
-                ],
-                "iconSet": "default"
+                ]
               },
               {
                 "type": "image",
-                "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/200x83.jpg",
-                "alt": "200x83",
+                "link": "",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83.png",
+                "alt": "220x83",
                 "padded": false,
-                "width": "200px",
+                "width": "220px",
                 "height": "83px",
                 "styles": {
                   "block": {
@@ -779,8 +773,8 @@
             ]
           },
           {
-            "orientation": "vertical",
             "type": "container",
+            "orientation": "vertical",
             "styles": {
               "block": {
                 "backgroundColor": "transparent"
@@ -789,11 +783,11 @@
             "blocks": [
               {
                 "type": "image",
-                "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/200x83.jpg",
-                "alt": "200x83",
+                "link": "",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83.png",
+                "alt": "220x83",
                 "padded": true,
-                "width": "200px",
+                "width": "220px",
                 "height": "83px",
                 "styles": {
                   "block": {
@@ -803,7 +797,7 @@
               },
               {
                 "type": "text",
-                "text": "<h1>1/3 Column</h1>\n<h1 style=\"text-align: center;\">1/3 Column</h1>\n<h1 style=\"text-align: right;\">1/3 Column</h1>\n<h1 style=\"text-align: center;\"><a href=\"../?p=231\" title=\"With multiple images\">1/3 Column</a></h1>\n<h2>Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3)&nbsp;<a href=\"../?p=223\" title=\"A classic embed object for Flash\">with link</a></h3>\n<h3>Heading&nbsp;<em>(size 3)</em></h3>\n<p>Paragraph under heading to test line-height.</p>\n<p><span style=\"font-weight: 600;\">Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</span>&nbsp;<em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em>&nbsp;Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</p>\n<p style=\"text-align: center;\"><span style=\"font-weight: 600;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle.</span>&nbsp;<em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em>&nbsp;Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: right;\"><span style=\"font-weight: 600;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin.</span>&nbsp;<em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em>&nbsp;Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: justify;\"><span style=\"font-weight: 600;\">Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa.</span>&nbsp;<em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em>&nbsp;Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p><span style=\"font-weight: 600;\">Alcatra flank ground round corned beef tenderloin prosciutto chicken sirloin, venison leberkas turducken shoulder pastrami bresaola.</span>&nbsp;<em>Chicken leberkas t-bone pork loin drumstick flank. T-bone flank venison alcatra andouille brisket short ribs shankle biltong pancetta pork belly bacon.</em>&nbsp;Tri-tip biltong ham hock jowl chicken. Spare ribs beef ribs shankle corned beef short loin picanha prosciutto bacon ham rump tri-tip doner ground round cupim. Meatloaf andouille bresaola strip steak kevin, pork turducken.</p>\n<p>Jowl&nbsp;<span style=\"color: #ff0000;\">strip steak</span>&nbsp;pork&nbsp;<span style=\"color: #0000ff;\">belly jerky</span>&nbsp;short&nbsp;<span style=\"color: #008000;\">ribs filet</span>&nbsp;mignon. Kielbasa ham shoulder turducken sausage jerky beef&nbsp;<span style=\"color: #ff0000;\">h</span><span style=\"color: #0000ff;\">a</span><span style=\"color: #008000;\">m</span></p>\n<p><a href=\"../?p=1\" title=\"Hello world!\">Alcatra hamburger</a>&nbsp;jowl shank jerky.&nbsp;</p>\n<ul>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ul>\n<ol>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ol>\n<blockquote><p><span style=\"background-color: inherit;\"></span>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.&nbsp;</p>\n<p>&mdash; Mr. Bacon</p></blockquote>"
+                "text": "<h1>1/3 Column</h1>\n<h1 style=\"text-align: center;\">1/3 Column</h1>\n<h1 style=\"text-align: right;\">1/3 Column</h1>\n<h1><a href=\"http://www.example.org\">1/3 Column</a></h1>\n<h2>Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3) <a href=\"http://www.google.co.uk\">with link</a></h3>\n<h3><strong>Heading</strong> (size 3)</h3>\n<p>Paragraph under heading to test line-height.</p>\n<p><strong>Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em> Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak.</p>\n<p><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: center;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle. <em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em> Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: center;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: right;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin. <em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em> Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: right;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: justify;\"><br />Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa. <em>Bresaola ham hock <span style=\"color: #ffffff;\">pancetta, cow ham tenderloin flank turducken fatback beef</span> jowl short loin pig.</em> Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p style=\"text-align: justify;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin.</em> Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim. <a href=\"http://www.example.org\">Alcatra hamburger</a></p>\n<ul>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ul>\n<ol>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ol>\n<blockquote>\n<p>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.<br /><br /></p>\n</blockquote>"
               },
               {
                 "type": "divider",
@@ -841,28 +835,20 @@
                     "lineHeight": "30px",
                     "fontColor": "#ffffff",
                     "fontFamily": "Arial",
-                    "fontSize": "13px",
+                    "fontSize": "14px",
                     "textAlign": "center"
                   }
                 }
               },
               {
                 "type": "social",
+                "iconSet": "default",
                 "icons": [
                   {
                     "type": "socialIcon",
-                    "iconType": "custom",
-                    "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/custom.png",
-                    "height": "32px",
-                    "width": "32px",
-                    "text": "Custom"
-                  },
-                  {
-                    "type": "socialIcon",
                     "iconType": "facebook",
-                    "link": "http://www.facebook.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Facebook.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Facebook.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Facebook"
@@ -870,8 +856,8 @@
                   {
                     "type": "socialIcon",
                     "iconType": "twitter",
-                    "link": "http://www.twitter.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Twitter.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Twitter.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Twitter"
@@ -880,7 +866,7 @@
                     "type": "socialIcon",
                     "iconType": "google-plus",
                     "link": "http://plus.google.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Google-Plus.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Google-Plus.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Google Plus"
@@ -889,7 +875,7 @@
                     "type": "socialIcon",
                     "iconType": "youtube",
                     "link": "http://www.youtube.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Youtube.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Youtube.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Youtube"
@@ -898,7 +884,7 @@
                     "type": "socialIcon",
                     "iconType": "website",
                     "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Website.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Website.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Website"
@@ -907,7 +893,7 @@
                     "type": "socialIcon",
                     "iconType": "email",
                     "link": "mailto:mail@example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Email.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Email.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Email"
@@ -916,7 +902,7 @@
                     "type": "socialIcon",
                     "iconType": "instagram",
                     "link": "http://instagram.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Instagram.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Instagram.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Instagram"
@@ -925,7 +911,7 @@
                     "type": "socialIcon",
                     "iconType": "pinterest",
                     "link": "http://www.pinterest.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Pinterest.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Pinterest.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Pinterest"
@@ -934,21 +920,29 @@
                     "type": "socialIcon",
                     "iconType": "linkedin",
                     "link": "http://www.linkedin.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/LinkedIn.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/LinkedIn.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "LinkedIn"
+                  },
+                  {
+                    "type": "socialIcon",
+                    "iconType": "custom",
+                    "link": "http://example.org",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/custom.png",
+                    "height": "32px",
+                    "width": "32px",
+                    "text": "Custom"
                   }
-                ],
-                "iconSet": "default"
+                ]
               },
               {
                 "type": "image",
                 "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/200x83.jpg",
-                "alt": "200x83",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83.png",
+                "alt": "220x83",
                 "padded": false,
-                "width": "200px",
+                "width": "220px",
                 "height": "83px",
                 "styles": {
                   "block": {
@@ -959,8 +953,8 @@
             ]
           },
           {
-            "orientation": "vertical",
             "type": "container",
+            "orientation": "vertical",
             "styles": {
               "block": {
                 "backgroundColor": "transparent"
@@ -969,11 +963,11 @@
             "blocks": [
               {
                 "type": "image",
-                "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/200x83.jpg",
-                "alt": "200x83",
+                "link": "",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83.png",
+                "alt": "220x83",
                 "padded": true,
-                "width": "200px",
+                "width": "220px",
                 "height": "83px",
                 "styles": {
                   "block": {
@@ -983,7 +977,7 @@
               },
               {
                 "type": "text",
-                "text": "<h1>1/3 Column</h1>\n<h1 style=\"text-align: center;\">1/3 Column</h1>\n<h1 style=\"text-align: right;\">1/3 Column</h1>\n<h1 style=\"text-align: center;\"><a href=\"../?p=231\" title=\"With multiple images\">1/3 Column</a></h1>\n<h2>Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3)&nbsp;<a href=\"../?p=223\" title=\"A classic embed object for Flash\">with link</a></h3>\n<h3>Heading&nbsp;<em>(size 3)</em></h3>\n<p>Paragraph under heading to test line-height.</p>\n<p><span style=\"font-weight: 600;\">Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</span>&nbsp;<em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em>&nbsp;Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</p>\n<p style=\"text-align: center;\"><span style=\"font-weight: 600;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle.</span>&nbsp;<em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em>&nbsp;Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: right;\"><span style=\"font-weight: 600;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin.</span>&nbsp;<em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em>&nbsp;Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: justify;\"><span style=\"font-weight: 600;\">Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa.</span>&nbsp;<em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em>&nbsp;Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p><span style=\"font-weight: 600;\">Alcatra flank ground round corned beef tenderloin prosciutto chicken sirloin, venison leberkas turducken shoulder pastrami bresaola.</span>&nbsp;<em>Chicken leberkas t-bone pork loin drumstick flank. T-bone flank venison alcatra andouille brisket short ribs shankle biltong pancetta pork belly bacon.</em>&nbsp;Tri-tip biltong ham hock jowl chicken. Spare ribs beef ribs shankle corned beef short loin picanha prosciutto bacon ham rump tri-tip doner ground round cupim. Meatloaf andouille bresaola strip steak kevin, pork turducken.</p>\n<p>Jowl&nbsp;<span style=\"color: #ff0000;\">strip steak</span>&nbsp;pork&nbsp;<span style=\"color: #0000ff;\">belly jerky</span>&nbsp;short&nbsp;<span style=\"color: #008000;\">ribs filet</span>&nbsp;mignon. Kielbasa ham shoulder turducken sausage jerky beef&nbsp;<span style=\"color: #ff0000;\">h</span><span style=\"color: #0000ff;\">a</span><span style=\"color: #008000;\">m</span></p>\n<p><a href=\"../?p=1\" title=\"Hello world!\">Alcatra hamburger</a>&nbsp;jowl shank jerky.&nbsp;</p>\n<ul>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ul>\n<ol>\n<li><span style=\"background-color: inherit;\">One</span></li>\n<li><span style=\"background-color: inherit;\">Two</span></li>\n<li><span style=\"background-color: inherit;\">Three</span></li>\n</ol>\n<blockquote><p><span style=\"background-color: inherit;\"></span>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.&nbsp;</p>\n<p>&mdash; Mr. Bacon</p></blockquote>"
+                "text": "<h1>1/3 Column</h1>\n<h1 style=\"text-align: center;\">1/3 Column</h1>\n<h1 style=\"text-align: right;\">1/3 Column</h1>\n<h1><a href=\"http://www.example.org\">1/3 Column</a></h1>\n<h2>Heading (size 2)</h2>\n<p>Paragraph under heading to test line-height.</p>\n<h3>Heading (size 3)</h3>\n<h3>Heading (size 3) <a href=\"http://www.google.co.uk\">with link</a></h3>\n<h3><strong>Heading</strong> (size 3)</h3>\n<p>Paragraph under heading to test line-height.</p>\n<p><strong>Bacon ipsum dolor amet short ribs shank cow, ribeye corned beef short loin t-bone kielbasa meatloaf ball tip rump venison boudin brisket beef ribs. Fatback landjaeger frankfurter, meatloaf picanha andouille leberkas.</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Biltong frankfurter shank pork belly picanha prosciutto meatloaf tail hamburger landjaeger pancetta shankle pig.</em> Pig tri-tip tenderloin ground round ribeye alcatra turkey salami turducken sausage pork loin kielbasa hamburger meatloaf strip steak.</p>\n<p><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: center;\">Bacon kevin shank ball tip shoulder. Jowl leberkas fatback, short loin chuck beef beef ribs short ribs ribeye turducken pork chop brisket filet mignon cow. Turkey ball tip rump bacon filet mignon sausage jowl shoulder chicken ground round kielbasa shankle. <em>Drumstick pancetta corned beef kielbasa porchetta jerky swine leberkas kevin boudin chicken shoulder bacon tri-tip venison.</em> Ham hock ball tip beef ribs spare ribs tail pork ground round, biltong doner t-bone pork chop rump hamburger pancetta brisket.</p>\n<p style=\"text-align: center;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: right;\">Brisket beef kielbasa jowl hamburger, doner flank. Shoulder ham hock sausage t-bone pork belly chicken picanha pork loin ham bresaola tri-tip ground round kevin. <em>Chicken sirloin shankle fatback boudin t-bone pig tri-tip bresaola doner cow short loin pancetta short ribs andouille. Cupim doner short ribs, andouille cow t-bone ground round pork porchetta beef capicola.</em> Rump drumstick biltong shank kielbasa bacon ball tip pancetta meatloaf shankle fatback.</p>\n<p style=\"text-align: right;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin. Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim.</em></p>\n<p style=\"text-align: justify;\"><br />Kielbasa jowl flank biltong. Pork loin fatback chicken ham prosciutto sausage cow short loin porchetta kielbasa. <em>Bresaola ham hock pancetta, cow ham tenderloin flank turducken fatback beef jowl short loin pig.</em> Picanha turkey spare ribs capicola andouille, tongue short loin sausage corned beef kevin meatball venison kielbasa pastrami. Beef ribs ground round tenderloin flank.</p>\n<p style=\"text-align: justify;\"><strong>Second paragraph, same text-alignment goes in the same table, other text alignments go into new tables, see?</strong> <em>Tail beef ribs boudin salami, kevin cupim landjaeger pork loin tenderloin ham filet mignon drumstick short loin.</em> Ribeye boudin cow, beef ribs t-bone pig short ribs tri-tip pork loin rump shank hamburger short loin. Salami pastrami meatball shoulder cupim. <a href=\"http://www.example.org\">Alcatra hamburger</a></p>\n<ul>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ul>\n<ol>\n<li>One</li>\n<li>Two</li>\n<li>Three</li>\n</ol>\n<blockquote>\n<p>Bacon ipsum dolor amet shoulder turkey meatball pork chop porchetta, filet mignon shankle. Sausage meatloaf flank picanha jowl chuck capicola tri-tip. Meatloaf andouille kielbasa beef ribs.<br /><br /></p>\n</blockquote>"
               },
               {
                 "type": "divider",
@@ -1021,28 +1015,20 @@
                     "lineHeight": "30px",
                     "fontColor": "#ffffff",
                     "fontFamily": "Arial",
-                    "fontSize": "13px",
+                    "fontSize": "14px",
                     "textAlign": "center"
                   }
                 }
               },
               {
                 "type": "social",
+                "iconSet": "default",
                 "icons": [
                   {
                     "type": "socialIcon",
-                    "iconType": "custom",
-                    "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/custom.png",
-                    "height": "32px",
-                    "width": "32px",
-                    "text": "Custom"
-                  },
-                  {
-                    "type": "socialIcon",
                     "iconType": "facebook",
-                    "link": "http://www.facebook.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Facebook.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Facebook.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Facebook"
@@ -1050,8 +1036,8 @@
                   {
                     "type": "socialIcon",
                     "iconType": "twitter",
-                    "link": "http://www.twitter.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Twitter.png",
+                    "link": "http://example.com",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Twitter.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Twitter"
@@ -1060,7 +1046,7 @@
                     "type": "socialIcon",
                     "iconType": "google-plus",
                     "link": "http://plus.google.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Google-Plus.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Google-Plus.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Google Plus"
@@ -1069,7 +1055,7 @@
                     "type": "socialIcon",
                     "iconType": "youtube",
                     "link": "http://www.youtube.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Youtube.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Youtube.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Youtube"
@@ -1078,7 +1064,7 @@
                     "type": "socialIcon",
                     "iconType": "website",
                     "link": "http://example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Website.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Website.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Website"
@@ -1087,7 +1073,7 @@
                     "type": "socialIcon",
                     "iconType": "email",
                     "link": "mailto:mail@example.org",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Email.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Email.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Email"
@@ -1096,7 +1082,7 @@
                     "type": "socialIcon",
                     "iconType": "instagram",
                     "link": "http://instagram.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Instagram.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Instagram.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Instagram"
@@ -1105,7 +1091,7 @@
                     "type": "socialIcon",
                     "iconType": "pinterest",
                     "link": "http://www.pinterest.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/Pinterest.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/Pinterest.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "Pinterest"
@@ -1114,21 +1100,29 @@
                     "type": "socialIcon",
                     "iconType": "linkedin",
                     "link": "http://www.linkedin.com",
-                    "image": "http://mp3.mailpoet.net/various/social-icons/01-social/LinkedIn.png",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/01-social/LinkedIn.png",
                     "height": "32px",
                     "width": "32px",
                     "text": "LinkedIn"
+                  },
+                  {
+                    "type": "socialIcon",
+                    "iconType": "custom",
+                    "link": "http://example.org",
+                    "image": "http://test.mailpoet.net/wp-content/plugins/wysija-newsletters/assets/img/newsletter_editor/social-icons/custom.png",
+                    "height": "32px",
+                    "width": "32px",
+                    "text": "Custom"
                   }
-                ],
-                "iconSet": "default"
+                ]
               },
               {
                 "type": "image",
                 "link": "http://example.org",
-                "src": "http://mp3.mailpoet.net/various/social-icons/custom.png/200x83.jpg",
-                "alt": "200x83",
+                "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83.png",
+                "alt": "220x83",
                 "padded": false,
-                "width": "200px",
+                "width": "220px",
                 "height": "83px",
                 "styles": {
                   "block": {
@@ -1138,20 +1132,20 @@
               }
             ]
           }
-        ]
-      },
-      {
-        "orientation": "horizontal",
+        ],
         "type": "container",
         "styles": {
           "block": {
-            "backgroundColor": "transparent"
+            "backgroundColor": "#999000"
           }
-        },
+        }
+      },
+      {
+        "orientation": "horizontal",
         "blocks": [
           {
-            "orientation": "vertical",
             "type": "container",
+            "orientation": "vertical",
             "styles": {
               "block": {
                 "backgroundColor": "transparent"
@@ -1160,10 +1154,10 @@
             "blocks": [
               {
                 "type": "footer",
-                "text": "<p>You are receiving this email because you opted in on our website. Update your <a href=\"[manageSubscriptionUrl]\">email preferences</a> or <a href=\"[unsubscribeUrl]\">unsubscribe</a>.&nbsp;</p>\n<p><a href=\"[manageSubscriptionUrl]\"></a>123 Maple Avenue<br />93102<br />Oakland, California</p>",
+                "text": "<p>You are receiving this email because you opted in on our website. <a href=\"[manageSubscriptionUrl]\">Update your preferences</a> or <a href=\"[unsubscribeUrl]\">Unsubscribe</a><a href=\"[manageSubscriptionUrl]\"> </a><br />123 Maple Avenue<br />93102<br />Oakland, California </p>",
                 "styles": {
                   "block": {
-                    "backgroundColor": "#333333"
+                    "backgroundColor": "transparent"
                   },
                   "text": {
                     "fontColor": "#aaaaaa",
@@ -1179,7 +1173,13 @@
               }
             ]
           }
-        ]
+        ],
+        "type": "container",
+        "styles": {
+          "block": {
+            "backgroundColor": "transparent"
+          }
+        }
       }
     ]
   },
@@ -1191,7 +1191,7 @@
     },
     "h1": {
       "fontColor": "#565656",
-      "fontFamily": "Arial",
+      "fontFamily": "Arial Black",
       "fontSize": "36px"
     },
     "h2": {
@@ -1205,11 +1205,11 @@
       "fontSize": "18px"
     },
     "link": {
-      "fontColor": "#a86b6b",
+      "fontColor": "#561ab9",
       "textDecoration": "underline"
     },
     "wrapper": {
-      "backgroundColor": "#999999"
+      "backgroundColor": "#ffffff"
     },
     "body": {
       "backgroundColor": "#333333"
