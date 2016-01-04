@@ -37,7 +37,6 @@ class Button {
           </div>
         </td>
       </tr>';
-    //!d($template);exit;
     return $template;
   }
 }

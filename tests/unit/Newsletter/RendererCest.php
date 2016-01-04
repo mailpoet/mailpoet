@@ -132,11 +132,9 @@ class NewsletterRendererCest {
     expect($DOM('tr > td > img', 0)->attr('width'))->equals(280);
   }
 
-
   function itRendersText() {
     $template = $this->newsletterData['content']['blocks'][0]['blocks'][0]['blocks'][2];
     $DOM = $this->queryDOM->parseStr(Text::render($template));
-    //!d($DOM->__toString());exit;
     // blockquotes and paragraphs should be converted to spans and placed inside a table
     expect(
       !empty($DOM('tr > td > table > tr > td.mailpoet_paragraph', 0)->html())
@@ -173,7 +171,6 @@ class NewsletterRendererCest {
         $DOM('tr > td.mailpoet_divider > table > tr > td.mailpoet_divider-cell', 0)->attr('style')
       ))->equals(1);
   }
-
 
   function itRendersSpacer() {
     $template = $this->newsletterData['content']['blocks'][0]['blocks'][0]['blocks'][4];
