@@ -6,7 +6,6 @@ class MailGunCest {
   function _before() {
     $this->settings = array(
       'method' => 'MailGun',
-      'type' => 'API',
       'api_key' => 'key-6cf5g5qjzenk-7nodj44gdt8phe6vam2',
       'domain' => 'mrcasual.com'
     );

@@ -6,7 +6,6 @@ class ElasticEmailCest {
   function _before() {
     $this->settings = array(
       'method' => 'ElasticEmail',
-      'type' => 'API',
       'api_key' => '997f1f7f-41de-4d7f-a8cb-86c8481370fa'
     );
     $this->fromEmail = 'staff@mailpoet.com';

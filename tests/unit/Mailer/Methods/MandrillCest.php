@@ -6,7 +6,6 @@ class MandrillCest {
   function _before() {
     $this->settings = array(
       'method' => 'Mandrill',
-      'type' => 'API',
       'api_key' => '692ys1B7REEoZN7R-dYwNA'
     );
     $this->fromEmail = 'staff@mailpoet.com';

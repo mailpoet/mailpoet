@@ -6,7 +6,6 @@ class AmazonSESCest {
   function _before() {
     $this->settings = array(
       'method' => 'AmazonSES',
-      'type' => 'API',
       'access_key' => 'AKIAJM6Y5HMGXBLDNSRA',
       'secret_key' => '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',
       'region' => 'us-east-1',
