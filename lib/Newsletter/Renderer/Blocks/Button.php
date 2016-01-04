@@ -11,8 +11,7 @@ class Button {
           <div>
             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;text-align:' . $element['styles']['block']['textAlign'] . ';">
               <tr>
-                <td class="mailpoet_button-container" style="padding:8px 0;">
-                  <!--[if mso]>
+                <td class="mailpoet_button-container" style="padding:8px 0;"><!--[if mso]>
                   <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
                     href="' . $element['url'] . '"
                     style="height:' . $element['styles']['block']['lineHeight'] . ';
@@ -29,8 +28,7 @@ class Button {
                     font-weight:bold;">' . $element['text'] . '
                   </center>
                   </v:roundrect>
-                  <![endif]-->
-                  <a class="mailpoet_button" href="' . $element['url'] . '" style="display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none!important;text-align:center;' . StylesHelper::getBlockStyles($element, $exclude = array('textAlign')) . '"> ' . $element['text'] . '
+                  <![endif]--><a class="mailpoet_button" href="' . $element['url'] . '" style="display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none!important;text-align:center;' . StylesHelper::getBlockStyles($element, $exclude = array('textAlign')) . '"> ' . $element['text'] . '
                 </td>
               </tr>
             </table>

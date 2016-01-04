@@ -23,10 +23,10 @@ class StylesHelper {
     'Courier New' => "'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace",
     'Georgia' => "Georgia, Times, 'Times New Roman', serif",
     'Lucida' => "'Lucida Sans Unicode', 'Lucida Grande', sans-serif",
-    'Tahoma' => "Tahoma, Verdana, Segoe, sans-serif",
+    'Tahoma' => 'Tahoma, Verdana, Segoe, sans-serif',
     'Times New Roman' => "'Times New Roman', Times, Baskerville, Georgia, serif",
     'Trebuchet MS' => "'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif",
-    'Verdana' => "Verdana, Geneva, sans-serif"
+    'Verdana' => 'Verdana, Geneva, sans-serif'
   );
   static $fontSize = array(
     // fontSize => array(columnCount => lineHeight);
@@ -221,7 +221,7 @@ class StylesHelper {
   static function setFontFamily($fontFamily, $selector) {
     $fontFamily = (isset(self::$font[$fontFamily])) ?
       self::$font[$fontFamily] :
-      $fontFamily;
+      self::$font['Arial'];
     $css = $selector . '{' . PHP_EOL;
     $css .= 'font-family:' . $fontFamily . ';' . PHP_EOL;
     $css .= '}' . PHP_EOL;
