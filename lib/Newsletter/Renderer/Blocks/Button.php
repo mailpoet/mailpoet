@@ -9,9 +9,9 @@ class Button {
       <tr>
         <td class="mailpoet_padded" valign="top">
           <div>
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;text-align:' . $element['styles']['block']['textAlign'] . ';">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;">
               <tr>
-                <td class="mailpoet_button-container" style="padding:8px 0;"><!--[if mso]>
+                <td class="mailpoet_button-container" style="padding:8px 0;text-align:' . $element['styles']['block']['textAlign'] . ';"><!--[if mso]>
                   <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
                     href="' . $element['url'] . '"
                     style="height:' . $element['styles']['block']['lineHeight'] . ';
