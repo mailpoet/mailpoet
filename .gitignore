@@ -1,7 +1,7 @@
 .DS_Store
 TODO
 composer.phar
-vendor
+/vendor
 tests/_output/*
 tests/acceptance.suite.yml
 tests/_support/_generated/*

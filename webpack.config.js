@@ -23,7 +23,7 @@ baseConfig = {
       'handlebars': 'handlebars/dist/handlebars.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
-      'sticky-kit': 'vendor_static/jquery.sticky-kit.js',
+      'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'interact$': 'interact.js/interact.js',
       'spectrum$': 'spectrum-colorpicker/spectrum.js',
       'blob$': 'blob/Blob.js',
@@ -253,7 +253,7 @@ config.push(_.extend({}, baseConfig, {
       'tests/javascript/newsletter_editor'
     ],
     alias: {
-      'sticky-kit': 'sticky-kit/jquery.sticky-kit',
+      'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
       'blob$': 'blob/Blob.js',
