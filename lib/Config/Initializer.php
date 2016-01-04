@@ -147,7 +147,6 @@ class Initializer {
       $supervisor = new Supervisor();
       $supervisor->checkDaemon();
     } catch (\Exception $e) {
-      !d($e->getMessage());exit;
     }
   }
 
