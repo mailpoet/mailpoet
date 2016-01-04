@@ -7,8 +7,11 @@ class Divider {
   static function render($element) {
     $template = '
       <tr>
-        <td class="mailpoet_divider" valign="top" bgColor="' . $element['styles']['block']['backgroundColor'] . '"
-        style="background-color:' . $element['styles']['block']['backgroundColor'] . ';' .
+        <td class="mailpoet_divider" valign="top" ' .
+        (($element['styles']['block']['backgroundColor'] !== 'transparent') ?
+          'bgColor="' . $element['styles']['block']['backgroundColor'] . '" style="background-color:' . $element['styles']['block']['backgroundColor'] . ';' :
+          'style="'
+        ) .
         sprintf('padding: %s %spx %s %spx;',
                 $element['styles']['block']['padding'],
                 StylesHelper::$paddingWidth,
@@ -26,6 +29,6 @@ class Divider {
           </table>
         </td>
       </tr>';
-    return $template;
+     return $template;
   }
 }
