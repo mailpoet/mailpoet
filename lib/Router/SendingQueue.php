@@ -19,9 +19,7 @@ class SendingQueue {
           'errors' => array($e->getMessage())
         )
       );
-      exit;
     }
-
     $queue = \MailPoet\Models\SendingQueue::where('newsletter_id', $data['newsletter_id'])
       ->whereNull('status')
       ->findArray();

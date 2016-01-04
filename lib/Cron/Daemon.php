@@ -10,18 +10,18 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 if(!defined('ABSPATH')) exit;
 
 class Daemon {
-  function __construct($payload = array()) {
+  function __construct($requestPayload = array()) {
     set_time_limit(0);
     ignore_user_abort();
     list ($this->daemon, $this->daemonData) = $this->getDaemon();
     $this->refreshedToken = $this->refreshToken();
-    $this->payload = $payload;
+    $this->requestPayload = $requestPayload;
     $this->timer = microtime(true);
   }
 
   function start() {
-    if(!isset($this->payload['session'])) {
-      $this->abortWithError('missing session ID');
+    if(!isset($this->requestPayload['session'])) {
+      $this->abortWithError(__('Missing session ID.'));
     }
     $this->manageSession('start');
     $daemon = $this->daemon;
@@ -30,58 +30,63 @@ class Daemon {
       $daemon = Setting::create();
       $daemon->name = 'cron_daemon';
       $daemonData = array(
-        'status' => null,
+        'status' => 'starting',
         'counter' => 0
       );
       $daemon->value = json_encode($daemonData);
       $daemon->save();
     }
-    if($daemonData['status'] !== 'started') {
+    if($daemonData['status'] === 'started') {
+      $_SESSION['cron_daemon'] = array(
+        'result' => false,
+        'errors' => array(__('Daemon already running.'))
+      );
+    }
+    if($daemonData['status'] === 'starting') {
       $_SESSION['cron_daemon'] = 'started';
+      $_SESSION['cron_daemon'] = array('result' => true);
       $daemonData['status'] = 'started';
       $daemonData['token'] = $this->refreshedToken;
-      $_SESSION['cron_daemon'] = array('result' => true);
       $this->manageSession('end');
       $daemon->value = json_encode($daemonData);
       $daemon->save();
       $this->callSelf();
-    } else {
-      $_SESSION['cron_daemon'] = array(
-        'result' => false,
-        'error' => 'already started'
-      );
     }
     $this->manageSession('end');
   }
 
   function run() {
-    if(!$this->daemon || $this->daemonData['status'] !== 'started') {
-      $this->abortWithError('not running');
+    $allowedStatuses = array(
+      'stopping',
+      'starting',
+      'started'
+    );
+    if(!$this->daemon || !in_array($this->daemonData['status'], $allowedStatuses)) {
+      $this->abortWithError(__('Invalid daemon status.'));
     }
-    if(!isset($this->payload['token']) ||
-      $this->payload['token'] !== $this->daemonData['token']
+    if(!isset($this->requestPayload['token']) ||
+      $this->requestPayload['token'] !== $this->daemonData['token']
     ) {
-      $this->abortWithError('invalid token');
+      $this->abortWithError('Invalid token.');
     }
-
     try {
       $sendingQueue = new SendingQueue($this->timer);
       $sendingQueue->process();
     } catch(Exception $e) {
     }
-
     $elapsedTime = microtime(true) - $this->timer;
     if($elapsedTime < 30) {
       sleep(30 - $elapsedTime);
     }
-
     // after each execution, read daemon in case it's status was modified
     list($daemon, $daemonData) = $this->getDaemon();
-    $daemonData['counter']++;
+    if($daemonData['status'] === 'stopping') $daemonData['status'] = 'stopped';
+    if($daemonData['status'] === 'starting') $daemonData['status'] = 'started';
     $daemonData['token'] = $this->refreshedToken;
+    $daemonData['counter']++;
     $daemon->value = json_encode($daemonData);
     $daemon->save();
-    if($daemonData['status'] === 'strated') $this->callSelf();
+    if($daemonData['status'] === 'started') $this->callSelf();
   }
 
   function getDaemon() {
@@ -103,7 +108,7 @@ class Daemon {
         if(session_id()) {
           session_write_close();
         }
-        session_id($this->payload['session']);
+        session_id($this->requestPayload['session']);
         session_start();
         break;
       case 'end':
@@ -114,9 +119,8 @@ class Daemon {
 
   function callSelf() {
     $payload = json_encode(array('token' => $this->refreshedToken));
-    Supervisor::getRemoteUrl(
-      '/?mailpoet-api&section=queue&action=run&payload=' . urlencode($payload)
-
+    Supervisor::accessRemoteUrl(
+      '/?mailpoet-api&section=queue&action=run&request_payload=' . urlencode($payload)
     );
     exit;
   }
@@ -125,7 +129,7 @@ class Daemon {
     wp_send_json(
       array(
         'result' => false,
-        'error' => $error
+        'errors' => array($error)
       ));
     exit;
   }
