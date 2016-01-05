@@ -16,7 +16,7 @@ define(
     Breadcrumb
   ) {
 
-    var settings = window.mailpoet_settings || {};
+    var settings = window.mailpoet_settings || {};
 
     var fields = [
       {
@@ -24,14 +24,17 @@ define(
         label: 'Subject line',
         tip: "Be creative! It's the first thing your subscribers see."+
              "Tempt them to open your email.",
-        type: 'text'
+        type: 'text',
+        validation: {
+          'data-parsley-required': true
+        }
       },
       {
         name: 'segments',
-        label: 'Lists',
-        tip: "The subscriber list that will be used for this campaign.",
+        label: 'Segments',
+        tip: "The subscriber segment that will be used for this campaign.",
         type: 'selection',
-        placeholder: "Select a list",
+        placeholder: "Select a segment",
         id: "mailpoet_segments",
         endpoint: "segments",
         multiple: true,
@@ -111,12 +114,19 @@ define(
             action: 'add',
             data: {
               newsletter_id: this.props.params.id,
-              segments: jQuery('#mailpoet_segments').val()
+              segments: jQuery('#mailpoet_segments').val(),
+              sender: {
+                'name': jQuery('#mailpoet_newsletter [name="sender_name"]').val(),
+                'address': jQuery('#mailpoet_newsletter [name="sender_address"]').val()
+              },
+              reply_to: {
+                'name': jQuery('#mailpoet_newsletter [name="reply_to_name"]').val(),
+                'address': jQuery('#mailpoet_newsletter [name="reply_to_address"]').val()
+              }
             }
           }).done(function(response) {
             if(response.result === true) {
               this.history.pushState(null, '/');
-
               MailPoet.Notice.success(
                 'The newsletter is being sent...'
               );

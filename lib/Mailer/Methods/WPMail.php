@@ -1,5 +1,6 @@
 <?php
-namespace MailPoet\Mailer;
+namespace MailPoet\Mailer\Methods;
+
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 if(!defined('ABSPATH')) exit;
