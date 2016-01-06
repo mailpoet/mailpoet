@@ -198,6 +198,8 @@ config.push(_.extend({}, baseConfig, {
       'select2',
       'blob',
       'filesaver',
+      'velocity-animate',
+
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
       'newsletter_editor/components/config.js',
