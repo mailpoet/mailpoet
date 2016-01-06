@@ -11,9 +11,8 @@ define([
     'underscore',
     'jquery',
     'mailpoet',
-    'modal',
-    'velocity-animate'
-  ], function(App, Marionette, SuperModel, _, jQuery, MailPoet, Modal, Velocity) {
+    'modal'
+  ], function(App, Marionette, SuperModel, _, jQuery, MailPoet, Modal) {
 
   "use strict";
 
