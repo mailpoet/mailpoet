@@ -217,7 +217,7 @@ class Newsletters {
     if(!isset($data['body'])) {
       wp_send_json(false);
     }
-    $renderer = new Renderer(json_decode($data['body'], true));
+    $renderer = new Renderer($data);
     wp_send_json(array('rendered_body' => $renderer->render()));
   }
 

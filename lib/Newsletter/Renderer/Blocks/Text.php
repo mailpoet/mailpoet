@@ -73,7 +73,7 @@ class Text {
       </table>
       <br/>';
     preg_match('/<blockquote>.*?<\/blockquote>/s', $html, $blockquotes);
-    foreach ($blockquotes as $index => $blockquote) {
+    foreach($blockquotes as $index => $blockquote) {
       $blockquote = preg_replace('/<\/p>\n<p>/', '<br/><br/>', $blockquote);
       $blockquote = preg_replace('/<\/?p>/', '', $blockquote);
       $blockquote = preg_replace(

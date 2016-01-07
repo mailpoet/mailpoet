@@ -13,18 +13,19 @@ use MailPoet\Newsletter\Renderer\Renderer;
 
 class NewsletterRendererCest {
   function __construct() {
-    $this->newsletterData = json_decode(
-      file_get_contents(dirname(__FILE__) . '/RendererTestData.json'),
-      true
+    $this->newsletter = array(
+      'body' => file_get_contents(dirname(__FILE__) . '/RendererTestData.json'),
+      'subject' => 'Some subject',
+      'preheader' => 'Some preheader'
     );
-    $this->renderer = new Renderer($this->newsletterData);
-    $this->columnRenderer = new ColumnRenderer();
-    $this->queryDOM = new \pQuery();
+    $this->renderer = new Renderer($this->newsletter);
+    $this->column_renderer = new ColumnRenderer();
+    $this->DOM_parser = new \pQuery();
   }
 
   function itRendersCompleteNewsletter() {
     $template = $this->renderer->render();
-    $DOM = $this->queryDOM->parseStr($template);
+    $DOM = $this->DOM_parser->parseStr($template);
     // we expect to have 7 columns:
     //  1x column including header
     //  2x column
@@ -36,74 +37,75 @@ class NewsletterRendererCest {
   }
 
   function itRendersOneColumn() {
-    $columnContent = array(
+    $column_content = array(
       'one'
     );
-    $columnStyles = array(
+    $column_styles = array(
       'block' => array(
         'backgroundColor' => "#999999"
       )
     );
-    $DOM = $this->queryDOM->parseStr(
-      $this->columnRenderer->render(
-        $columnStyles,
-        count($columnContent),
-        $columnContent)
+    $DOM = $this->DOM_parser->parseStr(
+      $this->column_renderer->render(
+        $column_styles,
+        count($column_content),
+        $column_content)
     );
-    foreach ($DOM('table.mailpoet_cols-one > tbody') as $column) {
-      $renderedColumnContent[] = trim($column->text());
+    foreach($DOM('table.mailpoet_cols-one > tbody') as $column) {
+      $rendered_column_content[] = trim($column->text());
     };
-    expect($renderedColumnContent)->equals($columnContent);
+    expect($rendered_column_content)->equals($column_content);
   }
 
   function itRendersTwoColumns() {
-    $columnContent = array(
+    $column_content = array(
       'one',
       'two'
     );
-    $columnStyles = array(
+    $column_styles = array(
       'block' => array(
         'backgroundColor' => "#999999"
       )
     );
-    $DOM = $this->queryDOM->parseStr(
-      $this->columnRenderer->render(
-        $columnStyles,
-        count($columnContent),
-        $columnContent)
+    $DOM = $this->DOM_parser->parseStr(
+      $this->column_renderer->render(
+        $column_styles,
+        count($column_content),
+        $column_content)
     );
-    foreach ($DOM('table.mailpoet_cols-two > tbody') as $column) {
-      $renderedColumnContent[] = trim($column->text());
+    foreach($DOM('table.mailpoet_cols-two > tbody') as $column) {
+      $rendered_column_content[] = trim($column->text());
     };
-    expect($renderedColumnContent)->equals($columnContent);
+    expect($rendered_column_content)->equals($column_content);
   }
 
   function itRendersThreeColumns() {
-    $columnContent = array(
+    $column_content = array(
       'one',
       'two',
       'three'
     );
-    $columnStyles = array(
+    $column_styles = array(
       'block' => array(
         'backgroundColor' => "#999999"
       )
     );
-    $DOM = $this->queryDOM->parseStr(
-      $this->columnRenderer->render(
-        $columnStyles,
-        count($columnContent),
-        $columnContent)
+    $DOM = $this->DOM_parser->parseStr(
+      $this->column_renderer->render(
+        $column_styles,
+        count($column_content),
+        $column_content)
     );
-    foreach ($DOM('table.mailpoet_cols-three > tbody') as $column) {
-      $renderedColumnContent[] = trim($column->text());
+    foreach($DOM('table.mailpoet_cols-three > tbody') as $column) {
+      $rendered_column_content[] = trim($column->text());
     };
-    expect($renderedColumnContent)->equals($columnContent);
+    expect($rendered_column_content)->equals($column_content);
   }
 
   function itRendersHeader() {
-    $template = $this->newsletterData['content']['blocks'][0]['blocks'][0]['blocks'][0];
-    $DOM = $this->queryDOM->parseStr(Header::render($template));
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][0];
+    $DOM = $this->DOM_parser->parseStr(Header::render($template));
     // element should be proplerly nested, and styles should be applied
     expect(!empty($DOM('tr > td.mailpoet_header', 0)->html()))->true();
     expect(!empty($DOM('tr > td > a', 0)->html()))->true();
@@ -113,28 +115,31 @@ class NewsletterRendererCest {
 
 
   function itRendersImage() {
-    $template = $this->newsletterData['content']['blocks'][0]['blocks'][0]['blocks'][1];
-    $DOM = $this->queryDOM->parseStr(Image::render($template, $columnCount = 1));
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
+    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
     // element should be properly nested, it's width set and style applied
     expect($DOM('tr > td > img', 0)->attr('width'))->equals(620);
     expect($DOM('tr > td > img', 0)->attr('style'))->notEmpty();
   }
 
   function itAdjustImageSizeBasedOnColumnWidth() {
-    $template = $this->newsletterData['content']['blocks'][0]['blocks'][0]['blocks'][1];
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
     $template['width'] = '800px';
-    $DOM = $this->queryDOM->parseStr(Image::render($template, $columnCount = 2));
+    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 2));
     // 800px resized to 330px (2-column layout) and 40px padding applied
     expect($DOM('tr > td > img', 0)->attr('width'))->equals(290);
     $template['width'] = '280px';
-    $DOM = $this->queryDOM->parseStr(Image::render($template, $columnCount = 2));
+    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 2));
     // 280px image should not be resized and padding should not be applied
     expect($DOM('tr > td > img', 0)->attr('width'))->equals(280);
   }
 
   function itRendersText() {
-    $template = $this->newsletterData['content']['blocks'][0]['blocks'][0]['blocks'][2];
-    $DOM = $this->queryDOM->parseStr(Text::render($template));
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][2];
+    $DOM = $this->DOM_parser->parseStr(Text::render($template));
     // blockquotes and paragraphs should be converted to spans and placed inside a table
     expect(
       !empty($DOM('tr > td > table > tr > td.mailpoet_paragraph', 0)->html())
@@ -162,8 +167,9 @@ class NewsletterRendererCest {
   }
 
   function itRendersDivider() {
-    $template = $this->newsletterData['content']['blocks'][0]['blocks'][0]['blocks'][3];
-    $DOM = $this->queryDOM->parseStr(Divider::render($template));
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][3];
+    $DOM = $this->DOM_parser->parseStr(Divider::render($template));
     // element should be properly nested and its border-top-width set
     expect(
       preg_match(
@@ -173,15 +179,17 @@ class NewsletterRendererCest {
   }
 
   function itRendersSpacer() {
-    $template = $this->newsletterData['content']['blocks'][0]['blocks'][0]['blocks'][4];
-    $DOM = $this->queryDOM->parseStr(Spacer::render($template));
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][4];
+    $DOM = $this->DOM_parser->parseStr(Spacer::render($template));
     // element should be properly nested and its height set
     expect($DOM('tr > td.mailpoet_spacer', 0)->attr('height'))->equals(50);
   }
 
   function itRendersButton() {
-    $template = $this->newsletterData['content']['blocks'][0]['blocks'][0]['blocks'][5];
-    $DOM = $this->queryDOM->parseStr(Button::render($template));
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
+    $DOM = $this->DOM_parser->parseStr(Button::render($template));
     // element should be properly nested with arcsize/styles/fillcolor set
     expect(
       !empty($DOM('tr > td > div > table > tr > td > a.mailpoet_button', 0)->html())
@@ -214,27 +222,42 @@ class NewsletterRendererCest {
   }
 
   function itRendersSocialIcons() {
-    $template = $this->newsletterData['content']['blocks'][0]['blocks'][0]['blocks'][6];
-    $DOM = $this->queryDOM->parseStr(Social::render($template));
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][6];
+    $DOM = $this->DOM_parser->parseStr(Social::render($template));
     // element should be properly nested, contain social icons and
     // image source/link href/alt should be  properly set
-    expect(!empty($DOM('tr > td > div.mailpoet_social-icon', 0)->html()))->true();
+    expect(!empty($DOM('tr > td', 0)->html()))->true();
     expect($DOM('a', 0)->attr('href'))->equals('http://example.com');
-    expect($DOM('div > a:nth-of-type(10) > img')->attr('src'))->contains('custom.png');
-    expect($DOM('div > a:nth-of-type(10) > img')->attr('alt'))->equals('custom');
-    // there should be 10 icons and 19 spacer images
+    expect($DOM('td > a:nth-of-type(10) > img')->attr('src'))->contains('custom.png');
+    expect($DOM('td > a:nth-of-type(10) > img')->attr('alt'))->equals('custom');
+    // there should be 10 icons
     expect(count($DOM('a > img')))->equals(10);
-    expect(count($DOM('img')))->equals(19);
   }
 
   function itRendersFooter() {
-    $template = $this->newsletterData['content']['blocks'][3]['blocks'][0]['blocks'][0];
-    $DOM = $this->queryDOM->parseStr(Footer::render($template));
-    // element should be proplerly nested, and styles should be applied
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][3]['blocks'][0]['blocks'][0];
+    $DOM = $this->DOM_parser->parseStr(Footer::render($template));
+    // element should be properly nested, and styles should be applied
     expect(!empty($DOM('tr > td.mailpoet_footer', 0)->html()))->true();
     expect(!empty($DOM('tr > td > a', 0)->html()))->true();
     expect($DOM('a', 0)->attr('style'))->notEmpty();
     expect($DOM('td', 0)->attr('style'))->notEmpty();
+  }
+
+  function itSetsSubject() {
+    $template = $this->renderer->render();
+    $DOM = $this->DOM_parser->parseStr($template);
+    $subject = trim($DOM('title')->text());
+    expect($subject)->equals($this->newsletter['subject']);
+  }
+
+  function itSetsPreheader() {
+    $template = $this->renderer->render();
+    $DOM = $this->DOM_parser->parseStr($template);
+    $preheader = trim($DOM('td.mailpoet_preheader')->text());
+    expect($preheader)->equals($this->newsletter['preheader']);
   }
 
   function itPostProcessesTemplate() {

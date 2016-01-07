@@ -14,9 +14,9 @@ class Divider {
         ) .
         sprintf('padding: %s %spx %s %spx;',
                 $element['styles']['block']['padding'],
-                StylesHelper::$paddingWidth,
+                StylesHelper::$padding_width,
                 $element['styles']['block']['padding'],
-                StylesHelper::$paddingWidth) . '">
+                StylesHelper::$padding_width) . '">
           <table width="100%" border="0" cellpadding="0" cellspacing="0"
           style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;">
             <tr>

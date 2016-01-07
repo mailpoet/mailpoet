@@ -2,27 +2,26 @@
 namespace MailPoet\Newsletter\Renderer\Columns;
 
 class Renderer {
-  function render($columnStyles, $columnsCount, $columnsData) {
-    $styles = $columnStyles['block'];
-
-    $width = ColumnsHelper::$columnsWidth[$columnsCount];
-    $class = ColumnsHelper::$columnsClass[$columnsCount];
-    $alignment = ColumnsHelper::$columnsAlignment[$columnsCount];
-    $template = ($columnsCount === 1) ?
+  function render($column_styles, $columns_count, $columns_data) {
+    $styles = $column_styles['block'];
+    $width = ColumnsHelper::$columns_width[$columns_count];
+    $class = ColumnsHelper::$columns_class[$columns_count];
+    $alignment = ColumnsHelper::$columns_alignment[$columns_count];
+    $template = ($columns_count === 1) ?
       $this->getOneColumnTemplate($styles, $class) :
       $this->getMultipleColumnsTemplate($styles, $width, $alignment, $class);
     $result = array_map(function ($content) use ($template) {
-      return $template['contentStart'] . $content . $template['contentEnd'];
-    }, $columnsData);
+      return $template['content_start'] . $content . $template['content_end'];
+    }, $columns_data);
     $result = implode('', $result);
-    if ($columnsCount !== 1) {
-      $result = $template['containerStart'] . $result . $template['containerEnd'];
+    if($columns_count !== 1) {
+      $result = $template['container_start'] . $result . $template['container_end'];
     }
     return $result;
   }
   
   function getOneColumnTemplate($styles, $class) {
-    $template['contentStart'] = '
+    $template['content_start'] = '
       <tr>
         <td class="mailpoet_content" align="center" style="border-collapse:collapse">
           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
@@ -31,7 +30,7 @@ class Renderer {
                 <td style="padding-left:0;padding-right:0">
                   <table width="100%" border="0" cellpadding="0" cellspacing="0" class="mailpoet_' . $class . '" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0;background-color:' . $styles['backgroundColor'] . '!important;" bgcolor="' . $styles['backgroundColor'] . '">
                     <tbody>';
-    $template['contentEnd'] = '
+    $template['content_end'] = '
                     </tbody>
                   </table>
                 </td>
@@ -44,7 +43,7 @@ class Renderer {
   }
 
   function getMultipleColumnsTemplate($styles, $width, $alignment, $class) {
-    $template['containerStart'] = '
+    $template['container_start'] = '
       <tr>
         <td class="mailpoet_content-' . $class . '" align="left" style="border-collapse:collapse;background-color:' . $styles['backgroundColor'] . '!important;" bgcolor="' . $styles['backgroundColor'] . '">
           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
@@ -54,17 +53,17 @@ class Renderer {
                   <table border="0" width="100%" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>';
-    $template['contentStart'] = '
+    $template['content_start'] = '
       <td width="' . $width . '" valign="top">
         <![endif]--><div style="display:inline-block; max-width:' . $width . 'px; vertical-align:top; width:100%;">
           <table width="' . $width . '" class="mailpoet_' . $class . '" border="0" cellpadding="0" cellspacing="0" align="' . $alignment . '" style="width:100%;max-width:' . $width . 'px;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0;">
             <tbody>';
-    $template['contentEnd'] = '
+    $template['content_end'] = '
             </tbody>
           </table>
         </div><!--[if mso]>
       </td>';
-    $template['containerEnd'] = '
+    $template['container_end'] = '
                   </tr>
                 </tbody>
               </table>

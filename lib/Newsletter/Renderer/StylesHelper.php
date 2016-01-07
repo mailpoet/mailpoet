@@ -4,7 +4,7 @@ namespace MailPoet\Newsletter\Renderer;
 use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 
 class StylesHelper {
-  static $cssAttributesTable = array(
+  static $css_attributes = array(
     'backgroundColor' => 'background-color',
     'fontColor' => 'color',
     'fontFamily' => 'font-family',
@@ -28,8 +28,8 @@ class StylesHelper {
     'Trebuchet MS' => "'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif",
     'Verdana' => 'Verdana, Geneva, sans-serif'
   );
-  static $fontSize = array(
-    // fontSize => array(columnCount => lineHeight);
+  static $font_size = array(
+    // font_size => array(columnCount => lineHeight);
     8 => array(
       1 => "20",
       2 => "15",
@@ -196,18 +196,18 @@ class StylesHelper {
       3 => "53"
     )
   );
-  static $paddingWidth = 20;
+  static $padding_width = 20;
   
-  static function getBlockStyles($element, $ignoreSpecificStyles = false) {
-    if (!isset($element['styles']['block'])) {
+  static function getBlockStyles($element, $ignore_specific_styles = false) {
+    if(!isset($element['styles']['block'])) {
       return;
     }
-    return self::getStyles($element['styles'], 'block', $ignoreSpecificStyles);
+    return self::getStyles($element['styles'], 'block', $ignore_specific_styles);
   }
   
-  static function getStyles($data, $type, $ignoreSpecificStyles = false) {
-    $styles = array_map(function ($attribute, $style) use ($ignoreSpecificStyles) {
-      if (!$ignoreSpecificStyles || !in_array($attribute, $ignoreSpecificStyles)) {
+  static function getStyles($data, $type, $ignore_specific_styles = false) {
+    $styles = array_map(function ($attribute, $style) use ($ignore_specific_styles) {
+      if(!$ignore_specific_styles || !in_array($attribute, $ignore_specific_styles)) {
         return self::translateCSSAttribute($attribute) . ': ' . $style . ' !important;';
       }
     }, array_keys($data[$type]), $data[$type]);
@@ -215,25 +215,27 @@ class StylesHelper {
   }
   
   static function translateCSSAttribute($attribute) {
-    return (array_key_exists($attribute, self::$cssAttributesTable)) ? self::$cssAttributesTable[$attribute] : $attribute;
+    return (array_key_exists($attribute, self::$css_attributes)) ?
+      self::$css_attributes[$attribute] :
+      $attribute;
   }
 
-  static function setFontFamily($fontFamily, $selector) {
-    $fontFamily = (isset(self::$font[$fontFamily])) ?
-      self::$font[$fontFamily] :
+  static function setFontFamily($font_family, $selector) {
+    $font_family = (isset(self::$font[$font_family])) ?
+      self::$font[$font_family] :
       self::$font['Arial'];
     $css = $selector . '{' . PHP_EOL;
-    $css .= 'font-family:' . $fontFamily . ';' . PHP_EOL;
+    $css .= 'font-family:' . $font_family . ';' . PHP_EOL;
     $css .= '}' . PHP_EOL;
     return $css;
   }
 
-  static function setFontAndLineHeight($fontSize, $selector) {
+  static function setFontAndLineHeight($font_size, $selector) {
     $css = '';
-    foreach (ColumnsHelper::$columnsClass as $columnCount => $columnClass) {
+    foreach(ColumnsHelper::$columns_class as $columnCount => $columnClass) {
       $css .= '.mailpoet_content-' . $columnClass . ' ' . $selector . '{' . PHP_EOL;
-      $css .= 'font-size:' . $fontSize . 'px;' . PHP_EOL;
-      $css .= 'line-height:' . StylesHelper::$fontSize[$fontSize][$columnCount] . 'px;' . PHP_EOL;
+      $css .= 'font-size:' . $font_size . 'px;' . PHP_EOL;
+      $css .= 'line-height:' . StylesHelper::$font_size[$font_size][$columnCount] . 'px;' . PHP_EOL;
       $css .= '}' . PHP_EOL;
     }
     return $css;
@@ -241,8 +243,8 @@ class StylesHelper {
 
   static function setStyle($style, $selector) {
     $css = $selector . '{' . PHP_EOL;
-    foreach ($style as $attribute => $individualStyle) {
-      $css .= self::translateCSSAttribute($attribute) . ':' . $individualStyle . ';' . PHP_EOL;
+    foreach($style as $attribute => $individual_style) {
+      $css .= self::translateCSSAttribute($attribute) . ':' . $individual_style . ';' . PHP_EOL;
     }
     $css .= '}' . PHP_EOL;
     return $css;

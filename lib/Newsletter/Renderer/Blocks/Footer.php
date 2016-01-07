@@ -5,7 +5,7 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Footer {
   static function render($element) {
-    if (isset($element['styles']['link'])) {
+    if(isset($element['styles']['link'])) {
       $element['text'] = str_replace(
         '<a',
         '<a style="'
