@@ -8,12 +8,12 @@ class MandrillCest {
       'method' => 'Mandrill',
       'api_key' => '692ys1B7REEoZN7R-dYwNA'
     );
-    $this->fromEmail = 'staff@mailpoet.com';
-    $this->fromName = 'Sender';
+    $this->from_email = 'staff@mailpoet.com';
+    $this->from_name = 'Sender';
     $this->mailer = new Mandrill(
       $this->settings['api_key'],
-      $this->fromEmail,
-      $this->fromName
+      $this->from_email,
+      $this->from_name
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -29,8 +29,8 @@ class MandrillCest {
     $subscriber = $this->mailer->processSubscriber($this->subscriber);
     $body = $this->mailer->getBody($this->newsletter, $subscriber);
     expect($body['key'])->equals($this->settings['api_key']);
-    expect($body['message']['from_email'])->equals($this->fromEmail);
-    expect($body['message']['from_name'])->equals($this->fromName);
+    expect($body['message']['from_email'])->equals($this->from_email);
+    expect($body['message']['from_name'])->equals($this->from_name);
     expect($body['message']['to'])->equals(array($subscriber));
     expect($body['message']['subject'])->equals($this->newsletter['subject']);
     expect($body['message']['html'])->equals($this->newsletter['body']['html']);
@@ -70,8 +70,8 @@ class MandrillCest {
         ));
   }
 
-  function itCannotSendWithoutProperAPIKey() {
-    $this->mailer->apiKey = 'someapi';
+  function itCannotSendWithoutProperApiKey() {
+    $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

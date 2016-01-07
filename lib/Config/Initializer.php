@@ -142,7 +142,7 @@ class Initializer {
   }
 
   function runQueueSupervisor() {
-    if (php_sapi_name() === 'cli') return;
+    if(php_sapi_name() === 'cli') return;
     try {
       $supervisor = new Supervisor();
       $supervisor->checkDaemon();

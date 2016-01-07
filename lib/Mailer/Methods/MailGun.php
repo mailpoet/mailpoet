@@ -4,9 +4,13 @@ namespace MailPoet\Mailer\Methods;
 if(!defined('ABSPATH')) exit;
 
 class MailGun {
-  function __construct($domain, $apiKey, $from) {
+  public $url;
+  public $api_key;
+  public $from;
+  
+  function __construct($domain, $api_key, $from) {
     $this->url = sprintf('https://api.mailgun.net/v3/%s/messages', $domain);
-    $this->apiKey = $apiKey;
+    $this->api_key = $api_key;
     $this->from = $from;
   }
 
@@ -37,7 +41,7 @@ class MailGun {
   }
 
   function auth() {
-    return 'Basic ' . base64_encode('api:' . $this->apiKey);
+    return 'Basic ' . base64_encode('api:' . $this->api_key);
   }
 
   function request($newsletter, $subscriber) {

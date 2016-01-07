@@ -27,15 +27,16 @@ class AmazonSESCest {
   }
 
   function itsConstructorWorks() {
-    expect($this->mailer->awsEndpoint)
+    expect($this->mailer->aws_endpoint)
       ->equals(
         sprintf('email.%s.amazonaws.com', $this->settings['region'])
       );
-    expect($this->mailer->url)      ->equals(
+    expect($this->mailer->url)
+      ->equals(
       sprintf('https://email.%s.amazonaws.com', $this->settings['region'])
     );
     expect(preg_match('!^\d{8}T\d{6}Z$!', $this->mailer->date))->equals(1);
-    expect(preg_match('!^\d{8}$!', $this->mailer->dateWithoutTime))->equals(1);
+    expect(preg_match('!^\d{8}$!', $this->mailer->date_without_time))->equals(1);
   }
 
   function itCanGenerateBody() {
@@ -60,7 +61,7 @@ class AmazonSESCest {
     expect($request['timeout'])->equals(10);
     expect($request['httpversion'])->equals('1.1');
     expect($request['method'])->equals('POST');
-    expect($request['headers']['Host'])->equals($this->mailer->awsEndpoint);
+    expect($request['headers']['Host'])->equals($this->mailer->aws_endpoint);
     expect($request['headers']['Authorization'])
       ->equals($this->mailer->signRequest($body));
     expect($request['headers']['X-Amz-Date'])->equals($this->mailer->date);
@@ -79,11 +80,11 @@ class AmazonSESCest {
           'POST',
           '/',
           '',
-          'host:' . $this->mailer->awsEndpoint,
+          'host:' . $this->mailer->aws_endpoint,
           'x-amz-date:' . $this->mailer->date,
           '',
           'host;x-amz-date',
-          hash($this->mailer->hashAlgorithm,
+          hash($this->mailer->hash_algorithm,
                urldecode(http_build_query($body))
           )
         )
@@ -94,10 +95,10 @@ class AmazonSESCest {
     $credentialScope = $this->mailer->getCredentialScope();
     expect($credentialScope)
       ->equals(
-        $this->mailer->dateWithoutTime . '/' .
-        $this->mailer->awsRegion . '/' .
-        $this->mailer->awsService . '/' .
-        $this->mailer->awsTerminationString
+        $this->mailer->date_without_time . '/' .
+        $this->mailer->aws_region . '/' .
+        $this->mailer->aws_service . '/' .
+        $this->mailer->aws_termination_string
       );
   }
 
@@ -113,10 +114,10 @@ class AmazonSESCest {
     expect($stringToSing)
       ->equals(
         array(
-          $this->mailer->awsSigningAlgorithm,
+          $this->mailer->aws_signing_algorithm,
           $this->mailer->date,
           $credentialScope,
-          hash($this->mailer->hashAlgorithm, $canonicalRequest)
+          hash($this->mailer->hash_algorithm, $canonicalRequest)
         )
       );
   }
@@ -126,8 +127,8 @@ class AmazonSESCest {
     $signedRequest = $this->mailer->signRequest($body);
     expect($signedRequest)
       ->contains(
-        $this->mailer->awsSigningAlgorithm . ' Credential=' .
-        $this->mailer->awsAccessKey . '/' .
+        $this->mailer->aws_signing_algorithm . ' Credential=' .
+        $this->mailer->aws_access_key . '/' .
         $this->mailer->getCredentialScope() . ', ' .
         'SignedHeaders=host;x-amz-date, Signature='
       );
@@ -136,7 +137,7 @@ class AmazonSESCest {
   }
 
   function itCannotSendWithoutProperAccessKey() {
-    $this->mailer->awsAccessKey = 'somekey';
+    $this->mailer->aws_access_key = 'somekey';
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

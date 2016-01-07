@@ -8,12 +8,12 @@ class MailPoetCest {
       'method' => 'MailPoet',
       'api_key' => 'dhNSqj1XHkVltIliyQDvMiKzQShOA5rs0m_DdRUVZHU'
     );
-    $this->fromEmail = 'staff@mailpoet.com';
-    $this->fromName = 'Sender';
+    $this->from_email = 'staff@mailpoet.com';
+    $this->from_name = 'Sender';
     $this->mailer = new MailPoet(
       $this->settings['api_key'],
-      $this->fromEmail,
-      $this->fromName
+      $this->from_email,
+      $this->from_name
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -30,7 +30,7 @@ class MailPoetCest {
     $body = $this->mailer->getBody($this->newsletter, $subscriber);
     expect($body['to']['address'])->equals($subscriber['email']);
     expect($body['to']['name'])->equals($subscriber['name']);
-    expect($body['from']['address'])->equals($this->fromEmail);
+    expect($body['from']['address'])->equals($this->from_email);
     expect($body['subject'])->equals($this->newsletter['subject']);
     expect($body['html'])->equals($this->newsletter['body']['html']);
     expect($body['text'])->equals($this->newsletter['body']['text']);
@@ -76,8 +76,8 @@ class MailPoetCest {
       ->equals('Basic ' . base64_encode('api:' . $this->settings['api_key']));
   }
 
-  function itCannotSendWithoutProperAPIKey() {
-    $this->mailer->apiKey = 'someapi';
+  function itCannotSendWithoutProperApiKey() {
+    $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

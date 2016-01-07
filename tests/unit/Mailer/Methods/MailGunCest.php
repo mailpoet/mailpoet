@@ -52,8 +52,8 @@ class MailGunCest {
     expect($request['body'])->equals(urldecode(http_build_query($body)));
   }
 
-  function itCannotSendWithoutProperAPIKey() {
-    $this->mailer->apiKey = 'someapi';
+  function itCannotSendWithoutProperApiKey() {
+    $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

@@ -4,16 +4,27 @@ namespace MailPoet\Mailer\Methods;
 if(!defined('ABSPATH')) exit;
 
 class SMTP {
-  function __construct($host, $port, $authentication, $login = null, $password = null, $encryption,
-    $fromEmail, $fromName) {
+  public $host;
+  public $port;
+  public $authentication;
+  public $login;
+  public $password;
+  public $encryption;
+  public $from_name;
+  public $from_email;
+  public $mailer;
+  
+  function __construct(
+    $host, $port, $authentication, $login = null, $password = null, $encryption,
+    $from_email, $from_name) {
     $this->host = $host;
     $this->port = $port;
     $this->authentication = $authentication;
     $this->login = $login;
     $this->password = $password;
     $this->encryption = $encryption;
-    $this->fromName = $fromName;
-    $this->fromEmail = $fromEmail;
+    $this->from_name = $from_name;
+    $this->from_email = $from_email;
     $this->mailer = $this->buildMailer();
   }
 
@@ -42,7 +53,7 @@ class SMTP {
 
   function createMessage($newsletter, $subscriber) {
     $message = \Swift_Message::newInstance()
-      ->setFrom(array($this->fromEmail => $this->fromName))
+      ->setFrom(array($this->from_email => $this->from_name))
       ->setTo($this->processSubscriber($subscriber))
       ->setSubject($newsletter['subject']);
     if(!empty($newsletter['body']['html'])) {
@@ -55,15 +66,15 @@ class SMTP {
   }
 
   function processSubscriber($subscriber) {
-    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriberData);
-    if(!isset($subscriberData['email'])) {
-      $subscriberData = array(
+    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
+    if(!isset($subscriber_data['email'])) {
+      $subscriber_data = array(
         'email' => $subscriber,
       );
     }
     return array(
-      $subscriberData['email'] =>
-        (isset($subscriberData['name'])) ? $subscriberData['name'] : ''
+      $subscriber_data['email'] =>
+        (isset($subscriber_data['name'])) ? $subscriber_data['name'] : ''
     );
   }
 }

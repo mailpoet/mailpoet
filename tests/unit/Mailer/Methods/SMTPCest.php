@@ -13,8 +13,8 @@ class SMTPCest {
       'authentication' => '1',
       'encryption' => 'tls'
     );
-    $this->fromEmail = 'staff@mailpoet.com';
-    $this->fromName = 'Sender';
+    $this->from_email = 'staff@mailpoet.com';
+    $this->from_name = 'Sender';
     $this->mailer = new SMTP(
       $this->settings['host'],
       $this->settings['port'],
@@ -22,8 +22,8 @@ class SMTPCest {
       $this->settings['login'],
       $this->settings['password'],
       $this->settings['encryption'],
-      $this->fromEmail,
-      $this->fromName
+      $this->from_email,
+      $this->from_name
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -54,7 +54,7 @@ class SMTPCest {
     expect($message->getTo())
       ->equals(array('mailpoet-phoenix-test@mailinator.com' => 'Recipient'));
     expect($message->getFrom())
-      ->equals(array($this->fromEmail => $this->fromName));
+      ->equals(array($this->from_email => $this->from_name));
     expect($message->getSubject())
       ->equals($this->newsletter['subject']);
     expect($message->getBody())

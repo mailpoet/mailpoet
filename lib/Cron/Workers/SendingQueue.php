@@ -10,36 +10,41 @@ use MailPoet\Newsletter\Renderer\Renderer;
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
+  public $timer;
+
   function __construct($timer = false) {
     $this->timer = ($timer) ? $timer : microtime(true);
   }
 
   function process() {
+    // TODO: implement mailer sending frequency limits
     foreach($this->getQueues() as $queue) {
       $newsletter = Newsletter::findOne($queue->newsletter_id)
         ->asArray();
       if(!$newsletter) {
         continue;
       };
-      $newsletter = $this->renderNewsletter($newsletter);
       $mailer = $this->configureMailerForNewsletter($newsletter);
+      $newsletter = $this->renderNewsletter($newsletter);
       $subscribers = json_decode($queue->subscribers, true);
-      $subscribersToProcess = $subscribers['to_process'];
+      $subscribers_to_process = $subscribers['to_process'];
       if(!isset($subscribers['processed'])) $subscribers['processed'] = array();
       if(!isset($subscribers['failed'])) $subscribers['failed'] = array();
-      foreach(array_chunk($subscribersToProcess, 200) as $subscriberIds) {
-        $dbSubscribers = Subscriber::whereIn('id', $subscriberIds)
+      foreach(array_chunk($subscribers_to_process, 200) as $subscriber_ids) {
+        $db_subscribers = Subscriber::whereIn('id', $subscriber_ids)
           ->findArray();
-        foreach($dbSubscribers as $dbSubscriber) {
+        foreach($db_subscribers as $db_subscriber) {
           $this->checkExecutionTimer();
           $result = $this->sendNewsletter(
             $mailer,
             $this->processNewsletter($newsletter),
-            $dbSubscriber);
+            $db_subscriber);
           if($result) {
-            $this->updateStatistics($newsletter['id'], $dbSubscriber['id'], $queue->id);
-            $subscribers['processed'][] = $dbSubscriber['id'];
-          } else $subscribers['failed'][] = $dbSubscriber['id'];
+            $this->updateStatistics($newsletter['id'], $db_subscriber['id'], $queue->id);
+            $subscribers['processed'][] = $db_subscriber['id'];
+          } else {
+            $subscribers['failed'][] = $db_subscriber['id'];
+          }
           $this->updateQueue($queue, $subscribers);
         }
       }
@@ -52,18 +57,18 @@ class SendingQueue {
   }
 
   function sendNewsletter($mailer, $newsletter, $subscriber) {
-    return $mailer->mailerInstance->send(
+    return $mailer->mailer_instance->send(
       $newsletter,
       $mailer->transformSubscriber($subscriber)
     );
   }
 
-  function updateStatistics($newsletterId, $subscriberId, $queueId) {
-    $newsletterStatistics = NewsletterStatistics::create();
-    $newsletterStatistics->subscriber_id = $newsletterId;
-    $newsletterStatistics->newsletter_id = $subscriberId;
-    $newsletterStatistics->queue_id = $queueId;
-    $newsletterStatistics->save();
+  function updateStatistics($newsletter_id, $subscriber_id, $queue_id) {
+    $newsletter_statistic = NewsletterStatistics::create();
+    $newsletter_statistic->subscriber_id = $newsletter_id;
+    $newsletter_statistic->newsletter_id = $subscriber_id;
+    $newsletter_statistic->queue_id = $queue_id;
+    $newsletter_statistic->save();
   }
 
   function updateQueue($queue, $subscribers) {
@@ -93,20 +98,24 @@ class SendingQueue {
         'name' => $newsletter['sender_name'],
         'address' => $newsletter['sender_address']
       );
-    } else $sender = false;
+    } else {
+      $sender = false;
+    }
     if(!empty($newsletter['reply_to_address']) && !empty($newsletter['reply_to_name'])) {
-      $replyTo = array(
+      $reply_to = array(
         'name' => $newsletter['reply_to_name'],
         'address' => $newsletter['reply_to_address']
       );
-    } else $replyTo = false;
-    $mailer = new Mailer($method = false, $sender, $replyTo);
+    } else {
+      $reply_to = false;
+    }
+    $mailer = new Mailer($method = false, $sender, $reply_to);
     return $mailer;
   }
 
   function checkExecutionTimer() {
-    $elapsedTime = microtime(true) - $this->timer;
-    if($elapsedTime >= 30) throw new \Exception('Maximum execution time reached.');
+    $elapsed_time = microtime(true) - $this->timer;
+    if($elapsed_time >= 30) throw new \Exception('Maximum execution time reached.');
   }
 
   function getQueues() {
@@ -118,7 +127,8 @@ class SendingQueue {
 
   function renderNewsletter($newsletter) {
     $renderer = new Renderer(json_decode($newsletter['body'], true));
-    $newsletter['body'] = $renderer->renderAll();
+    // TODO: update once text rendering is implemented/enderer returns an array
+    $newsletter['body'] = array('html' => $renderer->render(), 'text' => '');
     return $newsletter;
   }
 }

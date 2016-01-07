@@ -8,12 +8,12 @@ class ElasticEmailCest {
       'method' => 'ElasticEmail',
       'api_key' => '997f1f7f-41de-4d7f-a8cb-86c8481370fa'
     );
-    $this->fromEmail = 'staff@mailpoet.com';
-    $this->fromName = 'Sender';
+    $this->from_email = 'staff@mailpoet.com';
+    $this->from_name = 'Sender';
     $this->mailer = new ElasticEmail(
       $this->settings['api_key'],
-      $this->fromEmail,
-      $this->fromName
+      $this->from_email,
+      $this->from_name
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -28,8 +28,8 @@ class ElasticEmailCest {
   function itCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     expect($body['api_key'])->equals($this->settings['api_key']);
-    expect($body['from'])->equals($this->fromEmail);
-    expect($body['from_name'])->equals($this->fromName);
+    expect($body['from'])->equals($this->from_email);
+    expect($body['from_name'])->equals($this->from_name);
     expect($body['to'])->contains($this->subscriber);
     expect($body['subject'])->equals($this->newsletter['subject']);
     expect($body['body_html'])->equals($this->newsletter['body']['html']);
@@ -45,8 +45,8 @@ class ElasticEmailCest {
     expect($request['body'])->equals(urldecode(http_build_query($body)));
   }
 
-  function itCannotSendWithoutProperAPIKey() {
-    $this->mailer->apiKey = 'someapi';
+  function itCannotSendWithoutProperApiKey() {
+    $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

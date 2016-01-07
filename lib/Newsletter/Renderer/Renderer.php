@@ -15,7 +15,7 @@ class Renderer {
     $this->template = file_get_contents(dirname(__FILE__) . '/' . $this->template);
   }
 
-  function renderAll() {
+  function render() {
     $newsletterContent = $this->renderContent($this->data['content']);
     $newsletterStyles = $this->renderStyles($this->data['globalStyles']);
 

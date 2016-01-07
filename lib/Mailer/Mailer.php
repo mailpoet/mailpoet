@@ -8,86 +8,91 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 if(!defined('ABSPATH')) exit;
 
 class Mailer {
+  public $mailer;
+  public $sender;
+  public $reply_to;
+  public $mailer_instance;
+
   function __construct($mailer = false, $sender = false, $reply_to = false) {
     $this->mailer = $this->getMailer($mailer);
     $this->sender = $this->getSender($sender);
-    $this->replyTo = $this->getReplyTo($reply_to);
-    $this->mailerInstance = $this->buildMailer();
+    $this->reply_to = $this->getReplyTo($reply_to);
+    $this->mailer_instance = $this->buildMailer();
   }
   
   function send($newsletter, $subscriber) {
     $subscriber = $this->transformSubscriber($subscriber);
-    return $this->mailerInstance->send($newsletter, $subscriber);
+    return $this->mailer_instance->send($newsletter, $subscriber);
   }
   
   function buildMailer() {
     switch($this->mailer['method']) {
-      case 'AmazonSES':
-        $mailerInstance = new $this->mailer['class'](
-          $this->mailer['region'],
-          $this->mailer['access_key'],
-          $this->mailer['secret_key'],
-          $this->sender['fromNameEmail']
-        );
-        break;
-      case 'ElasticEmail':
-        $mailerInstance = new $this->mailer['class'](
-          $this->mailer['api_key'],
-          $this->sender['fromEmail'],
-          $this->sender['fromName']
-        );
-        break;
-      case 'MailGun':
-        $mailerInstance = new $this->mailer['class'](
-          $this->mailer['domain'],
-          $this->mailer['api_key'],
-          $this->sender['fromNameEmail']
-        );
-        break;
-      case 'MailPoet':
-        $mailerInstance = new $this->mailer['class'](
-          $this->mailer['mailpoet_api_key'],
-          $this->sender['fromEmail'],
-          $this->sender['fromName']
-        );
-        break;
-      case 'Mandrill':
-        $mailerInstance = new $this->mailer['class'](
-          $this->mailer['api_key'],
-          $this->sender['fromEmail'],
-          $this->sender['fromName']
-        );
-        break;
-      case 'SendGrid':
-        $mailerInstance = new $this->mailer['class'](
-          $this->mailer['api_key'],
-          $this->sender['fromEmail'],
-          $this->sender['fromName']
-        );
-        break;
-      case 'WPMail':
-        $mailerInstance = new $this->mailer['class'](
-          $this->sender['fromEmail'],
-          $this->sender['fromName']
-        );
-        break;
-      case 'SMTP':
-        $mailerInstance = new $this->mailer['class'](
-          $this->mailer['host'],
-          $this->mailer['port'],
-          $this->mailer['authentication'],
-          $this->mailer['login'],
-          $this->mailer['password'],
-          $this->mailer['encryption'],
-          $this->sender['fromEmail'],
-          $this->sender['fromName']
-        );
-        break;
-      default:
-        throw new \Exception(__('Mailing method does not exist.'));
-        break;
+    case 'AmazonSES':
+      $mailer_instance = new $this->mailer['class'](
+        $this->mailer['region'],
+        $this->mailer['access_key'],
+        $this->mailer['secret_key'],
+        $this->sender['from_name_email']
+      );
+    break;
+    case 'ElasticEmail':
+      $mailer_instance = new $this->mailer['class'](
+        $this->mailer['api_key'],
+        $this->sender['from_email'],
+        $this->sender['from_name']
+      );
+    break;
+    case 'MailGun':
+      $mailer_instance = new $this->mailer['class'](
+        $this->mailer['domain'],
+        $this->mailer['api_key'],
+        $this->sender['from_name_email']
+      );
+    break;
+    case 'MailPoet':
+      $mailer_instance = new $this->mailer['class'](
+        $this->mailer['mailpoet_api_key'],
+        $this->sender['from_email'],
+        $this->sender['from_name']
+      );
+    break;
+    case 'Mandrill':
+      $mailer_instance = new $this->mailer['class'](
+        $this->mailer['api_key'],
+        $this->sender['from_email'],
+        $this->sender['from_name']
+      );
+    break;
+    case 'SendGrid':
+      $mailer_instance = new $this->mailer['class'](
+        $this->mailer['api_key'],
+        $this->sender['from_email'],
+        $this->sender['from_name']
+      );
+    break;
+    case 'WPMail':
+      $mailer_instance = new $this->mailer['class'](
+        $this->sender['from_email'],
+        $this->sender['from_name']
+      );
+    break;
+    case 'SMTP':
+      $mailer_instance = new $this->mailer['class'](
+        $this->mailer['host'],
+        $this->mailer['port'],
+        $this->mailer['authentication'],
+        $this->mailer['login'],
+        $this->mailer['password'],
+        $this->mailer['encryption'],
+        $this->sender['from_email'],
+        $this->sender['from_name']
+      );
+    break;
+    default:
+      throw new \Exception(__('Mailing method does not exist.'));
+    break;
     }
-    return $mailerInstance;
+    return $mailer_instance;
   }
   
   function getMailer($mailer = false) {
@@ -105,26 +110,26 @@ class Mailer {
       if(!$sender) throw new \Exception(__('Sender name and email are not configured.'));
     }
     return array(
-      'fromName' => $sender['name'],
-      'fromEmail' => $sender['address'],
-      'fromNameEmail' => sprintf('%s <%s>', $sender['name'], $sender['address'])
+      'from_name' => $sender['name'],
+      'from_email' => $sender['address'],
+      'from_name_email' => sprintf('%s <%s>', $sender['name'], $sender['address'])
     );
   }
 
-  function getReplyTo($replyTo = false) {
-    if(!$replyTo) {
-      $replyTo = Setting::getValue('replyTo', null);
-      if(!$replyTo) {
-        $replyTo = array(
-          'name' => $this->sender['fromName'],
-          'address' => $this->sender['fromEmail']
+  function getReplyTo($reply_to = false) {
+    if(!$reply_to) {
+      $reply_to = Setting::getValue('reply_to', null);
+      if(!$reply_to) {
+        $reply_to = array(
+          'name' => $this->sender['from_name'],
+          'address' => $this->sender['from_email']
         );
       }
     }
     return array(
-      'replyToName' => $replyTo['name'],
-      'replyToEmail' => $replyTo['address'],
-      'replyToNameEmail' => sprintf('%s <%s>', $replyTo['name'], $replyTo['address'])
+      'reply_to_name' => $reply_to['name'],
+      'reply_to_email' => $reply_to['address'],
+      'reply_to_name_email' => sprintf('%s <%s>', $reply_to['name'], $reply_to['address'])
     );
   }
 

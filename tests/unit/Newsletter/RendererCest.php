@@ -20,7 +20,7 @@ class NewsletterRendererCest {
   }
 
   function itRendersCompleteNewsletter() {
-    $template = $this->renderer->renderAll();
+    $template = $this->renderer->render();
     $DOM = $this->queryDOM->parseStr($template);
 
     // we expect to have 4 column containers and 7 columns (1x1, 1x2, 1x3, 1x1)

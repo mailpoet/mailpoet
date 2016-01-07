@@ -7,11 +7,11 @@ class WPMailCest {
     $this->settings = array(
       'method' => 'WPMail'
     );
-    $this->fromEmail = 'staff@mailpoet.com';
-    $this->fromName = 'Sender';
+    $this->from_email = 'staff@mailpoet.com';
+    $this->from_name = 'Sender';
     $this->mailer = new WPMail(
-      $this->fromEmail,
-      $this->fromName
+      $this->from_email,
+      $this->from_name
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -48,11 +48,11 @@ class WPMailCest {
   }
 
   function itCanSetFromName() {
-    expect($this->mailer->setFromName())->equals($this->fromName);
+    expect($this->mailer->setFromName())->equals($this->from_name);
   }
 
   function itCanSetFromEmail() {
-    expect($this->mailer->setFromName())->equals($this->fromName);
+    expect($this->mailer->setFromEmail())->equals($this->from_email);
   }
 
   function itCanSetContentType() {

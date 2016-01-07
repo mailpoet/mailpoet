@@ -8,38 +8,39 @@ use MailPoet\Models\Setting;
 if(!defined('ABSPATH')) exit;
 
 class Supervisor {
-  function __construct($forceStart = false) {
-    $this->forceStart = $forceStart;
+  public $daemon;
+
+  function __construct($force_start = false) {
+    $this->force_start = $force_start;
     if(!Env::isPluginActivated()) {
       throw new \Exception(__('MailPoet is not activated.'));
     }
-    list ($this->daemon, $this->daemonData) = $this->getDaemon();
+    $this->daemon = $this->getDaemon();
   }
 
   function checkDaemon() {
     if(!$this->daemon) {
       return $this->startDaemon();
     }
-    if(!$this->forceStart && (
-        $this->daemonData['status'] === 'stopped' ||
-        $this->daemonData['status'] === 'stopping')
+    if(!$this->force_start && (
+        $this->daemon['value']['status'] === 'stopped' ||
+        $this->daemon['value']['status'] === 'stopping')
     ) {
-      return $this->daemonData['status'];
+      return $this->daemon['value']['status'];
     }
-    $timeSinceLastRun = $this->getDaemonLastRunTime();
-    if($timeSinceLastRun < 40) {
-      if(!$this->forceStart) {
+    $time_since_last_run = $this->getDaemonLastRunTime();
+    if($time_since_last_run < 40) {
+      if(!$this->force_start) {
         return;
       }
-      if($this->daemonData['status'] === 'stopping' ||
-        $this->daemonData['status'] === 'starting'
+      if($this->daemon['value']['status'] === 'stopping' ||
+        $this->daemon['value']['status'] === 'starting'
       ) {
-        return $this->daemonData['status'];
+        return $this->daemon['value']['status'];
       }
     }
-    $this->daemonData['status'] = 'starting';
-    $this->daemon->value = json_encode($this->daemonData);
-    $this->daemon->save();
+    $this->daemon['value']['status'] = 'starting';
+    $this->saveDaemon($this->daemon['value']);
     return $this->startDaemon();
   }
 
@@ -50,7 +51,8 @@ class Supervisor {
     $_SESSION['cron_daemon'] = null;
     $requestPayload = json_encode(array('session' => $sessionId));
     self::accessRemoteUrl(
-      '/?mailpoet-api&section=queue&action=start&request_payload=' . urlencode($requestPayload)
+      '/?mailpoet-api&section=queue&action=start&request_payload=' .
+      urlencode($requestPayload)
     );
     session_start();
     $daemonStatus = $_SESSION['cron_daemon'];
@@ -62,10 +64,16 @@ class Supervisor {
   function getDaemon() {
     $daemon = Setting::where('name', 'cron_daemon')
       ->findOne();
-    $daemonData = ($daemon) ? json_decode($daemon->value, true) : false;
-    return array(
-      $daemon,
-      $daemonData
+    if(!$daemon) return false;
+    $daemon = $daemon->asArray();
+    $daemon['value'] = unserialize($daemon['value']);
+    return $daemon;
+  }
+
+  function saveDaemon($daemon_data) {
+    return Setting::setValue(
+      'cron_daemon',
+      $daemon_data
     );
   }
 
@@ -98,11 +106,11 @@ class Supervisor {
   }
 
   function getDaemonLastRunTime() {
-    $currentTime = Carbon::now('UTC');
-    $lastUpdateTime = Carbon::createFromFormat(
+    $current_time = Carbon::now('UTC');
+    $last_update_time = Carbon::createFromFormat(
       'Y-m-d H:i:s',
-      $this->daemon->updated_at, 'UTC'
+      $this->daemon['updated_at'], 'UTC'
     );
-    return $currentTime->diffInSeconds($lastUpdateTime);
+    return $current_time->diffInSeconds($last_update_time);
   }
 }

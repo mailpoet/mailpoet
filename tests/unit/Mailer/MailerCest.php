@@ -7,7 +7,7 @@ class MailerCest {
       'name' => 'Sender',
       'address' => 'staff@mailinator.com'
     );
-    $this->replyTo = array(
+    $this->reply_to = array(
       'name' => 'Reply To',
       'address' => 'staff@mailinator.com'
     );
@@ -42,16 +42,16 @@ class MailerCest {
   }
 
   function itCanConstruct() {
-    $mailer = new Mailer($this->mailer, $this->sender, $this->replyTo);
-    expect($mailer->sender['fromName'])->equals($this->sender['name']);
-    expect($mailer->sender['fromEmail'])->equals($this->sender['address']);
-    expect($mailer->replyTo['replyToName'])->equals($this->replyTo['name']);
-    expect($mailer->replyTo['replyToEmail'])->equals($this->replyTo['address']);
+    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
+    expect($mailer->sender['from_name'])->equals($this->sender['name']);
+    expect($mailer->sender['from_email'])->equals($this->sender['address']);
+    expect($mailer->reply_to['reply_to_name'])->equals($this->reply_to['name']);
+    expect($mailer->reply_to['reply_to_email'])->equals($this->reply_to['address']);
   }
 
   function itCanBuildMailerInstance() {
     $mailer = new Mailer($this->mailer, $this->sender);
-    expect(get_class($mailer->mailerInstance))
+    expect(get_class($mailer->mailer_instance))
       ->equals('MailPoet\Mailer\Methods\MailPoet');
   }
 
@@ -64,7 +64,7 @@ class MailerCest {
   }
 
   function itCanTransformSubscriber() {
-    $mailer = new Mailer($this->mailer, $this->sender, $this->replyTo);
+    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
     expect($mailer->transformSubscriber('test@email.com'))
       ->equals('test@email.com');
     expect($mailer->transformSubscriber(
@@ -94,7 +94,7 @@ class MailerCest {
   }
 
   function itCanSend() {
-    $mailer = new Mailer($this->mailer, $this->sender, $this->replyTo);
+    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
     expect($mailer->send($this->newsletter, $this->subscriber))->true();
   }
 }

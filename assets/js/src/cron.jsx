@@ -37,7 +37,7 @@ define(
       }
     },
     controlCron: function(action) {
-      if (jQuery('.button-primary').hasClass('disabled')) {
+      if(jQuery('.button-primary').hasClass('disabled')) {
         return;
       }
       jQuery('.button-primary')

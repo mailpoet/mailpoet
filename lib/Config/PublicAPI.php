@@ -7,6 +7,11 @@ use MailPoet\Util\Helpers;
 if(!defined('ABSPATH')) exit;
 
 class PublicAPI {
+  public $api;
+  public $section;
+  public $action;
+  public $request_payload;
+
   function __construct() {
     # http://example.com/?mailpoet-api&section=&action=&request_payload=
     $this->api = isset($_GET['mailpoet-api']) ? true : false;
@@ -14,7 +19,7 @@ class PublicAPI {
     $this->action = isset($_GET['action']) ?
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
-    $this->requestPayload = isset($_GET['request_payload']) ?
+    $this->request_payload = isset($_GET['request_payload']) ?
       json_decode(urldecode($_GET['request_payload']), true) :
       false;
   }
@@ -26,7 +31,7 @@ class PublicAPI {
 
   function queue() {
     try {
-      $queue = new Daemon($this->requestPayload);
+      $queue = new Daemon($this->request_payload);
       $this->_checkAndCallMethod($queue, $this->action);
     } catch(\Exception $e) {
     }
