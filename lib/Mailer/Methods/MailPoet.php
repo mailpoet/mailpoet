@@ -1,16 +1,20 @@
 <?php
-namespace MailPoet\Mailer;
+namespace MailPoet\Mailer\Methods;
 
 if(!defined('ABSPATH')) exit;
 
 class MailPoet {
-  function __construct($apiKey, $fromEmail, $fromName) {
-    $this->url = 'https://bridge.mailpoet.com/api/messages';
-    $this->apiKey = $apiKey;
-    $this->fromEmail = $fromEmail;
-    $this->fromName = $fromName;
+  public $url = 'https://bridge.mailpoet.com/api/messages';
+  public $api_key;
+  public $from_email;
+  public $from_name;
+  
+  function __construct($api_key, $from_email, $from_name) {
+    $this->api_key = $api_key;
+    $this->from_email = $from_email;
+    $this->from_name = $from_name;
   }
-
+  
   function send($newsletter, $subscriber) {
     $result = wp_remote_post(
       $this->url,
@@ -21,20 +25,20 @@ class MailPoet {
       wp_remote_retrieve_response_code($result) === 201
     );
   }
-
+  
   function processSubscriber($subscriber) {
-    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriberData);
-    if(!isset($subscriberData['email'])) {
-      $subscriberData = array(
+    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
+    if(!isset($subscriber_data['email'])) {
+      $subscriber_data = array(
         'email' => $subscriber,
       );
     }
     return array(
-      'email' => $subscriberData['email'],
-      'name' => (isset($subscriberData['name'])) ? $subscriberData['name'] : ''
+      'email' => $subscriber_data['email'],
+      'name' => (isset($subscriber_data['name'])) ? $subscriber_data['name'] : ''
     );
   }
-
+  
   function getBody($newsletter, $subscriber) {
     $body = array(
       'to' => (array(
@@ -42,8 +46,8 @@ class MailPoet {
         'name' => $subscriber['name']
       )),
       'from' => (array(
-        'address' => $this->fromEmail,
-        'name' => $this->fromName
+        'address' => $this->from_email,
+        'name' => $this->from_name
       )),
       'subject' => $newsletter['subject']
     );
@@ -55,11 +59,11 @@ class MailPoet {
     }
     return $body;
   }
-
+  
   function auth() {
-    return 'Basic ' . base64_encode('api:' . $this->apiKey);
+    return 'Basic ' . base64_encode('api:' . $this->api_key);
   }
-
+  
   function request($newsletter, $subscriber) {
     $body = array($this->getBody($newsletter, $subscriber));
     return array(

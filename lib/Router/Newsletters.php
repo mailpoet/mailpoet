@@ -188,12 +188,12 @@ class Newsletters {
       ));
     }
 
-    // TO REMOVE once we add the columns from/reply_to
+    // TODO: TO REMOVE once we add the columns from/reply_to
     $newsletter = array_merge($newsletter, $data['newsletter']);
     // END - TO REMOVE
 
     $renderer = new Renderer(json_decode($newsletter['body'], true));
-    $newsletter['body']['html'] = $renderer->renderAll();
+    $newsletter['body']['html'] = $renderer->render();
     $newsletter['body']['text'] = '';
 
     $subscribers = Subscriber::find_array();
@@ -218,7 +218,7 @@ class Newsletters {
       wp_send_json(false);
     }
     $renderer = new Renderer(json_decode($data['body'], true));
-    wp_send_json(array('rendered_body' => $renderer->renderAll()));
+    wp_send_json(array('rendered_body' => $renderer->render()));
   }
 
   function listing($data = array()) {

@@ -10,86 +10,93 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 if(!defined('ABSPATH')) exit;
 
 class Daemon {
-  function __construct($payload = array()) {
+  public $daemon;
+  public $request_payload;
+  public $refreshed_token;
+  public $timer;
+
+  function __construct($request_payload = array()) {
     set_time_limit(0);
     ignore_user_abort();
-    list ($this->daemon, $this->daemonData) = $this->getDaemon();
-    $this->refreshedToken = $this->refreshToken();
-    $this->payload = $payload;
+    $this->daemon = $this->getDaemon();
+    $this->refreshed_token = $this->refreshToken();
+    $this->request_payload = $request_payload;
     $this->timer = microtime(true);
   }
 
   function start() {
-    if(!isset($this->payload['session'])) {
-      $this->abortWithError('missing session ID');
+    if(!isset($this->request_payload['session'])) {
+      $this->abortWithError(__('Missing session ID.'));
     }
     $this->manageSession('start');
     $daemon = $this->daemon;
-    $daemonData = $this->daemonData;
     if(!$daemon) {
-      $daemon = Setting::create();
-      $daemon->name = 'cron_daemon';
-      $daemonData = array(
-        'status' => null,
-        'counter' => 0
+      $this->saveDaemon(
+        array(
+          'status' => 'starting',
+          'counter' => 0
+        )
       );
-      $daemon->value = json_encode($daemonData);
-      $daemon->save();
     }
-    if($daemonData['status'] !== 'started') {
-      $_SESSION['cron_daemon'] = 'started';
-      $daemonData['status'] = 'started';
-      $daemonData['token'] = $this->refreshedToken;
-      $_SESSION['cron_daemon'] = array('result' => true);
-      $this->manageSession('end');
-      $daemon->value = json_encode($daemonData);
-      $daemon->save();
-      $this->callSelf();
-    } else {
+    if($daemon['status'] === 'started') {
       $_SESSION['cron_daemon'] = array(
         'result' => false,
-        'error' => 'already started'
+        'errors' => array(__('Daemon already running.'))
       );
+    }
+    if($daemon['status'] === 'starting') {
+      $_SESSION['cron_daemon'] = 'started';
+      $_SESSION['cron_daemon'] = array('result' => true);
+      $this->manageSession('end');
+      $daemon['status'] = 'started';
+      $daemon['token'] = $this->refreshed_token;
+      $this->saveDaemon($daemon);
+      $this->callSelf();
     }
     $this->manageSession('end');
   }
 
   function run() {
-    if(!$this->daemon || $this->daemonData['status'] !== 'started') {
-      $this->abortWithError('not running');
+    $allowed_statuses = array(
+      'stopping',
+      'starting',
+      'started'
+    );
+    if(!$this->daemon || !in_array($this->daemon['status'], $allowed_statuses)) {
+      $this->abortWithError(__('Invalid daemon status.'));
     }
-    if(!isset($this->payload['token']) ||
-      $this->payload['token'] !== $this->daemonData['token']
+    if(!isset($this->request_payload['token']) ||
+      $this->request_payload['token'] !== $this->daemon['token']
     ) {
-      $this->abortWithError('invalid token');
+      $this->abortWithError('Invalid token.');
     }
-
     try {
-      $sendingQueue = new SendingQueue($this->timer);
-      $sendingQueue->process();
+      $sending_queue = new SendingQueue($this->timer);
+      $sending_queue->process();
     } catch(Exception $e) {
     }
-
-    $elapsedTime = microtime(true) - $this->timer;
-    if($elapsedTime < 30) {
-      sleep(30 - $elapsedTime);
+    $elapsed_time = microtime(true) - $this->timer;
+    if($elapsed_time < 30) {
+      sleep(30 - $elapsed_time);
     }
-
     // after each execution, read daemon in case it's status was modified
-    list($daemon, $daemonData) = $this->getDaemon();
-    $daemonData['counter']++;
-    $daemonData['token'] = $this->refreshedToken;
-    $daemon->value = json_encode($daemonData);
-    $daemon->save();
-    if($daemonData['status'] === 'strated') $this->callSelf();
+    $daemon = $this->getDaemon();
+    if($daemon['status'] === 'stopping') $daemon['status'] = 'stopped';
+    if($daemon['status'] === 'starting') $daemon['status'] = 'started';
+    $daemon['token'] = $this->refreshed_token;
+    $daemon['counter']++;
+    $this->saveDaemon($daemon);
+    if($daemon['status'] === 'started') $this->callSelf();
   }
 
   function getDaemon() {
-    $daemon = Setting::where('name', 'cron_daemon')
-      ->findOne();
-    return array(
-      ($daemon) ? $daemon : null,
-      ($daemon) ? json_decode($daemon->value, true) : null
+    return Setting::getValue('cron_daemon', null);
+  }
+
+  function saveDaemon($daemon_data) {
+    return Setting::setValue(
+      'cron_daemon',
+      $daemon_data
     );
   }
 
@@ -99,24 +106,23 @@ class Daemon {
 
   function manageSession($action) {
     switch($action) {
-      case 'start':
-        if(session_id()) {
-          session_write_close();
-        }
-        session_id($this->payload['session']);
-        session_start();
-        break;
-      case 'end':
+    case 'start':
+      if(session_id()) {
         session_write_close();
-        break;
+      }
+      session_id($this->request_payload['session']);
+      session_start();
+    break;
+    case 'end':
+      session_write_close();
+    break;
     }
   }
 
   function callSelf() {
-    $payload = json_encode(array('token' => $this->refreshedToken));
-    Supervisor::getRemoteUrl(
-      '/?mailpoet-api&section=queue&action=run&payload=' . urlencode($payload)
-
+    $payload = json_encode(array('token' => $this->refreshed_token));
+    Supervisor::accessRemoteUrl(
+      '/?mailpoet-api&section=queue&action=run&request_payload=' . urlencode($payload)
     );
     exit;
   }
@@ -125,7 +131,7 @@ class Daemon {
     wp_send_json(
       array(
         'result' => false,
-        'error' => $error
+        'errors' => array($error)
       ));
     exit;
   }

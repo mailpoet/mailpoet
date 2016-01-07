@@ -1,43 +1,45 @@
 <?php
-namespace MailPoet\Mailer\API;
+namespace MailPoet\Mailer\Methods;
 
 if(!defined('ABSPATH')) exit;
 
-class MailGun {
-  function __construct($domain, $apiKey, $from) {
-    $this->url = sprintf('https://api.mailgun.net/v3/%s/messages', $domain);
-    $this->apiKey = $apiKey;
-    $this->from = $from;
+class ElasticEmail {
+  public $url = 'https://api.elasticemail.com/mailer/send';
+  public $api_key;
+  public $from_email;
+  public $from_name;
+  
+  function __construct($api_key, $from_email, $from_name) {
+    $this->api_key = $api_key;
+    $this->from_email = $from_email;
+    $this->from_name = $from_name;
   }
 
   function send($newsletter, $subscriber) {
     $result = wp_remote_post(
       $this->url,
-      $this->request($newsletter, $subscriber)
-    );
+      $this->request($newsletter, $subscriber));
     return (
       !is_wp_error($result) === true &&
-      wp_remote_retrieve_response_code($result) === 200
+      !preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $result['body']) === false
     );
   }
 
   function getBody($newsletter, $subscriber) {
     $body = array(
-      'from' => $this->from,
+      'api_key' => $this->api_key,
+      'from' => $this->from_email,
+      'from_name' => $this->from_name,
       'to' => $subscriber,
       'subject' => $newsletter['subject']
     );
     if(!empty($newsletter['body']['html'])) {
-      $body['html'] = $newsletter['body']['html'];
+      $body['body_html'] = $newsletter['body']['html'];
     }
     if(!empty($newsletter['body']['text'])) {
-      $body['text'] = $newsletter['body']['text'];
+      $body['body_text'] = $newsletter['body']['text'];
     }
     return $body;
-  }
-
-  function auth() {
-    return 'Basic ' . base64_encode('api:' . $this->apiKey);
   }
 
   function request($newsletter, $subscriber) {
@@ -46,10 +48,6 @@ class MailGun {
       'timeout' => 10,
       'httpversion' => '1.0',
       'method' => 'POST',
-      'headers' => array(
-        'Content-Type' => 'application/x-www-form-urlencoded',
-        'Authorization' => $this->auth()
-      ),
       'body' => urldecode(http_build_query($body))
     );
   }

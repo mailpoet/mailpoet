@@ -1,14 +1,17 @@
 <?php
-namespace MailPoet\Mailer\API;
+namespace MailPoet\Mailer\Methods;
 
 if(!defined('ABSPATH')) exit;
 
-class SendGrid {
-  function __construct($apiKey, $fromEmail, $fromName) {
-    $this->url = 'https://api.sendgrid.com/api/mail.send.json';
-    $this->apiKey = $apiKey;
-    $this->fromEmail = $fromEmail;
-    $this->fromName = $fromName;
+class MailGun {
+  public $url;
+  public $api_key;
+  public $from;
+  
+  function __construct($domain, $api_key, $from) {
+    $this->url = sprintf('https://api.mailgun.net/v3/%s/messages', $domain);
+    $this->api_key = $api_key;
+    $this->from = $from;
   }
 
   function send($newsletter, $subscriber) {
@@ -18,17 +21,14 @@ class SendGrid {
     );
     return (
       !is_wp_error($result) === true &&
-      !preg_match('!invalid!', $result['body']) === true &&
-      !isset(json_decode($result['body'], true)['errors']) === true &&
       wp_remote_retrieve_response_code($result) === 200
     );
   }
 
   function getBody($newsletter, $subscriber) {
     $body = array(
+      'from' => $this->from,
       'to' => $subscriber,
-      'from' => $this->fromEmail,
-      'fromname' => $this->fromName,
       'subject' => $newsletter['subject']
     );
     if(!empty($newsletter['body']['html'])) {
@@ -41,16 +41,17 @@ class SendGrid {
   }
 
   function auth() {
-    return 'Bearer ' . $this->apiKey;
+    return 'Basic ' . base64_encode('api:' . $this->api_key);
   }
 
   function request($newsletter, $subscriber) {
     $body = $this->getBody($newsletter, $subscriber);
     return array(
       'timeout' => 10,
-      'httpversion' => '1.1',
+      'httpversion' => '1.0',
       'method' => 'POST',
       'headers' => array(
+        'Content-Type' => 'application/x-www-form-urlencoded',
         'Authorization' => $this->auth()
       ),
       'body' => urldecode(http_build_query($body))

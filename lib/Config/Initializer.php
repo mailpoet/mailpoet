@@ -75,7 +75,7 @@ class Initializer {
     define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', $subscriber_custom_field);
     define('MP_NEWSLETTER_OPTION_FIELDS_TABLE', $newsletter_option_fields);
     define('MP_NEWSLETTER_OPTION_TABLE', $newsletter_option);
-    define('MP_SENDING_QUEUE_TABLE', $sending_queues);
+    define('MP_SENDING_QUEUES_TABLE', $sending_queues);
     define('MP_NEWSLETTER_STATISTICS_TABLE', $newsletter_statistics);
   }
 
@@ -113,7 +113,6 @@ class Initializer {
   }
 
   function setupAnalytics() {
-
     $widget = new Analytics();
     $widget->init();
   }
@@ -143,10 +142,12 @@ class Initializer {
   }
 
   function runQueueSupervisor() {
+    if(php_sapi_name() === 'cli') return;
     try {
       $supervisor = new Supervisor();
       $supervisor->checkDaemon();
-    } catch (\Exception $e) {}
+    } catch (\Exception $e) {
+    }
   }
 
   function setupImages() {

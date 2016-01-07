@@ -1,22 +1,22 @@
 <?php
-namespace MailPoet\Mailer;
+namespace MailPoet\Mailer\Methods;
+
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 if(!defined('ABSPATH')) exit;
 
 class WPMail {
-  function __construct($fromEmail, $fromName) {
-    $this->fromEmail = $fromEmail;
-    $this->fromName = $fromName;
-    add_filter('wp_mail_from', array(
-      $this,
-      'setFromEmail'
-    ));
-    $this->filters = array(
-      'wp_mail_from' => 'setFromEmail',
-      'wp_mail_from_name' => 'setFromName',
-      'wp_mail_content_type' => 'setContentType'
-    );
+  public $from_email;
+  public $from_name;
+  public $filters = array(
+    'wp_mail_from' => 'setFromEmail',
+    'wp_mail_from_name' => 'setFromName',
+    'wp_mail_content_type' => 'setContentType'
+  );
+
+  function __construct($from_email, $from_name) {
+    $this->from_email = $from_email;
+    $this->from_name = $from_name;
   }
 
   function addFilters() {
@@ -38,11 +38,11 @@ class WPMail {
   }
 
   function setFromEmail() {
-    return $this->fromEmail;
+    return $this->from_email;
   }
 
   function setFromName() {
-    return $this->fromName;
+    return $this->from_name;
   }
 
   function setContentType() {
@@ -53,7 +53,9 @@ class WPMail {
     $this->addFilters();
     $result = wp_mail(
       $subscriber, $newsletter['subject'],
-      (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text']
+      (!empty($newsletter['body']['html'])) ?
+        $newsletter['body']['html'] :
+        $newsletter['body']['text']
     );
     $this->removeFilters();
     return ($result === true);
