@@ -97,7 +97,6 @@ define([
     fetchAvailablePosts: function() {
       var that = this;
       CommunicationComponent.getPosts(this.toJSON()).done(function(posts) {
-        console.log('Posts fetched', arguments);
         that.get('_availablePosts').reset(posts);
         that.get('_selectedPosts').reset(); // Empty out the collection
         that.trigger('change:_availablePosts');
@@ -117,7 +116,6 @@ define([
       }
 
       CommunicationComponent.getTransformedPosts(data).done(function(posts) {
-        console.log('Transformed posts fetched', arguments);
         that.get('_transformedPosts').get('blocks').reset(posts, {parse: true});
       }).fail(function() {
         console.log('Posts _refreshTransformedPosts error', arguments);
@@ -134,7 +132,6 @@ define([
       if (data.posts.length === 0) return;
 
       CommunicationComponent.getTransformedPosts(data).done(function(posts) {
-        console.log('Available posts fetched', arguments);
         collection.add(posts, { at: index });
       }).fail(function() {
         console.log('Posts fetchPosts error', arguments);

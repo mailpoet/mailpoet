@@ -17,7 +17,7 @@ define([
       },
       h1: {
         fontColor: '#111111',
-        fontFamily: 'Arial Black',
+        fontFamily: 'Arial',
         fontSize: '40px'
       },
       h2: {

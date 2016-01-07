@@ -70,8 +70,8 @@ define([
     fetchPosts: function() {
       var that = this;
       CommunicationComponent.getTransformedPosts(this.toJSON()).done(function(content) {
-        console.log('ALC fetched', arguments);
         that.get('_container').get('blocks').reset(content, {parse: true});
+        that.trigger('postsChanged');
       }).fail(function(error) {
         console.log('ALC fetchPosts error', arguments);
       });
@@ -100,6 +100,11 @@ define([
       toolsRegion: '.mailpoet_tools',
       postsRegion: '.mailpoet_automated_latest_content_block_posts',
     },
+    modelEvents: _.extend(
+      _.omit(base.BlockView.prototype.modelEvents, 'change'),
+      {
+        'postsChanged': 'render',
+      }),
     events: _.extend(base.BlockView.prototype.events, {
       'click .mailpoet_automated_latest_content_block_overlay': 'showSettings',
     }),

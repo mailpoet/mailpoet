@@ -128,24 +128,37 @@ define([
       }
     },
     deleteBlock: function() {
-      this.transitionOut().done(function() {
+      this.transitionOut().then(function() {
         this.model.destroy();
       }.bind(this));
     },
     transitionIn: function() {
-      return this._transition('mailpoet_block_transition_in');
+      return this._transition('slideDown', 'fadeIn', 'easeIn');
     },
     transitionOut: function() {
-      return this._transition('mailpoet_block_transition_out');
+      return this._transition('slideUp', 'fadeOut', 'easeOut');
     },
-    _transition: function(className) {
+    _transition: function(slideDirection, fadeDirection, easing) {
       var promise = jQuery.Deferred();
 
-      this.$el.addClass(className);
-      this.$el.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd animationend', function() {
-        this.$el.removeClass(className);
-        promise.resolve();
-      }.bind(this));
+      this.$el.velocity(
+        slideDirection,
+        {
+          duration: 250,
+          easing: easing,
+          complete: function() {
+            promise.resolve();
+          }.bind(this),
+        }
+      ).velocity(
+        fadeDirection,
+        {
+          duration: 250,
+          easing: easing,
+          queue: false, // Do not enqueue, trigger animation in parallel
+        }
+      );
+
       return promise;
     },
   });

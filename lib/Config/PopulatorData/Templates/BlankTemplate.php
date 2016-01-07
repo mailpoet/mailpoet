@@ -179,7 +179,7 @@ class BlankTemplate {
         ),
         "h1" => array(
           "fontColor" => "#111111",
-          "fontFamily" => "Arial Black",
+          "fontFamily" => "Arial",
           "fontSize" => "24px"
         ),
         "h2" => array(

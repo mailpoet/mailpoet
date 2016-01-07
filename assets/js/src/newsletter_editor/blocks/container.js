@@ -248,20 +248,32 @@ define([
       }.bind(this));
     },
     transitionIn: function() {
-      return this._transition('mailpoet_block_transition_in');
+      return this._transition('slideDown', 'fadeIn', 'easeIn');
     },
     transitionOut: function() {
-      return this._transition('mailpoet_block_transition_out');
+      return this._transition('slideUp', 'fadeOut', 'easeOut');
     },
-    _transition: function(className) {
-      var that = this,
-          promise = jQuery.Deferred();
+    _transition: function(slideDirection, fadeDirection, easing) {
+      var promise = jQuery.Deferred();
 
-      this.$el.addClass(className);
-      this.$el.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd animationend', function() {
-        that.$el.removeClass(className);
-        promise.resolve();
-      });
+      this.$el.velocity(
+        slideDirection,
+        {
+          duration: 250,
+          easing: easing,
+          complete: function() {
+            promise.resolve();
+          }.bind(this),
+        }
+      ).velocity(
+        fadeDirection,
+        {
+          duration: 250,
+          easing: easing,
+          queue: false, // Do not enqueue, trigger animation in parallel
+        }
+      );
+
       return promise;
     },
   });
