@@ -26,7 +26,7 @@ class Image {
       $element['width'] = $column_width;
       $element['height'] = ceil((int) $element['height'] / $ratio);
     }
-    if($element['padded'] === true && $element['width'] >= $column_width) {
+    if($element['padded'] == "true" && $element['width'] >= $column_width) {
       // resize image if the padded option is on
       $ratio = (int) $element['width'] / ((int) $element['width'] - $padded_width);
       $element['width'] = (int) $element['width'] - $padded_width;

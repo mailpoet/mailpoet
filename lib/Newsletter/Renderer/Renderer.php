@@ -24,8 +24,8 @@ class Renderer {
     $newsletter_data = (is_array($this->newsletter['body'])) ?
       $this->newsletter['body'] :
       json_decode($this->newsletter['body'], true);
-    $newsletter_body = $this->renderContent($newsletter_data['content']);
-    $newsletter_styles = $this->renderGlobalStyles($newsletter_data['globalStyles']);
+    $newsletter_body = $this->renderBody($newsletter_data['content']);
+    $newsletter_styles = $this->renderStyles($newsletter_data['globalStyles']);
     $newsletter_subject = $this->newsletter['subject'];
     $newsletter_preheader = $this->newsletter['preheader'];
     $rendered_template = $this->renderTemplate($this->template, array(
@@ -34,11 +34,11 @@ class Renderer {
       $newsletter_preheader,
       $newsletter_body
     ));
-    $rendered_template_with_innlined_styles = $this->inlineCSSStyles($rendered_template);
-    return $this->postProcessTemplate($rendered_template_with_innlined_styles);
+    $rendered_template_with_inlined_styles = $this->inlineCSSStyles($rendered_template);
+    return $this->postProcessTemplate($rendered_template_with_inlined_styles);
   }
 
-  function renderContent($content) {
+  function renderBody($content) {
     $content = array_map(function ($content_block) {
       $column_count = count($content_block['blocks']);
       $column_data = $this->blocks_renderer->render($content_block, $column_count);
@@ -51,7 +51,7 @@ class Renderer {
     return implode('', $content);
   }
 
-  function renderGlobalStyles($styles) {
+  function renderStyles($styles) {
     $css = '';
     foreach($styles as $selector => $style) {
       switch($selector) {
@@ -68,13 +68,13 @@ class Renderer {
         $selector = '.mailpoet_paragraph, .mailpoet_blockquote';
       break;
       case 'body':
-        $selector = 'body, .mailpoet_content-wrapper';
+        $selector = 'body, .mailpoet-wrapper';
       break;
       case 'link':
-        $selector = '.mailpoet_content-wrapper a';
+        $selector = '.mailpoet-wrapper a';
       break;
       case 'wrapper':
-        $selector = '.mailpoet_content';
+        $selector = '.mailpoet_content-wrapper';
       break;
       }
       if(isset($style['fontSize'])) {
@@ -114,9 +114,9 @@ class Renderer {
   function postProcessTemplate($template) {
     // replace all !important tags except for in the body tag
     $DOM = $this->DOM_parser->parseStr($template);
-    $last_column_element = $DOM->query('.mailpoet_template');
-    $last_column_element->html(
-      str_replace('!important', '', $last_column_element->html())
+    $template = $DOM->query('.mailpoet_template');
+    $template->html(
+      str_replace('!important', '', $template->html())
     );
     // TODO: return array with html and text body
     return $DOM->__toString();
