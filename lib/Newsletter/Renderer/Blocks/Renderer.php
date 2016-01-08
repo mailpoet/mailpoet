@@ -21,5 +21,4 @@ class Renderer {
     $block_class = __NAMESPACE__ . '\\' . ucfirst($block['type']);
     return (class_exists($block_class)) ? $block_class::render($block, $column_count) : '';
   }
-
 }

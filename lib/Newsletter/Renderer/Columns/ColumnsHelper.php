@@ -7,7 +7,7 @@ class ColumnsHelper {
     2 => 330,
     3 => 220
   );
-  
+
   static $columns_class = array(
     1 => 'cols-one',
     2 => 'cols-two',

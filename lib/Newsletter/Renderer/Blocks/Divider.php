@@ -12,11 +12,11 @@ class Divider {
           'bgColor="' . $element['styles']['block']['backgroundColor'] . '" style="background-color:' . $element['styles']['block']['backgroundColor'] . ';' :
           'style="'
         ) .
-        sprintf('padding: %s %spx %s %spx;',
-                $element['styles']['block']['padding'],
-                StylesHelper::$padding_width,
-                $element['styles']['block']['padding'],
-                StylesHelper::$padding_width) . '">
+      sprintf('padding: %s %spx %s %spx;',
+              $element['styles']['block']['padding'],
+              StylesHelper::$padding_width,
+              $element['styles']['block']['padding'],
+              StylesHelper::$padding_width) . '">
           <table width="100%" border="0" cellpadding="0" cellspacing="0"
           style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;">
             <tr>
@@ -29,6 +29,6 @@ class Divider {
           </table>
         </td>
       </tr>';
-     return $template;
+    return $template;
   }
 }
