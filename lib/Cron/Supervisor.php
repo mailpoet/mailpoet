@@ -63,7 +63,7 @@ class Supervisor {
   }
 
   function getDaemon() {
-    return Setting::getValue('cron_daemon', null);
+    return Setting::getValue('cron_daemon');
   }
 
   function saveDaemon($daemon_data) {
