@@ -48,14 +48,9 @@ class Daemon {
       $_SESSION['cron_daemon'] = 'started';
       $_SESSION['cron_daemon'] = array('result' => true);
       $this->manageSession('end');
-
       $daemon['status'] = 'started';
       $daemon['token'] = $this->refreshed_token;
-      $this->saveDaemon(array(
-        'status' => 'started',
-        'token' => $this->refreshed_token,
-        'updated_at' => time()
-      ));
+      $this->saveDaemon($daemon);
       $this->callSelf();
     }
     $this->manageSession('end');
@@ -92,7 +87,9 @@ class Daemon {
 
     $daemon['token'] = $this->refreshed_token;
     $daemon['counter']++;
+
     $this->saveDaemon($daemon);
+
     if($daemon['status'] === 'started') $this->callSelf();
   }
 
@@ -101,6 +98,8 @@ class Daemon {
   }
 
   function saveDaemon($daemon_data) {
+    $daemon_data['updated_at'] = time();
+
     return Setting::setValue(
       'cron_daemon',
       $daemon_data
