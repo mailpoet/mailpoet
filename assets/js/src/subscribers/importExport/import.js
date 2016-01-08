@@ -235,9 +235,7 @@ define(
               }
               else {
                 MailPoet.Notice.hide();
-                MailPoet.Notice
-
-                (response.message, {
+                MailPoet.Notice(response.message, {
                   timeout: 3000,
                 });
               }

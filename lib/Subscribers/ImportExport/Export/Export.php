@@ -170,9 +170,8 @@ class Export {
 
   function getExportFileURL($file) {
     return sprintf(
-      '%s%s/%s',
-      Env::$plugin_url,
-      Env::$temp_name,
+      '%s/%s',
+      Env::$temp_URL,
       basename($file)
     );
   }
