@@ -132,8 +132,7 @@ class ExportCest {
     expect(
       preg_match(
         '|' .
-        Env::$plugin_url .
-        Env::$temp_name . '/' .
+        Env::$temp_URL . '/' .
         basename($this->export->export_file) .
         '|'
         , $this->export->export_file_URL)
