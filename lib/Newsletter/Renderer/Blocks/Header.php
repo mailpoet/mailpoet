@@ -18,7 +18,7 @@ class Header {
     $template = '
       <tr>
         <td class="mailpoet_padded_header_footer mailpoet_header" bgcolor="' . $element['styles']['block']['backgroundColor'] . '"
-        style="padding:10px 0;' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
+        style="' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
         ' . $element['text'] . '
         </td>
       </tr>';
