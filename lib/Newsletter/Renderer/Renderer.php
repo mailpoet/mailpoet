@@ -28,14 +28,14 @@ class Renderer {
     $newsletter_styles = $this->renderStyles($newsletter_data['globalStyles']);
     $newsletter_subject = $this->newsletter['subject'];
     $newsletter_preheader = $this->newsletter['preheader'];
-    $rendered_template = $this->renderTemplate($this->template, array(
+    $template = $this->injectContentIntoTemplate($this->template, array(
       $newsletter_subject,
       $newsletter_styles,
       $newsletter_preheader,
       $newsletter_body
     ));
-    $rendered_template_with_inlined_styles = $this->inlineCSSStyles($rendered_template);
-    return $this->postProcessTemplate($rendered_template_with_inlined_styles);
+    $template = $this->inlineCSSStyles($template);
+    return $this->postProcessTemplate($template);
   }
 
   function renderBody($content) {
@@ -96,7 +96,7 @@ class Renderer {
     return $css;
   }
 
-  function renderTemplate($template, $data) {
+  function injectContentIntoTemplate($template, $data) {
     return preg_replace_callback('/{{\w+}}/', function ($matches) use (&$data) {
       return array_shift($data);
     }, $template);
