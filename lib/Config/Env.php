@@ -34,7 +34,7 @@ class Env {
     self::$file = $file;
     self::$path = dirname(self::$file);
     self::$plugin_name = 'mailpoet';
-    self::$plugin_url = plugin_dir_url(__FILE__);
+    self::$plugin_url = plugin_dir_url(preg_replace('/lib/', '', __DIR__));
     self::$views_path = self::$path . '/views';
     self::$assets_path = self::$path . '/assets';
     self::$assets_url = plugins_url('/assets', $file);

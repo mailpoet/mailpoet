@@ -18,18 +18,6 @@ define(
         return;
       }
       jQuery(document).ready(function () {
-
-
-        var data = [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 'zz', text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }];
-
-        jQuery("#boo").select2({
-          data: data,
-          width: '20em'});
-        jQuery("#suka").click(function() {
-          jQuery("#boo").select2('val', ['zz']);
-        })
-
-        return;
         jQuery('input[name="select_method"]').attr('checked', false);
         // configure router
         router = new (Backbone.Router.extend({
@@ -133,7 +121,9 @@ define(
             // get an approximate size of textarea paste in bytes
             var pasteSize = encodeURI(pasteInputElement.val()).split(/%..|./).length - 1;
             if (pasteSize > maxPostSizeBytes) {
-              MailPoet.Notice.error(MailPoetI18n.maxPostSizeNotice);
+              MailPoet.Notice.error(MailPoetI18n.maxPostSizeNotice, {
+                timeout: 3000,
+              });
               return;
             }
             // delay loading indicator for 10ms or else it's just too fast :)
@@ -193,7 +183,9 @@ define(
             }).done(function (response) {
               if (response.result === false) {
                 MailPoet.Notice.hide();
-                MailPoet.Notice.error(response.error);
+                MailPoet.Notice.error(response.error, {
+                  timeout: 3000,
+                });
                 jQuery('.mailpoet_mailchimp-key-status')
                     .removeClass()
                     .addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-error');
@@ -216,7 +208,9 @@ define(
             }).error(function (error) {
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
-                  MailPoetI18n.serverError + error.statusText.toLowerCase() + '.'
+                  MailPoetI18n.serverError + error.statusText.toLowerCase() + '.', {
+                    timeout: 3000,
+                  }
               );
             });
             MailPoet.Modal.loading(false);
@@ -241,13 +235,19 @@ define(
               }
               else {
                 MailPoet.Notice.hide();
-                MailPoet.Notice.error(response.message);
+                MailPoet.Notice
+
+                (response.message, {
+                  timeout: 3000,
+                });
               }
               MailPoet.Modal.loading(false);
             }).error(function () {
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
-                  MailPoetI18n.serverError + result.statusText.toLowerCase() + '.'
+                  MailPoetI18n.serverError + result.statusText.toLowerCase() + '.', {
+                    timeout: 3000,
+                  }
               );
             });
           });
@@ -337,7 +337,9 @@ define(
               comments: advancedOptionComments,
               error: function () {
                 MailPoet.Notice.hide();
-                MailPoet.Notice.error(MailPoetI18n.dataProcessingError);
+                MailPoet.Notice.error(MailPoetI18n.dataProcessingError, {
+                  timeout: 3000,
+                });
               },
               complete: function (CSV) {
                 for (var rowCount in CSV.data) {
@@ -416,7 +418,9 @@ define(
                 }
                 else {
                   MailPoet.Modal.loading(false);
-                  MailPoet.Notice.error(MailPoetI18n.noValidRecords);
+                  MailPoet.Notice.error(MailPoetI18n.noValidRecords, {
+                    timeout: 3000,
+                  });
                 }
               }
             }
@@ -546,6 +550,7 @@ define(
                     if (!segmentSelectionNotice.length) {
                       MailPoet.Notice.error(MailPoetI18n.segmentSelectionRequired, {
                         static: true,
+                        timeout: 3000,
                         scroll: true,
                         id: 'segmentSelection',
                         hideClose: true
@@ -623,14 +628,18 @@ define(
                       else {
                         MailPoet.Modal.close();
                         MailPoet.Notice.error(
-                            MailPoetI18n.segmentCreateError + response.message + '.'
+                            MailPoetI18n.segmentCreateError + response.message + '.', {
+                              timeout: 3000,
+                            }
                         );
                       }
                     })
                     .error(function (error) {
                       MailPoet.Modal.close();
                       MailPoet.Notice.error(
-                          MailPoetI18n.serverError + error.statusText.toLowerCase() + '.'
+                          MailPoetI18n.serverError + error.statusText.toLowerCase() + '.', {
+                            timeout: 3000
+                          }
                       );
                     });
               }
@@ -831,18 +840,22 @@ define(
                                           }
                                         })
                                   });
-                              jQuery(selectElement).data('column-id', new_column_data.id)
+                              jQuery(selectElement).data('column-id', new_column_data.id);
                               filterSubscribers();
                             }
                             else {
-                              MailPoet.Notice.error(MailPoetI18n.customFieldCreateError);
+                              MailPoet.Notice.error(MailPoetI18n.customFieldCreateError, {
+                                timeout: 3000,
+                              });
                             }
                             MailPoet.Modal.loading(false);
                           })
                           .error(function (error) {
                             MailPoet.Modal.loading(false);
                             MailPoet.Notice.error(
-                                MailPoetI18n.serverError + error.statusText.toLowerCase() + '.'
+                                MailPoetI18n.serverError + error.statusText.toLowerCase() + '.', {
+                                  timeout: 3000,
+                                }
                             );
                           });
                     }
@@ -860,24 +873,23 @@ define(
                             elementId = jQuery(element).val();
                         // if another column has the same value and it's not an 'ignore', prompt user
                         if (elementId === selectedOptionId
-                            && element.id !== selectElement.id
                             && elementId !== 'ignore') {
                           if (confirm(MailPoetI18n.selectedValueAlreadyMatched + ' ' + MailPoetI18n.confirmCorrespondingColumn)) {
                             jQuery(element).data('column-id', 'ignore');
-                            jQuery(selectElement).data('column-id', selectedOptionId);
-                            filterSubscribers();
                           }
                           else {
                             selectEvent.preventDefault();
                             jQuery(selectElement).select2('close');
                           }
                         }
-                        else if (element.id !== selectElement.id) {
-                          jQuery(selectElement).data('column-id', selectedOptionId);
-                          filterSubscribers();
-                        }
                       });
                 }
+              })
+              .on('select2:select', function (selectEvent) {
+                var selectElement = this,
+                    selectedOptionId = selectEvent.params.data.id;
+                jQuery(selectElement).data('column-id', selectedOptionId);
+                filterSubscribers();
               });
 
           // filter subscribers' data to detect dates, emails, etc.
@@ -907,6 +919,7 @@ define(
                   if (!jQuery('[data-id="notice_invalidEmail"]').length) {
                     MailPoet.Notice.error(MailPoetI18n.columnContainsInvalidElement, {
                       static: true,
+                      timeout: 3000,
                       scroll: true,
                       hideClose: true,
                       id: 'invalidEmail'
@@ -986,6 +999,7 @@ define(
                 if (preventNextStep && !jQuery('.mailpoet_invalidDate').length) {
                   MailPoet.Notice.error(MailPoetI18n.columnContainsInvalidDate, {
                     static: true,
+                    timeout: 3000,
                     scroll: true,
                     hideClose: true,
                     id: 'invalidDate'
@@ -1057,7 +1071,9 @@ define(
             }).done(function (response) {
               MailPoet.Modal.loading(false);
               if (response.result === false) {
-                MailPoet.Notice.error(response.error);
+                MailPoet.Notice.error(response.error, {
+                  timeout: 3000,
+                });
               } else {
                 mailpoetSegments = response.data.segments;
                 response.data.segments = _.map(segmentSelectElement.select2('data'),
@@ -1071,7 +1087,9 @@ define(
             }).error(function (error) {
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
-                  MailPoetI18n.serverError + error.statusText.toLowerCase() + '.'
+                  MailPoetI18n.serverError + error.statusText.toLowerCase() + '.',  {
+                    timeout: 3000,
+                  }
               );
             });
           });

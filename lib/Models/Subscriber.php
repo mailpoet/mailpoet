@@ -154,7 +154,7 @@ class Subscriber extends Model {
       $orm = $orm->selectExpr(
         'CASE WHEN ' .
         MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
-        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END as "' . $customField['name'].'"');
+        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END as "' . $customField['id'].'"');
     }
     $orm = $orm
       ->leftOuterJoin(

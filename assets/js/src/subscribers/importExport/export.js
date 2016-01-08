@@ -62,7 +62,7 @@ define(
            if (_.contains(fieldsToExclude, selectedOptionId)) {
              selectEvent.preventDefault();
              if (selectedOptionId === 'deselect') {
-               jQuery(selectElement).select2('val', '');
+               jQuery(selectElement).val('').trigger('change');
              } else {
                var allOptions = [];
                _.each(container.find('option'), function (field) {
@@ -70,7 +70,7 @@ define(
                    allOptions.push(field.value);
                  }
                });
-               jQuery(selectElement).select2('val', allOptions);
+               jQuery(selectElement).val(allOptions).trigger('change');
              }
              jQuery(selectElement).select2('close');
            }
@@ -138,11 +138,11 @@ define(
           endpoint: 'ImportExport',
           action: 'processExport',
           data: JSON.stringify({
-            'exportConfirmedOption': exportData.exportConfirmedOption,
-            'exportFormatOption': jQuery(':radio[name="option_format"]:checked').val(),
-            'groupBySegmentOption': (groupBySegmentOptionElement.is(":visible")) ? groupBySegmentOptionElement.prop('checked') : false,
+            'export_confirmed_option': exportData.exportConfirmedOption,
+            'export_format_option': jQuery(':radio[name="option_format"]:checked').val(),
+            'group_by_segment_option': (groupBySegmentOptionElement.is(":visible")) ? groupBySegmentOptionElement.prop('checked') : false,
             'segments': (exportData.segments) ? segmentsContainerElement.val() : false,
-            'subscriberFields': subscriberFieldsContainerElement.val()
+            'subscriber_fields': subscriberFieldsContainerElement.val()
           })
         })
         .done(function (response) {
