@@ -79,6 +79,9 @@
       </tr>
       <tr>
         <th>
+          <a href="javascript:;" id="return_to_step1"
+             class="button-primary wysija button"><%= __('Previous step') %> </a>
+          &nbsp;&nbsp;
           <a href="javascript:;" id="step2_process"
            class="button-primary wysija button-disabled"><%= __('Next step') %> </a>
         </th>
@@ -95,7 +98,7 @@
       {{#show_and_match_columns .}}
       {{#.}}
       <th>
-        <select class="mailpoet_subscribers_column_data_match" data-column-id="{{column_id}}" id="column_{{@index}}">
+        <select class="mailpoet_subscribers_column_data_match" id="{{column_id}}" data-column-id="{{column_id}}" id="column_{{@index}}">
       </th>
       {{/.}}
       {{/show_and_match_columns}}

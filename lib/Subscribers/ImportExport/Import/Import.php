@@ -8,192 +8,201 @@ use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Util\Helpers;
 
 class Import {
+  public $subscribers_data;
+  public $segments;
+  public $update_subscribers;
+  public $subscriber_fields;
+  public $subscriber_custom_fields;
+  public $subscribers_count;
+  public $import_time;
+  public $profiler_start;
+  
   public function __construct($data) {
-    $this->subscribersData = $data['subscribers'];
+    $this->subscribers_data = $data['subscribers'];
     $this->segments = $data['segments'];
-    $this->updateSubscribers = $data['updateSubscribers'];
-    $this->subscriberFields = $this->getSubscriberFields(
-      array_keys($this->subscribersData)
+    $this->update_subscribers = $data['updateSubscribers'];
+    $this->subscriber_fields = $this->getSubscriberFields(
+      array_keys($this->subscribers_data)
     );
-    $this->subscriberCustomFields = $this->getCustomSubscriberFields(
-      array_keys($this->subscribersData)
+    $this->subscriber_custom_fields = $this->getCustomSubscriberFields(
+      array_keys($this->subscribers_data)
     );
-    $this->subscribersCount = count(reset($this->subscribersData));
-    $this->currentTime = date('Y-m-d H:i:s');
-    $this->profilerStart = microtime(true);
+    $this->subscribers_count = count(reset($this->subscribers_data));
+    $this->import_time = date('Y-m-d H:i:s');
+    $this->profiler_start = microtime(true);
   }
-
+  
   function process() {
-    $subscriberFields = $this->subscriberFields;
-    $subscriberCustomFields = $this->subscriberCustomFields;
-    $subscribersData = $this->subscribersData;
-    list ($subscribersData, $subscriberFields) =
-      $this->filterSubscriberStatus($subscribersData, $subscriberFields);
-    $this->deleteExistingTrashedSubscribers($subscribersData);
-    list($subscribersData, $subscriberFields) = $this->extendSubscribersAndFields(
-      $subscribersData, $subscriberFields
+    $subscriber_fields = $this->subscriber_fields;
+    $subscriber_custom_fields = $this->subscriber_custom_fields;
+    $subscribers_data = $this->subscribers_data;
+    list ($subscribers_data, $subscriber_fields) =
+      $this->filterSubscriberStatus($subscribers_data, $subscriber_fields);
+    $this->deleteExistingTrashedSubscribers($subscribers_data);
+    list($subscribers_data, $subscriber_fields) = $this->extendSubscribersAndFields(
+      $subscribers_data, $subscriber_fields
     );
-    list($existingSubscribers, $newSubscribers) =
-      $this->filterExistingAndNewSubscribers($subscribersData);
-    $createdSubscribers = $updatedSubscribers = array();
+    list($existing_subscribers, $new_subscribers) =
+      $this->filterExistingAndNewSubscribers($subscribers_data);
+    $created_subscribers = $updated_subscribers = array();
     try {
-      if($newSubscribers) {
-        $createdSubscribers =
+      if($new_subscribers) {
+        $created_subscribers =
           $this->createOrUpdateSubscribers(
             'create',
-            $newSubscribers,
-            $subscriberFields,
-            $subscriberCustomFields
+            $new_subscribers,
+            $subscriber_fields,
+            $subscriber_custom_fields
           );
       }
-      if($existingSubscribers && $this->updateSubscribers) {
-        $updatedSubscribers =
+      if($existing_subscribers && $this->update_subscribers) {
+        $updated_subscribers =
           $this->createOrUpdateSubscribers(
             'update',
-            $existingSubscribers,
-            $subscriberFields,
-            $subscriberCustomFields
+            $existing_subscribers,
+            $subscriber_fields,
+            $subscriber_custom_fields
           );
-        if($createdSubscribers) {
+        if($created_subscribers) {
           // subtract added from updated subscribers when DB operation takes <1s
-          $updatedSubscribers = array_diff_key(
-            $updatedSubscribers,
-            $createdSubscribers,
-            $subscriberCustomFields
+          $updated_subscribers = array_diff_key(
+            $updated_subscribers,
+            $created_subscribers,
+            $subscriber_custom_fields
           );
         }
       }
     } catch(\PDOException $e) {
       return array(
         'result' => false,
-        'error' => $e->getMessage()
+        'errors' => array($e->getMessage())
       );
     }
     $segments = new BootStrapMenu('import');
     return array(
       'result' => true,
       'data' => array(
-        'created' => count($createdSubscribers),
-        'updated' => count($updatedSubscribers),
+        'created' => count($created_subscribers),
+        'updated' => count($updated_subscribers),
         'segments' => $segments->getSegments()
       ),
       'profiler' => $this->timeExecution()
     );
   }
-
-  function filterExistingAndNewSubscribers($subscribersData) {
-    $existingRecords = array_filter(
-      array_map(function ($subscriberEmails) {
+  
+  function filterExistingAndNewSubscribers($subscribers_data) {
+    $existing_records = array_filter(
+      array_map(function($subscriber_emails) {
         return Subscriber::selectMany(array('email'))
-          ->whereIn('email', $subscriberEmails)
+          ->whereIn('email', $subscriber_emails)
           ->whereNull('deleted_at')
           ->findArray();
-      }, array_chunk($subscribersData['email'], 200))
+      }, array_chunk($subscribers_data['email'], 200))
     );
-    if(!$existingRecords) {
+    if(!$existing_records) {
       return array(
         false,
-        $subscribersData
+        $subscribers_data
       );
     }
-    $existingRecords = Helpers::flattenArray($existingRecords);
-    $newRecords = array_keys(
+    $existing_records = Helpers::flattenArray($existing_records);
+    $new_records = array_keys(
       array_diff(
-        $subscribersData['email'],
-        $existingRecords
+        $subscribers_data['email'],
+        $existing_records
       )
     );
-    if(!$newRecords) {
+    if(!$new_records) {
       return array(
-        $subscribersData,
+        $subscribers_data,
         false
       );
     }
-    $newSubscribers =
+    $new_subscribers =
       array_filter(
-        array_map(function ($subscriber) use ($newRecords) {
-          return array_map(function ($index) use ($subscriber) {
+        array_map(function($subscriber) use ($new_records) {
+          return array_map(function($index) use ($subscriber) {
             return $subscriber[$index];
-          }, $newRecords);
-        }, $subscribersData)
+          }, $new_records);
+        }, $subscribers_data)
       );
-
-    $existingSubscribers =
-      array_map(function ($subscriber) use ($newRecords) {
+    
+    $existing_subscribers =
+      array_map(function($subscriber) use ($new_records) {
         return array_values( // reindex array
           array_filter( // remove NULL entries
-            array_map(function ($index, $data) use ($newRecords) {
-              if(!in_array($index, $newRecords)) return $data;
+            array_map(function($index, $data) use ($new_records) {
+              if(!in_array($index, $new_records)) return $data;
             }, array_keys($subscriber), $subscriber)
           )
         );
-      }, $subscribersData);
+      }, $subscribers_data);
     return array(
-      $existingSubscribers,
-      $newSubscribers
+      $existing_subscribers,
+      $new_subscribers
     );
   }
-
-  function deleteExistingTrashedSubscribers($subscribersData) {
-    $existingTrashedRecords = array_filter(
-      array_map(function ($subscriberEmails) {
+  
+  function deleteExistingTrashedSubscribers($subscribers_data) {
+    $existing_trashed_records = array_filter(
+      array_map(function($subscriber_emails) {
         return Subscriber::selectMany(array('id'))
-          ->whereIn('email', $subscriberEmails)
+          ->whereIn('email', $subscriber_emails)
           ->whereNotNull('deleted_at')
           ->findArray();
-      }, array_chunk($subscribersData['email'], 200))
+      }, array_chunk($subscribers_data['email'], 200))
     );
-    if(!$existingTrashedRecords) return;
-    $existingTrashedRecords = Helpers::flattenArray($existingTrashedRecords);
-    foreach(array_chunk($existingTrashedRecords, 200) as $subscriberIds) {
-      Subscriber::whereIn('id', $subscriberIds)
+    if(!$existing_trashed_records) return;
+    $existing_trashed_records = Helpers::flattenArray($existing_trashed_records);
+    foreach(array_chunk($existing_trashed_records, 200) as $subscriber_ids) {
+      Subscriber::whereIn('id', $subscriber_ids)
         ->deleteMany();
-      SubscriberSegment::whereIn('subscriber_id', $subscriberIds)
+      SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)
         ->deleteMany();
     }
   }
-
-  function extendSubscribersAndFields($subscribersData, $subscriberFields) {
-    $subscribersData['created_at'] = $this->filterSubscriberCreatedAtDate();
-    $subscriberFields[] = 'created_at';
+  
+  function extendSubscribersAndFields($subscribers_data, $subscriber_fields) {
+    $subscribers_data['created_at'] = $this->filterSubscriberCreatedAtDate();
+    $subscriber_fields[] = 'created_at';
     return array(
-      $subscribersData,
-      $subscriberFields
+      $subscribers_data,
+      $subscriber_fields
     );
   }
-
-  function getSubscriberFields($subscriberFields) {
+  
+  function getSubscriberFields($subscriber_fields) {
     return array_values(
       array_filter(
-        array_map(function ($field) {
+        array_map(function($field) {
           if(!is_int($field)) return $field;
-        }, $subscriberFields)
+        }, $subscriber_fields)
       )
     );
   }
-
-  function getCustomSubscriberFields($subscriberFields) {
+  
+  function getCustomSubscriberFields($subscriber_fields) {
     return array_values(
       array_filter(
-        array_map(function ($field) {
+        array_map(function($field) {
           if(is_int($field)) return $field;
-        }, $subscriberFields)
+        }, $subscriber_fields)
       )
     );
   }
-
+  
   function filterSubscriberCreatedAtDate() {
-    return array_fill(0, $this->subscribersCount, $this->currentTime);
+    return array_fill(0, $this->subscribers_count, $this->import_time);
   }
-
-  function filterSubscriberStatus($subscribersData, $subscriberFields) {
-    if(!in_array('status', $subscriberFields)) {
-      $subscribersData['status'] =
-        array_fill(0, count($subscribersData['email']), 'subscribed');
-      $subscriberFields[] = 'status';
+  
+  function filterSubscriberStatus($subscribers_data, $subscriber_fields) {
+    if(!in_array('status', $subscriber_fields)) {
+      $subscribers_data['status'] =
+        array_fill(0, count($subscribers_data['email']), 'subscribed');
+      $subscriber_fields[] = 'status';
       return array(
-        $subscribersData,
-        $subscriberFields
+        $subscribers_data,
+        $subscriber_fields
       );
     }
     $statuses = array(
@@ -216,7 +225,7 @@ class Import {
         'false'
       )
     );
-    $subscribersData['status'] = array_map(function ($state) use ($statuses) {
+    $subscribers_data['status'] = array_map(function($state) use ($statuses) {
       if(in_array(strtolower($state), $statuses['subscribed'])) {
         return 'subscribed';
       }
@@ -227,38 +236,38 @@ class Import {
         return 'unconfirmed';
       }
       return 'subscribed'; // make "subscribed" a default status
-    }, $subscribersData['status']);
+    }, $subscribers_data['status']);
     return array(
-      $subscribersData,
-      $subscriberFields
+      $subscribers_data,
+      $subscriber_fields
     );
   }
-
+  
   function createOrUpdateSubscribers(
     $action,
-    $subscribersData,
-    $subscriberFields,
-    $subscriberCustomFields
+    $subscribers_data,
+    $subscriber_fields,
+    $subscriber_custom_fields
   ) {
-    $subscribersCount = count(reset($subscribersData)) - 1;
-    $subscribers = array_map(function ($index) use ($subscribersData, $subscriberFields) {
-      return array_map(function ($field) use ($index, $subscribersData) {
-        return $subscribersData[$field][$index];
-      }, $subscriberFields);
-    }, range(0, $subscribersCount));
-    $currentTime = ($action === 'update') ? date('Y-m-d H:i:s') : $this->currentTime;
+    $subscribers_count = count(reset($subscribers_data)) - 1;
+    $subscribers = array_map(function($index) use ($subscribers_data, $subscriber_fields) {
+      return array_map(function($field) use ($index, $subscribers_data) {
+        return $subscribers_data[$field][$index];
+      }, $subscriber_fields);
+    }, range(0, $subscribers_count));
+    $import_time = ($action === 'update') ? date('Y-m-d H:i:s') : $this->import_time;
     foreach(array_chunk($subscribers, 100) as $data) {
       if($action == 'create') {
         Subscriber::createMultiple(
-          $subscriberFields,
+          $subscriber_fields,
           $data
         );
       }
       if($action == 'update') {
         Subscriber::updateMultiple(
-          $subscriberFields,
+          $subscriber_fields,
           $data,
-          $currentTime
+          $import_time
         );
       }
     }
@@ -268,16 +277,16 @@ class Import {
           'id',
           'email'
         ))
-        ->where(($action === 'create') ? 'created_at' : 'updated_at', $currentTime)
+        ->where(($action === 'create') ? 'created_at' : 'updated_at', $import_time)
         ->findArray(),
       'email', 'id'
     );
-    if($subscriberCustomFields) {
+    if($subscriber_custom_fields) {
       $this->createOrUpdateCustomFields(
         ($action === 'create') ? 'create' : 'update',
         $result,
-        $subscribersData,
-        $subscriberCustomFields
+        $subscribers_data,
+        $subscriber_custom_fields
       );
     }
     $this->addSubscribersToSegments(
@@ -286,30 +295,30 @@ class Import {
     );
     return $result;
   }
-
+  
   function createOrUpdateCustomFields(
     $action,
-    $dbSubscribers,
-    $subscribersData,
-    $subscriberCustomFields
+    $db_subscribers,
+    $subscribers_data,
+    $subscriber_custom_fields
   ) {
     $subscribers = array_map(
-      function ($column) use ($dbSubscribers, $subscribersData) {
-        $count = range(0, count($subscribersData[$column]) - 1);
+      function($column) use ($db_subscribers, $subscribers_data) {
+        $count = range(0, count($subscribers_data[$column]) - 1);
         return array_map(
-          function ($index, $value)
-          use ($dbSubscribers, $subscribersData, $column) {
-            $subscriberId = array_search(
-              $subscribersData['email'][$index],
-              $dbSubscribers
+          function($index, $value)
+          use ($db_subscribers, $subscribers_data, $column) {
+            $subscriber_id = array_search(
+              $subscribers_data['email'][$index],
+              $db_subscribers
             );
             return array(
               $column,
-              $subscriberId,
+              $subscriber_id,
               $value
             );
-          }, $count, $subscribersData[$column]);
-      }, $subscriberCustomFields)[0];
+          }, $count, $subscribers_data[$column]);
+      }, $subscriber_custom_fields)[0];
     foreach(array_chunk($subscribers, 200) as $data) {
       if($action === 'create') {
         SubscriberCustomField::createMultiple(
@@ -323,15 +332,15 @@ class Import {
       }
     }
   }
-
+  
   function addSubscribersToSegments($subscribers, $segments) {
     foreach(array_chunk($subscribers, 200) as $data) {
       SubscriberSegment::createMultiple($segments, $data);
     }
   }
-
+  
   function timeExecution() {
-    $profilerEnd = microtime(true);
-    return ($profilerEnd - $this->profilerStart) / 60;
+    $profiler_end = microtime(true);
+    return ($profiler_end - $this->profiler_start) / 60;
   }
 }

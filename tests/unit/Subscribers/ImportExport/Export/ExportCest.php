@@ -10,15 +10,15 @@ use MailPoet\Subscribers\ImportExport\Export\Export;
 
 class ExportCest {
   function _before() {
-    $this->JSONdata = json_decode(file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
-    $this->subscriberFields = array(
+    $this->JSON_data = json_decode(file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
+    $this->subscriber_fields = array(
       'first_name' => 'First name',
       'last_name' => 'Last name',
       'email' => 'Email',
       1 => 'Country'
     );
 
-    $this->subscribersData = array(
+    $this->subscribers_data = array(
       array(
         'first_name' => 'Adam',
         'last_name' => 'Smith',
@@ -42,13 +42,13 @@ class ExportCest {
         'email' => 'paul@newman.com'
       )
     );
-    $this->customFieldsData = array(
+    $this->custom_fields_data = array(
       array(
         'name' => 'Country',
         'type' => 'text'
       )
     );
-    $this->segmentsData = array(
+    $this->segments_data = array(
       array(
         'name' => 'Newspapers'
       ),
@@ -56,7 +56,7 @@ class ExportCest {
         'name' => 'Journals'
       )
     );
-    foreach ($this->subscribersData as $subscriber) {
+    foreach($this->subscribers_data as $subscriber) {
       if(isset($subscriber[1])) {
         unset($subscriber[1]);
       }
@@ -64,20 +64,20 @@ class ExportCest {
       $entity->hydrate($subscriber);
       $entity->save();
     }
-    foreach ($this->segmentsData as $customField) {
+    foreach($this->segments_data as $custom_field) {
       $entity = Segment::create();
-      $entity->hydrate($customField);
+      $entity->hydrate($custom_field);
       $entity->save();
     }
-    foreach ($this->customFieldsData as $customField) {
+    foreach($this->custom_fields_data as $custom_field) {
       $entity = CustomField::create();
-      $entity->hydrate($customField);
+      $entity->hydrate($custom_field);
       $entity->save();
     }
     $entity = SubscriberCustomField::create();
     $entity->subscriber_id = 2;
     $entity->custom_field_id = 1;
-    $entity->value = $this->subscribersData[1][1];
+    $entity->value = $this->subscribers_data[1][1];
     $entity->save();
     $entity = SubscriberSegment::create();
     $entity->subscriber_id = 1;
@@ -95,15 +95,15 @@ class ExportCest {
     $entity->subscriber_id = 3;
     $entity->segment_id = 2;
     $entity->save();
-    $this->export = new Export($this->JSONdata);
+    $this->export = new Export($this->JSON_data);
   }
 
   function itCanConstruct() {
-    expect($this->export->exportConfirmedOption)
+    expect($this->export->export_confirmed_option)
       ->equals(false);
-    expect($this->export->exportFormatOption)
+    expect($this->export->export_format_option)
       ->equals('csv');
-    expect($this->export->groupBySegmentOption)
+    expect($this->export->group_by_segment_option)
       ->equals(false);
     expect($this->export->segments)
       ->equals(
@@ -112,9 +112,9 @@ class ExportCest {
           2
         )
       );
-    expect($this->export->subscribersWithoutSegment)
+    expect($this->export->subscribers_without_segment)
       ->equals(0);
-    expect($this->export->subscriberFields)
+    expect($this->export->subscriber_fields)
       ->equals(
         array(
           'email',
@@ -126,42 +126,41 @@ class ExportCest {
       preg_match(
         '|' .
         Env::$temp_path . '/MailPoet_export_[a-f0-9]{4}.' .
-        $this->export->exportFormatOption .
-        '|', $this->export->exportFile)
+        $this->export->export_format_option .
+        '|', $this->export->export_file)
     )->equals(1);
     expect(
       preg_match(
         '|' .
-        Env::$plugin_url . '/' .
-        Env::$temp_name . '/' .
-        basename($this->export->exportFile) .
+        Env::$temp_URL . '/' .
+        basename($this->export->export_file) .
         '|'
-        , $this->export->exportFileURL)
+        , $this->export->export_file_URL)
     )->equals(1);
   }
 
   function itCanGetSubscriberCustomFields() {
-    $source = CustomField::where('name', $this->customFieldsData[0]['name'])
+    $source = CustomField::where('name', $this->custom_fields_data[0]['name'])
       ->findOne();
     $target = $this->export->getSubscriberCustomFields();
     expect($target)->equals(array($source->id => $source->name));
   }
 
-  function itCanFormatSubscriberFields() {
-    $formattedSubscriberFields = $this->export->formatSubscriberFields(
-      array_keys($this->subscriberFields),
+  function itCanFormatsubscriber_fields() {
+    $formatted_subscriber_fields = $this->export->formatSubscriberFields(
+      array_keys($this->subscriber_fields),
       $this->export->getSubscriberCustomFields()
     );
-    expect($formattedSubscriberFields)
-      ->equals(array_values($this->subscriberFields));
+    expect($formatted_subscriber_fields)
+      ->equals(array_values($this->subscriber_fields));
   }
 
   function itProperlyReturnsSubscriberCustomFields() {
     $subscribers = $this->export->getSubscribers();
-    foreach ($subscribers as $subscriber) {
-      if($subscriber['email'] === $this->subscribersData[1]) {
+    foreach($subscribers as $subscriber) {
+      if($subscriber['email'] === $this->subscribers_data[1]) {
         expect($subscriber['Country'])
-          ->equals($this->subscribersData[1][1]);
+          ->equals($this->subscribers_data[1][1]);
       }
     }
   }
@@ -182,26 +181,26 @@ class ExportCest {
   }
 
   function itCanGroupSubscribersBySegments() {
-    $this->export->groupBySegmentOption = true;
-    $this->export->subscribersWithoutSegment = true;
+    $this->export->group_by_segment_option = true;
+    $this->export->subscribers_without_segment = true;
     $subscribers = $this->export->getSubscribers();
     expect(count($subscribers))->equals(5);
   }
 
   function itCanGetSubscribersOnlyWithoutSegments() {
     $this->export->segments = array(0);
-    $this->export->subscribersWithoutSegment = true;
+    $this->export->subscribers_without_segment = true;
     $subscribers = $this->export->getSubscribers();
     expect(count($subscribers))->equals(1);
-    expect($subscribers[0]['segment_name'])->equals('Not In List');
+    expect($subscribers[0]['segment_name'])->equals('Not In Segment');
   }
 
   function itCanGetOnlyConfirmedSubscribers() {
-    $this->export->exportConfirmedOption = true;
+    $this->export->export_confirmed_option = true;
     $subscribers = $this->export->getSubscribers();
     expect(count($subscribers))->equals(1);
     expect($subscribers[0]['email'])
-      ->equals($this->subscribersData[1]['email']);
+      ->equals($this->subscribers_data[1]['email']);
   }
 
   function itCanGetSubscribersOnlyInSegments() {
@@ -213,18 +212,17 @@ class ExportCest {
   }
 
   function itCanProcess() {
-    $this->export->exportFile = $this->export->getExportFile('csv');
-    $this->export->exportFormatOption = 'csv';
+    $this->export->export_file = $this->export->getExportFile('csv');
+    $this->export->export_format_option = 'csv';
     $this->export->process();
-    $CSVFileSize = filesize($this->export->exportFile);
-    $this->export->exportFile = $this->export->getExportFile('xls');
-    $this->export->exportFormatOption = 'xls';
+    $CSV_file_size = filesize($this->export->export_file);
+    $this->export->export_file = $this->export->getExportFile('xls');
+    $this->export->export_format_option = 'xls';
     $this->export->process();
-    $XLSFileSize = filesize($this->export->exportFile);
-    expect($CSVFileSize)->greaterThan(0);
-    expect($XLSFileSize)->greaterThan(0);
-    expect($XLSFileSize)->greaterThan($CSVFileSize);
-
+    $XLS_file_size = filesize($this->export->export_file);
+    expect($CSV_file_size)->greaterThan(0);
+    expect($XLS_file_size)->greaterThan(0);
+    expect($XLS_file_size)->greaterThan($CSV_file_size);
   }
 
   function _after() {

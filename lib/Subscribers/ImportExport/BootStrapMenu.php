@@ -6,15 +6,17 @@ use MailPoet\Models\Segment;
 use MailPoet\Util\Helpers;
 
 class BootStrapMenu {
+  public $action;
+
   function __construct($action = null) {
     $this->action = $action;
   }
 
-  function getSegments($withConfirmedSubscribers = false) {
+  function getSegments($with_confirmed_subscribers = false) {
     $segments = ($this->action === 'import') ?
       Segment::getSegmentsWithSubscriberCount() :
-      Segment::getSegmentsForExport($withConfirmedSubscribers);
-    return array_map(function ($segment) {
+      Segment::getSegmentsForExport($with_confirmed_subscribers);
+    return array_map(function($segment) {
       return array(
         'id' => $segment['id'],
         'name' => $segment['name'],
@@ -29,6 +31,7 @@ class BootStrapMenu {
       'first_name' => __('First name'),
       'last_name' => __('Last name'),
       'status' => __('Status')
+      // TODO: add additional fiels from MP2
       /*
             'confirmed_ip' => __('IP address')
             'confirmed_at' => __('Subscription date')
@@ -36,35 +39,35 @@ class BootStrapMenu {
     );
   }
 
-  function formatSubscriberFields($subscriberFields) {
-    return array_map(function ($fieldId, $fieldName) {
+  function formatSubscriberFields($subscriber_fields) {
+    return array_map(function($field_id, $field_name) {
       return array(
-        'id' => $fieldId,
-        'name' => $fieldName,
-        'type' => ($fieldId === 'confirmed_at') ? 'date' : null,
+        'id' => $field_id,
+        'name' => $field_name,
+        'type' => ($field_id === 'confirmed_at') ? 'date' : null,
         'custom' => false
       );
-    }, array_keys($subscriberFields), $subscriberFields);
+    }, array_keys($subscriber_fields), $subscriber_fields);
   }
 
   function getSubscriberCustomFields() {
     return CustomField::findArray();
   }
 
-  function formatSubscriberCustomFields($subscriberCustomFields) {
-    return array_map(function ($field) {
+  function formatSubscriberCustomFields($subscriber_custom_fields) {
+    return array_map(function($field) {
       return array(
         'id' => $field['id'],
         'name' => $field['name'],
         'type' => $field['type'],
         'custom' => true
       );
-    }, $subscriberCustomFields);
+    }, $subscriber_custom_fields);
   }
 
   function formatFieldsForSelect2(
-    $subscriberFields,
-    $subscriberCustomFields) {
+    $subscriber_fields,
+    $subscriber_custom_fields) {
     $actions = ($this->action === 'import') ?
       array(
         array(
@@ -93,14 +96,14 @@ class BootStrapMenu {
       ),
       array(
         'name' => __('System columns'),
-        'children' => $this->formatSubscriberFields($subscriberFields)
+        'children' => $this->formatSubscriberFields($subscriber_fields)
       )
     );
-    if($subscriberCustomFields) {
+    if($subscriber_custom_fields) {
       array_push($select2Fields, array(
         'name' => __('User columns'),
         'children' => $this->formatSubscriberCustomFields(
-          $subscriberCustomFields
+          $subscriber_custom_fields
         )
       ));
     }
@@ -108,27 +111,27 @@ class BootStrapMenu {
   }
 
   function bootstrap() {
-    $subscriberFields = $this->getSubscriberFields();
-    $subscriberCustomFields = $this->getSubscriberCustomFields();
+    $subscriber_fields = $this->getSubscriberFields();
+    $subscriber_custom_fields = $this->getSubscriberCustomFields();
     $data['segments'] = json_encode($this->getSegments());
     $data['subscriberFieldsSelect2'] = json_encode(
       $this->formatFieldsForSelect2(
-        $subscriberFields,
-        $subscriberCustomFields
+        $subscriber_fields,
+        $subscriber_custom_fields
       )
     );
     if($this->action === 'import') {
       $data['subscriberFields'] = json_encode(
         array_merge(
-          $this->formatSubscriberFields($subscriberFields),
-          $this->formatSubscriberCustomFields($subscriberCustomFields)
+          $this->formatSubscriberFields($subscriber_fields),
+          $this->formatSubscriberCustomFields($subscriber_custom_fields)
         )
       );
       $data['maxPostSizeBytes'] = Helpers::getMaxPostSize('bytes');
       $data['maxPostSize'] = Helpers::getMaxPostSize();
     } else {
       $data['segmentsWithConfirmedSubscribers'] =
-        json_encode($this->getSegments($withConfirmedSubscribers = true));
+        json_encode($this->getSegments($with_confirmed_subscribers = true));
     }
     return $data;
   }
