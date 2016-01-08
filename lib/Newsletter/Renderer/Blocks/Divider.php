@@ -22,9 +22,9 @@ class Divider {
             <tr>
               <td class="mailpoet_divider-cell"
               style="border-top-width: ' . $element['styles']['block']['borderWidth'] . ';
-       	             border-top-style: ' . $element['styles']['block']['borderStyle'] . ';
+                     border-top-style: ' . $element['styles']['block']['borderStyle'] . ';
                      border-top-color: ' . $element['styles']['block']['borderColor'] . ';">
-    	      </td>
+             </td>
             </tr>
           </table>
         </td>
