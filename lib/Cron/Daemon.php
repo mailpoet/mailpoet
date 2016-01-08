@@ -48,9 +48,14 @@ class Daemon {
       $_SESSION['cron_daemon'] = 'started';
       $_SESSION['cron_daemon'] = array('result' => true);
       $this->manageSession('end');
+
       $daemon['status'] = 'started';
       $daemon['token'] = $this->refreshed_token;
-      $this->saveDaemon($daemon);
+      $this->saveDaemon(array(
+        'status' => 'started',
+        'token' => $this->refreshed_token,
+        'updated_at' => time()
+      ));
       $this->callSelf();
     }
     $this->manageSession('end');
@@ -79,10 +84,12 @@ class Daemon {
     if($elapsed_time < 30) {
       sleep(30 - $elapsed_time);
     }
-    // after each execution, read daemon in case it's status was modified
+    // after each execution, read daemon in case its status was modified
     $daemon = $this->getDaemon();
+
     if($daemon['status'] === 'stopping') $daemon['status'] = 'stopped';
     if($daemon['status'] === 'starting') $daemon['status'] = 'started';
+
     $daemon['token'] = $this->refreshed_token;
     $daemon['counter']++;
     $this->saveDaemon($daemon);
@@ -90,7 +97,7 @@ class Daemon {
   }
 
   function getDaemon() {
-    return Setting::getValue('cron_daemon', null);
+    return Setting::getValue('cron_daemon');
   }
 
   function saveDaemon($daemon_data) {
