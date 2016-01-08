@@ -1,30 +1,27 @@
-<?php namespace MailPoet\Newsletter\Renderer\Blocks;
+<?php
+namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Header {
   static function render($element) {
-    $stylesHelper = new StylesHelper();
-
-    // apply link styles
     if(isset($element['styles']['link'])) {
-      $element['text'] = str_replace('<a', '<a style="' . $stylesHelper->getStyles($element['styles'], 'link') . '"', $element['text']);
+      $element['text'] = str_replace(
+        '<a',
+        '<a style="'
+        . StylesHelper::getStyles($element['styles'], 'link')
+        . '"', $element['text']
+      );
     }
-    
-    // apply text styles
-    if(isset($element['styles']['link'])) {
-      $element['text'] = str_replace('<p', '<p style="' . $stylesHelper->getStyles($element['styles'], 'text') . '"', $element['text']);
-    }
-    
+    $element['text'] = preg_replace('/\n/', '<br /><br />', $element['text']);
+    $element['text'] = preg_replace('/(<\/?p>)/', '', $element['text']);
     $template = '
-    <tr>
-      <td class="mailpoet_col mailpoet_header"
-          style="' . $stylesHelper->getBlockStyles($element) . '"
-          valign="top">
-        <div>' . $element['text'] . '</div>
-      </td>
-    </tr>';
-    
+      <tr>
+        <td class="mailpoet_padded_header_footer mailpoet_header" bgcolor="' . $element['styles']['block']['backgroundColor'] . '"
+        style="' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
+        ' . $element['text'] . '
+        </td>
+      </tr>';
     return $template;
   }
 }

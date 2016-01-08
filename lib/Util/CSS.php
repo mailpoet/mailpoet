@@ -365,9 +365,6 @@ class CSS {
         // And put the CSS back as a string!
         $node->style = self::arrayToStyle($style);
 
-        // remove all !important tags (inlined styles take precedent over others anyway)
-        $node->style = str_replace("!important", "", $node->style);
-
         // I'm leaving this for debug purposes, it has proved useful.
         /*
         if($rule['selector'] === 'table.table-recap td')

@@ -1,24 +1,42 @@
-<?php namespace MailPoet\Newsletter\Renderer\Blocks;
+<?php
+namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Image {
-  static function render($element) {
-    $stylesHelper = new StylesHelper();
-
-    $element['width'] = (int) $element['width'];
-
+  static function render($element, $columnCount) {
+    $element = self::getImageDimensions($element, $columnCount);
     $template = '
-    <tr>
-      <td class="mailpoet_col mailpoet_image ' . (($element['padded'] === true) ? "mailpoet_padded" : "") . '"
-          style="' . $stylesHelper->getBlockStyles($element) . '"
-          valign="top">
-        <img style="top:0; left:0; height: auto; width:100%;"
-             src="' . $element['src'] . '"
-             width="' . (($element['padded'] === true) ? $element['width'] - (20 * 2) : $element['width']) . '">
-      </td>
-    </tr>';
-
+      <tr>
+        <td class="mailpoet_image ' . $element['paddedClass'] . '" align="center" valign="top">
+          <img style="max-width:' . $element['width'] . 'px;" src="' . $element['src'] . '"
+          width="' . $element['width'] . '" height="' . $element['height'] . '" alt="' . $element['alt'] . '"/>
+        </td>
+      </tr>';
     return $template;
+  }
+
+  static function getImageDimensions($element, $column_count) {
+    $column_width = ColumnsHelper::columnWidth($column_count);
+    $padded_width = StylesHelper::$padding_width * 2;
+    // resize image if it's wider than the column width
+    if((int) $element['width'] >= $column_width) {
+      $ratio = (int) $element['width'] / $column_width;
+      $element['width'] = $column_width;
+      $element['height'] = ceil((int) $element['height'] / $ratio);
+    }
+    if($element['padded'] == "true" && $element['width'] >= $column_width) {
+      // resize image if the padded option is on
+      $ratio = (int) $element['width'] / ((int) $element['width'] - $padded_width);
+      $element['width'] = (int) $element['width'] - $padded_width;
+      $element['height'] = ceil((int) $element['height'] / $ratio);
+      $element['paddedClass'] = 'mailpoet_padded';
+    } else {
+      $element['width'] = (int) $element['width'];
+      $element['height'] = (int) $element['height'];
+      $element['paddedClass'] = '';
+    }
+    return $element;
   }
 }

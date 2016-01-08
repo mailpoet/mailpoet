@@ -1,26 +1,23 @@
-<?php namespace MailPoet\Newsletter\Renderer\Blocks;
+<?php
+namespace MailPoet\Newsletter\Renderer\Blocks;
 
 class Social {
   static function render($element) {
-    $iconsBlock = '';
-
+    $icons_block = '';
     if(is_array($element['icons'])) {
-      foreach ($element['icons'] as $icon) {
-        $iconsBlock .= '
-        <a href="' . $icon['link'] . '">
-          <img src="' . $icon['image'] . '" width = "32" height = "32"  style="width: 32px; height: 32px;" alt="' . $icon['iconType'] . '">
-        </a>
-        <img src="http://mp3.mailpoet.net/spacer.gif" width = "10" height = "1"  style="	width: 10px; height: 1px;">';
+      foreach($element['icons'] as $index => $icon) {
+        $icons_block .= '
+        <a href="' . $icon['link'] . '" style="text-decoration:none!important;">
+          <img src="' . $icon['image'] . '" width="' . (int) $icon['width'] . '" height="' . (int) $icon['height'] . '" style="width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;" alt="' . $icon['iconType'] . '">
+        </a>';
       }
+      $template = '
+      <tr>
+        <td class="mailpoet_padded" valign="top" align="center">
+          ' . $icons_block . '
+        </td>
+      </tr>';
+      return $template;
     }
-
-    $template = '
-    <tr>
-      <td class="mailpoet_col mailpoet_social" valign="top">
-        <div class="mailpoet_social-icon mailpoet_padded">' . $iconsBlock . ' </div>
-      </td>
-    </tr>';
-
-    return $template;
   }
 }
