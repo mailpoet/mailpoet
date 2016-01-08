@@ -43,7 +43,7 @@ class Export {
     try {
       if($this->export_format_option === 'csv') {
         $CSV_file = fopen($this->export_file, 'w');
-        $format_CSV = function ($row) {
+        $format_CSV = function($row) {
           return '"' . str_replace('"', '\"', $row) . '"';
         };
         // add UTF-8 BOM (3 bytes, hex EF BB BF) at the start of the file for
@@ -196,7 +196,7 @@ class Export {
   function formatSubscriberFields($subscriber_fields, $subscriber_custom_fields) {
     $bootstrap_menu = new BootStrapMenu();
     $translated_fields = $bootstrap_menu->getSubscriberFields();
-    return array_map(function ($field) use (
+    return array_map(function($field) use (
       $translated_fields, $subscriber_custom_fields
     ) {
       $field = (isset($translated_fields[$field])) ?
@@ -208,7 +208,7 @@ class Export {
   }
 
   function formatSubscriberData($subscriber) {
-    return array_map(function ($field) use ($subscriber) {
+    return array_map(function($field) use ($subscriber) {
       return $subscriber[$field];
     }, $this->subscriber_fields);
   }

@@ -92,7 +92,7 @@ class Import {
   
   function filterExistingAndNewSubscribers($subscribers_data) {
     $existing_records = array_filter(
-      array_map(function ($subscriber_emails) {
+      array_map(function($subscriber_emails) {
         return Subscriber::selectMany(array('email'))
           ->whereIn('email', $subscriber_emails)
           ->whereNull('deleted_at')
@@ -120,18 +120,18 @@ class Import {
     }
     $new_subscribers =
       array_filter(
-        array_map(function ($subscriber) use ($new_records) {
-          return array_map(function ($index) use ($subscriber) {
+        array_map(function($subscriber) use ($new_records) {
+          return array_map(function($index) use ($subscriber) {
             return $subscriber[$index];
           }, $new_records);
         }, $subscribers_data)
       );
     
     $existing_subscribers =
-      array_map(function ($subscriber) use ($new_records) {
+      array_map(function($subscriber) use ($new_records) {
         return array_values( // reindex array
           array_filter( // remove NULL entries
-            array_map(function ($index, $data) use ($new_records) {
+            array_map(function($index, $data) use ($new_records) {
               if(!in_array($index, $new_records)) return $data;
             }, array_keys($subscriber), $subscriber)
           )
@@ -145,7 +145,7 @@ class Import {
   
   function deleteExistingTrashedSubscribers($subscribers_data) {
     $existing_trashed_records = array_filter(
-      array_map(function ($subscriber_emails) {
+      array_map(function($subscriber_emails) {
         return Subscriber::selectMany(array('id'))
           ->whereIn('email', $subscriber_emails)
           ->whereNotNull('deleted_at')
@@ -174,7 +174,7 @@ class Import {
   function getSubscriberFields($subscriber_fields) {
     return array_values(
       array_filter(
-        array_map(function ($field) {
+        array_map(function($field) {
           if(!is_int($field)) return $field;
         }, $subscriber_fields)
       )
@@ -184,7 +184,7 @@ class Import {
   function getCustomSubscriberFields($subscriber_fields) {
     return array_values(
       array_filter(
-        array_map(function ($field) {
+        array_map(function($field) {
           if(is_int($field)) return $field;
         }, $subscriber_fields)
       )
@@ -225,7 +225,7 @@ class Import {
         'false'
       )
     );
-    $subscribers_data['status'] = array_map(function ($state) use ($statuses) {
+    $subscribers_data['status'] = array_map(function($state) use ($statuses) {
       if(in_array(strtolower($state), $statuses['subscribed'])) {
         return 'subscribed';
       }
@@ -250,8 +250,8 @@ class Import {
     $subscriber_custom_fields
   ) {
     $subscribers_count = count(reset($subscribers_data)) - 1;
-    $subscribers = array_map(function ($index) use ($subscribers_data, $subscriber_fields) {
-      return array_map(function ($field) use ($index, $subscribers_data) {
+    $subscribers = array_map(function($index) use ($subscribers_data, $subscriber_fields) {
+      return array_map(function($field) use ($index, $subscribers_data) {
         return $subscribers_data[$field][$index];
       }, $subscriber_fields);
     }, range(0, $subscribers_count));
@@ -303,10 +303,10 @@ class Import {
     $subscriber_custom_fields
   ) {
     $subscribers = array_map(
-      function ($column) use ($db_subscribers, $subscribers_data) {
+      function($column) use ($db_subscribers, $subscribers_data) {
         $count = range(0, count($subscribers_data[$column]) - 1);
         return array_map(
-          function ($index, $value)
+          function($index, $value)
           use ($db_subscribers, $subscribers_data, $column) {
             $subscriber_id = array_search(
               $subscribers_data['email'][$index],

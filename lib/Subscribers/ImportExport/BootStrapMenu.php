@@ -16,7 +16,7 @@ class BootStrapMenu {
     $segments = ($this->action === 'import') ?
       Segment::getSegmentsWithSubscriberCount() :
       Segment::getSegmentsForExport($with_confirmed_subscribers);
-    return array_map(function ($segment) {
+    return array_map(function($segment) {
       return array(
         'id' => $segment['id'],
         'name' => $segment['name'],
@@ -40,7 +40,7 @@ class BootStrapMenu {
   }
 
   function formatSubscriberFields($subscriber_fields) {
-    return array_map(function ($field_id, $field_name) {
+    return array_map(function($field_id, $field_name) {
       return array(
         'id' => $field_id,
         'name' => $field_name,
@@ -55,7 +55,7 @@ class BootStrapMenu {
   }
 
   function formatSubscriberCustomFields($subscriber_custom_fields) {
-    return array_map(function ($field) {
+    return array_map(function($field) {
       return array(
         'id' => $field['id'],
         'name' => $field['name'],
