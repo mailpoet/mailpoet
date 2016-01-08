@@ -78,7 +78,6 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           } else {
             positionAfter = jQuery('#mailpoet_notice_'+this.options.type);
           }
-          console.log('positionAfter', typeof this.options.positionAfter);
           positionAfter.after(this.element);
 
           // setup onClose callback

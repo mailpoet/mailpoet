@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Cron;
 
-use Carbon\Carbon;
 use MailPoet\Config\Env;
 use MailPoet\Models\Setting;
 
@@ -22,25 +21,27 @@ class Supervisor {
     if(!$this->daemon) {
       return $this->startDaemon();
     }
-    if(!$this->force_start && (
-        $this->daemon['value']['status'] === 'stopped' ||
-        $this->daemon['value']['status'] === 'stopping')
+    if(
+      !$this->force_start &&
+      in_array($this->daemon['status'], array('stopped', 'stopping'))
     ) {
-      return $this->daemon['value']['status'];
+      return $this->daemon['status'];
     }
-    $time_since_last_run = $this->getDaemonLastRunTime();
-    if($time_since_last_run < 40) {
+
+    $elapsed_time = time() - (int)$this->daemon['updated_at'];
+
+    if($elapsed_time < 40) {
       if(!$this->force_start) {
         return;
       }
-      if($this->daemon['value']['status'] === 'stopping' ||
-        $this->daemon['value']['status'] === 'starting'
+      if($this->daemon['status'] === 'stopping' ||
+        $this->daemon['status'] === 'starting'
       ) {
-        return $this->daemon['value']['status'];
+        return $this->daemon['status'];
       }
     }
-    $this->daemon['value']['status'] = 'starting';
-    $this->saveDaemon($this->daemon['value']);
+    $this->daemon['status'] = 'starting';
+    $this->saveDaemon($this->daemon);
     return $this->startDaemon();
   }
 
@@ -62,12 +63,7 @@ class Supervisor {
   }
 
   function getDaemon() {
-    $daemon = Setting::where('name', 'cron_daemon')
-      ->findOne();
-    if(!$daemon) return false;
-    $daemon = $daemon->asArray();
-    $daemon['value'] = unserialize($daemon['value']);
-    return $daemon;
+    return Setting::getValue('cron_daemon');
   }
 
   function saveDaemon($daemon_data) {
@@ -103,14 +99,5 @@ class Supervisor {
     if($fp) return preg_replace('!(?=:\d+):\d+!', '$1', site_url());
     // throw an error if all connections fail
     throw new \Exception(__('Site URL is unreachable.'));
-  }
-
-  function getDaemonLastRunTime() {
-    $current_time = Carbon::now('UTC');
-    $last_update_time = Carbon::createFromFormat(
-      'Y-m-d H:i:s',
-      $this->daemon['updated_at'], 'UTC'
-    );
-    return $current_time->diffInSeconds($last_update_time);
   }
 }

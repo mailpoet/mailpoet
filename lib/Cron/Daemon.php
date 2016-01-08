@@ -79,21 +79,27 @@ class Daemon {
     if($elapsed_time < 30) {
       sleep(30 - $elapsed_time);
     }
-    // after each execution, read daemon in case it's status was modified
+    // after each execution, read daemon in case its status was modified
     $daemon = $this->getDaemon();
+
     if($daemon['status'] === 'stopping') $daemon['status'] = 'stopped';
     if($daemon['status'] === 'starting') $daemon['status'] = 'started';
+
     $daemon['token'] = $this->refreshed_token;
     $daemon['counter']++;
+
     $this->saveDaemon($daemon);
+
     if($daemon['status'] === 'started') $this->callSelf();
   }
 
   function getDaemon() {
-    return Setting::getValue('cron_daemon', null);
+    return Setting::getValue('cron_daemon');
   }
 
   function saveDaemon($daemon_data) {
+    $daemon_data['updated_at'] = time();
+
     return Setting::setValue(
       'cron_daemon',
       $daemon_data
