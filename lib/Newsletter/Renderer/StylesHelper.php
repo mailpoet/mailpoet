@@ -197,14 +197,14 @@ class StylesHelper {
     )
   );
   static $padding_width = 20;
-  
+
   static function getBlockStyles($element, $ignore_specific_styles = false) {
     if(!isset($element['styles']['block'])) {
       return;
     }
     return self::getStyles($element['styles'], 'block', $ignore_specific_styles);
   }
-  
+
   static function getStyles($data, $type, $ignore_specific_styles = false) {
     $styles = array_map(function ($attribute, $style) use ($ignore_specific_styles) {
       if(!$ignore_specific_styles || !in_array($attribute, $ignore_specific_styles)) {
@@ -213,7 +213,7 @@ class StylesHelper {
     }, array_keys($data[$type]), $data[$type]);
     return implode('', $styles);
   }
-  
+
   static function translateCSSAttribute($attribute) {
     return (array_key_exists($attribute, self::$css_attributes)) ?
       self::$css_attributes[$attribute] :
@@ -232,10 +232,10 @@ class StylesHelper {
 
   static function setFontAndLineHeight($font_size, $selector) {
     $css = '';
-    foreach(ColumnsHelper::$columns_class as $columnCount => $columnClass) {
-      $css .= '.mailpoet_content-' . $columnClass . ' ' . $selector . '{' . PHP_EOL;
+    foreach(ColumnsHelper::columnClasses() as $column_count => $column_class) {
+      $css .= '.mailpoet_content-' . $column_class . ' ' . $selector . '{' . PHP_EOL;
       $css .= 'font-size:' . $font_size . 'px;' . PHP_EOL;
-      $css .= 'line-height:' . StylesHelper::$font_size[$font_size][$columnCount] . 'px;' . PHP_EOL;
+      $css .= 'line-height:' . StylesHelper::$font_size[$font_size][$column_count] . 'px;' . PHP_EOL;
       $css .= '}' . PHP_EOL;
     }
     return $css;

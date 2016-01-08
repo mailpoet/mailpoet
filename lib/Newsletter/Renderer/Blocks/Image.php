@@ -18,7 +18,7 @@ class Image {
   }
 
   static function getImageDimensions($element, $column_count) {
-    $column_width = ColumnsHelper::$columns_width[$column_count];
+    $column_width = ColumnsHelper::columnWidth($column_count);
     $padded_width = StylesHelper::$padding_width * 2;
     // resize image if it's wider than the column width
     if((int) $element['width'] >= $column_width) {

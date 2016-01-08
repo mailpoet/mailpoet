@@ -19,4 +19,20 @@ class ColumnsHelper {
     2 => 'left',
     3 => 'right'
   );
+
+  static function columnWidth($columns_count) {
+    return self::$columns_width[$columns_count];
+  }
+
+  static function columnClass($columns_count) {
+    return self::$columns_class[$columns_count];
+  }
+
+  static function columnClasses() {
+    return self::$columns_class;
+  }
+
+  static function columnAlignment($columns_count) {
+    return self::$columns_alignment[$columns_count];
+  }
 }

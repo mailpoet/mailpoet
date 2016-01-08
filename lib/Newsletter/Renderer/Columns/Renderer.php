@@ -4,9 +4,9 @@ namespace MailPoet\Newsletter\Renderer\Columns;
 class Renderer {
   function render($column_styles, $columns_count, $columns_data) {
     $styles = $column_styles['block'];
-    $width = ColumnsHelper::$columns_width[$columns_count];
-    $class = ColumnsHelper::$columns_class[$columns_count];
-    $alignment = ColumnsHelper::$columns_alignment[$columns_count];
+    $width = ColumnsHelper::columnWidth($columns_count);
+    $class = ColumnsHelper::columnClass($columns_count);
+    $alignment = ColumnsHelper::columnAlignment($columns_count);
     $template = ($columns_count === 1) ?
       $this->getOneColumnTemplate($styles, $class) :
       $this->getMultipleColumnsTemplate($styles, $width, $alignment, $class);
@@ -19,7 +19,7 @@ class Renderer {
     }
     return $result;
   }
-  
+
   function getOneColumnTemplate($styles, $class) {
     $template['content_start'] = '
       <tr>
