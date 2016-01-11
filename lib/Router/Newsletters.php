@@ -59,10 +59,6 @@ class Newsletters {
       unset($data['options']);
     }
 
-    if (isset($data['body'])) {
-      $data['body'] = json_encode($data['body']);
-    }
-
     $errors = array();
     $result = false;
 

@@ -1,5 +1,6 @@
 define([
     'newsletter_editor/App',
+    'newsletter_editor/components/communication',
     'mailpoet',
     'notice',
     'backbone',
@@ -8,7 +9,18 @@ define([
     'blob',
     'filesaver',
     'html2canvas'
-  ], function(App, MailPoet, Notice, Backbone, Marionette, jQuery, Blob, FileSaver, html2canvas) {
+  ], function(
+    App,
+    CommunicationComponent,
+    MailPoet,
+    Notice,
+    Backbone,
+    Marionette,
+    jQuery,
+    Blob,
+    FileSaver,
+    html2canvas
+  ) {
 
   "use strict";
 
@@ -17,16 +29,18 @@ define([
 
   // Save editor contents to server
   Module.save = function() {
-    App.getChannel().trigger('beforeEditorSave');
 
     var json = App.toJSON();
 
+    // Stringify to enable transmission of primitive non-string value types
+    if (!_.isUndefined(json.body)) {
+      json.body = JSON.stringify(json.body);
+    }
+
+    App.getChannel().trigger('beforeEditorSave', json);
+
     // save newsletter
-    MailPoet.Ajax.post({
-      endpoint: 'newsletters',
-      action: 'save',
-      data: json,
-    }).done(function(response) {
+    CommunicationComponent.saveNewsletter(json).done(function(response) {
       if(response.success !== undefined && response.success === true) {
         // TODO: Handle translations
         //MailPoet.Notice.success("<?php _e('Newsletter has been saved.'); ?>");
@@ -58,7 +72,7 @@ define([
     promise.then(function(thumbnail) {
       var data = _.extend(options || {}, {
         thumbnail: thumbnail.toDataURL('image/jpeg'),
-        body: App.getBody(),
+        body: JSON.stringify(App.getBody()),
       });
 
       return MailPoet.Ajax.post({
