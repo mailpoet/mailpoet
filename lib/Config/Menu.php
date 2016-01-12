@@ -240,6 +240,7 @@ class Menu {
 
   function settings() {
     $settings = Setting::getAll();
+    $flags = $this->_getFlags();
 
     // dkim: check if public/private keys have been generated
     if(
@@ -258,10 +259,9 @@ class Menu {
 
     $data = array(
       'settings' => $settings,
-      'segments' => Segment::getPublished()
-        ->findArray(),
+      'segments' => Segment::getPublic()->findArray(),
       'pages' => Pages::getAll(),
-      'flags' => $this->_getFlags(),
+      'flags' => $flags,
       'charsets' => Charsets::getAll(),
       'current_user' => wp_get_current_user(),
       'permissions' => Permissions::getAll(),
