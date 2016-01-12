@@ -63,9 +63,10 @@ define([
   };
 
   Module.saveNewsletter = function(options) {
-    return Module._query({
+    return MailPoet.Ajax.post({
+      endpoint: 'newsletters',
       action: 'save',
-      options: options,
+      data: options || {},
     });
   };
 

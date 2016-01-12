@@ -18,6 +18,12 @@ define(
 
     var ImportTemplate = React.createClass({
       saveTemplate: function(template) {
+
+        // Stringify to enable transmission of primitive non-string value types
+        if (!_.isUndefined(template.body)) {
+          template.body = JSON.stringify(template.body);
+        }
+
         MailPoet.Ajax.post({
           endpoint: 'newsletterTemplates',
           action: 'save',
@@ -111,12 +117,19 @@ define(
         }.bind(this));
       },
       handleSelectTemplate: function(template) {
+        var body = template.body;
+
+        // Stringify to enable transmission of primitive non-string value types
+        if (!_.isUndefined(body)) {
+          body = JSON.stringify(body);
+        }
+
         MailPoet.Ajax.post({
           endpoint: 'newsletters',
           action: 'save',
           data: {
             id: this.props.params.id,
-            body: template.body
+            body: body
           }
         }).done(function(response) {
           if(response.result === true) {

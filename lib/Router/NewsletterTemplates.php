@@ -30,10 +30,6 @@ class NewsletterTemplates {
   }
 
   function save($data = array()) {
-    if (isset($data['body'])) {
-      $data['body'] = json_encode($data['body']);
-    }
-
     $result = NewsletterTemplate::createOrUpdate($data);
     if($result !== true) {
       wp_send_json($result);

@@ -1,21 +1,18 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/components/save',
-    'amd-inject-loader!newsletter_editor/components/save'
-  ], function(EditorApplication, SaveComponent, SaveInjector) {
+    'amd-inject-loader!newsletter_editor/components/save',
+    'jquery'
+  ], function(EditorApplication, SaveComponent, SaveInjector, jQuery) {
 
   describe('Save', function() {
     describe('save method', function() {
       var module;
       before(function() {
         module = SaveInjector({
-          'mailpoet': {
-            Ajax: {
-              post: function() {
-                  var deferred = jQuery.Deferred();
-                  deferred.resolve({});
-                  return deferred;
-              }
+          'newsletter_editor/components/communication': {
+            saveNewsletter: function() {
+              return jQuery.Deferred();
             }
           }
         });
@@ -26,34 +23,69 @@ define([
         global.stubChannel(EditorApplication, {
           trigger: spy,
         });
-        EditorApplication.toJSON = sinon.stub();
+        EditorApplication.toJSON = sinon.stub().returns({
+          body: {
+            type: 'container',
+          },
+        });
         module.save();
         expect(spy.withArgs('beforeEditorSave').calledOnce).to.be.true;
       });
 
       it('triggers afterEditorSave event', function() {
-        var stub = sinon.stub().callsArgWith(2, { success: true }),
-          spy = sinon.spy();
+        var spy = sinon.spy(),
+          promise = jQuery.Deferred();
         global.stubChannel(EditorApplication, {
           trigger: spy,
         });
-        EditorApplication.toJSON = sinon.stub();
+        EditorApplication.toJSON = sinon.stub().returns({
+          body: {
+            type: 'container',
+          },
+        });
+        var module = SaveInjector({
+          'newsletter_editor/components/communication': {
+            saveNewsletter: sinon.stub().returns(promise),
+          }
+        });
+        promise.resolve({ success: true });
         module.save();
         expect(spy.withArgs('afterEditorSave').calledOnce).to.be.true;
       });
 
       it('sends newsletter json to server for saving', function() {
-        var mock = sinon.mock({ saveNewsletter: function() {} }).expects('saveNewsletter').once().returns(jQuery.Deferred());
+        var mock = sinon.mock().once().returns(jQuery.Deferred());
         var module = SaveInjector({
-          'mailpoet': {
-            Ajax: {
-              post: mock,
-            }
+          'newsletter_editor/components/communication': {
+            saveNewsletter: mock,
           }
         });
         global.stubChannel(EditorApplication);
 
         EditorApplication.toJSON = sinon.stub().returns({});
+        module.save();
+
+        mock.verify();
+      });
+
+      it('encodes newsletter body in JSON format', function() {
+        var body = {type: 'testType'},
+          mock = sinon.mock()
+            .once()
+            .withArgs({
+              body: JSON.stringify(body),
+            })
+            .returns(jQuery.Deferred());
+        global.stubChannel(EditorApplication);
+
+        EditorApplication.toJSON = sinon.stub().returns({
+          body: body,
+        });
+        var module = SaveInjector({
+          'newsletter_editor/components/communication': {
+            saveNewsletter: mock,
+          }
+        });
         module.save();
 
         mock.verify();
