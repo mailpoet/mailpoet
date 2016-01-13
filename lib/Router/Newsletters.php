@@ -226,7 +226,7 @@ class Newsletters {
         'result' => false
       ));
     }
-    if (empty($data['subscriber'])) {
+    if(empty($data['subscriber'])) {
       wp_send_json(array(
         'result' => false,
         'errors' => array(__('Please specify receiver information')),
@@ -248,7 +248,7 @@ class Newsletters {
       wp_send_json(array(
         'result' => $mailer->send($newsletter, $data['subscriber'])
       ));
-    } catch (\Exception $e) {
+    } catch(\Exception $e) {
       wp_send_json(array(
         'result' => false,
         'errors' => array($e->getMessage()),
