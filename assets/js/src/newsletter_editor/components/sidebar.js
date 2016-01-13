@@ -242,26 +242,25 @@ define([
       console.log('trying to send a preview');
       // get form data
       var data = {
-        from_name: this.$('#mailpoet_preview_from_name').val(),
-        from_email: this.$('#mailpoet_preview_from_email').val(),
-        to_email: this.$('#mailpoet_preview_to_email').val(),
-        newsletter: App.newsletterId,
+        sender: {
+          name: this.$('#mailpoet_preview_from_name').val(),
+          address: this.$('#mailpoet_preview_from_email').val(),
+        },
+        subscriber: this.$('#mailpoet_preview_to_email').val(),
+        id: App.getNewsletter().get('id'),
       };
 
       // send test email
       MailPoet.Modal.loading(true);
 
-      // TODO: Migrate logic to new AJAX format
       CommunicationComponent.previewNewsletter(data).done(function(response) {
-        if(response.success !== undefined && response.success === true) {
-          MailPoet.Notice.success(App.getConfig().get('translations.testEmailSent'));
-        } else if(response.error !== undefined) {
-          if(response.error.length === 0) {
-            MailPoet.Notice.error(App.getConfig().get('translations.unknownErrorOccurred'));
+        if(response.result !== undefined && response.result === true) {
+          MailPoet.Notice.success(App.getConfig().get('translations.newsletterPreviewSent'));
+        } else {
+          if (_.isArray(response.errors)) {
+            MailPoet.Notice.error("\n".join(response.errors));
           } else {
-            $(response.error).each(function(i, error) {
-              MailPoet.Notice.error(error);
-            });
+            MailPoet.Notice.error(App.getConfig().get('translations.newsletterPreviewFailedToSend'));
           }
         }
         MailPoet.Modal.loading(false);
