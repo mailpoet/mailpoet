@@ -242,10 +242,6 @@ define([
       console.log('trying to send a preview');
       // get form data
       var data = {
-        sender: {
-          name: this.$('#mailpoet_preview_from_name').val(),
-          address: this.$('#mailpoet_preview_from_email').val(),
-        },
         subscriber: this.$('#mailpoet_preview_to_email').val(),
         id: App.getNewsletter().get('id'),
       };
@@ -258,7 +254,7 @@ define([
           MailPoet.Notice.success(App.getConfig().get('translations.newsletterPreviewSent'));
         } else {
           if (_.isArray(response.errors)) {
-            MailPoet.Notice.error("\n".join(response.errors));
+            MailPoet.Notice.error(response.errors.join("\n"));
           } else {
             MailPoet.Notice.error(App.getConfig().get('translations.newsletterPreviewFailedToSend'));
           }

@@ -225,32 +225,34 @@ class Newsletters {
       wp_send_json(array(
         'result' => false
       ));
-    } else {
-      $newsletter = $newsletter->asArray();
+    }
+    if (empty($data['subscriber'])) {
+      wp_send_json(array(
+        'result' => false,
+        'errors' => array(__('Please specify receiver information')),
+      ));
+    }
 
-      $renderer = new Renderer($newsletter);
-      $rendered_body = $renderer->render();
-      $newsletter['body'] = array(
-        'html' => $rendered_body,
-        'text' => '',
-      );
+    $newsletter = $newsletter->asArray();
 
-      try {
-        $mailer = new \MailPoet\Mailer\Mailer(
-          false,
-          (isset($data['sender'])) ? $data['sender'] : false,
-          false
-        );
+    $renderer = new Renderer($newsletter);
+    $rendered_body = $renderer->render();
+    $newsletter['body'] = array(
+      'html' => $rendered_body,
+      'text' => '',
+    );
 
-        wp_send_json(array(
-          'result' => $mailer->send($newsletter, $data['subscriber'])
-        ));
-      } catch (\Exception $e) {
-        wp_send_json(array(
-          'result' => false,
-          'errors' => array($e->getMessage()),
-        ));
-      }
+    try {
+      $mailer = new \MailPoet\Mailer\Mailer(false, false, false);
+
+      wp_send_json(array(
+        'result' => $mailer->send($newsletter, $data['subscriber'])
+      ));
+    } catch (\Exception $e) {
+      wp_send_json(array(
+        'result' => false,
+        'errors' => array($e->getMessage()),
+      ));
     }
   }
 
