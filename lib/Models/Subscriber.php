@@ -70,11 +70,8 @@ class Subscriber extends Model {
       } else {
         // reset status of existing subscribers if signup confirmation
         // is turned on
-        if($subscriber->isNew() === false) {
-          // existing subscriber
-          if($subscriber->status !== 'subscribed') {
-            $subscriber->set('status', 'unconfirmed');
-          }
+        if($subscriber->status !== 'subscribed') {
+          $subscriber->set('status', 'unconfirmed');
         }
 
         // send confirmation email to unconfirmed subscribers
