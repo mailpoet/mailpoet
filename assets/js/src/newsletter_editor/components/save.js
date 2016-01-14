@@ -47,10 +47,15 @@ define([
       } else if(response.error !== undefined) {
         if(response.error.length === 0) {
           // TODO: Handle translations
-          MailPoet.Notice.error("<?php _e('An unknown error occurred, please check your settings.'); ?>");
+          MailPoet.Notice.error(
+            "An unknown error occurred, please check your settings.",
+            {
+              scroll: true,
+            }
+          );
         } else {
           $(response.error).each(function(i, error) {
-            MailPoet.Notice.error(error);
+            MailPoet.Notice.error(error, { scroll: true });
           });
         }
       }
@@ -168,6 +173,7 @@ define([
           App.getConfig().get('translations.templateNameMissing'),
           {
             positionAfter: that.$el,
+            scroll: true,
           }
         );
       } else if (templateDescription === '') {
@@ -175,6 +181,7 @@ define([
           App.getConfig().get('translations.templateDescriptionMissing'),
           {
             positionAfter: that.$el,
+            scroll: true,
           }
         );
       } else {
@@ -188,6 +195,7 @@ define([
             App.getConfig().get('translations.templateSaved'),
             {
               positionAfter: that.$el,
+              scroll: true,
             }
           );
         }).fail(function() {
@@ -196,6 +204,7 @@ define([
             App.getConfig().get('translations.templateSaveFailed'),
             {
               positionAfter: that.$el,
+              scroll: true,
             }
           );
         });
@@ -220,6 +229,7 @@ define([
           App.getConfig().get('translations.templateNameMissing'),
           {
             positionAfter: that.$el,
+            scroll: true,
           }
         );
       } else if (templateDescription === '') {
@@ -227,6 +237,7 @@ define([
           App.getConfig().get('translations.templateDescriptionMissing'),
           {
             positionAfter: that.$el,
+            scroll: true,
           }
         );
       } else {

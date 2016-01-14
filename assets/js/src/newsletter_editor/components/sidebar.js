@@ -251,12 +251,20 @@ define([
 
       CommunicationComponent.previewNewsletter(data).done(function(response) {
         if(response.result !== undefined && response.result === true) {
-          MailPoet.Notice.success(App.getConfig().get('translations.newsletterPreviewSent'));
+          MailPoet.Notice.success(App.getConfig().get('translations.newsletterPreviewSent'), { scroll: true });
         } else {
           if (_.isArray(response.errors)) {
-            MailPoet.Notice.error(response.errors.join("\n"));
+            response.errors.map(function(error) {
+              MailPoet.Notice.error(error, { scroll: true });
+            });
           } else {
-            MailPoet.Notice.error(App.getConfig().get('translations.newsletterPreviewFailedToSend'));
+            MailPoet.Notice.error(
+              App.getConfig().get('translations.newsletterPreviewFailedToSend'),
+              {
+                scroll: true,
+                static: true,
+              }
+            );
           }
         }
         MailPoet.Modal.loading(false);
