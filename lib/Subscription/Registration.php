@@ -47,18 +47,24 @@ class Registration {
       isset($_POST['mailpoet']['subscribe_on_register'])
       && $_POST['mailpoet']['subscribe_on_register']
     ) {
-      static::subscribeNewUser($user_login, $user_email);
+      static::subscribeNewUser(
+        $user_login,
+        $user_email
+      );
     }
   }
 
-  private static function subscribeNewUser($login, $email) {
-    $segment_ids = Setting::getValue('subscribe.on_comment.segments', array());
+  private static function subscribeNewUser($name, $email) {
+    $segment_ids = Setting::getValue(
+      'subscribe.on_comment.segments',
+      array()
+    );
 
     if(!empty($segment_ids)) {
       Subscriber::subscribe(
         array(
           'email' => $email,
-          'first_name' => $login
+          'first_name' => $name
         ),
         $segment_ids
       );

@@ -72,6 +72,11 @@ class Populator {
       'name' => $user_name,
       'address' => $current_user->user_email
     ));
+
+    // enable signup confirmation by default
+    Setting::setValue('signup_confirmation', array(
+      'enabled' => true
+    ));
   }
 
   private function createDefaultSegments() {

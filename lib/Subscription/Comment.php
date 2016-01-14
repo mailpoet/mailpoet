@@ -31,11 +31,7 @@ class Comment {
 
     if(
       isset($_POST['mailpoet']['subscribe_on_comment'])
-      &&
-      filter_var(
-        $_POST['mailpoet']['subscribe_on_comment'],
-        FILTER_VALIDATE_BOOLEAN
-      ) === true
+      && $_POST['mailpoet']['subscribe_on_comment']
     ) {
       if($comment_status === Comment::PENDING_APPROVAL) {
         // add a comment meta to remember to subscribe the user
