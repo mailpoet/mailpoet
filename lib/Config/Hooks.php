@@ -36,6 +36,36 @@ class Hooks {
       }
     }
 
+    // Subscribe in registration form
+    if(
+      isset($subscribe_settings['on_register']['enabled'])
+      && $subscribe_settings['on_register']['enabled']
+    ) {
+      if(is_multisite()) {
+        add_action(
+          'signup_extra_fields',
+          '\MailPoet\Subscription\Registration::extendForm'
+        );
+        add_action(
+          'wpmu_validate_user_signup',
+          '\MailPoet\Subscription\Registration::onMSRegister',
+          60,
+          1
+        );
+      } else {
+        add_action(
+          'register_form',
+          '\MailPoet\Subscription\Registration::extendForm'
+        );
+        add_action(
+          'register_post',
+          '\MailPoet\Subscription\Registration::onRegister',
+          60,
+          3
+        );
+      }
+    }
+
     // WP Users synchronization
     add_action(
       'user_register',

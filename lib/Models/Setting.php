@@ -16,15 +16,34 @@ class Setting extends Model {
   }
 
   public static function getValue($key, $default = null) {
-    $setting = Setting::where('name', $key)->findOne();
-    if($setting === false) {
-      return $default;
-    } else {
-      if(is_serialized($setting->value)) {
-        return unserialize($setting->value);
+    $keys = explode('.', $key);
+
+    if(count($keys) === 1) {
+      $setting = Setting::where('name', $key)->findOne();
+      if($setting === false) {
+        return $default;
       } else {
-        return $setting->value;
+        if(is_serialized($setting->value)) {
+          return unserialize($setting->value);
+        } else {
+          return $setting->value;
+        }
       }
+    } else {
+      $main_key = array_shift($keys);
+
+      $setting = static::getValue($main_key, $default);
+
+      if($setting !== $default) {
+        for($i = 0, $count = count($keys); $i < $count; $i++) {
+          if(array_key_exists($keys[$i], $setting)) {
+            $setting = $setting[$keys[$i]];
+          } else {
+            return $default;
+          }
+        }
+      }
+      return $setting;
     }
   }
 
@@ -66,17 +85,5 @@ class Setting extends Model {
 
     $exists->value = $model['value'];
     return $exists->save();
-  }
-
-  public static function hasSignupConfirmation() {
-    $signup_confirmation = Setting::getValue('signup_confirmation', array());
-    $has_signup_confirmation = true;
-    if(array_key_exists('enabled', $signup_confirmation)) {
-      $has_signup_confirmation = filter_var(
-        $signup_confirmation['enabled'],
-        FILTER_VALIDATE_BOOLEAN
-      );
-    }
-    return $has_signup_confirmation;
   }
 }
