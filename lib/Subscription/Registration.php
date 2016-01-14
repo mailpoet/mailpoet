@@ -44,7 +44,8 @@ class Registration {
     $errors = null
   ) {
     if(
-      isset($_POST['mailpoet']['subscribe_on_register'])
+      empty($errors->errors)
+      && isset($_POST['mailpoet']['subscribe_on_register'])
       && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
     ) {
       static::subscribeNewUser(
@@ -56,7 +57,7 @@ class Registration {
 
   private static function subscribeNewUser($name, $email) {
     $segment_ids = Setting::getValue(
-      'subscribe.on_comment.segments',
+      'subscribe.on_register.segments',
       array()
     );
 

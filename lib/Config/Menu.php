@@ -190,6 +190,8 @@ class Menu {
   }
 
   function welcome() {
+    if((bool)(defined('DOING_AJAX') && DOING_AJAX)) return;
+
     global $wp;
     $current_url = home_url(add_query_arg($wp->query_string, $wp->request));
     $redirect_url =
