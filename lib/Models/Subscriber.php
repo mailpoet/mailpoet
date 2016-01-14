@@ -43,7 +43,7 @@ class Subscriber extends Model {
   }
 
   function sendConfirmationEmail() {
-    $subscriber->set('status', 'unconfirmed');
+    $this->set('status', 'unconfirmed');
 
     // TODO
   }
