@@ -103,6 +103,9 @@
             />
           </p>
           <p>
+            <label><%= __('Users will be subscribed to these lists:') %></label>
+          </p>
+          <p>
             <select
               id="mailpoet_subscribe_on_comment_segments"
               name="subscribe[on_comment][segments][]"
@@ -162,6 +165,9 @@
                   value="<%= __('Yes, add me to your mailing list.') %>"
                 <% endif %>
               />
+            </p>
+            <p>
+              <label><%= __('Users will be subscribed to these lists:') %></label>
             </p>
             <p>
               <select
@@ -227,7 +233,7 @@
           ><%= __('Edit') %></a>
         </p>
         <p>
-          <label><%= __('Subscribers can choose from these lists :') %></label>
+          <label><%= __('Subscribers can choose from these lists:') %></label>
         </p>
         <p>
           <select

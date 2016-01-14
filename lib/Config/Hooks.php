@@ -16,18 +16,20 @@ class Hooks {
         && $subscribe_settings['on_comment']['enabled']
       ) {
         add_action(
-          'comment_form',
-          '\MailPoet\Form\Subscribe::inComments'
+          'comment_form_after_fields',
+          '\MailPoet\Subscription\Comment::extendForm'
         );
+
         add_action(
           'comment_post',
-          '\MailPoet\Form\Subscribe::onCommentSubmit',
+          '\MailPoet\Subscription\Comment::onSubmit',
           60,
           2
         );
+
         add_action(
           'wp_set_comment_status',
-          '\MailPoet\Form\Subscribe::onCommentStatusUpdate',
+          '\MailPoet\Subscription\Comment::onStatusUpdate',
           60,
           2
         );

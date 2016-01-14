@@ -42,6 +42,12 @@ class Subscriber extends Model {
     }
   }
 
+  function sendConfirmationEmail() {
+    $subscriber->set('status', 'unconfirmed');
+
+    // TODO
+  }
+
   static function subscribe($subscriber_data = array(), $segment_ids = array()) {
     if(empty($subscriber_data) or empty($segment_ids)) {
       return false;
@@ -50,34 +56,19 @@ class Subscriber extends Model {
     $subscriber = static::createOrUpdate($subscriber_data);
 
     if($subscriber !== false && $subscriber->id() > 0) {
-      $signup_confirmation = Setting::getValue('signup_confirmation', array());
-      $has_signup_confirmation = true;
-      if(array_key_exists('enabled', $signup_confirmation)) {
-        $has_signup_confirmation = filter_var(
-          $signup_confirmation['enabled'],
-          FILTER_VALIDATE_BOOLEAN
-        );
-      }
-
       // restore deleted subscriber
       if($subscriber->deleted_at !== NULL) {
         $subscriber->setExpr('deleted_at', 'NULL');
       }
 
-      if($has_signup_confirmation === false) {
-        // auto subscribe when signup confirmation is turned off
-        $subscriber->set('status', 'subscribed');
-      } else {
+      if(Setting::hasSignupConfirmation()) {
         // reset status of existing subscribers if signup confirmation
         // is turned on
         if($subscriber->status !== 'subscribed') {
-          $subscriber->set('status', 'unconfirmed');
+          $subscriber->sendConfirmationEmail();
         }
-
-        // send confirmation email to unconfirmed subscribers
-        if($subscriber->status === 'unconfirmed') {
-          // TODO: send signup confirmation email
-        }
+      } else {
+        $subscriber->set('status', 'subscribed');
       }
 
       if($subscriber->save()) {
@@ -255,34 +246,6 @@ class Subscriber extends Model {
       $subscriber->set($data);
     }
 
-    // TODO: Cf
-    /*
-    // custom fields
-    $custom_fields = array();
-    foreach($data as $key => $value) {
-      if(strpos($key, 'cf_') === 0) {
-        $custom_fields[substr($key, 3)] = $value;
-        unset($data[$key]);
-      }
-    }
-
-    // add custom fields
-    if(!empty($custom_fields)) {
-      foreach($custom_fields as $custom_field_id => $value) {
-        if(is_array($value)) {
-          // date
-          $value = mktime(0, 0, 0, $value['month'], $value['day'], $value['year']);
-        }
-        $subscriber_custom_field = SubscriberCustomField::create();
-        $subscriber_custom_field->hydrate(array(
-          'subscriber_id' => $subscriber->id(),
-          'custom_field_id' => $custom_field_id,
-          'value' => $value
-        ));
-        $subscriber_custom_field->save();
-      }
-    }*/
-
     $subscriber->save();
     return $subscriber;
   }
@@ -364,8 +327,7 @@ class Subscriber extends Model {
 
     if(!empty($subscribers)) {
       foreach($subscribers as $subscriber) {
-        // TODO: send confirmation email
-        // $subscriber->sendConfirmationEmail()
+        $subscriber->sendConfirmationEmail();
       }
 
       return $subscribers->count();
