@@ -31,7 +31,7 @@ class Comment {
 
     if(
       isset($_POST['mailpoet']['subscribe_on_comment'])
-      && $_POST['mailpoet']['subscribe_on_comment']
+      && (bool)$_POST['mailpoet']['subscribe_on_comment'] === true
     ) {
       if($comment_status === Comment::PENDING_APPROVAL) {
         // add a comment meta to remember to subscribe the user

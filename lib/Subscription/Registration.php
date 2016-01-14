@@ -23,11 +23,11 @@ class Registration {
     </p>';
   }
 
-  static function onMSRegister($result) {
+  static function onMultiSiteRegister($result) {
     if(empty($result['errors']->errors)) {
       if(
         isset($_POST['mailpoet']['subscribe_on_register'])
-        && $_POST['mailpoet']['subscribe_on_register']
+        && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
       ) {
         static::subscribeNewUser(
           $result['user_name'],
@@ -45,7 +45,7 @@ class Registration {
   ) {
     if(
       isset($_POST['mailpoet']['subscribe_on_register'])
-      && $_POST['mailpoet']['subscribe_on_register']
+      && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
     ) {
       static::subscribeNewUser(
         $user_login,

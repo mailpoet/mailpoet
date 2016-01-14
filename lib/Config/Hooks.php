@@ -38,7 +38,7 @@ class Hooks {
         );
         add_action(
           'wpmu_validate_user_signup',
-          '\MailPoet\Subscription\Registration::onMSRegister',
+          '\MailPoet\Subscription\Registration::onMultiSiteRegister',
           60,
           1
         );
