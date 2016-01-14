@@ -133,10 +133,10 @@ define([
       }.bind(this));
     },
     transitionIn: function() {
-      return this._transition('slideDown', 'fadeIn', 'easeIn');
+      return this._transition('slideDown', 'fadeIn', 'easeOut');
     },
     transitionOut: function() {
-      return this._transition('slideUp', 'fadeOut', 'easeOut');
+      return this._transition('slideUp', 'fadeOut', 'easeIn');
     },
     _transition: function(slideDirection, fadeDirection, easing) {
       var promise = jQuery.Deferred();
