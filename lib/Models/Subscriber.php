@@ -61,9 +61,7 @@ class Subscriber extends Model {
         $subscriber->setExpr('deleted_at', 'NULL');
       }
 
-      if(Setting::hasSignupConfirmation()) {
-        // reset status of existing subscribers if signup confirmation
-        // is turned on
+      if((bool)Setting::getValue('signup_confirmation.enabled')) {
         if($subscriber->status !== 'subscribed') {
           $subscriber->sendConfirmationEmail();
         }

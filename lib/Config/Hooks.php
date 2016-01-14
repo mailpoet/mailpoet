@@ -7,31 +7,51 @@ class Hooks {
   }
 
   function init() {
-    $subscribe_settings = Setting::getValue('subscribe');
+    // Subscribe in comments
+    if((bool)Setting::getValue('subscribe.on_comment.enabled')) {
+      add_action(
+        'comment_form_after_fields',
+        '\MailPoet\Subscription\Comment::extendForm'
+      );
 
-    if($subscribe_settings !== null) {
-      // Subscribe in comments
-      if(
-        isset($subscribe_settings['on_comment']['enabled'])
-        && $subscribe_settings['on_comment']['enabled']
-      ) {
+      add_action(
+        'comment_post',
+        '\MailPoet\Subscription\Comment::onSubmit',
+        60,
+        2
+      );
+
+      add_action(
+        'wp_set_comment_status',
+        '\MailPoet\Subscription\Comment::onStatusUpdate',
+        60,
+        2
+      );
+    }
+
+    // Subscribe in registration form
+    if((bool)Setting::getValue('subscribe.on_register.enabled')) {
+      if(is_multisite()) {
         add_action(
-          'comment_form_after_fields',
-          '\MailPoet\Subscription\Comment::extendForm'
+          'signup_extra_fields',
+          '\MailPoet\Subscription\Registration::extendForm'
         );
-
         add_action(
-          'comment_post',
-          '\MailPoet\Subscription\Comment::onSubmit',
+          'wpmu_validate_user_signup',
+          '\MailPoet\Subscription\Registration::onMultiSiteRegister',
           60,
-          2
+          1
         );
-
+      } else {
         add_action(
-          'wp_set_comment_status',
-          '\MailPoet\Subscription\Comment::onStatusUpdate',
+          'register_form',
+          '\MailPoet\Subscription\Registration::extendForm'
+        );
+        add_action(
+          'register_post',
+          '\MailPoet\Subscription\Registration::onRegister',
           60,
-          2
+          3
         );
       }
     }

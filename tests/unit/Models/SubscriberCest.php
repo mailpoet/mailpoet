@@ -336,7 +336,7 @@ class SubscriberCest {
     expect($subscriber->email)->equals($this->data['email']);
     expect($subscriber->first_name)->equals($this->data['first_name']);
     expect($subscriber->last_name)->equals($this->data['last_name']);
-    expect($subscriber->status)->equals('unconfirmed');
+    expect($subscriber->status)->equals('subscribed');
     expect($subscriber->deleted_at)->equals(null);
   }
 

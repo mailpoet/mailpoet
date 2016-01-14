@@ -9,10 +9,9 @@ class Comment {
   const PENDING_APPROVAL = 0;
 
   static function extendForm() {
-    $subscribe_settings = Setting::getValue('subscribe');
-    $label = (isset($subscribe_settings['on_comment']['label'])
-      ? $subscribe_settings['on_comment']['label']
-      : __('Yes, add me to your mailing list.')
+    $label = Setting::getValue(
+      'subscribe.on_comment.label',
+      __('Yes, add me to your mailing list.')
     );
 
     print '<p class="comment-form-mailpoet">
@@ -32,11 +31,7 @@ class Comment {
 
     if(
       isset($_POST['mailpoet']['subscribe_on_comment'])
-      &&
-      filter_var(
-        $_POST['mailpoet']['subscribe_on_comment'],
-        FILTER_VALIDATE_BOOLEAN
-      ) === true
+      && (bool)$_POST['mailpoet']['subscribe_on_comment'] === true
     ) {
       if($comment_status === Comment::PENDING_APPROVAL) {
         // add a comment meta to remember to subscribe the user
@@ -73,10 +68,9 @@ class Comment {
   }
 
   private static function subscribeAuthorOfComment($comment_id) {
-    $subscribe_settings = Setting::getValue('subscribe');
-    $segment_ids = (array)$subscribe_settings['on_comment']['segments'];
+    $segment_ids = Setting::getValue('subscribe.on_comment.segments', array());
 
-    if($subscribe_settings !== null) {
+    if(!empty($segment_ids)) {
       $comment = get_comment($comment_id);
 
       $result = Subscriber::subscribe(
