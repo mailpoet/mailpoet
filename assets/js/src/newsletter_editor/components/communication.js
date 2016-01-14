@@ -73,7 +73,7 @@ define([
   Module.previewNewsletter = function(options) {
     return MailPoet.Ajax.post({
       endpoint: 'newsletters',
-      action: 'preview',
+      action: 'sendPreview',
       data: options || {},
     });
   };

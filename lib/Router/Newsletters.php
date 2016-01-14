@@ -217,6 +217,45 @@ class Newsletters {
     wp_send_json(array('rendered_body' => $renderer->render()));
   }
 
+  function sendPreview($data = array()) {
+    $id = (isset($data['id'])) ? (int) $data['id'] : 0;
+    $newsletter = Newsletter::findOne($id);
+
+    if($newsletter === false) {
+      wp_send_json(array(
+        'result' => false
+      ));
+    }
+    if(empty($data['subscriber'])) {
+      wp_send_json(array(
+        'result' => false,
+        'errors' => array(__('Please specify receiver information')),
+      ));
+    }
+
+    $newsletter = $newsletter->asArray();
+
+    $renderer = new Renderer($newsletter);
+    $rendered_body = $renderer->render();
+    $newsletter['body'] = array(
+      'html' => $rendered_body,
+      'text' => '',
+    );
+
+    try {
+      $mailer = new \MailPoet\Mailer\Mailer(false, false, false);
+
+      wp_send_json(array(
+        'result' => $mailer->send($newsletter, $data['subscriber'])
+      ));
+    } catch(\Exception $e) {
+      wp_send_json(array(
+        'result' => false,
+        'errors' => array($e->getMessage()),
+      ));
+    }
+  }
+
   function listing($data = array()) {
     $listing = new Listing\Handler(
       '\MailPoet\Models\Newsletter',
