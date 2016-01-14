@@ -68,10 +68,10 @@ class Subscribers {
   function save($data = array()) {
     $errors = array();
     $result = false;
-    $segments = false;
+    $segment_ids = array();
 
     if(array_key_exists('segments', $data)) {
-      $segments = $data['segments'];
+      $segment_ids = (array)$data['segments'];
       unset($data['segments']);
     }
 
@@ -82,18 +82,8 @@ class Subscribers {
     } else {
       $result = true;
 
-      if($segments !== false) {
-        SubscriberSegment::where('subscriber_id', $subscriber->id)
-          ->deleteMany();
-
-        if(!empty($segments)) {
-          foreach($segments as $segment_id) {
-            $relation = SubscriberSegment::create();
-            $relation->segment_id = $segment_id;
-            $relation->subscriber_id = $subscriber->id;
-            $relation->save();
-          }
-        }
+      if(!empty($segment_ids)) {
+        $subscriber->addToSegments($segment_ids);
       }
     }
     wp_send_json(array(
@@ -112,109 +102,31 @@ class Subscribers {
       $errors[] = __('This form does not exist.');
     }
 
-    if(empty($data['segments'])) {
-      $errors[] = __('You need to select a list');
-    } else {
-      $segments = Segment::whereIn('id', (array)$data['segments'])->findMany();
-
-      if(empty($segments)) {
-        $errors[] = __('You need to select a list');
-      }
-    }
+    $segment_ids = (!empty($data['segments'])
+      ? (array)$data['segments']
+      : array()
+    );
     unset($data['segments']);
 
-    $subscriber = false;
+    if(empty($segment_ids)) {
+      $errors[] = __('You need to select a list');
+    }
+
     if(!empty($errors)) {
       wp_send_json(array('errors' => $errors));
-    } else {
-      if(!empty($data['email'])) {
-        $subscriber = Subscriber::where('email', $data['email'])->findOne();
-      }
     }
 
-    $signup_confirmation = Setting::getValue('signup_confirmation', array());
+    $subscriber = Subscriber::subscribe($data, $segment_ids);
 
-    if($subscriber === false) {
-      // create new subscriber
-      $data['status'] = (
-        (!empty($signup_confirmation['enabled']))
-        ? 'unconfirmed' : 'subscribed'
-      );
+    if($subscriber === false || !$subscriber->id()) {
+      $errors = array_merge($errors, $subscriber->getValidationErrors());
+    }
 
-      // custom fields
-      $custom_fields = array();
-      foreach($data as $key => $value) {
-        if(strpos($key, 'cf_') === 0) {
-          $custom_fields[substr($key, 3)] = $value;
-          unset($data[$key]);
-        }
-      }
-
-      // insert new subscriber
-      $subscriber = Subscriber::createOrUpdate($data);
-
-      if($subscriber === false || !$subscriber->id()) {
-        $errors = array_merge($errors, $subscriber->getValidationErrors());
-      } else {
-        // add custom fields
-        if(!empty($custom_fields)) {
-          foreach($custom_fields as $custom_field_id => $value) {
-            if(is_array($value)) {
-              // date
-              $value = mktime(0, 0, 0, $value['month'], $value['day'], $value['year']);
-            }
-            $subscriber_custom_field = SubscriberCustomField::create();
-            $subscriber_custom_field->hydrate(array(
-              'subscriber_id' => $subscriber->id(),
-              'custom_field_id' => $custom_field_id,
-              'value' => $value
-            ));
-            $subscriber_custom_field->save();
-          }
-        }
-      }
-    } else {
-      $subscriber->set('status', (
-        !empty($signup_confirmation['enabled'])
-        ? 'unconfirmed' : 'subscribed'
+    if(!empty($errors)) {
+      wp_send_json(array(
+        'result' => false,
+        'errors' => $errors
       ));
-
-      // restore deleted subscriber
-      if($subscriber->deleted_at !== NULL) {
-        $subscriber->setExpr('deleted_at', 'NULL');
-      }
-
-      if(!$subscriber->save()) {
-        $errors[] = __('An error occurred. Please try again later.');
-      }
-    }
-
-    // get segments
-    // IDEA: $subscriptions->addToSegments($data['segments']);
-    $segments_subscribed = array();
-    foreach($segments as $segment) {
-      if($segment->addSubscriber($subscriber->id())) {
-        $segments_subscribed[] = $segment->id;
-      }
-    }
-
-    // if signup confirmation is enabled and the subscriber is unconfirmed
-    if(!empty($signup_confirmation['enabled'])
-      && !empty($segments_subscribed)
-      && $subscriber->status !== 'subscribed'
-    ) {
-      // TODO: send confirmation email
-      // resend confirmation email
-      $is_sent = true;
-      /*$is_sent = static::sendSignupConfirmation(
-        $subscriber->asArray(),
-        $segments->asArray()
-      );*/
-
-      // error message if the email could not be sent
-      if($is_sent === false) {
-        $errors[] = __('The signup confirmation email could not be sent. Please check your settings.');
-      }
     }
 
     // get success message to display after subscription
@@ -222,15 +134,6 @@ class Subscribers {
       isset($form->settings)
       ? unserialize($form->settings) : null
     );
-
-    if(!empty($errors)) {
-      wp_send_json(array(
-        'result' => false,
-        'errors' => $errors
-      ));
-    } else {
-      $result = true;
-    }
 
     if($form_settings !== null) {
       $message = $form_settings['success_message'];
@@ -274,7 +177,7 @@ class Subscribers {
           // response depending on context
           if($doing_ajax === true) {
             wp_send_json(array(
-              'result' => $result,
+              'result' => true,
               'message' => $message
             ));
           } else {

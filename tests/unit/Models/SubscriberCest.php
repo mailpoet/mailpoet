@@ -317,6 +317,61 @@ class SubscriberCest {
      expect($subscribers[0]['first_name'])->equals($values[0]['first_name']);
   }
 
+  function itCanSubscribe() {
+    $segment = Segment::create();
+    $segment->hydrate(array('name' => 'List #1'));
+    $segment->save();
+
+    $segment2 = Segment::create();
+    $segment2->hydrate(array('name' => 'List #2'));
+    $segment2->save();
+
+    $subscriber = Subscriber::subscribe(
+      $this->data,
+      array($segment->id(), $segment2->id())
+    );
+
+    expect($subscriber->id() > 0)->equals(true);
+    expect($subscriber->segments()->count())->equals(2);
+    expect($subscriber->email)->equals($this->data['email']);
+    expect($subscriber->first_name)->equals($this->data['first_name']);
+    expect($subscriber->last_name)->equals($this->data['last_name']);
+    expect($subscriber->status)->equals('unconfirmed');
+    expect($subscriber->deleted_at)->equals(null);
+  }
+
+  function itCanBeAddedToSegments() {
+    $segment = Segment::create();
+    $segment->hydrate(array('name' => 'List #1'));
+    $segment->save();
+
+    $segment2 = Segment::create();
+    $segment2->hydrate(array('name' => 'List #2'));
+    $segment2->save();
+
+    $this->subscriber->addToSegments(array($segment->id(), $segment2->id()));
+    $subscriber_segments = $this->subscriber->segments()->findArray();
+
+    expect($this->subscriber->segments()->count())->equals(2);
+    expect($subscriber_segments[0]['name'])->equals('List #1');
+    expect($subscriber_segments[1]['name'])->equals('List #2');
+  }
+
+  function itCanBeUpdatedByEmail() {
+    $subscriber_updated = Subscriber::createOrUpdate(array(
+      'email' => $this->data['email'],
+      'first_name' => 'JoJo',
+      'last_name' => 'DoDo'
+    ));
+
+    expect($this->subscriber->id())->equals($subscriber_updated->id());
+
+    $subscriber = Subscriber::findOne($this->subscriber->id());
+    expect($subscriber->email)->equals($this->data['email']);
+    expect($subscriber->first_name)->equals('JoJo');
+    expect($subscriber->last_name)->equals('DoDo');
+  }
+
   function _after() {
     ORM::forTable(Subscriber::$_table)
       ->deleteMany();

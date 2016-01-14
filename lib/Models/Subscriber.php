@@ -32,6 +32,53 @@ class Subscriber extends Model {
     return parent::delete();
   }
 
+  function addToSegments(array $segment_ids = array()) {
+    $segments = Segment::whereIn('id', $segment_ids)->findMany();
+    foreach($segments as $segment) {
+      $association = SubscriberSegment::create();
+      $association->subscriber_id = $this->id;
+      $association->segment_id = $segment->id;
+      $association->save();
+    }
+  }
+
+  function sendConfirmationEmail() {
+    $this->set('status', 'unconfirmed');
+
+    // TODO
+  }
+
+  static function subscribe($subscriber_data = array(), $segment_ids = array()) {
+    if(empty($subscriber_data) or empty($segment_ids)) {
+      return false;
+    }
+
+    $subscriber = static::createOrUpdate($subscriber_data);
+
+    if($subscriber !== false && $subscriber->id() > 0) {
+      // restore deleted subscriber
+      if($subscriber->deleted_at !== NULL) {
+        $subscriber->setExpr('deleted_at', 'NULL');
+      }
+
+      if(Setting::hasSignupConfirmation()) {
+        // reset status of existing subscribers if signup confirmation
+        // is turned on
+        if($subscriber->status !== 'subscribed') {
+          $subscriber->sendConfirmationEmail();
+        }
+      } else {
+        $subscriber->set('status', 'subscribed');
+      }
+
+      if($subscriber->save()) {
+        $subscriber->addToSegments($segment_ids);
+      }
+    }
+
+    return $subscriber;
+  }
+
   static function search($orm, $search = '') {
     if(strlen(trim($search) === 0)) {
       return $orm;
@@ -181,12 +228,19 @@ class Subscriber extends Model {
     $subscriber = false;
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
-      $subscriber = self::findOne((int)$data['id']);
+      $subscriber = static::findOne((int)$data['id']);
       unset($data['id']);
     }
 
+    if($subscriber === false && !empty($data['email'])) {
+      $subscriber = static::where('email', $data['email'])->findOne();
+      if($subscriber !== false) {
+        unset($data['email']);
+      }
+    }
+
     if($subscriber === false) {
-      $subscriber = self::create();
+      $subscriber = static::create();
       $subscriber->hydrate($data);
     } else {
       $subscriber->set($data);
@@ -273,8 +327,7 @@ class Subscriber extends Model {
 
     if(!empty($subscribers)) {
       foreach($subscribers as $subscriber) {
-        // TODO: send confirmation email
-        // $subscriber->sendConfirmationEmail()
+        $subscriber->sendConfirmationEmail();
       }
 
       return $subscribers->count();

@@ -103,16 +103,19 @@
             />
           </p>
           <p>
+            <label><%= __('Users will be subscribed to these lists:') %></label>
+          </p>
+          <p>
             <select
-              id="mailpoet_subscribe_on_comment_lists"
-              name="subscribe[on_comment][lists][]"
+              id="mailpoet_subscribe_on_comment_segments"
+              name="subscribe[on_comment][segments][]"
               placeholder="<%= __('Choose a list') %>"
               multiple
             >
               <% for segment in segments %>
                 <option
                   value="<%= segment.id %>"
-                  <% if(segment.id in settings.subscribe.on_comment.lists) %>
+                  <% if(segment.id in settings.subscribe.on_comment.segments) %>
                     selected="selected"
                   <% endif %>
                 ><%= segment.name %></option>
@@ -164,16 +167,19 @@
               />
             </p>
             <p>
+              <label><%= __('Users will be subscribed to these lists:') %></label>
+            </p>
+            <p>
               <select
-                id="mailpoet_subscribe_on_register_lists"
-                name="subscribe[on_register][lists][]"
+                id="mailpoet_subscribe_on_register_segments"
+                name="subscribe[on_register][segments][]"
                 placeholder="<%= __('Choose a list') %>"
                 multiple
               >
                 <% for segment in segments %>
                   <option
                     value="<%= segment.id %>"
-                    <% if(segment.id in settings.subscribe.on_register.lists) %>
+                    <% if(segment.id in settings.subscribe.on_register.segments) %>
                       selected="selected"
                     <% endif %>
                   ><%= segment.name %></option>
@@ -227,19 +233,19 @@
           ><%= __('Edit') %></a>
         </p>
         <p>
-          <label><%= __('Subscribers can choose from these lists :') %></label>
+          <label><%= __('Subscribers can choose from these lists:') %></label>
         </p>
         <p>
           <select
-            id="mailpoet_subscription_edit_lists"
-            name="subscription[lists][]"
+            id="mailpoet_subscription_edit_segments"
+            name="subscription[segments][]"
             placeholder="<%= __('Leave empty to show all lists') %>"
             multiple
           >
             <% for segment in segments %>
               <option
                 value="<%= segment.id %>"
-                <% if(segment.id in settings.subscription.lists) %>
+                <% if(segment.id in settings.subscription.segments) %>
                   selected="selected"
                 <% endif %>
               ><%= segment.name %></option>
@@ -307,7 +313,7 @@
         </p>
         <p>
           <select
-            id="mailpoet_shortcode_subscribers_list"
+            id="mailpoet_shortcode_subscribers_count"
             data-shortcode="mailpoet_subscribers_count"
             data-output="mailpoet_shortcode_subscribers"
             placeholder="<%= __('Leave empty to show all lists') %>"
@@ -328,25 +334,26 @@
     // on dom loaded
     $(function() {
       // select2 instances
-      $('#mailpoet_subscribe_on_comment_lists').select2();
-      $('#mailpoet_subscribe_on_register_lists').select2();
-      $('#mailpoet_subscription_edit_lists').select2();
+      $('#mailpoet_subscribe_on_comment_segments').select2();
+      $('#mailpoet_subscribe_on_register_segments').select2();
+      $('#mailpoet_subscription_edit_segments').select2();
       $('#mailpoet_shortcode_archives_list').select2();
-      $('#mailpoet_shortcode_subscribers_list').select2();
+      $('#mailpoet_shortcode_subscribers_count').select2();
 
       // shortcodes
-      $('#mailpoet_shortcode_archives_list, #mailpoet_shortcode_subscribers_list')
+      $('#mailpoet_shortcode_archives_list, #mailpoet_shortcode_subscribers_count')
       .on('change', function() {
         var shortcode = $(this).data('shortcode'),
           values = $(this).val() || [];
 
-        if(values.length > 0) {
+        if (values.length > 0) {
           shortcode += ' list_id="';
           shortcode += values.join(',');
           shortcode += '"';
         }
 
-        $('#' + $(this).data('output')).val('[' + shortcode + ']');
+        $('#' + $(this).data('output'))
+          .val('[' + shortcode + ']');
       });
     });
   });

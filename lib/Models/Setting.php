@@ -67,4 +67,16 @@ class Setting extends Model {
     $exists->value = $model['value'];
     return $exists->save();
   }
+
+  public static function hasSignupConfirmation() {
+    $signup_confirmation = Setting::getValue('signup_confirmation', array());
+    $has_signup_confirmation = true;
+    if(array_key_exists('enabled', $signup_confirmation)) {
+      $has_signup_confirmation = filter_var(
+        $signup_confirmation['enabled'],
+        FILTER_VALIDATE_BOOLEAN
+      );
+    }
+    return $has_signup_confirmation;
+  }
 }
