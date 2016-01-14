@@ -33,6 +33,10 @@ class SubscriberSegment extends Model {
     return $orm;
   }
 
+  static function subscribed($orm) {
+    return $orm->where('status', 'subscribed');
+  }
+
   static function createMultiple($segmnets, $subscribers) {
     $values = Helpers::flattenArray(
       array_map(function ($segment) use ($subscribers) {
