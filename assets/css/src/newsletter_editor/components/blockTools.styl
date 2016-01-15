@@ -7,7 +7,6 @@ $tool-active-secondary-color = #ffffff
 
 $tool-width = 20px
 $master-column-tool-width = 24px
-$layer-selector-width = 30px
 
 .mailpoet_tools
   position: absolute
@@ -33,9 +32,34 @@ $layer-selector-width = 30px
         width: $master-column-tool-width
         height: $master-column-tool-width
 
+
+    .mailpoet_delete_block_activate
+      max-width: 100%
+      max-height: $master-column-tool-width
+      opacity: 1
+      display: block
+
+    .mailpoet_delete_block_confirm,
+    .mailpoet_delete_block_cancel
+      max-width: 100%
+      max-height: 0
+      opacity: 0
+      overflow: hidden
+      display: block
+
     .mailpoet_delete_block_activated
       width: auto
       height: auto
+
+      .mailpoet_delete_block_activate
+        overflow: hidden
+        max-height: 0
+        opacity: 0
+
+      .mailpoet_delete_block_confirm,
+      .mailpoet_delete_block_cancel
+        max-height: $master-column-tool-width*2
+        opacity: 1
 
 .mailpoet_tool
   display: inline-block
@@ -82,9 +106,10 @@ $layer-selector-width = 30px
     padding: 0
 
   .mailpoet_delete_block_activate
-    max-width: 100%
+    max-width: $tool-width
     display: inline-block
     opacity: 1
+    animation-fade-in-and-scale-horizontally()
 
   .mailpoet_delete_block_confirm,
   .mailpoet_delete_block_cancel
@@ -95,12 +120,12 @@ $layer-selector-width = 30px
     animation-fade-in-and-scale-horizontally()
 
 .mailpoet_delete_block_activated
+  height: auto
   width: auto
   border-radius(3px)
   background-color: $warning-background-color
   padding: 3px 5px
   line-height: 1.2em
-  height: auto
 
   .mailpoet_delete_block_activate
     overflow: hidden
