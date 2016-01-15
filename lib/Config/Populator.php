@@ -8,6 +8,7 @@ use MailPoet\Config\PopulatorData\Templates\PostNotificationsBlankTemplate;
 use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
 use \MailPoet\Models\Setting;
+use \MailPoet\Settings\Pages;
 
 if (!defined('ABSPATH')) exit;
 
@@ -48,6 +49,29 @@ class Populator {
 
     $this->createDefaultSegments();
     $this->createDefaultSettings();
+    $this->createMailPoetPage();
+  }
+
+  private function createMailPoetPage() {
+    $pages = get_posts(array(
+      'posts_per_page' => 1,
+      'orderby' => 'date',
+      'order' => 'DESC',
+      'post_type' => 'mailpoet_page'
+    ));
+
+    $page = null;
+    if(!empty($pages)) {
+      $page = array_shift($pages);
+      if(strpos($page->post_content, '[mailpoet_page]') === false) {
+        $page = null;
+      }
+    }
+
+    if($page === null) {
+      $mailpoet_page_id = Pages::createMailPoetPage();
+      Setting::setValue('subscription.page', $mailpoet_page_id);
+    }
   }
 
   private function createDefaultSettings() {
@@ -74,9 +98,7 @@ class Populator {
     ));
 
     // enable signup confirmation by default
-    Setting::setValue('signup_confirmation', array(
-      'enabled' => true
-    ));
+    Setting::setValue('signup_confirmation.enabled', true);
   }
 
   private function createDefaultSegments() {

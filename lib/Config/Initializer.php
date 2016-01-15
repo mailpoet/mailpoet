@@ -5,6 +5,7 @@ use MailPoet\Models;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Router;
 use MailPoet\Models\Setting;
+use MailPoet\Settings\Pages;
 
 if(!defined('ABSPATH')) exit;
 
@@ -31,6 +32,7 @@ class Initializer {
     $this->runQueueSupervisor();
     $this->setupShortcodes();
     $this->setupHooks();
+    $this->setupPages();
     $this->setupImages();
   }
 
@@ -125,6 +127,11 @@ class Initializer {
   function setupChangelog() {
     $changelog = new Changelog();
     $changelog->init();
+  }
+
+  function setupPages() {
+    $pages = new Pages();
+    $pages->init();
   }
 
   function setupShortcodes() {

@@ -48,14 +48,41 @@ class Setting extends Model {
   }
 
   public static function setValue($key, $value) {
-    if(is_array($value)) {
-      $value = serialize($value);
-    }
+    $keys = explode('.', $key);
 
-    return Setting::createOrUpdate(array(
-      'name' => $key,
-      'value' => $value
-    ));
+    if(count($keys) === 1) {
+      if(is_array($value)) {
+        $value = serialize($value);
+      }
+
+      return Setting::createOrUpdate(array(
+        'name' => $key,
+        'value' => $value
+      ));
+    } else {
+      $main_key = array_shift($keys);
+
+      $setting_value = static::getValue($main_key, array());
+      $current_value = &$setting_value;
+      $last_key = array_pop($keys);
+
+      foreach($keys as $key) {
+        if(!is_array($current_value)) {
+          $current_value = array();
+        }
+
+        if(!array_key_exists($key, $current_value)) {
+          $current_value = array($key => array());
+        }
+        $current_value =& $current_value[$key];
+      }
+      if(is_scalar($current_value)) {
+        $current_value = array();
+      }
+      $current_value[$last_key] = $value;
+
+      return static::setValue($main_key, $setting_value);
+    }
   }
 
   public static function getAll() {

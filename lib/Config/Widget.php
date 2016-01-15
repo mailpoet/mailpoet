@@ -1,6 +1,5 @@
 <?php
 namespace MailPoet\Config;
-use \MailPoet\Models\Subscriber;
 use \MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
@@ -22,18 +21,6 @@ class Widget {
 
   function registerWidget() {
     register_widget('\MailPoet\Form\Widget');
-
-    // subscribers count shortcode
-    add_shortcode('mailpoet_subscribers_count', array(
-      $this, 'getSubscribersCount'
-    ));
-    add_shortcode('wysija_subscribers_count', array(
-      $this, 'getSubscribersCount'
-    ));
-  }
-
-  function getSubscribersCount($params) {
-    return Subscriber::filter('subscribed')->count();
   }
 
   function setupDependencies() {
