@@ -51,7 +51,6 @@ class Setting extends Model {
     $keys = explode('.', $key);
 
     if(count($keys) === 1) {
-
       if(is_array($value)) {
         $value = serialize($value);
       }
@@ -67,17 +66,15 @@ class Setting extends Model {
       $current_value = &$setting_value;
       $last_key = array_pop($keys);
 
-      for($i = 0, $count = count($keys); $i < $count; $i++) {
-        if($i < $count) {
-          if(!is_array($current_value)) {
-            $current_value = array();
-          }
-
-          if(!array_key_exists($keys[$i], $current_value)) {
-            $current_value = array($keys[$i] => array());
-          }
-          $current_value =& $current_value[$keys[$i]];
+      foreach($keys as $key) {
+        if(!is_array($current_value)) {
+          $current_value = array();
         }
+
+        if(!array_key_exists($key, $current_value)) {
+          $current_value = array($key => array());
+        }
+        $current_value =& $current_value[$key];
       }
       if(is_scalar($current_value)) {
         $current_value = array();

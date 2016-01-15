@@ -51,7 +51,7 @@ class Shortcodes {
     if(!empty($params['segments'])) {
       $segment_ids = array_map(function($segment_id) {
         return (int)trim($segment_id);
-      },explode(',', $params['segments']));
+      }, explode(',', $params['segments']));
     }
 
     if(empty($segment_ids)) {
@@ -68,7 +68,7 @@ class Shortcodes {
     if(!empty($params['segments'])) {
       $segment_ids = array_map(function($segment_id) {
         return (int)trim($segment_id);
-      },explode(',', $params['segments']));
+      }, explode(',', $params['segments']));
     }
 
     $newsletters = array();

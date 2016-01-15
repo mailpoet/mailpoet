@@ -79,6 +79,31 @@ class SettingCest {
     expect($record->value)->equals('new data');
   }
 
+  function itCanGetAndSetValue() {
+    expect(Setting::setValue('test', '123'))->true();
+    expect(Setting::getValue('test'))->equals('123');
+  }
+
+  function itCanGetAndSetNestedValue() {
+    expect(Setting::setValue('test.key', '123'))->true();
+    expect(Setting::getValue('test.key'))->equals('123');
+
+    expect(Setting::setValue('test.key.subkey', '123'))->true();
+    expect(Setting::setValue('test.key.subkey2', '456'))->true();
+
+    expect(Setting::getValue('test.key'))->notEmpty();
+    expect(Setting::getValue('test.key.subkey'))->equals('123');
+    expect(Setting::getValue('test.key.subkey2'))->equals('456');
+  }
+
+  function itCanSetValueToNull() {
+    expect(Setting::setValue('test.key', true))->true();
+    expect(Setting::getValue('test.key'))->equals(true);
+
+    expect(Setting::setValue('test.key', null))->true();
+    expect(Setting::getValue('test.key'))->null();
+  }
+
   function _after() {
     ORM::forTable(Setting::$_table)
       ->deleteMany();
