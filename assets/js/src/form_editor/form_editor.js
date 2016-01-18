@@ -617,6 +617,17 @@ var WysijaForm = {
       // this is a url, so do not encode the protocol
       return encodeURI(str).replace(/[!'()*]/g, escape);
     }
+  },
+  updateBlock: function(data) {
+    var hasUpdated = false;
+    WysijaForm.getBlocks().each(function(b) {
+      if(b.block.getData().id == data.id) {
+        hasUpdated = true;
+        b.block.redraw(data);
+      }
+    });
+
+    return hasUpdated;
   }
 };
 

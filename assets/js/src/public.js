@@ -20,10 +20,7 @@ function(
       $('form.mailpoet_form').each(function() {
         var form = $(this);
 
-        form.parsley({
-          errorsWrapper: '<p></p>',
-          errorTemplate: '<span></span>'
-        }).on('form:submit', function(parsley) {
+        form.parsley().on('form:submit', function(parsley) {
 
           var data = form.serializeObject() || {};
 

@@ -66,7 +66,7 @@
                     type="radio"
                     name="on_success"
                     value="message"
-                    <% if(form.data.settings.on_success is empty or form.data.settings.on_success == 'message') %>
+                    <% if(form.settings.on_success is empty or form.settings.on_success == 'message') %>
                       checked="checked"
                     <% endif %>
                   /><%= __('Show message') %>
@@ -77,15 +77,15 @@
                     type="radio"
                     name="on_success"
                     value="page"
-                    <% if(form.data.settings.on_success == 'page') %>
+                    <% if(form.settings.on_success == 'page') %>
                       checked="checked"
                     <% endif %>
                   /><%= __('Go to page') %>
                 </label>
               </p>
               <!-- default success message -->
-              <% if form.data.settings.success_message %>
-                <% set success_message = form.data.settings.success_message %>
+              <% if form.settings.success_message %>
+                <% set success_message = form.settings.success_message %>
               <% else %>
                 <% set success_message = __('Check your inbox now to confirm your subscription.') %>
               <% endif %>
@@ -103,7 +103,7 @@
                 <select name="success_page">
                   <% for page in pages %>
                     <option value="<%= page.id %>"
-                      <%- if form.data.settings.success_page != page.id %>
+                      <%- if form.settings.success_page == page.id %>
                         <%=- ' selected="selected"' %>
                       <%- endif %>><%= page.title %></option>
                   <% endfor %>
@@ -445,28 +445,31 @@
               return false;
             }
 
-            var message = null;
+            if(callback !== false) {
+              var message = null;
 
-            if(response.is_widget === true) {
-              message = "<%= __('Saved! The changes are already active in your widget.') %>";
-            } else {
-              message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw %>";
-            }
+              if(response.is_widget === true) {
+                message = "<%= __('Saved! The changes are already active in your widget.') %>";
+              } else {
+                message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw %>";
+              }
 
-            if(message !== null) {
-              MailPoet.Notice.hide();
-              MailPoet.Notice.success(message, {
-                scroll: true,
-                static: (response.is_widget === false)
-              });
-            }
+              if(message !== null) {
+                MailPoet.Notice.hide();
+                MailPoet.Notice.success(message, {
+                  scroll: true,
+                  static: (response.is_widget === false)
+                });
+              }
 
-            // if there is a callback, call it!
-            if(callback !== undefined) {
-              callback();
+              // if there is a callback, call it!
+              if(callback !== undefined) {
+                callback();
+              }
             }
           });
         }
+        window.mailpoet_form_save = mailpoet_form_save;
 
         // toolbar: on success toggle
         $(document).on('change', 'input[name="on_success"]', toggleOnSuccessOptions);
@@ -506,7 +509,7 @@
           // open popup
           MailPoet.Modal.popup({
             title: "<%= __('Add new field') %>",
-            template: $('#form_template_field_new').html()
+            template: $('#form_template_field_form').html()
           });
 
           return false;
@@ -524,7 +527,7 @@
             if(response.result !== false) {
               MailPoet.Modal.popup({
                 title: "<%= __('Edit field') %>",
-                template: $('#form_template_field_new').html(),
+                template: $('#form_template_field_form').html(),
                 data: response
               });
             }
@@ -685,8 +688,8 @@
   ) %>
 
   <!-- custom field: new -->
-  <%= partial('form_template_field_new',
-    'form/templates/settings/field_new.hbs'
+  <%= partial('form_template_field_form',
+    'form/templates/settings/field_form.hbs'
   ) %>
 
   <!-- form preview -->

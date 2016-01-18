@@ -78,7 +78,16 @@
           data: data
         }).done(function(response) {
           if(response.result === true) {
+            // close popup
+            MailPoet.Modal.close();
+
+            if(WysijaForm.updateBlock(response.field) === true) {
+              // trigger save, if a block has been updated
+              mailpoet_form_save(false);
+            }
+
             mailpoet_form_fields();
+
             if(data.id) {
               MailPoet.Notice.success(
                 "<%= __('Updated custom field “"+data.name+"“') %>"
@@ -88,9 +97,6 @@
                 "<%= __('Added custom field “"+data.name+"“') %>"
               );
             }
-
-            // close popup
-            MailPoet.Modal.success();
           } else {
             if(response.errors.length > 0) {
               $(response.errors).each(function(i, error) {

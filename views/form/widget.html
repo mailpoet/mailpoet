@@ -16,8 +16,6 @@
       class="mailpoet_form mailpoet_form_<%= form_type %>"
       novalidate
     >
-      <div class="mailpoet_message"></div>
-
       <input type="hidden" name="form_id" value="<%= form.id %>" />
 
       <% if not(form.settings.segments_selected_by == 'user') %>
@@ -26,6 +24,8 @@
         <% endfor %>
       <% endif %>
       <%= html | raw %>
+
+      <div class="mailpoet_message"></div>
     </form>
   </div>
   <%= after_widget | raw %>
