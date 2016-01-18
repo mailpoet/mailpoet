@@ -547,9 +547,16 @@
               endpoint: 'customFields',
               action: 'delete',
               data: id
-            }).done(function(result) {
-              if(result === true) {
+            }).done(function(response) {
+              if(response.result === true) {
                 item.remove();
+
+                if(response.field !== undefined) {
+                  WysijaForm.removeBlock(response.field, function() {
+                    mailpoet_form_save(false);
+                  });
+                }
+
                 mailpoet_form_fields();
                 MailPoet.Notice.success(
                   "<%= __('Removed custom field “"+name+"“') %>"
