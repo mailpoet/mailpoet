@@ -24,7 +24,7 @@ class Subscribers {
     } else {
       $segments = $subscriber->segments()->findArray();
 
-      $subscriber = $subscriber->asArray();
+      $subscriber = $subscriber->getCustomFields()->asArray();
       $subscriber['segments'] = array_map(function($segment) {
         return $segment['id'];
       }, $segments);

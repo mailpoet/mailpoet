@@ -242,8 +242,15 @@ class Subscriber extends Model {
 
     foreach($data as $key => $value) {
       if(strpos($key, 'cf_') === 0) {
-        $custom_fields[substr($key, 3)] = $value;
+        $custom_fields[(int)substr($key, 3)] = $value;
         unset($data[$key]);
+      }
+    }
+
+
+    if(!empty($custom_fields)) {
+      foreach($custom_fields as $custom_field_id => $value) {
+        $subscriber->setCustomField($custom_field_id, $value);
       }
     }
 
@@ -254,8 +261,48 @@ class Subscriber extends Model {
       $subscriber->set($data);
     }
 
+
+
     $subscriber->save();
     return $subscriber;
+  }
+
+  function getCustomFields() {
+    $relation = CustomField::select('id')->findArray();
+    if(empty($relation)) return $this;
+
+    $custom_field_ids = Helpers::arrayColumn($relation, 'id');
+    $custom_fields = SubscriberCustomField::select('id')
+      ->select('value')
+      ->whereIn('custom_field_id', $custom_field_ids)
+      ->where('subscriber_id', $this->id())
+      ->findMany();
+    foreach($custom_fields as $custom_field) {
+      $this->{'cf_'.$custom_field->id()} = $custom_field->value;
+    }
+
+    return $this;
+  }
+
+  function getCustomField($custom_field_id, $default = null) {
+    $custom_field = SubscriberCustomField::select('value')
+      ->where('custom_field_id', $custom_field_id)
+      ->where('subscriber_id', $this->id())
+      ->findOne();
+
+    if($custom_field === false) {
+      return $default;
+    } else {
+      return $custom_field->value;
+    }
+  }
+
+  function setCustomField($custom_field_id, $value) {
+    return SubscriberCustomField::createOrUpdate(array(
+      'subscriber_id' => $this->id(),
+      'custom_field_id' => $custom_field_id,
+      'value' => $value
+    ));
   }
 
   static function bulkMoveToList($orm, $data = array()) {
