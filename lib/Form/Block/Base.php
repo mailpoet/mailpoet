@@ -13,7 +13,9 @@ abstract class Base {
     if($block['id'] === 'segments') {
       $rules['required'] = true;
       $rules['mincheck'] = 1;
-      $rules['error-message'] = __('You need to select a list');
+      $rules['group'] = $block['id'];
+      $rules['errors-container'] = '.mailpoet_error_'.$block['id'];
+      $rules['required-message'] = __('You need to select a list');
     }
 
     if(!empty($block['params']['required'])) {
@@ -29,7 +31,7 @@ abstract class Base {
       }
     }
 
-    if($block['type'] === 'radio') {
+    if(in_array($block['type'], array('radio', 'checkbox'))) {
       $rules['group'] = 'custom_field_'.$block['id'];
       $rules['errors-container'] = '.mailpoet_error_'.$block['id'];
       $rules['required-message'] = __('You need to select at least one option.');

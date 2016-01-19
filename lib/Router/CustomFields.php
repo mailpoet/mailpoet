@@ -18,15 +18,19 @@ class CustomFields {
   }
 
   function delete($id) {
-    $result = false;
-
     $custom_field = CustomField::findOne($id);
-    if($custom_field !== false) {
+    if($custom_field === false or !$custom_field->id()) {
+      wp_send_json(array(
+        'result' => false
+      ));
+    } else {
       $custom_field->delete();
-      $result = true;
-    }
 
-    wp_send_json($result);
+      wp_send_json(array(
+        'result' => true,
+        'field' => $custom_field->asArray()
+      ));
+    }
   }
 
   function save($data = array()) {

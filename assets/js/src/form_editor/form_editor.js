@@ -617,6 +617,28 @@ var WysijaForm = {
       // this is a url, so do not encode the protocol
       return encodeURI(str).replace(/[!'()*]/g, escape);
     }
+  },
+  updateBlock: function(field) {
+    var hasUpdated = false;
+    WysijaForm.getBlocks().each(function(b) {
+      if(b.block.getData().id === field.id) {
+        hasUpdated = true;
+        b.block.redraw(field);
+      }
+    });
+
+    return hasUpdated;
+  },
+  removeBlock: function(field, callback) {
+    var hasRemoved = false;
+    WysijaForm.getBlocks().each(function(b) {
+      if(b.block.getData().id === field.id) {
+        hasRemoved = true;
+        b.block.removeBlock(callback);
+      }
+    });
+
+    return hasRemoved;
   }
 };
 
@@ -825,10 +847,6 @@ WysijaForm.Block = Class.create({
     Effect.Fade(this.element.identify(), {
       duration: 0.2,
       afterFinish: function(effect) {
-        if(effect.element.next('.mailpoet_form_block') !== undefined && callback !== false) {
-          // show controls of next block to allow mass delete
-          WysijaForm.get(effect.element.next('.mailpoet_form_block')).block.showControls();
-        }
         // remove placeholder
         if(effect.element.previous('.block_placeholder') !== undefined) {
           effect.element.previous('.block_placeholder').remove();

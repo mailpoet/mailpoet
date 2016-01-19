@@ -20,7 +20,6 @@
       mailpoet_segment_selection_render();
 
       setInputNames();
-      setupSortableSegments();
 
       // add segment
       $('.mailpoet_segment_add').on('click', function() {
@@ -125,6 +124,7 @@
         $(item).find('.mailpoet_segment_id').attr('name', 'params[values]['+index+'][id]');
         $(item).find('.mailpoet_segment_name').attr('name', 'params[values]['+index+'][name]');
       });
+      setupSortableSegments();
     }
   });
 <{{!}}/script>

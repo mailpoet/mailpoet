@@ -113,13 +113,19 @@ class Subscribers {
     }
 
     if(!empty($errors)) {
-      wp_send_json(array('errors' => $errors));
+      wp_send_json(array(
+        'result' => false,
+        'errors' => $errors
+      ));
     }
 
     $subscriber = Subscriber::subscribe($data, $segment_ids);
 
+    $result = false;
     if($subscriber === false || !$subscriber->id()) {
       $errors = array_merge($errors, $subscriber->getValidationErrors());
+    } else {
+      $result = true;
     }
 
     if(!empty($errors)) {

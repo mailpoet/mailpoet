@@ -30,6 +30,8 @@ class Segment extends Base {
       }
     }
 
+    $html .= '<span class="mailpoet_error_'.$block['id'].'"></span>';
+
     $html .= '</p>';
 
     return $html;

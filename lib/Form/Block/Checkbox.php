@@ -9,10 +9,6 @@ class Checkbox extends Base {
     $field_name = static::getFieldName($block);
     $field_validation = static::getInputValidation($block);
 
-    // TODO: check if it still makes sense
-    // create hidden default value
-    // $html .= '<input type="hidden"name="'.$field_name.'" value="0" '.static::getInputValidation($block).'/>';
-
     $html .= '<p class="mailpoet_paragraph">';
 
     $html .= static::renderLabel($block);
@@ -34,6 +30,8 @@ class Checkbox extends Base {
 
       $html .= '</label>';
     }
+
+    $html .= '<span class="mailpoet_error_'.$block['id'].'"></span>';
 
     $html .= '</p>';
 

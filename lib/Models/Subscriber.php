@@ -237,6 +237,16 @@ class Subscriber extends Model {
       }
     }
 
+    // custom fields
+    $custom_fields = array();
+
+    foreach($data as $key => $value) {
+      if(strpos($key, 'cf_') === 0) {
+        $custom_fields[substr($key, 3)] = $value;
+        unset($data[$key]);
+      }
+    }
+
     if($subscriber === false) {
       $subscriber = static::create();
       $subscriber->hydrate($data);

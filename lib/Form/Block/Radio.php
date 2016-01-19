@@ -13,8 +13,6 @@ class Radio extends Base {
 
     $html .= static::renderLabel($block);
 
-    $html .= '<span class="mailpoet_error_'.$block['id'].'"></span>';
-
     foreach($block['params']['values'] as $option) {
       $html .= '<label class="mailpoet_radio_label">';
 
@@ -32,6 +30,8 @@ class Radio extends Base {
 
       $html .= '</label>';
     }
+
+    $html .= '<span class="mailpoet_error_'.$block['id'].'"></span>';
 
     $html .= '</p>';
 
