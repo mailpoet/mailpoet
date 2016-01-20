@@ -138,6 +138,14 @@ define(
            */
           uploadElement.change(function () {
             MailPoet.Notice.hide();
+              var ext = this.value.match(/\.(.+)$/)[1];
+              if (ext.toLowerCase() !== 'csv') {
+                this.value = '';
+                MailPoet.Notice.error(MailPoetI18n.wrongFileFormat, {
+                  timeout: 3000,
+                });
+              }
+
             toggleNextStepButton(
                 uploadProcessButtonElement,
                 (this.value.trim() !== '') ? 'on' : 'off'
@@ -416,7 +424,10 @@ define(
                 }
                 else {
                   MailPoet.Modal.loading(false);
-                  MailPoet.Notice.error(MailPoetI18n.noValidRecords, {
+                  var errorNotice = MailPoetI18n.noValidRecords;
+                  errorNotice = errorNotice.replace('[link]', '<a target="_blank" href="http://support.mailpoet.com/knowledgebase/importing-subscribers-with-a-csv-file?utm_source=wpadmin&utm_campaign=import">');
+                  errorNotice = errorNotice.replace('[/link]', '</a>');
+                  MailPoet.Notice.error(errorNotice, {
                     timeout: 3000,
                   });
                 }

@@ -33,7 +33,7 @@
                 <%=
                 __('This needs to be in CSV style. See [link]examples in our support site[/link].')
                 |replace({
-                '[link]': '<a target="_blank" href="http://support.mailpoet.com/knowledgebase/importing-subscribers-with-a-csv-file/main.html?utm_source=wpadmin&utm_campaign=import">',
+                '[link]': '<a target="_blank" href="http://support.mailpoet.com/knowledgebase/importing-subscribers-with-a-csv-file?utm_source=wpadmin&utm_campaign=import">',
                 '[/link]': '</a>'
                 })
                 |raw
@@ -65,7 +65,7 @@
                 <%=
                 __('This needs to be in CSV style. See [link]examples in our support site[/link].')
                 |replace({
-                '[link]': '<a target="_blank" href="http://support.mailpoet.com/knowledgebase/importing-subscribers-with-a-csv-file/main.html?utm_source=wpadmin&utm_campaign=import">',
+                '[link]': '<a target="_blank" href="http://support.mailpoet.com/knowledgebase/importing-subscribers-with-a-csv-file?utm_source=wpadmin&utm_campaign=import">',
                 '[/link]': '</a>'
                 })
                 |raw
@@ -74,7 +74,7 @@
             </label>
           </th>
           <td>
-            <input type="file" id="file_local">
+            <input type="file" id="file_local" accept=".csv" />
             &nbsp;
             <%= __( 'total max upload file size : %s' )|replace({'%s': maxPostSize}) %>
           </td>
