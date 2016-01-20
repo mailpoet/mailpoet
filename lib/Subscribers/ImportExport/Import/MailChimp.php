@@ -113,7 +113,7 @@ class MailChimp {
         'invalid' => false,
         'duplicate' => false,
         'header' => $header,
-        'count' => count($subscribers)
+        'subscribersCount' => count($subscribers)
       )
     );
   }
