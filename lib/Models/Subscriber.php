@@ -247,13 +247,6 @@ class Subscriber extends Model {
       }
     }
 
-
-    if(!empty($custom_fields)) {
-      foreach($custom_fields as $custom_field_id => $value) {
-        $subscriber->setCustomField($custom_field_id, $value);
-      }
-    }
-
     if($subscriber === false) {
       $subscriber = static::create();
       $subscriber->hydrate($data);
@@ -261,24 +254,28 @@ class Subscriber extends Model {
       $subscriber->set($data);
     }
 
-
-
-    $subscriber->save();
+    if($subscriber->save()) {
+      if(!empty($custom_fields)) {
+        foreach($custom_fields as $custom_field_id => $value) {
+          $subscriber->setCustomField($custom_field_id, $value);
+        }
+      }
+    }
     return $subscriber;
   }
 
   function getCustomFields() {
-    $relation = CustomField::select('id')->findArray();
-    if(empty($relation)) return $this;
+    $custom_fields = CustomField::select('id')->findArray();
+    if(empty($custom_fields)) return $this;
 
-    $custom_field_ids = Helpers::arrayColumn($relation, 'id');
-    $custom_fields = SubscriberCustomField::select('id')
+    $custom_field_ids = Helpers::arrayColumn($custom_fields, 'id');
+    $relations = SubscriberCustomField::select('custom_field_id')
       ->select('value')
       ->whereIn('custom_field_id', $custom_field_ids)
       ->where('subscriber_id', $this->id())
       ->findMany();
-    foreach($custom_fields as $custom_field) {
-      $this->{'cf_'.$custom_field->id()} = $custom_field->value;
+    foreach($relations as $relation) {
+      $this->{'cf_'.$relation->custom_field_id} = $relation->value;
     }
 
     return $this;

@@ -25,7 +25,6 @@
     "papaparse": "4.1.1",
     "parsleyjs": "^2.1.2",
     "react": "0.14.3",
-    "react-checkbox-group": "0.2.2",
     "react-dom": "0.14.3",
     "react-infinity": "1.2.2",
     "react-prefixr": "0.1.0",

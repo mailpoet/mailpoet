@@ -51,6 +51,28 @@ define(
       }
     ];
 
+    var custom_fields = window.mailpoet_custom_fields || [];
+    custom_fields.map(custom_field => {
+      if(custom_field.type === 'input') {
+        custom_field.type = 'text';
+      }
+
+      let field = {
+        name: 'cf_' + custom_field.id,
+        label: custom_field.name,
+        type: custom_field.type
+      };
+      if(custom_field.params) {
+        field.params = custom_field.params;
+      }
+
+      if(custom_field.params.values) {
+        field.values = custom_field.params.values;
+      }
+
+      fields.push(field);
+    });
+
     var messages = {
       onUpdate: function() {
         MailPoet.Notice.success('Subscriber successfully updated!');
