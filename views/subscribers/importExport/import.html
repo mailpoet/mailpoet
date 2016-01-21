@@ -1,5 +1,8 @@
 <% extends 'layout.html' %>
 <% block content %>
+<% set csvDescription = __('This needs to be in CSV style. See [link]examples in our support site[/link].') %>
+<% set csvKBLink = '<a target="_blank" href="http://support.mailpoet.com/knowledgebase/importing-subscribers-with-a-csv-file?utm_source=wpadmin&utm_campaign=import">' %>
+
 <div id="mailpoet_subscribers_import" class="wrap">
   <h2 class="title">
     <%= __('Import') %>
@@ -19,9 +22,10 @@
 'noMailChimpLists': __('No active lists found.'),
 'serverError': __('Server error:'),
 'select': __('Select'),
+'csvKBLink':  csvKBLink,
 'wrongFileFormat': __('Only comma-separated (CSV) file format is supported.'),
 'maxPostSizeNotice': __('Your CSV is over %s, and too big to process. Please split the file in two, or more.')|replace({'%s': maxPostSize}),
-'dataProcessingError': __("Your data couldn't be processed. Please make sure it is in the proper format."),
+'dataProcessingError': __("Your data could not be processed. Please make sure it is in the proper format."),
 'noValidRecords': __('No valid records were found. This needs to be in CSV style. See [link]examples in our support site[/link]'),
 'importNoticeSkipped': __('%1$s records were skipped due to problems.'),
 'importNoticeInvalid': __('%1$s emails are not valid : %2$s.'),
