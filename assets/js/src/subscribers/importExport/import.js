@@ -721,7 +721,7 @@ define(
             }
           });
 
-          // reduce subscribers object if the total length is geater than the
+          // reduce subscribers object if the total length is greater than the
           // maximum number of defined rows
           if (subscribers.subscribersCount > (maxRowsToShow + 1)) {
             subscribers.subscribers.splice(

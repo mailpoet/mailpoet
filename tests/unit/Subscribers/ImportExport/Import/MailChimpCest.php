@@ -58,7 +58,7 @@ class MailChimpCest {
     expect(isset($subscribers['data']['duplicate']))->true();
     expect(isset($subscribers['data']['header']))->true();
     expect(count($subscribers['data']['subscribers']))->equals(1);
-    expect($subscribers['data']['count'])->equals(1);
+    expect($subscribers['data']['subscribersCount'])->equals(1);
   }
 
   function itFailsWhenListHeadersDontMatch() {
