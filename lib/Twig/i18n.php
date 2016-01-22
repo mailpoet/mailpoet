@@ -38,7 +38,8 @@ class i18n extends \Twig_Extension {
     $output[] = '<script type="text/javascript">';
     $output[] = ' var MailPoetI18n = MailPoetI18n || {}';
     foreach($translations as $key => $translation) {
-      $output[] = 'MailPoetI18n[\''.$key.'\'] = "'.$translation.'";';
+      $output[] =
+        'MailPoetI18n["'.$key.'"] = "'. str_replace('"', '\"', $translation) . '";';
     }
     $output[] = '</script>';
     return join("\n", $output);

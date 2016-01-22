@@ -8,12 +8,14 @@ define(
       'papaparse',
       'select2'
     ],
-    function (Backbone,
-              _,
-              jQuery,
-              MailPoet,
-              Handlebars,
-              Papa) {
+    function (
+      Backbone,
+      _,
+      jQuery,
+      MailPoet,
+      Handlebars,
+      Papa
+    ) {
       if (!jQuery('#mailpoet_subscribers_import').length) {
         return;
       }
@@ -138,6 +140,14 @@ define(
            */
           uploadElement.change(function () {
             MailPoet.Notice.hide();
+              var ext = this.value.match(/\.(.+)$/);
+              if (ext === null || ext[1].toLowerCase() !== 'csv') {
+                this.value = '';
+                MailPoet.Notice.error(MailPoetI18n.wrongFileFormat, {
+                  timeout: 3000,
+                });
+              }
+
             toggleNextStepButton(
                 uploadProcessButtonElement,
                 (this.value.trim() !== '') ? 'on' : 'off'
@@ -416,7 +426,10 @@ define(
                 }
                 else {
                   MailPoet.Modal.loading(false);
-                  MailPoet.Notice.error(MailPoetI18n.noValidRecords, {
+                  var errorNotice = MailPoetI18n.noValidRecords;
+                  errorNotice = errorNotice.replace('[link]', MailPoetI18n.csvKBLink);
+                  errorNotice = errorNotice.replace('[/link]', '</a>');
+                  MailPoet.Notice.error(errorNotice, {
                     timeout: 3000,
                   });
                 }
