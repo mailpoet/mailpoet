@@ -18,9 +18,21 @@ class SubscriberCustomField extends Model {
 
     if($custom_field['type'] === 'date') {
       if(is_array($data['value'])) {
-        $day = (isset($data['value']['day']) ? : 1);
-        $month = (isset($data['value']['month']) ? : 1);
-        $year = (isset($data['value']['year']) ? : 1970);
+        $day = (
+          isset($data['value']['day'])
+          ? (int)$data['value']['day']
+          : 1
+        );
+        $month = (
+          isset($data['value']['month'])
+          ? (int)$data['value']['month']
+          : 1
+        );
+        $year = (
+          isset($data['value']['year'])
+          ? (int)$data['value']['year']
+          : 1970
+        );
         $data['value'] = mktime(0, 0, 0, $month, $day, $year);
       }
     }

@@ -88,7 +88,7 @@ define([
     componentDidMount() {
     }
     componentDidUpdate(prevProps, prevState) {
-      if(
+      if (
         (this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)
       ) {
@@ -104,27 +104,39 @@ define([
         day: Moment.unix(timeStamp).date()
       });
     }
+    updateTimeStamp(field) {
+      let newTimeStamp = Moment(
+        `${this.state.month}/${this.state.day}/${this.state.year}`,
+        'M/D/YYYY'
+      ).valueOf();
+      if (!isNaN(newTimeStamp) && parseInt(newTimeStamp, 10) > 0) {
+        // convert milliseconds to seconds
+        newTimeStamp /= 1000;
+        return this.props.onValueChange({
+          target: {
+            name: field,
+            value: newTimeStamp
+          }
+        });
+      }
+    }
     onValueChange(e) {
       // extract property from name
-      const matches = e.target.name.match(/.*?\[(.*?)\]/);
+      const matches = e.target.name.match(/(.*?)\[(.*?)\]/);
+      let field = null;
       let property = null;
-      if(matches !== null && matches.length === 2) {
-        property = matches[1];
-      }
-      let value = parseInt(e.target.value, 10);
 
-      switch(property) {
-        case 'year':
-          this.setState({ year: value });
-        break;
+      if (matches !== null && matches.length === 3) {
+        field = matches[1];
+        property = matches[2];
 
-        case 'month':
-          this.setState({ month: value });
-        break;
+        let value = parseInt(e.target.value, 10);
 
-        case 'day':
-          this.setState({ day: value });
-        break;
+        this.setState({
+          [`${property}`]: value
+        }, () => {
+          this.updateTimeStamp(field);
+        });
       }
     }
     render() {
