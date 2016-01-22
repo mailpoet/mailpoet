@@ -6,10 +6,12 @@ define([
   Moment
 ) {
   class FormFieldDateYear extends React.Component {
+    const yearsRange = 100;
+
     render() {
       const years = [];
       const currentYear = Moment().year();
-      for (let i = currentYear; i >= currentYear - 100; i--) {
+      for (let i = currentYear; i >= currentYear - yearsRange; i--) {
         years.push((
           <option
             key={ i }
@@ -100,6 +102,8 @@ define([
 
       this.setState({
         year: Moment.unix(timeStamp).year(),
+        // Moment returns the month as [0..11]
+        // We increment it to match PHP's mktime() which expects [1..12]
         month: Moment.unix(timeStamp).month() + 1,
         day: Moment.unix(timeStamp).date()
       });
