@@ -1,31 +1,31 @@
 define([
-  'react',
-  'react-checkbox-group'
+  'react'
 ],
 function(
-  React,
-  CheckboxGroup
+  React
 ) {
-  var FormFieldCheckbox = React.createClass({
+  const FormFieldCheckbox = React.createClass({
+    onValueChange: function(e) {
+      e.target.value = this.refs.checkbox.checked ? '1' : '';
+      return this.props.onValueChange(e);
+    },
     render: function() {
-      var selected_values = this.props.item[this.props.field.name] || '';
-      if(
-        selected_values !== undefined
-        && selected_values.constructor !== Array
-      ) {
-        selected_values = selected_values.split(';').map(function(value) {
-          return value.trim();
-        });
-      }
-      var count = Object.keys(this.props.field.values).length;
+      const isChecked = !!(this.props.item[this.props.field.name]);
 
-      var options = Object.keys(this.props.field.values).map(
+      const options = Object.keys(this.props.field.values).map(
         function(value, index) {
           return (
             <p key={ 'checkbox-' + index }>
               <label>
-                <input type="checkbox" value={ value } />
-                &nbsp;{ this.props.field.values[value] }
+                <input
+                  ref="checkbox"
+                  type="checkbox"
+                  value="1"
+                  checked={ isChecked }
+                  onChange={ this.onValueChange }
+                  name={ this.props.field.name }
+                />
+                { this.props.field.values[value] }
               </label>
             </p>
           );
@@ -33,30 +33,10 @@ function(
       );
 
       return (
-        <CheckboxGroup
-          name={ this.props.field.name }
-          value={ selected_values }
-          ref={ this.props.field.name }
-          onChange={ this.handleValueChange }>
+        <div>
           { options }
-        </CheckboxGroup>
+        </div>
       );
-    },
-    handleValueChange: function() {
-      var field = this.props.field.name;
-      var group = this.refs[field];
-      var selected_values = [];
-
-      if(group !== undefined) {
-        selected_values = group.getCheckedValues();
-      }
-
-      return this.props.onValueChange({
-        target: {
-          name: field,
-          value: selected_values.join(';')
-        }
-      });
     }
   });
 

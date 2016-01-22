@@ -296,7 +296,7 @@ class Menu {
     } else {
       // check if users can register
       $flags['registration_enabled'] =
-        (bool) get_option('users_can_register', false);
+        (bool)get_option('users_can_register', false);
     }
 
     return $flags;
@@ -306,6 +306,23 @@ class Menu {
     $data = array();
 
     $data['segments'] = Segment::findArray();
+
+    $data['custom_fields'] = array_map(function($field) {
+      $field['params'] = unserialize($field['params']);
+
+      if(!empty($field['params']['values'])) {
+        $values = array();
+
+        foreach($field['params']['values'] as $value) {
+          $values[$value['value']] = $value['value'];
+        }
+        $field['params']['values'] = $values;
+      }
+      return $field;
+    }, CustomField::findArray());
+
+    $data['date_formats'] = Block\Date::getDateFormats();
+    $data['month_names'] = Block\Date::getMonthNames();
 
     echo $this->renderer->render('subscribers/subscribers.html', $data);
   }

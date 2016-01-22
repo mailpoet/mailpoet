@@ -13,7 +13,12 @@ class Checkbox extends Base {
 
     $html .= static::renderLabel($block);
 
-    foreach($block['params']['values'] as $option) {
+    $options = (!empty($block['params']['values'])
+      ? $block['params']['values']
+      : array()
+    );
+
+    foreach($options as $option) {
       $html .= '<label class="mailpoet_checkbox_label">';
 
       $html .= '<input type="checkbox" class="mailpoet_checkbox" ';

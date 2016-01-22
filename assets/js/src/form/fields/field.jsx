@@ -5,7 +5,8 @@ define([
   'form/fields/select.jsx',
   'form/fields/radio.jsx',
   'form/fields/checkbox.jsx',
-  'form/fields/selection.jsx'
+  'form/fields/selection.jsx',
+  'form/fields/date.jsx',
 ],
 function(
   React,
@@ -14,7 +15,8 @@ function(
   FormFieldSelect,
   FormFieldRadio,
   FormFieldCheckbox,
-  FormFieldSelection
+  FormFieldSelection,
+  FormFieldDate
 ) {
   var FormField = React.createClass({
     renderField: function(data, inline = false) {
@@ -55,6 +57,10 @@ function(
         case 'selection':
           field = (<FormFieldSelection {...data} />);
         break;
+
+        case 'date':
+          field = (<FormFieldDate {...data} />);
+        break;
       }
 
       if(inline === true) {
@@ -66,10 +72,10 @@ function(
         );
       } else {
         return (
-          <p key={ 'field-' + (data.index || 0) }>
+          <div key={ 'field-' + (data.index || 0) }>
             { field }
             { description }
-          </p>
+          </div>
         );
       }
     },

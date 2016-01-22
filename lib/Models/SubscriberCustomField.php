@@ -12,6 +12,49 @@ class SubscriberCustomField extends Model {
     parent::__construct();
   }
 
+  static function createOrUpdate($data = array()) {
+    $custom_field = CustomField::findOne($data['custom_field_id']);
+    if($custom_field === false) {
+      return false;
+    } else {
+      $custom_field = $custom_field->asArray();
+    }
+
+    if($custom_field['type'] === 'date') {
+      if(is_array($data['value'])) {
+        $day = (
+          isset($data['value']['day'])
+          ? (int)$data['value']['day']
+          : 1
+        );
+        $month = (
+          isset($data['value']['month'])
+          ? (int)$data['value']['month']
+          : 1
+        );
+        $year = (
+          isset($data['value']['year'])
+          ? (int)$data['value']['year']
+          : 1970
+        );
+        $data['value'] = mktime(0, 0, 0, $month, $day, $year);
+      }
+    }
+
+    $relation = self::where('custom_field_id', $data['custom_field_id'])
+      ->where('subscriber_id', $data['subscriber_id'])
+      ->findOne();
+
+    if($relation === false) {
+      $relation = self::create();
+      $relation->hydrate($data);
+    } else {
+      $relation->set($data);
+    }
+
+    return $relation->save();
+  }
+
   static function createMultiple($values) {
     $values = array_map('array_values', $values);
     return self::rawExecute(

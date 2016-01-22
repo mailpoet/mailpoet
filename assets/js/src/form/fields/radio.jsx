@@ -7,7 +7,6 @@ function(
   var FormFieldRadio = React.createClass({
     render: function() {
       var selected_value = this.props.item[this.props.field.name];
-      var count = Object.keys(this.props.field.values).length;
 
       var options = Object.keys(this.props.field.values).map(
         function(value, index) {
@@ -20,7 +19,7 @@ function(
                   value={ value }
                   onChange={ this.props.onValueChange }
                   name={ this.props.field.name } />
-                &nbsp;{ this.props.field.values[value] }
+                { this.props.field.values[value] }
               </label>
             </p>
           );
