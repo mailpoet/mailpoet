@@ -6,9 +6,8 @@ define([
   Moment
 ) {
   class FormFieldDateYear extends React.Component {
-    const yearsRange = 100;
-
     render() {
+      const yearsRange = 100;
       const years = [];
       const currentYear = Moment().year();
       for (let i = currentYear; i >= currentYear - yearsRange; i--) {
