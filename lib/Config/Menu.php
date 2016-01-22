@@ -324,12 +324,6 @@ class Menu {
     $data['date_formats'] = Block\Date::getDateFormats();
     $data['month_names'] = Block\Date::getMonthNames();
 
-
-    // print "<pre>";
-    // print_r($data['custom_fields']);
-    // print "</pre>";
-    // exit;
-
     echo $this->renderer->render('subscribers/subscribers.html', $data);
   }
 

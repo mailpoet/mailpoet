@@ -264,7 +264,7 @@ class Subscriber extends Model {
     return $subscriber;
   }
 
-  function getCustomFields() {
+  function withCustomFields() {
     $custom_fields = CustomField::select('id')->findArray();
     if(empty($custom_fields)) return $this;
 

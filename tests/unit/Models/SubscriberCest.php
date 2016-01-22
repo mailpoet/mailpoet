@@ -372,6 +372,47 @@ class SubscriberCest {
     expect($subscriber->last_name)->equals('DoDo');
   }
 
+  function itCanSetCustomField() {
+    $custom_field = CustomField::createOrUpdate(array(
+      'name' => 'Date of Birth',
+      'type' => 'date'
+    ));
+
+    expect($custom_field->id() > 0)->true();
+
+    $value = array(
+      'year' => 1984,
+      'month' => 3,
+      'day' => 9
+    );
+
+    $subscriber = Subscriber::findOne($this->subscriber->id());
+    $subscriber->setCustomField($custom_field->id(), $value);
+
+    $subscriber = $subscriber->withCustomFields()->asArray();
+
+    expect($subscriber['cf_'.$custom_field->id()])->equals(
+      mktime(0, 0, 0, $value['month'], $value['day'], $value['year'])
+    );
+  }
+
+  function itCanGetCustomField() {
+    $subscriber = Subscriber::findOne($this->subscriber->id());
+
+    expect($subscriber->getCustomField(9999, 'default_value'))
+      ->equals('default_value');
+
+    $custom_field = CustomField::createOrUpdate(array(
+      'name' => 'Custom field: text input',
+      'type' => 'input'
+    ));
+
+    $subscriber->setCustomField($custom_field->id(), 'non_default_value');
+
+    expect($subscriber->getCustomField($custom_field->id(), 'default_value'))
+      ->equals('non_default_value');
+  }
+
   function _after() {
     ORM::forTable(Subscriber::$_table)
       ->deleteMany();
