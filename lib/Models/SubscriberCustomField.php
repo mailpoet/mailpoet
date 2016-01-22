@@ -13,8 +13,12 @@ class SubscriberCustomField extends Model {
   }
 
   static function createOrUpdate($data = array()) {
-    $custom_field = CustomField::findOne($data['custom_field_id'])->asArray();
-    if($custom_field === false) return false;
+    $custom_field = CustomField::findOne($data['custom_field_id']);
+    if($custom_field === false) {
+      return false;
+    } else {
+      $custom_field = $custom_field->asArray();
+    }
 
     if($custom_field['type'] === 'date') {
       if(is_array($data['value'])) {

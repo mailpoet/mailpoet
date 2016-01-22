@@ -22,8 +22,9 @@ class Supervisor {
       return $this->startDaemon();
     }
     if(
-      !$this->force_start &&
-      in_array($this->daemon['status'], array('stopped', 'stopping'))
+      !$this->force_start
+      && isset($this->daemon['status'])
+      && in_array($this->daemon['status'], array('stopped', 'stopping'))
     ) {
       return $this->daemon['status'];
     }
