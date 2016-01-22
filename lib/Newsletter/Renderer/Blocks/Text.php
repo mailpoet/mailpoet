@@ -3,7 +3,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 class Text {
   static function render($element) {
-    $html = $element['text'];
+    $html = mb_convert_encoding($element['text'], 'HTML-ENTITIES', 'UTF-8');
     $html = self::convertBlockquotesToTables($html);
     $html = self::convertParagraphsToTables($html);
     $html = self::addLineBreakAfterTags($html);
@@ -42,7 +42,6 @@ class Text {
       , $html);
     return $html;
   }
-
 
   static function removeLastElementBreakLine($html) {
     return preg_replace('/<br\/>([^<br\/>]*)$/s', '', $html);
