@@ -33,6 +33,17 @@ class Wordpress {
   }
 
   function getPosts($args) {
+    wp_send_json($this->fetchWordPressPosts($args));
+  }
+
+  function getTransformedPosts($args) {
+    $posts = $this->fetchWordPressPosts($args);
+
+    $transformer = new Transformer($args);
+    wp_send_json($transformer->transform($posts));
+  }
+
+  function fetchWordPressPosts($args) {
     $parameters = array(
       'posts_per_page' => (isset($args['amount'])) ? (int)$args['amount'] : 10,
       'post_type' => (isset($args['contentType'])) ? $args['contentType'] : 'post',
@@ -45,32 +56,16 @@ class Wordpress {
       $parameters['s'] = $args['search'];
     }
 
-    $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
-
-    wp_send_json(get_posts($parameters));
-  }
-
-  function getTransformedPosts($args) {
-    $parameters = array(
-      'posts_per_page' => (isset($args['amount'])) ? (int)$args['amount'] : 10,
-      'post_type' => (isset($args['contentType'])) ? $args['contentType'] : 'post',
-      'orderby' => 'date',
-      'order' => ($args['sortBy'] === 'newest') ? 'DESC' : 'ASC',
-    );
-
     if (isset($args['posts']) && is_array($args['posts'])) {
       $parameters['post__in'] = $args['posts'];
     }
 
     $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
 
-    $posts = get_posts($parameters);
-
-    $transformer = new Transformer($args);
-    wp_send_json($transformer->transform($posts));
+    return get_posts($parameters);
   }
 
-  private function constructTaxonomiesQuery($args) {
+  function constructTaxonomiesQuery($args) {
     $taxonomies_query = array();
 
     if (isset($args['terms']) && is_array($args['terms'])) {
