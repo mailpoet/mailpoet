@@ -52,7 +52,7 @@ class SendingQueue {
   }
 
   function processNewsletter($newsletter) {
-    // TODO: replace shortcodes, etc..
+    // TODO: replace shortcodes
     return $newsletter;
   }
 
@@ -127,8 +127,7 @@ class SendingQueue {
 
   function renderNewsletter($newsletter) {
     $renderer = new Renderer(json_decode($newsletter['body'], true));
-    // TODO: update once text rendering is implemented/enderer returns an array
-    $newsletter['body'] = array('html' => $renderer->render(), 'text' => '');
+    $newsletter['body'] = $renderer->render();
     return $newsletter;
   }
 }
