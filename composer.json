@@ -10,7 +10,8 @@
     "swiftmailer/swiftmailer": "^5.4",
     "phpseclib/phpseclib": "*",
     "mtdowling/cron-expression": "^1.0",
-    "nesbot/carbon": "^1.21"
+    "nesbot/carbon": "^1.21",
+    "soundasleep/html2text": "^0.3.0"
   },
   "require-dev": {
     "codeception/codeception": "*",

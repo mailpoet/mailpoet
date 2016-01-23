@@ -189,8 +189,7 @@ class Newsletters {
     // END - TO REMOVE
 
     $renderer = new Renderer(json_decode($newsletter['body'], true));
-    $newsletter['body']['html'] = $renderer->render();
-    $newsletter['body']['text'] = '';
+    $newsletter['body'] = $renderer->render();
 
     $subscribers = Subscriber::find_array();
     $fromEmail = Setting::where('name', 'from_address')->findOne()->value;
@@ -214,7 +213,8 @@ class Newsletters {
       wp_send_json(false);
     }
     $renderer = new Renderer($data);
-    wp_send_json(array('rendered_body' => $renderer->render()));
+    $rendered_body = $renderer->render();
+    wp_send_json(array('rendered_body' => $rendered_body['html']));
   }
 
   function sendPreview($data = array()) {
@@ -236,11 +236,7 @@ class Newsletters {
     $newsletter = $newsletter->asArray();
 
     $renderer = new Renderer($newsletter);
-    $rendered_body = $renderer->render();
-    $newsletter['body'] = array(
-      'html' => $rendered_body,
-      'text' => '',
-    );
+    $newsletter['body'] = $renderer->render();
 
     try {
       $mailer = new \MailPoet\Mailer\Mailer(false, false, false);

@@ -25,7 +25,9 @@ class NewsletterRendererCest {
 
   function itRendersCompleteNewsletter() {
     $template = $this->renderer->render();
-    $DOM = $this->DOM_parser->parseStr($template);
+    expect(isset($template['html']))->true();
+    expect(isset($template['text']))->true();
+    $DOM = $this->DOM_parser->parseStr($template['html']);
     // we expect to have 7 columns:
     //  1x column including header
     //  2x column
@@ -248,14 +250,14 @@ class NewsletterRendererCest {
 
   function itSetsSubject() {
     $template = $this->renderer->render();
-    $DOM = $this->DOM_parser->parseStr($template);
+    $DOM = $this->DOM_parser->parseStr($template['html']);
     $subject = trim($DOM('title')->text());
     expect($subject)->equals($this->newsletter['subject']);
   }
 
   function itSetsPreheader() {
     $template = $this->renderer->render();
-    $DOM = $this->DOM_parser->parseStr($template);
+    $DOM = $this->DOM_parser->parseStr($template['html']);
     $preheader = trim($DOM('td.mailpoet_preheader')->text());
     expect($preheader)->equals($this->newsletter['preheader']);
   }
@@ -264,9 +266,9 @@ class NewsletterRendererCest {
     $template = $this->renderer->render();
     // !important should be stripped from everywhere except from
     // with the <style> tag
-    expect(preg_match('/<style.*?important/s', $template))
+    expect(preg_match('/<style.*?important/s', $template['html']))
       ->equals(1);
-    expect(preg_match('/mailpoet_template.*?important/s', $template))
+    expect(preg_match('/mailpoet_template.*?important/s', $template['html']))
       ->equals(0);
   }
 }
