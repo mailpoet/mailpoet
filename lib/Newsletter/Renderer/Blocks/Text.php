@@ -43,7 +43,6 @@ class Text {
     return $html;
   }
 
-
   static function removeLastElementBreakLine($html) {
     return preg_replace('/<br\/>([^<br\/>]*)$/s', '', $html);
   }
@@ -92,7 +91,7 @@ class Text {
 
   static function styleHeadings($html) {
     return preg_replace(
-      '/<(h[1-6])(?:.+style=\"(.*)?\")?>/',
+      '/<(h[1-6])(?:\s+style=\"(.*)?\")?>/',
       '<$1 style="margin:0;font-style:normal;font-weight:normal;$2">',
       $html
     );
