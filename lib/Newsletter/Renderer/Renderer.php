@@ -35,7 +35,11 @@ class Renderer {
       $newsletter_body
     ));
     $template = $this->inlineCSSStyles($template);
-    return $this->postProcessTemplate($template);
+    $template = $this->postProcessTemplate($template);
+    return array(
+      'html' => $template,
+      'text' => $this->renderTextVersion($template)
+    );
   }
 
   function renderBody($content) {
@@ -107,8 +111,8 @@ class Renderer {
   }
 
   function renderTextVersion($template) {
-    // TODO: add text rendering
-    return $template;
+    $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+    return \Html2Text\Html2Text::convert($template);
   }
 
   function postProcessTemplate($template) {
@@ -118,7 +122,6 @@ class Renderer {
     $template->html(
       str_replace('!important', '', $template->html())
     );
-    // TODO: return array with html and text body
     return $DOM->__toString();
   }
 }
