@@ -9,7 +9,7 @@ define([
 
   Module._query = function(args) {
     return MailPoet.Ajax.post({
-      endpoint: 'wordpress',
+      endpoint: 'automatedLatestContent',
       action: args.action,
       data: args.options || {},
     });
