@@ -19,12 +19,12 @@ class Mailer {
     $this->reply_to = $this->getReplyTo($reply_to);
     $this->mailer_instance = $this->buildMailer();
   }
-  
+
   function send($newsletter, $subscriber) {
     $subscriber = $this->transformSubscriber($subscriber);
     return $this->mailer_instance->send($newsletter, $subscriber);
   }
-  
+
   function buildMailer() {
     switch($this->mailer['method']) {
     case 'AmazonSES':
@@ -52,13 +52,6 @@ class Mailer {
     case 'MailPoet':
       $mailer_instance = new $this->mailer['class'](
         $this->mailer['mailpoet_api_key'],
-        $this->sender['from_email'],
-        $this->sender['from_name']
-      );
-    break;
-    case 'Mandrill':
-      $mailer_instance = new $this->mailer['class'](
-        $this->mailer['api_key'],
         $this->sender['from_email'],
         $this->sender['from_name']
       );
@@ -94,7 +87,7 @@ class Mailer {
     }
     return $mailer_instance;
   }
-  
+
   function getMailer($mailer = false) {
     if(!$mailer) {
       $mailer = Setting::getValue('mta', null);
