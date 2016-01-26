@@ -214,13 +214,13 @@ class Newsletters {
       wp_send_json(false);
     }
     $renderer = new Renderer($data);
-    $rendered_body = $renderer->render();
+    $rendered_newsletter = $renderer->render();
     $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $rendered_body,
+      $rendered_newsletter['html'],
       $data
     );
-    $rendered_body = $shortcodes->replace();
-    wp_send_json(array('rendered_body' => $rendered_body));
+    $rendered_newsletter = $shortcodes->replace();
+    wp_send_json(array('rendered_body' => $rendered_newsletter));
   }
 
   function sendPreview($data = array()) {
@@ -242,15 +242,17 @@ class Newsletters {
     $newsletter = $newsletter->asArray();
 
     $renderer = new Renderer($newsletter);
-    $rendered_body = $renderer->render();
+    $rendered_newsletter = $renderer->render();
     $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $rendered_body,
+      $rendered_newsletter['html'],
       $newsletter
     );
-    $rendered_body = $shortcodes->replace();
+    $processed_newsletter['html'] = $shortcodes->replace();
+    $shortcodes->rendered_newsletter = $rendered_newsletter['text'];
+    $processed_newsletter['text'] = $shortcodes->replace();
     $newsletter['body'] = array(
-      'html' => $rendered_body,
-      'text' => '',
+      'html' => $processed_newsletter['html'],
+      'text' => $processed_newsletter['text'],
     );
 
     try {

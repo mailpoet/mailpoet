@@ -53,8 +53,10 @@ class SendingQueue {
 
   function processNewsletter($newsletter, $subscriber) {
     $rendered_newsletter = $this->renderNewsletter($newsletter);
-    $shortcodes = new Shortcodes($rendered_newsletter, $newsletter, $subscriber);
-    $processed_newsletter = $shortcodes->replace();
+    $shortcodes = new Shortcodes($rendered_newsletter['html'], $newsletter, $subscriber);
+    $processed_newsletter['html'] = $shortcodes->replace();
+    $shortcodes->rendered_newsletter = $rendered_newsletter['text'];
+    $processed_newsletter['text'] = $shortcodes->replace();
     return $processed_newsletter;
   }
 
