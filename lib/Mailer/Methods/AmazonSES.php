@@ -13,25 +13,27 @@ class AmazonSES {
   public $aws_termination_string;
   public $hash_algorithm;
   public $url;
-  public $from;
+  public $sender;
+  public $reply_to;
   public $date;
   public $date_without_time;
-  
-  function __construct($region, $access_key, $secret_key, $from) {
+
+  function __construct($region, $access_key, $secret_key, $sender, $reply_to) {
     $this->aws_access_key = $access_key;
     $this->aws_secret_key = $secret_key;
     $this->aws_region = $region;
-    $this->aws_endpoint = sprintf('email.%s.amazonaws.com', $region);
+    $this->aws_endpoint = sprintf('email.%s.amazonaws.com', $this->aws_region);
     $this->aws_signing_algorithm = 'AWS4-HMAC-SHA256';
     $this->aws_service = 'ses';
     $this->aws_termination_string = 'aws4_request';
     $this->hash_algorithm = 'sha256';
     $this->url = 'https://' . $this->aws_endpoint;
-    $this->from = $from;
+    $this->sender = $sender;
+    $this->reply_to = $reply_to;
     $this->date = gmdate('Ymd\THis\Z');
     $this->date_without_time = gmdate('Ymd');
   }
-  
+
   function send($newsletter, $subscriber) {
     $result = wp_remote_post(
       $this->url,
@@ -42,15 +44,16 @@ class AmazonSES {
       wp_remote_retrieve_response_code($result) === 200
     );
   }
-  
+
   function getBody($newsletter, $subscriber) {
     $body = array(
       'Action' => 'SendEmail',
       'Version' => '2010-12-01',
-      'Source' => $this->from,
       'Destination.ToAddresses.member.1' => $subscriber,
+      'Source' => $this->sender['from_name_email'],
+      'ReplyToAddresses.member.1' => $this->reply_to['reply_to_name_email'],
       'Message.Subject.Data' => $newsletter['subject'],
-      'ReturnPath' => $this->from
+      'ReturnPath' => $this->sender['from_name_email'],
     );
     if(!empty($newsletter['body']['html'])) {
       $body['Message.Body.Html.Data'] = $newsletter['body']['html'];
@@ -60,7 +63,7 @@ class AmazonSES {
     }
     return $body;
   }
-  
+
   function request($newsletter, $subscriber) {
     $body = $this->getBody($newsletter, $subscriber);
     return array(
@@ -75,7 +78,7 @@ class AmazonSES {
       'body' => urldecode(http_build_query($body))
     );
   }
-  
+
   function signRequest($body) {
     $string_to_sign = $this->createStringToSign(
       $this->getCredentialScope(),
@@ -86,7 +89,7 @@ class AmazonSES {
       $string_to_sign,
       $this->getSigningKey()
     );
-    
+
     return sprintf(
       '%s Credential=%s/%s, SignedHeaders=host;x-amz-date, Signature=%s',
       $this->aws_signing_algorithm,
@@ -94,7 +97,7 @@ class AmazonSES {
       $this->getCredentialScope(),
       $signature);
   }
-  
+
   function getCredentialScope() {
     return sprintf(
       '%s/%s/%s/%s',
@@ -103,7 +106,7 @@ class AmazonSES {
       $this->aws_service,
       $this->aws_termination_string);
   }
-  
+
   function getCanonicalRequest($body) {
     return implode("\n", array(
       'POST',
@@ -116,7 +119,7 @@ class AmazonSES {
       hash($this->hash_algorithm, urldecode(http_build_query($body)))
     ));
   }
-  
+
   function createStringToSign($credential_scope, $canonical_request) {
     return implode("\n", array(
       $this->aws_signing_algorithm,
@@ -125,7 +128,7 @@ class AmazonSES {
       hash($this->hash_algorithm, $canonical_request)
     ));
   }
-  
+
   function getSigningKey() {
     $date_key = hash_hmac(
       $this->hash_algorithm,

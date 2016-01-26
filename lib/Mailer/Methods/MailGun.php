@@ -6,12 +6,14 @@ if(!defined('ABSPATH')) exit;
 class MailGun {
   public $url;
   public $api_key;
-  public $from;
-  
-  function __construct($domain, $api_key, $from) {
+  public $sender;
+  public $reply_to;
+
+  function __construct($domain, $api_key, $sender, $reply_to) {
     $this->url = sprintf('https://api.mailgun.net/v3/%s/messages', $domain);
     $this->api_key = $api_key;
-    $this->from = $from;
+    $this->sender = $sender;
+    $this->reply_to = $reply_to;
   }
 
   function send($newsletter, $subscriber) {
@@ -27,8 +29,9 @@ class MailGun {
 
   function getBody($newsletter, $subscriber) {
     $body = array(
-      'from' => $this->from,
       'to' => $subscriber,
+      'from' => $this->sender['from_name_email'],
+      'h:Reply-To' => $this->reply_to['reply_to_name_email'],
       'subject' => $newsletter['subject']
     );
     if(!empty($newsletter['body']['html'])) {

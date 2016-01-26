@@ -3,26 +3,12 @@ namespace MailPoet\Mailer\Methods;
 
 if(!defined('ABSPATH')) exit;
 
-class SMTP {
-  public $host;
-  public $port;
-  public $authentication;
-  public $login;
-  public $password;
-  public $encryption;
+class PHPMail {
   public $sender;
   public $reply_to;
   public $mailer;
 
-  function __construct(
-    $host, $port, $authentication, $login = null, $password = null, $encryption,
-    $sender, $reply_to) {
-    $this->host = $host;
-    $this->port = $port;
-    $this->authentication = $authentication;
-    $this->login = $login;
-    $this->password = $password;
-    $this->encryption = $encryption;
+  function __construct($sender, $reply_to) {
     $this->sender = $sender;
     $this->reply_to = $reply_to;
     $this->mailer = $this->buildMailer();
@@ -39,14 +25,8 @@ class SMTP {
   }
 
   function buildMailer() {
-    $transport = \Swift_SmtpTransport::newInstance(
-      $this->host, $this->port, $this->encryption);
+    $transport = \Swift_SmtpTransport::newInstance();
     $transport->setTimeout(10);
-    if($this->authentication) {
-      $transport
-        ->setUsername($this->login)
-        ->setPassword($this->password);
-    }
     return \Swift_Mailer::newInstance($transport);
   }
 

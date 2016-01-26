@@ -27,63 +27,65 @@ class Mailer {
 
   function buildMailer() {
     switch($this->mailer['method']) {
-    case 'AmazonSES':
-      $mailer_instance = new $this->mailer['class'](
-        $this->mailer['region'],
-        $this->mailer['access_key'],
-        $this->mailer['secret_key'],
-        $this->sender['from_name_email']
-      );
-    break;
-    case 'ElasticEmail':
-      $mailer_instance = new $this->mailer['class'](
-        $this->mailer['api_key'],
-        $this->sender['from_email'],
-        $this->sender['from_name']
-      );
-    break;
-    case 'MailGun':
-      $mailer_instance = new $this->mailer['class'](
-        $this->mailer['domain'],
-        $this->mailer['api_key'],
-        $this->sender['from_name_email']
-      );
-    break;
-    case 'MailPoet':
-      $mailer_instance = new $this->mailer['class'](
-        $this->mailer['mailpoet_api_key'],
-        $this->sender['from_email'],
-        $this->sender['from_name']
-      );
-    break;
-    case 'SendGrid':
-      $mailer_instance = new $this->mailer['class'](
-        $this->mailer['api_key'],
-        $this->sender['from_email'],
-        $this->sender['from_name']
-      );
-    break;
-    case 'WPMail':
-      $mailer_instance = new $this->mailer['class'](
-        $this->sender['from_email'],
-        $this->sender['from_name']
-      );
-    break;
-    case 'SMTP':
-      $mailer_instance = new $this->mailer['class'](
-        $this->mailer['host'],
-        $this->mailer['port'],
-        $this->mailer['authentication'],
-        $this->mailer['login'],
-        $this->mailer['password'],
-        $this->mailer['encryption'],
-        $this->sender['from_email'],
-        $this->sender['from_name']
-      );
-    break;
-    default:
-      throw new \Exception(__('Mailing method does not exist.'));
-    break;
+      case 'AmazonSES':
+        $mailer_instance = new $this->mailer['class'](
+          $this->mailer['region'],
+          $this->mailer['access_key'],
+          $this->mailer['secret_key'],
+          $this->sender,
+          $this->reply_to
+        );
+        break;
+      case 'ElasticEmail':
+        $mailer_instance = new $this->mailer['class'](
+          $this->mailer['api_key'],
+          $this->sender,
+          $this->reply_to
+        );
+        break;
+      case 'MailGun':
+        $mailer_instance = new $this->mailer['class'](
+          $this->mailer['domain'],
+          $this->mailer['api_key'],
+          $this->sender,
+          $this->reply_to
+        );
+        break;
+      case 'MailPoet':
+        $mailer_instance = new $this->mailer['class'](
+          $this->mailer['mailpoet_api_key'],
+          $this->sender,
+          $this->reply_to
+        );
+        break;
+      case 'SendGrid':
+        $mailer_instance = new $this->mailer['class'](
+          $this->mailer['api_key'],
+          $this->sender,
+          $this->reply_to
+        );
+        break;
+      case 'PHPMail':
+        $mailer_instance = new $this->mailer['class'](
+          $this->sender,
+          $this->reply_to
+        );
+        break;
+      case 'SMTP':
+        $mailer_instance = new $this->mailer['class'](
+          $this->mailer['host'],
+          $this->mailer['port'],
+          $this->mailer['authentication'],
+          $this->mailer['login'],
+          $this->mailer['password'],
+          $this->mailer['encryption'],
+          $this->sender,
+          $this->reply_to
+        );
+        break;
+      default:
+        throw new \Exception(__('Mailing method does not exist.'));
+        break;
     }
     return $mailer_instance;
   }
@@ -118,6 +120,9 @@ class Mailer {
           'address' => $this->sender['from_email']
         );
       }
+    }
+    if(!$reply_to['address']) {
+      $reply_to['reply_to_email'] = $this->sender['from_email'];
     }
     return array(
       'reply_to_name' => $reply_to['name'],

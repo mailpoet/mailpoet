@@ -6,16 +6,27 @@ class AmazonSESCest {
   function _before() {
     $this->settings = array(
       'method' => 'AmazonSES',
-      'access_key' => 'AKIAJM6Y5HMGXBLDNSRA',
-      'secret_key' => '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',
-      'region' => 'us-east-1',
+      'access_key' => 'AKIAJDCYK7DHCRVF7LXA',
+      'secret_key' => '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',
+      'region' => 'us-west-2',
     );
-    $this->from = 'Sender <vlad@mailpoet.com>';
+    $this->sender = array(
+      'from_name' => 'Sender',
+      'from_email' => 'staff@mailpoet.com',
+      'from_name_email' => 'Sender <staff@mailpoet.com>'
+    );
+    $this->reply_to = array(
+      'reply_to_name' => 'Reply To',
+      'reply_to_email' => 'reply-to@mailpoet.com',
+      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
+    );
     $this->mailer = new AmazonSES(
       $this->settings['region'],
       $this->settings['access_key'],
       $this->settings['secret_key'],
-      $this->from);
+      $this->sender,
+      $this->reply_to
+    );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
       'subject' => 'testing AmazonSES',
@@ -33,8 +44,8 @@ class AmazonSESCest {
       );
     expect($this->mailer->url)
       ->equals(
-      sprintf('https://email.%s.amazonaws.com', $this->settings['region'])
-    );
+        sprintf('https://email.%s.amazonaws.com', $this->settings['region'])
+      );
     expect(preg_match('!^\d{8}T\d{6}Z$!', $this->mailer->date))->equals(1);
     expect(preg_match('!^\d{8}$!', $this->mailer->date_without_time))->equals(1);
   }
@@ -43,7 +54,9 @@ class AmazonSESCest {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     expect($body['Action'])->equals('SendEmail');
     expect($body['Version'])->equals('2010-12-01');
-    expect($body['Source'])->equals($this->from);
+    expect($body['Source'])->equals($this->sender['from_name_email']);
+    expect($body['ReplyToAddresses.member.1'])
+      ->equals($this->reply_to['reply_to_name_email']);
     expect($body['Destination.ToAddresses.member.1'])
       ->contains($this->subscriber);
     expect($body['Message.Subject.Data'])
@@ -52,7 +65,7 @@ class AmazonSESCest {
       ->equals($this->newsletter['body']['html']);
     expect($body['Message.Body.Text.Data'])
       ->equals($this->newsletter['body']['text']);
-    expect($body['ReturnPath'])->equals($this->from);
+    expect($body['ReturnPath'])->equals($this->sender['from_name_email']);
   }
 
   function itCanCreateRequest() {

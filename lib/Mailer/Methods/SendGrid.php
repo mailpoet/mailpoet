@@ -6,13 +6,13 @@ if(!defined('ABSPATH')) exit;
 class SendGrid {
   public $url = 'https://api.sendgrid.com/api/mail.send.json';
   public $api_key;
-  public $from_email;
-  public $from_name;
+  public $sender;
+  public $reply_to;
 
-  function __construct($api_key, $from_email, $from_name) {
+  function __construct($api_key, $sender, $reply_to) {
     $this->api_key = $api_key;
-    $this->from_email = $from_email;
-    $this->from_name = $from_name;
+    $this->sender = $sender;
+    $this->reply_to = $reply_to;
   }
 
   function send($newsletter, $subscriber) {
@@ -31,8 +31,9 @@ class SendGrid {
   function getBody($newsletter, $subscriber) {
     $body = array(
       'to' => $subscriber,
-      'from' => $this->from_email,
-      'from_name' => $this->from_name,
+      'from' => $this->sender['from_email'],
+      'fromname' => $this->sender['from_name'],
+      'replyto' => $this->reply_to['reply_to_email'],
       'subject' => $newsletter['subject']
     );
     if(!empty($newsletter['body']['html'])) {

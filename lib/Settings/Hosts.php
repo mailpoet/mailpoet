@@ -13,9 +13,9 @@ class Hosts {
         'secret_key'
       ),
       'regions' => array(
-        'US East (N. Virginia)' => 'us-east-1.amazonaws.com',
-        'US West (Oregon)' => 'us-west-2.amazonaws.com',
-        'EU (Ireland)' => 'eu-west-1.amazonaws.com'
+        'US East (N. Virginia)' => 'us-east-1',
+        'US West (Oregon)' => 'us-west-2',
+        'EU (Ireland)' => 'eu-west-1'
       )
     ),
     'ElasticEmail' => array(

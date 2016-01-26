@@ -6,15 +6,15 @@ if(!defined('ABSPATH')) exit;
 class MailPoet {
   public $url = 'https://bridge.mailpoet.com/api/messages';
   public $api_key;
-  public $from_email;
-  public $from_name;
-  
-  function __construct($api_key, $from_email, $from_name) {
+  public $sender;
+  public $reply_to;
+
+  function __construct($api_key, $sender, $reply_to) {
     $this->api_key = $api_key;
-    $this->from_email = $from_email;
-    $this->from_name = $from_name;
+    $this->sender = $sender;
+    $this->reply_to = $reply_to;
   }
-  
+
   function send($newsletter, $subscriber) {
     $result = wp_remote_post(
       $this->url,
@@ -25,7 +25,7 @@ class MailPoet {
       wp_remote_retrieve_response_code($result) === 201
     );
   }
-  
+
   function processSubscriber($subscriber) {
     preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
     if(!isset($subscriber_data['email'])) {
@@ -38,7 +38,7 @@ class MailPoet {
       'name' => (isset($subscriber_data['name'])) ? $subscriber_data['name'] : ''
     );
   }
-  
+
   function getBody($newsletter, $subscriber) {
     $body = array(
       'to' => (array(
@@ -46,8 +46,12 @@ class MailPoet {
         'name' => $subscriber['name']
       )),
       'from' => (array(
-        'address' => $this->from_email,
-        'name' => $this->from_name
+        'address' => $this->sender['from_email'],
+        'name' => $this->sender['from_name']
+      )),
+      'reply_to' => (array(
+        'address' => $this->reply_to['reply_to_email'],
+        'name' => $this->reply_to['reply_to_name']
       )),
       'subject' => $newsletter['subject']
     );
@@ -59,11 +63,11 @@ class MailPoet {
     }
     return $body;
   }
-  
+
   function auth() {
     return 'Basic ' . base64_encode('api:' . $this->api_key);
   }
-  
+
   function request($newsletter, $subscriber) {
     $body = array($this->getBody($newsletter, $subscriber));
     return array(

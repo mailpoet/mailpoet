@@ -9,11 +9,21 @@ class MailGunCest {
       'api_key' => 'key-6cf5g5qjzenk-7nodj44gdt8phe6vam2',
       'domain' => 'mrcasual.com'
     );
-    $this->from = 'Sender <staff@mailpoet.com>';
+    $this->sender = array(
+      'from_name' => 'Sender',
+      'from_email' => 'staff@mailpoet.com',
+      'from_name_email' => 'Sender <staff@mailpoet.com>'
+    );
+    $this->reply_to = array(
+      'reply_to_name' => 'Reply To',
+      'reply_to_email' => 'reply-to@mailpoet.com',
+      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
+    );
     $this->mailer = new MailGun(
       $this->settings['domain'],
       $this->settings['api_key'],
-      $this->from
+      $this->sender,
+      $this->reply_to
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -27,7 +37,8 @@ class MailGunCest {
 
   function itCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
-    expect($body['from'])->equals($this->from);
+    expect($body['from'])->equals($this->sender['from_name_email']);
+    expect($body['h:Reply-To'])->equals($this->reply_to['reply_to_name_email']);
     expect($body['to'])->equals($this->subscriber);
     expect($body['subject'])->equals($this->newsletter['subject']);
     expect($body['html'])->equals($this->newsletter['body']['html']);
