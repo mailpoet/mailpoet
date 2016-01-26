@@ -6,6 +6,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterStatistics;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Shortcodes\Shortcodes;
 
 if(!defined('ABSPATH')) exit;
 
@@ -19,17 +20,12 @@ class SendingQueue {
   function process() {
     // TODO: implement mailer sending frequency limits
     foreach($this->getQueues() as $queue) {
-      $newsletter = Newsletter::findOne($queue->newsletter_id);
-
-      if($newsletter === false) {
-        //TODO: delete queue item if newsletter doesn't exist
+      $newsletter = Newsletter::findOne($queue->newsletter_id)
+        ->asArray();
+      if(!$newsletter) {
         continue;
-      } else {
-        $newsletter = $newsletter->asArray();
-      }
-
+      };
       $mailer = $this->configureMailerForNewsletter($newsletter);
-      $newsletter = $this->renderNewsletter($newsletter);
       $subscribers = json_decode($queue->subscribers, true);
       $subscribers_to_process = $subscribers['to_process'];
       if(!isset($subscribers['processed'])) $subscribers['processed'] = array();
@@ -41,7 +37,7 @@ class SendingQueue {
           $this->checkExecutionTimer();
           $result = $this->sendNewsletter(
             $mailer,
-            $this->processNewsletter($newsletter),
+            $this->processNewsletter($newsletter, $db_subscriber),
             $db_subscriber);
           if($result) {
             $this->updateStatistics($newsletter['id'], $db_subscriber['id'], $queue->id);
@@ -55,9 +51,13 @@ class SendingQueue {
     }
   }
 
-  function processNewsletter($newsletter) {
-    // TODO: replace shortcodes
-    return $newsletter;
+  function processNewsletter($newsletter, $subscriber) {
+    $rendered_newsletter = $this->renderNewsletter($newsletter);
+    $shortcodes = new Shortcodes($rendered_newsletter['html'], $newsletter, $subscriber);
+    $processed_newsletter['html'] = $shortcodes->replace();
+    $shortcodes = new Shortcodes($rendered_newsletter['text'], $newsletter, $subscriber);
+    $processed_newsletter['text'] = $shortcodes->replace();
+    return $processed_newsletter;
   }
 
   function sendNewsletter($mailer, $newsletter, $subscriber) {

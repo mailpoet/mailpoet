@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Router;
 
+use MailPoet\Config\Shortcodes;
 use MailPoet\Listing;
 use MailPoet\Mailer\API\MailPoet;
 use MailPoet\Models\Newsletter;
@@ -213,8 +214,13 @@ class Newsletters {
       wp_send_json(false);
     }
     $renderer = new Renderer($data);
-    $rendered_body = $renderer->render();
-    wp_send_json(array('rendered_body' => $rendered_body['html']));
+    $rendered_newsletter = $renderer->render();
+    $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
+      $rendered_newsletter['html'],
+      $data
+    );
+    $rendered_newsletter = $shortcodes->replace();
+    wp_send_json(array('rendered_body' => $rendered_newsletter));
   }
 
   function sendPreview($data = array()) {
@@ -236,10 +242,28 @@ class Newsletters {
     $newsletter = $newsletter->asArray();
 
     $renderer = new Renderer($newsletter);
-    $newsletter['body'] = $renderer->render();
+    $rendered_newsletter = $renderer->render();
+    $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
+      $rendered_newsletter['html'],
+      $newsletter
+    );
+    $processed_newsletter['html'] = $shortcodes->replace();
+    $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
+      $rendered_newsletter['text'],
+      $newsletter
+    );
+    $processed_newsletter['text'] = $shortcodes->replace();
+    $newsletter['body'] = array(
+      'html' => $processed_newsletter['html'],
+      'text' => $processed_newsletter['text'],
+    );
 
     try {
-      $mailer = new \MailPoet\Mailer\Mailer(false, false, false);
+      $mailer = new \MailPoet\Mailer\Mailer(
+        $mailer = false,
+        $sender = false,
+        $reply_to = false
+      );
 
       wp_send_json(array(
         'result' => $mailer->send($newsletter, $data['subscriber'])
