@@ -6,10 +6,9 @@ class Text {
     $html = $element['text'];
     $html = self::convertBlockquotesToTables($html);
     $html = self::convertParagraphsToTables($html);
-    $html = self::addLineBreakAfterTags($html);
     $html = self::styleLists($html);
     $html = self::styleHeadings($html);
-    $html = self::removeLastElementBreakLine($html);
+    $html = self::addLineBreakAfterTags($html);
     $template = '
       <tr>
         <td class="mailpoet_text mailpoet_padded" valign="top" style="word-break:break-word;word-wrap:break-word;">
@@ -19,41 +18,26 @@ class Text {
     return $template;
   }
 
-  static function convertParagraphsToTables($html) {
-    $html = preg_replace('/<p>(.*?)<\/p>/', '
-      <table width="100%" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
-        <tr>
-          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;">
-            $1
-            <br /><br />
-          </td>
-         </tr>
-      </table>'
-      , $html);
-    $html = preg_replace('/<p style=\"(.*)\">(.*?)<\/p>/', '
-      <table width="100%" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
-        <tr>
-          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;$1">
-            $2
-            <br /><br />
-          </td>
-         </tr>
-      </table>'
-      , $html);
-    return $html;
-  }
-
-  static function removeLastElementBreakLine($html) {
-    return preg_replace('/<br\/>([^<br\/>]*)$/s', '', $html);
-  }
-
-  static function addLineBreakAfterTags($html) {
-    return preg_replace('/(<\/(ul|ol|h\d)>)/', '$1<br />', $html);
-  }
-
   static function convertBlockquotesToTables($html) {
-    $template = '
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    $DOM_parser = new \pQuery();
+    $DOM = $DOM_parser->parseStr($html);
+    $blockquotes = $DOM->query('blockquote');
+    if(!$blockquotes->count()) return $html;
+    foreach($blockquotes as $blockquote) {
+      $paragraphs = $blockquote->query('p', 0);
+      foreach($paragraphs as $index => $paragraph) {
+        $contents[] = $paragraph->html();
+        if($index + 1 < $paragraphs->count()) $contents[] = '<br />';
+        $paragraph->remove();
+      }
+      $paragraph->remove();
+      $blockquote->setTag('table');
+      $blockquote->addClass('mailpoet_blockquote');
+      $blockquote->width = '100%';
+      $blockquote->spacing = 0;
+      $blockquote->border = 0;
+      $blockquote->cellpadding = 0;
+      $blockquote->html('
         <tbody>
           <tr>
             <td width="2" bgcolor="#565656"></td>
@@ -62,48 +46,90 @@ class Text {
               <table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
                 <tr>
                   <td class="mailpoet_blockquote">
-                    $1
+                  ' . implode('', $contents) . '
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
-        </tbody>
-      </table>
-      <br/>';
-    preg_match('/<blockquote>.*?<\/blockquote>/s', $html, $blockquotes);
-    foreach($blockquotes as $index => $blockquote) {
-      $blockquote = preg_replace('/<\/p>\n<p>/', '<br/><br/>', $blockquote);
-      $blockquote = preg_replace('/<\/?p>/', '', $blockquote);
-      $blockquote = preg_replace(
-        '/<blockquote>(.*?)<\/blockquote>/s',
-        $template,
-        $blockquote
-      );
-      $html = preg_replace(
-        '/' . preg_quote($blockquotes[$index], '/') . '/',
-        $blockquote,
-        $html
+        </tbody>'
       );
     }
-    return $html;
+    return $DOM->__toString();
   }
 
-  static function styleHeadings($html) {
-    return preg_replace(
-      '/<(h[1-6])(?:\s+style=\"(.*)?\")?>/',
-      '<$1 style="margin:0;font-style:normal;font-weight:normal;$2">',
-      $html
-    );
+  static function convertParagraphsToTables($html) {
+    $DOM_parser = new \pQuery();
+    $DOM = $DOM_parser->parseStr($html);
+    $paragraphs = $DOM->query('p');
+    if(!$paragraphs->count()) return $html;
+    foreach($paragraphs as $paragraph) {
+      // remove empty paragraphs
+      if(!trim($paragraph->html())) {
+        $paragraph->remove();
+        continue;
+      }
+      $style = $paragraph->style;
+      $contents = $paragraph->html();
+      $paragraph->setTag('table');
+      $paragraph->style = 'border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;';
+      $paragraph->width = '100%';
+      $paragraph->cellpadding = 0;
+      $paragraph->html('
+        <tr>
+          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . $style . '">
+            ' . $contents . '
+            <br /><br />
+          </td>
+         </tr>'
+      );
+    }
+    return $DOM->__toString();
   }
 
   static function styleLists($html) {
-    $html = preg_replace(
-      '/<(ul|ol)>/',
-      '<$1 class="mailpoet_paragraph" style="padding-top:0;padding-bottom:0;margin-top:0;margin-bottom:0;">',
-      $html
-    );
-    $html = preg_replace('/<li>/', '<li class="mailpoet_paragraph">', $html);
-    return $html;
+    $DOM_parser = new \pQuery();
+    $DOM = $DOM_parser->parseStr($html);
+    $lists = $DOM->query('ol, ul, li');
+    if(!$lists->count()) return $html;
+    foreach($lists as $list) {
+      if($list->tag === 'li') {
+        $list->class = 'mailpoet_paragraph';
+      } else {
+        $list->class = 'mailpoet_paragraph';
+        $list->style .= 'padding-top:0;padding-bottom:0;margin-top:0;margin-bottom:0;';
+      }
+    }
+    return $DOM->__toString();
+  }
+
+  static function styleHeadings($html) {
+    $DOM_parser = new \pQuery();
+    $DOM = $DOM_parser->parseStr($html);
+    $headings = $DOM->query('h1, h2, h3, h4');
+    if(!$headings->count()) return $html;
+    foreach($headings as $heading) {
+      $heading->style .= 'margin:0;font-style:normal;font-weight:normal;';
+    }
+    return $DOM->__toString();
+  }
+
+  static function addLineBreakAfterTags($html) {
+    $DOM_parser = new \pQuery();
+    $DOM = $DOM_parser->parseStr($html);
+    $tags = $DOM->query('ul, ol, h1, h2, h3, h4, table.mailpoet_blockquote');
+    if(!$tags->count()) return $html;
+    foreach($tags as $tag) {
+      $tag->parent->insertChild(
+        array(
+          'tag_name' => 'br',
+          'self_close' => true,
+          'attributes' => array()
+        ),
+        $tag->index() + 1
+      );
+    }
+    // remove last line break
+    return preg_replace('/(^)?(<br.*?\/?>)+$/i', '', $DOM->__toString());
   }
 }
