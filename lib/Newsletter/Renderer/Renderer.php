@@ -69,7 +69,7 @@ class Renderer {
         $selector = 'h3';
       break;
       case 'text':
-        $selector = '.mailpoet_paragraph, .mailpoet_blockquote';
+        $selector = '.mailpoet_paragraph, td.mailpoet_blockquote';
       break;
       case 'body':
         $selector = 'body, .mailpoet-wrapper';
