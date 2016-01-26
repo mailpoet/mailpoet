@@ -145,14 +145,6 @@ define(
           }.bind(this));
         }
       },
-      componentDidMount: function() {
-        if(this.isMounted()) {
-          jQuery('#mailpoet_newsletter').parsley();
-        }
-      },
-      isValid: function() {
-        return (jQuery('#mailpoet_newsletter').parsley().validate());
-      },
       render: function() {
         return (
           <div>
@@ -166,8 +158,7 @@ define(
               fields={ fields }
               params={ this.props.params }
               messages={ messages }
-              isValid={ this.isValid }>
-
+            >
               <p className="submit">
                 <input
                   className="button button-primary"
