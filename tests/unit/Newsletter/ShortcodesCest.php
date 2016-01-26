@@ -3,7 +3,7 @@
 use MailPoet\Models\Subscriber;
 
 class ShortcodesCest {
-  public $rendered_newsletter;
+/*  public $rendered_newsletter;
   public $newsletter;
   public $subscriber;
 
@@ -101,5 +101,5 @@ class ShortcodesCest {
 
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-  }
+  }*/
 }
