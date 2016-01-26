@@ -248,7 +248,10 @@ class Newsletters {
       $newsletter
     );
     $processed_newsletter['html'] = $shortcodes->replace();
-    $shortcodes->rendered_newsletter = $rendered_newsletter['text'];
+    $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
+      $rendered_newsletter['text'],
+      $newsletter
+    );
     $processed_newsletter['text'] = $shortcodes->replace();
     $newsletter['body'] = array(
       'html' => $processed_newsletter['html'],
