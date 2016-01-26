@@ -120,7 +120,7 @@ function(
         <select
           id={ this.props.field.id || this.props.field.name }
           ref="select"
-          placeholder={ this.props.field.placeholder }
+          data-placeholder={ this.props.field.placeholder }
           multiple={ this.props.field.multiple }
           defaultValue={ default_value }
           {...this.props.field.validation}

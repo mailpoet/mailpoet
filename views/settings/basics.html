@@ -109,7 +109,7 @@
             <select
               id="mailpoet_subscribe_on_comment_segments"
               name="subscribe[on_comment][segments][]"
-              placeholder="<%= __('Choose a list') %>"
+              data-placeholder="<%= __('Choose a list') %>"
               multiple
             >
               <% for segment in segments %>
@@ -173,7 +173,7 @@
               <select
                 id="mailpoet_subscribe_on_register_segments"
                 name="subscribe[on_register][segments][]"
-                placeholder="<%= __('Choose a list') %>"
+                data-placeholder="<%= __('Choose a list') %>"
                 multiple
               >
                 <% for segment in segments %>
@@ -239,7 +239,7 @@
           <select
             id="mailpoet_subscription_edit_segments"
             name="subscription[segments][]"
-            placeholder="<%= __('Leave empty to show all lists') %>"
+            data-placeholder="<%= __('Leave empty to show all lists') %>"
             multiple
           >
             <% for segment in segments %>
@@ -280,7 +280,7 @@
             id="mailpoet_shortcode_archives_list"
             data-shortcode="mailpoet_archive"
             data-output="mailpoet_shortcode_archives"
-            placeholder="<%= __('Leave empty to show all lists') %>"
+            data-placeholder="<%= __('Leave empty to show all lists') %>"
             multiple
           >
             <% for segment in segments %>
@@ -316,7 +316,7 @@
             id="mailpoet_shortcode_subscribers_count"
             data-shortcode="mailpoet_subscribers_count"
             data-output="mailpoet_shortcode_subscribers"
-            placeholder="<%= __('Leave empty to show all lists') %>"
+            data-placeholder="<%= __('Leave empty to show all lists') %>"
             multiple
           >
             <% for segment in segments %>
