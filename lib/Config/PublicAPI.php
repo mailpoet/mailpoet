@@ -20,7 +20,7 @@ class PublicAPI {
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
     $this->request_payload = isset($_GET['request_payload']) ?
-      json_decode(urldecode($_GET['request_payload']), true) :
+      unserialize(base64_decode($_GET['request_payload'])) :
       false;
   }
 

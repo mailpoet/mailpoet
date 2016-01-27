@@ -112,23 +112,27 @@ class Daemon {
 
   function manageSession($action) {
     switch($action) {
-    case 'start':
-      if(session_id()) {
+      case 'start':
+        if(session_id()) {
+          session_write_close();
+        }
+        session_id($this->request_payload['session']);
+        session_start();
+        if (!isset($_SESSION['cron_daemon'])) {
+          throw new \Exception(__('Session cannot be read.'));
+        }
+        break;
+      case 'end':
         session_write_close();
-      }
-      session_id($this->request_payload['session']);
-      session_start();
-    break;
-    case 'end':
-      session_write_close();
-    break;
+        break;
     }
   }
 
   function callSelf() {
-    $payload = json_encode(array('token' => $this->refreshed_token));
+    $payload = serialize(array('token' => $this->refreshed_token));
     Supervisor::accessRemoteUrl(
-      '/?mailpoet-api&section=queue&action=run&request_payload=' . urlencode($payload)
+      '/?mailpoet-api&section=queue&action=run&request_payload=' .
+      base64_encode($payload)
     );
     exit;
   }

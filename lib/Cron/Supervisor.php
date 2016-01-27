@@ -51,12 +51,15 @@ class Supervisor {
     $sessionId = session_id();
     session_write_close();
     $_SESSION['cron_daemon'] = null;
-    $requestPayload = json_encode(array('session' => $sessionId));
+    $requestPayload = serialize(array('session' => $sessionId));
     self::accessRemoteUrl(
       '/?mailpoet-api&section=queue&action=start&request_payload=' .
-      urlencode($requestPayload)
+      base64_encode($requestPayload)
     );
     session_start();
+    if (!isset($_SESSION['cron_daemon'])) {
+      throw new \Exception(__('Session cannot be read.'));
+    }
     $daemonStatus = $_SESSION['cron_daemon'];
     unset($_SESSION['daemon']);
     session_write_close();
