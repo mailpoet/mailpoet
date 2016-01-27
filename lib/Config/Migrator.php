@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config;
 
-if (!defined('ABSPATH')) exit;
+if(!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 

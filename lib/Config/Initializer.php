@@ -18,22 +18,27 @@ class Initializer {
   }
 
   function init() {
-    $this->setupDB();
-    $this->setupActivator();
-    $this->setupRenderer();
-    $this->setupLocalizer();
-    $this->setupMenu();
-    $this->setupRouter();
-    $this->setupWidget();
-    $this->setupAnalytics();
-    $this->setupPermissions();
-    $this->setupChangelog();
-    $this->setupPublicAPI();
-    $this->runQueueSupervisor();
-    $this->setupShortcodes();
-    $this->setupHooks();
-    $this->setupPages();
-    $this->setupImages();
+    try {
+      $this->setupDB();
+      $this->setupRenderer();
+      $this->setupLocalizer();
+      $this->setupMenu();
+      $this->setupRouter();
+      $this->setupWidget();
+      $this->setupAnalytics();
+      $this->setupPermissions();
+      $this->setupChangelog();
+      $this->setupPublicAPI();
+      $this->runQueueSupervisor();
+      $this->setupShortcodes();
+      $this->setupHooks();
+      $this->setupPages();
+      $this->setupImages();
+    } catch(\Exception $e) {
+      // if anything goes wrong during init
+      // automatically deactivate the plugin
+      deactivate_plugins(Env::$file);
+    }
   }
 
   function setupDB() {
@@ -81,9 +86,10 @@ class Initializer {
     define('MP_NEWSLETTER_STATISTICS_TABLE', $newsletter_statistics);
   }
 
-  function setupActivator() {
-    $activator = new Activator();
-    $activator->init();
+  function runPopulator() {
+    $this->init();
+    $populator = new Populator();
+    $populator->up();
   }
 
   function setupRenderer() {
@@ -138,6 +144,7 @@ class Initializer {
     $shortcodes = new Shortcodes();
     $shortcodes->init();
   }
+
   function setupHooks() {
     $hooks = new Hooks();
     $hooks->init();
@@ -153,7 +160,7 @@ class Initializer {
     try {
       $supervisor = new Supervisor();
       $supervisor->checkDaemon();
-    } catch (\Exception $e) {
+    } catch(\Exception $e) {
     }
   }
 

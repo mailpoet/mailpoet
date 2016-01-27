@@ -1,5 +1,6 @@
 <?php
 use \MailPoet\Config\Initializer;
+use \MailPoet\Config\Migrator;
 
 if (!defined('ABSPATH')) exit;
 
@@ -26,7 +27,13 @@ require 'vendor/autoload.php';
 define('MAILPOET_VERSION', '0.0.12');
 
 $initializer = new Initializer(array(
-    'file' => __FILE__,
-    'version' => MAILPOET_VERSION
-  ));
-$initializer->init();
+  'file' => __FILE__,
+  'version' => MAILPOET_VERSION
+));
+
+$migrator = new Migrator();
+
+register_activation_hook(__FILE__, array($migrator, 'up'));
+register_activation_hook(__FILE__, array($initializer, 'runPopulator'));
+
+add_action('init', array($initializer, 'init'));
