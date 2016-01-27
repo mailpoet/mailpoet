@@ -6,7 +6,9 @@ class SendGridCest {
   function _before() {
     $this->settings = array(
       'method' => 'SendGrid',
-      'api_key' => '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'
+      'api_key' => getenv('WP_TEST_MAILER_SENDGRID_API') ?
+        getenv('WP_TEST_MAILER_SENDGRID_API') :
+        '1234567890'
     );
     $this->sender = array(
       'from_name' => 'Sender',
@@ -61,6 +63,7 @@ class SendGridCest {
   }
 
   function itCannotSendWithoutProperApiKey() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
       $this->newsletter,
@@ -70,6 +73,7 @@ class SendGridCest {
   }
 
   function itCanSend() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

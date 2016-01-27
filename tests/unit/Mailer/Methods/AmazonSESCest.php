@@ -6,9 +6,15 @@ class AmazonSESCest {
   function _before() {
     $this->settings = array(
       'method' => 'AmazonSES',
-      'access_key' => 'AKIAJDCYK7DHCRVF7LXA',
-      'secret_key' => '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',
-      'region' => 'us-west-2',
+      'access_key' => getenv('WP_TEST_MAILER_AMAZON_ACCESS') ?
+        getenv('WP_TEST_MAILER_AMAZON_ACCESS') :
+        '1234567890',
+      'secret_key' => getenv('WP_TEST_MAILER_AMAZON_SECRET') ?
+        getenv('WP_TEST_MAILER_AMAZON_SECRET') :
+        'abcdefghijk',
+      'region' => getenv('WP_TEST_MAILER_AMAZON_REGION') ?
+        getenv('WP_TEST_MAILER_AMAZON_REGION') :
+        'us-west-2',
     );
     $this->sender = array(
       'from_name' => 'Sender',
@@ -150,6 +156,7 @@ class AmazonSESCest {
   }
 
   function itCannotSendWithoutProperAccessKey() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $this->mailer->aws_access_key = 'somekey';
     $result = $this->mailer->send(
       $this->newsletter,
@@ -159,6 +166,7 @@ class AmazonSESCest {
   }
 
   function itCanSend() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

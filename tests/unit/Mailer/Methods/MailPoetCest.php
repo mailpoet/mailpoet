@@ -6,7 +6,9 @@ class MailPoetCest {
   function _before() {
     $this->settings = array(
       'method' => 'MailPoet',
-      'api_key' => 'dhNSqj1XHkVltIliyQDvMiKzQShOA5rs0m_DdRUVZHU'
+      'api_key' => getenv('WP_TEST_MAILER_MAILPOET_API') ?
+        getenv('WP_TEST_MAILER_MAILPOET_API') :
+        '1234567890'
     );
     $this->sender = array(
       'from_name' => 'Sender',
@@ -88,6 +90,7 @@ class MailPoetCest {
   }
 
   function itCannotSendWithoutProperApiKey() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
       $this->newsletter,
@@ -97,6 +100,7 @@ class MailPoetCest {
   }
 
   function itCanSend() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

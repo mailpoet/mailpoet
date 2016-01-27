@@ -6,10 +6,16 @@ class SMTPCest {
   function _before() {
     $this->settings = array(
       'method' => 'SMTP',
-      'host' => 'email-smtp.us-west-2.amazonaws.com',
+      'host' => getenv('WP_TEST_MAILER_SMTP_HOST') ?
+        getenv('WP_TEST_MAILER_SMTP_HOST') :
+        'example.com',
       'port' => 587,
-      'login' => 'AKIAIGPBLH6JWG5VCBQQ',
-      'password' => 'AudVHXHaYkvr54veCzqiqOxDiMMyfQW3/V6F1tYzGXY3',
+      'login' => getenv('WP_TEST_MAILER_SMTP_LOGIN') ?
+        getenv('WP_TEST_MAILER_SMTP_LOGIN') :
+        'example.com',
+      'password' => getenv('WP_TEST_MAILER_SMTP_PASSWORD') ?
+        getenv('WP_TEST_MAILER_SMTP_PASSWORD') :
+        'example.com',
       'authentication' => '1',
       'encryption' => 'tls'
     );
@@ -83,6 +89,7 @@ class SMTPCest {
   }
 
   function itCantSentWithoutProperAuthentication() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $this->mailer->login = 'someone';
     $this->mailer->mailer = $this->mailer->buildMailer();
     $result = $this->mailer->send(
@@ -93,6 +100,7 @@ class SMTPCest {
   }
 
   function itCanSend() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

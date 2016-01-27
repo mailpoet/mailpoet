@@ -2,7 +2,7 @@
 
 use MailPoet\Mailer\Methods\PHPMail;
 
-class WPMailCest {
+class PHPMailCest {
   function _before() {
     $this->sender = array(
       'from_name' => 'Sender',
@@ -30,7 +30,8 @@ class WPMailCest {
 
   function itCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->getTransport()->getHost())
+    expect($mailer->getTransport()
+             ->getHost())
       ->equals('localhost');
   }
 
@@ -60,6 +61,7 @@ class WPMailCest {
   }
 
   function itCanSend() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber
