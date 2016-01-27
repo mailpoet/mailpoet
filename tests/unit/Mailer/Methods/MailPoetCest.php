@@ -8,12 +8,20 @@ class MailPoetCest {
       'method' => 'MailPoet',
       'api_key' => 'dhNSqj1XHkVltIliyQDvMiKzQShOA5rs0m_DdRUVZHU'
     );
-    $this->from_email = 'staff@mailpoet.com';
-    $this->from_name = 'Sender';
+    $this->sender = array(
+      'from_name' => 'Sender',
+      'from_email' => 'staff@mailpoet.com',
+      'from_name_email' => 'Sender <staff@mailpoet.com>'
+    );
+    $this->reply_to = array(
+      'reply_to_name' => 'Reply To',
+      'reply_to_email' => 'reply-to@mailpoet.com',
+      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
+    );
     $this->mailer = new MailPoet(
       $this->settings['api_key'],
-      $this->from_email,
-      $this->from_name
+      $this->sender,
+      $this->reply_to
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -30,7 +38,10 @@ class MailPoetCest {
     $body = $this->mailer->getBody($this->newsletter, $subscriber);
     expect($body['to']['address'])->equals($subscriber['email']);
     expect($body['to']['name'])->equals($subscriber['name']);
-    expect($body['from']['address'])->equals($this->from_email);
+    expect($body['from']['address'])->equals($this->sender['from_email']);
+    expect($body['from']['name'])->equals($this->sender['from_name']);
+    expect($body['reply_to']['address'])->equals($this->reply_to['reply_to_email']);
+    expect($body['reply_to']['name'])->equals($this->reply_to['reply_to_name']);
     expect($body['subject'])->equals($this->newsletter['subject']);
     expect($body['html'])->equals($this->newsletter['body']['html']);
     expect($body['text'])->equals($this->newsletter['body']['text']);

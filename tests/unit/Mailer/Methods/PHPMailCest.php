@@ -1,18 +1,9 @@
 <?php
 
-use MailPoet\Mailer\Methods\SMTP;
+use MailPoet\Mailer\Methods\PHPMail;
 
-class SMTPCest {
+class WPMailCest {
   function _before() {
-    $this->settings = array(
-      'method' => 'SMTP',
-      'host' => 'email-smtp.us-west-2.amazonaws.com',
-      'port' => 587,
-      'login' => 'AKIAIGPBLH6JWG5VCBQQ',
-      'password' => 'AudVHXHaYkvr54veCzqiqOxDiMMyfQW3/V6F1tYzGXY3',
-      'authentication' => '1',
-      'encryption' => 'tls'
-    );
     $this->sender = array(
       'from_name' => 'Sender',
       'from_email' => 'staff@mailpoet.com',
@@ -23,19 +14,13 @@ class SMTPCest {
       'reply_to_email' => 'reply-to@mailpoet.com',
       'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
     );
-    $this->mailer = new SMTP(
-      $this->settings['host'],
-      $this->settings['port'],
-      $this->settings['authentication'],
-      $this->settings['login'],
-      $this->settings['password'],
-      $this->settings['encryption'],
+    $this->mailer = new PHPMail(
       $this->sender,
       $this->reply_to
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
-      'subject' => 'testing SMTP',
+      'subject' => 'testing local method (PHP mail)',
       'body' => array(
         'html' => 'HTML body',
         'text' => 'TEXT body'
@@ -46,15 +31,7 @@ class SMTPCest {
   function itCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
     expect($mailer->getTransport()->getHost())
-      ->equals($this->settings['host']);
-    expect($mailer->getTransport()->getPort())
-      ->equals($this->settings['port']);
-    expect($mailer->getTransport()->getUsername())
-      ->equals($this->settings['login']);
-    expect($mailer->getTransport()->getPassword())
-      ->equals($this->settings['password']);
-    expect($mailer->getTransport()->getEncryption())
-      ->equals($this->settings['encryption']);
+      ->equals('localhost');
   }
 
   function itCanCreateMessage() {
@@ -80,16 +57,6 @@ class SMTPCest {
       ->equals(array('test@test.com' => 'First'));
     expect($this->mailer->processSubscriber('First Last <test@test.com>'))
       ->equals(array('test@test.com' => 'First Last'));
-  }
-
-  function itCantSentWithoutProperAuthentication() {
-    $this->mailer->login = 'someone';
-    $this->mailer->mailer = $this->mailer->buildMailer();
-    $result = $this->mailer->send(
-      $this->newsletter,
-      $this->subscriber
-    );
-    expect($result)->false();
   }
 
   function itCanSend() {

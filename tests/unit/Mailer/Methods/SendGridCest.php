@@ -8,12 +8,20 @@ class SendGridCest {
       'method' => 'SendGrid',
       'api_key' => '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'
     );
-    $this->from_email = 'staff@mailpoet.com';
-    $this->from_name = 'Sender';
+    $this->sender = array(
+      'from_name' => 'Sender',
+      'from_email' => 'staff@mailpoet.com',
+      'from_name_email' => 'Sender <staff@mailpoet.com>'
+    );
+    $this->reply_to = array(
+      'reply_to_name' => 'Reply To',
+      'reply_to_email' => 'reply-to@mailpoet.com',
+      'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
+    );
     $this->mailer = new SendGrid(
       $this->settings['api_key'],
-      $this->from_email,
-      $this->from_name
+      $this->sender,
+      $this->reply_to
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -24,17 +32,18 @@ class SendGridCest {
       )
     );
   }
-  
+
   function itCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     expect($body['to'])->contains($this->subscriber);
-    expect($body['from'])->equals($this->from_email);
-    expect($body['from_name'])->equals($this->from_name);
+    expect($body['from'])->equals($this->sender['from_email']);
+    expect($body['fromname'])->equals($this->sender['from_name']);
+    expect($body['replyto'])->equals($this->reply_to['reply_to_email']);
     expect($body['subject'])->equals($this->newsletter['subject']);
     expect($body['html'])->equals($this->newsletter['body']['html']);
     expect($body['text'])->equals($this->newsletter['body']['text']);
   }
-  
+
   function itCanCreateRequest() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $request = $this->mailer->request($this->newsletter, $this->subscriber);
@@ -45,12 +54,12 @@ class SendGridCest {
       ->equals('Bearer ' . $this->settings['api_key']);
     expect($request['body'])->equals(urldecode(http_build_query($body)));
   }
-  
+
   function itCanDoBasicAuth() {
     expect($this->mailer->auth())
       ->equals('Bearer ' . $this->settings['api_key']);
   }
-  
+
   function itCannotSendWithoutProperApiKey() {
     $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
@@ -59,7 +68,7 @@ class SendGridCest {
     );
     expect($result)->false();
   }
-  
+
   function itCanSend() {
     $result = $this->mailer->send(
       $this->newsletter,
