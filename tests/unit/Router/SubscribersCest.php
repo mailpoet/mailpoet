@@ -88,20 +88,54 @@ class SubscribersCest {
     expect($updated_subscriber->first_name)->equals('Jane');
   }
 
-  function itCanSubscribeToSegments() {
-
-  }
-
   function itCanRestoreASubscriber() {
+    $subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'john.doe@mailpoet.com',
+      'first_name' => 'John',
+      'last_name' => 'Doe'
+    ));
+    expect($subscriber->id() > 0)->true();
 
+    $subscriber->trash();
+
+    expect($subscriber->deleted_at)->notNull();
+
+    $router = new Subscribers();
+    $router->restore($subscriber->id());
+
+    $restored_subscriber = Subscriber::findOne($subscriber->id());
+    expect($restored_subscriber->deleted_at)->null();
   }
 
   function itCanTrashASubscriber() {
+    $subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'john.doe@mailpoet.com',
+      'first_name' => 'John',
+      'last_name' => 'Doe'
+    ));
+    expect($subscriber->id() > 0)->true();
 
+    $router = new Subscribers();
+    $response = $router->trash($subscriber->id());
+    expect($response)->true();
+
+    $trashed_subscriber = Subscriber::findOne($subscriber->id());
+    expect($trashed_subscriber->deleted_at)->notNull();
   }
 
   function itCanDeleteASubscriber() {
+    $subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'john.doe@mailpoet.com',
+      'first_name' => 'John',
+      'last_name' => 'Doe'
+    ));
+    expect($subscriber->id() > 0)->true();
 
+    $router = new Subscribers();
+    $response = $router->delete($subscriber->id());
+    expect($response)->equals(1);
+
+    expect(Subscriber::findOne($subscriber->id()))->false();
   }
 
   function _after() {

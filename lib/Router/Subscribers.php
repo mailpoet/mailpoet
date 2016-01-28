@@ -160,7 +160,7 @@ class Subscribers {
         }
       }
 
-      switch ($form_settings['on_success']) {
+      switch($form_settings['on_success']) {
         case 'page':
           // response depending on context
           if($doing_ajax === true) {
