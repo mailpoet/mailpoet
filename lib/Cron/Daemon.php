@@ -118,9 +118,6 @@ class Daemon {
         }
         session_id($this->request_payload['session']);
         session_start();
-        if (!isset($_SESSION['cron_daemon'])) {
-          throw new \Exception(__('Session cannot be read.'));
-        }
         break;
       case 'end':
         session_write_close();
