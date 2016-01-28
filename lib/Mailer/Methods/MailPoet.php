@@ -16,9 +16,10 @@ class MailPoet {
   }
 
   function send($newsletter, $subscriber) {
+    $message_body = $this->getBody($newsletter, $subscriber);
     $result = wp_remote_post(
       $this->url,
-      $this->request($newsletter, $this->processSubscriber($subscriber))
+      $this->request($message_body)
     );
     return (
       !is_wp_error($result) === true &&
@@ -40,26 +41,40 @@ class MailPoet {
   }
 
   function getBody($newsletter, $subscriber) {
-    $body = array(
-      'to' => (array(
-        'address' => $subscriber['email'],
-        'name' => $subscriber['name']
-      )),
-      'from' => (array(
-        'address' => $this->sender['from_email'],
-        'name' => $this->sender['from_name']
-      )),
-      'reply_to' => (array(
-        'address' => $this->reply_to['reply_to_email'],
-        'name' => $this->reply_to['reply_to_name']
-      )),
-      'subject' => $newsletter['subject']
-    );
-    if(!empty($newsletter['body']['html'])) {
-      $body['html'] = $newsletter['body']['html'];
-    }
-    if(!empty($newsletter['body']['text'])) {
-      $body['text'] = $newsletter['body']['text'];
+    $composeBody = function ($newsletter, $subscriber) {
+      $body = array(
+        'to' => (array(
+          'address' => $subscriber['email'],
+          'name' => $subscriber['name']
+        )),
+        'from' => (array(
+          'address' => $this->sender['from_email'],
+          'name' => $this->sender['from_name']
+        )),
+        'reply_to' => (array(
+          'address' => $this->reply_to['reply_to_email'],
+          'name' => $this->reply_to['reply_to_name']
+        )),
+        'subject' => $newsletter['subject']
+      );
+      if(!empty($newsletter['body']['html'])) {
+        $body['html'] = $newsletter['body']['html'];
+      }
+      if(!empty($newsletter['body']['text'])) {
+        $body['text'] = $newsletter['body']['text'];
+      }
+      return $body;
+    };
+    if(is_array($newsletter) && is_array($subscriber)) {
+      $body = array();
+      for($record = 0; $record < count($newsletter); $record++) {
+        $body[] = $composeBody(
+          $newsletter[$record],
+          $this->processSubscriber($subscriber[$record])
+        );
+      }
+    } else {
+      $body[] = $composeBody($newsletter, $this->processSubscriber($subscriber));
     }
     return $body;
   }
@@ -68,8 +83,7 @@ class MailPoet {
     return 'Basic ' . base64_encode('api:' . $this->api_key);
   }
 
-  function request($newsletter, $subscriber) {
-    $body = array($this->getBody($newsletter, $subscriber));
+  function request($body) {
     return array(
       'timeout' => 10,
       'httpversion' => '1.0',
@@ -78,7 +92,7 @@ class MailPoet {
         'Content-Type' => 'application/json',
         'Authorization' => $this->auth()
       ),
-      'body' => $body
+      'body' => json_encode($body)
     );
   }
 }
