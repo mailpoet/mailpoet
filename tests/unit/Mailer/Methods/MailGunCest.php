@@ -6,8 +6,12 @@ class MailGunCest {
   function _before() {
     $this->settings = array(
       'method' => 'MailGun',
-      'api_key' => 'key-6cf5g5qjzenk-7nodj44gdt8phe6vam2',
-      'domain' => 'mrcasual.com'
+      'api_key' => getenv('WP_TEST_MAILER_MAILGUN_API') ?
+        getenv('WP_TEST_MAILER_MAILGUN_API') :
+        '1234567890',
+      'domain' => getenv('WP_TEST_MAILER_MAILGUN_DOMAIN') ?
+        getenv('WP_TEST_MAILER_MAILGUN_DOMAIN') :
+        'example.com'
     );
     $this->sender = array(
       'from_name' => 'Sender',
@@ -64,6 +68,7 @@ class MailGunCest {
   }
 
   function itCannotSendWithoutProperApiKey() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
       $this->newsletter,
@@ -73,6 +78,7 @@ class MailGunCest {
   }
 
   function itCannotSendWithoutProperDomain() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $this->mailer->url =
       str_replace($this->settings['domain'], 'somedomain', $this->mailer->url);
     $result = $this->mailer->send(
@@ -83,6 +89,7 @@ class MailGunCest {
   }
 
   function itCanSend() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber

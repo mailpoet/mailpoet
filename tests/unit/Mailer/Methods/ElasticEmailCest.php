@@ -6,7 +6,9 @@ class ElasticEmailCest {
   function _before() {
     $this->settings = array(
       'method' => 'ElasticEmail',
-      'api_key' => '997f1f7f-41de-4d7f-a8cb-86c8481370fa'
+      'api_key' => getenv('WP_TEST_MAILER_ELASTICEMAIL_API') ?
+        getenv('WP_TEST_MAILER_ELASTICEMAIL_API') :
+        '1234567890'
     );
     $this->sender = array(
       'from_name' => 'Sender',
@@ -56,6 +58,7 @@ class ElasticEmailCest {
   }
 
   function itCannotSendWithoutProperApiKey() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $this->mailer->api_key = 'someapi';
     $result = $this->mailer->send(
       $this->newsletter,
@@ -65,6 +68,7 @@ class ElasticEmailCest {
   }
 
   function itCanSend() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber
