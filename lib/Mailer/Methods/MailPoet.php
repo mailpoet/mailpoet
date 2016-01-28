@@ -66,6 +66,7 @@ class MailPoet {
       return $body;
     };
     if(is_array($newsletter) && is_array($subscriber)) {
+      $body = array();
       for($record = 0; $record < count($newsletter); $record++) {
         $body[] = $composeBody(
           $newsletter[$record],
