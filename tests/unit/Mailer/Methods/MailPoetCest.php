@@ -35,32 +35,46 @@ class MailPoetCest {
     );
   }
 
-  function itCanGenerateBody() {
+  function itCanGenerateBodyForSingleMessage() {
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $subscriber = $this->mailer->processSubscriber($this->subscriber);
-    $body = $this->mailer->getBody($this->newsletter, $subscriber);
-    expect($body['to']['address'])->equals($subscriber['email']);
-    expect($body['to']['name'])->equals($subscriber['name']);
-    expect($body['from']['address'])->equals($this->sender['from_email']);
-    expect($body['from']['name'])->equals($this->sender['from_name']);
-    expect($body['reply_to']['address'])->equals($this->reply_to['reply_to_email']);
-    expect($body['reply_to']['name'])->equals($this->reply_to['reply_to_name']);
-    expect($body['subject'])->equals($this->newsletter['subject']);
-    expect($body['html'])->equals($this->newsletter['body']['html']);
-    expect($body['text'])->equals($this->newsletter['body']['text']);
+    expect($body[0]['to']['address'])->equals($subscriber['email']);
+    expect($body[0]['to']['name'])->equals($subscriber['name']);
+    expect($body[0]['from']['address'])->equals($this->sender['from_email']);
+    expect($body[0]['from']['name'])->equals($this->sender['from_name']);
+    expect($body[0]['reply_to']['address'])->equals($this->reply_to['reply_to_email']);
+    expect($body[0]['reply_to']['name'])->equals($this->reply_to['reply_to_name']);
+    expect($body[0]['subject'])->equals($this->newsletter['subject']);
+    expect($body[0]['html'])->equals($this->newsletter['body']['html']);
+    expect($body[0]['text'])->equals($this->newsletter['body']['text']);
+  }
+
+  function itCanGenerateBodyForMultipleMessages() {
+    $newsletters = array_fill(0, 10, $this->newsletter);
+    $subscribers = array_fill(0, 10, $this->subscriber);
+    $body = $this->mailer->getBody($newsletters, $subscribers);
+    expect(count($body))->equals(10);
+    $subscriber = $this->mailer->processSubscriber($this->subscriber);
+    expect($body[0]['to']['address'])->equals($subscriber['email']);
+    expect($body[0]['to']['name'])->equals($subscriber['name']);
+    expect($body[0]['from']['address'])->equals($this->sender['from_email']);
+    expect($body[0]['from']['name'])->equals($this->sender['from_name']);
+    expect($body[0]['reply_to']['address'])->equals($this->reply_to['reply_to_email']);
+    expect($body[0]['reply_to']['name'])->equals($this->reply_to['reply_to_name']);
+    expect($body[0]['subject'])->equals($this->newsletter['subject']);
+    expect($body[0]['html'])->equals($this->newsletter['body']['html']);
+    expect($body[0]['text'])->equals($this->newsletter['body']['text']);
   }
 
   function itCanCreateRequest() {
-    $subscriber = $this->mailer->processSubscriber(
-      'Recipient <mailpoet-phoenix-test@mailinator.com>'
-    );
-    $body = array($this->mailer->getBody($this->newsletter, $subscriber));
-    $request = $this->mailer->request($this->newsletter, $subscriber);
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    $request = $this->mailer->request($body);
     expect($request['timeout'])->equals(10);
     expect($request['httpversion'])->equals('1.0');
     expect($request['method'])->equals('POST');
     expect($request['headers']['Content-Type'])->equals('application/json');
     expect($request['headers']['Authorization'])->equals($this->mailer->auth());
-    expect($request['body'])->equals($body);
+    expect($request['body'])->equals(json_encode($body));
   }
 
   function itCanProcessSubscriber() {
