@@ -2,7 +2,7 @@
 use \MailPoet\Config\Initializer;
 use \MailPoet\Config\Migrator;
 
-if (!defined('ABSPATH')) exit;
+if(!defined('ABSPATH')) exit;
 
 /*
  * Plugin Name: MailPoet
