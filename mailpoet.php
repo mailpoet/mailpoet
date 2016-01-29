@@ -6,7 +6,7 @@ if(!defined('ABSPATH')) exit;
 
 /*
  * Plugin Name: MailPoet
- * Version: 0.0.12
+ * Version: 0.0.13
  * Plugin URI: http://www.mailpoet.com
  * Description: MailPoet Newsletters.
  * Author: MailPoet
@@ -24,7 +24,7 @@ if(!defined('ABSPATH')) exit;
 
 require 'vendor/autoload.php';
 
-define('MAILPOET_VERSION', '0.0.12');
+define('MAILPOET_VERSION', '0.0.13');
 
 $initializer = new Initializer(array(
   'file' => __FILE__,
