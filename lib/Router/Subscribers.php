@@ -19,18 +19,16 @@ class Subscribers {
     $id = (isset($data['id']) ? (int) $data['id'] : 0);
 
     $subscriber = Subscriber::findOne($id);
-    if($subscriber === false) {
-      wp_send_json(false);
-    } else {
+    if($subscriber !== false && $subscriber->id() > 0) {
       $segments = $subscriber->segments()->findArray();
 
       $subscriber = $subscriber->withCustomFields()->asArray();
       $subscriber['segments'] = array_map(function($segment) {
         return $segment['id'];
       }, $segments);
-
-      wp_send_json($subscriber);
     }
+
+    return $subscriber;
   }
 
   function listing($data = array()) {
@@ -57,12 +55,11 @@ class Subscribers {
       }, $relations);
     }
 
-    wp_send_json($listing_data);
+    return $listing_data;
   }
 
   function getAll() {
-    $collection = Subscriber::findArray();
-    wp_send_json($collection);
+    return Subscriber::findArray();
   }
 
   function save($data = array()) {
@@ -86,10 +83,10 @@ class Subscribers {
         $subscriber->addToSegments($segment_ids);
       }
     }
-    wp_send_json(array(
+    return array(
       'result' => $result,
       'errors' => $errors
-    ));
+    );
   }
 
   function subscribe($data = array()) {
@@ -113,10 +110,10 @@ class Subscribers {
     }
 
     if(!empty($errors)) {
-      wp_send_json(array(
+      return array(
         'result' => false,
         'errors' => $errors
-      ));
+      );
     }
 
     $subscriber = Subscriber::subscribe($data, $segment_ids);
@@ -129,10 +126,10 @@ class Subscribers {
     }
 
     if(!empty($errors)) {
-      wp_send_json(array(
+      return array(
         'result' => false,
         'errors' => $errors
-      ));
+      );
     }
 
     // get success message to display after subscription
@@ -163,15 +160,15 @@ class Subscribers {
         }
       }
 
-      switch ($form_settings['on_success']) {
+      switch($form_settings['on_success']) {
         case 'page':
           // response depending on context
           if($doing_ajax === true) {
-            wp_send_json(array(
+            return array(
               'result' => $result,
               'page' => get_permalink($form_settings['success_page']),
               'message' => $message
-            ));
+            );
           } else {
             $redirect_to = ($result === false) ? $referer : get_permalink($form_settings['success_page']);
             wp_redirect(add_query_arg($params, $redirect_to));
@@ -182,10 +179,10 @@ class Subscribers {
         default:
           // response depending on context
           if($doing_ajax === true) {
-            wp_send_json(array(
+            return array(
               'result' => true,
               'message' => $message
-            ));
+            );
           } else {
             // redirect to previous page
             wp_redirect(add_query_arg($params, $referer));
@@ -203,7 +200,7 @@ class Subscribers {
       $result = $subscriber->restore();
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function trash($id) {
@@ -214,7 +211,7 @@ class Subscribers {
       $result = $subscriber->trash();
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function delete($id) {
@@ -226,7 +223,7 @@ class Subscribers {
       $result = 1;
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function bulkAction($data = array()) {
@@ -235,6 +232,6 @@ class Subscribers {
       $data
     );
 
-    wp_send_json($bulk_action->apply());
+    return $bulk_action->apply();
   }
 }

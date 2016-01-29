@@ -25,8 +25,15 @@ class Router {
     $endpoint =  __NAMESPACE__ . "\\" . $class;
     $method = $_POST['method'];
     $data = isset($_POST['data']) ? stripslashes_deep($_POST['data']) : array();
-    $endpoint = new $endpoint();
-    $endpoint->$method($data);
+
+    try {
+      $endpoint = new $endpoint();
+      $response = $endpoint->$method($data);
+      wp_send_json($response);
+    } catch(Exception $e) {
+      error_log($e->getMessage());
+      exit;
+    }
   }
 
   function setToken() {
