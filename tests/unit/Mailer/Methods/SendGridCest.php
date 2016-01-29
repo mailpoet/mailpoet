@@ -54,7 +54,7 @@ class SendGridCest {
     expect($request['method'])->equals('POST');
     expect($request['headers']['Authorization'])
       ->equals('Bearer ' . $this->settings['api_key']);
-    expect($request['body'])->equals(urldecode(http_build_query($body)));
+    expect($request['body'])->equals(http_build_query($body));
   }
 
   function itCanDoBasicAuth() {
