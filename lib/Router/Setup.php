@@ -17,8 +17,8 @@ class Setup {
     } catch(Exception $e) {
       $result = false;
     }
-    wp_send_json(array(
+    return array(
       'result' => $result
-    ));
+    );
   }
 }
