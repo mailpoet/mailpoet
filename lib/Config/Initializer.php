@@ -156,7 +156,9 @@ class Initializer {
   }
 
   function runQueueSupervisor() {
-    if(php_sapi_name() === 'cli') return;
+    if(php_sapi_name() === 'cli' ||
+      !Env::isPluginActivated()
+    ) return;
     try {
       $supervisor = new Supervisor();
       $supervisor->checkDaemon();

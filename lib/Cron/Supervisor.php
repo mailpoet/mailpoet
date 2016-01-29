@@ -1,76 +1,98 @@
 <?php
 namespace MailPoet\Cron;
 
-use MailPoet\Config\Env;
 use MailPoet\Models\Setting;
+use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
 class Supervisor {
   public $daemon;
+  public $token;
+  public $force_run;
 
-  function __construct($force_start = false) {
-    $this->force_start = $force_start;
-    if(!Env::isPluginActivated()) {
-      throw new \Exception(__('MailPoet is not activated.'));
-    }
-    $this->daemon = $this->getDaemon();
+  function __construct($force_run = false) {
+    $this->daemon = self::getDaemon();
+    $this->token = Security::generateRandomString();
+    $this->force_run = $force_run;
   }
 
   function checkDaemon() {
-    if(!$this->daemon) {
-      return $this->startDaemon();
+    $daemon = $this->daemon;
+    if(!$daemon) {
+      $daemon = $this->createDaemon();
+      return $this->runDaemon($daemon);
     }
-    if(
-      !$this->force_start
-      && isset($this->daemon['status'])
-      && in_array($this->daemon['status'], array('stopped', 'stopping'))
+    // if the daemon is stopped, return its status and do nothing
+    if(!$this->force_run &&
+      isset($daemon['status']) &&
+      $daemon['status'] === 'stopped'
     ) {
-      return $this->daemon['status'];
-    }
+      return $this->formatDaemonStatusMessage($daemon['status']);
 
-    $elapsed_time = time() - (int)$this->daemon['updated_at'];
-
-    if($elapsed_time < 40) {
-      if(!$this->force_start) {
-        return;
-      }
-      if($this->daemon['status'] === 'stopping' ||
-        $this->daemon['status'] === 'starting'
-      ) {
-        return $this->daemon['status'];
-      }
     }
-    $this->daemon['status'] = 'starting';
-    $this->saveDaemon($this->daemon);
-    return $this->startDaemon();
+    $elapsed_time = time() - (int) $daemon['updated_at'];
+    // if it's been less than 40 seconds since last execution and we're not
+    // force-running the daemon, return its status and do nothing
+    if($elapsed_time < 40 && !$this->force_run) {
+      return $this->formatDaemonStatusMessage($daemon['status']);
+    }
+    // if it's been less than 40 seconds since last execution, we are
+    // force-running the daemon and it's either being started or stopped,
+    // return its status and do nothing
+    elseif($elapsed_time < 40 &&
+      $this->force_run &&
+      in_array($daemon['status'], array(
+        'stopping',
+        'starting'
+      ))
+    ) {
+      return $this->formatDaemonStatusMessage($daemon['status']);
+    }
+    // re-create (restart) daemon
+    $this->createDaemon();
+    return $this->runDaemon();
   }
 
-  function startDaemon() {
-    if(!session_id()) session_start();
-    $sessionId = session_id();
-    session_write_close();
-    $_SESSION['cron_daemon'] = null;
-    $requestPayload = serialize(array('session' => $sessionId));
-    self::accessRemoteUrl(
-      '/?mailpoet-api&section=queue&action=start&request_payload=' .
-      base64_encode($requestPayload)
+  function runDaemon() {
+    $payload = serialize(array('token' => $this->token));
+    $request = self::accessRemoteUrl(
+      '/?mailpoet-api&section=queue&action=run&request_payload=' .
+      base64_encode($payload)
     );
-    session_start();
-    if (!isset($_SESSION['cron_daemon'])) {
-      throw new \Exception(__('Session cannot be read.'));
+    preg_match('/\[(mailpoet_cron_error:.*?)\]/i', $request, $status);
+    $daemon = self::getDaemon();
+    if(!empty($status) || !$daemon) {
+      if(!$daemon) {
+        $message = __('Daemon failed to run.');
+      } else {
+        list(, $message) = explode(':', $status[0]);
+        $message = base64_decode($message);
+      }
+      return $this->formatResult(
+        false,
+        $message
+      );
     }
-    $daemonStatus = $_SESSION['cron_daemon'];
-    unset($_SESSION['daemon']);
-    session_write_close();
-    return $daemonStatus;
+    return $this->formatDaemonStatusMessage($daemon['status']);
   }
 
-  function getDaemon() {
+  function createDaemon() {
+    $daemon = array(
+      'status' => 'starting',
+      'counter' => 0,
+      'token' => $this->token
+    );
+    self::saveDaemon($daemon);
+    return $daemon;
+  }
+
+  static function getDaemon() {
     return Setting::getValue('cron_daemon');
   }
 
-  function saveDaemon($daemon_data) {
+  static function saveDaemon($daemon_data) {
+    $daemon_data['updated_at'] = time();
     return Setting::setValue(
       'cron_daemon',
       $daemon_data
@@ -82,10 +104,11 @@ class Supervisor {
       'timeout' => 1,
       'user-agent' => 'MailPoet (www.mailpoet.com) Cron'
     );
-    wp_remote_get(
+    $result = wp_remote_get(
       self::getSiteUrl() . $url,
       $args
     );
+    return wp_remote_retrieve_body($result);
   }
 
   static function getSiteUrl() {
@@ -101,7 +124,29 @@ class Supervisor {
     // connect to the URL without port
     $fp = @fsockopen($server['host'], $server['port'], $errno, $errstr, 1);
     if($fp) return preg_replace('!(?=:\d+):\d+!', '$1', site_url());
-    // throw an error if all connections fail
+    // throw an error if all connection attempts failed
     throw new \Exception(__('Site URL is unreachable.'));
+  }
+
+  private function formatDaemonStatusMessage($status) {
+    return $this->formatResultMessage(
+      true,
+      sprintf(
+        __('Daemon is currently %.'),
+        __($status)
+      )
+    );
+  }
+
+  private function formatResultMessage($result, $message) {
+    $formattedResult = array(
+      'result' => $result
+    );
+    if(!$result) {
+      $formattedResult['errors'] = array($message);
+    } else {
+      $formattedResult['message'] = $message;
+    }
+    return $formattedResult;
   }
 }
