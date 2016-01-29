@@ -11,15 +11,12 @@ class Forms {
   function __construct() {
   }
 
-  function get($data = array()) {
-    $id = (isset($data['id']) ? (int)$data['id'] : 0);
-
+  function get($id = false) {
     $form = Form::findOne($id);
     if($form === false) {
-      wp_send_json(false);
+      return false;
     } else {
-      $form = $form->asArray();
-      wp_send_json($form);
+      return $form->asArray();
     }
   }
 
@@ -47,12 +44,11 @@ class Forms {
       );
     }
 
-    wp_send_json($listing_data);
+    return $listing_data;
   }
 
   function getAll() {
-    $collection = Form::findArray();
-    wp_send_json($collection);
+    return Form::findArray();
   }
 
   function create() {
@@ -88,24 +84,16 @@ class Forms {
       )
     );
 
-    $form = Form::createOrUpdate($form_data);
-
-    if($form !== false && $form->id()) {
-      wp_send_json(
-        admin_url('admin.php?page=mailpoet-form-editor&id='.$form->id())
-      );
-    } else {
-      wp_send_json(false);
-    }
+    return $this->save($form_data);
   }
 
   function save($data = array()) {
     $form = Form::createOrUpdate($data);
 
     if($form !== false && $form->id()) {
-      wp_send_json($form->id());
+      return $form->id();
     } else {
-      wp_send_json($form);
+      return $form;
     }
   }
 
@@ -119,10 +107,10 @@ class Forms {
     // styles
     $css = new Util\Styles(FormRenderer::getStyles($data));
 
-    wp_send_json(array(
+    return array(
       'html' => $html,
       'css' => $css->render()
-    ));
+    );
   }
 
   function exportsEditor($id) {
@@ -134,7 +122,7 @@ class Forms {
       $exports = Util\Export::getAll($form->asArray());
     }
 
-    wp_send_json($exports);
+    return $exports;
   }
 
   function saveEditor($data = array()) {
@@ -146,7 +134,7 @@ class Forms {
 
     if(empty($body) || empty($settings)) {
       // error
-      wp_send_json(false);
+      return false;
     } else {
       // check if the form is used as a widget
       $is_widget = false;
@@ -195,10 +183,10 @@ class Forms {
     ));
 
     // response
-    wp_send_json(array(
+    return array(
       'result' => ($form !== false),
       'is_widget' => $is_widget
-    ));
+    );
   }
 
   function restore($id) {
@@ -209,7 +197,7 @@ class Forms {
       $result = $form->restore();
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function trash($id) {
@@ -220,7 +208,7 @@ class Forms {
       $result = $form->trash();
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function delete($id) {
@@ -232,7 +220,7 @@ class Forms {
       $result = 1;
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function duplicate($id) {
@@ -246,7 +234,7 @@ class Forms {
       $result = $form->duplicate($data)->asArray();
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function bulkAction($data = array()) {
@@ -255,6 +243,6 @@ class Forms {
       $data
     );
 
-    wp_send_json($bulk_action->apply());
+    return $bulk_action->apply();
   }
 }

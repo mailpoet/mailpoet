@@ -17,10 +17,10 @@ class SubscribersCest {
 
     $router = new Subscribers();
 
-    $response = $router->get(array('id' => $subscriber->id()));
+    $response = $router->get($subscriber->id());
     expect($response['id'])->equals($subscriber->id());
 
-    $response = $router->get(array('id' => 'not_an_id'));
+    $response = $router->get('not_an_id');
     expect($response)->false();
 
     $response = $router->get(/* missing argument */);

@@ -9,14 +9,13 @@ class NewsletterTemplates {
   function __construct() {
   }
 
-  function get($data = array()) {
-    $id = (isset($data['id'])) ? (int) $data['id'] : 0;
+  function get($id = false) {
     $template = NewsletterTemplate::findOne($id);
     if($template === false) {
-      wp_send_json(false);
+      return false;
     } else {
       $template->body = json_decode($template->body);
-      wp_send_json($template->asArray());
+      return $template->asArray();
     }
   }
 
@@ -26,15 +25,15 @@ class NewsletterTemplates {
       $item['body'] = json_decode($item['body']);
       return $item;
     }, $collection);
-    wp_send_json($collection);
+    return $collection;
   }
 
   function save($data = array()) {
     $result = NewsletterTemplate::createOrUpdate($data);
     if($result !== true) {
-      wp_send_json($result);
+      return $result;
     } else {
-      wp_send_json(true);
+      return true;
     }
   }
 
@@ -45,6 +44,6 @@ class NewsletterTemplates {
     } else {
       $result = false;
     }
-    wp_send_json($result);
+    return $result;
   }
 }

@@ -105,7 +105,7 @@ class RoboFile extends \Robo\Tasks {
   function testUnit($file = null) {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
-    $this->_exec('vendor/bin/codecept run unit '.(($file) ? $file : ''));
+    $this->_exec('vendor/bin/codecept run unit -f '.(($file) ? $file : ''));
   }
 
   function testJavascript() {
