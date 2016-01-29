@@ -53,10 +53,11 @@ class SendingQueue {
 
   function processNewsletter($newsletter, $subscriber) {
     $rendered_newsletter = $this->renderNewsletter($newsletter);
-    $shortcodes = new Shortcodes($rendered_newsletter['html'], $newsletter, $subscriber);
-    $processed_newsletter['html'] = $shortcodes->replace();
-    $shortcodes = new Shortcodes($rendered_newsletter['text'], $newsletter, $subscriber);
-    $processed_newsletter['text'] = $shortcodes->replace();
+    $shortcodes = new Shortcodes($rendered_newsletter['body']['html'], $newsletter, $subscriber);
+    $processed_newsletter['body']['html'] = $shortcodes->replace();
+    $shortcodes = new Shortcodes($rendered_newsletter['body']['text'], $newsletter, $subscriber);
+    $processed_newsletter['body']['text'] = $shortcodes->replace();
+    $processed_newsletter['subject'] = $rendered_newsletter['subject'];
     return $processed_newsletter;
   }
 
@@ -130,7 +131,7 @@ class SendingQueue {
   }
 
   function renderNewsletter($newsletter) {
-    $renderer = new Renderer(json_decode($newsletter['body'], true));
+    $renderer = new Renderer($newsletter);
     $newsletter['body'] = $renderer->render();
     return $newsletter;
   }
