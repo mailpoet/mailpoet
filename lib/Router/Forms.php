@@ -63,7 +63,7 @@ class Forms {
         array(
           'id' => 'email',
           'name' => __('Email'),
-          'type' => 'input',
+          'type' => 'text',
           'static' => true,
           'params' => array(
             'label' => __('Email'),

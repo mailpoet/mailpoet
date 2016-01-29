@@ -219,7 +219,7 @@
       {
         id: "first_name",
         name: "<%= __('First name') %>",
-        type: 'input',
+        type: 'text',
         params: {
           label: "<%= __('First name') %>"
         },
@@ -228,7 +228,7 @@
       {
         id: "last_name",
         name: "<%= __('Last name') %>",
-        type: 'input',
+        type: 'text',
         params: {
           label: "<%= __('Last name') %>"
         },
@@ -620,7 +620,7 @@
   <!-- block templates -->
   <%= partial('form_template_block', 'form/templates/blocks/container.hbs') %>
   <%= partial('form_template_divider', 'form/templates/blocks/divider.hbs') %>
-  <%= partial('form_template_input', 'form/templates/blocks/input.hbs') %>
+  <%= partial('form_template_text', 'form/templates/blocks/text.hbs') %>
   <%= partial('form_template_submit', 'form/templates/blocks/submit.hbs') %>
   <%= partial('form_template_segment', 'form/templates/blocks/segment.hbs') %>
   <%= partial('form_template_radio', 'form/templates/blocks/radio.hbs') %>
@@ -705,7 +705,7 @@
   ) %>
 
   <!-- field settings depending on field type -->
-  <script id="form_template_field_input" type="text/x-handlebars-template">
+  <script id="form_template_field_text" type="text/x-handlebars-template">
     {{> _settings_required }}
     {{> _settings_validate }}
   </script>

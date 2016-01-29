@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Form\Block;
 
-class Input extends Base {
+class Text extends Base {
 
   static function render($block) {
     $type = 'text';
@@ -15,7 +15,7 @@ class Input extends Base {
 
     $html .= static::renderLabel($block);
 
-    $html .= '<input type="'.$type.'" class="mailpoet_input" ';
+    $html .= '<input type="'.$type.'" class="mailpoet_text" ';
 
     $html .= 'name="'.static::getFieldName($block).'" ';
 

@@ -49,7 +49,7 @@ class Renderer {
 
   private static function renderBlock($block = array()) {
     $html = '';
-    switch ($block['type']) {
+    switch($block['type']) {
       case 'html':
         $html .= Block\Html::render($block);
       break;
@@ -78,8 +78,8 @@ class Renderer {
         $html .= Block\Select::render($block);
       break;
 
-      case 'input':
-        $html .= Block\Input::render($block);
+      case 'text':
+        $html .= Block\Text::render($block);
       break;
 
       case 'textarea':
