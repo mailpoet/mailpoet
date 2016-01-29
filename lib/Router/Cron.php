@@ -2,7 +2,7 @@
 namespace MailPoet\Router;
 
 use Carbon\Carbon;
-use MailPoet\Cron\Daemon;
+use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Models\Setting;
 
@@ -10,23 +10,17 @@ if(!defined('ABSPATH')) exit;
 
 class Cron {
   function start() {
-    $supervisor = new Supervisor($forceStart = true);
-    wp_send_json(
-      array(
-        'result' => $supervisor->checkDaemon() ? true : false
-      )
-    );
+    $supervisor = new Supervisor($force_run = true);
+    wp_send_json($supervisor->checkDaemon());
   }
 
   function stop() {
-    $daemon = new Daemon();
-    if(!$daemon->daemon ||
-      $daemon->daemon['status'] !== 'started'
-    ) {
+    $daemon = CronHelper::getDaemon();
+    if(!$daemon || $daemon['status'] !== 'started') {
       $result = false;
     } else {
-      $daemon->daemon['status'] = 'stopping';
-      $result = $daemon->saveDaemon($daemon->daemon);
+      $daemon['status'] = 'stopping';
+      $result = CronHelper::saveDaemon($daemon);
     }
     wp_send_json(
       array(

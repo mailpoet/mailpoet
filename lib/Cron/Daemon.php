@@ -2,8 +2,6 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Cron\Workers\SendingQueue;
-use MailPoet\Models\Setting;
-use MailPoet\Util\Security;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
@@ -13,136 +11,69 @@ class Daemon {
   public $daemon;
   public $request_payload;
   public $refreshed_token;
-  public $timer;
+  private $execution_time_limit = 30;
+  private $timer;
 
   function __construct($request_payload = array()) {
     set_time_limit(0);
     ignore_user_abort();
-    $this->daemon = $this->getDaemon();
-    $this->refreshed_token = $this->refreshToken();
+    $this->daemon = CronHelper::getDaemon();
+    $this->token = CronHelper::createToken();
     $this->request_payload = $request_payload;
     $this->timer = microtime(true);
   }
 
-  function start() {
-    if(!isset($this->request_payload['session'])) {
-      $this->abortWithError(__('Missing session ID.'));
-    }
-    $this->manageSession('start');
+  function run() {
     $daemon = $this->daemon;
     if(!$daemon) {
-      $this->saveDaemon(
-        array(
-          'status' => 'starting',
-          'counter' => 0
-        )
-      );
-    }
-    if($daemon['status'] === 'started') {
-      $_SESSION['cron_daemon'] = array(
-        'result' => false,
-        'errors' => array(__('Daemon already running.'))
-      );
-    }
-    if($daemon['status'] === 'starting') {
-      $_SESSION['cron_daemon'] = 'started';
-      $_SESSION['cron_daemon'] = array('result' => true);
-      $this->manageSession('end');
-      $daemon['status'] = 'started';
-      $daemon['token'] = $this->refreshed_token;
-      $this->saveDaemon($daemon);
-      $this->callSelf();
-    }
-    $this->manageSession('end');
-  }
-
-  function run() {
-    $allowed_statuses = array(
-      'stopping',
-      'starting',
-      'started'
-    );
-    if(!$this->daemon || !in_array($this->daemon['status'], $allowed_statuses)) {
-      $this->abortWithError(__('Invalid daemon status.'));
+      $this->abortWithError(__('Daemon does not exist.'));
     }
     if(!isset($this->request_payload['token']) ||
-      $this->request_payload['token'] !== $this->daemon['token']
+      $this->request_payload['token'] !== $daemon['token']
     ) {
-      $this->abortWithError('Invalid token.');
+      $this->abortWithError(__('Invalid or missing token.'));
     }
+    $this->abortIfStopped($daemon);
     try {
       $sending_queue = new SendingQueue($this->timer);
       $sending_queue->process();
     } catch(Exception $e) {
     }
     $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time < 30) {
-      sleep(30 - $elapsed_time);
+    if($elapsed_time < $this->execution_time_limit) {
+      sleep($this->execution_time_limit - $elapsed_time);
     }
-    // after each execution, read daemon in case its status was modified
-    $daemon = $this->getDaemon();
-
-    if($daemon['status'] === 'stopping') $daemon['status'] = 'stopped';
-    if($daemon['status'] === 'starting') $daemon['status'] = 'started';
-
-    $daemon['token'] = $this->refreshed_token;
+    // after each execution, re-read daemon data in case its status has changed
+    $daemon = CronHelper::getDaemon();
+    // if the token has changed, abort further processing
+    if(!$daemon || $daemon['token'] !== $this->request_payload['token']) {
+      exit;
+    }
     $daemon['counter']++;
-
-    $this->saveDaemon($daemon);
-
-    if($daemon['status'] === 'started') $this->callSelf();
-  }
-
-  function getDaemon() {
-    return Setting::getValue('cron_daemon');
-  }
-
-  function saveDaemon($daemon_data) {
-    $daemon_data['updated_at'] = time();
-
-    return Setting::setValue(
-      'cron_daemon',
-      $daemon_data
-    );
-  }
-
-  function refreshToken() {
-    return Security::generateRandomString();
-  }
-
-  function manageSession($action) {
-    switch($action) {
-      case 'start':
-        if(session_id()) {
-          session_write_close();
-        }
-        session_id($this->request_payload['session']);
-        session_start();
-        if (!isset($_SESSION['cron_daemon'])) {
-          throw new \Exception(__('Session cannot be read.'));
-        }
-        break;
-      case 'end':
-        session_write_close();
-        break;
+    $this->abortIfStopped($daemon);
+    if($daemon['status'] === 'starting') {
+      $daemon['status'] = 'started';
     }
+    $daemon['token'] = $this->token;
+    CronHelper::saveDaemon($daemon);
+    $this->callSelf();
+  }
+
+  function abortIfStopped($daemon) {
+    if($daemon['status'] === 'stopped') exit;
+    if($daemon['status'] === 'stopping') {
+      $daemon['status'] = 'stopped';
+      CronHelper::saveDaemon($daemon);
+      exit;
+    }
+  }
+
+  function abortWithError($message) {
+    exit('[mailpoet_cron_error:' . base64_encode($message) . ']');
   }
 
   function callSelf() {
-    $payload = serialize(array('token' => $this->refreshed_token));
-    Supervisor::accessRemoteUrl(
-      '/?mailpoet-api&section=queue&action=run&request_payload=' .
-      base64_encode($payload)
-    );
-    exit;
-  }
-
-  function abortWithError($error) {
-    wp_send_json(
-      array(
-        'result' => false,
-        'errors' => array($error)
-      ));
+    CronHelper::accessDaemon($this->token);
     exit;
   }
 }
