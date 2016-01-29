@@ -58,7 +58,7 @@ class SendGrid {
       'headers' => array(
         'Authorization' => $this->auth()
       ),
-      'body' => urldecode(http_build_query($body))
+      'body' => http_build_query($body)
     );
   }
 }
