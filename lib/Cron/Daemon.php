@@ -2,8 +2,6 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Cron\Workers\SendingQueue;
-use MailPoet\Models\Setting;
-use MailPoet\Util\Security;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
@@ -13,13 +11,14 @@ class Daemon {
   public $daemon;
   public $request_payload;
   public $refreshed_token;
-  public $timer;
+  private $execution_time_limit = 30;
+  private $timer;
 
   function __construct($request_payload = array()) {
     set_time_limit(0);
     ignore_user_abort();
-    $this->daemon = Supervisor::getDaemon();
-    $this->token = Security::generateRandomString();
+    $this->daemon = CronHelper::getDaemon();
+    $this->token = CronHelper::createToken();
     $this->request_payload = $request_payload;
     $this->timer = microtime(true);
   }
@@ -41,13 +40,13 @@ class Daemon {
     } catch(Exception $e) {
     }
     $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time < 30) {
-      sleep(30 - $elapsed_time);
+    if($elapsed_time < $this->execution_time_limit) {
+      sleep($this->execution_time_limit - $elapsed_time);
     }
     // after each execution, re-read daemon data in case its status has changed
-    $daemon = Supervisor::getDaemon();
+    $daemon = CronHelper::getDaemon();
     // if the token has changed, abort further processing
-    if ($daemon['token'] !== $this->request_payload['token']) {
+    if(!$daemon || $daemon['token'] !== $this->request_payload['token']) {
       exit;
     }
     $daemon['counter']++;
@@ -56,7 +55,7 @@ class Daemon {
       $daemon['status'] = 'started';
     }
     $daemon['token'] = $this->token;
-    Supervisor::saveDaemon($daemon);
+    CronHelper::saveDaemon($daemon);
     $this->callSelf();
   }
 
@@ -64,21 +63,17 @@ class Daemon {
     if($daemon['status'] === 'stopped') exit;
     if($daemon['status'] === 'stopping') {
       $daemon['status'] = 'stopped';
-      Supervisor::saveDaemon($daemon);
+      CronHelper::saveDaemon($daemon);
       exit;
     }
   }
 
-  function callSelf() {
-    $payload = serialize(array('token' => $this->token));
-    Supervisor::accessRemoteUrl(
-      '/?mailpoet-api&section=queue&action=run&request_payload=' .
-      base64_encode($payload)
-    );
-    exit;
-  }
-
   function abortWithError($message) {
     exit('[mailpoet_cron_error:' . base64_encode($message) . ']');
+  }
+
+  function callSelf() {
+    CronHelper::accessDaemon($this->token);
+    exit;
   }
 }
