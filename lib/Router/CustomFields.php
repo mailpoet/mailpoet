@@ -14,22 +14,20 @@ class CustomFields {
       return $custom_field->asArray();
     }, $collection);
 
-    wp_send_json($custom_fields);
+    return $custom_fields;
   }
 
   function delete($id) {
     $custom_field = CustomField::findOne($id);
     if($custom_field === false or !$custom_field->id()) {
-      wp_send_json(array(
-        'result' => false
-      ));
+      return array('result' => false);
     } else {
       $custom_field->delete();
 
-      wp_send_json(array(
+      return array(
         'result' => true,
         'field' => $custom_field->asArray()
-      ));
+      );
     }
   }
 
@@ -58,16 +56,15 @@ class CustomFields {
       }
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function get($id) {
     $custom_field = CustomField::findOne($id);
     if($custom_field === false) {
-      wp_send_json(false);
+      return false;
     } else {
-      $custom_field = $custom_field->asArray();
-      wp_send_json($custom_field);
+      return $custom_field->asArray();
     }
   }
 }

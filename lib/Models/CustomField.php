@@ -54,7 +54,7 @@ class CustomField extends Model {
     }
 
     // set name as label by default
-    if(empty($data['params']['label'])) {
+    if(empty($data['params']['label']) && isset($data['name'])) {
       $data['params']['label'] = $data['name'];
     }
 
