@@ -11,7 +11,6 @@ class Daemon {
   public $daemon;
   public $request_payload;
   public $refreshed_token;
-  private $execution_time_limit = 30;
   private $timer;
 
   function __construct($request_payload = array()) {
@@ -40,12 +39,12 @@ class Daemon {
     } catch(Exception $e) {
     }
     $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time < $this->execution_time_limit) {
-      sleep($this->execution_time_limit - $elapsed_time);
+    if($elapsed_time < CronHelper::$daemon_execution_limit) {
+      sleep(CronHelper::$daemon_execution_limit - $elapsed_time);
     }
-    // after each execution, re-read daemon data in case its status has changed
+    // after each execution, re-read daemon data in case it was deleted or
+    // its status has changed
     $daemon = CronHelper::getDaemon();
-    // if the token has changed, abort further processing
     if(!$daemon || $daemon['token'] !== $this->request_payload['token']) {
       exit;
     }

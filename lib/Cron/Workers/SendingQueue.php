@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterStatistics;
@@ -11,7 +12,7 @@ use MailPoet\Newsletter\Shortcodes\Shortcodes;
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
-  public $timer;
+  private $timer;
 
   function __construct($timer = false) {
     $this->timer = ($timer) ? $timer : microtime(true);
@@ -120,7 +121,7 @@ class SendingQueue {
 
   function checkExecutionTimer() {
     $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time >= 30) throw new \Exception('Maximum execution time reached.');
+    if($elapsed_time >= CronHelper::$daemon_execution_limit) throw new \Exception(__('Maximum execution time reached.'));
   }
 
   function getQueues() {

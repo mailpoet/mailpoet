@@ -7,6 +7,9 @@ use MailPoet\Util\Security;
 if(!defined('ABSPATH')) exit;
 
 class CronHelper {
+  static $daemon_execution_limit = 30;
+  static $daemon_timeout_limit = 30;
+
   static function createDaemon($token) {
     $daemon = array(
       'status' => 'starting',
