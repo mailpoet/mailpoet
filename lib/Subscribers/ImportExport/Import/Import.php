@@ -16,7 +16,7 @@ class Import {
   public $subscribers_count;
   public $import_time;
   public $profiler_start;
-  
+
   public function __construct($data) {
     $this->subscribers_data = $data['subscribers'];
     $this->segments = $data['segments'];
@@ -31,7 +31,7 @@ class Import {
     $this->import_time = date('Y-m-d H:i:s');
     $this->profiler_start = microtime(true);
   }
-  
+
   function process() {
     $subscriber_fields = $this->subscriber_fields;
     $subscriber_custom_fields = $this->subscriber_custom_fields;
@@ -89,7 +89,7 @@ class Import {
       'profiler' => $this->timeExecution()
     );
   }
-  
+
   function filterExistingAndNewSubscribers($subscribers_data) {
     $existing_records = array_filter(
       array_map(function($subscriber_emails) {
@@ -126,7 +126,7 @@ class Import {
           }, $new_records);
         }, $subscribers_data)
       );
-    
+
     $existing_subscribers =
       array_map(function($subscriber) use ($new_records) {
         return array_values( // reindex array
@@ -142,7 +142,7 @@ class Import {
       $new_subscribers
     );
   }
-  
+
   function deleteExistingTrashedSubscribers($subscribers_data) {
     $existing_trashed_records = array_filter(
       array_map(function($subscriber_emails) {
@@ -161,7 +161,7 @@ class Import {
         ->deleteMany();
     }
   }
-  
+
   function extendSubscribersAndFields($subscribers_data, $subscriber_fields) {
     $subscribers_data['created_at'] = $this->filterSubscriberCreatedAtDate();
     $subscriber_fields[] = 'created_at';
@@ -170,7 +170,7 @@ class Import {
       $subscriber_fields
     );
   }
-  
+
   function getSubscriberFields($subscriber_fields) {
     return array_values(
       array_filter(
@@ -180,7 +180,7 @@ class Import {
       )
     );
   }
-  
+
   function getCustomSubscriberFields($subscriber_fields) {
     return array_values(
       array_filter(
@@ -190,11 +190,11 @@ class Import {
       )
     );
   }
-  
+
   function filterSubscriberCreatedAtDate() {
     return array_fill(0, $this->subscribers_count, $this->import_time);
   }
-  
+
   function filterSubscriberStatus($subscribers_data, $subscriber_fields) {
     if(!in_array('status', $subscriber_fields)) {
       $subscribers_data['status'] =
@@ -242,7 +242,7 @@ class Import {
       $subscriber_fields
     );
   }
-  
+
   function createOrUpdateSubscribers(
     $action,
     $subscribers_data,
@@ -295,7 +295,7 @@ class Import {
     );
     return $result;
   }
-  
+
   function createOrUpdateCustomFields(
     $action,
     $db_subscribers,
@@ -318,8 +318,8 @@ class Import {
               $value
             );
           }, $count, $subscribers_data[$column]);
-      }, $subscriber_custom_fields)[0];
-    foreach(array_chunk($subscribers, 200) as $data) {
+      }, $subscriber_custom_fields);
+    foreach(array_chunk($subscribers[0], 200) as $data) {
       if($action === 'create') {
         SubscriberCustomField::createMultiple(
           $data
@@ -332,13 +332,13 @@ class Import {
       }
     }
   }
-  
+
   function addSubscribersToSegments($subscribers, $segments) {
     foreach(array_chunk($subscribers, 200) as $data) {
       SubscriberSegment::createMultiple($segments, $data);
     }
   }
-  
+
   function timeExecution() {
     $profiler_end = microtime(true);
     return ($profiler_end - $this->profiler_start) / 60;
