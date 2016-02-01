@@ -21,11 +21,11 @@ class SendingQueue {
   function process() {
     // TODO: implement mailer sending frequency limits
     foreach($this->getQueues() as $queue) {
-      $newsletter = Newsletter::findOne($queue->newsletter_id)
-        ->asArray();
+      $newsletter = Newsletter::findOne($queue->newsletter_id);
       if(!$newsletter) {
         continue;
       };
+      $newsletter = $newsletter->asArray();
       $mailer = $this->configureMailerForNewsletter($newsletter);
       $subscribers = json_decode($queue->subscribers, true);
       $subscribers_to_process = $subscribers['to_process'];
