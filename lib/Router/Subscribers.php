@@ -15,9 +15,7 @@ class Subscribers {
   function __construct() {
   }
 
-  function get($data = array()) {
-    $id = (isset($data['id']) ? (int) $data['id'] : 0);
-
+  function get($id = false) {
     $subscriber = Subscriber::findOne($id);
     if($subscriber !== false && $subscriber->id() > 0) {
       $segments = $subscriber->segments()->findArray();

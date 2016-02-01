@@ -10,17 +10,17 @@ class Settings {
 
   function get() {
     $settings = Setting::getAll();
-    wp_send_json($settings);
+    return $settings;
   }
 
   function set($settings = array()) {
     if(empty($settings)) {
-      wp_send_json(false);
+      return false;
     } else {
       foreach($settings as $name => $value) {
         Setting::setValue($name, $value);
       }
-      wp_send_json(true);
+      return true;
     }
   }
 }

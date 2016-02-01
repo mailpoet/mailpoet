@@ -8,7 +8,6 @@ class Permissions {
   }
 
   function set($permissions = array()) {
-    $result = \MailPoet\Util\Permissions::set($permissions);
-    wp_send_json($result);
+    return \MailPoet\Util\Permissions::set($permissions);
   }
 }

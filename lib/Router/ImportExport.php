@@ -10,17 +10,17 @@ if(!defined('ABSPATH')) exit;
 class ImportExport {
   function getMailChimpLists($data) {
     $mailChimp = new MailChimp($data['api_key']);
-    wp_send_json($mailChimp->getLists());
+    return $mailChimp->getLists();
   }
 
   function getMailChimpSubscribers($data) {
     $mailChimp = new MailChimp($data['api_key']);
-    wp_send_json($mailChimp->getSubscribers($data['lists']));
+    return $mailChimp->getSubscribers($data['lists']);
   }
 
   function addSegment($data) {
     $segment = Segment::createOrUpdate($data);
-    wp_send_json(
+    return (
       ($segment->id) ?
         array(
           'result' => true,
@@ -36,7 +36,7 @@ class ImportExport {
     $customField = CustomField::create();
     $customField->hydrate($data);
     $result = $customField->save();
-    wp_send_json(
+    return (
       ($result) ?
         array(
           'result' => true,
@@ -49,12 +49,16 @@ class ImportExport {
   }
 
   function processImport($data) {
-    $import = new \MailPoet\Subscribers\ImportExport\Import\Import(json_decode($data, true));
-    wp_send_json($import->process());
+    $import = new \MailPoet\Subscribers\ImportExport\Import\Import(
+      json_decode($data, true)
+    );
+    return $import->process();
   }
 
   function processExport($data) {
-    $export = new \MailPoet\Subscribers\ImportExport\Export\Export(json_decode($data, true));
-    wp_send_json($export->process());
+    $export = new \MailPoet\Subscribers\ImportExport\Export\Export(
+      json_decode($data, true)
+    );
+    return $export->process();
   }
 }

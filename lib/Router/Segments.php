@@ -12,14 +12,12 @@ class Segments {
   function __construct() {
   }
 
-  function get($data = array()) {
-    $id = (isset($data['id']) ? (int)$data['id'] : 0);
-
+  function get($id = false) {
     $segment = Segment::findOne($id);
     if($segment === false) {
-      wp_send_json(false);
+      return false;
     } else {
-      wp_send_json($segment->asArray());
+      return $segment->asArray();
     }
   }
 
@@ -64,12 +62,11 @@ class Segments {
       );
     }
 
-    wp_send_json($listing_data);
+    return $listing_data;
   }
 
   function getAll() {
-    $collection = Segment::findArray();
-    wp_send_json($collection);
+    return Segment::findArray();
   }
 
   function save($data = array()) {
@@ -83,10 +80,10 @@ class Segments {
     } else {
       $result = true;
     }
-    wp_send_json(array(
+    return array(
       'result' => $result,
       'errors' => $errors
-    ));
+    );
   }
 
   function restore($id) {
@@ -97,7 +94,7 @@ class Segments {
       $result = $segment->restore();
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function trash($id) {
@@ -108,7 +105,7 @@ class Segments {
       $result = $segment->trash();
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function delete($id) {
@@ -120,7 +117,7 @@ class Segments {
       $result = 1;
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function duplicate($id) {
@@ -134,13 +131,13 @@ class Segments {
       $result = $segment->duplicate($data)->asArray();
     }
 
-    wp_send_json($result);
+    return $result;
   }
 
   function synchronize() {
     $result = WP::synchronizeUsers();
 
-    wp_send_json($result);
+    return $result;
   }
 
   function bulkAction($data = array()) {
@@ -149,6 +146,6 @@ class Segments {
       $data
     );
 
-    wp_send_json($bulk_action->apply());
+    return $bulk_action->apply();
   }
 }

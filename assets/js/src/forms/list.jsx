@@ -126,7 +126,7 @@ const FormList = React.createClass({
       action: 'create'
     }).done(function(response) {
       if(response !== false) {
-        window.location = response;
+        window.location = mailpoet_form_edit_url + response;
       }
     });
   },

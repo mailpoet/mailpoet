@@ -48,7 +48,7 @@ define(
         MailPoet.Ajax.post({
           endpoint: this.props.endpoint,
           action: 'get',
-          data: { id: id }
+          data: id
         }).done(function(response) {
           if(response === false) {
             this.setState({

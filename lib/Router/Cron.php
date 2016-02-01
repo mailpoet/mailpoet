@@ -11,7 +11,7 @@ if(!defined('ABSPATH')) exit;
 class Cron {
   function start() {
     $supervisor = new Supervisor($force_run = true);
-    wp_send_json($supervisor->checkDaemon());
+    return $supervisor->checkDaemon();
   }
 
   function stop() {
@@ -22,17 +22,15 @@ class Cron {
       $daemon['status'] = 'stopping';
       $result = CronHelper::saveDaemon($daemon);
     }
-    wp_send_json(
-      array(
-        'result' => $result
-      )
+    return array(
+      'result' => $result
     );
   }
 
   function getStatus() {
     $daemon = Setting::where('name', 'cron_daemon')
       ->findOne();
-    wp_send_json(
+    return (
       ($daemon) ?
         array_merge(
           array(
