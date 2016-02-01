@@ -21,11 +21,10 @@ class Newsletters {
   function __construct() {
   }
 
-  function get($data = array()) {
-    $id = (isset($data['id'])) ? (int) $data['id'] : 0;
+  function get($id = false) {
     $newsletter = Newsletter::findOne($id);
     if($newsletter === false) {
-      wp_send_json(false);
+      return false;
     } else {
       $segments = $newsletter->segments()->findArray();
       $options = $newsletter->options()->findArray();
@@ -36,7 +35,7 @@ class Newsletters {
       $newsletter['options'] = $options;
       $newsletter['body'] = json_decode($newsletter['body']);
 
-      wp_send_json($newsletter);
+      return $newsletter;
     }
   }
 

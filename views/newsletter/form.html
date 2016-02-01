@@ -1269,9 +1269,7 @@
     MailPoet.Ajax.post({
       endpoint: 'newsletters',
       action: 'get',
-      data: {
-        id: <%= params('id') %>
-      }
+      data: <%= params('id') %>
     }).done(function(newsletter) {
       // start editor
       editor = EditorApplication.start({

@@ -11,10 +11,8 @@ class Mailer {
       (isset($data['reply_to'])) ? $data['reply_to'] : false
     );
     $result = $mailer->send($data['newsletter'], $data['subscriber']);
-    wp_send_json(
-      array(
-        'result' => ($result) ? true : false
-      )
+    return array(
+      'result' => ($result) ? true : false
     );
   }
 }

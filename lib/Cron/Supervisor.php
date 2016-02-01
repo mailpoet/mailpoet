@@ -62,7 +62,7 @@ class Supervisor {
         list(, $message) = explode(':', $status[0]);
         $message = base64_decode($message);
       }
-      return $this->formatResult(
+      return $this->formatResultMessage(
         false,
         $message
       );
