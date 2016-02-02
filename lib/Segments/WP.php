@@ -61,10 +61,10 @@ class WP {
     $segment = Segment::getWPUsers();
 
     // count WP users
-    $users_count = \count_users()['total_users'];
+    $users_count = \count_users();
     $linked_subscribers_count = $segment->subscribers()->count();
 
-    if($users_count !== $linked_subscribers_count) {
+    if($users_count['total_users'] !== $linked_subscribers_count) {
       $linked_subscribers = Subscriber::select('wp_user_id')
         ->whereNotNull('wp_user_id')
         ->findArray();

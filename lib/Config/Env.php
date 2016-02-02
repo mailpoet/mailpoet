@@ -36,8 +36,9 @@ class Env {
     self::$views_path = self::$path . '/views';
     self::$assets_path = self::$path . '/assets';
     self::$assets_url = plugins_url('/assets', $file);
-    self::$temp_path = wp_upload_dir()['path'];
-    self::$temp_URL = wp_upload_dir()['url'];
+    $wp_upload_dir = wp_upload_dir();
+    self::$temp_path = $wp_upload_dir['path'];
+    self::$temp_URL = $wp_upload_dir['url'];
     self::$languages_path = self::$path . '/lang';
     self::$lib_path = self::$path . '/lib';
     self::$plugin_prefix = 'mailpoet_';
@@ -74,15 +75,16 @@ class Env {
   }
 
   static function isPluginActivated() {
-    $activatesPlugins = get_option('active_plugins');
+    $activated_plugins = get_option('active_plugins');
+    $plugin_basename = plugin_basename(__FILE__);
     $isActivated = (
       in_array(
         sprintf('%s/%s.php', basename(self::$path), self::$plugin_name),
-        $activatesPlugins
+        $activated_plugins
       ) ||
       in_array(
-        sprintf('%s/%s.php', explode('/', plugin_basename(__FILE__))[0], self::$plugin_name),
-        $activatesPlugins
+        sprintf('%s/%s.php', explode('/', $plugin_basename[0]), self::$plugin_name),
+        $activated_plugins
       )
     );
     return ($isActivated) ? true : false;

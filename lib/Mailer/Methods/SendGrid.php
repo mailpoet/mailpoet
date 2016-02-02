@@ -20,10 +20,11 @@ class SendGrid {
       $this->url,
       $this->request($newsletter, $subscriber)
     );
+    $result_body = json_decode($result['body'], true);
     return (
       !is_wp_error($result) === true &&
       !preg_match('!invalid!', $result['body']) === true &&
-      !isset(json_decode($result['body'], true)['errors']) === true &&
+      !isset($result_body['errors']) === true &&
       wp_remote_retrieve_response_code($result) === 200
     );
   }
