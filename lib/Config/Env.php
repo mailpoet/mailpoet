@@ -73,20 +73,4 @@ class Env {
     );
     return implode('', $source_name);
   }
-
-  static function isPluginActivated() {
-    $activated_plugins = get_option('active_plugins');
-    $plugin_basename = plugin_basename(__FILE__);
-    $isActivated = (
-      in_array(
-        sprintf('%s/%s.php', basename(self::$path), self::$plugin_name),
-        $activated_plugins
-      ) ||
-      in_array(
-        sprintf('%s/%s.php', explode('/', $plugin_basename[0]), self::$plugin_name),
-        $activated_plugins
-      )
-    );
-    return ($isActivated) ? true : false;
-  }
 }

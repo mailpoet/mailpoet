@@ -9,6 +9,7 @@ $console->writeln('Loading WP core... ('.$wp_load_file.')');
 $console->writeln('Cleaning up database...');
 $models = array(
   'CustomField',
+  'Form',
   'Newsletter',
   'NewsletterSegment',
   'NewsletterTemplate',

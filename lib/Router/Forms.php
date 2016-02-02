@@ -91,9 +91,15 @@ class Forms {
     $form = Form::createOrUpdate($data);
 
     if($form !== false && $form->id()) {
-      return $form->id();
+      return array(
+        'result' => true,
+        'form_id' => $form->id()
+      );
     } else {
-      return $form;
+      return array(
+        'result' => false,
+        'errors' => $form->getValidationErrors()
+      );
     }
   }
 
@@ -127,10 +133,10 @@ class Forms {
 
   function saveEditor($data = array()) {
     $form_id = (isset($data['id']) ? (int)$data['id'] : 0);
-    $name = (isset($data['name']) ? $data['name'] : array());
+    $name = (isset($data['name']) ? $data['name'] : __('New form'));
     $body = (isset($data['body']) ? $data['body'] : array());
     $settings = (isset($data['settings']) ? $data['settings'] : array());
-    $styles = (isset($data['styles']) ? $data['styles'] : array());
+    $styles = (isset($data['styles']) ? $data['styles'] : '');
 
     if(empty($body) || empty($settings)) {
       // error
@@ -166,7 +172,7 @@ class Forms {
         }
       }
 
-      // check list selectio
+      // check list selection
       if($has_segment_selection === true) {
         $settings['segments_selected_by'] = 'user';
       } else {
@@ -182,7 +188,6 @@ class Forms {
       'styles' => $styles
     ));
 
-    // response
     return array(
       'result' => ($form !== false),
       'is_widget' => $is_widget

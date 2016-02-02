@@ -18,13 +18,17 @@ class Initializer {
   }
 
   function init() {
+    $this->setupWidget();
+    add_action('init', array($this, 'setup'));
+  }
+
+  function setup() {
     try {
       $this->setupDB();
       $this->setupRenderer();
       $this->setupLocalizer();
       $this->setupMenu();
       $this->setupRouter();
-      $this->setupWidget();
       $this->setupAnalytics();
       $this->setupPermissions();
       $this->setupChangelog();
@@ -156,9 +160,7 @@ class Initializer {
   }
 
   function runQueueSupervisor() {
-    if(php_sapi_name() === 'cli' ||
-      !Env::isPluginActivated()
-    ) return;
+    if(php_sapi_name() === 'cli') return;
     try {
       $supervisor = new Supervisor();
       $supervisor->checkDaemon();

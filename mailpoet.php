@@ -36,4 +36,4 @@ $migrator = new Migrator();
 register_activation_hook(__FILE__, array($migrator, 'up'));
 register_activation_hook(__FILE__, array($initializer, 'runPopulator'));
 
-add_action('init', array($initializer, 'init'));
+$initializer->init();

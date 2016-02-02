@@ -51,7 +51,9 @@ class SegmentCest {
   function nameMustBeUnique() {
     $segment = Segment::create();
     $segment->hydrate($this->data);
-    expect($segment->save())->contains('Duplicate');
+    $errors = $segment->save();
+    expect(is_array($errors))->true();
+    expect($errors[0])->contains('Duplicate');
   }
 
   function itCanHaveDescription() {

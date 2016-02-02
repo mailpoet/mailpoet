@@ -21,8 +21,9 @@ class Model extends \Sudzy\ValidModel {
     } catch (\Sudzy\ValidationException $e) {
       return array_unique($e->getValidationErrors());
     } catch (\PDOException $e) {
-      return $e->getMessage();
+      return array($e->getMessage());
     }
+    return false;
   }
 
   function trash() {
