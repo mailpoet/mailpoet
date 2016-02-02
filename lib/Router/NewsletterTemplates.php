@@ -14,18 +14,15 @@ class NewsletterTemplates {
     if($template === false) {
       return false;
     } else {
-      $template->body = json_decode($template->body);
       return $template->asArray();
     }
   }
 
   function getAll() {
-    $collection = NewsletterTemplate::findArray();
-    $collection = array_map(function($item) {
-      $item['body'] = json_decode($item['body']);
-      return $item;
+    $collection = NewsletterTemplate::findMany();
+    return array_map(function($item) {
+      return $item->asArray();
     }, $collection);
-    return $collection;
   }
 
   function save($data = array()) {

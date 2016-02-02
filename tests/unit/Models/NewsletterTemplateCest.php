@@ -8,7 +8,7 @@ class NewsletterTemplateCest {
     $this->data = array(
       'name' => 'Some template',
       'description' => 'My nice template',
-      'body' => '{content: {}, globalStyles: {}}',
+      'body' => '{}',
     );
 
     $template = NewsletterTemplate::create();
@@ -59,9 +59,9 @@ class NewsletterTemplateCest {
     expect($created_template->id() > 0)->true();
     expect($created_template->getErrors())->false();
 
-    $template = NewsletterTemplate::where('name', 'Another template')
+    $created_template = NewsletterTemplate::where('name', 'Another template')
       ->findOne();
-    expect($template->name)->equals('Another template');
+    expect($created_template->name)->equals('Another template');
 
     $updated_template = NewsletterTemplate::createOrUpdate(
       array(

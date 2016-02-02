@@ -24,8 +24,18 @@ class SegmentsCest {
     expect($response['name'])->equals($segment->name);
   }
 
-  function itCanGetListingData($data = array()) {
+  function itCanGetListingData() {
+    $router = new Segments();
+    $response = $router->listing();
+    expect($response)->hasKey('filters');
+    expect($response)->hasKey('groups');
 
+    expect($response['count'])->equals(3);
+    expect($response['items'])->count(3);
+
+    expect($response['items'][0]['name'])->equals('Segment 1');
+    expect($response['items'][1]['name'])->equals('Segment 2');
+    expect($response['items'][2]['name'])->equals('Segment 3');
   }
 
   function itCanGetAllSegments() {
