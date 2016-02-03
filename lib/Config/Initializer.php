@@ -9,6 +9,8 @@ use MailPoet\Settings\Pages;
 
 if(!defined('ABSPATH')) exit;
 
+require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+
 class Initializer {
   function __construct($params = array(
     'file' => '',
@@ -18,21 +20,25 @@ class Initializer {
   }
 
   function init() {
-    $this->setupWidget();
+    $this->setupDB();
+
+    register_activation_hook(Env::$file, array($this, 'runMigrator'));
+    register_activation_hook(Env::$file, array($this, 'runPopulator'));
+
     add_action('init', array($this, 'setup'));
+    add_action('widgets_init', array($this, 'setupWidget'));
   }
 
   function setup() {
     try {
-      $this->setupDB();
       $this->setupRenderer();
       $this->setupLocalizer();
       $this->setupMenu();
       $this->setupRouter();
-      $this->setupAnalytics();
       $this->setupPermissions();
-      $this->setupChangelog();
       $this->setupPublicAPI();
+      $this->setupAnalytics();
+      $this->setupChangelog();
       $this->runQueueSupervisor();
       $this->setupShortcodes();
       $this->setupHooks();
@@ -90,8 +96,12 @@ class Initializer {
     define('MP_NEWSLETTER_STATISTICS_TABLE', $newsletter_statistics);
   }
 
+  function runMigrator() {
+    $migrator = new Migrator();
+    $migrator->up();
+  }
+
   function runPopulator() {
-    $this->init();
     $populator = new Populator();
     $populator->up();
   }
@@ -107,10 +117,7 @@ class Initializer {
   }
 
   function setupMenu() {
-    $menu = new Menu(
-      $this->renderer,
-      Env::$assets_url
-    );
+    $menu = new Menu($this->renderer, Env::$assets_url);
     $menu->init();
   }
 

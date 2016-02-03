@@ -1,9 +1,7 @@
 <?php
-use \MailPoet\Config\Initializer;
-use \MailPoet\Config\Migrator;
-
 if(!defined('ABSPATH')) exit;
 
+use \MailPoet\Config\Initializer;
 /*
  * Plugin Name: MailPoet
  * Version: 0.0.13
@@ -30,10 +28,4 @@ $initializer = new Initializer(array(
   'file' => __FILE__,
   'version' => MAILPOET_VERSION
 ));
-
-$migrator = new Migrator();
-
-register_activation_hook(__FILE__, array($migrator, 'up'));
-register_activation_hook(__FILE__, array($initializer, 'runPopulator'));
-
 $initializer->init();

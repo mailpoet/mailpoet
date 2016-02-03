@@ -9,13 +9,13 @@ class Widget {
   }
 
   function init() {
-    add_action('widgets_init', array($this, 'registerWidget'));
+    $this->registerWidget();
 
     if(!is_admin()) {
       //$this->setupActions();
-      add_action('widgets_init', array($this, 'setupDependencies'));
+      $this->setupDependencies();
     } else {
-      add_action('widgets_init', array($this, 'setupAdminDependencies'));
+      $this->setupAdminDependencies();
     }
   }
 
