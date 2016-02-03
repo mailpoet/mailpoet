@@ -58,6 +58,7 @@ define([
       DraggableBehavior: {
         cloneOriginal: true,
         hideOriginal: true,
+        ignoreSelector: ".mailpoet_tool:not(.mailpoet_move_block)",
         onDrop: function(options) {
           // After a clone of model has been dropped, cleanup
           // and destroy self
