@@ -11,7 +11,7 @@ define([
   // Does not hold newsletter content nor newsletter styles, those are
   // handled by other components.
   Module.NewsletterModel = SuperModel.extend({
-    stale: ['body'],
+    stale: ['body', 'created_at', 'deleted_at', 'updated_at'],
     initialize: function(options) {
       this.on('change', function() {
           App.getChannel().trigger('autoSave');
