@@ -62,7 +62,7 @@ class PostTransformer {
       // get attachment data (src, width, height)
       $image_info = wp_get_attachment_image_src(
         $thumbnail_id,
-        'single-post-thumbnail'
+        'mailpoet_newsletter_max'
       );
 
       // get alt text
