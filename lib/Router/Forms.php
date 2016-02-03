@@ -188,10 +188,17 @@ class Forms {
       'styles' => $styles
     ));
 
-    return array(
-      'result' => ($form !== false),
-      'is_widget' => $is_widget
-    );
+    if($form->getErrors() === false) {
+      return array(
+        'result' => true,
+        'is_widget' => $is_widget
+      );
+    } else {
+      return array(
+        'result' => false,
+        'errors' => $form->getErrors()
+      );
+    }
   }
 
   function restore($id) {
