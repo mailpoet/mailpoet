@@ -279,19 +279,19 @@ class FranksRoastHouseTemplate {
                 "blocks" => array(
                   array(
                     "type" => "footer",
-                    "text" => __("<p><span style=\"color: #000000;\"><a href=\"[unsubscribeUrl]\" style=\"color: #000000;\">Unsubscribe</a> | <a href=\"[manageSubscriptionUrl]\" style=\"color: #000000;\">Manage subscription</a></span><br /><span style=\"color: #000000;\">12345 MailPoet Drive, EmailVille, 76543</span></p>"),
+                    "text" => __("<p><a href=\"[unsubscribeUrl]\">Unsubscribe</a> | <a href=\"[manageSubscriptionUrl]\">Manage subscription</a><br />12345 MailPoet Drive, EmailVille, 76543</p>"),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "#a9a7a7"
                       ),
                       "text" => array(
-                        "fontColor" => "#ffffff",
+                        "fontColor" => "#000000",
                         "fontFamily" => "Arial",
                         "fontSize" => "12px",
                         "textAlign" => "center"
                       ),
                       "link" => array(
-                        "fontColor" => "#ffffff",
+                        "fontColor" => "#000000",
                         "textDecoration" => "underline"
                       )
                     )
