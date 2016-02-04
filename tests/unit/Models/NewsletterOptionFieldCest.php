@@ -9,19 +9,21 @@ class NewsletterOptionFieldCest {
     $this->before_time = time();
     $this->data = array(
       'name' => 'Event',
-      'newsletter_type' => 'welcome',
+      'newsletter_type' => 'welcome'
     );
-    $this->optionField = NewsletterOptionField::create();
-    $this->optionField->hydrate($this->data);
-    $this->saved = $this->optionField->save();
-    $this->newslettersData = array(
+    $this->option_field = NewsletterOptionField::create();
+    $this->option_field->hydrate($this->data);
+    $this->saved = $this->option_field->save();
+    $this->newsletter_data = array(
       array(
         'subject' => 'Test newsletter 1',
+        'type' => 'standard',
         'preheader' => '',
         'body' => '{}'
       ),
       array(
         'subject' => 'Test newsletter 2',
+        'type' => 'standard',
         'preheader' => 'A newsletter',
         'body' => '{}'
       )
@@ -34,15 +36,15 @@ class NewsletterOptionFieldCest {
   }
 
   function itHasName() {
-    $optionField = NewsletterOptionField::where('name', $this->data['name'])
+    $option_field = NewsletterOptionField::where('name', $this->data['name'])
       ->findOne();
-    expect($optionField->name)->equals($this->data['name']);
+    expect($option_field->name)->equals($this->data['name']);
   }
 
   function itHasNewsletterType() {
-    $optionField = NewsletterOptionField::where('name', $this->data['name'])
+    $option_field = NewsletterOptionField::where('name', $this->data['name'])
       ->findOne();
-    expect($optionField->newsletter_type)->equals($this->data['newsletter_type']);
+    expect($option_field->newsletter_type)->equals($this->data['newsletter_type']);
   }
 
   function itHasToBeValid() {
@@ -56,65 +58,65 @@ class NewsletterOptionFieldCest {
   }
 
   function itHasACreatedAtOnCreation() {
-    $optionField = NewsletterOptionField::where('name', $this->data['name'])
+    $option_field = NewsletterOptionField::where('name', $this->data['name'])
       ->findOne();
-    $time_difference = strtotime($optionField->created_at) >= $this->before_time;
+    $time_difference = strtotime($option_field->created_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itHasAnUpdatedAtOnCreation() {
-    $optionField = NewsletterOptionField::where('name', $this->data['name'])
+    $option_field = NewsletterOptionField::where('name', $this->data['name'])
       ->findOne();
-    $time_difference = strtotime($optionField->updated_at) >= $this->before_time;
+    $time_difference = strtotime($option_field->updated_at) >= $this->before_time;
     expect($time_difference)->equals(true);
   }
 
   function itKeepsTheCreatedAtOnUpdate() {
-    $optionField = NewsletterOptionField::where('name', $this->data['name'])
+    $option_field = NewsletterOptionField::where('name', $this->data['name'])
       ->findOne();
-    $old_created_at = $optionField->created_at;
-    $optionField->name = 'new name';
-    $optionField->save();
-    expect($old_created_at)->equals($optionField->created_at);
+    $old_created_at = $option_field->created_at;
+    $option_field->name = 'new name';
+    $option_field->save();
+    expect($old_created_at)->equals($option_field->created_at);
   }
 
   function itUpdatesTheUpdatedAtOnUpdate() {
-    $optionField = NewsletterOptionField::where('name', $this->data['name'])
+    $option_field = NewsletterOptionField::where('name', $this->data['name'])
       ->findOne();
     $update_time = time();
-    $optionField->name = 'new name';
-    $optionField->save();
-    $time_difference = strtotime($optionField->updated_at) >= $update_time;
+    $option_field->name = 'new name';
+    $option_field->save();
+    $time_difference = strtotime($option_field->updated_at) >= $update_time;
     expect($time_difference)->equals(true);
   }
 
   function itCanHaveManyNewsletters() {
-    foreach ($this->newslettersData as $data) {
+    foreach($this->newsletter_data as $data) {
       $newsletter = Newsletter::create();
       $newsletter->hydrate($data);
       $newsletter->save();
       $association = NewsletterOption::create();
       $association->newsletter_id = $newsletter->id;
-      $association->option_field_id = $this->optionField->id;
+      $association->option_field_id = $this->option_field->id;
       $association->save();
     }
-    $optionField = NewsletterOptionField::findOne($this->optionField->id);
-    $newsletters = $optionField->newsletters()
+    $option_field = NewsletterOptionField::findOne($this->option_field->id);
+    $newsletters = $option_field->newsletters()
       ->findArray();
     expect(count($newsletters))->equals(2);
   }
 
   function itCanStoreOptionValue() {
     $newsletter = Newsletter::create();
-    $newsletter->hydrate($this->newslettersData[0]);
+    $newsletter->hydrate($this->newsletter_data[0]);
     $newsletter->save();
     $association = NewsletterOption::create();
     $association->newsletter_id = $newsletter->id;
-    $association->option_field_id = $this->optionField->id;
+    $association->option_field_id = $this->option_field->id;
     $association->value = 'list';
     $association->save();
-    $optionField = NewsletterOptionField::findOne($this->optionField->id);
-    $newsletter = $optionField->newsletters()
+    $option_field = NewsletterOptionField::findOne($this->option_field->id);
+    $newsletter = $option_field->newsletters()
       ->findOne();
     expect($newsletter->value)->equals($association->value);
   }

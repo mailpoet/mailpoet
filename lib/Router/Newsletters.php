@@ -33,42 +33,32 @@ class Newsletters {
         return $segment['id'];
       }, $segments);
       $newsletter['options'] = $options;
-      $newsletter['body'] = json_decode($newsletter['body']);
-
       return $newsletter;
     }
   }
 
-  function getAll() {
-    $collection = Newsletter::findArray();
-    $collection = array_map(function($item) {
-      $item['body'] = json_decode($item['body']);
-      return $item;
-    }, $collection);
-    wp_send_json($collection);
-  }
-
   function save($data = array()) {
+    $segment_ids = array();
     if(isset($data['segments'])) {
       $segment_ids = $data['segments'];
       unset($data['segments']);
     }
 
+    $options = array();
     if(isset($data['options'])) {
       $options = $data['options'];
       unset($data['options']);
     }
 
-    $errors = array();
-    $result = false;
-
     $newsletter = Newsletter::createOrUpdate($data);
+    $errors = $newsletter->getErrors();
 
-    if($newsletter !== false && !$newsletter->id()) {
-      $errors = $newsletter->getValidationErrors();
+    if(!empty($errors)) {
+      return array(
+        'result' => false,
+        'errors' => $errors
+      );
     } else {
-      $result = true;
-
       if(!empty($segment_ids)) {
         NewsletterSegment::where('newsletter_id', $newsletter->id)
           ->deleteMany();
@@ -100,117 +90,51 @@ class Newsletters {
           }
         }
       }
+
+      return array(
+        'result' => true
+      );
     }
-    wp_send_json(array(
-      'result' => $result,
-      'errors' => $errors
-    ));
   }
 
   function restore($id) {
-    $result = false;
-
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
-      $result = $newsletter->restore();
+      $newsletter->restore();
     }
-
-    wp_send_json($result);
+    return ($newsletter->getErrors() === false);
   }
 
   function trash($id) {
-    $result = false;
-
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
-      $result = $newsletter->trash();
+      $newsletter->trash();
     }
-
-    wp_send_json($result);
+    return ($newsletter->getErrors() === false);
   }
 
   function delete($id) {
-    $result = false;
-
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
       $newsletter->delete();
-      $result = 1;
+      return 1;
     }
-
-    wp_send_json($result);
+    return false;
   }
 
-  function duplicate($id) {
-    $result = false;
-
+  function duplicate($id = false) {
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
-      $data = array(
+      return $newsletter->duplicate(array(
         'subject' => sprintf(__('Copy of %s'), $newsletter->subject)
-      );
-      $result = $newsletter->duplicate($data)->asArray();
+      ))->asArray();
     }
-
-    wp_send_json($result);
-  }
-
-  function send($data = array()) {
-    $newsletter = Newsletter::findOne($data['id'])->asArray();
-
-    if(empty($data['segments'])) {
-      return wp_send_json(array(
-        'errors' => array(
-            __("You need to select a list.")
-          )
-      ));
-    }
-
-    $segments = Segment::whereIdIn($data['segments'])->findMany();
-    $subscribers = array();
-    foreach($segments as $segment) {
-      $segment_subscribers = $segment->subscribers()->findMany();
-      foreach($segment_subscribers as $segment_subscriber) {
-        $subscribers[$segment_subscriber->email] = $segment_subscriber
-          ->asArray();
-      }
-    }
-
-    if(empty($subscribers)) {
-      return wp_send_json(array(
-        'errors' => array(
-            __("No subscribers found.")
-          )
-      ));
-    }
-
-    // TODO: TO REMOVE once we add the columns from/reply_to
-    $newsletter = array_merge($newsletter, $data['newsletter']);
-    // END - TO REMOVE
-
-    $renderer = new Renderer(json_decode($newsletter['body'], true));
-    $newsletter['body'] = $renderer->render();
-
-    $subscribers = Subscriber::find_array();
-    $fromEmail = Setting::where('name', 'from_address')->findOne()->value;
-    $fromName = Setting::where('name', 'from_name')->findOne()->value;
-    $apiKey = Setting::where('name', 'api_key')->findOne()->value;
-    $mailer = new MailPoet($apiKey, $fromEmail, $fromName);
-
-    foreach ($subscribers as $subscriber) {
-      $result = $mailer->send(
-        $newsletter,
-        sprintf('%s %s <%s>', $subscriber['first_name'], $subscriber['last_name'], $subscriber['email'])
-      );
-      if ($result !== true) wp_send_json(false);
-    }
-
-    wp_send_json(true);
+    return false;
   }
 
   function render($data = array()) {
     if(!isset($data['body'])) {
-      wp_send_json(false);
+      return false;
     }
     $renderer = new Renderer($data);
     $rendered_newsletter = $renderer->render();
@@ -219,7 +143,7 @@ class Newsletters {
       $data
     );
     $rendered_newsletter = $shortcodes->replace();
-    wp_send_json(array('rendered_body' => $rendered_newsletter));
+    return array('rendered_body' => $rendered_newsletter);
   }
 
   function sendPreview($data = array()) {
@@ -227,15 +151,15 @@ class Newsletters {
     $newsletter = Newsletter::findOne($id);
 
     if($newsletter === false) {
-      wp_send_json(array(
+      return array(
         'result' => false
-      ));
+      );
     }
     if(empty($data['subscriber'])) {
-      wp_send_json(array(
+      return array(
         'result' => false,
-        'errors' => array(__('Please specify receiver information')),
-      ));
+        'errors' => array(__('Please specify receiver information'))
+      );
     }
 
     $newsletter = $newsletter->asArray();
@@ -263,7 +187,7 @@ class Newsletters {
         $sender = false,
         $reply_to = false
       );
-      $result = $mailer->send($newsletter, $data['subscriber'])
+      $result = $mailer->send($newsletter, $data['subscriber']);
 
       return array('result' => $result);
     } catch(\Exception $e) {
@@ -310,27 +234,30 @@ class Newsletters {
   }
 
   function create($data = array()) {
-    $newsletter = Newsletter::create();
-    $newsletter->type = $data['type'];
-    $newsletter->subject = $data['subject'];
-    $newsletter->body = '{}';
-
-    // try to load template data
-    $template_id = (!empty($data['template']) ? (int)$data['template'] : 0);
-    $template = NewsletterTemplate::findOne($template_id);
-    if($template !== false) {
-      $newsletter->body = $template->body;
-    }
-
+    $options = array();
     if(isset($data['options'])) {
       $options = $data['options'];
       unset($data['options']);
     }
 
+    $newsletter = Newsletter::createOrUpdate($data);
+
+    // try to load template data
+    $template_id = (!empty($data['template']) ? (int)$data['template'] : false);
+    $template = NewsletterTemplate::findOne($template_id);
+    if($template !== false) {
+      $newsletter->body = $template->body;
+    } else {
+      $newsletter->body = array();
+    }
+
     $newsletter->save();
     $errors = $newsletter->getErrors();
     if(!empty($errors)) {
-      return $errors;
+      return array(
+        'result' => false,
+        'errors' =>$errors
+      );
     } else {
       if(!empty($options)) {
         $option_fields = NewsletterOptionField::where(
@@ -347,8 +274,10 @@ class Newsletters {
           }
         }
       }
-      $newsletter->body = json_decode($newsletter->body);
-      return $newsletter->asArray();
+      return array(
+        'result' => true,
+        'newsletter' => $newsletter->asArray()
+      );
     }
   }
 }

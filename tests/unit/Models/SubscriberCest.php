@@ -105,75 +105,62 @@ class SubscriberCest {
   }
 
   function itCanHaveSegment() {
-    $segmentData = array(
+    $segment = Segment::createOrUpdate(array(
       'name' => 'some name'
-    );
-    $segment = Segment::create();
-    $segment->hydrate($segmentData);
-    $segment->save();
+    ));
+    expect($segment->getErrors())->false();
+
     $association = SubscriberSegment::create();
     $association->subscriber_id = $this->subscriber->id;
     $association->segment_id = $segment->id;
     $association->save();
+
     $subscriber = Subscriber::findOne($this->subscriber->id);
-    $subscriberSegment = $subscriber->segments()
-      ->findOne();
-    expect($subscriberSegment->id)->equals($segment->id);
+
+    $subscriber_segment = $subscriber->segments()->findOne();
+    expect($subscriber_segment->id)->equals($segment->id);
   }
 
   function itCanHaveCustomFields() {
-    $customFieldData = array(
+    $custom_field = CustomField::createOrUpdate(array(
       'name' => 'DOB',
       'type' => 'date',
-    );
-    $customField = CustomField::create();
-    $customField->hydrate($customFieldData);
-    $customField->save();
+    ));
+
     $association = SubscriberCustomField::create();
     $association->subscriber_id = $this->subscriber->id;
-    $association->custom_field_id = $customField->id;
+    $association->custom_field_id = $custom_field->id;
     $association->value = '12/12/2012';
     $association->save();
+
     $subscriber = Subscriber::filter('filterWithCustomFields')
       ->findOne($this->subscriber->id);
     expect($subscriber->DOB)->equals($association->value);
   }
 
   function itCanFilterCustomFields() {
-    $customFieldData = array(
-      array(
-        'name' => 'City',
-        'type' => 'text',
-      ),
-      array(
-        'name' => 'Country',
-        'type' => 'text',
-      )
-    );
-    foreach($customFieldData as $data) {
-      $customField = CustomField::create();
-      $customField->hydrate($data);
-      $customField->save();
-      $createdCustomFields[] = $customField->asArray();
-    }
-    $subscriberCustomFieldData = array(
-      array(
-        'subscriber_id' => $this->subscriber->id,
-        'custom_field_id' => $createdCustomFields[0]['id'],
-        'value' => 'Paris'
-      ),
-      array(
-        'subscriber_id' => $this->subscriber->id,
-        'custom_field_id' => $createdCustomFields[1]['id'],
-        'value' => 'France'
-      )
-    );
-    foreach($subscriberCustomFieldData as $data) {
-      $association = SubscriberCustomField::create();
-      $association->hydrate($data);
-      $association->save();
-      $createdAssociations[] = $association->asArray();
-    }
+    $cf_city = CustomField::createOrUpdate(array(
+      'name' => 'City',
+      'type' => 'text'
+    ));
+
+    SubscriberCustomField::createOrUpdate(array(
+      'subscriber_id' => $this->subscriber->id,
+      'custom_field_id' => $cf_city->id,
+      'value' => 'Paris'
+    ));
+
+    $cf_country = CustomField::createOrUpdate(array(
+      'name' => 'Country',
+      'type' => 'text'
+    ));
+
+    SubscriberCustomField::createOrUpdate(array(
+      'subscriber_id' => $this->subscriber->id,
+      'custom_field_id' => $cf_country->id,
+      'value' => 'France'
+    ));
+
     $subscriber = Subscriber::filter('filterWithCustomFields')
       ->filter('filterSearchCustomFields', array(
         array(
@@ -196,6 +183,7 @@ class SubscriberCest {
       ))
       ->findArray();
     expect(empty($subscriber))->false();
+
     $subscriber = Subscriber::filter('filterWithCustomFields')
       ->filter('filterSearchCustomFields', array(
         array(
@@ -209,6 +197,7 @@ class SubscriberCest {
       ), 'OR')
       ->findArray();
     expect(empty($subscriber))->false();
+
     $subscriber = Subscriber::filter('filterWithCustomFields')
       ->filter('filterSearchCustomFields', array(
         array(
@@ -218,6 +207,7 @@ class SubscriberCest {
       ), 'AND', 'LIKE')
       ->findArray();
     expect(empty($subscriber))->false();
+
     $subscriber = Subscriber::filter('filterWithCustomFields')
       ->filter('filterSearchCustomFields', array(
         array(
@@ -227,6 +217,7 @@ class SubscriberCest {
       ))
       ->findArray();
     expect(empty($subscriber))->true();
+
     $subscriber = Subscriber::filter('filterWithCustomFields')
       ->filter('filterSearchCustomFields', array(
         array(
@@ -240,6 +231,7 @@ class SubscriberCest {
       ))
       ->findArray();
     expect(empty($subscriber))->true();
+
     $subscriber = Subscriber::filter('filterWithCustomFields')
       ->filter('filterSearchCustomFields', array(
         array(
@@ -253,6 +245,7 @@ class SubscriberCest {
       ), 'OR')
       ->findArray();
     expect(empty($subscriber))->true();
+
     $subscriber = Subscriber::filter('filterWithCustomFields')
       ->filter('filterSearchCustomFields', array(
         array(
@@ -271,8 +264,8 @@ class SubscriberCest {
       'last_name' => 'Doe'
     );
     $result = Subscriber::createOrUpdate($data);
-    expect($result)->notEquals(false);
-    expect($result->getValidationErrors())->isEmpty();
+    expect($result->id() > 0)->true();
+    expect($result->getErrors())->false();
 
     $record = Subscriber::where('email', $data['email'])
       ->findOne();

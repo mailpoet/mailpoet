@@ -138,12 +138,14 @@ define(
             options: this.state,
           },
         }).done(function(response) {
-          if(response.id !== undefined) {
-            this.showTemplateSelection(response.id);
+          if(response.result && response.newsletter.id) {
+            this.showTemplateSelection(response.newsletter.id);
           } else {
-            response.map(function(error) {
-              MailPoet.Notice.error(error);
-            });
+            if(response.errors.length > 0) {
+              response.errors.map(function(error) {
+                MailPoet.Notice.error(error);
+              });
+            }
           }
         }.bind(this));
       },

@@ -8,7 +8,7 @@ class NewsletterTemplateCest {
     $this->data = array(
       'name' => 'Some template',
       'description' => 'My nice template',
-      'body' => '{content: {}, globalStyles: {}}',
+      'body' => '{}',
     );
 
     $template = NewsletterTemplate::create();

@@ -17,6 +17,14 @@ class NewsletterTemplate extends Model {
     ));
   }
 
+  function asArray() {
+    $template = parent::asArray();
+    if(isset($template['body'])) {
+      $template['body'] = json_decode($template['body'], true);
+    }
+    return $template;
+  }
+
   static function createOrUpdate($data = array()) {
     $template = false;
 

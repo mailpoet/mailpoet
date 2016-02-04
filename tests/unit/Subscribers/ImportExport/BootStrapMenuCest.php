@@ -8,67 +8,76 @@ use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 
 class BootStrapMenuCest {
   function _before() {
-    $this->segmentsData = array(
-      array(
-        'name' => 'first',
-        'description' => 'some description'
-      ),
-      array(
-        'name' => 'second',
-        'description' => 'some description'
-      )
-    );
-    $this->subscribersData = array(
-      array(
-        'first_name' => 'John',
-        'last_name' => 'Mailer',
-        'status' => 'unconfirmed',
-        'email' => 'john@mailpoet.com'
-      ),
-      array(
-        'first_name' => 'Mike',
-        'last_name' => 'Smith',
-        'status' => 'subscribed',
-        'email' => 'mike@maipoet.com'
-      )
-    );
-    $this->customFieldsData = array(
-      'name' => 'DOB',
-      'type' => 'date',
-    );
-    $customField = CustomField::create();
-    $customField->hydrate($this->customFieldsData);
-    $customField->save();
+        $segment_1 = Segment::createOrUpdate(array('name' => 'Unconfirmed Segment'));
+    $segment_2 = Segment::createOrUpdate(array('name' => 'Confirmed Segment'));
+
+    $subscriber_1 = Subscriber::createOrUpdate(array(
+      'first_name' => 'John',
+      'last_name' => 'Mailer',
+      'status' => 'unconfirmed',
+      'email' => 'john@mailpoet.com'
+    ));
+
+    $subscriber_2 = Subscriber::createOrUpdate(array(
+      'first_name' => 'Mike',
+      'last_name' => 'Smith',
+      'status' => 'subscribed',
+      'email' => 'mike@maipoet.com'
+    ));
+
+    $association = SubscriberSegment::create();
+    $association->subscriber_id = $subscriber_1->id;
+    $association->segment_id = $segment_1->id;
+    $association->save();
+
+    $association = SubscriberSegment::create();
+    $association->subscriber_id = $subscriber_2->id;
+    $association->segment_id = $segment_2->id;
+    $association->save();
+
+    CustomField::createOrUpdate(array(
+      'name' => 'Birthday',
+      'type' => 'date'
+    ));
+
     $this->bootStrapImportMenu = new BootStrapMenu('import');
     $this->bootStrapExportMenu = new BootStrapMenu('export');
   }
 
   function itCanGetSegmentsWithSubscriberCount() {
-    // TOFIX.
-    /*$this->_createSegmentsAndSubscribers();
     $segments = $this->bootStrapImportMenu->getSegments();
     expect(count($segments))->equals(2);
-    expect($segments[0]['name'])->equals($this->segmentsData[0]['name']);
+    expect($segments[0]['name'])->equals('Unconfirmed Segment');
     expect($segments[0]['subscriberCount'])->equals(1);
-    expect($segments[1]['subscriberCount'])->equals(1);*/
+    expect($segments[1]['name'])->equals('Confirmed Segment');
+    expect($segments[1]['subscriberCount'])->equals(1);
   }
 
-  function itCanGetSegmentsForImportWithoutTrashedSubscribers() {
-    $this->_createSegmentsAndSubscribers();
+  function itCanGetPublicSegmentsForImport() {
+
     $segments = $this->bootStrapImportMenu->getSegments();
     expect(count($segments))->equals(2);
-    $subscriber = Subscriber::findOne(1);
-    $subscriber->deleted_at = date('Y-m-d H:i:s');
-    $subscriber->save();
+
+    $subscriber = Subscriber::where(
+      'email', 'john@mailpoet.com'
+    )->findOne();
+    expect($subscriber->deleted_at)->null();
+    $subscriber->trash();
+
+    $subscriber = Subscriber::where(
+      'email', 'john@mailpoet.com'
+    )->whereNull('deleted_at')->findOne();
+    expect($subscriber)->false();
+
     $segments = $this->bootStrapImportMenu->getSegments();
     expect(count($segments))->equals(1);
   }
 
-  function itCanGetSegmentsForExportWithoutTrashedSubscribers() {
-    $this->_createSegmentsAndSubscribers();
+  function itCanGetPublicSegmentsForExport() {
     $segments = $this->bootStrapExportMenu->getSegments();
     expect(count($segments))->equals(2);
-    $subscriber = Subscriber::findOne(1);
+    $subscriber = Subscriber::where('email', 'john@mailpoet.com')
+      ->findOne();
     $subscriber->deleted_at = date('Y-m-d H:i:s');
     $subscriber->save();
     $segments = $this->bootStrapExportMenu->getSegments();
@@ -76,21 +85,21 @@ class BootStrapMenuCest {
   }
 
   function itCanGetSegmentsForExport() {
-    $this->_createSegmentsAndSubscribers();
     $segments = $this->bootStrapExportMenu->getSegments();
     expect(count($segments))->equals(2);
-    expect($segments[0]['name'])->equals($this->segmentsData[0]['name']);
+
+    expect($segments[0]['name'])->equals('Confirmed Segment');
     expect($segments[0]['subscriberCount'])->equals(1);
+    expect($segments[1]['name'])->equals('Unconfirmed Segment');
     expect($segments[1]['subscriberCount'])->equals(1);
   }
 
   function itCanGetSegmentsWithConfirmedSubscribersForExport() {
-    $this->_createSegmentsAndSubscribers();
     $segments = $this->bootStrapExportMenu->getSegments(
       $withConfirmedSubscribers = true
     );
     expect(count($segments))->equals(1);
-    expect($segments[0]['name'])->equals($this->segmentsData[1]['name']);
+    expect($segments[0]['name'])->equals('Confirmed Segment');
   }
 
   function itCanGetSubscriberFields() {
@@ -101,7 +110,7 @@ class BootStrapMenuCest {
       'last_name',
       'status'
     );
-    foreach ($fields as $field) {
+    foreach($fields as $field) {
       expect(in_array($field, array_keys($subsriberFields)))->true();
     }
   }
@@ -117,7 +126,7 @@ class BootStrapMenuCest {
       'type',
       'custom'
     );
-    foreach ($fields as $field) {
+    foreach($fields as $field) {
       expect(in_array($field, array_keys($formattedSubscriberFields[0])))
         ->true();
     }
@@ -129,7 +138,7 @@ class BootStrapMenuCest {
       $this->bootStrapImportMenu
         ->getSubscriberCustomFields();
     expect($subscriberCustomFields[0]['type'])
-      ->equals($this->customFieldsData['type']);
+      ->equals('date');
   }
 
   function itCanFormatSubsciberCustomFields() {
@@ -143,7 +152,7 @@ class BootStrapMenuCest {
       'type',
       'custom'
     );
-    foreach ($fields as $field) {
+    foreach($fields as $field) {
       expect(in_array($field, array_keys($formattedSubscriberCustomFields[0])))
         ->true();
     }
@@ -241,10 +250,6 @@ class BootStrapMenuCest {
   }
 
   function itCanBootStrapImport() {
-    $customField = CustomField::create();
-    $customField->hydrate($this->customFieldsData);
-    $customField->save();
-    $this->_createSegmentsAndSubscribers();
     $import = clone($this->bootStrapImportMenu);
     $importMenu = $import->bootstrap();
     expect(count(json_decode($importMenu['segments'], true)))
@@ -257,15 +262,11 @@ class BootStrapMenuCest {
       ->equals(3);
     expect($importMenu['maxPostSize'])->equals(ini_get('post_max_size'));
     expect($importMenu['maxPostSizeBytes'])->equals(
-      (int) ini_get('post_max_size') * 1048576
+      (int)ini_get('post_max_size') * 1048576
     );
   }
 
   function itCanBootStrapExport() {
-    $customField = CustomField::create();
-    $customField->hydrate($this->customFieldsData);
-    $customField->save();
-    $this->_createSegmentsAndSubscribers();
     $export = clone($this->bootStrapImportMenu);
     $exportMenu = $export->bootstrap();
     expect(count(json_decode($exportMenu['segments'], true)))
@@ -275,27 +276,10 @@ class BootStrapMenuCest {
       ->equals(3);
   }
 
-  function _createSegmentsAndSubscribers() {
-    foreach ($this->segmentsData as $segmentData) {
-      $segment = Segment::create();
-      $segment->hydrate($segmentData);
-      $segment->save();
-    }
-    foreach ($this->subscribersData as $subscriberData) {
-      $subscriber = Subscriber::create();
-      $subscriber->hydrate($subscriberData);
-      $subscriber->save();
-      $association = SubscriberSegment::create();
-      $association->subscriber_id = $subscriber->id;
-      $association->segment_id = $subscriber->id;
-      $association->save();
-    };
-  }
-
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    Subscriber::deleteMany();
+    Segment::deleteMany();
+    SubscriberSegment::deleteMany();
+    CustomField::deleteMany();
   }
 }

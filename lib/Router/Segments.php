@@ -65,10 +65,6 @@ class Segments {
     return $listing_data;
   }
 
-  function getAll() {
-    return Segment::findArray();
-  }
-
   function save($data = array()) {
     $errors = array();
     $result = false;

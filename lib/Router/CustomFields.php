@@ -33,30 +33,19 @@ class CustomFields {
 
   function save($data = array()) {
     $custom_field = CustomField::createOrUpdate($data);
+    $errors = $custom_field->getErrors();
 
-    if($custom_field === false) {
-      $result = array(
+    if(!empty($errors)) {
+      return array(
         'result' => false,
-        'errors' => array(
-          __('The custom field could not be created.')
-        )
+        'errors' => $errors
       );
     } else {
-      $errors = $custom_field->getValidationErrors();
-      if(!empty($errors)) {
-        $result = array(
-          'result' => false,
-          'errors' => $errors
-        );
-      } else {
-        $result = array(
-          'result' => true,
-          'field' => $custom_field->asArray()
-        );
-      }
+      return array(
+        'result' => true,
+        'field' => $custom_field->asArray()
+      );
     }
-
-    return $result;
   }
 
   function get($id) {

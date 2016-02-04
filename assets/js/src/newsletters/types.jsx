@@ -29,12 +29,14 @@ define(
             subject: 'Draft newsletter',
           }
         }).done(function(response) {
-          if(response.id !== undefined) {
-            this.history.pushState(null, `/template/${response.id}`);
+          if(response.result && response.newsletter.id) {
+            this.history.pushState(null, `/template/${response.newsletter.id}`);
           } else {
-            response.map(function(error) {
-              MailPoet.Notice.error(error);
-            });
+            if(response.errors.length > 0) {
+              response.errors.map(function(error) {
+                MailPoet.Notice.error(error);
+              });
+            }
           }
         }.bind(this));
       },

@@ -19,20 +19,24 @@ class CustomField extends Model {
   function asArray() {
     $model = parent::asArray();
 
-    $model['params'] = (
-      is_serialized($this->params)
-      ? unserialize($this->params)
-      : $this->params
-    );
-
+    if(isset($model['params'])) {
+      $model['params'] = (
+        is_array($this->params)
+        ? $this->params
+        : unserialize($this->params)
+      );
+    }
     return $model;
   }
 
   function save() {
+    if(is_null($this->params)) {
+      $this->params = array();
+    }
     $this->set('params', (
-      is_serialized($this->params)
-      ? $this->params
-      : serialize($this->params)
+      is_array($this->params)
+      ? serialize($this->params)
+      : $this->params
     ));
     return parent::save();
   }
@@ -66,12 +70,6 @@ class CustomField extends Model {
       $custom_field->set($data);
     }
 
-    try {
-      $custom_field->save();
-      return $custom_field;
-    } catch(Exception $e) {
-      return $custom_field->getValidationErrors();
-    }
-    return false;
+    return $custom_field->save();
   }
 }

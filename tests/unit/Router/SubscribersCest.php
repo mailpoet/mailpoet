@@ -6,7 +6,6 @@ use \MailPoet\Models\Segment;
 
 class SubscribersCest {
   function _before() {
-
   }
 
   function itCanGetASubscriber() {
@@ -27,21 +26,6 @@ class SubscribersCest {
     expect($response)->false();
   }
 
-  function itCanGetAllSubscribers(UnitTester $I) {
-    $I->generateSubscribers(10);
-
-    $router = new Subscribers();
-    $result = $router->getAll();
-
-    expect($result)->count(10);
-
-    $model = Subscriber::create();
-    foreach($result as $subscriber) {
-      expect($subscriber['id'] > 0)->true();
-      expect($subscriber['email'])->notEmpty();
-    }
-  }
-
   function itCanSaveANewSubscriber() {
     $valid_data = array(
       'email' => 'john.doe@mailpoet.com',
@@ -50,9 +34,13 @@ class SubscribersCest {
     );
 
     $router = new Subscribers();
-
     $response = $router->save($valid_data);
     expect($response['result'])->true();
+    expect($response)->hasntKey('errors');
+
+    $response = $router->save(/* missing data */);
+    expect($response['result'])->false();
+    expect($response['errors'][0])->equals('You need to enter your email address.');
 
     $invalid_data = array(
       'email' => 'john.doe@invalid',

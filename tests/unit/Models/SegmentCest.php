@@ -13,7 +13,7 @@ class SegmentCest {
       'name' => 'some name',
       'description' => 'some description'
     );
-    $this->subscribersData = array(
+    $this->subscribers_data = array(
       array(
         'first_name' => 'John',
         'last_name' => 'Mailer',
@@ -27,22 +27,22 @@ class SegmentCest {
         'email' => 'mike@maipoet.com'
       )
     );
-    $this->newslettersData = array(
+    $this->newsletters_data = array(
       array(
-        'subject' => 'My first newsletter'
+        'subject' => 'My first newsletter',
+        'type' => 'standard'
       ),
       array(
-        'subject' => 'My second newsletter'
+        'subject' => 'My second newsletter',
+        'type' => 'standard'
       )
     );
-    $this->segment = Segment::create();
-    $this->segment->hydrate($this->data);
-    $this->saved = $this->segment->save();
+    $this->segment = Segment::createOrUpdate($this->data);
   }
 
   function itCanBeCreated() {
-    expect($this->saved->id() > 0)->true();
-    expect($this->saved->getErrors())->false();
+    expect($this->segment->id() > 0)->true();
+    expect($this->segment->getErrors())->false();
   }
 
   function itCanHaveName() {
@@ -108,10 +108,10 @@ class SegmentCest {
 
   function itCanCreateOrUpdate() {
     $is_created = Segment::createOrUpdate(array(
-                                            'name' => 'new list'
-                                          ));
-    expect($is_created)->notEquals(false);
-    expect($is_created->getValidationErrors())->isEmpty();
+      'name' => 'new list'
+    ));
+    expect($is_created->id() > 0)->true();
+    expect($is_created->getErrors())->false();
 
     $segment = Segment::where('name', 'new list')
       ->findOne();
@@ -128,9 +128,9 @@ class SegmentCest {
   }
 
   function itCanHaveManySubscribers() {
-    foreach ($this->subscribersData as $subscriberData) {
+    foreach($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::create();
-      $subscriber->hydrate($subscriberData);
+      $subscriber->hydrate($subscriber_data);
       $subscriber->save();
       $association = SubscriberSegment::create();
       $association->subscriber_id = $subscriber->id;
@@ -145,9 +145,9 @@ class SegmentCest {
   }
 
   function itCanHaveManyNewsletters() {
-    foreach ($this->newslettersData as $newsletterData) {
+    foreach($this->newsletters_data as $newsletter_data) {
       $newsletter = Newsletter::create();
-      $newsletter->hydrate($newsletterData);
+      $newsletter->hydrate($newsletter_data);
       $newsletter->save();
       $association = NewsletterSegment::create();
       $association->newsletter_id = $newsletter->id;
@@ -162,9 +162,9 @@ class SegmentCest {
   }
 
   function itCanGetSegmentsWithSubscriberCount() {
-    foreach ($this->subscribersData as $subscriberData) {
+    foreach($this->subscribers_data as $subscriber_data) {
       $subscriber = Subscriber::create();
-      $subscriber->hydrate($subscriberData);
+      $subscriber->hydrate($subscriber_data);
       $subscriber->save();
       $association = SubscriberSegment::create();
       $association->subscriber_id = $subscriber->id;
@@ -176,9 +176,9 @@ class SegmentCest {
   }
 
   function itCanGetSegmentsForExport() {
-    foreach ($this->subscribersData as $index => $subscriberData) {
+    foreach($this->subscribers_data as $index => $subscriber_data) {
       $subscriber = Subscriber::create();
-      $subscriber->hydrate($subscriberData);
+      $subscriber->hydrate($subscriber_data);
       $subscriber->save();
       if(!$index) {
         $association = SubscriberSegment::create();
