@@ -766,7 +766,12 @@
           if(response.result === true) {
             MailPoet.Notice.success("The email has been sent! Check your inbox.");
           } else {
-            MailPoet.Notice.error("The email could not be sent. Please check your settings.");
+            if (response.errors) {
+              MailPoet.Notice.error("The email could not be sent. " + response.errors);
+            }
+            else {
+              MailPoet.Notice.error("The email could not be sent. Please check your settings.");
+            }
           }
         });
       });
