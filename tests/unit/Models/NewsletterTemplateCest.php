@@ -59,9 +59,9 @@ class NewsletterTemplateCest {
     expect($created_template->id() > 0)->true();
     expect($created_template->getErrors())->false();
 
-    $created_template = NewsletterTemplate::where('name', 'Another template')
+    $template = NewsletterTemplate::where('name', 'Another template')
       ->findOne();
-    expect($created_template->name)->equals('Another template');
+    expect($template->name)->equals('Another template');
 
     $updated_template = NewsletterTemplate::createOrUpdate(
       array(
