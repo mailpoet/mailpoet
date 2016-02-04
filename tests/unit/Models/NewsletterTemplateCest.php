@@ -13,18 +13,22 @@ class NewsletterTemplateCest {
 
     $template = NewsletterTemplate::create();
     $template->hydrate($this->data);
-    $this->result = $template->save();
+    $this->saved = $template->save();
   }
 
   function itCanBeCreated() {
-    expect($this->result)->equals(true);
+    expect($this->saved->id() > 0)->true();
+    expect($this->saved->getErrors())->false();
   }
 
   function itHasToBeValid() {
-    $empty_model = NewsletterTemplate::create();
-    expect($empty_model->save())->notEquals(true);
-    $validations = $empty_model->getValidationErrors();
-    expect(count($validations))->equals(2);
+    $invalid_newsletter_template = NewsletterTemplate::create();
+    $result = $invalid_newsletter_template->save();
+    $errors = $result->getErrors();
+
+    expect(is_array($errors))->true();
+    expect($errors[0])->equals('You need to specify a name.');
+    expect($errors[1])->equals('Template body cannot be empty.');
   }
 
   function itHasName() {
@@ -46,25 +50,28 @@ class NewsletterTemplateCest {
   }
 
   function itCanCreateOrUpdate() {
-    $is_created = NewsletterTemplate::createOrUpdate(
+    $created_template = NewsletterTemplate::createOrUpdate(
       array(
         'name' => 'Another template',
         'description' => 'Another template description',
         'body' => '{content: {}, globalStyles: {}}',
       ));
-    expect($is_created)->equals(true);
+    expect($created_template->id() > 0)->true();
+    expect($created_template->getErrors())->false();
 
     $template = NewsletterTemplate::where('name', 'Another template')
       ->findOne();
     expect($template->name)->equals('Another template');
 
-    $is_updated = NewsletterTemplate::createOrUpdate(
+    $updated_template = NewsletterTemplate::createOrUpdate(
       array(
         'id' => $template->id,
         'name' => 'Another template updated',
         'body' => '{}'
       ));
-    expect($is_updated)->equals(true);
+    expect($updated_template->id() > 0)->true();
+    expect($updated_template->getErrors())->false();
+
     $template = NewsletterTemplate::findOne($template->id);
     expect($template->name)->equals('Another template updated');
   }

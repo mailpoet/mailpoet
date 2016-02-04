@@ -202,37 +202,28 @@ class Forms {
   }
 
   function restore($id) {
-    $result = false;
-
     $form = Form::findOne($id);
     if($form !== false) {
-      $result = $form->restore();
+      $form->restore();
     }
-
-    return $result;
+    return ($form->getErrors() === false);
   }
 
   function trash($id) {
-    $result = false;
-
     $form = Form::findOne($id);
     if($form !== false) {
-      $result = $form->trash();
+      $form->trash();
     }
-
-    return $result;
+    return ($form->getErrors() === false);
   }
 
   function delete($id) {
-    $result = false;
-
     $form = Form::findOne($id);
     if($form !== false) {
       $form->delete();
-      $result = 1;
+      return 1;
     }
-
-    return $result;
+    return false;
   }
 
   function duplicate($id) {

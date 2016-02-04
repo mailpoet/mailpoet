@@ -12,7 +12,6 @@ class Widget {
     $this->registerWidget();
 
     if(!is_admin()) {
-      //$this->setupActions();
       $this->setupDependencies();
     } else {
       $this->setupAdminDependencies();
@@ -69,6 +68,9 @@ class Widget {
     }
   }
 
+  // TODO: extract this method into an Initializer
+  // - the "ajax" part might probably be useless
+  // - the "post" (non-ajax) part needs to be redone properly
   function setupActions() {
     // ajax requests
     add_action(

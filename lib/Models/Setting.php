@@ -10,8 +10,7 @@ class Setting extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => 'name_is_blank',
-      'isString' => 'name_is_not_string'
+      'required' => __('You need to specify a name.')
     ));
   }
 
@@ -55,10 +54,11 @@ class Setting extends Model {
         $value = serialize($value);
       }
 
-      return Setting::createOrUpdate(array(
+      $setting = Setting::createOrUpdate(array(
         'name' => $key,
         'value' => $value
       ));
+      return ($setting->id() > 0 && $setting->getErrors() === false);
     } else {
       $main_key = array_shift($keys);
 
@@ -101,8 +101,7 @@ class Setting extends Model {
   }
 
   public static function createOrUpdate($model) {
-    $exists = self::where('name', $model['name'])
-      ->find_one();
+    $exists = self::where('name', $model['name'])->findOne();
 
     if($exists === false) {
       $new_model = self::create();

@@ -39,7 +39,6 @@ class Model extends \Sudzy\ValidModel {
     $this->setTimestamp();
     try {
       parent::save();
-      return true;
     } catch(\Sudzy\ValidationException $e) {
       $this->setError($e->getValidationErrors());
     } catch(\PDOException $e) {
@@ -47,7 +46,7 @@ class Model extends \Sudzy\ValidModel {
     } catch(\Exception $e) {
       $this->setError($e->getMessage());
     }
-    return false;
+    return $this;
   }
 
   function trash() {

@@ -11,19 +11,21 @@ class SettingCest {
 
     $setting = Setting::create();
     $setting->hydrate($this->data);
-    $this->result = $setting->save();
+    $this->saved = $setting->save();
   }
 
   function itCanBeCreated() {
-   expect($this->result)->equals(true);
+    expect($this->saved->id() > 0)->true();
+    expect($this->saved->getErrors())->false();
   }
 
   function itHasToBeValid() {
-    expect($this->result)->equals(true);
-    $empty_model = Setting::create();
-    expect($empty_model->save())->notEquals(true);
-    $validations = $empty_model->getValidationErrors();
-    expect(count($validations))->equals(2);
+    $invalid_setting = Setting::create();
+    $result = $invalid_setting->save();
+    $errors = $result->getErrors();
+
+    expect(is_array($errors))->true();
+    expect($errors[0])->equals('You need to specify a name.');
   }
 
   function itHasACreatedAtOnCreation() {
@@ -65,18 +67,20 @@ class SettingCest {
       'value' => 'data'
     );
 
-    $result = Setting::createOrUpdate($data);
-    expect($result)->equals(true);
-    $record = Setting::where('name', $data['name'])
-      ->find_one();
-    expect($record->value)->equals($data['value']);
+    $created_setting = Setting::createOrUpdate($data);
+    expect($created_setting->id() > 0)->true();
+    expect($created_setting->getErrors())->false();
+
+    $setting = Setting::where('name', $data['name'])->findOne();
+    expect($setting->value)->equals($data['value']);
 
     $data['value'] = 'new data';
-    $result = Setting::createOrUpdate($data);
-    expect($result)->equals(true);
-    $record = Setting::where('name', $data['name'])
-      ->find_one();
-    expect($record->value)->equals('new data');
+    $updated_setting = Setting::createOrUpdate($data);
+    expect($updated_setting->id() > 0)->true();
+    expect($updated_setting->getErrors())->false();
+
+    $setting = Setting::where('name', $data['name'])->findOne();
+    expect($setting->value)->equals('new data');
   }
 
   function itCanGetAndSetValue() {

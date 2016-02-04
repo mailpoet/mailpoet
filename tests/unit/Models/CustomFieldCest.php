@@ -30,7 +30,8 @@ class CustomFieldCest {
   }
 
   function itCanBeCreated() {
-    expect($this->saved)->equals(true);
+    expect($this->saved->id() > 0)->true();
+    expect($this->saved->getErrors())->false();
   }
 
   function itCanHaveName() {
@@ -46,10 +47,14 @@ class CustomFieldCest {
   }
 
   function itHasToBeValid() {
-    $empty_model = CustomField::create();
-    expect($empty_model->save())->notEquals(true);
-    $validations = $empty_model->getValidationErrors();
-    expect(count($validations))->equals(2);
+    $invalid_custom_field = CustomField::create();
+
+    $result = $invalid_custom_field->save();
+    $errors = $result->getErrors();
+
+    expect(is_array($errors))->true();
+    expect($errors[0])->equals('You need to specify a name.');
+    expect($errors[1])->equals('You need to specify a type.');
   }
 
   function itHasACreatedAtOnCreation() {

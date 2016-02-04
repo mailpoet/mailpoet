@@ -20,7 +20,9 @@ class SubscriberCustomFieldCest {
   function itCanBeCreated() {
     $subscriberCustomField = SubscriberCustomField::create();
     $subscriberCustomField->hydrate($this->data[0]);
-    expect($subscriberCustomField->save())->true();
+    $subscriberCustomField->save();
+    expect($subscriberCustomField->id() > 0)->true();
+    expect($subscriberCustomField->getErrors())->false();
   }
 
   function itCanCreateOrUpdateMultipleRecords() {
