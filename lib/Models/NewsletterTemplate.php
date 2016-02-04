@@ -32,16 +32,7 @@ class NewsletterTemplate extends Model {
       $template->set($data);
     }
 
-    $saved = $template->save();
-
-    if($saved === true) {
-      return true;
-    } else {
-      $errors = $template->getValidationErrors();
-      if(!empty($errors)) {
-        return $errors;
-      }
-    }
-    return false;
+    $template->save();
+    return $template;
   }
 }

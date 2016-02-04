@@ -87,37 +87,28 @@ class Segments {
   }
 
   function restore($id) {
-    $result = false;
-
     $segment = Segment::findOne($id);
     if($segment !== false) {
-      $result = $segment->restore();
+      $segment->restore();
     }
-
-    return $result;
+    return ($segment->getErrors() === false);
   }
 
   function trash($id) {
-    $result = false;
-
     $segment = Segment::findOne($id);
     if($segment !== false) {
-      $result = $segment->trash();
+      $segment->trash();
     }
-
-    return $result;
+    return ($segment->getErrors() === false);
   }
 
   function delete($id) {
-    $result = false;
-
     $segment = Segment::findOne($id);
     if($segment !== false) {
       $segment->delete();
-      $result = 1;
+      return 1;
     }
-
-    return $result;
+    return false;
   }
 
   function duplicate($id) {

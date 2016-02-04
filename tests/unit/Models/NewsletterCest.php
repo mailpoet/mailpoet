@@ -19,11 +19,12 @@ class NewsletterCest {
     $newsletter = Newsletter::create();
     $newsletter->hydrate($this->data);
     $this->newsletter = $newsletter;
-    $this->result = $newsletter->save();
+    $this->saved = $newsletter->save();
   }
 
   function itCanBeCreated() {
-    expect($this->result)->equals(true);
+    expect($this->saved->id() > 0)->true();
+    expect($this->saved->getErrors())->false();
   }
 
   function itHasSubject() {

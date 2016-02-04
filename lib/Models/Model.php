@@ -4,7 +4,10 @@ namespace MailPoet\Models;
 if(!defined('ABSPATH')) exit;
 
 class Model extends \Sudzy\ValidModel {
+  protected $_errors;
+
   function __construct() {
+    $this->_errors = array();
     $customValidators = new CustomValidator();
     parent::__construct($customValidators->init());
   }
@@ -13,16 +16,37 @@ class Model extends \Sudzy\ValidModel {
     return parent::create();
   }
 
+  function getErrors() {
+    if(empty($this->_errors)) {
+      return false;
+    } else {
+      return $this->_errors;
+    }
+  }
+
+  function setError($error = '') {
+    if(!empty($error)) {
+      if(is_array($error)) {
+        $this->_errors = array_merge($this->_errors, $error);
+        $this->_errors = array_unique($this->_errors);
+      } else {
+        $this->_errors[] = $error;
+      }
+    }
+  }
+
   function save() {
     $this->setTimestamp();
     try {
       parent::save();
-      return true;
-    } catch (\Sudzy\ValidationException $e) {
-      return array_unique($e->getValidationErrors());
-    } catch (\PDOException $e) {
-      return $e->getMessage();
+    } catch(\Sudzy\ValidationException $e) {
+      $this->setError($e->getValidationErrors());
+    } catch(\PDOException $e) {
+      $this->setError($e->getMessage());
+    } catch(\Exception $e) {
+      $this->setError($e->getMessage());
     }
+    return $this;
   }
 
   function trash() {

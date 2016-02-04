@@ -191,37 +191,28 @@ class Subscribers {
   }
 
   function restore($id) {
-    $result = false;
-
     $subscriber = Subscriber::findOne($id);
     if($subscriber !== false) {
-      $result = $subscriber->restore();
+      $subscriber->restore();
     }
-
-    return $result;
+    return ($subscriber->getErrors() === false);
   }
 
   function trash($id) {
-    $result = false;
-
     $subscriber = Subscriber::findOne($id);
     if($subscriber !== false) {
-      $result = $subscriber->trash();
+      $subscriber->trash();
     }
-
-    return $result;
+    return ($subscriber->getErrors() === false);
   }
 
   function delete($id) {
-    $result = false;
-
     $subscriber = Subscriber::findOne($id);
     if($subscriber !== false) {
       $subscriber->delete();
-      $result = 1;
+      return 1;
     }
-
-    return $result;
+    return false;
   }
 
   function bulkAction($data = array()) {

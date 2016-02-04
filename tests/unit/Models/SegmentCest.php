@@ -41,7 +41,8 @@ class SegmentCest {
   }
 
   function itCanBeCreated() {
-    expect($this->saved)->equals(true);
+    expect($this->saved->id() > 0)->true();
+    expect($this->saved->getErrors())->false();
   }
 
   function itCanHaveName() {
@@ -51,7 +52,11 @@ class SegmentCest {
   function nameMustBeUnique() {
     $segment = Segment::create();
     $segment->hydrate($this->data);
-    expect($segment->save())->contains('Duplicate');
+    $result = $segment->save();
+    $errors = $result->getErrors();
+
+    expect(is_array($errors))->true();
+    expect($errors[0])->contains('Duplicate');
   }
 
   function itCanHaveDescription() {
@@ -59,11 +64,13 @@ class SegmentCest {
   }
 
   function itHasToBeValid() {
-    expect($this->saved)->equals(true);
-    $empty_model = Segment::create();
-    expect($empty_model->save())->notEquals(true);
-    $validations = $empty_model->getValidationErrors();
-    expect(count($validations))->equals(1);
+    $invalid_segment = Segment::create();
+
+    $result = $invalid_segment->save();
+    $errors = $result->getErrors();
+
+    expect(is_array($errors))->true();
+    expect($errors[0])->equals('You need to specify a name.');
   }
 
   function itHasACreatedAtOnCreation() {

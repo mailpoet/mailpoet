@@ -85,17 +85,17 @@ class Newsletters {
         NewsletterOption::where('newsletter_id', $newsletter->id)
           ->deleteMany();
 
-        $optionFields = NewsletterOptionField::where(
+        $option_fields = NewsletterOptionField::where(
           'newsletter_type',
           $data['type']
         )->findArray();
 
-        foreach($optionFields as $optionField) {
-          if(isset($options[$optionField['name']])) {
+        foreach($option_fields as $option_field) {
+          if(isset($options[$option_field['name']])) {
             $relation = NewsletterOption::create();
             $relation->newsletter_id = $newsletter->id;
-            $relation->option_field_id = $optionField['id'];
-            $relation->value = $options[$optionField['name']];
+            $relation->option_field_id = $option_field['id'];
+            $relation->value = $options[$option_field['name']];
             $relation->save();
           }
         }
@@ -263,15 +263,14 @@ class Newsletters {
         $sender = false,
         $reply_to = false
       );
+      $result = $mailer->send($newsletter, $data['subscriber'])
 
-      wp_send_json(array(
-        'result' => $mailer->send($newsletter, $data['subscriber'])
-      ));
+      return array('result' => $result);
     } catch(\Exception $e) {
-      wp_send_json(array(
+      return array(
         'result' => false,
         'errors' => array($e->getMessage()),
-      ));
+      );
     }
   }
 
@@ -299,7 +298,7 @@ class Newsletters {
       $item['queue'] = ($queue !== false) ? $queue->asArray() : null;
     }
 
-    wp_send_json($listing_data);
+    return $listing_data;
   }
 
   function bulkAction($data = array()) {
@@ -307,7 +306,7 @@ class Newsletters {
       '\MailPoet\Models\Newsletter',
       $data
     );
-    wp_send_json($bulk_action->apply());
+    return $bulk_action->apply();
   }
 
   function create($data = array()) {
@@ -328,25 +327,28 @@ class Newsletters {
       unset($data['options']);
     }
 
-    $result = $newsletter->save();
-    if($result !== true) {
-      wp_send_json($newsletter->getValidationErrors());
+    $newsletter->save();
+    $errors = $newsletter->getErrors();
+    if(!empty($errors)) {
+      return $errors;
     } else {
       if(!empty($options)) {
-        $optionFields = NewsletterOptionField::where('newsletter_type', $newsletter->type)->findArray();
+        $option_fields = NewsletterOptionField::where(
+          'newsletter_type', $newsletter->type
+        )->findArray();
 
-        foreach($optionFields as $optionField) {
-          if(isset($options[$optionField['name']])) {
+        foreach($option_fields as $option_field) {
+          if(isset($options[$option_field['name']])) {
             $relation = NewsletterOption::create();
             $relation->newsletter_id = $newsletter->id;
-            $relation->option_field_id = $optionField['id'];
-            $relation->value = $options[$optionField['name']];
+            $relation->option_field_id = $option_field['id'];
+            $relation->value = $options[$option_field['name']];
             $relation->save();
           }
         }
       }
       $newsletter->body = json_decode($newsletter->body);
-      wp_send_json($newsletter->asArray());
+      return $newsletter->asArray();
     }
   }
 }

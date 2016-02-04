@@ -14,15 +14,17 @@ class FormCest {
   }
 
   function itCanBeCreated() {
-    expect($this->saved)->equals(true);
+    expect($this->saved->id() > 0)->true();
+    expect($this->saved->getErrors())->false();
   }
 
   function itHasToBeValid() {
-    expect($this->saved)->equals(true);
-    $empty_model = Form::create();
-    expect($empty_model->save())->notEquals(true);
-    $validations = $empty_model->getValidationErrors();
-    expect(count($validations))->equals(1);
+    $invalid_form = Form::create();
+    $result = $invalid_form->save();
+    $errors = $result->getErrors();
+
+    expect(is_array($errors))->true();
+    expect($errors[0])->equals('You need to specify a name.');
   }
 
   function itHasACreatedAtOnCreation() {

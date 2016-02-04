@@ -438,10 +438,15 @@
             action: 'saveEditor',
             data: form
           }).done(function(response) {
-            if(response === false) {
-              MailPoet.Notice.error(
-                "<%= __('An error occured, please reload the page and try again.') %>"
-              );
+            if(response.result === false) {
+              if(response.errors.length > 0) {
+                MailPoet.Notice.error(response.errors.join('<br />'));
+              } else {
+                MailPoet.Notice.error(
+                  "<%= __('An error occured, please reload the page and try again.') %>"
+                );
+              }
+
               return false;
             }
 

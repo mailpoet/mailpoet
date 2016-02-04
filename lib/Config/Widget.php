@@ -9,13 +9,12 @@ class Widget {
   }
 
   function init() {
-    add_action('widgets_init', array($this, 'registerWidget'));
+    $this->registerWidget();
 
     if(!is_admin()) {
-      //$this->setupActions();
-      add_action('widgets_init', array($this, 'setupDependencies'));
+      $this->setupDependencies();
     } else {
-      add_action('widgets_init', array($this, 'setupAdminDependencies'));
+      $this->setupAdminDependencies();
     }
   }
 
@@ -69,6 +68,9 @@ class Widget {
     }
   }
 
+  // TODO: extract this method into an Initializer
+  // - the "ajax" part might probably be useless
+  // - the "post" (non-ajax) part needs to be redone properly
   function setupActions() {
     // ajax requests
     add_action(

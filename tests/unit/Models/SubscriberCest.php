@@ -20,7 +20,8 @@ class SubscriberCest {
   }
 
   function itCanBeCreated() {
-    expect($this->saved)->true();
+    expect($this->saved->id() > 0)->true();
+    expect($this->saved->getErrors())->false();
   }
 
   function itHasFirstName() {
@@ -62,14 +63,13 @@ class SubscriberCest {
   }
 
   function itCanChangeStatus() {
-    $subscriber = Subscriber::where('email', $this->data['email'])
-      ->findOne();
+    $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
     $subscriber->status = 'subscribed';
-    expect($subscriber->save())->equals(true);
-    $subscriber_updated = Subscriber::where(
-      'email',
-      $this->data['email']
-    )
+    $subscriber->save();
+
+    expect($subscriber->id() > 0)->true();
+    expect($subscriber->getErrors())->false();
+    $subscriber_updated = Subscriber::where('email', $this->data['email'])
       ->findOne();
     expect($subscriber_updated->status)->equals('subscribed');
   }
@@ -89,17 +89,17 @@ class SubscriberCest {
   function itHasGroupFilter() {
     $subscribers = Subscriber::filter('groupBy', 'unconfirmed')
       ->findMany();
-    foreach ($subscribers as $subscriber) {
+    foreach($subscribers as $subscriber) {
       expect($subscriber->status)->equals('unconfirmed');
     }
     $subscribers = Subscriber::filter('groupBy', 'subscribed')
       ->findMany();
-    foreach ($subscribers as $subscriber) {
+    foreach($subscribers as $subscriber) {
       expect($subscriber->status)->equals('subscribed');
     }
     $subscribers = Subscriber::filter('groupBy', 'unsubscribed')
       ->findMany();
-    foreach ($subscribers as $subscriber) {
+    foreach($subscribers as $subscriber) {
       expect($subscriber->status)->equals('unsubscribed');
     }
   }
@@ -150,7 +150,7 @@ class SubscriberCest {
         'type' => 'text',
       )
     );
-    foreach ($customFieldData as $data) {
+    foreach($customFieldData as $data) {
       $customField = CustomField::create();
       $customField->hydrate($data);
       $customField->save();
@@ -168,7 +168,7 @@ class SubscriberCest {
         'value' => 'France'
       )
     );
-    foreach ($subscriberCustomFieldData as $data) {
+    foreach($subscriberCustomFieldData as $data) {
       $association = SubscriberCustomField::create();
       $association->hydrate($data);
       $association->save();

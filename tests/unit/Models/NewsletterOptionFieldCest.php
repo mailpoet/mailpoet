@@ -29,7 +29,8 @@ class NewsletterOptionFieldCest {
   }
 
   function itCanBeCreated() {
-    expect($this->saved)->equals(true);
+    expect($this->saved->id() > 0)->true();
+    expect($this->saved->getErrors())->false();
   }
 
   function itHasName() {
@@ -45,11 +46,13 @@ class NewsletterOptionFieldCest {
   }
 
   function itHasToBeValid() {
-    expect($this->saved)->equals(true);
-    $empty_model = NewsletterOptionField::create();
-    expect($empty_model->save())->notEquals(true);
-    $validations = $empty_model->getValidationErrors();
-    expect(count($validations))->equals(2);
+    $invalid_newsletter_option = NewsletterOptionField::create();
+    $result = $invalid_newsletter_option->save();
+    $errors = $result->getErrors();
+
+    expect(is_array($errors))->true();
+    expect($errors[0])->equals('You need to specify a name.');
+    expect($errors[1])->equals('You need to specify a newsletter type.');
   }
 
   function itHasACreatedAtOnCreation() {

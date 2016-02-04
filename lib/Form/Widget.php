@@ -65,6 +65,8 @@ class Widget extends \WP_Widget {
       )
     );
 
+    $form_edit_url = admin_url('admin.php?page=mailpoet-form-editor&id=');
+
     // set title
     $title = isset($instance['title']) ? strip_tags($instance['title']) : '';
 
@@ -102,8 +104,9 @@ class Widget extends \WP_Widget {
           endpoint: 'forms',
           action: 'create'
         }).done(function(response) {
-          if(response !== false) {
-            window.location = response;
+          if(response.result && response.form_id) {
+            window.location =
+              "<?php echo $form_edit_url; ?>" + response.form_id;
           }
         });
         return false;
