@@ -94,6 +94,7 @@ class MailerCest {
   }
 
   function itCanSend() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
     expect($mailer->send($this->newsletter, $this->subscriber))->true();
   }

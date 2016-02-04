@@ -24,6 +24,7 @@ class MailChimpCest {
   }
 
   function itFailsWithIncorrectAPIKey() {
+    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
     $mailChimp = clone($this->mailChimp);
     $mailChimp->APIKey = false;
     $lists = $mailChimp->getLists();
@@ -35,6 +36,7 @@ class MailChimpCest {
   }
 
   function itCanGetLists() {
+    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
     $lists = $this->mailChimp->getLists();
     expect($lists['result'])->true();
     expect(count($lists['data']))->equals(2);
@@ -43,6 +45,7 @@ class MailChimpCest {
   }
 
   function itFailsWithIncorrectLists() {
+    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
     $subscribers = $this->mailChimp->getSubscribers();
     expect($subscribers['result'])->false();
     expect($subscribers['error'])->contains('lists');
@@ -52,6 +55,7 @@ class MailChimpCest {
   }
 
   function itCanGetSubscribers() {
+    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
     $subscribers = $this->mailChimp->getSubscribers(array($this->lists[0]));
     expect($subscribers['result'])->true();
     expect(isset($subscribers['data']['invalid']))->true();
@@ -62,12 +66,14 @@ class MailChimpCest {
   }
 
   function itFailsWhenListHeadersDontMatch() {
+    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
     $subscribers = $this->mailChimp->getSubscribers($this->lists);
     expect($subscribers['result'])->false();
     expect($subscribers['error'])->contains('header');
   }
 
   function itFailWhenSubscribersDataTooLarge() {
+    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
     $mailChimp = clone($this->mailChimp);
     $mailChimp->maxPostSize = 10;
     $subscribers = $mailChimp->getSubscribers(array('8b66f7fac8'));
