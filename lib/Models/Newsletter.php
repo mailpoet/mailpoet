@@ -8,6 +8,10 @@ class Newsletter extends Model {
 
   function __construct() {
     parent::__construct();
+
+    $this->addValidations('type', array(
+      'required' => __('You need to specify a type.')
+    ));
   }
 
   function save() {
@@ -15,7 +19,21 @@ class Newsletter extends Model {
       $this->set_expr('deleted_at', 'NULL');
     }
 
+    $this->set('body',
+      is_array($this->body)
+      ? json_encode($this->body)
+      : $this->body
+    );
     return parent::save();
+  }
+
+  function asArray() {
+    $model = parent::asArray();
+
+    if(isset($model['body'])) {
+      $model['body'] = json_decode($model['body'], true);
+    }
+    return $model;
   }
 
   function delete() {

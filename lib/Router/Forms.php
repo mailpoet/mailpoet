@@ -47,10 +47,6 @@ class Forms {
     return $listing_data;
   }
 
-  function getAll() {
-    return Form::findArray();
-  }
-
   function create() {
     // create new form
     $form_data = array(
@@ -89,16 +85,17 @@ class Forms {
 
   function save($data = array()) {
     $form = Form::createOrUpdate($data);
+    $errors = $form->getErrors();
 
-    if($form !== false && $form->id()) {
+    if(!empty($errors)) {
       return array(
-        'result' => true,
-        'form_id' => $form->id()
+        'result' => false,
+        'errors' => $errors
       );
     } else {
       return array(
-        'result' => false,
-        'errors' => $form->getValidationErrors()
+        'result' => true,
+        'form_id' => $form->id()
       );
     }
   }

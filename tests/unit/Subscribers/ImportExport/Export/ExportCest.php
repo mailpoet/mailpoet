@@ -146,7 +146,7 @@ class ExportCest {
     expect($target)->equals(array($source->id => $source->name));
   }
 
-  function itCanFormatsubscriber_fields() {
+  function itCanFormatSubscriberFields() {
     $formatted_subscriber_fields = $this->export->formatSubscriberFields(
       array_keys($this->subscriber_fields),
       $this->export->getSubscriberCustomFields()

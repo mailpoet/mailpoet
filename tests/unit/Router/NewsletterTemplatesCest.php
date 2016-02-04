@@ -56,8 +56,7 @@ class NewsletterTemplatesCest {
 
     $router = new NewsletterTemplates();
     $response = $router->save($template_data);
-
-    expect($response->id() > 0)->true();
+    expect($response)->true();
 
     $template = NewsletterTemplate::where('name', 'Template #3')->findOne();
     expect($template->name)->equals('Template #3');

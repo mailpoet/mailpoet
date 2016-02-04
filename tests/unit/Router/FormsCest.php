@@ -40,16 +40,6 @@ class FormsCest {
     expect($response['items'][2]['name'])->equals('Form 3');
   }
 
-  function itCanGetAllForms() {
-    $forms = Form::findArray();
-
-    $router = new Forms();
-    $response = $router->getAll();
-
-    expect($response)->count(3);
-    expect($response)->equals($forms);
-  }
-
   function itCanCreateANewForm() {
     $router = new Forms();
     $response = $router->create();

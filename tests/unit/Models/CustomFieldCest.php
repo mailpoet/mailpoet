@@ -43,7 +43,7 @@ class CustomFieldCest {
   }
 
   function itCanHaveParams() {
-    expect(unserialize($this->customField->params))->equals($this->data['params']);
+    expect($this->customField->params)->equals($this->data['params']);
   }
 
   function itHasToBeValid() {

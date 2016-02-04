@@ -29,7 +29,7 @@ define(
           action: 'save',
           data: template
         }).done(function(response) {
-          if(response === true) {
+          if(response.result === true) {
             this.props.onImport(template);
           } else {
             response.map(function(error) {

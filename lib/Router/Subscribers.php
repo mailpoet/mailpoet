@@ -56,35 +56,30 @@ class Subscribers {
     return $listing_data;
   }
 
-  function getAll() {
-    return Subscriber::findArray();
-  }
-
   function save($data = array()) {
-    $errors = array();
-    $result = false;
     $segment_ids = array();
 
-    if(array_key_exists('segments', $data)) {
+    if(isset($data['segments'])) {
       $segment_ids = (array)$data['segments'];
       unset($data['segments']);
     }
 
     $subscriber = Subscriber::createOrUpdate($data);
+    $errors = $subscriber->getErrors();
 
-    if($subscriber !== false && !$subscriber->id()) {
-      $errors = $subscriber->getValidationErrors();
+    if(!empty($errors)) {
+      return array(
+        'result' => false,
+        'errors' => $errors
+      );
     } else {
-      $result = true;
-
       if(!empty($segment_ids)) {
         $subscriber->addToSegments($segment_ids);
       }
+      return array(
+        'result' => true
+      );
     }
-    return array(
-      'result' => $result,
-      'errors' => $errors
-    );
   }
 
   function subscribe($data = array()) {

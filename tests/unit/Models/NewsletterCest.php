@@ -11,8 +11,8 @@ class NewsletterCest {
     $this->before_time = time();
     $this->data = array(
       'subject' => 'new newsletter',
-      'body' => 'body',
       'type' => 'standard',
+      'body' => 'body',
       'preheader' => 'preheader'
     );
 
@@ -78,10 +78,11 @@ class NewsletterCest {
     $is_created = Newsletter::createOrUpdate(
       array(
         'subject' => 'new newsletter',
+        'type' => 'standard',
         'body' => 'body'
       ));
-    expect($is_created)->notEquals(false);
-    expect($is_created->getValidationErrors())->isEmpty();
+    expect($is_created->id() > 0)->true();
+    expect($is_created->getErrors())->false();
 
     $newsletter = Newsletter::where('subject', 'new newsletter')
       ->findOne();
@@ -90,8 +91,7 @@ class NewsletterCest {
     $is_updated = Newsletter::createOrUpdate(
       array(
         'id' => $newsletter->id,
-        'subject' => 'updated newsletter',
-        'body' => 'body'
+        'subject' => 'updated newsletter'
       ));
     $newsletter = Newsletter::findOne($newsletter->id);
     expect($newsletter->subject)->equals('updated newsletter');
@@ -101,6 +101,7 @@ class NewsletterCest {
     Newsletter::createOrUpdate(
       array(
         'subject' => 'search for "pineapple"',
+        'type' => 'standard',
         'body' => 'body'
       ));
     $newsletter = Newsletter::filter('search', 'pineapple')

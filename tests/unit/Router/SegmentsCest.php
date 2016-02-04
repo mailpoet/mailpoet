@@ -38,15 +38,6 @@ class SegmentsCest {
     expect($response['items'][2]['name'])->equals('Segment 3');
   }
 
-  function itCanGetAllSegments() {
-    $router = new Segments();
-    $segments = Segment::findArray();
-
-    $response = $router->getAll();
-    expect($response)->count(3);
-    expect($response)->equals($segments);
-  }
-
   function itCanSaveASegment() {
     $segment_data = array(
       'name' => 'New Segment'

@@ -26,21 +26,16 @@ class NewsletterTemplates {
   }
 
   function save($data = array()) {
-    $result = NewsletterTemplate::createOrUpdate($data);
-    if($result !== true) {
-      return $result;
-    } else {
-      return true;
-    }
+    $template = NewsletterTemplate::createOrUpdate($data);
+    return ($template->getErrors() === false && $template->id() > 0);
   }
 
   function delete($id) {
     $template = NewsletterTemplate::findOne($id);
     if($template !== false) {
-      $result = $template->delete();
+      return $template->delete();
     } else {
-      $result = false;
+      return false;
     }
-    return $result;
   }
 }
