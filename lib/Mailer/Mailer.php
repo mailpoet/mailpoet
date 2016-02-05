@@ -122,7 +122,7 @@ class Mailer {
       }
     }
     if(!$reply_to['address']) {
-      $reply_to['reply_to_email'] = $this->sender['from_email'];
+      $reply_to['address'] = $this->sender['from_email'];
     }
     return array(
       'reply_to_name' => $reply_to['name'],
