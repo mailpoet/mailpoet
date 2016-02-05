@@ -4,12 +4,16 @@ use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 
 class MailChimpCest {
   function __construct() {
-    $this->APIKey = 'd91ae3861c4829c40bd469e40d6c0e7e-us6';
+    $this->APIKey = getenv('WP_TEST_IMPORT_MAILCHIMP_API') ?
+      getenv('WP_TEST_IMPORT_MAILCHIMP_API') :
+      '1234567890';
     $this->mailChimp = new MailChimp($this->APIKey);
-    $this->lists = array(
-      'edf74586e9',
-      '8b66f7fac8'
-    );
+    $this->lists = getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS') ?
+      explode(",", getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS')) :
+      array(
+        'one',
+        'two'
+      );
   }
 
   function itCanGetAPIKey() {
@@ -24,7 +28,7 @@ class MailChimpCest {
   }
 
   function itFailsWithIncorrectAPIKey() {
-    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
+    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     $mailChimp = clone($this->mailChimp);
     $mailChimp->APIKey = false;
     $lists = $mailChimp->getLists();
@@ -36,7 +40,6 @@ class MailChimpCest {
   }
 
   function itCanGetLists() {
-    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
     $lists = $this->mailChimp->getLists();
     expect($lists['result'])->true();
     expect(count($lists['data']))->equals(2);
@@ -45,7 +48,7 @@ class MailChimpCest {
   }
 
   function itFailsWithIncorrectLists() {
-    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
+    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     $subscribers = $this->mailChimp->getSubscribers();
     expect($subscribers['result'])->false();
     expect($subscribers['error'])->contains('lists');
@@ -55,7 +58,7 @@ class MailChimpCest {
   }
 
   function itCanGetSubscribers() {
-    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
+    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     $subscribers = $this->mailChimp->getSubscribers(array($this->lists[0]));
     expect($subscribers['result'])->true();
     expect(isset($subscribers['data']['invalid']))->true();
@@ -66,17 +69,17 @@ class MailChimpCest {
   }
 
   function itFailsWhenListHeadersDontMatch() {
-    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
+    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     $subscribers = $this->mailChimp->getSubscribers($this->lists);
     expect($subscribers['result'])->false();
     expect($subscribers['error'])->contains('header');
   }
 
-  function itFailWhenSubscribersDataTooLarge() {
-    if(getenv('WP_TEST_REQUIRE_INTERNET_CONNECTION') !== 'true') return;
+  function itFailsWhenSubscribersDataTooLarge() {
+    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     $mailChimp = clone($this->mailChimp);
     $mailChimp->maxPostSize = 10;
-    $subscribers = $mailChimp->getSubscribers(array('8b66f7fac8'));
+    $subscribers = $mailChimp->getSubscribers($this->lists);
     expect($subscribers['result'])->false();
     expect($subscribers['error'])->contains('large');
   }
