@@ -1,10 +1,12 @@
 define([
   'react',
-  'jquery'
+  'jquery',
+  'mailpoet'
 ],
 function(
   React,
-  jQuery
+  jQuery,
+  MailPoet
 ) {
   var ListingFilters = React.createClass({
     handleFilterAction: function() {
@@ -13,6 +15,9 @@ function(
         filters[this.refs['filter-'+i].name] = this.refs['filter-'+i].value
       })
       return this.props.onSelectFilter(filters);
+    },
+    handleEmptyTrash: function() {
+      return this.props.onEmptyTrash();
     },
     getAvailableFilters: function() {
       let filters = this.props.filters;
@@ -34,7 +39,7 @@ function(
       const available_filters = this.getAvailableFilters()
         .map(function(filter, i) {
           let default_value = false;
-          if(selected_filters[filter] !== undefined && selected_filters[filter]) {
+          if (selected_filters[filter] !== undefined && selected_filters[filter]) {
             default_value = selected_filters[filter]
           } else {
             jQuery(`select[name="${filter}"]`).val('');
@@ -60,9 +65,10 @@ function(
 
       let button = false;
 
-      if(available_filters.length > 0) {
+      if (available_filters.length > 0) {
         button = (
           <input
+            id="post-query-submit"
             onClick={ this.handleFilterAction }
             type="submit"
             defaultValue="Filter"
@@ -70,10 +76,23 @@ function(
         );
       }
 
+      let empty_trash = false;
+      if (this.props.group === 'trash') {
+        empty_trash = (
+          <input
+            onClick={ this.handleEmptyTrash }
+            type="submit"
+            value="Empty Trash"
+            className="button"
+          />
+        );
+      }
+
       return (
         <div className="alignleft actions actions">
           { available_filters }
           { button }
+          { empty_trash }
         </div>
       );
     }

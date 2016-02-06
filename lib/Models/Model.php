@@ -60,7 +60,7 @@ class Model extends \Sudzy\ValidModel {
   }
 
   static function bulkDelete($orm) {
-    $models = $orm->findMany();
+    $models = $orm->findResultSet();
     $count = 0;
     foreach($models as $model) {
       $model->delete();

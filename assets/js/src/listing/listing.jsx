@@ -504,10 +504,21 @@ define(
           this.getItems();
         }.bind(this));
       },
+      handleEmptyTrash: function() {
+        this.handleBulkAction('all', {
+          action: 'delete',
+          group: 'trash'
+        }, function(response) {
+          MailPoet.Notice.success(
+            MailPoetI18n.permanentlyDeleted.replace('%d', response)
+          );
+        });
+      },
       handleBulkAction: function(selected_ids, params, callback) {
         if(
           this.state.selection === false
           && this.state.selected_ids.length === 0
+          && selected_ids !== 'all'
         ) {
           return;
         }
@@ -520,8 +531,10 @@ define(
           limit: 0,
           filter: this.state.filter,
           group: this.state.group,
-          search: this.state.search,
-          selection: selected_ids
+          search: this.state.search
+        }
+        if(selected_ids !== 'all') {
+          data.listing.selection = selected_ids;
         }
 
         MailPoet.Ajax.post({
@@ -715,7 +728,10 @@ define(
               <ListingFilters
                 filters={ this.state.filters }
                 filter={ this.state.filter }
-                onSelectFilter={ this.handleFilter } />
+                group={ this.state.group }
+                onSelectFilter={ this.handleFilter }
+                onEmptyTrash={ this.handleEmptyTrash }
+              />
               <ListingPages
                 count={ this.state.count }
                 page={ this.state.page }
