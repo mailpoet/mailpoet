@@ -57,13 +57,6 @@ class Subscribers {
   }
 
   function save($data = array()) {
-    $segment_ids = array();
-
-    if(isset($data['segments'])) {
-      $segment_ids = (array)$data['segments'];
-      unset($data['segments']);
-    }
-
     $subscriber = Subscriber::createOrUpdate($data);
     $errors = $subscriber->getErrors();
 
@@ -73,9 +66,6 @@ class Subscribers {
         'errors' => $errors
       );
     } else {
-      if(!empty($segment_ids)) {
-        $subscriber->addToSegments($segment_ids);
-      }
       return array(
         'result' => true
       );

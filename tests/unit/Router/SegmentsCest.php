@@ -4,14 +4,12 @@ use \MailPoet\Models\Segment;
 
 class SegmentsCest {
   function _before() {
-    Segment::createOrUpdate(array('name' => 'Segment 1'));
-    Segment::createOrUpdate(array('name' => 'Segment 2'));
-    Segment::createOrUpdate(array('name' => 'Segment 3'));
+    $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
+    $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
+    $this->segment_3 = Segment::createOrUpdate(array('name' => 'Segment 3'));
   }
 
   function itCanGetASegment() {
-    $segment = Segment::where('name', 'Segment 1')->findOne();
-
     $router = new Segments();
 
     $response = $router->get(/* missing id */);
@@ -20,8 +18,8 @@ class SegmentsCest {
     $response = $router->get('not_an_id');
     expect($response)->false();
 
-    $response = $router->get($segment->id());
-    expect($response['name'])->equals($segment->name);
+    $response = $router->get($this->segment_1->id());
+    expect($response['name'])->equals($this->segment_1->name);
   }
 
   function itCanGetListingData() {
@@ -33,9 +31,9 @@ class SegmentsCest {
     expect($response['count'])->equals(3);
     expect($response['items'])->count(3);
 
-    expect($response['items'][0]['name'])->equals('Segment 1');
-    expect($response['items'][1]['name'])->equals('Segment 2');
-    expect($response['items'][2]['name'])->equals('Segment 3');
+    expect($response['items'][0]['name'])->equals($this->segment_1->name);
+    expect($response['items'][1]['name'])->equals($this->segment_2->name);
+    expect($response['items'][2]['name'])->equals($this->segment_3->name);
   }
 
   function itCanSaveASegment() {
@@ -55,57 +53,81 @@ class SegmentsCest {
     expect($segment->name)->equals($segment_data['name']);
   }
 
-  function itCanRestoreASegment() {
-    $segment = Segment::where('name', 'Segment 1')->findOne();
-    $segment->trash();
+  function itCannotSaveDuplicate() {
+    $duplicate_entry = array(
+      'name' => 'Segment 1'
+    );
 
-    $trashed_segment = Segment::findOne($segment->id());
+    $router = new Segments();
+    $response = $router->save($duplicate_entry);
+    expect($response['result'])->false();
+    expect($response['errors'][0])->contains('Duplicate');
+  }
+
+  function itCanRestoreASegment() {
+    $this->segment_1->trash();
+
+    $trashed_segment = Segment::findOne($this->segment_1->id());
     expect($trashed_segment->deleted_at)->notNull();
 
     $router = new Segments();
-    $response = $router->restore($segment->id());
+    $response = $router->restore($this->segment_1->id());
     expect($response)->true();
 
-    $restored_segment = Segment::findOne($segment->id());
+    $restored_segment = Segment::findOne($this->segment_1->id());
     expect($restored_segment->deleted_at)->null();
   }
 
   function itCanTrashASegment() {
-    $segment = Segment::where('name', 'Segment 1')->findOne();
-    expect($segment->deleted_at)->null();
-
     $router = new Segments();
-    $response = $router->trash($segment->id());
+    $response = $router->trash($this->segment_2->id());
     expect($response)->true();
 
-    $trashed_segment = Segment::findOne($segment->id());
+    $trashed_segment = Segment::findOne($this->segment_2->id());
     expect($trashed_segment->deleted_at)->notNull();
   }
 
   function itCanDeleteASegment() {
-    $segment = Segment::where('name', 'Segment 2')->findOne();
-    expect($segment->deleted_at)->null();
-
     $router = new Segments();
-    $response = $router->delete($segment->id());
+    $response = $router->delete($this->segment_3->id());
     expect($response)->equals(1);
 
-    $deleted_segment = Segment::findOne($segment->id());
+    $deleted_segment = Segment::findOne($this->segment_3->id());
     expect($deleted_segment)->false();
   }
 
   function itCanDuplicateASegment() {
-    $segment = Segment::where('name', 'Segment 3')->findOne();
-
     $router = new Segments();
-    $response = $router->duplicate($segment->id());
-    expect($response['name'])->equals('Copy of '.$segment->name);
+    $response = $router->duplicate($this->segment_1->id());
+    expect($response['name'])->equals('Copy of '.$this->segment_1->name);
 
     $duplicated_segment = Segment::findOne($response['id']);
-    expect($duplicated_segment->name)->equals('Copy of '.$segment->name);
+    expect($duplicated_segment->name)->equals('Copy of '.$this->segment_1->name);
+  }
+
+  function itCanBulkDeleteSegments() {
+    expect(Segment::count())->equals(3);
+
+    $segments = Segment::findMany();
+    foreach($segments as $segment) {
+      $segment->trash();
+    }
+
+    $router = new Segments();
+    $response = $router->bulkAction(array(
+      'action' => 'delete',
+      'listing' => array('group' => 'trash')
+    ));
+    expect($response)->equals(3);
+
+    $response = $router->bulkAction(array(
+      'action' => 'delete',
+      'listing' => array('group' => 'trash')
+    ));
+    expect($response)->equals(0);
   }
 
   function _after() {
-    ORM::forTable(Segment::$_table)->deleteMany();
+    Segment::deleteMany();
   }
 }

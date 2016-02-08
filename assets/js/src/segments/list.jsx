@@ -42,58 +42,49 @@ var columns = [
 
 const messages = {
   onTrash: function(response) {
-    if(response) {
-      let message = null;
-      if(~~response === 1) {
-        message = (
-          '1 segment was moved to the trash.'
-        );
-      } else if(~~response > 1) {
-        message = (
-          '%$1d segments were moved to the trash.'
-        ).replace('%$1d', ~~response);
-      }
+    var count = ~~response;
+    var message = null;
 
-      if(message !== null) {
-        MailPoet.Notice.success(message);
-      }
+    if(count === 1) {
+      message = (
+        '1 segment was moved to the trash.'
+      );
+    } else {
+      message = (
+        '%$1d segments were moved to the trash.'
+      ).replace('%$1d', count);
     }
+    MailPoet.Notice.success(message);
   },
   onDelete: function(response) {
-    if(response) {
-      let message = null;
-      if(~~response === 1) {
-        message = (
-          '1 segment was permanently deleted.'
-        );
-      } else if(~~response > 1) {
-        message = (
-          '%$1d segments were permanently deleted.'
-        ).replace('%$1d', ~~response);
-      }
+    var count = ~~response;
+    var message = null;
 
-      if(message !== null) {
-        MailPoet.Notice.success(message);
-      }
+    if(count === 1) {
+      message = (
+        '1 segment was permanently deleted.'
+      );
+    } else {
+      message = (
+        '%$1d segments were permanently deleted.'
+      ).replace('%$1d', count);
     }
+    MailPoet.Notice.success(message);
   },
   onRestore: function(response) {
-    if(response) {
-      let message = null;
-      if(~~response === 1) {
-        message = (
-          '1 segment has been restored from the trash.'
-        );
-      } else if(~~response > 1) {
-        message = (
-          '%$1d segments have been restored from the trash.'
-        ).replace('%$1d', ~~response);
-      }
+    var count = ~~response;
+    var message = null;
 
-      if(message !== null) {
-        MailPoet.Notice.success(message);
-      }
+    if(count === 1) {
+      message = (
+        '1 segment has been restored from the trash.'
+      );
+    } else {
+      message = (
+        '%$1d segments have been restored from the trash.'
+      ).replace('%$1d', count);
     }
+    MailPoet.Notice.success(message);
   }
 };
 

@@ -33,12 +33,17 @@ class Subscriber extends Model {
   }
 
   function addToSegments(array $segment_ids = array()) {
-    $segments = Segment::whereIn('id', $segment_ids)->findMany();
-    foreach($segments as $segment) {
-      $association = SubscriberSegment::create();
-      $association->subscriber_id = $this->id;
-      $association->segment_id = $segment->id;
-      $association->save();
+    // delete all relations to segments
+    SubscriberSegment::where('subscriber_id', $this->id)->deleteMany();
+
+    if(!empty($segment_ids)) {
+      $segments = Segment::whereIn('id', $segment_ids)->findMany();
+      foreach($segments as $segment) {
+        $association = SubscriberSegment::create();
+        $association->subscriber_id = $this->id;
+        $association->segment_id = $segment->id;
+        $association->save();
+      }
     }
   }
 
@@ -53,7 +58,7 @@ class Subscriber extends Model {
       return false;
     }
 
-    $subscriber = static::createOrUpdate($subscriber_data);
+    $subscriber = self::createOrUpdate($subscriber_data);
 
     if($subscriber !== false && $subscriber->id() > 0) {
       // restore deleted subscriber
@@ -92,20 +97,25 @@ class Subscriber extends Model {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
-      'label' => __('All lists'),
+      'label' => __('All segments'),
       'value' => ''
+    );
+    $segment_list[] = array(
+      'label' => sprintf(
+        __('Subscribers without a segment (%d)'),
+        self::filter('withoutSegments')->count()
+      ),
+      'value' => 'none'
     );
 
     foreach($segments as $segment) {
       $subscribers_count = $segment->subscribers()
         ->whereNull('deleted_at')
         ->count();
-      if($subscribers_count > 0) {
-        $segment_list[] = array(
-          'label' => sprintf('%s (%d)', $segment->name, $subscribers_count),
-          'value' => $segment->id()
-        );
-      }
+      $segment_list[] = array(
+        'label' => sprintf('%s (%d)', $segment->name, $subscribers_count),
+        'value' => $segment->id()
+      );
     }
 
     $filters = array(
@@ -121,9 +131,13 @@ class Subscriber extends Model {
     }
     foreach($filters as $key => $value) {
       if($key === 'segment') {
-        $segment = Segment::findOne($value);
-        if($segment !== false) {
-          return $segment->subscribers();
+        if($value === 'none') {
+          return self::filter('withoutSegments');
+        } else {
+          $segment = Segment::findOne($value);
+          if($segment !== false) {
+            return $segment->subscribers();
+          }
         }
       }
     }
@@ -135,27 +149,27 @@ class Subscriber extends Model {
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Subscriber::getPublished()->count()
+        'count' => self::getPublished()->count()
       ),
       array(
         'name' => 'subscribed',
         'label' => __('Subscribed'),
-        'count' => Subscriber::filter('subscribed')->count()
+        'count' => self::filter('subscribed')->count()
       ),
       array(
         'name' => 'unconfirmed',
         'label' => __('Unconfirmed'),
-        'count' => Subscriber::filter('unconfirmed')->count()
+        'count' => self::filter('unconfirmed')->count()
       ),
       array(
         'name' => 'unsubscribed',
         'label' => __('Unsubscribed'),
-        'count' => Subscriber::filter('unsubscribed')->count()
+        'count' => self::filter('unsubscribed')->count()
       ),
       array(
         'name' => 'trash',
         'label' => __('Trash'),
-        'count' => Subscriber::getTrashed()->count()
+        'count' => self::getTrashed()->count()
       )
     );
   }
@@ -226,15 +240,23 @@ class Subscriber extends Model {
     $subscriber = false;
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
-      $subscriber = static::findOne((int)$data['id']);
+      $subscriber = self::findOne((int)$data['id']);
       unset($data['id']);
     }
 
     if($subscriber === false && !empty($data['email'])) {
-      $subscriber = static::where('email', $data['email'])->findOne();
+      $subscriber = self::where('email', $data['email'])->findOne();
       if($subscriber !== false) {
         unset($data['email']);
       }
+    }
+
+    // segments
+    $segment_ids = array();
+
+    if(isset($data['segments'])) {
+      $segment_ids = (array)$data['segments'];
+      unset($data['segments']);
     }
 
     // custom fields
@@ -248,7 +270,7 @@ class Subscriber extends Model {
     }
 
     if($subscriber === false) {
-      $subscriber = static::create();
+      $subscriber = self::create();
       $subscriber->hydrate($data);
     } else {
       $subscriber->set($data);
@@ -260,6 +282,7 @@ class Subscriber extends Model {
           $subscriber->setCustomField($custom_field_id, $value);
         }
       }
+      $subscriber->addToSegments($segment_ids);
     }
     return $subscriber;
   }
@@ -428,6 +451,19 @@ class Subscriber extends Model {
     return $orm
       ->whereNull('deleted_at')
       ->where('status', 'unconfirmed');
+  }
+
+  static function withoutSegments($orm) {
+    return $orm->select(MP_SUBSCRIBERS_TABLE.'.*')
+      ->leftOuterJoin(
+        MP_SUBSCRIBER_SEGMENT_TABLE,
+        array(
+          MP_SUBSCRIBERS_TABLE.'.id',
+          '=',
+          MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id'
+        )
+      )
+      ->whereNull(MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id');
   }
 
   static function createMultiple($columns, $values) {

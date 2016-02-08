@@ -43,58 +43,49 @@ define(
 
     var messages = {
       onTrash: function(response) {
-        var count = ~~response.newsletters;
+        var count = ~~response;
         var message = null;
 
-        if(count === 1 || response === true) {
+        if(count === 1) {
           message = (
             '1 newsletter was moved to the trash.'
           );
-        } else if(count > 1) {
+        } else {
           message = (
             '%$1d newsletters were moved to the trash.'
           ).replace('%$1d', count);
         }
-
-        if(message !== null) {
-          MailPoet.Notice.success(message);
-        }
+        MailPoet.Notice.success(message);
       },
       onDelete: function(response) {
-        var count = ~~response.newsletters;
+        var count = ~~response;
         var message = null;
 
-        if(count === 1 || response === true) {
+        if(count === 1) {
           message = (
             '1 newsletter was permanently deleted.'
           );
-        } else if(count > 1) {
+        } else {
           message = (
             '%$1d newsletters were permanently deleted.'
           ).replace('%$1d', count);
         }
-
-        if(message !== null) {
-          MailPoet.Notice.success(message);
-        }
+        MailPoet.Notice.success(message);
       },
       onRestore: function(response) {
-        var count = ~~response.newsletters;
+        var count = ~~response;
         var message = null;
 
-        if(count === 1 || response === true) {
+        if(count === 1) {
           message = (
             '1 newsletter has been restored from the trash.'
           );
-        } else if(count > 1) {
+        } else {
           message = (
             '%$1d newsletters have been restored from the trash.'
           ).replace('%$1d', count);
         }
-
-        if(message !== null) {
-          MailPoet.Notice.success(message);
-        }
+        MailPoet.Notice.success(message);
       }
     };
 
