@@ -6,6 +6,9 @@ use \MailPoet\Models\Segment;
 
 class SubscribersCest {
   function _before() {
+    $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
+    $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
+
     $this->subscriber_1 = Subscriber::createOrUpdate(array(
       'email' => 'john.doe@mailpoet.com',
       'first_name' => 'John',
@@ -14,10 +17,12 @@ class SubscribersCest {
     $this->subscriber_2 = Subscriber::createOrUpdate(array(
       'email' => 'jane.doe@mailpoet.com',
       'first_name' => 'Jane',
-      'last_name' => 'Doe'
+      'last_name' => 'Doe',
+      'segments' => array(
+        $this->segment_1->id(),
+        $this->segment_2->id()
+      )
     ));
-    $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
-    $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
   }
 
   function itCanGetASubscriber() {
@@ -40,13 +45,23 @@ class SubscribersCest {
     $valid_data = array(
       'email' => 'john.doe@mailpoet.com',
       'first_name' => 'John',
-      'last_name' => 'Doe'
+      'last_name' => 'Doe',
+      'segments' => array(
+        $this->segment_1->id(),
+        $this->segment_2->id()
+      )
     );
 
     $router = new Subscribers();
     $response = $router->save($valid_data);
     expect($response['result'])->true();
     expect($response)->hasntKey('errors');
+
+    $subscriber = Subscriber::where('email', 'john.doe@mailpoet.com')->findOne();
+    $subscriber_segments = $subscriber->segments()->findMany();
+    expect($subscriber_segments)->count(2);
+    expect($subscriber_segments[0]->name)->equals($this->segment_1->name);
+    expect($subscriber_segments[1]->name)->equals($this->segment_2->name);
 
     $response = $router->save(/* missing data */);
     expect($response['result'])->false();
@@ -65,9 +80,9 @@ class SubscribersCest {
 
   function itCanSaveAnExistingSubscriber() {
     $router = new Subscribers();
-
     $subscriber_data = $this->subscriber_2->asArray();
-    $subscriber_data['email'] = 'jane.doe@mailpoet.com';
+    unset($subscriber_data['created_at']);
+    $subscriber_data['segments'] = array($this->segment_1->id());
     $subscriber_data['first_name'] = 'Super Jane';
 
     $response = $router->save($subscriber_data);

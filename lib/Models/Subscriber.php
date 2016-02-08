@@ -58,7 +58,7 @@ class Subscriber extends Model {
       return false;
     }
 
-    $subscriber = static::createOrUpdate($subscriber_data);
+    $subscriber = Subscriber::createOrUpdate($subscriber_data);
 
     if($subscriber !== false && $subscriber->id() > 0) {
       // restore deleted subscriber
@@ -101,7 +101,10 @@ class Subscriber extends Model {
       'value' => ''
     );
     $segment_list[] = array(
-      'label' => __('Subscribers without a segment'),
+      'label' => sprintf(
+        __('Subscribers without a segment (%d)'),
+        Subscriber::filter('withoutSegments')->count()
+      ),
       'value' => 'none'
     );
 
@@ -237,15 +240,23 @@ class Subscriber extends Model {
     $subscriber = false;
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
-      $subscriber = static::findOne((int)$data['id']);
+      $subscriber = Subscriber::findOne((int)$data['id']);
       unset($data['id']);
     }
 
     if($subscriber === false && !empty($data['email'])) {
-      $subscriber = static::where('email', $data['email'])->findOne();
+      $subscriber = Subscriber::where('email', $data['email'])->findOne();
       if($subscriber !== false) {
         unset($data['email']);
       }
+    }
+
+    // segments
+    $segment_ids = array();
+
+    if(isset($data['segments'])) {
+      $segment_ids = (array)$data['segments'];
+      unset($data['segments']);
     }
 
     // custom fields
@@ -259,7 +270,7 @@ class Subscriber extends Model {
     }
 
     if($subscriber === false) {
-      $subscriber = static::create();
+      $subscriber = Subscriber::create();
       $subscriber->hydrate($data);
     } else {
       $subscriber->set($data);
@@ -271,6 +282,7 @@ class Subscriber extends Model {
           $subscriber->setCustomField($custom_field_id, $value);
         }
       }
+      $subscriber->addToSegments($segment_ids);
     }
     return $subscriber;
   }

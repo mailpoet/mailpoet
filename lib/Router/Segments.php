@@ -66,20 +66,19 @@ class Segments {
   }
 
   function save($data = array()) {
-    $errors = array();
-    $result = false;
-
     $segment = Segment::createOrUpdate($data);
+    $errors = $segment->getErrors();
 
-    if($segment !== false && !$segment->id()) {
-      $errors = $segment->getValidationErrors();
+    if(!empty($errors)) {
+      return array(
+        'result' => false,
+        'errors' => $errors
+      );
     } else {
-      $result = true;
+      return array(
+        'result' => true
+      );
     }
-    return array(
-      'result' => $result,
-      'errors' => $errors
-    );
   }
 
   function restore($id) {

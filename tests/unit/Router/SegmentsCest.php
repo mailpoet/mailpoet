@@ -53,6 +53,17 @@ class SegmentsCest {
     expect($segment->name)->equals($segment_data['name']);
   }
 
+  function itCannotSaveDuplicate() {
+    $duplicate_entry = array(
+      'name' => 'Segment 1'
+    );
+
+    $router = new Segments();
+    $response = $router->save($duplicate_entry);
+    expect($response['result'])->false();
+    expect($response['errors'][0])->contains('Duplicate');
+  }
+
   function itCanRestoreASegment() {
     $this->segment_1->trash();
 
