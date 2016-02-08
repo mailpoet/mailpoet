@@ -1,12 +1,10 @@
 define([
   'react',
-  'jquery',
-  'mailpoet'
+  'jquery'
 ],
 function(
   React,
-  jQuery,
-  MailPoet
+  jQuery
 ) {
   var ListingFilters = React.createClass({
     handleFilterAction: function() {

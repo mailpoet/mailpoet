@@ -73,9 +73,8 @@ class Subscribers {
         'errors' => $errors
       );
     } else {
-      if(!empty($segment_ids)) {
-        $subscriber->addToSegments($segment_ids);
-      }
+      $subscriber->addToSegments($segment_ids);
+
       return array(
         'result' => true
       );
