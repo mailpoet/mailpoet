@@ -58,7 +58,7 @@ class Subscriber extends Model {
       return false;
     }
 
-    $subscriber = Subscriber::createOrUpdate($subscriber_data);
+    $subscriber = self::createOrUpdate($subscriber_data);
 
     if($subscriber !== false && $subscriber->id() > 0) {
       // restore deleted subscriber
@@ -103,7 +103,7 @@ class Subscriber extends Model {
     $segment_list[] = array(
       'label' => sprintf(
         __('Subscribers without a segment (%d)'),
-        Subscriber::filter('withoutSegments')->count()
+        self::filter('withoutSegments')->count()
       ),
       'value' => 'none'
     );
@@ -132,7 +132,7 @@ class Subscriber extends Model {
     foreach($filters as $key => $value) {
       if($key === 'segment') {
         if($value === 'none') {
-          return Subscriber::filter('withoutSegments');
+          return self::filter('withoutSegments');
         } else {
           $segment = Segment::findOne($value);
           if($segment !== false) {
@@ -149,27 +149,27 @@ class Subscriber extends Model {
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Subscriber::getPublished()->count()
+        'count' => self::getPublished()->count()
       ),
       array(
         'name' => 'subscribed',
         'label' => __('Subscribed'),
-        'count' => Subscriber::filter('subscribed')->count()
+        'count' => self::filter('subscribed')->count()
       ),
       array(
         'name' => 'unconfirmed',
         'label' => __('Unconfirmed'),
-        'count' => Subscriber::filter('unconfirmed')->count()
+        'count' => self::filter('unconfirmed')->count()
       ),
       array(
         'name' => 'unsubscribed',
         'label' => __('Unsubscribed'),
-        'count' => Subscriber::filter('unsubscribed')->count()
+        'count' => self::filter('unsubscribed')->count()
       ),
       array(
         'name' => 'trash',
         'label' => __('Trash'),
-        'count' => Subscriber::getTrashed()->count()
+        'count' => self::getTrashed()->count()
       )
     );
   }
@@ -240,12 +240,12 @@ class Subscriber extends Model {
     $subscriber = false;
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
-      $subscriber = Subscriber::findOne((int)$data['id']);
+      $subscriber = self::findOne((int)$data['id']);
       unset($data['id']);
     }
 
     if($subscriber === false && !empty($data['email'])) {
-      $subscriber = Subscriber::where('email', $data['email'])->findOne();
+      $subscriber = self::where('email', $data['email'])->findOne();
       if($subscriber !== false) {
         unset($data['email']);
       }
@@ -270,7 +270,7 @@ class Subscriber extends Model {
     }
 
     if($subscriber === false) {
-      $subscriber = Subscriber::create();
+      $subscriber = self::create();
       $subscriber->hydrate($data);
     } else {
       $subscriber->set($data);
