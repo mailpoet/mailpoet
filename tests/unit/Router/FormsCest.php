@@ -165,6 +165,28 @@ class FormsCest {
     expect($duplicated_form->name)->equals('Copy of '.$form->name);
   }
 
+  function itCanBulkDeleteForms() {
+    expect(Form::count())->equals(3);
+
+    $forms = Form::findMany();
+    foreach($forms as $form) {
+      $form->trash();
+    }
+
+    $router = new Forms();
+    $response = $router->bulkAction(array(
+      'action' => 'delete',
+      'listing' => array('group' => 'trash')
+    ));
+    expect($response)->equals(3);
+
+    $response = $router->bulkAction(array(
+      'action' => 'delete',
+      'listing' => array('group' => 'trash')
+    ));
+    expect($response)->equals(0);
+  }
+
   function _after() {
     Form::deleteMany();
     Segment::deleteMany();

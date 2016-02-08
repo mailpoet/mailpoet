@@ -7,20 +7,22 @@ use \MailPoet\Models\Segment;
 
 class NewslettersCest {
   function _before() {
+    $this->newsletter = Newsletter::createOrUpdate(array(
+      'subject' => 'My Standard Newsletter',
+      'type' => 'standard'
+    ));
+
+    $this->post_notification = Newsletter::createOrUpdate(array(
+      'subject' => 'My Post Notification',
+      'type' => 'notification'
+    ));
   }
 
   function itCanGetANewsletter() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'subject' => 'My First Newsletter',
-      'type' => 'standard'
-    ));
-    expect($newsletter->id() > 0)->true();
-
     $router = new Newsletters();
 
-    $response = $router->get($newsletter->id());
-
-    expect($response['id'])->equals($newsletter->id());
+    $response = $router->get($this->newsletter->id());
+    expect($response['id'])->equals($this->newsletter->id());
 
     $response = $router->get('not_an_id');
     expect($response)->false();
@@ -50,82 +52,57 @@ class NewslettersCest {
   }
 
   function itCanSaveAnExistingNewsletter() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'subject' => 'My First Newsletter',
-      'type' => 'standard'
-    ));
-    expect($newsletter->id() > 0)->true();
-
     $router = new Newsletters();
-    $newsletter_data = $newsletter->asArray();
+    $newsletter_data = $this->newsletter->asArray();
     $newsletter_data['subject'] = 'My Updated Newsletter';
 
     $response = $router->save($newsletter_data);
     expect($response['result'])->true();
 
-    $updated_newsletter = Newsletter::findOne($newsletter->id());
+    $updated_newsletter = Newsletter::findOne($this->newsletter->id());
     expect($updated_newsletter->subject)->equals('My Updated Newsletter');
   }
 
   function itCanRestoreANewsletter() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'subject' => 'My First Newsletter',
-      'type' => 'standard'
-    ));
-    expect($newsletter->id() > 0)->true();
+    $this->newsletter->trash();
 
-    $newsletter->trash();
-
-    expect($newsletter->deleted_at)->notNull();
+    expect($this->newsletter->deleted_at)->notNull();
 
     $router = new Newsletters();
-    $router->restore($newsletter->id());
+    $router->restore($this->newsletter->id());
 
-    $restored_subscriber = Newsletter::findOne($newsletter->id());
+    $restored_subscriber = Newsletter::findOne($this->newsletter->id());
     expect($restored_subscriber->deleted_at)->null();
   }
 
   function itCanTrashANewsletter() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'subject' => 'My First Newsletter',
-      'type' => 'standard'
-    ));
-    expect($newsletter->id() > 0)->true();
-
     $router = new Newsletters();
-    $response = $router->trash($newsletter->id());
+    $response = $router->trash($this->newsletter->id());
     expect($response)->true();
 
-    $trashed_subscriber = Newsletter::findOne($newsletter->id());
+    $trashed_subscriber = Newsletter::findOne($this->newsletter->id());
     expect($trashed_subscriber->deleted_at)->notNull();
   }
 
   function itCanDeleteANewsletter() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'subject' => 'My First Newsletter',
-      'type' => 'standard'
-    ));
-    expect($newsletter->id() > 0)->true();
-
     $router = new Newsletters();
-    $response = $router->delete($newsletter->id());
+    $response = $router->delete($this->newsletter->id());
     expect($response)->equals(1);
 
-    expect(Newsletter::findOne($newsletter->id()))->false();
+    expect(Newsletter::findOne($this->newsletter->id()))->false();
   }
 
   function itCanDuplicateANewsletter() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'subject' => 'My First Newsletter',
-      'type' => 'standard'
-    ));
-    expect($newsletter->id() > 0)->true();
-
     $router = new Newsletters();
-    $response = $router->duplicate($newsletter->id());
-    expect($response['subject'])->equals('Copy of My First Newsletter');
+    $response = $router->duplicate($this->newsletter->id());
+    expect($response['subject'])->equals('Copy of My Standard Newsletter');
     expect($response['type'])->equals('standard');
-    expect($response['body'])->equals($newsletter->body);
+    expect($response['body'])->equals($this->newsletter->body);
+
+    $response = $router->duplicate($this->post_notification->id());
+    expect($response['subject'])->equals('Copy of My Post Notification');
+    expect($response['type'])->equals('notification');
+    expect($response['body'])->equals($this->post_notification->body);
   }
 
   function itCanCreateANewsletter() {
@@ -151,38 +128,29 @@ class NewslettersCest {
     $segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
     $segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
 
-    $newsletter_1 = Newsletter::createOrUpdate(array(
-      'subject' => 'My First Newsletter',
-      'type' => 'standard'
-    ));
-    $newsletter_2 = Newsletter::createOrUpdate(array(
-      'subject' => 'My Second Newsletter',
-      'type' => 'standard'
-    ));
-
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(array(
-      'newsletter_id' => $newsletter_1->id(),
+      'newsletter_id' => $this->newsletter->id(),
       'segment_id' => $segment_1->id()
     ));
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(array(
-      'newsletter_id' => $newsletter_1->id(),
+      'newsletter_id' => $this->newsletter->id(),
       'segment_id' => $segment_2->id()
     ));
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(array(
-      'newsletter_id' => $newsletter_2->id(),
+      'newsletter_id' => $this->post_notification->id(),
       'segment_id' => $segment_2->id()
     ));
     $newsletter_segment->save();
 
     $router = new Newsletters();
-    $response = $router->listing(array('sort'));
+    $response = $router->listing();
 
     expect($response)->hasKey('filters');
     expect($response)->hasKey('groups');
@@ -190,8 +158,8 @@ class NewslettersCest {
     expect($response['count'])->equals(2);
     expect($response['items'])->count(2);
 
-    expect($response['items'][0]['subject'])->equals('My First Newsletter');
-    expect($response['items'][1]['subject'])->equals('My Second Newsletter');
+    expect($response['items'][0]['subject'])->equals('My Standard Newsletter');
+    expect($response['items'][1]['subject'])->equals('My Post Notification');
     expect($response['items'][0]['segments'])->equals(array(
       $segment_1->id(),
       $segment_2->id()
@@ -199,6 +167,28 @@ class NewslettersCest {
     expect($response['items'][1]['segments'])->equals(array(
       $segment_2->id()
     ));
+  }
+
+  function itCanBulkDeleteNewsletters() {
+    expect(Newsletter::count())->equals(2);
+
+    $newsletters = Newsletter::findMany();
+    foreach($newsletters as $newsletter) {
+      $newsletter->trash();
+    }
+
+    $router = new Newsletters();
+    $response = $router->bulkAction(array(
+      'action' => 'delete',
+      'listing' => array('group' => 'trash')
+    ));
+    expect($response)->equals(2);
+
+    $response = $router->bulkAction(array(
+      'action' => 'delete',
+      'listing' => array('group' => 'trash')
+    ));
+    expect($response)->equals(0);
   }
 
   function _after() {
