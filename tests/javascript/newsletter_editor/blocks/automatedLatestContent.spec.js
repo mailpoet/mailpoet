@@ -71,7 +71,7 @@ define([
       });
 
       it('has image width', function () {
-        expect(model.get('imagePadded')).to.be.a('boolean');
+        expect(model.get('imageFullWidth')).to.be.a('boolean');
       });
 
       it('has an option to display author', function () {
@@ -126,7 +126,7 @@ define([
               titlePosition: 'aboveBlock', // 'inTextBlock'|'aboveBlock',
               titleAlignment: 'right', // 'left'|'center'|'right'
               titleIsLink: true, // false|true
-              imagePadded: false, // true|false
+              imageFullWidth: false, // true|false
               showAuthor: 'belowText', // 'no'|'aboveText'|'belowText'
               authorPrecededBy: 'Custom config author preceded by',
               showCategories: 'belowText', // 'no'|'aboveText'|'belowText'
@@ -172,7 +172,7 @@ define([
         expect(model.get('titlePosition')).to.equal('aboveBlock');
         expect(model.get('titleAlignment')).to.equal('right');
         expect(model.get('titleIsLink')).to.equal(true);
-        expect(model.get('imagePadded')).to.equal(false);
+        expect(model.get('imageFullWidth')).to.equal(false);
         expect(model.get('showAuthor')).to.equal('belowText');
         expect(model.get('authorPrecededBy')).to.equal('Custom config author preceded by');
         expect(model.get('showCategories')).to.equal('belowText');
@@ -346,8 +346,8 @@ define([
 
         it('changes the model if image alignment changes', function () {
           var newValue = false;
-          view.$('.mailpoet_automated_latest_content_image_padded').val(newValue).change();
-          expect(model.get('imagePadded')).to.equal(newValue);
+          view.$('.mailpoet_automated_latest_content_image_full_width').val(newValue).change();
+          expect(model.get('imageFullWidth')).to.equal(newValue);
         });
 
         it('changes the model if show author changes', function () {

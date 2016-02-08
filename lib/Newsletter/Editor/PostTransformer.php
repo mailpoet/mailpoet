@@ -22,12 +22,12 @@ class PostTransformer {
     $content = $content_manager->filterContent($content);
 
     $structure_transformer = new StructureTransformer();
-    $structure = $structure_transformer->transform($content, $this->args['imagePadded'] === 'true');
+    $structure = $structure_transformer->transform($content, $this->args['imageFullWidth'] === 'true');
 
     $structure = $this->appendFeaturedImage(
       $post,
       $this->args['displayType'],
-      $this->args['imagePadded'] === 'true',
+      $this->args['imageFullWidth'] === 'true',
       $structure
     );
     $structure = $this->appendPostTitle($post, $structure);
@@ -36,7 +36,7 @@ class PostTransformer {
     return $structure;
   }
 
-  private function appendFeaturedImage($post, $display_type, $image_padded, $structure) {
+  private function appendFeaturedImage($post, $display_type, $image_full_width, $structure) {
     if ($display_type === 'full') {
       // No featured images for full posts
       return $structure;
@@ -45,7 +45,7 @@ class PostTransformer {
     $featured_image = $this->getFeaturedImage(
       $post->ID,
       $post->post_title,
-      (bool)$image_padded
+      (bool)$image_full_width
     );
 
     if (is_array($featured_image)) {
@@ -55,7 +55,7 @@ class PostTransformer {
     return $structure;
   }
 
-  private function getFeaturedImage($post_id, $post_title, $image_padded) {
+  private function getFeaturedImage($post_id, $post_title, $image_full_width) {
     if(has_post_thumbnail($post_id)) {
       $thumbnail_id = get_post_thumbnail_id($post_id);
 
@@ -81,7 +81,7 @@ class PostTransformer {
         'link' => get_permalink($post_id),
         'src' => $image_info[0],
         'alt' => $alt_text,
-        'padded' => $image_padded,
+        'fullWidth' => $image_full_width,
         'width' => $image_info[1],
         'height' => $image_info[2],
         'styles' => array(

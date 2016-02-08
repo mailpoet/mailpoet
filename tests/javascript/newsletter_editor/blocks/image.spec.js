@@ -30,8 +30,8 @@ define([
         expect(model.get('alt')).to.be.a('string');
       });
 
-      it('can be padded', function () {
-        expect(model.get('padded')).to.be.a('boolean');
+      it('can be full width', function () {
+        expect(model.get('fullWidth')).to.be.a('boolean');
       });
 
       it('has a width', function () {
@@ -61,7 +61,7 @@ define([
         model.set('link', 'http://example.net');
         model.set('src', 'someNewImage.png');
         model.set('alt', 'Some alt text');
-        model.set('padded', false);
+        model.set('fullWidth', false);
         model.set('width', '63px');
         model.set('height', '61px');
         model.set('styles.block.textAlign', 'right');
@@ -76,7 +76,7 @@ define([
               link: 'http://example.org/customConfigPage',
               src: 'http://example.org/someCustomConfigImage.png',
               alt: 'Custom config alt',
-              padded: false,
+              fullWidth: false,
               width: '1234px',
               height: '2345px',
               styles: {
@@ -92,7 +92,7 @@ define([
         expect(model.get('link')).to.equal('http://example.org/customConfigPage');
         expect(model.get('src')).to.equal('http://example.org/someCustomConfigImage.png');
         expect(model.get('alt')).to.equal('Custom config alt');
-        expect(model.get('padded')).to.equal(false);
+        expect(model.get('fullWidth')).to.equal(false);
         expect(model.get('width')).to.equal('1234px');
         expect(model.get('height')).to.equal('2345px');
         expect(model.get('styles.block.textAlign')).to.equal('right');
@@ -182,8 +182,8 @@ define([
 
         it('updates the model when padding changes', function () {
           var newValue = 'false';
-          view.$('.mailpoet_field_image_padded').prop('checked', false).change();
-          expect(model.get('padded')).to.equal(false);
+          view.$('.mailpoet_field_image_full_width').prop('checked', false).change();
+          expect(model.get('fullWidth')).to.equal(false);
         });
 
         it.skip('closes the sidepanel after "Done" is clicked', function() {

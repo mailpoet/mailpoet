@@ -225,6 +225,11 @@ define([
     showPreview: function() {
       var json = App.toJSON();
 
+      // Stringify to enable transmission of primitive non-string value types
+      if (!_.isUndefined(json.body)) {
+        json.body = JSON.stringify(json.body);
+      }
+
       MailPoet.Ajax.post({
         endpoint: 'newsletters',
         action: 'render',
