@@ -7,7 +7,11 @@ define(['react', 'classnames'], function(React, classNames) {
       }
     },
     setPage: function(page) {
-      this.props.onSetPage(page);
+      this.setState({
+        page: null
+      }, function () {
+        this.props.onSetPage(this.constrainPage(page));
+      }.bind(this));
     },
     setFirstPage: function() {
       this.setPage(1);
@@ -16,10 +20,14 @@ define(['react', 'classnames'], function(React, classNames) {
       this.setPage(this.getLastPage());
     },
     setPreviousPage: function() {
-      this.setPage(this.constrainPage(this.props.page - 1));
+      this.setPage(this.constrainPage(
+        parseInt(this.props.page, 10) - 1)
+      );
     },
     setNextPage: function() {
-      this.setPage(this.constrainPage(this.props.page + 1));
+      this.setPage(this.constrainPage(
+        parseInt(this.props.page, 10) + 1)
+      );
     },
     constrainPage: function(page) {
       return Math.min(Math.max(1, Math.abs(~~page)), this.getLastPage());
@@ -27,13 +35,15 @@ define(['react', 'classnames'], function(React, classNames) {
     handleSetManualPage: function(e) {
       if(e.which === 13) {
         this.setPage(this.state.page);
-        this.setState({ page: null });
       }
     },
     handleChangeManualPage: function(e) {
       this.setState({
-        page: this.constrainPage(e.target.value)
+        page: e.target.value
       });
+    },
+    handleBlurManualPage: function(e) {
+      this.setPage(e.target.value);
     },
     getLastPage: function() {
       return Math.ceil(this.props.count / this.props.limit);
@@ -101,6 +111,11 @@ define(['react', 'classnames'], function(React, classNames) {
             );
           }
 
+          let pageValue =  this.props.page;
+          if(this.state.page !== null) {
+            pageValue = this.state.page;
+          }
+
           pagination = (
             <span className="pagination-links">
               {firstPage}
@@ -115,10 +130,11 @@ define(['react', 'classnames'], function(React, classNames) {
                   type="text"
                   onChange={ this.handleChangeManualPage }
                   onKeyUp={ this.handleSetManualPage }
+                  onBlur={ this.handleBlurManualPage }
                   aria-describedby="table-paging"
                   size="1"
                   ref="page"
-                  value={ this.state.page || this.props.page }
+                  value={ pageValue }
                   name="paged"
                   id="current-page-selector"
                   className="current-page" />
