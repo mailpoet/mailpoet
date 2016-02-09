@@ -192,21 +192,28 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
       error: function(message, options) {
         this.show(jQuery.extend({}, {
               type: 'error',
-              message: '<p>'+message+'</p>'
+              message: '<p>'+this.formatMessage(message)+'</p>'
           }, options));
       },
       success: function(message, options) {
           this.show(jQuery.extend({}, {
               type: 'success',
-              message: '<p>'+message+'</p>'
+              message: '<p>'+this.formatMessage(message)+'</p>'
           }, options));
       },
       system: function(message, options) {
           this.show(jQuery.extend({}, {
               type: 'system',
               static: true,
-              message: message
+              message: '<p>'+this.formatMessage(message)+'</p>'
           }, options));
+      },
+      formatMessage: function(message) {
+        if(Array.isArray(message)) {
+          return message.join('<br />');
+        } else {
+          return message;
+        }
       }
   };
 });
