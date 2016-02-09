@@ -193,7 +193,7 @@ define(
             }).done(function (response) {
               if (response.result === false) {
                 MailPoet.Notice.hide();
-                MailPoet.Notice.error(response.error, {
+                MailPoet.Notice.error(response.errors, {
                   timeout: 3000,
                 });
                 jQuery('.mailpoet_mailchimp-key-status')
@@ -245,7 +245,7 @@ define(
               }
               else {
                 MailPoet.Notice.hide();
-                MailPoet.Notice(response.message, {
+                MailPoet.Notice.error(response.errors, {
                   timeout: 3000,
                 });
               }
@@ -1082,7 +1082,7 @@ define(
             }).done(function (response) {
               MailPoet.Modal.loading(false);
               if (response.result === false) {
-                MailPoet.Notice.error(response.error, {
+                MailPoet.Notice.error(response.errors, {
                   timeout: 3000,
                 });
               } else {
