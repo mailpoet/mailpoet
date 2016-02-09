@@ -5,114 +5,178 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterStatistics;
+use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
+  public $mailer_config;
+  public $mailer_log;
   private $timer;
 
   function __construct($timer = false) {
+    $this->mailer_config = $this->getMailerConfig();
+    $this->mailer_log = $this->getMailerLog();
     $this->timer = ($timer) ? $timer : microtime(true);
   }
 
   function process() {
-    // TODO: implement mailer sending frequency limits
     foreach($this->getQueues() as $queue) {
       $newsletter = Newsletter::findOne($queue->newsletter_id);
       if(!$newsletter) {
         continue;
-      };
+      }
+      $queue->subscribers = (object) unserialize($queue->subscribers);
+      if(!isset($queue->subscribers->processed)) {
+        $queue->subscribers->processed = array();
+      }
+      if(!isset($queue->subscribers->failed)) {
+        $queue->subscribers->failed = array();
+      }
       $newsletter = $newsletter->asArray();
-      $mailer = $this->configureMailerForNewsletter($newsletter);
-      $subscribers = json_decode($queue->subscribers, true);
-      $subscribers_to_process = $subscribers['to_process'];
-      if(!isset($subscribers['processed'])) $subscribers['processed'] = array();
-      if(!isset($subscribers['failed'])) $subscribers['failed'] = array();
-      foreach(array_chunk($subscribers_to_process, 200) as $subscriber_ids) {
-        $db_subscribers = Subscriber::whereIn('id', $subscriber_ids)
+      $newsletter['body'] = $this->renderNewsletter($newsletter);
+      $mailer = $this->configureMailer($newsletter);
+      foreach(array_chunk($queue->subscribers->to_process, 5) as
+              $subscribers_ids) {
+        $subscribers = Subscriber::whereIn('id', $subscribers_ids)
           ->findArray();
-        foreach($db_subscribers as $db_subscriber) {
-          $this->checkExecutionTimer();
-          $result = $this->sendNewsletter(
+        $processing_method = ($this->mailer_config['method'] === 'MailPoet') ?
+          'processBulkSubscribers' :
+          'processIndividualSubscriber';
+        $queue->subscribers = call_user_func_array(
+          array(
+            $this,
+            $processing_method
+          ),
+          array(
             $mailer,
-            $this->processNewsletter($newsletter, $db_subscriber),
-            $db_subscriber);
-          if($result) {
-            $this->updateStatistics($newsletter['id'], $db_subscriber['id'], $queue->id);
-            $subscribers['processed'][] = $db_subscriber['id'];
-          } else {
-            $subscribers['failed'][] = $db_subscriber['id'];
-          }
-          $this->updateQueue($queue, $subscribers);
-        }
+            $newsletter,
+            $subscribers,
+            $queue
+          )
+        );
       }
     }
   }
 
-  function processNewsletter($newsletter, $subscriber) {
-    $rendered_newsletter = $this->renderNewsletter($newsletter);
-    $shortcodes = new Shortcodes($rendered_newsletter['body']['html'], $newsletter, $subscriber);
-    $processed_newsletter['body']['html'] = $shortcodes->replace();
-    $shortcodes = new Shortcodes($rendered_newsletter['body']['text'], $newsletter, $subscriber);
-    $processed_newsletter['body']['text'] = $shortcodes->replace();
-    $processed_newsletter['subject'] = $rendered_newsletter['subject'];
-    return $processed_newsletter;
+  function processBulkSubscribers($mailer, $newsletter, $subscribers, $queue) {
+    foreach($subscribers as $subscriber) {
+      $processed_newsletters[] =
+        $this->processNewsletter($newsletter, $subscriber);
+      $transformed_subscribers[] =
+        $mailer->transformSubscriber($subscriber);
+    }
+    $result = $this->sendNewsletter(
+      $mailer,
+      $processed_newsletters,
+      $transformed_subscribers
+    );
+    $subscribers_ids = Helpers::arrayColumn($subscribers, 'id');
+    if(!$result) {
+      $queue->subscribers->failed = array_merge(
+        $queue->subscribers->failed,
+        $subscribers_ids
+      );
+    } else {
+      $newsletter_statistics =
+        array_map(function ($data) use ($newsletter, $subscribers_ids, $queue) {
+          return array(
+            $newsletter['id'],
+            $subscribers_ids[$data],
+            $queue->id
+          );
+        }, range(0, count($transformed_subscribers) - 1));
+      $newsletter_statistics = Helpers::flattenArray($newsletter_statistics);
+      $this->updateMailerLog();
+      $this->updateNewsletterStatistics($newsletter_statistics);
+      $queue->subscribers->processed = array_merge(
+        $queue->subscribers->processed,
+        $subscribers_ids
+      );
+    }
+    $this->updateQueue($queue);
+    $this->checkSendingLimit();
+    $this->checkExecutionTimer();
+    return $queue->subscribers;
+  }
+
+  function processIndividualSubscriber($mailer, $newsletter, $subscribers, $queue) {
+    foreach($subscribers as $subscriber) {
+      $processed_newsletter = $this->processNewsletter($newsletter, $subscriber);
+      $transformed_subscriber = $mailer->transformSubscriber($subscriber);
+      $result = $this->sendNewsletter(
+        $mailer,
+        $processed_newsletter,
+        $transformed_subscriber
+      );
+      if(!$result) {
+        $queue->subscribers->failed[] = $subscriber['id'];;
+      } else {
+        $queue->subscribers->processed[] = $subscriber['id'];
+        $newsletter_statistics = array(
+          $newsletter['id'],
+          $subscriber['id'],
+          $queue->id
+        );
+        $this->updateMailerLog();
+        $this->updateNewsletterStatistics($newsletter_statistics);
+      }
+      $this->updateQueue($queue);
+      $this->checkSendingLimit();
+      $this->checkExecutionTimer();
+    }
+    return $queue->subscribers;
+  }
+
+  function updateNewsletterStatistics($data) {
+    return NewsletterStatistics::createMultiple($data);
+  }
+
+  function renderNewsletter($newsletter) {
+    $renderer = new Renderer($newsletter);
+    return $renderer->render();
+  }
+
+  function processNewsletter($newsletter, $subscriber = false) {
+    $divider = '***MailPoet***';
+    $shortcodes = new Shortcodes(
+      implode($divider, $newsletter['body']),
+      $newsletter,
+      $subscriber
+    );
+    list($newsletter['body']['html'], $newsletter['body']['text']) =
+      explode($divider, $shortcodes->replace());
+    return $newsletter;
   }
 
   function sendNewsletter($mailer, $newsletter, $subscriber) {
     return $mailer->mailer_instance->send(
       $newsletter,
-      $mailer->transformSubscriber($subscriber)
+      $subscriber
     );
   }
 
-  function updateStatistics($newsletter_id, $subscriber_id, $queue_id) {
-    $newsletter_statistic = NewsletterStatistics::create();
-    $newsletter_statistic->subscriber_id = $newsletter_id;
-    $newsletter_statistic->newsletter_id = $subscriber_id;
-    $newsletter_statistic->queue_id = $queue_id;
-    $newsletter_statistic->save();
-  }
-
-  function updateQueue($queue, $subscribers) {
-    $subscribers['to_process'] = array_values(
-      array_diff(
-        $subscribers['to_process'],
-        array_merge($subscribers['processed'], $subscribers['failed'])
-      )
-    );
-    $queue->count_processed =
-      count($subscribers['processed']) + count($subscribers['failed']);
-    $queue->count_to_process = count($subscribers['to_process']);
-    $queue->count_failed = count($subscribers['failed']);
-    $queue->count_total =
-      $queue->count_processed + $queue->count_to_process;
-    if(!$queue->count_to_process) {
-      $queue->processed_at = date('Y-m-d H:i:s');
-      $queue->status = 'completed';
-    }
-    $queue->subscribers = json_encode($subscribers);
-    $queue->save();
-  }
-
-  function configureMailerForNewsletter($newsletter) {
-    if(!empty($newsletter['sender_address']) && !empty($newsletter['sender_name'])) {
-      $sender = array(
-        'name' => $newsletter['sender_name'],
-        'address' => $newsletter['sender_address']
-      );
-    } else {
+  function configureMailer($newsletter) {
+    $sender['address'] = (!empty($newsletter['sender_address'])) ?
+      $newsletter['sender_address'] :
+      false;
+    $sender['name'] = (!empty($newsletter['sender_name'])) ?
+      $newsletter['sender_name'] :
+      false;
+    $reply_to['address'] = (!empty($newsletter['reply_to_address'])) ?
+      $newsletter['reply_to_address'] :
+      false;
+    $reply_to['name'] = (!empty($newsletter['reply_to_name'])) ?
+      $newsletter['reply_to_name'] :
+      false;
+    if(!$sender['address']) {
       $sender = false;
     }
-    if(!empty($newsletter['reply_to_address']) && !empty($newsletter['reply_to_name'])) {
-      $reply_to = array(
-        'name' => $newsletter['reply_to_name'],
-        'address' => $newsletter['reply_to_address']
-      );
-    } else {
+    if(!$reply_to['address']) {
       $reply_to = false;
     }
     $mailer = new Mailer($method = false, $sender, $reply_to);
@@ -121,7 +185,9 @@ class SendingQueue {
 
   function checkExecutionTimer() {
     $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time >= CronHelper::$daemon_execution_limit) throw new \Exception(__('Maximum execution time reached.'));
+    if($elapsed_time >= CronHelper::$daemon_execution_limit) {
+      throw new \Exception(__('Maximum execution time reached.'));
+    }
   }
 
   function getQueues() {
@@ -131,9 +197,54 @@ class SendingQueue {
       ->findResultSet();
   }
 
-  function renderNewsletter($newsletter) {
-    $renderer = new Renderer($newsletter);
-    $newsletter['body'] = $renderer->render();
-    return $newsletter;
+  function updateQueue($queue) {
+    $queue = clone($queue);
+    $queue->subscribers->to_process = array_diff(
+      $queue->subscribers->to_process,
+      array_merge(
+        $queue->subscribers->processed,
+        $queue->subscribers->failed
+      )
+    );
+    $queue->subscribers->to_process = array_values($queue->subscribers->to_process);
+    $queue->count_processed =
+      count($queue->subscribers->processed) + count($queue->subscribers->failed);
+    $queue->count_to_process = count($queue->subscribers->to_process);
+    $queue->count_failed = count($queue->subscribers->failed);
+    $queue->count_total =
+      $queue->count_processed + $queue->count_to_process;
+    if(!$queue->count_to_process) {
+      $queue->processed_at = date('Y-m-d H:i:s');
+      $queue->status = 'completed';
+    }
+    $queue->subscribers = serialize($queue->subscribers);
+    $queue->save();
+  }
+
+  function updateMailerLog() {
+    $this->mailer_log['sent']++;
+    return Setting::setValue('mailer_log', $this->mailer_log);
+  }
+
+  function checkSendingLimit() {
+  }
+
+  function getMailerConfig() {
+    $mailer_config = Setting::getValue('mta');
+    if(!$mailer_config) {
+      throw new \Exception(__('Mailer is not configured.'));
+    }
+    return $mailer_config;
+  }
+
+  function getMailerLog() {
+    $mailer_log = Setting::getValue('mta_log');
+    if(!$mailer_log) {
+      $mailer_log = array(
+        'sent' => 0,
+        'started' => time()
+      );
+    }
+    return $mailer_log;
   }
 }
