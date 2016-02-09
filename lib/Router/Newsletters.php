@@ -143,7 +143,7 @@ class Newsletters {
       $data
     );
     $rendered_newsletter = $shortcodes->replace();
-    return array('rendered_body' => $rendered_newsletter, 'original' => $data);
+    return array('rendered_body' => $rendered_newsletter);
   }
 
   function sendPreview($data = array()) {
