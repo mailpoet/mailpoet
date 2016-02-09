@@ -4,43 +4,40 @@ use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 
 class MailChimpCest {
   function __construct() {
-    $this->APIKey = getenv('WP_TEST_IMPORT_MAILCHIMP_API') ?
-      getenv('WP_TEST_IMPORT_MAILCHIMP_API') :
-      '1234567890';
-    $this->mailChimp = new MailChimp($this->APIKey);
-    $this->lists = getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS') ?
-      explode(",", getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS')) :
-      array(
-        'one',
-        'two'
-      );
+    $this->api_key = getenv('WP_TEST_IMPORT_MAILCHIMP_API');
+    $this->mailchimp = new MailChimp($this->api_key);
+    $this->lists = explode(",", getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS'));
   }
 
-  function itCanGetAPIKey() {
-    expect($this->mailChimp->getAPIKey($this->APIKey))->equals($this->APIKey);
-    expect($this->mailChimp->getAPIKey('somekey'))->false();
+  function itValidatesAPIKey() {
+    $valid_api_key_format = '12345678901234567890123456789012-ab1';
+    expect($this->mailchimp->getAPIKey($valid_api_key_format))
+      ->equals($valid_api_key_format);
+    expect($this->mailchimp->getAPIKey('invalid_api_key_format'))->false();
   }
 
   function itCanGetDatacenter() {
-    expect($this->mailChimp->getDataCenter($this->APIKey))->equals(
-      explode('-', $this->APIKey)[1]
-    );
+    $valid_api_key_format = '12345678901234567890123456789012-ab1';
+    $data_center = 'ab1';
+    expect($this->mailchimp->getDataCenter($valid_api_key_format))
+      ->equals($data_center);
   }
 
   function itFailsWithIncorrectAPIKey() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    $mailChimp = clone($this->mailChimp);
-    $mailChimp->APIKey = false;
-    $lists = $mailChimp->getLists();
+    $mailchimp = clone($this->mailchimp);
+    $mailchimp->api_key = false;
+    $lists = $mailchimp->getLists();
     expect($lists['result'])->false();
     expect($lists['error'])->contains('API');
-    $subscribers = $mailChimp->getLists();
+    $subscribers = $mailchimp->getLists();
     expect($subscribers['result'])->false();
     expect($subscribers['error'])->contains('API');
   }
 
   function itCanGetLists() {
-    $lists = $this->mailChimp->getLists();
+    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    $lists = $this->mailchimp->getLists();
     expect($lists['result'])->true();
     expect(count($lists['data']))->equals(2);
     expect(isset($lists['data'][0]['id']))->true();
@@ -49,17 +46,17 @@ class MailChimpCest {
 
   function itFailsWithIncorrectLists() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    $subscribers = $this->mailChimp->getSubscribers();
+    $subscribers = $this->mailchimp->getSubscribers();
     expect($subscribers['result'])->false();
     expect($subscribers['error'])->contains('lists');
-    $subscribers = $this->mailChimp->getSubscribers(array(12));
+    $subscribers = $this->mailchimp->getSubscribers(array(12));
     expect($subscribers['result'])->false();
     expect($subscribers['error'])->contains('lists');
   }
 
   function itCanGetSubscribers() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    $subscribers = $this->mailChimp->getSubscribers(array($this->lists[0]));
+    $subscribers = $this->mailchimp->getSubscribers(array($this->lists[0]));
     expect($subscribers['result'])->true();
     expect(isset($subscribers['data']['invalid']))->true();
     expect(isset($subscribers['data']['duplicate']))->true();
@@ -70,16 +67,16 @@ class MailChimpCest {
 
   function itFailsWhenListHeadersDontMatch() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    $subscribers = $this->mailChimp->getSubscribers($this->lists);
+    $subscribers = $this->mailchimp->getSubscribers($this->lists);
     expect($subscribers['result'])->false();
     expect($subscribers['error'])->contains('header');
   }
 
   function itFailsWhenSubscribersDataTooLarge() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    $mailChimp = clone($this->mailChimp);
-    $mailChimp->maxPostSize = 10;
-    $subscribers = $mailChimp->getSubscribers($this->lists);
+    $mailchimp = clone($this->mailchimp);
+    $mailchimp->max_post_size = 10;
+    $subscribers = $mailchimp->getSubscribers($this->lists);
     expect($subscribers['result'])->false();
     expect($subscribers['error'])->contains('large');
   }

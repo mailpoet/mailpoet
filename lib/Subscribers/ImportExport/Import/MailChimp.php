@@ -5,19 +5,19 @@ use MailPoet\Util\Helpers;
 
 class MailChimp {
   function __construct($APIKey, $lists = false) {
-    $this->APIKey = $this->getAPIKey($APIKey);
-    $this->maxPostSize = Helpers::getMaxPostSize('bytes');
-    $this->dataCenter = $this->getDataCenter($this->APIKey);
-    $this->listsURL = 'https://%s.api.mailchimp.com/2.0/lists/list?apikey=%s';
-    $this->exportURL = 'https://%s.api.mailchimp.com/export/1.0/list/?apikey=%s&id=%s';
+    $this->api_key = $this->getAPIKey($APIKey);
+    $this->max_post_size = Helpers::getMaxPostSize('bytes');
+    $this->data_center = $this->getDataCenter($this->api_key);
+    $this->lists_url = 'https://%s.api.mailchimp.com/2.0/lists/list?apikey=%s';
+    $this->export_url = 'https://%s.api.mailchimp.com/export/1.0/list/?apikey=%s&id=%s';
   }
 
   function getLists() {
-    if(!$this->APIKey || !$this->dataCenter) {
+    if(!$this->api_key || !$this->data_center) {
       return $this->processError('API');
     }
 
-    $connection = @fopen(sprintf($this->listsURL, $this->dataCenter, $this->APIKey), 'r');
+    $connection = @fopen(sprintf($this->lists_url, $this->data_center, $this->api_key), 'r');
 
     if(!$connection) {
       return $this->processError('connection');
@@ -52,7 +52,7 @@ class MailChimp {
   }
 
   function getSubscribers($lists = array()) {
-    if(!$this->APIKey || !$this->dataCenter) {
+    if(!$this->api_key || !$this->data_center) {
       return $this->processError('API');
     }
 
@@ -60,9 +60,9 @@ class MailChimp {
       return $this->processError('lists');
     }
 
-    $bytesFetched = 0;
+    $bytes_fetched = 0;
     foreach ($lists as $list) {
-      $url = sprintf($this->exportURL, $this->dataCenter, $this->APIKey, $list);
+      $url = sprintf($this->export_url, $this->data_center, $this->api_key, $list);
       $connection = @fopen($url, 'r');
       if(!$connection) {
         return $this->processError('connection');
@@ -78,10 +78,10 @@ class MailChimp {
               if(is_object($header) && isset($header->error)) {
                 return $this->processError('lists');
               }
-              if(!isset($headerHash)) {
-                $headerHash = md5(implode(',', $header));
+              if(!isset($header_hash)) {
+                $header_hash = md5(implode(',', $header));
               } else {
-                if(md5(implode(',', $header) !== $headerHash)) {
+                if(md5(implode(',', $header) !== $header_hash)) {
                   return $this->processError('headers');
                 }
               }
@@ -91,8 +91,8 @@ class MailChimp {
             $i++;
           }
 
-          $bytesFetched += strlen($buffer);
-          if($bytesFetched > $this->maxPostSize) {
+          $bytes_fetched += strlen($buffer);
+          if($bytes_fetched > $this->max_post_size) {
             return $this->processError('size');
 
           }
@@ -119,8 +119,9 @@ class MailChimp {
   }
 
   function getDataCenter($APIKey) {
+    if (!preg_match('/-[a-zA-Z0-9]{3,}/', $APIKey)) return false;
     // double parantheses: http://phpsadness.com/sad/51
-    return ($APIKey) ? end((explode('-', $APIKey))) : false;
+    return end((explode('-', $APIKey)));
   }
 
   function getAPIKey($APIKey) {
