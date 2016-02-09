@@ -151,7 +151,7 @@ class MailChimp {
     }
     return array(
       'result' => false,
-      'error' => $errorMessage
+      'errors' => array($errorMessage)
     );
   }
 }
