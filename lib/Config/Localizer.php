@@ -11,8 +11,7 @@ class Localizer {
   function init() {
     add_action(
       'init',
-      array($this, 'setup'),
-      0
+      array($this, 'setup')
     );
   }
 

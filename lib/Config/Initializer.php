@@ -25,7 +25,7 @@ class Initializer {
     register_activation_hook(Env::$file, array($this, 'runMigrator'));
     register_activation_hook(Env::$file, array($this, 'runPopulator'));
 
-    add_action('init', array($this, 'setup'));
+    add_action('plugins_loaded', array($this, 'setup'));
     add_action('widgets_init', array($this, 'setupWidget'));
   }
 
