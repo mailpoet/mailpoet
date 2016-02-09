@@ -8,13 +8,22 @@ class Comment {
   const APPROVED = 1;
   const PENDING_APPROVAL = 0;
 
-  static function extendForm() {
+  static function extendLoggedInForm($field) {
+    $field .= self::getSubscriptionField();
+    return $field;
+  }
+
+  static function extendLoggedOutForm() {
+    echo self::getSubscriptionField();
+  }
+
+  static function getSubscriptionField() {
     $label = Setting::getValue(
       'subscribe.on_comment.label',
       __('Yes, add me to your mailing list.')
     );
 
-    print '<p class="comment-form-mailpoet">
+    return '<p class="comment-form-mailpoet">
       <label for="mailpoet_subscribe_on_comment">
         <input
           type="checkbox"

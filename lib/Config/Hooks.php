@@ -9,10 +9,17 @@ class Hooks {
   function init() {
     // Subscribe in comments
     if((bool)Setting::getValue('subscribe.on_comment.enabled')) {
-      add_action(
-        'comment_form_after_fields',
-        '\MailPoet\Subscription\Comment::extendForm'
-      );
+      if(is_user_logged_in()) {
+        add_action(
+          'comment_form_field_comment',
+          '\MailPoet\Subscription\Comment::extendLoggedInForm'
+        );
+      } else {
+        add_action(
+          'comment_form_after_fields',
+          '\MailPoet\Subscription\Comment::extendLoggedOutForm'
+        );
+      }
 
       add_action(
         'comment_post',
