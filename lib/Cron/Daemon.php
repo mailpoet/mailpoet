@@ -11,6 +11,7 @@ class Daemon {
   public $daemon;
   public $request_payload;
   public $refreshed_token;
+  private $daemon_request_timeout = 3;
   private $timer;
 
   function __construct($request_payload = array()) {
@@ -72,7 +73,7 @@ class Daemon {
   }
 
   function callSelf() {
-    CronHelper::accessDaemon($this->token);
+    CronHelper::accessDaemon($this->token, $this->daemon_request_timeout);
     exit;
   }
 }

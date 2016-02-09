@@ -31,13 +31,13 @@ class Supervisor {
     $elapsed_time = time() - (int) $daemon['updated_at'];
     // if it's been less than 40 seconds since last execution and we're not
     // force-running the daemon, return its status and do nothing
-    if($elapsed_time < CronHelper::$daemon_timeout_limit && !$this->force_run) {
+    if($elapsed_time < CronHelper::$daemon_execution_timeout && !$this->force_run) {
       return $this->formatDaemonStatusMessage($daemon['status']);
     }
     // if it's been less than 40 seconds since last execution, we are
     // force-running the daemon and it's either being started or stopped,
     // return its status and do nothing
-    elseif($elapsed_time < CronHelper::$daemon_timeout_limit &&
+    elseif($elapsed_time < CronHelper::$daemon_execution_timeout &&
       $this->force_run &&
       in_array($daemon['status'], array(
         'stopping',
