@@ -24,11 +24,14 @@ define(
           template.body = JSON.stringify(template.body);
         }
 
+        MailPoet.Modal.loading(true);
+
         MailPoet.Ajax.post({
           endpoint: 'newsletterTemplates',
           action: 'save',
           data: template
         }).done(function(response) {
+          MailPoet.Modal.loading(false);
           if(response.result === true) {
             this.props.onImport(template);
           } else {
@@ -92,10 +95,13 @@ define(
       getTemplates: function() {
         this.setState({ loading: true });
 
+        MailPoet.Modal.loading(true);
+
         MailPoet.Ajax.post({
           endpoint: 'newsletterTemplates',
           action: 'getAll',
         }).done(function(response) {
+          MailPoet.Modal.loading(false);
           if(this.isMounted()) {
 
             if(response.length === 0) {
