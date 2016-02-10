@@ -60,11 +60,9 @@ define([
 
         valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br",
         invalid_elements: "script",
-        style_formats: [
-          {title: 'Paragraph', block: 'p'},
-        ],
+        block_formats: 'Paragraph=p',
 
-        plugins: "link textcolor mailpoet_custom_fields",
+        plugins: "link textcolor colorpicker mailpoet_custom_fields",
 
         setup: function(editor) {
           editor.on('change', function(e) {
