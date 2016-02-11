@@ -1,6 +1,7 @@
 <?php
 
 use MailPoet\Listing;
+use MailPoet\Models\Subscriber;
 
 class ListingCest {
   function _before() {
@@ -57,6 +58,6 @@ class ListingCest {
   }
 
   function _after() {
-
+    Subscriber::deleteMany();
   }
 }

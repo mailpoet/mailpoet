@@ -8,8 +8,7 @@ class Model extends \Sudzy\ValidModel {
 
   function __construct() {
     $this->_errors = array();
-    $customValidators = new CustomValidator();
-    parent::__construct($customValidators->init());
+    parent::__construct();
   }
 
   static function create() {

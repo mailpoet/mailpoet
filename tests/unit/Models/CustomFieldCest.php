@@ -6,16 +6,12 @@ use MailPoet\Models\SubscriberCustomField;
 
 class CustomFieldCest {
   function _before() {
-    $this->before_time = time();
-    $this->data = array(
-      'name' => 'DOB',
-      'type' => 'date',
-      'params' => 'none'
-    );
-    $this->customField = CustomField::create();
-    $this->customField->hydrate($this->data);
-    $this->saved = $this->customField->save();
-    $this->subscribersData = array(
+    $this->custom_field = CustomField::createOrUpdate(array(
+      'name' => 'Birthdate',
+      'type' => 'date'
+    ));
+
+    $this->subscribers = array(
       array(
         'first_name' => 'John',
         'last_name' => 'Mailer',
@@ -30,20 +26,26 @@ class CustomFieldCest {
   }
 
   function itCanBeCreated() {
-    expect($this->saved->id() > 0)->true();
-    expect($this->saved->getErrors())->false();
+    expect($this->custom_field->id() > 0)->true();
+    expect($this->custom_field->getErrors())->false();
   }
 
-  function itCanHaveName() {
-    expect($this->customField->name)->equals($this->data['name']);
+  function itHasAName() {
+    expect($this->custom_field->name)->equals('Birthdate');
   }
 
-  function itCanHaveType() {
-    expect($this->customField->type)->equals($this->data['type']);
+  function itHasAType() {
+    expect($this->custom_field->type)->equals('date');
   }
 
-  function itCanHaveParams() {
-    expect($this->customField->params)->equals($this->data['params']);
+  function itCanDecodeParams() {
+    $custom_field = $this->custom_field->asArray();
+    expect($custom_field['params'])->hasKey('label');
+  }
+
+  function itHasDefaultParams() {
+    $params = unserialize($this->custom_field->params);
+    expect($params['label'])->equals('Birthdate');
   }
 
   function itHasToBeValid() {
@@ -57,76 +59,51 @@ class CustomFieldCest {
     expect($errors[1])->equals('You need to specify a type.');
   }
 
-  function itHasACreatedAtOnCreation() {
-    $customField = CustomField::where('name', $this->data['name'])
-      ->findOne();
-    $time_difference = strtotime($customField->created_at) >= $this->before_time;
-    expect($time_difference)->equals(true);
-  }
+  function itCanBeUpdated() {
+    $custom_field = $this->custom_field->asArray();
+    $custom_field['name'] = 'Favorite color';
+    $custom_field['type'] = 'text';
 
-  function itHasAnUpdatedAtOnCreation() {
-    $customField = CustomField::where('name', $this->data['name'])
-      ->findOne();
-    $time_difference = strtotime($customField->updated_at) >= $this->before_time;
-    expect($time_difference)->equals(true);
-  }
+    $custom_field = CustomField::createOrUpdate($custom_field);
 
-  function itKeepsTheCreatedAtOnUpdate() {
-    $customField = CustomField::where('name', $this->data['name'])
-      ->findOne();
-    $old_created_at = $customField->created_at;
-    $customField->name = 'new name';
-    $customField->save();
-    expect($old_created_at)->equals($customField->created_at);
-  }
+    expect($custom_field->getErrors())->false();
 
-  function itUpdatesTheUpdatedAtOnUpdate() {
-    $customField = CustomField::where('name', $this->data['name'])
-      ->findOne();
-    $update_time = time();
-    $customField->name = 'new name';
-    $customField->save();
-    $time_difference = strtotime($customField->updated_at) >= $update_time;
-    expect($time_difference)->equals(true);
+    $updated_custom_field = CustomField::findOne($custom_field->id);
+    expect($updated_custom_field->name)->equals('Favorite color');
+    expect($updated_custom_field->type)->equals('text');
   }
 
   function itCanHaveManySubscribers() {
-    foreach ($this->subscribersData as $data) {
-      $subscriber = Subscriber::create();
-      $subscriber->hydrate($data);
-      $subscriber->save();
+    foreach($this->subscribers as $subscriber) {
+      $subscriber = Subscriber::createOrUpdate($subscriber);
+
       $association = SubscriberCustomField::create();
       $association->subscriber_id = $subscriber->id;
-      $association->custom_field_id = $this->customField->id;
+      $association->custom_field_id = $this->custom_field->id;
       $association->save();
     }
-    $customField = CustomField::findOne($this->customField->id);
-    $subscribers = $customField->subscribers()
-      ->findArray();
+    $custom_field = CustomField::findOne($this->custom_field->id);
+    $subscribers = $custom_field->subscribers()->findArray();
     expect(count($subscribers))->equals(2);
   }
 
-  function itCanStoreCustomFieldValue() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate($this->subscribersData[0]);
-    $subscriber->save();
+  function itCanHaveAValue() {
+    $subscriber = Subscriber::createOrUpdate($this->subscribers[0]);
+
     $association = SubscriberCustomField::create();
     $association->subscriber_id = $subscriber->id;
-    $association->custom_field_id = $this->customField->id;
+    $association->custom_field_id = $this->custom_field->id;
     $association->value = '12/12/2012';
     $association->save();
-    $customField = CustomField::findOne($this->customField->id);
-    $subscriber = $customField->subscribers()
-      ->findOne();
+
+    $custom_field = CustomField::findOne($this->custom_field->id);
+    $subscriber = $custom_field->subscribers()->findOne();
     expect($subscriber->value)->equals($association->value);
   }
 
   function _after() {
-    ORM::forTable(CustomField::$_table)
-      ->deleteMany();
-    ORM::forTable(Subscriber::$_table)
-      ->deleteMany();
-    ORM::forTable(SubscriberCustomField::$_table)
-      ->deleteMany();
+    CustomField::deleteMany();
+    Subscriber::deleteMany();
+    SubscriberCustomField::deleteMany();
   }
 }

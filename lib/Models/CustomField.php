@@ -20,11 +20,9 @@ class CustomField extends Model {
     $model = parent::asArray();
 
     if(isset($model['params'])) {
-      $model['params'] = (
-        is_array($this->params)
+      $model['params'] = (is_array($this->params))
         ? $this->params
-        : unserialize($this->params)
-      );
+        : unserialize($this->params);
     }
     return $model;
   }
