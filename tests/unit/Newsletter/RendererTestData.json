@@ -44,7 +44,7 @@
                 "link": "",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/660.png",
                 "alt": "660",
-                "padded": true,
+                "fullWidth": false,
                 "width": "660px",
                 "height": "250px",
                 "styles": {
@@ -199,7 +199,7 @@
                 "link": "http://example.org",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/660.png",
                 "alt": "660",
-                "padded": false,
+                "fullWidth": true,
                 "width": "660px",
                 "height": "250px",
                 "styles": {
@@ -235,7 +235,7 @@
                 "link": "",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/330x125.png",
                 "alt": "330x125",
-                "padded": true,
+                "fullWidth": false,
                 "width": "330px",
                 "height": "125px",
                 "styles": {
@@ -390,7 +390,7 @@
                 "link": "http://example.org",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/330x125.png",
                 "alt": "330x125",
-                "padded": false,
+                "fullWidth": true,
                 "width": "330px",
                 "height": "125px",
                 "styles": {
@@ -415,7 +415,7 @@
                 "link": "",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/330x125-copy-150x57.png",
                 "alt": "330x125 copy",
-                "padded": true,
+                "fullWidth": false,
                 "width": "150px",
                 "height": "57px",
                 "styles": {
@@ -561,7 +561,7 @@
                 "link": "http://example.org",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/330x125.png",
                 "alt": "330x125",
-                "padded": false,
+                "fullWidth": true,
                 "width": "330px",
                 "height": "125px",
                 "styles": {
@@ -606,7 +606,7 @@
                 "link": "",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83-copy.png",
                 "alt": "220x83 copy",
-                "padded": true,
+                "fullWidth": false,
                 "width": "100px",
                 "height": "38px",
                 "styles": {
@@ -761,7 +761,7 @@
                 "link": "",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83.png",
                 "alt": "220x83",
-                "padded": false,
+                "fullWidth": true,
                 "width": "220px",
                 "height": "83px",
                 "styles": {
@@ -786,7 +786,7 @@
                 "link": "",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83.png",
                 "alt": "220x83",
-                "padded": true,
+                "fullWidth": false,
                 "width": "220px",
                 "height": "83px",
                 "styles": {
@@ -941,7 +941,7 @@
                 "link": "http://example.org",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83.png",
                 "alt": "220x83",
-                "padded": false,
+                "fullWidth": true,
                 "width": "220px",
                 "height": "83px",
                 "styles": {
@@ -966,7 +966,7 @@
                 "link": "",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83.png",
                 "alt": "220x83",
-                "padded": true,
+                "fullWidth": false,
                 "width": "220px",
                 "height": "83px",
                 "styles": {
@@ -1121,7 +1121,7 @@
                 "link": "http://example.org",
                 "src": "http://test.mailpoet.net/wp-content/uploads/2015/12/220x83.png",
                 "alt": "220x83",
-                "padded": false,
+                "fullWidth": true,
                 "width": "220px",
                 "height": "83px",
                 "styles": {

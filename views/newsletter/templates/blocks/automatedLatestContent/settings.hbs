@@ -156,14 +156,14 @@
             <div class="mailpoet_form_field_title"><%= __('Image width') %></div>
             <div class="mailpoet_form_field_radio_option">
                 <label>
-                    <input type="radio" name="imagePadded" class="mailpoet_automated_latest_content_image_padded" value="true" {{#if model.imagePadded}}CHECKED{{/if}}/>
-                    <%= __('With padding') %>
+                    <input type="radio" name="imageFullWidth" class="mailpoet_automated_latest_content_image_full_width" value="true" {{#if model.imageFullWidth}}CHECKED{{/if}}/>
+                    <%= __('Full width') %>
                 </label>
             </div>
             <div class="mailpoet_form_field_radio_option">
                 <label>
-                    <input type="radio" name="imagePadded" class="mailpoet_automated_latest_content_image_padded" value="false" {{#unless model.imagePadded}}CHECKED{{/unless}}/>
-                    <%= __('Full width') %>
+                    <input type="radio" name="imageFullWidth" class="mailpoet_automated_latest_content_image_full_width" value="false" {{#unless model.imageFullWidth}}CHECKED{{/unless}}/>
+                    <%= __('Padded') %>
                 </label>
             </div>
         </div>

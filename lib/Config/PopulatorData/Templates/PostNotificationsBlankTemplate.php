@@ -90,7 +90,7 @@ class PostNotificationsBlankTemplate {
                     "link" => "http://example.org",
                     "src" => $this->template_image_url . "/ALC-widget-icon.png",
                     "alt" => __("ALC-widget-icon"),
-                    "padded" => true,
+                    "fullWidth" => false,
                     "width" => "200px",
                     "height" => "134px",
                     "styles" => array(

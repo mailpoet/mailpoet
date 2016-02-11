@@ -46,7 +46,7 @@ define([
         titlePosition: 'inTextBlock', // 'inTextBlock'|'aboveBlock',
         titleAlignment: 'left', // 'left'|'center'|'right'
         titleIsLink: false, // false|true
-        imagePadded: true, // true|false
+        imageFullWidth: false, // true|false
         //imageAlignment: 'centerPadded', // 'centerFull'|'centerPadded'|'left'|'right'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
@@ -88,7 +88,7 @@ define([
       this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailablePosts);
 
       this.listenTo(this.get('_selectedPosts'), 'add remove reset', refreshTransformedPosts);
-      this.on('change:displayType change:titleFormat change:titlePosition change:titleAlignment change:titleIsLink change:imagePadded change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:showDivider', refreshTransformedPosts);
+      this.on('change:displayType change:titleFormat change:titlePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:showDivider', refreshTransformedPosts);
       this.listenTo(this.get('readMoreButton'), 'change', refreshTransformedPosts);
       this.listenTo(this.get('divider'), 'change', refreshTransformedPosts);
 
@@ -396,7 +396,7 @@ define([
         "change .mailpoet_posts_include_or_exclude": _.partial(this.changeField, "inclusionType"),
         "change .mailpoet_posts_title_position": _.partial(this.changeField, "titlePosition"),
         "change .mailpoet_posts_title_alignment": _.partial(this.changeField, "titleAlignment"),
-        "change .mailpoet_posts_image_padded": _.partial(this.changeBoolField, "imagePadded"),
+        "change .mailpoet_posts_image_full_width": _.partial(this.changeBoolField, "imageFullWidth"),
         "change .mailpoet_posts_show_author": _.partial(this.changeField, "showAuthor"),
         "keyup .mailpoet_posts_author_preceded_by": _.partial(this.changeField, "authorPrecededBy"),
         "change .mailpoet_posts_show_categories": _.partial(this.changeField, "showCategories"),

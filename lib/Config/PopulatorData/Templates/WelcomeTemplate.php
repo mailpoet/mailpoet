@@ -68,7 +68,7 @@ class WelcomeTemplate {
                     "link" => "http://example.org",
                     "src" => $this->template_image_url . "/logo-header.gif",
                     "alt" => "logo-header",
-                    "padded" => true,
+                    "fullWidth" => false,
                     "width" => "233px",
                     "height" => "118px",
                     "styles" => array(

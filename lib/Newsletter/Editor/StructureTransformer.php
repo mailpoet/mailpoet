@@ -7,11 +7,11 @@ if(!defined('ABSPATH')) exit;
 
 class StructureTransformer {
 
-  function transform($content, $image_padded) {
+  function transform($content, $image_full_width) {
     $root = pQuery::parseStr($content);
 
     $this->hoistImagesToRoot($root);
-    $structure = $this->transformTagsToBlocks($root, $image_padded);
+    $structure = $this->transformTagsToBlocks($root, $image_full_width);
     $structure = $this->mergeNeighboringBlocks($structure);
     return $structure;
   }
@@ -44,8 +44,8 @@ class StructureTransformer {
    * Transforms HTML tags into their respective JSON objects,
    * turns other root children into text blocks
    */
-  private function transformTagsToBlocks($root, $image_padded) {
-    return array_map(function($item) use ($image_padded) {
+  private function transformTagsToBlocks($root, $image_full_width) {
+    return array_map(function($item) use ($image_full_width) {
       if ($item->tag === 'img' || $item->tag === 'a' && $item->query('img')) {
         if ($item->tag === 'a') {
           $link = $item->getAttribute('href');
@@ -60,7 +60,7 @@ class StructureTransformer {
           'link' => $link,
           'src' => $image->getAttribute('src'),
           'alt' => $image->getAttribute('alt'),
-          'padded' => $image_padded,
+          'fullWidth' => $image_full_width,
           'width' => $image->getAttribute('width'),
           'height' => $image->getAttribute('height'),
           'styles' => array(

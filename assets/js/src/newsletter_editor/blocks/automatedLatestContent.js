@@ -35,7 +35,7 @@ define([
         titlePosition: 'inTextBlock', // 'inTextBlock'|'aboveBlock',
         titleAlignment: 'left', // 'left'|'center'|'right'
         titleIsLink: false, // false|true
-        imagePadded: true, // true|false
+        imageFullWidth: false, // true|false
         //imageAlignment: 'centerPadded', // 'centerFull'|'centerPadded'|'left'|'right'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
@@ -63,7 +63,7 @@ define([
     initialize: function() {
       base.BlockView.prototype.initialize.apply(this, arguments);
       this.fetchPosts();
-      this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:titlePosition change:titleAlignment change:titleIsLink change:imagePadded change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
+      this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:titlePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
       this.listenTo(this.get('readMoreButton'), 'change', this._scheduleFetchPosts);
       this.listenTo(this.get('divider'), 'change', this._scheduleFetchPosts);
     },
@@ -144,7 +144,7 @@ define([
         "change .mailpoet_automated_latest_content_include_or_exclude": _.partial(this.changeField, "inclusionType"),
         "change .mailpoet_automated_latest_content_title_position": _.partial(this.changeField, "titlePosition"),
         "change .mailpoet_automated_latest_content_title_alignment": _.partial(this.changeField, "titleAlignment"),
-        "change .mailpoet_automated_latest_content_image_padded": _.partial(this.changeBoolField, "imagePadded"),
+        "change .mailpoet_automated_latest_content_image_full_width": _.partial(this.changeBoolField, "imageFullWidth"),
         "change .mailpoet_automated_latest_content_show_author": _.partial(this.changeField, "showAuthor"),
         "keyup .mailpoet_automated_latest_content_author_preceded_by": _.partial(this.changeField, "authorPrecededBy"),
         "change .mailpoet_automated_latest_content_show_categories": _.partial(this.changeField, "showCategories"),

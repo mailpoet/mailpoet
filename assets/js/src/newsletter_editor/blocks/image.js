@@ -20,7 +20,7 @@ define([
         link: 'http://example.org',
         src: 'no-image.png',
         alt: 'An image of...',
-        padded: true, // true | false - Padded or full width
+        fullWidth: true, // true | false
         width: '64px',
         height: '64px',
         styles: {
@@ -45,10 +45,10 @@ define([
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.toolsRegion.show(this.toolsView);
 
-      if (this.model.get('padded')) {
-        this.$el.removeClass('mailpoet_full_image');
-      } else {
+      if (this.model.get('fullWidth')) {
         this.$el.addClass('mailpoet_full_image');
+      } else {
+        this.$el.removeClass('mailpoet_full_image');
       }
     },
   });
@@ -64,7 +64,7 @@ define([
         "keyup .mailpoet_field_image_link": _.partial(this.changeField, "link"),
         "keyup .mailpoet_field_image_address": _.partial(this.changeField, "src"),
         "keyup .mailpoet_field_image_alt_text": _.partial(this.changeField, "alt"),
-        "change .mailpoet_field_image_padded": _.partial(this.changeBoolCheckboxField, "padded"),
+        "change .mailpoet_field_image_full_width": _.partial(this.changeBoolCheckboxField, "fullWidth"),
         "change .mailpoet_field_image_alignment": _.partial(this.changeField, "styles.block.textAlign"),
         "click .mailpoet_field_image_select_another_image": "showMediaManager",
         "click .mailpoet_done_editing": "close",

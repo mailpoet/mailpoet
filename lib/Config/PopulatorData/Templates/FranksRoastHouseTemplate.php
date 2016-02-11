@@ -68,7 +68,7 @@ class FranksRoastHouseTemplate {
                     "link" => "http://www.example.com",
                     "src" => $this->template_image_url . "/header-v2.jpg",
                     "alt" => __("Frank's Roast House"),
-                    "padded" => false,
+                    "fullWidth" => true,
                     "width" => "600px",
                     "height" => "220px",
                     "styles" => array(
@@ -95,7 +95,7 @@ class FranksRoastHouseTemplate {
                     "link" => "http://example.org",
                     "src" => $this->template_image_url . "/coffee-grain.jpg",
                     "alt" => __("coffee-grain-3-1329675-1599x941"),
-                    "padded" => true,
+                    "fullWidth" => false,
                     "width" => "1599px",
                     "height" => "777px",
                     "styles" => array(
@@ -139,7 +139,7 @@ class FranksRoastHouseTemplate {
                     "link" => "http://example.org",
                     "src" => $this->template_image_url . "/sandwich.jpg",
                     "alt" => "sandwich",
-                    "padded" => true,
+                    "fullWidth" => false,
                     "width" => "640px",
                     "height" => "344px",
                     "styles" => array(
@@ -238,7 +238,7 @@ class FranksRoastHouseTemplate {
                     "link" => "http://example.org",
                     "src" => $this->template_image_url . "/map-v2.jpg",
                     "alt" => __("map-v2"),
-                    "padded" => true,
+                    "fullWidth" => false,
                     "width" => "636px",
                     "height" => "342px",
                     "styles" => array(
