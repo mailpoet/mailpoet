@@ -97,14 +97,13 @@ class Newsletter extends Model {
   }
 
   static function filterBy($orm, $filters = null) {
-   if(empty($filters)) {
-      return $orm;
-    }
-    foreach($filters as $key => $value) {
-      if($key === 'segment') {
-        $segment = Segment::findOne($value);
-        if($segment !== false) {
-          $orm = $segment->newsletters();
+    if(!empty($filters)) {
+      foreach($filters as $key => $value) {
+        if($key === 'segment') {
+          $segment = Segment::findOne($value);
+          if($segment !== false) {
+            $orm = $segment->newsletters();
+          }
         }
       }
     }

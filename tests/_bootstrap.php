@@ -14,6 +14,7 @@ $models = array(
   'NewsletterSegment',
   'NewsletterTemplate',
   'Segment',
+  'SendingQueue',
   'Setting',
   'Subscriber',
   'SubscriberCustomField',

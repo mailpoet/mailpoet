@@ -2,76 +2,80 @@
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterOption;
 
 class NewsletterCest {
   function _before() {
-    $this->before_time = time();
-    $this->data = array(
-      'subject' => 'new newsletter',
-      'type' => 'standard',
-      'body' => 'body',
-      'preheader' => 'preheader'
-    );
+    $this->newsletter = Newsletter::createOrUpdate(array(
+      'subject' => 'My Standard Newsletter',
+      'preheader' => 'Pre Header',
+      'type' => 'standard'
+    ));
 
-    $newsletter = Newsletter::create();
-    $newsletter->hydrate($this->data);
-    $this->newsletter = $newsletter;
-    $this->saved = $newsletter->save();
+    $this->segment_1 = Segment::createOrUpdate(array(
+      'name' => 'Segment 1'
+    ));
+    $association = NewsletterSegment::create();
+    $association->newsletter_id = $this->newsletter->id;
+    $association->segment_id = $this->segment_1->id;
+    $association->save();
+
+    $this->segment_2 = Segment::createOrUpdate(array(
+      'name' => 'Segment 2'
+    ));
+    $association = NewsletterSegment::create();
+    $association->newsletter_id = $this->newsletter->id;
+    $association->segment_id = $this->segment_2->id;
+    $association->save();
   }
 
   function itCanBeCreated() {
-    expect($this->saved->id() > 0)->true();
-    expect($this->saved->getErrors())->false();
+    expect($this->newsletter->id() > 0)->true();
+    expect($this->newsletter->getErrors())->false();
   }
 
   function itHasSubject() {
-    $newsletter = Newsletter::where('subject', $this->data['subject'])
-      ->findOne();
-    expect($newsletter->subject)->equals($this->data['subject']);
+    $newsletter = Newsletter::findOne($this->newsletter->id);
+    expect($newsletter->subject)->equals($this->newsletter->subject);
   }
 
-  function itHasType() {
-    $newsletter = Newsletter::where('type', $this->data['type'])
-      ->findOne();
-    expect($newsletter->type)->equals($this->data['type']);
+  function itHasAType() {
+    $newsletter = Newsletter::findOne($this->newsletter->id);
+    expect($newsletter->type)->equals($this->newsletter->type);
   }
 
-  function itHasBody() {
-    $newsletter = Newsletter::where('body', $this->data['body'])
-      ->findOne();
-    expect($newsletter->body)->equals($this->data['body']);
+  function itHasABody() {
+    $newsletter = Newsletter::findOne($this->newsletter->id);
+    expect($newsletter->body)->equals($this->newsletter->body);
   }
 
   function itHasPreheader() {
-    $newsletter = Newsletter::where('preheader', $this->data['preheader'])
-      ->findOne();
-    expect($newsletter->preheader)->equals($this->data['preheader']);
+    $newsletter = Newsletter::findOne($this->newsletter->id);
+    expect($newsletter->preheader)->equals($this->newsletter->preheader);
   }
 
-  function itCanHaveASegment() {
-    $segmentData = array(
-      'name' => 'my first list'
-    );
+  function itCanBeQueued() {
+    $queue = $this->newsletter->getQueue();
+    expect($queue)->false();
 
-    $segment = Segment::create();
-    $segment->hydrate($segmentData);
-    $segment->save();
+    $sending_queue = SendingQueue::create();
+    $sending_queue->newsletter_id = $this->newsletter->id;
+    $sending_queue->save();
 
-    $newsletter = Newsletter::create();
-    $newsletter->hydrate($this->data);
-    $newsletter->save();
+    $queue = $this->newsletter->getQueue();
+    expect($queue->id() > 0)->true();
+  }
 
-    $association = NewsletterSegment::create();
-    $association->newsletter_id = $newsletter->id();
-    $association->segment_id = $segment->id();
-    $association->save();
-
-    $newsletter = Newsletter::findOne($newsletter->id);
-    $newsletterSegment = $newsletter->segments()->findOne();
-    expect($newsletterSegment->id)->equals($segment->id);
+  function itCanHaveSegments() {
+    $newsletter_segments = $this->newsletter->segments()->findArray();
+    expect($newsletter_segments)->count(2);
+    expect($newsletter_segments[0]['id'])->equals($this->segment_1->id);
+    expect($newsletter_segments[0]['name'])->equals('Segment 1');
+    expect($newsletter_segments[1]['id'])->equals($this->segment_2->id);
+    expect($newsletter_segments[1]['name'])->equals('Segment 2');
   }
 
   function itCanCreateOrUpdate() {
@@ -97,6 +101,54 @@ class NewsletterCest {
     expect($newsletter->subject)->equals('updated newsletter');
   }
 
+  function itCannotSetAnEmptyDeletedAt() {
+    $this->newsletter->deleted_at = '';
+    $newsletter = $this->newsletter->save();
+    expect($newsletter->deleted_at)->equals('NULL');
+  }
+
+  function itCanBeFilteredBySegment() {
+    // no filter
+    $newsletters = Newsletter::filter('filterBy')->findArray();
+    expect($newsletters)->count(1);
+
+    // filter by segment
+    $newsletters = Newsletter::filter('filterBy', array(
+      'segment' => $this->segment_1->id
+    ))->findArray();
+
+    expect($newsletters)->count(1);
+    expect($newsletters[0]['subject'])->equals($this->newsletter->subject);
+
+    // remove all segment relations to newsletters
+    NewsletterSegment::deleteMany();
+
+    $newsletters = Newsletter::filter('filterBy', array(
+      'segment' => $this->segment_1->id
+    ))->findArray();
+
+    expect($newsletters)->isEmpty();
+  }
+
+  function itCanBeGrouped() {
+    $newsletters = Newsletter::filter('groupBy', 'all')->findArray();
+    expect($newsletters)->count(1);
+
+    $newsletters = Newsletter::filter('groupBy', 'trash')->findArray();
+    expect($newsletters)->count(0);
+
+    $this->newsletter->trash();
+    $newsletters = Newsletter::filter('groupBy', 'trash')->findArray();
+    expect($newsletters)->count(1);
+
+    $newsletters = Newsletter::filter('groupBy', 'all')->findArray();
+    expect($newsletters)->count(0);
+
+    $this->newsletter->restore();
+    $newsletters = Newsletter::filter('groupBy', 'all')->findArray();
+    expect($newsletters)->count(1);
+  }
+
   function itHasSearchFilter() {
     Newsletter::createOrUpdate(
       array(
@@ -110,16 +162,16 @@ class NewsletterCest {
   }
 
   function itCanHaveOptions() {
-    $newsletterOptionFieldData = array(
+    $newsletter_options = array(
       'name' => 'Event',
       'newsletter_type' => 'welcome',
     );
-    $optionField = NewsletterOptionField::create();
-    $optionField->hydrate($newsletterOptionFieldData);
-    $optionField->save();
+    $option_field = NewsletterOptionField::create();
+    $option_field->hydrate($newsletter_options);
+    $option_field->save();
     $association = NewsletterOption::create();
     $association->newsletter_id = $this->newsletter->id;
-    $association->option_field_id = $optionField->id;
+    $association->option_field_id = $option_field->id;
     $association->value = 'list';
     $association->save();
     $newsletter = Newsletter::filter('filterWithOptions')
@@ -128,7 +180,7 @@ class NewsletterCest {
   }
 
   function itCanFilterOptions() {
-    $newsletterOptionFieldData = array(
+    $newsletter_options = array(
       array(
         'name' => 'Event',
         'newsletter_type' => 'welcome',
@@ -138,13 +190,13 @@ class NewsletterCest {
         'newsletter_type' => 'welcome',
       )
     );
-    foreach ($newsletterOptionFieldData as $data) {
-      $optionField = NewsletterOptionField::create();
-      $optionField->hydrate($data);
-      $optionField->save();
-      $createdOptionFields[] = $optionField->asArray();
+    foreach ($newsletter_options as $data) {
+      $option_field = NewsletterOptionField::create();
+      $option_field->hydrate($data);
+      $option_field->save();
+      $createdOptionFields[] = $option_field->asArray();
     }
-    $newsletterOptionData = array(
+    $newsletter_options = array(
       array(
         'newsletter_id' => $this->newsletter->id,
         'option_field_id' => $createdOptionFields[0]['id'],
@@ -156,12 +208,12 @@ class NewsletterCest {
         'value' => '1'
       )
     );
-    foreach ($newsletterOptionData as $data) {
+    foreach($newsletter_options as $data) {
       $association = NewsletterOption::create();
       $association->hydrate($data);
       $association->save();
-      $createdAssociations[] = $association->asArray();
     }
+
     $newsletter = Newsletter::filter('filterWithOptions')
       ->filter('filterSearchCustomFields', array(
         array(
@@ -200,11 +252,11 @@ class NewsletterCest {
   }
 
   function _after() {
-    ORM::forTable(NewsletterOption::$_table)
-      ->deleteMany();
-    ORM::forTable(NewsletterOptionField::$_table)
-      ->deleteMany();
-    ORM::for_table(Newsletter::$_table)
-      ->deleteMany();
+    NewsletterOption::deleteMany();
+    NewsletterOptionField::deleteMany();
+    Newsletter::deleteMany();
+    Segment::deleteMany();
+    NewsletterSegment::deleteMany();
+    SendingQueue::deleteMany();
   }
 }

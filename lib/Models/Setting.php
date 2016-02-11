@@ -35,6 +35,9 @@ class Setting extends Model {
 
       if($setting !== $default) {
         for($i = 0, $count = count($keys); $i < $count; $i++) {
+          if(!is_array($setting)) {
+            $setting = array();
+          }
           if(array_key_exists($keys[$i], $setting)) {
             $setting = $setting[$keys[$i]];
           } else {
@@ -67,13 +70,6 @@ class Setting extends Model {
       $last_key = array_pop($keys);
 
       foreach($keys as $key) {
-        if(!is_array($current_value)) {
-          $current_value = array();
-        }
-
-        if(!array_key_exists($key, $current_value)) {
-          $current_value = array($key => array());
-        }
         $current_value =& $current_value[$key];
       }
       if(is_scalar($current_value)) {
@@ -100,16 +96,20 @@ class Setting extends Model {
     return $settings;
   }
 
-  public static function createOrUpdate($model) {
-    $exists = self::where('name', $model['name'])->findOne();
+  public static function createOrUpdate($data = array()) {
+    $setting = false;
 
-    if($exists === false) {
-      $new_model = self::create();
-      $new_model->hydrate($model);
-      return $new_model->save();
+    if(isset($data['name'])) {
+      $setting = self::where('name', $data['name'])->findOne();
     }
 
-    $exists->value = $model['value'];
-    return $exists->save();
+    if($setting === false) {
+      $setting = self::create();
+      $setting->hydrate($data);
+    } else {
+      $setting->value = $data['value'];
+    }
+
+    return $setting->save();
   }
 }

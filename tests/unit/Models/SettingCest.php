@@ -2,63 +2,52 @@
 use MailPoet\Models\Setting;
 
 class SettingCest {
-  function _before() {
-    $this->before_time = time();
-    $this->data = array(
-      'name'  => 'sending_method',
-      'value' => 'smtp'
-    );
-
-    $setting = Setting::create();
-    $setting->hydrate($this->data);
-    $this->saved = $setting->save();
-  }
-
-  function itCanBeCreated() {
-    expect($this->saved->id() > 0)->true();
-    expect($this->saved->getErrors())->false();
-  }
-
   function itHasToBeValid() {
-    $invalid_setting = Setting::create();
-    $result = $invalid_setting->save();
-    $errors = $result->getErrors();
+    $invalid_setting = Setting::createOrUpdate();
+    $errors = $invalid_setting->getErrors();
 
-    expect(is_array($errors))->true();
+    expect($errors)->notEmpty();
     expect($errors[0])->equals('You need to specify a name.');
   }
 
-  function itHasACreatedAtOnCreation() {
-    $setting = Setting::where('name', $this->data['name'])
-      ->findOne();
-    $time_difference = strtotime($setting->created_at) >= $this->before_time;
-    expect($time_difference)->equals(true);
+  function itCanGetAllSettings() {
+    Setting::setValue('key_1', 'value_1');
+    Setting::setValue('key_2', 'value_2');
+    Setting::setValue('key_3', array(
+      'subkey_1' => 'subvalue_1',
+      'subkey_2' => 'subvalue_2'
+    ));
+
+    $settings = Setting::getAll();
+    expect(array_keys($settings))->count(3);
+    expect($settings['key_1'])->equals('value_1');
+    expect($settings['key_2'])->equals('value_2');
+    expect($settings['key_3'])->equals(array(
+      'subkey_1' => 'subvalue_1',
+      'subkey_2' => 'subvalue_2'
+    ));
   }
 
-  function itHasAnUpdatedAtOnCreation() {
-    $setting = Setting::where('name', $this->data['name'])
-      ->findOne();
-    $time_difference = strtotime($setting->updated_at) >= $this->before_time;
-    expect($time_difference)->equals(true);
-  }
+  function itReturnsDefaultValueIfNotSet() {
+    // try to get an "unknown" key
+    $setting = Setting::getValue('unknown_key', 'default_value');
+    expect($setting)->equals('default_value');
 
-  function itKeepsTheCreatedAtOnUpdate() {
-    $setting = Setting::where('name', $this->data['name'])
-      ->findOne();
-    $old_created_at = $setting->created_at;
-    $setting->value = 'http_api';
-    $setting->save();
-    expect($old_created_at)->equals($setting->created_at);
-  }
+    // setting a "known" key
+    $setting = Setting::setValue('known_key', 'actual_value');
+    expect($setting)->equals(true);
 
-  function itUpdatesTheUpdatedAtOnUpdate() {
-    $setting = Setting::where('name', $this->data['name'])
-      ->findOne();
-    $update_time = time();
-    $setting->value = 'http_api';
-    $setting->save();
-    $time_difference = strtotime($setting->updated_at) >= $update_time;
-    expect($time_difference)->equals(true);
+    // try to get a "known" key
+    $setting = Setting::getValue('known_key', 'default_value');
+    expect($setting)->equals('actual_value');
+
+    // try to get an "unknown" subkey of a "known" key
+    $setting = Setting::getValue('known_key.unknown_subkey', 'default_value');
+    expect($setting)->equals('default_value');
+
+    // try to get an "unknown" subkey of an "unknown" key
+    $setting = Setting::getValue('unknown_key.unknown_subkey', 'default_value');
+    expect($setting)->equals('default_value');
   }
 
   function itCanCreateOrUpdate() {
@@ -109,7 +98,6 @@ class SettingCest {
   }
 
   function _after() {
-    ORM::forTable(Setting::$_table)
-      ->deleteMany();
+    Setting::deleteMany();
   }
 }
