@@ -236,10 +236,7 @@ class Migrator {
       'newsletter_id mediumint(9) NOT NULL,',
       'subscriber_id mediumint(9) NOT NULL,',
       'queue_id mediumint(9) NOT NULL,',
-      'sent_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
+      'sent_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);

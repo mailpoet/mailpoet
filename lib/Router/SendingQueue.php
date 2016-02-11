@@ -58,7 +58,7 @@ class SendingQueue {
     }
 
     $subscriber_ids = array_unique($subscriber_ids);
-    $queue->subscribers = json_encode(
+    $queue->subscribers = serialize(
       array(
         'to_process' => $subscriber_ids
       )
@@ -136,7 +136,7 @@ class SendingQueue {
     $result = array_map(function ($queueData) {
       $queue = \MailPoet\Models\SendingQueue::create();
       $queue->newsletter_id = $queueData['newsletter_id'];
-      $queue->subscribers = json_encode(
+      $queue->subscribers = serialize(
         array(
           'to_process' => $queueData['subscribers']
         )

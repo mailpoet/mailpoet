@@ -9,4 +9,16 @@ class NewsletterStatistics extends Model {
   function __construct() {
     parent::__construct();
   }
+
+  static function createMultiple($data) {
+    return self::rawExecute(
+      'INSERT INTO `' . NewsletterStatistics::$_table . '` ' .
+      '(newsletter_id, subscriber_id, queue_id) ' .
+      'VALUES ' . rtrim(
+        str_repeat('(?,?,?), ', count($data)/3),
+        ', '
+      ),
+      $data
+    );
+  }
 }
