@@ -69,13 +69,17 @@ class CustomFieldsCest {
 
   function itCanDeleteACustomField() {
     $custom_field = CustomField::where('type', 'date')->findOne();
+    $custom_field_id = $custom_field->id();
 
     $router = new CustomFields();
-    $response = $router->delete($custom_field->id());
+    $response = $router->delete($custom_field_id);
     expect($response['result'])->true();
 
     $custom_field = CustomField::where('type', 'date')->findOne();
     expect($custom_field)->false();
+
+    $response = $router->delete($custom_field_id);
+    expect($response['result'])->false();
   }
 
   function itCanSaveACustomField() {
@@ -120,6 +124,6 @@ class CustomFieldsCest {
   }
 
   function _after() {
-    ORM::forTable(CustomField::$_table)->deleteMany();
+    CustomField::deleteMany();
   }
 }

@@ -29,10 +29,10 @@ class MailChimpCest {
     $mailchimp->api_key = false;
     $lists = $mailchimp->getLists();
     expect($lists['result'])->false();
-    expect($lists['error'])->contains('API');
+    expect($lists['errors'][0])->contains('API');
     $subscribers = $mailchimp->getLists();
     expect($subscribers['result'])->false();
-    expect($subscribers['error'])->contains('API');
+    expect($subscribers['errors'][0])->contains('API');
   }
 
   function itCanGetLists() {
@@ -48,10 +48,10 @@ class MailChimpCest {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     $subscribers = $this->mailchimp->getSubscribers();
     expect($subscribers['result'])->false();
-    expect($subscribers['error'])->contains('lists');
+    expect($subscribers['errors'][0])->contains('lists');
     $subscribers = $this->mailchimp->getSubscribers(array(12));
     expect($subscribers['result'])->false();
-    expect($subscribers['error'])->contains('lists');
+    expect($subscribers['errors'][0])->contains('lists');
   }
 
   function itCanGetSubscribers() {
@@ -69,7 +69,7 @@ class MailChimpCest {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     $subscribers = $this->mailchimp->getSubscribers($this->lists);
     expect($subscribers['result'])->false();
-    expect($subscribers['error'])->contains('header');
+    expect($subscribers['errors'][0])->contains('header');
   }
 
   function itFailsWhenSubscribersDataTooLarge() {
@@ -78,6 +78,6 @@ class MailChimpCest {
     $mailchimp->max_post_size = 10;
     $subscribers = $mailchimp->getSubscribers($this->lists);
     expect($subscribers['result'])->false();
-    expect($subscribers['error'])->contains('large');
+    expect($subscribers['errors'][0])->contains('large');
   }
 }

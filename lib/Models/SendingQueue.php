@@ -15,7 +15,8 @@ class SendingQueue extends Model {
       return false;
     } else {
       $this->set('status', 'paused');
-      return $this->save();
+      $this->save();
+      return ($this->getErrors() === false && $this->id() > 0);
     }
   }
 
@@ -24,12 +25,14 @@ class SendingQueue extends Model {
       return $this->complete();
     } else {
       $this->set_expr('status', 'NULL');
-      return $this->save();
+      $this->save();
+      return ($this->getErrors() === false && $this->id() > 0);
     }
   }
 
   function complete() {
     $this->set('status', 'completed');
-    return $this->save();
+    $this->save();
+    return ($this->getErrors() === false && $this->id() > 0);
   }
 }

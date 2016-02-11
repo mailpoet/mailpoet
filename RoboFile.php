@@ -108,11 +108,12 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('vendor/bin/codecept run unit -f '.(($file) ? $file : ''));
   }
 
-  function testCoverage() {
+  function testCoverage($file = null) {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
     $this->_exec(join(' ', array(
       'vendor/bin/codecept run',
+      (($file) ? $file : ''),
       '--coverage',
       '--coverage-html'
     )));
