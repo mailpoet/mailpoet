@@ -11,7 +11,7 @@ class Daemon {
   public $daemon;
   public $request_payload;
   public $refreshed_token;
-  private $daemon_request_timeout = 3;
+  const daemon_request_timeout = 5;
   private $timer;
 
   function __construct($request_payload = array()) {
@@ -40,8 +40,8 @@ class Daemon {
     } catch(Exception $e) {
     }
     $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time < CronHelper::$daemon_execution_limit) {
-      sleep(CronHelper::$daemon_execution_limit - $elapsed_time);
+    if($elapsed_time < CronHelper::daemon_execution_limit) {
+      sleep(CronHelper::daemon_execution_limit - $elapsed_time);
     }
     // after each execution, re-read daemon data in case it was deleted or
     // its status has changed
@@ -73,7 +73,7 @@ class Daemon {
   }
 
   function callSelf() {
-    CronHelper::accessDaemon($this->token, $this->daemon_request_timeout);
+    CronHelper::accessDaemon($this->token, self::daemon_request_timeout);
     exit;
   }
 }

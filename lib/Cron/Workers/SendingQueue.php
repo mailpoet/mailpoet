@@ -16,11 +16,16 @@ if(!defined('ABSPATH')) exit;
 class SendingQueue {
   public $mailer_config;
   public $mailer_log;
+  public $processing_method;
   private $timer;
+  const batch_size = 50;
 
   function __construct($timer = false) {
     $this->mailer_config = $this->getMailerConfig();
     $this->mailer_log = $this->getMailerLog();
+    $this->processing_method = ($this->mailer_config['method'] === 'MailPoet') ?
+      'processBulkSubscribers' :
+      'processIndividualSubscriber';
     $this->timer = ($timer) ? $timer : microtime(true);
   }
 
@@ -40,17 +45,14 @@ class SendingQueue {
       $newsletter = $newsletter->asArray();
       $newsletter['body'] = $this->renderNewsletter($newsletter);
       $mailer = $this->configureMailer($newsletter);
-      foreach(array_chunk($queue->subscribers->to_process, 5) as
+      foreach(array_chunk($queue->subscribers->to_process, self::batch_size) as
               $subscribers_ids) {
         $subscribers = Subscriber::whereIn('id', $subscribers_ids)
           ->findArray();
-        $processing_method = ($this->mailer_config['method'] === 'MailPoet') ?
-          'processBulkSubscribers' :
-          'processIndividualSubscriber';
         $queue->subscribers = call_user_func_array(
           array(
             $this,
-            $processing_method
+            $this->processing_method
           ),
           array(
             $mailer,
@@ -59,6 +61,7 @@ class SendingQueue {
             $queue
           )
         );
+        die('aaaa');
       }
     }
   }
@@ -101,6 +104,7 @@ class SendingQueue {
     $this->updateQueue($queue);
     $this->checkSendingLimit();
     $this->checkExecutionTimer();
+    die('zzz');
     return $queue->subscribers;
   }
 
@@ -185,7 +189,7 @@ class SendingQueue {
 
   function checkExecutionTimer() {
     $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time >= CronHelper::$daemon_execution_limit) {
+    if($elapsed_time >= CronHelper::daemon_execution_limit) {
       throw new \Exception(__('Maximum execution time reached.'));
     }
   }
@@ -217,7 +221,7 @@ class SendingQueue {
       $queue->processed_at = date('Y-m-d H:i:s');
       $queue->status = 'completed';
     }
-    $queue->subscribers = serialize($queue->subscribers);
+    $queue->subscribers = serialize((array) $queue->subscribers);
     $queue->save();
   }
 
@@ -227,6 +231,7 @@ class SendingQueue {
   }
 
   function checkSendingLimit() {
+    // TODO: enforce sending frequency
   }
 
   function getMailerConfig() {

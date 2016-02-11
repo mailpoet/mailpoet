@@ -7,8 +7,9 @@ use MailPoet\Util\Security;
 if(!defined('ABSPATH')) exit;
 
 class CronHelper {
-  static $daemon_execution_limit = 20;
-  static $daemon_execution_timeout = 35;
+  const daemon_execution_limit = 20;
+  const daemon_execution_timeout = 35;
+  const daemon_request_timeout = 2;
 
   static function createDaemon($token) {
     $daemon = array(
@@ -36,7 +37,7 @@ class CronHelper {
     return Security::generateRandomString();
   }
 
-  static function accessDaemon($token, $timeout = 2) {
+  static function accessDaemon($token, $timeout = self::daemon_request_timeout) {
     $payload = serialize(array('token' => $token));
     $url = '/?mailpoet-api&section=queue&action=run&request_payload=' .
       base64_encode($payload);
