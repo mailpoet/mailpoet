@@ -14,7 +14,7 @@ class Setup {
       $activator->deactivate();
       $activator->activate();
       $result = true;
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
       $result = false;
     }
     return array(

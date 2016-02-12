@@ -104,7 +104,7 @@ class Export {
         );
         $writer->writeToFile($this->export_file);
       }
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
       return array(
         'result' => false,
         'errors' => array($e->getMessage())

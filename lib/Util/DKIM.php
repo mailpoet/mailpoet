@@ -12,7 +12,7 @@ class DKIM {
         'public' => self::trimKey($rsa_keys['publickey']),
         'private' => self::trimKey($rsa_keys['privatekey'])
       );
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
        return false;
     }
   }
