@@ -61,7 +61,9 @@ class SegmentsCest {
     $router = new Segments();
     $response = $router->save($duplicate_entry);
     expect($response['result'])->false();
-    expect($response['errors'][0])->contains('Duplicate');
+    expect($response['errors'][0])->equals(
+      'Another record already exists. Please specify a different "name".'
+    );
   }
 
   function itCanRestoreASegment() {
