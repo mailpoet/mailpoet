@@ -6,37 +6,35 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Image {
   static function render($element, $columnCount) {
-    $element = self::getImageDimensions($element, $columnCount);
+    $element['width'] = (int) $element['width'];
+    $element['height'] = (int) $element['height'];
+    $element = self::adjustImageDimensions($element, $columnCount);
     $template = '
       <tr>
-        <td class="mailpoet_image ' . $element['paddedClass'] . '" align="center" valign="top">
+        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded' : '') . '" align="center" valign="top">
           <img style="max-width:' . $element['width'] . 'px;" src="' . $element['src'] . '"
           width="' . $element['width'] . '" height="' . $element['height'] . '" alt="' . $element['alt'] . '"/>
-          ' . json_encode($element) . '
         </td>
       </tr>';
     return $template;
   }
 
-  static function getImageDimensions($element, $column_count) {
+  static function adjustImageDimensions($element, $column_count) {
     $column_width = ColumnsHelper::columnWidth($column_count);
     $padded_width = StylesHelper::$padding_width * 2;
-    // resize image if it's wider than the column width
-    if((int) $element['width'] >= $column_width) {
-      $ratio = (int) $element['width'] / $column_width;
+    // scale image to fit column width
+    if($element['width'] > $column_width ||
+      ($element['width'] < $column_width && $element['fullWidth'] === true)
+    ) {
+      $ratio = $element['width'] / $column_width;
       $element['width'] = $column_width;
-      $element['height'] = ceil((int) $element['height'] / $ratio);
+      $element['height'] = ceil($element['height'] / $ratio);
     }
-    if($element['fullWidth'] == false && $element['width'] >= $column_width) {
-      // resize image if the padded option is on
-      $ratio = (int) $element['width'] / ((int) $element['width'] - $padded_width);
-      $element['width'] = (int) $element['width'] - $padded_width;
-      $element['height'] = ceil((int) $element['height'] / $ratio);
-      $element['paddedClass'] = 'mailpoet_padded';
-    } else {
-      $element['width'] = (int) $element['width'];
-      $element['height'] = (int) $element['height'];
-      $element['paddedClass'] = '';
+    // resize image if the image is padded and wider than column width
+    if($element['fullWidth'] === false && $element['width'] >= $column_width) {
+      $ratio = $element['width'] / ($element['width'] - $padded_width);
+      $element['width'] = $element['width'] - $padded_width;
+      $element['height'] = ceil($element['height'] / $ratio);
     }
     return $element;
   }
