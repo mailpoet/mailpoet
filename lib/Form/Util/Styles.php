@@ -101,7 +101,7 @@ EOL;
   }
 
   private function stripComments($stylesheet) {
-        // remove comments
+    // remove comments
     return preg_replace('!/\*.*?\*/!s', '', $stylesheet);
   }
 
@@ -111,7 +111,6 @@ EOL;
 
   private function setStyles($styles) {
     $this->_styles = $styles;
-
     return $this;
   }
 

@@ -56,7 +56,9 @@ class SegmentCest {
     $errors = $result->getErrors();
 
     expect(is_array($errors))->true();
-    expect($errors[0])->contains('Duplicate');
+    expect($errors[0])->equals(
+      'Another record already exists. Please specify a different "name".'
+    );
   }
 
   function itCanHaveDescription() {

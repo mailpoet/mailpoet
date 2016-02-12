@@ -122,6 +122,7 @@ class Segment extends Model {
       ->group_by(self::$_table.'.id')
       ->group_by(self::$_table.'.name')
       ->where(self::$_table.'.type', 'default')
+      ->whereNull(self::$_table.'.deleted_at')
       ->findArray();
   }
 

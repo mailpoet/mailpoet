@@ -12,7 +12,7 @@ define(
     Form
   ) {
 
-    var fields = [
+    let fields = [
       {
         name: 'name',
         label: 'Name',
@@ -25,7 +25,7 @@ define(
       }
     ];
 
-    var messages = {
+    const messages = {
       onUpdate: function() {
         MailPoet.Notice.success('Segment successfully updated!');
       },
@@ -34,7 +34,7 @@ define(
       }
     };
 
-    var SegmentForm = React.createClass({
+    const SegmentForm = React.createClass({
       mixins: [
         Router.History
       ],

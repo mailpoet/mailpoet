@@ -154,12 +154,14 @@ class Widget extends \WP_Widget {
       $output = '';
 
       if(!empty($body)) {
+        $form_id = $this->id_base.'_'.$this->number;
+
         $data = array(
-          'form_id' => $this->id_base.'_'.$this->number,
+          'form_id' => $form_id,
           'form_type' => $form_type,
           'form' => $form,
           'title' => $title,
-          'styles' => FormRenderer::renderStyles($form),
+          'styles' => FormRenderer::renderStyles($form, '#'.$form_id),
           'html' => FormRenderer::renderHTML($form),
           'before_widget' => (!empty($before_widget) ? $before_widget : ''),
           'after_widget' => (!empty($after_widget) ? $after_widget : ''),
