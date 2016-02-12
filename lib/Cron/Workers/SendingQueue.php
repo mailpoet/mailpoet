@@ -14,16 +14,16 @@ use MailPoet\Util\Helpers;
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
-  public $mailer_config;
-  public $mailer_log;
+  public $mta_config;
+  public $mta_log;
   public $processing_method;
   private $timer;
   const batch_size = 50;
 
   function __construct($timer = false) {
-    $this->mailer_config = $this->getMailerConfig();
-    $this->mailer_log = $this->getMailerLog();
-    $this->processing_method = ($this->mailer_config['method'] === 'MailPoet') ?
+    $this->mta_config = $this->getMailerConfig();
+    $this->mta_log = $this->getMailerLog();
+    $this->processing_method = ($this->mta_config['method'] === 'MailPoet') ?
       'processBulkSubscribers' :
       'processIndividualSubscriber';
     $this->timer = ($timer) ? $timer : microtime(true);
@@ -61,7 +61,6 @@ class SendingQueue {
             $queue
           )
         );
-        die('aaaa');
       }
     }
   }
@@ -104,12 +103,12 @@ class SendingQueue {
     $this->updateQueue($queue);
     $this->checkSendingLimit();
     $this->checkExecutionTimer();
-    die('zzz');
     return $queue->subscribers;
   }
 
   function processIndividualSubscriber($mailer, $newsletter, $subscribers, $queue) {
     foreach($subscribers as $subscriber) {
+      $this->checkSendingLimit();
       $processed_newsletter = $this->processNewsletter($newsletter, $subscriber);
       $transformed_subscriber = $mailer->transformSubscriber($subscriber);
       $result = $this->sendNewsletter(
@@ -130,7 +129,6 @@ class SendingQueue {
         $this->updateNewsletterStatistics($newsletter_statistics);
       }
       $this->updateQueue($queue);
-      $this->checkSendingLimit();
       $this->checkExecutionTimer();
     }
     return $queue->subscribers;
@@ -187,13 +185,6 @@ class SendingQueue {
     return $mailer;
   }
 
-  function checkExecutionTimer() {
-    $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time >= CronHelper::daemon_execution_limit) {
-      throw new \Exception(__('Maximum execution time reached.'));
-    }
-  }
-
   function getQueues() {
     return \MailPoet\Models\SendingQueue::orderByDesc('priority')
       ->whereNull('deleted_at')
@@ -226,30 +217,53 @@ class SendingQueue {
   }
 
   function updateMailerLog() {
-    $this->mailer_log['sent']++;
-    return Setting::setValue('mailer_log', $this->mailer_log);
-  }
-
-  function checkSendingLimit() {
-    // TODO: enforce sending frequency
+    $this->mta_log['sent']++;
+    return Setting::setValue('mta_log', $this->mta_log);
   }
 
   function getMailerConfig() {
-    $mailer_config = Setting::getValue('mta');
-    if(!$mailer_config) {
+    $mta_config = Setting::getValue('mta');
+    if(!$mta_config) {
       throw new \Exception(__('Mailer is not configured.'));
     }
-    return $mailer_config;
+    return $mta_config;
   }
 
   function getMailerLog() {
-    $mailer_log = Setting::getValue('mta_log');
-    if(!$mailer_log) {
-      $mailer_log = array(
+    $mta_log = Setting::getValue('mta_log');
+    if(!$mta_log) {
+      $mta_log = array(
         'sent' => 0,
         'started' => time()
       );
+      Setting::setValue('mta_log', $mta_log);
     }
-    return $mailer_log;
+    return $mta_log;
+  }
+
+  function checkSendingLimit() {
+    $frequency_interval = (int) $this->mta_config['frequency']['interval'] * 60;
+    $frequency_limit = (int) $this->mta_config['frequency']['emails'];
+    $elapsed_time = time() - (int) $this->mta_log['started'];
+    if($this->mta_log['sent'] === $frequency_limit &&
+      $elapsed_time <= $frequency_interval
+    ) {
+      throw new \Exception(__('Sending frequency limit reached.'));
+    }
+    if($elapsed_time > $frequency_interval) {
+      $this->mta_log = array(
+        'sent' => 0,
+        'started' => time()
+      );
+      Setting::setValue('mta_log', $this->mta_log);
+    }
+    return;
+  }
+
+  function checkExecutionTimer() {
+    $elapsed_time = microtime(true) - $this->timer;
+    if($elapsed_time >= CronHelper::daemon_execution_limit) {
+      throw new \Exception(__('Maximum execution time reached.'));
+    }
   }
 }

@@ -52,7 +52,7 @@ class SendingQueue {
     }
 
     $subscriber_ids = array_unique($subscriber_ids);
-    $queue->subscribers = json_encode(
+    $queue->subscribers = serialize(
       array(
         'to_process' => $subscriber_ids
       )
