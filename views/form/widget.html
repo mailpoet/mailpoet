@@ -5,10 +5,9 @@
     <h2 class="widget-title"><%= title | raw %></h2>
   <% endif %>
 
-  <div class="mailpoet_form mailpoet_form_<%= form_type %>">
+  <div id="<%= form_id %>" class="mailpoet_form mailpoet_form_<%= form_type %>">
     <%= styles | raw %>
     <form
-      id="<%= form_id %>"
       method="post"
       <#
       action="<%= admin_url('admin-post.php?action=mailpoet_form_subscribe') | raw %>"

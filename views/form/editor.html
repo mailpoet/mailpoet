@@ -50,6 +50,8 @@
                 name="segments"
                 data-placeholder="<%= __('Choose a list') %>"
                 multiple
+                data-parsley-required="true"
+                data-parsley-required-message="<%= __('You need to select a list.') %>"
               >
                 <% for segment in segments %>
                   <option value="<%= segment.id %>"><%= segment.name %></option>
@@ -303,19 +305,46 @@
       );
 
       // toolbar sections
-      $(document).on('click', '.mailpoet_toolbar_section.closed', function() {
+      $(document).on(
+        'click',
+        '.mailpoet_toolbar_section.closed',
+        mailpoet_toolbar_tab
+      );
+
+      function mailpoet_toolbar_tab(tab, callback) {
+        var section = null;
+
+        if($.type(tab) === 'string') {
+          section = $('.mailpoet_toolbar_section[data-section="'+tab+'"]');
+        } else {
+          section = $(this);
+        }
+
+        var current_section = $('.mailpoet_toolbar_section:not(.closed)');
+
+        if(current_section.data('section') === section.data('section')) {
+          if(callback !== undefined && $.type(callback) === 'function') {
+            callback();
+          }
+        } else {
           // close currently opened section
           $('.mailpoet_toolbar_section:not(.closed)').addClass('closed');
+
           // open selected section after a mini delay
           setTimeout(function() {
-            $(this).removeClass('closed');
-          }.bind(this), 250);
-          return false;
-      });
+            $(section).removeClass('closed');
+            if(callback !== undefined && $.type(callback) === 'function') {
+              setTimeout(function() {
+                callback();
+              }, 151);
+            }
+          }.bind(this), 150);
+        }
+        return false;
+      }
 
       // toolbar: open default section
-      $('.mailpoet_toolbar_section[data-section="fields"]')
-        .removeClass('closed');
+      mailpoet_toolbar_tab('settings');
 
       // form: edit name (in place editor)
       $('#mailpoet_form_edit_name').on('click', function() {
@@ -328,7 +357,7 @@
           mailpoet_edit_form_name();
           return false;
         }
-      })
+      });
 
       function mailpoet_edit_form_name() {
         var is_editing = $('#mailpoet_form_name')
@@ -433,46 +462,52 @@
           var form = WysijaForm.save();
           form.id = $('#mailpoet_form_id').val();
 
-          MailPoet.Ajax.post({
-            endpoint: 'forms',
-            action: 'saveEditor',
-            data: form
-          }).done(function(response) {
-            if(response.result === false) {
-              if(response.errors.length > 0) {
-                MailPoet.Notice.error(response.errors.join('<br />'));
-              } else {
-                MailPoet.Notice.error(
-                  "<%= __('An error occured, please reload the page and try again.') %>"
-                );
+          if(jQuery('#mailpoet_form_settings').parsley().isValid() === false) {
+            mailpoet_toolbar_tab('settings', function() {
+              jQuery('#mailpoet_form_settings').parsley().validate();
+            });
+          } else {
+            MailPoet.Ajax.post({
+              endpoint: 'forms',
+              action: 'saveEditor',
+              data: form
+            }).done(function(response) {
+              if(response.result === false) {
+                if(response.errors.length > 0) {
+                  MailPoet.Notice.error(response.errors.join('<br />'));
+                } else {
+                  MailPoet.Notice.error(
+                    "<%= __('An error occured, please reload the page and try again.') %>"
+                  );
+                }
+
+                return false;
               }
 
-              return false;
-            }
+              if(callback !== false) {
+                var message = null;
 
-            if(callback !== false) {
-              var message = null;
+                if(response.is_widget === true) {
+                  message = "<%= __('Saved! The changes are already active in your widget.') %>";
+                } else {
+                  message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw %>";
+                }
 
-              if(response.is_widget === true) {
-                message = "<%= __('Saved! The changes are already active in your widget.') %>";
-              } else {
-                message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw %>";
+                if(message !== null) {
+                  MailPoet.Notice.hide();
+                  MailPoet.Notice.success(message, {
+                    scroll: true,
+                    static: (response.is_widget === false)
+                  });
+                }
+
+                // if there is a callback, call it!
+                if(callback !== undefined) {
+                  callback();
+                }
               }
-
-              if(message !== null) {
-                MailPoet.Notice.hide();
-                MailPoet.Notice.success(message, {
-                  scroll: true,
-                  static: (response.is_widget === false)
-                });
-              }
-
-              // if there is a callback, call it!
-              if(callback !== undefined) {
-                callback();
-              }
-            }
-          });
+            });
+          }
         }
         window.mailpoet_form_save = mailpoet_form_save;
 
@@ -546,7 +581,7 @@
           var name = $(this).siblings('.mailpoet_form_field').attr('wysija_name');
 
           if(window.confirm(
-            "<%= __('Deleting this field here will delete the data associated to it for all you users. Confirm you want to delete.') %>"
+            "<%= __('Delete this field for all your subscribers?') %>"
           )) {
             MailPoet.Ajax.post({
               endpoint: 'customFields',

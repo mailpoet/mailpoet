@@ -13,9 +13,11 @@ class Renderer {
     return $html;
   }
 
-  static function renderStyles($form = array()) {
+  static function renderStyles($form = array(), $prefix = null) {
+    $styles = new Util\Styles(static::getStyles($form));
+
     $html = '<style type="text/css">';
-    $html .= static::getStyles($form);
+    $html .= $styles->render($prefix);
     $html .= '</style>';
 
     return $html;
