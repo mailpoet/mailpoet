@@ -37,7 +37,7 @@ class Daemon {
     try {
       $sending_queue = new SendingQueue($this->timer);
       $sending_queue->process();
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
     }
     $elapsed_time = microtime(true) - $this->timer;
     if($elapsed_time < CronHelper::daemon_execution_limit) {
