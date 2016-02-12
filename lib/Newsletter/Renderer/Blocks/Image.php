@@ -23,18 +23,18 @@ class Image {
     $column_width = ColumnsHelper::columnWidth($column_count);
     $padded_width = StylesHelper::$padding_width * 2;
     // scale image to fit column width
-    if($element['width'] > $column_width ||
-      ($element['width'] < $column_width && $element['fullWidth'] === true)
-    ) {
+    if($element['width'] > $column_width) {
       $ratio = $element['width'] / $column_width;
       $element['width'] = $column_width;
-      $element['height'] = ceil($element['height'] / $ratio);
+      $element['height'] = (int) ceil($element['height'] / $ratio);
     }
-    // resize image if the image is padded and wider than column width
-    if($element['fullWidth'] === false && $element['width'] >= $column_width) {
-      $ratio = $element['width'] / ($element['width'] - $padded_width);
-      $element['width'] = $element['width'] - $padded_width;
-      $element['height'] = ceil($element['height'] / $ratio);
+    // resize image if the image is padded and wider than padded column width
+    if($element['fullWidth'] === false &&
+      $element['width'] > ($column_width - $padded_width)
+    ) {
+      $ratio = $element['width'] / ($column_width - $padded_width);
+      $element['width'] = $column_width - $padded_width;
+      $element['height'] = (int) ceil($element['height'] / $ratio);
     }
     return $element;
   }
