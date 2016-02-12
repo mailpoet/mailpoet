@@ -96,6 +96,9 @@ const item_actions = [
       return (
         <Link to={ `/edit/${item.id}` }>Edit</Link>
       );
+    },
+    display: function(segment) {
+      return (segment.type !== 'wp_users');
     }
   },
   {

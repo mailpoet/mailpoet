@@ -74,10 +74,11 @@ define(
           );
         }
 
-        var custom_actions = this.props.item_actions;
-        var item_actions = false;
+        const custom_actions = this.props.item_actions;
+        let item_actions = false;
 
         if(custom_actions.length > 0) {
+          let is_first = true;
           item_actions = custom_actions.map(function(action, index) {
             if(action.display !== undefined) {
               if(action.display(this.props.item) === false) {
@@ -85,10 +86,12 @@ define(
               }
             }
 
+            let custom_action = null;
+
             if(action.name === 'trash') {
-              return (
+              custom_action = (
                 <span key={ 'action-'+index } className="trash">
-                  {(index > 0) ? ' | ' : ''}
+                  {(!is_first) ? ' | ' : ''}
                   <a
                     href="javascript:;"
                     onClick={ this.handleTrashItem.bind(
@@ -100,27 +103,27 @@ define(
                 </span>
               );
             } else if(action.refresh) {
-              return (
+              custom_action = (
                 <span
                   onClick={ this.props.onRefreshItems }
                   key={ 'action-'+index } className={ action.name }>
-                  {(index > 0) ? ' | ' : ''}
+                  {(!is_first) ? ' | ' : ''}
                   { action.link(this.props.item) }
                 </span>
               );
             } else if(action.link) {
-              return (
+              custom_action = (
                 <span
                   key={ 'action-'+index } className={ action.name }>
-                  {(index > 0) ? ' | ' : ''}
+                  {(!is_first) ? ' | ' : ''}
                   { action.link(this.props.item) }
                 </span>
               );
             } else {
-              return (
+              custom_action = (
                 <span
                   key={ 'action-'+index } className={ action.name }>
-                  {(index > 0) ? ' | ' : ''}
+                  {(!is_first) ? ' | ' : ''}
                   <a href="javascript:;" onClick={
                     (action.onClick !== undefined)
                     ? action.onClick.bind(null,
@@ -132,6 +135,12 @@ define(
                 </span>
               );
             }
+
+            if(custom_action !== null && is_first === true) {
+              is_first = false;
+            }
+
+            return custom_action;
           }.bind(this));
         } else {
           item_actions = (
