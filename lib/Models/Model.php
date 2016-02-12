@@ -42,7 +42,24 @@ class Model extends \Sudzy\ValidModel {
     } catch(\Sudzy\ValidationException $e) {
       $this->setError($e->getValidationErrors());
     } catch(\PDOException $e) {
-      $this->setError($e->getMessage());
+      switch($e->getCode()) {
+        case 23000:
+          preg_match("/for key \'(.*?)\'/i", $e->getMessage(), $matches);
+          if(isset($matches[1])) {
+            $column = $matches[1];
+            $this->setError(
+              sprintf(
+                __('Another record already exists. Please specify a different "%1$s".'),
+                $column
+              )
+            );
+          } else {
+            $this->setError($e->getMessage());
+          }
+        break;
+        default:
+          $this->setError($e->getMessage());
+      }
     } catch(\Exception $e) {
       $this->setError($e->getMessage());
     }
