@@ -10,12 +10,13 @@
     'noItemsFound': __('No subscribers found.'),
     'selectAllLabel': __('All subscribers on this page are selected.'),
     'selectedAllLabel': __('All %d subscribers are selected.'),
-    'selectAllLink': __('Select all pages.'),
+    'selectAllLink': __('Select all subscribers on all pages.'),
     'clearSelection': __('Clear selection.'),
     'permanentlyDeleted': __('%d subscribers permanently deleted.')
   }) %>
 
   <script type="text/javascript">
+    var mailpoet_listing_per_page = <%= per_page %>;
     var mailpoet_segments = <%= json_encode(segments) %>;
     var mailpoet_custom_fields = <%= json_encode(custom_fields) %>;
     var mailpoet_month_names = <%= json_encode(month_names) %>;

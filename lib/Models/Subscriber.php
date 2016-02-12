@@ -411,7 +411,6 @@ class Subscriber extends Model {
   }
 
   static function bulkAddToList($orm, $data = array()) {
-
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
@@ -433,6 +432,15 @@ class Subscriber extends Model {
       );
     }
     return false;
+  }
+
+  static function bulkDelete($orm) {
+    return parent::bulkAction($orm, function($ids) {
+      // delete subscribers
+      Subscriber::whereIn('id', $ids)->deleteMany();
+      // delete subscribers' relations to segments
+      SubscriberSegment::whereIn('subscriber_id', $ids)->deleteMany();
+    });
   }
 
   static function subscribed($orm) {

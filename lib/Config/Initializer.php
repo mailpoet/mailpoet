@@ -56,6 +56,9 @@ class Initializer {
     \ORM::configure('username', Env::$db_username);
     \ORM::configure('password', Env::$db_password);
     \ORM::configure('logging', WP_DEBUG);
+    \ORM::configure('logger', function($query, $time) {
+      error_log($query);
+    });
     \ORM::configure('driver_options', array(
       \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
       \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET TIME_ZONE = "+00:00"'

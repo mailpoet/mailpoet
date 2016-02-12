@@ -7,8 +7,13 @@ class Hooks {
   }
 
   function init() {
+    $subscribe = Setting::getValue('subscribe', array());
     // Subscribe in comments
-    if((bool)Setting::getValue('subscribe.on_comment.enabled')) {
+    if(
+      isset($subscribe['on_comment']['enabled'])
+      &&
+      (bool)$subscribe['on_comment']['enabled']
+    ) {
       if(is_user_logged_in()) {
         add_action(
           'comment_form_field_comment',
@@ -37,7 +42,11 @@ class Hooks {
     }
 
     // Subscribe in registration form
-    if((bool)Setting::getValue('subscribe.on_register.enabled')) {
+    if(
+      isset($subscribe['on_register']['enabled'])
+      &&
+      (bool)$subscribe['on_register']['enabled']
+    ) {
       if(is_multisite()) {
         add_action(
           'signup_extra_fields',

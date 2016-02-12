@@ -5,6 +5,7 @@ if(!defined('ABSPATH')) exit;
 
 class Model extends \Sudzy\ValidModel {
   protected $_errors;
+  const BULK_ACTION_BATCH_SIZE = 1000;
 
   function __construct() {
     $this->_errors = array();
@@ -70,19 +71,23 @@ class Model extends \Sudzy\ValidModel {
   }
 
   static function bulkTrash($orm) {
-    $models = $orm->findResultSet();
-    $models->set_expr('deleted_at', 'NOW()')->save();
-    return $models->count();
+    $model = get_called_class();
+    return self::bulkAction($orm, function($ids) use($model) {
+       self::rawExecute(join(' ', array(
+          'UPDATE `'.$model::$_table.'`',
+          'SET `deleted_at`=NOW()',
+          'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'
+        )),
+        $ids
+      );
+    });
   }
 
   static function bulkDelete($orm) {
-    $models = $orm->findMany();
-    $count = 0;
-    foreach($models as $model) {
-      $model->delete();
-      $count++;
-    }
-    return $count;
+    $model = get_called_class();
+    return self::bulkAction($orm, function($ids) use($model) {
+      $model::whereIn('id', $ids)->deleteMany();
+    });
   }
 
   function restore() {
@@ -90,9 +95,35 @@ class Model extends \Sudzy\ValidModel {
   }
 
   static function bulkRestore($orm) {
-    $models = $orm->findResultSet();
-    $models->set_expr('deleted_at', 'NULL')->save();
-    return $models->count();
+    $model = get_called_class();
+    return self::bulkAction($orm, function($ids) use($model) {
+       self::rawExecute(join(' ', array(
+          'UPDATE `'.$model::$_table.'`',
+          'SET `deleted_at`=NULL',
+          'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'
+        )),
+        $ids
+      );
+    });
+  }
+
+  static function bulkAction($orm, $callback = false) {
+    $total = $orm->count();
+
+    $models = $orm->select('id')
+      ->offset(null)
+      ->limit(null)
+      ->findArray();
+
+    $ids = array_map(function($model) {
+      return (int)$model['id'];
+    }, $models);
+
+    if(is_callable($callback)) {
+      $callback($ids);
+    }
+
+    return $total;
   }
 
   function duplicate($data = array()) {

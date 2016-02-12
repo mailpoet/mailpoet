@@ -67,7 +67,7 @@ class Menu {
         'forms'
       )
     );
-    add_submenu_page(
+    $hook_subscribers_page = add_submenu_page(
       'mailpoet',
       __('Subscribers'),
       __('Subscribers'),
@@ -182,6 +182,17 @@ class Menu {
         'cron'
       )
     );
+
+    add_action('load-'.$hook_subscribers_page, function() {
+      add_screen_option('per_page', array(
+        'label' => _x(
+          'Number of subscribers per page',
+          'subscribers per page (screen options)'
+        ),
+        'default' => 10,
+        'option' => 'mailpoet_subscribers_per_page'
+      ));
+    });
   }
 
   function home() {
@@ -304,6 +315,13 @@ class Menu {
 
   function subscribers() {
     $data = array();
+
+    // listing: limit per page
+    $data['per_page'] = get_user_meta(
+      get_current_user_id(),
+      'mailpoet_subscribers_per_page',
+      true
+    );
 
     $data['segments'] = Segment::findArray();
 
