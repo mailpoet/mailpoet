@@ -46,6 +46,35 @@ class FormCest {
     expect($form->name)->equals('My Form');
   }
 
+  function itHasACreatedAtOnCreation() {
+    $form = Form::findOne($this->form->id);
+    expect($form->created_at)->notNull();
+    expect($form->created_at)->notEquals('0000-00-00 00:00:00');
+  }
+
+  function itHasAnUpdatedAtOnCreation() {
+    $form = Form::findOne($this->form->id);
+    expect($form->updated_at)
+      ->equals($form->created_at);
+  }
+
+  function itUpdatesTheUpdatedAtOnUpdate() {
+    $form = Form::findOne($this->form->id);
+    $created_at = $form->created_at;
+
+    sleep(1);
+
+    $form->name = 'new name';
+    $form->save();
+
+    $updated_form = Form::findOne($form->id);
+    expect($updated_form->created_at)->equals($created_at);
+    $is_time_updated = (
+      $updated_form->updated_at > $updated_form->created_at
+    );
+    expect($is_time_updated)->true();
+  }
+
   function itCanCreateOrUpdate() {
     $created_form = Form::createOrUpdate(array(
       'name' => 'Created Form'

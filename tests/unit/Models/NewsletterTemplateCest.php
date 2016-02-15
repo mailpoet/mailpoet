@@ -4,7 +4,6 @@ use MailPoet\Models\NewsletterTemplate;
 
 class NewsletterTemplateCest {
   function _before() {
-    $this->before_time = time();
     $this->data = array(
       'name' => 'Some template',
       'description' => 'My nice template',

@@ -37,7 +37,7 @@ class NewsletterCest {
     expect($this->newsletter->getErrors())->false();
   }
 
-  function itHasSubject() {
+  function itHasASubject() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     expect($newsletter->subject)->equals($this->newsletter->subject);
   }
@@ -55,6 +55,35 @@ class NewsletterCest {
   function itHasPreheader() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     expect($newsletter->preheader)->equals($this->newsletter->preheader);
+  }
+
+  function itHasACreatedAtOnCreation() {
+    $newsletter = Newsletter::findOne($this->newsletter->id);
+    expect($newsletter->created_at)->notNull();
+    expect($newsletter->created_at)->notEquals('0000-00-00 00:00:00');
+  }
+
+  function itHasAnUpdatedAtOnCreation() {
+    $newsletter = Newsletter::findOne($this->newsletter->id);
+    expect($newsletter->updated_at)
+      ->equals($newsletter->created_at);
+  }
+
+  function itUpdatesTheUpdatedAtOnUpdate() {
+    $newsletter = Newsletter::findOne($this->newsletter->id);
+    $created_at = $newsletter->created_at;
+
+    sleep(1);
+
+    $newsletter->subject = 'New Subject';
+    $newsletter->save();
+
+    $updated_newsletter = Newsletter::findOne($newsletter->id);
+    expect($updated_newsletter->created_at)->equals($created_at);
+    $is_time_updated = (
+      $updated_newsletter->updated_at > $updated_newsletter->created_at
+    );
+    expect($is_time_updated)->true();
   }
 
   function itCanBeQueued() {

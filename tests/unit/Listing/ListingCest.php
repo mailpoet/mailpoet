@@ -23,18 +23,17 @@ class ListingCest {
   }
 
   function itShouldGroup(UnitTester $I) {
-    $I->generateSubscribers(10);
-    $I->generateSubscribers(20, array('status' => 'unsubscribed'));
-    $I->generateSubscribers(30, array('status' => 'subscribed'));
+    $I->generateSubscribers(1);
+    $I->generateSubscribers(2, array('status' => 'unsubscribed'));
+    $I->generateSubscribers(3, array('status' => 'subscribed'));
 
     $listing = new Listing\Handler(
       '\MailPoet\Models\Subscriber',
       array('group' => 'subscribed')
     );
     $result = $listing->get();
-
     expect($result['groups'])->notEmpty();
-    expect($result['count'])->equals(30);
+    expect($result['count'])->equals(3);
   }
 
   function itShouldSearch(UnitTester $I) {
@@ -51,10 +50,6 @@ class ListingCest {
 
     $result = $listing->get();
     expect($result['count'])->equals(1);
-  }
-
-  function itShouldPaginate(UnitTester $I) {
-
   }
 
   function _after() {
