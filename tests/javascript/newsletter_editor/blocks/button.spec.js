@@ -63,6 +63,10 @@ define([
         expect(model.get('styles.block.fontSize')).to.match(/^\d+px$/);
       });
 
+      it("has a text font weight", function () {
+        expect(model.get('styles.block.fontWeight')).to.match(/^(bold|normal)$/);
+      });
+
       it("has width", function () {
         expect(model.get('styles.block.width')).to.match(/^\d+px$/);
       });
@@ -78,7 +82,7 @@ define([
       });
 
       it("triggers autosave if any attribute changes", function () {
-        var mock = sinon.mock().exactly(11).withArgs('autoSave');
+        var mock = sinon.mock().exactly(12).withArgs('autoSave');
         EditorApplication.getChannel = sinon.stub().returns({
           trigger: mock,
         });
@@ -93,6 +97,7 @@ define([
         model.set('styles.block.fontColor', '#345678');
         model.set('styles.block.fontFamily', 'Some other style');
         model.set('styles.block.fontSize', '10px');
+        model.set('styles.block.fontWeight', 'bold');
         mock.verify();
       });
 
@@ -114,6 +119,7 @@ define([
                   fontColor: '#345678',
                   fontFamily: 'Tahoma',
                   fontSize: '30px',
+                  fontWeight: 'bold',
                 },
               },
             },
@@ -133,6 +139,7 @@ define([
         expect(model.get('styles.block.fontColor')).to.equal('#345678');
         expect(model.get('styles.block.fontFamily')).to.equal('Tahoma');
         expect(model.get('styles.block.fontSize')).to.equal('30px');
+        expect(model.get('styles.block.fontWeight')).to.equal('bold');
       });
     });
 
@@ -179,6 +186,7 @@ define([
                 fontColor: '#345678',
                 fontFamily: 'Arial',
                 fontSize: '12px',
+                fontWeight: 'bold',
               },
             },
           });
@@ -234,6 +242,10 @@ define([
 
         it('has a specified font size', function () {
           expect(view.$('.mailpoet_editor_button').css('font-size')).to.equal(model.get('styles.block.fontSize'));
+        });
+
+        it('has a specified font weight', function () {
+          expect(view.$('.mailpoet_editor_button').css('font-weight')).to.equal(model.get('styles.block.fontWeight'));
         });
       });
     });
@@ -316,6 +328,12 @@ define([
           var newValue = '20px';
           view.$('.mailpoet_field_button_font_size').val(newValue).change();
           expect(model.get('styles.block.fontSize')).to.equal(newValue);
+        });
+
+        it('updates the model when font weight changes', function () {
+          var newValue = 'bold';
+          view.$('.mailpoet_field_button_font_weight').prop('checked', true).change();
+          expect(model.get('styles.block.fontWeight')).to.equal(newValue);
         });
 
         it('updates the model when background color changes', function () {

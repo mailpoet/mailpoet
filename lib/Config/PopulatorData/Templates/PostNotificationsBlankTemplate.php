@@ -325,6 +325,7 @@ class PostNotificationsBlankTemplate {
                           "fontColor" => "#ffffff",
                           "fontFamily" => "Arial",
                           "fontSize" => "18px",
+                          "fontWeight" => "normal",
                           "textAlign" => "center"
                         )
                       )

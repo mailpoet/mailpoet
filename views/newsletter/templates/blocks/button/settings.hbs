@@ -57,6 +57,14 @@
     <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Text') %></div>
 </div>
 <div class="mailpoet_form_field">
+    <div class="mailpoet_form_field_checkbox_option">
+        <label>
+            <input type="checkbox" name="fontWeight" class="mailpoet_field_button_font_weight" value="bold" {{#ifCond styles.block.fontWeight '===' 'bold'}}CHECKED{{/ifCond}}/>
+            <%= __('Bold') %>
+        </label>
+    </div>
+</div>
+<div class="mailpoet_form_field">
     <div class="mailpoet_form_field_input_option">
         <input type="text" name="background-color" class="mailpoet_field_button_background_color mailpoet_color" value="{{ model.styles.block.backgroundColor }}" />
     </div>

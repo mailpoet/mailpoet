@@ -1,8 +1,9 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/components/communication',
-    'newsletter_editor/blocks/posts'
-  ], function(EditorApplication, CommunicationComponent, PostsBlock) {
+    'newsletter_editor/blocks/posts',
+    'newsletter_editor/blocks/container'
+  ], function(EditorApplication, CommunicationComponent, PostsBlock, ContainerBlock) {
 
   describe('Posts', function () {
     Backbone.Radio = {
@@ -255,7 +256,7 @@ define([
         global.stubConfig(EditorApplication, {
           blockDefaults: {},
         });
-        EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
+        EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
         model = new (PostsBlock.PostsBlockModel)();
         view = new (PostsBlock.PostsBlockSettingsView)({model: model});
       });

@@ -32,6 +32,7 @@ define([
             fontColor: '#000000',
             fontFamily: 'Arial',
             fontSize: '16px',
+            fontWeight: 'normal', // 'normal'|'bold'
             textAlign: 'center',
           },
         },
@@ -72,6 +73,7 @@ define([
         "change .mailpoet_field_button_font_size": _.partial(this.changeField, "styles.block.fontSize"),
         "change .mailpoet_field_button_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
         "change .mailpoet_field_button_border_color": _.partial(this.changeColorField, "styles.block.borderColor"),
+        "change .mailpoet_field_button_font_weight": "changeFontWeight",
 
         "input .mailpoet_field_button_border_width": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_width_input', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
         "change .mailpoet_field_button_border_width": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_width_input', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
@@ -128,6 +130,13 @@ define([
       this.$(fieldToUpdate).val(jQuery(event.target).val());
       callable(event);
     },
+    changeFontWeight: function(event) {
+      var checked = !!jQuery(event.target).prop('checked');
+      this.model.set(
+        'styles.block.fontWeight',
+        (checked) ? jQuery(event.target).val() : 'normal'
+      );
+    }
   });
 
   Module.ButtonWidgetView = base.WidgetView.extend({
