@@ -109,17 +109,19 @@ class Model extends \Sudzy\ValidModel {
   static function bulkAction($orm, $callback = false) {
     $total = $orm->count();
 
-    $models = $orm->select('id')
-      ->offset(null)
-      ->limit(null)
-      ->findArray();
+    if($total > 0) {
+      $models = $orm->select('id')
+        ->offset(null)
+        ->limit(null)
+        ->findArray();
 
-    $ids = array_map(function($model) {
-      return (int)$model['id'];
-    }, $models);
+      $ids = array_map(function($model) {
+        return (int)$model['id'];
+      }, $models);
 
-    if(is_callable($callback)) {
-      $callback($ids);
+      if(is_callable($callback)) {
+        $callback($ids);
+      }
     }
 
     return $total;
