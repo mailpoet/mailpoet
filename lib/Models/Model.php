@@ -5,7 +5,6 @@ if(!defined('ABSPATH')) exit;
 
 class Model extends \Sudzy\ValidModel {
   protected $_errors;
-  const BULK_ACTION_BATCH_SIZE = 1000;
 
   function __construct() {
     $this->_errors = array();
