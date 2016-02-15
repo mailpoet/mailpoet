@@ -26,7 +26,8 @@ define(
              "Tempt them to open your email.",
         type: 'text',
         validation: {
-          'data-parsley-required': true
+          'data-parsley-required': true,
+          'data-parsley-required-message': 'You need to specify a subject.'
         }
       },
       {
@@ -42,7 +43,8 @@ define(
           return !!(!segment.deleted_at);
         },
         validation: {
-          'data-parsley-required': true
+          'data-parsley-required': true,
+          'data-parsley-required-message': 'You need to select a segment.'
         }
       },
       {
@@ -107,8 +109,16 @@ define(
       mixins: [
         Router.History
       ],
+      componentDidMount: function() {
+        jQuery('#mailpoet_newsletter').parsley();
+      },
+      isValid: function() {
+        return jQuery('#mailpoet_newsletter').parsley().isValid();
+      },
       handleSend: function() {
-        if(jQuery('#mailpoet_newsletter').parsley().validate() === true) {
+        if(!this.isValid()) {
+          jQuery('#mailpoet_newsletter').parsley().validate();
+        } else {
           MailPoet.Ajax.post({
             endpoint: 'sendingQueue',
             action: 'add',
@@ -132,9 +142,7 @@ define(
               );
             } else {
               if(response.errors) {
-                MailPoet.Notice.error(
-                  response.errors.join("<br />")
-                );
+                MailPoet.Notice.error(response.errors);
               } else {
                 MailPoet.Notice.error(
                   'An error occurred while trying to send. '+
@@ -144,6 +152,7 @@ define(
             }
           }.bind(this));
         }
+        return false;
       },
       render: function() {
         return (
@@ -158,6 +167,7 @@ define(
               fields={ fields }
               params={ this.props.params }
               messages={ messages }
+              isValid={ this.isValid }
             >
               <p className="submit">
                 <input
