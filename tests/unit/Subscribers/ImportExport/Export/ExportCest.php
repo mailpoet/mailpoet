@@ -211,6 +211,13 @@ class ExportCest {
     expect(count($subscribers))->equals(2);
   }
 
+  function itRequiresWritableExportFile() {
+    $this->export->export_file = '/dev/random';
+    $result = $this->export->process();
+    expect($result['errors'][0])
+      ->equals("Couldn't save export file on the server.");
+  }
+
   function itCanProcess() {
     $this->export->export_file = $this->export->getExportFile('csv');
     $this->export->export_format_option = 'csv';

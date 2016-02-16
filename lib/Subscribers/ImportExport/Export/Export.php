@@ -41,6 +41,9 @@ class Export {
       $subscriber_custom_fields
     );
     try {
+      if(is_writable($this->export_file)) {
+        throw new \Exception(__("Couldn't save export file on the server."));
+      }
       if($this->export_format_option === 'csv') {
         $CSV_file = fopen($this->export_file, 'w');
         $format_CSV = function($row) {
