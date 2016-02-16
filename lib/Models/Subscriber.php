@@ -33,8 +33,12 @@ class Subscriber extends Model {
   }
 
   function addToSegments(array $segment_ids = array()) {
-    // delete all relations to segments
-    SubscriberSegment::where('subscriber_id', $this->id)->deleteMany();
+    $wp_users_segment = Segment::getWPUsers();
+
+    // delete all relations to segments except WP users
+    SubscriberSegment::where('subscriber_id', $this->id)
+      ->whereNotEqual('segment_id', $wp_users_segment->id)
+      ->deleteMany();
 
     if(!empty($segment_ids)) {
       $segments = Segment::whereIn('id', $segment_ids)->findMany();
@@ -252,9 +256,8 @@ class Subscriber extends Model {
     }
 
     // segments
-    $segment_ids = array();
-
-    if(isset($data['segments'])) {
+    $segment_ids = false;
+    if(array_key_exists('segments', $data)) {
       $segment_ids = (array)$data['segments'];
       unset($data['segments']);
     }
@@ -282,7 +285,9 @@ class Subscriber extends Model {
           $subscriber->setCustomField($custom_field_id, $value);
         }
       }
-      $subscriber->addToSegments($segment_ids);
+      if($segment_ids !== false) {
+        $subscriber->addToSegments($segment_ids);
+      }
     }
     return $subscriber;
   }
