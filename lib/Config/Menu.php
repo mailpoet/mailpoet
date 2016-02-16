@@ -13,6 +13,7 @@ use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Util\DKIM;
 use MailPoet\Util\Permissions;
+use MailPoet\Listing;
 
 if(!defined('ABSPATH')) exit;
 
@@ -67,7 +68,7 @@ class Menu {
         'forms'
       )
     );
-    $hook_subscribers_page = add_submenu_page(
+    $subscribers_page = add_submenu_page(
       'mailpoet',
       __('Subscribers'),
       __('Subscribers'),
@@ -78,6 +79,17 @@ class Menu {
         'subscribers'
       )
     );
+    // add limit per page to screen options
+    add_action('load-'.$subscribers_page, function() {
+      add_screen_option('per_page', array(
+        'label' => _x(
+          'Number of subscribers per page',
+          'subscribers per page (screen options)'
+        ),
+        'option' => 'mailpoet_subscribers_per_page'
+      ));
+    });
+
     add_submenu_page(
       'mailpoet',
       __('Segments'),
@@ -182,17 +194,6 @@ class Menu {
         'cron'
       )
     );
-
-    add_action('load-'.$hook_subscribers_page, function() {
-      add_screen_option('per_page', array(
-        'label' => _x(
-          'Number of subscribers per page',
-          'subscribers per page (screen options)'
-        ),
-        'default' => 10,
-        'option' => 'mailpoet_subscribers_per_page'
-      ));
-    });
   }
 
   function home() {
@@ -317,11 +318,12 @@ class Menu {
     $data = array();
 
     // listing: limit per page
-    $data['per_page'] = get_user_meta(
-      get_current_user_id(),
-      'mailpoet_subscribers_per_page',
-      true
+    $listing_per_page = get_user_meta(
+      get_current_user_id(), 'mailpoet_subscribers_per_page', true
     );
+    $data['per_page'] = (!empty($listing_per_page))
+      ? (int)$listing_per_page
+      : Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
 
     $data['segments'] = Segment::findArray();
 

@@ -7,6 +7,13 @@ class Hooks {
   }
 
   function init() {
+    $this->setupSubscribe();
+    $this->setupWPUsers();
+    $this->setupImageSize();
+    $this->setupListing();
+  }
+
+  function setupSubscribe() {
     $subscribe = Setting::getValue('subscribe', array());
     // Subscribe in comments
     if(
@@ -71,7 +78,9 @@ class Hooks {
         );
       }
     }
+  }
 
+  function setupWPUsers() {
     // WP Users synchronization
     add_action(
       'user_register',
@@ -104,19 +113,24 @@ class Hooks {
       '\MailPoet\Segments\WP::synchronizeUser',
       1
     );
-
-    add_filter(
-      'image_size_names_choose',
-      array(
-        $this,
-        'appendImageSizes'
-      )
-    );
   }
 
-  function appendImageSizes($sizes) {
-    return array_merge($sizes, array(
-      'mailpoet_newsletter_max' => __('MailPoet Newsletter'),
-    ));
+  function setupImageSize() {
+    add_filter('image_size_names_choose', function($sizes) {
+      return array_merge($sizes, array(
+        'mailpoet_newsletter_max' => __('MailPoet Newsletter')
+      ));
+    });
+  }
+
+  function setupListing() {
+    // handle saving "per_page" screen option
+    add_filter('set-screen-option', function($status, $option, $value) {
+      if(preg_match('/^mailpoet_(.*)_per_page$/', $option)) {
+        return $value;
+      } else {
+        return $status;
+      }
+    }, 10, 3);
   }
 }
