@@ -4,6 +4,8 @@ namespace MailPoet\Listing;
 if(!defined('ABSPATH')) exit;
 
 class Handler {
+  const DEFAULT_LIMIT_PER_PAGE = 20;
+
   private $data = array();
   private $model = null;
 
@@ -14,7 +16,10 @@ class Handler {
     $this->data = array(
       // pagination
       'offset' => (isset($data['offset']) ? (int)$data['offset'] : 0),
-      'limit' => (isset($data['limit']) ? (int)$data['limit'] : 50),
+      'limit' => (isset($data['limit'])
+        ? (int)$data['limit']
+        : self::DEFAULT_LIMIT_PER_PAGE
+      ),
       // searching
       'search' => (isset($data['search']) ? $data['search'] : null),
       // sorting

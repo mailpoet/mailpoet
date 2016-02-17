@@ -7,8 +7,20 @@ class Hooks {
   }
 
   function init() {
+    $this->setupSubscribe();
+    $this->setupWPUsers();
+    $this->setupImageSize();
+    $this->setupListing();
+  }
+
+  function setupSubscribe() {
+    $subscribe = Setting::getValue('subscribe', array());
     // Subscribe in comments
-    if((bool)Setting::getValue('subscribe.on_comment.enabled')) {
+    if(
+      isset($subscribe['on_comment']['enabled'])
+      &&
+      (bool)$subscribe['on_comment']['enabled']
+    ) {
       if(is_user_logged_in()) {
         add_action(
           'comment_form_field_comment',
@@ -37,7 +49,11 @@ class Hooks {
     }
 
     // Subscribe in registration form
-    if((bool)Setting::getValue('subscribe.on_register.enabled')) {
+    if(
+      isset($subscribe['on_register']['enabled'])
+      &&
+      (bool)$subscribe['on_register']['enabled']
+    ) {
       if(is_multisite()) {
         add_action(
           'signup_extra_fields',
@@ -62,7 +78,9 @@ class Hooks {
         );
       }
     }
+  }
 
+  function setupWPUsers() {
     // WP Users synchronization
     add_action(
       'user_register',
@@ -95,19 +113,35 @@ class Hooks {
       '\MailPoet\Segments\WP::synchronizeUser',
       1
     );
+  }
 
+  function setupImageSize() {
     add_filter(
       'image_size_names_choose',
-      array(
-        $this,
-        'appendImageSizes'
-      )
+      array($this, 'appendImageSize'),
+      10, 1
     );
   }
 
-  function appendImageSizes($sizes) {
+  function appendImageSize($sizes) {
     return array_merge($sizes, array(
-      'mailpoet_newsletter_max' => __('MailPoet Newsletter'),
+      'mailpoet_newsletter_max' => __('MailPoet Newsletter')
     ));
+  }
+
+  function setupListing() {
+    add_filter(
+      'set-screen-option',
+      array($this, 'setScreenOption'),
+      10, 3
+    );
+  }
+
+  function setScreenOption($status, $option, $value) {
+    if(preg_match('/^mailpoet_(.*)_per_page$/', $option)) {
+      return $value;
+    } else {
+      return $status;
+    }
   }
 }

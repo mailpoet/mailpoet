@@ -313,6 +313,7 @@ const SubscriberList = React.createClass({
         </h2>
 
         <Listing
+          limit={ mailpoet_listing_per_page }
           location={ this.props.location }
           params={ this.props.params }
           endpoint="subscribers"
