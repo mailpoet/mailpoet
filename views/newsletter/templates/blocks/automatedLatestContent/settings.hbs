@@ -3,8 +3,8 @@
 <div class="mailpoet_form_field">
     <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Show:') %></div>
     <div class="mailpoet_form_field_input_option">
-        <input type="text" class="mailpoet_input mailpoet_input_small mailpoet_automated_latest_content_show_amount" value="{{ model.amount }}" />
-        <select class="mailpoet_select mailpoet_select_small mailpoet_automated_latest_content_content_type">
+        <input type="text" class="mailpoet_input mailpoet_input_small mailpoet_automated_latest_content_show_amount" value="{{ model.amount }}" maxlength="2" size="2" />
+        <select class="mailpoet_select mailpoet_select_large mailpoet_automated_latest_content_content_type">
             <option value="post" {{#ifCond model.contentType '==' 'post'}}SELECTED{{/ifCond}}><%= __('Posts') %></option>
             <option value="page" {{#ifCond model.contentType '==' 'page'}}SELECTED{{/ifCond}}><%= __('Pages') %></option>
             <option value="mailpoet_page" {{#ifCond model.contentType '==' 'mailpoet_page'}}SELECTED{{/ifCond}}><%= __('MailPoet pages') %></option>
