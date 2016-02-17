@@ -212,7 +212,7 @@ class ExportCest {
   }
 
   function itRequiresWritableExportFile() {
-    $this->export->export_file = '/dev/random';
+    $this->export->export_path = '/fake_folder';
     $result = $this->export->process();
     expect($result['errors'][0])
       ->equals("Couldn't save export file on the server.");
