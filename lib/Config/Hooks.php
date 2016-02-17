@@ -116,21 +116,32 @@ class Hooks {
   }
 
   function setupImageSize() {
-    add_filter('image_size_names_choose', function($sizes) {
-      return array_merge($sizes, array(
-        'mailpoet_newsletter_max' => __('MailPoet Newsletter')
-      ));
-    });
+    add_filter(
+      'image_size_names_choose',
+      array($this, 'appendImageSize'),
+      10, 1
+    );
+  }
+
+  function appendImageSize($sizes) {
+    return array_merge($sizes, array(
+      'mailpoet_newsletter_max' => __('MailPoet Newsletter')
+    ));
   }
 
   function setupListing() {
-    // handle saving "per_page" screen option
-    add_filter('set-screen-option', function($status, $option, $value) {
-      if(preg_match('/^mailpoet_(.*)_per_page$/', $option)) {
-        return $value;
-      } else {
-        return $status;
-      }
-    }, 10, 3);
+    add_filter(
+      'set-screen-option',
+      array($this, 'setScreenOption'),
+      10, 3
+    );
+  }
+
+  function setScreenOption($status, $option, $value) {
+    if(preg_match('/^mailpoet_(.*)_per_page$/', $option)) {
+      return $value;
+    } else {
+      return $status;
+    }
   }
 }
