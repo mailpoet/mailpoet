@@ -35,10 +35,15 @@ class Subscriber extends Model {
   function addToSegments(array $segment_ids = array()) {
     $wp_users_segment = Segment::getWPUsers();
 
-    // delete all relations to segments except WP users
-    SubscriberSegment::where('subscriber_id', $this->id)
-      ->whereNotEqual('segment_id', $wp_users_segment->id)
-      ->deleteMany();
+    if($wp_users_segment !== false) {
+      // delete all relations to segments except WP users
+      SubscriberSegment::where('subscriber_id', $this->id)
+        ->whereNotEqual('segment_id', $wp_users_segment->id)
+        ->deleteMany();
+      } else {
+        // delete all relations to segments
+        SubscriberSegment::where('subscriber_id', $this->id)->deleteMany();
+      }
 
     if(!empty($segment_ids)) {
       $segments = Segment::whereIn('id', $segment_ids)->findMany();
