@@ -4,12 +4,15 @@ define([
 function(
   React
 ) {
-  var FormFieldRadio = React.createClass({
+  const FormFieldRadio = React.createClass({
     render: function() {
-      var selected_value = this.props.item[this.props.field.name];
+      if (this.props.field.values === undefined) {
+        return false;
+      }
 
-      var options = Object.keys(this.props.field.values).map(
-        function(value, index) {
+      const selected_value = this.props.item[this.props.field.name];
+      const options = Object.keys(this.props.field.values).map(
+        (value, index) => {
           return (
             <p key={ 'radio-' + index }>
               <label>
@@ -23,7 +26,7 @@ function(
               </label>
             </p>
           );
-        }.bind(this)
+        }
       );
 
       return (

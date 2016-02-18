@@ -4,10 +4,14 @@ define([
 function(
   React
 ) {
-  var FormFieldSelect = React.createClass({
+  const FormFieldSelect = React.createClass({
     render: function() {
-      var options =
-        Object.keys(this.props.field.values).map(function(value, index) {
+      if (this.props.field.values === undefined) {
+        return false;
+      }
+
+      const options = Object.keys(this.props.field.values).map(
+        (value, index) => {
           return (
             <option
               key={ 'option-' + index }
@@ -15,7 +19,7 @@ function(
               { this.props.field.values[value] }
             </option>
           );
-        }.bind(this)
+        }
       );
 
       return (

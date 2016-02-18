@@ -187,20 +187,25 @@
   jQuery(function($) {
     $(function() {
       $('#mailpoet_reinstall').on('click', function() {
-        MailPoet.Ajax.post({
-          'endpoint': 'setup',
-          'action': 'reset'
-        }).done(function(response) {
-          if(response.result === true) {
-            MailPoet.Notice.success(
-              "<%= __('MailPoet has been reinstalled successfully using the same version. Settings and data have been deleted.') %>",
-            { scroll: true });
-          } else {
-            MailPoet.Notice.error(
-              "<%= __('MailPoet could not be reinstalled. You might need to remove it manually first.') %>",
-            { scroll: true });
-          }
-        });
+        if(confirm(
+          "<%= __('If you confirm this, all your current MailPoet data will be erased (newsletters, statistics, subscribers, etc...)') %>"
+        )) {
+          MailPoet.Ajax.post({
+            'endpoint': 'setup',
+            'action': 'reset'
+          }).done(function(response) {
+            if(response.result === true) {
+              MailPoet.Notice.success(
+                "<%= __('MailPoet has been reinstalled successfully using the same version. Settings and data have been deleted.') %>",
+              { scroll: true });
+            } else {
+              MailPoet.Notice.error(
+                "<%= __('MailPoet could not be reinstalled. You might need to remove it manually first.') %>",
+              { scroll: true });
+            }
+          });
+        }
+        return false;
       });
     });
   });
