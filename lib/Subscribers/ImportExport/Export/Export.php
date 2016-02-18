@@ -17,6 +17,7 @@ class Export {
   public $segments;
   public $subscribers_without_segment;
   public $subscriber_fields;
+  public $export_path;
   public $export_file;
   public $export_file_URL;
   public $profiler_start;
@@ -28,19 +29,23 @@ class Export {
     $this->segments = $data['segments'];
     $this->subscribers_without_segment = array_search(0, $this->segments);
     $this->subscriber_fields = $data['subscriber_fields'];
+    $this->export_path = Env::$temp_path;
     $this->export_file = $this->getExportFile($this->export_format_option);
     $this->export_file_URL = $this->getExportFileURL($this->export_file);
     $this->profiler_start = microtime(true);
   }
 
   function process() {
-    $subscribers = $this->getSubscribers();
-    $subscriber_custom_fields = $this->getSubscriberCustomFields();
-    $formatted_subscriber_fields = $this->formatSubscriberFields(
-      $this->subscriber_fields,
-      $subscriber_custom_fields
-    );
     try {
+      if(is_writable($this->export_path) === false) {
+        throw new \Exception(__("Couldn't save export file on the server."));
+      }
+      $subscribers = $this->getSubscribers();
+      $subscriber_custom_fields = $this->getSubscriberCustomFields();
+      $formatted_subscriber_fields = $this->formatSubscriberFields(
+        $this->subscriber_fields,
+        $subscriber_custom_fields
+      );
       if($this->export_format_option === 'csv') {
         $CSV_file = fopen($this->export_file, 'w');
         $format_CSV = function($row) {
@@ -178,7 +183,7 @@ class Export {
 
   function getExportFile($format) {
     return sprintf(
-      Env::$temp_path . '/MailPoet_export_%s.%s',
+      $this->export_path . '/MailPoet_export_%s.%s',
       substr(md5(time()), 0, 4),
       $format
     );

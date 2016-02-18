@@ -148,7 +148,7 @@ define(
         .done(function (response) {
           MailPoet.Modal.loading(false);
           if (response.result === false) {
-            MailPoet.Notice.error(response.error);
+            MailPoet.Notice.error(response.errors);
           } else {
             resultMessage = MailPoetI18n.exportMessage
              .replace('%1$s', '<strong>' + response.data.totalExported + '</strong>')

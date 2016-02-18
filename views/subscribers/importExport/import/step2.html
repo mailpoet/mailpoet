@@ -140,10 +140,10 @@
         <input id="new_segment_name" type="text" name="name"/>
       </p>
       <p class="mailpoet_validation_error" data-error="segment_name_required">
-        <%= __('You need to specify a name') %>
+        <%= __('You need to specify a name.') %>
       </p>
       <p class="mailpoet_validation_error" data-error="segment_name_not_unique">
-        <%= __('This name is already taken') %>
+        <%= __('Another record already exists. Please specify a different "%1$s".')|format('name') %>
       </p>
       <p>
         <label><%= __('Description') %>:</label>
