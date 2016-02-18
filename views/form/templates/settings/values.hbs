@@ -6,9 +6,13 @@
 </div>
 <script type="text/javascript">
 jQuery(function($) {
-  var field_values = {{#if params.values}}{{{ json_encode params.values }}}{{else}}[]{{/if}},
-    field_type = "{{ type }}",
-    template = Handlebars.compile($('#field_settings_values_item').html());
+  {{#if params.values}}
+    var field_values = {{{ json_encode params.values }}};
+  {{else}}
+    var field_values = [{ value: '' }];
+  {{/if}}
+  var field_type = "{{ type }}";
+  var template = Handlebars.compile($('#field_settings_values_item').html());
 
   // set default value for checkbox type if there is no value defined
   if(field_type === 'checkbox' && field_values.length !== 1) {
@@ -51,6 +55,13 @@ jQuery(function($) {
         $(item).find('.is_checked').attr('name', 'params[values]['+index+'][is_checked]');
         $(item).find('.value').attr('name', 'params[values]['+index+'][value]');
       });
+
+      // hide remove button if only one item remains
+      if ($('.mailpoet_multiple_values li').length > 1) {
+        $('.mailpoet_multiple_values .remove').show();
+      } else {
+        $('.mailpoet_multiple_values .remove').hide();
+      }
     }
     {{#ifCond type '!=' 'checkbox'}}
     $('.mailpoet_multiple_values').on('click', '.is_checked', function() {

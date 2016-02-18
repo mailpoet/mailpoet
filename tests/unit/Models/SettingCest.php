@@ -2,6 +2,15 @@
 use MailPoet\Models\Setting;
 
 class SettingCest {
+  function itCanBeCreated() {
+    $setting = Setting::createOrUpdate(array(
+      'name' => 'key',
+      'value' => 'val'
+    ));
+    expect($setting->id() > 0)->true();
+    expect($setting->getErrors())->false();
+  }
+
   function itHasToBeValid() {
     $invalid_setting = Setting::createOrUpdate();
     $errors = $invalid_setting->getErrors();

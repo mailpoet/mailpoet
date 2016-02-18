@@ -47,9 +47,9 @@ class WP {
         }
         $subscriber = Subscriber::createOrUpdate($data);
 
-        if($subscriber !== false && $subscriber->id()) {
+        if($subscriber->getErrors() === false && $subscriber->id > 0) {
           if($segment !== false) {
-            $segment->addSubscriber($subscriber->id());
+            $segment->addSubscriber($subscriber->id);
           }
         }
       break;

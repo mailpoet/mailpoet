@@ -6,10 +6,14 @@ use MailPoet\Models\SubscriberCustomField;
 
 class CustomFieldCest {
   function _before() {
-    $this->custom_field = CustomField::createOrUpdate(array(
-      'name' => 'Birthdate',
-      'type' => 'date'
-    ));
+    $this->data = array(
+      'name' => 'City',
+      'type' => 'text',
+      'params' => array(
+        'label' => 'What is your city?'
+      )
+    );
+    $this->custom_field = CustomField::createOrUpdate($this->data);
 
     $this->subscribers = array(
       array(
@@ -31,21 +35,21 @@ class CustomFieldCest {
   }
 
   function itHasAName() {
-    expect($this->custom_field->name)->equals('Birthdate');
+    expect($this->custom_field->name)->equals($this->data['name']);
   }
 
   function itHasAType() {
-    expect($this->custom_field->type)->equals('date');
+    expect($this->custom_field->type)->equals($this->data['type']);
+  }
+
+  function itHasSerializedParams() {
+    $params = unserialize($this->custom_field->params);
+    expect($params)->equals($this->data['params']);
   }
 
   function itCanDecodeParams() {
     $custom_field = $this->custom_field->asArray();
-    expect($custom_field['params'])->hasKey('label');
-  }
-
-  function itHasDefaultParams() {
-    $params = unserialize($this->custom_field->params);
-    expect($params['label'])->equals('Birthdate');
+    expect($custom_field['params'])->equals($this->data['params']);
   }
 
   function itHasToBeValid() {
@@ -59,18 +63,33 @@ class CustomFieldCest {
     expect($errors[1])->equals('You need to specify a type.');
   }
 
-  function itCanBeUpdated() {
-    $custom_field = $this->custom_field->asArray();
-    $custom_field['name'] = 'Favorite color';
-    $custom_field['type'] = 'text';
+  function itHasACreatedAtOnCreation() {
+    $custom_field = CustomField::findOne($this->custom_field->id);
+    expect($custom_field->created_at)->notNull();
+    expect($custom_field->created_at)->notEquals('0000-00-00 00:00:00');
+  }
 
-    $custom_field = CustomField::createOrUpdate($custom_field);
+  function itHasAnUpdatedAtOnCreation() {
+    $custom_field = CustomField::findOne($this->custom_field->id);
+    expect($custom_field->updated_at)
+      ->equals($custom_field->created_at);
+  }
 
-    expect($custom_field->getErrors())->false();
+  function itUpdatesTheUpdatedAtOnUpdate() {
+    $custom_field = CustomField::findOne($this->custom_field->id);
+    $created_at = $custom_field->created_at;
+
+    sleep(1);
+
+    $custom_field->name = 'Country';
+    $custom_field->save();
 
     $updated_custom_field = CustomField::findOne($custom_field->id);
-    expect($updated_custom_field->name)->equals('Favorite color');
-    expect($updated_custom_field->type)->equals('text');
+    expect($updated_custom_field->created_at)->equals($created_at);
+    $is_time_updated = (
+      $updated_custom_field->updated_at > $updated_custom_field->created_at
+    );
+    expect($is_time_updated)->true();
   }
 
   function itCanHaveManySubscribers() {
@@ -95,7 +114,6 @@ class CustomFieldCest {
     $association->custom_field_id = $this->custom_field->id;
     $association->value = '12/12/2012';
     $association->save();
-
     $custom_field = CustomField::findOne($this->custom_field->id);
     $subscriber = $custom_field->subscribers()->findOne();
     expect($subscriber->value)->equals($association->value);

@@ -10,10 +10,13 @@ function(
       return this.props.onValueChange(e);
     },
     render: function() {
-      const isChecked = !!(this.props.item[this.props.field.name]);
+      if (this.props.field.values === undefined) {
+        return false;
+      }
 
+      const isChecked = !!(this.props.item[this.props.field.name]);
       const options = Object.keys(this.props.field.values).map(
-        function(value, index) {
+        (value, index) => {
           return (
             <p key={ 'checkbox-' + index }>
               <label>
@@ -29,7 +32,7 @@ function(
               </label>
             </p>
           );
-        }.bind(this)
+        }
       );
 
       return (

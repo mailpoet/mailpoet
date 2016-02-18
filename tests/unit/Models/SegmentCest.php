@@ -8,11 +8,12 @@ use MailPoet\Models\SubscriberSegment;
 
 class SegmentCest {
   function _before() {
-    $this->before_time = time();
     $this->data = array(
       'name' => 'some name',
       'description' => 'some description'
     );
+    $this->segment = Segment::createOrUpdate($this->data);
+
     $this->subscribers_data = array(
       array(
         'first_name' => 'John',
@@ -37,7 +38,6 @@ class SegmentCest {
         'type' => 'standard'
       )
     );
-    $this->segment = Segment::createOrUpdate($this->data);
   }
 
   function itCanBeCreated() {
@@ -76,36 +76,32 @@ class SegmentCest {
   }
 
   function itHasACreatedAtOnCreation() {
-    $segment = Segment::where('name', $this->data['name'])
-      ->findOne();
-    $time_difference = strtotime($segment->created_at) >= $this->before_time;
-    expect($time_difference)->equals(true);
+    $segment = Segment::findOne($this->segment->id);
+    expect($segment->created_at)->notNull();
+    expect($segment->created_at)->notEquals('0000-00-00 00:00:00');
   }
 
   function itHasAnUpdatedAtOnCreation() {
-    $segment = Segment::where('name', $this->data['name'])
-      ->findOne();
-    $time_difference = strtotime($segment->updated_at) >= $this->before_time;
-    expect($time_difference)->equals(true);
-  }
-
-  function itKeepsTheCreatedAtOnUpdate() {
-    $segment = Segment::where('name', $this->data['name'])
-      ->findOne();
-    $old_created_at = $segment->created_at;
-    $segment->name = 'new name';
-    $segment->save();
-    expect($old_created_at)->equals($segment->created_at);
+    $segment = Segment::findOne($this->segment->id);
+    expect($segment->updated_at)
+      ->equals($segment->created_at);
   }
 
   function itUpdatesTheUpdatedAtOnUpdate() {
-    $segment = Segment::where('name', $this->data['name'])
-      ->findOne();
-    $update_time = time();
+    $segment = Segment::findOne($this->segment->id);
+    $created_at = $segment->created_at;
+
+    sleep(1);
+
     $segment->name = 'new name';
     $segment->save();
-    $time_difference = strtotime($segment->updated_at) >= $update_time;
-    expect($time_difference)->equals(true);
+
+    $updated_segment = Segment::findOne($segment->id);
+    expect($updated_segment->created_at)->equals($created_at);
+    $is_time_updated = (
+      $updated_segment->updated_at > $updated_segment->created_at
+    );
+    expect($is_time_updated)->true();
   }
 
   function itCanCreateOrUpdate() {

@@ -6,14 +6,14 @@ use MailPoet\Models\NewsletterOptionField;
 
 class NewsletterOptionFieldCest {
   function _before() {
-    $this->before_time = time();
     $this->data = array(
       'name' => 'Event',
       'newsletter_type' => 'welcome'
     );
-    $this->option_field = NewsletterOptionField::create();
-    $this->option_field->hydrate($this->data);
-    $this->saved = $this->option_field->save();
+    $option = NewsletterOptionField::create();
+    $option->hydrate($this->data);
+    $this->option_field = $option->save();
+
     $this->newsletter_data = array(
       array(
         'subject' => 'Test newsletter 1',
@@ -31,20 +31,17 @@ class NewsletterOptionFieldCest {
   }
 
   function itCanBeCreated() {
-    expect($this->saved->id() > 0)->true();
-    expect($this->saved->getErrors())->false();
+    expect($this->option_field->id() > 0)->true();
+    expect($this->option_field->getErrors())->false();
   }
 
   function itHasName() {
-    $option_field = NewsletterOptionField::where('name', $this->data['name'])
-      ->findOne();
-    expect($option_field->name)->equals($this->data['name']);
+    expect($this->option_field->name)->equals($this->data['name']);
   }
 
   function itHasNewsletterType() {
-    $option_field = NewsletterOptionField::where('name', $this->data['name'])
-      ->findOne();
-    expect($option_field->newsletter_type)->equals($this->data['newsletter_type']);
+    expect($this->option_field->newsletter_type)
+      ->equals($this->data['newsletter_type']);
   }
 
   function itHasToBeValid() {
@@ -58,36 +55,31 @@ class NewsletterOptionFieldCest {
   }
 
   function itHasACreatedAtOnCreation() {
-    $option_field = NewsletterOptionField::where('name', $this->data['name'])
-      ->findOne();
-    $time_difference = strtotime($option_field->created_at) >= $this->before_time;
-    expect($time_difference)->equals(true);
+    $option_field = NewsletterOptionField::findOne($this->option_field->id);
+    expect($option_field->created_at)->notNull();
+    expect($option_field->created_at)->notEquals('0000-00-00 00:00:00');
   }
 
   function itHasAnUpdatedAtOnCreation() {
-    $option_field = NewsletterOptionField::where('name', $this->data['name'])
-      ->findOne();
-    $time_difference = strtotime($option_field->updated_at) >= $this->before_time;
-    expect($time_difference)->equals(true);
-  }
-
-  function itKeepsTheCreatedAtOnUpdate() {
-    $option_field = NewsletterOptionField::where('name', $this->data['name'])
-      ->findOne();
-    $old_created_at = $option_field->created_at;
-    $option_field->name = 'new name';
-    $option_field->save();
-    expect($old_created_at)->equals($option_field->created_at);
+    $option_field = NewsletterOptionField::findOne($this->option_field->id);
+    expect($option_field->updated_at)
+      ->equals($option_field->created_at);
   }
 
   function itUpdatesTheUpdatedAtOnUpdate() {
-    $option_field = NewsletterOptionField::where('name', $this->data['name'])
-      ->findOne();
-    $update_time = time();
+    $option_field = NewsletterOptionField::findOne($this->option_field->id);
+    $created_at = $option_field->created_at;
+
+    sleep(1);
+
     $option_field->name = 'new name';
     $option_field->save();
-    $time_difference = strtotime($option_field->updated_at) >= $update_time;
-    expect($time_difference)->equals(true);
+
+    $updated_option_field = NewsletterOptionField::findOne($option_field->id);
+    $is_time_updated = (
+      $updated_option_field->updated_at > $updated_option_field->created_at
+    );
+    expect($is_time_updated)->true();
   }
 
   function itCanHaveManyNewsletters() {
