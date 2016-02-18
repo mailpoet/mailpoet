@@ -57,6 +57,14 @@
     <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Text') %></div>
 </div>
 <div class="mailpoet_form_field">
+    <div class="mailpoet_form_field_checkbox_option">
+        <label>
+            <input type="checkbox" name="fontWeight" class="mailpoet_field_button_font_weight" value="bold" {{#ifCond styles.block.fontWeight '===' 'bold'}}CHECKED{{/ifCond}}/>
+            <%= __('Bold') %>
+        </label>
+    </div>
+</div>
+<div class="mailpoet_form_field">
     <div class="mailpoet_form_field_input_option">
         <input type="text" name="background-color" class="mailpoet_field_button_background_color mailpoet_color" value="{{ model.styles.block.backgroundColor }}" />
     </div>
@@ -101,11 +109,11 @@
 </div>
 {{#ifCond renderOptions.hideApplyToAll '!==' true}}
 <div class="mailpoet_form_field">
-    <input type="button" name="replace-all-button-styles" class="mailpoet_button mailpoet_button_full mailpoet_button_secondary mailpoet_field_button_replace_all_styles" value="<%= __('Apply styles to all buttons') %>" />
+    <input type="button" name="replace-all-button-styles" class="button button-secondary mailpoet_button_full mailpoet_field_button_replace_all_styles" value="<%= __('Apply styles to all buttons') %>" />
 </div>
 {{/ifCond}}
 
 <div class="mailpoet_form_field">
-    <input type="button" class="mailpoet_button mailpoet_button_primary mailpoet_done_editing" value="<%= __('Done') %>" />
+    <input type="button" class="button button-primary mailpoet_done_editing" value="<%= __('Done') %>" />
 </div>
 

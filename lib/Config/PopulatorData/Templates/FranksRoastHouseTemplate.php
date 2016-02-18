@@ -168,6 +168,7 @@ class FranksRoastHouseTemplate {
                         "fontColor" => "#ffffff",
                         "fontFamily" => "Arial",
                         "fontSize" => "14px",
+                        "fontWeight" => "normal",
                         "textAlign" => "center"
                       )
                     )

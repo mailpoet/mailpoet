@@ -147,7 +147,11 @@ define([
               },
             },
             'newsletter_editor/App': EditorApplication,
-            'html2canvas': function() { return html2canvasMock; },
+            'html2canvas': function() {
+              return {
+                then: function() { return html2canvasMock; }
+              };
+            },
           });
           var view = new (module.SaveView)();
           view.render();

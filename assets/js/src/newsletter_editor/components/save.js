@@ -67,7 +67,28 @@ define([
   };
 
   Module.getThumbnail = function(element, options) {
-    return html2canvas(element, options || {});
+    var promise = html2canvas(element, options || {});
+
+    return promise.then(function(oldCanvas) {
+      // Temporary workaround for html2canvas-alpha2.
+      // Removes 1px left transparent border from resulting canvas.
+
+      var oldContext = oldCanvas.getContext('2d'),
+          newCanvas = document.createElement("canvas"),
+          newContext = newCanvas.getContext("2d"),
+          leftBorderWidth = 1;
+
+      newCanvas.width = oldCanvas.width;
+      newCanvas.height = oldCanvas.height;
+
+      newContext.drawImage(
+        oldCanvas,
+        leftBorderWidth, 0, oldCanvas.width - leftBorderWidth, oldCanvas.height,
+        0, 0, oldCanvas.width, oldCanvas.height
+      );
+
+      return newCanvas;
+    });
   };
 
   Module.saveTemplate = function(options) {

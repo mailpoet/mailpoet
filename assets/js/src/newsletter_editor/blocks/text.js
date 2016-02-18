@@ -52,21 +52,15 @@ define([
           inline: true,
 
           menubar: false,
-          toolbar1: "styleselect bold italic forecolor | link unlink",
+          toolbar1: "formatselect bold italic forecolor | link unlink",
           toolbar2: "alignleft aligncenter alignright alignjustify | bullist numlist blockquote | code mailpoet_custom_fields",
 
           //forced_root_block: 'p',
           valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],h1[class|style],h2[class|style],h3[class|style],ol[class|style],ul[class|style],li[class|style],strong[class|style],em[class|style],strike,br,blockquote[class|style],table[class|style],tr[class|style],th[class|style],td[class|style]",
           invalid_elements: "script",
-          style_formats: [
-            {title: 'Heading 1', block: 'h1'},
-            {title: 'Heading 2', block: 'h2'},
-            {title: 'Heading 3', block: 'h3'},
+          block_formats: 'Heading 1=h1;Heading 2=h2;Heading 3=h3;Paragraph=p',
 
-            {title: 'Paragraph', block: 'p'},
-          ],
-
-          plugins: "link code textcolor mailpoet_custom_fields",
+          plugins: "link code textcolor colorpicker mailpoet_custom_fields",
 
           setup: function(editor) {
             editor.on('change', function(e) {

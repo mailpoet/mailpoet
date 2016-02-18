@@ -111,7 +111,7 @@ define([
       data.posts = this.get('_selectedPosts').pluck('ID');
 
       if (data.posts.length === 0) {
-        this.get('_transformedPosts.blocks').reset();
+        this.get('_transformedPosts').get('blocks').reset();
         return;
       }
 
