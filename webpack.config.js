@@ -30,7 +30,8 @@ baseConfig = {
       'filesaver$': 'filesaver/FileSaver.js',
       'papaparse': 'papaparse/papaparse.min.js',
       'helpscout': 'helpscout.js',
-      'html2canvas': 'html2canvas/dist/html2canvas.js'
+      'html2canvas': 'html2canvas/dist/html2canvas.js',
+      'asyncqueue': 'asyncqueue/jquery.asyncqueue.js'
     },
   },
   node: {

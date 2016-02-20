@@ -498,7 +498,7 @@ class Subscriber extends Model {
     );
   }
 
-  static function updateMultiple($columns, $subscribers, $currentTime = false) {
+  static function updateMultiple($columns, $subscribers, $import_batch = false) {
     $ignoreColumnsOnUpdate = array(
       'email',
       'created_at'
@@ -538,7 +538,7 @@ class Subscriber extends Model {
     return self::rawExecute(
       'UPDATE `' . self::$_table . '` ' .
       'SET ' . implode(', ', $sql('statement')) . ' '.
-      (($currentTime) ? ', updated_at = "' . $currentTime . '" ' : '') .
+      (($import_batch) ? ', import_batch = "' . $import_batch . '" ' : '') .
         'WHERE email IN ' .
         '(' . rtrim(str_repeat('?,', count($subscribers)), ',') . ')',
       array_merge(

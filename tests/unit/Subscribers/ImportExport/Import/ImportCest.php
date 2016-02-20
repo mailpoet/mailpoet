@@ -8,24 +8,31 @@ use MailPoet\Util\Helpers;
 
 class ImportCest {
   function __construct() {
-    $this->JSON_data = json_decode(file_get_contents(dirname(__FILE__) . '/ImportTestData.json'), true);
-    $this->subscribers_data = array(
-      'first_name' => array(
-        'Adam',
-        'Mary'
+    $this->data = array(
+      'subscribers' => array(
+        array(
+          'Adam',
+          'Smith',
+          'adam@smith.com',
+          'France'
+        ),
+        array(
+          'Mary',
+          'Jane',
+          'mary@jane.com',
+          'Brazil'
+        )
       ),
-      'last_name' => array(
-        'Smith',
-        'Jane'
+      'columns' => array(
+        'first_name' => 0,
+        'last_name' => 1,
+        'email' => 2,
+        777 => 3
       ),
-      'email' => array(
-        'adam@smith.com',
-        'mary@jane.com'
+      'segments' => array(
+        195
       ),
-      777 => array(
-        'France',
-        'Brazil'
-      )
+      'updateSubscribers' => true
     );
     $this->subscriber_fields = array(
       'first_name',
@@ -34,25 +41,37 @@ class ImportCest {
     );
     $this->segments = range(0, 1);
     $this->subscriber_custom_fields = array(777);
-    $this->import = new Import($this->JSON_data);
+    $this->import = new Import($this->data);
+    $this->subscribers_data = $this->import->transformSubscribersData(
+      $this->data['subscribers'],
+      $this->data['columns']
+    );
   }
 
   function itCanConstruct() {
-    expect($this->import->subscribers_data)->equals($this->JSON_data['subscribers']);
-    expect($this->import->segments)->equals($this->JSON_data['segments']);
+    expect(is_array($this->import->subscribers_data))->true();
+    expect($this->import->segments)->equals($this->data['segments']);
     expect(is_array($this->import->subscriber_fields))->true();
     expect(is_array($this->import->subscriber_custom_fields))->true();
-    expect($this->import->subscribers_count)->equals(
-      count($this->JSON_data['subscribers']['email'])
-    );
-    expect(
-      preg_match(
-        '/\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/',
-        $this->import->import_time)
-    )->equals(1);
+    expect($this->import->subscribers_count)->equals(2);
+    expect($this->import->import_batch)->notEmpty();
+    expect($this->import->import_time)->notEmpty();
+    expect($this->import->import_batch)->notEmpty();
+  }
+
+  function itCanTransformSubscribers() {
+    expect($this->import->subscribers_data['first_name'][0])
+      ->equals($this->data['subscribers'][0][0]);
+    expect($this->import->subscribers_data['last_name'][0])
+      ->equals($this->data['subscribers'][0][1]);
+    expect($this->import->subscribers_data['email'][0])
+      ->equals($this->data['subscribers'][0][2]);
+    expect($this->import->subscribers_data['777'][0])
+      ->equals($this->data['subscribers'][0][3]);
   }
 
   function itCanFilterExistingAndNewSubscribers() {
+    $subscribers_data = $this->subscribers_data;
     $subscriber = Subscriber::create();
     $subscriber->hydrate(
       array(
@@ -62,10 +81,10 @@ class ImportCest {
       ));
     $subscriber->save();
     list($existing, $new) = $this->import->filterExistingAndNewSubscribers(
-      $this->subscribers_data
+      $subscribers_data
     );
-    expect($existing['email'][0])->equals($this->subscribers_data['email'][0]);
-    expect($new['email'][0])->equals($this->subscribers_data['email'][1]);
+    expect($existing['email'][0])->equals($subscribers_data['email'][0]);
+    expect($new['email'][0])->equals($subscribers_data['email'][1]);
   }
 
   function itCanExtendSubscribersAndFields() {
@@ -106,17 +125,17 @@ class ImportCest {
   }
 
   function itCanFilterSubscriberStatus() {
-    $subscibers_data = $this->subscribers_data;
+    $subscribers_data = $this->subscribers_data;
     $subscriber_fields = $this->subscriber_fields;
-    list($subscibers_data, $subsciber_fields) =
-      $this->import->filterSubscriberStatus($subscibers_data, $subscriber_fields);
+    list($subscribers_data, $subsciber_fields) =
+      $this->import->filterSubscriberStatus($subscribers_data, $subscriber_fields);
     // subscribers' status was set to "subscribed" & status column was added
     // to subscribers fields
     expect(array_pop($subsciber_fields))->equals('status');
-    expect($subscibers_data['status'][0])->equals('subscribed');
-    expect(count($subscibers_data['status']))->equals(2);
+    expect($subscribers_data['status'][0])->equals('subscribed');
+    expect(count($subscribers_data['status']))->equals(2);
     $subscriber_fields[] = 'status';
-    $subscibers_data = array(
+    $subscribers_data = array(
       'status' => array(
         #subscribed
         'subscribed',
@@ -135,9 +154,9 @@ class ImportCest {
         'false'
       ),
     );
-    list($subscibers_data, $subsciber_fields) =
-      $this->import->filterSubscriberStatus($subscibers_data, $subscriber_fields);
-    expect($subscibers_data)->equals(
+    list($subscribers_data, $subsciber_fields) =
+      $this->import->filterSubscriberStatus($subscribers_data, $subscriber_fields);
+    expect($subscribers_data)->equals(
       array(
         'status' => array(
           'subscribed',
@@ -185,8 +204,8 @@ class ImportCest {
     $subscribers_data = $this->subscribers_data;
     $subscriber_fields = $this->subscriber_fields;
     $subscribers_data['deleted_at'] = array(
-        null,
-        date('Y-m-d H:i:s')
+      null,
+      date('Y-m-d H:i:s')
     );
     $subscriber_fields[] = 'deleted_at';
     $this->import->createOrUpdateSubscribers(
@@ -255,6 +274,7 @@ class ImportCest {
       ->equals($subscribers_data[777][1]);
   }
 
+
   function itCanaddSubscribersToSegments() {
     $subscribers_data = $this->subscribers_data;
     $this->import->createOrUpdateSubscribers(
@@ -296,19 +316,17 @@ class ImportCest {
   function itCanProcess() {
     $import = clone($this->import);
     $result = $import->process();
-    expect($result['data']['created'])->equals(997);
+    expect($result['data']['created'])->equals(2);
     expect($result['data']['updated'])->equals(0);
     $result = $import->process();
     expect($result['data']['created'])->equals(0);
-    expect($result['data']['updated'])->equals(997);
-    Subscriber::where('email', 'mbanks4@blinklist.com')
+    expect($result['data']['updated'])->equals(2);
+    Subscriber::where('email', 'mary@jane.com')
       ->findOne()
       ->delete();
-    // TODO: find a more elegant way to test this
-    $import->import_time = date('Y-m-d 12:i:s');
     $result = $import->process();
     expect($result['data']['created'])->equals(1);
-    expect($result['data']['updated'])->equals(996);
+    expect($result['data']['updated'])->equals(1);
     $import->update_subscribers = false;
     $result = $import->process();
     expect($result['data']['created'])->equals(0);
