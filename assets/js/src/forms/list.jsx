@@ -146,7 +146,7 @@ const FormList = React.createClass({
           { segments }
         </td>
         <td className="column-date" data-colname="Created on">
-          <abbr>{ form.created_at }</abbr>
+          <abbr>{ MailPoet.Date.full(form.created_at) }</abbr>
         </td>
       </div>
     );

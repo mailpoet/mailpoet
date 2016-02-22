@@ -331,10 +331,10 @@ const SubscriberList = React.createClass({
           { segments }
         </td>
         <td className="column-date" data-colname="Subscribed on">
-          <abbr>{ subscriber.created_at }</abbr>
+          <abbr>{ MailPoet.Date.full(subscriber.created_at) }</abbr>
         </td>
         <td className="column-date" data-colname="Last modified on">
-          <abbr>{ subscriber.updated_at }</abbr>
+          <abbr>{ MailPoet.Date.full(subscriber.updated_at) }</abbr>
         </td>
       </div>
     );

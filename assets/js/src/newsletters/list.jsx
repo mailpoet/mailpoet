@@ -229,10 +229,10 @@ define(
               { segments }
             </td>
             <td className="column-date" data-colname="Subscribed on">
-              <abbr>{ newsletter.created_at }</abbr>
+              <abbr>{ MailPoet.Date.full(newsletter.created_at) }</abbr>
             </td>
             <td className="column-date" data-colname="Last modified on">
-              <abbr>{ newsletter.updated_at }</abbr>
+              <abbr>{ MailPoet.Date.full(newsletter.updated_at) }</abbr>
             </td>
           </div>
         );
