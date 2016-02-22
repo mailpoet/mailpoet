@@ -52,6 +52,11 @@ class Newsletter extends Model {
     );
   }
 
+  function withSegments() {
+    $this->segments = $this->segments()->findArray();
+    return $this;
+  }
+
   function options() {
     return $this->has_many_through(
       __NAMESPACE__.'\NewsletterOptionField',
@@ -66,6 +71,12 @@ class Newsletter extends Model {
       ->orderByDesc('updated_at')
       ->findOne();
   }
+
+  function withSendingQueue() {
+    $this->queue = $this->getQueue();
+    return $this;
+  }
+
 
   static function search($orm, $search = '') {
     return $orm->where_like('subject', '%' . $search . '%');

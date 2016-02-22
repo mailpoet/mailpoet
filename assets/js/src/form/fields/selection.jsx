@@ -26,7 +26,7 @@ function(
         && (this.props.item.id !== prevProps.item.id)
       ) {
         jQuery('#'+this.refs.select.id)
-          .val(this.props.item[this.props.field.name])
+          .val(this.getSelectedValues())
           .trigger('change');
       }
     },
@@ -45,7 +45,11 @@ function(
           if(item.element && item.element.selected) {
             return null;
           } else {
-            return item.text;
+            if(item.title) {
+              return item.title;
+            } else {
+              return item.text;
+            }
           }
         }
       });
@@ -65,14 +69,24 @@ function(
 
       select2.select2(
         'val',
-        this.props.item[this.props.field.name]
+        this.getSelectedValues()
       );
 
       this.setState({ initialized: true });
     },
+    getSelectedValues: function() {
+      if(this.props.field['selected'] !== undefined) {
+        return this.props.field['selected'](this.props.item);
+      } else if(this.props.item !== undefined && this.props.field.name !== undefined) {
+        return this.props.item[this.props.field.name];
+      } else {
+        return null;
+      }
+    },
     loadCachedItems: function() {
       if(typeof(window['mailpoet_'+this.props.field.endpoint]) !== 'undefined') {
         var items = window['mailpoet_'+this.props.field.endpoint];
+
 
         if(this.props.field['filter'] !== undefined) {
           items = items.filter(this.props.field.filter);
@@ -98,23 +112,40 @@ function(
         });
       }
     },
+    getLabel: function(item) {
+      if(this.props.field['getLabel'] !== undefined) {
+        return this.props.field.getLabel(item, this.props.item);
+      }
+      return item.name;
+    },
+    getSearchLabel: function(item) {
+      if(this.props.field['getSearchLabel'] !== undefined) {
+        return this.props.field.getSearchLabel(item, this.props.item);
+      }
+      return null;
+    },
+    getValue: function(item) {
+      if(this.props.field['getValue'] !== undefined) {
+        return this.props.field.getValue(item, this.props.item);
+      }
+      return item.id;
+    },
     render: function() {
-      var options = this.state.items.map(function(item, index) {
+      const options = this.state.items.map((item, index) => {
+        let label = this.getLabel(item);
+        let searchLabel = this.getSearchLabel(item);
+        let value = this.getValue(item);
+
         return (
           <option
-            key={ item.id }
-            value={ item.id }
+            key={ 'option-'+index }
+            value={ value }
+            title={ searchLabel }
           >
-            { item.name }
+            { label }
           </option>
         );
       });
-
-      var default_value = (
-        (this.props.item !== undefined && this.props.field.name !== undefined)
-        ? this.props.item[this.props.field.name]
-        : null
-      );
 
       return (
         <select
@@ -122,7 +153,7 @@ function(
           ref="select"
           data-placeholder={ this.props.field.placeholder }
           multiple={ this.props.field.multiple }
-          defaultValue={ default_value }
+          defaultValue={ this.getSelectedValues() }
           {...this.props.field.validation}
         >{ options }</select>
       );

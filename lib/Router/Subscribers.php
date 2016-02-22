@@ -17,15 +17,12 @@ class Subscribers {
 
   function get($id = false) {
     $subscriber = Subscriber::findOne($id);
-    if($subscriber !== false && $subscriber->id() > 0) {
-      $segments = $subscriber->segments()->findArray();
-
-      $subscriber = $subscriber->withCustomFields()->asArray();
-      $subscriber['segments'] = array_map(function($segment) {
-        return $segment['id'];
-      }, $segments);
+    if($subscriber !== false) {
+      $subscriber = $subscriber
+        ->withCustomFields()
+        ->withSubscriptions()
+        ->asArray();
     }
-
     return $subscriber;
   }
 
@@ -38,19 +35,10 @@ class Subscribers {
     $listing_data = $listing->get();
 
     // fetch segments relations for each returned item
-    foreach($listing_data['items'] as &$item) {
-      // avatar
-      $item['avatar_url'] = get_avatar_url($item['email'], array(
-        'size' => 32
-      ));
-
-      // subscriber's segments
-      $relations = SubscriberSegment::select('segment_id')
-        ->where('subscriber_id', $item['id'])
-        ->findMany();
-      $item['segments'] = array_map(function($relation) {
-        return $relation->segment_id;
-      }, $relations);
+    foreach($listing_data['items'] as $key => $subscriber) {
+      $listing_data['items'][$key] = $subscriber
+        ->withSubscriptions()
+        ->asArray();
     }
 
     return $listing_data;

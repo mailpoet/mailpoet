@@ -206,20 +206,11 @@ class Newsletters {
 
     $listing_data = $listing->get();
 
-    foreach($listing_data['items'] as &$item) {
-      // get segments
-      $segments = NewsletterSegment::select('segment_id')
-        ->where('newsletter_id', $item['id'])
-        ->findMany();
-      $item['segments'] = array_map(function($relation) {
-        return $relation->segment_id;
-      }, $segments);
-
-      // get queue
-      $queue = SendingQueue::where('newsletter_id', $item['id'])
-        ->orderByDesc('updated_at')
-        ->findOne();
-      $item['queue'] = ($queue !== false) ? $queue->asArray() : null;
+    foreach($listing_data['items'] as $key => $newsletter) {
+      $listing_data['items'][$key] = $newsletter
+        ->withSegments()
+        ->withSendingQueue()
+        ->asArray();
     }
 
     return $listing_data;

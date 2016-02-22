@@ -38,15 +38,6 @@ class Segment extends Model {
     );
   }
 
-  function segmentFilters() {
-    return $this->has_many_through(
-      __NAMESPACE__.'\Filter',
-      __NAMESPACE__.'\SegmentFilter',
-      'segment_id',
-      'filter_id'
-    );
-  }
-
   function duplicate($data = array()) {
     $duplicate = parent::duplicate($data);
 
@@ -74,6 +65,32 @@ class Segment extends Model {
     return SubscriberSegment::where('subscriber_id', $subscriber_id)
       ->where('segment_id', $this->id)
       ->delete();
+  }
+
+  function withSubscribersCount() {
+    $this->subscribers_count = SubscriberSegment::table_alias('relation')
+      ->where('relation.segment_id', $this->id)
+      ->join(
+        MP_SUBSCRIBERS_TABLE,
+        'subscribers.id = relation.subscriber_id',
+        'subscribers'
+      )
+      ->select_expr(
+        'SUM(CASE subscribers.status WHEN "subscribed" THEN 1 ELSE 0 END)',
+        'subscribed'
+      )
+      ->select_expr(
+        'SUM(CASE subscribers.status WHEN "unsubscribed" THEN 1 ELSE 0 END)',
+        'unsubscribed'
+      )
+      ->select_expr(
+        'SUM(CASE subscribers.status WHEN "unconfirmed" THEN 1 ELSE 0 END)',
+        'unconfirmed'
+      )
+      ->findOne()
+      ->asArray();
+
+    return $this;
   }
 
   static function getWPUsers() {

@@ -30,36 +30,14 @@ class Segments {
     $listing_data = $listing->get();
 
     // fetch segments relations for each returned item
-    foreach($listing_data['items'] as &$item) {
-      $stats = SubscriberSegment::table_alias('relation')
-        ->where(
-          'relation.segment_id',
-          $item['id']
-        )
-        ->join(
-          MP_SUBSCRIBERS_TABLE,
-          'subscribers.id = relation.subscriber_id',
-          'subscribers'
-        )
-        ->select_expr(
-          'SUM(CASE subscribers.status WHEN "subscribed" THEN 1 ELSE 0 END)',
-          'subscribed'
-        )
-        ->select_expr(
-          'SUM(CASE subscribers.status WHEN "unsubscribed" THEN 1 ELSE 0 END)',
-          'unsubscribed'
-        )
-        ->select_expr(
-          'SUM(CASE subscribers.status WHEN "unconfirmed" THEN 1 ELSE 0 END)',
-          'unconfirmed'
-        )
-        ->findOne()->asArray();
-
-      $item = array_merge($item, $stats);
-
-      $item['subscribers_url'] = admin_url(
-        'admin.php?page=mailpoet-subscribers#/filter[segment='.$item['id'].']'
+    foreach($listing_data['items'] as $key => $segment) {
+      $segment->subscribers_url = admin_url(
+        'admin.php?page=mailpoet-subscribers#/filter[segment='.$segment->id.']'
       );
+
+      $listing_data['items'][$key] = $segment
+        ->withSubscribersCount()
+        ->asArray();
     }
 
     return $listing_data;

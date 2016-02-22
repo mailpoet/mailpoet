@@ -181,13 +181,13 @@ const SegmentList = React.createClass({
           <abbr>{ segment.description }</abbr>
         </td>
         <td className="column-date" data-colname="Subscribed">
-          <abbr>{ segment.subscribed || 0 }</abbr>
+          <abbr>{ segment.subscribers_count.subscribed || 0 }</abbr>
         </td>
         <td className="column-date" data-colname="Unconfirmed">
-          <abbr>{ segment.unconfirmed || 0 }</abbr>
+          <abbr>{ segment.subscribers_count.unconfirmed || 0 }</abbr>
         </td>
         <td className="column-date" data-colname="Unsubscribed">
-          <abbr>{ segment.unsubscribed || 0 }</abbr>
+          <abbr>{ segment.subscribers_count.unsubscribed || 0 }</abbr>
         </td>
         <td className="column-date" data-colname="Created on">
           <abbr>{ segment.created_at }</abbr>

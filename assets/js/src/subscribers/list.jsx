@@ -231,6 +231,15 @@ const item_actions = [
 ];
 
 const SubscriberList = React.createClass({
+  getSegmentFromId: function(segment_id) {
+    let result = false;
+    mailpoet_segments.map(function(segment) {
+      if (segment.id === segment_id) {
+        result = segment;
+      }
+    });
+    return result;
+  },
   renderItem: function(subscriber, actions) {
     let row_classes = classNames(
       'manage-column',
@@ -255,11 +264,41 @@ const SubscriberList = React.createClass({
       break;
     }
 
-    let segments = mailpoet_segments.filter(function(segment) {
-      return (jQuery.inArray(segment.id, subscriber.segments) !== -1);
-    }).map(function(segment) {
-      return segment.name;
-    }).join(', ');
+    let segments = false;
+
+    if (subscriber.subscriptions.length > 0) {
+      let subscribed_segments = [];
+      let unsubscribed_segments = [];
+
+      subscriber.subscriptions.map((subscription) => {
+        const segment = this.getSegmentFromId(subscription.segment_id);
+        if (subscription.status === 'subscribed') {
+          subscribed_segments.push(segment.name);
+        } else {
+          unsubscribed_segments.push(segment.name);
+        }
+      });
+
+      segments = (
+        <span>
+          <span className="mailpoet_segments_subscribed">
+            { subscribed_segments.join(', ') }
+            {
+              (
+                subscribed_segments.length > 0
+                && unsubscribed_segments.length > 0
+              ) ? ' / ' : ''
+            }
+          </span>
+          <span
+            className="mailpoet_segments_unsubscribed"
+            title="Lists to which the subscriber was subscribed."
+          >
+            { unsubscribed_segments.join(', ') }
+          </span>
+        </span>
+      );
+    }
 
     let avatar = false;
     if(subscriber.avatar_url) {

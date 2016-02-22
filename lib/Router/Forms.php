@@ -13,11 +13,10 @@ class Forms {
 
   function get($id = false) {
     $form = Form::findOne($id);
-    if($form === false) {
-      return false;
-    } else {
-      return $form->asArray();
+    if($form !== false) {
+      $form = $form->asArray();
     }
+    return $form;
   }
 
   function listing($data = array()) {
@@ -29,19 +28,14 @@ class Forms {
     $listing_data = $listing->get();
 
     // fetch segments relations for each returned item
-    foreach($listing_data['items'] as &$item) {
-      // form's segments
-      $form_settings = (
-        (is_serialized($item['settings']))
-        ? unserialize($item['settings'])
+    foreach($listing_data['items'] as $key => $form) {
+      $form = $form->asArray();
+      $form['segments'] = (
+        !empty($form['settings']['segments'])
+        ? $form['settings']['segments']
         : array()
       );
-
-      $item['segments'] = (
-        !empty($form_settings['segments'])
-        ? $form_settings['segments']
-        : array()
-      );
+      $listing_data['items'][$key] = $form;
     }
 
     return $listing_data;
