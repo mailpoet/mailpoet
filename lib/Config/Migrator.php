@@ -57,7 +57,6 @@ class Migrator {
       'last_name tinytext NOT NULL,',
       'email varchar(150) NOT NULL,',
       'status varchar(12) NOT NULL DEFAULT "unconfirmed",',
-      'import_batch varchar(12) NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'deleted_at TIMESTAMP NULL DEFAULT NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',

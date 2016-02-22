@@ -6,7 +6,6 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Util\Helpers;
-use MailPoet\Util\Security;
 
 class Import {
   public $subscribers_data;
@@ -15,8 +14,8 @@ class Import {
   public $subscriber_fields;
   public $subscriber_custom_fields;
   public $subscribers_count;
-  public $import_time;
-  public $import_batch;
+  public $created_at;
+  public $updated_at;
   public $profiler_start;
 
   public function __construct($data) {
@@ -33,8 +32,8 @@ class Import {
       array_keys($data['columns'])
     );
     $this->subscribers_count = count(reset($this->subscribers_data));
-    $this->import_time = date('Y-m-d H:i:s');
-    $this->import_batch = Security::generateRandomString();
+    $this->created_at = date('Y-m-d H:i:s', (int) $data['timestamp']);
+    $this->updated_at = date('Y-m-d H:i:s', (int) $data['timestamp'] + 1);
     $this->profiler_start = microtime(true);
   }
 
@@ -84,7 +83,6 @@ class Import {
         'updated' => count($updated_subscribers),
         'segments' => $segments->getSegments()
       ),
-      'time' => date('Y-m-d H:i:s'),
       'profiler' => $this->timeExecution()
     );
   }
@@ -97,13 +95,14 @@ class Import {
   }
 
   function filterExistingAndNewSubscribers($subscribers_data) {
+    $chunk_size = 200;
     $existing_records = array_filter(
-      array_map(function ($subscriber_emails) {
+      array_map(function($subscriber_emails) {
         return Subscriber::selectMany(array('email'))
           ->whereIn('email', $subscriber_emails)
           ->whereNull('deleted_at')
           ->findArray();
-      }, array_chunk($subscribers_data['email'], 200))
+      }, array_chunk($subscribers_data['email'], $chunk_size))
     );
     if(!$existing_records) {
       return array(
@@ -126,18 +125,18 @@ class Import {
     }
     $new_subscribers =
       array_filter(
-        array_map(function ($subscriber) use ($new_records) {
-          return array_map(function ($index) use ($subscriber) {
+        array_map(function($subscriber) use ($new_records) {
+          return array_map(function($index) use ($subscriber) {
             return $subscriber[$index];
           }, $new_records);
         }, $subscribers_data)
       );
 
     $existing_subscribers =
-      array_map(function ($subscriber) use ($new_records) {
+      array_map(function($subscriber) use ($new_records) {
         return array_values( // reindex array
           array_filter( // remove NULL entries
-            array_map(function ($index, $data) use ($new_records) {
+            array_map(function($index, $data) use ($new_records) {
               if(!in_array($index, $new_records)) return $data;
             }, array_keys($subscriber), $subscriber)
           )
@@ -150,17 +149,19 @@ class Import {
   }
 
   function deleteExistingTrashedSubscribers($subscribers_data) {
+    $chunk_size = 200;
     $existing_trashed_records = array_filter(
-      array_map(function ($subscriber_emails) {
+      array_map(function($subscriber_emails) {
         return Subscriber::selectMany(array('id'))
           ->whereIn('email', $subscriber_emails)
           ->whereNotNull('deleted_at')
           ->findArray();
-      }, array_chunk($subscribers_data['email'], 200))
+      }, array_chunk($subscribers_data['email'], $chunk_size))
     );
     if(!$existing_trashed_records) return;
     $existing_trashed_records = Helpers::flattenArray($existing_trashed_records);
-    foreach(array_chunk($existing_trashed_records, 200) as $subscriber_ids) {
+    foreach(array_chunk($existing_trashed_records, $chunk_size) as
+            $subscriber_ids) {
       Subscriber::whereIn('id', $subscriber_ids)
         ->deleteMany();
       SubscriberSegment::whereIn('subscriber_id', $subscriber_ids)
@@ -170,16 +171,8 @@ class Import {
 
   function extendSubscribersAndFields($subscribers_data, $subscriber_fields) {
     $subscribers_data['created_at'] =
-      array_fill(0, $this->subscribers_count, $this->import_time);
-    $subscribers_data['import_batch'] =
-      array_fill(0, $this->subscribers_count, $this->import_batch);
-    $subscriber_fields = array_merge(
-      $subscriber_fields,
-      array(
-        'created_at',
-        'import_batch'
-      )
-    );
+      array_fill(0, $this->subscribers_count, $this->created_at);
+    $subscriber_fields[] = 'created_at';
     return array(
       $subscribers_data,
       $subscriber_fields
@@ -189,7 +182,7 @@ class Import {
   function getSubscriberFields($subscriber_fields) {
     return array_values(
       array_filter(
-        array_map(function ($field) {
+        array_map(function($field) {
           if(!is_int($field)) return $field;
         }, $subscriber_fields)
       )
@@ -199,7 +192,7 @@ class Import {
   function getCustomSubscriberFields($subscriber_fields) {
     return array_values(
       array_filter(
-        array_map(function ($field) {
+        array_map(function($field) {
           if(is_int($field)) return $field;
         }, $subscriber_fields)
       )
@@ -236,7 +229,7 @@ class Import {
         'false'
       )
     );
-    $subscribers_data['status'] = array_map(function ($state) use ($statuses) {
+    $subscribers_data['status'] = array_map(function($state) use ($statuses) {
       if(in_array(strtolower($state), $statuses['subscribed'])) {
         return 'subscribed';
       }
@@ -260,14 +253,14 @@ class Import {
     $subscriber_fields,
     $subscriber_custom_fields
   ) {
+    $chunk_size = 100;
     $subscribers_count = count(reset($subscribers_data)) - 1;
-    $subscribers = array_map(function ($index) use ($subscribers_data, $subscriber_fields) {
-      return array_map(function ($field) use ($index, $subscribers_data) {
+    $subscribers = array_map(function($index) use ($subscribers_data, $subscriber_fields) {
+      return array_map(function($field) use ($index, $subscribers_data) {
         return $subscribers_data[$field][$index];
       }, $subscriber_fields);
     }, range(0, $subscribers_count));
-    $batch = ($action === 'update') ? Security::generateRandomString() : $this->import_batch;
-    foreach(array_chunk($subscribers, 100) as $data) {
+    foreach(array_chunk($subscribers, $chunk_size) as $data) {
       if($action == 'create') {
         Subscriber::createMultiple(
           $subscriber_fields,
@@ -278,18 +271,20 @@ class Import {
         Subscriber::updateMultiple(
           $subscriber_fields,
           $data,
-          $batch
+          $this->updated_at
         );
       }
     }
-    $result = Helpers::arrayColumn( // return id=>email array of results
-      Subscriber::selectMany(
-        array(
-          'id',
-          'email'
-        ))
-        ->where('import_batch', $batch)
-        ->findArray(),
+    $query = Subscriber::selectMany(
+      array(
+        'id',
+        'email'
+      ));
+    $query = ($action === 'update') ?
+      $query->where('updated_at', $this->updated_at) :
+      $query->where('created_at', $this->created_at);
+    $result = Helpers::arrayColumn(
+      $query->findArray(),
       'email', 'id'
     );
     if($subscriber_custom_fields) {
@@ -314,10 +309,10 @@ class Import {
     $subscriber_custom_fields
   ) {
     $subscribers = array_map(
-      function ($column) use ($db_subscribers, $subscribers_data) {
+      function($column) use ($db_subscribers, $subscribers_data) {
         $count = range(0, count($subscribers_data[$column]) - 1);
         return array_map(
-          function ($index, $value)
+          function($index, $value)
           use ($db_subscribers, $subscribers_data, $column) {
             $subscriber_id = array_search(
               $subscribers_data['email'][$index],

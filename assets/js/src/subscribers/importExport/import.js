@@ -22,7 +22,7 @@ define(
         return;
       }
       jQuery(document).ready(function () {
-        console.log = function() {};
+        var noticeTimeout = 3000;
         jQuery('input[name="select_method"]').attr('checked', false);
         // configure router
         router = new (Backbone.Router.extend({
@@ -127,7 +127,7 @@ define(
             var pasteSize = encodeURI(pasteInputElement.val()).split(/%..|./).length - 1;
             if (pasteSize > maxPostSizeBytes) {
               MailPoet.Notice.error(MailPoetI18n.maxPostSizeNotice, {
-                timeout: 3000,
+                timeout: noticeTimeout,
               });
               return;
             }
@@ -147,7 +147,7 @@ define(
               if (ext === null || ext[1].toLowerCase() !== 'csv') {
                 this.value = '';
                 MailPoet.Notice.error(MailPoetI18n.wrongFileFormat, {
-                  timeout: 3000,
+                  timeout: noticeTimeout,
                 });
               }
 
@@ -197,7 +197,7 @@ define(
               if (response.result === false) {
                 MailPoet.Notice.hide();
                 MailPoet.Notice.error(response.errors, {
-                  timeout: 3000,
+                  timeout: noticeTimeout,
                 });
                 jQuery('.mailpoet_mailchimp-key-status')
                     .removeClass()
@@ -222,7 +222,7 @@ define(
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
                   MailPoetI18n.serverError + error.statusText.toLowerCase() + '.', {
-                    timeout: 3000,
+                    timeout: noticeTimeout,
                   }
               );
             });
@@ -249,7 +249,7 @@ define(
               else {
                 MailPoet.Notice.hide();
                 MailPoet.Notice.error(response.errors, {
-                  timeout: 3000,
+                  timeout: noticeTimeout,
                 });
               }
               MailPoet.Modal.loading(false);
@@ -257,7 +257,7 @@ define(
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
                   MailPoetI18n.serverError + result.statusText.toLowerCase() + '.', {
-                    timeout: 3000,
+                    timeout: noticeTimeout,
                   }
               );
             });
@@ -349,7 +349,7 @@ define(
               error: function () {
                 MailPoet.Notice.hide();
                 MailPoet.Notice.error(MailPoetI18n.dataProcessingError, {
-                  timeout: 3000,
+                  timeout: noticeTimeout,
                 });
               },
               complete: function (CSV) {
@@ -433,7 +433,7 @@ define(
                   errorNotice = errorNotice.replace('[link]', MailPoetI18n.csvKBLink);
                   errorNotice = errorNotice.replace('[/link]', '</a>');
                   MailPoet.Notice.error(errorNotice, {
-                    timeout: 3000,
+                    timeout: noticeTimeout,
                   });
                 }
               }
@@ -564,7 +564,7 @@ define(
                     if (!segmentSelectionNotice.length) {
                       MailPoet.Notice.error(MailPoetI18n.segmentSelectionRequired, {
                         static: true,
-                        timeout: 3000,
+                        timeout: noticeTimeout,
                         scroll: true,
                         id: 'segmentSelection',
                         hideClose: true
@@ -643,7 +643,7 @@ define(
                         MailPoet.Modal.close();
                         MailPoet.Notice.error(
                             MailPoetI18n.segmentCreateError + response.message + '.', {
-                              timeout: 3000,
+                              timeout: noticeTimeout,
                             }
                         );
                       }
@@ -652,7 +652,7 @@ define(
                       MailPoet.Modal.close();
                       MailPoet.Notice.error(
                           MailPoetI18n.serverError + error.statusText.toLowerCase() + '.', {
-                            timeout: 3000
+                            timeout: noticeTimeout
                           }
                       );
                     });
@@ -859,7 +859,7 @@ define(
                             }
                             else {
                               MailPoet.Notice.error(MailPoetI18n.customFieldCreateError, {
-                                timeout: 3000,
+                                timeout: noticeTimeout,
                               });
                             }
                             MailPoet.Modal.loading(false);
@@ -868,7 +868,7 @@ define(
                             MailPoet.Modal.loading(false);
                             MailPoet.Notice.error(
                                 MailPoetI18n.serverError + error.statusText.toLowerCase() + '.', {
-                                  timeout: 3000,
+                                  timeout: noticeTimeout,
                                 }
                             );
                           });
@@ -933,7 +933,7 @@ define(
                   if (!jQuery('[data-id="notice_invalidEmail"]').length) {
                     MailPoet.Notice.error(MailPoetI18n.columnContainsInvalidElement, {
                       static: true,
-                      timeout: 3000,
+                      timeout: noticeTimeout,
                       scroll: true,
                       hideClose: true,
                       id: 'invalidEmail'
@@ -1013,7 +1013,7 @@ define(
                 if (preventNextStep && !jQuery('.mailpoet_invalidDate').length) {
                   MailPoet.Notice.error(MailPoetI18n.columnContainsInvalidDate, {
                     static: true,
-                    timeout: 3000,
+                    timeout: noticeTimeout,
                     scroll: true,
                     hideClose: true,
                     id: 'invalidDate'
@@ -1055,7 +1055,9 @@ define(
 
             var columns = {},
               queue = new jQuery.AsyncQueue(),
-              batch = 0,
+              batchNumber = 0,
+              batchSize = 500,
+              timestamp = Date.now() / 1000,
               subscribers = [],
               importResults = {
                 'created': 0,
@@ -1072,7 +1074,7 @@ define(
                   return res;
                 }, []);
               },
-              subscribers = splitSubscribers(importData.step1.subscribers, 500);
+              subscribers = splitSubscribers(importData.step1.subscribers, batchSize);
 
             _.each(jQuery('select.mailpoet_subscribers_column_data_match'),
               function (column, columnIndex) {
@@ -1092,8 +1094,8 @@ define(
                     action: 'processImport',
                     data: JSON.stringify({
                       columns: columns,
-                      subscribers: subscribers[batch],
-                      length: subscribers[batch].length,
+                      subscribers: subscribers[batchNumber],
+                      timestamp: timestamp,
                       segments: segmentSelectElement.val(),
                       updateSubscribers: (jQuery(':radio[name="subscriber_update_option"]:checked').val() === 'yes') ? true : false
                     })
@@ -1102,8 +1104,8 @@ define(
                     if (response.result === false) {
                       importResults.errors.push(response.errors);
                     } else {
-                      importResults.created += response.data.created;
-                      importResults.updated += response.data.updated;
+                      importResults.created = response.data.created;
+                      importResults.updated = response.data.updated;
                       importResults.segments = response.data.segments;
                     }
                     queue.run();
@@ -1114,7 +1116,7 @@ define(
                     );
                     queue.run();
                   });
-                batch++;
+                batchNumber++;
               })
             });
 
@@ -1124,7 +1126,7 @@ define(
               MailPoet.Modal.loading(false);
               if (importResults.errors.length > 0 && !importResults.updated && !importResults.created) {
                 MailPoet.Notice.error(_.flatten(importResults.errors), {
-                    timeout: 3000,
+                    timeout: noticeTimeout,
                   }
                 );
               }
@@ -1155,7 +1157,7 @@ define(
 
           if (importData.step2.errors.length > 0) {
             MailPoet.Notice.error(_.flatten(importData.step2.errors), {
-              timeout: 3000,
+              timeout: noticeTimeout,
             });
           }
 

@@ -7,7 +7,7 @@ use MailPoet\Subscribers\ImportExport\Import\Import;
 use MailPoet\Util\Helpers;
 
 class ImportCest {
-  function __construct() {
+  function _before() {
     $this->data = array(
       'subscribers' => array(
         array(
@@ -32,6 +32,7 @@ class ImportCest {
       'segments' => array(
         195
       ),
+      'timestamp' => time(),
       'updateSubscribers' => true
     );
     $this->subscriber_fields = array(
@@ -54,9 +55,8 @@ class ImportCest {
     expect(is_array($this->import->subscriber_fields))->true();
     expect(is_array($this->import->subscriber_custom_fields))->true();
     expect($this->import->subscribers_count)->equals(2);
-    expect($this->import->import_batch)->notEmpty();
-    expect($this->import->import_time)->notEmpty();
-    expect($this->import->import_batch)->notEmpty();
+    expect($this->import->created_at)->notEmpty();
+    expect($this->import->updated_at)->notEmpty();
   }
 
   function itCanTransformSubscribers() {
@@ -313,24 +313,27 @@ class ImportCest {
     );
   }
 
-  function itCanProcess() {
-    $import = clone($this->import);
-    $result = $import->process();
-    expect($result['data']['created'])->equals(2);
+  function itCanUpdateSubscribers() {
+    $result = $this->import->process();
     expect($result['data']['updated'])->equals(0);
-    $result = $import->process();
-    expect($result['data']['created'])->equals(0);
+    $result = $this->import->process();
     expect($result['data']['updated'])->equals(2);
+    $this->import->update_subscribers = false;
+    $result = $this->import->process();
+    expect($result['data']['updated'])->equals(0);
+  }
+
+  function itCanProcess() {
+    $result = $this->import->process();
+    expect($result['data']['created'])->equals(2);
     Subscriber::where('email', 'mary@jane.com')
       ->findOne()
       ->delete();
-    $result = $import->process();
+    $timestamp = time() + 1;
+    $this->import->created_at = date('Y-m-d H:i:s', $timestamp);
+    $this->import->updated_at = date('Y-m-d H:i:s', $timestamp + 1);
+    $result = $this->import->process();
     expect($result['data']['created'])->equals(1);
-    expect($result['data']['updated'])->equals(1);
-    $import->update_subscribers = false;
-    $result = $import->process();
-    expect($result['data']['created'])->equals(0);
-    expect($result['data']['updated'])->equals(0);
   }
 
   function _after() {

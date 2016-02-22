@@ -5,8 +5,7 @@
   },
   "napa": {
     "blob": "eligrey/Blob.js.git",
-    "filesaver": "eligrey/FileSaver.js.git",
-    "asyncqueue": "mjward/Jquery-Async-queue.git"
+    "filesaver": "eligrey/FileSaver.js.git"
   },
   "dependencies": {
     "backbone": "1.2.3",
