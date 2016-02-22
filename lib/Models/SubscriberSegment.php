@@ -12,6 +12,28 @@ class SubscriberSegment extends Model {
     parent::__construct();
   }
 
+  static function setSubscriptions($subscriber, $segment_ids = array()) {
+    if($subscriber->id > 0) {
+      // unsubscribe from current subscriptions
+      SubscriberSegment::where('subscriber_id', $subscriber->id)
+        ->whereNotIn('segment_id', $segment_ids)
+        ->findResultSet()
+        ->set('status', 'unsubscribed')
+        ->save();
+
+      // subscribe to segments
+      foreach($segment_ids as $segment_id) {
+        self::createOrUpdate(array(
+          'subscriber_id' => $subscriber->id,
+          'segment_id' => $segment_id,
+          'status' => 'subscribed'
+        ));
+      }
+    }
+
+    return $subscriber;
+  }
+
   static function filterWithCustomFields($orm) {
     $orm = $orm->select(MP_SUBSCRIBERS_TABLE.'.*');
     $customFields = CustomField::findArray();
@@ -35,6 +57,30 @@ class SubscriberSegment extends Model {
 
   static function subscribed($orm) {
     return $orm->where('status', 'subscribed');
+  }
+
+  static function createOrUpdate($data = array()) {
+    $subscription = false;
+
+    if(isset($data['id']) && (int)$data['id'] > 0) {
+      $subscription = self::findOne((int)$data['id']);
+    }
+
+    if(isset($data['subscriber_id']) && isset($data['segment_id'])) {
+      $subscription = self::where('subscriber_id', (int)$data['subscriber_id'])
+        ->where('segment_id', (int)$data['segment_id'])
+        ->findOne();
+    }
+
+    if($subscription === false) {
+      $subscription = self::create();
+      $subscription->hydrate($data);
+    } else {
+      unset($data['id']);
+      $subscription->set($data);
+    }
+
+    return $subscription->save();
   }
 
   static function createMultiple($segmnets, $subscribers) {

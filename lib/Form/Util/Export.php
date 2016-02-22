@@ -22,19 +22,21 @@ class Export {
         ), site_url());
 
         // generate iframe
-        return '<iframe '.
-        'width="100%" '.
-        'scrolling="no" '.
-        'frameborder="0" '.
-        'src="'.$iframe_url.'" '.
-        'class="mailpoet_form_iframe" '.
-        'vspace="0" '.
-        'tabindex="0" '.
-        'onload="javascript:(this.style.height = this.contentWindow.document.body.scrollHeight + \'px\');"'.
-        'marginwidth="0" '.
-        'marginheight="0" '.
-        'hspace="0" '.
-        'allowtransparency="true"></iframe>';
+        return join(' ', array(
+          '<iframe',
+          'width="100%"',
+          'scrolling="no"',
+          'frameborder="0"',
+          'src="'.$iframe_url.'"',
+          'class="mailpoet_form_iframe"',
+          'vspace="0"',
+          'tabindex="0"',
+          'onload="javascript:(this.style.height = this.contentWindow.document.body.scrollHeight + \'px\');"',
+          'marginwidth="0"',
+          'marginheight="0"',
+          'hspace="0"',
+          'allowtransparency="true"></iframe>'
+        ));
       break;
 
       case 'php':

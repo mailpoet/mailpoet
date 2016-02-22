@@ -3,15 +3,16 @@ define(
     'react',
     'react-router',
     'mailpoet',
-    'form/form.jsx'
+    'form/form.jsx',
+    'moment'
   ],
   function(
     React,
     Router,
     MailPoet,
-    Form
+    Form,
+    Moment
   ) {
-
     var fields = [
       {
         name: 'email',
@@ -45,8 +46,38 @@ define(
         placeholder: "Select a list",
         endpoint: "segments",
         multiple: true,
+        selected: function(subscriber) {
+          if (Array.isArray(subscriber.subscriptions) === false) {
+            return null;
+          }
+
+          return subscriber.subscriptions.map(function(subscription) {
+            if (subscription.status === 'subscribed') {
+              return subscription.segment_id;
+            }
+          });
+        },
         filter: function(segment) {
           return !!(!segment.deleted_at);
+        },
+        getSearchLabel: function(segment, subscriber) {
+          let label = '';
+
+          if (subscriber.subscriptions !== undefined) {
+            subscriber.subscriptions.map(function(subscription) {
+              if (segment.id === subscription.segment_id) {
+                label = segment.name;
+
+                if (subscription.status === 'unsubscribed') {
+                  const unsubscribed_at = Moment(subscription.updated_at)
+                    .utcOffset(parseInt(mailpoet_date_offset))
+                    .format('ddd, D MMM YYYY HH:mm:ss');
+                  label += ' (Unsubscribed on '+unsubscribed_at+')';
+                }
+              }
+            });
+          }
+          return label;
         }
       }
     ];
@@ -58,11 +89,11 @@ define(
         label: custom_field.name,
         type: custom_field.type
       };
-      if(custom_field.params) {
+      if (custom_field.params) {
         field.params = custom_field.params;
       }
 
-      if(custom_field.params.values) {
+      if (custom_field.params.values) {
         field.values = custom_field.params.values;
       }
 

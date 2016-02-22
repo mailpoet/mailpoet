@@ -291,7 +291,7 @@ class Subscriber extends Model {
         }
       }
       if($segment_ids !== false) {
-        $subscriber->addToSegments($segment_ids);
+        SubscriberSegment::setSubscriptions($subscriber, $segment_ids);
       }
     }
     return $subscriber;
@@ -311,6 +311,17 @@ class Subscriber extends Model {
       $this->{'cf_'.$relation->custom_field_id} = $relation->value;
     }
 
+    return $this;
+  }
+
+  function withSegments() {
+    $this->segments = $this->segments()->findArray();
+    return $this;
+  }
+
+  function withSubscriptions() {
+    $this->subscriptions = SubscriberSegment::where('subscriber_id', $this->id())
+      ->findArray();
     return $this;
   }
 

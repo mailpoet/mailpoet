@@ -18,7 +18,13 @@ class i18n extends \Twig_Extension {
     // twig custom functions
     $twig_functions = array();
     // list of WP functions to map
-    $functions = array('localize', '__', '_n');
+    $functions = array(
+      'localize',
+      '__',
+      '_n',
+      'date',
+      'date_format'
+    );
 
     foreach($functions as $function) {
       $twig_functions[] = new \Twig_SimpleFunction(
@@ -55,6 +61,23 @@ class i18n extends \Twig_Extension {
     $args = func_get_args();
 
     return call_user_func_array('_n', $this->setTextDomain($args));
+  }
+
+  function date() {
+    $args = func_get_args();
+    $date = (isset($args[0])) ? $args[0] : null;
+    $date_format = (isset($args[1])) ? $args[1] : get_option('date_format');
+
+    if(empty($date)) return;
+
+    // check if it's an int passed as a string
+    if((string)(int)$date === $date) {
+      $date = (int)$date;
+    } else if(!is_int($date)) {
+      $date = strtotime($date);
+    }
+
+    return get_date_from_gmt(date('Y-m-d H:i:s', $date), $date_format);
   }
 
   private function setTextDomain($args = array()) {

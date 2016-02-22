@@ -89,7 +89,7 @@ class Handler {
     $items = $this->model
       ->offset($this->data['offset'])
       ->limit($this->data['limit'])
-      ->findArray();
+      ->findMany();
 
     return array(
       'count' => $count,

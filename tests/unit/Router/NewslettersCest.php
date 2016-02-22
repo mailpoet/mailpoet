@@ -160,13 +160,18 @@ class NewslettersCest {
 
     expect($response['items'][0]['subject'])->equals('My Standard Newsletter');
     expect($response['items'][1]['subject'])->equals('My Post Notification');
-    expect($response['items'][0]['segments'])->equals(array(
-      $segment_1->id(),
-      $segment_2->id()
-    ));
-    expect($response['items'][1]['segments'])->equals(array(
-      $segment_2->id()
-    ));
+
+    // 1st subscriber has 2 segments
+    expect($response['items'][0]['segments'])->count(2);
+    expect($response['items'][0]['segments'][0]['id'])
+      ->equals($segment_1->id);
+    expect($response['items'][0]['segments'][1]['id'])
+      ->equals($segment_2->id);
+
+    // 2nd subscriber has 1 segment
+    expect($response['items'][1]['segments'])->count(1);
+    expect($response['items'][1]['segments'][0]['id'])
+      ->equals($segment_2->id);
   }
 
   function itCanBulkDeleteNewsletters() {
@@ -193,6 +198,7 @@ class NewslettersCest {
 
   function _after() {
     Newsletter::deleteMany();
+    NewsletterSegment::deleteMany();
     Segment::deleteMany();
   }
 }
