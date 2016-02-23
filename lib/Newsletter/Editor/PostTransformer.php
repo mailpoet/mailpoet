@@ -24,7 +24,7 @@ class PostTransformer {
     $structure_transformer = new StructureTransformer();
     $structure = $structure_transformer->transform($content, $this->args['imageFullWidth'] === true);
 
-    if ($this->args['featuredImagePosition'] === 'aboveTitle') {
+    if($this->args['featuredImagePosition'] === 'aboveTitle') {
       $structure = $this->appendPostTitle($post, $structure);
       $structure = $this->appendFeaturedImage(
         $post,
@@ -33,7 +33,7 @@ class PostTransformer {
         $structure
       );
     } else {
-      if ($this->args['featuredImagePosition'] === 'belowTitle') {
+      if($this->args['featuredImagePosition'] === 'belowTitle') {
         $structure = $this->appendFeaturedImage(
           $post,
           $this->args['displayType'],
@@ -49,7 +49,7 @@ class PostTransformer {
   }
 
   private function appendFeaturedImage($post, $display_type, $image_full_width, $structure) {
-    if ($display_type !== 'excerpt') {
+    if($display_type !== 'excerpt') {
       // Append featured images only on excerpts
       return $structure;
     }
@@ -60,7 +60,7 @@ class PostTransformer {
       (bool)$image_full_width
     );
 
-    if (is_array($featured_image)) {
+    if(is_array($featured_image)) {
       return array_merge(array($featured_image), $structure);
     }
 
@@ -111,7 +111,7 @@ class PostTransformer {
     // Append title always at the top of the post structure
     // Reuse an existing text block if needed
 
-    if (count($structure) > 0 && $structure[0]['type'] === 'text') {
+    if(count($structure) > 0 && $structure[0]['type'] === 'text') {
       $structure[0]['text'] = $title . $structure[0]['text'];
     } else {
       array_unshift(
@@ -127,24 +127,24 @@ class PostTransformer {
   }
 
   private function appendReadMore($post_id, $structure) {
-    if ($this->args['readMoreType'] === 'button') {
+    if($this->args['readMoreType'] === 'button') {
       $button = $this->args['readMoreButton'];
       $button['url'] = get_permalink($post_id);
       $structure[] = $button;
     } else {
-      $totalBlocks = count($structure);
-      $readMoreText = sprintf(
+      $total_blocks = count($structure);
+      $read_more_text = sprintf(
         '<a href="%s">%s</a>',
         get_permalink($post_id),
         $this->args['readMoreText']
       );
 
-      if ($structure[$totalBlocks - 1]['type'] === 'text') {
-        $structure[$totalBlocks - 1]['text'] .= $readMoreText;
+      if($structure[$total_blocks - 1]['type'] === 'text') {
+        $structure[$total_blocks - 1]['text'] .= $read_more_text;
       } else {
         $structure[] = array(
           'type' => 'text',
-          'text' => $readMoreText,
+          'text' => $read_more_text,
         );
       }
     }
