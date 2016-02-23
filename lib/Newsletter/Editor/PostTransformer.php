@@ -22,23 +22,35 @@ class PostTransformer {
     $content = $content_manager->filterContent($content);
 
     $structure_transformer = new StructureTransformer();
-    $structure = $structure_transformer->transform($content, $this->args['imageFullWidth'] === 'true');
+    $structure = $structure_transformer->transform($content, $this->args['imageFullWidth'] === true);
 
-    $structure = $this->appendFeaturedImage(
-      $post,
-      $this->args['displayType'],
-      $this->args['imageFullWidth'] === 'true',
-      $structure
-    );
-    $structure = $this->appendPostTitle($post, $structure);
+    if ($this->args['featuredImagePosition'] === 'aboveTitle') {
+      $structure = $this->appendPostTitle($post, $structure);
+      $structure = $this->appendFeaturedImage(
+        $post,
+        $this->args['displayType'],
+        $this->args['imageFullWidth'] === 'true',
+        $structure
+      );
+    } else {
+      if ($this->args['featuredImagePosition'] === 'belowTitle') {
+        $structure = $this->appendFeaturedImage(
+          $post,
+          $this->args['displayType'],
+          $this->args['imageFullWidth'] === 'true',
+          $structure
+        );
+      }
+      $structure = $this->appendPostTitle($post, $structure);
+    }
     $structure = $this->appendReadMore($post->ID, $structure);
 
     return $structure;
   }
 
   private function appendFeaturedImage($post, $display_type, $image_full_width, $structure) {
-    if ($display_type === 'full') {
-      // No featured images for full posts
+    if ($display_type !== 'excerpt') {
+      // Append featured images only on excerpts
       return $structure;
     }
 
@@ -96,25 +108,12 @@ class PostTransformer {
   private function appendPostTitle($post, $structure) {
     $title = $this->getPostTitle($post);
 
-    if ($this->args['titlePosition'] === 'inTextBlock') {
-      // Attach title to the first text block
-      $text_block_index = null;
-      foreach ($structure as $index => $block) {
-        if ($block['type'] === 'text') {
-          $text_block_index = $index;
-          break;
-        }
-      }
+    // Append title always at the top of the post structure
+    // Reuse an existing text block if needed
 
-      if ($text_block_index === null) {
-        $structure[] = array(
-          'type' => 'text',
-          'text' => $title,
-        );
-      } else {
-        $structure[$text_block_index]['text'] = $title . $structure[$text_block_index]['text'];
-      }
-    } elseif ($this->args['titlePosition'] === 'aboveBlock') {
+    if (count($structure) > 0 && $structure[0]['type'] === 'text') {
+      $structure[0]['text'] = $title . $structure[0]['text'];
+    } else {
       array_unshift(
         $structure,
         array(
@@ -133,14 +132,21 @@ class PostTransformer {
       $button['url'] = get_permalink($post_id);
       $structure[] = $button;
     } else {
-      $structure[] = array(
-        'type' => 'text',
-        'text' => sprintf(
-          '<a href="%s">%s</a>',
-          get_permalink($post_id),
-          $this->args['readMoreText']
-        ),
+      $totalBlocks = count($structure);
+      $readMoreText = sprintf(
+        '<a href="%s">%s</a>',
+        get_permalink($post_id),
+        $this->args['readMoreText']
       );
+
+      if ($structure[$totalBlocks - 1]['type'] === 'text') {
+        $structure[$totalBlocks - 1]['text'] .= $readMoreText;
+      } else {
+        $structure[] = array(
+          'type' => 'text',
+          'text' => $readMoreText,
+        );
+      }
     }
 
     return $structure;

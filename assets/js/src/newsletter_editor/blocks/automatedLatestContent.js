@@ -32,10 +32,10 @@ define([
         inclusionType: 'include', // 'include'|'exclude'
         displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
         titleFormat: 'h1', // 'h1'|'h2'|'h3'|'ul'
-        titlePosition: 'inTextBlock', // 'inTextBlock'|'aboveBlock',
         titleAlignment: 'left', // 'left'|'center'|'right'
         titleIsLink: false, // false|true
         imageFullWidth: false, // true|false
+        featuredImagePosition: 'belowTitle', // 'aboveTitle'|'belowTitle'|'none'
         //imageAlignment: 'centerPadded', // 'centerFull'|'centerPadded'|'left'|'right'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
@@ -63,7 +63,7 @@ define([
     initialize: function() {
       base.BlockView.prototype.initialize.apply(this, arguments);
       this.fetchPosts();
-      this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:titlePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
+      this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
       this.listenTo(this.get('readMoreButton'), 'change', this._scheduleFetchPosts);
       this.listenTo(this.get('divider'), 'change', this._scheduleFetchPosts);
     },
@@ -142,9 +142,9 @@ define([
         "keyup .mailpoet_automated_latest_content_show_amount": _.partial(this.changeField, "amount"),
         "change .mailpoet_automated_latest_content_content_type": _.partial(this.changeField, "contentType"),
         "change .mailpoet_automated_latest_content_include_or_exclude": _.partial(this.changeField, "inclusionType"),
-        "change .mailpoet_automated_latest_content_title_position": _.partial(this.changeField, "titlePosition"),
         "change .mailpoet_automated_latest_content_title_alignment": _.partial(this.changeField, "titleAlignment"),
         "change .mailpoet_automated_latest_content_image_full_width": _.partial(this.changeBoolField, "imageFullWidth"),
+        "change .mailpoet_automated_latest_content_featured_image_position": _.partial(this.changeField, "featuredImagePosition"),
         "change .mailpoet_automated_latest_content_show_author": _.partial(this.changeField, "showAuthor"),
         "keyup .mailpoet_automated_latest_content_author_preceded_by": _.partial(this.changeField, "authorPrecededBy"),
         "change .mailpoet_automated_latest_content_show_categories": _.partial(this.changeField, "showCategories"),
@@ -273,12 +273,13 @@ define([
     },
     changeDisplayType: function(event) {
       var value = jQuery(event.target).val();
+
       if (value == 'titleOnly') {
-        this.$('.mailpoet_automated_latest_content_title_position_container').addClass('mailpoet_hidden');
         this.$('.mailpoet_automated_latest_content_title_as_list').removeClass('mailpoet_hidden');
+        this.$('.mailpoet_automated_latest_content_image_full_width_option').addClass('mailpoet_hidden');
       } else {
-        this.$('.mailpoet_automated_latest_content_title_position_container').removeClass('mailpoet_hidden');
         this.$('.mailpoet_automated_latest_content_title_as_list').addClass('mailpoet_hidden');
+        this.$('.mailpoet_automated_latest_content_image_full_width_option').removeClass('mailpoet_hidden');
 
         // Reset titleFormat if it was set to List when switching away from displayType=titleOnly
         if (this.model.get('titleFormat') === 'ul') {
@@ -286,6 +287,12 @@ define([
           this.$('.mailpoet_automated_latest_content_title_format').val(['h1']);
           this.$('.mailpoet_automated_latest_content_title_as_link').removeClass('mailpoet_hidden');
         }
+      }
+
+      if (value === 'excerpt') {
+        this.$('.mailpoet_automated_latest_content_featured_image_position_container').removeClass('mailpoet_hidden');
+      } else {
+        this.$('.mailpoet_automated_latest_content_featured_image_position_container').addClass('mailpoet_hidden');
       }
       this.changeField('displayType', event);
     },

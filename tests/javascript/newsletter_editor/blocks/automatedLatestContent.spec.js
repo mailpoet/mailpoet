@@ -58,10 +58,6 @@ define([
         expect(model.get('titleFormat')).to.match(/^(h1|h2|h3|ul)$/);
       });
 
-      it('has title position', function () {
-        expect(model.get('titlePosition')).to.match(/^(inTextBlock|aboveBlock)$/);
-      });
-
       it('has title alignment', function () {
         expect(model.get('titleAlignment')).to.match(/^(left|center|right)$/);
       });
@@ -72,6 +68,10 @@ define([
 
       it('has image width', function () {
         expect(model.get('imageFullWidth')).to.be.a('boolean');
+      });
+
+      it('has featured image position', function () {
+        expect(model.get('featuredImagePosition')).to.match(/^(aboveTitle|belowTitle|none)$/);
       });
 
       it('has an option to display author', function () {
@@ -123,10 +123,10 @@ define([
               inclusionType: 'exclude', // 'include'|'exclude'
               displayType: 'full', // 'excerpt'|'full'|'titleOnly'
               titleFormat: 'h3', // 'h1'|'h2'|'h3'|'ul'
-              titlePosition: 'aboveBlock', // 'inTextBlock'|'aboveBlock',
               titleAlignment: 'right', // 'left'|'center'|'right'
               titleIsLink: true, // false|true
               imageFullWidth: false, // true|false
+              featuredImagePosition: 'aboveTitle',
               showAuthor: 'belowText', // 'no'|'aboveText'|'belowText'
               authorPrecededBy: 'Custom config author preceded by',
               showCategories: 'belowText', // 'no'|'aboveText'|'belowText'
@@ -169,10 +169,10 @@ define([
         expect(model.get('inclusionType')).to.equal('exclude');
         expect(model.get('displayType')).to.equal('full');
         expect(model.get('titleFormat')).to.equal('h3');
-        expect(model.get('titlePosition')).to.equal('aboveBlock');
         expect(model.get('titleAlignment')).to.equal('right');
         expect(model.get('titleIsLink')).to.equal(true);
         expect(model.get('imageFullWidth')).to.equal(false);
+        expect(model.get('featuredImagePosition')).to.equal('aboveTitle');
         expect(model.get('showAuthor')).to.equal('belowText');
         expect(model.get('authorPrecededBy')).to.equal('Custom config author preceded by');
         expect(model.get('showCategories')).to.equal('belowText');
@@ -326,12 +326,6 @@ define([
           expect(model.get('titleFormat')).to.equal(newValue);
         });
 
-        it('changes the model if title position changes', function () {
-          var newValue = 'aboveBlock';
-          view.$('.mailpoet_automated_latest_content_title_position').val(newValue).change();
-          expect(model.get('titlePosition')).to.equal(newValue);
-        });
-
         it('changes the model if title alignment changes', function () {
           var newValue = 'right';
           view.$('.mailpoet_automated_latest_content_title_alignment').val(newValue).change();
@@ -348,6 +342,12 @@ define([
           var newValue = false;
           view.$('.mailpoet_automated_latest_content_image_full_width').val(newValue).change();
           expect(model.get('imageFullWidth')).to.equal(newValue);
+        });
+
+        it('changes the model if featured image position changes', function () {
+          var newValue = 'aboveTitle';
+          view.$('.mailpoet_automated_latest_content_featured_image_position').val(newValue).change();
+          expect(model.get('featuredImagePosition')).to.equal(newValue);
         });
 
         it('changes the model if show author changes', function () {

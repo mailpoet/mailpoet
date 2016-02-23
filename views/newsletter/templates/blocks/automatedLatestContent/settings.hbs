@@ -95,22 +95,6 @@
         </div>
     </div>
 
-    <div class="mailpoet_form_field mailpoet_automated_latest_content_title_position_container {{#ifCond model.displayType '===' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
-        <div class="mailpoet_form_field_title"><%= __('Title Position') %></div>
-        <div class="mailpoet_form_field_radio_option">
-            <label>
-                <input type="radio" name="mailpoet_automated_latest_content_title_position" class="mailpoet_automated_latest_content_title_position" value="inTextBlock" {{#ifCond model.titlePosition '==' 'inTextBlock' }}CHECKED{{/ifCond}}/>
-                <%= __('In text block') %>
-            </label>
-        </div>
-        <div class="mailpoet_form_field_radio_option">
-            <label>
-                <input type="radio" name="mailpoet_automated_latest_content_title_position" class="mailpoet_automated_latest_content_title_position" value="aboveBlock" {{#ifCond model.titlePosition '==' 'aboveBlock' }}CHECKED{{/ifCond}}/>
-                <%= __('Above block') %>
-            </label>
-        </div>
-    </div>
-
     <div class="mailpoet_form_field">
         <div class="mailpoet_form_field_title"><%= __('Title Alignment') %></div>
         <div class="mailpoet_form_field_radio_option">
@@ -151,8 +135,30 @@
 
     <hr class="mailpoet_separator" />
 
+    <div class="mailpoet_form_field mailpoet_automated_latest_content_featured_image_position_container {{#ifCond model.displayType '!==' 'excerpt'}}mailpoet_hidden{{/ifCond}}">
+        <div class="mailpoet_form_field_title"><%= __('Featured image position') %></div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="belowTitle" {{#ifCond model.featuredImagePosition '==' 'belowTitle' }}CHECKED{{/ifCond}}/>
+                <%= __('Below title') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="aboveTitle" {{#ifCond model.featuredImagePosition '==' 'aboveTitle' }}CHECKED{{/ifCond}}/>
+                <%= __('Above title') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="none" {{#ifCond model.featuredImagePosition '==' 'none' }}CHECKED{{/ifCond}}/>
+                <%= __('None') %>
+            </label>
+        </div>
+    </div>
+
     <div class="mailpoet_automated_latest_content_non_title_list_options {{#ifCond model.displayType '==' 'titleOnly'}}{{#ifCond model.titleFormat '==' 'ul'}}mailpoet_hidden{{/ifCond}}{{/ifCond}}">
-        <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field mailpoet_automated_latest_content_image_full_width_option {{#ifCond model.displayType '==' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
             <div class="mailpoet_form_field_title"><%= __('Image width') %></div>
             <div class="mailpoet_form_field_radio_option">
                 <label>
