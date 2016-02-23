@@ -22,7 +22,7 @@ class Subscriber extends Model {
       __NAMESPACE__.'\SubscriberSegment',
       'subscriber_id',
       'segment_id'
-    );
+    )->where(MP_SUBSCRIBER_SEGMENT_TABLE.'.status', 'subscribed');
   }
 
   function delete() {
@@ -102,7 +102,7 @@ class Subscriber extends Model {
     );
   }
 
-  static function filters() {
+  static function filters($orm, $group = 'all') {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
@@ -119,8 +119,9 @@ class Subscriber extends Model {
 
     foreach($segments as $segment) {
       $subscribers_count = $segment->subscribers()
-        ->whereNull('deleted_at')
+        ->filter('groupBy', $group)
         ->count();
+
       $segment_list[] = array(
         'label' => sprintf('%s (%d)', $segment->name, $subscribers_count),
         'value' => $segment->id()

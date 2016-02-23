@@ -93,7 +93,7 @@ class Handler {
 
     return array(
       'count' => $count,
-      'filters' => $this->model->filter('filters'),
+      'filters' => $this->model->filter('filters', $this->data['group']),
       'groups' => $this->model->filter('groups'),
       'items' => $items
     );

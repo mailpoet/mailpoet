@@ -82,7 +82,7 @@ class Newsletter extends Model {
     return $orm->where_like('subject', '%' . $search . '%');
   }
 
-  static function filters() {
+  static function filters($orm, $group = 'all') {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
@@ -91,7 +91,9 @@ class Newsletter extends Model {
     );
 
     foreach($segments as $segment) {
-      $newsletters_count = $segment->newsletters()->count();
+      $newsletters_count = $segment->newsletters()
+        ->filter('groupBy', $group)
+        ->count();
       if($newsletters_count > 0) {
         $segment_list[] = array(
           'label' => sprintf('%s (%d)', $segment->name, $newsletters_count),
