@@ -18,7 +18,6 @@ baseConfig = {
     modulesDirectories: [
       'node_modules',
       'assets/js/src',
-      'assets/js/lib'
     ],
     alias: {
       'handlebars': 'handlebars/dist/handlebars.js',
@@ -32,7 +31,7 @@ baseConfig = {
       'papaparse': 'papaparse/papaparse.min.js',
       'helpscout': 'helpscout.js',
       'html2canvas': 'html2canvas/dist/html2canvas.js',
-      'asyncqueue': 'jquery.asyncqueue.js'
+      'asyncqueue': 'vendor/jquery.asyncqueue.js'
     },
   },
   node: {
