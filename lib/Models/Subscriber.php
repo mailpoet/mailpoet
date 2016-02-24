@@ -1,11 +1,16 @@
 <?php
 namespace MailPoet\Models;
-
+use MailPoet\Mailer\Mailer;
 use MailPoet\Util\Helpers;
+
 if(!defined('ABSPATH')) exit;
 
 class Subscriber extends Model {
   public static $_table = MP_SUBSCRIBERS_TABLE;
+
+  const STATUS_SUBSCRIBED = 'subscribed';
+  const STATUS_UNSUBSCRIBED = 'unsubscribed';
+  const STATUS_UNCONFIRMED = 'unconfirmed';
 
   function __construct() {
     parent::__construct();
@@ -16,13 +21,22 @@ class Subscriber extends Model {
     ));
   }
 
+  static function findOne($id = null) {
+    if(is_int($id) || (string)(int)$id === $id) {
+      return parent::findOne($id);
+    } else {
+      return parent::where('email', $id)->findOne();
+    }
+  }
+
   function segments() {
     return $this->has_many_through(
       __NAMESPACE__.'\Segment',
       __NAMESPACE__.'\SubscriberSegment',
       'subscriber_id',
       'segment_id'
-    )->where(MP_SUBSCRIBER_SEGMENT_TABLE.'.status', 'subscribed');
+    )
+    ->where(MP_SUBSCRIBER_SEGMENT_TABLE.'.status', self::STATUS_SUBSCRIBED);
   }
 
   function delete() {
@@ -56,10 +70,99 @@ class Subscriber extends Model {
     }
   }
 
-  function sendConfirmationEmail() {
-    $this->set('status', 'unconfirmed');
+  function getConfirmationUrl() {
+    $post = get_post(Setting::getValue('signup_confirmation.page'));
 
-    // TODO
+    if($post === null) {
+      // create page
+      return '';
+    } else {
+      $url = get_permalink($post);
+
+      $params = array(
+        'mailpoet_action=confirm',
+        'mailpoet_token='.md5(AUTH_KEY.$this->email),
+        'mailpoet_email='.$this->email
+      );
+      // add parameters
+      $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?').join('&', $params);
+
+      $url_params = parse_url($url);
+      if(empty($url_params['scheme'])) {
+        $url = get_bloginfo('url').$url;
+      }
+
+      return $url;
+    }
+  }
+
+  function sendConfirmationEmail() {
+    if($this->status === self::STATUS_UNCONFIRMED) {
+      $signup_confirmation = Setting::getValue('signup_confirmation');
+
+      $segments = $this->segments()->findMany();
+      $segment_names = array_map(function($segment) {
+        return $segment->name;
+      }, $segments);
+      $body = nl2br($signup_confirmation['body']);
+
+      // replace list of segments shortcode
+      $body = str_replace(
+        '[lists_to_confirm]',
+        '<strong>'.join(', ', $segment_names).'</strong>',
+        $body
+      );
+
+      // replace activation link
+      $body = str_replace(
+        array(
+          '[activation_link]',
+          '[/activation_link]'
+        ),
+        array(
+          '<a href="'.htmlentities($this->getConfirmationUrl()).'">',
+          '</a>'
+        ),
+        $body
+      );
+
+      // build email data
+      $email = array(
+        'subject' => $signup_confirmation['subject'],
+        'body' => array(
+          'html' => $body,
+          'text' => $body
+        )
+      );
+
+      // convert subsdriber to array
+      $subscriber = $this->asArray();
+
+      // set from
+      $from = (!empty($signup_confirmation['from'])
+        ? $signup_confirmation['from']
+        : false
+      );
+
+      // set reply to
+      $reply_to = (!empty($signup_confirmation['reply_to'])
+        ? $signup_confirmation['reply_to']
+        : false
+      );
+
+      // send email
+      $mailer = new Mailer(
+        false,
+        $from,
+        $reply_to
+      );
+      print '<pre>';
+      print_r($mailer);
+      print '</pre>';
+      exit();
+      return $mailer->send($email, $subscriber);
+    }
+    return false;
   }
 
   static function subscribe($subscriber_data = array(), $segment_ids = array()) {
@@ -76,11 +179,11 @@ class Subscriber extends Model {
       }
 
       if((bool)Setting::getValue('signup_confirmation.enabled')) {
-        if($subscriber->status !== 'subscribed') {
+        if($subscriber->status !== self::STATUS_SUBSCRIBED) {
           $subscriber->sendConfirmationEmail();
         }
       } else {
-        $subscriber->set('status', 'subscribed');
+        $subscriber->set('status', self::STATUS_SUBSCRIBED);
       }
 
       if($subscriber->save()) {
@@ -162,19 +265,19 @@ class Subscriber extends Model {
         'count' => self::getPublished()->count()
       ),
       array(
-        'name' => 'subscribed',
+        'name' => self::STATUS_SUBSCRIBED,
         'label' => __('Subscribed'),
-        'count' => self::filter('subscribed')->count()
+        'count' => self::filter(self::STATUS_SUBSCRIBED)->count()
       ),
       array(
-        'name' => 'unconfirmed',
+        'name' => self::STATUS_UNCONFIRMED,
         'label' => __('Unconfirmed'),
-        'count' => self::filter('unconfirmed')->count()
+        'count' => self::filter(self::STATUS_UNCONFIRMED)->count()
       ),
       array(
-        'name' => 'unsubscribed',
+        'name' => self::STATUS_UNSUBSCRIBED,
         'label' => __('Unsubscribed'),
-        'count' => self::filter('unsubscribed')->count()
+        'count' => self::filter(self::STATUS_UNSUBSCRIBED)->count()
       ),
       array(
         'name' => 'trash',
@@ -413,21 +516,23 @@ class Subscriber extends Model {
 
   static function bulkConfirmUnconfirmed($orm) {
     $subscribers = $orm->findResultSet();
-    $subscribers->set('status', 'subscribed')->save();
+    $subscribers->set('status', self::STATUS_SUBSCRIBED)->save();
     return $subscribers->count();
   }
 
-  static function bulkResendConfirmationEmail($orm) {
+  static function bulkSendConfirmationEmail($orm) {
     $subscribers = $orm
-      ->where('status', 'unconfirmed')
-      ->findResultSet();
+      ->where('status', self::STATUS_UNCONFIRMED)
+      ->findMany();
 
+    $emails_sent = 0;
     if(!empty($subscribers)) {
       foreach($subscribers as $subscriber) {
-        $subscriber->sendConfirmationEmail();
+        if($subscriber->sendConfirmationEmail()) {
+          $emails_sent++;
+        }
       }
-
-      return $subscribers->count();
+      return $emails_sent;
     }
     return false;
   }
@@ -468,19 +573,19 @@ class Subscriber extends Model {
   static function subscribed($orm) {
     return $orm
       ->whereNull('deleted_at')
-      ->where('status', 'subscribed');
+      ->where('status', self::STATUS_SUBSCRIBED);
   }
 
   static function unsubscribed($orm) {
     return $orm
       ->whereNull('deleted_at')
-      ->where('status', 'unsubscribed');
+      ->where('status', self::STATUS_UNSUBSCRIBED);
   }
 
   static function unconfirmed($orm) {
     return $orm
       ->whereNull('deleted_at')
-      ->where('status', 'unconfirmed');
+      ->where('status', self::STATUS_UNCONFIRMED);
   }
 
   static function withoutSegments($orm) {

@@ -209,6 +209,16 @@ const bulk_actions = [
     }
   },
   {
+    name: 'sendConfirmationEmail',
+    label: 'Resend confirmation email',
+    onSuccess: function(response) {
+      MailPoet.Notice.success(
+        '%$1d confirmation emails have been sent.'
+        .replace('%$1d', ~~response)
+      );
+    }
+  },
+  {
     name: 'trash',
     label: 'Trash',
     onSuccess: messages.onTrash
@@ -272,13 +282,13 @@ const SubscriberList = React.createClass({
 
       subscriber.subscriptions.map((subscription) => {
         const segment = this.getSegmentFromId(subscription.segment_id);
+        if(segment === false) return;
         if (subscription.status === 'subscribed') {
           subscribed_segments.push(segment.name);
-        } else {
+        } else if (subscription.status === 'unsubscribed') {
           unsubscribed_segments.push(segment.name);
         }
       });
-
       segments = (
         <span>
           <span className="mailpoet_segments_subscribed">

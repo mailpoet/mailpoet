@@ -16,10 +16,10 @@ class Pages {
       'show_ui' => true,
       'show_in_menu' => false,
       'rewrite' => false,
-      'show_in_nav_menus'=>false,
-      'can_export'=>false,
-      'publicly_queryable'=>true,
-      'exclude_from_search'=>true
+      'show_in_nav_menus' => false,
+      'can_export' => false,
+      'publicly_queryable' => true,
+      'exclude_from_search' => true
     ));
   }
 

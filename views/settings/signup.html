@@ -163,7 +163,7 @@
             <% for page in pages %>
               <option
                 value="<%= page.id %>"
-                data-preview-url="<%= page.preview_url|raw %>"
+                data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=confirm"
                 data-edit-url="<%= page.edit_url|raw %>"
                 <% if(page.id == settings.signup_confirmation.page) %>
                   selected="selected"
