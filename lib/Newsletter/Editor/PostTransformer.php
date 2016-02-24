@@ -134,7 +134,7 @@ class PostTransformer {
     } else {
       $total_blocks = count($structure);
       $read_more_text = sprintf(
-        '<a href="%s">%s</a>',
+        '<p><a href="%s">%s</a></p>',
         get_permalink($post_id),
         $this->args['readMoreText']
       );
