@@ -81,7 +81,7 @@ define([
      * ALC posts on each model change
      */
     _scheduleFetchPosts: function() {
-      var timeout = 2000,
+      var timeout = 500,
         that = this;
       if (this._fetchPostsTimer !== undefined) {
         clearTimeout(this._fetchPostsTimer);
