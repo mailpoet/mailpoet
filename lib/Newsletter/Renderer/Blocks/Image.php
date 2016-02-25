@@ -5,11 +5,10 @@ use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Image {
-  static function render($element, $columnCount) {
+  static function render($element, $column_count) {
     $element['width'] = (int) $element['width'];
     $element['height'] = (int) $element['height'];
-    $element = self::adjustImageDimensions($element, $columnCount);
-
+    $element = self::adjustImageDimensions($element, $column_count);
     $image_template = '
       <img style="max-width:' . $element['width'] . 'px;" src="' . $element['src'] . '"
       width="' . $element['width'] . '" height="' . $element['height'] . '" alt="' . $element['alt'] . '"/>
@@ -17,7 +16,6 @@ class Image {
     if(!empty($element['link'])) {
       $image_template = '<a href="' . $element['link'] . '">' . $image_template . '</a>';
     }
-
     $template = '
       <tr>
         <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded' : '') . '" align="center" valign="top">
