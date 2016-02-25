@@ -107,7 +107,6 @@ define(
 
      exportConfirmedOptionElement.change(function () {
        var selectedSegments = segmentsContainerElement.val();
-       console.log(selectedSegments);
        if (this.value == 1) {
          exportData.exportConfirmedOption = true;
          renderSegmentsAndFields(segmentsContainerElement, segmentsWithConfirmedSubscribers);
