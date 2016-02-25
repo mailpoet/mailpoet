@@ -126,6 +126,16 @@ class NewsletterRendererCest {
     expect($DOM('tr > td > img', 0)->attr('style'))->notEmpty();
   }
 
+  function itRendersImageWithLink() {
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
+    $template['link'] = 'http://example.com';
+    $DOM = $this->DOM_parser->parseStr(Image::render($template, $columnCount = 1));
+    // element should be wrapped in <a> tag
+    expect($DOM('tr > td > a', 0)->html())->contains('<img');
+    expect($DOM('tr > td > a', 0)->attr('href'))->equals($template['link']);
+  }
+
   function itAdjustsImageDimensions() {
     // image gets scaled down when image width > column width
     $image = array(
