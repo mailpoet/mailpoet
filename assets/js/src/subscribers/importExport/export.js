@@ -115,7 +115,7 @@ define(
          exportData.exportConfirmedOption = false;
          renderSegmentsAndFields(segmentsContainerElement, segments);
        }
-       segmentsContainerElement.select2('val', selectedSegments);
+       segmentsContainerElement.val(selectedSegments).trigger('change');
      });
 
      function toggleNextStepButton(condition) {
