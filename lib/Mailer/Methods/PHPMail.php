@@ -25,8 +25,7 @@ class PHPMail {
   }
 
   function buildMailer() {
-    $transport = \Swift_SmtpTransport::newInstance();
-    $transport->setTimeout(10);
+    $transport = \Swift_MailTransport::newInstance();
     return \Swift_Mailer::newInstance($transport);
   }
 

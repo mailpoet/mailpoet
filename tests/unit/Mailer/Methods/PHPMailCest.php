@@ -30,9 +30,7 @@ class PHPMailCest {
 
   function itCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->getTransport()
-             ->getHost())
-      ->equals('localhost');
+    expect($mailer->getTransport() instanceof \Swift_MailTransport)->true();
   }
 
   function itCanCreateMessage() {
