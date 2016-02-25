@@ -9,11 +9,19 @@ class Image {
     $element['width'] = (int) $element['width'];
     $element['height'] = (int) $element['height'];
     $element = self::adjustImageDimensions($element, $columnCount);
+
+    $image_template = '
+      <img style="max-width:' . $element['width'] . 'px;" src="' . $element['src'] . '"
+      width="' . $element['width'] . '" height="' . $element['height'] . '" alt="' . $element['alt'] . '"/>
+      ';
+    if(!empty($element['link'])) {
+      $image_template = '<a href="' . $element['link'] . '">' . $image_template . '</a>';
+    }
+
     $template = '
       <tr>
         <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded' : '') . '" align="center" valign="top">
-          <img style="max-width:' . $element['width'] . 'px;" src="' . $element['src'] . '"
-          width="' . $element['width'] . '" height="' . $element['height'] . '" alt="' . $element['alt'] . '"/>
+          ' . $image_template . '
         </td>
       </tr>';
     return $template;

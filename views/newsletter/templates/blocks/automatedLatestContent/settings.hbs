@@ -95,22 +95,6 @@
         </div>
     </div>
 
-    <div class="mailpoet_form_field mailpoet_automated_latest_content_title_position_container {{#ifCond model.displayType '===' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
-        <div class="mailpoet_form_field_title"><%= __('Title Position') %></div>
-        <div class="mailpoet_form_field_radio_option">
-            <label>
-                <input type="radio" name="mailpoet_automated_latest_content_title_position" class="mailpoet_automated_latest_content_title_position" value="inTextBlock" {{#ifCond model.titlePosition '==' 'inTextBlock' }}CHECKED{{/ifCond}}/>
-                <%= __('In text block') %>
-            </label>
-        </div>
-        <div class="mailpoet_form_field_radio_option">
-            <label>
-                <input type="radio" name="mailpoet_automated_latest_content_title_position" class="mailpoet_automated_latest_content_title_position" value="aboveBlock" {{#ifCond model.titlePosition '==' 'aboveBlock' }}CHECKED{{/ifCond}}/>
-                <%= __('Above block') %>
-            </label>
-        </div>
-    </div>
-
     <div class="mailpoet_form_field">
         <div class="mailpoet_form_field_title"><%= __('Title Alignment') %></div>
         <div class="mailpoet_form_field_radio_option">
@@ -151,8 +135,30 @@
 
     <hr class="mailpoet_separator" />
 
+    <div class="mailpoet_form_field mailpoet_automated_latest_content_featured_image_position_container {{#ifCond model.displayType '!==' 'excerpt'}}mailpoet_hidden{{/ifCond}}">
+        <div class="mailpoet_form_field_title"><%= __('Featured image position') %></div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="belowTitle" {{#ifCond model.featuredImagePosition '==' 'belowTitle' }}CHECKED{{/ifCond}}/>
+                <%= __('Below title') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="aboveTitle" {{#ifCond model.featuredImagePosition '==' 'aboveTitle' }}CHECKED{{/ifCond}}/>
+                <%= __('Above title') %>
+            </label>
+        </div>
+        <div class="mailpoet_form_field_radio_option">
+            <label>
+                <input type="radio" name="mailpoet_automated_latest_content_featured_image_position" class="mailpoet_automated_latest_content_featured_image_position" value="none" {{#ifCond model.featuredImagePosition '==' 'none' }}CHECKED{{/ifCond}}/>
+                <%= __('None') %>
+            </label>
+        </div>
+    </div>
+
     <div class="mailpoet_automated_latest_content_non_title_list_options {{#ifCond model.displayType '==' 'titleOnly'}}{{#ifCond model.titleFormat '==' 'ul'}}mailpoet_hidden{{/ifCond}}{{/ifCond}}">
-        <div class="mailpoet_form_field">
+        <div class="mailpoet_form_field mailpoet_automated_latest_content_image_full_width_option {{#ifCond model.displayType '==' 'titleOnly'}}mailpoet_hidden{{/ifCond}}">
             <div class="mailpoet_form_field_title"><%= __('Image width') %></div>
             <div class="mailpoet_form_field_radio_option">
                 <label>
@@ -190,9 +196,9 @@
                     <%= __('Below text') %><br />
                 </label>
             </div>
-            <div class="mailpoet_form_field_title mailpoet_form_field_title_small mailpoet_form_field_title_inline"><%= __('Preceded by:') %></div>
-            <div class="mailpoet_form_field_input_option">
-                <input type="text" class="mailpoet_input mailpoet_input_medium mailpoet_automated_latest_content_author_preceded_by" value="{{ model.authorPrecededBy }}" />
+            <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('Preceded by:') %></div>
+            <div class="mailpoet_form_field_input_option mailpoet_form_field_block">
+                <input type="text" class="mailpoet_input mailpoet_input_full mailpoet_automated_latest_content_author_preceded_by" value="{{ model.authorPrecededBy }}" />
             </div>
         </div>
 
@@ -216,16 +222,16 @@
                     <%= __('Below text') %>
                 </label>
             </div>
-            <div class="mailpoet_form_field_title mailpoet_form_field_title_small mailpoet_form_field_title_inline"><%= __('Preceded by:') %></div>
-            <div class="mailpoet_form_field_input_option">
-                <input type="text" class="mailpoet_input mailpoet_input_medium mailpoet_automated_latest_content_categories" value="{{ model.categoriesPrecededBy }}" />
+            <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('Preceded by:') %></div>
+            <div class="mailpoet_form_field_input_option mailpoet_form_field_block">
+                <input type="text" class="mailpoet_input mailpoet_input_full mailpoet_automated_latest_content_categories" value="{{ model.categoriesPrecededBy }}" />
             </div>
         </div>
 
         <hr class="mailpoet_separator" />
 
         <div class="mailpoet_form_field">
-            <div class="mailpoet_form_field_title mailpoet_form_field_title_small mailpoet_form_field_title_inline"><%= __('"Read more" text') %></div>
+            <div class="mailpoet_form_field_title mailpoet_form_field_title_small"><%= __('"Read more" text') %></div>
             <div class="mailpoet_form_field_radio_option">
                 <label>
                     <input type="radio" name="mailpoet_automated_latest_content_read_more_type" class="mailpoet_automated_latest_content_read_more_type" value="link" {{#ifCond model.readMoreType '==' 'link'}}CHECKED{{/ifCond}}/>
@@ -239,11 +245,11 @@
                 </label>
             </div>
 
-            <div class="mailpoet_form_field_input_option">
-                <input type="text" class="mailpoet_automated_latest_content_read_more_text {{#ifCond model.readMoreType '!=' 'link'}}mailpoet_hidden{{/ifCond}}" value="{{ model.readMoreText }}" />
+            <div class="mailpoet_form_field_input_option mailpoet_form_field_block">
+                <input type="text" class="mailpoet_input mailpoet_input_full mailpoet_automated_latest_content_read_more_text {{#ifCond model.readMoreType '!=' 'link'}}mailpoet_hidden{{/ifCond}}" value="{{ model.readMoreText }}" />
             </div>
 
-            <div class="mailpoet_form_field_input_option">
+            <div class="mailpoet_form_field_input_option mailpoet_form_field_block">
                 <a href="javascript:;" class="mailpoet_automated_latest_content_select_button {{#ifCond model.readMoreType '!=' 'button'}}mailpoet_hidden{{/ifCond}}"><%= __('Design a button') %></a>
             </div>
         </div>
