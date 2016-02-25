@@ -1,10 +1,17 @@
 <?php
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Button {
-  static function render($element) {
+  static function render($element, $column_count) {
+    $column_width = ColumnsHelper::columnWidth($column_count);
+    $column_width = $column_width - (StylesHelper::$padding_width * 2);
+    $element['styles']['block']['width'] =
+      ((int) $element['styles']['block']['width'] > $column_width) ?
+      $column_width . 'px' :
+      $element['styles']['block']['width'];
     $template = '
       <tr>
         <td class="mailpoet_padded" valign="top">
