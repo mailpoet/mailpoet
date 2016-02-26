@@ -6,12 +6,7 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Button {
   static function render($element, $column_count) {
-    $column_width = ColumnsHelper::columnWidth($column_count);
-    $column_width = $column_width - (StylesHelper::$padding_width * 2);
-    $element['styles']['block']['width'] =
-      ((int) $element['styles']['block']['width'] > $column_width) ?
-      $column_width . 'px' :
-      $element['styles']['block']['width'];
+    $element['styles']['block']['width'] = self::calculateWidth($element, $column_count);
     $template = '
       <tr>
         <td class="mailpoet_padded" valign="top">
@@ -43,5 +38,14 @@ class Button {
         </td>
       </tr>';
     return $template;
+  }
+
+  static function calculateWidth($element, $column_count) {
+    $column_width = ColumnsHelper::columnWidth($column_count);
+    $column_width = $column_width - (StylesHelper::$padding_width * 2);
+    $column_width = ((int) $element['styles']['block']['width'] > $column_width) ?
+      $column_width . 'px' :
+      $element['styles']['block']['width'];
+    return $column_width;
   }
 }

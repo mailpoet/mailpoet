@@ -3,7 +3,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 class Spacer {
   static function render($element) {
-    $height = $element['styles']['block']['height'];
+    $height = (int) $element['styles']['block']['height'];
     $background_color = $element['styles']['block']['backgroundColor'];
     $template = '
       <tr>
