@@ -39,8 +39,7 @@ class Renderer {
     }
   }
 
-  // private: rendering methods
-  private static function renderBlocks($blocks = array()) {
+  static function renderBlocks($blocks = array()) {
     $html = '';
     foreach ($blocks as $key => $block) {
       $html .= static::renderBlock($block)."\n";
@@ -49,7 +48,7 @@ class Renderer {
     return $html;
   }
 
-  private static function renderBlock($block = array()) {
+  static function renderBlock($block = array()) {
     $html = '';
     switch($block['type']) {
       case 'html':

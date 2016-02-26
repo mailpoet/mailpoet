@@ -15,7 +15,7 @@ class Subscribers {
   function __construct() {
   }
 
-  function get($id = false) {
+  function get($id = null) {
     $subscriber = Subscriber::findOne($id);
     if($subscriber !== false) {
       $subscriber = $subscriber
