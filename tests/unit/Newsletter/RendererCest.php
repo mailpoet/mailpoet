@@ -215,10 +215,21 @@ class NewsletterRendererCest {
     expect($DOM('tr > td.mailpoet_spacer', 0)->attr('height'))->equals(50);
   }
 
+  function itSetsSpacerBackground() {
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][4];
+    $DOM = $this->DOM_parser->parseStr(Spacer::render($template));
+    expect($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))->null();
+    $template['styles']['block']['backgroundColor'] = '#ffff';
+    $DOM = $this->DOM_parser->parseStr(Spacer::render($template));
+    expect($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))
+      ->equals('#ffff');
+  }
+
   function itRendersButton() {
     $newsletter = json_decode($this->newsletter['body'], true);
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
-    $DOM = $this->DOM_parser->parseStr(Button::render($template));
+    $DOM = $this->DOM_parser->parseStr(Button::render($template, $columnCount = 1));
     // element should be properly nested with arcsize/styles/fillcolor set
     expect(
       !empty($DOM('tr > td > div > table > tr > td > a.mailpoet_button', 0)->html())
@@ -248,6 +259,14 @@ class NewsletterRendererCest {
         '/fillcolor="#666666/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
+  }
+
+  function itCalculatesButtonWidth() {
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
+    $template['styles']['block']['width'] = '700px';
+    $button_width = Button::calculateWidth($template, $columnCunt = 1);
+    expect($button_width)->equals('620px');
   }
 
   function itRendersSocialIcons() {

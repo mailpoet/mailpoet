@@ -11,6 +11,7 @@ class StylesHelper {
     'textDecoration' => 'text-decoration',
     'textAlign' => 'text-align',
     'fontSize' => 'font-size',
+    'fontWeight' => 'font-weight',
     'borderWidth' => 'border-width',
     'borderStyle' => 'border-style',
     'borderColor' => 'border-color',
