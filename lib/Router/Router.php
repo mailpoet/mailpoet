@@ -52,68 +52,114 @@ class Router {
 
   }
 
+  function getSubscriber() {
+    $token = (isset($_GET['mailpoet_token']))
+      ? $_GET['mailpoet_token']
+      : null;
+    $email = (isset($_GET['mailpoet_email']))
+      ? $_GET['mailpoet_email']
+      : null;
+
+    if(empty($token) || empty($email)) {
+      return 'demo';
+    }
+
+    if(md5(AUTH_KEY.$email) === $token) {
+      $subscriber = Subscriber::findOne($email);
+      if($subscriber !== false) {
+        return $subscriber;
+      }
+    }
+    return false;
+  }
+
   function setPageTitle($title) {
     $action = (isset($_GET['mailpoet_action']))
       ? $_GET['mailpoet_action']
       : null;
 
+    // get subscriber
+    $subscriber = $this->getSubscriber();
+
     switch($action) {
       case 'confirm':
-        $token = (isset($_GET['mailpoet_token']))
-          ? $_GET['mailpoet_token']
-          : null;
-        $email = (isset($_GET['mailpoet_email']))
-          ? $_GET['mailpoet_email']
-          : null;
+        if($subscriber === 'demo') {
+          $title = sprintf(__("You've subscribed to: %s"), 'demo');
+        } else if($subscriber === false) {
+          $title = __('Your confirmation link expired, please subscribe again.');
+        } else if($subscriber->id > 0) {
+          if($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
+            $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+            $subscriber->save();
+          }
 
-        if(empty($token) || empty($token)) {
+          $segments = $subscriber->segments()->findMany();
+
+          $segment_names = array_map(function($segment) {
+            return $segment->name;
+          }, $segments);
+
           $title = sprintf(
             __("You've subscribed to: %s"),
-            'demo'
+            join(', ', $segment_names)
           );
-        } else {
-          // check token validity
-          if(md5(AUTH_KEY.$email) !== $token) {
-            $title = __('Your confirmation link expired, please subscribe again.');
-          } else {
-            $subscriber = Subscriber::findOne($email);
-            if($subscriber !== false) {
-              if($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
-                $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-                $subscriber->save();
-              }
-
-              $segments = $subscriber->segments()->findMany();
-
-              $segment_names = array_map(function($segment) {
-                return $segment->name;
-              }, $segments);
-
-              $title = sprintf(
-                __("You've subscribed to: %s"),
-                join(', ', $segment_names)
-              );
-            }
-          }
         }
       break;
-      case 'manage':
-        // TODO
+      case 'edit':
+        if($subscriber->id > 0) {
+          $title = sprintf(
+            __('Edit your subscriber profile: %s'),
+            $subscriber->email
+          );
+        }
       break;
       case 'unsubscribe':
-        // TODO
+        if($subscriber->id > 0) {
+          if($subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED) {
+            $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+            $subscriber->save();
+          }
+        }
+        $title = __("You've unsubscribed!");
       break;
     }
     return $title;
   }
 
   function setPageContent($content) {
+    $action = (isset($_GET['mailpoet_action']))
+      ? $_GET['mailpoet_action']
+      : null;
 
-    return __(
-      "Yup, we've added you to our list. ".
-      "You'll hear from us shortly."
-    );
+    $subscriber = $this->getSubscriber();
 
+    switch($action) {
+      case 'confirm':
+        $content = __(
+          "Yup, we've added you to our list. ".
+          "You'll hear from us shortly."
+        );
+      break;
+      case 'edit':
+        $subscriber = $subscriber
+        ->withCustomFields()
+        ->withSubscriptions();
+        $content = 'TODO';
+      break;
+      case 'unsubscribe':
+        $content = '<p>'.__("Great, you'll never hear from us again!").'</p>';
+        if($subscriber->id > 0) {
+          $content .= '<p><strong>'.
+            str_replace(
+              array('[link]', '[/link]'),
+              array('<a href="'.$subscriber->getConfirmationUrl().'">', '</a>'),
+              __('You made a mistake? [link]Undo unsubscribe.[/link]')
+            ).
+          '</strong></p>';
+        }
+      break;
+    }
+    return $content;
   }
 
   function setToken() {

@@ -73,7 +73,10 @@ class Newsletter extends Model {
   }
 
   function withSendingQueue() {
-    $this->queue = $this->getQueue();
+    $queue = $this->getQueue();
+    if($queue !== false) {
+      $this->queue = $queue->asArray();
+    }
     return $this;
   }
 

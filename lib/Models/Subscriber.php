@@ -72,28 +72,39 @@ class Subscriber extends Model {
 
   function getConfirmationUrl() {
     $post = get_post(Setting::getValue('signup_confirmation.page'));
+    return $this->getSubscriptionUrl($post, 'confirm');
+  }
 
-    if($post === null) {
-      // create page
-      return '';
-    } else {
-      $url = get_permalink($post);
+  function getEditSubscriptionUrl() {
+    $post = get_post(Setting::getValue('subscription.page'));
+    return $this->getSubscriptionUrl($post, 'edit');
+  }
 
-      $params = array(
-        'mailpoet_action=confirm',
-        'mailpoet_token='.md5(AUTH_KEY.$this->email),
-        'mailpoet_email='.$this->email
-      );
-      // add parameters
-      $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?').join('&', $params);
+  function getUnsubscribeUrl() {
+    $post = get_post(Setting::getValue('subscription.page'));
+    return $this->getSubscriptionUrl($post, 'unsubscribe');
+  }
 
-      $url_params = parse_url($url);
-      if(empty($url_params['scheme'])) {
-        $url = get_bloginfo('url').$url;
-      }
 
-      return $url;
+  private function getSubscriptionUrl($post = null, $action = null) {
+    if($post === null || $action === null) return;
+
+    $url = get_permalink($post);
+
+    $params = array(
+      'mailpoet_action='.$action,
+      'mailpoet_token='.md5(AUTH_KEY.$this->email),
+      'mailpoet_email='.$this->email
+    );
+    // add parameters
+    $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?').join('&', $params);
+
+    $url_params = parse_url($url);
+    if(empty($url_params['scheme'])) {
+      $url = get_bloginfo('url').$url;
     }
+
+    return $url;
   }
 
   function sendConfirmationEmail() {
