@@ -41,7 +41,7 @@ define([
     getTemplate: function() { return templates.footerBlock; },
     modelEvents: _.extend({
       'change:styles.block.backgroundColor change:styles.text.fontColor change:styles.text.fontFamily change:styles.text.fontSize change:styles.text.textAlign change:styles.link.fontColor change:styles.link.textDecoration': 'render',
-    }, base.BlockView.prototype.modelEvents),
+    }, _.omit(base.BlockView.prototype.modelEvents, 'change')),
     onDragSubstituteBy: function() { return Module.FooterWidgetView; },
     onRender: function() {
       this.toolsView = new Module.FooterBlockToolsView({ model: this.model });

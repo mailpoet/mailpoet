@@ -236,7 +236,7 @@ define([
         data: json,
       }).done(function(response){
         console.log('Should open a new window');
-        window.open('data:text/html,' + encodeURIComponent(response.rendered_body), '_blank');
+        window.open('data:text/html;charset=utf-8,' + encodeURIComponent(response.rendered_body), '_blank');
       }).fail(function(error) {
         console.log('Preview error', json);
         alert('Something went wrong, check console');
