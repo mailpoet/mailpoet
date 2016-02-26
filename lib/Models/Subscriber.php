@@ -139,16 +139,19 @@ class Subscriber extends Model {
       $subscriber = $this->asArray();
 
       // set from
-      $from = (!empty($signup_confirmation['from'])
-        ? $signup_confirmation['from']
-        : false
-      );
+      $from = (
+        !empty($signup_confirmation['from'])
+        && !empty($signup_confirmation['email'])
+      ) ? $signup_confirmation['from']
+        : false;
 
       // set reply to
-      $reply_to = (!empty($signup_confirmation['reply_to'])
-        ? $signup_confirmation['reply_to']
-        : false
-      );
+      $reply_to = (
+        !empty($signup_confirmation['reply_to'])
+        && !empty($signup_confirmation['reply_to'])
+      ) ? $signup_confirmation['reply_to']
+        : false;
+
 
       // send email
       $mailer = new Mailer(
@@ -156,10 +159,6 @@ class Subscriber extends Model {
         $from,
         $reply_to
       );
-      print '<pre>';
-      print_r($mailer);
-      print '</pre>';
-      exit();
       return $mailer->send($email, $subscriber);
     }
     return false;
