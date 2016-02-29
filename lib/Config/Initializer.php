@@ -4,8 +4,6 @@ namespace MailPoet\Config;
 use MailPoet\Models;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Router;
-use MailPoet\Models\Setting;
-use MailPoet\Settings\Pages;
 
 if(!defined('ABSPATH')) exit;
 
@@ -26,6 +24,7 @@ class Initializer {
     register_activation_hook(Env::$file, array($this, 'runPopulator'));
 
     add_action('plugins_loaded', array($this, 'setup'));
+    add_action('init', array($this, 'onInit'));
     add_action('widgets_init', array($this, 'setupWidget'));
   }
 
@@ -39,16 +38,19 @@ class Initializer {
       $this->setupPublicAPI();
       $this->setupAnalytics();
       $this->setupChangelog();
-      $this->runQueueSupervisor();
       $this->setupShortcodes();
       $this->setupHooks();
-      $this->setupPages();
       $this->setupImages();
     } catch(\Exception $e) {
       // if anything goes wrong during init
       // automatically deactivate the plugin
       deactivate_plugins(Env::$file);
     }
+  }
+
+  function onInit() {
+    $this->setupPages();
+    $this->runQueueSupervisor();
   }
 
   function setupDB() {
@@ -147,8 +149,11 @@ class Initializer {
   }
 
   function setupPages() {
-    $pages = new Pages();
+    $pages = new \MailPoet\Settings\Pages();
     $pages->init();
+
+    $subscription_pages = new \MailPoet\Subscription\Pages();
+    $subscription_pages->init();
   }
 
   function setupShortcodes() {
