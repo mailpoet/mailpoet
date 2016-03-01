@@ -65,7 +65,9 @@ class Pages {
     return array(
       'id' => $page->ID,
       'title' => $page->post_title,
-      'preview_url' => get_permalink($page->ID),
+      'preview_url' => add_query_arg(array(
+        'preview' => 1
+      ), get_permalink($page->ID)),
       'edit_url' => get_edit_post_link($page->ID)
     );
   }

@@ -8,10 +8,7 @@ use \MailPoet\Models\Segment;
 use \MailPoet\Util\Helpers;
 
 class Pages {
-  const DEMO_EMAIL = 'demo@mailpoet.com';
-
   function __construct() {
-
   }
 
   function init() {
@@ -20,6 +17,10 @@ class Pages {
       add_filter('the_title', array($this,'setPageTitle'));
       add_filter('the_content', array($this,'setPageContent'));
     }
+  }
+
+  function isPreview() {
+    return (array_key_exists('preview', $_GET));
   }
 
   function setWindowTitle() {
@@ -39,13 +40,13 @@ class Pages {
       break;
 
       case 'unsubscribe':
-        if($subscriber !== false && $subscriber->email !== self::DEMO_EMAIL) {
+        if($subscriber !== false) {
           if($subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED) {
             $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
             $subscriber->save();
           }
         }
-        return $this->getUnsubscribeTitle();
+        return $this->getUnsubscribeTitle($subscriber);
       break;
     }
     return $title;
@@ -70,23 +71,22 @@ class Pages {
   }
 
   private function getConfirmTitle($subscriber) {
-    if($subscriber === false) {
+    if($this->isPreview()) {
+      $title = sprintf(
+        __("You've subscribed to: %s"),
+        'demo 1, demo 2'
+      );
+    } else if($subscriber === false) {
       $title = __('Your confirmation link expired, please subscribe again.');
     } else {
-      if($subscriber->email === self::DEMO_EMAIL) {
-        $segment_names = array('demo 1', 'demo 2');
-      } else {
-        if($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
-          $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-          $subscriber->save();
-        }
-
-        $segments = $subscriber->segments()->findMany();
-
-        $segment_names = array_map(function($segment) {
-          return $segment->name;
-        }, $segments);
+      if($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
+        $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+        $subscriber->save();
       }
+
+      $segment_names = array_map(function($segment) {
+        return $segment->name;
+      }, $subscriber->segments()->findMany());
 
       if(empty($segment_names)) {
         $title = __("You've subscribed!");
@@ -109,13 +109,15 @@ class Pages {
     }
   }
 
-  private function getUnsubscribeTitle() {
-    return __("You've unsubscribed!");
+  private function getUnsubscribeTitle($subscriber) {
+    if($this->isPreview() || $subscriber !== false) {
+      return __("You've unsubscribed!");
+    }
   }
 
 
   private function getConfirmContent($subscriber) {
-    if($subscriber !== false) {
+    if($this->isPreview() || $subscriber !== false) {
       return __("Yup, we've added you to our list. You'll hear from us shortly.");
     }
   }
@@ -242,15 +244,18 @@ class Pages {
   }
 
   private function getUnsubscribeContent($subscriber) {
-    $content = '<p>'.__("Great, you'll never hear from us again!").'</p>';
-    if($subscriber !== false) {
-      $content .= '<p><strong>'.
-        str_replace(
-          array('[link]', '[/link]'),
-          array('<a href="'.$subscriber->getConfirmationUrl().'">', '</a>'),
-          __('You made a mistake? [link]Undo unsubscribe.[/link]')
-        ).
-      '</strong></p>';
+    $content = '';
+    if($this->isPreview() || $subscriber !== false) {
+      $content = '<p>'.__("Great, you'll never hear from us again!").'</p>';
+      if($subscriber !== false) {
+        $content .= '<p><strong>'.
+          str_replace(
+            array('[link]', '[/link]'),
+            array('<a href="'.$subscriber->getConfirmationUrl().'">', '</a>'),
+            __('You made a mistake? [link]Undo unsubscribe.[/link]')
+          ).
+        '</strong></p>';
+      }
     }
     return $content;
   }
@@ -262,12 +267,6 @@ class Pages {
     $email = (isset($_GET['mailpoet_email']))
       ? $_GET['mailpoet_email']
       : null;
-
-    if(empty($token) || empty($email) || $email === self::DEMO_EMAIL) {
-      $subscriber = Subscriber::create();
-      $subscriber->email = self::DEMO_EMAIL;
-      return $subscriber;
-    }
 
     if(md5(AUTH_KEY.$email) === $token) {
       $subscriber = Subscriber::findOne($email);
