@@ -33,7 +33,6 @@ class Initializer {
       $this->setupRenderer();
       $this->setupLocalizer();
       $this->setupMenu();
-      $this->setupRouter();
       $this->setupPermissions();
       $this->setupPublicAPI();
       $this->setupAnalytics();
@@ -49,6 +48,7 @@ class Initializer {
   }
 
   function onInit() {
+    $this->setupRouter();
     $this->setupPages();
     $this->runQueueSupervisor();
   }

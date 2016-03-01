@@ -146,7 +146,7 @@ class Subscriber extends Model {
         )
       );
 
-      // convert subsdriber to array
+      // convert subscriber to array
       $subscriber = $this->asArray();
 
       // set from
@@ -163,14 +163,13 @@ class Subscriber extends Model {
       ) ? $signup_confirmation['reply_to']
         : false;
 
-
       // send email
-      $mailer = new Mailer(
-        false,
-        $from,
-        $reply_to
-      );
-      return $mailer->send($email, $subscriber);
+      try {
+        $mailer = new Mailer(false, $from, $reply_to);
+        return $mailer->send($email, $subscriber);
+      } catch(\Exception $e) {
+        return false;
+      }
     }
     return false;
   }

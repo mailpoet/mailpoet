@@ -119,14 +119,14 @@ define('date',
 
       let outputFormat = '';
 
-      Object.keys(replacements).forEach(function (key) {
-        if (format.contains(key)) {
+      Object.keys(replacements).forEach(function(key) {
+        if (format.indexOf(key) !== -1) {
           format = format.replace(key, '%'+key);
         }
       });
       outputFormat = format;
       Object.keys(replacements).forEach(function(key) {
-        if (outputFormat.contains('%'+key)) {
+        if (outputFormat.indexOf('%'+key) !== -1) {
           outputFormat = outputFormat.replace('%'+key, replacements[key]);
         }
       });
