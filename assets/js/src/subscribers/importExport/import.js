@@ -1056,7 +1056,7 @@ define(
             var columns = {},
               queue = new jQuery.AsyncQueue(),
               batchNumber = 0,
-              batchSize = 500,
+              batchSize = 2000,
               timestamp = Date.now() / 1000,
               subscribers = [],
               importResults = {
