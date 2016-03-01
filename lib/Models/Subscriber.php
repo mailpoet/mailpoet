@@ -115,6 +115,7 @@ class Subscriber extends Model {
       $segment_names = array_map(function($segment) {
         return $segment->name;
       }, $segments);
+
       $body = nl2br($signup_confirmation['body']);
 
       // replace list of segments shortcode
@@ -152,14 +153,14 @@ class Subscriber extends Model {
       // set from
       $from = (
         !empty($signup_confirmation['from'])
-        && !empty($signup_confirmation['email'])
+        && !empty($signup_confirmation['from']['email'])
       ) ? $signup_confirmation['from']
         : false;
 
       // set reply to
       $reply_to = (
         !empty($signup_confirmation['reply_to'])
-        && !empty($signup_confirmation['reply_to'])
+        && !empty($signup_confirmation['reply_to']['email'])
       ) ? $signup_confirmation['reply_to']
         : false;
 
@@ -168,6 +169,7 @@ class Subscriber extends Model {
         $mailer = new Mailer(false, $from, $reply_to);
         return $mailer->send($email, $subscriber);
       } catch(\Exception $e) {
+        $this->setError($e->getMessage());
         return false;
       }
     }

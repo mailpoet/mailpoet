@@ -112,11 +112,6 @@
           name="signup_confirmation[subject]"
           <% if(settings.signup_confirmation.subject) %>
             value="<%= settings.signup_confirmation.subject %>"
-          <% else %>
-            value="<%=
-              __('Confirm your subscription to %1$s')
-              | format(get_option('blogname'))
-            %>"
           <% endif %>
         />
       </td>
@@ -139,8 +134,6 @@
           name="signup_confirmation[body]"
         ><% if(settings.signup_confirmation.body) %>
             <%=- settings.signup_confirmation.body -%>
-          <% else %>
-            <%=- __("Hello!\n\nHurray! You've subscribed to our site.\nWe need you to activate your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe team!") -%>
           <% endif %></textarea>
       </td>
     </tr>

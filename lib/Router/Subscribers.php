@@ -88,18 +88,10 @@ class Subscribers {
     }
 
     $subscriber = Subscriber::subscribe($data, $segment_ids);
-
-    $result = false;
-    if($subscriber === false || !$subscriber->id()) {
-      $errors = array_merge($errors, $subscriber->getValidationErrors());
-    } else {
-      $result = true;
-    }
-
-    if(!empty($errors)) {
+    if($subscriber->getErrors() !== false) {
       return array(
         'result' => false,
-        'errors' => $errors
+        'errors' => $subscriber->getErrors()
       );
     }
 

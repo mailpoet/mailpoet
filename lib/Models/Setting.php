@@ -6,6 +6,8 @@ if (!defined('ABSPATH')) exit;
 class Setting extends Model {
   public static $_table = MP_SETTINGS_TABLE;
 
+  public static $defaults = null;
+
   function __construct() {
     parent::__construct();
 
@@ -14,8 +16,26 @@ class Setting extends Model {
     ));
   }
 
+  public static function getDefaults() {
+    if(self::$defaults === null) {
+      self::loadDefaults();
+    }
+    return self::$defaults;
+  }
+
+  public static function loadDefaults() {
+    self::$defaults = array(
+      'signup_confirmation' => array(
+        'enabled' => true,
+        'subject' => sprintf(__('Confirm your subscription to %1$s'), get_option('blogname')),
+        'body' => __("Hello!\n\nHurray! You've subscribed to our site.\nWe need you to activate your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe team!")
+      )
+    );
+  }
+
   public static function getValue($key, $default = null) {
     $keys = explode('.', $key);
+    $defaults = self::getDefaults();
 
     if(count($keys) === 1) {
       $setting = Setting::where('name', $key)->findOne();
@@ -23,9 +43,14 @@ class Setting extends Model {
         return $default;
       } else {
         if(is_serialized($setting->value)) {
-          return unserialize($setting->value);
+          $value = unserialize($setting->value);
         } else {
-          return $setting->value;
+          $value = $setting->value;
+        }
+        if(is_array($value) && array_key_exists($key, $defaults)) {
+          return array_replace_recursive($defaults[$key], $value);
+        } else {
+          return $value;
         }
       }
     } else {
@@ -93,7 +118,7 @@ class Setting extends Model {
         $settings[$setting->name] = $value;
       }
     }
-    return $settings;
+    return array_replace_recursive(self::getDefaults(), $settings);
   }
 
   public static function createOrUpdate($data = array()) {
