@@ -230,15 +230,17 @@ define([
         json.body = JSON.stringify(json.body);
       }
 
+      MailPoet.Modal.loading(true);
+
       MailPoet.Ajax.post({
         endpoint: 'newsletters',
         action: 'render',
         data: json,
       }).done(function(response){
-        console.log('Should open a new window');
+        MailPoet.Modal.loading(false);
         window.open('data:text/html;charset=utf-8,' + encodeURIComponent(response.rendered_body), '_blank');
       }).fail(function(error) {
-        console.log('Preview error', json);
+        MailPoet.Modal.loading(false);
         alert('Something went wrong, check console');
       });
     },
