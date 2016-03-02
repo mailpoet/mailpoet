@@ -3,15 +3,13 @@ define(
     'react',
     'react-router',
     'mailpoet',
-    'form/form.jsx',
-    'moment'
+    'form/form.jsx'
   ],
   function(
     React,
     Router,
     MailPoet,
-    Form,
-    Moment
+    Form
   ) {
     var fields = [
       {
@@ -69,9 +67,8 @@ define(
                 label = segment.name;
 
                 if (subscription.status === 'unsubscribed') {
-                  const unsubscribed_at = Moment(subscription.updated_at)
-                    .utcOffset(parseInt(mailpoet_date_offset))
-                    .format('ddd, D MMM YYYY HH:mm:ss');
+                  const unsubscribed_at = MailPoet.Date
+                    .format(subscription.updated_at);
                   label += ' (Unsubscribed on '+unsubscribed_at+')';
                 }
               }

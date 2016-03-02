@@ -16,7 +16,7 @@ class SettingsCest {
 
     Setting::deleteMany();
     $settings = $router->get();
-    expect($settings)->isEmpty();
+    expect($settings)->equals(Setting::getDefaults());
   }
 
   function itCanSetSettings() {

@@ -15,12 +15,26 @@ class Router {
     );
     add_action(
       'wp_ajax_mailpoet',
-      array($this, 'setup')
+      array($this, 'setupAdmin')
+    );
+    add_action(
+      'wp_ajax_nopriv_mailpoet',
+      array($this, 'setupPublic')
     );
   }
 
-  function setup() {
-    $this->securityCheck();
+  function setupAdmin() {
+    $this->verifyToken();
+    $this->checkPermissions();
+    return $this->processRoute();
+  }
+
+  function setupPublic() {
+    $this->verifyToken();
+    return $this->processRoute();
+  }
+
+  function processRoute() {
     $class = ucfirst($_POST['endpoint']);
     $endpoint =  __NAMESPACE__ . "\\" . $class;
     $method = $_POST['method'];
@@ -43,8 +57,11 @@ class Router {
     echo $global;
   }
 
-  function securityCheck() {
+  function checkPermissions() {
     if(!current_user_can('manage_options')) { die(); }
+  }
+
+  function verifyToken() {
     if(!wp_verify_nonce($_POST['token'], 'mailpoet_token')) { die(); }
   }
 }

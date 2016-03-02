@@ -214,7 +214,7 @@
             <% for page in pages %>
               <option
                 value="<%= page.id %>"
-                data-preview-url="<%= page.preview_url|raw %>"
+                data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=unsubscribe"
                 data-edit-url="<%= page.edit_url|raw %>"
                 <% if(page.id == settings.subscription.page) %>
                   selected="selected"

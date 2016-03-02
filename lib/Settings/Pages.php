@@ -13,13 +13,13 @@ class Pages {
       ),
       'public' => true,
       'has_archive' => false,
-      'show_ui' => true,
-      'show_in_menu' => false,
+      'show_ui' => WP_DEBUG,
+      'show_in_menu' => WP_DEBUG,
       'rewrite' => false,
-      'show_in_nav_menus'=>false,
-      'can_export'=>false,
-      'publicly_queryable'=>true,
-      'exclude_from_search'=>true
+      'show_in_nav_menus' => false,
+      'can_export' => false,
+      'publicly_queryable' => true,
+      'exclude_from_search' => true
     ));
   }
 
@@ -65,7 +65,9 @@ class Pages {
     return array(
       'id' => $page->ID,
       'title' => $page->post_title,
-      'preview_url' => get_permalink($page->ID),
+      'preview_url' => add_query_arg(array(
+        'preview' => 1
+      ), get_permalink($page->ID)),
       'edit_url' => get_edit_post_link($page->ID)
     );
   }

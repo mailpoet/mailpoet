@@ -110,7 +110,7 @@ class Model extends \Sudzy\ValidModel {
     $total = $orm->count();
 
     if($total > 0) {
-      $models = $orm->select('id')
+      $models = $orm->select(static::$_table.'.id')
         ->offset(null)
         ->limit(null)
         ->findArray();

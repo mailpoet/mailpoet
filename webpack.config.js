@@ -91,10 +91,14 @@ baseConfig = {
 config.push(_.extend({}, baseConfig, {
   name: 'admin',
   entry: {
-    vendor: ['handlebars', 'handlebars_helpers'],
+    vendor: [
+      'handlebars',
+      'handlebars_helpers'
+    ],
     mailpoet: [
       'mailpoet',
       'ajax',
+      'date',
       'modal',
       'notice',
       'jquery.serialize_object',
@@ -129,7 +133,6 @@ config.push(_.extend({}, baseConfig, {
       'blob',
       'filesaver',
       'velocity-animate',
-
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
       'newsletter_editor/components/config.js',
@@ -156,11 +159,11 @@ config.push(_.extend({}, baseConfig, {
       'newsletter_editor/blocks/header.js',
       'newsletter_editor/blocks/automatedLatestContent.js',
       'newsletter_editor/blocks/posts.js',
-      'newsletter_editor/blocks/social.js',
-    ],
+      'newsletter_editor/blocks/social.js'
+    ]
   },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js'),
+    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js')
   ],
   externals: {
     'jquery': 'jQuery',
