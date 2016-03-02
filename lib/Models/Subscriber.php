@@ -85,7 +85,6 @@ class Subscriber extends Model {
     return $this->getSubscriptionUrl($post, 'unsubscribe');
   }
 
-
   private function getSubscriptionUrl($post = null, $action = null) {
     if($post === null || $action === null) return;
 
@@ -93,7 +92,7 @@ class Subscriber extends Model {
 
     $params = array(
       'mailpoet_action='.$action,
-      'mailpoet_token='.md5(AUTH_KEY.$this->email),
+      'mailpoet_token='.self::generateToken($this->email),
       'mailpoet_email='.$this->email
     );
     // add parameters
@@ -172,6 +171,13 @@ class Subscriber extends Model {
         $this->setError($e->getMessage());
         return false;
       }
+    }
+    return false;
+  }
+
+  static function generateToken($email = null) {
+    if($email !== null) {
+      return md5(AUTH_KEY.$email);
     }
     return false;
   }

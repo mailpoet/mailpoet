@@ -239,7 +239,7 @@ class Pages {
         )
       );
 
-      $content = \MailPoet\Form\Renderer::renderBlocks($form);
+      return \MailPoet\Form\Renderer::renderBlocks($form);
     }
   }
 
@@ -268,7 +268,7 @@ class Pages {
       ? $_GET['mailpoet_email']
       : null;
 
-    if(md5(AUTH_KEY.$email) === $token) {
+    if(Subscriber::generateToken($email) === $token) {
       $subscriber = Subscriber::findOne($email);
       if($subscriber !== false) {
         return $subscriber;
