@@ -34,27 +34,6 @@ class SubscriberSegment extends Model {
     return $subscriber;
   }
 
-  static function filterWithCustomFields($orm) {
-    $orm = $orm->select(MP_SUBSCRIBERS_TABLE.'.*');
-    $customFields = CustomField::findArray();
-    foreach ($customFields as $customField) {
-      $orm = $orm->select_expr(
-        'CASE WHEN ' .
-        MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
-        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END as "' . $customField['name'].'"');
-    }
-    $orm = $orm
-      ->left_outer_join(
-        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
-        array(MP_SUBSCRIBERS_TABLE.'.id', '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'))
-      ->left_outer_join(
-        MP_CUSTOM_FIELDS_TABLE,
-        array(MP_CUSTOM_FIELDS_TABLE.'.id','=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'));
-    return $orm;
-  }
-
   static function subscribed($orm) {
     return $orm->where('status', 'subscribed');
   }

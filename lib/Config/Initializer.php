@@ -4,8 +4,6 @@ namespace MailPoet\Config;
 use MailPoet\Models;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Router;
-use MailPoet\Models\Setting;
-use MailPoet\Settings\Pages;
 
 if(!defined('ABSPATH')) exit;
 
@@ -26,6 +24,7 @@ class Initializer {
     register_activation_hook(Env::$file, array($this, 'runPopulator'));
 
     add_action('plugins_loaded', array($this, 'setup'));
+    add_action('init', array($this, 'onInit'));
     add_action('widgets_init', array($this, 'setupWidget'));
   }
 
@@ -34,15 +33,12 @@ class Initializer {
       $this->setupRenderer();
       $this->setupLocalizer();
       $this->setupMenu();
-      $this->setupRouter();
       $this->setupPermissions();
       $this->setupPublicAPI();
       $this->setupAnalytics();
       $this->setupChangelog();
-      $this->runQueueSupervisor();
       $this->setupShortcodes();
       $this->setupHooks();
-      $this->setupPages();
       $this->setupImages();
     } catch(\Exception $e) {
       // if anything goes wrong during init
@@ -51,11 +47,20 @@ class Initializer {
     }
   }
 
+  function onInit() {
+    $this->setupRouter();
+    $this->setupPages();
+    $this->runQueueSupervisor();
+  }
+
   function setupDB() {
     \ORM::configure(Env::$db_source_name);
     \ORM::configure('username', Env::$db_username);
     \ORM::configure('password', Env::$db_password);
     \ORM::configure('logging', WP_DEBUG);
+    \ORM::configure('logger', function($query, $time) {
+      // error_log("\n".$query."\n");
+    });
 
     \ORM::configure('driver_options', array(
       \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
@@ -144,8 +149,11 @@ class Initializer {
   }
 
   function setupPages() {
-    $pages = new Pages();
+    $pages = new \MailPoet\Settings\Pages();
     $pages->init();
+
+    $subscription_pages = new \MailPoet\Subscription\Pages();
+    $subscription_pages->init();
   }
 
   function setupShortcodes() {

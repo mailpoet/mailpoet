@@ -190,7 +190,7 @@ const SegmentList = React.createClass({
           <abbr>{ segment.subscribers_count.unsubscribed || 0 }</abbr>
         </td>
         <td className="column-date" data-colname="Created on">
-          <abbr>{ segment.created_at }</abbr>
+          <abbr>{ MailPoet.Date.full(segment.created_at) }</abbr>
         </td>
       </div>
     );

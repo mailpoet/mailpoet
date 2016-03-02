@@ -19,7 +19,13 @@ class SettingCest {
     expect($errors[0])->equals('You need to specify a name.');
   }
 
-  function itCanGetAllSettings() {
+  function itHasDefaultSettings() {
+    $default_settings = Setting::getDefaults();
+    expect($default_settings)->notEmpty();
+    expect($default_settings['signup_confirmation']['enabled'])->true();
+  }
+
+  function itCanGetAllSettingsIncludingDefaults() {
     Setting::setValue('key_1', 'value_1');
     Setting::setValue('key_2', 'value_2');
     Setting::setValue('key_3', array(
@@ -28,13 +34,17 @@ class SettingCest {
     ));
 
     $settings = Setting::getAll();
-    expect(array_keys($settings))->count(3);
     expect($settings['key_1'])->equals('value_1');
     expect($settings['key_2'])->equals('value_2');
     expect($settings['key_3'])->equals(array(
       'subkey_1' => 'subvalue_1',
       'subkey_2' => 'subvalue_2'
     ));
+
+    // default settings
+    $default_settings = Setting::getDefaults();
+    expect($settings['signup_confirmation'])
+      ->equals($default_settings['signup_confirmation']);
   }
 
   function itReturnsDefaultValueIfNotSet() {

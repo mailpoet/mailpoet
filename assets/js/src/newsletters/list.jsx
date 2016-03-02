@@ -135,7 +135,7 @@ define(
         });
       },
       renderStatus: function(item) {
-        if(item.queue === null) {
+        if(!item.queue) {
           return (
             <span>Not sent yet.</span>
           );
@@ -208,10 +208,8 @@ define(
           'has-row-actions'
         );
 
-        var segments = mailpoet_segments.filter(function(segment) {
-          return (jQuery.inArray(segment.id, newsletter.segments) !== -1);
-        }).map(function(segment) {
-          return segment.name;
+        var segments = newsletter.segments.map(function(segment) {
+          return segment.name
         }).join(', ');
 
         return (
@@ -229,10 +227,10 @@ define(
               { segments }
             </td>
             <td className="column-date" data-colname="Subscribed on">
-              <abbr>{ newsletter.created_at }</abbr>
+              <abbr>{ MailPoet.Date.full(newsletter.created_at) }</abbr>
             </td>
             <td className="column-date" data-colname="Last modified on">
-              <abbr>{ newsletter.updated_at }</abbr>
+              <abbr>{ MailPoet.Date.full(newsletter.updated_at) }</abbr>
             </td>
           </div>
         );

@@ -23,8 +23,17 @@ class Select extends Base {
     foreach($block['params']['values'] as $option) {
       $is_selected = (isset($option['is_checked']) && $option['is_checked'])
                       ? 'selected="selected"' : '';
-      $html .= '<option value="'.$option['value'].'" '.$is_selected.'>';
-      $html .= $option['value'];
+
+      if(is_array($option['value'])) {
+        $value = key($option['value']);
+        $label = reset($option['value']);
+      } else {
+        $value = $option['value'];
+        $label = $option['value'];
+      }
+
+      $html .= '<option value="'.$value.'" '.$is_selected.'>';
+      $html .= $label;
       $html .= '</option>';
     }
     $html .= '</select>';
