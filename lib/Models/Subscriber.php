@@ -182,8 +182,11 @@ class Subscriber extends Model {
     }
 
     $subscriber = self::createOrUpdate($subscriber_data);
+    $errors = $subscriber->getErrors();
 
-    if($subscriber !== false && $subscriber->id() > 0) {
+    if($errors === false && $subscriber->id > 0) {
+      $subscriber = self::findOne($subscriber->id);
+
       // restore deleted subscriber
       if($subscriber->deleted_at !== NULL) {
         $subscriber->setExpr('deleted_at', 'NULL');

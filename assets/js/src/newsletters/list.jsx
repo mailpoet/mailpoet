@@ -135,7 +135,7 @@ define(
         });
       },
       renderStatus: function(item) {
-        if(item.queue === false) {
+        if(!item.queue) {
           return (
             <span>Not sent yet.</span>
           );

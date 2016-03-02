@@ -74,12 +74,13 @@ class Newsletter extends Model {
 
   function withSendingQueue() {
     $queue = $this->getQueue();
-    if($queue !== false) {
+    if($queue === false) {
+      $this->queue = false;
+    } else {
       $this->queue = $queue->asArray();
     }
     return $this;
   }
-
 
   static function search($orm, $search = '') {
     return $orm->where_like('subject', '%' . $search . '%');

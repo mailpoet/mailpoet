@@ -59,7 +59,7 @@ class Initializer {
     \ORM::configure('password', Env::$db_password);
     \ORM::configure('logging', WP_DEBUG);
     \ORM::configure('logger', function($query, $time) {
-    //  error_log("\n".$query."\n");
+      // error_log("\n".$query."\n");
     });
 
     \ORM::configure('driver_options', array(
