@@ -18,7 +18,7 @@ class SubscriberSegment extends Model {
       SubscriberSegment::where('subscriber_id', $subscriber->id)
         ->whereNotIn('segment_id', $segment_ids)
         ->findResultSet()
-        ->set('status', 'unsubscribed')
+        ->set('status', Subscriber::STATUS_UNSUBSCRIBED)
         ->save();
 
       // subscribe to segments
@@ -26,7 +26,7 @@ class SubscriberSegment extends Model {
         self::createOrUpdate(array(
           'subscriber_id' => $subscriber->id,
           'segment_id' => $segment_id,
-          'status' => 'subscribed'
+          'status' => Subscriber::STATUS_SUBSCRIBED
         ));
       }
     }
@@ -35,7 +35,7 @@ class SubscriberSegment extends Model {
   }
 
   static function subscribed($orm) {
-    return $orm->where('status', 'subscribed');
+    return $orm->where('status', Subscriber::STATUS_SUBSCRIBED);
   }
 
   static function createOrUpdate($data = array()) {

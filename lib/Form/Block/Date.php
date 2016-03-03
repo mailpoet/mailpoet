@@ -33,18 +33,37 @@ class Date extends Base {
     // generate an array of selectors based on date format
     $date_selectors = explode('/', $date_format);
 
+    // format value if present
+    $value = self::getFieldValue($block);
+    $day = null;
+    $month = null;
+    $year = null;
+
+    if($value) {
+      $day = (int)strftime('%d', $value);
+      $month = (int)strftime('%m', $value);
+      $year = (int)strftime('%Y', $value);
+    } else if(!empty($block['params']['is_default_today'])) {
+      $day = (int)strftime('%d');
+      $month = (int)strftime('%m');
+      $year = (int)strftime('%Y');
+    }
+
     foreach($date_selectors as $date_selector) {
       if($date_selector === 'dd') {
+        $block['selected'] = $day;
         $html .= '<select class="mailpoet_date_day" ';
         $html .= 'name="'.$field_name.'[day]" placeholder="'.__('Day').'">';
         $html .= static::getDays($block);
         $html .= '</select>';
       } else if($date_selector === 'mm') {
+        $block['selected'] = $month;
         $html .= '<select class="mailpoet_date_month" ';
         $html .= 'name="'.$field_name.'[month]" placeholder="'.__('Month').'">';
         $html .= static::getMonths($block);
         $html .= '</select>';
       } else if($date_selector === 'yyyy') {
+        $block['selected'] = $year;
         $html .= '<select class="mailpoet_date_year" ';
         $html .= 'name="'.$field_name.'[year]" placeholder="'.__('Year').'">';
         $html .= static::getYears($block);
@@ -83,11 +102,6 @@ class Date extends Base {
     $defaults = array(
       'selected' => null
     );
-
-    // is default today
-    if(!empty($block['params']['is_default_today'])) {
-      $defaults['selected'] = (int)strftime('%m');
-    }
 
     // merge block with defaults
     $block = array_merge($defaults, $block);

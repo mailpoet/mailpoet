@@ -186,6 +186,6 @@ class Segment extends Model {
   }
 
   static function getPublic() {
-    return self::getPublished()->where('type', 'default');
+    return self::getPublished()->where('type', 'default')->orderByAsc('name');
   }
 }

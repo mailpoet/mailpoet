@@ -10,9 +10,7 @@ class Select extends Base {
     $field_validation = static::getInputValidation($block);
 
     $html .= '<p class="mailpoet_paragraph">';
-
     $html .= static::renderLabel($block);
-
     $html .= '<select class="mailpoet_select" name="'.$field_name.'">';
 
     if(isset($block['params']['label_within'])
@@ -21,8 +19,11 @@ class Select extends Base {
     }
 
     foreach($block['params']['values'] as $option) {
-      $is_selected = (isset($option['is_checked']) && $option['is_checked'])
-                      ? 'selected="selected"' : '';
+      $is_selected = (
+        (isset($option['is_checked']) && $option['is_checked'])
+        ||
+        (self::getFieldValue($block) === $option['value'])
+      ) ? 'selected="selected"' : '';
 
       if(is_array($option['value'])) {
         $value = key($option['value']);

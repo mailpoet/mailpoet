@@ -1,11 +1,13 @@
 <?php
 namespace MailPoet\Subscription;
 
+use \MailPoet\Router\Subscribers;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\CustomField;
 use \MailPoet\Models\Setting;
 use \MailPoet\Models\Segment;
 use \MailPoet\Util\Helpers;
+use \MailPoet\Util\Url;
 
 class Pages {
   function __construct() {
@@ -17,6 +19,27 @@ class Pages {
       add_filter('the_title', array($this,'setPageTitle'));
       add_filter('the_content', array($this,'setPageContent'));
     }
+    add_action('admin_post_update', array($this, 'updateSubscriber'));
+  }
+
+  function updateSubscriber() {
+    $action = (isset($_POST['action']) ? $_POST['action'] : null);
+    if($action !== 'update') {
+      Url::redirectBack();
+    }
+
+    $reserved_keywords = array('action', 'mailpoet_redirect');
+    $subscriber_data = array_diff_key(
+      $_POST,
+      array_flip($reserved_keywords)
+    );
+
+    $subscriber = Subscriber::createOrUpdate($subscriber_data);
+    $errors = $subscriber->getErrors();
+
+    // TODO: success/error messages
+
+    Url::redirectBack();
   }
 
   function isPreview() {
@@ -101,7 +124,12 @@ class Pages {
   }
 
   private function getEditTitle($subscriber) {
-    if($subscriber !== false) {
+    if($this->isPreview()) {
+      return sprintf(
+        __('Edit your subscriber profile: %s'),
+        'demo@mailpoet.com'
+      );
+    } else if($subscriber !== false) {
       return sprintf(
         __('Edit your subscriber profile: %s'),
         $subscriber->email
@@ -123,124 +151,135 @@ class Pages {
   }
 
   private function getEditContent($subscriber) {
-    if($subscriber !== false) {
+    if($this->isPreview()) {
+      $subscriber = Subscriber::create();
+      $subscriber->hydrate(array(
+        'email' => 'demo@mailpoet.com'
+      ));
+    } else if($subscriber !== false) {
       $subscriber = $subscriber
       ->withCustomFields()
       ->withSubscriptions();
+    } else {
+      return;
+    }
 
-      $custom_fields = array_map(function($custom_field) use($subscriber) {
-        $custom_field->id = 'cf_'.$custom_field->id;
-        $custom_field = $custom_field->asArray();
-        $custom_field['params']['value'] = $subscriber->{$custom_field['id']};
-        return $custom_field;
-      }, CustomField::findMany());
+    $custom_fields = array_map(function($custom_field) use($subscriber) {
+      $custom_field->id = 'cf_'.$custom_field->id;
+      $custom_field = $custom_field->asArray();
+      $custom_field['params']['value'] = $subscriber->{$custom_field['id']};
+      return $custom_field;
+    }, CustomField::findMany());
 
-      $segment_ids = Setting::getValue('subscription.segments', array());
-      if(!empty($segment_ids)) {
-        $segments = Segment::getPublic()
-          ->whereIn('id', $segment_ids)
-          ->findMany();
-      } else {
-        $segments = Segment::getPublic()->findMany();
+    $segment_ids = Setting::getValue('subscription.segments', array());
+    if(!empty($segment_ids)) {
+      $segments = Segment::getPublic()
+        ->whereIn('id', $segment_ids)
+        ->findMany();
+    } else {
+      $segments = Segment::getPublic()
+        ->findMany();
+    }
+
+    $subscribed_segment_ids = array();
+    if(!empty($subscriber->subscriptions)) {
+      foreach ($subscriber->subscriptions as $subscription) {
+        if($subscription['status'] === Subscriber::STATUS_SUBSCRIBED) {
+          $subscribed_segment_ids[] = $subscription['segment_id'];
+        }
       }
+    }
 
-      $subscribed_segment_ids = Helpers::arrayColumn(
-        $subscriber->subscriptions, 'id'
+    $segments = array_map(function($segment) use($subscribed_segment_ids) {
+      return array(
+        'id' => $segment->id,
+        'name' => $segment->name,
+        'is_checked' => in_array($segment->id, $subscribed_segment_ids)
       );
+    }, $segments);
 
-      $segments = array_map(function($segment) use($subscribed_segment_ids) {
-        return array(
-          'id' => $segment->id,
-          'name' => $segment->name,
-          'is_checked' => in_array($segment->id, $subscribed_segment_ids)
-        );
-      }, $segments);
-
-      $fields = array(
-        array(
-          'id' => 'email',
-          'type' => 'text',
-          'params' => array(
-            'label' => __('Email'),
-            'required' => true,
-            'value' => $subscriber->email
-          )
-        ),
-        array(
-          'id' => 'first_name',
-          'type' => 'text',
-          'params' => array(
-            'label' => __('First name'),
-            'value' => $subscriber->first_name
-          )
-        ),
-        array(
-          'id' => 'last_name',
-          'type' => 'text',
-          'params' => array(
-            'label' => __('Last name'),
-            'value' => $subscriber->last_name
-          )
-        ),
-        array(
-          'id' => 'status',
-          'type' => 'select',
-          'params' => array(
-            'label' => __('Status'),
-            'values' => array(
-              array(
-                'value' => array(
-                  Subscriber::STATUS_SUBSCRIBED => __('Subscribed')
-                ),
-                'is_checked' => (
-                  $subscriber->status === Subscriber::STATUS_SUBSCRIBED
-                )
+    $fields = array(
+      array(
+        'id' => 'email',
+        'type' => 'text',
+        'params' => array(
+          'label' => __('Email'),
+          'required' => true,
+          'value' => $subscriber->email
+        )
+      ),
+      array(
+        'id' => 'first_name',
+        'type' => 'text',
+        'params' => array(
+          'label' => __('First name'),
+          'value' => $subscriber->first_name
+        )
+      ),
+      array(
+        'id' => 'last_name',
+        'type' => 'text',
+        'params' => array(
+          'label' => __('Last name'),
+          'value' => $subscriber->last_name
+        )
+      ),
+      array(
+        'id' => 'status',
+        'type' => 'select',
+        'params' => array(
+          'label' => __('Status'),
+          'values' => array(
+            array(
+              'value' => array(
+                Subscriber::STATUS_SUBSCRIBED => __('Subscribed')
               ),
-              array(
-                'value' => array(
-                  Subscriber::STATUS_UNSUBSCRIBED => __('Unsubscribed')
-                ),
-                'is_checked' => (
-                  $subscriber->status === Subscriber::STATUS_UNSUBSCRIBED
-                )
+              'is_checked' => (
+                $subscriber->status === Subscriber::STATUS_SUBSCRIBED
+              )
+            ),
+            array(
+              'value' => array(
+                Subscriber::STATUS_UNSUBSCRIBED => __('Unsubscribed')
               ),
-              array(
-                'value' => array(
-                  Subscriber::STATUS_UNCONFIRMED => __('Unconfirmed')
-                ),
-                'is_checked' => (
-                  $subscriber->status === Subscriber::STATUS_UNCONFIRMED
-                )
+              'is_checked' => (
+                $subscriber->status === Subscriber::STATUS_UNSUBSCRIBED
+              )
+            ),
+            array(
+              'value' => array(
+                Subscriber::STATUS_UNCONFIRMED => __('Unconfirmed')
+              ),
+              'is_checked' => (
+                $subscriber->status === Subscriber::STATUS_UNCONFIRMED
               )
             )
           )
         )
-      );
+      )
+    );
 
-      $form = array_merge(
-        $fields,
-        $custom_fields,
+    $form = array_merge(
+      $fields,
+      $custom_fields,
+      array(
         array(
-          array(
-            'id' => 'segment',
-            'type' => 'segment',
-            'params' => array(
-              'label' => __('Your lists'),
-              'values' => $segments
-            )
-          ),
-          array(
-            'id' => 'submit',
-            'type' => 'submit',
-            'params' => array(
-              'label' => __('Subscribe!')
-            )
+          'id' => 'submit',
+          'type' => 'submit',
+          'params' => array(
+            'label' => __('Subscribe!')
           )
         )
-      );
+      )
+    );
 
-      return \MailPoet\Form\Renderer::renderBlocks($form);
-    }
+    $form_html = '<form method="POST" action="'.admin_url('admin-post.php').'" novalidate>';
+    $form_html .= '<input type="hidden" name="action" value="update" />';
+    $form_html .= '<input type="hidden" name="mailpoet_redirect" value="'.Url::getCurrentUrl().'" />';
+
+    $form_html .= \MailPoet\Form\Renderer::renderBlocks($form);
+    $form_html .= '</form>';
+    return $form_html;
   }
 
   private function getUnsubscribeContent($subscriber) {

@@ -28,7 +28,7 @@ class Segment extends Base {
       $html .= 'name="'.$field_name.'[]" ';
       $html .= 'value="'.$option['id'].'" '.$is_checked.' ';
       $html .= $field_validation;
-      $html .= ' />'.$option['name'];
+      $html .= ' /> '.$option['name'];
       $html .= '</label>';
     }
 

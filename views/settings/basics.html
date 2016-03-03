@@ -194,14 +194,13 @@
         <% endif %>
       </td>
     </tr>
-    <!-- manage subscriptions-->
+    <!-- edit subscription-->
     <tr>
       <th scope="row">
-        <label for="settings[subscription_edit]">
-          <%= __('Unsubscribe & Manage Subscription page') %>
+        <label for="subscription_edit_page">
+          <%= __('Manage Subscription page') %>
           <p class="description">
-            <%= __('The page your subscribers see when they click to
-            "Unsubscribe" or "Manage your subscription" in your emails.') %>
+            <%= __('The page your subscribers see when they click on "Manage your subscription" in your emails.') %>
           </p>
         </label>
       </th>
@@ -209,14 +208,15 @@
         <p>
           <select
             class="mailpoet_page_selection"
-            name="subscription[page]"
+            id="subscription_edit_page"
+            name="subscription[edit_page]"
           >
             <% for page in pages %>
               <option
                 value="<%= page.id %>"
-                data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=unsubscribe"
+                data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=edit"
                 data-edit-url="<%= page.edit_url|raw %>"
-                <% if(page.id == settings.subscription.page) %>
+                <% if(page.id == settings.subscription.edit_page) %>
                   selected="selected"
                 <% endif %>
               ><%= page.title %></option>
@@ -251,6 +251,46 @@
               ><%= segment.name %></option>
             <% endfor %>
           </select>
+        </p>
+      </td>
+    </tr>
+    <!-- unsubscribe-->
+    <tr>
+      <th scope="row">
+        <label for="subscription_unsubscribe_page">
+          <%= __('Unsubscribe page') %>
+          <p class="description">
+            <%= __('The page your subscribers see when they click on "Unsubscribe" in your emails.') %>
+          </p>
+        </label>
+      </th>
+      <td>
+        <p>
+          <select
+            class="mailpoet_page_selection"
+            id="subscription_unsubscribe_page"
+            name="subscription[unsubscribe_page]"
+          >
+            <% for page in pages %>
+              <option
+                value="<%= page.id %>"
+                data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=unsubscribe"
+                data-edit-url="<%= page.edit_url|raw %>"
+                <% if(page.id == settings.subscription.unsubscribe_page) %>
+                  selected="selected"
+                <% endif %>
+              ><%= page.title %></option>
+            <% endfor %>
+          </select>
+          <a
+            class="mailpoet_page_preview"
+            href="javascript:;"
+            title="<%= __('Preview page') %>"
+          ><%= __('Preview') %></a>&nbsp;|&nbsp;<a
+            class="mailpoet_page_edit"
+            href="javascript:;"
+            title="<%= __('Edit page') %>"
+          ><%= __('Edit') %></a>
         </p>
       </td>
     </tr>
