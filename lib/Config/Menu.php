@@ -380,6 +380,7 @@ class Menu {
 
     $data = array(
       'customFields' => $custom_fields,
+      'settings' => Setting::getAll(),
     );
     wp_enqueue_media();
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));

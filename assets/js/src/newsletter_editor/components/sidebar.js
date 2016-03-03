@@ -248,10 +248,22 @@ define([
       // testing sending method
       console.log('trying to send a preview');
       // get form data
+      var $emailField = this.$('#mailpoet_preview_to_email');
       var data = {
-        subscriber: this.$('#mailpoet_preview_to_email').val(),
+        subscriber: $emailField.val(),
         id: App.getNewsletter().get('id'),
       };
+
+      if (data.subscriber.length <= 0) {
+        MailPoet.Notice.error(
+          App.getConfig().get('translations.newsletterPreviewEmailMissing'),
+          {
+            positionAfter: $emailField,
+            scroll: true,
+          }
+        );
+        return false;
+      }
 
       // send test email
       MailPoet.Modal.loading(true);
