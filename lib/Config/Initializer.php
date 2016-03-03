@@ -34,12 +34,13 @@ class Initializer {
       $this->setupLocalizer();
       $this->setupMenu();
       $this->setupPermissions();
-      $this->setupPublicAPI();
       $this->setupAnalytics();
       $this->setupChangelog();
       $this->setupShortcodes();
       $this->setupHooks();
       $this->setupImages();
+      $this->setupPublicAPI();
+      $this->runQueueSupervisor();
     } catch(\Exception $e) {
       // if anything goes wrong during init
       // automatically deactivate the plugin

@@ -1,5 +1,7 @@
 <?php
 namespace MailPoet\Config;
+use MailPoet\Cron\Workers\Scheduler;
+use MailPoet\Cron\Workers\SendingQueue;
 use \MailPoet\Models\Setting;
 
 class Hooks {
@@ -11,6 +13,7 @@ class Hooks {
     $this->setupWPUsers();
     $this->setupImageSize();
     $this->setupListing();
+    $this->setupCronWorkers();
   }
 
   function setupSubscribe() {
@@ -143,5 +146,16 @@ class Hooks {
     } else {
       return $status;
     }
+  }
+
+  function setupCronWorkers() {
+    add_action('mailpoet_cron_worker', function($timer) {
+      $scheduler = new Scheduler($timer);
+      $scheduler->process();
+    }, 10, 1);
+    add_action('mailpoet_cron_worker', function($timer) {
+      $sending_queue = new SendingQueue($timer);
+      $sending_queue->process();
+    }, 10, 1);
   }
 }

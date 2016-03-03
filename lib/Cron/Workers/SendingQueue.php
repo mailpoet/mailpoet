@@ -10,6 +10,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -27,6 +28,7 @@ class SendingQueue {
       'processBulkSubscribers' :
       'processIndividualSubscriber';
     $this->timer = ($timer) ? $timer : microtime(true);
+    CronHelper::checkExecutionTimer($this->timer);
   }
 
   function process() {
@@ -102,7 +104,7 @@ class SendingQueue {
     }
     $this->updateQueue($queue);
     $this->checkSendingLimit();
-    $this->checkExecutionTimer();
+    CronHelper::checkExecutionTimer($this->timer);
     return $queue->subscribers;
   }
 
@@ -129,7 +131,7 @@ class SendingQueue {
         $this->updateNewsletterStatistics($newsletter_statistics);
       }
       $this->updateQueue($queue);
-      $this->checkExecutionTimer();
+      CronHelper::checkExecutionTimer($this->timer);
     }
     return $queue->subscribers;
   }
@@ -258,12 +260,5 @@ class SendingQueue {
       Setting::setValue('mta_log', $this->mta_log);
     }
     return;
-  }
-
-  function checkExecutionTimer() {
-    $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time >= CronHelper::daemon_execution_limit) {
-      throw new \Exception(__('Maximum execution time reached.'));
-    }
   }
 }
