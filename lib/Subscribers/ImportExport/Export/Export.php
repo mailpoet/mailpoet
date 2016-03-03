@@ -17,22 +17,30 @@ class Export {
   public $segments;
   public $subscribers_without_segment;
   public $subscriber_fields;
+  public $subscriber_custom_fields;
+  public $formatted_subscriber_fields;
   public $export_path;
   public $export_file;
   public $export_file_URL;
-  public $profiler_start;
+  public $subscriber_batch_size;
 
   public function __construct($data) {
+    set_time_limit(0);
     $this->export_confirmed_option = $data['export_confirmed_option'];
     $this->export_format_option = $data['export_format_option'];
     $this->group_by_segment_option = $data['group_by_segment_option'];
     $this->segments = $data['segments'];
     $this->subscribers_without_segment = array_search(0, $this->segments);
     $this->subscriber_fields = $data['subscriber_fields'];
+    $this->subscriber_custom_fields = $this->getSubscriberCustomFields();
+    $this->formatted_subscriber_fields = $this->formatSubscriberFields(
+      $this->subscriber_fields,
+      $this->subscriber_custom_fields
+    );
     $this->export_path = Env::$temp_path;
     $this->export_file = $this->getExportFile($this->export_format_option);
     $this->export_file_URL = $this->getExportFileURL($this->export_file);
-    $this->profiler_start = microtime(true);
+    $this->subscriber_batch_size = 15000;
   }
 
   function process() {
@@ -40,75 +48,12 @@ class Export {
       if(is_writable($this->export_path) === false) {
         throw new \Exception(__("Couldn't save export file on the server."));
       }
-      $subscribers = $this->getSubscribers();
-      $subscriber_custom_fields = $this->getSubscriberCustomFields();
-      $formatted_subscriber_fields = $this->formatSubscriberFields(
-        $this->subscriber_fields,
-        $subscriber_custom_fields
+      $processed_subscribers = call_user_func(
+        array(
+          $this,
+          'generate' . strtoupper($this->export_format_option)
+        )
       );
-      if($this->export_format_option === 'csv') {
-        $CSV_file = fopen($this->export_file, 'w');
-        $format_CSV = function($row) {
-          return '"' . str_replace('"', '\"', $row) . '"';
-        };
-        // add UTF-8 BOM (3 bytes, hex EF BB BF) at the start of the file for
-        // Excel to automatically recognize the encoding
-        fwrite($CSV_file, chr(0xEF) . chr(0xBB) . chr(0xBF));
-        if($this->group_by_segment_option) {
-          $formatted_subscriber_fields[] = __('Segment');
-        }
-        fwrite(
-          $CSV_file,
-          implode(
-            ',',
-            array_map(
-              $format_CSV,
-              $formatted_subscriber_fields
-            )
-          ) . "\n"
-        );
-        foreach($subscribers as $subscriber) {
-          $row = $this->formatSubscriberData($subscriber);
-          if($this->group_by_segment_option) {
-            $row[] = ucwords($subscriber['segment_name']);
-          }
-          fwrite($CSV_file, implode(',', array_map($format_CSV, $row)) . "\n");
-        }
-        fclose($CSV_file);
-      } else {
-        $writer = new XLSXWriter();
-        $writer->setAuthor('MailPoet (www.mailpoet.com)');
-        $header_row = array($formatted_subscriber_fields);
-        $last_segment = false;
-        $rows = array();
-        foreach($subscribers as $subscriber) {
-          if($last_segment && $last_segment !== $subscriber['segment_name'] &&
-            $this->group_by_segment_option
-          ) {
-            $writer->writeSheet(
-              array_merge($header_row, $rows), ucwords($last_segment)
-            );
-            $rows = array();
-          }
-          // detect RTL language and set Excel to properly display the sheet
-          $RTL_regex = '/\p{Arabic}|\p{Hebrew}/u';
-          if(!$writer->rtl && (
-              preg_grep($RTL_regex, $subscriber) ||
-              preg_grep($RTL_regex, $formatted_subscriber_fields))
-          ) {
-            $writer->rtl = true;
-          }
-          $rows[] = $this->formatSubscriberData($subscriber);
-          $last_segment = $subscriber['segment_name'];
-        }
-        $writer->writeSheet(
-          array_merge($header_row, $rows),
-          ($this->group_by_segment_option) ?
-            ucwords($subscriber['segment_name']) :
-            __('All Segments')
-        );
-        $writer->writeToFile($this->export_file);
-      }
     } catch(\Exception $e) {
       return array(
         'result' => false,
@@ -118,14 +63,118 @@ class Export {
     return array(
       'result' => true,
       'data' => array(
-        'totalExported' => count($subscribers),
+        'totalExported' => $processed_subscribers,
         'exportFileURL' => $this->export_file_URL
-      ),
-      'profiler' => $this->timeExecution()
+      )
     );
   }
 
-  function getSubscribers() {
+  function generateCSV() {
+    $processed_subscribers = 0;
+    $offset = 0;
+    $formatted_subscriber_fields = $this->formatted_subscriber_fields;
+    $CSV_file = fopen($this->export_file, 'w');
+    $format_CSV = function($row) {
+      return '"' . str_replace('"', '\"', $row) . '"';
+    };
+    // add UTF-8 BOM (3 bytes, hex EF BB BF) at the start of the file for
+    // Excel to automatically recognize the encoding
+    fwrite($CSV_file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+    if($this->group_by_segment_option) {
+      $formatted_subscriber_fields[] = __('Segment');
+    }
+    fwrite(
+      $CSV_file,
+      implode(
+        ',',
+        array_map(
+          $format_CSV,
+          $formatted_subscriber_fields
+        )
+      ) . PHP_EOL
+    );
+    do {
+      $subscribers = $this->getSubscribers($offset, $this->subscriber_batch_size);
+      $processed_subscribers += count($subscribers);
+      foreach($subscribers as $subscriber) {
+        $row = $this->formatSubscriberData($subscriber);
+        if($this->group_by_segment_option) {
+          $row[] = ucwords($subscriber['segment_name']);
+        }
+        fwrite($CSV_file, implode(',', array_map($format_CSV, $row)) . "\n");
+      }
+      $offset += $this->subscriber_batch_size;
+    } while(count($subscribers) === $this->subscriber_batch_size);
+    fclose($CSV_file);
+    return $processed_subscribers;
+  }
+
+  function generateXLSX() {
+    $processed_subscribers = 0;
+    $offset = 0;
+    $XLSX_writer = new XLSXWriter();
+    $XLSX_writer->setAuthor('MailPoet (www.mailpoet.com)');
+    $last_segment = false;
+    $processed_segments = array();
+    do {
+      $subscribers = $this->getSubscribers($offset, $this->subscriber_batch_size);
+      $processed_subscribers += count($subscribers);
+      foreach($subscribers as $i => $subscriber) {
+        $current_segment = ucwords($subscriber['segment_name']);
+        // Sheet header (1st row) will be written only if:
+        // * This is the first time we're processing a segment
+        // * "Group by subscriber option" is turned AND the previous subscriber's
+        // segment is different from the current subscriber's segment
+        // Header will NOT be written if:
+        // * We have already processed the segment. Because SQL results are not
+        // sorted by segment name (due to slow queries when using ORDER BY and LIMIT),
+        // we need to keep track of processed segments so that we do not create header
+        // multiple times when switching from one segment to another and back.
+        if((!count($processed_segments) ||
+            ($last_segment !== $current_segment && $this->group_by_segment_option)
+          ) &&
+          (!in_array($last_segment, $processed_segments) ||
+            !in_array($current_segment, $processed_segments)
+          )
+        ) {
+          $this->writeXLSX(
+            $XLSX_writer,
+            $subscriber['segment_name'],
+            $this->formatted_subscriber_fields
+          );
+          $processed_segments[] = $current_segment;
+        }
+        $last_segment = ucwords($subscriber['segment_name']);
+        // detect RTL language and set Excel to properly display the sheet
+        $RTL_regex = '/\p{Arabic}|\p{Hebrew}/u';
+        if(!$XLSX_writer->rtl && (
+            preg_grep($RTL_regex, $subscriber) ||
+            preg_grep($RTL_regex, $this->formatted_subscriber_fields))
+        ) {
+          $XLSX_writer->rtl = true;
+        }
+        $this->writeXLSX(
+          $XLSX_writer,
+          $last_segment,
+          $this->formatSubscriberData($subscriber)
+        );
+      }
+      $offset += $this->subscriber_batch_size;
+    } while(count($subscribers) === $this->subscriber_batch_size);
+    $XLSX_writer->writeToFile($this->export_file);
+    return $processed_subscribers;
+  }
+
+  function writeXLSX($XLSX_writer, $segment, $data) {
+    return $XLSX_writer->writeSheetRow(
+      ($this->group_by_segment_option) ?
+        ucwords($segment) :
+        __('All Segments'),
+      $data
+    );
+  }
+
+  function getSubscribers($offset, $limit) {
     $subscribers = Subscriber::
     left_outer_join(
       SubscriberSegment::$_table,
@@ -141,7 +190,6 @@ class Export {
           '=',
           SubscriberSegment::$_table . '.segment_id'
         ))
-      ->orderByAsc('segment_name')
       ->filter('filterWithCustomFieldsForExport');
     if($this->subscribers_without_segment !== false) {
       $subscribers = $subscribers
@@ -168,9 +216,11 @@ class Export {
       $subscribers =
         $subscribers->where(Subscriber::$_table . '.status', 'subscribed');
     }
-    $subscribers = $subscribers->whereNull(Subscriber::$_table . '.deleted_at');
-
-    return $subscribers->findArray();
+    $subscribers = $subscribers
+      ->whereNull(Subscriber::$_table . '.deleted_at')
+      ->limit(sprintf('%d, %d', $offset, $limit))
+      ->findArray();
+    return $subscribers;
   }
 
   function getExportFileURL($file) {
@@ -215,10 +265,5 @@ class Export {
     return array_map(function($field) use ($subscriber) {
       return $subscriber[$field];
     }, $this->subscriber_fields);
-  }
-
-  function timeExecution() {
-    $profiler_end = microtime(true);
-    return ($profiler_end - $this->profiler_start) / 60;
   }
 }

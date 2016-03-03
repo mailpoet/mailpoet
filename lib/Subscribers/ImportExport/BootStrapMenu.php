@@ -17,6 +17,8 @@ class BootStrapMenu {
       Segment::getSegmentsWithSubscriberCount() :
       Segment::getSegmentsForExport($with_confirmed_subscribers);
     return array_map(function($segment) {
+      if (!$segment['name']) $segment['name'] = __('Not In Segment');
+      if (!$segment['id']) $segment['id'] = 0;
       return array(
         'id' => $segment['id'],
         'name' => $segment['name'],
@@ -31,7 +33,7 @@ class BootStrapMenu {
       'first_name' => __('First name'),
       'last_name' => __('Last name'),
       'status' => __('Status')
-      // TODO: add additional fiels from MP2
+      // TODO: add additional fields from MP2
       /*
             'confirmed_ip' => __('IP address')
             'confirmed_at' => __('Subscription date')
