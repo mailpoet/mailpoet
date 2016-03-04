@@ -68,4 +68,11 @@ class CronHelper {
     // throw an error if all connection attempts failed
     throw new \Exception(__('Site URL is unreachable.'));
   }
+
+  static function checkExecutionTimer($timer) {
+    $elapsed_time = microtime(true) - $timer;
+    if($elapsed_time >= self::daemon_execution_limit) {
+      throw new \Exception(__('Maximum execution time reached.'));
+    }
+  }
 }
