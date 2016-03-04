@@ -17,7 +17,7 @@ class Styles {
 }
 
 /* labels */
-.mailpoet_input_label,
+.mailpoet_text_label,
 .mailpoet_textarea_label,
 .mailpoet_select_label,
 .mailpoet_radio_label,
@@ -28,7 +28,7 @@ class Styles {
 }
 
 /* inputs */
-.mailpoet_input,
+.mailpoet_text,
 .mailpoet_textarea,
 .mailpoet_select,
 .mailpoet_date {
@@ -36,9 +36,7 @@ class Styles {
 }
 
 .mailpoet_checkbox {
-  display:inline;
-  margin-right: 5px;
-  vertical-align:middle;
+
 }
 
 .mailpoet_validate_success {

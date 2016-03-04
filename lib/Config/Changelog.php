@@ -1,8 +1,12 @@
 <?php
 namespace MailPoet\Config;
 use \MailPoet\Models\Setting;
+use \MailPoet\Util\Url;
 
 class Changelog {
+  function __construct() {
+  }
+
   function init() {
     $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
 
@@ -42,20 +46,7 @@ class Changelog {
       // save version number
       Setting::setValue('version', Env::$version);
 
-      global $wp;
-      $current_url = home_url(add_query_arg($wp->query_string, $wp->request));
-
-      if($redirect_url !== $current_url) {
-        wp_safe_redirect(
-          add_query_arg(
-            array(
-              'mailpoet_redirect' => urlencode($current_url)
-            ),
-            $redirect_url
-          )
-        );
-        exit;
-      }
+      Url::redirectWithReferer($redirect_url);
     }
   }
 }
