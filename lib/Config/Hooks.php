@@ -149,7 +149,7 @@ class Hooks {
   }
 
   function setupCronWorkers() {
-    add_action('mailpoet_cron_worker', array($this, 'runShedulerWorker'), 10, 1);
+    add_action('mailpoet_cron_worker', array($this, 'runSchedulerWorker'), 10, 1);
     add_action('mailpoet_cron_worker', array($this, 'runSendingQueueWorker'), 10, 1);
   }
 
