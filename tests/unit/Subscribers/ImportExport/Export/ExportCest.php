@@ -122,6 +122,15 @@ class ExportCest {
           '1'
         )
       );
+    expect($this->export->subscriber_custom_fields)
+      ->equals($this->export->getSubscriberCustomFields());
+    expect($this->export->formatted_subscriber_fields)
+      ->equals(
+        $this->export->formatSubscriberFields(
+          $this->export->subscriber_fields,
+          $this->export->subscriber_custom_fields
+        )
+      );
     expect(
       preg_match(
         '|' .
@@ -137,6 +146,7 @@ class ExportCest {
         '|'
         , $this->export->export_file_URL)
     )->equals(1);
+    expect($this->export->subscriber_batch_size)->notNull();
   }
 
   function itCanGetSubscriberCustomFields() {
@@ -156,7 +166,7 @@ class ExportCest {
   }
 
   function itProperlyReturnsSubscriberCustomFields() {
-    $subscribers = $this->export->getSubscribers();
+    $subscribers = $this->export->getSubscribers(0, 10);
     foreach($subscribers as $subscriber) {
       if($subscriber['email'] === $this->subscribers_data[1]) {
         expect($subscriber['Country'])
@@ -167,37 +177,37 @@ class ExportCest {
 
   function itCanGetSubscribers() {
     $this->export->segments = array(1);
-    $subscribers = $this->export->getSubscribers();
+    $subscribers = $this->export->getSubscribers(0, 10);
     expect(count($subscribers))->equals(2);
     $this->export->segments = array(2);
-    $subscribers = $this->export->getSubscribers();
+    $subscribers = $this->export->getSubscribers(0, 10);
     expect(count($subscribers))->equals(2);
     $this->export->segments = array(
       1,
       2
     );
-    $subscribers = $this->export->getSubscribers();
+    $subscribers = $this->export->getSubscribers(0, 10);
     expect(count($subscribers))->equals(3);
   }
 
   function itCanGroupSubscribersBySegments() {
     $this->export->group_by_segment_option = true;
     $this->export->subscribers_without_segment = true;
-    $subscribers = $this->export->getSubscribers();
+    $subscribers = $this->export->getSubscribers(0, 10);
     expect(count($subscribers))->equals(5);
   }
 
   function itCanGetSubscribersOnlyWithoutSegments() {
     $this->export->segments = array(0);
     $this->export->subscribers_without_segment = true;
-    $subscribers = $this->export->getSubscribers();
+    $subscribers = $this->export->getSubscribers(0, 10);
     expect(count($subscribers))->equals(1);
     expect($subscribers[0]['segment_name'])->equals('Not In Segment');
   }
 
   function itCanGetOnlyConfirmedSubscribers() {
     $this->export->export_confirmed_option = true;
-    $subscribers = $this->export->getSubscribers();
+    $subscribers = $this->export->getSubscribers(0, 10);
     expect(count($subscribers))->equals(1);
     expect($subscribers[0]['email'])
       ->equals($this->subscribers_data[1]['email']);
@@ -207,7 +217,7 @@ class ExportCest {
     SubscriberSegment::where('subscriber_id', 3)
       ->findOne()
       ->delete();
-    $subscribers = $this->export->getSubscribers();
+    $subscribers = $this->export->getSubscribers(0, 10);
     expect(count($subscribers))->equals(2);
   }
 
@@ -223,8 +233,8 @@ class ExportCest {
     $this->export->export_format_option = 'csv';
     $this->export->process();
     $CSV_file_size = filesize($this->export->export_file);
-    $this->export->export_file = $this->export->getExportFile('xls');
-    $this->export->export_format_option = 'xls';
+    $this->export->export_file = $this->export->getExportFile('xlsx');
+    $this->export->export_format_option = 'xlsx';
     $this->export->process();
     $XLS_file_size = filesize($this->export->export_file);
     expect($CSV_file_size)->greaterThan(0);
