@@ -19,7 +19,7 @@ class Header {
     }
     $template = '
       <tr>
-        <td class="mailpoet_padded_header_footer mailpoet_header" bgcolor="' . $element['styles']['block']['backgroundColor'] . '"
+        <td class="mailpoet_header_footer_padded mailpoet_header" bgcolor="' . $element['styles']['block']['backgroundColor'] . '"
         style="' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
         ' . $DOM->html() . '
         </td>

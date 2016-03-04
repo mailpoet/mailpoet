@@ -10,7 +10,8 @@ class Renderer {
     $template = ($columns_count === 1) ?
       $this->getOneColumnTemplate($styles, $class) :
       $this->getMultipleColumnsTemplate($styles, $width, $alignment, $class);
-    $result = array_map(function ($content) use ($template) {
+    $result = array_map(function($content) use ($template) {
+      $content = self::removePaddingFromLastElement($content);
       return $template['content_start'] . $content . $template['content_end'];
     }, $columns_data);
     $result = implode('', $result);
@@ -74,5 +75,9 @@ class Renderer {
       </td>
     </tr>';
     return $template;
+  }
+
+  function removePaddingFromLastElement($element) {
+    return preg_replace('/mailpoet_padded(?!.*mailpoet_padded)/ism', '', $element);
   }
 }

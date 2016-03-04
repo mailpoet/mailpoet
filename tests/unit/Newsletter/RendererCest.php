@@ -105,6 +105,26 @@ class NewsletterRendererCest {
     expect($rendered_column_content)->equals($column_content);
   }
 
+  function itRemovesPaddingFromLastColumnElement() {
+    $column_content = array('
+      <tr><td class="mailpoet_padded"></td></tr>
+      <tr><td class="mailpoet_padded"></td></tr>
+      <tr><td class="mailpoet_padded"></td></tr>
+      <tr><td class="mailpoet_padded"></td></tr>'
+    );
+    $column_styles = array(
+      'block' => array(
+        'backgroundColor' => "#999999"
+      )
+    );
+    $rendered_column_content = $this->column_renderer->render(
+      $column_styles,
+      count($column_content),
+      $column_content
+    );
+    expect(substr_count($rendered_column_content, 'mailpoet_padded'))->equals(3);
+  }
+
   function itRendersHeader() {
     $newsletter = json_decode($this->newsletter['body'], true);
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][0];
