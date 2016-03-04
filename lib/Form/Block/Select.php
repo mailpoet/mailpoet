@@ -34,7 +34,7 @@ class Select extends Base {
       }
 
       $html .= '<option value="'.$value.'" '.$is_selected.'>';
-      $html .= $label;
+      $html .= esc_attr($label);
       $html .= '</option>';
     }
     $html .= '</select>';

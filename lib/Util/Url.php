@@ -21,15 +21,22 @@ class Url {
   }
 
   static function redirectBack() {
-    $referer = (isset($_REQUEST['mailpoet_redirect'])
-      ? $_REQUEST['mailpoet_redirect']
+    // check mailpoet_redirect parameter
+    $referer = (isset($_POST['mailpoet_redirect'])
+      ? $_POST['mailpoet_redirect']
       : null
     );
+
+    // fallback: http referer
     if($referer === null) {
-      // try to get the server's referer
       if(!empty($_SERVER['HTTP_REFERER'])) {
         $referer = $_SERVER['HTTP_REFERER'];
       }
+    }
+
+    // fallback: home_url
+    if($referer === null) {
+      $referer = home_url();
     }
 
     if($referer !== null) {

@@ -10,6 +10,8 @@ use \MailPoet\Util\Helpers;
 use \MailPoet\Util\Url;
 
 class Pages {
+  const DEMO_EMAIL = 'demo@mailpoet.com';
+
   function __construct() {
   }
 
@@ -37,7 +39,7 @@ class Pages {
     $subscriber = Subscriber::createOrUpdate($subscriber_data);
     $errors = $subscriber->getErrors();
 
-    // TODO: success/error messages
+    // TBD: success/error messages (not present in MP2)
 
     Url::redirectBack();
   }
@@ -127,7 +129,7 @@ class Pages {
     if($this->isPreview()) {
       return sprintf(
         __('Edit your subscriber profile: %s'),
-        'demo@mailpoet.com'
+        self::DEMO_EMAIL
       );
     } else if($subscriber !== false) {
       return sprintf(
@@ -154,7 +156,7 @@ class Pages {
     if($this->isPreview()) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate(array(
-        'email' => 'demo@mailpoet.com'
+        'email' => self::DEMO_EMAIL
       ));
     } else if($subscriber !== false) {
       $subscriber = $subscriber
@@ -180,7 +182,6 @@ class Pages {
       $segments = Segment::getPublic()
         ->findMany();
     }
-
     $subscribed_segment_ids = array();
     if(!empty($subscriber->subscriptions)) {
       foreach ($subscriber->subscriptions as $subscription) {
@@ -264,19 +265,30 @@ class Pages {
       $custom_fields,
       array(
         array(
+          'id' => 'segments',
+          'type' => 'segment',
+          'params' => array(
+            'label' => __('Your lists'),
+            'values' => $segments
+          )
+        ),
+        array(
           'id' => 'submit',
           'type' => 'submit',
           'params' => array(
-            'label' => __('Subscribe!')
+            'label' => __('Save')
           )
         )
       )
     );
 
-    $form_html = '<form method="POST" action="'.admin_url('admin-post.php').'" novalidate>';
+    $form_html = '<form method="POST" '.
+      'action="'.admin_url('admin-post.php').'" '.
+      'novalidate>';
     $form_html .= '<input type="hidden" name="action" value="update" />';
-    $form_html .= '<input type="hidden" name="mailpoet_redirect" value="'.Url::getCurrentUrl().'" />';
-
+    $form_html .= '<input type="hidden" name="segments" value="" />';
+    $form_html .= '<input type="hidden" name="mailpoet_redirect" '.
+      'value="'.Url::getCurrentUrl().'" />';
     $form_html .= \MailPoet\Form\Renderer::renderBlocks($form);
     $form_html .= '</form>';
     return $form_html;

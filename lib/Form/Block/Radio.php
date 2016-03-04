@@ -35,7 +35,7 @@ class Radio extends Base {
 
       $html .= $field_validation;
 
-      $html .= ' />&nbsp;'.esc_attr($option['value']);
+      $html .= ' /> '.esc_attr($option['value']);
 
       $html .= '</label>';
     }

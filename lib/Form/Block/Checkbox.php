@@ -35,7 +35,7 @@ class Checkbox extends Base {
 
       $html .= $field_validation;
 
-      $html .= ' /> '.$option['value'];
+      $html .= ' /> '.esc_attr($option['value']);
 
       $html .= '</label>';
     }
