@@ -149,13 +149,17 @@ class Hooks {
   }
 
   function setupCronWorkers() {
-    add_action('mailpoet_cron_worker', function($timer) {
-      $scheduler = new Scheduler($timer);
-      $scheduler->process();
-    }, 10, 1);
-    add_action('mailpoet_cron_worker', function($timer) {
-      $sending_queue = new SendingQueue($timer);
-      $sending_queue->process();
-    }, 10, 1);
+    add_action('mailpoet_cron_worker', array($this, 'runShedulerWorker'), 10, 1);
+    add_action('mailpoet_cron_worker', array($this, 'runSendingQueueWorker'), 10, 1);
+  }
+
+  function runSchedulerWorker($timer) {
+    $scheduler = new Scheduler($timer);
+    $scheduler->process();
+
+  }
+  function runSendingQueueWorker($timer) {
+    $sending_queue = new SendingQueue($timer);
+    $sending_queue->process();
   }
 }
