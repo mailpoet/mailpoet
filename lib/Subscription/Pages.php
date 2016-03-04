@@ -21,12 +21,19 @@ class Pages {
       add_filter('the_title', array($this,'setPageTitle'));
       add_filter('the_content', array($this,'setPageContent'));
     }
-    add_action('admin_post_update', array($this, 'updateSubscriber'));
+    add_action(
+      'admin_post_mailpoet_subscriber_save',
+      array($this, 'subscriberSave')
+    );
+    add_action(
+      'admin_post_nopriv_mailpoet_subscriber_save',
+      array($this, 'subscriberSave')
+    );
   }
 
-  function updateSubscriber() {
+  function subscriberSave() {
     $action = (isset($_POST['action']) ? $_POST['action'] : null);
-    if($action !== 'update') {
+    if($action !== 'mailpoet_subscriber_save') {
       Url::redirectBack();
     }
 
@@ -285,7 +292,8 @@ class Pages {
     $form_html = '<form method="POST" '.
       'action="'.admin_url('admin-post.php').'" '.
       'novalidate>';
-    $form_html .= '<input type="hidden" name="action" value="update" />';
+    $form_html .= '<input type="hidden" name="action" '.
+      'value="mailpoet_subscriber_save" />';
     $form_html .= '<input type="hidden" name="segments" value="" />';
     $form_html .= '<input type="hidden" name="mailpoet_redirect" '.
       'value="'.Url::getCurrentUrl().'" />';
