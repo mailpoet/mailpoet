@@ -522,7 +522,7 @@
         ],
         fonts: [
           'Arial',
-          'Comic Sans',
+          'Comic Sans MS',
           'Courier New',
           'Georgia',
           'Lucida',
@@ -976,10 +976,10 @@
               backgroundColor: '#2ea1cd',
               borderColor: '#0074a2',
               borderWidth: '1px',
-              borderRadius: '7px',
+              borderRadius: '5px',
               borderStyle: 'solid',
-              width: '120px',
-              lineHeight: '35px',
+              width: '180px',
+              lineHeight: '40px',
               fontColor: '#ffffff',
               fontFamily: 'Verdana',
               fontSize: '18px',
@@ -1241,7 +1241,9 @@
         customFieldsWindowTitle:
           '<%= __('Select a shortcode') %>',
         unsubscribeLinkMissing:
-          '<%= __('Please include an unsubscribe link to continue.') %>',
+          '<%= __('All newsletter must include an "unsubscribe" link. Add a footer widget to your newsletter to continue.') %>',
+        newsletterPreviewEmailMissing:
+          '<%= __('Please enter an email where newsletter preview should be sent to.') %>',
         newsletterPreviewSent:
           '<%= __('Newsletter preview email has been successfully sent!') %>',
         newsletterPreviewFailedToSend:
@@ -1264,7 +1266,7 @@
         imageMissing: '<%= image_url(
           "newsletter_editor/image-missing.svg"
         ) %>',
-      }
+      },
     };
 
     var editor = null;

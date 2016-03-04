@@ -4,7 +4,7 @@
     <div class="mailpoet_form_field">
         <label>
             <%= __('Send preview to') %><br />
-            <input id="mailpoet_preview_to_email" class="mailpoet_input mailpoet_input_full" type="text" name="to_email" value="{{ from_email }}" />
+            <input id="mailpoet_preview_to_email" class="mailpoet_input mailpoet_input_full" type="text" name="to_email" value="<%= settings.sender.address %>" />
         </label>
     </div>
 
