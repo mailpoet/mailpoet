@@ -1256,6 +1256,7 @@
       validation: {
         validateUnsubscribeLinkPresent: true, // TODO: Add validation based on whether Mailpoet MTA is used or not
       },
+      translations: MailPoetI18n,
       urls: {
         send: '<%= admin_url('admin.php?page=mailpoet-newsletters#/send/' ~ params('id')) %>',
         imageMissing: '<%= image_url(

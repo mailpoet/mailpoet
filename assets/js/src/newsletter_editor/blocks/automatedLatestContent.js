@@ -83,7 +83,7 @@ define([
         that.get('_container').get('blocks').reset(content, {parse: true});
         that.trigger('postsChanged');
       }).fail(function(error) {
-        MailPoet.Notice(MailPoetI18n.failedToFetchRenderedPosts);
+        MailPoet.Notice.error(App.getConfig().get('translations.failedToFetchRenderedPosts'));
       });
     },
     /**

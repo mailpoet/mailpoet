@@ -1,13 +1,24 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/components/communication',
+    'mailpoet',
     'backbone',
     'backbone.marionette',
     'backbone.supermodel',
     'underscore',
     'jquery',
     'sticky-kit'
-  ], function(App, CommunicationComponent, Backbone, Marionette, SuperModel, _, jQuery, StickyKit) {
+  ], function(
+    App,
+    CommunicationComponent,
+    MailPoet,
+    Backbone,
+    Marionette,
+    SuperModel,
+    _,
+    jQuery,
+    StickyKit
+  ) {
 
   "use strict";
 
@@ -254,7 +265,7 @@ define([
 
       if (data.subscriber.length <= 0) {
         MailPoet.Notice.error(
-          MailPoetI18n.newsletterPreviewEmailMissing,
+          App.getConfig().get('translations.newsletterPreviewEmailMissing'),
           {
             positionAfter: $emailField,
             scroll: true,
@@ -268,7 +279,7 @@ define([
 
       CommunicationComponent.previewNewsletter(data).done(function(response) {
         if(response.result !== undefined && response.result === true) {
-          MailPoet.Notice.success(MailPoetI18n.newsletterPreviewSent, { scroll: true });
+          MailPoet.Notice.success(App.getConfig().get('translations.newsletterPreviewSent'), { scroll: true });
         } else {
           if (_.isArray(response.errors)) {
             response.errors.map(function(error) {
@@ -276,7 +287,7 @@ define([
             });
           } else {
             MailPoet.Notice.error(
-              MailPoetI18n.newsletterPreviewFailedToSend,
+              App.getConfig().get('translations.newsletterPreviewFailedToSend'),
               {
                 scroll: true,
                 static: true,
