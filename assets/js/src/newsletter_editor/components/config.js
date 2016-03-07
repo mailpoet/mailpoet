@@ -10,7 +10,6 @@ define([
       availableStyles: {},
       socialIcons: {},
       blockDefaults: {},
-      translations: {},
       sidepanelWidth: '331px',
       validation: {},
       urls: {},

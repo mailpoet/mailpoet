@@ -1,100 +1,5 @@
 <% extends 'layout.html' %>
 
-<% block content %>
-<div id="mailpoet_editor">
-    <div id="mailpoet_editor_heading"></div>
-    <div class="mailpoet_breadcrumbs">
-      <%= __('Select type') %> &gt; <%= __('Template') %> &gt; <strong><%= __('Designer') %></strong> &gt; <%= __('Send') %>
-    </div>
-    <div class="clearfix"></div>
-    <div id="mailpoet_editor_main_wrapper">
-      <div id="mailpoet_editor_styles">
-      </div>
-      <div id="mailpoet_editor_sidebar"></div>
-      <div id="mailpoet_editor_content_container">
-        <div class="mailpoet_newsletter_wrapper">
-          <div id="mailpoet_editor_content"></div>
-        </div>
-      </div>
-      <div class="clear"></div>
-    </div>
-    <div id="mailpoet_editor_bottom">
-    </div>
-  </div>
-
-  <div class="mailpoet_layer_overlay" style="display:none;"></div>
-
-  <div id="wp-link-backdrop" style="display: none"></div>
-  <div
-    id="wp-link-wrap"
-    class="wp-core-ui search-panel-visible"
-    style="display: none"
-  >
-    <form id="wp-link" tabindex="-1">
-      <%= wp_nonce_field('internal-linking', '_ajax_linking_nonce', false) %>
-      <div id="link-modal-title">
-        <%= __('Insert/edit link') %>
-        <div id="wp-link-close" tabindex="0"></div>
-      </div>
-      <div id="link-selector">
-        <div id="link-options">
-          <div>
-            <label>
-              <span><%= __('Type') %></span>
-              <select id="url-type-field" name="urltype">
-                <option value="http://"><%= __('Link to a web page') %></option>
-                <option value="[viewInBrowserUrl]"><%= __('Browser version') %></option>
-                <option value="[unsubscribeUrl]"><%= __('Unsubcribe page') %></option>
-                <option value="[manageSubscriptionUrl]"><%= __('Manage your subscription page') %></option>
-              </select>
-            </label>
-          </div>
-          <div id="link-href-field">
-            <label><span><%= __('Link') %></span><input id="url-field" type="text" name="href" /></label>
-          </div>
-          <div class="mailpoet_hidden">
-            <label><span><%= __('Title') %></span><input id="link-title-field" type="text" name="linktitle" /></label>
-          </div>
-          <div class="link-target mailpoet_hidden">
-            <label><span>&nbsp;</span><input type="checkbox" id="link-target-checkbox" /> <%= __('Open link in a new window/tab') %></label>
-          </div>
-        </div>
-        <div id="search-panel">
-          <div class="link-search-wrapper">
-            <label>
-              <span class="search-label"><%= __('Search your content') %></span>
-              <input type="search" id="search-field" class="link-search-field" autocomplete="off" />
-              <span class="spinner"></span>
-            </label>
-          </div>
-          <div id="search-results" class="query-results">
-            <ul></ul>
-            <div class="river-waiting">
-              <span class="spinner"></span>
-            </div>
-          </div>
-          <div id="most-recent-results" class="query-results">
-            <div class="query-notice"><em><%= __('No search term specified. Showing recent items.') %></em></div>
-            <ul></ul>
-            <div class="river-waiting">
-              <span class="spinner"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="submitbox">
-        <div id="wp-link-update">
-          <input type="submit" value="<%= __('Add Link') %>" class="button button-primary" id="wp-link-submit" name="wp-link-submit">
-        </div>
-        <div id="wp-link-cancel">
-          <a class="submitdelete deletion" href="#"><%= __('Cancel') %></a>
-        </div>
-      </div>
-    </form>
-  </div>
-
-<% endblock %>
-
 <% block templates %>
   <%= partial(
     'newsletter_editor_template_tools_generic',
@@ -312,6 +217,112 @@
     'newsletter_editor_template_sidebar_styles',
     'newsletter/templates/components/sidebar/styles.hbs'
   ) %>
+<% endblock %>
+
+<% block content %>
+<div id="mailpoet_editor">
+    <div id="mailpoet_editor_heading"></div>
+    <div class="mailpoet_breadcrumbs">
+      <%= __('Select type') %> &gt; <%= __('Template') %> &gt; <strong><%= __('Designer') %></strong> &gt; <%= __('Send') %>
+    </div>
+    <div class="clearfix"></div>
+    <div id="mailpoet_editor_main_wrapper">
+      <div id="mailpoet_editor_styles">
+      </div>
+      <div id="mailpoet_editor_sidebar"></div>
+      <div id="mailpoet_editor_content_container">
+        <div class="mailpoet_newsletter_wrapper">
+          <div id="mailpoet_editor_content"></div>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div id="mailpoet_editor_bottom">
+    </div>
+  </div>
+
+  <div class="mailpoet_layer_overlay" style="display:none;"></div>
+
+  <div id="wp-link-backdrop" style="display: none"></div>
+  <div
+    id="wp-link-wrap"
+    class="wp-core-ui search-panel-visible"
+    style="display: none"
+  >
+    <form id="wp-link" tabindex="-1">
+      <%= wp_nonce_field('internal-linking', '_ajax_linking_nonce', false) %>
+      <div id="link-modal-title">
+        <%= __('Insert/edit link') %>
+        <div id="wp-link-close" tabindex="0"></div>
+      </div>
+      <div id="link-selector">
+        <div id="link-options">
+          <div>
+            <label>
+              <span><%= __('Type') %></span>
+              <select id="url-type-field" name="urltype">
+                <option value="http://"><%= __('Link to a web page') %></option>
+                <option value="[viewInBrowserUrl]"><%= __('Browser version') %></option>
+                <option value="[unsubscribeUrl]"><%= __('Unsubcribe page') %></option>
+                <option value="[manageSubscriptionUrl]"><%= __('Manage your subscription page') %></option>
+              </select>
+            </label>
+          </div>
+          <div id="link-href-field">
+            <label><span><%= __('Link') %></span><input id="url-field" type="text" name="href" /></label>
+          </div>
+          <div class="mailpoet_hidden">
+            <label><span><%= __('Title') %></span><input id="link-title-field" type="text" name="linktitle" /></label>
+          </div>
+          <div class="link-target mailpoet_hidden">
+            <label><span>&nbsp;</span><input type="checkbox" id="link-target-checkbox" /> <%= __('Open link in a new window/tab') %></label>
+          </div>
+        </div>
+        <div id="search-panel">
+          <div class="link-search-wrapper">
+            <label>
+              <span class="search-label"><%= __('Search your content') %></span>
+              <input type="search" id="search-field" class="link-search-field" autocomplete="off" />
+              <span class="spinner"></span>
+            </label>
+          </div>
+          <div id="search-results" class="query-results">
+            <ul></ul>
+            <div class="river-waiting">
+              <span class="spinner"></span>
+            </div>
+          </div>
+          <div id="most-recent-results" class="query-results">
+            <div class="query-notice"><em><%= __('No search term specified. Showing recent items.') %></em></div>
+            <ul></ul>
+            <div class="river-waiting">
+              <span class="spinner"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="submitbox">
+        <div id="wp-link-update">
+          <input type="submit" value="<%= __('Add Link') %>" class="button button-primary" id="wp-link-submit" name="wp-link-submit">
+        </div>
+        <div id="wp-link-cancel">
+          <a class="submitdelete deletion" href="#"><%= __('Cancel') %></a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <%= localize({
+    'customFieldsWindowTitle': __('Select a shortcode'),
+    'unsubscribeLinkMissing': __('All newsletters must include an "unsubscribe" link. Add a footer widget to your newsletter to continue.'),
+    'newsletterPreviewEmailMissing': __('Please enter an email where newsletter preview should be sent to.'),
+    'newsletterPreviewSent': __('Newsletter preview email has been successfully sent!'),
+    'newsletterPreviewFailedToSend': __('Attempt to send a newsletter preview email failed. Please verify that your sending method is configured correctly try again.'),
+    'templateNameMissing': __('Please add a template name'),
+    'templateDescriptionMissing': __('Please add a template description'),
+    'templateSaved': __('Template has been saved.'),
+    'templateSaveFailed': __('Template has not been saved, please try again.'),
+  }) %>
 
   <%= javascript(
     'vendor.js',
@@ -509,7 +520,6 @@
   </script>
 
   <script type="text/javascript">
-    var newsletter = {};
     var config = {
       availableStyles: {
         textSizes: [
@@ -1237,26 +1247,6 @@
         '<%= __('Custom fields') %>': <%= json_encode(customFields) %>,
         <% endif %>
       },
-      translations: {
-        customFieldsWindowTitle:
-          '<%= __('Select a shortcode') %>',
-        unsubscribeLinkMissing:
-          '<%= __('All newsletter must include an "unsubscribe" link. Add a footer widget to your newsletter to continue.') %>',
-        newsletterPreviewEmailMissing:
-          '<%= __('Please enter an email where newsletter preview should be sent to.') %>',
-        newsletterPreviewSent:
-          '<%= __('Newsletter preview email has been successfully sent!') %>',
-        newsletterPreviewFailedToSend:
-          '<%= __('Attempt to send a newsletter preview email failed. Please verify that your sending method is configured correctly try again.') %>',
-        templateNameMissing:
-          '<%= __('Please add a template name') %>',
-        templateDescriptionMissing:
-          '<%= __('Please add a template description') %>',
-        templateSaved:
-          '<%= __('Template has been saved.') %>',
-        templateSaveFailed:
-          '<%= __('Template has not been saved, please try again.') %>',
-      },
       sidepanelWidth: '331px',
       validation: {
         validateUnsubscribeLinkPresent: true, // TODO: Add validation based on whether Mailpoet MTA is used or not
@@ -1269,15 +1259,12 @@
       },
     };
 
-    var editor = null;
-
     MailPoet.Ajax.post({
       endpoint: 'newsletters',
       action: 'get',
       data: <%= params('id') %>
     }).done(function(newsletter) {
-      // start editor
-      editor = EditorApplication.start({
+      EditorApplication.start({
         newsletter: newsletter,
         config: config,
       });

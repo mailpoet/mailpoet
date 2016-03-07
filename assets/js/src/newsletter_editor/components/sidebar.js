@@ -256,7 +256,7 @@ define([
 
       if (data.subscriber.length <= 0) {
         MailPoet.Notice.error(
-          App.getConfig().get('translations.newsletterPreviewEmailMissing'),
+          MailPoetI18n.newsletterPreviewEmailMissing,
           {
             positionAfter: $emailField,
             scroll: true,
@@ -270,7 +270,7 @@ define([
 
       CommunicationComponent.previewNewsletter(data).done(function(response) {
         if(response.result !== undefined && response.result === true) {
-          MailPoet.Notice.success(App.getConfig().get('translations.newsletterPreviewSent'), { scroll: true });
+          MailPoet.Notice.success(MailPoetI18n.newsletterPreviewSent, { scroll: true });
         } else {
           if (_.isArray(response.errors)) {
             response.errors.map(function(error) {
@@ -278,7 +278,7 @@ define([
             });
           } else {
             MailPoet.Notice.error(
-              App.getConfig().get('translations.newsletterPreviewFailedToSend'),
+              MailPoetI18n.newsletterPreviewFailedToSend,
               {
                 scroll: true,
                 static: true,

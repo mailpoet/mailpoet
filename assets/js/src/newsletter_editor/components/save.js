@@ -191,7 +191,7 @@ define([
 
       if (templateName === '') {
         MailPoet.Notice.error(
-          App.getConfig().get('translations.templateNameMissing'),
+          MailPoetI18n.templateNameMissing,
           {
             positionAfter: that.$el,
             scroll: true,
@@ -199,7 +199,7 @@ define([
         );
       } else if (templateDescription === '') {
         MailPoet.Notice.error(
-          App.getConfig().get('translations.templateDescriptionMissing'),
+          MailPoetI18n.templateDescriptionMissing,
           {
             positionAfter: that.$el,
             scroll: true,
@@ -213,7 +213,7 @@ define([
         }).done(function() {
           console.log('Template saved', arguments);
           MailPoet.Notice.success(
-            App.getConfig().get('translations.templateSaved'),
+            MailPoetI18n.templateSaved,
             {
               positionAfter: that.$el,
               scroll: true,
@@ -222,7 +222,7 @@ define([
         }).fail(function() {
           console.log('Template save failed', arguments);
           MailPoet.Notice.error(
-            App.getConfig().get('translations.templateSaveFailed'),
+            MailPoetI18n.templateSaveFailed,
             {
               positionAfter: that.$el,
               scroll: true,
@@ -247,7 +247,7 @@ define([
 
       if (templateName === '') {
         MailPoet.Notice.error(
-          App.getConfig().get('translations.templateNameMissing'),
+          MailPoetI18n.templateNameMissing,
           {
             positionAfter: that.$el,
             scroll: true,
@@ -255,7 +255,7 @@ define([
         );
       } else if (templateDescription === '') {
         MailPoet.Notice.error(
-          App.getConfig().get('translations.templateDescriptionMissing'),
+          MailPoetI18n.templateDescriptionMissing,
           {
             positionAfter: that.$el,
             scroll: true,
@@ -290,7 +290,7 @@ define([
 
       if (App.getConfig().get('validation.validateUnsubscribeLinkPresent') &&
           JSON.stringify(jsonObject).indexOf("[unsubscribeUrl]") < 0) {
-        this.showValidationError(App.getConfig().get('translations.unsubscribeLinkMissing'));
+        this.showValidationError(MailPoetI18n.unsubscribeLinkMissing);
         return;
       }
 
