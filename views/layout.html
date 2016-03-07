@@ -25,6 +25,8 @@
   <%= stylesheet('rtl.css') %>
 <% endif %>
 
+<% block after_css %><% endblock %>
+
 <!-- javascripts -->
 <%= javascript(
   'vendor.js',
@@ -43,3 +45,5 @@
     instructions: '<%= __('Want to give feedback to the MailPoet team? Write them right here with as much information as possible.') %>',
   });
 </script>
+
+<% block after_javascript %><% endblock %>
