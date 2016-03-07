@@ -206,12 +206,10 @@ define([
           }
         );
       } else {
-        console.log('Saving template with ', templateName, templateDescription);
         Module.saveTemplate({
           name: templateName,
           description: templateDescription,
         }).done(function() {
-          console.log('Template saved', arguments);
           MailPoet.Notice.success(
             MailPoetI18n.templateSaved,
             {
@@ -220,7 +218,6 @@ define([
             }
           );
         }).fail(function() {
-          console.log('Template save failed', arguments);
           MailPoet.Notice.error(
             MailPoetI18n.templateSaveFailed,
             {
@@ -262,7 +259,6 @@ define([
           }
         );
       } else {
-        console.log('Exporting template with ', templateName, templateDescription);
         Module.exportTemplate({
           name: templateName,
           description: templateDescription,
@@ -278,7 +274,6 @@ define([
     next: function() {
       this.hideOptionContents();
       if(!this.$('.mailpoet_save_next').hasClass('button-disabled')) {
-        console.log('Next');
         window.location.href = App.getConfig().get('urls.send');
       }
     },

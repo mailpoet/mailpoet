@@ -245,8 +245,6 @@ define([
       });
     },
     sendPreview: function() {
-      // testing sending method
-      console.log('trying to send a preview');
       // get form data
       var $emailField = this.$('#mailpoet_preview_to_email');
       var data = {

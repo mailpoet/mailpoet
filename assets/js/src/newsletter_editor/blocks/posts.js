@@ -101,7 +101,7 @@ define([
         that.get('_selectedPosts').reset(); // Empty out the collection
         that.trigger('change:_availablePosts');
       }).fail(function() {
-        console.log('Posts fetchPosts error', arguments);
+        MailPoet.Notice(MailPoetI18n.failedToFetchAvailablePosts);
       });
     },
     _refreshTransformedPosts: function() {
@@ -118,7 +118,7 @@ define([
       CommunicationComponent.getTransformedPosts(data).done(function(posts) {
         that.get('_transformedPosts').get('blocks').reset(posts, {parse: true});
       }).fail(function() {
-        console.log('Posts _refreshTransformedPosts error', arguments);
+        MailPoet.Notice(MailPoetI18n.failedToFetchRenderedPosts);
       });
     },
     _insertSelectedPosts: function() {
@@ -134,7 +134,7 @@ define([
       CommunicationComponent.getTransformedPosts(data).done(function(posts) {
         collection.add(posts, { at: index });
       }).fail(function() {
-        console.log('Posts fetchPosts error', arguments);
+        MailPoet.Notice(MailPoetI18n.failedToFetchRenderedPosts);
       });
     },
   });

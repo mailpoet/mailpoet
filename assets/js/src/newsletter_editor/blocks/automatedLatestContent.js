@@ -12,9 +12,19 @@ define([
     'newsletter_editor/blocks/button',
     'newsletter_editor/blocks/divider',
     'newsletter_editor/components/communication',
+    'mailpoet',
     'underscore',
     'jquery'
-  ], function(App, BaseBlock, ButtonBlock, DividerBlock, CommunicationComponent, _, jQuery) {
+  ], function(
+    App,
+    BaseBlock,
+    ButtonBlock,
+    DividerBlock,
+    CommunicationComponent,
+    MailPoet,
+    _,
+    jQuery
+  ) {
 
   "use strict";
 
@@ -73,7 +83,7 @@ define([
         that.get('_container').get('blocks').reset(content, {parse: true});
         that.trigger('postsChanged');
       }).fail(function(error) {
-        console.log('ALC fetchPosts error', arguments);
+        MailPoet.Notice(MailPoetI18n.failedToFetchRenderedPosts);
       });
     },
     /**
