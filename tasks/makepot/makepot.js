@@ -60,6 +60,9 @@ module.exports = function (grunt) {
             }
         });
 
+        grunt.loadNpmTasks('grunt-shell');
+        grunt.loadNpmTasks( 'grunt-wp-i18n' );
+
         // set base
         grunt.file.setBase(base_path);
 
