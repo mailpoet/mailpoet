@@ -25,11 +25,11 @@ define(
     var intervalField = {
       name: 'interval',
       values: {
-        'daily': 'Once a day at...',
-        'weekly': 'Weekly on...',
-        'monthly': 'Monthly on the...',
-        'nthWeekDay': 'Monthly every...',
-        'immediately': 'Immediately.',
+        'daily': MailPoetI18n.intervalOnceADay,
+        'weekly': MailPoetI18n.intervalWeekly,
+        'monthly': MailPoetI18n.intervalMonthly,
+        'nthWeekDay': MailPoetI18n.intervalMonthlyEvery,
+        'immediately': MailPoetI18n.intervalImmediately,
       },
     };
 
@@ -53,13 +53,13 @@ define(
     var weekDayField = {
       name: 'weekDay',
       values: {
-        0: 'Monday',
-        1: 'Tuesday',
-        2: 'Wednesday',
-        3: 'Thursday',
-        4: 'Friday',
-        5: 'Saturday',
-        6: 'Sunday',
+        0: MailPoetI18n.monday,
+        1: MailPoetI18n.tuesday,
+        2: MailPoetI18n.wednesday,
+        3: MailPoetI18n.thursday,
+        4: MailPoetI18n.friday,
+        5: MailPoetI18n.saturday,
+        6: MailPoetI18n.sunday,
       },
     };
 
@@ -69,14 +69,13 @@ define(
       values: _.object(_.map(
         _.times(NUMBER_OF_DAYS_IN_MONTH, function(day) { return day; }),
         function(day) {
-          var suffixes = {
-            0: 'st',
-            1: 'nd',
-            2: 'rd'
-          };
-          var suffix = suffixes[day] || 'th';
+          var label;
+          if (day === 0) label = MailPoetI18n.first;
+          else if (day === 1) label = MailPoetI18n.second;
+          else if (day === 2) label = MailPoetI18n.third;
+          else label = MailPoetI18n.nth.replace('%$1d', (day + 1));
 
-          return [day, (day + 1).toString() + suffix];
+          return [day, label];
         },
       )),
     };
@@ -84,10 +83,10 @@ define(
     var nthWeekDayField = {
       name: 'nthWeekDay',
       values: {
-        '0': '1st',
-        '1': '2nd',
-        '2': '3rd',
-        '3': 'last',
+        '0': MailPoetI18n.first,
+        '1': MailPoetI18n.second,
+        '2': MailPoetI18n.third,
+        '3': MailPoetI18n.last,
       },
     };
 
@@ -197,7 +196,7 @@ define(
 
         return (
           <div>
-            <h1>Post notifications</h1>
+            <h1>{MailPoetI18n.postNotificationsNewsletter}</h1>
             <Breadcrumb step="type" />
 
             <Select
@@ -215,7 +214,7 @@ define(
                 className="button button-primary"
                 type="button"
                 onClick={ this.handleNext }
-                value="Next" />
+                value={MailPoetI18n.next} />
             </p>
           </div>
         );

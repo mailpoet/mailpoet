@@ -28,8 +28,8 @@ define(
     var events = {
       name: 'event',
       values: {
-        'segment': 'When someone subscribes to the list...',
-        'user': 'When a new Wordrpess user is added to your site...',
+        'segment': MailPoetI18n.whenSomeoneSubscribesToList,
+        'user': MailPoetI18n.whenWordpressUserIsAdded,
       }
     };
 
@@ -57,10 +57,10 @@ define(
     var afterTimeTypeField = {
       name: 'afterTimeType',
       values: {
-        'immediate': 'immediately',
-        'hours': 'hour(s) after',
-        'days': 'day(s) after',
-        'weeks': 'week(s) after',
+        'immediate': MailPoetI18n.delayImmediately,
+        'hours': MailPoetI18n.delayHoursAfter,
+        'days': MailPoetI18n.delayDaysAfter,
+        'weeks': MailPoetI18n.delayWeeksAfter,
       }
     };
 
@@ -152,7 +152,7 @@ define(
         }
         return (
           <div>
-            <h1>Welcome email</h1>
+            <h1>{MailPoetI18n.welcomeEmail}</h1>
             <Breadcrumb step="type" />
 
             <Select
@@ -174,7 +174,7 @@ define(
                 className="button button-primary"
                 type="button"
                 onClick={ this.handleNext }
-                value="Next" />
+                value={MailPoetI18n.next} />
             </p>
           </div>
         );
