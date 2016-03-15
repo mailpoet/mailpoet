@@ -9,7 +9,7 @@
     "j4mie/paris": "1.5.4",
     "swiftmailer/swiftmailer": "^5.4",
     "phpseclib/phpseclib": "*",
-    "mtdowling/cron-expression": "^1.0",
+    "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
     "soundasleep/html2text": "^0.3.0"
   },
