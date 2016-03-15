@@ -70,8 +70,12 @@ class Populator {
 
     if($page === null) {
       $mailpoet_page_id = Pages::createMailPoetPage();
-      Setting::setValue('subscription.page', $mailpoet_page_id);
+    } else {
+      $mailpoet_page_id = $page->ID;
     }
+
+    Setting::setValue('subscription.page', $mailpoet_page_id);
+    Setting::setValue('signup_confirmation.page', $mailpoet_page_id);
   }
 
   private function createDefaultSettings() {

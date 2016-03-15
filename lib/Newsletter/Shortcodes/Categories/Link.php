@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Newsletter\Shortcodes\Categories;
+use MailPoet\Subscription;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
@@ -18,12 +19,27 @@ class Link {
       shortcode: 'global:browser',
     }
    */
-  static function process($action) {
-    // TODO: implement
+  static function process(
+    $action,
+    $default_value,
+    $newsletter = false,
+    $subscriber = false
+  ) {
+
     $actions = array(
-      'unsubscribe' => '',
-      'manage' => '',
-      'browser' => ''
+      'unsubscribe' =>
+        '<a
+          target="_blank"
+          href="'.esc_attr(Subscription\Url::getUnsubscribeUrl($subscriber)).'">'.
+          __('Unsubscribe').
+        '</a>',
+      'manage' =>
+        '<a
+          target="_blank"
+          href="'.esc_attr(Subscription\Url::getManageUrl($subscriber)).'">'.
+          __('Manage subscription').
+        '</a>',
+      'browser' => 'TODO'
     );
     return (isset($actions[$action])) ? $actions[$action] : false;
   }

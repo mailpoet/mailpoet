@@ -43,10 +43,10 @@ class User {
         if($subscriber && $subscriber['wp_user_id']) {
           $wp_user = get_userdata($subscriber['wp_user_id']);
           return $wp_user->user_login;
-        };
+        }
         return $default_value;
       case 'count':
-        return Subscriber::count();
+        return Subscriber::filter('subscribed')->count();
       default:
         return false;
     }

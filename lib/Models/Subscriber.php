@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Util\Helpers;
+use MailPoet\Subscription;
 
 if(!defined('ABSPATH')) exit;
 
@@ -70,42 +71,6 @@ class Subscriber extends Model {
     }
   }
 
-  function getConfirmationUrl() {
-    $post = get_post(Setting::getValue('signup_confirmation.page'));
-    return $this->getSubscriptionUrl($post, 'confirm');
-  }
-
-  function getEditSubscriptionUrl() {
-    $post = get_post(Setting::getValue('subscription.page'));
-    return $this->getSubscriptionUrl($post, 'edit');
-  }
-
-  function getUnsubscribeUrl() {
-    $post = get_post(Setting::getValue('subscription.page'));
-    return $this->getSubscriptionUrl($post, 'unsubscribe');
-  }
-
-  private function getSubscriptionUrl($post = null, $action = null) {
-    if($post === null || $action === null) return;
-
-    $url = get_permalink($post);
-
-    $params = array(
-      'mailpoet_action='.$action,
-      'mailpoet_token='.self::generateToken($this->email),
-      'mailpoet_email='.$this->email
-    );
-    // add parameters
-    $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?').join('&', $params);
-
-    $url_params = parse_url($url);
-    if(empty($url_params['scheme'])) {
-      $url = get_bloginfo('url').$url;
-    }
-
-    return $url;
-  }
-
   function sendConfirmationEmail() {
     if($this->status === self::STATUS_UNCONFIRMED) {
       $signup_confirmation = Setting::getValue('signup_confirmation');
@@ -131,7 +96,7 @@ class Subscriber extends Model {
           '[/activation_link]'
         ),
         array(
-          '<a href="'.htmlentities($this->getConfirmationUrl()).'">',
+          '<a href="'.esc_attr(Subscription\Url::getConfirmationUrl($this)).'">',
           '</a>'
         ),
         $body

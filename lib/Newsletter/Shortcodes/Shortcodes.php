@@ -23,13 +23,20 @@ class Shortcodes {
   function process($shortcodes) {
     $processed_shortcodes = array_map(
       function ($shortcode) {
-        // TODO: discuss renaming "global". It is a reserved name in PHP.
-        if($shortcode === 'global') $shortcode = 'link';
         preg_match(
           '/\[(?P<type>\w+):(?P<action>\w+)(?:.*?default:(?P<default>.*?))?\]/',
           $shortcode,
           $shortcode_details
         );
+
+        // TODO: discuss renaming "global". It is a reserved name in PHP.
+        if(
+          isset($shortcode_details['type'])
+          && $shortcode_details['type'] === 'global'
+        ) {
+          $shortcode_details['type'] = 'link';
+        }
+
         $shortcode_class =
           __NAMESPACE__ . '\\Categories\\' . ucfirst($shortcode_details['type']);
         if(!class_exists($shortcode_class)) return false;
@@ -41,7 +48,7 @@ class Shortcodes {
           $this->subscriber
         );
       }, $shortcodes);
-    return array_filter($processed_shortcodes);
+    return $processed_shortcodes;
   }
 
   function replace() {

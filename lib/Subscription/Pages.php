@@ -8,6 +8,7 @@ use \MailPoet\Models\Setting;
 use \MailPoet\Models\Segment;
 use \MailPoet\Util\Helpers;
 use \MailPoet\Util\Url;
+use \MailPoet\Subscription;
 
 class Pages {
   const DEMO_EMAIL = 'demo@mailpoet.com';
@@ -67,8 +68,8 @@ class Pages {
         return $this->getConfirmTitle($subscriber);
       break;
 
-      case 'edit':
-        return $this->getEditTitle($subscriber);
+      case 'manage':
+        return $this->getManageTitle($subscriber);
       break;
 
       case 'unsubscribe':
@@ -92,8 +93,8 @@ class Pages {
       case 'confirm':
         $content = $this->getConfirmContent($subscriber);
       break;
-      case 'edit':
-        $content = $this->getEditContent($subscriber);
+      case 'manage':
+        $content = $this->getManageContent($subscriber);
       break;
       case 'unsubscribe':
         $content = $this->getUnsubscribeContent($subscriber);
@@ -132,7 +133,7 @@ class Pages {
     return $title;
   }
 
-  private function getEditTitle($subscriber) {
+  private function getManageTitle($subscriber) {
     if($this->isPreview()) {
       return sprintf(
         __('Edit your subscriber profile: %s'),
@@ -159,7 +160,7 @@ class Pages {
     }
   }
 
-  private function getEditContent($subscriber) {
+  private function getManageContent($subscriber) {
     if($this->isPreview()) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate(array(
@@ -310,7 +311,7 @@ class Pages {
         $content .= '<p><strong>'.
           str_replace(
             array('[link]', '[/link]'),
-            array('<a href="'.$subscriber->getConfirmationUrl().'">', '</a>'),
+            array('<a href="'.Subscription\Url::getConfirmationUrl($subscriber).'">', '</a>'),
             __('You made a mistake? [link]Undo unsubscribe.[/link]')
           ).
         '</strong></p>';

@@ -1,13 +1,13 @@
 <?php
-
+/*
 use MailPoet\Models\Subscriber;
 
 class ShortcodesCest {
-/*  public $rendered_newsletter;
+  public $rendered_newsletter;
   public $newsletter;
   public $subscriber;
 
-  function __construct() {
+  function _before() {
     $this->wp_user = $this->_createWPUser();
     $this->subscriber = $this->_createSubscriber();
     $this->newsletter['subject'] = 'some subject';
@@ -30,7 +30,7 @@ class ShortcodesCest {
       Month text: [date:mtext].
       Year: [date:y]
 
-      You can usubscribe here: [global:unsubscribe].
+      You can unsubscribe here: [global:unsubscribe].
       Manage your subscription here: [global:manage].
       View this newsletter in browser: [global:browser].';
     $this->shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
@@ -71,7 +71,7 @@ class ShortcodesCest {
       Month text: {$date->format('F')}.
       Year: {$date->format('Y')}
 
-      You can usubscribe here: [global:unsubscribe].
+      You can unsubscribe here: [global:unsubscribe].
       Manage your subscription here: [global:manage].
       View this newsletter in browser: [global:browser].");
   }
@@ -92,6 +92,7 @@ class ShortcodesCest {
         'first_name' => 'Donald',
         'last_name' => 'Trump',
         'email' => 'mister@trump.com',
+        'status' => Subscriber::STATUS_SUBSCRIBED,
         'wp_user_id' => $this->wp_user
       )
     );
@@ -100,6 +101,6 @@ class ShortcodesCest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-  }*/
-}
+    Subscriber::deleteMany();
+  }
+}*/
