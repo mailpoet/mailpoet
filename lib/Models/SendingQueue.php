@@ -35,4 +35,8 @@ class SendingQueue extends Model {
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);
   }
+
+  function stop() {
+    return $this->delete();
+  }
 }

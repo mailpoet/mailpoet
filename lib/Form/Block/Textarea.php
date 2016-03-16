@@ -19,6 +19,8 @@ class Textarea extends Base {
 
     $html .= static::getInputValidation($block);
 
+    $html .= static::getInputModifiers($block);
+
     $html .= '></textarea>';
 
     $html .= '</p>';

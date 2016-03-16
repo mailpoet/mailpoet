@@ -6,17 +6,17 @@ use \MailPoet\Models\Setting;
 
 class Url {
   static function getConfirmationUrl($subscriber = false) {
-    $post = get_post(Setting::getValue('signup_confirmation.page'));
+    $post = get_post(Setting::getValue('subscription.confirmation_page'));
     return self::getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
   static function getManageUrl($subscriber = false) {
-    $post = get_post(Setting::getValue('subscription.page'));
+    $post = get_post(Setting::getValue('subscription.manage_page'));
     return self::getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
   static function getUnsubscribeUrl($subscriber = false) {
-    $post = get_post(Setting::getValue('subscription.page'));
+    $post = get_post(Setting::getValue('subscription.unsubscribe_page'));
     return self::getSubscriptionUrl($post, 'unsubscribe', $subscriber);
   }
 
@@ -28,10 +28,15 @@ class Url {
     $url = get_permalink($post);
 
     if($subscriber !== false) {
+
+      if(is_object($subscriber)) {
+        $subscriber = $subscriber->asArray();
+      }
+
       $params = array(
         'mailpoet_action='.$action,
-        'mailpoet_token='.Subscriber::generateToken($subscriber->email),
-        'mailpoet_email='.$subscriber->email
+        'mailpoet_token='.Subscriber::generateToken($subscriber['email']),
+        'mailpoet_email='.$subscriber['email']
       );
     } else {
       $params = array(

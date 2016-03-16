@@ -270,7 +270,6 @@
               <option
                 value="<%= page.id %>"
                 data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=unsubscribe"
-                data-edit-url="<%= page.edit_url|raw %>"
                 <% if(page.id == settings.subscription.unsubscribe_page) %>
                   selected="selected"
                 <% endif %>
@@ -281,11 +280,7 @@
             class="mailpoet_page_preview"
             href="javascript:;"
             title="<%= __('Preview page') %>"
-          ><%= __('Preview') %></a>&nbsp;|&nbsp;<a
-            class="mailpoet_page_edit"
-            href="javascript:;"
-            title="<%= __('Edit page') %>"
-          ><%= __('Edit') %></a>
+          ><%= __('Preview') %></a>
         </p>
       </td>
     </tr>

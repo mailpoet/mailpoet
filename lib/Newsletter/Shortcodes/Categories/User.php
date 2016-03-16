@@ -35,20 +35,31 @@ class User {
     switch($action) {
       case 'firstname':
         return ($subscriber) ? $subscriber['first_name'] : $default_value;
+      break;
+
       case 'lastname':
         return ($subscriber) ? $subscriber['last_name'] : $default_value;
+      break;
+
       case 'email':
         return ($subscriber) ? $subscriber['email'] : false;
+      break;
+
       case 'displayname':
         if($subscriber && $subscriber['wp_user_id']) {
           $wp_user = get_userdata($subscriber['wp_user_id']);
           return $wp_user->user_login;
         }
         return $default_value;
+      break;
+
       case 'count':
         return Subscriber::filter('subscribed')->count();
+      break;
+
       default:
         return false;
+      break;
     }
   }
 }

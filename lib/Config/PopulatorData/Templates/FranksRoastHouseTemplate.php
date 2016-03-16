@@ -46,7 +46,7 @@ class FranksRoastHouseTemplate {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems?&nbsp;<a href=\"[viewInBrowserUrl]\">View it in your browser</a>"),
+                    "text" => __("Display problems?&nbsp;<a href=\"[newsletter:view_in_browser_url]\">View it in your browser</a>"),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "#ccc6c6"
@@ -280,7 +280,7 @@ class FranksRoastHouseTemplate {
                 "blocks" => array(
                   array(
                     "type" => "footer",
-                    "text" => __("<p><a href=\"[unsubscribeUrl]\">Unsubscribe</a> | <a href=\"[manageSubscriptionUrl]\">Manage subscription</a><br />12345 MailPoet Drive, EmailVille, 76543</p>"),
+                    "text" => __("<p><a href=\"[subscription:unsubscribe_url]\">Unsubscribe</a> | <a href=\"[subscription:manage_url]\">Manage subscription</a><br />12345 MailPoet Drive, EmailVille, 76543</p>"),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "#a9a7a7"

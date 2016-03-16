@@ -9,7 +9,8 @@ class Shortcodes {
   function __construct(
     $rendered_newsletter,
     $newsletter = false,
-    $subscriber = false) {
+    $subscriber = false
+  ) {
     $this->rendered_newsletter = $rendered_newsletter;
     $this->newsletter = $newsletter;
     $this->subscriber = $subscriber;
@@ -28,14 +29,6 @@ class Shortcodes {
           $shortcode,
           $shortcode_details
         );
-
-        // TODO: discuss renaming "global". It is a reserved name in PHP.
-        if(
-          isset($shortcode_details['type'])
-          && $shortcode_details['type'] === 'global'
-        ) {
-          $shortcode_details['type'] = 'link';
-        }
 
         $shortcode_class =
           __NAMESPACE__ . '\\Categories\\' . ucfirst($shortcode_details['type']);

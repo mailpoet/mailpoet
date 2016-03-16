@@ -6,7 +6,7 @@ class Text extends Base {
   static function render($block) {
     $type = 'text';
     if($block['id'] === 'email') {
-        $type = 'email';
+      $type = 'email';
     }
 
     $html = '';
@@ -26,6 +26,8 @@ class Text extends Base {
     $html .= static::renderInputPlaceholder($block);
 
     $html .= static::getInputValidation($block);
+
+    $html .= static::getInputModifiers($block);
 
     $html .= '/>';
 

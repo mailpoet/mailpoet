@@ -336,6 +336,9 @@ class Subscriber extends Model {
 
   static function createOrUpdate($data = array()) {
     $subscriber = false;
+    if(is_array($data) && !empty($data)) {
+      $data = stripslashes_deep($data);
+    }
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
       $subscriber = self::findOne((int)$data['id']);
@@ -361,16 +364,25 @@ class Subscriber extends Model {
 
     foreach($data as $key => $value) {
       if(strpos($key, 'cf_') === 0) {
+        if(is_array($value)) {
+          $value = array_filter($value);
+          $value = reset($value);
+        }
         $custom_fields[(int)substr($key, 3)] = $value;
         unset($data[$key]);
       }
     }
 
+    $old_status = false;
+    $new_status = false;
+
     if($subscriber === false) {
       $subscriber = self::create();
       $subscriber->hydrate($data);
     } else {
+      $old_status = $subscriber->status;
       $subscriber->set($data);
+      $new_status = $subscriber->status;
     }
 
     if($subscriber->save()) {
@@ -379,8 +391,19 @@ class Subscriber extends Model {
           $subscriber->setCustomField($custom_field_id, $value);
         }
       }
-      if($segment_ids !== false) {
-        SubscriberSegment::setSubscriptions($subscriber, $segment_ids);
+
+      // check for status change
+      if(
+          ($old_status === self::STATUS_SUBSCRIBED)
+          &&
+          ($new_status === self::STATUS_UNSUBSCRIBED)
+      ) {
+        // make sure we unsubscribe the user from all lists
+        SubscriberSegment::setSubscriptions($subscriber, array());
+      } else {
+        if($segment_ids !== false) {
+          SubscriberSegment::setSubscriptions($subscriber, $segment_ids);
+        }
       }
     }
     return $subscriber;

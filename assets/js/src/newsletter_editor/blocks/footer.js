@@ -16,7 +16,7 @@ define([
     defaults: function() {
       return this._getDefaults({
         type: 'footer',
-        text: '<a href="[unsubscribeUrl]">Unsubscribe</a> | <a href="[manageSubscriptionUrl]">Manage subscription</a><br /><b>Add your postal address here!</b>',
+        text: '<a href="[subscription:unsubscribe_url]">Unsubscribe</a> | <a href="[subscription:manage_url]">Manage subscription</a><br /><b>Add your postal address here!</b>',
         styles: {
           block: {
             backgroundColor: 'transparent',

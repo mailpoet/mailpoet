@@ -1022,7 +1022,7 @@
           },
         },
         footer: {
-          text: '<a href="[unsubscribeUrl]"><%= __('Unsubscribe') %></a> | <a href="[manageSubscriptionUrl]"><%= __('Manage subscription') %></a><br /><b><%= __('Add your postal address here!') %></b>',
+          text: '<a href="[subscription:unsubscribe_url]"><%= __('Unsubscribe') %></a> | <a href="[subscription:manage_url]"><%= __('Manage subscription') %></a><br /><b><%= __('Add your postal address here!') %></b>',
           styles: {
             block: {
               backgroundColor: 'transparent',
@@ -1147,7 +1147,7 @@
         },
         header: {
           text: '<%= __('Display problems?') %>&nbsp;'+
-            '<a href="[viewInBrowserUrl]"><%= __('View it in your browser') %></a>',
+            '<a href="[newsletter:view_in_browser_url]"><%= __('View it in your browser') %></a>',
           styles: {
             block: {
               backgroundColor: 'transparent',
@@ -1237,15 +1237,15 @@
         '<%= __('Links') %>': [
           {
             text: '<%= __('Unsubscribe link') %>',
-            shortcode: 'global:unsubscribe',
+            shortcode: 'subscription:unsubscribe',
           },
           {
             text: '<%= __('Edit subscription page link') %>',
-            shortcode: 'global:manage',
+            shortcode: 'subscription:manage',
           },
           {
             text: '<%= __('View in browser link') %>',
-            shortcode: 'global:browser',
+            shortcode: 'newsletter:view_in_browser',
           }
         ],
         <% if customFields %>

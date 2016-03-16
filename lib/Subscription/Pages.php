@@ -43,7 +43,6 @@ class Pages {
       $_POST,
       array_flip($reserved_keywords)
     );
-
     $subscriber = Subscriber::createOrUpdate($subscriber_data);
     $errors = $subscriber->getErrors();
 
@@ -214,7 +213,8 @@ class Pages {
         'params' => array(
           'label' => __('Email'),
           'required' => true,
-          'value' => $subscriber->email
+          'value' => $subscriber->email,
+          'readonly' => true
         )
       ),
       array(
@@ -235,7 +235,7 @@ class Pages {
       ),
       array(
         'id' => 'status',
-        'type' => 'radio',
+        'type' => 'select',
         'params' => array(
           'label' => __('Status'),
           'values' => array(

@@ -112,4 +112,17 @@ abstract class Base {
             && strlen(trim($block['params']['value'])) > 0)
             ? esc_attr(trim($block['params']['value'])) : '';
   }
+
+  protected static function getInputModifiers($block = array()) {
+    $modifiers = array();
+
+    if(isset($block['params']['readonly'])) {
+      $modifiers[] = 'readonly';
+    }
+
+    if(isset($block['params']['disabled'])) {
+      $modifiers[] = 'disabled';
+    }
+    return join(' ', $modifiers);
+  }
 }
