@@ -71,7 +71,7 @@ class Populator {
     if($page === null) {
       $mailpoet_page_id = Pages::createMailPoetPage();
     } else {
-      $mailpoet_page_id = $page->ID;
+      $mailpoet_page_id = (int)$page->ID;
     }
 
     Setting::setValue('subscription.unsubscribe_page', $mailpoet_page_id);
