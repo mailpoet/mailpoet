@@ -197,7 +197,7 @@
     <!-- edit subscription-->
     <tr>
       <th scope="row">
-        <label for="subscription_edit_page">
+        <label for="subscription_manage_page">
           <%= __('Manage Subscription page') %>
           <p class="description">
             <%= __('The page your subscribers see when they click on "Manage your subscription" in your emails.') %>
@@ -208,15 +208,14 @@
         <p>
           <select
             class="mailpoet_page_selection"
-            id="subscription_edit_page"
-            name="subscription[edit_page]"
+            id="subscription_manage_page"
+            name="subscription[manage_page]"
           >
             <% for page in pages %>
               <option
                 value="<%= page.id %>"
-                data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=edit"
-                data-edit-url="<%= page.edit_url|raw %>"
-                <% if(page.id == settings.subscription.edit_page) %>
+                data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=manage"
+                <% if(page.id == settings.subscription.manage_page) %>
                   selected="selected"
                 <% endif %>
               ><%= page.title %></option>
@@ -226,11 +225,7 @@
             class="mailpoet_page_preview"
             href="javascript:;"
             title="<%= __('Preview page') %>"
-          ><%= __('Preview') %></a>&nbsp;|&nbsp;<a
-            class="mailpoet_page_edit"
-            href="javascript:;"
-            title="<%= __('Edit page') %>"
-          ><%= __('Edit') %></a>
+          ><%= __('Preview') %></a>
         </p>
         <p>
           <label><%= __('Subscribers can choose from these lists:') %></label>

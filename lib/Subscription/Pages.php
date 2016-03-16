@@ -235,7 +235,7 @@ class Pages {
       ),
       array(
         'id' => 'status',
-        'type' => 'select',
+        'type' => 'radio',
         'params' => array(
           'label' => __('Status'),
           'values' => array(
@@ -253,14 +253,6 @@ class Pages {
               ),
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_UNSUBSCRIBED
-              )
-            ),
-            array(
-              'value' => array(
-                Subscriber::STATUS_UNCONFIRMED => __('Unconfirmed')
-              ),
-              'is_checked' => (
-                $subscriber->status === Subscriber::STATUS_UNCONFIRMED
               )
             )
           )

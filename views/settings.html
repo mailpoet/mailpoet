@@ -139,18 +139,6 @@
             $(this).removeAttr('target');
           }
         });
-
-        // page edit
-        $('.mailpoet_page_edit').on('click', function() {
-          var selection = $(this).siblings('.mailpoet_page_selection');
-          if(selection.length > 0) {
-            $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('edit-url'));
-            $(this).attr('target', '_blank');
-          } else {
-            $(this).attr('href', 'javascript:;');
-            $(this).removeAttr('target');
-          }
-        });
       });
     });
   </script>

@@ -25,18 +25,24 @@ class Radio extends Base {
 
       $html .= 'name="'.$field_name.'" ';
 
-      $html .= 'value="'.esc_attr($option['value']).'" ';
+      if(is_array($option['value'])) {
+        $value = key($option['value']);
+        $label = reset($option['value']);
+      } else {
+        $value = $option['value'];
+        $label = $option['value'];
+      }
+
+      $html .= 'value="'.esc_attr($value).'" ';
 
       $html .= (
         (isset($option['is_checked']) && $option['is_checked'])
         ||
-        (self::getFieldValue($block) === $option['value'])
+        (self::getFieldValue($block) === $value)
       ) ? 'checked="checked"' : '';
 
       $html .= $field_validation;
-
-      $html .= ' /> '.esc_attr($option['value']);
-
+      $html .= ' /> '.esc_attr($label);
       $html .= '</label>';
     }
 

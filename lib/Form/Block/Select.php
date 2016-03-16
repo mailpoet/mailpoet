@@ -18,7 +18,12 @@ class Select extends Base {
       $html .= '<option value="">'.static::getFieldLabel($block).'</option>';
     }
 
-    foreach($block['params']['values'] as $option) {
+    $options = (!empty($block['params']['values'])
+      ? $block['params']['values']
+      : array()
+    );
+
+    foreach($options as $option) {
       $is_selected = (
         (isset($option['is_checked']) && $option['is_checked'])
         ||
