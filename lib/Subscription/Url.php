@@ -41,7 +41,7 @@ class Url {
     } else {
       $params = array(
         'mailpoet_action='.$action,
-        'preview'
+        'mailpoet_preview=1'
       );
     }
     // add parameters

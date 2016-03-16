@@ -17,10 +17,11 @@ class Pages {
   }
 
   function init() {
-    if(isset($_GET['mailpoet_page'])) {
-      add_filter('wp_title', array($this,'setWindowTitle'));
-      add_filter('the_title', array($this,'setPageTitle'));
-      add_filter('the_content', array($this,'setPageContent'));
+    $action = $this->getAction();
+    if($action !== null) {
+      add_filter('document_title_parts', array($this,'setWindowTitle'), 10, 1);
+      add_filter('the_title', array($this,'setPageTitle'), 10, 1);
+      add_filter('the_content', array($this,'setPageContent'), 10, 1);
     }
     add_action(
       'admin_post_mailpoet_subscriber_save',
@@ -43,45 +44,56 @@ class Pages {
       $_POST,
       array_flip($reserved_keywords)
     );
-    $subscriber = Subscriber::createOrUpdate($subscriber_data);
-    $errors = $subscriber->getErrors();
-
+    if(isset($subscriber_data['email'])) {
+      if($subscriber_data['email'] !== self::DEMO_EMAIL) {
+        $subscriber = Subscriber::createOrUpdate($subscriber_data);
+        $errors = $subscriber->getErrors();
+      }
+    }
     // TBD: success/error messages (not present in MP2)
 
     Url::redirectBack();
   }
 
   function isPreview() {
-    return (array_key_exists('preview', $_GET));
+    return (array_key_exists('mailpoet_preview', $_GET));
   }
 
-  function setWindowTitle() {
-    // TODO
+  function setWindowTitle($meta = array()) {
+    $meta['title'] = $this->setPageTitle($meta['title']);
+    return $meta;
   }
 
-  function setPageTitle($title = null) {
-    $subscriber = $this->getSubscriber();
+  function setPageTitle($page_title = '[mailpoet_title]') {
+   if(
+      (strpos($page_title, '[mailpoet_title]') === false)
+      &&
+      (strlen(trim($page_title)) > 0)
+    ) {
+      return $page_title;
+    } else {
+      $subscriber = $this->getSubscriber();
+      switch($this->getAction()) {
+        case 'confirm':
+          return $this->getConfirmTitle($subscriber);
+        break;
 
-    switch($this->getAction()) {
-      case 'confirm':
-        return $this->getConfirmTitle($subscriber);
-      break;
+        case 'manage':
+          return $this->getManageTitle($subscriber);
+        break;
 
-      case 'manage':
-        return $this->getManageTitle($subscriber);
-      break;
-
-      case 'unsubscribe':
-        if($subscriber !== false) {
-          if($subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED) {
-            $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-            $subscriber->save();
+        case 'unsubscribe':
+          if($subscriber !== false) {
+            if($subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED) {
+              $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+              $subscriber->save();
+            }
           }
-        }
-        return $this->getUnsubscribeTitle($subscriber);
-      break;
+          return $this->getUnsubscribeTitle($subscriber);
+        break;
+      }
     }
-    return $title;
+    return str_replace('[mailpoet_title]', $title, $page_title);
   }
 
   function setPageContent($page_content = '[mailpoet_page]') {

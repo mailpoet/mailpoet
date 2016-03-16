@@ -33,7 +33,7 @@ class Pages {
       'post_type' => 'mailpoet_page',
       'post_author' => 1,
       'post_content' => '[mailpoet_page]',
-      'post_title' => __('MailPoet Page'),
+      'post_title' => '[mailpoet_title]',
       'post_name' => 'subscriptions'
     ));
     flush_rewrite_rules();
@@ -66,7 +66,7 @@ class Pages {
       'id' => $page->ID,
       'title' => $page->post_title,
       'preview_url' => add_query_arg(array(
-        'preview' => 1
+        'mailpoet_preview' => 1
       ), get_permalink($page->ID))
     );
   }
