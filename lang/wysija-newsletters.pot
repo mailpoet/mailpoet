@@ -1,14 +1,14 @@
-# Copyright (C) 2015 
+# Copyright (C) 2016 
 # This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://support.mailpoet.com/\n"
-"POT-Creation-Date: 2015-07-31 10:31:32+00:00\n"
+"POT-Creation-Date: 2016-03-17 14:06:47+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
 "Last-Translator: MailPoet i18n "
 "(https://www.transifex.com/organization/wysija)\n"
 "Language-Team: MailPoet i18n "
@@ -26,216 +26,2818 @@ msgstr ""
 "X-Poedit-Bookmarks: \n"
 "X-Textdomain-Support: yes\n"
 
-#: lib/config/initializer.php:269
-msgid "New form"
+#: lib/Config/Hooks.php:131
+msgid "MailPoet Newsletter"
 msgstr ""
 
-#: lib/config/initializer.php:274
-msgid "Check your inbox or spam folder now to confirm your subscription."
+#: lib/Config/Menu.php:51 lib/Config/Menu.php:52 views/newsletters.html:7
+msgid "Newsletters"
 msgstr ""
 
-#: lib/config/initializer.php:280 lib/config/initializer.php:285
-msgid "Email"
+#: lib/Config/Menu.php:62 lib/Config/Menu.php:63 views/forms.html:7
+msgid "Forms"
 msgstr ""
 
-#: lib/config/initializer.php:290
-msgid "Submit"
+#: lib/Config/Menu.php:73 lib/Config/Menu.php:74
+#: views/subscribers/subscribers.html:7
+msgid "Subscribers"
 msgstr ""
 
-#: lib/config/initializer.php:295
-msgid "Subscribe!"
+#: lib/Config/Menu.php:95 lib/Config/Menu.php:96 views/segments.html:7
+msgid "Segments"
 msgstr ""
 
-#: lib/form/renderer.php:91
-msgid "Year, month, day"
-msgstr ""
-
-#: lib/form/renderer.php:92
-msgid "Year, month"
-msgstr ""
-
-#: lib/form/renderer.php:93
-msgid "Month (January, February,...)"
-msgstr ""
-
-#: lib/form/renderer.php:94 lib/form/renderer.php:519
-msgid "Year"
-msgstr ""
-
-#: lib/form/renderer.php:108
-msgid "January"
-msgstr ""
-
-#: lib/form/renderer.php:109
-msgid "February"
-msgstr ""
-
-#: lib/form/renderer.php:110
-msgid "March"
-msgstr ""
-
-#: lib/form/renderer.php:111
-msgid "April"
-msgstr ""
-
-#: lib/form/renderer.php:112
-msgid "May"
-msgstr ""
-
-#: lib/form/renderer.php:113
-msgid "June"
-msgstr ""
-
-#: lib/form/renderer.php:114
-msgid "July"
-msgstr ""
-
-#: lib/form/renderer.php:115
-msgid "August"
-msgstr ""
-
-#: lib/form/renderer.php:116
-msgid "September"
-msgstr ""
-
-#: lib/form/renderer.php:117
-msgid "October"
-msgstr ""
-
-#: lib/form/renderer.php:118
-msgid "November"
-msgstr ""
-
-#: lib/form/renderer.php:119
-msgid "December"
-msgstr ""
-
-#: lib/form/renderer.php:509
-msgid "Day"
-msgstr ""
-
-#: lib/form/renderer.php:514
-msgid "Month"
-msgstr ""
-
-#: lib/form/widget.php:11
-msgid "MailPoet Subscription Form"
-msgstr ""
-
-#: lib/form/widget.php:13
-msgid "Newsletter subscription form"
-msgstr ""
-
-#: lib/form/widget.php:36
-msgid "Subscribe to our Newsletter"
-msgstr ""
-
-#: lib/form/widget.php:56
-msgid "Title:"
-msgstr ""
-
-#: lib/form/widget.php:76
-msgid "Create a new form"
-msgstr ""
-
-#: lib/form/widget.php:109
-msgid "Newsletter"
-msgstr ""
-
-#: views/form/editor.html:8
-msgid "Edit name' "
-msgstr ""
-
-#: views/form/editor.html:23
-msgid "Save"
-msgstr ""
-
-#: views/form/editor.html:31 views/templates/test.hbs:1
+#: lib/Config/Menu.php:106 lib/Config/Menu.php:107 views/form/editor.html:33
+#: views/settings.html:6
 msgid "Settings"
 msgstr ""
 
-#: views/form/editor.html:39
+#: lib/Config/Menu.php:117 lib/Config/Menu.php:118
+#: views/subscribers/importExport/import.html:8
+msgid "Import"
+msgstr ""
+
+#: lib/Config/Menu.php:128 lib/Config/Menu.php:129
+#: views/subscribers/importExport/export.html:6
+#: views/subscribers/importExport/export.html:100
+msgid "Export"
+msgstr ""
+
+#: lib/Config/Menu.php:140 lib/Config/Menu.php:141
+msgid "Welcome"
+msgstr ""
+
+#: lib/Config/Menu.php:152 lib/Config/Menu.php:153
+msgid "Update"
+msgstr ""
+
+#: lib/Config/Menu.php:164 lib/Config/Menu.php:165
+msgid "Form editor"
+msgstr ""
+
+#: lib/Config/Menu.php:176 lib/Config/Menu.php:177
+msgid "Newsletter editor"
+msgstr ""
+
+#: lib/Config/Menu.php:188 lib/Config/Menu.php:189
+msgid "Cron"
+msgstr ""
+
+#: lib/Config/Populator.php:112
+msgid "WordPress Users"
+msgstr ""
+
+#: lib/Config/Populator.php:114
+msgid "The list containing all of your WordPress users."
+msgstr ""
+
+#: lib/Config/Populator.php:127
+msgid "My First List"
+msgstr ""
+
+#: lib/Config/Populator.php:129
+msgid "The list created automatically on install of MailPoet"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/BlankTemplate.php:14
+msgid "A Blank Template"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/BlankTemplate.php:15
+msgid "A blank canvas ready for you to create something wonderful."
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:16
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:70
+msgid "Frank's Roast House"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:17
+msgid ""
+"Think of this as your playground, ready for you to explore. Play around "
+"with this example newsletter and get a handle of what MailPoet can do for "
+"you."
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:49
+#: lib/Config/PopulatorData/Templates/WelcomeTemplate.php:49
+msgid ""
+"Display problems?&nbsp;<a href=\"[viewInBrowserUrl]\">View it in your "
+"browser</a>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:91
+msgid ""
+"<p>Hello there&nbsp;[user:firstname | default:Coffee Drinker]</p>\n"
+"<p></p>\n"
+"<p>Sit back&nbsp;and enjoy a cup of joe as you have a read of our latest "
+"newsletter.&nbsp;</p>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:97
+msgid "coffee-grain-3-1329675-1599x941"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:109
+msgid ""
+"<h1 style=\"text-align: center;\">--- Guest Coffee: <em>Brew Bros. "
+"---</em></h1>\n"
+"<p><em></em></p>\n"
+"<p>Pop into our North Avenue store to try our latest guest coffee from "
+"independent coffee roasters, Brew Bros. This young duo only started "
+"creating their own blends two years ago, but have quickly "
+"gained&nbsp;popularity through a number of pop-up events and collaborations "
+"with local street food vendors.</p>\n"
+"<p></p>\n"
+"<blockquote>\n"
+"<p><span style=\"color: #ff6600;\"><em>Tasting notes: A rich, caramel "
+"flavour with subtle overtones of molasses. The perfect wake-up morning "
+"espresso.</em></span></p>\n"
+"</blockquote>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:135
+msgid "<h2>Sandwich Competition</h2>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:153
+msgid ""
+"<p>We're offering free lunch for a month if you can invent a new sandwich "
+"to go on our menu.</p>\n"
+"<p></p>\n"
+"<p></p>\n"
+"<p>Simply tweet your ideas to <a href=\"http://www.example.com\" "
+"title=\"This isn't a real twitter account\">@franksroasthouse</a> and use "
+"#sandwichcomp and we'll let you know if you're a winner.</p>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:178
+msgid "<h3 style=\"text-align: center;\">Follow us</h3>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:235
+msgid "<h2>New Store Opening!</h2>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:241
+msgid "map-v2"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:253
+msgid ""
+"<p>Watch out Westville Street, we're coming to you very soon!&nbsp;</p>\n"
+"<p></p>\n"
+"<p>Keep an eye on your mailboxes, we'll have some special offers for our "
+"email subscribers and an exclusive Preview Evening invite.<br /><br /></p>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:257
+msgid ""
+"<h2>We're Now Open Longer</h2>\n"
+"<p></p>\n"
+"<p>That's right, Franks is now open for even longer, so you can get your "
+"caffeine fix almost any time of the day! Here's our new opening hours:</p>\n"
+"<p></p>\n"
+"<ul>\n"
+"<li>Monday - Thursday: 6am - 12am</li>\n"
+"<li>Friday - Saturday: 6am - 1:30am</li>\n"
+"<li>Sunday: 7:30am - 11pm</li>\n"
+"</ul>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/FranksRoastHouseTemplate.php:283
+msgid ""
+"<p><a href=\"[unsubscribeUrl]\">Unsubscribe</a> | <a "
+"href=\"[manageSubscriptionUrl]\">Manage subscription</a><br />12345 "
+"MailPoet Drive, EmailVille, 76543</p>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:16
+msgid "Post Notifications Blank Template"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:17
+msgid ""
+"A simple and plain post notifications template for you to create your own "
+"email from."
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:49
+msgid ""
+"<h2 style=\"text-align: center;\">Ready to get started on your&nbsp;post "
+"notifications email?</h2>\n"
+"<p style=\"text-align: center;\">&nbsp;</p>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:75
+msgid ""
+"<p style=\"text-align: right;\">Your&nbsp;posts below are generated using "
+"our <strong>Automated Latest Content widget</strong> in the right "
+"sidebar.</p>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:92
+msgid "ALC-widget-icon"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:162
+msgid "settings-icon-highlight"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:185
+msgid ""
+"<p><strong>Hover over the posts below</strong> and click on the Settings "
+"icon to change their appearance.</p>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:245
+#: lib/Config/PopulatorData/Templates/WelcomeTemplate.php:227
+msgid ""
+"<a href=\"[unsubscribeUrl]\">Unsubscribe</a> | <a "
+"href=\"[manageSubscriptionUrl]\">Manage subscription</a><br /><b>Add your "
+"postal address here!</b>"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:307
+#: views/newsletter/editor.html:945 views/newsletter/editor.html:1069
+msgid "Author:"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:309
+#: views/newsletter/editor.html:947 views/newsletter/editor.html:1071
+msgid "Categories:"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:311
+#: views/newsletter/editor.html:951 views/newsletter/editor.html:1075
+msgid "Read more"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/PostNotificationsBlankTemplate.php:314
+msgid "Read the post"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/WelcomeTemplate.php:16
+msgid "Welcome Email Example"
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/WelcomeTemplate.php:17
+msgid ""
+"A really simple welcome email idea to help you say hello your new "
+"subscribers."
+msgstr ""
+
+#: lib/Config/PopulatorData/Templates/WelcomeTemplate.php:104
+msgid ""
+"<h1 style=\"text-align: center;\"><strong>What's in a Welcome "
+"Email?&nbsp;</strong></h1>\n"
+"<p>How about thanking the person and telling them what they can expect from "
+"signing up as a subscriber,&nbsp;for example, how frequently they might "
+"receive newsletters from you and what type of content. If you also write a "
+"blog, why not share a few of your most recent posts using Automated Latest "
+"Content?</p>\n"
+"<p>Get help with your welcome email in our blog post: <a "
+"href=\"http://www.mailpoet.com/improve-your-signup-welcome-email/\">http://"
+"www.mailpoet.com/improve-your-signup-welcome-email/</a></p>\n"
+"<p></p>"
+msgstr ""
+
+#: lib/Config/Shortcodes.php:83
+msgid "Oops! There are no newsletters to display."
+msgstr ""
+
+#: lib/Config/Shortcodes.php:116
+msgid "Preview in new tab"
+msgstr ""
+
+#: lib/Cron/CronHelper.php:69
+msgid "Site URL is unreachable."
+msgstr ""
+
+#: lib/Cron/CronHelper.php:75 lib/Cron/Workers/Scheduler.php:24
+msgid "Maximum execution time reached."
+msgstr ""
+
+#: lib/Cron/Daemon.php:31
+msgid "Daemon does not exist."
+msgstr ""
+
+#: lib/Cron/Daemon.php:36
+msgid "Invalid or missing token."
+msgstr ""
+
+#: lib/Cron/Supervisor.php:60
+msgid "Daemon failed to run."
+msgstr ""
+
+#: lib/Cron/Supervisor.php:77
+msgid "Daemon is currently %s."
+msgstr ""
+
+#: lib/Cron/Workers/SendingQueue.php:229 lib/Mailer/Mailer.php:96
+msgid "Mailer is not configured."
+msgstr ""
+
+#: lib/Cron/Workers/SendingQueue.php:253
+msgid "Sending frequency limit reached."
+msgstr ""
+
+#: lib/Form/Block/Base.php:10
+msgid "You need to specify a valid email address"
+msgstr ""
+
+#: lib/Form/Block/Base.php:18 lib/Router/Subscribers.php:80
+msgid "You need to select a list"
+msgstr ""
+
+#: lib/Form/Block/Base.php:28
+msgid "You need to specify a valid phone number"
+msgstr ""
+
+#: lib/Form/Block/Base.php:37
+msgid "You need to select at least one option."
+msgstr ""
+
+#: lib/Form/Block/Date.php:56 views/settings/bounce.html:252
+msgid "Day"
+msgstr ""
+
+#: lib/Form/Block/Date.php:62
+msgid "Month"
+msgstr ""
+
+#: lib/Form/Block/Date.php:68 lib/Form/Block/Date.php:82
+#: views/newsletter/editor.html:1233
+msgid "Year"
+msgstr ""
+
+#: lib/Form/Block/Date.php:79
+msgid "Year, month, day"
+msgstr ""
+
+#: lib/Form/Block/Date.php:80
+msgid "Year, month"
+msgstr ""
+
+#: lib/Form/Block/Date.php:81
+msgid "Month (January, February,...)"
+msgstr ""
+
+#: lib/Form/Block/Date.php:95 views/subscribers/importExport/import.html:42
+msgid "January"
+msgstr ""
+
+#: lib/Form/Block/Date.php:95 views/subscribers/importExport/import.html:43
+msgid "February"
+msgstr ""
+
+#: lib/Form/Block/Date.php:95 views/subscribers/importExport/import.html:44
+msgid "March"
+msgstr ""
+
+#: lib/Form/Block/Date.php:95 views/subscribers/importExport/import.html:45
+msgid "April"
+msgstr ""
+
+#: lib/Form/Block/Date.php:96 views/subscribers/importExport/import.html:46
+msgid "May"
+msgstr ""
+
+#: lib/Form/Block/Date.php:96 views/subscribers/importExport/import.html:47
+msgid "June"
+msgstr ""
+
+#: lib/Form/Block/Date.php:96 views/subscribers/importExport/import.html:48
+msgid "July"
+msgstr ""
+
+#: lib/Form/Block/Date.php:96 views/subscribers/importExport/import.html:49
+msgid "August"
+msgstr ""
+
+#: lib/Form/Block/Date.php:96 views/subscribers/importExport/import.html:50
+msgid "September"
+msgstr ""
+
+#: lib/Form/Block/Date.php:97 views/subscribers/importExport/import.html:51
+msgid "October"
+msgstr ""
+
+#: lib/Form/Block/Date.php:97 views/subscribers/importExport/import.html:52
+msgid "November"
+msgstr ""
+
+#: lib/Form/Block/Date.php:97 views/subscribers/importExport/import.html:53
+msgid "December"
+msgstr ""
+
+#: lib/Form/Widget.php:39
+msgid "MailPoet Form"
+msgstr ""
+
+#: lib/Form/Widget.php:41
+msgid "Add a newsletter subscription form."
+msgstr ""
+
+#: lib/Form/Widget.php:64
+msgid "Subscribe to our Newsletter"
+msgstr ""
+
+#: lib/Form/Widget.php:79
+msgid "Title:"
+msgstr ""
+
+#: lib/Form/Widget.php:99
+msgid "Create a new form"
+msgstr ""
+
+#: lib/Mailer/Mailer.php:87
+msgid "Mailing method does not exist."
+msgstr ""
+
+#: lib/Mailer/Mailer.php:105
+msgid "Sender name and email are not configured."
+msgstr ""
+
+#: lib/Models/CustomField.php:12 lib/Models/Form.php:13
+#: lib/Models/NewsletterOptionField.php:12 lib/Models/NewsletterTemplate.php:13
+#: lib/Models/Segment.php:13 lib/Models/Setting.php:15
+#: views/subscribers/importExport/import/step2.html:143
+#: views/subscribers/importExport/import/step2.html:201
+msgid "You need to specify a name."
+msgstr ""
+
+#: lib/Models/CustomField.php:15 lib/Models/Newsletter.php:13
+msgid "You need to specify a type."
+msgstr ""
+
+#: lib/Models/Form.php:50 lib/Models/Newsletter.php:156
+#: lib/Models/Segment.php:108 lib/Models/Subscriber.php:284
+msgid "All"
+msgstr ""
+
+#: lib/Models/Form.php:55 lib/Models/Newsletter.php:161
+#: lib/Models/Segment.php:113 lib/Models/Subscriber.php:304
+msgid "Trash"
+msgstr ""
+
+#: lib/Models/Model.php:51 views/subscribers/importExport/import/step2.html:146
+msgid "Another record already exists. Please specify a different \"%1$s\"."
+msgstr ""
+
+#: lib/Models/Newsletter.php:93
+msgid "All lists"
+msgstr ""
+
+#: lib/Models/NewsletterOptionField.php:15
+msgid "You need to specify a newsletter type."
+msgstr ""
+
+#: lib/Models/NewsletterTemplate.php:16
+msgid "Template body cannot be empty."
+msgstr ""
+
+#: lib/Models/Segment.php:158
+msgid "Not In List"
+msgstr ""
+
+#: lib/Models/Setting.php:30
+msgid "Confirm your subscription to %1$s"
+msgstr ""
+
+#: lib/Models/Setting.php:31
+msgid ""
+"Hello!\n"
+"\n"
+"Hurray! You've subscribed to our site.\n"
+"We need you to activate your subscription to the list(s): "
+"[lists_to_confirm] by clicking the link below: \n"
+"\n"
+"[activation_link]Click here to confirm your subscription.[/activation_link]\n"
+"\n"
+"Thank you,\n"
+"\n"
+"The team!"
+msgstr ""
+
+#: lib/Models/Subscriber.php:19
+msgid "You need to enter your email address."
+msgstr ""
+
+#: lib/Models/Subscriber.php:20
+msgid "Your email address is invalid."
+msgstr ""
+
+#: lib/Models/Subscriber.php:232
+msgid "All segments"
+msgstr ""
+
+#: lib/Models/Subscriber.php:237
+msgid "Subscribers without a segment (%d)"
+msgstr ""
+
+#: lib/Models/Subscriber.php:289 lib/Subscription/Pages.php:243
+msgid "Subscribed"
+msgstr ""
+
+#: lib/Models/Subscriber.php:294 lib/Subscription/Pages.php:259
+msgid "Unconfirmed"
+msgstr ""
+
+#: lib/Models/Subscriber.php:299 lib/Subscription/Pages.php:251
+msgid "Unsubscribed"
+msgstr ""
+
+#: lib/Newsletter/Editor/PostContentManager.php:80
+msgid "Click here to view media."
+msgstr ""
+
+#: lib/Router/Forms.php:47 lib/Router/Forms.php:127
+msgid "New form"
+msgstr ""
+
+#: lib/Router/Forms.php:51 lib/Router/Forms.php:55
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:32
+#: lib/Subscription/Pages.php:214 views/newsletter/editor.html:908
+#: views/newsletter/editor.html:909
+msgid "Email"
+msgstr ""
+
+#: lib/Router/Forms.php:61
+msgid "Submit"
+msgstr ""
+
+#: lib/Router/Forms.php:65
+msgid "Subscribe!"
+msgstr ""
+
+#: lib/Router/Forms.php:71
+msgid "Check your inbox or spam folder now to confirm your subscription."
+msgstr ""
+
+#: lib/Router/Forms.php:226 lib/Router/Newsletters.php:129
+#: lib/Router/Segments.php:93
+msgid "Copy of %s"
+msgstr ""
+
+#: lib/Router/Newsletters.php:161
+msgid "Please specify receiver information"
+msgstr ""
+
+#: lib/Router/SendingQueue.php:29
+msgid "Send operation is already in progress."
+msgstr ""
+
+#: lib/Router/SendingQueue.php:50
+msgid "There are no subscribers."
+msgstr ""
+
+#: lib/Router/Subscribers.php:70
+msgid "This form does not exist."
+msgstr ""
+
+#: lib/Settings/Pages.php:11 lib/Settings/Pages.php:12
+#: lib/Settings/Pages.php:36
+msgid "MailPoet Page"
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:20
+#: lib/Subscribers/ImportExport/Export/Export.php:198
+msgid "Not In Segment"
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:33
+#: lib/Subscription/Pages.php:223 views/form/editor.html:223
+#: views/form/editor.html:226
+msgid "First name"
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:34
+#: lib/Subscription/Pages.php:231 views/form/editor.html:232
+#: views/form/editor.html:235
+msgid "Last name"
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:35
+#: lib/Subscription/Pages.php:239
+msgid "Status"
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:77
+msgid "Ignore column..."
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:81
+msgid "Create new column..."
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:87
+msgid "Select all..."
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:91
+msgid "Deselect all..."
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:96
+msgid "Actions"
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:100
+msgid "System columns"
+msgstr ""
+
+#: lib/Subscribers/ImportExport/BootStrapMenu.php:106
+#: views/subscribers/importExport/import.html:38
+msgid "User columns"
+msgstr ""
+
+#: lib/Subscribers/ImportExport/Export/Export.php:49
+msgid "Couldn't save export file on the server."
+msgstr ""
+
+#: lib/Subscribers/ImportExport/Export/Export.php:84
+msgid "Segment"
+msgstr ""
+
+#: lib/Subscribers/ImportExport/Export/Export.php:172
+msgid "All Segments"
+msgstr ""
+
+#: lib/Subscribers/ImportExport/Import/MailChimp.php:134
+msgid "Invalid API key."
+msgstr ""
+
+#: lib/Subscribers/ImportExport/Import/MailChimp.php:137
+msgid "Could not connect to your MailChimp account."
+msgstr ""
+
+#: lib/Subscribers/ImportExport/Import/MailChimp.php:140
+msgid "The selected lists do not have matching columns (headers)."
+msgstr ""
+
+#: lib/Subscribers/ImportExport/Import/MailChimp.php:143
+msgid ""
+"Information received from MailChimp is too large for processing. Please "
+"limit the number of lists."
+msgstr ""
+
+#: lib/Subscribers/ImportExport/Import/MailChimp.php:146
+msgid "Did not find any active subscribers."
+msgstr ""
+
+#: lib/Subscribers/ImportExport/Import/MailChimp.php:149
+msgid "Did not find any valid lists"
+msgstr ""
+
+#: lib/Subscription/Comment.php:23 lib/Subscription/Registration.php:11
+msgid "Yes, add me to your mailing list."
+msgstr ""
+
+#: lib/Subscription/Pages.php:108 lib/Subscription/Pages.php:127
+msgid "You've subscribed to: %s"
+msgstr ""
+
+#: lib/Subscription/Pages.php:112
+msgid "Your confirmation link expired, please subscribe again."
+msgstr ""
+
+#: lib/Subscription/Pages.php:124
+msgid "You've subscribed!"
+msgstr ""
+
+#: lib/Subscription/Pages.php:138 lib/Subscription/Pages.php:143
+msgid "Edit your subscriber profile: %s"
+msgstr ""
+
+#: lib/Subscription/Pages.php:151
+msgid "You've unsubscribed!"
+msgstr ""
+
+#: lib/Subscription/Pages.php:158
+msgid "Yup, we've added you to our list. You'll hear from us shortly."
+msgstr ""
+
+#: lib/Subscription/Pages.php:278
+msgid "Your lists"
+msgstr ""
+
+#: lib/Subscription/Pages.php:286 views/form/editor.html:25
+#: views/form/editor.html:382 views/newsletter/templates/components/save.hbs:3
+msgid "Save"
+msgstr ""
+
+#: lib/Subscription/Pages.php:308
+msgid "Great, you'll never hear from us again!"
+msgstr ""
+
+#: lib/Subscription/Pages.php:314
+msgid "You made a mistake? [link]Undo unsubscribe.[/link]"
+msgstr ""
+
+#: lib/Twig/Functions.php:59 views/settings/mta.html:989
+msgid "every minute"
+msgstr ""
+
+#: lib/Twig/Functions.php:60 views/settings/mta.html:990
+msgid "every %1$d minutes"
+msgstr ""
+
+#: lib/Twig/Functions.php:61 views/settings/mta.html:991
+msgid "every hour"
+msgstr ""
+
+#: lib/Twig/Functions.php:62 views/settings/mta.html:992
+msgid "every %1$d hours"
+msgstr ""
+
+#: lib/Util/Permissions.php:8
+msgid "Who can create newsletters?"
+msgstr ""
+
+#: lib/Util/Permissions.php:10
+msgid "Who can see the styles tab in the visual editor?"
+msgstr ""
+
+#: lib/Util/Permissions.php:12
+msgid "Who can manage subscribers?"
+msgstr ""
+
+#: lib/Util/Permissions.php:14
+msgid "Who can change MailPoet's settings?"
+msgstr ""
+
+#: views/form/editor.html:7
+msgid "Click to change the name!"
+msgstr ""
+
+#: views/form/editor.html:46
 msgid "This form adds subscribers to these lists:"
 msgstr ""
 
-#: views/form/editor.html:41
+#: views/form/editor.html:51 views/settings/basics.html:112
+#: views/settings/basics.html:176
 msgid "Choose a list"
 msgstr ""
 
-#: views/form/editor.html:45
-msgid "You have to select at least 1 list"
+#: views/form/editor.html:54
+msgid "You need to select a list."
 msgstr ""
 
-#: views/form/editor.html:51
+#: views/form/editor.html:65
 msgid "After submit..."
 msgstr ""
 
-#: views/form/editor.html:53
+#: views/form/editor.html:74
 msgid "Show message"
 msgstr ""
 
-#: views/form/editor.html:57
+#: views/form/editor.html:85
 msgid "Go to page"
 msgstr ""
 
-#: views/form/editor.html:64
+#: views/form/editor.html:92
 msgid "Check your inbox now to confirm your subscription."
 msgstr ""
 
-#: views/form/editor.html:84
-msgid "Shortcodes"
+#: views/form/editor.html:122
+msgid "Form Placement"
 msgstr ""
 
-#: views/form/editor.html:89
-msgid "You can easily add this form to your theme's in the %sWidgets area%s"
+#: views/form/editor.html:127
+msgid "Add this form to your sidebar or footer in the [link]Widgets[/link]."
 msgstr ""
 
-#: views/form/editor.html:95
+#: views/form/editor.html:136
+msgid ""
+"Copy and paste this [link]shortcode[/link] into a post or page "
+"alternatively."
+msgstr ""
+
+#: views/form/editor.html:145
 msgid "%sHTML%s"
 msgstr ""
 
-#: views/form/editor.html:118
+#: views/form/editor.html:166
 msgid "Fields"
 msgstr ""
 
-#: views/form/editor.html:124
+#: views/form/editor.html:172
 msgid "Add New Field"
 msgstr ""
 
-#: views/form/editor.html:133
+#: views/form/editor.html:181
+#: views/newsletter/templates/blocks/social/settings.hbs:3
+#: views/newsletter/templates/components/sidebar/styles.hbs:2
 msgid "Styles"
 msgstr ""
 
-#: views/form/editor.html:137
+#: views/form/editor.html:191
+#: views/newsletter/templates/components/sidebar/preview.hbs:2
+#: views/settings/basics.html:229 views/settings/basics.html:289
+#: views/settings/signup.html:171
 msgid "Preview"
 msgstr ""
 
-#: views/index.html:5
-msgid "Translatable string with a link %shere%s"
+#: views/form/editor.html:216
+#: views/newsletter/templates/blocks/divider/widget.hbs:4
+msgid "Divider"
 msgstr ""
 
-#: views/index.html:6 views/index.html:7
-msgid "deleted one message"
-msgid_plural "deleted %d messages"
+#: views/form/editor.html:241
+msgid "List selection"
+msgstr ""
+
+#: views/form/editor.html:244
+#: views/subscribers/importExport/import/step1.html:91
+msgid "Select list(s"
+msgstr ""
+
+#: views/form/editor.html:250
+msgid "Random text or HTML"
+msgstr ""
+
+#: views/form/editor.html:253
+msgid ""
+"Subscribe to our newsletter and join our [mailpoet_subscribers_count] "
+"subscribers."
+msgstr ""
+
+#: views/form/editor.html:400
+msgid "Edit name"
+msgstr ""
+
+#: views/form/editor.html:413
+msgid "Form name successfully updated!"
+msgstr ""
+
+#: views/form/editor.html:454
+msgid "Form preview"
+msgstr ""
+
+#: views/form/editor.html:480
+msgid "An error occured"
+msgstr ""
+
+#: views/form/editor.html:491
+msgid "Saved! The changes are already active in your widget."
+msgstr ""
+
+#: views/form/editor.html:493
+msgid "Saved! Add this form to %1$sa widget%2$s."
+msgstr ""
+
+#: views/form/editor.html:551
+msgid "Add new field"
+msgstr ""
+
+#: views/form/editor.html:569 views/form/templates/toolbar/fields.hbs:14
+msgid "Edit field"
+msgstr ""
+
+#: views/form/editor.html:584
+msgid "Delete this field for all your subscribers?"
+msgstr ""
+
+#: views/form/editor.html:602
+msgid "Removed custom field “\"+name+\"“"
+msgstr ""
+
+#: views/form/templates/blocks/container.hbs:10
+msgid "Edit display"
+msgstr ""
+
+#: views/form/templates/blocks/segment.hbs:2
+msgid "You have to select at least 1 list"
+msgstr ""
+
+#: views/form/templates/preview.hbs:4
+msgid "This is a success message"
+msgstr ""
+
+#: views/form/templates/preview.hbs:5
+msgid "This is an error message"
+msgstr ""
+
+#: views/form/templates/settings/date_default.hbs:2
+msgid "Preselect today's date:"
+msgstr ""
+
+#: views/form/templates/settings/date_default.hbs:11
+#: views/form/templates/settings/label_within.hbs:5
+#: views/form/templates/settings/required.hbs:9
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:125
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:282
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:79
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:221
+#: views/settings/advanced.html:88 views/settings/advanced.html:152
+#: views/settings/basics.html:101 views/settings/basics.html:165
+#: views/settings/bounce.html:190 views/settings/mta.html:599
+#: views/settings/signup.html:25 views/subscribers/importExport/export.html:37
+#: views/subscribers/importExport/import/step2.html:72
+msgid "Yes"
+msgstr ""
+
+#: views/form/templates/settings/date_default.hbs:20
+#: views/form/templates/settings/label_within.hbs:8
+#: views/form/templates/settings/required.hbs:17
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:131
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:184
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:210
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:288
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:85
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:139
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:165
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:227
+#: views/settings/advanced.html:99 views/settings/advanced.html:163
+#: views/settings/bounce.html:148 views/settings/bounce.html:179
+#: views/settings/mta.html:562 views/settings/mta.html:610
+#: views/settings/signup.html:37 views/subscribers/importExport/export.html:42
+#: views/subscribers/importExport/import/step2.html:76
+msgid "No"
+msgstr ""
+
+#: views/form/templates/settings/date_formats.hbs:9
+msgid "Order"
+msgstr ""
+
+#: views/form/templates/settings/date_types.hbs:2
+msgid "Type of date"
+msgstr ""
+
+#: views/form/templates/settings/field.hbs:19
+msgid "Number of lines:"
+msgstr ""
+
+#: views/form/templates/settings/field.hbs:24
+msgid "1 line"
+msgid_plural "%d lines"
 msgstr[0] ""
 msgstr[1] ""
 
-#: views/index.html:39 views/index.html:40 views/index.html:41
-msgid "Test"
+#: views/form/templates/settings/field.hbs:61
+msgid "Automatically add paragraphs"
 msgstr ""
 
-#: views/index.html:62
-msgid "Ajax output"
+#: views/form/templates/settings/field_form.hbs:11
+msgid "Select a field type:"
 msgstr ""
 
-#: views/index.html:95
-msgid "Testing 3 4..."
+#: views/form/templates/settings/field_form.hbs:16
+msgid "You need to specify a type"
 msgstr ""
 
-#: views/index.html:96 views/index.html:102
-msgid "Hello World!"
+#: views/form/templates/settings/field_form.hbs:21
+#: views/subscribers/importExport/import/step2.html:173
+msgid "Text Input"
 msgstr ""
 
-#: views/index.html:101
-msgid "Testing 1 2..."
+#: views/form/templates/settings/field_form.hbs:25
+#: views/subscribers/importExport/import/step2.html:176
+msgid "Text Area"
+msgstr ""
+
+#: views/form/templates/settings/field_form.hbs:29
+#: views/subscribers/importExport/import/step2.html:179
+msgid "Radio buttons"
+msgstr ""
+
+#: views/form/templates/settings/field_form.hbs:33
+#: views/subscribers/importExport/import/step2.html:182
+msgid "Checkbox"
+msgstr ""
+
+#: views/form/templates/settings/field_form.hbs:37
+#: views/subscribers/importExport/export.html:56
+#: views/subscribers/importExport/export.html:67
+#: views/subscribers/importExport/import/step1.html:95
+#: views/subscribers/importExport/import/step2.html:47
+#: views/subscribers/importExport/import/step2.html:185
+#: views/subscribers/importExport/import.html:24
+msgid "Select"
+msgstr ""
+
+#: views/form/templates/settings/field_form.hbs:41
+#: views/newsletter/editor.html:1211
+#: views/subscribers/importExport/import/step2.html:188
+msgid "Date"
+msgstr ""
+
+#: views/form/templates/settings/field_form.hbs:46
+msgid "Field's name:"
+msgstr ""
+
+#: views/form/templates/settings/field_form.hbs:52
+msgid "You need to specify a name"
+msgstr ""
+
+#: views/form/templates/settings/field_form.hbs:60
+#: views/form/templates/settings/submit.hbs:2
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:300
+#: views/newsletter/templates/blocks/button/settings.hbs:117
+#: views/newsletter/templates/blocks/container/settings.hbs:14
+#: views/newsletter/templates/blocks/divider/settings.hbs:37
+#: views/newsletter/templates/blocks/footer/settings.hbs:59
+#: views/newsletter/templates/blocks/header/settings.hbs:59
+#: views/newsletter/templates/blocks/image/settings.hbs:40
+#: views/newsletter/templates/blocks/social/settings.hbs:6
+#: views/newsletter/templates/blocks/spacer/settings.hbs:10
+#: views/subscribers/importExport/import/step2.html:157
+#: views/subscribers/importExport/import/step2.html:210
+msgid "Done"
+msgstr ""
+
+#: views/form/templates/settings/field_form.hbs:93
+msgid "Updated custom field “\"+data.name+\"“"
+msgstr ""
+
+#: views/form/templates/settings/field_form.hbs:97
+msgid "Added custom field “\"+data.name+\"“"
+msgstr ""
+
+#: views/form/templates/settings/label.hbs:2
+msgid "Label:"
+msgstr ""
+
+#: views/form/templates/settings/label_within.hbs:2
+msgid "Display label within input:"
+msgstr ""
+
+#: views/form/templates/settings/required.hbs:2
+msgid "Is this field mandatory?"
+msgstr ""
+
+#: views/form/templates/settings/segment_selection.hbs:4
+msgid "Select the segment you want to add:"
+msgstr ""
+
+#: views/form/templates/settings/segment_selection.hbs:8
+msgid "Add"
+msgstr ""
+
+#: views/form/templates/settings/segment_selection_item.hbs:10
+#: views/form/templates/settings/values_item.hbs:20
+msgid "Remove"
+msgstr ""
+
+#: views/form/templates/settings/segment_selection_item.hbs:11
+msgid "Move"
+msgstr ""
+
+#: views/form/templates/settings/validate.hbs:2
+msgid "Validate for:"
+msgstr ""
+
+#: views/form/templates/settings/validate.hbs:6
+msgid "Nothing"
+msgstr ""
+
+#: views/form/templates/settings/validate.hbs:11
+msgid "Numbers only"
+msgstr ""
+
+#: views/form/templates/settings/validate.hbs:16
+msgid "Alphanumerical"
+msgstr ""
+
+#: views/form/templates/settings/validate.hbs:21
+msgid "Phone number"
+msgstr ""
+
+#: views/form/templates/settings/values.hbs:4
+msgid "Add item"
+msgstr ""
+
+#: views/form/templates/toolbar/fields.hbs:20
+msgid "Delete field"
+msgstr ""
+
+#: views/forms.html:8 views/newsletters.html:8 views/segments.html:8
+#: views/subscribers/subscribers.html:8
+msgid "Search"
+msgstr ""
+
+#: views/forms.html:9
+msgid "Loading forms..."
+msgstr ""
+
+#: views/forms.html:10
+msgid "No forms found."
+msgstr ""
+
+#: views/forms.html:11
+msgid "All forms on this page are selected."
+msgstr ""
+
+#: views/forms.html:12
+msgid "All %d forms are selected."
+msgstr ""
+
+#: views/forms.html:13
+msgid "Select all forms on all pages."
+msgstr ""
+
+#: views/forms.html:14 views/newsletters.html:14
+#: views/subscribers/subscribers.html:14
+msgid "Clear selection."
+msgstr ""
+
+#: views/forms.html:15
+msgid "%d forms permanently deleted."
+msgstr ""
+
+#: views/index.html:5
+msgid " %sSetup%s MailPoet and start sending."
+msgstr ""
+
+#: views/layout.html:45
+msgid ""
+"Want to give feedback to the MailPoet team? Write them right here with as "
+"much information as possible."
+msgstr ""
+
+#: views/newsletter/editor.html:226
+msgid "Select type"
+msgstr ""
+
+#: views/newsletter/editor.html:226
+msgid "Template"
+msgstr ""
+
+#: views/newsletter/editor.html:226
+msgid "Designer"
+msgstr ""
+
+#: views/newsletter/editor.html:226
+msgid "Send"
+msgstr ""
+
+#: views/newsletter/editor.html:255
+msgid "Insert/edit link"
+msgstr ""
+
+#: views/newsletter/editor.html:262
+msgid "Type"
+msgstr ""
+
+#: views/newsletter/editor.html:264
+msgid "Link to a web page"
+msgstr ""
+
+#: views/newsletter/editor.html:265
+msgid "Browser version"
+msgstr ""
+
+#: views/newsletter/editor.html:266
+msgid "Unsubcribe page"
+msgstr ""
+
+#: views/newsletter/editor.html:267
+msgid "Manage your subscription page"
+msgstr ""
+
+#: views/newsletter/editor.html:272 views/newsletter/editor.html:884
+#: views/newsletter/editor.html:889 views/newsletter/editor.html:894
+#: views/newsletter/editor.html:899 views/newsletter/editor.html:904
+#: views/newsletter/editor.html:914 views/newsletter/editor.html:919
+#: views/newsletter/editor.html:924 views/newsletter/editor.html:929
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:238
+#: views/newsletter/templates/blocks/button/settings.hbs:14
+#: views/newsletter/templates/blocks/image/settings.hbs:4
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:193
+msgid "Link"
+msgstr ""
+
+#: views/newsletter/editor.html:275
+msgid "Title"
+msgstr ""
+
+#: views/newsletter/editor.html:278
+msgid "Open link in a new window/tab"
+msgstr ""
+
+#: views/newsletter/editor.html:284
+msgid "Search your content"
+msgstr ""
+
+#: views/newsletter/editor.html:296
+msgid "No search term specified. Showing recent items."
+msgstr ""
+
+#: views/newsletter/editor.html:306
+msgid "Add Link"
+msgstr ""
+
+#: views/newsletter/editor.html:309
+#: views/newsletter/templates/blocks/base/toolsGeneric.hbs:5
+#: views/subscribers/importExport/import/step2.html:159
+#: views/subscribers/importExport/import/step2.html:212
+msgid "Cancel"
+msgstr ""
+
+#: views/newsletter/editor.html:316
+msgid "Failed to fetch available posts"
+msgstr ""
+
+#: views/newsletter/editor.html:317
+msgid "Failed to fetch rendered posts"
+msgstr ""
+
+#: views/newsletter/editor.html:318
+msgid "Select a shortcode"
+msgstr ""
+
+#: views/newsletter/editor.html:319
+msgid ""
+"All newsletters must include an \"unsubscribe\" link. Add a footer widget "
+"to your newsletter to continue."
+msgstr ""
+
+#: views/newsletter/editor.html:320
+msgid "Please enter an email where newsletter preview should be sent to."
+msgstr ""
+
+#: views/newsletter/editor.html:321
+msgid "Newsletter preview email has been successfully sent!"
+msgstr ""
+
+#: views/newsletter/editor.html:322
+msgid ""
+"Attempt to send a newsletter preview email failed. Please verify that your "
+"sending method is configured correctly try again."
+msgstr ""
+
+#: views/newsletter/editor.html:323
+msgid "Please add a template name"
+msgstr ""
+
+#: views/newsletter/editor.html:324
+msgid "Please add a template description"
+msgstr ""
+
+#: views/newsletter/editor.html:325
+msgid "Template has been saved."
+msgstr ""
+
+#: views/newsletter/editor.html:326
+msgid "Template has not been saved"
+msgstr ""
+
+#: views/newsletter/editor.html:903
+msgid "Website"
+msgstr ""
+
+#: views/newsletter/editor.html:928
+msgid "Custom"
+msgstr ""
+
+#: views/newsletter/editor.html:987
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:244
+#: views/newsletter/templates/blocks/button/settings.hbs:1
+#: views/newsletter/templates/blocks/button/widget.hbs:4
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:199
+msgid "Button"
+msgstr ""
+
+#: views/newsletter/editor.html:1025
+msgid "Unsubscribe"
+msgstr ""
+
+#: views/newsletter/editor.html:1025
+msgid "Manage subscription"
+msgstr ""
+
+#: views/newsletter/editor.html:1025
+msgid "Add your postal address here!"
+msgstr ""
+
+#: views/newsletter/editor.html:1047
+msgid "An image of..."
+msgstr ""
+
+#: views/newsletter/editor.html:1122
+msgid "Facebook"
+msgstr ""
+
+#: views/newsletter/editor.html:1133
+msgid "Twitter"
+msgstr ""
+
+#: views/newsletter/editor.html:1146
+msgid "Edit this to insert text"
+msgstr ""
+
+#: views/newsletter/editor.html:1149
+msgid "Display problems?"
+msgstr ""
+
+#: views/newsletter/editor.html:1150
+msgid "View it in your browser"
+msgstr ""
+
+#: views/newsletter/editor.html:1169
+msgid "Subscriber"
+msgstr ""
+
+#: views/newsletter/editor.html:1171
+msgid "First Name"
+msgstr ""
+
+#: views/newsletter/editor.html:1175
+msgid "Last Name"
+msgstr ""
+
+#: views/newsletter/editor.html:1179
+msgid "Email Address"
+msgstr ""
+
+#: views/newsletter/editor.html:1183
+msgid "Wordpress user display name"
+msgstr ""
+
+#: views/newsletter/editor.html:1187
+msgid "Total of subscribers"
+msgstr ""
+
+#: views/newsletter/editor.html:1191
+#: views/newsletter/templates/components/sidebar/styles.hbs:74
+msgid "Newsletter"
+msgstr ""
+
+#: views/newsletter/editor.html:1193
+msgid "Newsletter Subject"
+msgstr ""
+
+#: views/newsletter/editor.html:1197
+msgid "Post Notifications"
+msgstr ""
+
+#: views/newsletter/editor.html:1199
+msgid "Total number of posts or pages"
+msgstr ""
+
+#: views/newsletter/editor.html:1203
+msgid "Latest post title"
+msgstr ""
+
+#: views/newsletter/editor.html:1207
+msgid "Issue number"
+msgstr ""
+
+#: views/newsletter/editor.html:1213
+msgid "Current day of the month number"
+msgstr ""
+
+#: views/newsletter/editor.html:1217
+msgid "Current day of the month in ordinal"
+msgstr ""
+
+#: views/newsletter/editor.html:1221
+msgid "Full name of current day"
+msgstr ""
+
+#: views/newsletter/editor.html:1225
+msgid "Current month number"
+msgstr ""
+
+#: views/newsletter/editor.html:1229
+msgid "Full name of current month"
+msgstr ""
+
+#: views/newsletter/editor.html:1237
+#: views/newsletter/templates/blocks/footer/settings.hbs:22
+#: views/newsletter/templates/blocks/header/settings.hbs:22
+#: views/newsletter/templates/components/sidebar/styles.hbs:68
+msgid "Links"
+msgstr ""
+
+#: views/newsletter/editor.html:1239
+msgid "Unsubscribe link"
+msgstr ""
+
+#: views/newsletter/editor.html:1243
+msgid "Edit subscription page link"
+msgstr ""
+
+#: views/newsletter/editor.html:1247
+msgid "View in browser link"
+msgstr ""
+
+#: views/newsletter/editor.html:1252
+msgid "Custom fields"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:1
+#: views/newsletter/templates/blocks/posts/settings.hbs:1
+msgid "Post selection"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:4
+msgid "Show:"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:8
+#: views/newsletter/templates/blocks/posts/settingsSelection.hbs:6
+#: views/newsletter/templates/blocks/posts/widget.hbs:4
+msgid "Posts"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:9
+#: views/newsletter/templates/blocks/posts/settingsSelection.hbs:7
+msgid "Pages"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:10
+#: views/newsletter/templates/blocks/posts/settingsSelection.hbs:8
+msgid "MailPoet pages"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:16
+#: views/newsletter/templates/blocks/posts/settingsSelection.hbs:17
+msgid "Categories & tags:"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:27
+msgid "Include"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:33
+msgid "Exclude"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:42
+#: views/newsletter/templates/blocks/posts/settings.hbs:7
+msgid "Display options"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:46
+msgid "Hide display options"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:53
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:5
+msgid "Excerpt"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:59
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:11
+msgid "Full post"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:65
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:17
+msgid "Title only"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:71
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:25
+msgid "Title Format"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:75
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:29
+#: views/newsletter/templates/components/sidebar/styles.hbs:33
+msgid "Heading 1"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:81
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:35
+#: views/newsletter/templates/components/sidebar/styles.hbs:48
+msgid "Heading 2"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:87
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:41
+#: views/newsletter/templates/components/sidebar/styles.hbs:63
+msgid "Heading 3"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:93
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:47
+msgid "Show as list"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:99
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:53
+msgid "Title Alignment"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:103
+#: views/newsletter/templates/blocks/button/settings.hbs:27
+#: views/newsletter/templates/blocks/footer/settings.hbs:41
+#: views/newsletter/templates/blocks/header/settings.hbs:41
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:57
+msgid "Left"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:109
+#: views/newsletter/templates/blocks/button/settings.hbs:33
+#: views/newsletter/templates/blocks/footer/settings.hbs:47
+#: views/newsletter/templates/blocks/header/settings.hbs:47
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:63
+msgid "Center"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:115
+#: views/newsletter/templates/blocks/button/settings.hbs:39
+#: views/newsletter/templates/blocks/footer/settings.hbs:53
+#: views/newsletter/templates/blocks/header/settings.hbs:53
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:69
+msgid "Right"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:121
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:75
+msgid "Title as links"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:139
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:95
+msgid "Featured image position"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:143
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:99
+msgid "Below title"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:149
+msgid "Above title"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:155
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:111
+msgid "None"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:162
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:117
+msgid "Image width"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:166
+#: views/newsletter/templates/blocks/image/settings.hbs:30
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:121
+msgid "Full width"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:172
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:127
+msgid "Padded"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:180
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:135
+msgid "Show author"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:190
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:216
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:145
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:171
+msgid "Above text"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:196
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:222
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:151
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:177
+msgid "Below text"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:199
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:225
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:154
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:180
+msgid "Preceded by:"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:206
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:161
+msgid "Show categories"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:234
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:189
+msgid "Read more\" text"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:253
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:208
+msgid "Design a button"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:261
+msgid "Sort by"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:265
+msgid "Newest"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:271
+msgid "Oldest"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:278
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:217
+msgid "Show divider between posts"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/settings.hbs:292
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:231
+msgid "Select divider"
+msgstr ""
+
+#: views/newsletter/templates/blocks/automatedLatestContent/widget.hbs:4
+msgid "Automated latest content"
+msgstr ""
+
+#: views/newsletter/templates/blocks/base/toolsGeneric.hbs:1
+msgid "Switch editing layer"
+msgstr ""
+
+#: views/newsletter/templates/blocks/base/toolsGeneric.hbs:3
+msgid "Edit settings"
+msgstr ""
+
+#: views/newsletter/templates/blocks/base/toolsGeneric.hbs:5
+msgid "Delete"
+msgstr ""
+
+#: views/newsletter/templates/blocks/base/toolsGeneric.hbs:5
+msgid "Confirm deletion"
+msgstr ""
+
+#: views/newsletter/templates/blocks/base/toolsGeneric.hbs:5
+msgid "Cancel deletion"
+msgstr ""
+
+#: views/newsletter/templates/blocks/base/toolsGeneric.hbs:5
+msgid "Drag to move"
+msgstr ""
+
+#: views/newsletter/templates/blocks/button/settings.hbs:4
+msgid "Label"
+msgstr ""
+
+#: views/newsletter/templates/blocks/button/settings.hbs:23
+msgid "Alignment"
+msgstr ""
+
+#: views/newsletter/templates/blocks/button/settings.hbs:57
+#: views/newsletter/templates/blocks/footer/settings.hbs:16
+#: views/newsletter/templates/blocks/header/settings.hbs:16
+#: views/newsletter/templates/blocks/social/settingsIcon.hbs:55
+#: views/newsletter/templates/blocks/text/settings.hbs:1
+#: views/newsletter/templates/blocks/text/settings.hbs:2
+#: views/newsletter/templates/blocks/text/widget.hbs:4
+#: views/newsletter/templates/components/sidebar/styles.hbs:18
+msgid "Text"
+msgstr ""
+
+#: views/newsletter/templates/blocks/button/settings.hbs:63
+msgid "Bold"
+msgstr ""
+
+#: views/newsletter/templates/blocks/button/settings.hbs:71
+#: views/newsletter/templates/blocks/container/settings.hbs:7
+#: views/newsletter/templates/blocks/divider/settings.hbs:28
+#: views/newsletter/templates/blocks/footer/settings.hbs:34
+#: views/newsletter/templates/blocks/header/settings.hbs:34
+#: views/newsletter/templates/blocks/spacer/settings.hbs:6
+#: views/newsletter/templates/components/sidebar/styles.hbs:79
+msgid "Background"
+msgstr ""
+
+#: views/newsletter/templates/blocks/button/settings.hbs:77
+msgid "Border"
+msgstr ""
+
+#: views/newsletter/templates/blocks/button/settings.hbs:85
+msgid "Rounded corners"
+msgstr ""
+
+#: views/newsletter/templates/blocks/button/settings.hbs:94
+msgid "Width"
+msgstr ""
+
+#: views/newsletter/templates/blocks/button/settings.hbs:103
+msgid "Height"
+msgstr ""
+
+#: views/newsletter/templates/blocks/button/settings.hbs:112
+msgid "Apply styles to all buttons"
+msgstr ""
+
+#: views/newsletter/templates/blocks/container/emptyBlock.hbs:1
+msgid "Drop layout here"
+msgstr ""
+
+#: views/newsletter/templates/blocks/container/emptyBlock.hbs:1
+msgid "Drop content here"
+msgstr ""
+
+#: views/newsletter/templates/blocks/container/oneColumnLayoutWidget.hbs:4
+msgid "1 column"
+msgstr ""
+
+#: views/newsletter/templates/blocks/container/settings.hbs:1
+#: views/newsletter/templates/components/sidebar/layout.hbs:2
+msgid "Layout"
+msgstr ""
+
+#: views/newsletter/templates/blocks/container/threeColumnLayoutWidget.hbs:4
+msgid "3 columns"
+msgstr ""
+
+#: views/newsletter/templates/blocks/container/twoColumnLayoutWidget.hbs:4
+msgid "2 columns"
+msgstr ""
+
+#: views/newsletter/templates/blocks/divider/settings.hbs:1
+msgid "Dividers"
+msgstr ""
+
+#: views/newsletter/templates/blocks/divider/settings.hbs:15
+msgid "Divider height"
+msgstr ""
+
+#: views/newsletter/templates/blocks/divider/settings.hbs:22
+msgid "Divider color"
+msgstr ""
+
+#: views/newsletter/templates/blocks/divider/settings.hbs:32
+msgid "Apply to all dividers"
+msgstr ""
+
+#: views/newsletter/templates/blocks/footer/settings.hbs:1
+#: views/newsletter/templates/blocks/footer/widget.hbs:4
+msgid "Footer"
+msgstr ""
+
+#: views/newsletter/templates/blocks/footer/settings.hbs:25
+#: views/newsletter/templates/blocks/header/settings.hbs:25
+#: views/newsletter/templates/components/sidebar/styles.hbs:68
+msgid "Underline"
+msgstr ""
+
+#: views/newsletter/templates/blocks/header/settings.hbs:1
+#: views/newsletter/templates/blocks/header/widget.hbs:4
+msgid "Header"
+msgstr ""
+
+#: views/newsletter/templates/blocks/image/settings.hbs:1
+#: views/newsletter/templates/blocks/image/widget.hbs:4
+#: views/newsletter/templates/blocks/social/settingsIcon.hbs:27
+msgid "Image"
+msgstr ""
+
+#: views/newsletter/templates/blocks/image/settings.hbs:4
+msgid "Optional"
+msgstr ""
+
+#: views/newsletter/templates/blocks/image/settings.hbs:12
+msgid "Address"
+msgstr ""
+
+#: views/newsletter/templates/blocks/image/settings.hbs:20
+msgid "Alternative text"
+msgstr ""
+
+#: views/newsletter/templates/blocks/image/settings.hbs:36
+msgid "Select another image"
+msgstr ""
+
+#: views/newsletter/templates/blocks/posts/settings.hbs:6
+msgid "Back to selection"
+msgstr ""
+
+#: views/newsletter/templates/blocks/posts/settings.hbs:9
+msgid "Insert selected"
+msgstr ""
+
+#: views/newsletter/templates/blocks/posts/settingsDisplayOptions.hbs:105
+msgid "Above block"
+msgstr ""
+
+#: views/newsletter/templates/blocks/posts/settingsSelection.hbs:3
+msgid "Search..."
+msgstr ""
+
+#: views/newsletter/templates/blocks/posts/settingsSelection.hbs:10
+msgid "Published"
+msgstr ""
+
+#: views/newsletter/templates/blocks/posts/settingsSelection.hbs:11
+msgid "Scheduled"
+msgstr ""
+
+#: views/newsletter/templates/blocks/posts/settingsSelection.hbs:12
+msgid "Draft"
+msgstr ""
+
+#: views/newsletter/templates/blocks/posts/settingsSelection.hbs:13
+msgid "Pending Review"
+msgstr ""
+
+#: views/newsletter/templates/blocks/posts/settingsSelection.hbs:14
+msgid "Private"
+msgstr ""
+
+#: views/newsletter/templates/blocks/posts/settingsSelectionEmpty.hbs:1
+msgid "No posts available"
+msgstr ""
+
+#: views/newsletter/templates/blocks/social/settings.hbs:1
+msgid "Select icons"
+msgstr ""
+
+#: views/newsletter/templates/blocks/social/settingsIconSelector.hbs:2
+msgid "Add another social network"
+msgstr ""
+
+#: views/newsletter/templates/blocks/social/widget.hbs:2
+msgid "Social"
+msgstr ""
+
+#: views/newsletter/templates/blocks/spacer/settings.hbs:1
+#: views/newsletter/templates/blocks/spacer/widget.hbs:4
+msgid "Spacer"
+msgstr ""
+
+#: views/newsletter/templates/components/heading.hbs:6
+msgid "Click to change the subject!"
+msgstr ""
+
+#: views/newsletter/templates/components/heading.hbs:13
+msgid "Write your preheader here..."
+msgstr ""
+
+#: views/newsletter/templates/components/save.hbs:5
+msgid "Next"
+msgstr ""
+
+#: views/newsletter/templates/components/save.hbs:7
+msgid "Autosaved"
+msgstr ""
+
+#: views/newsletter/templates/components/save.hbs:10
+#: views/newsletter/templates/components/save.hbs:15
+#: views/newsletter/templates/components/save.hbs:18
+msgid "Save as template"
+msgstr ""
+
+#: views/newsletter/templates/components/save.hbs:11
+msgid "Export as template"
+msgstr ""
+
+#: views/newsletter/templates/components/save.hbs:16
+msgid "Insert template name"
+msgstr ""
+
+#: views/newsletter/templates/components/save.hbs:17
+msgid "Insert template description"
+msgstr ""
+
+#: views/newsletter/templates/components/save.hbs:21
+#: views/newsletter/templates/components/save.hbs:24
+msgid "Export template"
+msgstr ""
+
+#: views/newsletter/templates/components/save.hbs:22
+msgid "Template name"
+msgstr ""
+
+#: views/newsletter/templates/components/save.hbs:23
+msgid "Template description"
+msgstr ""
+
+#: views/newsletter/templates/components/sidebar/content.hbs:2
+msgid "Content"
+msgstr ""
+
+#: views/newsletter/templates/components/sidebar/preview.hbs:6
+msgid "Send preview to"
+msgstr ""
+
+#: views/newsletter/templates/components/sidebar/preview.hbs:12
+msgid "Send preview"
+msgstr ""
+
+#: views/newsletter/templates/components/sidebar/preview.hbs:17
+msgid "View in browser"
+msgstr ""
+
+#: views/newsletter/templates/components/sidebar/styles.hbs:1
+msgid "Click to toggle"
+msgstr ""
+
+#: views/newsletters.html:9
+msgid "Loading newsletters..."
+msgstr ""
+
+#: views/newsletters.html:10
+msgid "No newsletters found."
+msgstr ""
+
+#: views/newsletters.html:11
+msgid "All newsletters on this page are selected."
+msgstr ""
+
+#: views/newsletters.html:12
+msgid "All %d newsletters are selected."
+msgstr ""
+
+#: views/newsletters.html:13
+msgid "Select all newsletters on all pages."
+msgstr ""
+
+#: views/newsletters.html:15
+msgid "%d newsletters permanently deleted."
+msgstr ""
+
+#: views/segments.html:9
+msgid "Loading segments..."
+msgstr ""
+
+#: views/segments.html:10
+msgid "No segments found."
+msgstr ""
+
+#: views/segments.html:11
+msgid "%d segments permanently deleted."
+msgstr ""
+
+#: views/settings/advanced.html:5
+msgid "Roles and permissions"
+msgstr ""
+
+#: views/settings/advanced.html:48
+msgid "Bounce email"
+msgstr ""
+
+#: views/settings/advanced.html:50
+msgid "To which address should all the bounced emails go?"
+msgstr ""
+
+#: views/settings/advanced.html:68
+msgid "Share anonymous data"
+msgstr ""
+
+#: views/settings/advanced.html:70
+msgid "Share anonymous data and help us improve the plugin."
+msgstr ""
+
+#: views/settings/advanced.html:74 views/settings/mta.html:631
+#: views/settings/mta.html:653
+msgid "Read more."
+msgstr ""
+
+#: views/settings/advanced.html:108
+msgid "Charset"
+msgstr ""
+
+#: views/settings/advanced.html:110
+msgid ""
+"Squares or weird characters are displayed in your emails? Select the "
+"encoding for your language."
+msgstr ""
+
+#: views/settings/advanced.html:136
+msgid "Debug mode"
+msgstr ""
+
+#: views/settings/advanced.html:138
+msgid ""
+"Enable this to show MailPoet's errors. Our support might ask you to enable "
+"this if you seek their help."
+msgstr ""
+
+#: views/settings/advanced.html:171
+msgid "Reinstall from scratch"
+msgstr ""
+
+#: views/settings/advanced.html:172
+msgid ""
+"Want to start all over again? This will wipe out MailPoet and reinstall "
+"anew."
+msgstr ""
+
+#: views/settings/advanced.html:179
+msgid "Reinstall now..."
+msgstr ""
+
+#: views/settings/advanced.html:191
+msgid "If you confirm this"
+msgstr ""
+
+#: views/settings/advanced.html:199
+msgid ""
+"MailPoet has been reinstalled successfully using the same version. Settings "
+"and data have been deleted."
+msgstr ""
+
+#: views/settings/advanced.html:203
+msgid ""
+"MailPoet could not be reinstalled. You might need to remove it manually "
+"first."
+msgstr ""
+
+#: views/settings/basics.html:7
+msgid "Email notifications"
+msgstr ""
+
+#: views/settings/basics.html:9
+msgid ""
+"Enter the email addresses that should receive notifications (separate by "
+"comma"
+msgstr ""
+
+#: views/settings/basics.html:28
+msgid "When someone subscribes"
+msgstr ""
+
+#: views/settings/basics.html:38
+msgid "When someone unsubscribes"
+msgstr ""
+
+#: views/settings/basics.html:43 views/settings/signup.html:50
+msgid "From"
+msgstr ""
+
+#: views/settings/basics.html:48 views/settings/basics.html:62
+#: views/settings/signup.html:60 views/settings/signup.html:87
+msgid "Your name"
+msgstr ""
+
+#: views/settings/basics.html:57 views/settings/signup.html:77
+msgid "Reply-to"
+msgstr ""
+
+#: views/settings/basics.html:76
+msgid "Subscribe in comments"
+msgstr ""
+
+#: views/settings/basics.html:77
+msgid ""
+"Visitors who submit a comment on a post can click on a checkbox to "
+"subscribe."
+msgstr ""
+
+#: views/settings/basics.html:106 views/settings/basics.html:170
+msgid "Users will be subscribed to these lists:"
+msgstr ""
+
+#: views/settings/basics.html:134
+msgid "Subscribe in registration form"
+msgstr ""
+
+#: views/settings/basics.html:136
+msgid "Allow users who register to your site to subscribe on a list of your choice."
+msgstr ""
+
+#: views/settings/basics.html:192
+msgid "Registration is disabled on this site."
+msgstr ""
+
+#: views/settings/basics.html:201
+msgid "Manage Subscription page"
+msgstr ""
+
+#: views/settings/basics.html:203
+msgid ""
+"The page your subscribers see when they click on \"Manage your "
+"subscription\" in your emails."
+msgstr ""
+
+#: views/settings/basics.html:228 views/settings/basics.html:288
+#: views/settings/signup.html:170
+msgid "Preview page"
+msgstr ""
+
+#: views/settings/basics.html:232 views/settings/basics.html:292
+#: views/settings/signup.html:174
+msgid "Edit page"
+msgstr ""
+
+#: views/settings/basics.html:233 views/settings/basics.html:293
+#: views/settings/signup.html:175
+msgid "Edit"
+msgstr ""
+
+#: views/settings/basics.html:236
+msgid "Subscribers can choose from these lists:"
+msgstr ""
+
+#: views/settings/basics.html:242 views/settings/basics.html:323
+#: views/settings/basics.html:359
+msgid "Leave empty to show all lists"
+msgstr ""
+
+#: views/settings/basics.html:261
+msgid "Unsubscribe page"
+msgstr ""
+
+#: views/settings/basics.html:263
+msgid ""
+"The page your subscribers see when they click on \"Unsubscribe\" in your "
+"emails."
+msgstr ""
+
+#: views/settings/basics.html:301
+msgid "Archive page shortcode"
+msgstr ""
+
+#: views/settings/basics.html:303
+msgid "Paste this shortcode in a page to display a list of past newsletters."
+msgstr ""
+
+#: views/settings/basics.html:337
+msgid "Shortcode to display total number of subscribers"
+msgstr ""
+
+#: views/settings/basics.html:339
+msgid ""
+"Paste this shortcode to display the number of confirmed subscribers in post "
+"or page."
+msgstr ""
+
+#: views/settings/bounce.html:1
+msgid "How does it work?"
+msgstr ""
+
+#: views/settings/bounce.html:4
+msgid "Create an email account dedicated solely to bounce handling."
+msgstr ""
+
+#: views/settings/bounce.html:7
+msgid "Fill out the form below so we can connect to it."
+msgstr ""
+
+#: views/settings/bounce.html:10
+msgid "Take it easy"
+msgstr ""
+
+#: views/settings/bounce.html:16
+msgid "Need help? Check out %1$sour guide%2$s on how to fill out the form."
+msgstr ""
+
+#: views/settings/bounce.html:32
+msgid "Hostname"
+msgstr ""
+
+#: views/settings/bounce.html:50 views/settings/mta.html:523
+msgid "Login"
+msgstr ""
+
+#: views/settings/bounce.html:67 views/settings/mta.html:540
+msgid "Password"
+msgstr ""
+
+#: views/settings/bounce.html:84
+msgid "Connection method"
+msgstr ""
+
+#: views/settings/bounce.html:110
+msgid "POP3 without imap extension"
+msgstr ""
+
+#: views/settings/bounce.html:125
+msgid "Port"
+msgstr ""
+
+#: views/settings/bounce.html:143 views/settings/mta.html:557
+msgid "Secure connection"
+msgstr ""
+
+#: views/settings/bounce.html:167
+msgid "Self-signed certificate"
+msgstr ""
+
+#: views/settings/bounce.html:198
+msgid "Activate bounce and check every..."
+msgstr ""
+
+#: views/settings/bounce.html:222
+msgid "15 minutes"
+msgstr ""
+
+#: views/settings/bounce.html:228
+msgid "30 minutes"
+msgstr ""
+
+#: views/settings/bounce.html:234
+msgid "1 hour"
+msgstr ""
+
+#: views/settings/bounce.html:240
+msgid "2 hours"
+msgstr ""
+
+#: views/settings/bounce.html:246
+msgid "Twice daily"
+msgstr ""
+
+#: views/settings/bounce.html:266
+msgid "Does it work? Try to connect."
+msgstr ""
+
+#: views/settings/mta.html:75
+msgid ""
+"Send to 500 subscribers per month for <strong>free</strong>. Enjoy great "
+"deliverability"
+msgstr ""
+
+#: views/settings/mta.html:77
+msgid "See pricing for more."
+msgstr ""
+
+#: views/settings/mta.html:81 views/settings/mta.html:101
+#: views/settings/mta.html:121
+msgid "Activated"
+msgstr ""
+
+#: views/settings/mta.html:87 views/settings/mta.html:107
+#: views/settings/mta.html:127
+msgid "Configure"
+msgstr ""
+
+#: views/settings/mta.html:94
+msgid "Your own website"
+msgstr ""
+
+#: views/settings/mta.html:97
+msgid ""
+"The simplest solution for small lists. Your web host sets a daily email "
+"limit."
+msgstr ""
+
+#: views/settings/mta.html:114
+msgid "Third party"
+msgstr ""
+
+#: views/settings/mta.html:117
+msgid "Send with an alternate email provider. Usually not free."
+msgstr ""
+
+#: views/settings/mta.html:139
+msgid "Open a free account with MailPoet"
+msgstr ""
+
+#: views/settings/mta.html:143
+msgid "Send up to 4000 emails with good deliverability for free. %1$sNeed more?%2$s"
+msgstr ""
+
+#: views/settings/mta.html:149
+msgid "Test your campaign's spam score"
+msgstr ""
+
+#: views/settings/mta.html:152
+msgid "Send on time"
+msgstr ""
+
+#: views/settings/mta.html:157
+msgid "Create a free account to get a key"
+msgstr ""
+
+#: views/settings/mta.html:162
+msgid "Already have a key?"
+msgstr ""
+
+#: views/settings/mta.html:168
+msgid "Your key"
+msgstr ""
+
+#: views/settings/mta.html:195 views/settings/mta.html:327
+msgid "Sending frequency"
+msgstr ""
+
+#: views/settings/mta.html:206
+msgid "Safe default values"
+msgstr ""
+
+#: views/settings/mta.html:214
+msgid "I'll set my own frequency"
+msgstr ""
+
+#: views/settings/mta.html:219
+msgid "Select your host recommended frequency"
+msgstr ""
+
+#: views/settings/mta.html:251 views/settings/mta.html:343
+msgid "emails"
+msgstr ""
+
+#: views/settings/mta.html:268 views/settings/mta.html:360
+msgid "recommended"
+msgstr ""
+
+#: views/settings/mta.html:277 views/settings/mta.html:369
+msgid ""
+"<strong>Warning!</strong> Sending more than the recommended amount of "
+"emails might break the terms of your host or provider."
+msgstr ""
+
+#: views/settings/mta.html:279 views/settings/mta.html:371
+msgid "Double check with them what maximum number of emails you can send daily."
+msgstr ""
+
+#: views/settings/mta.html:295
+msgid "Provider"
+msgstr ""
+
+#: views/settings/mta.html:305
+msgid "Custom SMTP"
+msgstr ""
+
+#: views/settings/mta.html:308
+msgid "Select your prodivder"
+msgstr ""
+
+#: views/settings/mta.html:379
+msgid "SMTP Hostname"
+msgstr ""
+
+#: views/settings/mta.html:381 views/settings/mta.html:487
+msgid "e.g.:smtp.mydomain.com"
+msgstr ""
+
+#: views/settings/mta.html:398
+msgid "SMTP Port"
+msgstr ""
+
+#: views/settings/mta.html:421
+msgid "Region"
+msgstr ""
+
+#: views/settings/mta.html:443
+msgid "Access Key"
+msgstr ""
+
+#: views/settings/mta.html:464
+msgid "Secret Key"
+msgstr ""
+
+#: views/settings/mta.html:485
+msgid "Domain"
+msgstr ""
+
+#: views/settings/mta.html:505
+msgid "API Key"
+msgstr ""
+
+#: views/settings/mta.html:582
+msgid "Authentication"
+msgstr ""
+
+#: views/settings/mta.html:584
+msgid ""
+"Leave this option to Yes. Only a tiny portion of SMTP services ask "
+"Authentication to be turned off."
+msgstr ""
+
+#: views/settings/mta.html:624
+msgid "DKIM signature"
+msgstr ""
+
+#: views/settings/mta.html:626
+msgid "Improve your spam score. Mailpoet can sign all your emails with DKIM."
+msgstr ""
+
+#: views/settings/mta.html:649
+msgid "Configure your DNS by adding a key/value record in TXT as shown below."
+msgstr ""
+
+#: views/settings/mta.html:657
+msgid "Key"
+msgstr ""
+
+#: views/settings/mta.html:669
+msgid "Value"
+msgstr ""
+
+#: views/settings/mta.html:688
+msgid "Test sending"
+msgstr ""
+
+#: views/settings/mta.html:701
+msgid "Send a test email"
+msgstr ""
+
+#: views/settings/mta.html:712
+msgid "Activate"
+msgstr ""
+
+#: views/settings/mta.html:717
+msgid "or cancel."
+msgstr ""
+
+#: views/settings/mta.html:754
+msgid "Sending method test."
+msgstr ""
+
+#: views/settings/mta.html:756
+msgid "Yup"
+msgstr ""
+
+#: views/settings/mta.html:808
+msgid "You have selected an invalid sending method."
+msgstr ""
+
+#: views/settings/mta.html:816
+msgid "You need to specify a MailPoet account key"
+msgstr ""
+
+#: views/settings/signup.html:7
+msgid "Enable signup confirmation"
+msgstr ""
+
+#: views/settings/signup.html:9
+msgid "Prevent people from being subscribed to your list unwillingly"
+msgstr ""
+
+#: views/settings/signup.html:10
+msgid "Learn more."
+msgstr ""
+
+#: views/settings/signup.html:104
+msgid "Email subject"
+msgstr ""
+
+#: views/settings/signup.html:123
+msgid "Email content"
+msgstr ""
+
+#: views/settings/signup.html:125
+msgid ""
+"Don't forget to include:<br /><br />[activation_link]Confirm your "
+"subscription.[/activation_link].<br /><br />Optional: [lists_to_confirm]."
+msgstr ""
+
+#: views/settings/signup.html:144
+msgid "Confirmation page"
+msgstr ""
+
+#: views/settings/signup.html:146
+msgid "When subscribers click on the activation link"
+msgstr ""
+
+#: views/settings/signup.html:193
+msgid ""
+"Subscribers will now need to activate their subscription by email in order "
+"to receive your newsletters. This is recommended."
+msgstr ""
+
+#: views/settings/signup.html:195
+msgid ""
+"Unconfirmed subscribers will receive your newsletters from now on without "
+"the need to activate their subscriptions."
+msgstr ""
+
+#: views/settings/templates/sending_frequency.hbs:4
+msgid "%1$s emails"
+msgstr ""
+
+#: views/settings/templates/sending_frequency.hbs:11
+msgid "That's <strong>%1$s emails</strong> per day."
+msgstr ""
+
+#: views/settings.html:18
+msgid "Basics"
+msgstr ""
+
+#: views/settings.html:19
+msgid "Signup Confirmation"
+msgstr ""
+
+#: views/settings.html:20
+msgid "Send With..."
+msgstr ""
+
+#: views/settings.html:21
+msgid "Advanced"
+msgstr ""
+
+#: views/settings.html:22
+msgid "Bounce Handling"
+msgstr ""
+
+#: views/settings.html:100
+msgid "Settings saved."
+msgstr ""
+
+#: views/settings.html:105
+msgid "Settings could not be saved."
+msgstr ""
+
+#: views/settings.html:112
+msgid "An error occurred. Check your settings."
+msgstr ""
+
+#: views/subscribers/importExport/export.html:7
+#: views/subscribers/importExport/import.html:9
+msgid "Back to list"
+msgstr ""
+
+#: views/subscribers/importExport/export.html:12
+msgid "Yikes! Couldn't find any subscribers."
+msgstr ""
+
+#: views/subscribers/importExport/export.html:31
+msgid "Export confirmed subscribers only"
+msgstr ""
+
+#: views/subscribers/importExport/export.html:52
+msgid "Pick a list"
+msgstr ""
+
+#: views/subscribers/importExport/export.html:63
+msgid "List of fields to export"
+msgstr ""
+
+#: views/subscribers/importExport/export.html:73
+msgid "Group subscribers by list"
+msgstr ""
+
+#: views/subscribers/importExport/export.html:82
+msgid "Format"
+msgstr ""
+
+#: views/subscribers/importExport/export.html:88
+msgid "CSV file"
+msgstr ""
+
+#: views/subscribers/importExport/export.html:93
+msgid "Excel"
+msgstr ""
+
+#: views/subscribers/importExport/export.html:111
+#: views/subscribers/importExport/import.html:23
+msgid "Server error:"
+msgstr ""
+
+#: views/subscribers/importExport/export.html:112
+msgid "%1$s subscribers were exported. Get the exported file [link]here[/link]."
+msgstr ""
+
+#: views/subscribers/importExport/import/step1.html:8
+msgid "How would you like to import subscribers?"
+msgstr ""
+
+#: views/subscribers/importExport/import/step1.html:13
+msgid "Copy paste in a text box"
+msgstr ""
+
+#: views/subscribers/importExport/import/step1.html:15
+#: views/subscribers/importExport/import/step1.html:55
+msgid "Upload a file"
+msgstr ""
+
+#: views/subscribers/importExport/import/step1.html:17
+msgid "Import from MailChimp"
+msgstr ""
+
+#: views/subscribers/importExport/import/step1.html:31
+msgid "Copy and paste your subscribers from Excel/Sheets"
+msgstr ""
+
+#: views/subscribers/importExport/import/step1.html:79
+msgid "Enter you MailChimp API key"
+msgstr ""
+
+#: views/subscribers/importExport/import/step1.html:84
+msgid "Verify"
+msgstr ""
+
+#: views/subscribers/importExport/import/step1.html:116
+msgid "[link]Read more on support.mailpoet.com[/link]."
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:11
+#: views/subscribers/importExport/import.html:34
+msgid "Show more details."
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:42
+msgid "Pick one or many segments"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:43
+msgid "Pick the segments you want to import those subscribers to."
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:48
+msgid "Create new list"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:54
+msgid "To add subscribers to a mailing segment"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:66
+msgid "Update existing subscribers' information"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:83
+msgid "Previous step"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:86
+msgid "Next step"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:96
+msgid "Match data"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:139
+msgid "Name"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:149
+msgid "Description"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:169
+msgid "Field type"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:193
+msgid "You need to select a type"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:197
+msgid "Field name"
+msgstr ""
+
+#: views/subscribers/importExport/import/step2.html:204
+msgid "This name is already taken."
+msgstr ""
+
+#: views/subscribers/importExport/import/step3.html:11
+msgid "Import again"
+msgstr ""
+
+#: views/subscribers/importExport/import/step3.html:14
+msgid "View subscribers"
+msgstr ""
+
+#: views/subscribers/importExport/import/step3.html:29
+msgid "No new subscribers were found/added."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:3
+msgid ""
+"This needs to be in CSV style. See [link]examples in our support "
+"site[/link]."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:22
+msgid "No active lists found."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:26
+msgid "Only comma-separated (CSV"
+msgstr ""
+
+#: views/subscribers/importExport/import.html:27
+msgid "Your CSV is over %s"
+msgstr ""
+
+#: views/subscribers/importExport/import.html:28
+msgid ""
+"Your data could not be processed. Please make sure it is in the proper "
+"format."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:29
+msgid ""
+"No valid records were found. This needs to be in CSV style. See "
+"[link]examples in our support site[/link]"
+msgstr ""
+
+#: views/subscribers/importExport/import.html:30
+msgid "%1$s records were skipped due to problems."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:31
+msgid "%1$s emails are not valid : %2$s."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:32
+msgid "%1$s emails appear more than once in your file : %2$s."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:33
+msgid "Hide details."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:35
+msgid "You need to select at least one list."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:36
+#: views/subscribers/importExport/import.html:37
+msgid "Add new list"
+msgstr ""
+
+#: views/subscribers/importExport/import.html:39
+msgid "The selected value is already matched to another column."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:40
+msgid "Can you confirm that this column is corresponding to that field?"
+msgstr ""
+
+#: views/subscribers/importExport/import.html:41
+#: views/subscribers/importExport/import.html:62
+msgid "One of the columns contains an invalid email. Please fix before continuing."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:54
+msgid ""
+"Do not match as a 'date field' if most of the rows for that column return "
+"the same error."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:55
+msgid "Date cannot be empty"
+msgstr ""
+
+#: views/subscribers/importExport/import.html:56
+msgid "Verify that the date in blue matches the original one"
+msgstr ""
+
+#: views/subscribers/importExport/import.html:57
+msgid "pm"
+msgstr ""
+
+#: views/subscribers/importExport/import.html:58
+msgid "am"
+msgstr ""
+
+#: views/subscribers/importExport/import.html:59
+msgid "Error matching date."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:60
+msgid "One of the columns contains an invalid date. Please fix before continuing."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:61
+msgid "Error adding a new segment:"
+msgstr ""
+
+#: views/subscribers/importExport/import.html:63
+msgid "Custom field could not be created."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:64
+msgid "%1$s subscribers added to %2$s."
+msgstr ""
+
+#: views/subscribers/importExport/import.html:65
+msgid "%1$s existing subscribers were updated and added to %2$s."
+msgstr ""
+
+#: views/subscribers/subscribers.html:9
+msgid "Loading subscribers..."
+msgstr ""
+
+#: views/subscribers/subscribers.html:10
+msgid "No subscribers found."
+msgstr ""
+
+#: views/subscribers/subscribers.html:11
+msgid "All subscribers on this page are selected."
+msgstr ""
+
+#: views/subscribers/subscribers.html:12
+msgid "All %d subscribers are selected."
+msgstr ""
+
+#: views/subscribers/subscribers.html:13
+msgid "Select all subscribers on all pages."
+msgstr ""
+
+#: views/subscribers/subscribers.html:15
+msgid "%d subscribers permanently deleted."
+msgstr ""
+
+#: views/update.html:5
+msgid "What's new?"
+msgstr ""
+
+#: views/welcome.html:80
+msgid "Welcome to MailPoet"
+msgstr ""
+
+#: views/welcome.html:80
+msgid "BETA"
+msgstr ""
+
+#: lib/Config/Menu.php:85
+msgctxt "subscribers per page (screen options)"
+msgid "Number of subscribers per page"
 msgstr ""

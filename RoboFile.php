@@ -89,14 +89,14 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function makepot() {
-    $this->_exec('grunt makepot'.
+    $this->_exec('./node_modules/.bin/grunt makepot'.
       ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
       ' --base_path '.__DIR__
     );
   }
 
   function pushpot() {
-    $this->_exec('grunt pushpot'.
+    $this->_exec('./node_modules/.bin/grunt pushpot'.
       ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
       ' --base_path '.__DIR__
     );
@@ -123,7 +123,7 @@ class RoboFile extends \Robo\Tasks {
     $this->compileJs();
 
     $this->_exec(join(' ', array(
-      './node_modules/mocha/bin/mocha',
+      './node_modules/.bin/mocha',
       '-r tests/javascript/mochaTestHelper.js',
       'tests/javascript/testBundles/**/*.js'
     )));
