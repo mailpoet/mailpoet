@@ -64,14 +64,10 @@ class Pages {
     return $meta;
   }
 
-  function setPageTitle($page_title = '[mailpoet_title]') {
-   if(
-      (strpos($page_title, '[mailpoet_title]') === false)
-      &&
-      (strlen(trim($page_title)) > 0)
-    ) {
-      return $page_title;
-    } else {
+  function setPageTitle($page_title = '') {
+    global $post;
+
+   if($post->post_type === 'mailpoet_page') {
       $subscriber = $this->getSubscriber();
       switch($this->getAction()) {
         case 'confirm':
@@ -93,7 +89,7 @@ class Pages {
         break;
       }
     }
-    return str_replace('[mailpoet_title]', $title, $page_title);
+    return $page_title;
   }
 
   function setPageContent($page_content = '[mailpoet_page]') {

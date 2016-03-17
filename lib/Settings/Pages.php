@@ -33,7 +33,7 @@ class Pages {
       'post_type' => 'mailpoet_page',
       'post_author' => 1,
       'post_content' => '[mailpoet_page]',
-      'post_title' => '[mailpoet_title]',
+      'post_title' => __('MailPoet Page'),
       'post_name' => 'subscriptions'
     ));
     flush_rewrite_rules();
