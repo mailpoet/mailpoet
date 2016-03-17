@@ -155,6 +155,8 @@ define(
             <h1>Welcome email</h1>
             <Breadcrumb step="type" />
 
+            <h3>{MailPoetI18n.selectEventToSendWelcomeEmail}</h3>
+
             <Select
               field={events}
               item={this.state}
