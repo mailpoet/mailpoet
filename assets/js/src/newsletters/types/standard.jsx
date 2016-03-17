@@ -47,7 +47,7 @@ define(
       render: function() {
         return (
           <div>
-            <h1>{MailPoetI18n.standardNewsletter}</h1>
+            <h1>Newsletter</h1>
             <Breadcrumb step="type" />
           </div>
         );

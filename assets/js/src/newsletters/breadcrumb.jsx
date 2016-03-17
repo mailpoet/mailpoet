@@ -21,20 +21,20 @@ define(
           steps: [
             {
               name: 'type',
-              label: MailPoetI18n.selectType,
+              label: 'Select type',
               link: '/new'
             },
             {
               name: 'template',
-              label: MailPoetI18n.template
+              label: 'Template'
             },
             {
               name: 'editor',
-              label: MailPoetI18n.designer
+              label: 'Designer'
             },
             {
               name: 'send',
-              label: MailPoetI18n.send
+              label: 'Send'
             }
           ]
         };
