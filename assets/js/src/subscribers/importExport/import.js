@@ -7,7 +7,8 @@ define(
       'handlebars',
       'papaparse',
       'select2',
-      'asyncqueue'
+      'asyncqueue',
+      'xss'
     ],
     function (
       Backbone,
@@ -16,7 +17,8 @@ define(
       MailPoet,
       Handlebars,
       Papa,
-      AsyncQueue
+      AsyncQueue,
+      xss
     ) {
       if (!jQuery('#mailpoet_subscribers_import').length) {
         return;
@@ -355,7 +357,7 @@ define(
               complete: function (CSV) {
                 for (var rowCount in CSV.data) {
                   var rowData = CSV.data[rowCount].map(function (el) {
-                        return el.trim();
+                        return filterXSS(el.trim());
                       }),
                       rowColumnCount = rowData.length;
                   // set the number of row elements based on the first non-empty row

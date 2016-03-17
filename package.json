@@ -34,7 +34,8 @@
     "spectrum-colorpicker": "^1.6.2",
     "tinymce": "4.1.10",
     "underscore": "1.8.3",
-    "velocity-animate": "1.2.3"
+    "velocity-animate": "1.2.3",
+    "xss": "^0.2.10"
   },
   "devDependencies": {
     "expose-loader": "latest",
