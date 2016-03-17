@@ -2,17 +2,15 @@
 namespace MailPoet\Segments;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\Segment;
+use MailPoet\Newsletter\Scheduler\Scheduler;
 
 class WP {
   static function synchronizeUser($wp_user_id) {
-    $wpUser = \get_userdata($wp_user_id);
+    $wp_user = \get_userdata($wp_user_id);
     $segment = Segment::getWPUsers();
-
-    if($wpUser === false or $segment === false) return;
-
-    $subscriber = Subscriber::where('wp_user_id', $wpUser->ID)
+    if($wp_user === false or $segment === false) return;
+    $subscriber = Subscriber::where('wp_user_id', $wp_user->ID)
       ->findOne();
-
     switch(current_filter()) {
       case 'delete_user':
       case 'deleted_user':
@@ -20,23 +18,22 @@ class WP {
         if($subscriber !== false && $subscriber->id()) {
           $subscriber->delete();
         }
-      break;
-
+        break;
       case 'user_register':
+        $new_user = (!$subscriber) ? true : false;
       case 'added_existing_user':
       case 'profile_update':
       default:
         // get first name & last name
-        $first_name = $wpUser->first_name;
-        $last_name = $wpUser->last_name;
-        if(empty($wpUser->first_name) && empty($wpUser->last_name)) {
-          $first_name = $wpUser->display_name;
+        $first_name = $wp_user->first_name;
+        $last_name = $wp_user->last_name;
+        if(empty($wp_user->first_name) && empty($wp_user->last_name)) {
+          $first_name = $wp_user->display_name;
         }
-
         // subscriber data
         $data = array(
-          'wp_user_id'=> $wpUser->ID,
-          'email' => $wpUser->user_email,
+          'wp_user_id' => $wp_user->ID,
+          'email' => $wp_user->user_email,
           'first_name' => $first_name,
           'last_name' => $last_name,
           'status' => 'subscribed'
@@ -46,13 +43,18 @@ class WP {
           $data['id'] = $subscriber->id();
         }
         $subscriber = Subscriber::createOrUpdate($data);
-
         if($subscriber->getErrors() === false && $subscriber->id > 0) {
           if($segment !== false) {
             $segment->addSubscriber($subscriber->id);
           }
+          if(isset($new_user) && $new_user === true) {
+            Scheduler::newUserRegistrationNewsletter(
+              $subscriber->asArray(),
+              (array) $wp_user
+            );
+          }
         }
-      break;
+        break;
     }
   }
 

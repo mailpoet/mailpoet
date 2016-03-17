@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Models;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -208,6 +209,7 @@ class Subscriber extends Model {
 
       if($subscriber->save()) {
         $subscriber->addToSegments($segment_ids);
+        Scheduler::newSegmentSubscriptionNewsletter($subscriber, $segment_ids);
       }
     }
 
