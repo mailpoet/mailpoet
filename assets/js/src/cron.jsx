@@ -48,7 +48,7 @@ define(
       })
       .done(function(response) {
         if(!response.result) {
-          MailPoet.Notice.error(MailPoetI18n.daemonControlError);
+          MailPoet.Notice.error(MailPoet.I18n.t('daemonControlError'));
         }
       }.bind(this));
     },

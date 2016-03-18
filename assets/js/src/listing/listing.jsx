@@ -223,8 +223,8 @@ define(
                   className="colspanchange">
                   {
                     (this.props.loading === true)
-                    ? MailPoetI18n.loadingItems
-                    : MailPoetI18n.noItemsFound
+                    ? MailPoet.I18n.t('loadingItems')
+                    : MailPoet.I18n.t('noItemsFound')
                   }
                 </td>
               </tr>
@@ -250,8 +250,8 @@ define(
                   }>
                   {
                     (this.props.selection !== 'all')
-                    ? MailPoetI18n.selectAllLabel
-                    : MailPoetI18n.selectedAllLabel.replace(
+                    ? MailPoet.I18n.t('selectAllLabel')
+                    : MailPoet.I18n.t('selectedAllLabel').replace(
                       '%d',
                       this.props.count
                     )
@@ -261,8 +261,8 @@ define(
                     onClick={ this.props.onSelectAll }
                     href="javascript:;">{
                       (this.props.selection !== 'all')
-                      ? MailPoetI18n.selectAllLink
-                      : MailPoetI18n.clearSelection
+                      ? MailPoet.I18n.t('selectAllLink')
+                      : MailPoet.I18n.t('clearSelection')
                     }</a>
                 </td>
               </tr>
@@ -519,7 +519,7 @@ define(
           group: 'trash'
         }, function(response) {
           MailPoet.Notice.success(
-            MailPoetI18n.permanentlyDeleted.replace('%d', response)
+            MailPoet.I18n.t('permanentlyDeleted').replace('%d', response)
           );
         });
       },

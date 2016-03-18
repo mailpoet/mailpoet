@@ -30,7 +30,12 @@
 <!-- javascripts -->
 <%= javascript(
   'vendor.js',
-  'mailpoet.js',
+  'mailpoet.js'
+)%>
+
+<% block translations %><% endblock %>
+
+<%= javascript(
   'admin.js'
 )%>
 

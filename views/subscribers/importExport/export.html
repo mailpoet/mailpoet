@@ -107,11 +107,6 @@
 
 <%= stylesheet('importExport.css') %>
 
-<%= localize({
-  'serverError': __('Server error:'),
-  'exportMessage' : __('%1$s subscribers were exported. Get the exported file [link]here[/link].')
-}) %>
-
 <script type="text/javascript">
   // define data variables
   var
@@ -127,4 +122,11 @@
      groupBySegmentOption: (segments.length > 1 || segmentsWithConfirmedSubscribers.length > 1) ? true : null
     };
 </script>
+<% endblock %>
+
+<% block translations %>
+<%= localize({
+  'serverError': __('Server error:'),
+  'exportMessage' : __('%1$s subscribers were exported. Get the exported file [link]here[/link].')
+}) %>
 <% endblock %>

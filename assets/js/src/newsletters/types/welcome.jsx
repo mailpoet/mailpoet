@@ -155,7 +155,7 @@ define(
             <h1>Welcome email</h1>
             <Breadcrumb step="type" />
 
-            <h3>{MailPoetI18n.selectEventToSendWelcomeEmail}</h3>
+            <h3>{MailPoet.I18n.t('selectEventToSendWelcomeEmail')}</h3>
 
             <Select
               field={events}

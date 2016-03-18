@@ -3,6 +3,14 @@
 <% block content %>
   <div id="forms_container"></div>
 
+  <script type="text/javascript">
+    var mailpoet_segments = <%= json_encode(segments) %>;
+    var mailpoet_form_edit_url =
+      "<%= admin_url('admin.php?page=mailpoet-form-editor&id=') %>";
+  </script>
+<% endblock %>
+
+<% block translations %>
   <%= localize({
     'pageTitle': __('Forms'),
     'searchLabel': __('Search'),
@@ -14,10 +22,4 @@
     'clearSelection': __('Clear selection.'),
     'permanentlyDeleted': __('%d forms permanently deleted.')
   }) %>
-
-  <script type="text/javascript">
-    var mailpoet_segments = <%= json_encode(segments) %>;
-    var mailpoet_form_edit_url =
-      "<%= admin_url('admin.php?page=mailpoet-form-editor&id=') %>";
-  </script>
 <% endblock %>

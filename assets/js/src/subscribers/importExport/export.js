@@ -150,7 +150,7 @@ define(
           if (response.result === false) {
             MailPoet.Notice.error(response.errors);
           } else {
-            resultMessage = MailPoetI18n.exportMessage
+            resultMessage = MailPoet.I18n.t('exportMessage')
              .replace('%1$s', '<strong>' + response.data.totalExported + '</strong>')
              .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
              .replace('[/link]', '</a>');
@@ -162,7 +162,7 @@ define(
         .error(function (error) {
           MailPoet.Modal.loading(false);
           MailPoet.Notice.error(
-           MailPoetI18n.serverError + error.statusText.toLowerCase() + '.'
+           MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
           );
         });
      });

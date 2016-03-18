@@ -101,7 +101,7 @@ define([
         that.get('_selectedPosts').reset(); // Empty out the collection
         that.trigger('change:_availablePosts');
       }).fail(function() {
-        MailPoet.Notice.error(App.getConfig().get('translations.failedToFetchAvailablePosts'));
+        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
       });
     },
     _refreshTransformedPosts: function() {
@@ -118,7 +118,7 @@ define([
       CommunicationComponent.getTransformedPosts(data).done(function(posts) {
         that.get('_transformedPosts').get('blocks').reset(posts, {parse: true});
       }).fail(function() {
-        MailPoet.Notice.error(App.getConfig().get('translations.failedToFetchRenderedPosts'));
+        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
       });
     },
     _insertSelectedPosts: function() {
@@ -134,7 +134,7 @@ define([
       CommunicationComponent.getTransformedPosts(data).done(function(posts) {
         collection.add(posts, { at: index });
       }).fail(function() {
-        MailPoet.Notice.error(App.getConfig().get('translations.failedToFetchRenderedPosts'));
+        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
       });
     },
   });

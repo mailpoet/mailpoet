@@ -77,7 +77,7 @@ define([
           },
 
           mailpoet_custom_fields: App.getConfig().get('customFields').toJSON(),
-          mailpoet_custom_fields_window_title: App.getConfig().get('translations.customFieldsWindowTitle'),
+          mailpoet_custom_fields_window_title: MailPoet.I18n.t('customFieldsWindowTitle'),
         });
       }
     },

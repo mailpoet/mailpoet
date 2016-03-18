@@ -311,7 +311,9 @@
       </div>
     </form>
   </div>
+<% endblock %>
 
+<% block translations %>
   <%= localize({
     'failedToFetchAvailablePosts': __('Failed to fetch available posts'),
     'failedToFetchRenderedPosts': __('Failed to fetch rendered posts'),
@@ -1256,7 +1258,6 @@
       validation: {
         validateUnsubscribeLinkPresent: true, // TODO: Add validation based on whether Mailpoet MTA is used or not
       },
-      translations: MailPoetI18n,
       urls: {
         send: '<%= admin_url('admin.php?page=mailpoet-newsletters#/send/' ~ params('id')) %>',
         imageMissing: '<%= image_url(

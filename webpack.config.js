@@ -99,6 +99,7 @@ config.push(_.extend({}, baseConfig, {
       'mailpoet',
       'ajax',
       'date',
+      'i18n',
       'modal',
       'notice',
       'jquery.serialize_object',

@@ -18,6 +18,19 @@
 
 <%= stylesheet('importExport.css') %>
 
+<script type="text/javascript">
+  var
+    maxPostSize = '<%= maxPostSize %>',
+    maxPostSizeBytes = '<%= maxPostSizeBytes %>',
+    importData = {},
+    mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
+    mailpoetColumns = <%= subscriberFields|raw %>,
+    mailpoetSegments = <%= segments|raw %>,
+    emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-_]{0,61}[a-zA-Z0-9])+.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+</script>
+<% endblock %>
+
+<% block translations %>
 <%= localize({
 'noMailChimpLists': __('No active lists found.'),
 'serverError': __('Server error:'),
@@ -64,15 +77,4 @@
 'subscribersCreated': __('%1$s subscribers added to %2$s.'),
 'subscribersUpdated': __('%1$s existing subscribers were updated and added to %2$s.')
 }) %>
-
-<script type="text/javascript">
-  var
-    maxPostSize = '<%= maxPostSize %>',
-    maxPostSizeBytes = '<%= maxPostSizeBytes %>',
-    importData = {},
-    mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
-    mailpoetColumns = <%= subscriberFields|raw %>,
-    mailpoetSegments = <%= segments|raw %>,
-    emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-_]{0,61}[a-zA-Z0-9])+.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-</script>
 <% endblock %>
