@@ -48,7 +48,7 @@ class WP {
             $segment->addSubscriber($subscriber->id);
           }
           if(isset($new_user) && $new_user === true) {
-            Scheduler::newUserRegistrationNewsletter(
+            Scheduler::welcomeForNewWordpressUserRegistration(
               $subscriber->asArray(),
               (array) $wp_user
             );

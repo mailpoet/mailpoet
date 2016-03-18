@@ -53,13 +53,13 @@ define(
     var weekDayField = {
       name: 'weekDay',
       values: {
-        0: 'Monday',
-        1: 'Tuesday',
-        2: 'Wednesday',
-        3: 'Thursday',
-        4: 'Friday',
-        5: 'Saturday',
-        6: 'Sunday',
+        0: 'Sunday',
+        1: 'Monday',
+        2: 'Tuesday',
+        3: 'Wednesday',
+        4: 'Thursday',
+        5: 'Friday',
+        6: 'Saturday'
       },
     };
 
@@ -84,10 +84,10 @@ define(
     var nthWeekDayField = {
       name: 'nthWeekDay',
       values: {
-        '0': '1st',
-        '1': '2nd',
-        '2': '3rd',
-        '3': 'last',
+        '1': '1st',
+        '2': '2nd',
+        '3': '3rd',
+        'L': 'last',
       },
     };
 
@@ -99,9 +99,9 @@ define(
         return {
           intervalType: 'immediate', // 'immediate'|'daily'|'weekly'|'monthly'
           timeOfDay: 0,
-          weekDay: 0,
+          weekDay: 1,
           monthDay: 0,
-          nthWeekDay: 0,
+          nthWeekDay: 1,
         };
       },
       handleIntervalChange: function(event) {

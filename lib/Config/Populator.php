@@ -175,6 +175,18 @@ class Populator {
         'name' => 'nthWeekDay',
         'newsletter_type' => 'notification',
       ),
+      array(
+        'name' => 'schedule',
+        'newsletter_type' => 'notification',
+      ),
+      array(
+        'name' => 'lastRunTime',
+        'newsletter_type' => 'notification',
+      ),
+      array(
+        'name' => 'lastRunResults',
+        'newsletter_type' => 'notification',
+      ),
     );
   }
 

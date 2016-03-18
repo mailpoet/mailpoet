@@ -209,7 +209,7 @@ class Subscriber extends Model {
 
       if($subscriber->save()) {
         $subscriber->addToSegments($segment_ids);
-        Scheduler::newSegmentSubscriptionNewsletter($subscriber, $segment_ids);
+        Scheduler::welcomeForSegmentSubscription($subscriber, $segment_ids);
       }
     }
 

@@ -3,29 +3,71 @@ namespace MailPoet\Newsletter\Scheduler;
 
 use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterOption;
+use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\SendingQueue;
 
 class Scheduler {
-  static function newSegmentSubscriptionNewsletter(array $subscriber, array $segments) {
+  static function postNotification($newsletter_id) {
+    $newsletter = Newsletter::filter('filterWithOptions')
+      ->findOne($newsletter_id);
+    $interval_type = $newsletter->intervalType;
+    $hour = (int) $newsletter->timeOfDay / 3600;
+    $week_day = $newsletter->weekDay;
+    $month_day = $newsletter->monthDay;
+    $nth_week_day = ($newsletter->nthWeekDay === 'L') ?
+      $newsletter->nthWeekDay :
+      '#' . $newsletter->nthWeekDay;
+    switch($interval_type) {
+      case 'immediately':
+        $cron = '* * * * *';
+        break;
+      case 'immediate': //daily
+        $cron = sprintf('0 %s * * *', $hour);
+        break;
+      case 'weekly':
+        $cron = sprintf('0 %s * * %s', $hour, $week_day);
+        break;
+      case 'monthly':
+        $cron = sprintf('0 %s %s * *', $hour, $month_day);
+        break;
+      case 'nthWeekDay':
+        $cron = sprintf('0 %s ? * %s%s', $hour, $week_day, $nth_week_day);
+        break;
+    }
+    $option_field = NewsletterOptionField::where('name', 'schedule')
+      ->findOne();
+    $relation = NewsletterOption::create();
+    $relation->newsletter_id = $newsletter->id;
+    $relation->option_field_id = $option_field->id;
+    $relation->value = $cron;
+    $relation->save();
+  }
+
+  static function welcomeForSegmentSubscription(
+    array $subscriber, array $segments
+  ) {
     $newsletters = self::getWelcomeNewsletters();
     if(!count($newsletters)) return;
     foreach($newsletters as $newsletter) {
       if($newsletter['event'] === 'segment' &&
         in_array($newsletter['segment'], $segments)
       ) {
-        self::scheduleWelcomeNewsletter($newsletter, $subscriber);
+        self::createSendingQueueEntry($newsletter, $subscriber);
       }
     }
   }
 
-  static function newUserRegistrationNewsletter(array $subscriber, array $wp_user) {
+  static function welcomeForNewWordpressUserRegistration(
+    array $subscriber, array $wp_user
+  ) {
     $newsletters = self::getWelcomeNewsletters();
     if(!count($newsletters)) return;
     foreach($newsletters as $newsletter) {
       if($newsletter['event'] === 'user' &&
         in_array($newsletter['role'], $wp_user['roles'])
       ) {
-        self::scheduleWelcomeNewsletter($newsletter, $subscriber);
+        self::createSendingQueueEntry($newsletter, $subscriber);
       }
     }
   }
@@ -36,7 +78,7 @@ class Scheduler {
       ->findArray();
   }
 
-  private static function scheduleWelcomeNewsletter($newsletter, $subscriber) {
+  private static function createSendingQueueEntry($newsletter, $subscriber) {
     $queue = SendingQueue::create();
     $queue->newsletter_id = $newsletter['id'];
     $queue->subscribers = serialize(
