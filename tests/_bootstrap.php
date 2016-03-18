@@ -13,6 +13,8 @@ $models = array(
   'Newsletter',
   'NewsletterSegment',
   'NewsletterTemplate',
+  'NewsletterOption',
+  'NewsletterOptionField',
   'Segment',
   'SendingQueue',
   'Setting',

@@ -1,6 +1,8 @@
 <?php
-/*
+
 use MailPoet\Models\Subscriber;
+use MailPoet\Config\Populator;
+use MailPoet\Subscription\Url as SubscriptionUrl;
 
 class ShortcodesTest extends MailPoetTest {
   public $rendered_newsletter;
@@ -8,6 +10,8 @@ class ShortcodesTest extends MailPoetTest {
   public $subscriber;
 
   function _before() {
+    $populator = new Populator();
+    $populator->up();
     $this->wp_user = $this->_createWPUser();
     $this->subscriber = $this->_createSubscriber();
     $this->newsletter['subject'] = 'some subject';
@@ -30,9 +34,9 @@ class ShortcodesTest extends MailPoetTest {
       Month text: [date:mtext].
       Year: [date:y]
 
-      You can unsubscribe here: [global:unsubscribe].
-      Manage your subscription here: [global:manage].
-      View this newsletter in browser: [global:browser].';
+      You can unsubscribe here: [subscription:unsubscribe_url].
+      Manage your subscription here: [subscription:manage_url].
+      View this newsletter in browser: [newsletter:view_in_browser_url].';
     $this->shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->rendered_newsletter,
       $this->newsletter,
@@ -52,6 +56,11 @@ class ShortcodesTest extends MailPoetTest {
     $date = new \DateTime('now');
     $subscriber_count = Subscriber::count();
     $newsletter_with_replaced_shortcodes = $this->shortcodes_object->replace();
+
+    $unsubscribe_url = SubscriptionUrl::getUnsubscribeUrl($this->subscriber);
+    $manage_url = SubscriptionUrl::getManageUrl($this->subscriber);
+    $view_in_browser_url = '#TODO';
+
     expect($newsletter_with_replaced_shortcodes)->equals("
       Hello {$wp_user->user_login}.
       Your first name is {$this->subscriber->first_name}.
@@ -62,7 +71,7 @@ class ShortcodesTest extends MailPoetTest {
       There are {$wp_post_count->publish} posts on this blog.
       You are reading {$this->newsletter['subject']}.
       The latest post on this blog is called {$wp_latest_post}.
-      The issue number of this newsletter is [newsletter:number].
+      The issue number of this newsletter is 1.
 
       Date: {$date->format('d')}.
       Ordinal date: {$date->format('dS')}.
@@ -71,9 +80,9 @@ class ShortcodesTest extends MailPoetTest {
       Month text: {$date->format('F')}.
       Year: {$date->format('Y')}
 
-      You can unsubscribe here: [global:unsubscribe].
-      Manage your subscription here: [global:manage].
-      View this newsletter in browser: [global:browser].");
+      You can unsubscribe here: {$unsubscribe_url}.
+      Manage your subscription here: {$manage_url}.
+      View this newsletter in browser: {$view_in_browser_url}.");
   }
 
   function _createWPUser() {
@@ -103,4 +112,4 @@ class ShortcodesTest extends MailPoetTest {
   function _after() {
     Subscriber::deleteMany();
   }
-}*/
+}

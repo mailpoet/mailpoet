@@ -3,16 +3,19 @@
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Config\Populator;
 
 class NewsletterOptionFieldTest extends MailPoetTest {
   function _before() {
     $this->data = array(
-      'name' => 'Event',
+      'name' => 'event',
       'newsletter_type' => 'welcome'
     );
     $option = NewsletterOptionField::create();
     $option->hydrate($this->data);
-    $this->option_field = $option->save();
+    $option->save();
+
+    $this->option_field = NewsletterOptionField::findOne($option->id);
 
     $this->newsletter_data = array(
       array(
@@ -31,7 +34,7 @@ class NewsletterOptionFieldTest extends MailPoetTest {
   }
 
   function testItCanBeCreated() {
-    expect($this->option_field->id() > 0)->true();
+    expect($this->option_field->id() > 0)->equals(true);
     expect($this->option_field->getErrors())->false();
   }
 
@@ -55,9 +58,8 @@ class NewsletterOptionFieldTest extends MailPoetTest {
   }
 
   function testItHasACreatedAtOnCreation() {
-    $option_field = NewsletterOptionField::findOne($this->option_field->id);
-    expect($option_field->created_at)->notNull();
-    expect($option_field->created_at)->notEquals('0000-00-00 00:00:00');
+    expect($this->option_field->created_at)->notNull();
+    expect($this->option_field->created_at)->notEquals('0000-00-00 00:00:00');
   }
 
   function testItHasAnUpdatedAtOnCreation() {
