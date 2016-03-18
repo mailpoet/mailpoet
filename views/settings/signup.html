@@ -151,14 +151,13 @@
         <p>
           <select
             class="mailpoet_page_selection"
-            name="signup_confirmation[page]"
+            name="subscription[confirmation_page]"
           >
             <% for page in pages %>
               <option
                 value="<%= page.id %>"
                 data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=confirm"
-                data-edit-url="<%= page.edit_url|raw %>"
-                <% if(page.id == settings.signup_confirmation.page) %>
+                <% if(page.id == settings.subscription.confirmation_page) %>
                   selected="selected"
                 <% endif %>
               ><%= page.title %></option>
@@ -168,11 +167,7 @@
             class="mailpoet_page_preview"
             href="javascript:;"
             title="<%= __('Preview page') %>"
-          ><%= __('Preview') %></a>&nbsp;|&nbsp;<a
-            class="mailpoet_page_edit"
-            href="javascript:;"
-            title="<%= __('Edit page') %>"
-          ><%= __('Edit') %></a>
+          ><%= __('Preview') %></a>
         </p>
       </td>
     </tr>

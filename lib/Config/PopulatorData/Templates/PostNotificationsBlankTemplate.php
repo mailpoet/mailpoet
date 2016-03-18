@@ -242,7 +242,7 @@ class PostNotificationsBlankTemplate {
                 "blocks" => array(
                   array(
                     "type" => "footer",
-                    "text" => __("<a href=\"[unsubscribeUrl]\">Unsubscribe</a> | <a href=\"[manageSubscriptionUrl]\">Manage subscription</a><br /><b>Add your postal address here!</b>"),
+                    "text" => __("<a href=\"[subscription:unsubscribe_url]\">Unsubscribe</a> | <a href=\"[subscription:manage_url]\">Manage subscription</a><br /><b>Add your postal address here!</b>"),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"

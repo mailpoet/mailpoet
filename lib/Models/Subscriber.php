@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Util\Helpers;
+use MailPoet\Subscription;
 
 if(!defined('ABSPATH')) exit;
 
@@ -70,42 +71,6 @@ class Subscriber extends Model {
     }
   }
 
-  function getConfirmationUrl() {
-    $post = get_post(Setting::getValue('signup_confirmation.page'));
-    return $this->getSubscriptionUrl($post, 'confirm');
-  }
-
-  function getEditSubscriptionUrl() {
-    $post = get_post(Setting::getValue('subscription.page'));
-    return $this->getSubscriptionUrl($post, 'edit');
-  }
-
-  function getUnsubscribeUrl() {
-    $post = get_post(Setting::getValue('subscription.page'));
-    return $this->getSubscriptionUrl($post, 'unsubscribe');
-  }
-
-  private function getSubscriptionUrl($post = null, $action = null) {
-    if($post === null || $action === null) return;
-
-    $url = get_permalink($post);
-
-    $params = array(
-      'mailpoet_action='.$action,
-      'mailpoet_token='.self::generateToken($this->email),
-      'mailpoet_email='.$this->email
-    );
-    // add parameters
-    $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?').join('&', $params);
-
-    $url_params = parse_url($url);
-    if(empty($url_params['scheme'])) {
-      $url = get_bloginfo('url').$url;
-    }
-
-    return $url;
-  }
-
   function sendConfirmationEmail() {
     if($this->status === self::STATUS_UNCONFIRMED) {
       $signup_confirmation = Setting::getValue('signup_confirmation');
@@ -131,7 +96,7 @@ class Subscriber extends Model {
           '[/activation_link]'
         ),
         array(
-          '<a href="'.htmlentities($this->getConfirmationUrl()).'">',
+          '<a href="'.esc_attr(Subscription\Url::getConfirmationUrl($this)).'">',
           '</a>'
         ),
         $body
@@ -371,6 +336,9 @@ class Subscriber extends Model {
 
   static function createOrUpdate($data = array()) {
     $subscriber = false;
+    if(is_array($data) && !empty($data)) {
+      $data = stripslashes_deep($data);
+    }
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
       $subscriber = self::findOne((int)$data['id']);
@@ -396,16 +364,25 @@ class Subscriber extends Model {
 
     foreach($data as $key => $value) {
       if(strpos($key, 'cf_') === 0) {
+        if(is_array($value)) {
+          $value = array_filter($value);
+          $value = reset($value);
+        }
         $custom_fields[(int)substr($key, 3)] = $value;
         unset($data[$key]);
       }
     }
 
+    $old_status = false;
+    $new_status = false;
+
     if($subscriber === false) {
       $subscriber = self::create();
       $subscriber->hydrate($data);
     } else {
+      $old_status = $subscriber->status;
       $subscriber->set($data);
+      $new_status = $subscriber->status;
     }
 
     if($subscriber->save()) {
@@ -414,8 +391,19 @@ class Subscriber extends Model {
           $subscriber->setCustomField($custom_field_id, $value);
         }
       }
-      if($segment_ids !== false) {
-        SubscriberSegment::setSubscriptions($subscriber, $segment_ids);
+
+      // check for status change
+      if(
+          ($old_status === self::STATUS_SUBSCRIBED)
+          &&
+          ($new_status === self::STATUS_UNSUBSCRIBED)
+      ) {
+        // make sure we unsubscribe the user from all lists
+        SubscriberSegment::setSubscriptions($subscriber, array());
+      } else {
+        if($segment_ids !== false) {
+          SubscriberSegment::setSubscriptions($subscriber, $segment_ids);
+        }
       }
     }
     return $subscriber;

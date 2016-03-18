@@ -203,7 +203,9 @@ class SendingQueue {
         $queue->subscribers->failed
       )
     );
-    $queue->subscribers->to_process = array_values($queue->subscribers->to_process);
+    $queue->subscribers->to_process = array_values(
+      $queue->subscribers->to_process
+    );
     $queue->count_processed =
       count($queue->subscribers->processed) + count($queue->subscribers->failed);
     $queue->count_to_process = count($queue->subscribers->to_process);

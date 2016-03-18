@@ -43,9 +43,12 @@ class Renderer {
   }
 
   function renderBody($content) {
-    $content = array_map(function ($content_block) {
+    $content = array_map(function($content_block) {
       $column_count = count($content_block['blocks']);
-      $column_data = $this->blocks_renderer->render($content_block, $column_count);
+      $column_data = $this->blocks_renderer->render(
+        $content_block,
+        $column_count
+      );
       return $this->columns_renderer->render(
         $content_block['styles'],
         $column_count,

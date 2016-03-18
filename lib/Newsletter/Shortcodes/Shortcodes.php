@@ -9,7 +9,8 @@ class Shortcodes {
   function __construct(
     $rendered_newsletter,
     $newsletter = false,
-    $subscriber = false) {
+    $subscriber = false
+  ) {
     $this->rendered_newsletter = $rendered_newsletter;
     $this->newsletter = $newsletter;
     $this->subscriber = $subscriber;
@@ -23,13 +24,12 @@ class Shortcodes {
   function process($shortcodes) {
     $processed_shortcodes = array_map(
       function ($shortcode) {
-        // TODO: discuss renaming "global". It is a reserved name in PHP.
-        if($shortcode === 'global') $shortcode = 'link';
         preg_match(
           '/\[(?P<type>\w+):(?P<action>\w+)(?:.*?default:(?P<default>.*?))?\]/',
           $shortcode,
           $shortcode_details
         );
+
         $shortcode_class =
           __NAMESPACE__ . '\\Categories\\' . ucfirst($shortcode_details['type']);
         if(!class_exists($shortcode_class)) return false;
@@ -41,7 +41,7 @@ class Shortcodes {
           $this->subscriber
         );
       }, $shortcodes);
-    return array_filter($processed_shortcodes);
+    return $processed_shortcodes;
   }
 
   function replace() {

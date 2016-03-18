@@ -8,6 +8,11 @@ class Setting extends Model {
 
   public static $defaults = null;
 
+  const DEFAULT_SENDING_METHOD_GROUP = 'website';
+  const DEFAULT_SENDING_METHOD = 'PHPMail';
+  const DEFAULT_SENDING_FREQUENCY_EMAILS = 25;
+  const DEFAULT_SENDING_FREQUENCY_INTERVAL = 15; // in minutes
+
   function __construct() {
     parent::__construct();
 
@@ -25,6 +30,14 @@ class Setting extends Model {
 
   public static function loadDefaults() {
     self::$defaults = array(
+      'mta_group' => self::DEFAULT_SENDING_METHOD_GROUP,
+      'mta' => array(
+        'method' => self::DEFAULT_SENDING_METHOD,
+        'frequency' => array(
+          'emails' => self::DEFAULT_SENDING_FREQUENCY_EMAILS,
+          'interval' => self::DEFAULT_SENDING_FREQUENCY_INTERVAL
+        )
+      ),
       'signup_confirmation' => array(
         'enabled' => true,
         'subject' => sprintf(__('Confirm your subscription to %1$s'), get_option('blogname')),

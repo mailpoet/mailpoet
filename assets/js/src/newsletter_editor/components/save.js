@@ -284,7 +284,7 @@ define([
       }
 
       if (App.getConfig().get('validation.validateUnsubscribeLinkPresent') &&
-          JSON.stringify(jsonObject).indexOf("[unsubscribeUrl]") < 0) {
+          JSON.stringify(jsonObject).indexOf("[subscription:unsubscribe_url]") < 0) {
         this.showValidationError(App.getConfig().get('translations.unsubscribeLinkMissing'));
         return;
       }

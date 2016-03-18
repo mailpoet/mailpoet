@@ -8,6 +8,7 @@ use \MailPoet\Models\Setting;
 use \MailPoet\Models\Segment;
 use \MailPoet\Util\Helpers;
 use \MailPoet\Util\Url;
+use \MailPoet\Subscription;
 
 class Pages {
   const DEMO_EMAIL = 'demo@mailpoet.com';
@@ -16,10 +17,11 @@ class Pages {
   }
 
   function init() {
-    if(isset($_GET['mailpoet_page'])) {
-      add_filter('wp_title', array($this,'setWindowTitle'));
-      add_filter('the_title', array($this,'setPageTitle'));
-      add_filter('the_content', array($this,'setPageContent'));
+    $action = $this->getAction();
+    if($action !== null) {
+      add_filter('document_title_parts', array($this,'setWindowTitle'), 10, 1);
+      add_filter('the_title', array($this,'setPageTitle'), 10, 1);
+      add_filter('the_content', array($this,'setPageContent'), 10, 1);
     }
     add_action(
       'admin_post_mailpoet_subscriber_save',
@@ -42,46 +44,52 @@ class Pages {
       $_POST,
       array_flip($reserved_keywords)
     );
-
-    $subscriber = Subscriber::createOrUpdate($subscriber_data);
-    $errors = $subscriber->getErrors();
-
+    if(isset($subscriber_data['email'])) {
+      if($subscriber_data['email'] !== self::DEMO_EMAIL) {
+        $subscriber = Subscriber::createOrUpdate($subscriber_data);
+        $errors = $subscriber->getErrors();
+      }
+    }
     // TBD: success/error messages (not present in MP2)
 
     Url::redirectBack();
   }
 
   function isPreview() {
-    return (array_key_exists('preview', $_GET));
+    return (array_key_exists('mailpoet_preview', $_GET));
   }
 
-  function setWindowTitle() {
-    // TODO
+  function setWindowTitle($meta = array()) {
+    $meta['title'] = $this->setPageTitle($meta['title']);
+    return $meta;
   }
 
-  function setPageTitle($title = null) {
-    $subscriber = $this->getSubscriber();
+  function setPageTitle($page_title = '') {
+    global $post;
 
-    switch($this->getAction()) {
-      case 'confirm':
-        return $this->getConfirmTitle($subscriber);
-      break;
+   if($post->post_type === 'mailpoet_page') {
+      $subscriber = $this->getSubscriber();
+      switch($this->getAction()) {
+        case 'confirm':
+          return $this->getConfirmTitle($subscriber);
+        break;
 
-      case 'edit':
-        return $this->getEditTitle($subscriber);
-      break;
+        case 'manage':
+          return $this->getManageTitle($subscriber);
+        break;
 
-      case 'unsubscribe':
-        if($subscriber !== false) {
-          if($subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED) {
-            $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-            $subscriber->save();
+        case 'unsubscribe':
+          if($subscriber !== false) {
+            if($subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED) {
+              $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+              $subscriber->save();
+            }
           }
-        }
-        return $this->getUnsubscribeTitle($subscriber);
-      break;
+          return $this->getUnsubscribeTitle($subscriber);
+        break;
+      }
     }
-    return $title;
+    return $page_title;
   }
 
   function setPageContent($page_content = '[mailpoet_page]') {
@@ -92,8 +100,8 @@ class Pages {
       case 'confirm':
         $content = $this->getConfirmContent($subscriber);
       break;
-      case 'edit':
-        $content = $this->getEditContent($subscriber);
+      case 'manage':
+        $content = $this->getManageContent($subscriber);
       break;
       case 'unsubscribe':
         $content = $this->getUnsubscribeContent($subscriber);
@@ -132,7 +140,7 @@ class Pages {
     return $title;
   }
 
-  private function getEditTitle($subscriber) {
+  private function getManageTitle($subscriber) {
     if($this->isPreview()) {
       return sprintf(
         __('Edit your subscriber profile: %s'),
@@ -159,7 +167,7 @@ class Pages {
     }
   }
 
-  private function getEditContent($subscriber) {
+  private function getManageContent($subscriber) {
     if($this->isPreview()) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate(array(
@@ -213,7 +221,8 @@ class Pages {
         'params' => array(
           'label' => __('Email'),
           'required' => true,
-          'value' => $subscriber->email
+          'value' => $subscriber->email,
+          'readonly' => true
         )
       ),
       array(
@@ -252,14 +261,6 @@ class Pages {
               ),
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_UNSUBSCRIBED
-              )
-            ),
-            array(
-              'value' => array(
-                Subscriber::STATUS_UNCONFIRMED => __('Unconfirmed')
-              ),
-              'is_checked' => (
-                $subscriber->status === Subscriber::STATUS_UNCONFIRMED
               )
             )
           )
@@ -310,7 +311,7 @@ class Pages {
         $content .= '<p><strong>'.
           str_replace(
             array('[link]', '[/link]'),
-            array('<a href="'.$subscriber->getConfirmationUrl().'">', '</a>'),
+            array('<a href="'.Subscription\Url::getConfirmationUrl($subscriber).'">', '</a>'),
             __('You made a mistake? [link]Undo unsubscribe.[/link]')
           ).
         '</strong></p>';

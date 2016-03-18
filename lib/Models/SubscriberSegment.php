@@ -16,18 +16,19 @@ class SubscriberSegment extends Model {
     if($subscriber->id > 0) {
       // unsubscribe from current subscriptions
       SubscriberSegment::where('subscriber_id', $subscriber->id)
-        ->whereNotIn('segment_id', $segment_ids)
         ->findResultSet()
         ->set('status', Subscriber::STATUS_UNSUBSCRIBED)
         ->save();
 
       // subscribe to segments
       foreach($segment_ids as $segment_id) {
-        self::createOrUpdate(array(
-          'subscriber_id' => $subscriber->id,
-          'segment_id' => $segment_id,
-          'status' => Subscriber::STATUS_SUBSCRIBED
-        ));
+        if((int)$segment_id > 0) {
+          self::createOrUpdate(array(
+            'subscriber_id' => $subscriber->id,
+            'segment_id' => $segment_id,
+            'status' => Subscriber::STATUS_SUBSCRIBED
+          ));
+        }
       }
     }
 

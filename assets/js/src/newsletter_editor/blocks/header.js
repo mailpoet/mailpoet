@@ -16,7 +16,7 @@ define([
     defaults: function() {
       return this._getDefaults({
         type: 'header',
-        text: 'Display problems? <a href="[viewInBrowserUrl]">View it in your browser</a>',
+        text: 'Display problems? <a href="[newsletter:view_in_browser_url]">View it in your browser</a>',
         styles: {
           block: {
             backgroundColor: 'transparent',
