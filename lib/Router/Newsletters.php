@@ -14,6 +14,7 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Scheduler\Scheduler;
 
 if(!defined('ABSPATH')) exit;
 
@@ -264,6 +265,12 @@ class Newsletters {
             $relation->save();
           }
         }
+      }
+      if(!isset($data['id']) &&
+        isset($data['type']) &&
+        $data['type'] === 'notification'
+      ) {
+        Scheduler::postNotification($newsletter->id);
       }
       return array(
         'result' => true,

@@ -221,6 +221,7 @@ class Migrator {
       'count_processed mediumint(9) NOT NULL DEFAULT 0,',
       'count_to_process mediumint(9) NOT NULL DEFAULT 0,',
       'count_failed mediumint(9) NOT NULL DEFAULT 0,',
+      'scheduled_at TIMESTAMP NOT NULL DEFAULT 0,',
       'processed_at TIMESTAMP NOT NULL DEFAULT 0,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',

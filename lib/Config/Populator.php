@@ -180,6 +180,14 @@ class Populator {
         'name' => 'nthWeekDay',
         'newsletter_type' => 'notification',
       ),
+      array(
+        'name' => 'schedule',
+        'newsletter_type' => 'notification',
+      ),
+      array(
+        'name' => 'lastSentData',
+        'newsletter_type' => 'notification',
+      ),
     );
   }
 

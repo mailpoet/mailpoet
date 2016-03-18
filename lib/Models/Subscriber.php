@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Models;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Util\Helpers;
 use MailPoet\Subscription;
 
@@ -173,6 +174,7 @@ class Subscriber extends Model {
 
       if($subscriber->save()) {
         $subscriber->addToSegments($segment_ids);
+        Scheduler::welcomeForSegmentSubscription($subscriber->id, $segment_ids);
       }
     }
 
