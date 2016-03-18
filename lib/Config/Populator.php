@@ -180,11 +180,7 @@ class Populator {
         'newsletter_type' => 'notification',
       ),
       array(
-        'name' => 'lastRunTime',
-        'newsletter_type' => 'notification',
-      ),
-      array(
-        'name' => 'lastRunResults',
+        'name' => 'lastSentData',
         'newsletter_type' => 'notification',
       ),
     );
