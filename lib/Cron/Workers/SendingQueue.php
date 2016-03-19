@@ -10,7 +10,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Util\Helpers;
-use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -22,13 +21,13 @@ class SendingQueue {
   const batch_size = 50;
 
   function __construct($timer = false) {
-    $this->mta_config = $this->getMailerConfig();
+/*    $this->mta_config = $this->getMailerConfig();
     $this->mta_log = $this->getMailerLog();
     $this->processing_method = ($this->mta_config['method'] === 'MailPoet') ?
       'processBulkSubscribers' :
       'processIndividualSubscriber';
     $this->timer = ($timer) ? $timer : microtime(true);
-    CronHelper::checkExecutionTimer($this->timer);
+    CronHelper::checkExecutionTimer($this->timer);*/
   }
 
   function process() {
@@ -87,7 +86,7 @@ class SendingQueue {
       );
     } else {
       $newsletter_statistics =
-        array_map(function ($data) use ($newsletter, $subscribers_ids, $queue) {
+        array_map(function($data) use ($newsletter, $subscribers_ids, $queue) {
           return array(
             $newsletter['id'],
             $subscribers_ids[$data],
@@ -147,13 +146,14 @@ class SendingQueue {
 
   function processNewsletter($newsletter, $subscriber = false) {
     $divider = '***MailPoet***';
+    $body = implode($divider, $newsletter['body']);
     $shortcodes = new Shortcodes(
-      implode($divider, $newsletter['body']),
       $newsletter,
       $subscriber
     );
     list($newsletter['body']['html'], $newsletter['body']['text']) =
-      explode($divider, $shortcodes->replace());
+      explode($divider, $shortcodes->replace($body));
+    $newsletter['subject'] = $shortcodes->replace($newsletter['subject']);
     return $newsletter;
   }
 

@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
+use MailPoet\Models\SendingQueue;
+
 class Newsletter {
   /*
     {
@@ -28,7 +30,9 @@ class Newsletter {
       shortcode: 'newsletter:view_in_browser',
     }
    */
-  static function process($action, $default_value = false, $newsletter) {
+  static function process($action,
+    $default_value = false,
+    $newsletter, $subscriber = false, $text) {
     if(is_object($newsletter)) {
       $newsletter = $newsletter->asArray();
     }
@@ -38,8 +42,7 @@ class Newsletter {
       break;
 
       case 'total':
-        $posts = wp_count_posts();
-        return $posts->publish;
+        return substr_count($text, 'mailpoet_alc_post');
       break;
 
       case 'post_title':
@@ -48,8 +51,10 @@ class Newsletter {
       break;
 
       case 'number':
-        // TODO: implement
-        return 1;
+        if ($newsletter['type'] !== 'notification') return false;
+        $sent_newsletters = (int)
+          SendingQueue::where('newsletter_id', $newsletter['id'])->count();
+        return ++$sent_newsletters;
       break;
 
       case 'view_in_browser':
