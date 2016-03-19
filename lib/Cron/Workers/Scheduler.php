@@ -1,9 +1,11 @@
 <?php
 namespace MailPoet\Cron\Workers;
 
+use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Models\Setting;
-use MailPoet\Util\Security;
+use MailPoet\Models\Newsletter;
+use MailPoet\Models\SendingQueue;
+use MailPoet\Models\SubscriberSegment;
 
 if(!defined('ABSPATH')) exit;
 
@@ -16,12 +18,31 @@ class Scheduler {
   }
 
   function process() {
+    $this->processScheduledNewsletters();
   }
 
-  function checkExecutionTimer() {
-    $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time >= CronHelper::daemon_execution_limit) {
-      throw new \Exception(__('Maximum execution time reached.'));
+  function processScheduledQueues() {
+    $scheduled_queues = SendingQueue::where('status', 'scheduled')
+      ->whereLte('scheduled_at', Carbon::now()
+        ->format('Y-m-d H:i:s'))
+      ->findMany();
+    if(!count($scheduled_queues)) return;
+    foreach($scheduled_queues as $queue) {
+      $newsletter = Newsletter::filter('filterWithOptions')
+        ->findOne($queue->newsletter_id)
+        ->asArray();
+      $subscriber = unserialize($queue->subscribers);
+      $subscriber_in_segment =
+        SubscriberSegment::where('subscriber_id', $subscriber['to_process'][0])
+          ->where('segment_id', $newsletter['segment'])
+          ->findOne();
+      if(!$subscriber_in_segment) {
+        $queue->delete();
+      } else {
+        $queue->status = null;
+        $queue->save();
+      }
+      CronHelper::checkExecutionTimer($this->timer);
     }
   }
 }
