@@ -1,5 +1,6 @@
 <?php
 
+use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Config\Populator;
 use MailPoet\Subscription\Url as SubscriptionUrl;
@@ -14,7 +15,11 @@ class ShortcodesTest extends MailPoetTest {
     $populator->up();
     $this->wp_user = $this->_createWPUser();
     $this->subscriber = $this->_createSubscriber();
-    $this->newsletter['subject'] = 'some subject';
+    $this->newsletter = array(
+      'subject' => 'some subject',
+      'type' => 'notification',
+      'id' => 1
+    );
     $this->rendered_newsletter = '
       Hello [user:displayname | default:member].
       Your first name is [user:firstname | default:First Name].
@@ -22,7 +27,10 @@ class ShortcodesTest extends MailPoetTest {
       Thank you for subscribing with [user:email].
       We already have [user:count] users.
 
-      There are [newsletter:total] posts on this blog.
+      <h1 class="mailpoet_alc_post">some post</h1>
+      <h1 class="mailpoet_alc_post">another post</h1>
+
+      There are [newsletter:total] posts in this newsletter.
       You are reading [newsletter:subject].
       The latest post on this blog is called [newsletter:post_title].
       The issue number of this newsletter is [newsletter:number].
@@ -38,24 +46,35 @@ class ShortcodesTest extends MailPoetTest {
       Manage your subscription here: [subscription:manage_url].
       View this newsletter in browser: [newsletter:view_in_browser_url].';
     $this->shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $this->rendered_newsletter,
       $this->newsletter,
       $this->subscriber
     );
   }
 
-  function testItCanProcessShortcodes() {
-    $shortcodes = $this->shortcodes_object->extract();
+  function testItCanExtractShortcodes() {
+    $shortcodes = $this->shortcodes_object->extract($this->rendered_newsletter);
     expect(count($shortcodes))->equals(18);
+  }
+
+  function testItCanProcessShortcodes() {
     $wp_user = get_userdata($this->wp_user);
-    $wp_post_count = wp_count_posts();
     $wp_latest_post = wp_get_recent_posts(array('numberposts' => 1));
     $wp_latest_post = (isset($wp_latest_post)) ?
       $wp_latest_post[0]['post_title'] :
       false;
+
+    $queue = SendingQueue::create();
+    $queue->newsletter_id = $this->newsletter['id'];
+    $queue->save();
+    $issue_number = 2;
+
+    $number_of_posts = 2;
+
     $date = new \DateTime('now');
     $subscriber_count = Subscriber::count();
-    $newsletter_with_replaced_shortcodes = $this->shortcodes_object->replace();
+    $newsletter_with_replaced_shortcodes = $this->shortcodes_object->replace(
+      $this->rendered_newsletter
+    );
 
     $unsubscribe_url = SubscriptionUrl::getUnsubscribeUrl($this->subscriber);
     $manage_url = SubscriptionUrl::getManageUrl($this->subscriber);
@@ -68,10 +87,13 @@ class ShortcodesTest extends MailPoetTest {
       Thank you for subscribing with {$this->subscriber->email}.
       We already have {$subscriber_count} users.
 
-      There are {$wp_post_count->publish} posts on this blog.
+      <h1 class=\"mailpoet_alc_post\">some post</h1>
+      <h1 class=\"mailpoet_alc_post\">another post</h1>
+
+      There are {$number_of_posts} posts in this newsletter.
       You are reading {$this->newsletter['subject']}.
       The latest post on this blog is called {$wp_latest_post}.
-      The issue number of this newsletter is 1.
+      The issue number of this newsletter is {$issue_number}.
 
       Date: {$date->format('d')}.
       Ordinal date: {$date->format('dS')}.

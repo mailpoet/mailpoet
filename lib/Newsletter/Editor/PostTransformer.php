@@ -169,6 +169,6 @@ class PostTransformer {
 
     $alignment = (in_array($this->args['titleAlignment'], array('left', 'right', 'center'))) ? $this->args['titleAlignment'] : 'left';
 
-    return '<' . $tag . ' style="text-align: ' . $alignment . '">' . $title . '</' . $tag . '>';
+    return '<' . $tag . ' class="mailpoet_alc_post" style="text-align: ' . $alignment . '">' . $title . '</' . $tag . '>';
   }
 }

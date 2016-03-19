@@ -139,11 +139,8 @@ class Newsletters {
     }
     $renderer = new Renderer($data);
     $rendered_newsletter = $renderer->render();
-    $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $rendered_newsletter['html'],
-      $data
-    );
-    $rendered_newsletter = $shortcodes->replace();
+    $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes($data);
+    $rendered_newsletter = $shortcodes->replace($rendered_newsletter['html']);
     return array('rendered_body' => $rendered_newsletter);
   }
 
