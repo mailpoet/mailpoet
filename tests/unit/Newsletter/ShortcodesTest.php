@@ -27,8 +27,8 @@ class ShortcodesTest extends MailPoetTest {
       Thank you for subscribing with [user:email].
       We already have [user:count] users.
 
-      <h1 class="mailpoet_alc_post">some post</h1>
-      <h1 class="mailpoet_alc_post">another post</h1>
+      <h1 data-post-id="1">some post</h1>
+      <h1 data-post-id="2">another post</h1>
 
       There are [newsletter:total] posts in this newsletter.
       You are reading [newsletter:subject].
@@ -87,8 +87,8 @@ class ShortcodesTest extends MailPoetTest {
       Thank you for subscribing with {$this->subscriber->email}.
       We already have {$subscriber_count} users.
 
-      <h1 class=\"mailpoet_alc_post\">some post</h1>
-      <h1 class=\"mailpoet_alc_post\">another post</h1>
+      <h1 data-post-id=\"1\">some post</h1>
+      <h1 data-post-id=\"2\">another post</h1>
 
       There are {$number_of_posts} posts in this newsletter.
       You are reading {$this->newsletter['subject']}.

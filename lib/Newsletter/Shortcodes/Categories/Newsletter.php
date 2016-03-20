@@ -42,7 +42,7 @@ class Newsletter {
       break;
 
       case 'total':
-        return substr_count($text, 'mailpoet_alc_post');
+        return substr_count($text, 'data-post-id');
       break;
 
       case 'post_title':
