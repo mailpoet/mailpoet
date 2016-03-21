@@ -24,28 +24,33 @@ class Scheduler {
       '#' . $newsletter['nthWeekDay'];
     switch($interval_type) {
       case 'immediately':
-        $cron = '* * * * *';
+        $schedule = '* * * * *';
         break;
-      case 'immediate': //daily
-        $cron = sprintf('0 %s * * *', $hour);
+      case 'immediate':
+      case 'daily':
+        $schedule = sprintf('0 %s * * *', $hour);
         break;
       case 'weekly':
-        $cron = sprintf('0 %s * * %s', $hour, $week_day);
+        $schedule = sprintf('0 %s * * %s', $hour, $week_day);
         break;
       case 'monthly':
-        $cron = sprintf('0 %s %s * *', $hour, $month_day);
+        $schedule = sprintf('0 %s %s * *', $hour, $month_day);
         break;
       case 'nthWeekDay':
-        $cron = sprintf('0 %s ? * %s%s', $hour, $week_day, $nth_week_day);
+        $schedule = sprintf('0 %s ? * %s%s', $hour, $week_day, $nth_week_day);
         break;
     }
     $option_field = NewsletterOptionField::where('name', 'schedule')
       ->findOne()
       ->asArray();
-    $relation = NewsletterOption::create();
-    $relation->newsletter_id = $newsletter['id'];
-    $relation->option_field_id = $option_field['id'];
-    $relation->value = $cron;
+    $relation = NewsletterOption::where('option_field_id', $option_field['id'])
+      ->findOne();
+    if(!$relation) {
+      $relation = NewsletterOption::create();
+      $relation->newsletter_id = $newsletter['id'];
+      $relation->option_field_id = $option_field['id'];
+    }
+    $relation->value = $schedule;
     $relation->save();
   }
 

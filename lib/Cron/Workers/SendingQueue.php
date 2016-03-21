@@ -10,7 +10,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Util\Helpers;
-use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -37,6 +36,8 @@ class SendingQueue {
       if(!$newsletter) {
         continue;
       }
+      $newsletter = $newsletter->asArray();
+      $newsletter['body'] = $this->getNewsletterBodyAndSubject($queue, $newsletter);
       $queue->subscribers = (object) unserialize($queue->subscribers);
       if(!isset($queue->subscribers->processed)) {
         $queue->subscribers->processed = array();
@@ -44,8 +45,6 @@ class SendingQueue {
       if(!isset($queue->subscribers->failed)) {
         $queue->subscribers->failed = array();
       }
-      $newsletter = $newsletter->asArray();
-      $newsletter['body'] = $this->renderNewsletter($newsletter);
       $mailer = $this->configureMailer($newsletter);
       foreach(array_chunk($queue->subscribers->to_process, self::batch_size) as
               $subscribers_ids) {
@@ -65,6 +64,20 @@ class SendingQueue {
         );
       }
     }
+  }
+
+  function getNewsletterBodyAndSubject($queue, $newsletter) {
+    // check if newsletter has been rendered, in which case return its contents
+    // or render & and for future use
+    if($queue->newsletter_rendered_body === null) {
+      $newsletter['body'] = $this->renderNewsletter($newsletter);
+      $queue->newsletter_rendered_body = json_encode($newsletter['body']);
+      $queue->newsletter_rendered_body_hash = md5($newsletter['body']['text']);
+      $queue->save();
+    } else {
+      $newsletter['body'] = json_decode($queue->newsletter_rendered_body);
+    }
+    return $newsletter['body'];
   }
 
   function processBulkSubscribers($mailer, $newsletter, $subscribers, $queue) {
@@ -87,7 +100,7 @@ class SendingQueue {
       );
     } else {
       $newsletter_statistics =
-        array_map(function ($data) use ($newsletter, $subscribers_ids, $queue) {
+        array_map(function($data) use ($newsletter, $subscribers_ids, $queue) {
           return array(
             $newsletter['id'],
             $subscribers_ids[$data],

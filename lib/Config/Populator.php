@@ -185,9 +185,9 @@ class Populator {
         'newsletter_type' => 'notification',
       ),
       array(
-        'name' => 'lastSentData',
+        'name' => 'segments',
         'newsletter_type' => 'notification',
-      ),
+      )
     );
   }
 

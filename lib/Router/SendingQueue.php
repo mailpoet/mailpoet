@@ -2,14 +2,16 @@
 namespace MailPoet\Router;
 
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterOption;
+use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\Segment;
 use MailPoet\Util\Helpers;
+use Cron\CronExpression as Cron;
 
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
   function add($data) {
-    // check if mailer is properly configured
     try {
       new Mailer(false);
     } catch(\Exception $e) {
@@ -19,18 +21,58 @@ class SendingQueue {
       );
     }
 
-    $queue = \MailPoet\Models\SendingQueue::whereNull('status')
-      ->where('newsletter_id', $data['newsletter_id'])
-      ->findArray();
+    $newsletter = Newsletter::filter('filterWithOptions')
+      ->findOne($data['newsletter_id']);
+    if(!$newsletter) {
+      return array(
+        'result' => false,
+        'errors' => array(__('Newsletter does not exist.'))
+      );
+    }
 
+    $queue = \MailPoet\Models\SendingQueue::whereNull('status')
+      ->where('newsletter_id', $newsletter->id)
+      ->findOne();
     if(!empty($queue)) {
       return array(
         'result' => false,
         'errors' => array(__('Send operation is already in progress.'))
       );
     }
+
+    if($newsletter->type === 'notification') {
+      $option_field = NewsletterOptionField::where('name', 'segments')
+        ->where('newsletter_type', 'notification')
+        ->findOne();
+      $relation = NewsletterOption::where('option_field_id', $option_field->id)
+        ->findOne();
+      if(!$relation) {
+        $relation = NewsletterOption::create();
+        $relation->newsletter_id = $newsletter->id;
+        $relation->option_field_id = $option_field->id;
+      }
+      $relation->value = serialize($data['segments']);
+      $relation->save();
+
+      $queue = \MailPoet\Models\SendingQueue::where('status', 'scheduled')
+        ->where('newsletter_id', $newsletter->id)
+        ->findOne();
+      if(!$queue) {
+        $queue = \MailPoet\Models\SendingQueue::create();
+        $queue->newsletter_id = $newsletter->id;
+      }
+      $schedule = Cron::factory($newsletter->schedule);
+      $queue->scheduled_at = $schedule->getNextRunDate()->format('Y-m-d H:i:s');
+      $queue->status = 'scheduled';
+      $queue->save();
+      return array(
+        'result' => true,
+        'data' => array(__('Newsletter was scheduled for sending.'))
+      );
+    }
+
     $queue = \MailPoet\Models\SendingQueue::create();
-    $queue->newsletter_id = $data['newsletter_id'];
+    $queue->newsletter_id = $newsletter->id;
     $subscriber_ids = array();
     $segments = Segment::whereIn('id', $data['segments'])
       ->findMany();
