@@ -13,7 +13,7 @@ class Env {
   static $assets_path;
   static $assets_url;
   static $temp_path;
-  static $temp_URL;
+  static $temp_url;
   static $languages_path;
   static $lib_path;
   static $plugin_prefix;
@@ -38,7 +38,7 @@ class Env {
     self::$assets_url = plugins_url('/assets', $file);
     $wp_upload_dir = wp_upload_dir();
     self::$temp_path = $wp_upload_dir['path'];
-    self::$temp_URL = $wp_upload_dir['url'];
+    self::$temp_url = $wp_upload_dir['url'];
     self::$languages_path = self::$path . '/lang';
     self::$lib_path = self::$path . '/lib';
     self::$plugin_prefix = 'mailpoet_';

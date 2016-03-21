@@ -226,7 +226,7 @@ class Export {
   function getExportFileURL($file) {
     return sprintf(
       '%s/%s',
-      Env::$temp_URL,
+      Env::$temp_url,
       basename($file)
     );
   }

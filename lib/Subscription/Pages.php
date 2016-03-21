@@ -19,7 +19,8 @@ class Pages {
   function init() {
     $action = $this->getAction();
     if($action !== null) {
-      add_filter('document_title_parts', array($this,'setWindowTitle'), 10, 1);
+      add_filter('wp_title', array($this,'setWindowTitle'), 10, 1);
+      add_filter('document_title_parts', array($this,'setWindowTitleParts'), 10, 1);
       add_filter('the_title', array($this,'setPageTitle'), 10, 1);
       add_filter('the_content', array($this,'setPageContent'), 10, 1);
     }
@@ -59,7 +60,11 @@ class Pages {
     return (array_key_exists('mailpoet_preview', $_GET));
   }
 
-  function setWindowTitle($meta = array()) {
+  function setWindowTitle($title) {
+    return $this->setPageTitle($title);
+  }
+
+  function setWindowTitleParts($meta = array()) {
     $meta['title'] = $this->setPageTitle($meta['title']);
     return $meta;
   }

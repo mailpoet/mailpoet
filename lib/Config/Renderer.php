@@ -59,7 +59,7 @@ class Renderer {
   }
 
   function detectCache() {
-    $cache_path = Env::$views_path . '/cache';
+    $cache_path = Env::$temp_path . '/cache';
     if(WP_DEBUG === false) {
       return $cache_path;
     }
