@@ -21,13 +21,13 @@ class SendingQueue {
   const batch_size = 50;
 
   function __construct($timer = false) {
-/*    $this->mta_config = $this->getMailerConfig();
+    $this->mta_config = $this->getMailerConfig();
     $this->mta_log = $this->getMailerLog();
     $this->processing_method = ($this->mta_config['method'] === 'MailPoet') ?
       'processBulkSubscribers' :
       'processIndividualSubscriber';
     $this->timer = ($timer) ? $timer : microtime(true);
-    CronHelper::checkExecutionTimer($this->timer);*/
+    CronHelper::checkExecutionTimer($this->timer);
   }
 
   function process() {
