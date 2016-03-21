@@ -261,7 +261,7 @@
       function mailpoet_form_toggle_segments() {
         // hide list selection if a list widget has been dragged into the editor
         $('mailpoet_settings_segment_selection')[
-          (($$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]').length > 0) === true)
+          (WysijaForm.hasSegmentSelection())
           ? 'hide' : 'show'
         ]();
       }
@@ -466,11 +466,10 @@
 
           // validate segments to subscribe to
           if(WysijaForm.hasSegmentSelection()) {
-            // disable segment selection from settings
-            $('#mailpoet_form_segments').removeAttr('required').attr('disabled', true);
-          } else {
-            // enable segment selection from settings
-            $('#mailpoet_form_segments').attr('required', true).removeAttr('disabled');
+            // validate segment selection in form
+            if(WysijaForm.isSegmentSelectionValid() === false) {
+              return false;
+            }
           }
 
           // check if the form is valid
