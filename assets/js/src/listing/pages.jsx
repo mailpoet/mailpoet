@@ -132,7 +132,7 @@ define(['react', 'classnames'], function(React, classNames) {
                   onKeyUp={ this.handleSetManualPage }
                   onBlur={ this.handleBlurManualPage }
                   aria-describedby="table-paging"
-                  size="1"
+                  size="2"
                   ref="page"
                   value={ pageValue }
                   name="paged"
