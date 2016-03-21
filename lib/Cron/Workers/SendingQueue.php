@@ -77,7 +77,7 @@ class SendingQueue {
     } else {
       $newsletter['body'] = json_decode($queue->newsletter_rendered_body);
     }
-    return $newsletter['body'];
+    return (array) $newsletter['body'];
   }
 
   function processBulkSubscribers($mailer, $newsletter, $subscribers, $queue) {
@@ -125,6 +125,9 @@ class SendingQueue {
     foreach($subscribers as $subscriber) {
       $this->checkSendingLimit();
       $processed_newsletter = $this->processNewsletter($newsletter, $subscriber);
+      if (!$queue->newsletter_rendered_subject) {
+        $queue->newsletter_rendered_subject = $processed_newsletter['subject'];
+      }
       $transformed_subscriber = $mailer->transformSubscriber($subscriber);
       $result = $this->sendNewsletter(
         $mailer,
@@ -132,7 +135,7 @@ class SendingQueue {
         $transformed_subscriber
       );
       if(!$result) {
-        $queue->subscribers->failed[] = $subscriber['id'];;
+        $queue->subscribers->failed[] = $subscriber['id'];
       } else {
         $queue->subscribers->processed[] = $subscriber['id'];
         $newsletter_statistics = array(
@@ -160,13 +163,17 @@ class SendingQueue {
 
   function processNewsletter($newsletter, $subscriber = false) {
     $divider = '***MailPoet***';
+    $data_for_shortcodes =
+      array_merge(array($newsletter['subject']), $newsletter['body']);
+    $body = implode($divider, $data_for_shortcodes);
     $shortcodes = new Shortcodes(
-      implode($divider, $newsletter['body']),
       $newsletter,
       $subscriber
     );
-    list($newsletter['body']['html'], $newsletter['body']['text']) =
-      explode($divider, $shortcodes->replace());
+    list($newsletter['subject'],
+      $newsletter['body']['html'],
+      $newsletter['body']['text']
+      ) = explode($divider, $shortcodes->replace($body));
     return $newsletter;
   }
 

@@ -15,6 +15,7 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -33,7 +34,7 @@ class Newsletters {
       $newsletter['segments'] = array_map(function($segment) {
         return $segment['id'];
       }, $segments);
-      $newsletter['options'] = $options;
+      $newsletter['options'] = Helpers::arrayColumn($options, 'value', 'name');
       return $newsletter;
     }
   }
@@ -139,11 +140,8 @@ class Newsletters {
     }
     $renderer = new Renderer($data);
     $rendered_newsletter = $renderer->render();
-    $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $rendered_newsletter['html'],
-      $data
-    );
-    $rendered_newsletter = $shortcodes->replace();
+    $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes($data);
+    $rendered_newsletter = $shortcodes->replace($rendered_newsletter['html']);
     return array('rendered_body' => $rendered_newsletter);
   }
 
