@@ -50,8 +50,8 @@
                 name="segments"
                 data-placeholder="<%= __('Choose a list') %>"
                 multiple
-                data-parsley-required="true"
                 data-parsley-required-message="<%= __('You need to select a list.') %>"
+                required
               >
                 <% for segment in segments %>
                   <option value="<%= segment.id %>"><%= segment.name %></option>
@@ -268,7 +268,7 @@
 
       function mailpoet_form_fields() {
         // form editor: default fields
-        var template = Handlebars.compile(jQuery('#form_template_fields').html());
+        var template = Handlebars.compile($('#form_template_fields').html());
 
         var data = {
           fields: mailpoet_default_fields
@@ -439,7 +439,6 @@
 
         // preview form
         $(document).on('click', '#mailpoet_form_preview', function() {
-          //mailpoet_form_save(mailpoet_form_preview);
           mailpoet_form_preview();
           return false;
         });
@@ -462,11 +461,26 @@
           var form = WysijaForm.save();
           form.id = $('#mailpoet_form_id').val();
 
-          if(jQuery('#mailpoet_form_settings').parsley().isValid() === false) {
+          // reset error messages
+          $('#mailpoet_form_settings').parsley().reset();
+
+          // validate segments to subscribe to
+          if(WysijaForm.hasSegmentSelection()) {
+            // disable segment selection from settings
+            $('#mailpoet_form_segments').removeAttr('required').attr('disabled', true);
+          } else {
+            // enable segment selection from settings
+            $('#mailpoet_form_segments').attr('required', true).removeAttr('disabled');
+          }
+
+          // check if the form is valid
+          if($('#mailpoet_form_settings').parsley().isValid() === false) {
+            // refresh settings and trigger validation
             mailpoet_toolbar_tab('settings', function() {
-              jQuery('#mailpoet_form_settings').parsley().validate();
+              $('#mailpoet_form_settings').parsley().validate();
             });
           } else {
+            // save form
             MailPoet.Ajax.post({
               endpoint: 'forms',
               action: 'saveEditor',

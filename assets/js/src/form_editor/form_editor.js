@@ -404,9 +404,12 @@ var WysijaForm = {
 
     // hide list selection if a list widget has been dragged into the editor
     $('mailpoet_settings_segment_selection')[
-      (($$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]').length > 0) === true)
+      (WysijaForm.hasSegmentSelection() === true)
       ? 'hide' : 'show'
     ]();
+  },
+  hasSegmentSelection: function() {
+    return ($$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]').length > 0);
   },
   setBlockPositions: function(event, target) {
     // release dragging lock
