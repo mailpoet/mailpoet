@@ -37,7 +37,8 @@ class Daemon {
     }
     $this->abortIfStopped($daemon);
     try {
-      do_action('mailpoet_cron_worker', $this->timer);
+      do_action('mailpoet_scheduler_worker', $this->timer);
+      do_action('mailpoet_queue_worker', $this->timer);
     } catch(\Exception $e) {
     }
     $elapsed_time = microtime(true) - $this->timer;
