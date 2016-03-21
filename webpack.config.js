@@ -194,7 +194,6 @@ config.push(_.extend({}, baseConfig, {
   name: 'test',
   entry: {
     vendor: ['handlebars', 'handlebars_helpers'],
-    testAjax: 'testAjax.js',
     testNewsletterEditor: [
       'underscore',
       'backbone',
