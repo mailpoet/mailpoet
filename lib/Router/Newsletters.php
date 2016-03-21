@@ -33,7 +33,7 @@ class Newsletters {
       $newsletter['segments'] = array_map(function($segment) {
         return $segment['id'];
       }, $segments);
-      $newsletter['options'] = $options;
+      $newsletter['options'] = array_column($options, 'value', 'name');
       return $newsletter;
     }
   }
