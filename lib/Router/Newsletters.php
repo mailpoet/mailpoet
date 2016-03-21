@@ -15,6 +15,7 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -33,7 +34,7 @@ class Newsletters {
       $newsletter['segments'] = array_map(function($segment) {
         return $segment['id'];
       }, $segments);
-      $newsletter['options'] = $options;
+      $newsletter['options'] = Helpers::arrayColumn($options, 'value', 'name');
       return $newsletter;
     }
   }
