@@ -21,21 +21,20 @@ define(
     var fields = [
       {
         name: 'subject',
-        label: 'Subject line',
-        tip: "Be creative! It's the first thing your subscribers see."+
-             "Tempt them to open your email.",
+        label: MailPoet.I18n.t('subjectLine'),
+        tip: MailPoet.I18n.t('subjectLineTip'),
         type: 'text',
         validation: {
           'data-parsley-required': true,
-          'data-parsley-required-message': 'You need to specify a subject.'
+          'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError')
         }
       },
       {
         name: 'segments',
-        label: 'Segments',
-        tip: "The subscriber segment that will be used for this campaign.",
+        label: MailPoet.I18n.t('segments'),
+        tip: MailPoet.I18n.t('segmentsTip'),
         type: 'selection',
-        placeholder: "Select a segment",
+        placeholder: MailPoet.I18n.t('selectSegmentPlaceholder'),
         id: "mailpoet_segments",
         endpoint: "segments",
         multiple: true,
@@ -44,18 +43,18 @@ define(
         },
         validation: {
           'data-parsley-required': true,
-          'data-parsley-required-message': 'You need to select a segment.'
+          'data-parsley-required-message': MailPoet.I18n.t('noSegmentsSelectedError')
         }
       },
       {
         name: 'sender',
-        label: 'Sender',
-        tip: "Name & email of yourself or your company.",
+        label: MailPoet.I18n.t('sender'),
+        tip: MailPoet.I18n.t('senderTip'),
         fields: [
           {
             name: 'sender_name',
             type: 'text',
-            placeholder: 'John Doe',
+            placeholder: MailPoet.I18n.t('senderNamePlaceholder'),
             defaultValue: (settings.sender !== undefined) ? settings.sender.name : '',
             validation: {
               'data-parsley-required': true
@@ -64,7 +63,7 @@ define(
           {
             name: 'sender_address',
             type: 'text',
-            placeholder: 'john.doe@email.com',
+            placeholder: MailPoet.I18n.t('senderAddressPlaceholder'),
             defaultValue: (settings.sender !== undefined) ? settings.sender.address : '',
             validation: {
               'data-parsley-required': true,
@@ -75,21 +74,20 @@ define(
       },
       {
         name: 'reply-to',
-        label: 'Reply-to',
-        tip: 'When the subscribers hit "reply" this is who will receive their '+
-             'email.',
+        label: MailPoet.I18n.t('replyTo'),
+        tip: MailPoet.I18n.t('replyToTip'),
         inline: true,
         fields: [
           {
             name: 'reply_to_name',
             type: 'text',
-            placeholder: 'John Doe',
+            placeholder: MailPoet.I18n.t('replyToNamePlaceholder'),
             defaultValue: (settings.reply_to !== undefined) ? settings.reply_to.name : '',
           },
           {
             name: 'reply_to_address',
             type: 'text',
-            placeholder: 'john.doe@email.com',
+            placeholder: MailPoet.I18n.t('replyToAddressPlaceholder'),
             defaultValue: (settings.reply_to !== undefined) ? settings.reply_to.address : ''
           },
         ]
@@ -98,10 +96,10 @@ define(
 
     var messages = {
       onUpdate: function() {
-        MailPoet.Notice.success('Newsletter successfully updated!');
+        MailPoet.Notice.success(MailPoet.I18n.t('newsletterUpdated'));
       },
       onCreate: function() {
-        MailPoet.Notice.success('Newsletter successfully added!');
+        MailPoet.Notice.success(MailPoet.I18n.t('newsletterAdded'));
       }
     };
 
@@ -138,15 +136,14 @@ define(
             if(response.result === true) {
               this.history.pushState(null, '/');
               MailPoet.Notice.success(
-                'The newsletter is being sent...'
+                MailPoet.I18n.t('newsletterIsBeingSent')
               );
             } else {
               if(response.errors) {
                 MailPoet.Notice.error(response.errors);
               } else {
                 MailPoet.Notice.error(
-                  'An error occurred while trying to send. '+
-                  '<a href="?page=mailpoet-settings">Check your settings.</a>'
+                  MailPoet.I18n.t('newsletterSendingError').replace("%$1s", '?page=mailpoet-settings')
                 );
               }
             }
@@ -157,7 +154,7 @@ define(
       render: function() {
         return (
           <div>
-            <h1>Final step: last details</h1>
+            <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
 
             <Breadcrumb step="send" />
 
@@ -174,18 +171,18 @@ define(
                   className="button button-primary"
                   type="button"
                   onClick={ this.handleSend }
-                  value="Send" />
+                  value={MailPoet.I18n.t('send')} />
                 &nbsp;
                 <input
                   className="button button-secondary"
                   type="submit"
-                  value="Save as draft and close" />
-                &nbsp;or simply&nbsp;
+                  value={MailPoet.I18n.t('saveDraftAndClose')} />
+                &nbsp;{MailPoet.I18n.t('orSimply')}&nbsp;
                 <a
                   href={
                     '?page=mailpoet-newsletter-editor&id='+this.props.params.id
                   }>
-                  go back to design
+                  {MailPoet.I18n.t('goBackToDesign')}
                 </a>.
               </p>
             </Form>

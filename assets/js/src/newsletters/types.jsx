@@ -26,7 +26,7 @@ define(
           action: 'create',
           data: {
             type: type,
-            subject: 'Draft newsletter',
+            subject: MailPoet.I18n.t('draftNewsletterTitle'),
           }
         }).done(function(response) {
           if(response.result && response.newsletter.id) {
@@ -43,7 +43,7 @@ define(
       render: function() {
         return (
           <div>
-            <h1>Pick a type of campaign</h1>
+            <h1>{MailPoet.I18n.t('pickCampaignType')}</h1>
 
             <Breadcrumb step="type" />
 
@@ -52,10 +52,9 @@ define(
                 <div className="mailpoet_thumbnail"></div>
 
                 <div className="mailpoet_description">
-                  <h3>Newsletter</h3>
+                  <h3>{MailPoet.I18n.t('regularNewsletterTypeTitle')}</h3>
                   <p>
-                    Send a newsletter with images, buttons, dividers,
-                    and social bookmarks. Or a simple email.
+                    {MailPoet.I18n.t('regularNewsletterTypeDescription')}
                   </p>
                 </div>
 
@@ -64,7 +63,7 @@ define(
                     className="button button-primary"
                     onClick={ this.createNewsletter.bind(null, 'standard') }
                   >
-                    Create
+                    {MailPoet.I18n.t('create')}
                   </a>
                 </div>
               </li>
@@ -73,9 +72,9 @@ define(
                 <div className="mailpoet_thumbnail"></div>
 
                 <div className="mailpoet_description">
-                  <h3>Welcome email</h3>
+                  <h3>{MailPoet.I18n.t('welcomeNewsletterTypeTitle')}</h3>
                   <p>
-                    Send an email for new users.
+                    {MailPoet.I18n.t('welcomeNewsletterTypeDescription')}
                   </p>
                 </div>
 
@@ -84,7 +83,7 @@ define(
                     className="button button-primary"
                     onClick={ this.setupNewsletter.bind(null, 'welcome') }
                   >
-                    Set up
+                    {MailPoet.I18n.t('setUp')}
                   </a>
                 </div>
               </li>
@@ -93,9 +92,9 @@ define(
                 <div className="mailpoet_thumbnail"></div>
 
                 <div className="mailpoet_description">
-                  <h3>Post notifications</h3>
+                  <h3>{MailPoet.I18n.t('postNotificationNewsletterTypeTitle')}</h3>
                   <p>
-                    Automatically send posts immediately, daily, weekly or monthly. Filter by categories, if you like.
+                    {MailPoet.I18n.t('postNotificationsNewsletterTypeDescription')}
                   </p>
                 </div>
 
@@ -104,7 +103,7 @@ define(
                     className="button button-primary"
                     onClick={ this.setupNewsletter.bind(null, 'notification') }
                   >
-                    Set up
+                    {MailPoet.I18n.t('setUp')}
                   </a>
                 </div>
               </li>
