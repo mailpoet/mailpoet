@@ -20,13 +20,18 @@ function(
       $('form.mailpoet_form').each(function() {
         var form = $(this);
 
-        form.parsley().on('form:submit', function(parsley) {
-
-          var data = form.serializeObject() || {};
-
+        form.parsley().on('form:validated', function(parsley) {
           // clear messages
           form.find('.mailpoet_message').html('');
 
+          // resize iframe
+          if(window.frameElement !== null) {
+            MailPoet.Iframe.autoSize(window.frameElement);
+          }
+        });
+
+        form.parsley().on('form:submit', function(parsley) {
+          var data = form.serializeObject() || {};
           // check if we're on the same domain
           if(isSameDomain(MailPoetForm.ajax_url) === false) {
             // non ajax post request
@@ -67,6 +72,11 @@ function(
                 form.trigger('reset');
                 // reset validation
                 parsley.reset();
+              }
+
+              // resize iframe
+              if(window.frameElement !== null) {
+                MailPoet.Iframe.autoSize(window.frameElement);
               }
             });
           }

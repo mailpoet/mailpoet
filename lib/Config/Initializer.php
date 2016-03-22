@@ -130,7 +130,7 @@ class Initializer {
   }
 
   function setupWidget() {
-    $widget = new Widget();
+    $widget = new Widget($this->renderer);
     $widget->init();
   }
 

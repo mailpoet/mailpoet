@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" <%= language_attributes | raw %>>
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" <%= language_attributes | raw %>>
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html <%= language_attributes | raw %>>
+<!--<![endif]-->
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+    <title><%= __('MailPoet Subscription Form') %></title>
+    <%= stylesheet('public.css') %>
+    <%= scripts | raw %>
+  </head>
+  <body>
+    <%= form | raw %>
+    <script type="text/javascript">
+      var MailPoetForm = <%= json_encode(mailpoet_form) %>;
+      function autoSize() {
+        var iframe = window.frameElement;
+        var height = document.body.scrollHeight;
+        parent.MailPoet.Iframe.setSize(iframe, height);
+      }
+
+      jQuery(function($) {
+        $(function() {
+          autoSize();
+        });
+      });
+
+      jQuery('form').on('submit', function() {
+        setTimeout(function() {
+          // make sure we resize the iframe
+          autoSize();
+        }.bind(this), 1);
+        return true;
+      }.bind(this));
+    </script>
+  </body>
+</html>
