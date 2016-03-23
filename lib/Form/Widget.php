@@ -154,7 +154,7 @@ class Widget extends \WP_Widget {
       $output = '';
 
       if(!empty($body)) {
-        $form_id = $this->id_base.'_'.$this->number;
+        $form_id = $this->id_base.'_'.$form['id'];
 
         $data = array(
           'form_id' => $form_id,

@@ -178,6 +178,7 @@ config.push(_.extend({}, baseConfig, {
     public: [
       'mailpoet',
       'ajax',
+      'iframe',
       'jquery.serialize_object',
       'public.js'
     ]

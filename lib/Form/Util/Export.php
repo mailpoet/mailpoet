@@ -17,8 +17,7 @@ class Export {
       case 'iframe':
         // generate url to load iframe's content
         $iframe_url = add_query_arg(array(
-          'mailpoet_page' => 'mailpoet_form_iframe',
-          'mailpoet_form' => $form['id']
+          'mailpoet_form_iframe' => $form['id']
         ), site_url());
 
         // generate iframe
@@ -31,7 +30,7 @@ class Export {
           'class="mailpoet_form_iframe"',
           'vspace="0"',
           'tabindex="0"',
-          'onload="javascript:(this.style.height = this.contentWindow.document.body.scrollHeight + \'px\');"',
+          'onload="MailPoet.Iframe.autoSize(this);"',
           'marginwidth="0"',
           'marginheight="0"',
           'hspace="0"',

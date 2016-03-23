@@ -402,11 +402,30 @@ var WysijaForm = {
       }
     });
 
-    // hide list selection if a list widget has been dragged into the editor
-    $('mailpoet_settings_segment_selection')[
-      (($$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]').length > 0) === true)
-      ? 'hide' : 'show'
-    ]();
+    var hasSegmentSelection = WysijaForm.hasSegmentSelection();
+
+    if(hasSegmentSelection) {
+      $('mailpoet_form_segments').writeAttribute('required', false).disable();
+      $('mailpoet_settings_segment_selection').hide();
+    } else {
+      $('mailpoet_form_segments').writeAttribute('required', true).enable();
+      $('mailpoet_settings_segment_selection').show();
+    }
+  },
+  hasSegmentSelection: function() {
+    return ($$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]').length > 0);
+  },
+  isSegmentSelectionValid: function() {
+    var segment_selection = $$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]')[0];
+    if(segment_selection !== undefined) {
+      var block = WysijaForm.get(segment_selection).block.getData();
+      return (
+        (block.params.values !== undefined)
+        &&
+        (block.params.values.length > 0)
+      );
+    }
+    return false;
   },
   setBlockPositions: function(event, target) {
     // release dragging lock
