@@ -3,7 +3,6 @@ namespace MailPoet\Cron;
 
 use MailPoet\Cron\Workers\Scheduler;
 use MailPoet\Cron\Workers\SendingQueue;
-use MailPoet\Models\Newsletter;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
@@ -37,8 +36,10 @@ class Daemon {
     }
     $this->abortIfStopped($daemon);
     try {
-      do_action('mailpoet_scheduler_worker', $this->timer);
-      do_action('mailpoet_queue_worker', $this->timer);
+      $scheduler = new Scheduler();
+      $scheduler->process($this->timer);
+      $queue = new SendingQueue();
+      $queue->process($this->timer);
     } catch(\Exception $e) {
     }
     $elapsed_time = microtime(true) - $this->timer;

@@ -13,7 +13,6 @@ class Hooks {
     $this->setupWPUsers();
     $this->setupImageSize();
     $this->setupListing();
-    $this->setupCronWorkers();
   }
 
   function setupSubscribe() {
@@ -146,20 +145,5 @@ class Hooks {
     } else {
       return $status;
     }
-  }
-
-  function setupCronWorkers() {
-    add_action('mailpoet_scheduler_worker', array($this, 'runSchedulerWorker'), 10, 1);
-    add_action('mailpoet_queue_worker', array($this, 'runSendingQueueWorker'), 10, 1);
-  }
-
-  function runSchedulerWorker($timer) {
-    $scheduler = new Scheduler($timer);
-    $scheduler->process();
-
-  }
-  function runSendingQueueWorker($timer) {
-    $sending_queue = new SendingQueue($timer);
-    $sending_queue->process();
   }
 }
