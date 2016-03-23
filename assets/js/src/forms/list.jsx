@@ -8,17 +8,17 @@ import MailPoet from 'mailpoet'
 const columns = [
   {
     name: 'name',
-    label: 'Name',
+    label: MailPoet.I18n.t('formName'),
     sortable: true
   },
   {
     name: 'segments',
-    label: 'Lists',
+    label: MailPoet.I18n.t('segments'),
     sortable: false
   },
   {
     name: 'created_at',
-    label: 'Created on',
+    label: MailPoet.I18n.t('createdOn'),
     sortable: true
   }
 ];
@@ -30,11 +30,11 @@ const messages = {
 
     if(count === 1) {
       message = (
-        '1 form was moved to the trash.'
+        MailPoet.I18n.t('oneFormTrashed')
       );
     } else {
       message = (
-        '%$1d forms were moved to the trash.'
+        MailPoet.I18n.t('multipleFormsTrashed')
       ).replace('%$1d', count);
     }
     MailPoet.Notice.success(message);
@@ -45,11 +45,11 @@ const messages = {
 
     if(count === 1) {
       message = (
-        '1 form was permanently deleted.'
+        MailPoet.I18n.t('oneFormDeleted')
       );
     } else {
       message = (
-        '%$1d forms were permanently deleted.'
+        MailPoet.I18n.t('multipleFormsDeleted')
       ).replace('%$1d', count);
     }
     MailPoet.Notice.success(message);
@@ -60,11 +60,11 @@ const messages = {
 
     if(count === 1) {
       message = (
-        '1 form has been restored from the trash.'
+        MailPoet.I18n.t('oneFormRestored')
       );
     } else {
       message = (
-        '%$1d forms have been restored from the trash.'
+        MailPoet.I18n.t('multipleFormsRestored')
       ).replace('%$1d', count);
     }
     MailPoet.Notice.success(message);
@@ -74,16 +74,16 @@ const messages = {
 const item_actions = [
   {
     name: 'edit',
-    label: 'Edit',
+    label: MailPoet.I18n.t('edit'),
     link: function(item) {
       return (
-        <a href={ `admin.php?page=mailpoet-form-editor&id=${item.id}` }>Edit</a>
+        <a href={ `admin.php?page=mailpoet-form-editor&id=${item.id}` }>{MailPoet.I18n.t('edit')}</a>
       );
     }
   },
   {
     name: 'duplicate_form',
-    label: 'Duplicate',
+    label: MailPoet.I18n.t('duplicate'),
     onClick: function(item, refresh) {
       return MailPoet.Ajax.post({
         endpoint: 'forms',
@@ -91,7 +91,7 @@ const item_actions = [
         data: item.id
       }).done(function(response) {
         MailPoet.Notice.success(
-          ('Form "%$1s" has been duplicated.').replace('%$1s', response.name)
+          (MailPoet.I18n.t('formDuplicated')).replace('%$1s', response.name)
         );
         refresh();
       });
@@ -105,7 +105,7 @@ const item_actions = [
 const bulk_actions = [
   {
     name: 'trash',
-    label: 'Trash',
+    label: MailPoet.I18n.t('trash'),
     onSuccess: messages.onTrash
   }
 ];
@@ -142,10 +142,10 @@ const FormList = React.createClass({
           </strong>
           { actions }
         </td>
-        <td className="column-format" data-colname="Lists">
+        <td className="column-format" data-colname={MailPoet.I18n.t('segments')}>
           { segments }
         </td>
-        <td className="column-date" data-colname="Created on">
+        <td className="column-date" data-colname={MailPoet.I18n.t('createdOn')}>
           <abbr>{ MailPoet.Date.full(form.created_at) }</abbr>
         </td>
       </div>
@@ -155,11 +155,11 @@ const FormList = React.createClass({
     return (
       <div>
         <h2 className="title">
-          Forms <a
+          {MailPoet.I18n.t('pageTitle')} <a
             className="add-new-h2"
             href="javascript:;"
             onClick={ this.createForm }
-          >New</a>
+          >{MailPoet.I18n.t('new')}</a>
         </h2>
 
         <Listing

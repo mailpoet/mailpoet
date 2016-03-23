@@ -82,7 +82,7 @@ function(
           <label
             className="screen-reader-text"
             htmlFor="bulk-action-selector-top">
-            Select bulk action
+            {MailPoet.I18n.t('selectBulkAction')}
           </label>
 
           <select
@@ -91,7 +91,7 @@ function(
             value={ this.state.action }
             onChange={this.handleChangeAction}
           >
-            <option value="">Bulk Actions</option>
+            <option value="">{MailPoet.I18n.t('bulkActions')}</option>
             { this.props.bulk_actions.map(function(action, index) {
               return (
                 <option

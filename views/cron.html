@@ -3,3 +3,18 @@
 <% block content %>
 <div id="cron_container"></div>
 <% endblock %>
+
+<% block translations %>
+  <%= localize({
+    'daemonControlError': __('Cron daemon error'),
+    'loadingDaemonStatus': __('Loading daemon status...'),
+    'cronDaemonIsRunning': __('Cron daemon is running.'),
+    'cronDaemonWasStarted': __('It was started'),
+    'cronDaemonLastExecuted': __('and last executed'),
+    'cronDaemonRunningDuration': __('for a total of'),
+    'cronDaemonExecutedTimes': __('times (once every 30 seconds, unless it was interrupted and restarted).'),
+    'stop': __('Stop'),
+    'start': __('Start'),
+    'cronDaemonState': __('Cron is %$1s')
+  }) %>
+<% endblock %>
