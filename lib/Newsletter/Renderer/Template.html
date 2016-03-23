@@ -43,6 +43,9 @@
         .mailpoet_header_footer_padded {
             padding: 10px 20px;
         }
+        @media screen and (max-width: 480px) and (-webkit-min-device-pixel-ratio: 1) {
+            .mailpoet_button {width:100% !important;}
+        }
         @media screen and (max-width: 599px) and (-webkit-min-device-pixel-ratio: 1) {
             .mailpoet_header {
                 padding: 10px 20px;
@@ -64,7 +67,7 @@
            style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
         <tbody>
         <tr>
-            <td class="mailpoet_preheader" style="-webkit-text-size-adjust:none;font-size:1px;line-height:1px;color:#333333;" height="1">
+            <td class="mailpoet_preheader" style="-webkit-text-size-adjust:none;font-sline-height:1px;ght:1px;color:#333333;" height="1">
                 {{newsletter_preheader}}
             </td>
         </tr>
