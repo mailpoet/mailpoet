@@ -26,6 +26,7 @@ class Env {
   static $db_username;
   static $db_password;
   static $db_charset;
+  static $db_timezone_offset;
 
   static function init($file, $version) {
     global $wpdb;
@@ -58,6 +59,7 @@ class Env {
     self::$db_password = DB_PASSWORD;
     self::$db_charset = $wpdb->get_charset_collate();
     self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port);
+    self::$db_timezone_offset = self::getDbTimezoneOffset();
   }
 
   private static function dbSourceName($host, $socket, $port) {
@@ -72,5 +74,14 @@ class Env {
       DB_NAME
     );
     return implode('', $source_name);
+  }
+
+  private static function getDbTimezoneOffset() {
+    $mins = get_option('gmt_offset') * 60;
+    $sgn = ($mins < 0 ? -1 : 1);
+    $mins = abs($mins);
+    $hrs = floor($mins / 60);
+    $mins -= $hrs * 60;
+    return sprintf('%+d:%02d', $hrs * $sgn, $mins);
   }
 }
