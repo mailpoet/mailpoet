@@ -62,7 +62,8 @@ class SendingQueue {
         $queue->newsletter_id = $newsletter->id;
       }
       $schedule = Cron::factory($newsletter->schedule);
-      $queue->scheduled_at = $schedule->getNextRunDate()->format('Y-m-d H:i:s');
+      $queue->scheduled_at =
+        $schedule->getNextRunDate(current_time('mysql'))->format('Y-m-d H:i:s');
       $queue->status = 'scheduled';
       $queue->save();
       return array(

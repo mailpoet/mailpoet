@@ -22,7 +22,7 @@ class Scheduler {
 
   function process() {
     $scheduled_queues = SendingQueue::where('status', 'scheduled')
-      ->whereLte('scheduled_at', Carbon::now()->format('Y-m-d H:i:s'))
+      ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
       ->findMany();
     if(!count($scheduled_queues)) return;
     foreach($scheduled_queues as $queue) {
@@ -80,7 +80,8 @@ class Scheduler {
     $new_queue = SendingQueue::create();
     $new_queue->newsletter_id = $newsletter->id;
     $schedule = Cron::factory($newsletter->schedule);
-    $new_queue->scheduled_at = $schedule->getNextRunDate()->format('Y-m-d H:i:s');
+    $new_queue->scheduled_at =
+      $schedule->getNextRunDate(current_time('mysql'))->format('Y-m-d H:i:s');
     $new_queue->status = 'scheduled';
     $new_queue->save();
   }

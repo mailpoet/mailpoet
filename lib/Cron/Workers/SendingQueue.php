@@ -34,6 +34,7 @@ class SendingQueue {
     foreach($this->getQueues() as $queue) {
       $newsletter = Newsletter::findOne($queue->newsletter_id);
       if(!$newsletter) {
+        $queue->delete();
         continue;
       }
       $newsletter = $newsletter->asArray();
