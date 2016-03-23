@@ -76,8 +76,8 @@
     </div>
     <div class="mailpoet_form_field_title mailpoet_form_field_title_inline"><%= __('Border') %></div>
     <div class="mailpoet_form_field_input_option">
-        <input type="number" name="border-width-input" class="mailpoet_input mailpoet_input_small mailpoet_field_button_border_width_input" value="{{getNumber model.styles.block.borderWidth}}" min="0" max="15" step="1" /> px 
-        <input type="range" min="0" max="15" step="1" name="border-width" class="mailpoet_range mailpoet_range_small mailpoet_field_button_border_width" value="{{getNumber model.styles.block.borderWidth}}" />
+        <input type="number" name="border-width-input" class="mailpoet_input mailpoet_input_small mailpoet_field_button_border_width_input" value="{{getNumber model.styles.block.borderWidth}}" min="0" max="10" step="1" /> px 
+        <input type="range" min="0" max="10" step="1" name="border-width" class="mailpoet_range mailpoet_range_small mailpoet_field_button_border_width" value="{{getNumber model.styles.block.borderWidth}}" />
     </div>
 </div>
 <div class="mailpoet_form_field">
@@ -93,8 +93,8 @@
     <label>
         <div class="mailpoet_form_field_title"><%= __('Width') %></div>
         <div class="mailpoet_form_field_input_option">
-            <input type="number" name="width-input" class="mailpoet_input mailpoet_input_small mailpoet_field_button_width_input" value="{{getNumber model.styles.block.width}}" min="50" max="552" step="1" /> px 
-            <input type="range" min="50" max="552" step="1" name="width" class="mailpoet_range mailpoet_range_medium mailpoet_field_button_width" value="{{getNumber model.styles.block.width }}" />
+            <input type="number" name="width-input" class="mailpoet_input mailpoet_input_small mailpoet_field_button_width_input" value="{{getNumber model.styles.block.width}}" min="50" max="288" step="1" /> px 
+            <input type="range" min="50" max="288" step="1" name="width" class="mailpoet_range mailpoet_range_medium mailpoet_field_button_width" value="{{getNumber model.styles.block.width }}" />
         </div>
     </label>
 </div>
