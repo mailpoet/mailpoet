@@ -1,8 +1,10 @@
 define([
-  'react'
+  'react',
+  'mailpoet'
 ],
 function(
-  React
+  React,
+  MailPoet
 ) {
   var ListingBulkActions = React.createClass({
     getInitialState: function() {
@@ -104,7 +106,7 @@ function(
           <input
             onClick={ this.handleApplyAction }
             type="submit"
-            defaultValue="Apply"
+            defaultValue={MailPoet.I18n.t('apply')}
             className="button action" />
 
             { this.state.extra }

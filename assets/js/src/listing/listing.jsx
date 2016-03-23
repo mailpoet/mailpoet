@@ -98,7 +98,7 @@ define(
                       null,
                       this.props.item.id
                     ) }>
-                    Trash
+                    {MailPoet.I18n.t('trash')}
                   </a>
                 </span>
               );
@@ -145,7 +145,7 @@ define(
         } else {
           item_actions = (
             <span className="edit">
-              <Link to={ `/edit/${ this.props.item.id }` }>Edit</Link>
+              <Link to={ `/edit/${ this.props.item.id }` }>{MailPoet.I18n.t('edit')}</Link>
             </span>
           );
         }
@@ -161,7 +161,7 @@ define(
                       null,
                       this.props.item.id
                     )}
-                  >Restore</a>
+                  >{MailPoet.I18n.t('restore')}</a>
                 </span>
                 { ' | ' }
                 <span className="delete">
@@ -172,13 +172,13 @@ define(
                       null,
                       this.props.item.id
                     )}
-                  >Delete permanently</a>
+                  >{MailPoet.I18n.t('deletePermanently')}</a>
                 </span>
               </div>
               <button
                 onClick={ this.handleToggleItem.bind(null, this.props.item.id) }
                 className="toggle-row" type="button">
-                <span className="screen-reader-text">Show more details</span>
+                <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
               </button>
             </div>
           );
@@ -191,7 +191,7 @@ define(
               <button
                 onClick={ this.handleToggleItem.bind(null, this.props.item.id) }
                 className="toggle-row" type="button">
-                <span className="screen-reader-text">Show more details</span>
+                <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
               </button>
             </div>
           );
@@ -678,12 +678,12 @@ define(
           bulk_actions = [
             {
               name: 'restore',
-              label: 'Restore',
+              label: MailPoet.I18n.t('restore'),
               onSuccess: this.props.messages.onRestore
             },
             {
               name: 'delete',
-              label: 'Delete permanently',
+              label: MailPoet.I18n.t('deletePermanently'),
               onSuccess: this.props.messages.onDelete
             }
           ];

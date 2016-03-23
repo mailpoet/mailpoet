@@ -14,34 +14,34 @@ define(
     var fields = [
       {
         name: 'email',
-        label: 'E-mail',
+        label: MailPoet.I18n.t('email'),
         type: 'text'
       },
       {
         name: 'first_name',
-        label: 'Firstname',
+        label: MailPoet.I18n.t('firstname'),
         type: 'text'
       },
       {
         name: 'last_name',
-        label: 'Lastname',
+        label: MailPoet.I18n.t('lastname'),
         type: 'text'
       },
       {
         name: 'status',
-        label: 'Status',
+        label: MailPoet.I18n.t('status'),
         type: 'select',
         values: {
-          'unconfirmed': 'Unconfirmed',
-          'subscribed': 'Subscribed',
-          'unsubscribed': 'Unsubscribed'
+          'unconfirmed': MailPoet.I18n.t('unconfirmed'),
+          'subscribed': MailPoet.I18n.t('subscribed'),
+          'unsubscribed': MailPoet.I18n.t('unsubscribed')
         }
       },
       {
         name: 'segments',
-        label: 'Lists',
+        label: MailPoet.I18n.t('lists'),
         type: 'selection',
-        placeholder: "Select a list",
+        placeholder: MailPoet.I18n.t('selectList'),
         endpoint: "segments",
         multiple: true,
         selected: function(subscriber) {
@@ -69,7 +69,11 @@ define(
                 if (subscription.status === 'unsubscribed') {
                   const unsubscribed_at = MailPoet.Date
                     .format(subscription.updated_at);
-                  label += ' (Unsubscribed on '+unsubscribed_at+')';
+                  label += ' ';
+                  label += MailPoet.I18n.t('unsubscribedOn').replace(
+                    '%$1s',
+                    unsubscribed_at
+                  );
                 }
               }
             });
@@ -99,10 +103,10 @@ define(
 
     var messages = {
       onUpdate: function() {
-        MailPoet.Notice.success('Subscriber successfully updated!');
+        MailPoet.Notice.success(MailPoet.I18n.t('subscriberUpdated'));
       },
       onCreate: function() {
-        MailPoet.Notice.success('Subscriber successfully added!');
+        MailPoet.Notice.success(MailPoet.I18n.t('subscriberAdded'));
       }
     };
 
@@ -116,7 +120,7 @@ define(
         return (
           <div>
             <h2 className="title">
-              Subscriber
+              {MailPoet.I18n.t('subscriber')}
             </h2>
 
             <Form

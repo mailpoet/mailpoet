@@ -1,10 +1,12 @@
 define([
   'react',
-  'jquery'
+  'jquery',
+  'mailpoet'
 ],
 function(
   React,
-  jQuery
+  jQuery,
+  MailPoet
 ) {
   var ListingFilters = React.createClass({
     handleFilterAction: function() {
@@ -69,7 +71,7 @@ function(
             id="post-query-submit"
             onClick={ this.handleFilterAction }
             type="submit"
-            defaultValue="Filter"
+            defaultValue={MailPoet.I18n.t('filter')}
             className="button" />
         );
       }
@@ -80,7 +82,7 @@ function(
           <input
             onClick={ this.handleEmptyTrash }
             type="submit"
-            value="Empty Trash"
+            value={MailPoet.I18n.t('emptyTrash')}
             className="button"
           />
         );

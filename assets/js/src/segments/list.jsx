@@ -10,32 +10,32 @@ import Listing from 'listing/listing.jsx'
 var columns = [
   {
     name: 'name',
-    label: 'Name',
+    label: MailPoet.I18n.t('name'),
     sortable: true
   },
   {
     name: 'description',
-    label: 'Description',
+    label: MailPoet.I18n.t('description'),
     sortable: false
   },
   {
     name: 'subscribed',
-    label: 'Subscribed',
+    label: MailPoet.I18n.t('subscribed'),
     sortable: false
   },
   {
     name: 'unconfirmed',
-    label: 'Unconfirmed',
+    label: MailPoet.I18n.t('unconfirmed'),
     sortable: false
   },
   {
     name: 'unsubscribed',
-    label: 'Unsubscribed',
+    label: MailPoet.I18n.t('unsubscribed'),
     sortable: false
   },
   {
     name: 'created_at',
-    label: 'Created on',
+    label: MailPoet.I18n.t('createdOn'),
     sortable: true
   }
 ];
@@ -47,11 +47,11 @@ const messages = {
 
     if(count === 1) {
       message = (
-        '1 segment was moved to the trash.'
+        MailPoet.I18n.t('oneSegmentTrashed')
       );
     } else {
       message = (
-        '%$1d segments were moved to the trash.'
+        MailPoet.I18n.t('multipleSegmentsTrashed')
       ).replace('%$1d', count);
     }
     MailPoet.Notice.success(message);
@@ -62,11 +62,11 @@ const messages = {
 
     if(count === 1) {
       message = (
-        '1 segment was permanently deleted.'
+        MailPoet.I18n.t('oneSegmentDeleted')
       );
     } else {
       message = (
-        '%$1d segments were permanently deleted.'
+        MailPoet.I18n.t('multipleSegmentsDeleted')
       ).replace('%$1d', count);
     }
     MailPoet.Notice.success(message);
@@ -77,11 +77,11 @@ const messages = {
 
     if(count === 1) {
       message = (
-        '1 segment has been restored from the trash.'
+        MailPoet.I18n.t('oneSegmentRestored')
       );
     } else {
       message = (
-        '%$1d segments have been restored from the trash.'
+        MailPoet.I18n.t('multipleSegmentsRestored')
       ).replace('%$1d', count);
     }
     MailPoet.Notice.success(message);
@@ -91,10 +91,10 @@ const messages = {
 const item_actions = [
   {
     name: 'edit',
-    label: 'Edit',
+    label: MailPoet.I18n.t('edit'),
     link: function(item) {
       return (
-        <Link to={ `/edit/${item.id}` }>Edit</Link>
+        <Link to={ `/edit/${item.id}` }>{MailPoet.I18n.t('edit')}</Link>
       );
     },
     display: function(segment) {
@@ -111,7 +111,7 @@ const item_actions = [
         data: item.id
       }).done(function(response) {
         MailPoet.Notice.success(
-          ('List "%$1s" has been duplicated.').replace('%$1s', response.name)
+          (MailPoet.I18n.t('listDuplicated')).replace('%$1s', response.name)
         );
         refresh();
       });
@@ -122,7 +122,7 @@ const item_actions = [
   },
   {
     name: 'synchronize_segment',
-    label: 'Update',
+    label: MailPoet.I18n.t('update'),
     className: 'update',
     onClick: function(item, refresh) {
       MailPoet.Modal.loading(true);
@@ -133,7 +133,7 @@ const item_actions = [
         MailPoet.Modal.loading(false);
         if(response === true) {
           MailPoet.Notice.success(
-            ('List "%$1s" has been synchronized.').replace('%$1s', item.name)
+            (MailPoet.I18n.t('listSynchronized')).replace('%$1s', item.name)
           );
           refresh();
         }
@@ -147,7 +147,7 @@ const item_actions = [
     name: 'view_subscribers',
     link: function(item) {
       return (
-        <a href={ item.subscribers_url }>View subscribers</a>
+        <a href={ item.subscribers_url }>{MailPoet.I18n.t('viewSubscribers')}</a>
       );
     }
   },
@@ -199,7 +199,7 @@ const SegmentList = React.createClass({
     return (
       <div>
         <h2 className="title">
-          Segments <Link className="add-new-h2" to="/new">New</Link>
+          {MailPoet.I18n.t('pageTitle')} <Link className="add-new-h2" to="/new">{MailPoet.I18n.t('new')}</Link>
         </h2>
 
         <Listing

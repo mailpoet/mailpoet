@@ -1,4 +1,12 @@
-define(['react', 'classnames'], function(React, classNames) {
+define([
+    'react',
+    'classnames',
+    'mailpoet'
+  ], function(
+    React,
+    classNames,
+    MailPoet
+  ) {
 
   var ListingPages = React.createClass({
     getInitialState: function() {
@@ -72,7 +80,7 @@ define(['react', 'classnames'], function(React, classNames) {
               <a href="javascript:;"
                 onClick={ this.setPreviousPage }
                 className="prev-page">
-                <span className="screen-reader-text">Previous page</span>
+                <span className="screen-reader-text">{MailPoet.I18n.t('previousPage')}</span>
                 <span aria-hidden="true">‹</span>
               </a>
             );
@@ -83,7 +91,7 @@ define(['react', 'classnames'], function(React, classNames) {
               <a href="javascript:;"
                 onClick={ this.setFirstPage }
                 className="first-page">
-                <span className="screen-reader-text">First page</span>
+                <span className="screen-reader-text">{MailPoet.I18n.t('firstPage')}</span>
                 <span aria-hidden="true">«</span>
               </a>
             );
@@ -94,7 +102,7 @@ define(['react', 'classnames'], function(React, classNames) {
               <a href="javascript:;"
                 onClick={ this.setNextPage }
                 className="next-page">
-                <span className="screen-reader-text">Next page</span>
+                <span className="screen-reader-text">{MailPoet.I18n.t('nextPage')}</span>
                 <span aria-hidden="true">›</span>
               </a>
             );
@@ -105,7 +113,7 @@ define(['react', 'classnames'], function(React, classNames) {
               <a href="javascript:;"
                 onClick={ this.setLastPage }
                 className="last-page">
-                <span className="screen-reader-text">Last page</span>
+                <span className="screen-reader-text">{MailPoet.I18n.t('lastPage')}</span>
                 <span aria-hidden="true">»</span>
               </a>
             );
@@ -125,7 +133,7 @@ define(['react', 'classnames'], function(React, classNames) {
               <span className="paging-input">
                 <label
                   className="screen-reader-text"
-                  htmlFor="current-page-selector">Current Page</label>
+                  htmlFor="current-page-selector">{MailPoet.I18n.t('currentPage')}</label>
                 <input
                   type="text"
                   onChange={ this.handleChangeManualPage }
@@ -138,7 +146,7 @@ define(['react', 'classnames'], function(React, classNames) {
                   name="paged"
                   id="current-page-selector"
                   className="current-page" />
-                &nbsp;of&nbsp;
+                &nbsp;{MailPoet.I18n.t('pageOutOf')}&nbsp;
                 <span className="total-pages">
                   {Math.ceil(this.props.count / this.props.limit)}
                 </span>
@@ -158,7 +166,9 @@ define(['react', 'classnames'], function(React, classNames) {
 
         return (
           <div className={ classes }>
-            <span className="displaying-num">{ this.props.count } items</span>
+            <span className="displaying-num">{
+              MailPoet.I18n.t('numberOfItems').replace('%$1d', this.props.count)
+            }</span>
             { pagination }
           </div>
         );

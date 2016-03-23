@@ -24,7 +24,7 @@ define([
           <form name="search" onSubmit={this.handleSearch}>
             <p className="search-box">
               <label htmlFor="search_input" className="screen-reader-text">
-                Search
+              {MailPoet.I18n.t('searchLabel')}
               </label>
               <input
                 type="search"

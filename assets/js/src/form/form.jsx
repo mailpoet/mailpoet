@@ -167,7 +167,7 @@ define(
             <input
               className="button button-primary"
               type="submit"
-              value="Save"
+              value={MailPoet.I18n.t('save')}
               disabled={this.state.loading} />
           );
         }

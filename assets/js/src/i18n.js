@@ -15,7 +15,7 @@ define('i18n',
       translations[key] = value;
     },
     t: function(key) {
-      return translations[key] || 'TRANSLATION NOT FOUND';
+      return translations[key] || 'TRANSLATION "%$1s" NOT FOUND'.replace("%$1s", key);
     },
     all: function() {
       return translations;

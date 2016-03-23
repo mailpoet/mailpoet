@@ -15,22 +15,22 @@ define(
     let fields = [
       {
         name: 'name',
-        label: 'Name',
+        label: MailPoet.I18n.t('name'),
         type: 'text'
       },
       {
         name: 'description',
-        label: 'Description',
+        label: MailPoet.I18n.t('description'),
         type: 'textarea'
       }
     ];
 
     const messages = {
       onUpdate: function() {
-        MailPoet.Notice.success('Segment successfully updated!');
+        MailPoet.Notice.success(MailPoet.I18n.t('segmentUpdated'));
       },
       onCreate: function() {
-        MailPoet.Notice.success('Segment successfully added!');
+        MailPoet.Notice.success(MailPoet.I18n.t('segmentAdded'));
       }
     };
 
@@ -42,7 +42,7 @@ define(
         return (
           <div>
             <h2 className="title">
-              Segment
+              {MailPoet.I18n.t('segment')}
             </h2>
 
             <Form
