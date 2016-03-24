@@ -88,6 +88,9 @@ class Pages {
 
   function setPageTitle($page_title = '') {
     global $post;
+
+    if($post->post_title !== __('MailPoet Page')) return $page_title;
+
     if(
       ($this->isMailPoetPage($post->ID) === false)
       ||
