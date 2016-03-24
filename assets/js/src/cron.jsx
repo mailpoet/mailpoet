@@ -63,7 +63,7 @@ define(
               {MailPoet.I18n.t('cronDaemonIsRunning')}
               <br/>
               <br/>
-              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'stop')}>Stop</a>
+              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'stop')}>{MailPoet.I18n.t('stop')}</a>
             </div>
           );
         break;
@@ -81,7 +81,7 @@ define(
               {MailPoet.I18n.t('cronDaemonState').replace('%$1s', this.state.status)}
               <br />
               <br />
-              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'start')}>{MailPoet.I18n.t('Start')}</a>
+              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'start')}>{MailPoet.I18n.t('start')}</a>
             </div>
           );
         break;
