@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Router;
 
-use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Models\Setting;
@@ -30,26 +29,8 @@ class Cron {
   function getStatus() {
     $daemon = Setting::where('name', 'cron_daemon')
       ->findOne();
-    return (
-      ($daemon) ?
-        array_merge(
-          array(
-            'timeSinceStart' =>
-              Carbon::createFromFormat(
-                'Y-m-d H:i:s',
-                $daemon->created_at,
-                'UTC'
-              )->diffForHumans(),
-            'timeSinceUpdate' =>
-              Carbon::createFromFormat(
-                'Y-m-d H:i:s',
-                $daemon->updated_at,
-                'UTC'
-              )->diffForHumans()
-          ),
-          unserialize($daemon->value)
-        ) :
-        "false"
-    );
+    return ($daemon) ?
+      unserialize($daemon->value) :
+      false;
   }
 }

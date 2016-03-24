@@ -5,7 +5,7 @@ use \MailPoet\Models\Segment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 
 class WP {
-  static function synchronizeUser($wp_user_id) {
+  static function synchronizeUser($wp_user_id, $old_wp_user_data = false) {
     $wp_user = \get_userdata($wp_user_id);
     $segment = Segment::getWPUsers();
     if($wp_user === false or $segment === false) return;
@@ -20,9 +20,16 @@ class WP {
         }
         break;
       case 'user_register':
-        $new_user = (!$subscriber) ? true : false;
-      case 'added_existing_user':
+        $schedule_welcome_newsletter = true;
       case 'profile_update':
+        if ($old_wp_user_data) {
+          // do not schedule welcome newsletter if roles have not changed
+          $old_role = (array) $old_wp_user_data->roles;
+          $new_role = (array) $wp_user->roles;
+          if (!array_diff($old_role, $new_role))
+            $schedule_welcome_newsletter = false;
+        }
+      case 'added_existing_user':
       default:
         // get first name & last name
         $first_name = $wp_user->first_name;
@@ -47,7 +54,7 @@ class WP {
           if($segment !== false) {
             $segment->addSubscriber($subscriber->id);
           }
-          if(isset($new_user) && $new_user === true) {
+          if(isset($schedule_welcome_newsletter)) {
             Scheduler::welcomeForNewWPUser(
               $subscriber->id,
               (array) $wp_user

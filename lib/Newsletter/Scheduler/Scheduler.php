@@ -80,6 +80,7 @@ class Scheduler {
 
   private static function getWelcomeNewsletters() {
     return Newsletter::where('type', 'welcome')
+      ->whereNull('deleted_at')
       ->filter('filterWithOptions')
       ->findArray();
   }
@@ -96,18 +97,16 @@ class Scheduler {
     $after_time_type = $newsletter['afterTimeType'];
     $after_time_number = $newsletter['afterTimeNumber'];
     $scheduled_at = null;
+    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     switch($after_time_type) {
       case 'hours':
-        $scheduled_at = Carbon::now()
-          ->addHours($after_time_number);
+        $scheduled_at = $current_time->addHours($after_time_number);
         break;
       case 'days':
-        $scheduled_at = Carbon::now()
-          ->addDays($after_time_number);
+        $scheduled_at = $current_time->addDays($after_time_number);
         break;
       case 'weeks':
-        $scheduled_at = Carbon::now()
-          ->addWeeks($after_time_number);
+        $scheduled_at = $current_time->addWeeks($after_time_number);
         break;
     }
     if($scheduled_at) {

@@ -97,7 +97,7 @@ class Hooks {
     add_action(
       'profile_update',
       '\MailPoet\Segments\WP::synchronizeUser',
-      1
+      1,2
     );
     add_action(
       'delete_user',

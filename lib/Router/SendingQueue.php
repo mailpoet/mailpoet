@@ -5,6 +5,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\Segment;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Util\Helpers;
 use Cron\CronExpression as Cron;
 
@@ -27,6 +28,12 @@ class SendingQueue {
       return array(
         'result' => false,
         'errors' => array(__('Newsletter does not exist.'))
+      );
+    }
+
+    if($newsletter->type === 'welcome') {
+      return array(
+        'result' => true
       );
     }
 
@@ -74,33 +81,22 @@ class SendingQueue {
 
     $queue = \MailPoet\Models\SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
-    $subscriber_ids = array();
-    $segments = Segment::whereIn('id', $data['segments'])
-      ->findMany();
-
-    foreach($segments as $segment) {
-      $subscriber_ids = array_merge(
-        $subscriber_ids,
-        Helpers::arrayColumn(
-          $segment->subscribers()->findArray(), 'id'
-        )
-      );
-    }
-
-    if(empty($subscriber_ids)) {
+    $subscribers = SubscriberSegment::whereIn('segment_id', $data['segments'])
+      ->findArray();
+    $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
+    $subscribers = array_unique($subscribers);
+    if(!count($subscribers)) {
       return array(
         'result' => false,
         'errors' => array(__('There are no subscribers.'))
       );
     }
-
-    $subscriber_ids = array_unique($subscriber_ids);
     $queue->subscribers = serialize(
       array(
-        'to_process' => $subscriber_ids
+        'to_process' => $subscribers
       )
     );
-    $queue->count_total = $queue->count_to_process = count($subscriber_ids);
+    $queue->count_total = $queue->count_to_process = count($subscribers);
     $queue->save();
     $errors = $queue->getErrors();
     if(!empty($errors)) {
