@@ -1,7 +1,7 @@
 define('iframe', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
   'use strict';
   MailPoet.Iframe = {
-    marginY: 15,
+    marginY: 20,
     autoSize: function(iframe) {
       if(!iframe) return;
 

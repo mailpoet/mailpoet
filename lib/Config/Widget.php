@@ -75,8 +75,8 @@ class Widget {
         );
 
         echo $this->renderer->render('form/iframe.html', $data);
-        exit();
       }
+      exit();
     }
   }
 

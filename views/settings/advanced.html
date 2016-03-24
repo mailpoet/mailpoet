@@ -190,14 +190,13 @@
         if(confirm(
           "<%= __('If you confirm this, all your current MailPoet data will be erased (newsletters, statistics, subscribers, etc...)') %>"
         )) {
+          MailPoet.Modal.loading(true);
           MailPoet.Ajax.post({
             'endpoint': 'setup',
             'action': 'reset'
           }).done(function(response) {
             if(response.result === true) {
-              MailPoet.Notice.success(
-                "<%= __('MailPoet has been reinstalled successfully using the same version. Settings and data have been deleted.') %>",
-              { scroll: true });
+              window.location = "<%= admin_url('admin.php?page=mailpoet-newsletters') %>";
             } else {
               MailPoet.Notice.error(
                 "<%= __('MailPoet could not be reinstalled. You might need to remove it manually first.') %>",

@@ -82,28 +82,24 @@ class Populator {
   private function createDefaultSettings() {
     $current_user = wp_get_current_user();
 
-    // user name
-    $user_name = '';
-    if($current_user->user_firstname) {
-      $user_name = $current_user->user_firstname;
-    }
-    if($current_user->user_lastname) {
-      if($user_name) {
-        $user_name .= ' '.$current_user->user_lastname;
-      }
-    }
-    if(!$user_name) {
-      $user_name = $current_user->display_name;
-    }
+    // default sender info based on current user
+    $sender = array(
+      'name' => $current_user->display_name,
+      'address' => $current_user->user_email
+    );
 
     // default from name & address
-    Setting::setValue('sender', array(
-      'name' => $user_name,
-      'address' => $current_user->user_email
-    ));
+    Setting::setValue('sender', $sender);
 
     // enable signup confirmation by default
-    Setting::setValue('signup_confirmation.enabled', true);
+    Setting::setValue('signup_confirmation', array(
+      'enabled' => true,
+      'from' => array(
+        'name' => get_option('blogname'),
+        'address' => get_option('admin_email')
+      ),
+      'reply_to' => $sender
+    ));
   }
 
   private function createDefaultSegments() {

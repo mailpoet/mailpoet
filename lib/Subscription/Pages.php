@@ -19,7 +19,7 @@ class Pages {
   function init() {
     $action = $this->getAction();
     if($action !== null) {
-      add_filter('wp_title', array($this,'setWindowTitle'), 10, 1);
+      add_filter('wp_title', array($this,'setWindowTitle'), 10, 3);
       add_filter('document_title_parts', array($this,'setWindowTitleParts'), 10, 1);
       add_filter('the_title', array($this,'setPageTitle'), 10, 1);
       add_filter('the_content', array($this,'setPageContent'), 10, 1);
@@ -60,8 +60,17 @@ class Pages {
     return (array_key_exists('mailpoet_preview', $_GET));
   }
 
-  function setWindowTitle($title) {
-    return $this->setPageTitle($title);
+  function setWindowTitle($title, $separator, $separator_location = 'right') {
+    $title_parts = explode(" $separator ", $title);
+    if($separator_location === 'right') {
+      // first part
+      $title_parts[0] = $this->setPageTitle($title_parts[0]);
+    } else {
+      // last part
+      $last_index = count($title_parts) - 1;
+      $title_parts[$last_index] = $this->setPageTitle($title_parts[$last_index]);
+    }
+    return implode(" $separator ", $title_parts);
   }
 
   function setWindowTitleParts($meta = array()) {
@@ -69,10 +78,26 @@ class Pages {
     return $meta;
   }
 
+  function isMailPoetPage($page_id = null) {
+    $mailpoet_page_ids = array_unique(array_values(
+      Setting::getValue('subscription', array())
+    ));
+
+    return (in_array($page_id, $mailpoet_page_ids));
+  }
+
   function setPageTitle($page_title = '') {
     global $post;
 
-   if($post->post_type === 'mailpoet_page') {
+    if($post->post_title !== __('MailPoet Page')) return $page_title;
+
+    if(
+      ($this->isMailPoetPage($post->ID) === false)
+      ||
+      ($page_title !== single_post_title('', false))
+    ) {
+      return $page_title;
+    } else {
       $subscriber = $this->getSubscriber();
       switch($this->getAction()) {
         case 'confirm':
@@ -98,6 +123,16 @@ class Pages {
   }
 
   function setPageContent($page_content = '[mailpoet_page]') {
+    global $post;
+
+    if(
+      ($this->isPreview() === false)
+      &&
+      ($this->isMailPoetPage($post->ID) === false)
+    ) {
+      return $page_content;
+    }
+
     $content = '';
     $subscriber = $this->getSubscriber();
 
