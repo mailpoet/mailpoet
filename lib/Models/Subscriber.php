@@ -118,14 +118,14 @@ class Subscriber extends Model {
       // set from
       $from = (
         !empty($signup_confirmation['from'])
-        && !empty($signup_confirmation['from']['email'])
+        && !empty($signup_confirmation['from']['address'])
       ) ? $signup_confirmation['from']
         : false;
 
       // set reply to
       $reply_to = (
         !empty($signup_confirmation['reply_to'])
-        && !empty($signup_confirmation['reply_to']['email'])
+        && !empty($signup_confirmation['reply_to']['address'])
       ) ? $signup_confirmation['reply_to']
         : false;
 
@@ -153,6 +153,10 @@ class Subscriber extends Model {
       return false;
     }
 
+    $signup_confirmation_enabled = (bool)Setting::getValue(
+      'signup_confirmation.enabled'
+    );
+
     $subscriber = self::createOrUpdate($subscriber_data);
     $errors = $subscriber->getErrors();
 
@@ -164,16 +168,21 @@ class Subscriber extends Model {
         $subscriber->setExpr('deleted_at', 'NULL');
       }
 
-      if((bool)Setting::getValue('signup_confirmation.enabled')) {
-        if($subscriber->status !== self::STATUS_SUBSCRIBED) {
-          $subscriber->sendConfirmationEmail();
-        }
-      } else {
+      // auto subscribe when signup confirmation is disabled
+      if($signup_confirmation_enabled === false) {
         $subscriber->set('status', self::STATUS_SUBSCRIBED);
       }
 
       if($subscriber->save()) {
+        // link subscriber to segments
         $subscriber->addToSegments($segment_ids);
+
+        // signup confirmation
+        if($subscriber->status !== self::STATUS_SUBSCRIBED) {
+          $subscriber->sendConfirmationEmail();
+        }
+
+        // welcome email
         Scheduler::welcomeForSegmentSubscription($subscriber->id, $segment_ids);
       }
     }
