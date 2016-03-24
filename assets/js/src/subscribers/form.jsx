@@ -69,10 +69,12 @@ define(
                 if (subscription.status === 'unsubscribed') {
                   const unsubscribed_at = MailPoet.Date
                     .format(subscription.updated_at);
-                  label += ' ';
-                  label += MailPoet.I18n.t('unsubscribedOn').replace(
+                  label += ' (%$1s)'.replace(
                     '%$1s',
-                    unsubscribed_at
+                    MailPoet.I18n.t('unsubscribedOn').replace(
+                      '%$1s',
+                      unsubscribed_at
+                    )
                   );
                 }
               }
