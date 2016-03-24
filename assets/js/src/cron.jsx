@@ -63,12 +63,6 @@ define(
               {MailPoet.I18n.t('cronDaemonIsRunning')}
               <br/>
               <br/>
-              {MailPoet.I18n.t('cronDaemonWasStarted')}
-              <strong> {this.state.timeSinceStart} </strong> {MailPoet.I18n.t('cronDaemonLastExecuted')}
-              <strong> {this.state.timeSinceUpdate} </strong> {MailPoet.I18n.t('cronDaemonRunningDuration')}
-              <strong> {this.state.counter} </strong> {MailPoet.I18n.t('cronDaemonExecutedTimes')}
-              <br />
-              <br />
               <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'stop')}>{MailPoet.I18n.t('stop')}</a>
             </div>
           );
@@ -87,7 +81,7 @@ define(
               {MailPoet.I18n.t('cronDaemonState').replace('%$1s', this.state.status)}
               <br />
               <br />
-              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'start')}>{MailPoet.I18n.t('Start')}</a>
+              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'start')}>{MailPoet.I18n.t('start')}</a>
             </div>
           );
         break;

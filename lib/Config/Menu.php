@@ -367,6 +367,8 @@ class Menu {
     $data['segments'] = Segment::findArray();
     $data['settings'] = Setting::getAll();
     $data['roles'] = $wp_roles->get_names();
+    $data['roles']['mailpoet_all'] = __('In any WordPress role');
+
     echo $this->renderer->render('newsletters.html', $data);
   }
 
