@@ -66,14 +66,26 @@ class Scheduler {
     }
   }
 
-  static function welcomeForNewWPUser($subscriber_id, array $wp_user) {
+  static function welcomeForNewWPUser($subscriber_id, array $wp_user, $old_user_data) {
     $newsletters = self::getWelcomeNewsletters();
     if(!count($newsletters)) return;
     foreach($newsletters as $newsletter) {
-      if($newsletter['event'] === 'user' &&
-        in_array($newsletter['role'], $wp_user['roles'])
-      ) {
-        self::createSendingQueueEntry($newsletter, $subscriber_id);
+      if($newsletter['event'] === 'user') {
+        if($old_user_data) {
+          // do not schedule welcome newsletter if roles have not changed
+          $old_role = (array) $old_user_data->roles;
+          $new_role = (array) $wp_user->roles;
+          if($newsletter['role'] === 'mailpoet_all' ||
+            !array_diff($old_role, $new_role)
+          ) {
+            continue;
+          }
+        }
+        if($newsletter['role'] === 'mailpoet_all' ||
+          in_array($newsletter['role'], $wp_user['roles'])
+        ) {
+          self::createSendingQueueEntry($newsletter, $subscriber_id);
+        }
       }
     }
   }

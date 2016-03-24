@@ -19,16 +19,9 @@ class WP {
           $subscriber->delete();
         }
         break;
+      case 'profile_update':
       case 'user_register':
         $schedule_welcome_newsletter = true;
-      case 'profile_update':
-        if ($old_wp_user_data) {
-          // do not schedule welcome newsletter if roles have not changed
-          $old_role = (array) $old_wp_user_data->roles;
-          $new_role = (array) $wp_user->roles;
-          if (!array_diff($old_role, $new_role))
-            $schedule_welcome_newsletter = false;
-        }
       case 'added_existing_user':
       default:
         // get first name & last name
@@ -57,7 +50,8 @@ class WP {
           if(isset($schedule_welcome_newsletter)) {
             Scheduler::welcomeForNewWPUser(
               $subscriber->id,
-              (array) $wp_user
+              (array) $wp_user,
+              $old_wp_user_data
             );
           }
         }
