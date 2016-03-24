@@ -190,6 +190,7 @@
         if(confirm(
           "<%= __('If you confirm this, all your current MailPoet data will be erased (newsletters, statistics, subscribers, etc...)') %>"
         )) {
+          MailPoet.Modal.loading(true);
           MailPoet.Ajax.post({
             'endpoint': 'setup',
             'action': 'reset'
