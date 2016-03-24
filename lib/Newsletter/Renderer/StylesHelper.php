@@ -29,7 +29,7 @@ class StylesHelper {
     'Trebuchet MS' => "'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif",
     'Verdana' => 'Verdana, Geneva, sans-serif'
   );
-  static $font_size = array(
+  static $line_height = array(
     // font_size => array(columnCount => lineHeight);
     8 => array(
       1 => "20",
@@ -231,15 +231,18 @@ class StylesHelper {
     return $css;
   }
 
-  static function setFontAndLineHeight($font_size, $selector) {
+  static function setFontSizeAndLineHeight($font_size, $selectors) {
     $css = '';
     foreach(ColumnsHelper::columnClasses() as $column_count => $column_class) {
-      $css .= '.mailpoet_content-' . $column_class . ' ' . $selector . '{' . PHP_EOL;
-      $css .= 'font-size:' . $font_size . 'px;' . PHP_EOL;
-      $css .= 'line-height:' . StylesHelper::$font_size[$font_size][$column_count] . 'px;' . PHP_EOL;
-      $css .= '}' . PHP_EOL;
+      $css = array_map(function($selector) use ($font_size, $column_count, $column_class) {
+        $css = '.mailpoet_content-' . $column_class . '.' . $selector . '{' . PHP_EOL;
+        if (!preg_match('/footer|header/', $selector)) $css .= 'font-size:' . $font_size . 'px !important;' . PHP_EOL;
+        $css .= 'line-height:' . StylesHelper::$line_height[$font_size][$column_count] . 'px !important;' . PHP_EOL;
+        $css .= '}' . PHP_EOL;
+        return $css;
+      }, explode(',', $selectors));
     }
-    return $css;
+    return implode('', $css);
   }
 
   static function setStyle($style, $selector) {

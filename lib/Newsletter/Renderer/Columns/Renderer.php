@@ -78,6 +78,8 @@ class Renderer {
   }
 
   function removePaddingFromLastElement($element) {
-    return preg_replace('/mailpoet_padded(?!.*mailpoet_padded)/ism', '', $element);
+    return (substr_count($element, 'mailpoet_padded') <= 1) ?
+      $element :
+      preg_replace('/mailpoet_padded(?!.*mailpoet_padded)/ism', '', $element);
   }
 }

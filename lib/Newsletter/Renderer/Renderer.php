@@ -62,17 +62,8 @@ class Renderer {
     $css = '';
     foreach($styles as $selector => $style) {
       switch($selector) {
-      case 'h1':
-        $selector = 'h1';
-      break;
-      case 'h2':
-        $selector = 'h2';
-      break;
-      case 'h3':
-        $selector = 'h3';
-      break;
       case 'text':
-        $selector = '.mailpoet_paragraph, td.mailpoet_blockquote';
+        $selector = '.mailpoet_paragraph, td.mailpoet_blockquote, .mailpoet_footer, .mailpoet_header';
       break;
       case 'body':
         $selector = 'body, .mailpoet-wrapper';
@@ -85,7 +76,7 @@ class Renderer {
       break;
       }
       if(isset($style['fontSize'])) {
-        $css .= StylesHelper::setFontAndLineHeight(
+        $css .= StylesHelper::setFontSizeAndLineHeight(
           (int) $style['fontSize'],
           $selector
         );
