@@ -2,12 +2,14 @@ define(
   [
     'react',
     'react-router',
-    'classnames'
+    'classnames',
+    'mailpoet'
   ],
   function(
     React,
     Router,
-    classNames
+    classNames,
+    MailPoet
   ) {
     var Link = Router.Link;
 
@@ -21,20 +23,20 @@ define(
           steps: [
             {
               name: 'type',
-              label: 'Select type',
+              label: MailPoet.I18n.t('selectType'),
               link: '/new'
             },
             {
               name: 'template',
-              label: 'Template'
+              label: MailPoet.I18n.t('template')
             },
             {
               name: 'editor',
-              label: 'Designer'
+              label: MailPoet.I18n.t('designer')
             },
             {
               name: 'send',
-              label: 'Send'
+              label: MailPoet.I18n.t('send')
             }
           ]
         };

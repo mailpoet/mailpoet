@@ -99,6 +99,7 @@ config.push(_.extend({}, baseConfig, {
       'mailpoet',
       'ajax',
       'date',
+      'i18n',
       'modal',
       'notice',
       'jquery.serialize_object',
@@ -193,7 +194,6 @@ config.push(_.extend({}, baseConfig, {
   name: 'test',
   entry: {
     vendor: ['handlebars', 'handlebars_helpers'],
-    testAjax: 'testAjax.js',
     testNewsletterEditor: [
       'underscore',
       'backbone',

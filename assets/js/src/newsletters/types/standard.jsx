@@ -47,7 +47,7 @@ define(
       render: function() {
         return (
           <div>
-            <h1>Newsletter</h1>
+            <h1>{MailPoet.I18n.t('regularNewsletterTypeTitle')}</h1>
             <Breadcrumb step="type" />
           </div>
         );

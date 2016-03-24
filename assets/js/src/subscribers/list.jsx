@@ -11,28 +11,28 @@ import Selection from 'form/fields/selection.jsx'
 const columns = [
   {
     name: 'email',
-    label: 'Subscriber',
+    label: MailPoet.I18n.t('subscriber'),
     sortable: true
   },
   {
     name: 'status',
-    label: 'Status',
+    label: MailPoet.I18n.t('status'),
     sortable: true
   },
   {
     name: 'segments',
-    label: 'Lists',
+    label: MailPoet.I18n.t('lists'),
     sortable: false
   },
 
   {
     name: 'created_at',
-    label: 'Subscribed on',
+    label: MailPoet.I18n.t('subscribedOn'),
     sortable: true
   },
   {
     name: 'updated_at',
-    label: 'Last modified on',
+    label: MailPoet.I18n.t('lastModifiedOn'),
     sortable: true
   },
 ];
@@ -43,11 +43,11 @@ const messages = {
       var message = null;
       if(~~response === 1) {
         message = (
-          '1 subscriber was moved to the trash.'
+          MailPoet.I18n.t('oneSubscriberTrashed')
         );
       } else if(~~response > 1) {
         message = (
-          '%$1d subscribers were moved to the trash.'
+          MailPoet.I18n.t('multipleSubscribersTrashed')
         ).replace('%$1d', ~~response);
       }
 
@@ -61,11 +61,11 @@ const messages = {
       var message = null;
       if(~~response === 1) {
         message = (
-          '1 subscriber was permanently deleted.'
+          MailPoet.I18n.t('oneSubscriberDeleted')
         );
       } else if(~~response > 1) {
         message = (
-          '%$1d subscribers were permanently deleted.'
+          MailPoet.I18n.t('multipleSubscribersDeleted')
         ).replace('%$1d', ~~response);
       }
 
@@ -79,11 +79,11 @@ const messages = {
       var message = null;
       if(~~response === 1) {
         message = (
-          '1 subscriber has been restored from the trash.'
+          MailPoet.I18n.t('oneSubscriberRestored')
         );
       } else if(~~response > 1) {
         message = (
-          '%$1d subscribers have been restored from the trash.'
+          MailPoet.I18n.t('multipleSubscribersRestored')
         ).replace('%$1d', ~~response);
       }
 
@@ -97,7 +97,7 @@ const messages = {
 const bulk_actions = [
   {
     name: 'moveToList',
-    label: 'Move to list...',
+    label: MailPoet.I18n.t('moveToList'),
     onSelect: function() {
       let field = {
         id: 'move_to_segment',
@@ -120,7 +120,7 @@ const bulk_actions = [
     },
     onSuccess: function(response) {
       MailPoet.Notice.success(
-        '%$1d subscribers were moved to list <strong>%$2s</strong>.'
+        MailPoet.I18n.t('multipleSubscribersMovedToList')
         .replace('%$1d', ~~response.subscribers)
         .replace('%$2s', response.segment)
       );
@@ -128,7 +128,7 @@ const bulk_actions = [
   },
   {
     name: 'addToList',
-    label: 'Add to list...',
+    label: MailPoet.I18n.t('addToList'),
     onSelect: function() {
       let field = {
         id: 'add_to_segment',
@@ -151,7 +151,7 @@ const bulk_actions = [
     },
     onSuccess: function(response) {
       MailPoet.Notice.success(
-        '%$1d subscribers were added to list <strong>%$2s</strong>.'
+        MailPoet.I18n.t('multipleSubscribersAddedToList')
         .replace('%$1d', ~~response.subscribers)
         .replace('%$2s', response.segment)
       );
@@ -159,7 +159,7 @@ const bulk_actions = [
   },
   {
     name: 'removeFromList',
-    label: 'Remove from list...',
+    label: MailPoet.I18n.t('removeFromList'),
     onSelect: function() {
       let field = {
         id: 'remove_from_segment',
@@ -182,7 +182,7 @@ const bulk_actions = [
     },
     onSuccess: function(response) {
       MailPoet.Notice.success(
-        '%$1d subscribers were removed from list <strong>%$2s</strong>.'
+        MailPoet.I18n.t('multipleSubscribersRemovedFromList')
         .replace('%$1d', ~~response.subscribers)
         .replace('%$2s', response.segment)
       );
@@ -190,37 +190,37 @@ const bulk_actions = [
   },
   {
     name: 'removeFromAllLists',
-    label: 'Remove from all lists',
+    label: MailPoet.I18n.t('removeFromAllLists'),
     onSuccess: function(response) {
       MailPoet.Notice.success(
-        '%$1d subscribers were removed from all lists.'
+        MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists')
         .replace('%$1d', ~~response)
       );
     }
   },
   {
     name: 'confirmUnconfirmed',
-    label: 'Confirm unconfirmed',
+    label: MailPoet.I18n.t('confirmUnconfirmed'),
     onSuccess: function(response) {
       MailPoet.Notice.success(
-        '%$1d subscribers have been confirmed.'
+        MailPoet.I18n.t('multipleSubscribersConfirmed')
         .replace('%$1d', ~~response)
       );
     }
   },
   {
     name: 'sendConfirmationEmail',
-    label: 'Resend confirmation email',
+    label: MailPoet.I18n.t('resendConfirmationEmail'),
     onSuccess: function(response) {
       MailPoet.Notice.success(
-        '%$1d confirmation emails have been sent.'
+        MailPoet.I18n.t('multipleConfirmationEmailsSent')
         .replace('%$1d', ~~response)
       );
     }
   },
   {
     name: 'trash',
-    label: 'Trash',
+    label: MailPoet.I18n.t('trash'),
     onSuccess: messages.onTrash
   }
 ];
@@ -228,10 +228,10 @@ const bulk_actions = [
 const item_actions = [
   {
     name: 'edit',
-    label: 'Edit',
+    label: MailPoet.I18n.t('edit'),
     link: function(item) {
       return (
-        <Link to={ `/edit/${item.id}` }>Edit</Link>
+        <Link to={ `/edit/${item.id}` }>{MailPoet.I18n.t('edit')}</Link>
       );
     }
   },
@@ -262,15 +262,15 @@ const SubscriberList = React.createClass({
 
     switch(subscriber.status) {
       case 'subscribed':
-        status = 'Subscribed';
+        status = MailPoet.I18n.t('subscribed');
       break;
 
       case 'unconfirmed':
-        status = 'Unconfirmed';
+        status = MailPoet.I18n.t('unconfirmed');
       break;
 
       case 'unsubscribed':
-        status = 'Unsubscribed';
+        status = MailPoet.I18n.t('unsubscribed');
       break;
     }
 
@@ -302,7 +302,7 @@ const SubscriberList = React.createClass({
           </span>
           <span
             className="mailpoet_segments_unsubscribed"
-            title="Lists to which the subscriber was subscribed."
+            title={MailPoet.I18n.t('listsToWhichSubscriberWasSubscribed')}
           >
             { unsubscribed_segments.join(', ') }
           </span>
@@ -334,16 +334,16 @@ const SubscriberList = React.createClass({
           </p>
           { actions }
         </td>
-        <td className="column" data-colname="Status">
+        <td className="column" data-colname={MailPoet.I18n.t('status')}>
           { status }
         </td>
-        <td className="column" data-colname="Lists">
+        <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           { segments }
         </td>
-        <td className="column-date" data-colname="Subscribed on">
+        <td className="column-date" data-colname={MailPoet.I18n.t('subscribedOn')}>
           <abbr>{ MailPoet.Date.full(subscriber.created_at) }</abbr>
         </td>
-        <td className="column-date" data-colname="Last modified on">
+        <td className="column-date" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
           <abbr>{ MailPoet.Date.full(subscriber.updated_at) }</abbr>
         </td>
       </div>
@@ -356,9 +356,9 @@ const SubscriberList = React.createClass({
     return (
       <div>
         <h2 className="title">
-          Subscribers <Link className="add-new-h2" to="/new">New</Link>
-          <a className="add-new-h2" href="?page=mailpoet-import#step1">Import</a>
-          <a id="mailpoet_export_button" className="add-new-h2" href="?page=mailpoet-export">Export</a>
+          {MailPoet.I18n.t('pageTitle')} <Link className="add-new-h2" to="/new">{MailPoet.I18n.t('new')}</Link>
+          <a className="add-new-h2" href="?page=mailpoet-import#step1">{MailPoet.I18n.t('import')}</a>
+          <a id="mailpoet_export_button" className="add-new-h2" href="?page=mailpoet-export">{MailPoet.I18n.t('export')}</a>
         </h2>
 
         <Listing

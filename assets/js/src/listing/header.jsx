@@ -1,4 +1,12 @@
-define(['react', 'classnames'], function(React, classNames) {
+define([
+    'react',
+    'classnames',
+    'mailpoet'
+  ], function(
+    React,
+    classNames,
+    MailPoet
+  ) {
 
   var ListingHeader = React.createClass({
     handleSelectItems: function() {
@@ -28,7 +36,7 @@ define(['react', 'classnames'], function(React, classNames) {
           <th
             className="manage-column column-cb check-column">
             <label className="screen-reader-text">
-              { 'Select All' }
+              {MailPoet.I18n.t('selectAll')}
             </label>
             <input
               type="checkbox"

@@ -28,8 +28,8 @@ define(
     var events = {
       name: 'event',
       values: {
-        'segment': 'When someone subscribes to the list...',
-        'user': 'When a new Wordrpess user is added to your site...',
+        'segment': MailPoet.I18n.t('onSubscriptionToList'),
+        'user': MailPoet.I18n.t('onWordpressUserRegistration'),
       }
     };
 
@@ -57,10 +57,10 @@ define(
     var afterTimeTypeField = {
       name: 'afterTimeType',
       values: {
-        'immediate': 'immediately',
-        'hours': 'hour(s) after',
-        'days': 'day(s) after',
-        'weeks': 'week(s) after',
+        'immediate': MailPoet.I18n.t('delayImmediately'),
+        'hours': MailPoet.I18n.t('delayHoursAfter'),
+        'days': MailPoet.I18n.t('delayDaysAfter'),
+        'weeks': MailPoet.I18n.t('delayWeeksAfter'),
       }
     };
 
@@ -152,10 +152,10 @@ define(
         }
         return (
           <div>
-            <h1>Welcome email</h1>
+            <h1>{MailPoet.I18n.t('welcomeNewsletterTypeTitle')}</h1>
             <Breadcrumb step="type" />
 
-            <h3>{MailPoetI18n.selectEventToSendWelcomeEmail}</h3>
+            <h3>{MailPoet.I18n.t('selectEventToSendWelcomeEmail')}</h3>
 
             <Select
               field={events}
@@ -176,7 +176,7 @@ define(
                 className="button button-primary"
                 type="button"
                 onClick={ this.handleNext }
-                value="Next" />
+                value={MailPoet.I18n.t('next')} />
             </p>
           </div>
         );

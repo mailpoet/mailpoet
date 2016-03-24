@@ -1,4 +1,10 @@
-define(['react'], function(React) {
+define([
+    'mailpoet',
+    'react'
+  ], function(
+    MailPoet,
+    React
+  ) {
 
   var ListingSearch = React.createClass({
     handleSearch: function(e) {
@@ -18,7 +24,7 @@ define(['react'], function(React) {
           <form name="search" onSubmit={this.handleSearch}>
             <p className="search-box">
               <label htmlFor="search_input" className="screen-reader-text">
-                Search
+              {MailPoet.I18n.t('searchLabel')}
               </label>
               <input
                 type="search"
@@ -28,7 +34,7 @@ define(['react'], function(React) {
                 defaultValue={this.props.search} />
               <input
                 type="submit"
-                defaultValue={MailPoetI18n.searchLabel}
+                defaultValue={MailPoet.I18n.t('searchLabel')}
                 className="button" />
             </p>
           </form>

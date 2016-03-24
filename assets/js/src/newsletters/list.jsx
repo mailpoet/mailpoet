@@ -4,39 +4,41 @@ define(
     'react-router',
     'listing/listing.jsx',
     'classnames',
-    'jquery'
+    'jquery',
+    'mailpoet'
   ],
   function(
     React,
     Router,
     Listing,
     classNames,
-    jQuery
+    jQuery,
+    MailPoet
   ) {
     var Link = Router.Link;
 
     var columns = [
       {
         name: 'subject',
-        label: 'Subject',
+        label: MailPoet.I18n.t('subject'),
         sortable: true
       },
       {
         name: 'status',
-        label: 'Status'
+        label: MailPoet.I18n.t('status')
       },
       {
         name: 'segments',
-        label: 'Lists'
+        label: MailPoet.I18n.t('lists')
       },
       {
         name: 'created_at',
-        label: 'Created on',
+        label: MailPoet.I18n.t('createdOn'),
         sortable: true
       },
       {
         name: 'updated_at',
-        label: 'Last modified on',
+        label: MailPoet.I18n.t('lastModifiedOn'),
         sortable: true
       }
     ];
@@ -48,11 +50,11 @@ define(
 
         if(count === 1) {
           message = (
-            '1 newsletter was moved to the trash.'
+            MailPoet.I18n.t('oneNewsletterTrashed')
           );
         } else {
           message = (
-            '%$1d newsletters were moved to the trash.'
+            MailPoet.I18n.t('multipleNewslettersTrashed')
           ).replace('%$1d', count);
         }
         MailPoet.Notice.success(message);
@@ -63,11 +65,11 @@ define(
 
         if(count === 1) {
           message = (
-            '1 newsletter was permanently deleted.'
+            MailPoet.I18n.t('oneNewsletterDeleted')
           );
         } else {
           message = (
-            '%$1d newsletters were permanently deleted.'
+            MailPoet.I18n.t('multipleNewslettersDeleted')
           ).replace('%$1d', count);
         }
         MailPoet.Notice.success(message);
@@ -78,11 +80,11 @@ define(
 
         if(count === 1) {
           message = (
-            '1 newsletter has been restored from the trash.'
+            MailPoet.I18n.t('oneNewsletterRestored')
           );
         } else {
           message = (
-            '%$1d newsletters have been restored from the trash.'
+            MailPoet.I18n.t('multipleNewslettersRestored')
           ).replace('%$1d', count);
         }
         MailPoet.Notice.success(message);
@@ -92,7 +94,7 @@ define(
     var bulk_actions = [
       {
         name: 'trash',
-        label: 'Trash',
+        label: MailPoet.I18n.t('trash'),
         onSuccess: messages.onTrash
       }
     ];
@@ -103,7 +105,7 @@ define(
         link: function(item) {
           return (
             <a href={ `?page=mailpoet-newsletter-editor&id=${ item.id }` }>
-              Edit
+              {MailPoet.I18n.t('edit')}
             </a>
           );
         }
@@ -137,7 +139,7 @@ define(
       renderStatus: function(item) {
         if(!item.queue) {
           return (
-            <span>Not sent yet.</span>
+            <span>{MailPoet.I18n.t('notSentYet')}</span>
           );
         } else {
           var progressClasses = classNames(
@@ -155,9 +157,11 @@ define(
           if(item.queue.status === 'completed') {
             label = (
               <span>
-                Sent to {
-                  item.queue.count_processed - item.queue.count_failed
-                } out of { item.queue.count_total }.
+                {
+                  MailPoet.I18n.t('newsletterQueueCompleted')
+                  .replace("%$1d", item.queue.count_processed - item.queue.count_failed)
+                  .replace("%$2d", item.queue.count_total)
+                }
               </span>
             );
           } else {
@@ -171,14 +175,14 @@ define(
                   style={{ display: (item.queue.status === 'paused') ? 'inline-block': 'none' }}
                   href="javascript:;"
                   onClick={ this.resumeSending.bind(null, item) }
-                >Resume</a>
+                >{MailPoet.I18n.t('resume')}</a>
                 <a
                   id={ 'pause_'+item.id }
                   className="button mailpoet_pause"
                   style={{ display: (item.queue.status === null) ? 'inline-block': 'none' }}
                   href="javascript:;"
                   onClick={ this.pauseSending.bind(null, item) }
-                >Pause</a>
+                >{MailPoet.I18n.t('pause')}</a>
               </span>
             );
           }
@@ -239,7 +243,7 @@ define(
         return (
           <div>
             <h2 className="title">
-              Newsletters <Link className="add-new-h2" to="/new">New</Link>
+              {MailPoet.I18n.t('pageTitle')} <Link className="add-new-h2" to="/new">{MailPoet.I18n.t('new')}</Link>
             </h2>
 
             <Listing

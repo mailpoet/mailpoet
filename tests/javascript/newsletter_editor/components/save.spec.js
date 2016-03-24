@@ -141,6 +141,9 @@ define([
               Ajax: {
                 post: mock,
               },
+              I18n: {
+                t: function() { return ''; },
+              },
               Notice: {
                 success: function() {},
                 error: function() {},

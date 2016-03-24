@@ -48,28 +48,28 @@ define(
       })
       .done(function(response) {
         if(!response.result) {
-          MailPoet.Notice.error(MailPoetI18n.daemonControlError);
+          MailPoet.Notice.error(MailPoet.I18n.t('daemonControlError'));
         }
       }.bind(this));
     },
     render: function() {
       if(this.state.status === 'loading') {
-        return(<div>Loading daemon status...</div>);
+        return(<div>{MailPoet.I18n.t('loadingDaemonStatus')}</div>);
       }
       switch(this.state.status) {
         case 'started':
           return(
             <div>
-              Cron daemon is running.
+              {MailPoet.I18n.t('cronDaemonIsRunning')}
               <br/>
               <br/>
-              It was started
-              <strong> {this.state.timeSinceStart} </strong> and last executed
-              <strong> {this.state.timeSinceUpdate} </strong> for a total of
-              <strong> {this.state.counter} </strong> times (once every 30 seconds, unless it was interrupted and restarted).
+              {MailPoet.I18n.t('cronDaemonWasStarted')}
+              <strong> {this.state.timeSinceStart} </strong> {MailPoet.I18n.t('cronDaemonLastExecuted')}
+              <strong> {this.state.timeSinceUpdate} </strong> {MailPoet.I18n.t('cronDaemonRunningDuration')}
+              <strong> {this.state.counter} </strong> {MailPoet.I18n.t('cronDaemonExecutedTimes')}
               <br />
               <br />
-              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'stop')}>Stop</a>
+              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'stop')}>{MailPoet.I18n.t('stop')}</a>
             </div>
           );
         break;
@@ -77,17 +77,17 @@ define(
         case 'stopping':
           return(
             <div>
-              Daemon is {this.state.status}
+              {MailPoet.I18n.t('cronDaemonState').replace('%$1s', this.state.status)}
             </div>
           );
         break;
         case 'stopped':
           return(
             <div>
-              Daemon is {this.state.status}
+              {MailPoet.I18n.t('cronDaemonState').replace('%$1s', this.state.status)}
               <br />
               <br />
-              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'start')}>Start</a>
+              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'start')}>{MailPoet.I18n.t('Start')}</a>
             </div>
           );
         break;

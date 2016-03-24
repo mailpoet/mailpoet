@@ -3,6 +3,15 @@
 <% block content %>
   <div id="subscribers_container"></div>
 
+  <script type="text/javascript">
+    var mailpoet_listing_per_page = <%= per_page %>;
+    var mailpoet_segments = <%= json_encode(segments) %>;
+    var mailpoet_custom_fields = <%= json_encode(custom_fields) %>;
+    var mailpoet_month_names = <%= json_encode(month_names) %>;
+  </script>
+<% endblock %>
+
+<% block translations %>
   <%= localize({
     'pageTitle': __('Subscribers'),
     'searchLabel': __('Search'),
@@ -12,13 +21,65 @@
     'selectedAllLabel': __('All %d subscribers are selected.'),
     'selectAllLink': __('Select all subscribers on all pages.'),
     'clearSelection': __('Clear selection.'),
-    'permanentlyDeleted': __('%d subscribers permanently deleted.')
-  }) %>
+    'permanentlyDeleted': __('%d subscribers permanently deleted.'),
+    'selectBulkAction': __('Select bulk action'),
+    'bulkActions': __('Bulk Actions'),
+    'apply': __('Apply'),
+    'filter': __('Filter'),
+    'emptyTrash': __('Empty Trash'),
+    'selectAll': __('Select All'),
+    'edit': __('Edit'),
+    'restore': __('Restore'),
+    'trash': __('Trash'),
+    'deletePermanently': __('Delete Permanently'),
+    'showMoreDetails': __('Show more details'),
+    'previousPage': __('Previous page'),
+    'firstPage': __('First page'),
+    'nextPage': __('Next page'),
+    'lastPage': __('Last page'),
+    'currentPage': __('Current Page'),
+    'pageOutOf': __('of'),
+    'numberOfItems': __('%$1d items'),
+    'email': __('E-mail'),
+    'firstname': __('Firstname'),
+    'lastname': __('Lastname'),
+    'status': __('Status'),
+    'unconfirmed': __('Unconfirmed'),
+    'subscribed': __('Subscribed'),
+    'unsubscribed': __('Unsubscribed'),
+    'selectList': __('Select a list'),
+    'unsubscribedOn': __('Unsubscribed on %$1s'),
+    'subscriberUpdated': __('Subscriber successfully updated!'),
+    'subscriberAdded': __('Subscriber successfully added!'),
 
-  <script type="text/javascript">
-    var mailpoet_listing_per_page = <%= per_page %>;
-    var mailpoet_segments = <%= json_encode(segments) %>;
-    var mailpoet_custom_fields = <%= json_encode(custom_fields) %>;
-    var mailpoet_month_names = <%= json_encode(month_names) %>;
-  </script>
+    'subscriber': __('Subscriber'),
+    'status': __('Status'),
+    'lists': __('Lists'),
+    'subscribedOn': __('Subscribed on'),
+    'lastModifiedOn': __('Last modified on'),
+    'oneSubscriberTrashed': __('1 subscriber was moved to the trash.'),
+    'multipleSubscribersTrashed': __('%$1d subscribers were moved to the trash.'),
+    'oneSubscriberDeleted': __('1 subscriber was permanently deleted.'),
+    'multipleSubscribersDeleted': __('%$1d subscribers were permanently deleted.'),
+    'oneSubscriberRestored': __('1 subscriber has been restored from the trash.'),
+    'multipleSubscribersRestored': __('%$1d subscribers have been restored from the trash.'),
+    'moveToList': __('Move to list...'),
+    'multipleSubscribersMovedToList': __('%$1d subscribers were moved to list <strong>%$2s</strong>.'),
+    'addToList': __('Add to list...'),
+    'multipleSubscribersAddedToList': __('%$1d subscribers were added to list <strong>%$2s</strong>.'),
+    'removeFromList': __('Remove from list...'),
+    'multipleSubscribersRemovedFromList': __('%$1d subscribers were removed from list <strong>%$2s</strong>.'),
+    'removeFromAllLists': __('Remove from all lists'),
+    'multipleSubscribersRemovedFromAllLists': __('%$1d subscribers were removed from all lists.'),
+    'confirmUnconfirmed': __('Confirm unconfirmed'),
+    'multipleSubscribersConfirmed': __('%$1d subscribers have been confirmed.'),
+    'resendConfirmationEmail': __('Resend confirmation email'),
+    'multipleConfirmationEmailsSent': __('%$1d confirmation emails have been sent.'),
+    'listsToWhichSubscriberWasSubscribed': __('Lists to which the subscriber was subscribed.'),
+    'new': __('New'),
+    'import': __('Import'),
+    'export': __('Export'),
+    'save': __('Save'),
+
+  }) %>
 <% endblock %>

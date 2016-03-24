@@ -128,7 +128,7 @@ define(
             // get an approximate size of textarea paste in bytes
             var pasteSize = encodeURI(pasteInputElement.val()).split(/%..|./).length - 1;
             if (pasteSize > maxPostSizeBytes) {
-              MailPoet.Notice.error(MailPoetI18n.maxPostSizeNotice, {
+              MailPoet.Notice.error(MailPoet.I18n.t('maxPostSizeNotice'), {
                 timeout: noticeTimeout,
               });
               return;
@@ -148,7 +148,7 @@ define(
               var ext = this.value.match(/\.(.+)$/);
               if (ext === null || ext[1].toLowerCase() !== 'csv') {
                 this.value = '';
-                MailPoet.Notice.error(MailPoetI18n.wrongFileFormat, {
+                MailPoet.Notice.error(MailPoet.I18n.t('wrongFileFormat'), {
                   timeout: noticeTimeout,
                 });
               }
@@ -212,7 +212,7 @@ define(
                     .removeClass()
                     .addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-ok');
                 if (!response.data) {
-                  jQuery('.mailpoet_mailchimp-key-status').html(MailPoetI18n.noMailChimpLists);
+                  jQuery('.mailpoet_mailchimp-key-status').html(MailPoet.I18n.t('noMailChimpLists'));
                   mailChimpListsContainerElement.hide();
                   toggleNextStepButton(mailChimpProcessButtonElement, 'off');
                 } else {
@@ -223,7 +223,7 @@ define(
             }).error(function (error) {
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
-                  MailPoetI18n.serverError + error.statusText.toLowerCase() + '.', {
+                  MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.', {
                     timeout: noticeTimeout,
                   }
               );
@@ -258,7 +258,7 @@ define(
             }).error(function () {
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
-                  MailPoetI18n.serverError + result.statusText.toLowerCase() + '.', {
+                  MailPoet.I18n.t('serverError') + result.statusText.toLowerCase() + '.', {
                     timeout: noticeTimeout,
                   }
               );
@@ -350,7 +350,7 @@ define(
               comments: advancedOptionComments,
               error: function () {
                 MailPoet.Notice.hide();
-                MailPoet.Notice.error(MailPoetI18n.dataProcessingError, {
+                MailPoet.Notice.error(MailPoet.I18n.t('dataProcessingError'), {
                   timeout: noticeTimeout,
                 });
               },
@@ -431,8 +431,8 @@ define(
                 }
                 else {
                   MailPoet.Modal.loading(false);
-                  var errorNotice = MailPoetI18n.noValidRecords;
-                  errorNotice = errorNotice.replace('[link]', MailPoetI18n.csvKBLink);
+                  var errorNotice = MailPoet.I18n.t('noValidRecords');
+                  errorNotice = errorNotice.replace('[link]', MailPoet.I18n.t('csvKBLink'));
                   errorNotice = errorNotice.replace('[/link]', '</a>');
                   MailPoet.Notice.error(errorNotice, {
                     timeout: noticeTimeout,
@@ -501,17 +501,17 @@ define(
             }
 
             var import_results = {
-              notice: MailPoetI18n.importNoticeSkipped.replace(
+              notice: MailPoet.I18n.t('importNoticeSkipped').replace(
                   '%1$s',
                   '<strong>' + (subscribers.invalid.length + subscribers.duplicate.length) + '</strong>'
               ),
               invalid: (subscribers.invalid.length)
-                  ? MailPoetI18n.importNoticeInvalid
+                  ? MailPoet.I18n.t('importNoticeInvalid')
                   .replace('%1$s', '<strong>' + subscribers.invalid.length + '</strong>')
                   .replace('%2$s', subscribers.invalid.join(', '))
                   : null,
               duplicate: (subscribers.duplicate.length)
-                  ? MailPoetI18n.importNoticeDuplicate
+                  ? MailPoet.I18n.t('importNoticeDuplicate')
                   .replace('%1$s', '<strong>' + subscribers.duplicate.length + '</strong>')
                   .replace('%2$s', subscribers.duplicate.join(', '))
                   : null
@@ -527,8 +527,8 @@ define(
                 jQuery(details).toggle();
                 this.text =
                     (jQuery(details).is(":visible"))
-                        ? MailPoetI18n.hideDetails
-                        : MailPoetI18n.showDetails;
+                        ? MailPoet.I18n.t('hideDetails')
+                        : MailPoet.I18n.t('showDetails');
               });
 
           // show available segments
@@ -564,7 +564,7 @@ define(
                   var segmentSelectionNotice = jQuery('[data-id="notice_segmentSelection"]');
                   if (!this.value) {
                     if (!segmentSelectionNotice.length) {
-                      MailPoet.Notice.error(MailPoetI18n.segmentSelectionRequired, {
+                      MailPoet.Notice.error(MailPoet.I18n.t('segmentSelectionRequired'), {
                         static: true,
                         timeout: noticeTimeout,
                         scroll: true,
@@ -584,7 +584,7 @@ define(
 
           jQuery('.mailpoet_create_segment').click(function () {
             MailPoet.Modal.popup({
-              title: MailPoetI18n.addNewList,
+              title: MailPoet.I18n.t('addNewList'),
               template: jQuery('#new_segment_template').html()
             })
             jQuery('#new_segment_name').keypress(function (e) {
@@ -644,7 +644,7 @@ define(
                       else {
                         MailPoet.Modal.close();
                         MailPoet.Notice.error(
-                            MailPoetI18n.segmentCreateError + response.message + '.', {
+                            MailPoet.I18n.t('segmentCreateError') + response.message + '.', {
                               timeout: noticeTimeout,
                             }
                         );
@@ -653,7 +653,7 @@ define(
                     .error(function (error) {
                       MailPoet.Modal.close();
                       MailPoet.Notice.error(
-                          MailPoetI18n.serverError + error.statusText.toLowerCase() + '.', {
+                          MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.', {
                             timeout: noticeTimeout
                           }
                       );
@@ -770,7 +770,7 @@ define(
                   selectEvent.preventDefault();
                   jQuery(selectElement).select2('close');
                   MailPoet.Modal.popup({
-                    title: MailPoetI18n.addNewColumn,
+                    title: MailPoet.I18n.t('addNewColumn'),
                     template: jQuery('#new_column_template').html()
                   });
                   jQuery('#new_column_name').keypress(function (e) {
@@ -834,7 +834,7 @@ define(
                               // if this is the first custom column, create an "optgroup"
                               if (mailpoetColumnsSelect2.length === 2) {
                                 mailpoetColumnsSelect2.push({
-                                  'name': MailPoetI18n.userColumns,
+                                  'name': MailPoet.I18n.t('userColumns'),
                                   'children': []
                                 });
                               }
@@ -860,7 +860,7 @@ define(
                               filterSubscribers();
                             }
                             else {
-                              MailPoet.Notice.error(MailPoetI18n.customFieldCreateError, {
+                              MailPoet.Notice.error(MailPoet.I18n.t('customFieldCreateError'), {
                                 timeout: noticeTimeout,
                               });
                             }
@@ -869,7 +869,7 @@ define(
                           .error(function (error) {
                             MailPoet.Modal.loading(false);
                             MailPoet.Notice.error(
-                                MailPoetI18n.serverError + error.statusText.toLowerCase() + '.', {
+                                MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.', {
                                   timeout: noticeTimeout,
                                 }
                             );
@@ -890,7 +890,7 @@ define(
                         // if another column has the same value and it's not an 'ignore', prompt user
                         if (elementId === selectedOptionId
                             && elementId !== 'ignore') {
-                          if (confirm(MailPoetI18n.selectedValueAlreadyMatched + ' ' + MailPoetI18n.confirmCorrespondingColumn)) {
+                          if (confirm(MailPoet.I18n.t('selectedValueAlreadyMatched') + ' ' + MailPoet.I18n.t('confirmCorrespondingColumn'))) {
                             jQuery(element).data('column-id', 'ignore');
                           }
                           else {
@@ -933,7 +933,7 @@ define(
                 if (!emailRegex.test(subscribersClone.subscribers[0][matchedColumn])) {
                   preventNextStep = true;
                   if (!jQuery('[data-id="notice_invalidEmail"]').length) {
-                    MailPoet.Notice.error(MailPoetI18n.columnContainsInvalidElement, {
+                    MailPoet.Notice.error(MailPoet.I18n.t('columnContainsInvalidElement'), {
                       static: true,
                       timeout: noticeTimeout,
                       scroll: true,
@@ -953,18 +953,18 @@ define(
                       date = new Date(rowData.replace(/-/g, '/')), // IE doesn't like
                   // dashes as date separators
                       month_name = [
-                        MailPoetI18n.january,
-                        MailPoetI18n.february,
-                        MailPoetI18n.march,
-                        MailPoetI18n.april,
-                        MailPoetI18n.may,
-                        MailPoetI18n.june,
-                        MailPoetI18n.july,
-                        MailPoetI18n.august,
-                        MailPoetI18n.september,
-                        MailPoetI18n.october,
-                        MailPoetI18n.november,
-                        MailPoetI18n.december
+                        MailPoet.I18n.t('january'),
+                        MailPoet.I18n.t('february'),
+                        MailPoet.I18n.t('march'),
+                        MailPoet.I18n.t('april'),
+                        MailPoet.I18n.t('may'),
+                        MailPoet.I18n.t('june'),
+                        MailPoet.I18n.t('july'),
+                        MailPoet.I18n.t('august'),
+                        MailPoet.I18n.t('september'),
+                        MailPoet.I18n.t('october'),
+                        MailPoet.I18n.t('november'),
+                        MailPoet.I18n.t('december')
                       ];
 
                   if (position !== fillterPosition) {
@@ -977,8 +977,8 @@ define(
                     if (rowData.trim() === '') {
                       data[matchedColumn] =
                           '<span class="mailpoet_data_match mailpoet_import_error" title="'
-                          + MailPoetI18n.noDateFieldMatch + '">'
-                          + MailPoetI18n.emptyDate
+                          + MailPoet.I18n.t('noDateFieldMatch') + '">'
+                          + MailPoet.I18n.t('emptyDate')
                           + '</span>';
                       preventNextStep = true;
                       return;
@@ -995,25 +995,25 @@ define(
                           + ((date.getMinutes() < 10 ? '0' : '')
                           + date.getMinutes()) + ' '
                           + ((date.getHours() >= 12)
-                                  ? MailPoetI18n.pm
-                                  : MailPoetI18n.am
+                                  ? MailPoet.I18n.t('pm')
+                                  : MailPoet.I18n.t('am')
                           );
                       data[matchedColumn] +=
                           '<span class="mailpoet_data_match" title="'
-                          + MailPoetI18n.verifyDateMatch + '">'
+                          + MailPoet.I18n.t('verifyDateMatch') + '">'
                           + date + '</span>';
                     }
                     else {
                       data[matchedColumn] +=
                           '<span class="mailpoet_data_match mailpoet_import_error" title="'
-                          + MailPoetI18n.noDateFieldMatch + '">'
-                          + MailPoetI18n.dateMatchError + '</span>';
+                          + MailPoet.I18n.t('noDateFieldMatch') + '">'
+                          + MailPoet.I18n.t('dateMatchError') + '</span>';
                       preventNextStep = true;
                     }
                   }
                 });
                 if (preventNextStep && !jQuery('.mailpoet_invalidDate').length) {
-                  MailPoet.Notice.error(MailPoetI18n.columnContainsInvalidDate, {
+                  MailPoet.Notice.error(MailPoet.I18n.t('columnContainsInvalidDate'), {
                     static: true,
                     timeout: noticeTimeout,
                     scroll: true,
@@ -1114,7 +1114,7 @@ define(
                   })
                   .error(function (error) {
                     importResults.errors.push(
-                      MailPoetI18n.serverError + error.statusText.toLowerCase() + '.'
+                      MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
                     );
                     queue.run();
                   });
@@ -1171,12 +1171,12 @@ define(
               exportMenuElement = jQuery('span.mailpoet_export'),
               importResults = {
                 created: (importData.step2.created)
-                    ? MailPoetI18n.subscribersCreated
+                    ? MailPoet.I18n.t('subscribersCreated')
                     .replace('%1$s', '<strong>' + importData.step2.created + '</strong>')
                     .replace('%2$s', '"' + importData.step2.segments.join('", "') + '"')
                     : false,
                 updated: (importData.step2.updated)
-                    ? MailPoetI18n.subscribersUpdated
+                    ? MailPoet.I18n.t('subscribersUpdated')
                     .replace('%1$s', '<strong>' + importData.step2.updated + '</strong>')
                     .replace('%2$s', '"' + importData.step2.segments.join('", "') + '"')
                     : false,

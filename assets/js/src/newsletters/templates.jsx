@@ -54,7 +54,7 @@ define(
           try {
             saveTemplate(JSON.parse(e.target.result));
           } catch (err) {
-            MailPoet.Notice.error('This template file appears to be malformed. Please try another one.');
+            MailPoet.Notice.error(MailPoet.I18n.t('templateFileMalformedError'));
           }
         }.bind(this);
 
@@ -63,15 +63,15 @@ define(
       render: function() {
         return (
           <div>
-            <h2>Import a template</h2>
+            <h2>{MailPoet.I18n.t('importTemplateTitle')}</h2>
             <form onSubmit={this.handleSubmit}>
-              <input type="file" placeholder="Select a .json file to upload" ref="templateFile" />
+              <input type="file" placeholder={MailPoet.I18n.t('selectJsonFileToUpload')} ref="templateFile" />
 
               <p className="submit">
                 <input
                   className="button button-primary"
                   type="submit"
-                  value="Upload" />
+                  value={MailPoet.I18n.t('upload')} />
               </p>
             </form>
           </div>
@@ -108,9 +108,9 @@ define(
               response = [
                 {
                   name:
-                    "MailPoet's Guide",
+                    MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
                   description:
-                    "This is the standard template that comes with MailPoet.",
+                    MailPoet.I18n.t('mailpoetGuideTemplateDescription'),
                   readonly: "1"
                 }
               ]
@@ -155,7 +155,9 @@ define(
         this.setState({ loading: true });
         if(
           window.confirm(
-            'You are about to delete the template named "'+ template.name +'"'
+            (
+              MailPoet.I18n.t('confirmTemplateDeletion')
+            ).replace("%$1s", template.name)
           )
         ) {
           MailPoet.Ajax.post({
@@ -187,7 +189,7 @@ define(
                 href="javascript:;"
                 onClick={ this.handleDeleteTemplate.bind(null, template) }
               >
-                Delete
+                {MailPoet.I18n.t('delete')}
               </a>
             </div>
           ), thumbnail = '';
@@ -218,7 +220,7 @@ define(
                     className="button button-primary"
                     onClick={ this.handleSelectTemplate.bind(null, template) }
                   >
-                    Select
+                    {MailPoet.I18n.t('select')}
                   </a>
                   &nbsp;
                   <a
@@ -226,7 +228,7 @@ define(
                     className="button button-secondary"
                     onClick={ this.handlePreviewTemplate.bind(null, template) }
                   >
-                    Preview
+                    {MailPoet.I18n.t('preview')}
                   </a>
               </div>
               { (template.readonly === "1") ? false : deleteLink }
@@ -242,7 +244,7 @@ define(
 
         return (
           <div>
-            <h1>Select a template</h1>
+            <h1>{MailPoet.I18n.t('selectTemplateTitle')}</h1>
 
             <Breadcrumb step="template" />
 

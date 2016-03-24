@@ -25,11 +25,11 @@ define(
     var intervalField = {
       name: 'interval',
       values: {
-        'daily': 'Once a day at...',
-        'weekly': 'Weekly on...',
-        'monthly': 'Monthly on the...',
-        'nthWeekDay': 'Monthly every...',
-        'immediately': 'Immediately.',
+        'daily': MailPoet.I18n.t('daily'),
+        'weekly': MailPoet.I18n.t('weekly'),
+        'monthly': MailPoet.I18n.t('monthly'),
+        'nthWeekDay': MailPoet.I18n.t('monthlyEvery'),
+        'immediately': MailPoet.I18n.t('immediately'),
       },
     };
 
@@ -53,13 +53,13 @@ define(
     var weekDayField = {
       name: 'weekDay',
       values: {
-        0: 'Sunday',
-        1: 'Monday',
-        2: 'Tuesday',
-        3: 'Wednesday',
-        4: 'Thursday',
-        5: 'Friday',
-        6: 'Saturday'
+        0: MailPoet.I18n.t('sunday'),
+        1: MailPoet.I18n.t('monday'),
+        2: MailPoet.I18n.t('tuesday'),
+        3: MailPoet.I18n.t('wednesday'),
+        4: MailPoet.I18n.t('thursday'),
+        5: MailPoet.I18n.t('friday'),
+        6: MailPoet.I18n.t('saturday')
       },
     };
 
@@ -69,14 +69,19 @@ define(
       values: _.object(_.map(
         _.times(NUMBER_OF_DAYS_IN_MONTH, function(day) { return day; }),
         function(day) {
-          var suffixes = {
-            0: 'st',
-            1: 'nd',
-            2: 'rd'
-          };
-          var suffix = suffixes[day] || 'th';
+          var labels = {
+            0: MailPoet.I18n.t('first'),
+            1: MailPoet.I18n.t('second'),
+            2: MailPoet.I18n.t('third')
+          },
+            label;
+          if (labels[day] !== undefined) {
+            label = labels[day];
+          } else {
+            label = MailPoet.I18n.t('nth').replace("%$1d", day + 1);
+          }
 
-          return [day, (day + 1).toString() + suffix];
+          return [day, label];
         },
       )),
     };
@@ -84,10 +89,10 @@ define(
     var nthWeekDayField = {
       name: 'nthWeekDay',
       values: {
-        '1': '1st',
-        '2': '2nd',
-        '3': '3rd',
-        'L': 'last',
+        '1': MailPoet.I18n.t('first'),
+        '2': MailPoet.I18n.t('second'),
+        '3': MailPoet.I18n.t('third'),
+        'L': MailPoet.I18n.t('last'),
       },
     };
 
@@ -197,7 +202,7 @@ define(
 
         return (
           <div>
-            <h1>Post notifications</h1>
+            <h1>{MailPoet.I18n.t('postNotificationNewsletterTypeTitle')}</h1>
             <Breadcrumb step="type" />
 
             <Select
@@ -215,7 +220,7 @@ define(
                 className="button button-primary"
                 type="button"
                 onClick={ this.handleNext }
-                value="Next" />
+                value={MailPoet.I18n.t('next')} />
             </p>
           </div>
         );
