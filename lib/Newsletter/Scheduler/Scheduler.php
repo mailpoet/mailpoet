@@ -120,11 +120,11 @@ class Scheduler {
       case 'weeks':
         $scheduled_at = $current_time->addWeeks($after_time_number);
         break;
+      default:
+        $scheduled_at = $current_time;
     }
-    if($scheduled_at) {
-      $queue->status = 'scheduled';
-      $queue->scheduled_at = $scheduled_at;
-    }
+    $queue->status = 'scheduled';
+    $queue->scheduled_at = $scheduled_at;
     $queue->save();
   }
 }

@@ -12,6 +12,10 @@ class SubscriberSegment extends Model {
     parent::__construct();
   }
 
+  function subscriber() {
+    return $this->has_one(__NAMESPACE__.'\Subscriber', 'id');
+  }
+
   static function setSubscriptions($subscriber, $segment_ids = array()) {
     if($subscriber->id > 0) {
       // unsubscribe from current subscriptions

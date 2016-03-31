@@ -47,16 +47,16 @@ class Scheduler {
   function processWelcomeNewsletter($newsletter, $queue) {
     $subscriber = unserialize($queue->subscribers);
     $subscriber_id = $subscriber['to_process'][0];
-    $result = false;
     if($newsletter->event === 'segment') {
-      $result = $this->verifyMailPoetSubscriber($subscriber_id, $newsletter);
+      if ($this->verifyMailPoetSubscriber($subscriber_id, $newsletter, $queue) === false) {
+        return;
+      }
     }
     else if($newsletter->event === 'user') {
-      $result = $this->verifyWPSubscriber($subscriber_id, $newsletter);
-    }
-    if(!$result) {
-      $queue->delete();
-      return;
+      if ($this->verifyWPSubscriber($subscriber_id, $newsletter) === false) {
+        $queue->delete();
+        return;
+      }
     }
     $queue->status = null;
     $queue->save();
@@ -95,14 +95,27 @@ class Scheduler {
     $new_queue->save();
   }
 
-  private function verifyMailPoetSubscriber($subscriber_id, $newsletter) {
+  private function verifyMailPoetSubscriber($subscriber_id, $newsletter, $queue) {
     // check if subscriber is in proper segment
     $subscriber_in_segment =
       SubscriberSegment::where('subscriber_id', $subscriber_id)
         ->where('segment_id', $newsletter->segment)
         ->where('status', 'subscribed')
         ->findOne();
-    return ($subscriber_in_segment) ? true : false;
+    if (!$subscriber_in_segment) {
+      $queue->delete();
+      return false;
+    }
+    // check if subscriber is confirmed (subscribed)
+    $subscriber = $subscriber_in_segment->subscriber()->findOne();
+    if ($subscriber->status !== 'subscribed') {
+      // reschedule delivery in 5 minutes
+      $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+      $queue->scheduled_at = $scheduled_at->addMinutes(5);
+      $queue->save();
+      return false;
+    }
+    return true;
   }
 
   private function verifyWPSubscriber($subscriber_id, $newsletter) {
