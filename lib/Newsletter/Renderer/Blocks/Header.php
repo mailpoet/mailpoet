@@ -17,9 +17,14 @@ class Header {
         }
       }
     }
+    $background_color = $element['styles']['block']['backgroundColor'];
+    $background_color = ($background_color !== 'transparent') ?
+      'bgcolor="' . $background_color . '"' :
+      false;
+    if(!$background_color) unset($element['styles']['block']['backgroundColor']);
     $template = '
       <tr>
-        <td class="mailpoet_header_footer_padded mailpoet_header" bgcolor="' . $element['styles']['block']['backgroundColor'] . '"
+        <td class="mailpoet_header_footer_padded mailpoet_header" ' . $background_color . '
         style="' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
         ' . $DOM->html() . '
         </td>

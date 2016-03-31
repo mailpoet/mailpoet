@@ -7,7 +7,6 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 class Button {
   static function render($element, $column_count) {
     $element['styles']['block']['width'] = self::calculateWidth($element, $column_count);
-    $element['styles']['block']['height'] = self::calculateHeight($element);
     $template = '
       <tr>
         <td class="mailpoet_padded_bottom mailpoet_padded_side" valign="top">
@@ -17,10 +16,10 @@ class Button {
                 <td class="mailpoet_button-container" style="padding:8px 20px;text-align:' . $element['styles']['block']['textAlign'] . ';"><!--[if mso]>
                   <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
                     href="' . $element['url'] . '"
-                    style="height:' . $element['styles']['block']['height'] . ';
+                    style="height:' . $element['styles']['block']['lineHeight'] . ';
                            width:' . $element['styles']['block']['width'] . ';
                            v-text-anchor:middle;"
-                    arcsize="' . round($element['styles']['block']['borderRadius'] / $element['styles']['block']['height'] * 100) . '%"
+                    arcsize="' . round($element['styles']['block']['borderRadius'] / $element['styles']['block']['lineHeight'] * 100) . '%"
                     strokeweight="1px"
                     strokecolor="' . $element['styles']['block']['borderColor'] . '"
                     fillcolor="' . $element['styles']['block']['backgroundColor'] . '">
@@ -51,12 +50,5 @@ class Button {
       $button_width;
     $button_width = $button_width - (2 * $border_width) . 'px';
     return $button_width;
-  }
-
-  static function calculateHeight($element) {
-    $border_width = (int) $element['styles']['block']['borderWidth'];
-    $button_height = (int) $element['styles']['block']['lineHeight'];
-    $button_height = $button_height - (2 * $border_width) . 'px';
-    return $button_height;
   }
 }
