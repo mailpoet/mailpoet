@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Newsletter\Renderer\StylesHelper;
+
 class Text {
   static function render($element) {
     $html = $element['text'];
@@ -11,7 +13,7 @@ class Text {
     $html = self::addLineBreakAfterTags($html);
     $template = '
       <tr>
-        <td class="mailpoet_text mailpoet_padded" valign="top" style="word-break:break-word;word-wrap:break-word;">
+        <td class="mailpoet_text mailpoet_padded_bottom mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;">
           ' . $html . '
         </td>
       </tr>';
@@ -77,7 +79,7 @@ class Text {
       $paragraph->cellpadding = 0;
       $paragraph->html('
         <tr>
-          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . $style . '">
+          <td class="mailpoet_paragraph" style="line-height:' . StylesHelper::$line_height . ';word-break:break-word;word-wrap:break-word;' . $style . '">
             ' . $contents . '
             <br /><br />
           </td>
@@ -97,7 +99,7 @@ class Text {
         $list->class = 'mailpoet_paragraph';
       } else {
         $list->class = 'mailpoet_paragraph';
-        $list->style .= 'padding-top:0;padding-bottom:0;margin-top:0;margin-bottom:0;';
+        $list->style .= 'line-height:' . StylesHelper::$line_height . ';padding-top:0;padding-bottom:0;margin-top:0;margin-bottom:0;';
       }
     }
     return $DOM->__toString();
@@ -109,7 +111,7 @@ class Text {
     $headings = $DOM->query('h1, h2, h3, h4');
     if(!$headings->count()) return $html;
     foreach($headings as $heading) {
-      $heading->style .= 'margin:0;font-style:normal;font-weight:normal;';
+      $heading->style .= 'line-height:' . StylesHelper::$line_height . ';margin:0;font-style:normal;font-weight:normal;';
     }
     return $DOM->__toString();
   }

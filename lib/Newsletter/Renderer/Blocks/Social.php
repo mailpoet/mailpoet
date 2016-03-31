@@ -13,7 +13,7 @@ class Social {
       }
       $template = '
       <tr>
-        <td class="mailpoet_padded" valign="top" align="center">
+        <td class="mailpoet_padded_side maipoet_padded_bottom" valign="top" align="center">
           ' . $icons_block . '
         </td>
       </tr>';
