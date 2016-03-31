@@ -10,11 +10,11 @@ class Button {
     $element['styles']['block']['height'] = self::calculateHeight($element);
     $template = '
       <tr>
-        <td class="mailpoet_padded" valign="top">
+        <td class="mailpoet_padded_bottom mailpoet_padded_side" valign="top">
           <div>
             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;">
               <tr>
-                <td class="mailpoet_button-container" style="padding:8px 0;text-align:' . $element['styles']['block']['textAlign'] . ';"><!--[if mso]>
+                <td class="mailpoet_button-container" style="padding:8px 20px;text-align:' . $element['styles']['block']['textAlign'] . ';"><!--[if mso]>
                   <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
                     href="' . $element['url'] . '"
                     style="height:' . $element['styles']['block']['height'] . ';
@@ -54,8 +54,9 @@ class Button {
   }
 
   static function calculateHeight($element) {
+    $border_width = (int) $element['styles']['block']['borderWidth'];
     $button_height = (int) $element['styles']['block']['lineHeight'];
-    $button_height = $button_height - (2 * $button_height) . 'px';
+    $button_height = $button_height - (2 * $border_width) . 'px';
     return $button_height;
   }
 }

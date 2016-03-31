@@ -107,10 +107,10 @@ class NewsletterRendererTest extends MailPoetTest {
 
   function testItRemovesPaddingFromLastColumnElement() {
     $column_content = array('
-      <tr><td class="mailpoet_padded"></td></tr>
-      <tr><td class="mailpoet_padded"></td></tr>
-      <tr><td class="mailpoet_padded"></td></tr>
-      <tr><td class="mailpoet_padded"></td></tr>'
+      <tr><td class="mailpoet_padded_bottom"></td></tr>
+      <tr><td class="mailpoet_padded_bottom"></td></tr>
+      <tr><td class="mailpoet_padded_bottom"></td></tr>
+      <tr><td class="mailpoet_padded_bottom"></td></tr>'
     );
     $column_styles = array(
       'block' => array(
@@ -129,7 +129,7 @@ class NewsletterRendererTest extends MailPoetTest {
     $newsletter = json_decode($this->newsletter['body'], true);
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][0];
     $DOM = $this->DOM_parser->parseStr(Header::render($template));
-    // element should be proplerly nested, and styles should be applied
+    // element should be properly nested, and styles should be applied
     expect(!empty($DOM('tr > td.mailpoet_header', 0)->html()))->true();
     expect(!empty($DOM('tr > td > a', 0)->html()))->true();
     expect($DOM('a', 0)->attr('style'))->notEmpty();
@@ -246,6 +246,22 @@ class NewsletterRendererTest extends MailPoetTest {
       ->equals('#ffff');
   }
 
+  function testItCalculatesButtonWidth() {
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
+    $template['styles']['block']['width'] = '700px';
+    $button_width = Button::calculateWidth($template, $columnCunt = 1);
+    expect($button_width)->equals('618px'); //(width - (2 * border width)
+  }
+
+  function testItCalculatesButtonHeight() {
+    $newsletter = json_decode($this->newsletter['body'], true);
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
+    $template['styles']['block']['height'] = '30px';
+    $button_width = Button::calculateHeight($template, $columnCunt = 1);
+    expect($button_width)->equals('28px'); //(height - (2 * border width)
+  }
+
   function testItRendersButton() {
     $newsletter = json_decode($this->newsletter['body'], true);
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
@@ -261,12 +277,12 @@ class NewsletterRendererTest extends MailPoetTest {
     )->equals(1);
     expect(
       preg_match(
-        '/arcsize="' . round(20 / 30 * 100) . '%"/',
+        '/arcsize="' . round(20 / 28 * 100) . '%"/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
     expect(
       preg_match(
-        '/style="height:30px.*?width:100px/',
+        '/style="height:28px.*?width:98px/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
     expect(
@@ -279,14 +295,6 @@ class NewsletterRendererTest extends MailPoetTest {
         '/fillcolor="#666666/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
-  }
-
-  function testItCalculatesButtonWidth() {
-    $newsletter = json_decode($this->newsletter['body'], true);
-    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
-    $template['styles']['block']['width'] = '700px';
-    $button_width = Button::calculateWidth($template, $columnCunt = 1);
-    expect($button_width)->equals('620px');
   }
 
   function testItRendersSocialIcons() {

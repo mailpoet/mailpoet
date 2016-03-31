@@ -63,7 +63,7 @@ class Renderer {
     foreach($styles as $selector => $style) {
       switch($selector) {
       case 'text':
-        $selector = '.mailpoet_paragraph, td.mailpoet_blockquote, .mailpoet_footer, .mailpoet_header';
+        $selector = 'td.mailpoet_paragraph, td.mailpoet_blockquote';
       break;
       case 'body':
         $selector = 'body, .mailpoet-wrapper';
@@ -74,13 +74,6 @@ class Renderer {
       case 'wrapper':
         $selector = '.mailpoet_content-wrapper';
       break;
-      }
-      if(isset($style['fontSize'])) {
-        $css .= StylesHelper::setFontSizeAndLineHeight(
-          (int) $style['fontSize'],
-          $selector
-        );
-        unset($style['fontSize']);
       }
       if(isset($style['fontFamily'])) {
         $css .= StylesHelper::setFontFamily(

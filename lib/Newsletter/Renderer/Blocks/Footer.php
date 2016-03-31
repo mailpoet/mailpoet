@@ -20,7 +20,7 @@ class Footer {
     $template = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_footer" bgcolor="' . $element['styles']['block']['backgroundColor'] . '"
-        style="' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
+        style="line-height: ' . StylesHelper::$line_height . ';' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
           ' . $DOM->html() . '
         </td>
       </tr>';
