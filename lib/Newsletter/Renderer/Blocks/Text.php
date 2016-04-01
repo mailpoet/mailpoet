@@ -81,7 +81,7 @@ class Text {
         <tr>
           <td class="mailpoet_paragraph" style="line-height:' . StylesHelper::$line_height . ';word-break:break-word;word-wrap:break-word;' . $style . '">
             ' . $contents . '
-            <br /><br />
+            <br />
           </td>
          </tr>'
       );

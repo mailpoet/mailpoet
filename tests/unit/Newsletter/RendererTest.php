@@ -23,7 +23,6 @@ class NewsletterRendererTest extends MailPoetTest {
     $this->DOM_parser = new \pQuery();
   }
 
-
   function testItRendersCompleteNewsletter() {
     $template = $this->renderer->render();
     expect(isset($template['html']))->true();
@@ -254,14 +253,6 @@ class NewsletterRendererTest extends MailPoetTest {
     expect($button_width)->equals('618px'); //(width - (2 * border width)
   }
 
-  function testItCalculatesButtonHeight() {
-    $newsletter = json_decode($this->newsletter['body'], true);
-    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
-    $template['styles']['block']['height'] = '30px';
-    $button_width = Button::calculateHeight($template, $columnCunt = 1);
-    expect($button_width)->equals('28px'); //(height - (2 * border width)
-  }
-
   function testItRendersButton() {
     $newsletter = json_decode($this->newsletter['body'], true);
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
@@ -277,12 +268,12 @@ class NewsletterRendererTest extends MailPoetTest {
     )->equals(1);
     expect(
       preg_match(
-        '/arcsize="' . round(20 / 28 * 100) . '%"/',
+        '/arcsize="' . round(20 / 30 * 100) . '%"/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
     expect(
       preg_match(
-        '/style="height:28px.*?width:98px/',
+        '/style="height:30px.*?width:98px/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
     expect(

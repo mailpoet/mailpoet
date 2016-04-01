@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\Newsletter\Renderer;
 
-use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
-
 class StylesHelper {
   static $css_attributes = array(
     'backgroundColor' => 'background-color',
@@ -67,9 +65,25 @@ class StylesHelper {
   static function setStyle($style, $selector) {
     $css = $selector . '{' . PHP_EOL;
     foreach($style as $attribute => $individual_style) {
-      $css .= self::translateCSSAttribute($attribute) . ':' . $individual_style . ';' .  PHP_EOL;
+      $css .= self::translateCSSAttribute($attribute) . ':' . $individual_style . ';' . PHP_EOL;
     }
     $css .= '}' . PHP_EOL;
     return $css;
+  }
+
+  static function setTextAlign($block) {
+    $alignments = array(
+      'center',
+      'right',
+      'justify'
+    );
+    $text_alignment = isset($block['styles']['block']['textAlign']) ?
+      strtolower($block['styles']['block']['textAlign']) :
+      false;
+    if(!$text_alignment || !in_array($text_alignment, $alignments)) {
+      return $block;
+    }
+    $block['styles']['block']['textAlign'] = 'left';
+    return $block;
   }
 }
