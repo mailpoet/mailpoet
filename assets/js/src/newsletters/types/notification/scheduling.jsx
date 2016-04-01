@@ -4,26 +4,18 @@ define(
     'react',
     'react-router',
     'mailpoet',
-    'form/form.jsx',
-    'form/fields/select.jsx',
-    'form/fields/selection.jsx',
-    'form/fields/text.jsx',
-    'newsletters/breadcrumb.jsx'
+    'form/fields/select.jsx'
   ],
   function(
     _,
     React,
     Router,
     MailPoet,
-    Form,
-    Select,
-    Selection,
-    Text,
-    Breadcrumb
+    Select
   ) {
 
     var intervalField = {
-      name: 'interval',
+      name: 'intervalType',
       values: {
         'daily': MailPoet.I18n.t('daily'),
         'weekly': MailPoet.I18n.t('weekly'),
@@ -96,137 +88,113 @@ define(
       },
     };
 
-    var NewsletterWelcome = React.createClass({
-      mixins: [
-        Router.History
-      ],
-      getInitialState: function() {
-        return {
-          intervalType: 'immediate', // 'immediate'|'daily'|'weekly'|'monthly'
-          timeOfDay: 0,
-          weekDay: 1,
-          monthDay: 0,
-          nthWeekDay: 1,
-        };
+    var NotificationScheduling = React.createClass({
+      _getCurrentValue: function() {
+        return this.props.item[this.props.field.name] || {};
+      },
+      handleValueChange: function(name, value) {
+        var oldValue = this._getCurrentValue(),
+            newValue = {};
+        newValue[name] = value;
+
+        return this.props.onValueChange({
+          target: {
+            name: this.props.field.name,
+            value: _.extend({}, oldValue, newValue)
+          }
+        });
       },
       handleIntervalChange: function(event) {
-        this.setState({
-          intervalType: event.target.value,
-        });
+        return this.handleValueChange(
+          'intervalType',
+          event.target.value
+        );
       },
       handleTimeOfDayChange: function(event) {
-        this.setState({
-          timeOfDay: event.target.value,
-        });
+        return this.handleValueChange(
+          'timeOfDay',
+          event.target.value
+        );
       },
       handleWeekDayChange: function(event) {
-        this.setState({
-          weekDay: event.target.value,
-        });
+        return this.handleValueChange(
+          'weekDay',
+          event.target.value
+        );
       },
       handleMonthDayChange: function(event) {
-        this.setState({
-          monthDay: event.target.value,
-        });
+        return this.handleValueChange(
+          'monthDay',
+          event.target.value
+        );
       },
       handleNthWeekDayChange: function(event) {
-        this.setState({
-          nthWeekDay: event.target.value,
-        });
-      },
-      handleNext: function() {
-        MailPoet.Ajax.post({
-          endpoint: 'newsletters',
-          action: 'create',
-          data: {
-            type: 'notification',
-            options: this.state,
-          },
-        }).done(function(response) {
-          if(response.result && response.newsletter.id) {
-            this.showTemplateSelection(response.newsletter.id);
-          } else {
-            if(response.errors.length > 0) {
-              response.errors.map(function(error) {
-                MailPoet.Notice.error(error);
-              });
-            }
-          }
-        }.bind(this));
-      },
-      showTemplateSelection: function(newsletterId) {
-        this.history.pushState(null, `/template/${newsletterId}`);
+        return this.handleValueChange(
+          'nthWeekDay',
+          event.target.value
+        );
       },
       render: function() {
-        var timeOfDaySelection,
+        var value = this._getCurrentValue(),
+            timeOfDaySelection,
             weekDaySelection,
             monthDaySelection,
             nthWeekDaySelection;
 
-        if (this.state.intervalType !== 'immediately') {
+
+        if (value.intervalType !== 'immediately') {
           timeOfDaySelection = (
             <Select
               field={timeOfDayField}
-              item={this.state}
+              item={this._getCurrentValue()}
               onValueChange={this.handleTimeOfDayChange} />
           );
         }
 
-        if (this.state.intervalType === 'weekly'
-            || this.state.intervalType === 'nthWeekDay') {
+        if (value.intervalType === 'weekly'
+            || value.intervalType === 'nthWeekDay') {
           weekDaySelection = (
             <Select
               field={weekDayField}
-              item={this.state}
+              item={this._getCurrentValue()}
               onValueChange={this.handleWeekDayChange} />
           );
         }
 
-        if (this.state.intervalType === 'monthly') {
+        if (value.intervalType === 'monthly') {
           monthDaySelection = (
             <Select
               field={monthDayField}
-              item={this.state}
+              item={this._getCurrentValue()}
               onValueChange={this.handleMonthDayChange} />
           );
         }
 
-        if (this.state.intervalType === 'nthWeekDay') {
+        if (value.intervalType === 'nthWeekDay') {
           nthWeekDaySelection = (
             <Select
               field={nthWeekDayField}
-              item={this.state}
+              item={this._getCurrentValue()}
               onValueChange={this.handleNthWeekDayChange} />
           );
         }
 
         return (
           <div>
-            <h1>{MailPoet.I18n.t('postNotificationNewsletterTypeTitle')}</h1>
-            <Breadcrumb step="type" />
-
             <Select
               field={intervalField}
-              item={this.state}
+              item={this._getCurrentValue()}
               onValueChange={this.handleIntervalChange} />
 
             {nthWeekDaySelection}
             {monthDaySelection}
             {weekDaySelection}
             {timeOfDaySelection}
-
-            <p className="submit">
-              <input
-                className="button button-primary"
-                type="button"
-                onClick={ this.handleNext }
-                value={MailPoet.I18n.t('next')} />
-            </p>
           </div>
         );
       },
     });
 
-    return NewsletterWelcome;
+    return NotificationScheduling;
   }
 );

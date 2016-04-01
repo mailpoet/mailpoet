@@ -3,16 +3,12 @@ define(
     'react',
     'react-router',
     'mailpoet',
-    'form/form.jsx',
-    'form/fields/selection.jsx',
     'newsletters/breadcrumb.jsx'
   ],
   function(
     React,
     Router,
     MailPoet,
-    Form,
-    Selection,
     Breadcrumb
   ) {
 

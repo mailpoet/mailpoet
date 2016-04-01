@@ -4,9 +4,7 @@ define(
     'react',
     'react-router',
     'mailpoet',
-    'form/form.jsx',
     'form/fields/select.jsx',
-    'form/fields/selection.jsx',
     'form/fields/text.jsx',
     'newsletters/breadcrumb.jsx'
   ],
@@ -15,9 +13,7 @@ define(
     React,
     Router,
     MailPoet,
-    Form,
     Select,
-    Selection,
     Text,
     Breadcrumb
   ) {
@@ -64,43 +60,51 @@ define(
       }
     };
 
-    var NewsletterWelcome = React.createClass({
-      mixins: [
-        Router.History
-      ],
-      getInitialState: function() {
-        return {
-          event: 'segment',
-          segment: 1,
-          role: 'subscriber',
-          afterTimeNumber: 1,
-          afterTimeType: 'immediate',
-        };
+    var WelcomeScheduling = React.createClass({
+      _getCurrentValue: function() {
+        return this.props.item[this.props.field.name] || {};
+      },
+      handleValueChange: function(name, value) {
+        var oldValue = this._getCurrentValue(),
+            newValue = {};
+        newValue[name] = value;
+
+        return this.props.onValueChange({
+          target: {
+            name: this.props.field.name,
+            value: _.extend({}, oldValue, newValue)
+          }
+        });
       },
       handleEventChange: function(event) {
-        this.setState({
-          event: event.target.value,
-        });
+        return this.handleValueChange(
+          'event',
+          event.target.value
+        );
       },
       handleSegmentChange: function(event) {
-        this.setState({
-          segment: event.target.value,
-        });
+        return this.handleValueChange(
+          'segment',
+          event.target.value
+        );
       },
       handleRoleChange: function(event) {
-        this.setState({
-          role: event.target.value,
-        });
+        return this.handleValueChange(
+          'role',
+          event.target.value
+        );
       },
       handleAfterTimeNumberChange: function(event) {
-        this.setState({
-          afterTimeNumber: event.target.value,
-        });
+        return this.handleValueChange(
+          'afterTimeNumber',
+          event.target.value
+        );
       },
       handleAfterTimeTypeChange: function(event) {
-        this.setState({
-          afterTimeType: event.target.value,
-        });
+        return this.handleValueChange(
+          'afterTimeType',
+          event.target.value
+        );
       },
       handleNext: function() {
         MailPoet.Ajax.post({
@@ -126,40 +130,38 @@ define(
         this.history.pushState(null, `/template/${newsletterId}`);
       },
       render: function() {
-        var roleSegmentSelection, timeNumber;
-        if (this.state.event === 'user') {
+        var value = this._getCurrentValue(),
+            roleSegmentSelection, timeNumber;
+
+        if (value.event === 'user') {
           roleSegmentSelection = (
             <Select
               field={roleField}
-              item={this.state}
+              item={this._getCurrentValue()}
               onValueChange={this.handleRoleChange} />
           );
         } else {
           roleSegmentSelection = (
             <Select
               field={segmentField}
-              item={this.state}
+              item={this._getCurrentValue()}
               onValueChange={this.handleSegmentChange} />
           );
         }
-        if (this.state.afterTimeType !== 'immediate') {
+        if (value.afterTimeType !== 'immediate') {
           timeNumber = (
             <Text
               field={afterTimeNumberField}
-              item={this.state}
+              item={this._getCurrentValue()}
               onValueChange={this.handleAfterTimeNumberChange} />
           );
         }
+
         return (
           <div>
-            <h1>{MailPoet.I18n.t('welcomeNewsletterTypeTitle')}</h1>
-            <Breadcrumb step="type" />
-
-            <h3>{MailPoet.I18n.t('selectEventToSendWelcomeEmail')}</h3>
-
             <Select
               field={events}
-              item={this.state}
+              item={this._getCurrentValue()}
               onValueChange={this.handleEventChange} />
 
             {roleSegmentSelection}
@@ -168,21 +170,14 @@ define(
 
             <Select
               field={afterTimeTypeField}
-              item={this.state}
+              item={this._getCurrentValue()}
               onValueChange={this.handleAfterTimeTypeChange}/>
-
-            <p className="submit">
-              <input
-                className="button button-primary"
-                type="button"
-                onClick={ this.handleNext }
-                value={MailPoet.I18n.t('next')} />
-            </p>
           </div>
         );
       },
     });
 
-    return NewsletterWelcome;
+    return WelcomeScheduling;
   }
 );
+
