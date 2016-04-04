@@ -43,7 +43,8 @@ class Scheduler {
     $option_field = NewsletterOptionField::where('name', 'schedule')
       ->findOne()
       ->asArray();
-    $relation = NewsletterOption::where('option_field_id', $option_field['id'])
+    $relation = NewsletterOption::where('newsletter_id', $newsletter_id)
+      ->where('option_field_id', $option_field['id'])
       ->findOne();
     if(!$relation) {
       $relation = NewsletterOption::create();
