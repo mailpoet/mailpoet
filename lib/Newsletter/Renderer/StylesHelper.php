@@ -80,7 +80,7 @@ class StylesHelper {
     $text_alignment = isset($block['styles']['block']['textAlign']) ?
       strtolower($block['styles']['block']['textAlign']) :
       false;
-    if(!$text_alignment || !in_array($text_alignment, $alignments)) {
+    if(in_array($text_alignment, $alignments)) {
       return $block;
     }
     $block['styles']['block']['textAlign'] = 'left';

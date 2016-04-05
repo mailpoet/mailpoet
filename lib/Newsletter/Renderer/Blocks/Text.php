@@ -72,6 +72,9 @@ class Text {
         continue;
       }
       $style = $paragraph->style;
+      if (!preg_match('/text-align/i', $style)) {
+        $style = 'text-align: left;' . $style;
+      }
       $contents = $paragraph->html();
       $paragraph->setTag('table');
       $paragraph->style = 'border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;';
@@ -81,7 +84,7 @@ class Text {
         <tr>
           <td class="mailpoet_paragraph" style="line-height:' . StylesHelper::$line_height . ';word-break:break-word;word-wrap:break-word;' . $style . '">
             ' . $contents . '
-            <br />
+            <br /><br />
           </td>
          </tr>'
       );
