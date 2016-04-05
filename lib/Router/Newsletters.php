@@ -157,7 +157,7 @@ class Newsletters {
     if(empty($data['subscriber'])) {
       return array(
         'result' => false,
-        'errors' => array(__('Please specify receiver information'))
+        'errors' => array(__('Please specify receiver information.'))
       );
     }
 
@@ -165,20 +165,17 @@ class Newsletters {
 
     $renderer = new Renderer($newsletter);
     $rendered_newsletter = $renderer->render();
+    $divider = '***MailPoet***';
+    $data_for_shortcodes =
+      array_merge(array($newsletter['subject']), $rendered_newsletter);
+    $body = implode($divider, $data_for_shortcodes);
     $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $rendered_newsletter['html'],
       $newsletter
     );
-    $processed_newsletter['html'] = $shortcodes->replace();
-    $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $rendered_newsletter['text'],
-      $newsletter
-    );
-    $processed_newsletter['text'] = $shortcodes->replace();
-    $newsletter['body'] = array(
-      'html' => $processed_newsletter['html'],
-      'text' => $processed_newsletter['text'],
-    );
+    list($newsletter['subject'],
+      $newsletter['body']['html'],
+      $newsletter['body']['text']
+      ) = explode($divider, $shortcodes->replace($body));
 
     try {
       $mailer = new \MailPoet\Mailer\Mailer(
