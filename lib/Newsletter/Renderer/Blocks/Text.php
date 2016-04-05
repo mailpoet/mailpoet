@@ -99,6 +99,7 @@ class Text {
     if(!$lists->count()) return $html;
     foreach($lists as $list) {
       if($list->tag === 'li') {
+        $list->setInnertext($list->text());
         $list->class = 'mailpoet_paragraph';
       } else {
         $list->class = 'mailpoet_paragraph';

@@ -63,7 +63,7 @@ class Renderer {
     foreach($styles as $selector => $style) {
       switch($selector) {
       case 'text':
-        $selector = 'td.mailpoet_paragraph, td.mailpoet_blockquote';
+        $selector = 'td.mailpoet_paragraph, td.mailpoet_blockquote, li.mailpoet_paragraph';
       break;
       case 'body':
         $selector = 'body, .mailpoet-wrapper';
