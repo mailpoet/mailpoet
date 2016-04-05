@@ -69,11 +69,7 @@ class Scheduler {
       ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
     $subscribers = array_unique($subscribers);
-    if(!count($subscribers)) {
-      $queue->delete();
-      return;
-    }
-    if(!$this->checkIfNewsletterChanged($newsletter)) {
+    if(!count($subscribers) || !$this->checkIfNewsletterChanged($newsletter)) {
       $queue->scheduled_at = $next_run_date;
       $queue->save();
       return;
@@ -141,7 +137,7 @@ class Scheduler {
     $rendered_newsletter = $renderer->render();
     $new_hash = md5($rendered_newsletter['html']);
     $old_hash = $last_run_queue->newsletter_rendered_body_hash;
-    return $new_hash !== $old_hash;
+    return $new_hash === $old_hash;
   }
 
   private function getQueueNextRunDate($schedule) {
