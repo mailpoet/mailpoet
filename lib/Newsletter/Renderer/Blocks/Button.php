@@ -20,7 +20,7 @@ class Button {
                            width:' . $element['styles']['block']['width'] . ';
                            v-text-anchor:middle;"
                     arcsize="' . round($element['styles']['block']['borderRadius'] / $element['styles']['block']['lineHeight'] * 100) . '%"
-                    strokeweight="1px"
+                    strokeweight="' . $element['styles']['block']['borderWidth'] . '"
                     strokecolor="' . $element['styles']['block']['borderColor'] . '"
                     fillcolor="' . $element['styles']['block']['backgroundColor'] . '">
                   <w:anchorlock/>
