@@ -24,6 +24,12 @@ define(
           item: {}
         };
       },
+      getValues: function() {
+        return this.props.item ? this.props.item : this.state.item;
+      },
+      getErrors: function() {
+        return this.props.errors ? this.props.errors : this.state.errors;
+      },
       componentDidMount: function() {
         if(this.props.params.id !== undefined) {
           if(this.isMounted()) {
@@ -37,10 +43,13 @@ define(
             loading: false,
             item: {}
           });
-          this.refs.form.reset();
+          if (props.item === undefined) {
+            this.refs.form.reset();
+          }
         } else {
           this.loadItem(props.params.id);
         }
+        console.log('Receiving props', arguments);
       },
       loadItem: function(id) {
         this.setState({ loading: true });
@@ -123,19 +132,23 @@ define(
         }.bind(this));
       },
       handleValueChange: function(e) {
-        var item = this.state.item,
-          field = e.target.name;
+        if (this.props.onChange) {
+          return this.props.onChange(e);
+        } else {
+          var item = this.state.item,
+            field = e.target.name;
 
-        item[field] = e.target.value;
+          item[field] = e.target.value;
 
-        this.setState({
-          item: item
-        });
-        return true;
+          this.setState({
+            item: item
+          });
+          return true;
+        }
       },
       render: function() {
-        if(this.state.errors !== undefined) {
-          var errors = this.state.errors.map(function(error, index) {
+        if(this.getErrors() !== undefined) {
+          var errors = this.getErrors().map(function(error, index) {
             return (
               <p key={ 'error-'+index } className="mailpoet_error">
                 { error }
@@ -153,7 +166,7 @@ define(
           return (
             <FormField
               field={ field }
-              item={ this.state.item }
+              item={ this.getValues() }
               onValueChange={ this.handleValueChange }
               key={ 'field-'+i } />
           );

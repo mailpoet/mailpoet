@@ -63,7 +63,6 @@ function(
         break;
 
         case 'reactComponent':
-          console.log(data);
           field = (<data.field.component {...data} />);
         break;
       }
