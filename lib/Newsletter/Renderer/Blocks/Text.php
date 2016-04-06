@@ -10,7 +10,8 @@ class Text {
     $html = self::convertParagraphsToTables($html);
     $html = self::styleLists($html);
     $html = self::styleHeadings($html);
-    $html = self::addLineBreakAfterTags($html);
+    $html = self::removeLastLineBreak($html);
+    //$html = self::addLineBreakAfterTags($html);
     $template = '
       <tr>
         <td class="mailpoet_text mailpoet_padded_bottom mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;">
@@ -56,6 +57,14 @@ class Text {
           </tr>
         </tbody>'
       );
+      $blockquote->parent->insertChild(
+        array(
+          'tag_name' => 'br',
+          'self_close' => true,
+          'attributes' => array()
+        ),
+        $blockquote->index() + 1
+      );
     }
     return $DOM->__toString();
   }
@@ -80,11 +89,12 @@ class Text {
       $paragraph->style = 'border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;';
       $paragraph->width = '100%';
       $paragraph->cellpadding = 0;
+      $next_element = $paragraph->getNextSibling();
       $paragraph->html('
         <tr>
           <td class="mailpoet_paragraph" style="line-height:' . StylesHelper::$line_height . ';word-break:break-word;word-wrap:break-word;' . $style . '">
             ' . $contents . '
-            <br /><br />
+            ' . (($next_element && !empty($next_element->getInnerText())) ? '<br /><br />' : '') .'
           </td>
          </tr>'
       );
@@ -103,7 +113,7 @@ class Text {
         $list->class = 'mailpoet_paragraph';
       } else {
         $list->class = 'mailpoet_paragraph';
-        $list->style .= 'line-height:' . StylesHelper::$line_height . ';padding-top:0;padding-bottom:0;margin-top:0;margin-bottom:0;';
+        $list->style .= 'line-height:' . StylesHelper::$line_height . ';padding-top:0;padding-bottom:0;margin-top:10px;margin-bottom:10px;';
       }
     }
     return $DOM->__toString();
@@ -115,27 +125,16 @@ class Text {
     $headings = $DOM->query('h1, h2, h3, h4');
     if(!$headings->count()) return $html;
     foreach($headings as $heading) {
-      $heading->style .= 'line-height:' . StylesHelper::$line_height . ';margin:0;font-style:normal;font-weight:normal;';
+      $heading->style .= 'line-height:' . StylesHelper::$line_height . ';margin:0 0 20px;padding:0;font-style:normal;font-weight:normal;';
+      $next_element = $heading->getNextSibling();
+      if ($next_element && preg_match('/mailpoet_paragraph/ism', $next_element->getInnerText())) {
+        $heading->html($heading->html() . '<br /><br />');
+      }
     }
     return $DOM->__toString();
   }
 
-  static function addLineBreakAfterTags($html) {
-    $DOM_parser = new \pQuery();
-    $DOM = $DOM_parser->parseStr($html);
-    $tags = $DOM->query('ul, ol, h1, h2, h3, h4, table.mailpoet_blockquote');
-    if(!$tags->count()) return $html;
-    foreach($tags as $tag) {
-      $tag->parent->insertChild(
-        array(
-          'tag_name' => 'br',
-          'self_close' => true,
-          'attributes' => array()
-        ),
-        $tag->index() + 1
-      );
-    }
-    // remove last line break
-    return preg_replace('/(^)?(<br.*?\/?>)+$/i', '', $DOM->__toString());
+  static function removeLastLineBreak($html) {
+    return preg_replace('/(^)?(<br.*?\/?>)+$/i', '', $html);
   }
 }
