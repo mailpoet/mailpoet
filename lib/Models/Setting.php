@@ -11,7 +11,7 @@ class Setting extends Model {
   const DEFAULT_SENDING_METHOD_GROUP = 'website';
   const DEFAULT_SENDING_METHOD = 'PHPMail';
   const DEFAULT_SENDING_FREQUENCY_EMAILS = 25;
-  const DEFAULT_SENDING_FREQUENCY_INTERVAL = 15; // in minutes
+  const DEFAULT_SENDING_FREQUENCY_INTERVAL = 5; // in minutes
 
   function __construct() {
     parent::__construct();
