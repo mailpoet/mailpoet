@@ -18,23 +18,6 @@ class Hosts {
         'EU (Ireland)' => 'eu-west-1'
       )
     ),
-    'ElasticEmail' => array(
-      'name' => 'ElasticEmail',
-      'emails' => 100,
-      'interval' => 5,
-      'fields' => array(
-        'api_key'
-      )
-    ),
-    'MailGun' => array(
-      'name' => 'MailGun',
-      'emails' => 100,
-      'interval' => 5,
-      'fields' => array(
-        'domain',
-        'api_key'
-      )
-    ),
     'SendGrid' => array(
       'name' => 'SendGrid',
       'emails' => 100,

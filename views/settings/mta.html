@@ -1,8 +1,8 @@
-<% set intervals = [1, 2, 5, 10, 15, 30, 60] %>
+<% set intervals = [1, 2, 5, 10, 15] %>
 <% set default_frequency = {
   'website': {
     'emails': 25,
-    'interval': 15
+    'interval': 5
   },
   'smtp': {
     'emails': 100,
@@ -66,15 +66,21 @@
       <img
         src="<%= assets_url %>/img/mailpoet_logo.png"
         alt="MailPoet"
-        width="222"
+        width="137"
         height="54"
       />
     </h3>
 
     <p class="mailpoet_description">
-      <%= __('Send to 500 subscribers per month for <strong>free</strong>. Enjoy great deliverability, and speed.') %>
-      <br /><br />
-      <a href="#todo"><%= __('See pricing for more.') %></a>
+      <strong><%= __('Currently in closed beta.') %></strong>
+      <br />
+      <%= __('[link]Sign up to our newsletter[/link] to get our latest news on this, and more.')
+        | replace({
+            '[link]': '<a href="http://www.mailpoet.com/subscribe/" target="_blank">',
+            '[/link]': '</a>'
+        })
+        | raw
+      %>
     </p>
 
     <div class="mailpoet_status">
@@ -91,10 +97,12 @@
     data-group="website"
     <% if(settings.mta_group == 'website') %>class="mailpoet_active"<% endif %>
   >
-    <h3><%= __('Your own website') %></h3>
+    <h3><%= __('Your web host/server') %></h3>
 
     <p class="mailpoet_description">
-      <%= __('The simplest solution for small lists. Your web host sets a daily email limit.') %>
+      <strong><%= __('Free, but not recommended.') %></strong>
+      <br />
+      <%= __('Web hosts generally have a bad reputation as senders. Your newsletter might be considered spam.') %>
     </p>
 
     <div class="mailpoet_status">
@@ -114,6 +122,8 @@
     <h3><%= __('Third party') %></h3>
 
     <p class="mailpoet_description">
+      <strong><%= __('Currently the best solution.') %></strong>
+      <br />
       <%= __('Send with an alternate email provider. Usually not free.') %>
     </p>
 
@@ -136,29 +146,6 @@
     data-group="mailpoet"
     style="display:none;"
   >
-    <h3><%= __('Open a free account with MailPoet, and get:') %></h3>
-    <ol>
-      <li>
-        <%=
-          __('Send up to 4000 emails with good deliverability for free. %1$sNeed more?%2$s')
-          | format('<a href="#todo">', '</a>')
-          | raw
-        %>
-      </li>
-      <li>
-        <%= __("Test your campaign's spam score") %>
-      </li>
-      <li>
-        <%= __('Send on time, without delay, without setting up your own "cron"') %>
-      </li>
-    </ol>
-
-    <a class="button-secondary">
-      <%=- __('Create a free account to get a key') -%>
-    </a>
-
-    <hr />
-
     <h3><%= __('Already have a key?') %></h3>
     <table class="form-table">
       <tbody>
@@ -243,10 +230,11 @@
                   type="number"
                   min="1"
                   max="1000"
-                  value="<%=
-                    settings.mta.frequency.emails
-                    | default(default_frequency.website.emails)
-                  %>"
+                  <% if(settings.mta_group == 'website') %>
+                    value="<%= settings.mta.frequency.emails %>"
+                  <% else %>
+                    value="<%= default_frequency.website.emails %>"
+                  <% endif %>
                 />
                 <%= __('emails') %>
                 <select id="website_frequency_interval">
@@ -264,7 +252,7 @@
                       <% endif %>
                     >
                       <%= sending_frequency(interval) %>
-                      <% if(interval == 15) %>
+                      <% if(interval == default_frequency.website.interval) %>
                         (<%= __('recommended') %>)
                       <% endif %>
                     </option>
@@ -274,7 +262,7 @@
               </p>
               <br />
               <p>
-                <%= __('<strong>Warning!</strong> Sending more than the recommended amount of emails might break the terms of your host or provider.') %>
+                <%= __('<strong>Warning!</strong> Sending more than the recommended amount of emails might break the terms of your host or provider.') %>'
                 <br />
                 <%= __('Double check with them what maximum number of emails you can send daily.') %>
               </p>
@@ -335,10 +323,11 @@
                 type="number"
                 min="1"
                 max="1000"
-                value="<%=
-                  settings.mta.frequency.emails
-                  | default(default_frequency.smtp.emails)
-                %>"
+                <% if(settings.mta_group == 'smtp') %>
+                  value="<%= settings.mta.frequency.emails %>"
+                <% else %>
+                  value="<%= default_frequency.smtp.emails %>"
+                <% endif %>
               />
               <%= __('emails') %>
               <select id="smtp_frequency_interval">
@@ -356,19 +345,13 @@
                     <% endif %>
                   >
                     <%= sending_frequency(interval) %>
-                    <% if(interval == 15) %>
+                    <% if(interval == default_frequency.smtp.interval) %>
                       (<%= __('recommended') %>)
                     <% endif %>
                   </option>
                 <% endfor %>
               </select>
               <span id="mailpoet_smtp_daily_emails"></span>
-            </p>
-            <br />
-            <p>
-              <%= __('<strong>Warning!</strong> Sending more than the recommended amount of emails might break the terms of your host or provider.') %>
-              <br />
-              <%= __('Double check with them what maximum number of emails you can send daily.') %>
             </p>
           </td>
         </tr>
@@ -617,13 +600,29 @@
 
   <table class="form-table">
     <tbody>
+      <!-- SPF -->
+      <tr id="mailpoet_mta_spf">
+        <th scope="row">
+          <label>
+            <%= __('SPF signature (recommended)') %>
+            <p class="description">
+              <%= __('Improves your spam score by allowing the recipient to verify that your website is allowed to send emails from your domain.') %>
+            </p>
+          </label>
+        </th>
+        <td>
+          <p>
+            <%= __('SPF is set in your DNS. Check the support documents of your host to set it up.') %>
+          </p>
+        </td>
+      </tr>
       <!-- dkim -->
-      <tr id="mailpoet_mta_dkim">
+      <tr id="mailpoet_mta_dkim" style="display:none;">
         <th scope="row">
           <label for="settings[dkim_enabled]">
-            <%= __('DKIM signature') %>
+            <%= __('DKIM signature (recommended)') %>
             <p class="description">
-              <%= __('Improve your spam score. Mailpoet can sign all your emails with DKIM.') %>
+              <%= __('Improve your spam score. MailPoet can sign all your emails with DKIM.') %>
               <a
                 href="#todo/guide-to-dkim-in-wysija/"
                 target="_blank"
@@ -693,6 +692,7 @@
             <input
               id="mailpoet_mta_test_email"
               type="text"
+              class="regular-text"
               value="<%= current_user.user_email %>"
             />
             <a
@@ -745,6 +745,16 @@
           : $('#mta_group').val()
         );
 
+        // check that we have a from address
+        if(settings.sender.address.length === 0) {
+          // validation
+          return MailPoet.Notice.error(
+            'The email could not be sent. Make sure the option "Email notifications" has a FROM email address in the Basics tab.',
+            { scroll: true, static: true }
+          );
+        }
+
+        MailPoet.Modal.loading(true);
         MailPoet.Ajax.post({
           endpoint: 'mailer',
           action: 'send',
@@ -763,16 +773,35 @@
             }
           }
         }).done(function(response) {
+          MailPoet.Modal.loading(false);
           if(response.result === true) {
-            MailPoet.Notice.success("The email has been sent! Check your inbox.");
+            MailPoet.Notice.success(
+              "<%= __('The email has been sent! Check your inbox.') %>",
+              { scroll: true }
+            );
           } else {
             if (response.errors) {
-              MailPoet.Notice.error("The email could not be sent. " + response.errors);
+              MailPoet.Notice.error(
+                "<%= __('The email could not be sent.') %> " + response.errors,
+                { scroll: true }
+              );
             }
             else {
-              MailPoet.Notice.error("The email could not be sent. Please check your settings.");
+              if(mailer.method === 'PHPMail') {
+                MailPoet.Notice.error(
+                  "<%= __('The email could not be sent. Contact your host to help you fix any sending issues with your server.') %>",
+                  { scroll: true, static: true }
+                );
+              } else {
+                MailPoet.Notice.error(
+                  "<%= __('The email could not be sent. Please check your settings.') %>",
+                  { scroll: true }
+                );
+              }
             }
           }
+        }).error(function(response) {
+          MailPoet.Modal.loading(false);
         });
       });
 
@@ -965,7 +994,16 @@
         interval: $('#'+method+'_frequency_interval').val()
       };
 
-      options.daily_emails = ~~((1440 / options.interval) * options.emails);
+      var MINUTES_PER_DAY = 1440;
+      var SECONDS_PER_DAY = 86400;
+
+      options.daily_emails = ~~(
+        (MINUTES_PER_DAY / options.interval) * options.emails
+      );
+
+      options.emails_per_second = (~~(
+        ((options.daily_emails) / 86400) * 10)
+      ) / 10;
 
       $('#mailpoet_'+method+'_daily_emails').html(
         sending_frequency_template(options)
