@@ -89,11 +89,14 @@ class Text {
       $paragraph->width = '100%';
       $paragraph->cellpadding = 0;
       $next_element = $paragraph->getNextSibling();
+      // unless this is the last element in column, add double line breaks
+      $line_breaks = ($next_element && !empty($next_element->getInnerText())) ? '<br /><br />' : '';
+      // if this element is followed by a list, add single line break
+      $line_breaks = ($next_element && preg_match('/<li>/i', $next_element->getInnerText())) ? '<br />' : $line_breaks;
       $paragraph->html('
         <tr>
           <td class="mailpoet_paragraph" style="line-height:' . StylesHelper::$line_height . ';word-break:break-word;word-wrap:break-word;' . $style . '">
-            ' . $contents . '
-            ' . (($next_element && !empty($next_element->getInnerText())) ? '<br /><br />' : '') . '
+            ' . $contents . $line_breaks . '
           </td>
          </tr>'
       );
