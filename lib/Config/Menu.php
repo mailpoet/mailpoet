@@ -364,7 +364,7 @@ class Menu {
 
     $data = array();
 
-    $data['segments'] = Segment::findArray();
+    $data['segments'] = Segment::getPublished()->findArray();
     $data['settings'] = Setting::getAll();
     $data['roles'] = $wp_roles->get_names();
     $data['roles']['mailpoet_all'] = __('In any WordPress role');
