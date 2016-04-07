@@ -54,12 +54,9 @@ class StylesHelper {
 
   static function setStyle($style, $selector) {
     $css = $selector . '{' . PHP_EOL;
+    $style = self::applyHeadingMargin($style, $selector);
     foreach($style as $attribute => $individual_style) {
-      if($attribute === 'fontFamily') {
-        $individual_style = (isset(self::$font[$individual_style])) ?
-          self::$font[$individual_style] :
-          self::$font['Arial'];
-      }
+      $individual_style = self::applyFontFamily($attribute, $individual_style);
       $css .= self::translateCSSAttribute($attribute) . ':' . $individual_style . ';' . PHP_EOL;
     }
     $css .= '}' . PHP_EOL;
@@ -80,5 +77,19 @@ class StylesHelper {
     }
     $block['styles']['block']['textAlign'] = 'left';
     return $block;
+  }
+
+  static function applyFontFamily($attribute, $style) {
+    if($attribute !== 'fontFamily') return $style;
+    return (isset(self::$font[$style])) ?
+        self::$font[$style] :
+        self::$font['Arial'];
+  }
+
+  static function applyHeadingMargin($style, $selector) {
+    if (!preg_match('/h[1|2|3|4]/i', $selector)) return $style;
+    $font_size = (int) $style['fontSize'];
+    $style['margin'] = sprintf('0 0 %spx 0', $font_size * 0.3);
+    return $style;
   }
 }

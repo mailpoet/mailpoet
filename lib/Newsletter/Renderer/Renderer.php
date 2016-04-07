@@ -62,13 +62,6 @@ class Renderer {
     $css = '';
     foreach($styles as $selector => $style) {
       switch($selector) {
-        case 'h1':
-        case 'h2':
-        case 'h3':
-        case 'h3':
-          $font_size = (int) $style['fontSize'];
-          $style['margin'] = sprintf('0 0 %spx 0', $font_size / 2);
-          break;
         case 'text':
           $selector = 'td.mailpoet_paragraph, td.mailpoet_blockquote, li.mailpoet_paragraph';
           break;
