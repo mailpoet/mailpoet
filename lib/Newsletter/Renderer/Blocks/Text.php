@@ -11,7 +11,6 @@ class Text {
     $html = self::styleLists($html);
     $html = self::styleHeadings($html);
     $html = self::removeLastLineBreak($html);
-    //$html = self::addLineBreakAfterTags($html);
     $template = '
       <tr>
         <td class="mailpoet_text mailpoet_padded_bottom mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;">
@@ -81,7 +80,7 @@ class Text {
         continue;
       }
       $style = $paragraph->style;
-      if (!preg_match('/text-align/i', $style)) {
+      if(!preg_match('/text-align/i', $style)) {
         $style = 'text-align: left;' . $style;
       }
       $contents = $paragraph->html();
@@ -94,7 +93,7 @@ class Text {
         <tr>
           <td class="mailpoet_paragraph" style="line-height:' . StylesHelper::$line_height . ';word-break:break-word;word-wrap:break-word;' . $style . '">
             ' . $contents . '
-            ' . (($next_element && !empty($next_element->getInnerText())) ? '<br /><br />' : '') .'
+            ' . (($next_element && !empty($next_element->getInnerText())) ? '<br /><br />' : '') . '
           </td>
          </tr>'
       );
@@ -125,11 +124,7 @@ class Text {
     $headings = $DOM->query('h1, h2, h3, h4');
     if(!$headings->count()) return $html;
     foreach($headings as $heading) {
-      $heading->style .= 'line-height:' . StylesHelper::$line_height . ';margin:0 0 20px;padding:0;font-style:normal;font-weight:normal;';
-      $next_element = $heading->getNextSibling();
-      if ($next_element && preg_match('/mailpoet_paragraph/ism', $next_element->getInnerText())) {
-        $heading->html($heading->html() . '<br /><br />');
-      }
+      $heading->style .= 'line-height:' . StylesHelper::$line_height . ';padding:0;font-style:normal;font-weight:normal;';
     }
     return $DOM->__toString();
   }

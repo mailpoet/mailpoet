@@ -52,19 +52,14 @@ class StylesHelper {
       $attribute;
   }
 
-  static function setFontFamily($font_family, $selector) {
-    $font_family = (isset(self::$font[$font_family])) ?
-      self::$font[$font_family] :
-      self::$font['Arial'];
-    $css = $selector . '{' . PHP_EOL;
-    $css .= 'font-family:' . $font_family . ';' . PHP_EOL;
-    $css .= '}' . PHP_EOL;
-    return $css;
-  }
-
   static function setStyle($style, $selector) {
     $css = $selector . '{' . PHP_EOL;
     foreach($style as $attribute => $individual_style) {
+      if($attribute === 'fontFamily') {
+        $individual_style = (isset(self::$font[$individual_style])) ?
+          self::$font[$individual_style] :
+          self::$font['Arial'];
+      }
       $css .= self::translateCSSAttribute($attribute) . ':' . $individual_style . ';' . PHP_EOL;
     }
     $css .= '}' . PHP_EOL;
