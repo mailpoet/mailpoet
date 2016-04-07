@@ -22,15 +22,6 @@ define(
     Breadcrumb
   ) {
 
-    var messages = {
-      onUpdate: function() {
-        MailPoet.Notice.success(MailPoet.I18n.t('newsletterUpdated'));
-      },
-      onCreate: function() {
-        MailPoet.Notice.success(MailPoet.I18n.t('newsletterAdded'));
-      }
-    };
-
     var NewsletterSend = React.createClass({
       mixins: [
         Router.History
@@ -38,10 +29,22 @@ define(
       getInitialState: function() {
         return {
           fields: [],
-          errors: [],
           item: {},
           loading: false,
         };
+      },
+      getFieldsByNewsletter: function(newsletter) {
+        switch(newsletter.type) {
+          case 'notification': return NotificationNewsletterFields;
+          case 'welcome': return WelcomeNewsletterFields;
+          default: return StandardNewsletterFields;
+        }
+      },
+      isAutomatedNewsletter: function() {
+        return this.state.item.type !== 'standard';
+      },
+      isValid: function() {
+        return jQuery('#mailpoet_newsletter').parsley().isValid();
       },
       componentDidMount: function() {
         if(this.isMounted()) {
@@ -76,23 +79,11 @@ define(
           }
         });
       },
-      getFieldsByNewsletter: function(newsletter) {
-        switch(newsletter.type) {
-          case 'notification': return NotificationNewsletterFields;
-          case 'welcome': return WelcomeNewsletterFields;
-          default: return StandardNewsletterFields;
-        }
-      },
-      isValid: function() {
-        return jQuery('#mailpoet_newsletter').parsley().isValid();
-      },
-      isAutomatedNewsletter: function() {
-        return this.state.item.type !== 'standard';
-      },
       handleSend: function() {
         if(!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
+          this.setState({ loading: true });
 
           MailPoet.Ajax.post({
             endpoint: 'newsletters',
@@ -111,6 +102,7 @@ define(
               return response;
             }
           }).done((response) => {
+            this.setState({ loading: false });
             if(response.result === true) {
               this.history.pushState(null, '/');
               MailPoet.Notice.success(
@@ -131,6 +123,7 @@ define(
       },
       handleSave: function(e) {
         e.preventDefault();
+        this.setState({ loading: true });
 
         MailPoet.Ajax.post({
           endpoint: 'newsletters',
@@ -141,10 +134,12 @@ define(
 
           if(response.result === true) {
             this.history.pushState(null, '/');
-            messages.onUpdate();
+            MailPoet.Notice.success(
+              MailPoet.I18n.t('newsletterUpdated')
+            );
           } else {
-            if(response.errors.length > 0) {
-              this.setState({ errors: response.errors });
+            if(response.errors) {
+              MailPoet.Notice.error(response.errors);
             }
           }
         });
@@ -160,9 +155,6 @@ define(
         });
         return true;
       },
-      getParams: function() {
-        return {};
-      },
       render: function() {
         return (
           <div>
@@ -174,8 +166,7 @@ define(
               id="mailpoet_newsletter"
               fields={ this.state.fields }
               item={ this.state.item }
-              params={ this.getParams() }
-              errors= { this.state.errors }
+              loading={ this.state.loading }
               onChange={this.handleFormChange}
               onSubmit={this.handleSave}
             >

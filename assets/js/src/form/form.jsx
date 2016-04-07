@@ -17,6 +17,11 @@ define(
       mixins: [
         Router.History
       ],
+      getDefaultProps: function() {
+        return {
+          params: {},
+        };
+      },
       getInitialState: function() {
         return {
           loading: false,
@@ -158,7 +163,7 @@ define(
 
         var formClasses = classNames(
           'mailpoet_form',
-          { 'mailpoet_form_loading': this.state.loading }
+          { 'mailpoet_form_loading': this.state.loading || this.props.loading }
         );
 
         var fields = this.props.fields.map(function(field, i) {
