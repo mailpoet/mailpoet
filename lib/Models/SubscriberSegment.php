@@ -13,7 +13,7 @@ class SubscriberSegment extends Model {
   }
 
   function subscriber() {
-    return $this->has_one(__NAMESPACE__.'\Subscriber', 'id');
+    return $this->has_one(__NAMESPACE__.'\Subscriber', 'id', 'subscriber_id');
   }
 
   static function setSubscriptions($subscriber, $segment_ids = array()) {
