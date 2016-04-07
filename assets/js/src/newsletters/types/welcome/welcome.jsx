@@ -48,7 +48,8 @@ define(
           endpoint: 'newsletters',
           action: 'create',
           data: _.extend({}, this.state, {
-            type: 'welcome'
+            type: 'welcome',
+            subject: MailPoet.I18n.t('draftNewsletterTitle'),
           }),
         }).done(function(response) {
           if(response.result && response.newsletter.id) {

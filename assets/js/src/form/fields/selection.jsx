@@ -30,6 +30,9 @@ function(
           .trigger('change');
       }
     },
+    componentWillUnmount: function() {
+      jQuery('#'+this.refs.select.id).select2('destroy');
+    },
     setupSelect2: function() {
       if(
           !this.props.field.multiple

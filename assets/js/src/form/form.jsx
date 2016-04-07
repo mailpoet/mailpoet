@@ -49,7 +49,6 @@ define(
         } else {
           this.loadItem(props.params.id);
         }
-        console.log('Receiving props', arguments);
       },
       loadItem: function(id) {
         this.setState({ loading: true });

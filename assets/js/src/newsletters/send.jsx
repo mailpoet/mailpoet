@@ -59,7 +59,7 @@ define(
           endpoint: 'newsletters',
           action: 'get',
           data: id
-        }).done(function(response) {
+        }).done((response) => {
           if(response === false) {
             this.setState({
               loading: false,
@@ -74,7 +74,7 @@ define(
               fields: this.getFieldsByNewsletter(response),
             });
           }
-        }.bind(this));
+        });
       },
       getFieldsByNewsletter: function(newsletter) {
         switch(newsletter.type) {
@@ -150,21 +150,15 @@ define(
         });
       },
       handleFormChange: function(e) {
-        console.log('Form change', e);
         var item = this.state.item,
           field = e.target.name;
 
         item[field] = e.target.value;
 
-        console.log('State before change', this.state);
         this.setState({
           item: item
         });
-        console.log('State after change', this.state);
         return true;
-      },
-      handleFormSubmit: function() {
-        console.log('Handling form submit', arguments);
       },
       getParams: function() {
         return {};
