@@ -13,14 +13,14 @@ class Button {
           <div>
             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;">
               <tr>
-                <td class="mailpoet_button-container" style="padding:8px 20px;text-align:' . $element['styles']['block']['textAlign'] . ';"><!--[if mso]>
+                <td class="mailpoet_button-container" style="text-align:' . $element['styles']['block']['textAlign'] . ';"><!--[if mso]>
                   <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
                     href="' . $element['url'] . '"
                     style="height:' . $element['styles']['block']['lineHeight'] . ';
                            width:' . $element['styles']['block']['width'] . ';
                            v-text-anchor:middle;"
                     arcsize="' . round($element['styles']['block']['borderRadius'] / $element['styles']['block']['lineHeight'] * 100) . '%"
-                    strokeweight="1px"
+                    strokeweight="' . $element['styles']['block']['borderWidth'] . '"
                     strokecolor="' . $element['styles']['block']['borderColor'] . '"
                     fillcolor="' . $element['styles']['block']['backgroundColor'] . '">
                   <w:anchorlock/>

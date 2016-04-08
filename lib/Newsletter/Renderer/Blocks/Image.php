@@ -11,7 +11,7 @@ class Image {
     $element = self::adjustImageDimensions($element, $column_count);
     $image_template = '
       <img style="max-width:' . $element['width'] . 'px;" src="' . $element['src'] . '"
-      width="' . $element['width'] . '" height="' . $element['height'] . '" alt="' . $element['alt'] . '"/>
+      width="' . $element['width'] . '" alt="' . $element['alt'] . '"/>
       ';
     if(!empty($element['link'])) {
       $image_template = '<a href="' . $element['link'] . '">' . $image_template . '</a>';

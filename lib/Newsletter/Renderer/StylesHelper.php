@@ -27,7 +27,8 @@ class StylesHelper {
     'Trebuchet MS' => "'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif",
     'Verdana' => 'Verdana, Geneva, sans-serif'
   );
-  static $line_height = 1.61803398875;
+  static $line_height_multiplier = 1.6;
+  static $heading_margin_multiplier = 0.3;
   static $padding_width = 20;
 
   static function getBlockStyles($element, $ignore_specific_styles = false) {
@@ -52,19 +53,12 @@ class StylesHelper {
       $attribute;
   }
 
-  static function setFontFamily($font_family, $selector) {
-    $font_family = (isset(self::$font[$font_family])) ?
-      self::$font[$font_family] :
-      self::$font['Arial'];
-    $css = $selector . '{' . PHP_EOL;
-    $css .= 'font-family:' . $font_family . ';' . PHP_EOL;
-    $css .= '}' . PHP_EOL;
-    return $css;
-  }
-
   static function setStyle($style, $selector) {
     $css = $selector . '{' . PHP_EOL;
+    $style = self::applyHeadingMargin($style, $selector);
+    $style = self::applyLineHeight($style, $selector);
     foreach($style as $attribute => $individual_style) {
+      $individual_style = self::applyFontFamily($attribute, $individual_style);
       $css .= self::translateCSSAttribute($attribute) . ':' . $individual_style . ';' . PHP_EOL;
     }
     $css .= '}' . PHP_EOL;
@@ -80,10 +74,31 @@ class StylesHelper {
     $text_alignment = isset($block['styles']['block']['textAlign']) ?
       strtolower($block['styles']['block']['textAlign']) :
       false;
-    if(!$text_alignment || !in_array($text_alignment, $alignments)) {
+    if(in_array($text_alignment, $alignments)) {
       return $block;
     }
     $block['styles']['block']['textAlign'] = 'left';
     return $block;
+  }
+
+  static function applyFontFamily($attribute, $style) {
+    if($attribute !== 'fontFamily') return $style;
+    return (isset(self::$font[$style])) ?
+        self::$font[$style] :
+        self::$font['Arial'];
+  }
+
+  static function applyHeadingMargin($style, $selector) {
+    if (!preg_match('/h[1-4]/i', $selector)) return $style;
+    $font_size = (int) $style['fontSize'];
+    $style['margin'] = sprintf('0 0 %spx 0', self::$heading_margin_multiplier * $font_size);
+    return $style;
+  }
+
+  static function applyLineHeight($style, $selector) {
+    if (!preg_match('/mailpoet_paragraph|h[1-4]/i', $selector)) return $style;
+    $font_size = (int) $style['fontSize'];
+    $style['lineHeight'] = sprintf('%spx', self::$line_height_multiplier * $font_size);
+    return $style;
   }
 }

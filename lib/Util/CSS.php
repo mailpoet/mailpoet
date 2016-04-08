@@ -116,6 +116,7 @@ class CSS {
   public function parseCSS($text)
   {
     $css  = new csstidy();
+    $css->settings['compress_colors'] = false;
     $css->parse($text);
 
     $rules    = array();
