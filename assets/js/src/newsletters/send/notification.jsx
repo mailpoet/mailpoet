@@ -39,6 +39,13 @@ define(
         filter: function(segment) {
           return !!(!segment.deleted_at);
         },
+        getLabel: function(segment) {
+          var name = segment.name;
+          if (segment.subscribers > 0) {
+            name += ' (%$1s)'.replace('%$1s', segment.subscribers);
+          }
+          return name;
+        },
         validation: {
           'data-parsley-required': true,
           'data-parsley-required-message': MailPoet.I18n.t('noSegmentsSelectedError')

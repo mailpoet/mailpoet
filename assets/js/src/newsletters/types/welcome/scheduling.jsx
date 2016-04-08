@@ -32,7 +32,11 @@ define(
     var availableSegmentValues = _.object(_.map(
       availableSegments,
       function(segment) {
-        return [segment.id, segment.name];
+        var name = segment.name;
+        if (segment.subscribers > 0) {
+          name += ' (%$1d)'.replace('%$1d', segment.subscribers);
+        }
+        return [segment.id, name];
       }
     ));
     var segmentField = {
