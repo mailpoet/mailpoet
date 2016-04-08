@@ -10,17 +10,18 @@ if(!defined('ABSPATH')) exit;
 
 class Daemon {
   public $daemon;
-  public $request_payload;
+  public $data;
   public $refreshed_token;
   const daemon_request_timeout = 5;
   private $timer;
 
-  function __construct($request_payload = array()) {
+  function __construct($data) {
+    if (!$data) $this->abortWithError(__('Invalid or missing cron data.'));
     set_time_limit(0);
     ignore_user_abort();
     $this->daemon = CronHelper::getDaemon();
     $this->token = CronHelper::createToken();
-    $this->request_payload = $request_payload;
+    $this->data = unserialize(base64_decode($data));
     $this->timer = microtime(true);
   }
 
@@ -29,8 +30,8 @@ class Daemon {
     if(!$daemon) {
       $this->abortWithError(__('Daemon does not exist.'));
     }
-    if(!isset($this->request_payload['token']) ||
-      $this->request_payload['token'] !== $daemon['token']
+    if(!isset($this->data['token']) ||
+      $this->data['token'] !== $daemon['token']
     ) {
       $this->abortWithError(__('Invalid or missing token.'));
     }
@@ -49,7 +50,7 @@ class Daemon {
     // after each execution, re-read daemon data in case it was deleted or
     // its status has changed
     $daemon = CronHelper::getDaemon();
-    if(!$daemon || $daemon['token'] !== $this->request_payload['token']) {
+    if(!$daemon || $daemon['token'] !== $this->data['token']) {
       exit;
     }
     $daemon['counter']++;
