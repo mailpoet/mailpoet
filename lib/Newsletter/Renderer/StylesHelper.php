@@ -89,7 +89,7 @@ class StylesHelper {
   static function applyHeadingMargin($style, $selector) {
     if (!preg_match('/h[1|2|3|4]/i', $selector)) return $style;
     $font_size = (int) $style['fontSize'];
-    $style['margin'] = sprintf('0 0 %spx 0', $font_size * 0.3);
+    $style['margin'] = sprintf('0 0 %spx 0',  0.3 * $font_size);
     return $style;
   }
 }

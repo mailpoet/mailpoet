@@ -115,9 +115,9 @@ class Text {
         $list->class = 'mailpoet_paragraph';
       } else {
         $list->class = 'mailpoet_paragraph';
-        $list->style .= 'padding-top:0;padding-bottom:0;margin-top:10px;margin-bottom:10px;';
+        $list->style .= 'padding-top:0;padding-bottom:0;margin-top:10px;';
       }
-      $list->style .= 'line-height:' . StylesHelper::$line_height . ';';
+      $list->style .= 'margin-bottom:10px;line-height:' . StylesHelper::$line_height . ';';
     }
     return $DOM->__toString();
   }
