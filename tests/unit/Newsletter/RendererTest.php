@@ -210,7 +210,7 @@ class NewsletterRendererTest extends MailPoetTest {
       ->contains('padding-top:0;padding-bottom:0;margin-top:10px;margin-bottom:10px;');
     // headings should be styled
     expect($DOM('tr > td.mailpoet_text > h1', 0)->attr('style'))
-      ->contains('margin:0 0 20px;padding:0;font-style:normal;font-weight:normal;');
+      ->contains('padding:0;font-style:normal;font-weight:normal;');
   }
 
   function testItRendersDivider() {

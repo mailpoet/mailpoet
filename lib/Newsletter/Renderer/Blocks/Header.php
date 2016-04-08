@@ -6,7 +6,10 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 class Header {
   static function render($element) {
     $element['text'] = preg_replace('/\n/', '<br /><br />', $element['text']);
-    $element['text'] = preg_replace('/(<\/?p.*?>)/', '', $element['text']);
+    $element['text'] = preg_replace('/(<\/?p.*?>)/i', '', $element['text']);
+    $line_height = sprintf(
+      '%spx', StylesHelper::$line_height_multiplier * (int) $element['styles']['text']['fontSize']
+    );
     $DOM_parser = new \pQuery();
     $DOM = $DOM_parser->parseStr($element['text']);
     if(isset($element['styles']['link'])) {
@@ -25,8 +28,8 @@ class Header {
     $template = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_header" ' . $background_color . '
-        style="' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
-        ' . $DOM->html() . '
+        style="line-height: ' . $line_height  . ';' . StylesHelper::getBlockStyles($element) . StylesHelper::getStyles($element['styles'], 'text') . '">
+          ' . $DOM->html() . '
         </td>
       </tr>';
     return $template;
