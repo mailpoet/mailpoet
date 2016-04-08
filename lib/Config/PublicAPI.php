@@ -21,9 +21,7 @@ class PublicAPI {
     $this->action = isset($_GET['action']) ?
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
-    $this->data = isset($_GET['data']) ?
-      unserialize(base64_decode($_GET['data'])) :
-      false;
+    $this->data = isset($_GET['data']) ? $_GET['data'] : false;
   }
 
   function init() {

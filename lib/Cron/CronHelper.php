@@ -38,9 +38,9 @@ class CronHelper {
   }
 
   static function accessDaemon($token, $timeout = self::daemon_request_timeout) {
-    $payload = serialize(array('token' => $token));
-    $url = '/?mailpoet-api&section=queue&action=run&request_payload=' .
-      base64_encode($payload);
+    $data = serialize(array('token' => $token));
+    $url = '/?mailpoet&endpoint=queue&action=run&data=' .
+      base64_encode($data);
     $args = array(
       'timeout' => $timeout,
       'user-agent' => 'MailPoet (www.mailpoet.com) Cron'
