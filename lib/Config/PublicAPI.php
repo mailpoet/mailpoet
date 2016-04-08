@@ -8,38 +8,40 @@ if(!defined('ABSPATH')) exit;
 
 class PublicAPI {
   public $api;
-  public $section;
+  public $endpoint;
   public $action;
-  public $request_payload;
+  public $data;
 
   function __construct() {
-    # http://example.com/?mailpoet-api&section=&action=&request_payload=
-    $this->api = isset($_GET['mailpoet-api']) ? true : false;
-    $this->section = isset($_GET['section']) ? $_GET['section'] : false;
+    # http://example.com/?mailpoet&endpoint=&action=&data=
+    $this->api = isset($_GET['mailpoet']) ? true : false;
+    $this->endpoint = isset($_GET['endpoint']) ?
+      Helpers::underscoreToCamelCase($_GET['endpoint']) :
+      false;
     $this->action = isset($_GET['action']) ?
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
-    $this->request_payload = isset($_GET['request_payload']) ?
-      unserialize(base64_decode($_GET['request_payload'])) :
+    $this->data = isset($_GET['data']) ?
+      unserialize(base64_decode($_GET['data'])) :
       false;
   }
 
   function init() {
-    if(!$this->api && !$this->section) return;
-    $this->_checkAndCallMethod($this, $this->section, $terminate = true);
+    if(!$this->api && !$this->endpoint) return;
+    $this->_checkAndCallMethod($this, $this->endpoint, $terminate_request = true);
   }
 
   function queue() {
     try {
-      $queue = new Daemon($this->request_payload);
+      $queue = new Daemon($this->data);
       $this->_checkAndCallMethod($queue, $this->action);
     } catch(\Exception $e) {
     }
   }
 
-  private function _checkAndCallMethod($class, $method, $terminate = false) {
+  private function _checkAndCallMethod($class, $method, $terminate_request = false) {
     if(!method_exists($class, $method)) {
-      if(!$terminate) return;
+      if(!$terminate_request) return;
       header('HTTP/1.0 404 Not Found');
       exit;
     }
