@@ -39,7 +39,6 @@ class Initializer {
       $this->setupShortcodes();
       $this->setupHooks();
       $this->setupImages();
-      $this->setupPublicAPI();
       $this->runQueueSupervisor();
     } catch(\Exception $e) {
       // if anything goes wrong during init
@@ -50,8 +49,8 @@ class Initializer {
 
   function onInit() {
     $this->setupRouter();
+    $this->setupPublicAPI();
     $this->setupPages();
-    $this->runQueueSupervisor();
   }
 
   function setupDB() {
