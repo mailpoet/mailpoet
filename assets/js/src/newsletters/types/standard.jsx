@@ -28,7 +28,6 @@ define(
             type: 'standard',
           }
         }).done(function(response) {
-          console.log(response);
           if(response.result && response.newsletter.id) {
             this.showTemplateSelection(response.newsletter.id);
           } else {

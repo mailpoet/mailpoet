@@ -14,10 +14,12 @@ function(
       return {
         items: [],
         initialized: false
-      }
+      };
+    },
+    componentWillMount: function() {
+      this.loadCachedItems();
     },
     componentDidMount: function() {
-      this.loadCachedItems();
       this.setupSelect2();
     },
     componentDidUpdate: function(prevProps, prevState) {
@@ -69,11 +71,6 @@ function(
       });
 
       select2.on('change', this.handleChange);
-
-      select2.select2(
-        'val',
-        this.getSelectedValues()
-      );
 
       this.setState({ initialized: true });
     },
