@@ -20,7 +20,7 @@ class Renderer {
   }
 
   function createElementFromBlockType($block, $column_count) {
-    $block = StylesHelper::setTextAlign($block);
+    $block = StylesHelper::applyTextAlignment($block);
     $block_class = __NAMESPACE__ . '\\' . ucfirst($block['type']);
     return (class_exists($block_class)) ? $block_class::render($block, $column_count) : '';
   }

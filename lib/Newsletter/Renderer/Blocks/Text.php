@@ -117,6 +117,7 @@ class Text {
         $list->class = 'mailpoet_paragraph';
         $list->style .= 'padding-top:0;padding-bottom:0;margin-top:10px;';
       }
+      $list->style = StylesHelper::applyTextAlignment($list->style);
       $list->style .= 'margin-bottom:10px;';
     }
     return $DOM->__toString();
@@ -128,6 +129,7 @@ class Text {
     $headings = $DOM->query('h1, h2, h3, h4');
     if(!$headings->count()) return $html;
     foreach($headings as $heading) {
+      $heading->style = StylesHelper::applyTextAlignment($heading->style);
       $heading->style .= 'padding:0;font-style:normal;font-weight:normal;';
     }
     return $DOM->__toString();

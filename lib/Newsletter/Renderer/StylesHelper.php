@@ -65,20 +65,20 @@ class StylesHelper {
     return $css;
   }
 
-  static function setTextAlign($block) {
-    $alignments = array(
-      'center',
-      'right',
-      'justify'
-    );
-    $text_alignment = isset($block['styles']['block']['textAlign']) ?
-      strtolower($block['styles']['block']['textAlign']) :
-      false;
-    if(in_array($text_alignment, $alignments)) {
+  static function applyTextAlignment($block) {
+    if(is_array($block)) {
+      $text_alignment = isset($block['styles']['block']['textAlign']) ?
+        strtolower($block['styles']['block']['textAlign']) :
+        false;
+      if(preg_match('/center|right|justify/i', $text_alignment)) {
+        return $block;
+      }
+      $block['styles']['block']['textAlign'] = 'left';
       return $block;
     }
-    $block['styles']['block']['textAlign'] = 'left';
-    return $block;
+    return (preg_match('/text-align.*?[center|justify|right]/i', $block)) ?
+      $block :
+      $block . 'text-align:left;';
   }
 
   static function applyFontFamily($attribute, $style) {
