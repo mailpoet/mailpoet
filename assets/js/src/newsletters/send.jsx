@@ -79,7 +79,9 @@ define(
           }
         });
       },
-      handleSend: function() {
+      handleSend: function(e) {
+        e.preventDefault();
+
         if(!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
