@@ -6,8 +6,8 @@ import NewsletterTypes from 'newsletters/types.jsx'
 import NewsletterTemplates from 'newsletters/templates.jsx'
 import NewsletterSend from 'newsletters/send.jsx'
 import NewsletterStandard from 'newsletters/types/standard.jsx'
-import NewsletterWelcome from 'newsletters/types/welcome.jsx'
-import NewsletterNotification from 'newsletters/types/notification.jsx'
+import NewsletterWelcome from 'newsletters/types/welcome/welcome.jsx'
+import NewsletterNotification from 'newsletters/types/notification/notification.jsx'
 import createHashHistory from 'history/lib/createHashHistory'
 
 let history = createHashHistory({ queryKey: false })

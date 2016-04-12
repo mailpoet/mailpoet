@@ -14,10 +14,12 @@ function(
       return {
         items: [],
         initialized: false
-      }
+      };
+    },
+    componentWillMount: function() {
+      this.loadCachedItems();
     },
     componentDidMount: function() {
-      this.loadCachedItems();
       this.setupSelect2();
     },
     componentDidUpdate: function(prevProps, prevState) {
@@ -29,6 +31,9 @@ function(
           .val(this.getSelectedValues())
           .trigger('change');
       }
+    },
+    componentWillUnmount: function() {
+      jQuery('#'+this.refs.select.id).select2('destroy');
     },
     setupSelect2: function() {
       if(
@@ -66,11 +71,6 @@ function(
       });
 
       select2.on('change', this.handleChange);
-
-      select2.select2(
-        'val',
-        this.getSelectedValues()
-      );
 
       this.setState({ initialized: true });
     },

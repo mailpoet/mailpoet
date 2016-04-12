@@ -61,6 +61,10 @@ function(
         case 'date':
           field = (<FormFieldDate {...data} />);
         break;
+
+        case 'reactComponent':
+          field = (<data.field.component {...data} />);
+        break;
       }
 
       if(inline === true) {

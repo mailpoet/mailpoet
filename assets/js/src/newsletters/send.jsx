@@ -2,137 +2,109 @@ define(
   [
     'react',
     'react-router',
+    'underscore',
     'mailpoet',
     'form/form.jsx',
-    'form/fields/selection.jsx',
+    'newsletters/send/standard.jsx',
+    'newsletters/send/notification.jsx',
+    'newsletters/send/welcome.jsx',
     'newsletters/breadcrumb.jsx'
   ],
   function(
     React,
     Router,
+    _,
     MailPoet,
     Form,
-    Selection,
+    StandardNewsletterFields,
+    NotificationNewsletterFields,
+    WelcomeNewsletterFields,
     Breadcrumb
   ) {
-
-    var settings = window.mailpoet_settings || {};
-
-    var fields = [
-      {
-        name: 'subject',
-        label: MailPoet.I18n.t('subjectLine'),
-        tip: MailPoet.I18n.t('subjectLineTip'),
-        type: 'text',
-        validation: {
-          'data-parsley-required': true,
-          'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError')
-        }
-      },
-      {
-        name: 'segments',
-        label: MailPoet.I18n.t('segments'),
-        tip: MailPoet.I18n.t('segmentsTip'),
-        type: 'selection',
-        placeholder: MailPoet.I18n.t('selectSegmentPlaceholder'),
-        id: "mailpoet_segments",
-        endpoint: "segments",
-        multiple: true,
-        filter: function(segment) {
-          return !!(!segment.deleted_at);
-        },
-        validation: {
-          'data-parsley-required': true,
-          'data-parsley-required-message': MailPoet.I18n.t('noSegmentsSelectedError')
-        }
-      },
-      {
-        name: 'sender',
-        label: MailPoet.I18n.t('sender'),
-        tip: MailPoet.I18n.t('senderTip'),
-        fields: [
-          {
-            name: 'sender_name',
-            type: 'text',
-            placeholder: MailPoet.I18n.t('senderNamePlaceholder'),
-            defaultValue: (settings.sender !== undefined) ? settings.sender.name : '',
-            validation: {
-              'data-parsley-required': true
-            }
-          },
-          {
-            name: 'sender_address',
-            type: 'text',
-            placeholder: MailPoet.I18n.t('senderAddressPlaceholder'),
-            defaultValue: (settings.sender !== undefined) ? settings.sender.address : '',
-            validation: {
-              'data-parsley-required': true,
-              'data-parsley-type': 'email'
-            }
-          }
-        ]
-      },
-      {
-        name: 'reply-to',
-        label: MailPoet.I18n.t('replyTo'),
-        tip: MailPoet.I18n.t('replyToTip'),
-        inline: true,
-        fields: [
-          {
-            name: 'reply_to_name',
-            type: 'text',
-            placeholder: MailPoet.I18n.t('replyToNamePlaceholder'),
-            defaultValue: (settings.reply_to !== undefined) ? settings.reply_to.name : '',
-          },
-          {
-            name: 'reply_to_address',
-            type: 'text',
-            placeholder: MailPoet.I18n.t('replyToAddressPlaceholder'),
-            defaultValue: (settings.reply_to !== undefined) ? settings.reply_to.address : ''
-          },
-        ]
-      }
-    ];
-
-    var messages = {
-      onUpdate: function() {
-        MailPoet.Notice.success(MailPoet.I18n.t('newsletterUpdated'));
-      },
-      onCreate: function() {
-        MailPoet.Notice.success(MailPoet.I18n.t('newsletterAdded'));
-      }
-    };
 
     var NewsletterSend = React.createClass({
       mixins: [
         Router.History
       ],
-      componentDidMount: function() {
-        jQuery('#mailpoet_newsletter').parsley();
+      getInitialState: function() {
+        return {
+          fields: [],
+          item: {},
+          loading: false,
+        };
+      },
+      getFieldsByNewsletter: function(newsletter) {
+        switch(newsletter.type) {
+          case 'notification': return NotificationNewsletterFields;
+          case 'welcome': return WelcomeNewsletterFields;
+          default: return StandardNewsletterFields;
+        }
+      },
+      isAutomatedNewsletter: function() {
+        return this.state.item.type !== 'standard';
       },
       isValid: function() {
         return jQuery('#mailpoet_newsletter').parsley().isValid();
       },
-      handleSend: function() {
+      componentDidMount: function() {
+        if(this.isMounted()) {
+          this.loadItem(this.props.params.id);
+        }
+        jQuery('#mailpoet_newsletter').parsley();
+      },
+      componentWillReceiveProps: function(props) {
+        this.loadItem(props.params.id);
+      },
+      loadItem: function(id) {
+        this.setState({ loading: true });
+
+        MailPoet.Ajax.post({
+          endpoint: 'newsletters',
+          action: 'get',
+          data: id
+        }).done((response) => {
+          if(response === false) {
+            this.setState({
+              loading: false,
+              item: {},
+            }, function() {
+              this.history.pushState(null, '/new');
+            }.bind(this));
+          } else {
+            this.setState({
+              loading: false,
+              item: response,
+              fields: this.getFieldsByNewsletter(response),
+            });
+          }
+        });
+      },
+      handleSend: function(e) {
+        e.preventDefault();
+
         if(!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
+          this.setState({ loading: true });
+
           MailPoet.Ajax.post({
-            endpoint: 'sendingQueue',
-            action: 'add',
-            data: {
-              newsletter_id: this.props.params.id,
-              segments: jQuery('#mailpoet_segments').val(),
-              sender: {
-                'name': jQuery('#mailpoet_newsletter [name="sender_name"]').val(),
-                'address': jQuery('#mailpoet_newsletter [name="sender_address"]').val()
-              },
-              reply_to: {
-                'name': jQuery('#mailpoet_newsletter [name="reply_to_name"]').val(),
-                'address': jQuery('#mailpoet_newsletter [name="reply_to_address"]').val()
-              }
+            endpoint: 'newsletters',
+            action: 'save',
+            data: this.state.item,
+          }).then((response) => {
+            if (response.result === true) {
+              return MailPoet.Ajax.post({
+                endpoint: 'sendingQueue',
+                action: 'add',
+                data: _.extend({}, this.state.item, {
+                  newsletter_id: this.props.params.id,
+                }),
+              });
+            } else {
+              return response;
             }
-          }).done(function(response) {
+          }).done((response) => {
+            this.setState({ loading: false });
             if(response.result === true) {
               this.history.pushState(null, '/');
               MailPoet.Notice.success(
@@ -147,9 +119,43 @@ define(
                 );
               }
             }
-          }.bind(this));
+          });
         }
         return false;
+      },
+      handleSave: function(e) {
+        e.preventDefault();
+        this.setState({ loading: true });
+
+        MailPoet.Ajax.post({
+          endpoint: 'newsletters',
+          action: 'save',
+          data: this.state.item,
+        }).done((response) => {
+          this.setState({ loading: false });
+
+          if(response.result === true) {
+            this.history.pushState(null, '/');
+            MailPoet.Notice.success(
+              MailPoet.I18n.t('newsletterUpdated')
+            );
+          } else {
+            if(response.errors) {
+              MailPoet.Notice.error(response.errors);
+            }
+          }
+        });
+      },
+      handleFormChange: function(e) {
+        var item = this.state.item,
+          field = e.target.name;
+
+        item[field] = e.target.value;
+
+        this.setState({
+          item: item
+        });
+        return true;
       },
       render: function() {
         return (
@@ -160,18 +166,21 @@ define(
 
             <Form
               id="mailpoet_newsletter"
-              endpoint="newsletters"
-              fields={ fields }
-              params={ this.props.params }
-              messages={ messages }
-              isValid={ this.isValid }
+              fields={ this.state.fields }
+              item={ this.state.item }
+              loading={ this.state.loading }
+              onChange={this.handleFormChange}
+              onSubmit={this.handleSave}
             >
               <p className="submit">
                 <input
                   className="button button-primary"
                   type="button"
                   onClick={ this.handleSend }
-                  value={MailPoet.I18n.t('send')} />
+                  value={
+                    this.isAutomatedNewsletter()
+                    ? MailPoet.I18n.t('activate')
+                    : MailPoet.I18n.t('send')} />
                 &nbsp;
                 <input
                   className="button button-secondary"

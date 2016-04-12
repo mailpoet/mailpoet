@@ -3,16 +3,12 @@ define(
     'react',
     'react-router',
     'mailpoet',
-    'form/form.jsx',
-    'form/fields/selection.jsx',
     'newsletters/breadcrumb.jsx'
   ],
   function(
     React,
     Router,
     MailPoet,
-    Form,
-    Selection,
     Breadcrumb
   ) {
 
@@ -32,7 +28,6 @@ define(
             type: 'standard',
           }
         }).done(function(response) {
-          console.log(response);
           if(response.result && response.newsletter.id) {
             this.showTemplateSelection(response.newsletter.id);
           } else {
