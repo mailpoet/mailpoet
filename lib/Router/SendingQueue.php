@@ -1,10 +1,10 @@
 <?php
 namespace MailPoet\Router;
 
+use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Util\Helpers;
 use Cron\CronExpression as Cron;
