@@ -140,5 +140,12 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
       return parseInt(string, 10);
   });
 
+  Handlebars.registerHelper('fontWithFallback', function(font) {
+    switch(font) {
+      case 'Lucida': return new Handlebars.SafeString("'Lucida Sans Unicode', 'Lucida Grande', sans-serif");
+      default: return font;
+    }
+  });
+
   window.Handlebars = Handlebars;
 });
