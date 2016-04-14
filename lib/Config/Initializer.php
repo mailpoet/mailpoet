@@ -81,8 +81,9 @@ class Initializer {
     $newsletter_templates = Env::$db_prefix . 'newsletter_templates';
     $newsletter_option_fields = Env::$db_prefix . 'newsletter_option_fields';
     $newsletter_option = Env::$db_prefix . 'newsletter_option';
-    $newsletter_statistics = Env::$db_prefix . 'newsletter_statistics';
     $newsletter_links = Env::$db_prefix . 'newsletter_links';
+    $statistics_newsletters = Env::$db_prefix . 'statistics_newsletters';
+    $statistics_clicks = Env::$db_prefix . 'statistics_clicks';
 
     define('MP_SETTINGS_TABLE', $settings);
     define('MP_SEGMENTS_TABLE', $segments);
@@ -96,9 +97,10 @@ class Initializer {
     define('MP_NEWSLETTER_TEMPLATES_TABLE', $newsletter_templates);
     define('MP_NEWSLETTER_SEGMENT_TABLE', $newsletter_segment);
     define('MP_NEWSLETTER_OPTION_FIELDS_TABLE', $newsletter_option_fields);
-    define('MP_NEWSLETTER_STATISTICS_TABLE', $newsletter_statistics);
     define('MP_NEWSLETTER_LINKS_TABLE', $newsletter_links);
     define('MP_NEWSLETTER_OPTION_TABLE', $newsletter_option);
+    define('MP_STATISTICS_NEWSLETTERS_TABLE', $statistics_newsletters);
+    define('MP_STATISTICS_CLICKS_TABLE', $statistics_clicks);
   }
 
   function runMigrator() {

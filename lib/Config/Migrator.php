@@ -22,9 +22,10 @@ class Migrator {
       'newsletter_option_fields',
       'newsletter_option',
       'newsletter_segment',
-      'newsletter_statistics',
       'newsletter_links',
-      'forms'
+      'forms',
+      'statistics_newsletters',
+      'statistics_clicks',
     );
   }
 
@@ -235,18 +236,6 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletter_statistics() {
-    $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'newsletter_id mediumint(9) NOT NULL,',
-      'subscriber_id mediumint(9) NOT NULL,',
-      'queue_id mediumint(9) NOT NULL,',
-      'sent_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id)',
-    );
-    return $this->sqlify(__FUNCTION__, $attributes);
-  }
-
   function newsletter_links() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
@@ -272,6 +261,34 @@ class Migrator {
       'deleted_at TIMESTAMP NULL DEFAULT NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function statistics_newsletters() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'newsletter_id mediumint(9) NOT NULL,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'queue_id mediumint(9) NOT NULL,',
+      'sent_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)',
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function statistics_clicks() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'newsletter_id mediumint(9) NOT NULL,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'queue_id mediumint(9) NOT NULL,',
+      'link_id mediumint(9) NOT NULL,',
+      'count mediumint(9) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }

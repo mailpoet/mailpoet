@@ -5,8 +5,8 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\NewsletterStatistics;
 use MailPoet\Models\Setting;
+use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
@@ -166,7 +166,7 @@ class SendingQueue {
   }
 
   function updateNewsletterStatistics($data) {
-    return NewsletterStatistics::createMultiple($data);
+    return StatisticsNewsletters::createMultiple($data);
   }
 
   function renderNewsletter($newsletter) {
