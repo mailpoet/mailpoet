@@ -90,7 +90,7 @@ class Text {
       $paragraph->cellpadding = 0;
       $next_element = $paragraph->getNextSibling();
       // unless this is the last element in column, add double line breaks
-      $line_breaks = ($next_element && !empty($next_element->getInnerText())) ? '<br /><br />' : '';
+      $line_breaks = ($next_element && !$next_element->getInnerText()) ? '<br /><br />' : '';
       // if this element is followed by a list, add single line break
       $line_breaks = ($next_element && preg_match('/<li>/i', $next_element->getInnerText())) ? '<br />' : $line_breaks;
       $paragraph->html('
