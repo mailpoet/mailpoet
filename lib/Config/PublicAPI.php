@@ -2,6 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Cron\Daemon;
+use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -33,6 +34,14 @@ class PublicAPI {
     try {
       $queue = new Daemon($this->data);
       $this->_checkAndCallMethod($queue, $this->action);
+    } catch(\Exception $e) {
+    }
+  }
+
+  function track() {
+    try {
+      $clicks = new Clicks($this->data);
+      $clicks->track();
     } catch(\Exception $e) {
     }
   }
