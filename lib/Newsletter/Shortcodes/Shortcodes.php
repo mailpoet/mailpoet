@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Shortcodes;
 class Shortcodes {
   public $newsletter;
   public $subscriber;
+  static $shortcodes_regex = '/\[(?:\w+):.*?\]/ism';
 
   function __construct(
     $newsletter = false,
@@ -14,7 +15,7 @@ class Shortcodes {
   }
 
   function extract($text) {
-    preg_match_all('/\[(?:\w+):.*?\]/', $text, $shortcodes);
+    preg_match_all(self::$shortcodes_regex, $text, $shortcodes);
     return array_unique($shortcodes[0]);
   }
 
@@ -43,7 +44,8 @@ class Shortcodes {
           $shortcode_default_value,
           $this->newsletter,
           $this->subscriber,
-          $text
+          $text,
+          $shortcode
         );
       }, $shortcodes);
     return $processed_shortcodes;

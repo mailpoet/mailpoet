@@ -5,6 +5,7 @@ use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\Subscriber;
 use MailPoet\Subscription\Url as SubscriptionUrl;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -37,7 +38,7 @@ class Clicks {
       $statistics->count = 1;
       $statistics->save();
     } else {
-      $statistics->count = (int) $statistics->count++;
+      $statistics->count++;
       $statistics->save();
     }
     $url = (preg_match('/\[subscription:.*?\]/', $link->url)) ?
@@ -55,7 +56,6 @@ class Clicks {
     if(preg_match('/manage/', $action)) {
       $url = SubscriptionUrl::getManageUrl($subscriber);
     }
-    !ddd($url);
     return $url;
   }
 

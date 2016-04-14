@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Links;
 
+use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Util\Security;
 
 class Links {
@@ -19,10 +20,14 @@ class Links {
 
   function extract($text) {
     // adopted from WP's wp_extract_urls() function &  modified to work on hrefs
+      # match href=' or href="
     $regex = '#(?:href.*?=.*?)(["\']?)('
+      # match http://
       . '(?:([\w-]+:)?//?)'
+      # match everything except for special characters # until .
       . '[^\s()<>]+'
       . '[.]'
+      # conditionally match everything except for special characters after .
       . '(?:'
       . '\([\w\d]+\)|'
       . '(?:'
@@ -32,7 +37,7 @@ class Links {
       . ')'
       . ')\\1#';
     preg_match_all($regex, $text, $links);
-    preg_match_all('/\[\w+:\w+\]/', $text, $shortcodes);
+    preg_match_all(Shortcodes::$shortcodes_regex, $text, $shortcodes);
     return array_merge(
       array_unique($links[2]),
       array_unique($shortcodes[0])
@@ -49,7 +54,7 @@ class Links {
         'url' => $link
       );
       $encoded_link = sprintf(
-        '%s/?mailpoet&endpoint=track&data=%s',
+        '%s/?mailpoet&endpoint=track&action=click&data=%s',
         home_url(),
         '[mailpoet_data]-'.$hash
       );

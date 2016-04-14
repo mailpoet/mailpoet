@@ -18,37 +18,39 @@ class Subscription {
     $action,
     $default_value = false,
     $newsletter = false,
-    $subscriber = false
+    $subscriber = false,
+    $text = false,
+    $shortcode
   ) {
     switch($action) {
       case 'unsubscribe':
-        return '<a target="_blank" href="['.
-          self::processUrl(
-            $action,
+        return '<a target="_blank" href="'.
+          self::getShortcodeUrl(
+            $shortcode,
             esc_attr(SubscriptionUrl::getUnsubscribeUrl($subscriber))
           )
           .'">'.__('Unsubscribe').'</a>';
       break;
 
       case 'unsubscribe_url':
-        return self::processUrl(
-          $action,
+        return self::getShortcodeUrl(
+          $shortcode,
           SubscriptionUrl::getUnsubscribeUrl($subscriber)
         );
       break;
 
       case 'manage':
         return '<a target="_blank" href="'.
-          self::processUrl(
-            $action,
+          self::getShortcodeUrl(
+            $shortcode,
             esc_attr(SubscriptionUrl::getManageUrl($subscriber))
           )
           .'">'.__('Manage subscription').'</a>';
       break;
 
       case 'manage_url':
-        return self::processUrl(
-          $action,
+        return self::getShortcodeUrl(
+          $shortcode,
           SubscriptionUrl::getManageUrl($subscriber)
         );
       break;
@@ -59,10 +61,9 @@ class Subscription {
     }
   }
 
-  static function processUrl($action, $url) {
-    if((int) Setting::getValue('tracking.enabled') === 1) {
-      return sprintf('[subscription:%s]', $action);
-    }
-    return $url;
+  static function getShortcodeUrl($shortcode, $url) {
+    return ((boolean) Setting::getValue('tracking.enabled') === true) ?
+      $shortcode :
+      $url;
   }
 }

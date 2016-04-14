@@ -40,8 +40,11 @@ class PublicAPI {
 
   function track() {
     try {
-      $clicks = new Clicks($this->data);
-      $clicks->track();
+      if ($this->action === 'click') {
+        $track_class = new Clicks($this->data);
+      }
+      if (!isset($track_class)) return;
+      $track_class->track();
     } catch(\Exception $e) {
     }
   }
