@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Newsletter\Shortcodes\Categories;
+use MailPoet\Models\Setting;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
 class Subscription {
@@ -21,28 +22,47 @@ class Subscription {
   ) {
     switch($action) {
       case 'unsubscribe':
-        return '<a target="_blank" href="'.
-          esc_attr(SubscriptionUrl::getUnsubscribeUrl($subscriber))
+        return '<a target="_blank" href="['.
+          self::processUrl(
+            $action,
+            esc_attr(SubscriptionUrl::getUnsubscribeUrl($subscriber))
+          )
           .'">'.__('Unsubscribe').'</a>';
       break;
 
       case 'unsubscribe_url':
-        return SubscriptionUrl::getUnsubscribeUrl($subscriber);
+        return self::processUrl(
+          $action,
+          SubscriptionUrl::getUnsubscribeUrl($subscriber)
+        );
       break;
 
       case 'manage':
         return '<a target="_blank" href="'.
-          esc_attr(SubscriptionUrl::getManageUrl($subscriber))
+          self::processUrl(
+            $action,
+            esc_attr(SubscriptionUrl::getManageUrl($subscriber))
+          )
           .'">'.__('Manage subscription').'</a>';
       break;
 
       case 'manage_url':
-        return SubscriptionUrl::getManageUrl($subscriber);
+        return self::processUrl(
+          $action,
+          SubscriptionUrl::getManageUrl($subscriber)
+        );
       break;
 
       default:
         return false;
       break;
     }
+  }
+
+  static function processUrl($action, $url) {
+    if((int) Setting::getValue('tracking.enabled') === 1) {
+      return sprintf('[subscription:%s]', $action);
+    }
+    return $url;
   }
 }

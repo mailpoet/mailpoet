@@ -76,14 +76,19 @@ class SendingQueue {
     if($queue->newsletter_rendered_body === null) {
       // render newsletter
       $rendered_newsletter = $this->renderNewsletter($newsletter);
-      // extract and replace links
-      $processed_newsletter = $this->processLinks(
-        $this->joinObject($rendered_newsletter),
-        $newsletter['id'],
-        $queue->id
-      );
-      list($newsletter['body']['html'], $newsletter['body']['text']) =
-        $this->splitObject($processed_newsletter);
+      if((int) Setting::getValue('tracking.enabled') === 1) {
+        // extract and replace links
+        $processed_newsletter = $this->processLinks(
+          $this->joinObject($rendered_newsletter),
+          $newsletter['id'],
+          $queue->id
+        );
+        list($newsletter['body']['html'], $newsletter['body']['text']) =
+          $this->splitObject($processed_newsletter);
+      }
+      else {
+        $newsletter['body'] = $rendered_newsletter;
+      }
       $queue->newsletter_rendered_body = json_encode($newsletter['body']);
       $queue->newsletter_rendered_body_hash = md5($newsletter['body']['text']);
       $queue->save();
@@ -200,12 +205,14 @@ class SendingQueue {
       $subscriber,
       $this->joinObject($data_for_shortcodes)
     );
-    $processed_newsletter = $this->replaceLinks(
-      $newsletter['id'],
-      $subscriber['id'],
-      $queue->id,
-      $processed_newsletter
-    );
+    if((int) Setting::getValue('tracking.enabled') === 1) {
+      $processed_newsletter = $this->replaceLinks(
+        $newsletter['id'],
+        $subscriber['id'],
+        $queue->id,
+        $processed_newsletter
+      );
+    }
     list($newsletter['subject'],
       $newsletter['body']['html'],
       $newsletter['body']['text']

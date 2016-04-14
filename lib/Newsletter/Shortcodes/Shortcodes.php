@@ -18,18 +18,21 @@ class Shortcodes {
     return array_unique($shortcodes[0]);
   }
 
+  function match($shortcode) {
+    preg_match(
+      '/\[(?P<type>\w+):(?P<action>\w+)(?:.*?default:(?P<default>.*?))?\]/',
+      $shortcode,
+      $match
+    );
+    return $match;
+  }
+
   function process($shortcodes, $text) {
     $processed_shortcodes = array_map(
       function($shortcode) use($text) {
-        preg_match(
-          '/\[(?P<type>\w+):(?P<action>\w+)(?:.*?default:(?P<default>.*?))?\]/',
-          $shortcode,
-          $shortcode_details
-        );
+        $shortcode_details = $this->match($shortcode);
         $shortcode_type = ucfirst($shortcode_details['type']);
         $shortcode_action = $shortcode_details['action'];
-        // do not process subscription management links
-        if ($shortcode_type === 'Subscription') return $shortcode;
         $shortcode_class =
           __NAMESPACE__ . '\\Categories\\' . $shortcode_type;
         $shortcode_default_value = isset($shortcode_details['default'])

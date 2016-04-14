@@ -61,6 +61,39 @@
         </p>
       </td>
     </tr>
+    <!-- link tracking -->
+    <tr>
+      <th scope="row">
+        <label>
+          <%= __('Open and click tracking') %>
+          <p class="description"><%= __('Some users prefer not to track their subscribers.') %></p>
+      </th>
+      <td>
+        <p>
+          <label>
+            <input
+                    type="radio"
+                    name="tracking[enabled]"
+                    value="1"
+            <% if(settings.tracking.enabled) %>
+            checked="checked"
+            <% endif %>
+            /><%= __('Yes') %>
+          </label>
+          &nbsp;
+          <label>
+            <input
+                    type="radio"
+                    name="tracking[enabled]"
+                    value=""
+            <% if not(settings.tracking.enabled) %>
+            checked="checked"
+            <% endif %>
+            /><%= __('No') %>
+          </label>
+        </p>
+      </td>
+    </tr>
     <!-- share anonymous data? -->
     <tr>
       <th scope="row">

@@ -3,6 +3,8 @@ namespace MailPoet\Statistics\Track;
 
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\StatisticsClicks;
+use MailPoet\Models\Subscriber;
+use MailPoet\Subscription\Url as SubscriptionUrl;
 
 if(!defined('ABSPATH')) exit;
 
@@ -17,8 +19,10 @@ class Clicks {
     $url = ($url) ? $url : $this->url;
     if(!preg_match('/\d+-\d+-\d+-[a-zA-Z0-9]/', $url)) $this->abort();
     list ($newsletter_id, $subscriber_id, $queue_id, $hash) = explode('-', $url);
-    $link = NewsletterLink::where('hash', $hash)->findOne();
-    if(!$link) $this->abort();
+    $subscriber = Subscriber::findOne($subscriber_id);
+    $link = NewsletterLink::where('hash', $hash)
+      ->findOne();
+    if(!$link || !$subscriber) $this->abort();
     $statistics = StatisticsClicks::where('link_id', $link->id)
       ->where('subscriber_id', $subscriber_id)
       ->where('newsletter_id', $newsletter_id)
@@ -36,7 +40,23 @@ class Clicks {
       $statistics->count = (int) $statistics->count++;
       $statistics->save();
     }
-    header('Location: ' . $link->url, true, 301);
+    $url = (preg_match('/\[subscription:.*?\]/', $link->url)) ?
+      $this->processSubscriptionUrl($link->url, $subscriber) :
+      $link->url;
+    header('Location: ' . $url, true, 302);
+  }
+
+  function processSubscriptionUrl($url, $subscriber) {
+    preg_match('/\[subscription:(.*?)\]/', $url, $match);
+    $action = $match[1];
+    if(preg_match('/unsubscribe/', $action)) {
+      $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
+    }
+    if(preg_match('/manage/', $action)) {
+      $url = SubscriptionUrl::getManageUrl($subscriber);
+    }
+    !ddd($url);
+    return $url;
   }
 
   private function abort() {
