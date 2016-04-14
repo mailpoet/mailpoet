@@ -4,9 +4,11 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterStatistics;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Util\Helpers;
@@ -17,6 +19,7 @@ class SendingQueue {
   public $mta_config;
   public $mta_log;
   public $processing_method;
+  public $divider = '***MailPoet***';
   private $timer;
   const batch_size = 50;
 
@@ -38,7 +41,7 @@ class SendingQueue {
         continue;
       }
       $newsletter = $newsletter->asArray();
-      $newsletter['body'] = $this->getNewsletterBodyAndSubject($queue, $newsletter);
+      $newsletter['body'] = $this->getOrRenderNewsletterBody($queue, $newsletter);
       $queue->subscribers = (object) unserialize($queue->subscribers);
       if(!isset($queue->subscribers->processed)) {
         $queue->subscribers->processed = array();
@@ -67,11 +70,20 @@ class SendingQueue {
     }
   }
 
-  function getNewsletterBodyAndSubject($queue, $newsletter) {
+  function getOrRenderNewsletterBody($queue, $newsletter) {
     // check if newsletter has been rendered, in which case return its contents
-    // or render & and for future use
+    // or render and save for future reuse
     if($queue->newsletter_rendered_body === null) {
-      $newsletter['body'] = $this->renderNewsletter($newsletter);
+      // render newsletter
+      $rendered_newsletter = $this->renderNewsletter($newsletter);
+      // extract and replace links
+      $processed_newsletter = $this->processLinks(
+        $this->joinObject($rendered_newsletter),
+        $newsletter['id'],
+        $queue->id
+      );
+      list($newsletter['body']['html'], $newsletter['body']['text']) =
+        $this->splitObject($processed_newsletter);
       $queue->newsletter_rendered_body = json_encode($newsletter['body']);
       $queue->newsletter_rendered_body_hash = md5($newsletter['body']['text']);
       $queue->save();
@@ -84,7 +96,7 @@ class SendingQueue {
   function processBulkSubscribers($mailer, $newsletter, $subscribers, $queue) {
     foreach($subscribers as $subscriber) {
       $processed_newsletters[] =
-        $this->processNewsletter($newsletter, $subscriber);
+        $this->processNewsletter($newsletter, $subscriber, $queue);
       $transformed_subscribers[] =
         $mailer->transformSubscriber($subscriber);
     }
@@ -125,8 +137,8 @@ class SendingQueue {
   function processIndividualSubscriber($mailer, $newsletter, $subscribers, $queue) {
     foreach($subscribers as $subscriber) {
       $this->checkSendingLimit();
-      $processed_newsletter = $this->processNewsletter($newsletter, $subscriber);
-      if (!$queue->newsletter_rendered_subject) {
+      $processed_newsletter = $this->processNewsletter($newsletter, $subscriber, $queue);
+      if(!$queue->newsletter_rendered_subject) {
         $queue->newsletter_rendered_subject = $processed_newsletter['subject'];
       }
       $transformed_subscriber = $mailer->transformSubscriber($subscriber);
@@ -162,20 +174,59 @@ class SendingQueue {
     return $renderer->render();
   }
 
-  function processNewsletter($newsletter, $subscriber = false) {
-    $divider = '***MailPoet***';
-    $data_for_shortcodes =
-      array_merge(array($newsletter['subject']), $newsletter['body']);
-    $body = implode($divider, $data_for_shortcodes);
-    $shortcodes = new Shortcodes(
+  function processLinks($text, $newsletter_id, $queue_id) {
+    $links = new Links();
+    list($text, $processed_links) = $links->replace($text);
+    foreach($processed_links as $link) {
+      // save extracted and processed links
+      $newsletter_link = NewsletterLink::create();
+      $newsletter_link->newsletter_id = $newsletter_id;
+      $newsletter_link->queue_id = $queue_id;
+      $newsletter_link->hash = $link['hash'];
+      $newsletter_link->url = $link['url'];
+      $newsletter_link->save();
+    }
+    return $text;
+  }
+
+  function processNewsletter($newsletter, $subscriber = false, $queue) {
+    $data_for_shortcodes = array(
+      $newsletter['subject'],
+      $newsletter['body']['html'],
+      $newsletter['body']['text']
+    );
+    $processed_newsletter = $this->replaceShortcodes(
       $newsletter,
-      $subscriber
+      $subscriber,
+      $this->joinObject($data_for_shortcodes)
+    );
+    $processed_newsletter = $this->replaceLinks(
+      $newsletter['id'],
+      $subscriber['id'],
+      $queue->id,
+      $processed_newsletter
     );
     list($newsletter['subject'],
       $newsletter['body']['html'],
       $newsletter['body']['text']
-      ) = explode($divider, $shortcodes->replace($body));
+      ) = $this->splitObject($processed_newsletter);
     return $newsletter;
+  }
+
+  function replaceLinks($newsletter_id, $subscriber_id, $queue_id, $body) {
+    return str_replace(
+      '[mailpoet_data]',
+      sprintf('%s-%s-%s', $newsletter_id, $subscriber_id, $queue_id),
+      $body
+    );
+  }
+
+  function replaceShortcodes($newsletter, $subscriber, $body) {
+    $shortcodes = new Shortcodes(
+      $newsletter,
+      $subscriber
+    );
+    return $shortcodes->replace($body);
   }
 
   function sendNewsletter($mailer, $newsletter, $subscriber) {
@@ -283,5 +334,13 @@ class SendingQueue {
       Setting::setValue('mta_log', $this->mta_log);
     }
     return;
+  }
+
+  private function joinObject($object = array()) {
+    return implode($this->divider, $object);
+  }
+
+  private function splitObject($object = array()) {
+    return explode($this->divider, $object);
   }
 }

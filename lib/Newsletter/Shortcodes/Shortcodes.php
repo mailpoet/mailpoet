@@ -26,9 +26,12 @@ class Shortcodes {
           $shortcode,
           $shortcode_details
         );
-        $shortcode_class =
-          __NAMESPACE__ . '\\Categories\\' . ucfirst($shortcode_details['type']);
+        $shortcode_type = ucfirst($shortcode_details['type']);
         $shortcode_action = $shortcode_details['action'];
+        // do not process subscription management links
+        if ($shortcode_type === 'Subscription') return $shortcode;
+        $shortcode_class =
+          __NAMESPACE__ . '\\Categories\\' . $shortcode_type;
         $shortcode_default_value = isset($shortcode_details['default'])
           ? $shortcode_details['default'] : false;
         if(!class_exists($shortcode_class)) return false;
