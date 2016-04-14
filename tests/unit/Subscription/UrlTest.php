@@ -14,51 +14,64 @@ class UrlTest extends MailPoetTest {
     // preview
     $url = Url::getConfirmationUrl(false);
     expect($url)->notNull();
-    expect($url)->contains('mailpoet_action=confirm');
-    expect($url)->contains('preview');
+    expect($url)->contains('action=confirm');
+    expect($url)->contains('endpoint=subscription');
 
     // actual subscriber
     $subscriber = Subscriber::createOrUpdate(array(
       'email' => 'john@mailpoet.com'
    ));
     $url = Url::getConfirmationUrl($subscriber);
-    expect($url)->contains('mailpoet_action=confirm');
-    expect($url)->contains('mailpoet_token=');
-    expect($url)->contains('mailpoet_email=');
+    expect($url)->contains('action=confirm');
+    expect($url)->contains('endpoint=subscription');
+
+    $this->checkData($url);
   }
 
   function testItReturnsTheManageSubscriptionUrl() {
     // preview
     $url = Url::getManageUrl(false);
     expect($url)->notNull();
-    expect($url)->contains('mailpoet_action=manage');
-    expect($url)->contains('preview');
+    expect($url)->contains('action=manage');
+    expect($url)->contains('endpoint=subscription');
 
     // actual subscriber
     $subscriber = Subscriber::createOrUpdate(array(
       'email' => 'john@mailpoet.com'
     ));
     $url = Url::getManageUrl($subscriber);
-    expect($url)->contains('mailpoet_action=manage');
-    expect($url)->contains('mailpoet_token=');
-    expect($url)->contains('mailpoet_email=');
+    expect($url)->contains('action=manage');
+    expect($url)->contains('endpoint=subscription');
+
+    $this->checkData($url);
   }
 
   function testItReturnsTheUnsubscribeUrl() {
     // preview
     $url = Url::getUnsubscribeUrl(false);
     expect($url)->notNull();
-    expect($url)->contains('mailpoet_action=unsubscribe');
-    expect($url)->contains('preview');
+    expect($url)->contains('action=unsubscribe');
+    expect($url)->contains('endpoint=subscription');
 
     // actual subscriber
     $subscriber = Subscriber::createOrUpdate(array(
       'email' => 'john@mailpoet.com'
     ));
     $url = Url::getUnsubscribeUrl($subscriber);
-    expect($url)->contains('mailpoet_action=unsubscribe');
-    expect($url)->contains('mailpoet_token=');
-    expect($url)->contains('mailpoet_email=');
+    expect($url)->contains('action=unsubscribe');
+    expect($url)->contains('endpoint=subscription');
+
+    $this->checkData($url);
+  }
+
+  private function checkData($url) {
+    // extract & decode data from url
+    $url_params = parse_url($url);
+    parse_str($url_params['query'], $params);
+    $data = unserialize(base64_decode($params['data']));
+
+    expect($data['email'])->contains('john@mailpoet.com');
+    expect($data['token'])->notEmpty();
   }
 
   function _after() {
