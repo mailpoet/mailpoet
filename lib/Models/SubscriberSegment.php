@@ -16,27 +16,55 @@ class SubscriberSegment extends Model {
     return $this->has_one(__NAMESPACE__.'\Subscriber', 'id', 'subscriber_id');
   }
 
-  static function setSubscriptions($subscriber, $segment_ids = array()) {
+  static function removeSubscriptions($subscriber, $segment_ids = array()) {
     if($subscriber->id > 0) {
-      // unsubscribe from current subscriptions
-      SubscriberSegment::where('subscriber_id', $subscriber->id)
-        ->findResultSet()
-        ->set('status', Subscriber::STATUS_UNSUBSCRIBED)
-        ->save();
-
-      // subscribe to segments
-      foreach($segment_ids as $segment_id) {
-        if((int)$segment_id > 0) {
-          self::createOrUpdate(array(
-            'subscriber_id' => $subscriber->id,
-            'segment_id' => $segment_id,
-            'status' => Subscriber::STATUS_SUBSCRIBED
-          ));
+      if(!empty($segment_ids)) {
+        // subscribe to segments
+        foreach($segment_ids as $segment_id) {
+          if((int)$segment_id > 0) {
+            self::createOrUpdate(array(
+              'subscriber_id' => $subscriber->id,
+              'segment_id' => $segment_id,
+              'status' => Subscriber::STATUS_UNSUBSCRIBED
+            ));
+          }
         }
+      } else {
+        // unsubscribe from all segments
+        SubscriberSegment::where('subscriber_id', $subscriber->id)
+          ->findResultSet()
+          ->set('status', Subscriber::STATUS_UNSUBSCRIBED)
+          ->save();
       }
     }
+  }
 
-    return $subscriber;
+  static function addSubscriptions($subscriber, $segment_ids = array()) {
+    if($subscriber->id > 0) {
+      if(!empty($segment_ids)) {
+        // subscribe to segments
+        foreach($segment_ids as $segment_id) {
+          if((int)$segment_id > 0) {
+            self::createOrUpdate(array(
+              'subscriber_id' => $subscriber->id,
+              'segment_id' => $segment_id,
+              'status' => Subscriber::STATUS_SUBSCRIBED
+            ));
+          }
+        }
+      } else {
+        // subscribe to all segments
+        SubscriberSegment::where('subscriber_id', $subscriber->id)
+          ->findResultSet()
+          ->set('status', Subscriber::STATUS_SUBSCRIBED)
+          ->save();
+      }
+    }
+  }
+
+  static function setSubscriptions($subscriber, $segment_ids = array()) {
+    self::removeSubscriptions($subscriber);
+    self::addSubscriptions($subscriber, $segment_ids);
   }
 
   static function subscribed($orm) {

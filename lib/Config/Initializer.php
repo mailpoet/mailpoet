@@ -156,9 +156,6 @@ class Initializer {
   function setupPages() {
     $pages = new \MailPoet\Settings\Pages();
     $pages->init();
-
-    $subscription_pages = new \MailPoet\Subscription\Pages();
-    $subscription_pages->init();
   }
 
   function setupShortcodes() {

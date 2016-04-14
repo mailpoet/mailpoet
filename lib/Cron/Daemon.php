@@ -16,12 +16,12 @@ class Daemon {
   private $timer;
 
   function __construct($data) {
-    if (!$data) $this->abortWithError(__('Invalid or missing cron data.'));
+    if(empty($data)) $this->abortWithError(__('Invalid or missing cron data.'));
     set_time_limit(0);
     ignore_user_abort();
     $this->daemon = CronHelper::getDaemon();
     $this->token = CronHelper::createToken();
-    $this->data = unserialize(base64_decode($data));
+    $this->data = $data;
     $this->timer = microtime(true);
   }
 

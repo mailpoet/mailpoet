@@ -74,9 +74,14 @@ class Populator {
       $mailpoet_page_id = (int)$page->ID;
     }
 
-    Setting::setValue('subscription.unsubscribe_page', $mailpoet_page_id);
-    Setting::setValue('subscription.manage_page', $mailpoet_page_id);
-    Setting::setValue('subscription.confirmation_page', $mailpoet_page_id);
+    $subscription = Setting::getValue('subscription.pages', array());
+    if(empty($subscription)) {
+      Setting::setValue('subscription.pages', array(
+        'unsubscribe' => $mailpoet_page_id,
+        'manage' => $mailpoet_page_id,
+        'confirmation' => $mailpoet_page_id
+      ));
+    }
   }
 
   private function createDefaultSettings() {

@@ -6,21 +6,21 @@ use \MailPoet\Models\Setting;
 
 class Url {
   static function getConfirmationUrl($subscriber = false) {
-    $post = get_post(Setting::getValue('subscription.confirmation_page'));
+    $post = get_post(Setting::getValue('subscription.pages.confirmation'));
     return self::getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
   static function getManageUrl($subscriber = false) {
-    $post = get_post(Setting::getValue('subscription.manage_page'));
+    $post = get_post(Setting::getValue('subscription.pages.manage'));
     return self::getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
   static function getUnsubscribeUrl($subscriber = false) {
-    $post = get_post(Setting::getValue('subscription.unsubscribe_page'));
+    $post = get_post(Setting::getValue('subscription.pages.unsubscribe'));
     return self::getSubscriptionUrl($post, 'unsubscribe', $subscriber);
   }
 
-  private static function getSubscriptionUrl(
+  static function getSubscriptionUrl(
     $post = null, $action = null, $subscriber = false
   ) {
     if($post === null || $action === null) return;
@@ -28,22 +28,26 @@ class Url {
     $url = get_permalink($post);
 
     if($subscriber !== false) {
-
       if(is_object($subscriber)) {
         $subscriber = $subscriber->asArray();
       }
 
-      $params = array(
-        'mailpoet_action='.$action,
-        'mailpoet_token='.Subscriber::generateToken($subscriber['email']),
-        'mailpoet_email='.$subscriber['email']
+      $data = array(
+        'token' => Subscriber::generateToken($subscriber['email']),
+        'email' => $subscriber['email']
       );
     } else {
-      $params = array(
-        'mailpoet_action='.$action,
-        'mailpoet_preview=1'
+      $data = array(
+        'preview' => 1
       );
     }
+
+    $params = array(
+      'endpoint=subscription',
+      'action='.$action,
+      'data='.base64_encode(serialize($data))
+    );
+
     // add parameters
     $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?').join('&', $params);
 

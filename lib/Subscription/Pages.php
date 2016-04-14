@@ -3,6 +3,7 @@ namespace MailPoet\Subscription;
 
 use \MailPoet\Router\Subscribers;
 use \MailPoet\Models\Subscriber;
+use \MailPoet\Models\SubscriberSegment;
 use \MailPoet\Models\CustomField;
 use \MailPoet\Models\Setting;
 use \MailPoet\Models\Segment;
@@ -13,51 +14,123 @@ use \MailPoet\Subscription;
 class Pages {
   const DEMO_EMAIL = 'demo@mailpoet.com';
 
-  function __construct() {
+  private $action;
+  private $data;
+  private $subscriber;
+
+  function __construct($action, $data) {
+    $this->action = $action;
+    $this->data = $data;
+    $this->subscriber = $this->getSubscriber();
+
+    // handle subscription pages title & content
+    add_filter('wp_title', array($this,'setWindowTitle'), 10, 3);
+    add_filter('document_title_parts', array($this,'setWindowTitleParts'), 10, 1);
+    add_filter('the_title', array($this,'setPageTitle'), 10, 1);
+    add_filter('the_content', array($this,'setPageContent'), 10, 1);
+
+    // manage subscription link shortcode
+    // [mailpoet_manage text="Manage your subscription"]
+    add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
   }
 
-  function init() {
-    $action = $this->getAction();
-    if($action !== null) {
-      add_filter('wp_title', array($this,'setWindowTitle'), 10, 3);
-      add_filter('document_title_parts', array($this,'setWindowTitleParts'), 10, 1);
-      add_filter('the_title', array($this,'setPageTitle'), 10, 1);
-      add_filter('the_content', array($this,'setPageContent'), 10, 1);
-    }
-    add_action(
-      'admin_post_mailpoet_subscriber_save',
-      array($this, 'subscriberSave')
-    );
-    add_action(
-      'admin_post_nopriv_mailpoet_subscriber_save',
-      array($this, 'subscriberSave')
+  private function isPreview() {
+    return (
+      array_key_exists('preview', $_GET)
+      || array_key_exists('preview', $this->data)
     );
   }
 
-  function subscriberSave() {
-    $action = (isset($_POST['action']) ? $_POST['action'] : null);
-    if($action !== 'mailpoet_subscriber_save') {
-      Url::redirectBack();
-    }
+  function getSubscriber() {
+    $token = (isset($this->data['token'])) ? $this->data['token'] : null;
+    $email = (isset($this->data['email'])) ? $this->data['email'] : null;
 
-    $reserved_keywords = array('action', 'mailpoet_redirect');
-    $subscriber_data = array_diff_key(
-      $_POST,
-      array_flip($reserved_keywords)
-    );
-    if(isset($subscriber_data['email'])) {
-      if($subscriber_data['email'] !== self::DEMO_EMAIL) {
-        $subscriber = Subscriber::createOrUpdate($subscriber_data);
-        $errors = $subscriber->getErrors();
+    if(Subscriber::generateToken($email) === $token) {
+      $subscriber = Subscriber::findOne($email);
+      if($subscriber !== false) {
+        return $subscriber;
       }
     }
-    // TBD: success/error messages (not present in MP2)
-
-    Url::redirectBack();
+    return false;
   }
 
-  function isPreview() {
-    return (array_key_exists('mailpoet_preview', $_GET));
+  function confirm() {
+    if($this->subscriber !== false) {
+      if($this->subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
+        $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+        $this->subscriber->save();
+      }
+    }
+  }
+
+  function unsubscribe() {
+    if($this->subscriber !== false) {
+      if($this->subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED) {
+        $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+        $this->subscriber->save();
+        SubscriberSegment::setSubscriptions($this->subscriber, false);
+      }
+    }
+  }
+  function setPageTitle($page_title = '') {
+    global $post;
+
+    if($post->post_title !== __('MailPoet Page')) return $page_title;
+    if(
+      ($this->isMailPoetPage($post->ID) === false)
+      ||
+      ($page_title !== single_post_title('', false))
+    ) {
+      return $page_title;
+    } else {
+      switch($this->action) {
+        case 'confirm':
+          return $this->getConfirmTitle();
+        break;
+
+        case 'manage':
+
+          return $this->getManageTitle();
+        break;
+
+        case 'unsubscribe':
+          return $this->getUnsubscribeTitle();
+        break;
+      }
+    }
+    return $page_title;
+  }
+
+  function setPageContent($page_content = '[mailpoet_page]') {
+    global $post;
+
+    if(
+      ($this->isPreview() === false)
+      &&
+      ($this->isMailPoetPage($post->ID) === false)
+    ) {
+      return $page_content;
+    }
+
+    $content = '';
+
+    switch($this->action) {
+      case 'confirm':
+        $content = $this->getConfirmContent();
+      break;
+      case 'manage':
+        $content = $this->getManageContent();
+      break;
+      case 'unsubscribe':
+        $content = $this->getUnsubscribeContent();
+      break;
+    }
+
+    if(strpos($page_content, '[mailpoet_page]') !== false) {
+      return str_replace('[mailpoet_page]', $content, $page_content);
+    } else {
+      return $page_content.$content;
+    }
   }
 
   function setWindowTitle($title, $separator, $separator_location = 'right') {
@@ -80,93 +153,24 @@ class Pages {
 
   function isMailPoetPage($page_id = null) {
     $mailpoet_page_ids = array_unique(array_values(
-      Setting::getValue('subscription', array())
+      Setting::getValue('subscription.pages', array())
     ));
 
     return (in_array($page_id, $mailpoet_page_ids));
   }
 
-  function setPageTitle($page_title = '') {
-    global $post;
-
-    if($post->post_title !== __('MailPoet Page')) return $page_title;
-
-    if(
-      ($this->isMailPoetPage($post->ID) === false)
-      ||
-      ($page_title !== single_post_title('', false))
-    ) {
-      return $page_title;
-    } else {
-      $subscriber = $this->getSubscriber();
-      switch($this->getAction()) {
-        case 'confirm':
-          return $this->getConfirmTitle($subscriber);
-        break;
-
-        case 'manage':
-          return $this->getManageTitle($subscriber);
-        break;
-
-        case 'unsubscribe':
-          if($subscriber !== false) {
-            if($subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED) {
-              $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-              $subscriber->save();
-            }
-          }
-          return $this->getUnsubscribeTitle($subscriber);
-        break;
-      }
-    }
-    return $page_title;
-  }
-
-  function setPageContent($page_content = '[mailpoet_page]') {
-    global $post;
-
-    if(
-      ($this->isPreview() === false)
-      &&
-      ($this->isMailPoetPage($post->ID) === false)
-    ) {
-      return $page_content;
-    }
-
-    $content = '';
-    $subscriber = $this->getSubscriber();
-
-    switch($this->getAction()) {
-      case 'confirm':
-        $content = $this->getConfirmContent($subscriber);
-      break;
-      case 'manage':
-        $content = $this->getManageContent($subscriber);
-      break;
-      case 'unsubscribe':
-        $content = $this->getUnsubscribeContent($subscriber);
-      break;
-    }
-    return str_replace('[mailpoet_page]', $content, $page_content);
-  }
-
-  private function getConfirmTitle($subscriber) {
+  private function getConfirmTitle() {
     if($this->isPreview()) {
       $title = sprintf(
         __("You've subscribed to: %s"),
         'demo 1, demo 2'
       );
-    } else if($subscriber === false) {
+    } else if($this->subscriber === false) {
       $title = __('Your confirmation link expired, please subscribe again.');
     } else {
-      if($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
-        $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-        $subscriber->save();
-      }
-
       $segment_names = array_map(function($segment) {
         return $segment->name;
-      }, $subscriber->segments()->findMany());
+      }, $this->subscriber->segments()->findMany());
 
       if(empty($segment_names)) {
         $title = __("You've subscribed!");
@@ -180,41 +184,35 @@ class Pages {
     return $title;
   }
 
-  private function getManageTitle($subscriber) {
-    if($this->isPreview()) {
-      return sprintf(
-        __('Edit your subscriber profile: %s'),
-        self::DEMO_EMAIL
-      );
-    } else if($subscriber !== false) {
-      return sprintf(
-        __('Edit your subscriber profile: %s'),
-        $subscriber->email
-      );
+  private function getManageTitle() {
+    if($this->isPreview() || $this->subscriber !== false) {
+      return __("Manage your subscription");
     }
   }
 
-  private function getUnsubscribeTitle($subscriber) {
-    if($this->isPreview() || $subscriber !== false) {
-      return __("You've unsubscribed!");
+  private function getUnsubscribeTitle() {
+    if($this->isPreview() || $this->subscriber !== false) {
+      return __("You've successfully unsubscribed");
     }
   }
 
 
-  private function getConfirmContent($subscriber) {
-    if($this->isPreview() || $subscriber !== false) {
+  private function getConfirmContent() {
+    if($this->isPreview() || $this->subscriber !== false) {
       return __("Yup, we've added you to our list. You'll hear from us shortly.");
     }
   }
 
-  private function getManageContent($subscriber) {
+  private function getManageContent() {
     if($this->isPreview()) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate(array(
-        'email' => self::DEMO_EMAIL
+        'email' => self::DEMO_EMAIL,
+        'first_name' => 'John',
+        'last_name' => 'Doe'
       ));
-    } else if($subscriber !== false) {
-      $subscriber = $subscriber
+    } else if($this->subscriber !== false) {
+      $subscriber = $this->subscriber
       ->withCustomFields()
       ->withSubscriptions();
     } else {
@@ -238,8 +236,8 @@ class Pages {
         ->findMany();
     }
     $subscribed_segment_ids = array();
-    if(!empty($subscriber->subscriptions)) {
-      foreach ($subscriber->subscriptions as $subscription) {
+    if(!empty($this->subscriber->subscriptions)) {
+      foreach ($this->subscriber->subscriptions as $subscription) {
         if($subscription['status'] === Subscriber::STATUS_SUBSCRIBED) {
           $subscribed_segment_ids[] = $subscription['segment_id'];
         }
@@ -255,16 +253,6 @@ class Pages {
     }, $segments);
 
     $fields = array(
-      array(
-        'id' => 'email',
-        'type' => 'text',
-        'params' => array(
-          'label' => __('Email'),
-          'required' => true,
-          'value' => $subscriber->email,
-          'readonly' => true
-        )
-      ),
       array(
         'id' => 'first_name',
         'type' => 'text',
@@ -333,53 +321,54 @@ class Pages {
     $form_html = '<form method="POST" '.
       'action="'.admin_url('admin-post.php').'" '.
       'novalidate>';
-    $form_html .= '<input type="hidden" name="action" '.
-      'value="mailpoet_subscriber_save" />';
+    $form_html .= '<input type="hidden" name="action"'.
+      ' value="mailpoet_subscription_update" />';
     $form_html .= '<input type="hidden" name="segments" value="" />';
     $form_html .= '<input type="hidden" name="mailpoet_redirect" '.
       'value="'.Url::getCurrentUrl().'" />';
+    $form_html .= '<input type="hidden" name="email" value="'.$subscriber->email.'" />';
+
+    $form_html .= '<p class="mailpoet_paragraph">';
+    $form_html .= '<label>Email *<br /><strong>'.$subscriber->email.'</strong></label>';
+    $form_html .= '<br /><span style="font-size:85%;">';
+    if($subscriber->wp_user_id !== null) {
+      $form_html .= str_replace(
+        array('[link]', '[/link]'),
+        array('<a href="'.wp_login_url().'" target="_blank">', '</a>'),
+        __('[link]Log in to your account[/link] to update your email.')
+      );
+    } else {
+      $form_html .= __('Need to change your email address? Unsubscribe here and simply sign up again.');
+    }
+    $form_html .= '</span>';
+    $form_html .= '</p>';
+
+    // subscription form
     $form_html .= \MailPoet\Form\Renderer::renderBlocks($form);
     $form_html .= '</form>';
     return $form_html;
   }
 
-  private function getUnsubscribeContent($subscriber) {
+  private function getUnsubscribeContent() {
     $content = '';
-    if($this->isPreview() || $subscriber !== false) {
-      $content = '<p>'.__("Great, you'll never hear from us again!").'</p>';
-      if($subscriber !== false) {
-        $content .= '<p><strong>'.
-          str_replace(
-            array('[link]', '[/link]'),
-            array('<a href="'.Subscription\Url::getConfirmationUrl($subscriber).'">', '</a>'),
-            __('You made a mistake? [link]Undo unsubscribe.[/link]')
-          ).
-        '</strong></p>';
-      }
+    if($this->isPreview() || $this->subscriber !== false) {
+      $content .= '<p>'.__('You made a mistake?').' <strong>';
+      $content .= '[mailpoet_manage]';
+      $content .= '</strong></p>';
     }
     return $content;
   }
 
-  private function getSubscriber() {
-    $token = (isset($_GET['mailpoet_token']))
-      ? $_GET['mailpoet_token']
-      : null;
-    $email = (isset($_GET['mailpoet_email']))
-      ? $_GET['mailpoet_email']
-      : null;
+  function getManageLink($params) {
+    // get label or display default label
+    $text = (
+      isset($params['text'])
+      ? $params['text']
+      : __('Manage your subscription')
+    );
 
-    if(Subscriber::generateToken($email) === $token) {
-      $subscriber = Subscriber::findOne($email);
-      if($subscriber !== false) {
-        return $subscriber;
-      }
-    }
-    return false;
-  }
-
-  private function getAction() {
-    return (isset($_GET['mailpoet_action']))
-      ? $_GET['mailpoet_action']
-      : null;
+    return '<a href="'.Subscription\Url::getManageUrl(
+      $this->subscriber
+    ).'">'.$text.'</a>';
   }
 }

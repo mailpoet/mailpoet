@@ -48,30 +48,6 @@ class Subscriber extends Model {
     return parent::delete();
   }
 
-  function addToSegments(array $segment_ids = array()) {
-    $wp_users_segment = Segment::getWPUsers();
-
-    if($wp_users_segment !== false) {
-      // delete all relations to segments except WP users
-      SubscriberSegment::where('subscriber_id', $this->id)
-        ->whereNotEqual('segment_id', $wp_users_segment->id)
-        ->deleteMany();
-      } else {
-        // delete all relations to segments
-        SubscriberSegment::where('subscriber_id', $this->id)->deleteMany();
-      }
-
-    if(!empty($segment_ids)) {
-      $segments = Segment::whereIn('id', $segment_ids)->findMany();
-      foreach($segments as $segment) {
-        $association = SubscriberSegment::create();
-        $association->subscriber_id = $this->id;
-        $association->segment_id = $segment->id;
-        $association->save();
-      }
-    }
-  }
-
   function sendConfirmationEmail() {
     if($this->status === self::STATUS_UNCONFIRMED) {
       $signup_confirmation = Setting::getValue('signup_confirmation');
@@ -168,14 +144,18 @@ class Subscriber extends Model {
         $subscriber->setExpr('deleted_at', 'NULL');
       }
 
-      // auto subscribe when signup confirmation is disabled
-      if($signup_confirmation_enabled === false) {
-        $subscriber->set('status', self::STATUS_SUBSCRIBED);
+      if($subscriber->status !== self::STATUS_SUBSCRIBED) {
+        // auto subscribe when signup confirmation is disabled
+        if($signup_confirmation_enabled === true) {
+          $subscriber->set('status', self::STATUS_UNCONFIRMED);
+        } else {
+          $subscriber->set('status', self::STATUS_SUBSCRIBED);
+        }
       }
 
       if($subscriber->save()) {
         // link subscriber to segments
-        $subscriber->addToSegments($segment_ids);
+        SubscriberSegment::addSubscriptions($subscriber, $segment_ids);
 
         // signup confirmation
         if($subscriber->status !== self::STATUS_SUBSCRIBED) {
@@ -409,8 +389,8 @@ class Subscriber extends Model {
           &&
           ($new_status === self::STATUS_UNSUBSCRIBED)
       ) {
-        // make sure we unsubscribe the user from all lists
-        SubscriberSegment::setSubscriptions($subscriber, array());
+        // make sure we unsubscribe the user from all segments
+        SubscriberSegment::removeSubscriptions($subscriber);
       } else {
         if($segment_ids !== false) {
           SubscriberSegment::setSubscriptions($subscriber, $segment_ids);
