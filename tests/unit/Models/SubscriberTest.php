@@ -389,16 +389,45 @@ class SubscriberTest extends MailPoetTest {
       ->equals('non_default_value');
   }
 
+  function testItCanGetOnlySubscribedSubscribersInSegments() {
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    $columns = array(
+      'first_name',
+      'last_name',
+      'email',
+      'status'
+    );
+    $values = array(
+      array(
+        'first_name' => 'Adam',
+        'last_name' => 'Smith',
+        'email' => 'adam@smith.com',
+        'status' => 'unconfirmed'
+      ),
+      array(
+        'first_name' => 'Mary',
+        'last_name' => 'Jane',
+        'email' => 'mary@jane.com',
+        'status' => 'subscribed'
+      )
+    );
+    Subscriber::createMultiple($columns, $values);
+    SubscriberSegment::createMultiple(array(1), array(1,2));
+    $subscribed_subscribers_in_segment =
+      Subscriber::getSubscribedInSegments(array(1))->findArray();
+    expect(count($subscribed_subscribers_in_segment))->equals(1);
+    $subscriber = Subscriber::findOne(1);
+    $subscriber->status = 'subscribed';
+    $subscriber->save();
+    $subscribed_subscribers_in_segment =
+      Subscriber::getSubscribedInSegments(array(1))->findArray();
+    expect(count($subscribed_subscribers_in_segment))->equals(2);
+  }
   function _after() {
-    ORM::forTable(Subscriber::$_table)
-      ->deleteMany();
-    ORM::forTable(Segment::$_table)
-      ->deleteMany();
-    ORM::forTable(SubscriberSegment::$_table)
-      ->deleteMany();
-    ORM::forTable(CustomField::$_table)
-      ->deleteMany();
-    ORM::forTable(SubscriberCustomField::$_table)
-      ->deleteMany();
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
   }
 }
