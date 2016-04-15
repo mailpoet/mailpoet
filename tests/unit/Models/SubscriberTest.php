@@ -333,23 +333,6 @@ class SubscriberTest extends MailPoetTest {
     expect($subscriber->deleted_at)->equals(null);
   }
 
-  function testItCanBeAddedToSegments() {
-    $segment = Segment::create();
-    $segment->hydrate(array('name' => 'List #1'));
-    $segment->save();
-
-    $segment2 = Segment::create();
-    $segment2->hydrate(array('name' => 'List #2'));
-    $segment2->save();
-
-    $this->subscriber->addToSegments(array($segment->id(), $segment2->id()));
-    $subscriber_segments = $this->subscriber->segments()->findArray();
-
-    expect($this->subscriber->segments()->count())->equals(2);
-    expect($subscriber_segments[0]['name'])->equals('List #1');
-    expect($subscriber_segments[1]['name'])->equals('List #2');
-  }
-
   function testItCanBeUpdatedByEmail() {
     $subscriber_updated = Subscriber::createOrUpdate(array(
       'email' => $this->data['email'],

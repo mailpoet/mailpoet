@@ -6,13 +6,7 @@ class Url {
   }
 
   static function getCurrentUrl() {
-    global $wp;
-    return home_url(
-      add_query_arg(
-        $wp->query_string,
-        $wp->request
-      )
-    );
+    return home_url(add_query_arg(null, null));
   }
 
   static function redirectTo($url = null) {

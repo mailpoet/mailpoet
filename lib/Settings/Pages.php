@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Settings;
+use \MailPoet\Subscription;
 
 class Pages {
   function __construct() {
@@ -65,9 +66,11 @@ class Pages {
     return array(
       'id' => $page->ID,
       'title' => $page->post_title,
-      'preview_url' => add_query_arg(array(
-        'mailpoet_preview' => 1
-      ), get_permalink($page->ID))
+      'url' => array(
+        'unsubscribe' => Subscription\Url::getSubscriptionUrl($page, 'unsubscribe'),
+        'manage' => Subscription\Url::getSubscriptionUrl($page, 'manage'),
+        'confirm' => Subscription\Url::getSubscriptionUrl($page, 'confirm')
+      )
     );
   }
 }

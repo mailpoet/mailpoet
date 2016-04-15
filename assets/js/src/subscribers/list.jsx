@@ -278,33 +278,18 @@ const SubscriberList = React.createClass({
 
     if (subscriber.subscriptions.length > 0) {
       let subscribed_segments = [];
-      let unsubscribed_segments = [];
 
       subscriber.subscriptions.map((subscription) => {
         const segment = this.getSegmentFromId(subscription.segment_id);
         if(segment === false) return;
         if (subscription.status === 'subscribed') {
           subscribed_segments.push(segment.name);
-        } else if (subscription.status === 'unsubscribed') {
-          unsubscribed_segments.push(segment.name);
         }
       });
       segments = (
         <span>
           <span className="mailpoet_segments_subscribed">
             { subscribed_segments.join(', ') }
-            {
-              (
-                subscribed_segments.length > 0
-                && unsubscribed_segments.length > 0
-              ) ? ' / ' : ''
-            }
-          </span>
-          <span
-            className="mailpoet_segments_unsubscribed"
-            title={MailPoet.I18n.t('listsToWhichSubscriberWasSubscribed')}
-          >
-            { unsubscribed_segments.join(', ') }
           </span>
         </span>
       );

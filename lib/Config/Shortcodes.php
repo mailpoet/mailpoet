@@ -3,6 +3,7 @@ namespace MailPoet\Config;
 use \MailPoet\Models\Newsletter;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\SubscriberSegment;
+use \MailPoet\Subscription;
 
 class Shortcodes {
   function __construct() {

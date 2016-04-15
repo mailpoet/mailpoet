@@ -151,13 +151,13 @@
         <p>
           <select
             class="mailpoet_page_selection"
-            name="subscription[confirmation_page]"
+            name="subscription[pages][confirmation]"
           >
             <% for page in pages %>
               <option
                 value="<%= page.id %>"
-                data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=confirm"
-                <% if(page.id == settings.subscription.confirmation_page) %>
+                data-preview-url="<%= page.url.confirm|raw %>"
+                <% if(page.id == settings.subscription.pages.confirmation) %>
                   selected="selected"
                 <% endif %>
               ><%= page.title %></option>

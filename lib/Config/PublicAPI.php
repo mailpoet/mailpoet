@@ -2,6 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Cron\Daemon;
+use MailPoet\Subscription;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Util\Helpers;
 
@@ -22,7 +23,9 @@ class PublicAPI {
     $this->action = isset($_GET['action']) ?
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
-    $this->data = isset($_GET['data']) ? $_GET['data'] : false;
+    $this->data = isset($_GET['data']) ?
+      $_GET['data'] :
+      false;
   }
 
   function init() {
@@ -32,18 +35,26 @@ class PublicAPI {
 
   function queue() {
     try {
-      $queue = new Daemon($this->data);
+      $queue = new Daemon($this->_decodeData());
       $this->_checkAndCallMethod($queue, $this->action);
+    } catch(\Exception $e) {
+    }
+  }
+
+  function subscription() {
+    try {
+      $subscription = new Subscription\Pages($this->action, $this->_decodeData());
+      $this->_checkAndCallMethod($subscription, $this->action);
     } catch(\Exception $e) {
     }
   }
 
   function track() {
     try {
-      if ($this->action === 'click') {
+      if($this->action === 'click') {
         $track_class = new Clicks($this->data);
       }
-      if (!isset($track_class)) return;
+      if(!isset($track_class)) return;
       $track_class->track();
     } catch(\Exception $e) {
     }
@@ -61,5 +72,13 @@ class PublicAPI {
         $method
       )
     );
+  }
+
+  private function _decodeData() {
+    if($this->data !== false) {
+      return unserialize(base64_decode($this->data));
+    } else {
+      return array();
+    }
   }
 }

@@ -209,13 +209,13 @@
           <select
             class="mailpoet_page_selection"
             id="subscription_manage_page"
-            name="subscription[manage_page]"
+            name="subscription[pages][manage]"
           >
             <% for page in pages %>
               <option
                 value="<%= page.id %>"
-                data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=manage"
-                <% if(page.id == settings.subscription.manage_page) %>
+                data-preview-url="<%= page.url.manage|raw %>"
+                <% if(page.id == settings.subscription.pages.manage) %>
                   selected="selected"
                 <% endif %>
               ><%= page.title %></option>
@@ -256,6 +256,8 @@
           <%= __('Unsubscribe page') %>
           <p class="description">
             <%= __('The page your subscribers see when they click on "Unsubscribe" in your emails.') %>
+            <br />
+            <%= __('Use this shortcode in your own pages: [mailpoet_manage text="Manage your subscription"].') %>
           </p>
         </label>
       </th>
@@ -264,13 +266,13 @@
           <select
             class="mailpoet_page_selection"
             id="subscription_unsubscribe_page"
-            name="subscription[unsubscribe_page]"
+            name="subscription[pages][unsubscribe]"
           >
             <% for page in pages %>
               <option
                 value="<%= page.id %>"
-                data-preview-url="<%= page.preview_url|raw %>&amp;mailpoet_action=unsubscribe"
-                <% if(page.id == settings.subscription.unsubscribe_page) %>
+                data-preview-url="<%= page.url.unsubscribe|raw %>"
+                <% if(page.id == settings.subscription.pages.unsubscribe) %>
                   selected="selected"
                 <% endif %>
               ><%= page.title %></option>
