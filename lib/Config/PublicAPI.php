@@ -51,10 +51,10 @@ class PublicAPI {
 
   function track() {
     try {
-      if ($this->action === 'click') {
+      if($this->action === 'click') {
         $track_class = new Clicks($this->data);
       }
-      if (!isset($track_class)) return;
+      if(!isset($track_class)) return;
       $track_class->track();
     } catch(\Exception $e) {
     }
@@ -74,9 +74,11 @@ class PublicAPI {
     );
   }
 
-  private function _decodeData($data) {
-    $data = ($data) ? $data : $this->data;
-    if (!$data) return false;
-    return unserialize(base64_decode($data));
+  private function _decodeData() {
+    if($this->data !== false) {
+      return unserialize(base64_decode($this->data));
+    } else {
+      return array();
+    }
   }
 }

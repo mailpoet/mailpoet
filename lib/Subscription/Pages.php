@@ -68,7 +68,7 @@ class Pages {
       if($this->subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED) {
         $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
         $this->subscriber->save();
-        SubscriberSegment::setSubscriptions($this->subscriber, false);
+        SubscriberSegment::removeSubscriptions($this->subscriber);
       }
     }
   }
