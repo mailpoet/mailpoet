@@ -23,11 +23,9 @@ class PublicAPI {
     $this->action = isset($_GET['action']) ?
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
-    $this->data = (
-      (isset($_GET['data']))
-      ? unserialize(base64_decode($_GET['data']))
-      : array()
-    );
+    $this->data = isset($_GET['data']) ?
+      $_GET['data'] :
+      false;
   }
 
   function init() {
@@ -37,7 +35,7 @@ class PublicAPI {
 
   function queue() {
     try {
-      $queue = new Daemon($this->data);
+      $queue = new Daemon($this->_decodeData());
       $this->_checkAndCallMethod($queue, $this->action);
     } catch(\Exception $e) {
     }
@@ -45,7 +43,7 @@ class PublicAPI {
 
   function subscription() {
     try {
-      $subscription = new Subscription\Pages($this->action, $this->data);
+      $subscription = new Subscription\Pages($this->action, $this->_decodeData());
       $this->_checkAndCallMethod($subscription, $this->action);
     } catch(\Exception $e) {
     }
@@ -74,5 +72,11 @@ class PublicAPI {
         $method
       )
     );
+  }
+
+  private function _decodeData($data) {
+    $data = ($data) ? $data : $this->data;
+    if (!$data) return false;
+    return unserialize(base64_decode($data));
   }
 }
