@@ -316,6 +316,19 @@ class Subscriber extends Model {
     return $orm;
   }
 
+  static function getSubscribedInSegments($segment_ids) {
+    $subscribers = SubscriberSegment::table_alias('relation')
+      ->whereIn('relation.segment_id', $segment_ids)
+      ->where('relation.status', 'subscribed')
+      ->join(
+        MP_SUBSCRIBERS_TABLE,
+        'subscribers.id = relation.subscriber_id',
+        'subscribers'
+      )
+      ->where('subscribers.status', 'subscribed');
+    return $subscribers;
+  }
+
   function customFields() {
     return $this->hasManyThrough(
       __NAMESPACE__.'\CustomField',

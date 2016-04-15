@@ -5,6 +5,8 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Util\Helpers;
 use Cron\CronExpression as Cron;
@@ -81,9 +83,18 @@ class SendingQueue {
 
     $queue = \MailPoet\Models\SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
-    $subscribers = SubscriberSegment::whereIn('segment_id', $data['segments'])
-      ->findArray();
+
+    if((boolean) Setting::getValue('signup_confirmation.enabled')) {
+      $subscribers = Subscriber::getSubscribedInSegments($data['segments'])
+        ->findArray();
+    }
+    else {
+      $subscribers = SubscriberSegment::whereIn('segment_id', $data['segments'])
+        ->where('status', 'subscribed')
+        ->findArray();
+    }
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
+
     $subscribers = array_unique($subscribers);
     if(!count($subscribers)) {
       return array(
