@@ -62,7 +62,7 @@ class Subscription {
   }
 
   static function getShortcodeUrl($shortcode, $url) {
-    return ((boolean) Setting::getValue('tracking.enabled') === true) ?
+    return ((boolean) Setting::getValue('tracking.enabled')) ?
       $shortcode :
       $url;
   }

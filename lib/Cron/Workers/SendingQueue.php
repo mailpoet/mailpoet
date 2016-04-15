@@ -76,7 +76,7 @@ class SendingQueue {
     if($queue->newsletter_rendered_body === null) {
       // render newsletter
       $rendered_newsletter = $this->renderNewsletter($newsletter);
-      if((boolean) Setting::getValue('tracking.enabled') === true) {
+      if((boolean) Setting::getValue('tracking.enabled')) {
         // extract and replace links
         $processed_newsletter = $this->processLinks(
           $this->joinObject($rendered_newsletter),
@@ -205,7 +205,7 @@ class SendingQueue {
       $subscriber,
       $this->joinObject($data_for_shortcodes)
     );
-    if((boolean) Setting::getValue('tracking.enabled') === true) {
+    if((boolean) Setting::getValue('tracking.enabled')) {
       $processed_newsletter = $this->replaceLinks(
         $newsletter['id'],
         $subscriber['id'],

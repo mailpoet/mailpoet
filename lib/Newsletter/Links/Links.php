@@ -37,10 +37,11 @@ class Links {
       . ')'
       . ')\\1#';
     preg_match_all($regex, $text, $links);
-    preg_match_all(Shortcodes::$shortcodes_regex, $text, $shortcodes);
+    $shortcodes = new Shortcodes();;
+    $shortcodes = $shortcodes->extract($text);
     return array_merge(
       array_unique($links[2]),
-      array_unique($shortcodes[0])
+      $shortcodes
     );
   }
 
