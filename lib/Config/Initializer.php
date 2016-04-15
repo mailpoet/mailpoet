@@ -68,35 +68,39 @@ class Initializer {
         'SET TIME_ZONE = "' . Env::$db_timezone_offset. '"'
     ));
 
-    $subscribers = Env::$db_prefix . 'subscribers';
     $settings = Env::$db_prefix . 'settings';
-    $newsletters = Env::$db_prefix . 'newsletters';
-    $newsletter_templates = Env::$db_prefix . 'newsletter_templates';
     $segments = Env::$db_prefix . 'segments';
     $forms = Env::$db_prefix . 'forms';
-    $subscriber_segment = Env::$db_prefix . 'subscriber_segment';
-    $newsletter_segment = Env::$db_prefix . 'newsletter_segment';
     $custom_fields = Env::$db_prefix . 'custom_fields';
+    $subscribers = Env::$db_prefix . 'subscribers';
+    $subscriber_segment = Env::$db_prefix . 'subscriber_segment';
     $subscriber_custom_field = Env::$db_prefix . 'subscriber_custom_field';
+    $newsletter_segment = Env::$db_prefix . 'newsletter_segment';
+    $sending_queues = Env::$db_prefix . 'sending_queues';
+    $newsletters = Env::$db_prefix . 'newsletters';
+    $newsletter_templates = Env::$db_prefix . 'newsletter_templates';
     $newsletter_option_fields = Env::$db_prefix . 'newsletter_option_fields';
     $newsletter_option = Env::$db_prefix . 'newsletter_option';
-    $sending_queues = Env::$db_prefix . 'sending_queues';
-    $newsletter_statistics = Env::$db_prefix . 'newsletter_statistics';
+    $newsletter_links = Env::$db_prefix . 'newsletter_links';
+    $statistics_newsletters = Env::$db_prefix . 'statistics_newsletters';
+    $statistics_clicks = Env::$db_prefix . 'statistics_clicks';
 
-    define('MP_SUBSCRIBERS_TABLE', $subscribers);
     define('MP_SETTINGS_TABLE', $settings);
-    define('MP_NEWSLETTERS_TABLE', $newsletters);
     define('MP_SEGMENTS_TABLE', $segments);
     define('MP_FORMS_TABLE', $forms);
+    define('MP_CUSTOM_FIELDS_TABLE', $custom_fields);
+    define('MP_SUBSCRIBERS_TABLE', $subscribers);
     define('MP_SUBSCRIBER_SEGMENT_TABLE', $subscriber_segment);
+    define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', $subscriber_custom_field);
+    define('MP_SENDING_QUEUES_TABLE', $sending_queues);
+    define('MP_NEWSLETTERS_TABLE', $newsletters);
     define('MP_NEWSLETTER_TEMPLATES_TABLE', $newsletter_templates);
     define('MP_NEWSLETTER_SEGMENT_TABLE', $newsletter_segment);
-    define('MP_CUSTOM_FIELDS_TABLE', $custom_fields);
-    define('MP_SUBSCRIBER_CUSTOM_FIELD_TABLE', $subscriber_custom_field);
     define('MP_NEWSLETTER_OPTION_FIELDS_TABLE', $newsletter_option_fields);
+    define('MP_NEWSLETTER_LINKS_TABLE', $newsletter_links);
     define('MP_NEWSLETTER_OPTION_TABLE', $newsletter_option);
-    define('MP_SENDING_QUEUES_TABLE', $sending_queues);
-    define('MP_NEWSLETTER_STATISTICS_TABLE', $newsletter_statistics);
+    define('MP_STATISTICS_NEWSLETTERS_TABLE', $statistics_newsletters);
+    define('MP_STATISTICS_CLICKS_TABLE', $statistics_clicks);
   }
 
   function runMigrator() {

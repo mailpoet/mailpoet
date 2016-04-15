@@ -3,8 +3,8 @@ namespace MailPoet\Models;
 
 if(!defined('ABSPATH')) exit;
 
-class NewsletterStatistics extends Model {
-  public static $_table = MP_NEWSLETTER_STATISTICS_TABLE;
+class StatisticsNewsletters extends Model {
+  public static $_table = MP_STATISTICS_NEWSLETTERS_TABLE;
 
   function __construct() {
     parent::__construct();
@@ -12,7 +12,7 @@ class NewsletterStatistics extends Model {
 
   static function createMultiple($data) {
     return self::rawExecute(
-      'INSERT INTO `' . NewsletterStatistics::$_table . '` ' .
+      'INSERT INTO `' . self::$_table . '` ' .
       '(newsletter_id, subscriber_id, queue_id) ' .
       'VALUES ' . rtrim(
         str_repeat('(?,?,?), ', count($data)/3),

@@ -10,20 +10,22 @@ class Migrator {
     $this->prefix = Env::$db_prefix;
     $this->charset = Env::$db_charset;
     $this->models = array(
-      'subscribers',
+      'segments',
       'settings',
+      'custom_fields',
+      'sending_queues',
+      'subscribers',
+      'subscriber_segment',
+      'subscriber_custom_field',
       'newsletters',
       'newsletter_templates',
-      'segments',
-      'subscriber_segment',
-      'newsletter_segment',
-      'custom_fields',
-      'subscriber_custom_field',
       'newsletter_option_fields',
       'newsletter_option',
-      'sending_queues',
-      'newsletter_statistics',
-      'forms'
+      'newsletter_segment',
+      'newsletter_links',
+      'forms',
+      'statistics_newsletters',
+      'statistics_clicks',
     );
   }
 
@@ -49,6 +51,72 @@ class Migrator {
     array_map($drop_table, $this->models);
   }
 
+  function segments() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'name varchar(90) NOT NULL,',
+      'type varchar(90) NOT NULL DEFAULT "default",',
+      'description varchar(250) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY name (name)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function settings() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'name varchar(20) NOT NULL,',
+      'value longtext,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY name (name)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function custom_fields() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'name varchar(90) NOT NULL,',
+      'type varchar(90) NOT NULL,',
+      'params longtext NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY name (name)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function sending_queues() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'newsletter_id mediumint(9) NOT NULL,',
+      'newsletter_rendered_body longtext,',
+      'newsletter_rendered_body_hash varchar(250) NULL DEFAULT NULL,',
+      'newsletter_rendered_subject varchar(250) NULL DEFAULT NULL,',
+      'subscribers longtext,',
+      'status varchar(12) NULL DEFAULT NULL,',
+      'priority mediumint(9) NOT NULL DEFAULT 0,',
+      'count_total mediumint(9) NOT NULL DEFAULT 0,',
+      'count_processed mediumint(9) NOT NULL DEFAULT 0,',
+      'count_to_process mediumint(9) NOT NULL DEFAULT 0,',
+      'count_failed mediumint(9) NOT NULL DEFAULT 0,',
+      'scheduled_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'processed_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
+      'PRIMARY KEY  (id)',
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
   function subscribers() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
@@ -66,15 +134,30 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function settings() {
+  function subscriber_segment() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'name varchar(20) NOT NULL,',
-      'value longtext,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'segment_id mediumint(9) NOT NULL,',
+      'status varchar(12) NOT NULL DEFAULT "subscribed",',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY name (name)'
+      'UNIQUE KEY subscriber_segment (subscriber_id,segment_id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function subscriber_custom_field() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'custom_field_id mediumint(9) NOT NULL,',
+      'value varchar(255) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY subscriber_id_custom_field_id (subscriber_id,custom_field_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -113,76 +196,6 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function segments() {
-    $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'name varchar(90) NOT NULL,',
-      'type varchar(90) NOT NULL DEFAULT "default",',
-      'description varchar(250) NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id),',
-      'UNIQUE KEY name (name)'
-    );
-    return $this->sqlify(__FUNCTION__, $attributes);
-  }
-
-  function subscriber_segment() {
-    $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'subscriber_id mediumint(9) NOT NULL,',
-      'segment_id mediumint(9) NOT NULL,',
-      'status varchar(12) NOT NULL DEFAULT "subscribed",',
-      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id),',
-      'UNIQUE KEY subscriber_segment (subscriber_id,segment_id)'
-    );
-    return $this->sqlify(__FUNCTION__, $attributes);
-  }
-
-  function newsletter_segment() {
-    $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'newsletter_id mediumint(9) NOT NULL,',
-      'segment_id mediumint(9) NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id),',
-      'UNIQUE KEY newsletter_segment (newsletter_id,segment_id)'
-    );
-    return $this->sqlify(__FUNCTION__, $attributes);
-  }
-
-  function custom_fields() {
-    $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'name varchar(90) NOT NULL,',
-      'type varchar(90) NOT NULL,',
-      'params longtext NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id),',
-      'UNIQUE KEY name (name)'
-    );
-    return $this->sqlify(__FUNCTION__, $attributes);
-  }
-
-  function subscriber_custom_field() {
-    $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'subscriber_id mediumint(9) NOT NULL,',
-      'custom_field_id mediumint(9) NOT NULL,',
-      'value varchar(255) NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'PRIMARY KEY  (id),',
-      'UNIQUE KEY subscriber_id_custom_field_id (subscriber_id,custom_field_id)'
-    );
-    return $this->sqlify(__FUNCTION__, $attributes);
-  }
-
   function newsletter_option_fields() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
@@ -210,37 +223,28 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function sending_queues() {
+  function newsletter_segment() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
-      'newsletter_rendered_body longtext,',
-      'newsletter_rendered_body_hash varchar(250) NULL DEFAULT NULL,',
-      'newsletter_rendered_subject varchar(250) NULL DEFAULT NULL,',
-      'subscribers longtext,',
-      'status varchar(12) NULL DEFAULT NULL,',
-      'priority mediumint(9) NOT NULL DEFAULT 0,',
-      'count_total mediumint(9) NOT NULL DEFAULT 0,',
-      'count_processed mediumint(9) NOT NULL DEFAULT 0,',
-      'count_to_process mediumint(9) NOT NULL DEFAULT 0,',
-      'count_failed mediumint(9) NOT NULL DEFAULT 0,',
-      'scheduled_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'processed_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'segment_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
-      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
-      'PRIMARY KEY  (id)',
+      'PRIMARY KEY  (id),',
+      'UNIQUE KEY newsletter_segment (newsletter_id,segment_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletter_statistics() {
+  function newsletter_links() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
-      'subscriber_id mediumint(9) NOT NULL,',
       'queue_id mediumint(9) NOT NULL,',
-      'sent_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'url varchar(255) NOT NULL,',
+      'hash varchar(20) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
@@ -257,6 +261,34 @@ class Migrator {
       'deleted_at TIMESTAMP NULL DEFAULT NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function statistics_newsletters() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'newsletter_id mediumint(9) NOT NULL,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'queue_id mediumint(9) NOT NULL,',
+      'sent_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)',
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function statistics_clicks() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'newsletter_id mediumint(9) NOT NULL,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'queue_id mediumint(9) NOT NULL,',
+      'link_id mediumint(9) NOT NULL,',
+      'count mediumint(9) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
