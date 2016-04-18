@@ -65,8 +65,15 @@ class Scheduler {
   function processPostNotificationNewsletter($newsletter, $queue) {
     $next_run_date = $this->getQueueNextRunDate($newsletter->schedule);
     $segments = unserialize($newsletter->segments);
-    $subscribers = SubscriberSegment::whereIn('segment_id', $segments)
-      ->findArray();
+    if((boolean) Setting::getValue('signup_confirmation.enabled')) {
+      $subscribers = Subscriber::getSubscribedInSegments($segments)
+        ->findArray();
+    }
+    else {
+      $subscribers = SubscriberSegment::whereIn('segment_id', $segments)
+        ->where('status', 'subscribed')
+        ->findArray();
+    }
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
     $subscribers = array_unique($subscribers);
     if(!count($subscribers) || !$this->checkIfNewsletterChanged($newsletter)) {
