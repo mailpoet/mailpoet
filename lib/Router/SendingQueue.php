@@ -84,17 +84,9 @@ class SendingQueue {
     $queue = \MailPoet\Models\SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
 
-    if((boolean) Setting::getValue('signup_confirmation.enabled')) {
-      $subscribers = Subscriber::getSubscribedInSegments($data['segments'])
-        ->findArray();
-    }
-    else {
-      $subscribers = SubscriberSegment::whereIn('segment_id', $data['segments'])
-        ->where('status', 'subscribed')
-        ->findArray();
-    }
+    $subscribers = Subscriber::getSubscribedInSegments($data['segments'])
+      ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
-
     $subscribers = array_unique($subscribers);
     if(!count($subscribers)) {
       return array(
