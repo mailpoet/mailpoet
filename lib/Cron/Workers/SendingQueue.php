@@ -102,6 +102,9 @@ class SendingQueue {
     foreach($subscribers as $subscriber) {
       $processed_newsletters[] =
         $this->processNewsletter($newsletter, $subscriber, $queue);
+      if(!$queue->newsletter_rendered_subject) {
+        $queue->newsletter_rendered_subject = $processed_newsletters[0]['subject'];
+      }
       $transformed_subscribers[] =
         $mailer->transformSubscriber($subscriber);
     }
