@@ -180,8 +180,7 @@ class SendingQueue {
   }
 
   function processLinks($text, $newsletter_id, $queue_id) {
-    $links = new Links();
-    list($text, $processed_links) = $links->replace($text);
+    list($text, $processed_links) = Links::replace($text);
     foreach($processed_links as $link) {
       // save extracted and processed links
       $newsletter_link = NewsletterLink::create();
