@@ -18,7 +18,7 @@ class Image {
     }
     $template = '
       <tr>
-        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_bottom mailpoet_padded_side' : 'mailpoet_padded_bottom') . '" align="center" valign="top">
+        <td class="mailpoet_image ' . (($element['fullWidth'] === false) ? 'mailpoet_padded_bottom mailpoet_padded_side' : '') . '" align="center" valign="top">
           ' . $image_template . '
         </td>
       </tr>';
