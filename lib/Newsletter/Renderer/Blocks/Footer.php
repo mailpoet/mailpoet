@@ -5,7 +5,7 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Footer {
   static function render($element) {
-    $element['text'] = preg_replace('/\n/', '<br /><br />', $element['text']);
+    $element['text'] = preg_replace('/\n/', '<br />', $element['text']);
     $element['text'] = preg_replace('/(<\/?p.*?>)/i', '', $element['text']);
     $line_height = sprintf(
       '%spx', StylesHelper::$line_height_multiplier * (int) $element['styles']['text']['fontSize']
