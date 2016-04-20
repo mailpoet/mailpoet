@@ -84,6 +84,7 @@ class Initializer {
     $newsletter_links = Env::$db_prefix . 'newsletter_links';
     $statistics_newsletters = Env::$db_prefix . 'statistics_newsletters';
     $statistics_clicks = Env::$db_prefix . 'statistics_clicks';
+    $statistics_opens = Env::$db_prefix . 'statistics_opens';
 
     define('MP_SETTINGS_TABLE', $settings);
     define('MP_SEGMENTS_TABLE', $segments);
@@ -101,6 +102,7 @@ class Initializer {
     define('MP_NEWSLETTER_OPTION_TABLE', $newsletter_option);
     define('MP_STATISTICS_NEWSLETTERS_TABLE', $statistics_newsletters);
     define('MP_STATISTICS_CLICKS_TABLE', $statistics_clicks);
+    define('MP_STATISTICS_OPENS_TABLE', $statistics_opens);
   }
 
   function runMigrator() {

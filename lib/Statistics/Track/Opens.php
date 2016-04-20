@@ -1,60 +1,39 @@
 <?php
 namespace MailPoet\Statistics\Track;
 
-use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\StatisticsClicks;
+use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
-use MailPoet\Subscription\Url as SubscriptionUrl;
-use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class Opens {
-  public $url;
+  public $data;
 
-  function __construct($url) {
-    $this->url = $url;
+  function __construct($data) {
+    $this->data = $data;
   }
 
-  function track($url = false) {
-    $url = ($url) ? $url : $this->url;
-    if(!preg_match('/\d+-\d+-\d+$/', $url)) $this->abort();
-    list ($newsletter_id, $subscriber_id, $queue_id) = explode('-', $url);
+  function track($data = false) {
+    $data = ($data) ? $data : $this->data;
+    if(!preg_match('/\d+-\d+-\d+/', $data)) $this->abort();
+    list ($newsletter_id, $subscriber_id, $queue_id) = explode('-', $data);
     $subscriber = Subscriber::findOne($subscriber_id);
     if(!$subscriber) return;
-    $statistics = StatisticsOpens::where('link_id', $link->id)
-      ->where('subscriber_id', $subscriber_id)
+    $statistics = StatisticsOpens::where('subscriber_id', $subscriber_id)
       ->where('newsletter_id', $newsletter_id)
       ->where('queue_id', $queue_id)
       ->findOne();
     if(!$statistics) {
-      $statistics = StatisticsClicks::create();
+      $statistics = StatisticsOpens::create();
       $statistics->newsletter_id = $newsletter_id;
-      $statistics->link_id = $link->id;
       $statistics->subscriber_id = $subscriber_id;
       $statistics->queue_id = $queue_id;
-      $statistics->count = 1;
-      $statistics->save();
-    } else {
-      $statistics->count++;
       $statistics->save();
     }
-    $url = (preg_match('/\[subscription:.*?\]/', $link->url)) ?
-      $this->processSubscriptionUrl($link->url, $subscriber) :
-      $link->url;
-    header('Location: ' . $url, true, 302);
-  }
-
-  function processSubscriptionUrl($url, $subscriber) {
-    preg_match('/\[subscription:(.*?)\]/', $url, $match);
-    $action = $match[1];
-    if(preg_match('/unsubscribe/', $action)) {
-      $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
-    }
-    if(preg_match('/manage/', $action)) {
-      $url = SubscriptionUrl::getManageUrl($subscriber);
-    }
-    return $url;
+    header('Content-Type: image/gif');
+    // return 1x1 pixel transparent gif image
+    echo "\x47\x49\x46\x38\x37\x61\x1\x0\x1\x0\x80\x0\x0\xfc\x6a\x6c\x0\x0\x0\x2c\x0\x0\x0\x0\x1\x0\x1\x0\x0\x2\x2\x44\x1\x0\x3b";
+    exit;
   }
 
   private function abort() {
