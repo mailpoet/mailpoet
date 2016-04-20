@@ -102,6 +102,10 @@ class Renderer {
     $template->html(
       str_replace('!important', '', $template->html())
     );
-    return $DOM->__toString();
+    $template = apply_filters(
+      'mailpoet_rendering_post_process',
+      $DOM->__toString()
+    );
+    return $template;
   }
 }

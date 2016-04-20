@@ -9,7 +9,7 @@ use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
-class Click {
+class Opens {
   public $url;
 
   function __construct($url) {
@@ -18,13 +18,11 @@ class Click {
 
   function track($url = false) {
     $url = ($url) ? $url : $this->url;
-    if(!preg_match('/\d+-\d+-\d+-[a-zA-Z0-9]/', $url)) $this->abort();
-    list ($newsletter_id, $subscriber_id, $queue_id, $hash) = explode('-', $url);
+    if(!preg_match('/\d+-\d+-\d+$/', $url)) $this->abort();
+    list ($newsletter_id, $subscriber_id, $queue_id) = explode('-', $url);
     $subscriber = Subscriber::findOne($subscriber_id);
-    $link = NewsletterLink::where('hash', $hash)
-      ->findOne();
-    if(!$link || !$subscriber) $this->abort();
-    $statistics = StatisticsClicks::where('link_id', $link->id)
+    if(!$subscriber) return;
+    $statistics = StatisticsOpens::where('link_id', $link->id)
       ->where('subscriber_id', $subscriber_id)
       ->where('newsletter_id', $newsletter_id)
       ->where('queue_id', $queue_id)
