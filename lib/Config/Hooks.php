@@ -9,14 +9,13 @@ class Hooks {
   }
 
   function init() {
-    $this->setupSubscribe();
     $this->setupWPUsers();
     $this->setupImageSize();
     $this->setupListing();
-    $this->setupManageSubscription();
+    $this->setupSubscriptionEvents();
   }
 
-  function setupSubscribe() {
+  function setupSubscriptionEvents() {
     $subscribe = Setting::getValue('subscribe', array());
     // Subscribe in comments
     if(
@@ -98,7 +97,7 @@ class Hooks {
     add_action(
       'profile_update',
       '\MailPoet\Segments\WP::synchronizeUser',
-      1,2
+      1, 2
     );
     add_action(
       'delete_user',
@@ -137,18 +136,6 @@ class Hooks {
       'set-screen-option',
       array($this, 'setScreenOption'),
       10, 3
-    );
-  }
-
-  function setupManageSubscription() {
-    // handle subscription form submission
-    add_action(
-      'admin_post_mailpoet_subscription_update',
-      '\MailPoet\Subscription\Manage::onSave'
-    );
-    add_action(
-      'admin_post_nopriv_mailpoet_subscription_update',
-      '\MailPoet\Subscription\Manage::onSave'
     );
   }
 

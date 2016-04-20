@@ -14,28 +14,24 @@ class Url {
     exit();
   }
 
-  static function redirectBack() {
+  static function redirectBack($params = array()) {
     // check mailpoet_redirect parameter
     $referer = (isset($_POST['mailpoet_redirect'])
       ? $_POST['mailpoet_redirect']
-      : null
+      : wp_get_referer()
     );
 
-    // fallback: http referer
-    if($referer === null) {
-      if(!empty($_SERVER['HTTP_REFERER'])) {
-        $referer = $_SERVER['HTTP_REFERER'];
-      }
-    }
-
     // fallback: home_url
-    if($referer === null) {
+    if(!$referer) {
       $referer = home_url();
     }
 
-    if($referer !== null) {
-      self::redirectTo($referer);
+    // append extra params to url
+    if(!empty($params)) {
+      $referer = add_query_arg($params, $referer);
     }
+
+    self::redirectTo($referer);
     exit();
   }
 

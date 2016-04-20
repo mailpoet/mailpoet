@@ -9,13 +9,14 @@
     <%= styles | raw %>
     <form
       method="post"
-      <#
-      action="<%= admin_url('admin-post.php?action=mailpoet_form_subscribe') | raw %>"
-      #>
+      action="<%= admin_url('admin-post.php?action=mailpoet') | raw %>"
       class="mailpoet_form mailpoet_form_<%= form_type %>"
       novalidate
     >
       <input type="hidden" name="form_id" value="<%= form.id %>" />
+      <input type="hidden" name="token" value="<%= token %>" />
+      <input type="hidden" name="endpoint" value="subscribers" />
+      <input type="hidden" name="method" value="subscribe" />
 
       <% if not(form.settings.segments_selected_by == 'user') %>
         <% for segment in form.settings.segments %>
@@ -23,8 +24,15 @@
         <% endfor %>
       <% endif %>
       <%= html | raw %>
+      <div
+        class="mailpoet_message"
+      >
 
-      <div class="mailpoet_message"></div>
+          <p class="mailpoet_validate_success" style="display:none;">
+            <%= form.settings.success_message %>
+          </p>
+
+      </div>
     </form>
   </div>
   <%= after_widget | raw %>

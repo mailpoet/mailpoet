@@ -7,33 +7,12 @@ use \MailPoet\Models\Setting;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Form\Renderer as FormRenderer;
 use \MailPoet\Form\Util;
+use \MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
 class Widget extends \WP_Widget {
   function __construct () {
-    // add_action(
-    //   'wp_ajax_mailpoet_form_subscribe',
-    //   array($this, 'subscribe')
-    // );
-    // add_action(
-    //   'wp_ajax_nopriv_mailpoet_form_subscribe',
-    //   array($this, 'subscribe')
-    // );
-    // add_action(
-    //   'admin_post_nopriv_mailpoet_form_subscribe',
-    //   array($this, 'subscribe')
-    // );
-    // add_action(
-    //   'admin_post_mailpoet_form_subscribe',
-    //   array($this, 'subscribe')
-    // );
-
-    // add_action(
-    //   'init',
-    //   array($this, 'subscribe')
-    // );
-
     return parent::__construct(
       'mailpoet_form',
       __('MailPoet Form'),
@@ -169,21 +148,15 @@ class Widget extends \WP_Widget {
           'after_title' => (!empty($after_title) ? $after_title : '')
         );
 
-        // if(isset($_GET['mailpoet_form']) && (int)$_GET['mailpoet_form'] === $form['id']) {
-        //   // form messages (success / error)
-        //   $output .= '<div class="mailpoet_message">';
-        //   // success message
-        //   if(isset($_GET['mailpoet_success'])) {
-        //     $output .= '<p class="mailpoet_validate_success">'.strip_tags(urldecode($_GET['mailpoet_success']), '<a><strong><em><br><p>').'</p>';
-        //   }
-        //   // error message
-        //   if(isset($_GET['mailpoet_error'])) {
-        //     $output .= '<p class="mailpoet_validate_error">'.strip_tags(urldecode($_GET['mailpoet_error']), '<a><strong><em><br><p>').'</p>';
-        //   }
-        //   $output .= '</div>';
-        // } else {
-        //   $output .= '<div class="mailpoet_message"></div>';
-        // }
+        // check if the form was submitted
+        $data['is_submitted'] = (
+          (isset($_GET['mailpoet_form']))
+          &&
+          ((int)$_GET['mailpoet_form'] === (int)$form['id'])
+        );
+
+        // generate security token
+        $data['token'] = Security::generateToken();
 
         // render form
         $renderer = new Renderer();

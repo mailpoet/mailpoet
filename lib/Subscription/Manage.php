@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\Subscription;
-use \MailPoet\Models\Setting;
 use \MailPoet\Models\Subscriber;
-use \MailPoet\Models\SubscriberSegment;
 use \MailPoet\Util\Url;
 
 class Manage {
