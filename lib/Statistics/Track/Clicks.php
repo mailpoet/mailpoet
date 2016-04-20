@@ -5,11 +5,10 @@ use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\Subscriber;
 use MailPoet\Subscription\Url as SubscriptionUrl;
-use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
-class Click {
+class Clicks {
   public $url;
 
   function __construct($url) {
@@ -23,13 +22,17 @@ class Click {
     $subscriber = Subscriber::findOne($subscriber_id);
     $link = NewsletterLink::where('hash', $hash)
       ->findOne();
-    if(!$link || !$subscriber) $this->abort();
+    if(!$subscriber) return;
+    if(!$link) $this->abort();
     $statistics = StatisticsClicks::where('link_id', $link->id)
       ->where('subscriber_id', $subscriber_id)
       ->where('newsletter_id', $newsletter_id)
       ->where('queue_id', $queue_id)
       ->findOne();
     if(!$statistics) {
+      // track open action in case it did not register
+      $opens = new Opens($url);
+      $opens->track();
       $statistics = StatisticsClicks::create();
       $statistics->newsletter_id = $newsletter_id;
       $statistics->link_id = $link->id;
