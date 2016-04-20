@@ -2,6 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Cron\Daemon;
+use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscription;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Util\Helpers;
@@ -53,6 +54,9 @@ class PublicAPI {
     try {
       if($this->action === 'click') {
         $track_class = new Clicks($this->data);
+      }
+      if($this->action === 'open') {
+        $track_class = new Opens($this->data);
       }
       if(!isset($track_class)) return;
       $track_class->track();

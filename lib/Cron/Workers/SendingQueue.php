@@ -9,6 +9,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
+use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Util\Helpers;
@@ -74,6 +75,10 @@ class SendingQueue {
     // check if newsletter has been rendered, in which case return its contents
     // or render and save for future reuse
     if($queue->newsletter_rendered_body === null) {
+      // insert tracking code
+      add_filter('mailpoet_rendering_post_process', function($template) {
+        return OpenTracking::process($template);
+      });
       // render newsletter
       $rendered_newsletter = $this->renderNewsletter($newsletter);
       if((boolean) Setting::getValue('tracking.enabled')) {
