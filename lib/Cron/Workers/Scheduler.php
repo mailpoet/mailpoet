@@ -127,7 +127,13 @@ class Scheduler {
     return true;
   }
 
+  // TODO: function will be depreciated once new post notification logic is done
   private function checkIfNewsletterChanged($newsletter) {
+    $previous_queue = SendingQueue::whereNull('status')
+      ->where('newsletter_id', $newsletter->id)
+      ->orderByDesc('id')
+      ->findOne();
+    if ($previous_queue) return false;
     $running_queue = SendingQueue::whereNull('status')
       ->where('newsletter_id', $newsletter->id)
       ->orderByDesc('id')
