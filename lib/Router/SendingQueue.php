@@ -54,6 +54,7 @@ class SendingQueue {
         ->where('newsletter_type', 'notification')
         ->findOne();
       $relation = NewsletterOption::where('option_field_id', $option_field->id)
+        ->where('newsletter_id', $newsletter->id)
         ->findOne();
       if(!$relation) {
         $relation = NewsletterOption::create();
