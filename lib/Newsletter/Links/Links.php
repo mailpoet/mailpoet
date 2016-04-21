@@ -25,7 +25,7 @@ class Links {
       . ')\\1#';
     preg_match_all($regex, $text, $links);
     $shortcodes = new Shortcodes();;
-    $shortcodes = $shortcodes->extract($text);
+    $shortcodes = $shortcodes->extract($text, $limit = array('subscription'));
     return array_merge(
       array_unique($links[2]),
       $shortcodes

@@ -18,8 +18,10 @@ class ShortcodesTest extends MailPoetTest {
     $this->newsletter = array(
       'subject' => 'some subject',
       'type' => 'notification',
-      'id' => 1
+      'id' => 2
     );
+    $post = get_post(1);
+    $this->latest_post_title = $post->post_title;
     $this->rendered_newsletter = '
       Hello [user:displayname | default:member].
       Your first name is [user:firstname | default:First Name].
@@ -32,7 +34,7 @@ class ShortcodesTest extends MailPoetTest {
 
       There are [newsletter:total] posts in this newsletter.
       You are reading [newsletter:subject].
-      The latest post on this blog is called [newsletter:post_title].
+      The latest post in this newsletter is called [newsletter:post_title].
       The issue number of this newsletter is [newsletter:number].
 
       Date: [date:d].
@@ -58,15 +60,11 @@ class ShortcodesTest extends MailPoetTest {
 
   function testItCanProcessShortcodes() {
     $wp_user = get_userdata($this->wp_user);
-    $wp_latest_post = wp_get_recent_posts(array('numberposts' => 1));
-    $wp_latest_post = (isset($wp_latest_post)) ?
-      $wp_latest_post[0]['post_title'] :
-      false;
 
     $queue = SendingQueue::create();
     $queue->newsletter_id = $this->newsletter['id'];
     $queue->save();
-    $issue_number = 2;
+    $issue_number = 1;
 
     $number_of_posts = 2;
 
@@ -92,7 +90,7 @@ class ShortcodesTest extends MailPoetTest {
 
       There are {$number_of_posts} posts in this newsletter.
       You are reading {$this->newsletter['subject']}.
-      The latest post on this blog is called {$wp_latest_post}.
+      The latest post in this newsletter is called {$this->latest_post_title}.
       The issue number of this newsletter is {$issue_number}.
 
       Date: {$date->format('d')}.
