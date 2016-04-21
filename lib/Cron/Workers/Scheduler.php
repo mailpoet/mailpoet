@@ -31,7 +31,6 @@ class Scheduler {
    foreach($scheduled_queues as $i=>$queue) {
       $newsletter = Newsletter::filter('filterWithOptions')
         ->findOne($queue->newsletter_id);
-     !ddd($newsletter);
       if(!$newsletter || $newsletter->deleted_at !== null) {
         $queue->delete();
       }
