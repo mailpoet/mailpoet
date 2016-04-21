@@ -102,19 +102,20 @@ class Subscribers {
     if($form_settings !== null) {
       switch($form_settings['on_success']) {
         case 'page':
+          $success_page_url = get_permalink($form_settings['success_page']);
+
           // response depending on context
           if($doing_ajax === true) {
             return array(
               'result' => $result,
-              'page' => get_permalink($form_settings['success_page']),
+              'page' => $success_page_url,
               'errors' => $errors
             );
           } else {
-            // handle success/error messages
             if($result === false) {
               Url::redirectBack();
             } else {
-              Url::redirectTo(get_permalink($form_settings['success_page']));
+              Url::redirectTo($success_page_url);
             }
           }
         break;
@@ -124,11 +125,17 @@ class Subscribers {
           // response depending on context
           if($doing_ajax === true) {
             return array(
-              'result' => true,
+              'result' => $result,
               'errors' => $errors
             );
           } else {
-            Url::redirectBack();
+            $params = (
+              ($result === true)
+              ? array('mailpoet_success' => $form->id)
+              : array()
+            );
+
+            Url::redirectBack($params);
           }
         break;
       }

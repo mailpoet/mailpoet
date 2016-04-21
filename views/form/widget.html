@@ -24,14 +24,18 @@
         <% endfor %>
       <% endif %>
       <%= html | raw %>
-      <div
-        class="mailpoet_message"
-      >
-
-          <p class="mailpoet_validate_success" style="display:none;">
-            <%= form.settings.success_message %>
-          </p>
-
+      <div class="mailpoet_message">
+        <p
+          class="mailpoet_validate_success"
+          <% if not(success) %>
+          style="display:none;"
+          <% endif %>
+        >
+          <%= form.settings.success_message %>
+        </p>
+        <p class="mailpoet_validate_error" style="display:none;">
+          <!-- errors will be displayed here -->
+        </p>
       </div>
     </form>
   </div>

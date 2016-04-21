@@ -148,11 +148,11 @@ class Widget extends \WP_Widget {
           'after_title' => (!empty($after_title) ? $after_title : '')
         );
 
-        // check if the form was submitted
-        $data['is_submitted'] = (
-          (isset($_GET['mailpoet_form']))
+        // check if the form was successfully submitted via POST (non ajax)
+        $data['success'] = (
+          (isset($_GET['mailpoet_success']))
           &&
-          ((int)$_GET['mailpoet_form'] === (int)$form['id'])
+          ((int)$_GET['mailpoet_success'] === (int)$form['id'])
         );
 
         // generate security token
