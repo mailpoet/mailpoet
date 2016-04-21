@@ -28,7 +28,7 @@ class Scheduler {
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
       ->findMany();
     if(!count($scheduled_queues)) return;
-    foreach($scheduled_queues as $queue) {
+   foreach($scheduled_queues as $i=>$queue) {
       $newsletter = Newsletter::filter('filterWithOptions')
         ->findOne($queue->newsletter_id);
       if(!$newsletter || $newsletter->deleted_at !== null) {
@@ -128,6 +128,11 @@ class Scheduler {
   }
 
   private function checkIfNewsletterChanged($newsletter) {
+    $running_queue = SendingQueue::whereNull('status')
+      ->where('newsletter_id', $newsletter->id)
+      ->orderByDesc('id')
+      ->findOne();
+    if ($running_queue) return false;
     $last_run_queue = SendingQueue::where('status', 'completed')
       ->where('newsletter_id', $newsletter->id)
       ->orderByDesc('id')
