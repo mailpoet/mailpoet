@@ -55,11 +55,16 @@ class SendingQueue {
               $subscribers_ids) {
         $subscribers = Subscriber::whereIn('id', $subscribers_ids)
           ->findArray();
-        // recalculate the number of subscribers if the total to process count
-        // does not match the number of subscribers in the database
         if (count($subscribers_ids) !== count($subscribers)) {
-          $subscibers_to_exclude = array_diff($subscribers_ids, Helpers::arrayColumn($subscribers, 'id'));
-          $queue->subscribers->to_process = array_diff($queue->subscribers->to_process, $subscibers_to_exclude);
+          $queue->subscribers->to_process = $this->recalculateSubscriberCount(
+            Helpers::arrayColumn($subscribers, 'id'),
+            $subscribers_ids,
+            $queue->subscribers->to_process
+          );
+        }
+        if (!count($queue->subscribers->to_process)) {
+          $this->updateQueue($queue);
+          continue;
         }
         $queue->subscribers = call_user_func_array(
           array(
@@ -354,6 +359,12 @@ class SendingQueue {
       Setting::setValue('mta_log', $this->mta_log);
     }
     return;
+  }
+
+  function recalculateSubscriberCount(
+    $found_subscriber, $existing_subscribers, $subscribers_to_process) {
+    $subscibers_to_exclude = array_diff($existing_subscribers, $found_subscriber);
+    return array_diff($subscribers_to_process, $subscibers_to_exclude);
   }
 
   private function joinObject($object = array()) {
