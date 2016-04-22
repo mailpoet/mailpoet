@@ -13,8 +13,13 @@ class Shortcodes {
     $this->subscriber = $subscriber;
   }
 
-  function extract($text) {
-    preg_match_all('/\[(?:\w+):.*?\]/ism', $text, $shortcodes);
+  function extract($text, $limit = false) {
+    $limit = (is_array($limit)) ? implode('|', $limit) : false;
+    $regex = sprintf(
+      '/\[%s:.*?\]/ism',
+      ($limit) ? '(?:' . $limit . ')' : '(?:\w+)'
+    );
+    preg_match_all($regex, $text, $shortcodes);
     return array_unique($shortcodes[0]);
   }
 

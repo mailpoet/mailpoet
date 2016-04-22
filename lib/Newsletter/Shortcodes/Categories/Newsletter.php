@@ -3,6 +3,8 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\SendingQueue;
 
+require_once( ABSPATH . "wp-includes/pluggable.php" );
+
 class Newsletter {
   /*
     {
@@ -46,14 +48,18 @@ class Newsletter {
       break;
 
       case 'post_title':
-        $post = wp_get_recent_posts(array('numberposts' => 1));
-        return (isset($post[0])) ? $post[0]['post_title'] : false;
+        preg_match_all('/data-post-id="(\w+)"/ism', $text, $posts);
+        $post_ids = array_unique($posts[1]);
+        $latest_post = self::getLatestWPPost($post_ids);
+        return ($latest_post) ? $latest_post['post_title'] : false;
       break;
 
       case 'number':
         if ($newsletter['type'] !== 'notification') return false;
-        $sent_newsletters = (int)
-          SendingQueue::where('newsletter_id', $newsletter['id'])->count();
+        $sent_newsletters =
+          SendingQueue::where('newsletter_id', $newsletter['id'])
+            ->where('status', 'completed')
+            ->count();
         return ++$sent_newsletters;
       break;
 
@@ -69,5 +75,19 @@ class Newsletter {
         return false;
       break;
     }
+  }
+
+  private static function getLatestWPPost($post_ids) {
+    $posts = new \WP_Query(
+      array(
+        'post__in' => $post_ids,
+        'posts_per_page' => 1,
+        'orderby' => 'post_date',
+        'order' => 'DESC'
+      )
+    );
+    return (count($posts)) ?
+      $posts->posts[0]->to_array() :
+      false;
   }
 }
