@@ -55,6 +55,17 @@ class SendingQueue {
               $subscribers_ids) {
         $subscribers = Subscriber::whereIn('id', $subscribers_ids)
           ->findArray();
+        if (count($subscribers_ids) !== count($subscribers)) {
+          $queue->subscribers->to_process = $this->recalculateSubscriberCount(
+            Helpers::arrayColumn($subscribers, 'id'),
+            $subscribers_ids,
+            $queue->subscribers->to_process
+          );
+        }
+        if (!count($queue->subscribers->to_process)) {
+          $this->updateQueue($queue);
+          continue;
+        }
         $queue->subscribers = call_user_func_array(
           array(
             $this,
@@ -348,6 +359,12 @@ class SendingQueue {
       Setting::setValue('mta_log', $this->mta_log);
     }
     return;
+  }
+
+  function recalculateSubscriberCount(
+    $found_subscriber, $existing_subscribers, $subscribers_to_process) {
+    $subscibers_to_exclude = array_diff($existing_subscribers, $found_subscriber);
+    return array_diff($subscribers_to_process, $subscibers_to_exclude);
   }
 
   private function joinObject($object = array()) {
