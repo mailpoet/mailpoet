@@ -22,7 +22,7 @@ function(
 
         form.parsley().on('form:validated', function(parsley) {
           // clear messages
-          form.find('.mailpoet_message').html('');
+          form.find('.mailpoet_message > p').hide();
 
           // resize iframe
           if(window.frameElement !== null) {
@@ -45,27 +45,18 @@ function(
               action: 'subscribe',
               data: data
             }).done(function(response) {
-              if(response.result !== true) {
-                // errors
-                $.each(response.errors, function(index, error) {
-                  form
-                    .find('.mailpoet_message')
-                    .append('<p class="mailpoet_validate_error">'+
-                      error+
-                    '</p>');
-                });
+              if(response.result === false) {
+                form.find('.mailpoet_validate_error').html(
+                  response.errors.join('<br />')
+                ).show();
               } else {
                 // successfully subscribed
                 if(response.page !== undefined) {
                   // go to page
                   window.location.href = response.page;
-                } else if(response.message !== undefined) {
+                } else {
                   // display success message
-                  form
-                    .find('.mailpoet_message')
-                    .html('<p class="mailpoet_validate_success">'+
-                      response.message+
-                    '</p>');
+                  form.find('.mailpoet_validate_success').show();
                 }
 
                 // reset form

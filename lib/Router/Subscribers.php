@@ -8,6 +8,7 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Form;
+use MailPoet\Util\Url;
 
 if(!defined('ABSPATH')) exit;
 
@@ -88,53 +89,34 @@ class Subscribers {
     }
 
     $subscriber = Subscriber::subscribe($data, $segment_ids);
-    if($subscriber->getErrors() !== false) {
-      return array(
-        'result' => false,
-        'errors' => $subscriber->getErrors()
-      );
-    }
+    $errors = $subscriber->getErrors();
+    $result = ($errors === false && $subscriber->id() > 0);
 
     // get success message to display after subscription
     $form_settings = (
       isset($form->settings)
-      ? unserialize($form->settings) : null
+      ? unserialize($form->settings)
+      : null
     );
 
     if($form_settings !== null) {
-      $message = $form_settings['success_message'];
-
-      // url params for non ajax requests
-      if($doing_ajax === false) {
-        // get referer
-        $referer = (wp_get_referer() !== false)
-          ? wp_get_referer() : $_SERVER['HTTP_REFERER'];
-
-        // redirection parameters
-        $params = array(
-          'mailpoet_form' => $form->id()
-        );
-
-        // handle success/error messages
-        if($result === false) {
-          $params['mailpoet_error'] = urlencode($message);
-        } else {
-          $params['mailpoet_success'] = urlencode($message);
-        }
-      }
-
       switch($form_settings['on_success']) {
         case 'page':
+          $success_page_url = get_permalink($form_settings['success_page']);
+
           // response depending on context
           if($doing_ajax === true) {
             return array(
               'result' => $result,
-              'page' => get_permalink($form_settings['success_page']),
-              'message' => $message
+              'page' => $success_page_url,
+              'errors' => $errors
             );
           } else {
-            $redirect_to = ($result === false) ? $referer : get_permalink($form_settings['success_page']);
-            wp_redirect(add_query_arg($params, $redirect_to));
+            if($result === false) {
+              Url::redirectBack();
+            } else {
+              Url::redirectTo($success_page_url);
+            }
           }
         break;
 
@@ -143,12 +125,17 @@ class Subscribers {
           // response depending on context
           if($doing_ajax === true) {
             return array(
-              'result' => true,
-              'message' => $message
+              'result' => $result,
+              'errors' => $errors
             );
           } else {
-            // redirect to previous page
-            wp_redirect(add_query_arg($params, $referer));
+            $params = (
+              ($result === true)
+              ? array('mailpoet_success' => $form->id)
+              : array()
+            );
+
+            Url::redirectBack($params);
           }
         break;
       }

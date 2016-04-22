@@ -9,16 +9,26 @@ class Router {
   }
 
   function init() {
+    // security token
     add_action(
       'admin_head',
       array($this, 'setToken')
     );
+
+    // Admin API (Ajax only)
     add_action(
       'wp_ajax_mailpoet',
       array($this, 'setupAdmin')
     );
+
+    // Public API (Ajax)
     add_action(
       'wp_ajax_nopriv_mailpoet',
+      array($this, 'setupPublic')
+    );
+    // Public API (Post)
+    add_action(
+      'admin_post_nopriv_mailpoet',
       array($this, 'setupPublic')
     );
   }
@@ -38,7 +48,23 @@ class Router {
     $class = ucfirst($_POST['endpoint']);
     $endpoint =  __NAMESPACE__ . "\\" . $class;
     $method = $_POST['method'];
-    $data = isset($_POST['data']) ? stripslashes_deep($_POST['data']) : array();
+
+    $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
+
+    if($doing_ajax) {
+      $data = isset($_POST['data']) ? stripslashes_deep($_POST['data']) : array();
+    } else {
+      $data = $_POST;
+    }
+
+    // filter out reserved keywords from data
+    $reserved_keywords = array(
+      'token',
+      'endpoint',
+      'method',
+      'mailpoet_redirect'
+    );
+    $data = array_diff_key($data, array_flip($reserved_keywords));
 
     try {
       $endpoint = new $endpoint();
@@ -62,6 +88,12 @@ class Router {
   }
 
   function verifyToken() {
-    if(!wp_verify_nonce($_POST['token'], 'mailpoet_token')) { die(); }
+    if(
+      empty($_POST['token'])
+      ||
+      !wp_verify_nonce($_POST['token'], 'mailpoet_token')
+    ) {
+      die();
+    }
   }
 }
