@@ -1,4 +1,5 @@
 $block-hover-highlight-color = $primary-active-color
+$block-text-line-height = $text-line-height
 
 .mailpoet_block
   box-sizing: border-box
@@ -30,8 +31,34 @@ $block-hover-highlight-color = $primary-active-color
 
 .mailpoet_content
   position: relative
-  line-height: 1.61803398875
+  line-height: $block-text-line-height
 
   p, h1, h2, h3, h4, h5, h6
-    line-height: 1.61803398875
+    line-height: $block-text-line-height
+    padding: 0
+    margin: 0
     font-style: normal
+    font-weight: normal
+
+  h1, h2, h3, h4, h5, h6
+    margin-bottom: 0.3em
+
+  p
+    margin-top: 0
+    margin-bottom: 0
+    font-weight: normal
+
+  ul
+    padding: 0
+    margin-top: 10px
+    margin-bottom: 10px
+
+  li
+    margin-top: 0
+    font-weight: normal
+    margin-bottom: 10px
+
+  blockquote
+    margin: 0 0 $block-text-line-height
+    padding-left: 10px
+    border-left: 2px #565656 solid

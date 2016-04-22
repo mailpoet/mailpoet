@@ -26,6 +26,7 @@ class Text {
     $blockquotes = $DOM->query('blockquote');
     if(!$blockquotes->count()) return $html;
     foreach($blockquotes as $blockquote) {
+      $contents = array();
       $paragraphs = $blockquote->query('p', 0);
       foreach($paragraphs as $index => $paragraph) {
         $contents[] = $paragraph->html();
