@@ -57,14 +57,16 @@ class Router {
       $data = $_POST;
     }
 
-    // filter out reserved keywords from data
-    $reserved_keywords = array(
-      'token',
-      'endpoint',
-      'method',
-      'mailpoet_redirect'
-    );
-    $data = array_diff_key($data, array_flip($reserved_keywords));
+    if(is_array($data) && !empty($data)) {
+      // filter out reserved keywords from data
+      $reserved_keywords = array(
+        'token',
+        'endpoint',
+        'method',
+        'mailpoet_redirect'
+      );
+      $data = array_diff_key($data, array_flip($reserved_keywords));
+    }
 
     try {
       $endpoint = new $endpoint();
