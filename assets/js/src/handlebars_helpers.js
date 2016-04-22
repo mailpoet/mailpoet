@@ -142,7 +142,15 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
 
   Handlebars.registerHelper('fontWithFallback', function(font) {
     switch(font) {
+      case 'Arial': return new Handlebars.SafeString("Arial, 'Helvetica Neue', Helvetica, sans-serif");
+      case 'Comic Sans MS': return new Handlebars.SafeString("'Comic Sans MS', 'Marker Felt-Thin', Arial, sans-serif");
+      case 'Courier New': return new Handlebars.SafeString("'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace");
+      case 'Georgia': return new Handlebars.SafeString("Georgia, Times, 'Times New Roman', serif");
       case 'Lucida': return new Handlebars.SafeString("'Lucida Sans Unicode', 'Lucida Grande', sans-serif");
+      case 'Tahoma': return new Handlebars.SafeString("Tahoma, Verdana, Segoe, sans-serif");
+      case 'Times New Roman': return new Handlebars.SafeString("'Times New Roman', Times, Baskerville, Georgia, serif");
+      case 'Trebuchet MS': return new Handlebars.SafeString("'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif");
+      case 'Verdana': return new Handlebars.SafeString("Verdana, Geneva, sans-serif");
       default: return font;
     }
   });
