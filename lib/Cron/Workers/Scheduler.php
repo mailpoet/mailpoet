@@ -6,8 +6,10 @@ use Cron\CronExpression as Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\Helpers;
 
@@ -144,11 +146,17 @@ class Scheduler {
       ->orderByDesc('id')
       ->findOne();
     if(!$last_run_queue) return true;
+    if((boolean) Setting::getValue('tracking.enabled')) {
+      // insert tracking code
+      add_filter('mailpoet_rendering_post_process', function ($template) {
+        return OpenTracking::process($template);
+      });
+    }
     $renderer = new Renderer($newsletter->asArray());
     $rendered_newsletter = $renderer->render();
-    $new_hash = md5($rendered_newsletter['html']);
+    $new_hash = md5($rendered_newsletter['text']);
     $old_hash = $last_run_queue->newsletter_rendered_body_hash;
-    return $new_hash === $old_hash;
+    return $new_hash !== $old_hash;
   }
 
   private function getQueueNextRunDate($schedule) {

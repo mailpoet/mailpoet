@@ -23,6 +23,13 @@ define(
       component: Scheduling,
     };
 
+    var availableSegments = window.mailpoet_segments || {},
+        defaultSegment = 1;
+
+    if (_.size(availableSegments) > 0) {
+      defaultSegment = _.first(availableSegments).id;
+    }
+
     var NewsletterWelcome = React.createClass({
       mixins: [
         Router.History
@@ -31,7 +38,7 @@ define(
         return {
           options: {
             event: 'segment',
-            segment: 1,
+            segment: defaultSegment,
             role: 'subscriber',
             afterTimeNumber: 1,
             afterTimeType: 'immediate',

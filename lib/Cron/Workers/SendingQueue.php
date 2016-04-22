@@ -86,13 +86,14 @@ class SendingQueue {
     // check if newsletter has been rendered, in which case return its contents
     // or render and save for future reuse
     if($queue->newsletter_rendered_body === null) {
-      // insert tracking code
-      add_filter('mailpoet_rendering_post_process', function($template) {
-        return OpenTracking::process($template);
-      });
-      // render newsletter
-      $rendered_newsletter = $this->renderNewsletter($newsletter);
       if((boolean) Setting::getValue('tracking.enabled')) {
+        // insert tracking code
+        add_filter('mailpoet_rendering_post_process', function($template) {
+          return OpenTracking::process($template);
+        });
+        // render newsletter
+        list($rendered_newsletter, $queue->newsletter_rendered_body_hash) =
+          $this->renderNewsletter($newsletter);
         // extract and replace links
         $processed_newsletter = $this->processLinks(
           $this->joinObject($rendered_newsletter),
@@ -103,10 +104,11 @@ class SendingQueue {
           $this->splitObject($processed_newsletter);
       }
       else {
-        $newsletter['body'] = $rendered_newsletter;
+        // render newsletter
+        list($newsletter['body'], $queue->newsletter_rendered_body_hash) =
+          $this->renderNewsletter($newsletter);
       }
       $queue->newsletter_rendered_body = json_encode($newsletter['body']);
-      $queue->newsletter_rendered_body_hash = md5($newsletter['body']['text']);
       $queue->save();
     } else {
       $newsletter['body'] = json_decode($queue->newsletter_rendered_body);
@@ -195,7 +197,9 @@ class SendingQueue {
 
   function renderNewsletter($newsletter) {
     $renderer = new Renderer($newsletter);
-    return $renderer->render();
+    $rendered_newsletter = $renderer->render();
+    $rendered_newsletter_hash = md5($rendered_newsletter['text']);
+    return array($rendered_newsletter, $rendered_newsletter_hash);
   }
 
   function processLinks($text, $newsletter_id, $queue_id) {
