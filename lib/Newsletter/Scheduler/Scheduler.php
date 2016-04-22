@@ -10,6 +10,7 @@ use MailPoet\Models\SendingQueue;
 class Scheduler {
   const seconds_in_hour = 3600;
   const last_weekday_format = 'L';
+  const wp_all_roles = 'mailpoet_all';
 
   static function postNotification($newsletter_id) {
     $newsletter = Newsletter::filter('filterWithOptions')
@@ -76,13 +77,13 @@ class Scheduler {
           // do not schedule welcome newsletter if roles have not changed
           $old_role = (array) $old_user_data->roles;
           $new_role = (array) $wp_user->roles;
-          if($newsletter['role'] === 'mailpoet_all' ||
+          if($newsletter['role'] === self::wp_all_roles ||
             !array_diff($old_role, $new_role)
           ) {
             continue;
           }
         }
-        if($newsletter['role'] === 'mailpoet_all' ||
+        if($newsletter['role'] === self::wp_all_roles ||
           in_array($newsletter['role'], $wp_user['roles'])
         ) {
           self::createSendingQueueEntry($newsletter, $subscriber_id);
