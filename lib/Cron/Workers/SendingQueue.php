@@ -55,6 +55,12 @@ class SendingQueue {
               $subscribers_ids) {
         $subscribers = Subscriber::whereIn('id', $subscribers_ids)
           ->findArray();
+        // recalculate the number of subscribers if the total to process count
+        // does not match the number of subscribers in the database
+        if (count($subscribers_ids) !== count($subscribers)) {
+          $subscibers_to_exclude = array_diff($subscribers_ids, Helpers::arrayColumn($subscribers, 'id'));
+          $queue->subscribers->to_process = array_diff($queue->subscribers->to_process, $subscibers_to_exclude);
+        }
         $queue->subscribers = call_user_func_array(
           array(
             $this,
