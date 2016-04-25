@@ -8,10 +8,11 @@ if(!defined('ABSPATH')) exit;
 
 class Opens {
   public $data;
-  public $display_image = true;
+  public $display_image;
 
-  function __construct($data) {
+  function __construct($data, $display_image = true) {
     $this->data = $data;
+    $this->display_image = $display_image;
   }
 
   function track($data = false) {

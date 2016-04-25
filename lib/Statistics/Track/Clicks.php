@@ -31,8 +31,7 @@ class Clicks {
       ->findOne();
     if(!$statistics) {
       // track open action in case it did not register
-      $opens = new Opens($url);
-      $opens->display_image = false;
+      $opens = new Opens($url, $display_image = false);
       $opens->track();
       $statistics = StatisticsClicks::create();
       $statistics->newsletter_id = $newsletter_id;
