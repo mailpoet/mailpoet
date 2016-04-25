@@ -8,18 +8,19 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\SendingQueue;
 
 class Scheduler {
-  const seconds_in_hour = 3600;
-  const last_weekday_format = 'L';
+  const SECONDS_IN_HOUR = 3600;
+  const LAST_WEEKDAY_FORMAT = 'L';
+  const WORDPRESS_ALL_ROLES = 'mailpoet_all';
 
   static function postNotification($newsletter_id) {
     $newsletter = Newsletter::filter('filterWithOptions')
       ->findOne($newsletter_id)
       ->asArray();
     $interval_type = $newsletter['intervalType'];
-    $hour = (int) $newsletter['timeOfDay'] / self::seconds_in_hour;
+    $hour = (int) $newsletter['timeOfDay'] / self::SECONDS_IN_HOUR;
     $week_day = $newsletter['weekDay'];
     $month_day = $newsletter['monthDay'];
-    $nth_week_day = ($newsletter['nthWeekDay'] === self::last_weekday_format) ?
+    $nth_week_day = ($newsletter['nthWeekDay'] === self::LAST_WEEKDAY_FORMAT) ?
       $newsletter['nthWeekDay'] :
       '#' . $newsletter['nthWeekDay'];
     switch($interval_type) {
@@ -76,13 +77,13 @@ class Scheduler {
           // do not schedule welcome newsletter if roles have not changed
           $old_role = (array) $old_user_data->roles;
           $new_role = (array) $wp_user->roles;
-          if($newsletter['role'] === 'mailpoet_all' ||
+          if($newsletter['role'] === self::WORDPRESS_ALL_ROLES ||
             !array_diff($old_role, $new_role)
           ) {
             continue;
           }
         }
-        if($newsletter['role'] === 'mailpoet_all' ||
+        if($newsletter['role'] === self::WORDPRESS_ALL_ROLES ||
           in_array($newsletter['role'], $wp_user['roles'])
         ) {
           self::createSendingQueueEntry($newsletter, $subscriber_id);
