@@ -123,7 +123,7 @@ class Scheduler {
       return false;
     }
     $wp_user = (array) get_userdata($subscriber->wp_user_id);
-    if($newsletter->role !== \MailPoet\Newsletter\Scheduler\Scheduler::wp_all_roles
+    if($newsletter->role !== \MailPoet\Newsletter\Scheduler\Scheduler::WORDPRESS_ALL_ROLES
       && !in_array($newsletter->role, $wp_user['roles'])) {
       return false;
     }
