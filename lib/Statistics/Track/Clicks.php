@@ -48,6 +48,7 @@ class Clicks {
       $this->processSubscriptionUrl($link->url, $subscriber, $queue_id, $newsletter_id) :
       $link->url;
     header('Location: ' . $url, true, 302);
+    exit;
   }
 
   function processSubscriptionUrl($url, $subscriber, $queue_id, $newsletter_id) {
