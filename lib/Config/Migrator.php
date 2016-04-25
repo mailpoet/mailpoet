@@ -26,7 +26,8 @@ class Migrator {
       'forms',
       'statistics_newsletters',
       'statistics_clicks',
-      'statistics_opens'
+      'statistics_opens',
+      'statistics_unsubscribes'
     );
   }
 
@@ -287,7 +288,6 @@ class Migrator {
       'link_id mediumint(9) NOT NULL,',
       'count mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)',
     );
@@ -301,8 +301,18 @@ class Migrator {
       'subscriber_id mediumint(9) NOT NULL,',
       'queue_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
-      'deleted_at TIMESTAMP NULL DEFAULT NULL,',
-      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)',
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function statistics_unsubscribes() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'newsletter_id mediumint(9) NOT NULL,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'queue_id mediumint(9) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'PRIMARY KEY  (id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);

@@ -45,16 +45,19 @@ class Clicks {
       $statistics->save();
     }
     $url = (preg_match('/\[subscription:.*?\]/', $link->url)) ?
-      $this->processSubscriptionUrl($link->url, $subscriber) :
+      $this->processSubscriptionUrl($link->url, $subscriber, $queue_id, $newsletter_id) :
       $link->url;
     header('Location: ' . $url, true, 302);
   }
 
-  function processSubscriptionUrl($url, $subscriber) {
+  function processSubscriptionUrl($url, $subscriber, $queue_id, $newsletter_id) {
     preg_match('/\[subscription:(.*?)\]/', $url, $match);
     $action = $match[1];
     if(preg_match('/unsubscribe/', $action)) {
       $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
+      // track unsubscribe action
+      $unsubscribes = new Unsubscribes();
+      $unsubscribes->track($subscriber->id, $queue_id, $newsletter_id);
     }
     if(preg_match('/manage/', $action)) {
       $url = SubscriptionUrl::getManageUrl($subscriber);
