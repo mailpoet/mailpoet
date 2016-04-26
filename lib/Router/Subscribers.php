@@ -8,6 +8,7 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Form;
+use MailPoet\Models\StatisticsForms;
 use MailPoet\Util\Url;
 
 if(!defined('ABSPATH')) exit;
@@ -91,6 +92,11 @@ class Subscribers {
     $subscriber = Subscriber::subscribe($data, $segment_ids);
     $errors = $subscriber->getErrors();
     $result = ($errors === false && $subscriber->id() > 0);
+
+    // record form statistics
+    if($result === true && $form !== false && $form->id > 0) {
+      StatisticsForms::record($form->id);
+    }
 
     // get success message to display after subscription
     $form_settings = (

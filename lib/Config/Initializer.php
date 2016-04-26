@@ -86,8 +86,9 @@ class Initializer {
     $statistics_clicks = Env::$db_prefix . 'statistics_clicks';
     $statistics_opens = Env::$db_prefix . 'statistics_opens';
     $statistics_unsubscribes = Env::$db_prefix . 'statistics_unsubscribes';
+    $statistics_forms = Env::$db_prefix . 'statistics_forms';
 
-    define('MP_SETTINGS_TABLE', $settings); 
+    define('MP_SETTINGS_TABLE', $settings);
     define('MP_SEGMENTS_TABLE', $segments);
     define('MP_FORMS_TABLE', $forms);
     define('MP_CUSTOM_FIELDS_TABLE', $custom_fields);
@@ -105,6 +106,7 @@ class Initializer {
     define('MP_STATISTICS_CLICKS_TABLE', $statistics_clicks);
     define('MP_STATISTICS_OPENS_TABLE', $statistics_opens);
     define('MP_STATISTICS_UNSUBSCRIBES_TABLE', $statistics_unsubscribes);
+    define('MP_STATISTICS_FORMS_TABLE', $statistics_forms);
   }
 
   function runMigrator() {
