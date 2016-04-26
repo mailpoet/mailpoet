@@ -95,7 +95,7 @@ class Subscribers {
 
     // record form statistics
     if($result === true && $form !== false && $form->id > 0) {
-      StatisticsForms::record($form->id);
+      StatisticsForms::record($form->id, $subscriber->id);
     }
 
     // get success message to display after subscription

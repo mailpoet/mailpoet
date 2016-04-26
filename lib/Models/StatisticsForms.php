@@ -10,27 +10,22 @@ class StatisticsForms extends Model {
     parent::__construct();
   }
 
-  public static function record($form_id) {
-    if($form_id > 0) {
-      $today = date('Y-m-d');
-
+  public static function record($form_id, $subscriber_id) {
+    if($form_id > 0 && $subscriber_id > 0) {
       // check if we already have a record for today
       $record = self::where('form_id', $form_id)
-        ->where('date', $today)
+        ->where('subscriber_id', $subscriber_id)
         ->findOne();
 
-      if($record !== false) {
-        $record->set('count', $record->count + 1);
-      } else {
+      if($record === false) {
         // create a new entry
         $record = self::create();
         $record->hydrate(array(
           'form_id' => $form_id,
-          'date' => $today,
-          'count' => 1
+          'subscriber_id' => $subscriber_id
         ));
+        $record->save();
       }
-      $record->save();
       return $record;
     }
     return false;

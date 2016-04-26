@@ -323,11 +323,10 @@ class Migrator {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'form_id mediumint(9) NOT NULL,',
-      'count mediumint(9) NOT NULL DEFAULT 0,',
-      'date DATE NOT NULL,',
+      'subscriber_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT 0,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY form_date (form_id,date)'
+      'UNIQUE KEY form_subscriber (form_id,subscriber_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }

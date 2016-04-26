@@ -4,37 +4,28 @@ use MailPoet\Models\StatisticsForms;
 class StatisticsFormsTest extends MailPoetTest {
 
   function _before() {
-    $this->yesterday = StatisticsForms::create();
-    $this->yesterday->hydrate(array(
-      'form_id' => 1,
-      'count' => 10,
-      'date' => date('Y-m-d', strtotime('yesterday'))
-    ));
-    $this->yesterday = $this->yesterday->save();
   }
 
-  function testItCanBeCreated() {
-    expect($this->yesterday->id() > 0)->true();
-    expect($this->yesterday->getErrors())->false();
+  function testItCanRecordStats() {
+    $record = StatisticsForms::record($form_id = 1, $subscriber_id = 2);
+    expect($record->form_id)->equals(1);
+    expect($record->subscriber_id)->equals(2);
   }
 
-  function testItCanRecordNewStats() {
-    $today = StatisticsForms::record($form_id = 1);
-    expect($today->count)->equals(1);
-    expect($today->date)->equals(date('Y-m-d'));
-    expect($today->form_id)->equals(1);
+  function testItDoesNotOverrideStats() {
+    $record = StatisticsForms::record($form_id = 1, $subscriber_id = 2);
+    expect($record->form_id)->equals(1);
+    expect($record->subscriber_id)->equals(2);
+
+    expect(StatisticsForms::count())->equals(1);
   }
 
-  function testItCanAggregateStats() {
-    $today = StatisticsForms::record($form_id = 2);
-    expect($today->count)->equals(1);
-    expect($today->date)->equals(date('Y-m-d'));
-    expect($today->form_id)->equals(2);
+  function testItCanRecordMultipleStats() {
+    $record = StatisticsForms::record($form_id = 1, $subscriber_id = 2);
+    $record2 = StatisticsForms::record($form_id = 2, $subscriber_id = 2);
+    $record3 = StatisticsForms::record($form_id = 1, $subscriber_id = 1);
 
-    $today = StatisticsForms::record($form_id = 2);
-    expect($today->count)->equals(2);
-    expect($today->date)->equals(date('Y-m-d'));
-    expect($today->form_id)->equals(2);
+    expect(StatisticsForms::count())->equals(3);
   }
 
   function _after() {
