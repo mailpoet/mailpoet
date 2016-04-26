@@ -20,7 +20,7 @@ class StatisticsForms extends Model {
         ->findOne();
 
       if($record !== false) {
-        $record->setExpr('count', 'count + 1')->save();
+        $record->set('count', $record->count + 1);
       } else {
         // create a new entry
         $record = self::create();
@@ -29,8 +29,10 @@ class StatisticsForms extends Model {
           'date' => $today,
           'count' => 1
         ));
-        $record->save();
       }
+      $record->save();
+      return $record;
     }
+    return false;
   }
 }
