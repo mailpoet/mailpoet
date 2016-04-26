@@ -94,15 +94,14 @@ class Newsletter extends Model {
   }
 
   function getStatistics() {
-    if (!property_exists($this, 'queue') || $this->queue === false) {
+    if ($this->queue === false) {
       return false;
     }
     return SendingQueue::tableAlias('queues')
       ->selectExpr(
-        'count(DISTINCT(clicks.id)) as clicks, ' .
-        'count(DISTINCT(opens.id)) as opens, ' .
-        'count(DISTINCT(unsubscribes.id)) as unsubscribes',
-        'queues.count_processed as total_sent'
+        'count(DISTINCT(clicks.id)) as clicked, ' .
+        'count(DISTINCT(opens.id)) as opened, ' .
+        'count(DISTINCT(unsubscribes.id)) as unsubscribed '
       )
       ->join(
         MP_STATISTICS_CLICKS_TABLE,

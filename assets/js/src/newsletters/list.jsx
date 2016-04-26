@@ -16,7 +16,7 @@ define(
     MailPoet
   ) {
     var Link = Router.Link;
-
+console.log(MailPoet)
     var columns = [
       {
         name: 'subject',
@@ -30,6 +30,10 @@ define(
       {
         name: 'segments',
         label: MailPoet.I18n.t('lists')
+      },
+      {
+        name: 'statistics',
+        label: MailPoet.I18n.t('statistics')
       },
       {
         name: 'created_at',
@@ -205,6 +209,31 @@ define(
           );
         }
       },
+      renderStatistics: function(item) {
+        if(!item.statistics || !item.queue) {
+          return (
+            <span>
+              {MailPoet.I18n.t('notSentYet')}
+            </span>
+          );
+        }
+
+        var percentage_clicked = Math.round(
+          (item.statistics.clicked * 100) / (item.queue.count_processed)
+        );
+        var percentage_opened = Math.round(
+          (item.statistics.opened * 100) / (item.queue.count_processed)
+        );
+        var percentage_unsubscribed = Math.round(
+          (item.statistics.unsubscribed * 100) / (item.queue.count_processed)
+        );
+
+        return (
+          <span>
+            { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
+          </span>
+        );
+      },
       renderItem: function(newsletter, actions) {
         var rowClasses = classNames(
           'manage-column',
@@ -216,6 +245,13 @@ define(
           return segment.name
         }).join(', ');
 
+        var statistics_column =
+          (!mailpoet_settings.tracking || !mailpoet_settings.tracking.enabled) ?
+            false :
+            <td className="column {statistics_class}" data-colname="Statistics">
+              { this.renderStatistics(newsletter) }
+            </td>;
+
         return (
           <div>
             <td className={ rowClasses }>
@@ -224,12 +260,13 @@ define(
               </strong>
               { actions }
             </td>
-            <td className="column" data-colname="Lists">
+            <td className="column" data-colname="Status">
               { this.renderStatus(newsletter) }
             </td>
             <td className="column" data-colname="Lists">
               { segments }
             </td>
+            { statistics_column }
             <td className="column-date" data-colname="Subscribed on">
               <abbr>{ MailPoet.Date.full(newsletter.created_at) }</abbr>
             </td>
@@ -240,6 +277,9 @@ define(
         );
       },
       render: function() {
+        if (!mailpoet_settings.tracking || !mailpoet_settings.tracking.enabled) {
+          columns = _.without(columns, _.findWhere(columns, {name: 'statistics'}));
+        }
         return (
           <div>
             <h2 className="title">
