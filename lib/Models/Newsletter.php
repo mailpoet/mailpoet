@@ -68,6 +68,7 @@ class Newsletter extends Model {
 
   function getQueue() {
     return SendingQueue::where('newsletter_id', $this->id)
+      ->whereNotEqual('status', 'scheduled')
       ->orderByDesc('updated_at')
       ->findOne();
   }
@@ -81,6 +82,47 @@ class Newsletter extends Model {
     }
     return $this;
   }
+
+  function withStatistics() {
+    $statistics = $this->getStatistics();
+    if($statistics === false) {
+      $this->statistics = false;
+    } else {
+      $this->statistics = $statistics->asArray();
+    }
+    return $this;
+  }
+
+  function getStatistics() {
+    if (!property_exists($this, 'queue') || $this->queue === false) {
+      return false;
+    }
+    return SendingQueue::tableAlias('queues')
+      ->selectExpr(
+        'count(DISTINCT(clicks.id)) as clicks, ' .
+        'count(DISTINCT(opens.id)) as opens, ' .
+        'count(DISTINCT(unsubscribes.id)) as unsubscribes',
+        'queues.count_processed as total_sent'
+      )
+      ->join(
+        MP_STATISTICS_CLICKS_TABLE,
+        'queues.id = clicks.queue_id',
+        'clicks'
+      )
+      ->join(
+        MP_STATISTICS_OPENS_TABLE,
+        'queues.id = opens.queue_id',
+        'opens'
+      )
+      ->join(
+        MP_STATISTICS_UNSUBSCRIBES_TABLE,
+        'queues.id = unsubscribes.queue_id',
+        'unsubscribes'
+      )
+      ->where('queues.id', $this->queue['id'])
+      ->findOne();
+  }
+
 
   static function search($orm, $search = '') {
     return $orm->where_like('subject', '%' . $search . '%');

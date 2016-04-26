@@ -206,6 +206,7 @@ class Newsletters {
       $listing_data['items'][$key] = $newsletter
         ->withSegments()
         ->withSendingQueue()
+        ->withStatistics()
         ->asArray();
     }
 
