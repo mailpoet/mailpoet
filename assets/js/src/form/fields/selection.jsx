@@ -33,6 +33,14 @@ function(
       }
     },
     componentWillUnmount: function() {
+      if(
+          !this.props.field.multiple
+          || this.state.initialized === false
+          || this.refs.select === undefined
+        ) {
+        return;
+      }
+
       jQuery('#'+this.refs.select.id).select2('destroy');
     },
     setupSelect2: function() {
