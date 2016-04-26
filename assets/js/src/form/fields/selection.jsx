@@ -13,14 +13,22 @@ function(
     getInitialState: function() {
       return {
         items: [],
-        initialized: false
+        select2: false
       };
     },
     componentWillMount: function() {
       this.loadCachedItems();
     },
+    allowMultipleValues: function() {
+      return (this.props.field.multiple === true);
+    },
+    isSelect2Initialized: function() {
+      return (this.state.select2 === true);
+    },
     componentDidMount: function() {
-      this.setupSelect2();
+      if(this.allowMultipleValues()) {
+        this.setupSelect2();
+      }
     },
     componentDidUpdate: function(prevProps, prevState) {
       if(
@@ -33,22 +41,17 @@ function(
       }
     },
     componentWillUnmount: function() {
-      if(
-          !this.props.field.multiple
-          || this.state.initialized === false
-          || this.refs.select === undefined
-        ) {
-        return;
+      if(this.allowMultipleValues()) {
+        this.destroySelect2();
       }
-
-      jQuery('#'+this.refs.select.id).select2('destroy');
+    },
+    destroySelect2: function() {
+      if(this.isSelect2Initialized()) {
+        jQuery('#'+this.refs.select.id).select2('destroy');
+      }
     },
     setupSelect2: function() {
-      if(
-          !this.props.field.multiple
-          || this.state.initialized === true
-          || this.refs.select === undefined
-        ) {
+      if(this.isSelect2Initialized()) {
         return;
       }
 
@@ -80,7 +83,7 @@ function(
 
       select2.on('change', this.handleChange);
 
-      this.setState({ initialized: true });
+      this.setState({ select2: true });
     },
     getSelectedValues: function() {
       if(this.props.field['selected'] !== undefined) {
