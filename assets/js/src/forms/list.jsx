@@ -102,14 +102,6 @@ const item_actions = [
   }
 ];
 
-const bulk_actions = [
-  {
-    name: 'trash',
-    label: MailPoet.I18n.t('trash'),
-    onSuccess: messages.onTrash
-  }
-];
-
 const FormList = React.createClass({
   createForm() {
     MailPoet.Ajax.post({
@@ -138,7 +130,10 @@ const FormList = React.createClass({
       <div>
         <td className={ row_classes }>
           <strong>
-            <a>{ form.name }</a>
+            <a
+              className="row-title"
+              href={ `admin.php?page=mailpoet-form-editor&id=${form.id}` }
+            >{ form.name }</a>
           </strong>
           { actions }
         </td>
@@ -171,7 +166,6 @@ const FormList = React.createClass({
           endpoint="forms"
           onRenderItem={ this.renderItem }
           columns={ columns }
-          bulk_actions={ bulk_actions }
           item_actions={ item_actions }
         />
       </div>
