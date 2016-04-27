@@ -5,6 +5,8 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Config\Populator;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
+require_once(ABSPATH . 'wp-includes/pluggable.php');
+
 class ShortcodesTest extends MailPoetTest {
   public $rendered_newsletter;
   public $newsletter;
@@ -20,17 +22,21 @@ class ShortcodesTest extends MailPoetTest {
       'type' => 'notification',
       'id' => 2
     );
-    $post = get_post(1);
-    $this->latest_post_title = $post->post_title;
-    $this->rendered_newsletter = '
+    $this->post_data = array(
+      'post_title' => 'Sample Post',
+      'post_content' => 'contents',
+      'post_status' => 'publish',
+    );
+    $this->post_id = wp_insert_post($this->post_data);
+    $this->rendered_newsletter = "
       Hello [user:displayname | default:member].
       Your first name is [user:firstname | default:First Name].
       Your last name is [user:lastname | default:Last Name].
       Thank you for subscribing with [user:email].
       We already have [user:count] users.
 
-      <h1 data-post-id="1">some post</h1>
-      <h1 data-post-id="2">another post</h1>
+      <h1 data-post-id=\"1\">some post</h1>
+      <h1 data-post-id=\"{$this->post_id}\">another post</h1>
 
       There are [newsletter:total] posts in this newsletter.
       You are reading [newsletter:subject].
@@ -46,7 +52,7 @@ class ShortcodesTest extends MailPoetTest {
 
       You can unsubscribe here: [subscription:unsubscribe_url].
       Manage your subscription here: [subscription:manage_url].
-      View this newsletter in browser: [newsletter:view_in_browser_url].';
+      View this newsletter in browser: [newsletter:view_in_browser_url].";
     $this->shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $this->subscriber
@@ -86,11 +92,11 @@ class ShortcodesTest extends MailPoetTest {
       We already have {$subscriber_count} users.
 
       <h1 data-post-id=\"1\">some post</h1>
-      <h1 data-post-id=\"2\">another post</h1>
+      <h1 data-post-id=\"{$this->post_id}\">another post</h1>
 
       There are {$number_of_posts} posts in this newsletter.
       You are reading {$this->newsletter['subject']}.
-      The latest post in this newsletter is called {$this->latest_post_title}.
+      The latest post in this newsletter is called {$this->post_data['post_title']}.
       The issue number of this newsletter is {$issue_number}.
 
       Date: {$date->format('d')}.
@@ -103,7 +109,7 @@ class ShortcodesTest extends MailPoetTest {
       You can unsubscribe here: {$unsubscribe_url}.
       Manage your subscription here: {$manage_url}.
       View this newsletter in browser: {$view_in_browser_url}.");
-  }
+}
 
   function _createWPUser() {
     $wp_user = wp_create_user('phoenix_test_user', 'pass', 'phoenix@test.com');
@@ -131,5 +137,6 @@ class ShortcodesTest extends MailPoetTest {
 
   function _after() {
     Subscriber::deleteMany();
+    wp_delete_post($this->post_id, true);
   }
 }

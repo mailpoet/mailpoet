@@ -82,6 +82,7 @@ class Newsletter {
       array(
         'post__in' => $post_ids,
         'posts_per_page' => 1,
+        'ignore_sticky_posts' => true,
         'orderby' => 'post_date',
         'order' => 'DESC'
       )
