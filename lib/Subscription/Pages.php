@@ -129,7 +129,7 @@ class Pages {
     if(strpos($page_content, '[mailpoet_page]') !== false) {
       return str_replace('[mailpoet_page]', $content, $page_content);
     } else {
-      return $page_content.$content;
+      return $page_content;
     }
   }
 
