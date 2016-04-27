@@ -141,11 +141,17 @@ define(
         });
       },
       renderStatus: function(item) {
+        console.log(item);
         if(!item.queue) {
           return (
             <span>{MailPoet.I18n.t('notSentYet')}</span>
           );
         } else {
+          if (item.queue.status === 'scheduled') {
+            return (
+              <span>{MailPoet.I18n.t('scheduledFor')}  { item.queue.scheduled_at } </span>
+            )
+          }
           var progressClasses = classNames(
             'mailpoet_progress',
             { 'mailpoet_progress_complete': item.queue.status === 'completed'}

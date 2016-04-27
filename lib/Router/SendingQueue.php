@@ -8,6 +8,7 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Util\Helpers;
 use Cron\CronExpression as Cron;
 
@@ -33,9 +34,46 @@ class SendingQueue {
       );
     }
 
+    // create or update newsletter options, including schedule time
+    $options = array();
+    if(isset($data['options'])) {
+      $options = $data['options'];
+      unset($data['options']);
+    }
+    if ($options &&
+      ($newsletter->type === 'notification' || $newsletter->type === 'welcome')
+    ) {
+      $option_fields = NewsletterOptionField::where(
+        'newsletter_type', $newsletter->type
+      )->findArray();
+      foreach($option_fields as $option_field) {
+        if(isset($options[$option_field['name']])) {
+          $relation = NewsletterOption::where('option_field_id', $option_field['id'])
+            ->where('newsletter_id', $newsletter->id)
+            ->findOne();
+          if (!$relation) {
+            $relation = NewsletterOption::create();
+            $relation->newsletter_id = $newsletter->id;
+            $relation->option_field_id = $option_field['id'];
+          }
+          $relation->value = ($option_field['name'] === 'segments') ?
+            serialize($data['segments']) :
+            $options[$option_field['name']];
+          $relation->save();
+        }
+      }
+      if ($newsletter->type === 'notification') {
+        Scheduler::postNotification($newsletter->id);
+      }
+      $newsletter = Newsletter::filter('filterWithOptions')
+        ->findOne($data['newsletter_id']);
+    }
     if($newsletter->type === 'welcome') {
       return array(
-        'result' => true
+        'result' => true,
+        'data' => array(
+          'message' => __('Your welcome notification is activated.')
+        )
       );
     }
 
@@ -50,20 +88,6 @@ class SendingQueue {
     }
 
     if($newsletter->type === 'notification') {
-      $option_field = NewsletterOptionField::where('name', 'segments')
-        ->where('newsletter_type', 'notification')
-        ->findOne();
-      $relation = NewsletterOption::where('option_field_id', $option_field->id)
-        ->where('newsletter_id', $newsletter->id)
-        ->findOne();
-      if(!$relation) {
-        $relation = NewsletterOption::create();
-        $relation->newsletter_id = $newsletter->id;
-        $relation->option_field_id = $option_field->id;
-      }
-      $relation->value = serialize($data['segments']);
-      $relation->save();
-
       $queue = \MailPoet\Models\SendingQueue::where('status', 'scheduled')
         ->where('newsletter_id', $newsletter->id)
         ->findOne();
@@ -78,7 +102,9 @@ class SendingQueue {
       $queue->save();
       return array(
         'result' => true,
-        'data' => array(__('Newsletter was scheduled for sending.'))
+        'data' => array(
+          'message' => __('Your post notifications is activated.')
+        )
       );
     }
 
@@ -111,7 +137,9 @@ class SendingQueue {
     } else {
       return array(
         'result' => true,
-        'data' => array($queue->id)
+        'data' => array(
+          'message' => __('The newsletter is being sent...')
+        )
       );
     }
   }
