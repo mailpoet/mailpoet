@@ -16,7 +16,7 @@ define(
     MailPoet
   ) {
     var Link = Router.Link;
-console.log(MailPoet)
+
     var columns = [
       {
         name: 'subject',

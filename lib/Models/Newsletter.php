@@ -68,7 +68,7 @@ class Newsletter extends Model {
 
   function getQueue() {
     return SendingQueue::where('newsletter_id', $this->id)
-      ->whereNotEqual('status', 'scheduled')
+      ->whereRaw(('`status` IS NULL OR `status` != "scheduled"'))
       ->orderByDesc('updated_at')
       ->findOne();
   }
@@ -103,17 +103,17 @@ class Newsletter extends Model {
         'count(DISTINCT(opens.id)) as opened, ' .
         'count(DISTINCT(unsubscribes.id)) as unsubscribed '
       )
-      ->join(
+      ->leftOuterJoin(
         MP_STATISTICS_CLICKS_TABLE,
         'queues.id = clicks.queue_id',
         'clicks'
       )
-      ->join(
+      ->leftOuterJoin(
         MP_STATISTICS_OPENS_TABLE,
         'queues.id = opens.queue_id',
         'opens'
       )
-      ->join(
+      ->leftOuterJoin(
         MP_STATISTICS_UNSUBSCRIBES_TABLE,
         'queues.id = unsubscribes.queue_id',
         'unsubscribes'
@@ -121,7 +121,6 @@ class Newsletter extends Model {
       ->where('queues.id', $this->queue['id'])
       ->findOne();
   }
-
 
   static function search($orm, $search = '') {
     return $orm->where_like('subject', '%' . $search . '%');
