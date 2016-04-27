@@ -6,6 +6,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterOption;
+use MailPoet\Models\StatisticsOpens;
 
 class NewsletterTest extends MailPoetTest {
   function _before() {
@@ -89,11 +90,9 @@ class NewsletterTest extends MailPoetTest {
   function testItCanBeQueued() {
     $queue = $this->newsletter->getQueue();
     expect($queue)->false();
-
     $sending_queue = SendingQueue::create();
     $sending_queue->newsletter_id = $this->newsletter->id;
     $sending_queue->save();
-
     $queue = $this->newsletter->getQueue();
     expect($queue->id() > 0)->true();
   }
@@ -105,6 +104,22 @@ class NewsletterTest extends MailPoetTest {
     expect($newsletter_segments[0]['name'])->equals('Segment 1');
     expect($newsletter_segments[1]['id'])->equals($this->segment_2->id);
     expect($newsletter_segments[1]['name'])->equals('Segment 2');
+  }
+
+  function testItCanHaveStatistics() {
+    $newsletter = $this->newsletter;
+    $sending_queue = SendingQueue::create();
+    $sending_queue->newsletter_id = $this->newsletter->id;
+    $sending_queue->save();
+    $opens = StatisticsOpens::create();
+    $opens->newsletter_id = $this->newsletter->id;
+    $opens->queue_id = $sending_queue->id;
+    $opens->save();
+    $newsletter->queue = $newsletter->getQueue()->asArray();
+    $statistics = $newsletter->getStatistics();
+    expect($statistics->opened)->equals(1);
+    expect($statistics->clicked)->equals(0);
+    expect($statistics->unsubscribed)->equals(0);
   }
 
   function testItCanCreateOrUpdate() {
@@ -281,11 +296,11 @@ class NewsletterTest extends MailPoetTest {
   }
 
   function _after() {
-    NewsletterOption::deleteMany();
-    NewsletterOptionField::deleteMany();
-    Newsletter::deleteMany();
-    Segment::deleteMany();
-    NewsletterSegment::deleteMany();
-    SendingQueue::deleteMany();
+    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

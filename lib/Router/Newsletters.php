@@ -203,10 +203,13 @@ class Newsletters {
     $listing_data = $listing->get();
 
     foreach($listing_data['items'] as $key => $newsletter) {
-      $listing_data['items'][$key] = $newsletter
+      $newsletter = $newsletter
         ->withSegments()
-        ->withSendingQueue()
-        ->asArray();
+        ->withSendingQueue();
+      if((boolean) Setting::getValue('tracking.enabled')) {
+        $newsletter = $newsletter->withStatistics();
+      }
+      $listing_data['items'][$key] = $newsletter->asArray();
     }
 
     return $listing_data;
