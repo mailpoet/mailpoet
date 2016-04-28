@@ -141,7 +141,6 @@ define(
         });
       },
       renderStatus: function(item) {
-        console.log(item);
         if(!item.queue) {
           return (
             <span>{MailPoet.I18n.t('notSentYet')}</span>
