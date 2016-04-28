@@ -215,7 +215,7 @@ define(
         }
       },
       renderStatistics: function(item) {
-        if(!item.statistics || !item.queue || item.queue.status === 'scheduled') {
+        if(!item.statistics || !item.queue || item.queue.count_processed == 0 || item.queue.status === 'scheduled') {
           return (
             <span>
               {MailPoet.I18n.t('notSentYet')}
