@@ -107,9 +107,7 @@ define(
             this.setState({ loading: false });
             if(response.result === true) {
               this.context.router.push('/');
-              MailPoet.Notice.success(
-                MailPoet.Notice.success(response.data.message);
-              );
+              MailPoet.Notice.success(response.data.message);
             } else {
               if(response.errors) {
                 MailPoet.Notice.error(response.errors);
