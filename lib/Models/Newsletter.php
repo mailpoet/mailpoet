@@ -99,9 +99,9 @@ class Newsletter extends Model {
     }
     return SendingQueue::tableAlias('queues')
       ->selectExpr(
-        'count(DISTINCT(clicks.id)) as clicked, ' .
-        'count(DISTINCT(opens.id)) as opened, ' .
-        'count(DISTINCT(unsubscribes.id)) as unsubscribed '
+        'count(DISTINCT(clicks.subscriber_id)) as clicked, ' .
+        'count(DISTINCT(opens.subscriber_id)) as opened, ' .
+        'count(DISTINCT(unsubscribes.subscriber_id)) as unsubscribed '
       )
       ->leftOuterJoin(
         MP_STATISTICS_CLICKS_TABLE,
