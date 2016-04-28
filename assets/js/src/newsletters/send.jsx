@@ -107,9 +107,7 @@ define(
             this.setState({ loading: false });
             if(response.result === true) {
               this.history.pushState(null, '/');
-              MailPoet.Notice.success(
-                MailPoet.I18n.t('newsletterIsBeingSent')
-              );
+              MailPoet.Notice.success(response.data.message);
             } else {
               if(response.errors) {
                 MailPoet.Notice.error(response.errors);
