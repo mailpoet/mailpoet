@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router, Route, IndexRoute, Link } from 'react-router'
+import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
+import { createHashHistory } from 'history'
 import SegmentList from 'segments/list.jsx'
 import SegmentForm from 'segments/form.jsx'
-import createHashHistory from 'history/lib/createHashHistory'
 
-let history = createHashHistory({ queryKey: false })
+const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
 const App = React.createClass({
   render() {
@@ -13,7 +13,7 @@ const App = React.createClass({
   }
 });
 
-let container = document.getElementById('segments_container');
+const container = document.getElementById('segments_container');
 
 if(container) {
   ReactDOM.render((

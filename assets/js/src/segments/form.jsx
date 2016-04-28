@@ -1,13 +1,11 @@
 define(
   [
     'react',
-    'react-router',
     'mailpoet',
     'form/form.jsx'
   ],
   function(
     React,
-    Router,
     MailPoet,
     Form
   ) {
@@ -21,7 +19,8 @@ define(
       {
         name: 'description',
         label: MailPoet.I18n.t('description'),
-        type: 'textarea'
+        type: 'textarea',
+        tip: MailPoet.I18n.t('segmentDescriptionTip')
       }
     ];
 
@@ -35,9 +34,6 @@ define(
     };
 
     const SegmentForm = React.createClass({
-      mixins: [
-        Router.History
-      ],
       render: function() {
         return (
           <div>

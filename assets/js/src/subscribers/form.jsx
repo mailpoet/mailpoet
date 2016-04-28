@@ -115,9 +115,6 @@ define(
     var Link = Router.Link;
 
     var SubscriberForm = React.createClass({
-      mixins: [
-        Router.History
-      ],
       render: function() {
         return (
           <div>

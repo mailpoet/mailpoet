@@ -36,7 +36,6 @@ define(
             name: 'sender_name',
             type: 'text',
             placeholder: MailPoet.I18n.t('senderNamePlaceholder'),
-            defaultValue: (settings.sender !== undefined) ? settings.sender.name : '',
             validation: {
               'data-parsley-required': true
             }
@@ -45,7 +44,6 @@ define(
             name: 'sender_address',
             type: 'text',
             placeholder: MailPoet.I18n.t('senderAddressPlaceholder'),
-            defaultValue: (settings.sender !== undefined) ? settings.sender.address : '',
             validation: {
               'data-parsley-required': true,
               'data-parsley-type': 'email'
@@ -62,15 +60,13 @@ define(
           {
             name: 'reply_to_name',
             type: 'text',
-            placeholder: MailPoet.I18n.t('replyToNamePlaceholder'),
-            defaultValue: (settings.reply_to !== undefined) ? settings.reply_to.name : '',
+            placeholder: MailPoet.I18n.t('replyToNamePlaceholder')
           },
           {
             name: 'reply_to_address',
             type: 'text',
-            placeholder: MailPoet.I18n.t('replyToAddressPlaceholder'),
-            defaultValue: (settings.reply_to !== undefined) ? settings.reply_to.address : ''
-          },
+            placeholder: MailPoet.I18n.t('replyToAddressPlaceholder')
+          }
         ]
       }
     ];

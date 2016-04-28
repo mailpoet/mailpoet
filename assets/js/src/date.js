@@ -41,9 +41,7 @@ define('date',
     },
     format: function(date, options) {
       this.init(options);
-      return Moment.utc(date)
-        .local()
-        .format(this.convertFormat(this.options.format));
+      return Moment(date).format(this.convertFormat(this.options.format));
     },
     short: function(date) {
       return this.format(date, {
