@@ -68,7 +68,6 @@ class Newsletter extends Model {
 
   function getQueue() {
     return SendingQueue::where('newsletter_id', $this->id)
-      ->whereRaw(('`status` IS NULL OR `status` != "scheduled"'))
       ->orderByDesc('updated_at')
       ->findOne();
   }
