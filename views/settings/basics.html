@@ -46,7 +46,9 @@
             name="sender[name]"
             value="<%= settings.sender.name %>"
             placeholder="<%= __('Your name') %>" />
-          <input type="text"
+          <input type="email"
+            data-parsley-type="email"
+            data-parsley-error-message="<%= __('You need to specify a valid email address') %>"
             id="settings[from_email]"
             name="sender[address]"
             value="<%= settings.sender.address %>"
@@ -60,7 +62,9 @@
             name="reply_to[name]"
             value="<%= settings.reply_to.name %>"
             placeholder="<%= __('Your name') %>" />
-          <input type="text"
+          <input type="email"
+            data-parsley-type="email"
+            data-parsley-error-message="<%= __('You need to specify a valid email address') %>"
             id="settings[notification_reply_email]"
             name="reply_to[address]"
             value="<%= settings.reply_to.address %>"

@@ -59,8 +59,9 @@
             value="<%= settings.signup_confirmation.from.name %>"
             placeholder="<%= __('Your name') %>"
           />
-          <input
-            type="text"
+          <input type="email"
+            data-parsley-type="email"
+            data-parsley-error-message="<%= __('You need to specify a valid email address') %>"
             id="settings[signup_confirmation_from_email]"
             name="signup_confirmation[from][address]"
             value="<%= settings.signup_confirmation.from.address %>"
@@ -86,8 +87,9 @@
             value="<%= settings.signup_confirmation.reply_to.name %>"
             placeholder="<%= __('Your name') %>"
             />
-          <input
-            type="text"
+          <input type="email"
+            data-parsley-type="email"
+            data-parsley-error-message="<%= __('You need to specify a valid email address') %>"
             id="settings[signup_confirmation_reply_email]"
             name="signup_confirmation[reply_to][address]"
             value="<%= settings.signup_confirmation.reply_to.address %>"
