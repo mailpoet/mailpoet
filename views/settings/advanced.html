@@ -5,9 +5,10 @@
       <th scope="row">
         <label for="settings[bounce_email]">
           <%= __('Bounce email') %>
-          <p class="description">
-            <%= __('Your bounced emails will be sent to this address.') %>
-          </p>
+        </label>
+        <p class="description">
+          <%= __('Your bounced emails will be sent to this address.') %>
+        </p>
       </th>
       <td>
         <p>
@@ -25,7 +26,10 @@
       <th scope="row">
         <label>
           <%= __('Open and click tracking') %>
-          <p class="description"><%= __('Some users prefer to not track their subscribers.') %></p>
+        </label>
+        <p class="description">
+          <%= __('Some users prefer to not track their subscribers.') %>
+        </p>
       </th>
       <td>
         <p>
@@ -58,14 +62,14 @@
       <th scope="row">
         <label>
           <%= __('Share anonymous data') %>
-          <p class="description">
-            <%= __('Share anonymous data and help us improve the plugin! We appreciate your help.') %>
-            <a
-              href="http://support.mailpoet.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=advanced_settings"
-              target="_blank"
-            ><%= __('Read more.') %></a>
-          </p>
         </label>
+        <p class="description">
+          <%= __('Share anonymous data and help us improve the plugin! We appreciate your help.') %>
+          <a
+            href="http://support.mailpoet.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=advanced_settings"
+            target="_blank"
+          ><%= __('Read more.') %></a>
+        </p>
       </th>
       <td>
         <p>
@@ -93,39 +97,13 @@
         </p>
       </td>
     </tr>
-    <!-- charset -->
-    <tr>
-      <th scope="row">
-        <label for="settings[charset]">
-          <%= __('Charset') %>
-          <p class="description">
-            <%= __('Squares, circles, or other weird characters in your emails? Select the correct encoding for your language.') %>
-          </p>
-        </label>
-      </th>
-      <td>
-        <p>
-          <select
-            id="settings[charset]"
-            name="charset"
-          >
-            <% for charset in charsets %>
-              <option
-                value="<%= charset %>"
-                <% if(settings.charset == charset) %>
-                  selected="selected"
-                <% endif %>
-              ><%= charset %></option>
-            <% endfor %>
-          </select>
-        </p>
-      </td>
-    </tr>
     <!-- reinstall -->
     <tr>
       <th scope="row">
-        <label><%= __('Reinstall from scratch') %>
-        <p class="description"><%= __('Want to start from the beginning? This will completely wipe out MailPoet and reinstall from scratch.') %></p>
+        <label><%= __('Reinstall from scratch') %></label>
+        <p class="description">
+          <%= __('Want to start from the beginning? This will completely wipe out MailPoet and reinstall from scratch.') %>
+        </p>
       </th>
       <td>
         <p>

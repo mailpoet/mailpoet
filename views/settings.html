@@ -19,7 +19,6 @@
         <a class="nav-tab" href="#signup"><%= __('Signup Confirmation') %></a>
         <a class="nav-tab" href="#mta"><%= __('Send With...') %></a>
         <a class="nav-tab" href="#advanced"><%= __('Advanced') %></a>
-        <a class="nav-tab" href="#bounce"><%= __('Bounce Handling') %></a>
       </h2>
 
       <!-- basics -->
@@ -40,11 +39,6 @@
       <!-- advanced -->
       <div data-tab="advanced" class="mailpoet_panel">
         <% include 'settings/advanced.html' %>
-      </div>
-
-      <!-- bounce -->
-      <div data-tab="bounce" class="mailpoet_panel">
-        <% include 'settings/bounce.html' %>
       </div>
 
       <p class="submit mailpoet_settings_submit" style="display:none;">

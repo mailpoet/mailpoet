@@ -8,7 +8,6 @@ use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
-use MailPoet\Settings\Charsets;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
@@ -259,7 +258,6 @@ class Menu {
       'segments' => Segment::getPublic()->findArray(),
       'pages' => Pages::getAll(),
       'flags' => $flags,
-      'charsets' => Charsets::getAll(),
       'current_user' => wp_get_current_user(),
       'permissions' => Permissions::getAll(),
       'hosts' => array(
