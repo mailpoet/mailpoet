@@ -314,7 +314,7 @@ class SendingQueue {
     $queue->count_total =
       $queue->count_processed + $queue->count_to_process;
     if(!$queue->count_to_process) {
-      $queue->processed_at = date('Y-m-d H:i:s');
+      $queue->processed_at = current_time('mysql');
       $queue->status = 'completed';
     }
     $queue->subscribers = serialize((array) $queue->subscribers);
