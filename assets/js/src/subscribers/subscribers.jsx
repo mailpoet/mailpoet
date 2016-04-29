@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router, Route, IndexRoute, Link } from 'react-router'
+import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
+import { createHashHistory } from 'history'
 import SubscriberList from 'subscribers/list.jsx'
 import SubscriberForm from 'subscribers/form.jsx'
-import createHashHistory from 'history/lib/createHashHistory'
 
-const history = createHashHistory({ queryKey: false })
+const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
 const App = React.createClass({
   render() {

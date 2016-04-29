@@ -65,6 +65,9 @@ define(
     };
 
     var WelcomeScheduling = React.createClass({
+      contextTypes: {
+        router: React.PropTypes.object.isRequired
+      },
       _getCurrentValue: function() {
         return this.props.item[this.props.field.name] || {};
       },
@@ -131,7 +134,7 @@ define(
         }.bind(this));
       },
       showTemplateSelection: function(newsletterId) {
-        this.history.pushState(null, `/template/${newsletterId}`);
+        this.context.router.push(`/template/${newsletterId}`);
       },
       render: function() {
         var value = this._getCurrentValue(),

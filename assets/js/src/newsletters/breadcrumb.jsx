@@ -14,9 +14,6 @@ define(
     var Link = Router.Link;
 
     var Breadcrumb = React.createClass({
-      mixins: [
-        Router.History
-      ],
       getInitialState: function() {
         return {
           step: null,

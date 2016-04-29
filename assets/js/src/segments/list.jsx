@@ -159,9 +159,6 @@ const item_actions = [
   }
 ];
 
-const bulk_actions = [
-];
-
 const SegmentList = React.createClass({
   renderItem: function(segment, actions) {
     var rowClasses = classNames(
@@ -211,7 +208,6 @@ const SegmentList = React.createClass({
           endpoint="segments"
           onRenderItem={ this.renderItem }
           columns={ columns }
-          bulk_actions={ bulk_actions }
           item_actions={ item_actions }
         />
       </div>

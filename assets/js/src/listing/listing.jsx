@@ -295,9 +295,9 @@ define(
     });
 
     var Listing = React.createClass({
-      mixins: [
-        Router.History
-      ],
+      contextTypes: {
+        router: React.PropTypes.object.isRequired
+      },
       getInitialState: function() {
         return {
           loading: false,
@@ -359,9 +359,12 @@ define(
             }
           })
         }
+
+        // default overrides
         if(this.props.limit !== undefined) {
           state.limit = Math.abs(~~this.props.limit);
         }
+
         this.setState(state, function() {
           this.getItems();
         }.bind(this));
@@ -398,7 +401,7 @@ define(
 
         if(this.props.location) {
           if(this.props.location.pathname !== params) {
-            this.history.pushState(null, `${params}`)
+            this.context.router.push(`${params}`);
           }
         }
       },
@@ -753,8 +756,8 @@ define(
                   onSort={ this.handleSort }
                   onSelectItems={ this.handleSelectItems }
                   selection={ this.state.selection }
-                  sort_by={ this.state.sort_by }
-                  sort_order={ this.state.sort_order }
+                  sort_by={ sort_by }
+                  sort_order={ sort_order }
                   columns={ this.props.columns }
                   is_selectable={ bulk_actions.length > 0 } />
               </thead>
@@ -783,8 +786,8 @@ define(
                   onSort={ this.handleSort }
                   onSelectItems={ this.handleSelectItems }
                   selection={ this.state.selection }
-                  sort_by={ this.state.sort_by }
-                  sort_order={ this.state.sort_order }
+                  sort_by={ sort_by }
+                  sort_order={ sort_order }
                   columns={ this.props.columns }
                   is_selectable={ bulk_actions.length > 0 } />
               </tfoot>

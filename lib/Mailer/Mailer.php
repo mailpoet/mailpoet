@@ -100,9 +100,9 @@ class Mailer {
   }
 
   function getSender($sender = false) {
-    if(!$sender) {
-      $sender = Setting::getValue('sender', null);
-      if(!$sender['address']) throw new \Exception(__('Sender name and email are not configured.'));
+    if(empty($sender)) {
+      $sender = Setting::getValue('sender', array());
+      if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured.'));
     }
     return array(
       'from_name' => $sender['name'],

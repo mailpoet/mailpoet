@@ -7,7 +7,10 @@ function(
   var FormFieldText = React.createClass({
     render: function() {
       var value = this.props.item[this.props.field.name];
-      if(!value) { value = null; }
+      if(value === undefined) {
+        value = this.props.field.defaultValue || '';
+      }
+
       return (
         <input
           type="text"
@@ -21,7 +24,6 @@ function(
           id={ 'field_'+this.props.field.name }
           value={ value }
           placeholder={ this.props.field.placeholder }
-          defaultValue={ this.props.field.defaultValue }
           onChange={ this.props.onValueChange }
           {...this.props.field.validation}
         />

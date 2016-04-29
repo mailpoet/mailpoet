@@ -219,6 +219,37 @@ class Newsletter extends Model {
 
     if($newsletter === false) {
       $newsletter = self::create();
+
+      // set default sender based on settings
+      if(empty($data['sender'])) {
+        $sender = Setting::getValue('sender', array());
+        $data['sender_name'] = (
+          !empty($sender['name'])
+          ? $sender['name']
+          : ''
+        );
+        $data['sender_address'] = (
+          !empty($sender['address'])
+          ? $sender['address']
+          : ''
+        );
+      }
+
+      // set default reply_to based on settings
+      if(empty($data['reply_to'])) {
+        $reply_to = Setting::getValue('reply_to', array());
+        $data['reply_to_name'] = (
+          !empty($reply_to['name'])
+          ? $reply_to['name']
+          : ''
+        );
+        $data['reply_to_address'] = (
+          !empty($reply_to['address'])
+          ? $reply_to['address']
+          : ''
+        );
+      }
+
       $newsletter->hydrate($data);
     } else {
       unset($data['id']);

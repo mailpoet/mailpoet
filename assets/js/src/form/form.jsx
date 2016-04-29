@@ -13,10 +13,11 @@ define(
     Router,
     FormField
   ) {
+
     var Form = React.createClass({
-      mixins: [
-        Router.History
-      ],
+      contextTypes: {
+        router: React.PropTypes.object.isRequired
+      },
       getDefaultProps: function() {
         return {
           params: {},
@@ -68,7 +69,7 @@ define(
               loading: false,
               item: {}
             }, function() {
-              this.history.pushState(null, '/new');
+              this.context.router.push('/new');
             }.bind(this));
           } else {
             this.setState({
@@ -118,7 +119,16 @@ define(
             if(this.props.onSuccess !== undefined) {
               this.props.onSuccess();
             } else {
-              this.history.pushState(null, '/')
+              var isChrome = (/Chrome/.test(navigator.userAgent))
+                && (/Google Inc/.test(navigator.vendor));
+              if(
+                (isChrome && history.length > 2)
+                || (!isChrome && history.length > 1)
+              ) {
+                this.context.router.goBack();
+              } else {
+                this.context.router.push('/');
+              }
             }
 
             if(this.props.params.id !== undefined) {

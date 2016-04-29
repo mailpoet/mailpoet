@@ -80,9 +80,6 @@ define(
     });
 
     var NewsletterTemplates = React.createClass({
-      mixins: [
-        Router.History
-      ],
       getInitialState: function() {
         return {
           loading: false,

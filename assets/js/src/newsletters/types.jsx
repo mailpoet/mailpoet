@@ -12,12 +12,12 @@ define(
     Breadcrumb
   ) {
     var NewsletterTypes = React.createClass({
-      mixins: [
-        Router.History
-      ],
+      contextTypes: {
+        router: React.PropTypes.object.isRequired
+      },
       setupNewsletter: function(type) {
         if(type !== undefined) {
-          this.history.pushState(null, `/new/${type}`);
+          this.context.router.push(`/new/${type}`);
         }
       },
       createNewsletter: function(type) {
@@ -30,7 +30,7 @@ define(
           }
         }).done(function(response) {
           if(response.result && response.newsletter.id) {
-            this.history.pushState(null, `/template/${response.newsletter.id}`);
+            this.context.router.push(`/template/${response.newsletter.id}`);
           } else {
             if(response.errors.length > 0) {
               response.errors.map(function(error) {

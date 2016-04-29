@@ -24,9 +24,9 @@ define(
     };
 
     var NewsletterNotification = React.createClass({
-      mixins: [
-        Router.History
-      ],
+      contextTypes: {
+        router: React.PropTypes.object.isRequired
+      },
       getInitialState: function() {
         return {
           options: {
@@ -64,7 +64,7 @@ define(
         }.bind(this));
       },
       showTemplateSelection: function(newsletterId) {
-        this.history.pushState(null, `/template/${newsletterId}`);
+        this.context.router.push(`/template/${newsletterId}`);
       },
       render: function() {
         return (

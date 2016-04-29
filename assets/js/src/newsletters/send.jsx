@@ -23,9 +23,9 @@ define(
   ) {
 
     var NewsletterSend = React.createClass({
-      mixins: [
-        Router.History
-      ],
+      contextTypes: {
+        router: React.PropTypes.object.isRequired
+      },
       getInitialState: function() {
         return {
           fields: [],
@@ -68,7 +68,7 @@ define(
               loading: false,
               item: {},
             }, function() {
-              this.history.pushState(null, '/new');
+              this.context.router.push('/new');
             }.bind(this));
           } else {
             this.setState({
@@ -106,7 +106,7 @@ define(
           }).done((response) => {
             this.setState({ loading: false });
             if(response.result === true) {
-              this.history.pushState(null, '/');
+              this.context.router.push('/');
               MailPoet.Notice.success(response.data.message);
             } else {
               if(response.errors) {
@@ -133,7 +133,7 @@ define(
           this.setState({ loading: false });
 
           if(response.result === true) {
-            this.history.pushState(null, '/');
+            this.context.router.push('/');
             MailPoet.Notice.success(
               MailPoet.I18n.t('newsletterUpdated')
             );
