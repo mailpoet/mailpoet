@@ -119,16 +119,7 @@ define(
             if(this.props.onSuccess !== undefined) {
               this.props.onSuccess();
             } else {
-              var isChrome = (/Chrome/.test(navigator.userAgent))
-                && (/Google Inc/.test(navigator.vendor));
-              if(
-                (isChrome && history.length > 2)
-                || (!isChrome && history.length > 1)
-              ) {
-                this.context.router.goBack();
-              } else {
-                this.context.router.push('/');
-              }
+              this.context.router.push('/');
             }
 
             if(this.props.params.id !== undefined) {
