@@ -12,23 +12,23 @@ class Shortcodes {
     $queue = false
   ) {
     $this->newsletter = (is_object($newsletter)) ?
-      $newsletter->toArray() :
+      $newsletter->asArray() :
       $newsletter;
     $this->subscriber = (is_object($subscriber)) ?
-      $subscriber->toArray() :
+      $subscriber->asArray() :
       $subscriber;
     $this->queue = (is_object($queue)) ?
-      $queue->toArray() :
+      $queue->asArray() :
       $queue;
   }
 
-  function extract($text, $limit = false) {
+  function extract($content, $limit = false) {
     $limit = (is_array($limit)) ? implode('|', $limit) : false;
     $regex = sprintf(
       '/\[%s:.*?\]/ism',
       ($limit) ? '(?:' . $limit . ')' : '(?:\w+)'
     );
-    preg_match_all($regex, $text, $shortcodes);
+    preg_match_all($regex, $content, $shortcodes);
     return array_unique($shortcodes[0]);
   }
 
@@ -41,9 +41,9 @@ class Shortcodes {
     return $match;
   }
 
-  function process($shortcodes, $text) {
+  function process($shortcodes, $content) {
     $processed_shortcodes = array_map(
-      function($shortcode) use($text) {
+      function($shortcode) use($content) {
         $shortcode_details = $this->match($shortcode);
         $shortcode_type = ucfirst($shortcode_details['type']);
         $shortcode_action = $shortcode_details['action'];
@@ -58,17 +58,16 @@ class Shortcodes {
           $this->newsletter,
           $this->subscriber,
           $this->queue,
-          $text,
-          $shortcode
+          $content
         );
       }, $shortcodes);
     return $processed_shortcodes;
   }
 
-  function replace($text) {
-    $shortcodes = $this->extract($text);
-    $processed_shortcodes = $this->process($shortcodes, $text);
+  function replace($content, $limit = false) {
+    $shortcodes = $this->extract($content, $limit);
+    $processed_shortcodes = $this->process($shortcodes, $content);
     $shortcodes = array_intersect_key($shortcodes, $processed_shortcodes);
-    return str_replace($shortcodes, $processed_shortcodes, $text);
+    return str_replace($shortcodes, $processed_shortcodes, $content);
   }
 }
