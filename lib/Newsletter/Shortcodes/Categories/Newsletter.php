@@ -34,7 +34,7 @@ class Newsletter {
     $newsletter,
     $subscriber,
     $queue = false,
-    $text
+    $content
   ) {
     switch($action) {
       case 'subject':
@@ -42,11 +42,11 @@ class Newsletter {
       break;
 
       case 'total':
-        return substr_count($text, 'data-post-id');
+        return substr_count($content, 'data-post-id');
       break;
 
       case 'post_title':
-        preg_match_all('/data-post-id="(\w+)"/ism', $text, $posts);
+        preg_match_all('/data-post-id="(\d+)"/ism', $content, $posts);
         $post_ids = array_unique($posts[1]);
         $latest_post = self::getLatestWPPost($post_ids);
         return ($latest_post) ? $latest_post['post_title'] : false;

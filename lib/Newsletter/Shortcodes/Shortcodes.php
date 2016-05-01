@@ -34,24 +34,36 @@ class Shortcodes {
 
   function match($shortcode) {
     preg_match(
-      '/\[(?P<type>\w+):(?P<action>\w+)(?:.*?default:(?P<default>.*?))?\]/',
+      '/\[(?P<category>\w+):(?P<action>\w+)(?:.*?\|.*?default:(?P<default>\w+))?\]/ism',
       $shortcode,
       $match
     );
     return $match;
   }
 
-  function process($shortcodes, $content) {
+  function process($shortcodes, $content = false) {
     $processed_shortcodes = array_map(
       function($shortcode) use($content) {
         $shortcode_details = $this->match($shortcode);
-        $shortcode_type = ucfirst($shortcode_details['type']);
+        $shortcode_category = ucfirst($shortcode_details['category']);
         $shortcode_action = $shortcode_details['action'];
         $shortcode_class =
-          __NAMESPACE__ . '\\Categories\\' . $shortcode_type;
+          __NAMESPACE__ . '\\Categories\\' . $shortcode_category;
         $shortcode_default_value = isset($shortcode_details['default'])
           ? $shortcode_details['default'] : false;
-        if(!class_exists($shortcode_class)) return false;
+        if(!class_exists($shortcode_class)) {
+          $custom_shortcode = apply_filters(
+            'mailpoet_newsletter_shortcode',
+            $shortcode,
+            $this->newsletter,
+            $this->subscriber,
+            $this->queue,
+            $content
+          );
+          return ($custom_shortcode === $shortcode) ?
+            false :
+            $custom_shortcode;
+        }
         return $shortcode_class::process(
           $shortcode_action,
           $shortcode_default_value,

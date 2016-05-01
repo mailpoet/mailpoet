@@ -1,55 +1,55 @@
 <?php
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
-        use MailPoet\Models\Setting;
-        use MailPoet\Models\Subscriber;
-        use MailPoet\Statistics\Track\Unsubscribes;
-        use MailPoet\Subscription\Url as SubscriptionUrl;
+use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
+use MailPoet\Statistics\Track\Unsubscribes;
+use MailPoet\Subscription\Url as SubscriptionUrl;
 
-        class Link {
-          /*
-            {
-              text: '<%= __('Unsubscribe') %>',-
-              shortcode: 'subscription:unsubscribe',
-            },
-            {
-              text: '<%= __('Manage subscription') %>',
-              shortcode: 'subscription:manage',
-            },
-            {
-              text: '<%= __('View in browser link') %>',
-              shortcode: 'newsletter:view_in_browser',
-            }
-           */
-          static function process($action,
-            $default_value = false,
-            $newsletter,
-            $subscriber,
-            $queue = false
-          ) {
-            switch($action) {
-              case 'subscription_unsubscribe':
-                $action = 'subscription_unsubscribe_url';
-                $url = self::processUrl(
-                  $action,
-                  esc_attr(SubscriptionUrl::getUnsubscribeUrl($subscriber))
-                );
-                return sprintf(
-                  '<a target="_blank" href="%s">%s</a>',
-                  $url,
-                  __('Unsubscribe')
-                );
-                break;
+class Link {
+  /*
+    {
+      text: '<%= __('Unsubscribe') %>',-
+      shortcode: 'subscription:unsubscribe',
+    },
+    {
+      text: '<%= __('Manage subscription') %>',
+      shortcode: 'subscription:manage',
+    },
+    {
+      text: '<%= __('View in browser link') %>',
+      shortcode: 'newsletter:view_in_browser',
+    }
+   */
+  static function process($action,
+    $default_value = false,
+    $newsletter,
+    $subscriber,
+    $queue = false
+  ) {
+    switch($action) {
+      case 'subscription_unsubscribe':
+        $action = 'subscription_unsubscribe_url';
+        $url = self::processUrl(
+          $action,
+          esc_attr(SubscriptionUrl::getUnsubscribeUrl($subscriber))
+        );
+        return sprintf(
+          '<a target="_blank" href="%s">%s</a>',
+          $url,
+          __('Unsubscribe')
+        );
+      break;
 
-              case 'subscription_unsubscribe_url':
-                return self::processUrl(
-                  $action,
-                  SubscriptionUrl::getUnsubscribeUrl($subscriber)
-                );
-                break;
+      case 'subscription_unsubscribe_url':
+        return self::processUrl(
+          $action,
+          SubscriptionUrl::getUnsubscribeUrl($subscriber)
+        );
+      break;
 
-              case 'subscription_manage':
-                $url = self::processUrl(
+      case 'subscription_manage':
+        $url = self::processUrl(
           $action = 'subscription_manage_url',
           esc_attr(SubscriptionUrl::getManageUrl($subscriber))
         );
@@ -81,20 +81,21 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
       case 'newsletter_view_in_browser_url':
         $url = self::getViewInBrowserUrl($newsletter, $subscriber, $queue);
         return self::processUrl($action, $url);
-      break;
+        break;
 
       default:
+        $shortcode = self::getShortcode($action);
         $url = apply_filters(
-          'mailpoet_shortcode_link',
-          $action,
+          'mailpoet_newsletter_shortcode_link',
+          $shortcode,
           $newsletter,
           $subscriber,
           $queue
         );
-        return ($url !== $action) ?
+        return ($url !== $shortcode) ?
           self::processUrl($action, $url) :
           false;
-        break;
+      break;
     }
   }
 
@@ -130,7 +131,7 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
       }
     }
     return ((boolean) Setting::getValue('tracking.enabled')) ?
-      '[link:' . $action . ']' :
+      self::getShortcode($action) :
       $url;
   }
 
@@ -153,9 +154,10 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
         $url = Link::getViewInBrowserUrl($newsletter, $subscriber, $queue);
         break;
       default:
+        $shortcode = self::getShortcode($shortcode_action);
         $url = apply_filters(
-          'mailpoet_shortcode_link',
-          $shortcode_action,
+          'mailpoet_newsletter_shortcode_link',
+          $shortcode,
           $newsletter,
           $subscriber,
           $queue
@@ -164,5 +166,9 @@ namespace MailPoet\Newsletter\Shortcodes\Categories;
         break;
     }
     return $url;
+  }
+
+  private static function getShortcode($action) {
+    return sprintf('[link:%s]', $action);
   }
 }
