@@ -82,7 +82,16 @@ class ShortcodesTest extends MailPoetTest {
 
     $unsubscribe_url = SubscriptionUrl::getUnsubscribeUrl($this->subscriber);
     $manage_url = SubscriptionUrl::getManageUrl($this->subscriber);
-    $view_in_browser_url = '#TODO';
+
+    $data = array(
+        'newsletter' => $this->newsletter['id'],
+        'subscriber' => $this->subscriber->id,
+        'subscriber_token' => Subscriber::generateToken($this->subscriber->email),
+        'queue' => false
+      );
+    $data = rtrim(base64_encode(serialize($data)), '=');
+    $view_in_browser_url =
+      home_url() . '/?mailpoet&endpoint=view_in_browser&data=' . $data;
 
     expect($newsletter_with_replaced_shortcodes)->equals("
       Hello {$wp_user->user_login}.
