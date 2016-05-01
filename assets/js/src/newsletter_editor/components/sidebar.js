@@ -245,14 +245,20 @@ define([
 
       MailPoet.Ajax.post({
         endpoint: 'newsletters',
-        action: 'render',
+        action: 'showPreview',
         data: json,
       }).done(function(response){
         MailPoet.Modal.loading(false);
-        window.open('data:text/html;charset=utf-8,' + encodeURIComponent(response.rendered_body), '_blank');
+
+        if (response.result === true) {
+          window.open(response.data.url, '_blank')
+        }
+        MailPoet.Notice.error(response.errors);
       }).fail(function(error) {
         MailPoet.Modal.loading(false);
-        alert('Something went wrong, check console');
+        MailPoet.Notice.error(
+          MailPoet.I18n.t('newsletterPreviewFailed')
+        );
       });
     },
     sendPreview: function() {

@@ -1,23 +1,22 @@
 <?php
 namespace MailPoet\Router;
 
-use MailPoet\Config\Shortcodes;
 use MailPoet\Listing;
-use MailPoet\Mailer\API\MailPoet;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterOption;
+use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
+
+require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Newsletters {
   function __construct() {
@@ -134,15 +133,32 @@ class Newsletters {
     return false;
   }
 
-  function render($data = array()) {
+  function showPreview($data = array()) {
     if(!isset($data['body'])) {
-      return false;
+      return array(
+        'result' => false,
+        'errors' => array(__('Newsletter data is missing.'))
+      );
     }
-    $renderer = new Renderer($data);
-    $rendered_newsletter = $renderer->render();
-    $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes($data);
-    $rendered_newsletter = $shortcodes->replace($rendered_newsletter['html']);
-    return array('rendered_body' => $rendered_newsletter);
+    $newsletter_id = (isset($data['id'])) ? (int) $data['id'] : 0;
+    $newsletter = Newsletter::findOne($newsletter_id);
+    if (!$newsletter) {
+      return array(
+        'result' => false,
+        'errors' => array(__('Newsletter could not be read.'))
+      );
+    }
+    $newsletter->body = $data['body'];
+    $newsletter->save();
+    $wp_user =wp_get_current_user();
+    $subscriber = Subscriber::where('email', $wp_user->data->user_email)
+      ->findOne();
+    $subscriber = ($subscriber) ? $subscriber->asArray() : $subscriber;
+    $preview_url = Link::getViewInBrowserUrl($data, $subscriber);
+    return array(
+      'result' => true,
+      'data' => array('url' => $preview_url)
+    );
   }
 
   function sendPreview($data = array()) {
