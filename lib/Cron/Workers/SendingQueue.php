@@ -109,7 +109,7 @@ class SendingQueue {
           $this->renderNewsletter($newsletter);
       }
       $queue->newsletter_rendered_body = json_encode($newsletter['body']);
-      $queue->save();
+  //    $queue->save();
     } else {
       $newsletter['body'] = json_decode($queue->newsletter_rendered_body);
     }
@@ -203,7 +203,8 @@ class SendingQueue {
   }
 
   function processLinks($text, $newsletter_id, $queue_id) {
-    list($text, $processed_links) = Links::replace($text);
+    list($text, $processed_links) =
+      Links::process($text, $links = false, $process_link_shortcodes = true);
     foreach($processed_links as $link) {
       // save extracted and processed links
       $newsletter_link = NewsletterLink::create();
@@ -225,10 +226,11 @@ class SendingQueue {
     $processed_newsletter = $this->replaceShortcodes(
       $newsletter,
       $subscriber,
+      $queue,
       $this->joinObject($data_for_shortcodes)
     );
     if((boolean) Setting::getValue('tracking.enabled')) {
-      $processed_newsletter = $this->replaceLinks(
+      $processed_newsletter = Links::replaceSubscriberData(
         $newsletter['id'],
         $subscriber['id'],
         $queue->id,
@@ -242,18 +244,11 @@ class SendingQueue {
     return $newsletter;
   }
 
-  function replaceLinks($newsletter_id, $subscriber_id, $queue_id, $body) {
-    return str_replace(
-      '[mailpoet_data]',
-      sprintf('%s-%s-%s', $newsletter_id, $subscriber_id, $queue_id),
-      $body
-    );
-  }
-
-  function replaceShortcodes($newsletter, $subscriber, $body) {
+  function replaceShortcodes($newsletter, $subscriber, $queue, $body) {
     $shortcodes = new Shortcodes(
       $newsletter,
-      $subscriber
+      $subscriber,
+      $queue
     );
     return $shortcodes->replace($body);
   }
