@@ -2,6 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Cron\Daemon;
+use MailPoet\Newsletter\Viewer\ViewInBrowser;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscription;
 use MailPoet\Statistics\Track\Clicks;
@@ -60,6 +61,14 @@ class PublicAPI {
       }
       if(!isset($track_class)) return;
       $track_class->track();
+    } catch(\Exception $e) {
+    }
+  }
+
+  function viewInBrowser() {
+    try {
+      $viewer = new ViewInBrowser($this->_decodeData());
+      $viewer->view();
     } catch(\Exception $e) {
     }
   }

@@ -1,61 +1,76 @@
 <?php
-namespace MailPoet\Newsletter\Links;
+namespace MailPoet\Newsletter\Viewer;
 
+use MailPoet\Models\Newsletter;
+use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Links\Links;
+use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
-use MailPoet\Util\Security;
 
-class Links {
-  static function extract($text, $process_link_shortcodes = false) {
-    // adopted from WP's wp_extract_urls() function &  modified to work on hrefs
-      # match href=' or href="
-    $regex = '#(?:href.*?=.*?)(["\']?)('
-      # match http://
-      . '(?:([\w-]+:)?//?)'
-      # match everything except for special characters # until .
-      . '[^\s()<>]+'
-      . '[.]'
-      # conditionally match everything except for special characters after .
-      . '(?:'
-      . '\([\w\d]+\)|'
-      . '(?:'
-      . '[^`!()\[\]{}:\'".,<>«»“”‘’\s]|'
-      . '(?:[:]\d+)?/?'
-      . ')+'
-      . ')'
-      . ')\\1#';
-    $shortcodes = new Shortcodes();
-    // extract shortcodes with [url:*] format
-    $shortcodes = $shortcodes->extract($text, $limit = array('link'));
-    // extract links
-    preg_match_all($regex, $text, $links);
-    return array_merge(
-      array_unique($links[2]),
-      $shortcodes
-    );
+class ViewInBrowser {
+  public $data;
+
+  function __construct($data) {
+    $this->data = $data;
   }
 
-  static function replace($text, $links = false, $process_link_shortcodes = false) {
-    if ($process_link_shortcodes) {
-      // process shortcodes with [url:*] format
-      $shortcodes = new Shortcodes();
-      $text = $shortcodes->replace($text, $limit = array('link'));
+  function view($data = false) {
+    $data = ($data) ? $data : $this->data;
+    $newsletter = ($data['newsletter'] !== false) ?
+      Newsletter::findOne($data['newsletter']) :
+      false;
+    if(!$newsletter) $this->abort();
+    $subscriber = ($data['subscriber'] !== false) ?
+      $this->verifySubscriber($data['subscriber'], $data['subscriber_token']) :
+      false;
+    $queue = ($data['queue'] !== false) ?
+      SendingQueue::findOne($data['queue']) :
+      false;
+    $rendered_newsletter =
+      $this->getAndRenderNewsletter($newsletter, $subscriber, $queue);
+    header('Content-Type: text/html; charset=utf-8');
+    echo $rendered_newsletter;
+    exit;
+  }
+
+  function verifySubscriber($subscriber_id, $subscriber_token) {
+    $subscriber = Subscriber::findOne($subscriber_id);
+    if(!$subscriber ||
+      Subscriber::generateToken($subscriber->email) !== $subscriber_token
+    ) {
+      return false;
     }
-    $links = ($links) ? $links : self::extract($text, $process_link_shortcodes);
-    $processed_links = array();
-    foreach($links as $link) {
-      $hash = Security::generateRandomString(5);
-      $processed_links[] = array(
-        'hash' => $hash,
-        'url' => $link
-      );
-      $encoded_link = sprintf(
-        '%s/?mailpoet&endpoint=track&action=click&data=%s',
-        home_url(),
-        '[mailpoet_data]-' . $hash
-      );
-      $link_regex = '/' . preg_quote($link, '/') . '/';
-      $text = preg_replace($link_regex, $encoded_link, $text);
+    return $subscriber;
+  }
+
+  function getAndRenderNewsletter($newsletter, $subscriber, $queue) {
+    if($queue) {
+      $newsletter_body = json_decode($queue->newsletter_rendered_body, true);
+    } else {
+      $renderer = new Renderer($newsletter->asArray());
+      $newsletter_body = $renderer->render();
     }
-     return array($text, $processed_links);
+    $shortcodes = new Shortcodes(
+      $newsletter,
+      $subscriber,
+      $queue
+    );
+    $rendered_newsletter = $shortcodes->replace($newsletter_body['html']);
+    if($queue && (boolean) Setting::getValue('tracking.enabled')) {
+      $rendered_newsletter = Links::replaceSubscriberData(
+        $newsletter->id,
+        $subscriber->id,
+        $queue->id,
+        $rendered_newsletter
+      );
+    }
+    return $rendered_newsletter;
+  }
+
+  private function abort() {
+    header('HTTP/1.0 404 Not Found');
+    exit;
   }
 }
