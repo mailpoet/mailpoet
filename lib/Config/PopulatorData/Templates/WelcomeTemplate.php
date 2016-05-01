@@ -46,7 +46,7 @@ class WelcomeTemplate {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems?&nbsp;<a href=\"[newsletter:view_in_browser_url]\">View it in your browser</a>"),
+                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">View it in your browser</a>"),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"
@@ -224,7 +224,7 @@ class WelcomeTemplate {
                 "blocks" => array(
                   array(
                     "type" => "footer",
-                    "text" => __("<a href=\"[subscription:unsubscribe_url]\">Unsubscribe</a> | <a href=\"[subscription:manage_url]\">Manage subscription</a><br /><b>Add your postal address here!</b>"),
+                    "text" => __("<a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage subscription</a><br /><b>Add your postal address here!</b>"),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"

@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 
 require_once( ABSPATH . "wp-includes/pluggable.php" );
 
@@ -26,18 +27,15 @@ class Newsletter {
     {
       text: '<%= __('Issue number') %>',
       shortcode: 'newsletter:number',
-    },
-    {
-      text: '<%= __('View in browser link') %>',
-      shortcode: 'newsletter:view_in_browser',
     }
    */
   static function process($action,
     $default_value = false,
-    $newsletter, $subscriber = false, $text) {
-    if(is_object($newsletter)) {
-      $newsletter = $newsletter->asArray();
-    }
+    $newsletter,
+    $subscriber,
+    $queue = false,
+    $text
+  ) {
     switch($action) {
       case 'subject':
         return ($newsletter) ? $newsletter['subject'] : false;
@@ -61,14 +59,6 @@ class Newsletter {
             ->where('status', 'completed')
             ->count();
         return ++$sent_newsletters;
-      break;
-
-      case 'view_in_browser':
-        return '<a href="#TODO">'.__('View in your browser').'</a>';
-      break;
-
-      case 'view_in_browser_url':
-        return '#TODO';
       break;
 
       default:

@@ -50,9 +50,9 @@ class ShortcodesTest extends MailPoetTest {
       Month text: [date:mtext].
       Year: [date:y]
 
-      You can unsubscribe here: [subscription:unsubscribe_url].
-      Manage your subscription here: [subscription:manage_url].
-      View this newsletter in browser: [newsletter:view_in_browser_url].";
+      You can unsubscribe here: [link:subscription_unsubscribe_url].
+      Manage your subscription here: [link:subscription_manage_url].
+      View this newsletter in browser: [link:newsletter_view_in_browser_url].";
     $this->shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $this->subscriber

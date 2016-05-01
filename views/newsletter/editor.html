@@ -320,6 +320,7 @@
     'customFieldsWindowTitle': __('Select a shortcode'),
     'unsubscribeLinkMissing': __('All newsletters must include an "unsubscribe" link. Add a footer widget to your newsletter to continue.'),
     'newsletterPreviewEmailMissing': __('Please enter an email where newsletter preview should be sent to.'),
+    'newsletterPreviewFailed': __('Preview failed. Pleae check console log.'),
     'newsletterPreviewSent': __('Newsletter preview email has been successfully sent!'),
     'newsletterPreviewFailedToSend': __('Attempt to send a newsletter preview email failed. Please verify that your sending method is configured correctly try again.'),
     'templateNameMissing': __('Please add a template name'),
@@ -1024,7 +1025,7 @@
           },
         },
         footer: {
-          text: '<a href="[subscription:unsubscribe_url]"><%= __('Unsubscribe') %></a> | <a href="[subscription:manage_url]"><%= __('Manage subscription') %></a><br /><b><%= __('Add your postal address here!') %></b>',
+          text: '<a href="[link:subscription_unsubscribe_url]"><%= __('Unsubscribe') %></a> | <a href="[link:subscription_manage_url]"><%= __('Manage subscription') %></a><br /><b><%= __('Add your postal address here!') %></b>',
           styles: {
             block: {
               backgroundColor: 'transparent',
@@ -1149,7 +1150,7 @@
         },
         header: {
           text: '<%= __('Display problems?') %>&nbsp;'+
-            '<a href="[newsletter:view_in_browser_url]"><%= __('View it in your browser') %></a>',
+            '<a href="[link:newsletter_view_in_browser_url]"><%= __('View it in your browser') %></a>',
           styles: {
             block: {
               backgroundColor: 'transparent',
@@ -1239,15 +1240,15 @@
         '<%= __('Links') %>': [
           {
             text: '<%= __('Unsubscribe link') %>',
-            shortcode: 'subscription:unsubscribe',
+            shortcode: 'link:subscription_unsubscribe',
           },
           {
             text: '<%= __('Edit subscription page link') %>',
-            shortcode: 'subscription:manage',
+            shortcode: 'link:subscription_manage',
           },
           {
             text: '<%= __('View in browser link') %>',
-            shortcode: 'newsletter:view_in_browser',
+            shortcode: 'link:newsletter_view_in_browser',
           }
         ],
         <% if customFields %>

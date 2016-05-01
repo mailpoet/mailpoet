@@ -30,9 +30,8 @@ class Clicks {
       ->where('queue_id', $queue_id)
       ->findOne();
     if(!$statistics) {
-      // track open action in case it did not register
-      $opens = new Opens($url, $display_image = false);
-      $opens->track();
+      // track open event in case it did not register
+      $this->trackOpen($url);
       $statistics = StatisticsClicks::create();
       $statistics->newsletter_id = $newsletter_id;
       $statistics->link_id = $link->id;
@@ -44,26 +43,39 @@ class Clicks {
       $statistics->count++;
       $statistics->save();
     }
-    $url = (preg_match('/\[subscription:.*?\]/', $link->url)) ?
-      $this->processSubscriptionUrl($link->url, $subscriber, $queue_id, $newsletter_id) :
+    $is_this_subscription = (preg_match('/\[link:(?P<action>.*?)\]/', $link->url, $action));
+    $url = ($is_this_subscription) ?
+      $this->getSubscriptionUrl($link->url, $subscriber, $queue_id, $newsletter_id) :
       $link->url;
     header('Location: ' . $url, true, 302);
     exit;
   }
 
-  function processSubscriptionUrl($url, $subscriber, $queue_id, $newsletter_id) {
-    preg_match('/\[subscription:(.*?)\]/', $url, $match);
-    $action = $match[1];
-    if(preg_match('/unsubscribe/', $action)) {
-      $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
-      // track unsubscribe action
-      $unsubscribes = new Unsubscribes();
-      $unsubscribes->track($subscriber->id, $queue_id, $newsletter_id);
-    }
-    if(preg_match('/manage/', $action)) {
-      $url = SubscriptionUrl::getManageUrl($subscriber);
+  function getSubscriptionUrl(
+    $subscription_action, $subscriber, $queue_id, $newsletter_id
+  ) {
+    if(!isset($subscription_action['action'])) self::abort();
+    switch($subscription_action['action']) {
+      case 'unsubscribe':
+        // track unsubscribe event
+        $this->trackUnsubscribe($subscriber->id, $queue_id, $newsletter_id);
+        $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
+        break;
+      case 'manage':
+        $url = SubscriptionUrl::getManageUrl($subscriber);
+        break;
     }
     return $url;
+  }
+
+  function trackUnsubscribe($subscriber, $queue, $newsletter) {
+    $unsubscribe = new Unsubscribes();
+    $unsubscribe->track($subscriber, $queue, $newsletter);
+  }
+
+  function trackOpen($url) {
+    $open = new Opens($url, $display_image = false);
+    $open->track();
   }
 
   private function abort() {

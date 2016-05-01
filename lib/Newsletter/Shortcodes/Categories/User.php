@@ -28,10 +28,12 @@ class User {
       shortcode: 'user:count',
     }
    */
-  static function process($action, $default_value, $newsletter = false, $subscriber) {
-    if(is_object($subscriber)) {
-      $subscriber = $subscriber->asArray();
-    }
+  static function process(
+    $action,
+    $default_value,
+    $newsletter = false,
+    $subscriber
+  ) {
     switch($action) {
       case 'firstname':
         return ($subscriber) ? $subscriber['first_name'] : $default_value;

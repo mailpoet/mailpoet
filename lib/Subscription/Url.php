@@ -45,7 +45,7 @@ class Url {
     $params = array(
       'endpoint=subscription',
       'action='.$action,
-      'data='.base64_encode(serialize($data))
+      'data='.rtrim(base64_encode(serialize($data)), '=')
     );
 
     // add parameters

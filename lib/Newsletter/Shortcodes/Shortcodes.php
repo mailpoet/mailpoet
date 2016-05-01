@@ -4,13 +4,22 @@ namespace MailPoet\Newsletter\Shortcodes;
 class Shortcodes {
   public $newsletter;
   public $subscriber;
+  public $queue;
 
   function __construct(
     $newsletter = false,
-    $subscriber = false
+    $subscriber = false,
+    $queue = false
   ) {
-    $this->newsletter = $newsletter;
-    $this->subscriber = $subscriber;
+    $this->newsletter = (is_object($newsletter)) ?
+      $newsletter->toArray() :
+      $newsletter;
+    $this->subscriber = (is_object($subscriber)) ?
+      $subscriber->toArray() :
+      $subscriber;
+    $this->queue = (is_object($queue)) ?
+      $queue->toArray() :
+      $queue;
   }
 
   function extract($text, $limit = false) {
@@ -48,6 +57,7 @@ class Shortcodes {
           $shortcode_default_value,
           $this->newsletter,
           $this->subscriber,
+          $this->queue,
           $text,
           $shortcode
         );
