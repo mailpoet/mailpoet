@@ -67,7 +67,7 @@ class Links {
 
   static function replaceSubscriberData($newsletter_id, $subscriber_id, $queue_id, $content) {
     return str_replace(
-      '[mailpoet_data]',
+      self::DATA_TAG,
       sprintf('%s-%s-%s', $newsletter_id, $subscriber_id, $queue_id),
       $content
     );
