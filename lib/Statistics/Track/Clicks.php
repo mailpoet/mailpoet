@@ -12,20 +12,18 @@ use MailPoet\Subscription\Url as SubscriptionUrl;
 if(!defined('ABSPATH')) exit;
 
 class Clicks {
-  public $url;
+  public $data;
 
-  function __construct($url) {
-    $this->url = $url;
+  function __construct($data) {
+    $this->data = $data;
   }
 
-  function track($url = false) {
-    $url = ($url) ? $url : $this->url;
-    if(!preg_match('/\d+-\d+-\d+-[a-zA-Z0-9]/', $url)) $this->abort();
-    list ($newsletter_id, $subscriber_id, $queue_id, $hash) = explode('-', $url);
-    $newsletter = $this->getNewsletter($newsletter_id);
-    $subscriber = $this->getSubscriber($subscriber_id);
-    $queue = $this->getQueue($queue_id);
-    $link = $this->getLink($hash);
+  function track($data = false) {
+    $data = ($data) ? $data : $this->data;
+    $newsletter = $this->getNewsletter($data['newsletter']);
+    $subscriber = $this->getSubscriber($data['subscriber']);
+    $queue = $this->getQueue($data['queue']);
+    $link = $this->getLink($data['hash']);
     if(!$subscriber || !$newsletter || !$link || !$queue) {
       $this->abort();
     }
@@ -36,7 +34,7 @@ class Clicks {
       ->findOne();
     if(!$statistics) {
       // track open event in case it did not register
-      $open = new Opens($url, $display_image = false);
+      $open = new Opens($data, $display_image = false);
       $open->track();
       $statistics = StatisticsClicks::create();
       $statistics->newsletter_id = $newsletter['id'];

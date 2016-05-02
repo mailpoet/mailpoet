@@ -10,7 +10,7 @@ class Links {
 
   static function extract($content) {
     // adopted from WP's wp_extract_urls() function &  modified to work on hrefs
-      # match href=' or href="
+    # match href=' or href="
     $regex = '#(?:href.*?=.*?)(["\']?)('
       # match http://
       . '(?:([\w-]+:)?//?)'
@@ -76,11 +76,23 @@ class Links {
     $queue_id,
     $content
   ) {
-    return str_replace(
-      self::DATA_TAG,
-      sprintf('%s-%s-%s', $newsletter_id, $subscriber_id, $queue_id),
-      $content
-    );
+    $regex = sprintf('/data=(%s(?:-\w+)?)/', preg_quote(self::DATA_TAG));
+    preg_match_all($regex, $content, $links);
+    foreach($links[1] as $link) {
+      $hash = null;
+      if(preg_match('/-/', $link)) {
+        list(, $hash) = explode('-', $link);
+      }
+      $data = array(
+        'newsletter' => $newsletter_id,
+        'subscriber' => $subscriber_id,
+        'queue' => $queue_id,
+        'hash' => $hash
+      );
+      $data = rtrim(base64_encode(serialize($data)), '=');
+      $content = str_replace($link, $data, $content);
+    }
+    return $content;
   }
 
   static function save($links, $newsletter_id, $queue_id) {

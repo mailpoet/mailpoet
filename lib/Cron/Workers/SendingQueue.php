@@ -118,7 +118,7 @@ class SendingQueue {
   function processBulkSubscribers($mailer, $newsletter, $subscribers, $queue) {
     foreach($subscribers as $subscriber) {
       $processed_newsletters[] =
-        $this->processNewsletter($newsletter, $subscriber, $queue);
+        $this->processNewsletterBeforeSending($newsletter, $subscriber, $queue);
       if(!$queue->newsletter_rendered_subject) {
         $queue->newsletter_rendered_subject = $processed_newsletters[0]['subject'];
       }
@@ -162,7 +162,7 @@ class SendingQueue {
   function processIndividualSubscriber($mailer, $newsletter, $subscribers, $queue) {
     foreach($subscribers as $subscriber) {
       $this->checkSendingLimit();
-      $processed_newsletter = $this->processNewsletter($newsletter, $subscriber, $queue);
+      $processed_newsletter = $this->processNewsletterBeforeSending($newsletter, $subscriber, $queue);
       if(!$queue->newsletter_rendered_subject) {
         $queue->newsletter_rendered_subject = $processed_newsletter['subject'];
       }
@@ -213,7 +213,7 @@ class SendingQueue {
     return $content;
   }
 
-  function processNewsletter($newsletter, $subscriber = false, $queue) {
+  function processNewsletterBeforeSending($newsletter, $subscriber = false, $queue) {
     $data_for_shortcodes = array(
       $newsletter['subject'],
       $newsletter['body']['html'],
