@@ -3,9 +3,9 @@ namespace MailPoet\Config;
 
 use MailPoet\Cron\Daemon;
 use MailPoet\Newsletter\Viewer\ViewInBrowser;
+use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscription;
-use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -36,19 +36,13 @@ class PublicAPI {
   }
 
   function queue() {
-    try {
-      $queue = new Daemon($this->data);
-      $this->_checkAndCallMethod($queue, $this->action);
-    } catch(\Exception $e) {
-    }
+    $queue = new Daemon($this->data);
+    $this->_checkAndCallMethod($queue, $this->action);
   }
 
   function subscription() {
-    try {
-      $subscription = new Subscription\Pages($this->action, $this->data);
-      $this->_checkAndCallMethod($subscription, $this->action);
-    } catch(\Exception $e) {
-    }
+    $subscription = new Subscription\Pages($this->action, $this->data);
+    $this->_checkAndCallMethod($subscription, $this->action);
   }
 
   function track() {
