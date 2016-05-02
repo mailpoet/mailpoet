@@ -21,7 +21,7 @@ class SendingQueue {
   public $processing_method;
   public $divider = '***MailPoet***';
   private $timer;
-  const batch_size = 50;
+  const BATCH_SIZE = 50;
 
   function __construct($timer = false) {
     $this->mta_config = $this->getMailerConfig();
@@ -50,7 +50,7 @@ class SendingQueue {
         $queue->subscribers->failed = array();
       }
       $mailer = $this->configureMailer($newsletter);
-      foreach(array_chunk($queue->subscribers->to_process, self::batch_size) as
+      foreach(array_chunk($queue->subscribers->to_process, self::BATCH_SIZE) as
               $subscribers_ids) {
         $subscribers = Subscriber::whereIn('id', $subscribers_ids)
           ->findArray();
@@ -204,9 +204,9 @@ class SendingQueue {
   function processLinks($content, $newsletter_id, $queue_id) {
     list($content, $processed_links) =
       Links::process(
-        $content, 
-        $links = false, 
-        $process_link_shortcodes = true, 
+        $content,
+        $links = false,
+        $process_link_shortcodes = true,
         $queue = false
       );
     Links::save($processed_links, $newsletter_id, $queue_id);

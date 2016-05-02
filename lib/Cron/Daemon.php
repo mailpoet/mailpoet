@@ -37,15 +37,15 @@ class Daemon {
     }
     $this->abortIfStopped($daemon);
     try {
-      $scheduler = new Scheduler();
+/*      $scheduler = new Scheduler();
       $scheduler->process($this->timer);
       $queue = new SendingQueue();
-      $queue->process($this->timer);
+      $queue->process($this->timer);*/
     } catch(\Exception $e) {
     }
     $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time < CronHelper::daemon_execution_limit) {
-      sleep(CronHelper::daemon_execution_limit - $elapsed_time);
+    if($elapsed_time < CronHelper::DAEMON_EXECUTION_LIMIT) {
+      sleep(CronHelper::DAEMON_EXECUTION_LIMIT - $elapsed_time);
     }
     // after each execution, re-read daemon data in case it was deleted or
     // its status has changed
