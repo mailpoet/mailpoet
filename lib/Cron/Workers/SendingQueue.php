@@ -207,7 +207,7 @@ class SendingQueue {
         $content,
         $links = false,
         $process_link_shortcodes = true,
-        $queue = false
+        $queue_id
       );
     Links::save($processed_links, $newsletter_id, $queue_id);
     return $content;
