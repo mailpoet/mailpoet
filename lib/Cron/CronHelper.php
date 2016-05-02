@@ -10,10 +10,14 @@ class CronHelper {
   const DAEMON_EXECUTION_LIMIT = 20;
   const DAEMON_EXECUTION_TIMEOUT = 35;
   const DAEMON_REQUEST_TIMEOUT = 2;
+  const DAEMON_STATUS_STOPPED = 'stopped';
+  const DAEMON_STATUS_STOPPING = 'stopping';
+  const DAEMON_STATUS_STARTED = 'started';
+  const DAEMON_STATUS_STARTING = 'starting';
 
   static function createDaemon($token) {
     $daemon = array(
-      'status' => 'starting',
+      'status' => self::DAEMON_STATUS_STARTING,
       'counter' => 0,
       'token' => $token
     );

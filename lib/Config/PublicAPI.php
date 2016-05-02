@@ -52,25 +52,19 @@ class PublicAPI {
   }
 
   function track() {
-    try {
-      if($this->action === 'click') {
-        $track_class = new Clicks($this->data);
-      }
-      if($this->action === 'open') {
-        $track_class = new Opens($this->data);
-      }
-      if(!isset($track_class)) return;
-      $track_class->track();
-    } catch(\Exception $e) {
+    if($this->action === 'click') {
+      $track_class = new Clicks($this->data);
     }
+    if($this->action === 'open') {
+      $track_class = new Opens($this->data);
+    }
+    if(!isset($track_class)) return;
+    $track_class->track();
   }
 
   function viewInBrowser() {
-    try {
-      $viewer = new ViewInBrowser($this->_decodeData());
-      $viewer->view();
-    } catch(\Exception $e) {
-    }
+    $viewer = new ViewInBrowser($this->_decodeData());
+    $viewer->view();
   }
 
   private function _checkAndCallMethod($class, $method, $terminate_request = false) {

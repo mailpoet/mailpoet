@@ -12,7 +12,7 @@ class Daemon {
   public $daemon;
   public $data;
   public $refreshed_token;
-  const daemon_request_timeout = 5;
+  const DAEMON_REQUEST_TIMEOUT = 5;
   private $timer;
 
   function __construct($data) {
@@ -37,11 +37,12 @@ class Daemon {
     }
     $this->abortIfStopped($daemon);
     try {
-/*      $scheduler = new Scheduler();
+      $scheduler = new Scheduler();
       $scheduler->process($this->timer);
       $queue = new SendingQueue();
-      $queue->process($this->timer);*/
+      $queue->process($this->timer);
     } catch(\Exception $e) {
+      // continue processing, no need to catch errors
     }
     $elapsed_time = microtime(true) - $this->timer;
     if($elapsed_time < CronHelper::DAEMON_EXECUTION_LIMIT) {
@@ -55,8 +56,8 @@ class Daemon {
     }
     $daemon['counter']++;
     $this->abortIfStopped($daemon);
-    if($daemon['status'] === 'starting') {
-      $daemon['status'] = 'started';
+    if($daemon['status'] === CronHelper::DAEMON_STATUS_STARTING) {
+      $daemon['status'] = CronHelper::DAEMON_STATUS_STARTED;
     }
     $daemon['token'] = $this->token;
     CronHelper::saveDaemon($daemon);
@@ -64,9 +65,9 @@ class Daemon {
   }
 
   function abortIfStopped($daemon) {
-    if($daemon['status'] === 'stopped') exit;
-    if($daemon['status'] === 'stopping') {
-      $daemon['status'] = 'stopped';
+    if($daemon['status'] === CronHelper::DAEMON_STATUS_STOPPED) exit;
+    if($daemon['status'] === CronHelper::DAEMON_STATUS_STOPPING) {
+      $daemon['status'] = CronHelper::DAEMON_STATUS_STOPPING;
       CronHelper::saveDaemon($daemon);
       exit;
     }
@@ -77,7 +78,7 @@ class Daemon {
   }
 
   function callSelf() {
-    CronHelper::accessDaemon($this->token, self::daemon_request_timeout);
+    CronHelper::accessDaemon($this->token, self::DAEMON_REQUEST_TIMEOUT);
     exit;
   }
 }

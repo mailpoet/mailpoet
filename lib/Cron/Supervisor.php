@@ -23,7 +23,7 @@ class Supervisor {
     // if the daemon is stopped, return its status and do nothing
     if(!$this->force_run &&
       isset($daemon['status']) &&
-      $daemon['status'] === 'stopped'
+      $daemon['status'] === CronHelper::DAEMON_STATUS_STOPPED
     ) {
       return $this->formatDaemonStatusMessage($daemon['status']);
 
@@ -40,8 +40,8 @@ class Supervisor {
     elseif($elapsed_time < CronHelper::DAEMON_EXECUTION_TIMEOUT &&
       $this->force_run &&
       in_array($daemon['status'], array(
-        'stopping',
-        'starting'
+        CronHelper::DAEMON_STATUS_STOPPING,
+        CronHelper::DAEMON_STATUS_STARTING
       ))
     ) {
       return $this->formatDaemonStatusMessage($daemon['status']);
