@@ -26,7 +26,7 @@ class Links {
       . ')+'
       . ')'
       . ')\\1#';
-    // extract shortcodes with [url:*] format
+    // extract shortcodes with [link:*] format
     $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract($content, $limit = array('link'));
     // extract links
@@ -43,8 +43,8 @@ class Links {
     $queue = false
   ) {
     if($process_link_shortcodes) {
-      // process shortcodes with [url:*] format
       $shortcodes = new Shortcodes($newsletter = false, $subscriber = false, $queue);
+      // process shortcodes with [link:*] format
       $content = $shortcodes->replace($content, $limit = array('link'));
     }
     $links = ($links) ? $links : self::extract($content);
