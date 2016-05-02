@@ -47,32 +47,34 @@ class ShortcodesTest extends MailPoetTest {
   }
 
   function testItCanMatchShortcodeDetails() {
+    $shortcodes_object = $this->shortcodes_object;
     $content = '[category:action]';
-    $details = $this->shortcodes_object->match($content);
+    $details = $shortcodes_object->match($content);
     expect($details['category'])->equals('category');
     expect($details['action'])->equals('action');
     $content = '[category:action|default:default_value]';
-    $details = $this->shortcodes_object->match($content);
+    $details = $shortcodes_object->match($content);
     expect($details['category'])->equals('category');
     expect($details['action'])->equals('action');
     expect($details['default'])->equals('default_value');
     $content = '[category:action|default]';
-    $details = $this->shortcodes_object->match($content);
+    $details = $shortcodes_object->match($content);
     expect($details)->isEmpty();
     $content = '[category|default:default_value]';
-    $details = $this->shortcodes_object->match($content);
+    $details = $shortcodes_object->match($content);
     expect($details)->isEmpty();
   }
 
   function testItCanProcessCustomShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
     $shortcode = array('[some:shortcode]');
-    $result = $this->shortcodes_object->process($shortcode);
+    $result = $shortcodes_object->process($shortcode);
     expect($result[0])->false();
     add_filter('mailpoet_newsletter_shortcode', function (
       $shortcode, $newsletter, $subscriber, $queue, $content) {
       if($shortcode === '[some:shortcode]') return 'success';
     }, 10, 5);
-    $result = $this->shortcodes_object->process($shortcode);
+    $result = $shortcodes_object->process($shortcode);
     expect($result[0])->equals('success');
   }
 
@@ -87,80 +89,84 @@ class ShortcodesTest extends MailPoetTest {
   }
 
   function testItCanProcessNewsletterShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
     $content =
       '<a data-post-id="' . $this->WP_post . '" href="#">latest post</a>' .
       '<a data-post-id="10" href="#">another post</a>' .
       '<a href="#">not post</a>';
     $result =
-      $this->shortcodes_object->process(array('[newsletter:subject]'));
+      $shortcodes_object->process(array('[newsletter:subject]'));
     expect($result[0])->equals($this->newsletter['subject']);
     $result =
-      $this->shortcodes_object->process(array('[newsletter:total]'), $content);
+      $shortcodes_object->process(array('[newsletter:total]'), $content);
     expect($result[0])->equals(2);
     $result =
-      $this->shortcodes_object->process(array('[newsletter:post_title]'));
+      $shortcodes_object->process(array('[newsletter:post_title]'));
     $wp_post = get_post($this->WP_post);
     expect($result['0'])->equals($wp_post->post_title);
     $result =
-      $this->shortcodes_object->process(array('[newsletter:number]'));
+      $shortcodes_object->process(array('[newsletter:number]'));
     expect($result['0'])->equals(1);
     $queue = $this->_createQueue();
     $result =
-      $this->shortcodes_object->process(array('[newsletter:number]'));
+      $shortcodes_object->process(array('[newsletter:number]'));
     expect($result['0'])->equals(2);
   }
 
   function testItCanProcessUserShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
     $result =
-      $this->shortcodes_object->process(array('[user:firstname]'));
+      $shortcodes_object->process(array('[user:firstname]'));
     expect($result[0])->equals($this->subscriber->first_name);
     $result =
-      $this->shortcodes_object->process(array('[user:lastname]'));
+      $shortcodes_object->process(array('[user:lastname]'));
     expect($result[0])->equals($this->subscriber->last_name);
     $result =
-      $this->shortcodes_object->process(array('[user:displayname]'));
+      $shortcodes_object->process(array('[user:displayname]'));
     expect($result[0])->equals($this->WP_user->user_login);
     $subscribers = Subscriber::where('status', 'subscribed')
       ->findMany();
     $subscriber_count = count($subscribers);
     $result =
-      $this->shortcodes_object->process(array('[user:count]'));
+      $shortcodes_object->process(array('[user:count]'));
     expect($result[0])->equals($subscriber_count);
     $this->subscriber->status = 'unsubscribed';
     $this->subscriber->save();
     $result =
-      $this->shortcodes_object->process(array('[user:count]'));
+      $shortcodes_object->process(array('[user:count]'));
     expect($result[0])->equals(--$subscriber_count);
   }
 
   function testItCanProcessLinkShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
     $result =
-      $this->shortcodes_object->process(array('[link:subscription_unsubscribe]'));
+      $shortcodes_object->process(array('[link:subscription_unsubscribe]'));
     expect(preg_match('/^<a.*?\/a>$/', $result['0']))->equals(1);
     expect(preg_match('/action=unsubscribe/', $result['0']))->equals(1);
     $result =
-      $this->shortcodes_object->process(array('[link:subscription_unsubscribe_url]'));
+      $shortcodes_object->process(array('[link:subscription_unsubscribe_url]'));
     expect(preg_match('/^http.*?action=unsubscribe/', $result['0']))->equals(1);
     $result =
-      $this->shortcodes_object->process(array('[link:subscription_manage]'));
+      $shortcodes_object->process(array('[link:subscription_manage]'));
     expect(preg_match('/^<a.*?\/a>$/', $result['0']))->equals(1);
     expect(preg_match('/action=manage/', $result['0']))->equals(1);
     $result =
-      $this->shortcodes_object->process(array('[link:subscription_manage_url]'));
+      $shortcodes_object->process(array('[link:subscription_manage_url]'));
     expect(preg_match('/^http.*?action=manage/', $result['0']))->equals(1);
     $result =
-      $this->shortcodes_object->process(array('[link:newsletter_view_in_browser]'));
+      $shortcodes_object->process(array('[link:newsletter_view_in_browser]'));
     expect(preg_match('/^<a.*?\/a>$/', $result['0']))->equals(1);
     expect(preg_match('/endpoint=view_in_browser/', $result['0']))->equals(1);
     $result =
-      $this->shortcodes_object->process(array('[link:newsletter_view_in_browser_url]'));
+      $shortcodes_object->process(array('[link:newsletter_view_in_browser_url]'));
     expect(preg_match('/^http.*?endpoint=view_in_browser/', $result['0']))->equals(1);
   }
 
   function testItReturnsShortcodeWhenTrackingEnabled() {
+    $shortcodes_object = $this->shortcodes_object;
     $shortcode = '[link:subscription_unsubscribe_url]';
     $result =
-      $this->shortcodes_object->process(array($shortcode));
+      $shortcodes_object->process(array($shortcode));
     expect(preg_match('/^http.*?action=unsubscribe/', $result['0']))->equals(1);
     Setting::setValue('tracking.enabled', true);
     $shortcodes = array(
@@ -171,25 +177,30 @@ class ShortcodesTest extends MailPoetTest {
       '[link:newsletter_view_in_browser]',
       '[link:newsletter_view_in_browser_url]'
     );
+    // tracking function only works during sending, so queue object must not be false
+    $shortcodes_object->queue = true;
     $result =
-      $this->shortcodes_object->process($shortcodes);
+      $shortcodes_object->process($shortcodes);
     // all returned shortcodes must end with url
     $result = join(',', $result);
     expect(substr_count($result, '_url'))->equals(count($shortcodes));
   }
 
   function testItCanProcessCustomLinkShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
     $shortcode = '[link:shortcode]';
-    $result = $this->shortcodes_object->process(array($shortcode));
+    $result = $shortcodes_object->process(array($shortcode));
     expect($result[0])->false();
     add_filter('mailpoet_newsletter_shortcode_link', function (
       $shortcode, $newsletter, $subscriber, $queue) {
       if($shortcode === '[link:shortcode]') return 'success';
     }, 10, 4);
-    $result = $this->shortcodes_object->process(array($shortcode));
+    $result = $shortcodes_object->process(array($shortcode));
     expect($result[0])->equals('success');
     Setting::setValue('tracking.enabled', true);
-    $result = $this->shortcodes_object->process(array($shortcode));
+    // tracking function only works during sending, so queue object must not be false
+    $shortcodes_object->queue = true;
+    $result = $shortcodes_object->process(array($shortcode));
     expect($result[0])->equals($shortcode);
   }
 
