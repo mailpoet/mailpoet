@@ -202,19 +202,11 @@ class SendingQueue {
     return array($rendered_newsletter, $rendered_newsletter_hash);
   }
 
-  function processLinks($text, $newsletter_id, $queue_id) {
-    list($text, $processed_links) =
-      Links::process($text, $links = false, $process_link_shortcodes = true);
-    foreach($processed_links as $link) {
-      // save extracted and processed links
-      $newsletter_link = NewsletterLink::create();
-      $newsletter_link->newsletter_id = $newsletter_id;
-      $newsletter_link->queue_id = $queue_id;
-      $newsletter_link->hash = $link['hash'];
-      $newsletter_link->url = $link['url'];
-      $newsletter_link->save();
-    }
-    return $text;
+  function processLinks($content, $newsletter_id, $queue_id) {
+    list($content, $processed_links) =
+      Links::process($content, $links = false, $process_link_shortcodes = true);
+    Links::save($processed_links, $newsletter_id, $queue_id);
+    return $content;
   }
 
   function processNewsletter($newsletter, $subscriber = false, $queue) {

@@ -1,13 +1,14 @@
 <?php
 namespace MailPoet\Newsletter\Links;
 
+use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Util\Security;
 
 class Links {
   const DATA_TAG = '[mailpoet_data]';
 
-  static function extract($content, $process_link_shortcodes = false) {
+  static function extract($content) {
     // adopted from WP's wp_extract_urls() function &  modified to work on hrefs
       # match href=' or href="
     $regex = '#(?:href.*?=.*?)(["\']?)('
@@ -25,8 +26,8 @@ class Links {
       . ')+'
       . ')'
       . ')\\1#';
-    $shortcodes = new Shortcodes();
     // extract shortcodes with [url:*] format
+    $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract($content, $limit = array('link'));
     // extract links
     preg_match_all($regex, $content, $links);
@@ -42,7 +43,7 @@ class Links {
       $shortcodes = new Shortcodes();
       $content = $shortcodes->replace($content, $limit = array('link'));
     }
-    $links = ($links) ? $links : self::extract($content, $process_link_shortcodes);
+    $links = ($links) ? $links : self::extract($content);
     $processed_links = array();
     foreach($links as $link) {
       $hash = Security::generateRandomString(5);
@@ -71,5 +72,16 @@ class Links {
       sprintf('%s-%s-%s', $newsletter_id, $subscriber_id, $queue_id),
       $content
     );
+  }
+
+  static function save($links, $newsletter_id, $queue_id) {
+    foreach($links as $link) {
+      $newsletter_link = NewsletterLink::create();
+      $newsletter_link->newsletter_id = $newsletter_id;
+      $newsletter_link->queue_id = $queue_id;
+      $newsletter_link->hash = $link['hash'];
+      $newsletter_link->url = $link['url'];
+      $newsletter_link->save();
+    }
   }
 }
