@@ -37,10 +37,14 @@ class Links {
     );
   }
 
-  static function process($content, $links = false, $process_link_shortcodes = false) {
+  static function process($content,
+    $links = false,
+    $process_link_shortcodes = false,
+    $queue = false
+  ) {
     if($process_link_shortcodes) {
       // process shortcodes with [url:*] format
-      $shortcodes = new Shortcodes();
+      $shortcodes = new Shortcodes($newsletter = false, $subscriber = false, $queue);
       $content = $shortcodes->replace($content, $limit = array('link'));
     }
     $links = ($links) ? $links : self::extract($content);
@@ -66,7 +70,12 @@ class Links {
     );
   }
 
-  static function replaceSubscriberData($newsletter_id, $subscriber_id, $queue_id, $content) {
+  static function replaceSubscriberData(
+    $newsletter_id,
+    $subscriber_id,
+    $queue_id,
+    $content
+  ) {
     return str_replace(
       self::DATA_TAG,
       sprintf('%s-%s-%s', $newsletter_id, $subscriber_id, $queue_id),

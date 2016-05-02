@@ -32,7 +32,8 @@ class Link {
         $action = 'subscription_unsubscribe_url';
         $url = self::processUrl(
           $action,
-          esc_attr(SubscriptionUrl::getUnsubscribeUrl($subscriber))
+          esc_attr(SubscriptionUrl::getUnsubscribeUrl($subscriber)),
+          $queue
         );
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
@@ -44,14 +45,16 @@ class Link {
       case 'subscription_unsubscribe_url':
         return self::processUrl(
           $action,
-          SubscriptionUrl::getUnsubscribeUrl($subscriber)
+          SubscriptionUrl::getUnsubscribeUrl($subscriber),
+          $queue
         );
       break;
 
       case 'subscription_manage':
         $url = self::processUrl(
           $action = 'subscription_manage_url',
-          esc_attr(SubscriptionUrl::getManageUrl($subscriber))
+          esc_attr(SubscriptionUrl::getManageUrl($subscriber)),
+          $queue
         );
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
@@ -63,14 +66,15 @@ class Link {
       case 'subscription_manage_url':
         return self::processUrl(
           $action,
-          SubscriptionUrl::getManageUrl($subscriber)
+          SubscriptionUrl::getManageUrl($subscriber),
+          $queue
         );
       break;
 
       case 'newsletter_view_in_browser':
         $action = 'view_in_browser_url';
         $url = esc_attr(self::getViewInBrowserUrl($newsletter, $subscriber, $queue));
-        $url = self::processUrl($action, $url);
+        $url = self::processUrl($action, $url, $queue);
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
           $url,
@@ -80,7 +84,7 @@ class Link {
 
       case 'newsletter_view_in_browser_url':
         $url = self::getViewInBrowserUrl($newsletter, $subscriber, $queue);
-        return self::processUrl($action, $url);
+        return self::processUrl($action, $url, $queue);
         break;
 
       default:
@@ -93,7 +97,7 @@ class Link {
           $queue
         );
         return ($url !== $shortcode) ?
-          self::processUrl($action, $url) :
+          self::processUrl($action, $url, $queue) :
           false;
       break;
     }
@@ -122,15 +126,8 @@ class Link {
     return home_url() . '/?mailpoet&endpoint=view_in_browser&data=' . $data;
   }
 
-  static function processUrl($action, $url) {
-    // when invoked by the ViewInBrowser class and tracking is enabled,
-    // do nto return shortcode
-    foreach(debug_backtrace() as $trace) {
-      if(isset($trace['class']) && preg_match('/ViewInBrowser/', $trace['class'])) {
-        return $url;
-      }
-    }
-    return ((boolean) Setting::getValue('tracking.enabled')) ?
+  static function processUrl($action, $url, $queue) {
+    return ($queue !== false && (boolean) Setting::getValue('tracking.enabled')) ?
       self::getShortcode($action) :
       $url;
   }

@@ -4,7 +4,6 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
@@ -109,7 +108,7 @@ class SendingQueue {
           $this->renderNewsletter($newsletter);
       }
       $queue->newsletter_rendered_body = json_encode($newsletter['body']);
-  //    $queue->save();
+      $queue->save();
     } else {
       $newsletter['body'] = json_decode($queue->newsletter_rendered_body);
     }
@@ -204,7 +203,12 @@ class SendingQueue {
 
   function processLinks($content, $newsletter_id, $queue_id) {
     list($content, $processed_links) =
-      Links::process($content, $links = false, $process_link_shortcodes = true);
+      Links::process(
+        $content, 
+        $links = false, 
+        $process_link_shortcodes = true, 
+        $queue = false
+      );
     Links::save($processed_links, $newsletter_id, $queue_id);
     return $content;
   }
