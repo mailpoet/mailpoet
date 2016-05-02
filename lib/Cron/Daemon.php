@@ -12,7 +12,10 @@ class Daemon {
   public $daemon;
   public $data;
   public $refreshed_token;
-  const DAEMON_REQUEST_TIMEOUT = 5;
+  const DAEMON_STATUS_STOPPED = 'stopped';
+  const DAEMON_STATUS_STOPPING = 'stopping';
+  const DAEMON_STATUS_STARTED = 'started';
+  const DAEMON_STATUS_STARTING = 'starting';
   private $timer;
 
   function __construct($data) {
@@ -56,8 +59,8 @@ class Daemon {
     }
     $daemon['counter']++;
     $this->abortIfStopped($daemon);
-    if($daemon['status'] === CronHelper::DAEMON_STATUS_STARTING) {
-      $daemon['status'] = CronHelper::DAEMON_STATUS_STARTED;
+    if($daemon['status'] === self::DAEMON_STATUS_STARTING) {
+      $daemon['status'] = self::DAEMON_STATUS_STARTED;
     }
     $daemon['token'] = $this->token;
     CronHelper::saveDaemon($daemon);
@@ -65,9 +68,9 @@ class Daemon {
   }
 
   function abortIfStopped($daemon) {
-    if($daemon['status'] === CronHelper::DAEMON_STATUS_STOPPED) exit;
-    if($daemon['status'] === CronHelper::DAEMON_STATUS_STOPPING) {
-      $daemon['status'] = CronHelper::DAEMON_STATUS_STOPPING;
+    if($daemon['status'] === self::DAEMON_STATUS_STOPPED) exit;
+    if($daemon['status'] === self::DAEMON_STATUS_STOPPING) {
+      $daemon['status'] = self::DAEMON_STATUS_STOPPING;
       CronHelper::saveDaemon($daemon);
       exit;
     }
@@ -78,7 +81,7 @@ class Daemon {
   }
 
   function callSelf() {
-    CronHelper::accessDaemon($this->token, self::DAEMON_REQUEST_TIMEOUT);
+    CronHelper::accessDaemon($this->token, $request_timeout = 5);
     exit;
   }
 }
