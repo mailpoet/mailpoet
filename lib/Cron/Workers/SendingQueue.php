@@ -19,9 +19,9 @@ class SendingQueue {
   public $mta_config;
   public $mta_log;
   public $processing_method;
-  public $divider = '***MailPoet***';
   private $timer;
   const BATCH_SIZE = 50;
+  const DIVIDER = '***MailPoet***';
 
   function __construct($timer = false) {
     $this->mta_config = $this->getMailerConfig();
@@ -363,10 +363,10 @@ class SendingQueue {
   }
 
   private function joinObject($object = array()) {
-    return implode($this->divider, $object);
+    return implode(self::DIVIDER, $object);
   }
 
   private function splitObject($object = array()) {
-    return explode($this->divider, $object);
+    return explode(self::DIVIDER, $object);
   }
 }
