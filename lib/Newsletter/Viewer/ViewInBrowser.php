@@ -38,7 +38,7 @@ class ViewInBrowser {
   function verifySubscriber($subscriber_id, $subscriber_token) {
     $subscriber = Subscriber::findOne($subscriber_id);
     if(!$subscriber ||
-      Subscriber::generateToken($subscriber->email) !== $subscriber_token
+      !Subscriber::verifyToken($subscriber->email, $subscriber_token)
     ) {
       return false;
     }

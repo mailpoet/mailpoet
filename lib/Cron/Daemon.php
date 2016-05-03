@@ -16,11 +16,11 @@ class Daemon {
   const STATUS_STOPPING = 'stopping';
   const STATUS_STARTED = 'started';
   const STATUS_STARTING = 'starting';
+  const REQUEST_TIMEOUT = 5;
   private $timer;
 
   function __construct($data) {
     if(empty($data)) $this->abortWithError(__('Invalid or missing cron data.'));
-    set_time_limit(0);
     ignore_user_abort();
     $this->daemon = CronHelper::getDaemon();
     $this->token = CronHelper::createToken();
@@ -30,6 +30,7 @@ class Daemon {
 
   function run() {
     $daemon = $this->daemon;
+    set_time_limit(0);
     if(!$daemon) {
       $this->abortWithError(__('Daemon does not exist.'));
     }
@@ -81,7 +82,7 @@ class Daemon {
   }
 
   function callSelf() {
-    CronHelper::accessDaemon($this->token, $request_timeout = 5);
+    CronHelper::accessDaemon($this->token, self::REQUEST_TIMEOUT);
     exit;
   }
 }

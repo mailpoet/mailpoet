@@ -28,7 +28,7 @@ class Links {
       . ')\\1#';
     // extract shortcodes with [link:*] format
     $shortcodes = new Shortcodes();
-    $shortcodes = $shortcodes->extract($content, $limit = array('link'));
+    $shortcodes = $shortcodes->extract($content, $categories = array('link'));
     // extract links
     preg_match_all($regex, $content, $links);
     return array_merge(
@@ -37,17 +37,8 @@ class Links {
     );
   }
 
-  static function process($content,
-    $links = false,
-    $process_link_shortcodes = false,
-    $queue = false
-  ) {
-    if($process_link_shortcodes) {
-      $shortcodes = new Shortcodes($newsletter = false, $subscriber = false, $queue);
-      // process shortcodes with [link:*] format
-      $content = $shortcodes->replace($content, $limit = array('link'));
-    }
-    $links = ($links) ? $links : self::extract($content);
+  static function process($content) {
+    $links = self::extract($content);
     $processed_links = array();
     foreach($links as $link) {
       $hash = Security::generateRandomString(5);

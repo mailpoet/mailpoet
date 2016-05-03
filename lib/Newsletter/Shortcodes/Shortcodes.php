@@ -22,11 +22,11 @@ class Shortcodes {
       $queue;
   }
 
-  function extract($content, $limit = false) {
-    $limit = (is_array($limit)) ? implode('|', $limit) : false;
+  function extract($content, $categories= false) {
+    $categories = (is_array($categories)) ? implode('|', $categories) : false;
     $regex = sprintf(
       '/\[%s:.*?\]/ism',
-      ($limit) ? '(?:' . $limit . ')' : '(?:\w+)'
+      ($categories) ? '(?:' . $categories . ')' : '(?:\w+)'
     );
     preg_match_all($regex, $content, $shortcodes);
     return array_unique($shortcodes[0]);
@@ -76,8 +76,8 @@ class Shortcodes {
     return $processed_shortcodes;
   }
 
-  function replace($content, $limit = false) {
-    $shortcodes = $this->extract($content, $limit);
+  function replace($content, $categories = false) {
+    $shortcodes = $this->extract($content, $categories);
     $processed_shortcodes = $this->process($shortcodes, $content);
     $shortcodes = array_intersect_key($shortcodes, $processed_shortcodes);
     return str_replace($shortcodes, $processed_shortcodes, $content);

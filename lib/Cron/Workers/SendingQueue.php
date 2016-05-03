@@ -93,8 +93,8 @@ class SendingQueue {
         // render newsletter
         list($rendered_newsletter, $queue->newsletter_rendered_body_hash) =
           $this->renderNewsletter($newsletter);
-        // extract and replace links
-        $processed_newsletter = $this->processLinks(
+        // process link shortcodes, extract and save links in the database
+        $processed_newsletter = $this->processLinksAndShortcodes(
           $this->joinObject($rendered_newsletter),
           $newsletter['id'],
           $queue->id
@@ -201,7 +201,14 @@ class SendingQueue {
     return array($rendered_newsletter, $rendered_newsletter_hash);
   }
 
-  function processLinks($content, $newsletter_id, $queue_id) {
+  function processLinksAndShortcodes($content, $newsletter_id, $queue_id) {
+    // process only link shortcodes
+    $shortcodes = new Shortcodes($newsletter = false, $subscriber = false, $queue_id);
+    $content = $shortcodes->replace(
+      $content,
+      $categories = array('link')
+    );
+    // extract and save links and link shortcodes
     list($content, $processed_links) =
       Links::process(
         $content,
