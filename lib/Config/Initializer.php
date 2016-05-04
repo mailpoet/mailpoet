@@ -82,6 +82,7 @@ class Initializer {
     $newsletter_option_fields = Env::$db_prefix . 'newsletter_option_fields';
     $newsletter_option = Env::$db_prefix . 'newsletter_option';
     $newsletter_links = Env::$db_prefix . 'newsletter_links';
+    $newsletter_posts = Env::$db_prefix . 'newsletter_posts';
     $statistics_newsletters = Env::$db_prefix . 'statistics_newsletters';
     $statistics_clicks = Env::$db_prefix . 'statistics_clicks';
     $statistics_opens = Env::$db_prefix . 'statistics_opens';
@@ -101,6 +102,7 @@ class Initializer {
     define('MP_NEWSLETTER_SEGMENT_TABLE', $newsletter_segment);
     define('MP_NEWSLETTER_OPTION_FIELDS_TABLE', $newsletter_option_fields);
     define('MP_NEWSLETTER_LINKS_TABLE', $newsletter_links);
+    define('MP_NEWSLETTER_POSTS_TABLE', $newsletter_posts);
     define('MP_NEWSLETTER_OPTION_TABLE', $newsletter_option);
     define('MP_STATISTICS_NEWSLETTERS_TABLE', $statistics_newsletters);
     define('MP_STATISTICS_CLICKS_TABLE', $statistics_clicks);

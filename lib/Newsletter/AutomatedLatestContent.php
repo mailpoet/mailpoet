@@ -1,12 +1,22 @@
 <?php
 namespace MailPoet\Newsletter;
 
+use MailPoet\Models\NewsletterPost;
 use MailPoet\Newsletter\Editor\Transformer;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class AutomatedLatestContent {
-  function getPosts($args) {
+  function getPosts($args, $newsletter_id = false, $posts_to_exclude = array()) {
+    if($newsletter_id) {
+      $existing_posts = NewsletterPost::where('newsletter_id', $newsletter_id)
+        ->findArray();
+      if(count($existing_posts)) {
+        $existing_posts = Helpers::arrayColumn($existing_posts, 'post_id');
+        $posts_to_exclude = array_merge($posts_to_exclude, $existing_posts);
+      }
+    }
     $parameters = array(
       'posts_per_page' => (isset($args['amount'])) ? (int) $args['amount'] : 10,
       'post_type' => (isset($args['contentType'])) ? $args['contentType'] : 'post',
@@ -21,7 +31,10 @@ class AutomatedLatestContent {
       $parameters['post__in'] = $args['posts'];
     }
     $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
-    return get_posts($parameters);
+    $WP_posts = array_map(function($post) use ($posts_to_exclude) {
+      return (!in_array($post->ID, $posts_to_exclude)) ? $post : false;
+    }, get_posts($parameters));
+    return array_filter($WP_posts);
   }
 
   function transformPosts($args, $posts) {
