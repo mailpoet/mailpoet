@@ -7,7 +7,6 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
-use MailPoet\Subscription\Url as SubscriptionUrl;
 
 if(!defined('ABSPATH')) exit;
 
@@ -82,7 +81,7 @@ class Clicks {
         $subscriber,
         $queue
       );
-      if (!$url) $this->abort();
+      if(!$url) $this->abort();
     }
     return $url;
   }

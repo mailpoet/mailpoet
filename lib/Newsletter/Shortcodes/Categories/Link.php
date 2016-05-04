@@ -147,7 +147,7 @@ class Link {
       case 'subscription_manage_url':
         $url = SubscriptionUrl::getManageUrl($subscriber);
         break;
-      case 'view_in_browser_url':
+      case 'newsletter_view_in_browser_url':
         $url = Link::getViewInBrowserUrl($newsletter, $subscriber, $queue);
         break;
       default:

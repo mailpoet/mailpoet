@@ -34,7 +34,7 @@ class Shortcodes {
 
   function match($shortcode) {
     preg_match(
-      '/\[(?P<category>\w+):(?P<action>\w+)(?:.*?\|.*?default:(?P<default>\w+))?\]/ism',
+      '/\[(?P<category>\w+)?:(?P<action>\w+)(?:.*?\|.*?default:(?P<default>.*?))?\]/',
       $shortcode,
       $match
     );
@@ -45,8 +45,12 @@ class Shortcodes {
     $processed_shortcodes = array_map(
       function($shortcode) use($content) {
         $shortcode_details = $this->match($shortcode);
-        $shortcode_category = ucfirst($shortcode_details['category']);
-        $shortcode_action = $shortcode_details['action'];
+        $shortcode_category = isset($shortcode_details['category']) ?
+          ucfirst($shortcode_details['category']) :
+          false;
+        $shortcode_action = isset($shortcode_details['action']) ?
+          $shortcode_details['action'] :
+          false;
         $shortcode_class =
           __NAMESPACE__ . '\\Categories\\' . $shortcode_category;
         $shortcode_default_value = isset($shortcode_details['default'])
