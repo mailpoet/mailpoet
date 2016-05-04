@@ -12,12 +12,15 @@ class Daemon {
   public $daemon;
   public $data;
   public $refreshed_token;
-  const daemon_request_timeout = 5;
+  const STATUS_STOPPED = 'stopped';
+  const STATUS_STOPPING = 'stopping';
+  const STATUS_STARTED = 'started';
+  const STATUS_STARTING = 'starting';
+  const REQUEST_TIMEOUT = 5;
   private $timer;
 
   function __construct($data) {
     if(empty($data)) $this->abortWithError(__('Invalid or missing cron data.'));
-    set_time_limit(0);
     ignore_user_abort();
     $this->daemon = CronHelper::getDaemon();
     $this->token = CronHelper::createToken();
@@ -27,6 +30,7 @@ class Daemon {
 
   function run() {
     $daemon = $this->daemon;
+    set_time_limit(0);
     if(!$daemon) {
       $this->abortWithError(__('Daemon does not exist.'));
     }
@@ -42,10 +46,11 @@ class Daemon {
       $queue = new SendingQueue();
       $queue->process($this->timer);
     } catch(\Exception $e) {
+      // continue processing, no need to catch errors
     }
     $elapsed_time = microtime(true) - $this->timer;
-    if($elapsed_time < CronHelper::daemon_execution_limit) {
-      sleep(CronHelper::daemon_execution_limit - $elapsed_time);
+    if($elapsed_time < CronHelper::DAEMON_EXECUTION_LIMIT) {
+      sleep(CronHelper::DAEMON_EXECUTION_LIMIT - $elapsed_time);
     }
     // after each execution, re-read daemon data in case it was deleted or
     // its status has changed
@@ -55,8 +60,8 @@ class Daemon {
     }
     $daemon['counter']++;
     $this->abortIfStopped($daemon);
-    if($daemon['status'] === 'starting') {
-      $daemon['status'] = 'started';
+    if($daemon['status'] === self::STATUS_STARTING) {
+      $daemon['status'] = self::STATUS_STARTED;
     }
     $daemon['token'] = $this->token;
     CronHelper::saveDaemon($daemon);
@@ -64,9 +69,9 @@ class Daemon {
   }
 
   function abortIfStopped($daemon) {
-    if($daemon['status'] === 'stopped') exit;
-    if($daemon['status'] === 'stopping') {
-      $daemon['status'] = 'stopped';
+    if($daemon['status'] === self::STATUS_STOPPED) exit;
+    if($daemon['status'] === self::STATUS_STOPPING) {
+      $daemon['status'] = self::STATUS_STOPPING;
       CronHelper::saveDaemon($daemon);
       exit;
     }
@@ -77,7 +82,7 @@ class Daemon {
   }
 
   function callSelf() {
-    CronHelper::accessDaemon($this->token, self::daemon_request_timeout);
+    CronHelper::accessDaemon($this->token, self::REQUEST_TIMEOUT);
     exit;
   }
 }

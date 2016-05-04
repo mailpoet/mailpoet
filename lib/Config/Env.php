@@ -39,6 +39,9 @@ class Env {
     self::$assets_url = plugins_url('/assets', $file);
     $wp_upload_dir = wp_upload_dir();
     self::$temp_path = $wp_upload_dir['basedir'].'/'.self::$plugin_name;
+    if (!is_dir(self::$temp_path)) {
+      mkdir(self::$temp_path);
+    }
     self::$temp_url = $wp_upload_dir['baseurl'].'/'.self::$plugin_name;
     self::$languages_path = self::$path . '/lang';
     self::$lib_path = self::$path . '/lib';

@@ -124,6 +124,10 @@ class Subscriber extends Model {
     return false;
   }
 
+  static function verifyToken($email, $token) {
+    return (self::generateToken($email) === $token);
+  }
+  
   static function subscribe($subscriber_data = array(), $segment_ids = array()) {
     if(empty($subscriber_data) or empty($segment_ids)) {
       return false;

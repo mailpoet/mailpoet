@@ -22,7 +22,7 @@
             "blocks": [
               {
                 "type": "header",
-                "text": "Display problems?&nbsp;<a href=\"[newsletter:view_in_browser_url]\">View it in your browser</a>",
+                "text": "Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">View it in your browser</a>",
                 "styles": {
                   "block": {
                     "backgroundColor": "#ffffff"
@@ -1154,7 +1154,7 @@
             "blocks": [
               {
                 "type": "footer",
-                "text": "<p>You are receiving this email because you opted in on our website. <a href=\"[subscription:manage_url]\">Update your preferences</a> or <a href=\"[subscription:unsubscribe_url]\">Unsubscribe</a><a href=\"[subscription:manage_url]\"> </a><br />123 Maple Avenue<br />93102<br />Oakland, California </p>",
+                "text": "<p>You are receiving this email because you opted in on our website. <a href=\"[link:subscription_manage_url]\">Update your preferences</a> or <a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a><a href=\"[link:subscription_manage_url]\"> </a><br />123 Maple Avenue<br />93102<br />Oakland, California </p>",
                 "styles": {
                   "block": {
                     "backgroundColor": "transparent"

@@ -4,7 +4,6 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
@@ -20,9 +19,9 @@ class SendingQueue {
   public $mta_config;
   public $mta_log;
   public $processing_method;
-  public $divider = '***MailPoet***';
   private $timer;
-  const batch_size = 50;
+  const BATCH_SIZE = 50;
+  const DIVIDER = '***MailPoet***';
 
   function __construct($timer = false) {
     $this->mta_config = $this->getMailerConfig();
@@ -51,7 +50,7 @@ class SendingQueue {
         $queue->subscribers->failed = array();
       }
       $mailer = $this->configureMailer($newsletter);
-      foreach(array_chunk($queue->subscribers->to_process, self::batch_size) as
+      foreach(array_chunk($queue->subscribers->to_process, self::BATCH_SIZE) as
               $subscribers_ids) {
         $subscribers = Subscriber::whereIn('id', $subscribers_ids)
           ->findArray();
@@ -94,8 +93,8 @@ class SendingQueue {
         // render newsletter
         list($rendered_newsletter, $queue->newsletter_rendered_body_hash) =
           $this->renderNewsletter($newsletter);
-        // extract and replace links
-        $processed_newsletter = $this->processLinks(
+        // process link shortcodes, extract and save links in the database
+        $processed_newsletter = $this->processLinksAndShortcodes(
           $this->joinObject($rendered_newsletter),
           $newsletter['id'],
           $queue->id
@@ -119,7 +118,7 @@ class SendingQueue {
   function processBulkSubscribers($mailer, $newsletter, $subscribers, $queue) {
     foreach($subscribers as $subscriber) {
       $processed_newsletters[] =
-        $this->processNewsletter($newsletter, $subscriber, $queue);
+        $this->processNewsletterBeforeSending($newsletter, $subscriber, $queue);
       if(!$queue->newsletter_rendered_subject) {
         $queue->newsletter_rendered_subject = $processed_newsletters[0]['subject'];
       }
@@ -163,7 +162,7 @@ class SendingQueue {
   function processIndividualSubscriber($mailer, $newsletter, $subscribers, $queue) {
     foreach($subscribers as $subscriber) {
       $this->checkSendingLimit();
-      $processed_newsletter = $this->processNewsletter($newsletter, $subscriber, $queue);
+      $processed_newsletter = $this->processNewsletterBeforeSending($newsletter, $subscriber, $queue);
       if(!$queue->newsletter_rendered_subject) {
         $queue->newsletter_rendered_subject = $processed_newsletter['subject'];
       }
@@ -202,21 +201,26 @@ class SendingQueue {
     return array($rendered_newsletter, $rendered_newsletter_hash);
   }
 
-  function processLinks($text, $newsletter_id, $queue_id) {
-    list($text, $processed_links) = Links::replace($text);
-    foreach($processed_links as $link) {
-      // save extracted and processed links
-      $newsletter_link = NewsletterLink::create();
-      $newsletter_link->newsletter_id = $newsletter_id;
-      $newsletter_link->queue_id = $queue_id;
-      $newsletter_link->hash = $link['hash'];
-      $newsletter_link->url = $link['url'];
-      $newsletter_link->save();
-    }
-    return $text;
+  function processLinksAndShortcodes($content, $newsletter_id, $queue_id) {
+    // process only link shortcodes
+    $shortcodes = new Shortcodes($newsletter = false, $subscriber = false, $queue_id);
+    $content = $shortcodes->replace(
+      $content,
+      $categories = array('link')
+    );
+    // extract and save links and link shortcodes
+    list($content, $processed_links) =
+      Links::process(
+        $content,
+        $links = false,
+        $process_link_shortcodes = true,
+        $queue_id
+      );
+    Links::save($processed_links, $newsletter_id, $queue_id);
+    return $content;
   }
 
-  function processNewsletter($newsletter, $subscriber = false, $queue) {
+  function processNewsletterBeforeSending($newsletter, $subscriber = false, $queue) {
     $data_for_shortcodes = array(
       $newsletter['subject'],
       $newsletter['body']['html'],
@@ -225,10 +229,11 @@ class SendingQueue {
     $processed_newsletter = $this->replaceShortcodes(
       $newsletter,
       $subscriber,
+      $queue,
       $this->joinObject($data_for_shortcodes)
     );
     if((boolean) Setting::getValue('tracking.enabled')) {
-      $processed_newsletter = $this->replaceLinks(
+      $processed_newsletter = Links::replaceSubscriberData(
         $newsletter['id'],
         $subscriber['id'],
         $queue->id,
@@ -242,18 +247,11 @@ class SendingQueue {
     return $newsletter;
   }
 
-  function replaceLinks($newsletter_id, $subscriber_id, $queue_id, $body) {
-    return str_replace(
-      '[mailpoet_data]',
-      sprintf('%s-%s-%s', $newsletter_id, $subscriber_id, $queue_id),
-      $body
-    );
-  }
-
-  function replaceShortcodes($newsletter, $subscriber, $body) {
+  function replaceShortcodes($newsletter, $subscriber, $queue, $body) {
     $shortcodes = new Shortcodes(
       $newsletter,
-      $subscriber
+      $subscriber,
+      $queue
     );
     return $shortcodes->replace($body);
   }
@@ -372,10 +370,10 @@ class SendingQueue {
   }
 
   private function joinObject($object = array()) {
-    return implode($this->divider, $object);
+    return implode(self::DIVIDER, $object);
   }
 
   private function splitObject($object = array()) {
-    return explode($this->divider, $object);
+    return explode(self::DIVIDER, $object);
   }
 }

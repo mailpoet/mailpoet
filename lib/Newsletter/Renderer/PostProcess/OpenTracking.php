@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Newsletter\Renderer\PostProcess;
 
+use MailPoet\Newsletter\Links\Links;
+
 class OpenTracking {
   static function process($template) {
     $DOM = new \pQuery();
@@ -9,7 +11,7 @@ class OpenTracking {
     $open_tracking_link = sprintf(
       '<img alt="" class="" src="%s/%s"/>',
       home_url(),
-      htmlentities('?mailpoet&endpoint=track&action=open&data=[mailpoet_data]')
+      esc_attr('?mailpoet&endpoint=track&action=open&data=' . Links::DATA_TAG)
     );
     $template->html($template->html() . $open_tracking_link);
     return $DOM->__toString();

@@ -7,13 +7,13 @@ use MailPoet\Util\Security;
 if(!defined('ABSPATH')) exit;
 
 class CronHelper {
-  const daemon_execution_limit = 20;
-  const daemon_execution_timeout = 35;
-  const daemon_request_timeout = 2;
+  const DAEMON_EXECUTION_LIMIT = 20;
+  const DAEMON_EXECUTION_TIMEOUT = 35;
+  const DAEMON_REQUEST_TIMEOUT = 2;
 
   static function createDaemon($token) {
     $daemon = array(
-      'status' => 'starting',
+      'status' => Daemon::STATUS_STARTING,
       'counter' => 0,
       'token' => $token
     );
@@ -37,7 +37,7 @@ class CronHelper {
     return Security::generateRandomString();
   }
 
-  static function accessDaemon($token, $timeout = self::daemon_request_timeout) {
+  static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
     $data = serialize(array('token' => $token));
     $url = '/?mailpoet&endpoint=queue&action=run&data=' .
       base64_encode($data);
@@ -71,7 +71,7 @@ class CronHelper {
 
   static function checkExecutionTimer($timer) {
     $elapsed_time = microtime(true) - $timer;
-    if($elapsed_time >= self::daemon_execution_limit) {
+    if($elapsed_time >= self::DAEMON_EXECUTION_LIMIT) {
       throw new \Exception(__('Maximum execution time reached.'));
     }
   }

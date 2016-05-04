@@ -1,11 +1,13 @@
 <?php
 
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Config\Populator;
-use MailPoet\Subscription\Url as SubscriptionUrl;
+use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Shortcodes\Categories\Date;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
+require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 class ShortcodesTest extends MailPoetTest {
   public $rendered_newsletter;
@@ -15,109 +17,206 @@ class ShortcodesTest extends MailPoetTest {
   function _before() {
     $populator = new Populator();
     $populator->up();
-    $this->wp_user = $this->_createWPUser();
+    $this->WP_user = $this->_createWPUser();
+    $this->WP_post = $this->_createWPPost();
     $this->subscriber = $this->_createSubscriber();
     $this->newsletter = array(
       'subject' => 'some subject',
       'type' => 'notification',
       'id' => 2
     );
-    $this->post_data = array(
-      'post_title' => 'Sample Post',
-      'post_content' => 'contents',
-      'post_status' => 'publish',
-    );
-    $this->post_id = wp_insert_post($this->post_data);
-    $this->rendered_newsletter = "
-      Hello [user:displayname | default:member].
-      Your first name is [user:firstname | default:First Name].
-      Your last name is [user:lastname | default:Last Name].
-      Thank you for subscribing with [user:email].
-      We already have [user:count] users.
-
-      <h1 data-post-id=\"1\">some post</h1>
-      <h1 data-post-id=\"{$this->post_id}\">another post</h1>
-
-      There are [newsletter:total] posts in this newsletter.
-      You are reading [newsletter:subject].
-      The latest post in this newsletter is called [newsletter:post_title].
-      The issue number of this newsletter is [newsletter:number].
-
-      Date: [date:d].
-      Ordinal date: [date:dordinal].
-      Date text: [date:dtext].
-      Month: [date:m].
-      Month text: [date:mtext].
-      Year: [date:y]
-
-      You can unsubscribe here: [subscription:unsubscribe_url].
-      Manage your subscription here: [subscription:manage_url].
-      View this newsletter in browser: [newsletter:view_in_browser_url].";
     $this->shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $this->subscriber
     );
+    Setting::setValue('tracking.enabled', false);
   }
 
   function testItCanExtractShortcodes() {
-    $shortcodes = $this->shortcodes_object->extract($this->rendered_newsletter);
-    expect(count($shortcodes))->equals(18);
+    $content = '[category:action] [notshortcode]';
+    $shortcodes = $this->shortcodes_object->extract($content);
+    expect(count($shortcodes))->equals(1);
   }
 
-  function testItCanProcessShortcodes() {
-    $wp_user = get_userdata($this->wp_user);
+  function testItCanExtractOnlySelectShortcodes() {
+    $content = '[link:action] [newsletter:action]';
+    $limit = array('link');
+    $shortcodes = $this->shortcodes_object->extract($content, $limit);
+    expect(count($shortcodes))->equals(1);
+    expect(preg_match('/link/', $shortcodes[0]))->equals(1);
+  }
 
-    $queue = SendingQueue::create();
-    $queue->newsletter_id = $this->newsletter['id'];
-    $queue->save();
-    $issue_number = 1;
+  function testItCanMatchShortcodeDetails() {
+    $shortcodes_object = $this->shortcodes_object;
+    $content = '[category:action]';
+    $details = $shortcodes_object->match($content);
+    expect($details['category'])->equals('category');
+    expect($details['action'])->equals('action');
+    $content = '[category:action|default:default_value]';
+    $details = $shortcodes_object->match($content);
+    expect($details['category'])->equals('category');
+    expect($details['action'])->equals('action');
+    expect($details['default'])->equals('default_value');
+    $content = '[category:action|default]';
+    $details = $shortcodes_object->match($content);
+    expect($details)->isEmpty();
+    $content = '[category|default:default_value]';
+    $details = $shortcodes_object->match($content);
+    expect($details)->isEmpty();
+  }
 
-    $number_of_posts = 2;
+  function testItCanProcessCustomShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
+    $shortcode = array('[some:shortcode]');
+    $result = $shortcodes_object->process($shortcode);
+    expect($result[0])->false();
+    add_filter('mailpoet_newsletter_shortcode', function (
+      $shortcode, $newsletter, $subscriber, $queue, $content) {
+      if($shortcode === '[some:shortcode]') return 'success';
+    }, 10, 5);
+    $result = $shortcodes_object->process($shortcode);
+    expect($result[0])->equals('success');
+  }
 
+  function testItCanProcessDateShortcodes() {
     $date = new \DateTime('now');
-    $subscriber_count = Subscriber::count();
-    $newsletter_with_replaced_shortcodes = $this->shortcodes_object->replace(
-      $this->rendered_newsletter
+    expect(Date::process('d'))->equals($date->format('d'));
+    expect(Date::process('dordinal'))->equals($date->format('dS'));
+    expect(Date::process('dtext'))->equals($date->format('D'));
+    expect(Date::process('m'))->equals($date->format('m'));
+    expect(Date::process('mtext'))->equals($date->format('F'));
+    expect(Date::process('y'))->equals($date->format('Y'));
+  }
+
+  function testItCanProcessNewsletterShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
+    $content =
+      '<a data-post-id="' . $this->WP_post . '" href="#">latest post</a>' .
+      '<a data-post-id="10" href="#">another post</a>' .
+      '<a href="#">not post</a>';
+    $result =
+      $shortcodes_object->process(array('[newsletter:subject]'));
+    expect($result[0])->equals($this->newsletter['subject']);
+    $result =
+      $shortcodes_object->process(array('[newsletter:total]'), $content);
+    expect($result[0])->equals(2);
+    $result =
+      $shortcodes_object->process(array('[newsletter:post_title]'));
+    $wp_post = get_post($this->WP_post);
+    expect($result['0'])->equals($wp_post->post_title);
+    $result =
+      $shortcodes_object->process(array('[newsletter:number]'));
+    expect($result['0'])->equals(1);
+    $queue = $this->_createQueue();
+    $result =
+      $shortcodes_object->process(array('[newsletter:number]'));
+    expect($result['0'])->equals(2);
+  }
+
+  function testItCanProcessUserShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
+    $result =
+      $shortcodes_object->process(array('[user:firstname]'));
+    expect($result[0])->equals($this->subscriber->first_name);
+    $result =
+      $shortcodes_object->process(array('[user:lastname]'));
+    expect($result[0])->equals($this->subscriber->last_name);
+    $result =
+      $shortcodes_object->process(array('[user:displayname]'));
+    expect($result[0])->equals($this->WP_user->user_login);
+    $subscribers = Subscriber::where('status', 'subscribed')
+      ->findMany();
+    $subscriber_count = count($subscribers);
+    $result =
+      $shortcodes_object->process(array('[user:count]'));
+    expect($result[0])->equals($subscriber_count);
+    $this->subscriber->status = 'unsubscribed';
+    $this->subscriber->save();
+    $result =
+      $shortcodes_object->process(array('[user:count]'));
+    expect($result[0])->equals(--$subscriber_count);
+  }
+
+  function testItCanProcessLinkShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
+    $result =
+      $shortcodes_object->process(array('[link:subscription_unsubscribe]'));
+    expect(preg_match('/^<a.*?\/a>$/', $result['0']))->equals(1);
+    expect(preg_match('/action=unsubscribe/', $result['0']))->equals(1);
+    $result =
+      $shortcodes_object->process(array('[link:subscription_unsubscribe_url]'));
+    expect(preg_match('/^http.*?action=unsubscribe/', $result['0']))->equals(1);
+    $result =
+      $shortcodes_object->process(array('[link:subscription_manage]'));
+    expect(preg_match('/^<a.*?\/a>$/', $result['0']))->equals(1);
+    expect(preg_match('/action=manage/', $result['0']))->equals(1);
+    $result =
+      $shortcodes_object->process(array('[link:subscription_manage_url]'));
+    expect(preg_match('/^http.*?action=manage/', $result['0']))->equals(1);
+    $result =
+      $shortcodes_object->process(array('[link:newsletter_view_in_browser]'));
+    expect(preg_match('/^<a.*?\/a>$/', $result['0']))->equals(1);
+    expect(preg_match('/endpoint=view_in_browser/', $result['0']))->equals(1);
+    $result =
+      $shortcodes_object->process(array('[link:newsletter_view_in_browser_url]'));
+    expect(preg_match('/^http.*?endpoint=view_in_browser/', $result['0']))->equals(1);
+  }
+
+  function testItReturnsShortcodeWhenTrackingEnabled() {
+    $shortcodes_object = $this->shortcodes_object;
+    $shortcode = '[link:subscription_unsubscribe_url]';
+    $result =
+      $shortcodes_object->process(array($shortcode));
+    expect(preg_match('/^http.*?action=unsubscribe/', $result['0']))->equals(1);
+    Setting::setValue('tracking.enabled', true);
+    $shortcodes = array(
+      '[link:subscription_unsubscribe]',
+      '[link:subscription_unsubscribe_url]',
+      '[link:subscription_manage]',
+      '[link:subscription_manage_url]',
+      '[link:newsletter_view_in_browser]',
+      '[link:newsletter_view_in_browser_url]'
     );
+    // tracking function only works during sending, so queue object must not be false
+    $shortcodes_object->queue = true;
+    $result =
+      $shortcodes_object->process($shortcodes);
+    // all returned shortcodes must end with url
+    $result = join(',', $result);
+    expect(substr_count($result, '_url'))->equals(count($shortcodes));
+  }
 
-    $unsubscribe_url = SubscriptionUrl::getUnsubscribeUrl($this->subscriber);
-    $manage_url = SubscriptionUrl::getManageUrl($this->subscriber);
-    $view_in_browser_url = '#TODO';
+  function testItCanProcessCustomLinkShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
+    $shortcode = '[link:shortcode]';
+    $result = $shortcodes_object->process(array($shortcode));
+    expect($result[0])->false();
+    add_filter('mailpoet_newsletter_shortcode_link', function (
+      $shortcode, $newsletter, $subscriber, $queue) {
+      if($shortcode === '[link:shortcode]') return 'success';
+    }, 10, 4);
+    $result = $shortcodes_object->process(array($shortcode));
+    expect($result[0])->equals('success');
+    Setting::setValue('tracking.enabled', true);
+    // tracking function only works during sending, so queue object must not be false
+    $shortcodes_object->queue = true;
+    $result = $shortcodes_object->process(array($shortcode));
+    expect($result[0])->equals($shortcode);
+  }
 
-    expect($newsletter_with_replaced_shortcodes)->equals("
-      Hello {$wp_user->user_login}.
-      Your first name is {$this->subscriber->first_name}.
-      Your last name is {$this->subscriber->last_name}.
-      Thank you for subscribing with {$this->subscriber->email}.
-      We already have {$subscriber_count} users.
-
-      <h1 data-post-id=\"1\">some post</h1>
-      <h1 data-post-id=\"{$this->post_id}\">another post</h1>
-
-      There are {$number_of_posts} posts in this newsletter.
-      You are reading {$this->newsletter['subject']}.
-      The latest post in this newsletter is called {$this->post_data['post_title']}.
-      The issue number of this newsletter is {$issue_number}.
-
-      Date: {$date->format('d')}.
-      Ordinal date: {$date->format('dS')}.
-      Date text: {$date->format('D')}.
-      Month: {$date->format('m')}.
-      Month text: {$date->format('F')}.
-      Year: {$date->format('Y')}
-
-      You can unsubscribe here: {$unsubscribe_url}.
-      Manage your subscription here: {$manage_url}.
-      View this newsletter in browser: {$view_in_browser_url}.");
-}
+  function _createWPPost() {
+    $data = array(
+      'post_title' => 'Sample Post',
+      'post_content' => 'contents',
+      'post_status' => 'publish',
+    );
+    return wp_insert_post($data);
+  }
 
   function _createWPUser() {
-    $wp_user = wp_create_user('phoenix_test_user', 'pass', 'phoenix@test.com');
-    if(is_wp_error($wp_user)) {
-      $wp_user = get_user_by('login', 'phoenix_test_user');
-      $wp_user = $wp_user->ID;
-    }
-    return $wp_user;
+    $WP_user = wp_create_user('phoenix_test_user', 'pass', 'phoenix@test.com');
+    $WP_user = get_user_by('login', 'phoenix_test_user');
+    return $WP_user;
   }
 
   function _createSubscriber() {
@@ -128,15 +227,25 @@ class ShortcodesTest extends MailPoetTest {
         'last_name' => 'Trump',
         'email' => 'mister@trump.com',
         'status' => Subscriber::STATUS_SUBSCRIBED,
-        'wp_user_id' => $this->wp_user
+        'WP_user_id' => $this->WP_user->ID
       )
     );
     $subscriber->save();
     return Subscriber::findOne($subscriber->id);
   }
 
+  function _createQueue() {
+    $queue = SendingQueue::create();
+    $queue->newsletter_id = $this->newsletter['id'];
+    $queue->status = 'completed';
+    $queue->save();
+    return $queue;
+  }
+
   function _after() {
-    Subscriber::deleteMany();
-    wp_delete_post($this->post_id, true);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    wp_delete_post($this->WP_post, true);
+    wp_delete_user($this->WP_user->ID);
   }
 }

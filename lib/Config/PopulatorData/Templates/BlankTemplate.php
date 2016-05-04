@@ -142,7 +142,7 @@ class BlankTemplate {
                 "blocks" => array(
                   array(
                     "type" => "footer",
-                    "text" => "<a href=\"[subscription:unsubscribe_url]\">Unsubscribe</a> | <a href=\"[subscription:manage_url]\">Manage subscription</a><br /><b>Add your postal address here!</b>",
+                    "text" => "<a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage subscription</a><br /><b>Add your postal address here!</b>",
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"

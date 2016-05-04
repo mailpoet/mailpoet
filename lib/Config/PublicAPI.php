@@ -2,9 +2,10 @@
 namespace MailPoet\Config;
 
 use MailPoet\Cron\Daemon;
+use MailPoet\Newsletter\Viewer\ViewInBrowser;
+use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscription;
-use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -25,7 +26,7 @@ class PublicAPI {
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
     $this->data = isset($_GET['data']) ?
-      $_GET['data'] :
+      unserialize(base64_decode($_GET['data'])) :
       false;
   }
 
@@ -35,33 +36,29 @@ class PublicAPI {
   }
 
   function queue() {
-    try {
-      $queue = new Daemon($this->_decodeData());
-      $this->_checkAndCallMethod($queue, $this->action);
-    } catch(\Exception $e) {
-    }
+    $queue = new Daemon($this->data);
+    $this->_checkAndCallMethod($queue, $this->action);
   }
 
   function subscription() {
-    try {
-      $subscription = new Subscription\Pages($this->action, $this->_decodeData());
-      $this->_checkAndCallMethod($subscription, $this->action);
-    } catch(\Exception $e) {
-    }
+    $subscription = new Subscription\Pages($this->action, $this->data);
+    $this->_checkAndCallMethod($subscription, $this->action);
   }
 
   function track() {
-    try {
-      if($this->action === 'click') {
-        $track_class = new Clicks($this->data);
-      }
-      if($this->action === 'open') {
-        $track_class = new Opens($this->data);
-      }
-      if(!isset($track_class)) return;
-      $track_class->track();
-    } catch(\Exception $e) {
+    if($this->action === 'click') {
+      $track_class = new Clicks($this->data);
     }
+    if($this->action === 'open') {
+      $track_class = new Opens($this->data);
+    }
+    if(!isset($track_class)) return;
+    $track_class->track();
+  }
+
+  function viewInBrowser() {
+    $viewer = new ViewInBrowser($this->data);
+    $viewer->view();
   }
 
   private function _checkAndCallMethod($class, $method, $terminate_request = false) {
@@ -76,13 +73,5 @@ class PublicAPI {
         $method
       )
     );
-  }
-
-  private function _decodeData() {
-    if($this->data !== false) {
-      return unserialize(base64_decode($this->data));
-    } else {
-      return array();
-    }
   }
 }
