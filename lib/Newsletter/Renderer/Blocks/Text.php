@@ -57,14 +57,7 @@ class Text {
           </tr>
         </tbody>'
       );
-      $blockquote->parent->insertChild(
-        array(
-          'tag_name' => 'br',
-          'self_close' => true,
-          'attributes' => array()
-        ),
-        $blockquote->index() + 1
-      );
+      $blockquote = self::insertLineBreak($blockquote);
     }
     return $DOM->__toString();
   }
@@ -75,8 +68,25 @@ class Text {
     $paragraphs = $DOM->query('p');
     if(!$paragraphs->count()) return $html;
     foreach($paragraphs as $paragraph) {
-      // remove empty paragraphs
+      // process empty paragraphs
       if(!trim($paragraph->html())) {
+          $next_element = ($paragraph->getNextSibling()) ?
+            trim($paragraph->getNextSibling()->text()) :
+            false;
+          $previous_element = ($paragraph->getPreviousSibling()) ?
+            trim($paragraph->getPreviousSibling()->text()) :
+            false;
+        $previous_element_tag = ($previous_element) ?
+          $paragraph->getPreviousSibling()->tag :
+          false;
+        // if previous or next paragraphs are empty OR previous paragraph
+        // is a heading, insert a break line
+        if (!$next_element ||
+            !$previous_element ||
+            (preg_match('/h\d+/', $previous_element_tag))
+        ) {
+          $paragraph = self::insertLineBreak($paragraph);
+        }
         $paragraph->remove();
         continue;
       }
@@ -91,9 +101,13 @@ class Text {
       $paragraph->cellpadding = 0;
       $next_element = $paragraph->getNextSibling();
       // unless this is the last element in column, add double line breaks
-      $line_breaks = ($next_element && !$next_element->getInnerText()) ? '<br /><br />' : '';
+      $line_breaks = ($next_element && !trim($next_element->text())) ?
+        '<br /><br />' :
+        '';
       // if this element is followed by a list, add single line break
-      $line_breaks = ($next_element && preg_match('/<li>/i', $next_element->getInnerText())) ? '<br />' : $line_breaks;
+      $line_breaks = ($next_element && preg_match('/<li>/i', $next_element->text())) ?
+        '<br />' :
+        $line_breaks;
       $paragraph->html('
         <tr>
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . $style . '">
@@ -138,5 +152,17 @@ class Text {
 
   static function removeLastLineBreak($html) {
     return preg_replace('/(^)?(<br.*?\/?>)+$/i', '', $html);
+  }
+
+  static function insertLineBreak($element) {
+    $element->parent->insertChild(
+      array(
+        'tag_name' => 'br',
+        'self_close' => true,
+        'attributes' => array()
+      ),
+      $element->index() + 1
+    );
+    return $element;
   }
 }
