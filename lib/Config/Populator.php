@@ -141,6 +141,14 @@ class Populator {
   function newsletter_option_fields() {
     return array(
       array(
+        'name' => 'isScheduled',
+        'newsletter_type' => 'standard',
+      ),
+      array(
+        'name' => 'scheduledAt',
+        'newsletter_type' => 'standard',
+      ),
+      array(
         'name' => 'event',
         'newsletter_type' => 'welcome',
       ),

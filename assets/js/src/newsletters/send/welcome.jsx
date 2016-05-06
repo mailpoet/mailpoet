@@ -71,7 +71,9 @@ define(
       }
     ];
 
-    return fields;
+    return function(newsletter) {
+      return fields;
+    };
   }
 );
 

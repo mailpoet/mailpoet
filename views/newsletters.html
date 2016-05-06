@@ -9,6 +9,9 @@
     var mailpoet_settings = <%= json_encode(settings) %>;
     var mailpoet_lists = <%= json_encode(lists) %>;
     var mailpoet_roles = <%= json_encode(roles) %>;
+    var mailpoet_current_date = <%= json_encode(current_date) %>;
+    var mailpoet_current_time = <%= json_encode(current_time) %>;
+    var mailpoet_schedule_time_of_day = <%= json_encode(schedule_time_of_day) %>;
   </script>
 <% endblock %>
 
@@ -62,6 +65,7 @@
     'edit': __('Edit'),
     'notSentYet': __('Not sent yet.'),
     'scheduledFor': __('Scheduled for'),
+    'scheduleIt': __('Schedule it'),
     'newsletterQueueCompleted': __('Sent to %$1d of %$2d.'),
     'resume': __('Resume'),
     'pause': __('Pause'),
@@ -145,5 +149,6 @@
     'saveDraftAndClose': __('Save as draft and close'),
     'orSimply': __('or simply'),
     'goBackToDesign': __('go back to design'),
+    'localTimeIs': __('Local time is'),
   }) %>
 <% endblock %>
