@@ -1,22 +1,35 @@
 <?php
 namespace MailPoet\Newsletter;
 
-use MailPoet\Models\NewsletterPost;
 use MailPoet\Newsletter\Editor\Transformer;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class AutomatedLatestContent {
-  function getPosts($args, $newsletter_id = false, $posts_to_exclude = array()) {
-    if($newsletter_id) {
-      $existing_posts = NewsletterPost::where('newsletter_id', $newsletter_id)
-        ->findArray();
-      if(count($existing_posts)) {
-        $existing_posts = Helpers::arrayColumn($existing_posts, 'post_id');
-        $posts_to_exclude = array_merge($posts_to_exclude, $existing_posts);
-      }
-    }
+  function __construct($newsletter_id = false) {
+    $this->newsletter_id = $newsletter_id;
+
+    $this->_attachSentPostsFilter();
+  }
+
+  function __destruct() {
+    $this->_detachSentPostsFilter();
+  }
+
+  function filterOutSentPosts($where) {
+    $sentPostsQuery = 'SELECT ' . MP_NEWSLETTER_POSTS_TABLE . '.post_id FROM '
+      . MP_NEWSLETTER_POSTS_TABLE . ' WHERE '
+      . MP_NEWSLETTER_POSTS_TABLE . ".newsletter_id='" . $this->newsletter_id . "'";
+
+    $wherePostUnsent = 'ID NOT IN (' . $sentPostsQuery . ')';
+
+    if (!empty($where)) $wherePostUnsent = ' AND ' . $wherePostUnsent;
+
+    return $where . $wherePostUnsent;
+  }
+
+  function getPosts($args, $posts_to_exclude = array()) {
     $parameters = array(
       'posts_per_page' => (isset($args['amount'])) ? (int) $args['amount'] : 10,
       'post_type' => (isset($args['contentType'])) ? $args['contentType'] : 'post',
@@ -34,6 +47,12 @@ class AutomatedLatestContent {
       $parameters['post__not_in'] = $posts_to_exclude;
     }
     $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
+
+    // This enables using posts query filters for get_posts, where by default
+    // it is disabled.
+    // However, it also enables other plugins and themes to hook in and alter
+    // the query.
+    $parameters['suppress_filters'] = false;
 
     return get_posts($parameters);
   }
@@ -79,5 +98,17 @@ class AutomatedLatestContent {
       }
     }
     return $taxonomies_query;
+  }
+
+  private function _attachSentPostsFilter() {
+    if ($this->newsletter_id > 0) {
+      add_action('posts_where', array($this, 'filterOutSentPosts'));
+    }
+  }
+
+  private function _detachSentPostsFilter() {
+    if ($this->newsletter_id > 0) {
+      remove_action('posts_where', array($this, 'filterOutSentPosts'));
+    }
   }
 }

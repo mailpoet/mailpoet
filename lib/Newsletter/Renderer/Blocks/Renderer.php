@@ -10,7 +10,7 @@ class Renderer {
   function __construct($newsletter, $posts = false) {
     $this->newsletter = $newsletter;
     $this->posts = array();
-    $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent();
+    $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent($this->newsletter['id']);
   }
 
   function render($data, $column_count) {
@@ -43,7 +43,7 @@ class Renderer {
 
   function processAutomatedLatestContent($args, $column_count) {
     $posts_to_exclude = $this->getPosts();
-    $ALCPosts = $this->ALC->getPosts($args, $this->newsletter['id'], $posts_to_exclude);
+    $ALCPosts = $this->ALC->getPosts($args, $posts_to_exclude);
     foreach($ALCPosts as $post) {
       $posts_to_exclude[] = $post->ID;
     }
