@@ -30,11 +30,12 @@ class AutomatedLatestContent {
     if(isset($args['posts']) && is_array($args['posts'])) {
       $parameters['post__in'] = $args['posts'];
     }
+    if (!empty($posts_to_exclude)) {
+      $parameters['post__not_in'] = $posts_to_exclude;
+    }
     $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
-    $WP_posts = array_map(function($post) use ($posts_to_exclude) {
-      return (!in_array($post->ID, $posts_to_exclude)) ? $post : false;
-    }, get_posts($parameters));
-    return array_filter($WP_posts);
+
+    return get_posts($parameters);
   }
 
   function transformPosts($args, $posts) {
