@@ -4,10 +4,10 @@
 <% set csvKBLink = '<a target="_blank" href="http://support.mailpoet.com/knowledgebase/importing-subscribers-with-a-csv-file?utm_source=wpadmin&utm_campaign=import">' %>
 
 <div id="mailpoet_subscribers_import" class="wrap">
-  <h2 class="title">
+  <h1 class="title">
     <%= __('Import') %>
-    <a class="add-new-h2" href="?page=mailpoet-subscribers#/"><%= __('Back to list') %></a>
-  </h2>
+    <a class="page-title-action" href="?page=mailpoet-subscribers#/"><%= __('Back to list') %></a>
+  </h1>
   <!-- STEP 1: method selection -->
   <% include 'subscribers/importExport/import/step1.html' %>
   <!-- STEP 2: subscriber data manipulation -->

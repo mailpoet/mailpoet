@@ -195,9 +195,9 @@ const SegmentList = React.createClass({
   render: function() {
     return (
       <div>
-        <h2 className="title">
-          {MailPoet.I18n.t('pageTitle')} <Link className="add-new-h2" to="/new">{MailPoet.I18n.t('new')}</Link>
-        </h2>
+        <h1 className="title">
+          {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
+        </h1>
 
         <Listing
           location={ this.props.location }

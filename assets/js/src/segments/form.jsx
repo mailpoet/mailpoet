@@ -1,11 +1,13 @@
 define(
   [
     'react',
+    'react-router',
     'mailpoet',
     'form/form.jsx'
   ],
   function(
     React,
+    Router,
     MailPoet,
     Form
   ) {
@@ -33,13 +35,16 @@ define(
       }
     };
 
+    var Link = Router.Link;
+
     const SegmentForm = React.createClass({
       render: function() {
         return (
           <div>
-            <h2 className="title">
+            <h1 className="title">
               {MailPoet.I18n.t('segment')}
-            </h2>
+              <Link className="page-title-action" to="/">{MailPoet.I18n.t('backToList')}</Link>
+            </h1>
 
             <Form
               endpoint="segments"

@@ -1,7 +1,11 @@
 <% extends 'layout.html' %>
 
 <% block title %>
-  <h2 class="title">
+<h1 class="title">
+  <%= __('Form') %>
+  <a class="page-title-action" href="?page=mailpoet-forms#/"><%= __('Back to list') %></a>
+</h1>
+  <h2>
     <input
       type="text"
       placeholder="<%= __('Click to change the name!') %>"

@@ -340,11 +340,11 @@ const SubscriberList = React.createClass({
   render: function() {
     return (
       <div>
-        <h2 className="title">
-          {MailPoet.I18n.t('pageTitle')} <Link className="add-new-h2" to="/new">{MailPoet.I18n.t('new')}</Link>
-          <a className="add-new-h2" href="?page=mailpoet-import#step1">{MailPoet.I18n.t('import')}</a>
-          <a id="mailpoet_export_button" className="add-new-h2" href="?page=mailpoet-export">{MailPoet.I18n.t('export')}</a>
-        </h2>
+        <h1 className="title">
+          {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
+          <a className="page-title-action" href="?page=mailpoet-import#step1">{MailPoet.I18n.t('import')}</a>
+          <a id="mailpoet_export_button" className="page-title-action" href="?page=mailpoet-export">{MailPoet.I18n.t('export')}</a>
+        </h1>
 
         <Listing
           limit={ mailpoet_listing_per_page }

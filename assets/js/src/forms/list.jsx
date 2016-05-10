@@ -149,13 +149,13 @@ const FormList = React.createClass({
   render() {
     return (
       <div>
-        <h2 className="title">
+        <h1 className="title">
           {MailPoet.I18n.t('pageTitle')} <a
-            className="add-new-h2"
+            className="page-title-action"
             href="javascript:;"
             onClick={ this.createForm }
           >{MailPoet.I18n.t('new')}</a>
-        </h2>
+        </h1>
 
         <Listing
           location={ this.props.location }
