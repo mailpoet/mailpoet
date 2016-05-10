@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\SendingQueue;
 
 class Scheduler {
@@ -12,10 +13,11 @@ class Scheduler {
   const LAST_WEEKDAY_FORMAT = 'L';
   const WORDPRESS_ALL_ROLES = 'mailpoet_all';
 
-  static function postNotification($newsletter_id) {
+  static function processPostNotificationSchedule($newsletter_id) {
     $newsletter = Newsletter::filter('filterWithOptions')
-      ->findOne($newsletter_id)
-      ->asArray();
+      ->findOne($newsletter_id);
+    if(!$newsletter) return;
+    $newsletter = $newsletter->asArray();
     $interval_type = $newsletter['intervalType'];
     $hour = (int) $newsletter['timeOfDay'] / self::SECONDS_IN_HOUR;
     $week_day = $newsletter['weekDay'];
@@ -56,20 +58,40 @@ class Scheduler {
     $relation->save();
   }
 
-  static function welcomeForSegmentSubscription($subscriber_id, array $segments) {
-    $newsletters = self::getWelcomeNewsletters();
+  static function schedulePostNotification($post_id) {
+    $newsletters = self::getNewsletters('notification');
+    if(!count($newsletters)) return;
+    foreach($newsletters as $newsletter) {
+      $post = NewsletterPost::where('newsletter_id', $newsletter['id'])
+        ->where('post_id', $post_id)
+        ->findOne();
+      if($post === false) {
+        $scheduled_notification = self::createPostNotificationQueue($newsletter);
+      }
+    }
+  }
+
+  static function scheduleSubscriberWelcomeNotification(
+    $subscriber_id,
+    array $segments
+  ) {
+    $newsletters = self::getWelcomeNewsletters('welcome');
     if(!count($newsletters)) return;
     foreach($newsletters as $newsletter) {
       if($newsletter['event'] === 'segment' &&
         in_array($newsletter['segment'], $segments)
       ) {
-        self::createSendingQueueEntry($newsletter, $subscriber_id);
+        self::createWelcomeNotificationQueue($newsletter, $subscriber_id);
       }
     }
   }
 
-  static function welcomeForNewWPUser($subscriber_id, array $wp_user, $old_user_data) {
-    $newsletters = self::getWelcomeNewsletters();
+  static function scheduleWPUserWelcomeNotification(
+    $subscriber_id,
+    array $wp_user,
+    $old_user_data
+  ) {
+    $newsletters = self::getNewsletters('welcome');
     if(!count($newsletters)) return;
     foreach($newsletters as $newsletter) {
       if($newsletter['event'] === 'user') {
@@ -86,20 +108,20 @@ class Scheduler {
         if($newsletter['role'] === self::WORDPRESS_ALL_ROLES ||
           in_array($newsletter['role'], $wp_user['roles'])
         ) {
-          self::createSendingQueueEntry($newsletter, $subscriber_id);
+          self::createWelcomeNotificationQueue($newsletter, $subscriber_id);
         }
       }
     }
   }
 
-  private static function getWelcomeNewsletters() {
-    return Newsletter::where('type', 'welcome')
+  static function getNewsletters($type) {
+    return Newsletter::where('type', $type)
       ->whereNull('deleted_at')
       ->filter('filterWithOptions')
       ->findArray();
   }
 
-  private static function createSendingQueueEntry($newsletter, $subscriber_id) {
+  static function createWelcomeNotificationQueue($newsletter, $subscriber_id) {
     $queue = SendingQueue::create();
     $queue->newsletter_id = $newsletter['id'];
     $queue->subscribers = serialize(
@@ -128,5 +150,26 @@ class Scheduler {
     $queue->status = 'scheduled';
     $queue->scheduled_at = $scheduled_at;
     $queue->save();
+  }
+
+  static function createPostNotificationQueue($newsletter) {
+    $next_run_date = self::getNextRunDate($newsletter['schedule']);
+    // do not schedule duplicate queues for the same time
+    $existing_queue = SendingQueue::where('newsletter_id', $newsletter['id'])
+      ->where('scheduled_at', $next_run_date)
+      ->findOne();
+    if($existing_queue) return;
+    $queue = SendingQueue::create();
+    $queue->newsletter_id = $newsletter['id'];
+    $queue->status = 'scheduled';
+    $queue->scheduled_at = $next_run_date;
+    $queue->save();
+    return $queue;
+  }
+
+  static function getNextRunDate($schedule) {
+    $schedule = \Cron\CronExpression::factory($schedule);
+    return $schedule->getNextRunDate(current_time('mysql'))
+      ->format('Y-m-d H:i:s');
   }
 }

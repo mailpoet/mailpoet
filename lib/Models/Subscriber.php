@@ -167,7 +167,10 @@ class Subscriber extends Model {
         }
 
         // welcome email
-        Scheduler::welcomeForSegmentSubscription($subscriber->id, $segment_ids);
+        Scheduler::scheduleSubscriberWelcomeNotification(
+          $subscriber->id,
+          $segment_ids
+        );
       }
     }
 

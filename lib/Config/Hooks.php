@@ -13,6 +13,7 @@ class Hooks {
     $this->setupImageSize();
     $this->setupListing();
     $this->setupSubscriptionEvents();
+    $this->setupPostNotifications();
   }
 
   function setupSubscriptionEvents() {
@@ -145,5 +146,13 @@ class Hooks {
     } else {
       return $status;
     }
+  }
+
+  function setupPostNotifications() {
+    add_filter(
+      'publish_post',
+      '\MailPoet\Newsletter\Scheduler\Scheduler::schedulePostNotification',
+      10, 1
+    );
   }
 }

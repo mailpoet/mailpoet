@@ -284,7 +284,7 @@ class Newsletters {
         isset($data['type']) &&
         $data['type'] === 'notification'
       ) {
-        Scheduler::postNotification($newsletter->id);
+        Scheduler::processPostNotificationSchedule($newsletter->id);
       }
       return array(
         'result' => true,

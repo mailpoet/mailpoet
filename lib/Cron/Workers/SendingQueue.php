@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
@@ -42,6 +43,11 @@ class SendingQueue {
       }
       $newsletter = $newsletter->asArray();
       $newsletter['body'] = $this->getOrRenderNewsletterBody($queue, $newsletter);
+      if ($newsletter['type'] === 'notification' &&
+          !preg_match_all('/data-post-id/', $newsletter['body']['html'])) {
+        $queue->delete();
+        continue;
+      }
       $queue->subscribers = (object) unserialize($queue->subscribers);
       if(!isset($queue->subscribers->processed)) {
         $queue->subscribers->processed = array();
@@ -91,8 +97,7 @@ class SendingQueue {
           return OpenTracking::process($template);
         });
         // render newsletter
-        list($rendered_newsletter, $queue->newsletter_rendered_body_hash) =
-          $this->renderNewsletter($newsletter);
+        $rendered_newsletter = $this->renderNewsletter($newsletter);
         // process link shortcodes, extract and save links in the database
         $processed_newsletter = $this->processLinksAndShortcodes(
           $this->joinObject($rendered_newsletter),
@@ -104,9 +109,12 @@ class SendingQueue {
       }
       else {
         // render newsletter
-        list($newsletter['body'], $queue->newsletter_rendered_body_hash) =
-          $this->renderNewsletter($newsletter);
+        $newsletter['body'] = $this->renderNewsletter($newsletter);
       }
+      $this->extractAndSaveNewsletterPosts(
+        $newsletter['id'],
+        $newsletter['body']['html']
+      );
       $queue->newsletter_rendered_body = json_encode($newsletter['body']);
       $queue->save();
     } else {
@@ -196,9 +204,7 @@ class SendingQueue {
 
   function renderNewsletter($newsletter) {
     $renderer = new Renderer($newsletter);
-    $rendered_newsletter = $renderer->render();
-    $rendered_newsletter_hash = md5($rendered_newsletter['text']);
-    return array($rendered_newsletter, $rendered_newsletter_hash);
+    return $renderer->render();
   }
 
   function processLinksAndShortcodes($content, $newsletter_id, $queue_id) {
@@ -367,6 +373,17 @@ class SendingQueue {
     $found_subscriber, $existing_subscribers, $subscribers_to_process) {
     $subscibers_to_exclude = array_diff($existing_subscribers, $found_subscriber);
     return array_diff($subscribers_to_process, $subscibers_to_exclude);
+  }
+
+  function extractAndSaveNewsletterPosts($newletter_id, $content) {
+    preg_match_all('/data-post-id="(\d+)"/ism', $content, $posts);
+    $posts = $posts[1];
+    foreach($posts as $post) {
+      $newletter_post = NewsletterPost::create();
+      $newletter_post->newsletter_id = $newletter_id;
+      $newletter_post->post_id = $post;
+      $newletter_post->save();
+    }
   }
 
   private function joinObject($object = array()) {

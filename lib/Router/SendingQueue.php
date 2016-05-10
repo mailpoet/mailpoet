@@ -38,6 +38,7 @@ class SendingQueue {
     $options = array();
     if(isset($data['options'])) {
       $options = $data['options'];
+      $options['segments'] = serialize($data['segments']);
       unset($data['options']);
     }
     if ($options &&
@@ -56,14 +57,12 @@ class SendingQueue {
             $relation->newsletter_id = $newsletter->id;
             $relation->option_field_id = $option_field['id'];
           }
-          $relation->value = ($option_field['name'] === 'segments') ?
-            serialize($data['segments']) :
-            $options[$option_field['name']];
+          $relation->value = $options[$option_field['name']];
           $relation->save();
         }
       }
       if ($newsletter->type === 'notification') {
-        Scheduler::postNotification($newsletter->id);
+        Scheduler::processPostNotificationSchedule($newsletter->id);
       }
       $newsletter = Newsletter::filter('filterWithOptions')
         ->findOne($data['newsletter_id']);

@@ -48,7 +48,7 @@ class WP {
             $segment->addSubscriber($subscriber->id);
           }
           if(isset($schedule_welcome_newsletter)) {
-            Scheduler::welcomeForNewWPUser(
+            Scheduler::scheduleWPUserWelcomeNotification(
               $subscriber->id,
               (array) $wp_user,
               $old_wp_user_data

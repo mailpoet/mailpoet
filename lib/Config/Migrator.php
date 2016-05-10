@@ -102,7 +102,6 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
       'newsletter_rendered_body longtext,',
-      'newsletter_rendered_body_hash varchar(250) NULL DEFAULT NULL,',
       'newsletter_rendered_subject varchar(250) NULL DEFAULT NULL,',
       'subscribers longtext,',
       'status varchar(12) NULL DEFAULT NULL,',
