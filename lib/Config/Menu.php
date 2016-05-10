@@ -48,7 +48,7 @@ class Menu {
     );
     add_submenu_page(
       'mailpoet',
-      __('Newsletters'),
+      $this->setPageTitle(__('Newsletters')),
       __('Newsletters'),
       'manage_options',
       'mailpoet-newsletters',
@@ -59,7 +59,7 @@ class Menu {
     );
     add_submenu_page(
       'mailpoet',
-      __('Forms'),
+      $this->setPageTitle(__('Forms')),
       __('Forms'),
       'manage_options',
       'mailpoet-forms',
@@ -70,7 +70,7 @@ class Menu {
     );
     $subscribers_page = add_submenu_page(
       'mailpoet',
-      __('Subscribers'),
+      $this->setPageTitle(__('Subscribers')),
       __('Subscribers'),
       'manage_options',
       'mailpoet-subscribers',
@@ -92,7 +92,7 @@ class Menu {
 
     add_submenu_page(
       'mailpoet',
-      __('Segments'),
+      $this->setPageTitle(__('Segments')),
       __('Segments'),
       'manage_options',
       'mailpoet-segments',
@@ -103,7 +103,7 @@ class Menu {
     );
     add_submenu_page(
       'mailpoet',
-      __('Settings'),
+      $this->setPageTitle( __('Settings')),
       __('Settings'),
       'manage_options',
       'mailpoet-settings',
@@ -113,8 +113,8 @@ class Menu {
       )
     );
     add_submenu_page(
-      null,
-      __('Import'),
+      true,
+      $this->setPageTitle( __('Import')),
       __('Import'),
       'manage_options',
       'mailpoet-import',
@@ -124,8 +124,8 @@ class Menu {
       )
     );
     add_submenu_page(
-      null,
-      __('Export'),
+      true,
+      $this->setPageTitle(__('Export')),
       __('Export'),
       'manage_options',
       'mailpoet-export',
@@ -136,8 +136,8 @@ class Menu {
     );
 
     add_submenu_page(
-      null,
-      __('Welcome'),
+      true,
+      $this->setPageTitle(__('Welcome')),
       __('Welcome'),
       'manage_options',
       'mailpoet-welcome',
@@ -148,8 +148,8 @@ class Menu {
     );
 
     add_submenu_page(
-      null,
-      __('Update'),
+      true,
+      $this->setPageTitle(__('Update')),
       __('Update'),
       'manage_options',
       'mailpoet-update',
@@ -160,8 +160,8 @@ class Menu {
     );
 
     add_submenu_page(
-      null,
-      __('Form editor'),
+      true,
+      $this->setPageTitle(__('Form')),
       __('Form editor'),
       'manage_options',
       'mailpoet-form-editor',
@@ -172,8 +172,8 @@ class Menu {
     );
 
     add_submenu_page(
-      null,
-      __('Newsletter editor'),
+      true,
+      $this->setPageTitle(__('Newsletter')),
       __('Newsletter editor'),
       'manage_options',
       'mailpoet-newsletter-editor',
@@ -185,7 +185,7 @@ class Menu {
 
     add_submenu_page(
       'mailpoet',
-      __('Cron'),
+      $this->setPageTitle(__('Cron')),
       __('Cron'),
       'manage_options',
       'mailpoet-cron',
@@ -412,8 +412,7 @@ class Menu {
     $data = array(
       'form' => $form,
       'pages' => Pages::getAll(),
-      'segments' => Segment::getPublic()
-        ->findArray(),
+      'segments' => Segment::getPublic()->findArray(),
       'styles' => FormRenderer::getStyles($form),
       'date_types' => Block\Date::getDateTypes(),
       'date_formats' => Block\Date::getDateFormats(),
@@ -425,5 +424,13 @@ class Menu {
 
   function cron() {
     echo $this->renderer->render('cron.html');
+  }
+
+  function setPageTitle($title) {
+    return sprintf(
+      '%s - %s',
+      __('MailPoet'),
+      $title
+    );
   }
 }
