@@ -71,7 +71,7 @@ class Daemon {
   function abortIfStopped($daemon) {
     if($daemon['status'] === self::STATUS_STOPPED) exit;
     if($daemon['status'] === self::STATUS_STOPPING) {
-      $daemon['status'] = self::STATUS_STOPPING;
+      $daemon['status'] = self::STATUS_STOPPED;
       CronHelper::saveDaemon($daemon);
       exit;
     }
