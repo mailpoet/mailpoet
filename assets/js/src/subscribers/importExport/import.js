@@ -24,7 +24,6 @@ define(
         return;
       }
       jQuery(document).ready(function () {
-        var noticeTimeout = 3000;
         jQuery('input[name="select_method"]').attr('checked', false);
         // configure router
         router = new (Backbone.Router.extend({
@@ -128,9 +127,7 @@ define(
             // get an approximate size of textarea paste in bytes
             var pasteSize = encodeURI(pasteInputElement.val()).split(/%..|./).length - 1;
             if (pasteSize > maxPostSizeBytes) {
-              MailPoet.Notice.error(MailPoet.I18n.t('maxPostSizeNotice'), {
-                timeout: noticeTimeout,
-              });
+              MailPoet.Notice.error(MailPoet.I18n.t('maxPostSizeNotice'));
               return;
             }
             // delay loading indicator for 10ms or else it's just too fast :)
@@ -148,9 +145,7 @@ define(
               var ext = this.value.match(/\.(.+)$/);
               if (ext === null || ext[1].toLowerCase() !== 'csv') {
                 this.value = '';
-                MailPoet.Notice.error(MailPoet.I18n.t('wrongFileFormat'), {
-                  timeout: noticeTimeout,
-                });
+                MailPoet.Notice.error(MailPoet.I18n.t('wrongFileFormat'));
               }
 
             toggleNextStepButton(
@@ -198,9 +193,7 @@ define(
             }).done(function (response) {
               if (response.result === false) {
                 MailPoet.Notice.hide();
-                MailPoet.Notice.error(response.errors, {
-                  timeout: noticeTimeout,
-                });
+                MailPoet.Notice.error(response.errors);
                 jQuery('.mailpoet_mailchimp-key-status')
                     .removeClass()
                     .addClass('mailpoet_mailchimp-key-status mailpoet_mailchimp-error');
@@ -223,9 +216,7 @@ define(
             }).error(function (error) {
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
-                  MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.', {
-                    timeout: noticeTimeout,
-                  }
+                  MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
               );
             });
             MailPoet.Modal.loading(false);
@@ -250,17 +241,13 @@ define(
               }
               else {
                 MailPoet.Notice.hide();
-                MailPoet.Notice.error(response.errors, {
-                  timeout: noticeTimeout,
-                });
+                MailPoet.Notice.error(response.errors);
               }
               MailPoet.Modal.loading(false);
             }).error(function () {
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
-                  MailPoet.I18n.t('serverError') + result.statusText.toLowerCase() + '.', {
-                    timeout: noticeTimeout,
-                  }
+                  MailPoet.I18n.t('serverError') + result.statusText.toLowerCase() + '.'
               );
             });
           });
@@ -350,9 +337,7 @@ define(
               comments: advancedOptionComments,
               error: function () {
                 MailPoet.Notice.hide();
-                MailPoet.Notice.error(MailPoet.I18n.t('dataProcessingError'), {
-                  timeout: noticeTimeout,
-                });
+                MailPoet.Notice.error(MailPoet.I18n.t('dataProcessingError'));
               },
               complete: function (CSV) {
                 for (var rowCount in CSV.data) {
@@ -434,9 +419,7 @@ define(
                   var errorNotice = MailPoet.I18n.t('noValidRecords');
                   errorNotice = errorNotice.replace('[link]', MailPoet.I18n.t('csvKBLink'));
                   errorNotice = errorNotice.replace('[/link]', '</a>');
-                  MailPoet.Notice.error(errorNotice, {
-                    timeout: noticeTimeout,
-                  });
+                  MailPoet.Notice.error(errorNotice);
                 }
               }
             }
@@ -566,7 +549,6 @@ define(
                     if (!segmentSelectionNotice.length) {
                       MailPoet.Notice.error(MailPoet.I18n.t('segmentSelectionRequired'), {
                         static: true,
-                        timeout: noticeTimeout,
                         scroll: true,
                         id: 'segmentSelection',
                         hideClose: true
@@ -644,18 +626,14 @@ define(
                       else {
                         MailPoet.Modal.close();
                         MailPoet.Notice.error(
-                            MailPoet.I18n.t('segmentCreateError') + response.message + '.', {
-                              timeout: noticeTimeout,
-                            }
+                            MailPoet.I18n.t('segmentCreateError') + response.message + '.'
                         );
                       }
                     })
                     .error(function (error) {
                       MailPoet.Modal.close();
                       MailPoet.Notice.error(
-                          MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.', {
-                            timeout: noticeTimeout
-                          }
+                          MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
                       );
                     });
               }
@@ -860,18 +838,14 @@ define(
                               filterSubscribers();
                             }
                             else {
-                              MailPoet.Notice.error(MailPoet.I18n.t('customFieldCreateError'), {
-                                timeout: noticeTimeout,
-                              });
+                              MailPoet.Notice.error(MailPoet.I18n.t('customFieldCreateError'));
                             }
                             MailPoet.Modal.loading(false);
                           })
                           .error(function (error) {
                             MailPoet.Modal.loading(false);
                             MailPoet.Notice.error(
-                                MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.', {
-                                  timeout: noticeTimeout,
-                                }
+                                MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
                             );
                           });
                     }
@@ -935,7 +909,6 @@ define(
                   if (!jQuery('[data-id="notice_invalidEmail"]').length) {
                     MailPoet.Notice.error(MailPoet.I18n.t('columnContainsInvalidElement'), {
                       static: true,
-                      timeout: noticeTimeout,
                       scroll: true,
                       hideClose: true,
                       id: 'invalidEmail'
@@ -1015,7 +988,6 @@ define(
                 if (preventNextStep && !jQuery('.mailpoet_invalidDate').length) {
                   MailPoet.Notice.error(MailPoet.I18n.t('columnContainsInvalidDate'), {
                     static: true,
-                    timeout: noticeTimeout,
                     scroll: true,
                     hideClose: true,
                     id: 'invalidDate'
@@ -1127,9 +1099,7 @@ define(
             queue.onComplete(function () {
               MailPoet.Modal.loading(false);
               if (importResults.errors.length > 0 && !importResults.updated && !importResults.created) {
-                MailPoet.Notice.error(_.flatten(importResults.errors), {
-                    timeout: noticeTimeout,
-                  }
+                MailPoet.Notice.error(_.flatten(importResults.errors)
                 );
               }
               else {
@@ -1158,9 +1128,7 @@ define(
           showCurrentStep();
 
           if (importData.step2.errors.length > 0) {
-            MailPoet.Notice.error(_.flatten(importData.step2.errors), {
-              timeout: noticeTimeout,
-            });
+            MailPoet.Notice.error(_.flatten(importData.step2.errors));
           }
 
           // display statistics
