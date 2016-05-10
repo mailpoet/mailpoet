@@ -325,7 +325,7 @@ class Menu {
       ? (int)$listing_per_page
       : Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
 
-    $data['segments'] = Segment::findArray();
+    $data['segments'] = Segment::getSegmentsWithSubscriberCount();
 
     $data['custom_fields'] = array_map(function($field) {
       $field['params'] = unserialize($field['params']);

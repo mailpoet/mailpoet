@@ -106,6 +106,9 @@ const bulk_actions = [
           return !!(
             !segment.deleted_at && segment.type === 'default'
           );
+        },
+        getLabel: function (segment) {
+          return segment.name + ' (' + segment.subscribers + ')';
         }
       };
 
@@ -137,6 +140,9 @@ const bulk_actions = [
           return !!(
             !segment.deleted_at && segment.type === 'default'
           );
+        },
+        getLabel: function (segment) {
+          return segment.name + ' (' + segment.subscribers + ')';
         }
       };
 
@@ -168,6 +174,9 @@ const bulk_actions = [
           return !!(
             segment.type === 'default'
           );
+        },
+        getLabel: function (segment) {
+          return segment.name + ' (' + segment.subscribers + ')';
         }
       };
 
