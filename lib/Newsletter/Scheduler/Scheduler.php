@@ -75,7 +75,7 @@ class Scheduler {
     $subscriber_id,
     array $segments
   ) {
-    $newsletters = self::getWelcomeNewsletters('welcome');
+    $newsletters = self::getNewsletters('welcome');
     if(!count($newsletters)) return;
     foreach($newsletters as $newsletter) {
       if($newsletter['event'] === 'segment' &&
