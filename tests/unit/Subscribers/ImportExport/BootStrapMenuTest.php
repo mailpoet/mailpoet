@@ -47,9 +47,9 @@ class BootStrapMenuTest extends MailPoetTest {
   function testItCanGetSegmentsWithSubscriberCount() {
     $segments = $this->bootStrapImportMenu->getSegments();
     expect(count($segments))->equals(2);
-    expect($segments[0]['name'])->equals('Unconfirmed Segment');
+    expect($segments[0]['name'])->equals('Confirmed Segment');
     expect($segments[0]['subscriberCount'])->equals(1);
-    expect($segments[1]['name'])->equals('Confirmed Segment');
+    expect($segments[1]['name'])->equals('Unconfirmed Segment');
     expect($segments[1]['subscriberCount'])->equals(1);
   }
 
