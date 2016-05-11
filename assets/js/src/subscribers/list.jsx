@@ -213,7 +213,7 @@ const bulk_actions = [
       );
     }
   },
-  {
+/*  {
     name: 'confirmUnconfirmed',
     label: MailPoet.I18n.t('confirmUnconfirmed'),
     onSuccess: function(response) {
@@ -222,7 +222,7 @@ const bulk_actions = [
         .replace('%$1d', ~~response)
       );
     }
-  },
+  },*/
   {
     name: 'sendConfirmationEmail',
     label: MailPoet.I18n.t('resendConfirmationEmail'),
