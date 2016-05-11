@@ -191,7 +191,7 @@ const SegmentList = React.createClass({
           <abbr>{ parseInt(unsubscribed).toLocaleString() }</abbr>
         </td>
         <td className="column-date" data-colname="Created on">
-          <abbr>{ MailPoet.Date.full(segment.created_at) }</abbr>
+          <abbr>{ MailPoet.Date.format(segment.created_at) }</abbr>
         </td>
       </div>
     );

@@ -976,7 +976,7 @@ define(
                       data[matchedColumn] +=
                           '<span class="mailpoet_data_match" title="'
                           + MailPoet.I18n.t('verifyDateMatch') + '">'
-                          + date + '</span>';
+                          + MailPoet.Date.format(date) + '</span>';
                     }
                     else {
                       data[matchedColumn] +=

@@ -43,8 +43,18 @@ class Functions extends \Twig_Extension {
         array('is_safe' => array('all'))
       ),
       new \Twig_SimpleFunction(
+        'get_option',
+        'get_option',
+        array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
         'sending_frequency',
         array($this, 'getSendingFrequency'),
+        array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
+        'wp_datetime_format',
+        array($this, 'getWPDateTimeFormat'),
         array('is_safe' => array('all'))
       )
     );
@@ -84,6 +94,16 @@ class Functions extends \Twig_Extension {
     } else {
       return $value;
     }
+  }
+
+  function getWPDateTimeFormat() {
+    $date_format = (get_option('date_format')) ?
+      get_option('date_format') :
+      'F j, Y';
+    $time_format = (get_option('time_format')) ?
+      get_option('time_format') :
+      'g:i a';
+    return sprintf('%s %s', $date_format, $time_format);
   }
 
   function params($key = null) {
