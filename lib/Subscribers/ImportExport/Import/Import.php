@@ -47,7 +47,7 @@ class Import {
     list($subscribers_data, $subscriber_fields) = $this->extendSubscribersAndFields(
       $subscribers_data, $subscriber_fields
     );
-    list($existing_subscribers, $new_subscribers) =
+    list($existing_subscribers, $wp_users, $new_subscribers) =
       $this->filterExistingAndNewSubscribers($subscribers_data);
     $created_subscribers = $updated_subscribers = array();
     try {
@@ -68,6 +68,9 @@ class Import {
             $subscriber_fields,
             $subscriber_custom_fields
           );
+        if ($wp_users) {
+          $this->synchronizeWPUsers($wp_users);
+        }
       }
     } catch(\PDOException $e) {
       return array(
@@ -98,7 +101,7 @@ class Import {
     $chunk_size = 200;
     $existing_records = array_filter(
       array_map(function($subscriber_emails) {
-        return Subscriber::selectMany(array('email'))
+        return Subscriber::selectMany(array('email', 'wp_user_id'))
           ->whereIn('email', $subscriber_emails)
           ->whereNull('deleted_at')
           ->findArray();
@@ -106,10 +109,15 @@ class Import {
     );
     if(!$existing_records) {
       return array(
-        false,
+        $existing_records = false,
+        $wp_users = false,
         $subscribers_data
       );
     }
+    $wp_users = array_map(function($subscriber) {
+      return Helpers::arrayColumn($subscriber, 'wp_user_id');
+    }, $existing_records);
+    $wp_users = array_filter($wp_users[0]);
     $existing_records = Helpers::flattenArray($existing_records);
     $new_records = array_keys(
       array_diff(
@@ -120,6 +128,7 @@ class Import {
     if(!$new_records) {
       return array(
         $subscribers_data,
+        $wp_users,
         false
       );
     }
@@ -144,6 +153,7 @@ class Import {
       }, $subscribers_data);
     return array(
       $existing_subscribers,
+      $wp_users,
       $new_subscribers
     );
   }
@@ -337,6 +347,10 @@ class Import {
         );
       }
     }
+  }
+
+  function synchronizeWPUsers($wp_users) {
+    return array_walk($wp_users, '\MailPoet\Segments\WP::synchronizeUser');
   }
 
   function addSubscribersToSegments($subscribers, $segments) {

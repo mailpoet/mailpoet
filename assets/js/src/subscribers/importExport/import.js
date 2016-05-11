@@ -1112,6 +1112,7 @@ define(
                   });
                 importData.step2 = importResults;
                 enableSegmentSelection(mailpoetSegments);
+                toggleNextStepButton('off');
                 router.navigate('step3', {trigger: true});
               }
             });
