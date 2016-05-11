@@ -34,7 +34,7 @@ define(
       function(segment) {
         var name = segment.name;
         if (segment.subscribers > 0) {
-          name += ' (%$1d)'.replace('%$1d', segment.subscribers);
+          name += ' (%$1s)'.replace('%$1s', parseInt(segment.subscribers).toLocaleString());
         }
         return [segment.id, name];
       }

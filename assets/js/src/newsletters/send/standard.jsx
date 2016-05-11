@@ -34,7 +34,7 @@ define(
         getLabel: function(segment) {
           var name = segment.name;
           if (segment.subscribers > 0) {
-            name += ' (%$1s)'.replace('%$1s', segment.subscribers);
+            name += ' (%$1s)'.replace('%$1s', parseInt(segment.subscribers).toLocaleString());
           }
           return name;
         },
