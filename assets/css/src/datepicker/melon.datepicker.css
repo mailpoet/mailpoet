@@ -1,0 +1,115 @@
+/**
+ * Melon skin from: https://github.com/rtsinani/jquery-datepicker-skins
+ */
+
+.wp-admin {
+	font-size: 90%;
+}
+
+.wp-admin .ui-widget {
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+	background: #2e3641;
+	border: none;
+	border-radius: 0;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+}
+
+.wp-admin .ui-datepicker {
+	padding: 0;
+}
+
+.wp-admin .ui-datepicker-header {
+	border: none;
+	background: transparent;
+	font-weight: normal;
+	font-size: 15px;
+}
+
+.wp-admin .ui-datepicker-header .ui-state-hover {
+	background: transparent;
+	border-color: transparent;
+	cursor: pointer;
+	border-radius: 0;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+}
+
+.wp-admin .ui-datepicker .ui-datepicker-title {
+	margin-top: .4em;
+	margin-bottom: .3em;
+	color: #e9f0f4;
+}
+
+.wp-admin .ui-datepicker .ui-datepicker-prev-hover,
+.wp-admin .ui-datepicker .ui-datepicker-next-hover,
+.wp-admin .ui-datepicker .ui-datepicker-next,
+.wp-admin .ui-datepicker .ui-datepicker-prev {
+	top: .9em;
+	border:none;
+}
+
+.wp-admin .ui-datepicker .ui-datepicker-prev-hover {
+	left: 2px;
+}
+
+.wp-admin .ui-datepicker .ui-datepicker-next-hover {
+	right: 2px;
+}
+
+.wp-admin .ui-datepicker .ui-datepicker-next span,
+.wp-admin .ui-datepicker .ui-datepicker-prev span {
+	background-image: url(../img/datepicker/ui-icons_ffffff_256x240.png);
+	background-position: -32px 0;
+	margin-top: 0;
+	top: 0;
+	font-weight: normal;
+}
+
+.wp-admin .ui-datepicker .ui-datepicker-prev span {
+	background-position: -96px 0;
+}
+
+.wp-admin .ui-datepicker table {
+	margin: 0;
+}
+
+.wp-admin .ui-datepicker th {
+	padding: 1em 0;
+	color: #ccc;
+	font-size: 13px;
+	font-weight: normal;
+	border: none;
+	border-top: 1px solid #3a414d;
+}
+
+.wp-admin .ui-datepicker td {
+	background: #f97e76;
+	border: none;
+	padding: 0;
+}
+
+.wp-admin td .ui-state-default {
+	background: transparent;
+	border: none;
+	text-align: center;
+	padding: .5em;
+	margin: 0;
+	font-weight: normal;
+	color: #efefef;
+	font-size: 16px;
+}
+
+.wp-admin .ui-state-disabled  {
+	opacity: 1;
+}
+
+.wp-admin .ui-state-disabled .ui-state-default {
+	color: #fba49e;
+}
+
+.wp-admin td .ui-state-active,
+.wp-admin td .ui-state-hover {
+	background: #2e3641;
+}
+

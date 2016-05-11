@@ -184,7 +184,7 @@ define(
                 dateValidation={this.getDateValidation()} />
               &nbsp;
               <span>
-                {MailPoet.I18n.t('localTimeIs')} <code>{currentTime}</code>
+                {MailPoet.I18n.t('websiteTimeIs')} <code>{currentTime}</code>
               </span>
             </span>
           );
