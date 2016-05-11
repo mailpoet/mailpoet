@@ -27,12 +27,18 @@ define(
 
     var DateText = React.createClass({
       componentDidMount: function() {
-        var $element = jQuery(this.refs.dateInput);
+        var $element = jQuery(this.refs.dateInput),
+            that = this;
         if ($element.datepicker) {
           $element.datepicker({
             dateFormat: "yy-mm-dd",
-            onSelect: function() {
-              jQuery(this).change();
+            onSelect: function(value) {
+              that.props.onChange({
+                target: {
+                  name: that.getFieldName(),
+                  value: value,
+                },
+              });
             }
           });
 
@@ -44,12 +50,15 @@ define(
           jQuery(this.refs.dateInput).datepicker('destroy');
         }
       },
+      getFieldName: function() {
+        return this.props.name || 'date';
+      },
       render: function() {
         return (
           <input
             type="text"
             size="10"
-            name={this.props.name || 'date'}
+            name={this.getFieldName()}
             value={this.props.value}
             onChange={this.props.onChange}
             ref="dateInput"
