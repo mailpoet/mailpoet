@@ -165,7 +165,11 @@ const SegmentList = React.createClass({
       'manage-column',
       'column-primary',
       'has-row-actions'
-    );
+    ),
+      subscribed = segment.subscribers_count.subscribed || 0,
+      unconfirmed = segment.subscribers_count.unconfirmed || 0,
+      unsubscribed = segment.subscribers_count.unsubscribed || 0;
+
     return (
       <div>
         <td className={ rowClasses }>
@@ -178,13 +182,13 @@ const SegmentList = React.createClass({
           <abbr>{ segment.description }</abbr>
         </td>
         <td className="column-date" data-colname="Subscribed">
-          <abbr>{ segment.subscribers_count.subscribed || 0 }</abbr>
+          <abbr>{ parseInt(subscribed).toLocaleString() }</abbr>
         </td>
         <td className="column-date" data-colname="Unconfirmed">
-          <abbr>{ segment.subscribers_count.unconfirmed || 0 }</abbr>
+          <abbr>{ parseInt(unconfirmed).toLocaleString() }</abbr>
         </td>
         <td className="column-date" data-colname="Unsubscribed">
-          <abbr>{ segment.subscribers_count.unsubscribed || 0 }</abbr>
+          <abbr>{ parseInt(unsubscribed).toLocaleString() }</abbr>
         </td>
         <td className="column-date" data-colname="Created on">
           <abbr>{ MailPoet.Date.full(segment.created_at) }</abbr>
@@ -195,9 +199,9 @@ const SegmentList = React.createClass({
   render: function() {
     return (
       <div>
-        <h2 className="title">
-          {MailPoet.I18n.t('pageTitle')} <Link className="add-new-h2" to="/new">{MailPoet.I18n.t('new')}</Link>
-        </h2>
+        <h1 className="title">
+          {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
+        </h1>
 
         <Listing
           location={ this.props.location }

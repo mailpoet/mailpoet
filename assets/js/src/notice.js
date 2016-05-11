@@ -51,7 +51,7 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           id: null,
           positionAfter: false,
           scroll: false,
-          timeout: 2000,
+          timeout: 5000,
           onOpen: null,
           onClose: null
       },

@@ -118,9 +118,10 @@ define(
       render: function() {
         return (
           <div>
-            <h2 className="title">
+            <h1 className="title">
               {MailPoet.I18n.t('subscriber')}
-            </h2>
+              <Link className="page-title-action" to="/">{MailPoet.I18n.t('backToList')}</Link>
+            </h1>
 
             <Form
               endpoint="subscribers"

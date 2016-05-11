@@ -127,7 +127,7 @@ class Subscriber extends Model {
   static function verifyToken($email, $token) {
     return (self::generateToken($email) === $token);
   }
-  
+
   static function subscribe($subscriber_data = array(), $segment_ids = array()) {
     if(empty($subscriber_data) or empty($segment_ids)) {
       return false;
@@ -192,11 +192,15 @@ class Subscriber extends Model {
       'label' => __('All segments'),
       'value' => ''
     );
+
+    $subscribers_without_segment = self::filter('withoutSegments')->count();
+    $subscribers_without_segment_label = sprintf(
+      __('Subscribers without a segment (%s)'),
+      number_format($subscribers_without_segment)
+    );
+
     $segment_list[] = array(
-      'label' => sprintf(
-        __('Subscribers without a segment (%d)'),
-        self::filter('withoutSegments')->count()
-      ),
+      'label' => str_replace(' (0)', '', $subscribers_without_segment_label),
       'value' => 'none'
     );
 
@@ -205,8 +209,9 @@ class Subscriber extends Model {
         ->filter('groupBy', $group)
         ->count();
 
+      $label = sprintf('%s (%s)', $segment->name, number_format($subscribers_count));
       $segment_list[] = array(
-        'label' => sprintf('%s (%d)', $segment->name, $subscribers_count),
+        'label' => str_replace(' (0)', '', $label),
         'value' => $segment->id()
       );
     }
@@ -530,11 +535,11 @@ class Subscriber extends Model {
     return false;
   }
 
-  static function bulkConfirmUnconfirmed($orm) {
+/*  static function bulkConfirmUnconfirmed($orm) {
     $subscribers = $orm->findResultSet();
     $subscribers->set('status', self::STATUS_SUBSCRIBED)->save();
     return $subscribers->count();
-  }
+  }*/
 
   static function bulkSendConfirmationEmail($orm) {
     $subscribers = $orm
