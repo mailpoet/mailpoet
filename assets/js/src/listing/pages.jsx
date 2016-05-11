@@ -148,7 +148,7 @@ define([
                   className="current-page" />
                 &nbsp;{MailPoet.I18n.t('pageOutOf')}&nbsp;
                 <span className="total-pages">
-                  {Math.ceil(this.props.count / this.props.limit)}
+                  {Math.ceil(this.props.count / this.props.limit).toLocaleString()}
                 </span>
               </span>
               &nbsp;
@@ -167,7 +167,7 @@ define([
         return (
           <div className={ classes }>
             <span className="displaying-num">{
-              MailPoet.I18n.t('numberOfItems').replace('%$1d', this.props.count)
+              MailPoet.I18n.t('numberOfItems').replace('%$1d', this.props.count.toLocaleString())
             }</span>
             { pagination }
           </div>

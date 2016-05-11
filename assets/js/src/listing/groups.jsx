@@ -21,7 +21,7 @@ define(['react', 'classnames'], function(React, classNames) {
                 href="javascript:;"
                 className={classes}
                 onClick={this.handleSelect.bind(this, group.name)} >
-                {group.label} <span className="count">({ group.count })</span>
+                {group.label} <span className="count">({ group.count.toLocaleString() })</span>
               </a>
             </li>
           );

@@ -108,7 +108,9 @@ const bulk_actions = [
           );
         },
         getLabel: function (segment) {
-          return segment.name + ' (' + segment.subscribers + ')';
+          return (segment.subscribers > 0) ?
+          segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')' :
+            segment.name;
         }
       };
 
@@ -142,7 +144,9 @@ const bulk_actions = [
           );
         },
         getLabel: function (segment) {
-          return segment.name + ' (' + segment.subscribers + ')';
+          return (segment.subscribers > 0) ?
+            segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')' :
+            segment.name;
         }
       };
 
@@ -176,7 +180,9 @@ const bulk_actions = [
           );
         },
         getLabel: function (segment) {
-          return segment.name + ' (' + segment.subscribers + ')';
+          return (segment.subscribers > 0) ?
+          segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')' :
+            segment.name;
         }
       };
 

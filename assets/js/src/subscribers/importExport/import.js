@@ -490,7 +490,7 @@ define(
               ),
               invalid: (subscribers.invalid.length)
                   ? MailPoet.I18n.t('importNoticeInvalid')
-                  .replace('%1$s', '<strong>' + subscribers.invalid.length + '</strong>')
+                  .replace('%1$s', '<strong>' + subscribers.invalid.length.toLocaleString() + '</strong>')
                   .replace('%2$s', subscribers.invalid.join(', '))
                   : null,
               duplicate: (subscribers.duplicate.length)
@@ -533,13 +533,15 @@ define(
                   data: segments,
                   width: '20em',
                   templateResult: function (item) {
+                    item.subscriberCount = parseInt(item.subscriberCount);
                     return (item.subscriberCount > 0)
-                        ? item.name + ' (' + item.subscriberCount + ')'
+                        ? item.name + ' (' + item.subscriberCount.toLocaleString() + ')'
                         : item.name;
                   },
                   templateSelection: function (item) {
+                    item.subscriberCount = parseInt(item.subscriberCount);
                     return (item.subscriberCount > 0)
-                        ? item.name + ' (' + item.subscriberCount + ')'
+                        ? item.name + ' (' + item.subscriberCount.toLocaleString() + ')'
                         : item.name;
                   }
                 })
@@ -1140,12 +1142,12 @@ define(
               importResults = {
                 created: (importData.step2.created)
                     ? MailPoet.I18n.t('subscribersCreated')
-                    .replace('%1$s', '<strong>' + importData.step2.created + '</strong>')
+                    .replace('%1$s', '<strong>' + importData.step2.created.toLocaleString() + '</strong>')
                     .replace('%2$s', '"' + importData.step2.segments.join('", "') + '"')
                     : false,
                 updated: (importData.step2.updated)
                     ? MailPoet.I18n.t('subscribersUpdated')
-                    .replace('%1$s', '<strong>' + importData.step2.updated + '</strong>')
+                    .replace('%1$s', '<strong>' + importData.step2.updated.toLocaleString() + '</strong>')
                     .replace('%2$s', '"' + importData.step2.segments.join('", "') + '"')
                     : false,
                 noaction: (!importData.step2.updated && !importData.step2.created)
