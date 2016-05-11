@@ -18,6 +18,7 @@ define(
 
     var settings = window.mailpoet_settings || {},
         currentTime = window.mailpoet_current_time || '00:00',
+        defaultDateTime = window.mailpoet_current_date + ' ' + '00:00:00';
         timeOfDayItems = window.mailpoet_schedule_time_of_day;
 
     var isScheduledField = {
@@ -30,17 +31,29 @@ define(
         if ($element.datepicker) {
           $element.datepicker({
             dateFormat: "yy-mm-dd",
+            onSelect: function() {
+              jQuery(this).change();
+            }
           });
+
+          this.datepickerInitialized = true;
+        }
+      },
+      componentWillUnmount: function() {
+        if (this.datepickerInitialized) {
+          jQuery(this.refs.dateInput).datepicker('destroy');
         }
       },
       render: function() {
         return (
           <input
             type="text"
+            size="10"
             name={this.props.name || 'date'}
             value={this.props.value}
             onChange={this.props.onChange}
-            ref="dateInput" />
+            ref="dateInput"
+            {...this.props.validation} />
         );
       },
     });
@@ -64,6 +77,7 @@ define(
             name={this.props.name || 'time'}
             value={this.props.value}
             onChange={this.props.onChange}
+            {...this.props.validation}
           >
             {options}
           </select>
@@ -80,7 +94,8 @@ define(
         this.setState(this._buildStateFromProps(nextProps));
       },
       _buildStateFromProps: function(props) {
-        const [date, time] = props.value.split(this._DATE_TIME_SEPARATOR)
+        let value = props.value || defaultDateTime;
+        const [date, time] = value.split(this._DATE_TIME_SEPARATOR)
         return {
           date: date,
           time: time,
@@ -96,7 +111,7 @@ define(
       },
       propagateChange: function() {
         if (this.props.onChange) {
-          this.props.onChange({
+          return this.props.onChange({
             target: {
               name: this.props.name || '',
               value: this.getDateTime(),
@@ -113,46 +128,61 @@ define(
             <DateText
               name="date"
               value={this.state.date}
-              onChange={this.handleChange} />
+              onChange={this.handleChange}
+              validation={this.props.dateValidation}/>
             <TimeSelect
               name="time"
               value={this.state.time}
-              onChange={this.handleChange} />
+              onChange={this.handleChange}
+              validation={this.props.timeValidation} />
           </span>
         );
       }
     });
 
     var StandardScheduling = React.createClass({
-      getInitialState: function() {
-        return {
-          isScheduled: '0',
-          scheduledAt: '2016-05-04 14:00:00',
-        };
+      _getCurrentValue: function() {
+        return this.props.item[this.props.field.name] || {};
       },
-      handleChange: function(event) {
-        var newState = {};
-        newState[event.target.name] = event.target.value;
-        this.setState(newState);
+      handleValueChange: function(event) {
+        var oldValue = this._getCurrentValue(),
+            newValue = {};
+        newValue[event.target.name] = event.target.value;
+
+        return this.props.onValueChange({
+          target: {
+            name: this.props.field.name,
+            value: _.extend({}, oldValue, newValue)
+          }
+        });
       },
       handleCheckboxChange: function(event) {
         event.target.value = this.refs.isScheduled.checked ? '1' : '0';
-        this.handleChange(event);
+        return this.handleValueChange(event);
       },
       isScheduled: function() {
-        return this.state.isScheduled === '1';
+        return this._getCurrentValue().isScheduled === '1';
+      },
+      getDateValidation: function() {
+        return {
+          'data-parsley-required': true,
+          'data-parsley-required-message': MailPoet.I18n.t('noScheduledDateError'),
+          'data-parsley-pattern': '[0-9]{4}-[0-9]{2}-[0-9]{2}',
+          'data-parsley-errors-container': '#mailpoet_scheduling',
+        };
       },
       render: function() {
-        var isChecked = this.isScheduled(),
-            schedulingOptions;
+        var schedulingOptions;
 
-        if (isChecked) {
+        if (this.isScheduled()) {
           schedulingOptions = (
-            <span>
+            <span id="mailpoet_scheduling">
               <DateTime
                 name="scheduledAt"
-                value={this.state.scheduledAt}
-                onChange={this.handleChange} />
+                value={this._getCurrentValue().scheduledAt}
+                onChange={this.handleValueChange} 
+                dateValidation={this.getDateValidation()} />
+              &nbsp;
               <span>
                 {MailPoet.I18n.t('localTimeIs')} <code>{currentTime}</code>
               </span>
