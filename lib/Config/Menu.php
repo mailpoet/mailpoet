@@ -113,7 +113,7 @@ class Menu {
       )
     );
     add_submenu_page(
-      true,
+      'admin.php?page=mailpoet-subscribers',
       $this->setPageTitle( __('Import')),
       __('Import'),
       'manage_options',
@@ -123,6 +123,7 @@ class Menu {
         'import'
       )
     );
+
     add_submenu_page(
       true,
       $this->setPageTitle(__('Export')),
@@ -383,6 +384,7 @@ class Menu {
     $data = array(
       'customFields' => $custom_fields,
       'settings' => Setting::getAll(),
+      'sub_menu' => 'mailpoet-newsletters'
     );
     wp_enqueue_media();
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
@@ -393,12 +395,14 @@ class Menu {
   function import() {
     $import = new BootStrapMenu('import');
     $data = $import->bootstrap();
+    $data['sub_menu'] = 'mailpoet-subscribers';
     echo $this->renderer->render('subscribers/importExport/import.html', $data);
   }
 
   function export() {
     $export = new BootStrapMenu('export');
     $data = $export->bootstrap();
+    $data['sub_menu'] = 'mailpoet-subscribers';
     echo $this->renderer->render('subscribers/importExport/export.html', $data);
   }
 
@@ -416,7 +420,8 @@ class Menu {
       'styles' => FormRenderer::getStyles($form),
       'date_types' => Block\Date::getDateTypes(),
       'date_formats' => Block\Date::getDateFormats(),
-      'month_names' => Block\Date::getMonthNames()
+      'month_names' => Block\Date::getMonthNames(),
+      'sub_menu' => 'mailpoet-forms'
     );
 
     echo $this->renderer->render('form/editor.html', $data);
