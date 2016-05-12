@@ -1,3 +1,14 @@
+<% if sub_menu %>
+<script type="text/javascript">
+jQuery('#toplevel_page_mailpoet')
+  .addClass('wp-has-current-submenu')
+  .find('a[href$="<%= sub_menu %>"]')
+  .addClass('current')
+  .parent()
+  .addClass('current');
+</script>
+<% endif %>
+
 <!-- system notices -->
 <div id="mailpoet_notice_system" class="mailpoet_notice" style="display:none;"></div>
 

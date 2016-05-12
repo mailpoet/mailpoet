@@ -108,12 +108,6 @@
 <%= stylesheet('importExport.css') %>
 
 <script type="text/javascript">
-  jQuery('#toplevel_page_mailpoet')
-    .addClass('wp-has-current-submenu')
-    .find('a[href$="mailpoet-subscribers"]')
-    .addClass('current')
-    .parent()
-    .addClass('current');
   var
     segments = <%= segments|raw %>,
     segmentsWithConfirmedSubscribers =
