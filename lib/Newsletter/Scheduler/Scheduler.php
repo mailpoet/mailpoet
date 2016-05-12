@@ -73,6 +73,10 @@ class Scheduler {
     }
   }
 
+  static function standard($timestamp) {
+    return Carbon::parse($timestamp)->format('Y-m-d H:i:s');
+  }
+
   static function scheduleSubscriberWelcomeNotification(
     $subscriber_id,
     array $segments

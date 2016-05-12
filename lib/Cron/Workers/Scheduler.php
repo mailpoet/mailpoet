@@ -35,10 +35,10 @@ class Scheduler {
       } else {
         if($newsletter->type === 'welcome') {
           $this->processWelcomeNewsletter($newsletter, $queue);
-        } else {
-          if($newsletter->type === 'notification') {
-            $this->processPostNotificationNewsletter($newsletter, $queue);
-          }
+        } elseif($newsletter->type === 'notification') {
+          $this->processPostNotificationNewsletter($newsletter, $queue);
+        } elseif($newsletter->type === 'standard') {
+          $this->processScheduledStandardNewsletter($newsletter, $queue);
         }
       }
       CronHelper::checkExecutionTimer($this->timer);
@@ -81,6 +81,28 @@ class Scheduler {
       $queue->delete();
       return;
     }
+    $queue->subscribers = serialize(
+      array(
+        'to_process' => $subscribers
+      )
+    );
+    $queue->count_total = $queue->count_to_process = count($subscribers);
+    $queue->status = null;
+    $queue->save();
+  }
+
+  function processScheduledStandardNewsletter($newsletter, $queue) {
+    $segments = $newsletter->segments()->findArray();
+    $segment_ids = array_map(function($segment) {
+      return $segment['id'];
+    }, $segments);
+
+    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
+      ->findArray();
+    $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
+    $subscribers = array_unique($subscribers);
+
+    // update current queue
     $queue->subscribers = serialize(
       array(
         'to_process' => $subscribers
