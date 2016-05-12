@@ -77,13 +77,15 @@ class ImportTest extends MailPoetTest {
       array(
         'first_name' => 'Adam',
         'last_name' => 'Smith',
-        'email' => 'adam@smith.com'
+        'email' => 'adam@smith.com',
+        'wp_user_id' => 1
       ));
     $subscriber->save();
-    list($existing, $new) = $this->import->filterExistingAndNewSubscribers(
+    list($existing, $wp_users, $new) = $this->import->filterExistingAndNewSubscribers(
       $subscribers_data
     );
     expect($existing['email'][0])->equals($subscribers_data['email'][0]);
+    expect($wp_users[0])->equals($subscriber->wp_user_id);
     expect($new['email'][0])->equals($subscribers_data['email'][1]);
   }
 
