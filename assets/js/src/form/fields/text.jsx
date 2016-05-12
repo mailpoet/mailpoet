@@ -14,6 +14,11 @@ function(
       return (
         <input
           type="text"
+          disabled={
+            (this.props.field.disabled !== undefined)
+            ? this.props.field.disabled(this.props.item)
+            : ''
+          }
           className={ (this.props.field.size) ? '' : 'regular-text' }
           size={
             (this.props.field.size !== 'auto' && this.props.field.size > 0)

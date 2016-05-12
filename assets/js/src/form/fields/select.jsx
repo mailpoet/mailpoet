@@ -10,7 +10,11 @@ function(
         return false;
       }
 
-      const options = Object.keys(this.props.field.values).map(
+      var values = (this.props.field.filterValues !== undefined)
+        ? this.props.field.filterValues(this.props.item)
+        : this.props.field.values;
+
+      const options = Object.keys(values).map(
         (value, index) => {
           return (
             <option
