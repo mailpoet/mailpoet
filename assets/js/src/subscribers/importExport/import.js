@@ -713,7 +713,7 @@ define(
             }
             // if we're on the last line, show the total count of subscribers data
             else if (index === (subscribers.subscribers.length - 1)) {
-              return subscribers.subscribersCount;
+              return subscribers.subscribersCount.toLocaleString();
             } else {
               return index + 1;
             }
@@ -976,7 +976,7 @@ define(
                       data[matchedColumn] +=
                           '<span class="mailpoet_data_match" title="'
                           + MailPoet.I18n.t('verifyDateMatch') + '">'
-                          + date + '</span>';
+                          + MailPoet.Date.format(date) + '</span>';
                     }
                     else {
                       data[matchedColumn] +=

@@ -43,12 +43,12 @@ define(
            width: '20em',
            templateResult: function (item) {
              return (item.subscriberCount > 0)
-              ? item.name + ' (' + item.subscriberCount + ')'
+              ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
               : item.name;
            },
            templateSelection: function (item) {
              return (item.subscriberCount > 0)
-              ? item.name + ' (' + item.subscriberCount + ')'
+              ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
               : item.name;
            }
          })
@@ -151,7 +151,7 @@ define(
             MailPoet.Notice.error(response.errors);
           } else {
             resultMessage = MailPoet.I18n.t('exportMessage')
-             .replace('%1$s', '<strong>' + response.data.totalExported + '</strong>')
+             .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
              .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
              .replace('[/link]', '</a>');
             jQuery('#export_result_notice > ul > li').html(resultMessage);

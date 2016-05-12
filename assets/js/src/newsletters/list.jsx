@@ -148,7 +148,7 @@ define(
         } else {
           if (item.queue.status === 'scheduled') {
             return (
-              <span>{MailPoet.I18n.t('scheduledFor')}  { item.queue.scheduled_at } </span>
+              <span>{MailPoet.I18n.t('scheduledFor')}  { MailPoet.Date.format(item.queue.scheduled_at) } </span>
             )
           }
           var progressClasses = classNames(
@@ -273,10 +273,10 @@ define(
             </td>
             { statistics_column }
             <td className="column-date" data-colname="Subscribed on">
-              <abbr>{ MailPoet.Date.full(newsletter.created_at) }</abbr>
+              <abbr>{ MailPoet.Date.format(newsletter.created_at) }</abbr>
             </td>
             <td className="column-date" data-colname="Last modified on">
-              <abbr>{ MailPoet.Date.full(newsletter.updated_at) }</abbr>
+              <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
             </td>
           </div>
         );
