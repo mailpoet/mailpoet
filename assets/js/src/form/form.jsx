@@ -167,6 +167,14 @@ define(
           { 'mailpoet_form_loading': this.state.loading || this.props.loading }
         );
 
+        if (this.props.beforeFormContent !== undefined) {
+          var beforeFormContent = this.props.beforeFormContent(this.getValues())
+        }
+
+        if (this.props.afterFormContent !== undefined) {
+          var afterFormContent = this.props.afterFormContent(this.getValues())
+        }
+
         var fields = this.props.fields.map(function(field, i) {
           return (
             <FormField
@@ -191,26 +199,30 @@ define(
         }
 
         return (
-          <form
-            id={ this.props.id }
-            ref="form"
-            className={ formClasses }
-            onSubmit={
-              (this.props.onSubmit !== undefined)
-              ? this.props.onSubmit
-              : this.handleSubmit
-            }
-          >
-            { errors }
+          <div>
+            { beforeFormContent }
+            <form
+              id={ this.props.id }
+              ref="form"
+              className={ formClasses }
+              onSubmit={
+                (this.props.onSubmit !== undefined)
+                ? this.props.onSubmit
+                : this.handleSubmit
+              }
+            >
+              { errors }
 
-            <table className="form-table">
-              <tbody>
-                {fields}
-              </tbody>
-            </table>
+              <table className="form-table">
+                <tbody>
+                  {fields}
+                </tbody>
+              </table>
 
-            { actions }
-          </form>
+              { actions }
+            </form>
+            { afterFormContent }
+          </div>
         );
       }
     });

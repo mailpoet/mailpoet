@@ -121,8 +121,22 @@ const item_actions = [
     }
   },
   {
+    name: 'read_more',
+    label: MailPoet.I18n.t('readMore'),
+    className: 'read_more',
+    onClick: function(item, refresh) {
+      // TODO: add URL with KB article
+      var url = 'http://example.com',
+        link = window.open(url, '_blank');
+      win.focus();
+    },
+    display: function(segment) {
+      return (segment.type === 'wp_users');
+    }
+  },
+  {
     name: 'synchronize_segment',
-    label: MailPoet.I18n.t('update'),
+    label: MailPoet.I18n.t('forceSync'),
     className: 'update',
     onClick: function(item, refresh) {
       MailPoet.Modal.loading(true);

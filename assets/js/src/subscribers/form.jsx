@@ -15,17 +15,26 @@ define(
       {
         name: 'email',
         label: MailPoet.I18n.t('email'),
-        type: 'text'
+        type: 'text',
+        disabled: function(subscriber) {
+          if (subscriber.wp_user_id !== null) return 'disabled';
+        }
       },
       {
         name: 'first_name',
         label: MailPoet.I18n.t('firstname'),
-        type: 'text'
+        type: 'text',
+        disabled: function(subscriber) {
+          if (subscriber.wp_user_id !== null) return 'disabled';
+        }
       },
       {
         name: 'last_name',
         label: MailPoet.I18n.t('lastname'),
-        type: 'text'
+        type: 'text',
+        disabled: function(subscriber) {
+          if (subscriber.wp_user_id !== null) return 'disabled';
+        }
       },
       {
         name: 'status',
@@ -35,6 +44,12 @@ define(
           'unconfirmed': MailPoet.I18n.t('unconfirmed'),
           'subscribed': MailPoet.I18n.t('subscribed'),
           'unsubscribed': MailPoet.I18n.t('unsubscribed')
+        },
+        filterValues: function(subscriber) {
+          if (subscriber.wp_user_id !== null) {
+            delete this.values.unconfirmed;
+          }
+          return this.values;
         }
       },
       {
@@ -112,6 +127,18 @@ define(
       }
     };
 
+    var beforeFormContent = function(subscriber) {
+      if (subscriber.wp_user_id !== null) {
+        var content =
+          '<p>' +
+            MailPoet.I18n.t('wordPressUserNotice')
+              .replace('[link]', '<a href="user-edit.php?user_id=' + subscriber.wp_user_id + '">')
+              .replace('[/link]', '</a>') +
+          '</p>';
+        return <div dangerouslySetInnerHTML={ {__html: content} } />
+      }
+    };
+
     var Link = Router.Link;
 
     var SubscriberForm = React.createClass({
@@ -128,6 +155,7 @@ define(
               fields={ fields }
               params={ this.props.params }
               messages={ messages }
+              beforeFormContent={ beforeFormContent }
             />
           </div>
         );
