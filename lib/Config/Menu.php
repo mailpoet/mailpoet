@@ -46,7 +46,7 @@ class Menu {
       $this->assets_url . '/img/menu_icon.png',
       30
     );
-    add_submenu_page(
+    $newsletters_page = add_submenu_page(
       'mailpoet',
       $this->setPageTitle(__('Newsletters')),
       __('Newsletters'),
@@ -57,7 +57,19 @@ class Menu {
         'newsletters'
       )
     );
-    add_submenu_page(
+
+    // add limit per page to screen options
+    add_action('load-'.$newsletters_page, function() {
+      add_screen_option('per_page', array(
+        'label' => _x(
+          'Number of newsletters per page',
+          'newsletters per page (screen options)'
+        ),
+        'option' => 'mailpoet_newsletters_per_page'
+      ));
+    });
+
+    $forms_page = add_submenu_page(
       'mailpoet',
       $this->setPageTitle(__('Forms')),
       __('Forms'),
@@ -68,6 +80,17 @@ class Menu {
         'forms'
       )
     );
+    // add limit per page to screen options
+    add_action('load-'.$forms_page, function() {
+      add_screen_option('per_page', array(
+        'label' => _x(
+          'Number of forms per page',
+          'forms per page (screen options)'
+        ),
+        'option' => 'mailpoet_forms_per_page'
+      ));
+    });
+
     $subscribers_page = add_submenu_page(
       'mailpoet',
       $this->setPageTitle(__('Subscribers')),
@@ -90,7 +113,7 @@ class Menu {
       ));
     });
 
-    add_submenu_page(
+    $segments_page = add_submenu_page(
       'mailpoet',
       $this->setPageTitle(__('Segments')),
       __('Segments'),
@@ -101,6 +124,18 @@ class Menu {
         'segments'
       )
     );
+
+    // add limit per page to screen options
+    add_action('load-'.$segments_page, function() {
+      add_screen_option('per_page', array(
+        'label' => _x(
+          'Number of segments per page',
+          'segments per page (screen options)'
+        ),
+        'option' => 'mailpoet_segments_per_page'
+      ));
+    });
+
     add_submenu_page(
       'mailpoet',
       $this->setPageTitle( __('Settings')),
@@ -317,14 +352,7 @@ class Menu {
   function subscribers() {
     $data = array();
 
-    // listing: limit per page
-    $listing_per_page = get_user_meta(
-      get_current_user_id(), 'mailpoet_subscribers_per_page', true
-    );
-    $data['per_page'] = (!empty($listing_per_page))
-      ? (int)$listing_per_page
-      : Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
-
+    $data['items_per_page'] = $this->getLimitPerPage('subscribers');
     $data['segments'] = Segment::getSegmentsWithSubscriberCount();
 
     $data['custom_fields'] = array_map(function($field) {
@@ -349,11 +377,14 @@ class Menu {
 
   function segments() {
     $data = array();
+    $data['items_per_page'] = $this->getLimitPerPage('segments');
     echo $this->renderer->render('segments.html', $data);
   }
 
   function forms() {
     $data = array();
+
+    $data['items_per_page'] = $this->getLimitPerPage('forms');
     $data['segments'] = Segment::findArray();
 
     echo $this->renderer->render('forms.html', $data);
@@ -364,6 +395,7 @@ class Menu {
 
     $data = array();
 
+    $data['items_per_page'] = $this->getLimitPerPage('newsletters');
     $data['segments'] = Segment::getSegmentsWithSubscriberCount();
     $data['settings'] = Setting::getAll();
     $data['roles'] = $wp_roles->get_names();
@@ -432,5 +464,18 @@ class Menu {
       __('MailPoet'),
       $title
     );
+  }
+
+  function getLimitPerPage($model = null) {
+    if($model === null) {
+      return Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
+    }
+
+    $listing_per_page = get_user_meta(
+      get_current_user_id(), 'mailpoet_'.$model.'_per_page', true
+    );
+    return (!empty($listing_per_page))
+      ? (int)$listing_per_page
+      : Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
   }
 }

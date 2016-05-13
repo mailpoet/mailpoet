@@ -292,6 +292,7 @@ define(
             </h1>
 
             <Listing
+              limit={ mailpoet_listing_per_page }
               params={ this.props.params }
               endpoint="newsletters"
               onRenderItem={this.renderItem}
