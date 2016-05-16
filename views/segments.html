@@ -2,6 +2,10 @@
 
 <% block content %>
   <div id="segments_container"></div>
+
+  <script type="text/javascript">
+    var mailpoet_listing_per_page = <%= items_per_page %>;
+  </script>
 <% endblock %>
 
 <% block translations %>
@@ -11,6 +15,9 @@
     'loadingItems': __('Loading segments...'),
     'noItemsFound': __('No segments found.'),
     'permanentlyDeleted': __('%d segments permanently deleted.'),
+    'selectBulkAction': __('Select bulk action'),
+    'bulkActions': __('Bulk Actions'),
+    'apply': __('Apply'),
     'name': __('Name'),
     'description': __('Description'),
     'segmentUpdated': __('Segment successfully updated!'),
@@ -36,10 +43,19 @@
     'edit': __('Edit'),
     'trash': __('Trash'),
     'emptyTrash': __('Empty Trash'),
+    'selectAll': __('Select All'),
     'restore': __('Restore'),
     'deletePermanently': __('Delete Permanently'),
     'save': __('Save'),
+
+    'previousPage': __('Previous page'),
+    'firstPage': __('First page'),
+    'nextPage': __('Next page'),
+    'lastPage': __('Last page'),
+    'currentPage': __('Current Page'),
+    'pageOutOf': __('of'),
     'numberOfItems': __('%$1d items'),
+
     'segmentDescriptionTip': __('For your own use and never shown to your subscribers.'),
     'backToList': __('Back to list')
   }) %>

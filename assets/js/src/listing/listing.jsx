@@ -733,6 +733,7 @@ define(
             { search }
             <div className="tablenav top clearfix">
               <ListingBulkActions
+                count={ this.state.count }
                 bulk_actions={ bulk_actions }
                 selection={ this.state.selection }
                 selected_ids={ this.state.selected_ids }
@@ -795,6 +796,7 @@ define(
             </table>
             <div className="tablenav bottom">
               <ListingBulkActions
+                count={ this.state.count }
                 bulk_actions={ bulk_actions }
                 selection={ this.state.selection }
                 selected_ids={ this.state.selected_ids }

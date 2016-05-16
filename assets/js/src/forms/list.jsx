@@ -71,6 +71,14 @@ const messages = {
   }
 };
 
+const bulk_actions = [
+  {
+    name: 'trash',
+    label: MailPoet.I18n.t('trash'),
+    onSuccess: messages.onTrash
+  }
+];
+
 const item_actions = [
   {
     name: 'edit',
@@ -158,14 +166,15 @@ const FormList = React.createClass({
         </h1>
 
         <Listing
+          limit={ mailpoet_listing_per_page }
           location={ this.props.location }
           params={ this.props.params }
           messages={ messages }
           search={ false }
-          limit={ 1000 }
           endpoint="forms"
           onRenderItem={ this.renderItem }
           columns={ columns }
+          bulk_actions={ bulk_actions }
           item_actions={ item_actions }
         />
       </div>

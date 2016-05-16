@@ -4,6 +4,7 @@
   <div id="forms_container"></div>
 
   <script type="text/javascript">
+    var mailpoet_listing_per_page = <%= items_per_page %>;
     var mailpoet_segments = <%= json_encode(segments) %>;
     var mailpoet_form_edit_url =
       "<%= admin_url('admin.php?page=mailpoet-form-editor&id=') %>";
@@ -29,6 +30,13 @@
     'selectAll': __('Select All'),
     'restore': __('Restore'),
     'deletePermanently': __('Delete Permanently'),
+
+    'previousPage': __('Previous page'),
+    'firstPage': __('First page'),
+    'nextPage': __('Next page'),
+    'lastPage': __('Last page'),
+    'currentPage': __('Current Page'),
+    'pageOutOf': __('of'),
     'numberOfItems': __('%$1d items'),
 
     'formName': __('Name'),

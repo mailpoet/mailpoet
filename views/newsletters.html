@@ -4,6 +4,7 @@
   <div id="newsletters_container"></div>
 
   <script type="text/javascript">
+    var mailpoet_listing_per_page = <%= items_per_page %>;
     var mailpoet_segments = <%= json_encode(segments) %>;
     var mailpoet_settings = <%= json_encode(settings) %>;
     var mailpoet_lists = <%= json_encode(lists) %>;
@@ -31,6 +32,7 @@
     'restore': __('Restore'),
     'deletePermanently': __('Delete Permanently'),
     'showMoreDetails': __('Show more details'),
+
     'previousPage': __('Previous page'),
     'firstPage': __('First page'),
     'nextPage': __('Next page'),
