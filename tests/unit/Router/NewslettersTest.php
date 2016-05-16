@@ -53,8 +53,10 @@ class NewslettersTest extends MailPoetTest {
 
   function testItCanSaveAnExistingNewsletter() {
     $router = new Newsletters();
-    $newsletter_data = $this->newsletter->asArray();
-    $newsletter_data['subject'] = 'My Updated Newsletter';
+    $newsletter_data = array(
+      'id' => $this->newsletter->id,
+      'subject' => 'My Updated Newsletter'
+    );
 
     $response = $router->save($newsletter_data);
     expect($response['result'])->true();
