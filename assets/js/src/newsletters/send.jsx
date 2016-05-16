@@ -35,9 +35,9 @@ define(
       },
       getFieldsByNewsletter: function(newsletter) {
         switch(newsletter.type) {
-          case 'notification': return NotificationNewsletterFields(newsletter);
-          case 'welcome': return WelcomeNewsletterFields(newsletter);
-          default: return StandardNewsletterFields(newsletter);
+          case 'notification': return NotificationNewsletterFields;
+          case 'welcome': return WelcomeNewsletterFields;
+          default: return StandardNewsletterFields;
         }
       },
       isAutomatedNewsletter: function() {

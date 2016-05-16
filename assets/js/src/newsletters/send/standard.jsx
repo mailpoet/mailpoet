@@ -365,8 +365,6 @@ define(
       }
     ];
 
-    return function(newsletter) {
-      return fields;
-    };
+    return fields;
   }
 );
