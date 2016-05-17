@@ -304,18 +304,14 @@ class Subscriber extends Model {
     return $orm;
   }
 
-  static function filterWithCustomFieldsForExport($orm, $group_by = false) {
+  static function filterWithCustomFieldsForExport($orm) {
     $orm = $orm->select(MP_SUBSCRIBERS_TABLE.'.*');
     $customFields = CustomField::findArray();
     foreach ($customFields as $customField) {
       $orm = $orm->selectExpr(
-        sprintf(
-          '%s CASE WHEN ' .
-          MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END %s as "' . $customField['id'].'"',
-          ($group_by) ? 'MAX(' : '',
-          ($group_by) ? ')' : ''
-        )
+        'MAX(CASE WHEN ' .
+        MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
+        MP_SUBSCRIBER_CUSTOM_FIELD_TABLE . '.value END) as "' . $customField['id'].'"'
       );
     }
     $orm = $orm
