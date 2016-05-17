@@ -175,7 +175,7 @@ class Export {
   }
 
   function getSubscribers($offset, $limit) {
-    // if we're not grouping by segments (i.e., resulting query can return the samer
+    // if we're not grouping by segments (i.e., resulting query can return the same
     // subscriber but with different segments), we should return only unique subscribers
     // by using a GROUP BY clause on subscriber id
     $group_by_subscribers = ($this->group_by_segment_option) ? false : true;
@@ -238,15 +238,11 @@ class Export {
       $subscribers =
         $subscribers->where(Subscriber::$_table . '.status', 'subscribed');
     }
-    try {
-      $subscribers = $subscribers
-        ->whereNull(Subscriber::$_table . '.deleted_at')
-        ->offset($offset)
-        ->limit($limit)
-        ->findArray();
-    } catch(\PDOException $e) {
-      !ddd(\ORM::get_last_statement());
-    }
+    $subscribers = $subscribers
+      ->whereNull(Subscriber::$_table . '.deleted_at')
+      ->offset($offset)
+      ->limit($limit)
+      ->findArray();
     return $subscribers;
   }
 
