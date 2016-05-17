@@ -56,6 +56,8 @@ class Scheduler {
     }
     $relation->value = $schedule;
     $relation->save();
+    return Newsletter::filter('filterWithOptions')
+      ->findOne($newsletter_id)->asArray();
   }
 
   static function schedulePostNotification($post_id) {

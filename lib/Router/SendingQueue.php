@@ -32,6 +32,8 @@ class SendingQueue {
         'result' => false,
         'errors' => array(__('Newsletter does not exist.'))
       );
+    } else {
+      $newsletter = $newsletter->asArray();
     }
 
     // create or update newsletter options, including schedule time
@@ -42,32 +44,33 @@ class SendingQueue {
       unset($data['options']);
     }
     if ($options &&
-      ($newsletter->type === 'notification' || $newsletter->type === 'welcome')
+      ($newsletter['type'] === 'notification' || $newsletter['type'] === 'welcome')
     ) {
       $option_fields = NewsletterOptionField::where(
-        'newsletter_type', $newsletter->type
+        'newsletter_type', $newsletter['type']
       )->findArray();
       foreach($option_fields as $option_field) {
         if(isset($options[$option_field['name']])) {
           $relation = NewsletterOption::where('option_field_id', $option_field['id'])
-            ->where('newsletter_id', $newsletter->id)
+            ->where('newsletter_id', $newsletter['id'])
             ->findOne();
           if (!$relation) {
             $relation = NewsletterOption::create();
-            $relation->newsletter_id = $newsletter->id;
+            $relation->newsletter_id = $newsletter['id'];
             $relation->option_field_id = $option_field['id'];
           }
           $relation->value = $options[$option_field['name']];
           $relation->save();
         }
       }
-      if ($newsletter->type === 'notification') {
-        Scheduler::processPostNotificationSchedule($newsletter->id);
+      if ($newsletter['type'] === 'notification') {
+        // convert scheduling options into cron format and add to queue
+        $newsletter = Scheduler::processPostNotificationSchedule($newsletter['id']);
+        Scheduler::createPostNotificationQueue($newsletter);
       }
-      $newsletter = Newsletter::filter('filterWithOptions')
-        ->findOne($data['newsletter_id']);
     }
-    if($newsletter->type === 'welcome') {
+
+    if($newsletter['type'] === 'welcome') {
       return array(
         'result' => true,
         'data' => array(
@@ -77,7 +80,7 @@ class SendingQueue {
     }
 
     $queue = \MailPoet\Models\SendingQueue::whereNull('status')
-      ->where('newsletter_id', $newsletter->id)
+      ->where('newsletter_id', $newsletter['id'])
       ->findOne();
     if(!empty($queue)) {
       return array(
@@ -86,15 +89,15 @@ class SendingQueue {
       );
     }
 
-    if($newsletter->type === 'notification') {
+    if($newsletter['type'] === 'notification') {
       $queue = \MailPoet\Models\SendingQueue::where('status', 'scheduled')
-        ->where('newsletter_id', $newsletter->id)
+        ->where('newsletter_id', $newsletter['id'])
         ->findOne();
       if(!$queue) {
         $queue = \MailPoet\Models\SendingQueue::create();
-        $queue->newsletter_id = $newsletter->id;
+        $queue->newsletter_id = $newsletter['id'];
       }
-      $schedule = Cron::factory($newsletter->schedule);
+      $schedule = Cron::factory($newsletter['schedule']);
       $queue->scheduled_at =
         $schedule->getNextRunDate(current_time('mysql'))->format('Y-m-d H:i:s');
       $queue->status = 'scheduled';
@@ -108,7 +111,7 @@ class SendingQueue {
     }
 
     $queue = \MailPoet\Models\SendingQueue::create();
-    $queue->newsletter_id = $newsletter->id;
+    $queue->newsletter_id = $newsletter['id'];
 
     $subscribers = Subscriber::getSubscribedInSegments($data['segments'])
       ->findArray();
