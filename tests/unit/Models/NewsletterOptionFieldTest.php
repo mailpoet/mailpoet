@@ -59,7 +59,6 @@ class NewsletterOptionFieldTest extends MailPoetTest {
 
   function testItHasACreatedAtOnCreation() {
     expect($this->option_field->created_at)->notNull();
-    expect($this->option_field->created_at)->notEquals('0000-00-00 00:00:00');
   }
 
   function testItHasAnUpdatedAtOnCreation() {

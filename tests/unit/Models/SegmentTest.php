@@ -78,7 +78,6 @@ class SegmentTest extends MailPoetTest {
   function testItHasACreatedAtOnCreation() {
     $segment = Segment::findOne($this->segment->id);
     expect($segment->created_at)->notNull();
-    expect($segment->created_at)->notEquals('0000-00-00 00:00:00');
   }
 
   function testItHasAnUpdatedAtOnCreation() {

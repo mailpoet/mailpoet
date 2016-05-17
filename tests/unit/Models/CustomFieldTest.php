@@ -66,7 +66,6 @@ class CustomFieldTest extends MailPoetTest {
   function testItHasACreatedAtOnCreation() {
     $custom_field = CustomField::findOne($this->custom_field->id);
     expect($custom_field->created_at)->notNull();
-    expect($custom_field->created_at)->notEquals('0000-00-00 00:00:00');
   }
 
   function testItHasAnUpdatedAtOnCreation() {

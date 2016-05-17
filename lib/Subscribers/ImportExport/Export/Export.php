@@ -175,6 +175,7 @@ class Export {
   }
 
   function getSubscribers($offset, $limit) {
+    // JOIN subscribers on segment and subscriber_segment tables
     $subscribers = Subscriber::
     left_outer_join(
       SubscriberSegment::$_table,
@@ -192,6 +193,8 @@ class Export {
         ))
       ->filter('filterWithCustomFieldsForExport');
     if($this->subscribers_without_segment !== false) {
+      // if there are subscribers who do not belong to any segment, use
+      // a CASE function to group them under "Not In Segment"
       $subscribers = $subscribers
         ->selectExpr('CASE WHEN ' . Segment::$_table . '.name IS NOT NULL ' .
                      'THEN ' . Segment::$_table . '.name ' .
@@ -204,21 +207,26 @@ class Export {
           $this->segments
         );
     } else {
+      // use an aggregate function to prevent non-deterministic GROUP BY issue
+      // in MySQL 5.7+
       $subscribers = $subscribers
-        ->select(Segment::$_table . '.name', 'segment_name')
+        ->selectExpr('CONCAT('.Segment::$_table . '.name) as segment_name')
         ->whereIn(SubscriberSegment::$_table . '.segment_id', $this->segments);
     }
     if(!$this->group_by_segment_option) {
+      // if grouping by segments, use a GROUP BY clause on subscriber id
       $subscribers =
         $subscribers->groupBy(Subscriber::$_table . '.id');
     }
     if($this->export_confirmed_option) {
+      // select only subscribers with "subscribed" status
       $subscribers =
         $subscribers->where(Subscriber::$_table . '.status', 'subscribed');
     }
     $subscribers = $subscribers
       ->whereNull(Subscriber::$_table . '.deleted_at')
-      ->limit(sprintf('%d, %d', $offset, $limit))
+      ->offset($offset)
+      ->limit($limit)
       ->findArray();
     return $subscribers;
   }

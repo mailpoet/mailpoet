@@ -49,7 +49,6 @@ class FormTest extends MailPoetTest {
   function testItHasACreatedAtOnCreation() {
     $form = Form::findOne($this->form->id);
     expect($form->created_at)->notNull();
-    expect($form->created_at)->notEquals('0000-00-00 00:00:00');
   }
 
   function testItHasAnUpdatedAtOnCreation() {

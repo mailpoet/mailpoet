@@ -64,9 +64,9 @@ class ExportTest extends MailPoetTest {
       $entity->hydrate($subscriber);
       $entity->save();
     }
-    foreach($this->segments_data as $custom_field) {
+    foreach($this->segments_data as $segment) {
       $entity = Segment::create();
-      $entity->hydrate($custom_field);
+      $entity->hydrate($segment);
       $entity->save();
     }
     foreach($this->custom_fields_data as $custom_field) {

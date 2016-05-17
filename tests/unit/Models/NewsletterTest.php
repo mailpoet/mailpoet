@@ -62,7 +62,6 @@ class NewsletterTest extends MailPoetTest {
   function testItHasACreatedAtOnCreation() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     expect($newsletter->created_at)->notNull();
-    expect($newsletter->created_at)->notEquals('0000-00-00 00:00:00');
   }
 
   function testItHasAnUpdatedAtOnCreation() {
