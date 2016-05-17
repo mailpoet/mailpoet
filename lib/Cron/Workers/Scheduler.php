@@ -47,15 +47,18 @@ class Scheduler {
 
   function processWelcomeNewsletter($newsletter, $queue) {
     $subscriber = unserialize($queue->subscribers);
-    $subscriber_id = $subscriber['to_process'][0];
+    if (!isset($subscriber['to_process']) || !isset($subscriber['to_process'][0])) {
+      $queue->delete();
+      return;
+    }
+    $subscriber_id = (int) $subscriber['to_process'][0];
     if($newsletter->event === 'segment') {
       if($this->verifyMailPoetSubscriber($subscriber_id, $newsletter, $queue) === false) {
         return;
       }
     } else {
       if($newsletter->event === 'user') {
-        if($this->verifyWPSubscriber($subscriber_id, $newsletter) === false) {
-          $queue->delete();
+        if($this->verifyWPSubscriber($subscriber_id, $newsletter, $queue) === false) {
           return;
         }
       }
@@ -66,7 +69,7 @@ class Scheduler {
 
   function processPostNotificationNewsletter($newsletter, $queue) {
     $segments = unserialize($newsletter->segments);
-    if(!count($segments)) {
+    if(empty($segments)) {
       $queue->delete();
       return;
     }
@@ -74,7 +77,7 @@ class Scheduler {
       ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
     $subscribers = array_unique($subscribers);
-    if(!count($subscribers)) {
+    if(empty($subscribers)) {
       $queue->delete();
       return;
     }
@@ -89,19 +92,18 @@ class Scheduler {
   }
 
   function verifyMailPoetSubscriber($subscriber_id, $newsletter, $queue) {
+    $subscriber = Subscriber::findOne($subscriber_id);
     // check if subscriber is in proper segment
     $subscriber_in_segment =
       SubscriberSegment::where('subscriber_id', $subscriber_id)
         ->where('segment_id', $newsletter->segment)
         ->where('status', 'subscribed')
         ->findOne();
-    if(!$subscriber_in_segment) {
+    if(!$subscriber || !$subscriber_in_segment) {
       $queue->delete();
       return false;
     }
     // check if subscriber is confirmed (subscribed)
-    $subscriber = $subscriber_in_segment->subscriber()
-      ->findOne();
     if($subscriber->status !== 'subscribed') {
       // reschedule delivery in 5 minutes
       $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
@@ -114,16 +116,18 @@ class Scheduler {
     return true;
   }
 
-  function verifyWPSubscriber($subscriber_id, $newsletter) {
+  function verifyWPSubscriber($subscriber_id, $newsletter, $queue) {
     // check if user has the proper role
     $subscriber = Subscriber::findOne($subscriber_id);
     if(!$subscriber || $subscriber->wp_user_id === null) {
+      $queue->delete();
       return false;
     }
     $wp_user = (array) get_userdata($subscriber->wp_user_id);
     if($newsletter->role !== \MailPoet\Newsletter\Scheduler\Scheduler::WORDPRESS_ALL_ROLES
       && !in_array($newsletter->role, $wp_user['roles'])
     ) {
+      $queue->delete();
       return false;
     }
     return true;

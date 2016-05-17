@@ -7,7 +7,7 @@ class Renderer {
   public $newsletter;
   public $posts;
 
-  function __construct($newsletter, $posts = false) {
+  function __construct(array $newsletter, $posts = false) {
     $this->newsletter = $newsletter;
     $this->posts = array();
     $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent($this->newsletter['id']);

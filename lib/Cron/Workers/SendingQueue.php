@@ -44,7 +44,7 @@ class SendingQueue {
       $newsletter = $newsletter->asArray();
       $newsletter['body'] = $this->getOrRenderNewsletterBody($queue, $newsletter);
       if ($newsletter['type'] === 'notification' &&
-          !preg_match_all('/data-post-id/', $newsletter['body']['html'])) {
+          strpos($newsletter['body']['html'], 'data-post-id') === false) {
         $queue->delete();
         continue;
       }
