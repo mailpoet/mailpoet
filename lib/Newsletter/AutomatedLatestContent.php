@@ -7,6 +7,8 @@ use MailPoet\Util\Helpers;
 if(!defined('ABSPATH')) exit;
 
 class AutomatedLatestContent {
+  const DEFAULT_POSTS_PER_PAGE = 10;
+
   function __construct($newsletter_id = false) {
     $this->newsletter_id = $newsletter_id;
 
@@ -30,8 +32,11 @@ class AutomatedLatestContent {
   }
 
   function getPosts($args, $posts_to_exclude = array()) {
+    $posts_per_page = (!empty($args['amount']) && (int) $args['amount'] > 0)
+      ? (int) $args['amount']
+      : self::DEFAULT_POSTS_PER_PAGE;
     $parameters = array(
-      'posts_per_page' => (isset($args['amount'])) ? (int) $args['amount'] : 10,
+      'posts_per_page' => $posts_per_page,
       'post_type' => (isset($args['contentType'])) ? $args['contentType'] : 'post',
       'post_status' => (isset($args['postStatus'])) ? $args['postStatus'] : 'publish',
       'orderby' => 'date',
