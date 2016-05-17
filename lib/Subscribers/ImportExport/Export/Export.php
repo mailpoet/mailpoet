@@ -175,6 +175,10 @@ class Export {
   }
 
   function getSubscribers($offset, $limit) {
+    // if we're not grouping by segments (i.e., resulting query can return the samer
+    // subscriber but with different segments), we should return only unique subscribers
+    // by using a GROUP BY clause on subscriber id
+    $group_by_subscribers = ($this->group_by_segment_option) ? false : true;
     // JOIN subscribers on segment and subscriber_segment tables
     $subscribers = Subscriber::
     left_outer_join(
@@ -191,14 +195,20 @@ class Export {
           '=',
           SubscriberSegment::$_table . '.segment_id'
         ))
-      ->filter('filterWithCustomFieldsForExport');
+      ->filter('filterWithCustomFieldsForExport', $group_by_subscribers);
     if($this->subscribers_without_segment !== false) {
       // if there are subscribers who do not belong to any segment, use
       // a CASE function to group them under "Not In Segment"
       $subscribers = $subscribers
-        ->selectExpr('CASE WHEN ' . Segment::$_table . '.name IS NOT NULL ' .
-                     'THEN ' . Segment::$_table . '.name ' .
-                     'ELSE "' . __('Not In Segment') . '" END as segment_name'
+        ->selectExpr(
+        // use an aggregate function when grouping by segments
+          sprintf(
+            '%s CASE WHEN ' . Segment::$_table . '.name IS NOT NULL ' .
+            'THEN ' . Segment::$_table . '.name ' .
+            'ELSE "' . __('Not In Segment') . '" END %s as segment_name',
+            ($group_by_subscribers) ? 'MAX(' : '',
+            ($group_by_subscribers) ? ')' : ''
+          )
         )
         ->whereRaw(
           SubscriberSegment::$_table . '.segment_id IN (' .
@@ -207,14 +217,19 @@ class Export {
           $this->segments
         );
     } else {
-      // use an aggregate function to prevent non-deterministic GROUP BY issue
-      // in MySQL 5.7+
       $subscribers = $subscribers
-        ->selectExpr('CONCAT('.Segment::$_table . '.name) as segment_name')
+        ->selectExpr(
+        // use an aggregate function when grouping by segments
+          sprintf(
+            '%s '.Segment::$_table . '.name %s as segment_name',
+            ($group_by_subscribers) ? 'MAX(' : '',
+            ($group_by_subscribers) ? ')' : ''
+          )
+        )
         ->whereIn(SubscriberSegment::$_table . '.segment_id', $this->segments);
     }
-    if(!$this->group_by_segment_option) {
-      // if grouping by segments, use a GROUP BY clause on subscriber id
+    if($group_by_subscribers) {
+      // if not grouping by segments, use a GROUP BY clause on subscriber id
       $subscribers =
         $subscribers->groupBy(Subscriber::$_table . '.id');
     }
@@ -223,11 +238,15 @@ class Export {
       $subscribers =
         $subscribers->where(Subscriber::$_table . '.status', 'subscribed');
     }
-    $subscribers = $subscribers
-      ->whereNull(Subscriber::$_table . '.deleted_at')
-      ->offset($offset)
-      ->limit($limit)
-      ->findArray();
+    try {
+      $subscribers = $subscribers
+        ->whereNull(Subscriber::$_table . '.deleted_at')
+        ->offset($offset)
+        ->limit($limit)
+        ->findArray();
+    } catch(\PDOException $e) {
+      !ddd(\ORM::get_last_statement());
+    }
     return $subscribers;
   }
 
