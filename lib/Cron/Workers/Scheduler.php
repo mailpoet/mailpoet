@@ -66,19 +66,34 @@ class Scheduler {
   }
 
   function processPostNotificationNewsletter($newsletter, $queue) {
+    $immediate_interval =
+      \MailPoet\Newsletter\Scheduler\Scheduler::INTERVAL_IMMEDIATELY;
     $segments = unserialize($newsletter->segments);
-    if(empty($segments)) {
+    if(empty($segments) && $newsletter->intervalType === $immediate_interval) {
       $queue->delete();
+      return;
+    } else {
+      self::updateQueueNextRunDate($queue, $newsletter);
       return;
     }
     $subscribers = Subscriber::getSubscribedInSegments($segments)
       ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
     $subscribers = array_unique($subscribers);
-    if(empty($subscribers)) {
+    if(empty($subscribers) && $newsletter->intervalType === $immediate_interval) {
       $queue->delete();
       return;
+    } else {
+      self::updateQueueNextRunDate($queue, $newsletter);
+      return;
     }
+    // schedule new queue if the post notification is not destined for immediate delivery
+    if ($newsletter->intervalType !== $immediate_interval) {
+      $new_queue = clone($queue);
+      $new_queue->scheduled_at = self::updateQueueNextRunDate($new_queue, $newsletter);
+      $new_queue->save();
+    }
+    $new_scheduled_queue = SendingQueue::create();
     $queue->subscribers = serialize(
       array(
         'to_process' => $subscribers
@@ -151,5 +166,12 @@ class Scheduler {
       return false;
     }
     return true;
+  }
+
+  private function updateQueueNextRunDate($queue, $newsletter) {
+    $next_run_date =
+      \MailPoet\Newsletter\Scheduler\Scheduler::getNextRunDate($newsletter->schedule);
+    $queue->scheduled_at = $next_run_date;
+    $queue->save();
   }
 }
