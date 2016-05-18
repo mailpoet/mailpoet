@@ -47,7 +47,7 @@ class Scheduler {
 
   function processWelcomeNewsletter($newsletter, $queue) {
     $subscriber = unserialize($queue->subscribers);
-    if(!isset($subscriber['to_process']) || !isset($subscriber['to_process'][0])) {
+    if(empty($subscriber['to_process'][0])) {
       $queue->delete();
       return;
     }
