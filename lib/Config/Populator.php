@@ -192,10 +192,6 @@ class Populator {
       array(
         'name' => 'schedule',
         'newsletter_type' => 'notification',
-      ),
-      array(
-        'name' => 'segments',
-        'newsletter_type' => 'notification',
       )
     );
   }
