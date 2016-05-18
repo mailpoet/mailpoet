@@ -215,7 +215,6 @@ class Export {
         ->whereIn(SubscriberSegment::$_table . '.segment_id', $this->segments);
     }
     if($this->group_by_segment_option) {
-      // if not grouping by segments, use a GROUP BY clause on subscriber id
       $subscribers = $subscribers->groupBy(Segment::$_table . '.id');
     }
     if($this->export_confirmed_option) {
