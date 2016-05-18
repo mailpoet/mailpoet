@@ -8,9 +8,9 @@ class PostContentManager {
   const MAX_EXCERPT_LENGTH = 60;
 
   function getContent($post, $displayType) {
-    if ($displayType === 'titleOnly') {
+    if($displayType === 'titleOnly') {
       return '';
-    } elseif ($displayType === 'excerpt') {
+    } elseif($displayType === 'excerpt') {
       // get excerpt
       if(!empty($post->post_excerpt)) {
         return $post->post_excerpt;
@@ -50,7 +50,7 @@ class PostContentManager {
   private function generateExcerpt($content) {
     // if excerpt is empty then try to find the "more" tag
     $excerpts = explode('<!--more-->', $content);
-    if (count($excerpts) > 1) {
+    if(count($excerpts) > 1) {
       // <!--more--> separator was present
       return $excerpts[0];
     } else {

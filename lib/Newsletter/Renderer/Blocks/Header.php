@@ -8,7 +8,7 @@ class Header {
     $element['text'] = preg_replace('/\n/', '<br />', $element['text']);
     $element['text'] = preg_replace('/(<\/?p.*?>)/i', '', $element['text']);
     $line_height = sprintf(
-      '%spx', StylesHelper::$line_height_multiplier * (int) $element['styles']['text']['fontSize']
+      '%spx', StylesHelper::$line_height_multiplier * (int)$element['styles']['text']['fontSize']
     );
     $DOM_parser = new \pQuery();
     $DOM = $DOM_parser->parseStr($element['text']);

@@ -23,6 +23,7 @@ class Migrator {
       'newsletter_option',
       'newsletter_segment',
       'newsletter_links',
+      'newsletter_posts',
       'forms',
       'statistics_newsletters',
       'statistics_clicks',
@@ -101,7 +102,6 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
       'newsletter_rendered_body longtext,',
-      'newsletter_rendered_body_hash varchar(250) NULL DEFAULT NULL,',
       'newsletter_rendered_subject varchar(250) NULL DEFAULT NULL,',
       'subscribers longtext,',
       'status varchar(12) NULL DEFAULT NULL,',
@@ -248,6 +248,18 @@ class Migrator {
       'hash varchar(20) NOT NULL,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)',
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function newsletter_posts() {
+    $attributes = array(
+      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'newsletter_id mediumint(9) NOT NULL,',
+      'post_id mediumint(9) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT 0,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);

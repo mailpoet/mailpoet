@@ -17,8 +17,8 @@ class BootStrapMenu {
       Segment::getSegmentsWithSubscriberCount() :
       Segment::getSegmentsForExport($with_confirmed_subscribers);
     return array_map(function($segment) {
-      if (!$segment['name']) $segment['name'] = __('Not In Segment');
-      if (!$segment['id']) $segment['id'] = 0;
+      if(!$segment['name']) $segment['name'] = __('Not In Segment');
+      if(!$segment['id']) $segment['id'] = 0;
       return array(
         'id' => $segment['id'],
         'name' => $segment['name'],

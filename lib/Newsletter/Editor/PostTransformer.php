@@ -155,13 +155,13 @@ class PostTransformer {
   private function getPostTitle($post) {
     $title = $post->post_title;
 
-    if ($this->args['titleIsLink'] === 'true') {
+    if($this->args['titleIsLink'] === 'true') {
       $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
     }
 
-    if (in_array($this->args['titleFormat'], array('h1', 'h2', 'h3'))) {
+    if(in_array($this->args['titleFormat'], array('h1', 'h2', 'h3'))) {
       $tag = $this->args['titleFormat'];
-    } elseif ($this->args['titleFormat'] === 'ul') {
+    } elseif($this->args['titleFormat'] === 'ul') {
       $tag = 'li';
     } else {
       $tag = 'h1';

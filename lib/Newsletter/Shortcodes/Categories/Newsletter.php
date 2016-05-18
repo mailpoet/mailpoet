@@ -53,7 +53,7 @@ class Newsletter {
       break;
 
       case 'number':
-        if ($newsletter['type'] !== 'notification') return false;
+        if($newsletter['type'] !== 'notification') return false;
         $sent_newsletters =
           SendingQueue::where('newsletter_id', $newsletter['id'])
             ->where('status', 'completed')

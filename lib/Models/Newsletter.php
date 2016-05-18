@@ -93,7 +93,7 @@ class Newsletter extends Model {
   }
 
   function getStatistics() {
-    if ($this->queue === false) {
+    if($this->queue === false) {
       return false;
     }
     return SendingQueue::tableAlias('queues')

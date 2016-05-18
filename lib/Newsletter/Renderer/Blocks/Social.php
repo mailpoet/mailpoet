@@ -8,7 +8,7 @@ class Social {
       foreach($element['icons'] as $index => $icon) {
         $icons_block .= '
         <a href="' . $icon['link'] . '" style="text-decoration:none!important;">
-          <img src="' . $icon['image'] . '" width="' . (int) $icon['width'] . '" height="' . (int) $icon['height'] . '" style="width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;" alt="' . $icon['iconType'] . '">
+          <img src="' . $icon['image'] . '" width="' . (int)$icon['width'] . '" height="' . (int)$icon['height'] . '" style="width:' . $icon['width'] . ';height:' . $icon['width'] . ';-ms-interpolation-mode:bicubic;border:0;display:inline;outline:none;" alt="' . $icon['iconType'] . '">
         </a>';
       }
       $template = '

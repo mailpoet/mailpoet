@@ -89,15 +89,15 @@ class StylesHelper {
   }
 
   static function applyHeadingMargin($style, $selector) {
-    if (!preg_match('/h[1-4]/i', $selector)) return $style;
-    $font_size = (int) $style['fontSize'];
+    if(!preg_match('/h[1-4]/i', $selector)) return $style;
+    $font_size = (int)$style['fontSize'];
     $style['margin'] = sprintf('0 0 %spx 0', self::$heading_margin_multiplier * $font_size);
     return $style;
   }
 
   static function applyLineHeight($style, $selector) {
-    if (!preg_match('/mailpoet_paragraph|h[1-4]/i', $selector)) return $style;
-    $font_size = (int) $style['fontSize'];
+    if(!preg_match('/mailpoet_paragraph|h[1-4]/i', $selector)) return $style;
+    $font_size = (int)$style['fontSize'];
     $style['lineHeight'] = sprintf('%spx', self::$line_height_multiplier * $font_size);
     return $style;
   }

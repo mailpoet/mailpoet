@@ -140,9 +140,9 @@ class Newsletters {
         'errors' => array(__('Newsletter data is missing.'))
       );
     }
-    $newsletter_id = (isset($data['id'])) ? (int) $data['id'] : 0;
+    $newsletter_id = (isset($data['id'])) ? (int)$data['id'] : 0;
     $newsletter = Newsletter::findOne($newsletter_id);
-    if (!$newsletter) {
+    if(!$newsletter) {
       return array(
         'result' => false,
         'errors' => array(__('Newsletter could not be read.'))
@@ -162,7 +162,7 @@ class Newsletters {
   }
 
   function sendPreview($data = array()) {
-    $id = (isset($data['id'])) ? (int) $data['id'] : 0;
+    $id = (isset($data['id'])) ? (int)$data['id'] : 0;
     $newsletter = Newsletter::findOne($id);
 
     if($newsletter === false) {
@@ -284,7 +284,7 @@ class Newsletters {
         isset($data['type']) &&
         $data['type'] === 'notification'
       ) {
-        Scheduler::postNotification($newsletter->id);
+        Scheduler::processPostNotificationSchedule($newsletter->id);
       }
       return array(
         'result' => true,

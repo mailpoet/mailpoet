@@ -11,14 +11,14 @@ class MetaInformationManager {
       $position_field = $position . 'Text';
       $text = array();
 
-      if ($args['showAuthor'] === $position_field) {
+      if($args['showAuthor'] === $position_field) {
         $text[] = self::getPostAuthor(
           $post->post_author,
           $args['authorPrecededBy']
         );
       }
 
-      if ($args['showCategories'] === $position_field) {
+      if($args['showCategories'] === $position_field) {
         $text[] = self::getPostCategories(
           $post->ID,
           $post->post_type,
@@ -26,10 +26,10 @@ class MetaInformationManager {
         );
       }
 
-      if (!empty($text)) {
+      if(!empty($text)) {
         $text = '<p>' . implode('<br />', $text) . '</p>';
-        if ($position === 'above') $content = $text . $content;
-        else if ($position === 'below') $content .= $text;
+        if($position === 'above') $content = $text . $content;
+        else if($position === 'below') $content .= $text;
       }
     }
 
