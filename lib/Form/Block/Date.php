@@ -109,6 +109,10 @@ class Date extends Base {
     $month_names = static::getMonthNames();
 
     $html = '';
+
+    // empty value label
+    $html .= '<option value="">'.__('Month').'</option>';
+
     for($i = 1; $i < 13; $i++) {
       $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
       $html .= '<option value="'.$i.'" '.$is_selected.'>';
@@ -125,6 +129,7 @@ class Date extends Base {
       'from' => (int)strftime('%Y') - 100,
       'to' => (int)strftime('%Y')
     );
+
     // is default today
     if(!empty($block['params']['is_default_today'])) {
       $defaults['selected'] = (int)strftime('%Y');
@@ -134,6 +139,9 @@ class Date extends Base {
     $block = array_merge($defaults, $block);
 
     $html = '';
+
+    // empty value label
+    $html .= '<option value="">'.__('Year').'</option>';
 
     // return years as an array
     for($i = (int)$block['to']; $i > (int)($block['from'] - 1); $i--) {
@@ -157,6 +165,9 @@ class Date extends Base {
     $block = array_merge($defaults, $block);
 
     $html = '';
+
+    // empty value label
+    $html .= '<option value="">'.__('Day').'</option>';
 
     // return days as an array
     for($i = 1; $i < 32; $i++) {

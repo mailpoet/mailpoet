@@ -29,6 +29,7 @@
     "react-infinity": "latest",
     "react-prefixr": "latest",
     "react-router": "latest",
+    "react-string-replace": "^0.3.2",
     "react-waypoint": "latest",
     "select2": "^4.0.0",
     "spectrum-colorpicker": "^1.6.2",

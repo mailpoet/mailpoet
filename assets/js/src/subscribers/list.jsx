@@ -213,16 +213,6 @@ const bulk_actions = [
       );
     }
   },
-/*  {
-    name: 'confirmUnconfirmed',
-    label: MailPoet.I18n.t('confirmUnconfirmed'),
-    onSuccess: function(response) {
-      MailPoet.Notice.success(
-        MailPoet.I18n.t('multipleSubscribersConfirmed')
-        .replace('%$1d', ~~response)
-      );
-    }
-  },*/
   {
     name: 'sendConfirmationEmail',
     label: MailPoet.I18n.t('resendConfirmationEmail'),
@@ -290,10 +280,15 @@ const SubscriberList = React.createClass({
     }
 
     let segments = false;
+    let subscribed_segments = [];
 
+    // WordPress Users
+    if (~~(subscriber.wp_user_id) > 0) {
+      subscribed_segments.push(MailPoet.I18n.t('WPUsersSegment'));
+    }
+
+    // Subscriptions
     if (subscriber.subscriptions.length > 0) {
-      let subscribed_segments = [];
-
       subscriber.subscriptions.map((subscription) => {
         const segment = this.getSegmentFromId(subscription.segment_id);
         if(segment === false) return;
@@ -301,14 +296,13 @@ const SubscriberList = React.createClass({
           subscribed_segments.push(segment.name);
         }
       });
-      segments = (
-        <span>
-          <span className="mailpoet_segments_subscribed">
-            { subscribed_segments.join(', ') }
-          </span>
-        </span>
-      );
     }
+
+    segments = (
+      <span>
+        { subscribed_segments.join(', ') }
+      </span>
+    );
 
     let avatar = false;
     if(subscriber.avatar_url) {

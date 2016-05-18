@@ -9,6 +9,13 @@ define([
     render() {
       const yearsRange = 100;
       const years = [];
+
+      if (this.props.empty_value_label !== undefined) {
+        years.push((
+          <option value="" key={ 0 }>{ this.props.empty_value_label }</option>
+        ));
+      }
+
       const currentYear = Moment().year();
       for (let i = currentYear; i >= currentYear - yearsRange; i--) {
         years.push((
@@ -33,6 +40,13 @@ define([
   class FormFieldDateMonth extends React.Component {
     render() {
       const months = [];
+
+      if (this.props.empty_value_label !== undefined) {
+        months.push((
+          <option value="" key={ 0 }>{ this.props.empty_value_label }</option>
+        ));
+      }
+
       for (let i = 1; i <= 12; i++) {
         months.push((
           <option
@@ -56,6 +70,13 @@ define([
   class FormFieldDateDay extends React.Component {
     render() {
       const days = [];
+
+      if (this.props.empty_value_label !== undefined) {
+        days.push((
+          <option value="" key={ 0 }>{ this.props.empty_value_label }</option>
+        ));
+      }
+
       for (let i = 1; i <= 31; i++) {
         days.push((
           <option
@@ -81,9 +102,9 @@ define([
     constructor(props) {
       super(props);
       this.state = {
-        year: Moment().year(),
-        month: 1,
-        day: 1
+        year: undefined,
+        month: undefined,
+        day: undefined
       }
     }
     componentDidMount() {
@@ -112,7 +133,7 @@ define([
         `${this.state.month}/${this.state.day}/${this.state.year}`,
         'M/D/YYYY'
       ).valueOf();
-      if (!isNaN(newTimeStamp) && parseInt(newTimeStamp, 10) > 0) {
+      if (~~(newTimeStamp) > 0) {
         // convert milliseconds to seconds
         newTimeStamp /= 1000;
         return this.props.onValueChange({
@@ -158,6 +179,7 @@ define([
               key={ 'year' }
               name={ this.props.field.name }
               year={ this.state.year }
+              empty_value_label={ this.props.field.empty_year_label }
             />);
           break;
 
@@ -169,6 +191,7 @@ define([
               name={ this.props.field.name }
               month={ this.state.month }
               monthNames={ monthNames }
+              empty_value_label={ this.props.field.empty_month_label }
             />);
           break;
 
@@ -179,6 +202,7 @@ define([
               key={ 'day' }
               name={ this.props.field.name }
               day={ this.state.day }
+              empty_value_label={ this.props.field.empty_day_label }
             />);
           break;
         }

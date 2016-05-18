@@ -4,9 +4,9 @@ define([
 function(
   React
 ) {
-  var FormFieldText = React.createClass({
+  const FormFieldText = React.createClass({
     render: function() {
-      var value = this.props.item[this.props.field.name];
+      let value = this.props.item[this.props.field.name];
       if(value === undefined) {
         value = this.props.field.defaultValue || '';
       }
@@ -15,9 +15,9 @@ function(
         <input
           type="text"
           disabled={
-            (this.props.field.disabled !== undefined)
+            (this.props.field['disabled'] !== undefined)
             ? this.props.field.disabled(this.props.item)
-            : ''
+            : false
           }
           className={ (this.props.field.size) ? '' : 'regular-text' }
           size={

@@ -10,12 +10,27 @@ function(
         return false;
       }
 
-      var values = (this.props.field.filterValues !== undefined)
-        ? this.props.field.filterValues(this.props.item)
-        : this.props.field.values;
+      let values = this.props.field.values;
+      let filter = false;
+      let empty_option = false;
+
+      if (this.props.field.empty_value_label !== undefined) {
+        empty_option = (
+          <option value="">{ this.props.field.empty_value_label }</option>
+        );
+      }
+
+      if (this.props.field['filter'] !== undefined) {
+        filter = this.props.field.filter;
+      }
 
       const options = Object.keys(values).map(
         (value, index) => {
+
+          if (filter !== false && filter(this.props.item, value) === false) {
+            return;
+          }
+
           return (
             <option
               key={ 'option-' + index }
@@ -34,6 +49,7 @@ function(
           onChange={ this.props.onValueChange }
           {...this.props.field.validation}
         >
+          {empty_option}
           {options}
         </select>
       );

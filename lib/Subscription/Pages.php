@@ -32,6 +32,7 @@ class Pages {
     // manage subscription link shortcode
     // [mailpoet_manage text="Manage your subscription"]
     add_shortcode('mailpoet_manage', array($this, 'getManageLink'));
+    add_shortcode('mailpoet_manage_subscription', array($this, 'getManageContent'));
   }
 
   private function isPreview() {
@@ -203,7 +204,7 @@ class Pages {
     }
   }
 
-  private function getManageContent() {
+  public function getManageContent() {
     if($this->isPreview()) {
       $subscriber = Subscriber::create();
       $subscriber->hydrate(array(
@@ -273,6 +274,7 @@ class Pages {
         'id' => 'status',
         'type' => 'select',
         'params' => array(
+          'required' => true,
           'label' => __('Status'),
           'values' => array(
             array(

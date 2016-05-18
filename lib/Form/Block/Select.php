@@ -13,9 +13,12 @@ class Select extends Base {
     $html .= static::renderLabel($block);
     $html .= '<select class="mailpoet_select" name="'.$field_name.'">';
 
-    if(isset($block['params']['label_within'])
-    && $block['params']['label_within']) {
+    if(isset($block['params']['label_within']) && $block['params']['label_within']) {
       $html .= '<option value="">'.static::getFieldLabel($block).'</option>';
+    } else {
+      if(empty($block['params']['required']) || !$block['params']['required']) {
+        $html .= '<option value="">-</option>';
+      }
     }
 
     $options = (!empty($block['params']['values'])

@@ -539,12 +539,6 @@ class Subscriber extends Model {
     return false;
   }
 
-/*  static function bulkConfirmUnconfirmed($orm) {
-    $subscribers = $orm->findResultSet();
-    $subscribers->set('status', self::STATUS_SUBSCRIBED)->save();
-    return $subscribers->count();
-  }*/
-
   static function bulkSendConfirmationEmail($orm) {
     $subscribers = $orm
       ->where('status', self::STATUS_UNCONFIRMED)

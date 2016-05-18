@@ -3,13 +3,15 @@ define(
     'react',
     'react-router',
     'mailpoet',
-    'form/form.jsx'
+    'form/form.jsx',
+    'react-string-replace'
   ],
   function(
     React,
     Router,
     MailPoet,
-    Form
+    Form,
+    ReactStringReplace
   ) {
     var fields = [
       {
@@ -17,7 +19,7 @@ define(
         label: MailPoet.I18n.t('email'),
         type: 'text',
         disabled: function(subscriber) {
-          if (subscriber.wp_user_id !== null) return 'disabled';
+          return ~~(subscriber.wp_user_id > 0);
         }
       },
       {
@@ -25,7 +27,7 @@ define(
         label: MailPoet.I18n.t('firstname'),
         type: 'text',
         disabled: function(subscriber) {
-          if (subscriber.wp_user_id !== null) return 'disabled';
+          return ~~(subscriber.wp_user_id > 0);
         }
       },
       {
@@ -33,7 +35,7 @@ define(
         label: MailPoet.I18n.t('lastname'),
         type: 'text',
         disabled: function(subscriber) {
-          if (subscriber.wp_user_id !== null) return 'disabled';
+          return ~~(subscriber.wp_user_id > 0);
         }
       },
       {
@@ -41,15 +43,15 @@ define(
         label: MailPoet.I18n.t('status'),
         type: 'select',
         values: {
-          'unconfirmed': MailPoet.I18n.t('unconfirmed'),
           'subscribed': MailPoet.I18n.t('subscribed'),
+          'unconfirmed': MailPoet.I18n.t('unconfirmed'),
           'unsubscribed': MailPoet.I18n.t('unsubscribed')
         },
-        filterValues: function(subscriber) {
-          if (subscriber.wp_user_id !== null) {
-            delete this.values.unconfirmed;
+        filter: function(subscriber, value) {
+          if (~~(subscriber.wp_user_id) > 0 && value === 'unconfirmed') {
+            return false;
           }
-          return this.values;
+          return true;
         }
       },
       {
@@ -115,6 +117,19 @@ define(
         field.values = custom_field.params.values;
       }
 
+      // add empty values' label for selects (date, select)
+      switch(custom_field.type) {
+        case 'date':
+          field.empty_year_label = MailPoet.I18n.t('year');
+          field.empty_month_label = MailPoet.I18n.t('month');
+          field.empty_day_label = MailPoet.I18n.t('day');
+        break;
+
+        case 'select':
+          field.empty_value_label = '-';
+        break;
+      }
+
       fields.push(field);
     });
 
@@ -128,16 +143,34 @@ define(
     };
 
     var beforeFormContent = function(subscriber) {
-      if (subscriber.wp_user_id !== null) {
-        var content =
-          '<p>' +
-            MailPoet.I18n.t('wordPressUserNotice')
-              .replace('[link]', '<a href="user-edit.php?user_id=' + subscriber.wp_user_id + '">')
-              .replace('[/link]', '</a>') +
-          '</p>';
-        return <div dangerouslySetInnerHTML={ {__html: content} } />
+      if (~~(subscriber.wp_user_id) > 0) {
+        return (
+          <p className="description">
+            { ReactStringReplace(
+                MailPoet.I18n.t('WPUserEditNotice'),
+                /\[link\](.*?)\[\/link\]/g,
+                (match, i) => (
+                  <a
+                    key={ i }
+                    href={`user-edit.php?user_id=${ subscriber.wp_user_id }`}
+                  >{ match }</a>
+                )
+              )
+            }
+          </p>
+        );
       }
     };
+
+    var afterFormContent = function(subscriber) {
+      return (
+        <p className="description">
+          <strong>
+            { MailPoet.I18n.t('tip') }
+          </strong> { MailPoet.I18n.t('customFieldsTip') }
+        </p>
+      );
+    }
 
     var Link = Router.Link;
 
@@ -156,6 +189,7 @@ define(
               params={ this.props.params }
               messages={ messages }
               beforeFormContent={ beforeFormContent }
+              afterFormContent={ afterFormContent }
             />
           </div>
         );
