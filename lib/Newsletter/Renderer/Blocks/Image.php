@@ -6,8 +6,8 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Image {
   static function render($element, $column_count) {
-    $element['width'] = (int) $element['width'];
-    $element['height'] = (int) $element['height'];
+    $element['width'] = (int)$element['width'];
+    $element['height'] = (int)$element['height'];
     $element = self::adjustImageDimensions($element, $column_count);
     $image_template = '
       <img style="max-width:' . $element['width'] . 'px;" src="' . $element['src'] . '"
@@ -32,7 +32,7 @@ class Image {
     if($element['width'] > $column_width) {
       $ratio = $element['width'] / $column_width;
       $element['width'] = $column_width;
-      $element['height'] = (int) ceil($element['height'] / $ratio);
+      $element['height'] = (int)ceil($element['height'] / $ratio);
     }
     // resize image if the image is padded and wider than padded column width
     if($element['fullWidth'] === false &&
@@ -40,7 +40,7 @@ class Image {
     ) {
       $ratio = $element['width'] / ($column_width - $padded_width);
       $element['width'] = $column_width - $padded_width;
-      $element['height'] = (int) ceil($element['height'] / $ratio);
+      $element['height'] = (int)ceil($element['height'] / $ratio);
     }
     return $element;
   }

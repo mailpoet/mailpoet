@@ -352,9 +352,9 @@ class SendingQueue {
   }
 
   function checkSendingLimit() {
-    $frequency_interval = (int) $this->mta_config['frequency']['interval'] * 60;
-    $frequency_limit = (int) $this->mta_config['frequency']['emails'];
-    $elapsed_time = time() - (int) $this->mta_log['started'];
+    $frequency_interval = (int)$this->mta_config['frequency']['interval'] * 60;
+    $frequency_limit = (int)$this->mta_config['frequency']['emails'];
+    $elapsed_time = time() - (int)$this->mta_log['started'];
     if($this->mta_log['sent'] === $frequency_limit &&
       $elapsed_time <= $frequency_interval
     ) {

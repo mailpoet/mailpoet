@@ -19,7 +19,7 @@ class Scheduler {
     if(!$newsletter) return;
     $newsletter = $newsletter->asArray();
     $interval_type = $newsletter['intervalType'];
-    $hour = (int) $newsletter['timeOfDay'] / self::SECONDS_IN_HOUR;
+    $hour = (int)$newsletter['timeOfDay'] / self::SECONDS_IN_HOUR;
     $week_day = $newsletter['weekDay'];
     $month_day = $newsletter['monthDay'];
     $nth_week_day = ($newsletter['nthWeekDay'] === self::LAST_WEEKDAY_FORMAT) ?

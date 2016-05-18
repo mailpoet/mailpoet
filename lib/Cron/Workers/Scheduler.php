@@ -51,7 +51,7 @@ class Scheduler {
       $queue->delete();
       return;
     }
-    $subscriber_id = (int) $subscriber['to_process'][0];
+    $subscriber_id = (int)$subscriber['to_process'][0];
     if($newsletter->event === 'segment') {
       if($this->verifyMailPoetSubscriber($subscriber_id, $newsletter, $queue) === false) {
         return;

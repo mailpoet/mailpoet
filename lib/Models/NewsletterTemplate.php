@@ -28,8 +28,8 @@ class NewsletterTemplate extends Model {
   static function createOrUpdate($data = array()) {
     $template = false;
 
-    if(isset($data['id']) && (int) $data['id'] > 0) {
-      $template = self::findOne((int) $data['id']);
+    if(isset($data['id']) && (int)$data['id'] > 0) {
+      $template = self::findOne((int)$data['id']);
     }
 
     if($template === false) {

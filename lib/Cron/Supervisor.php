@@ -28,7 +28,7 @@ class Supervisor {
       return $this->formatDaemonStatusMessage($daemon['status']);
 
     }
-    $elapsed_time = time() - (int) $daemon['updated_at'];
+    $elapsed_time = time() - (int)$daemon['updated_at'];
     // if it's been less than 40 seconds since last execution and we're not
     // force-running the daemon, return its status and do nothing
     if($elapsed_time < CronHelper::DAEMON_EXECUTION_TIMEOUT && !$this->force_run) {

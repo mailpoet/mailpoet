@@ -43,8 +43,8 @@ class Button {
   static function calculateWidth($element, $column_count) {
     $column_width = ColumnsHelper::columnWidth($column_count);
     $column_width = $column_width - (StylesHelper::$padding_width * 2);
-    $border_width = (int) $element['styles']['block']['borderWidth'];
-    $button_width = (int) $element['styles']['block']['width'];
+    $border_width = (int)$element['styles']['block']['borderWidth'];
+    $button_width = (int)$element['styles']['block']['width'];
     $button_width = ($button_width > $column_width) ?
       $column_width :
       $button_width;

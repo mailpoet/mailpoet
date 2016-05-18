@@ -32,8 +32,8 @@ class Import {
       array_keys($data['columns'])
     );
     $this->subscribers_count = count(reset($this->subscribers_data));
-    $this->created_at = date('Y-m-d H:i:s', (int) $data['timestamp']);
-    $this->updated_at = date('Y-m-d H:i:s', (int) $data['timestamp'] + 1);
+    $this->created_at = date('Y-m-d H:i:s', (int)$data['timestamp']);
+    $this->updated_at = date('Y-m-d H:i:s', (int)$data['timestamp'] + 1);
     $this->profiler_start = microtime(true);
   }
 

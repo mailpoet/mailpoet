@@ -32,8 +32,8 @@ class AutomatedLatestContent {
   }
 
   function getPosts($args, $posts_to_exclude = array()) {
-    $posts_per_page = (!empty($args['amount']) && (int) $args['amount'] > 0)
-      ? (int) $args['amount']
+    $posts_per_page = (!empty($args['amount']) && (int)$args['amount'] > 0)
+      ? (int)$args['amount']
       : self::DEFAULT_POSTS_PER_PAGE;
     $parameters = array(
       'posts_per_page' => $posts_per_page,

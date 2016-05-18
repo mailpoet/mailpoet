@@ -140,7 +140,7 @@ class Newsletters {
         'errors' => array(__('Newsletter data is missing.'))
       );
     }
-    $newsletter_id = (isset($data['id'])) ? (int) $data['id'] : 0;
+    $newsletter_id = (isset($data['id'])) ? (int)$data['id'] : 0;
     $newsletter = Newsletter::findOne($newsletter_id);
     if (!$newsletter) {
       return array(
@@ -162,7 +162,7 @@ class Newsletters {
   }
 
   function sendPreview($data = array()) {
-    $id = (isset($data['id'])) ? (int) $data['id'] : 0;
+    $id = (isset($data['id'])) ? (int)$data['id'] : 0;
     $newsletter = Newsletter::findOne($id);
 
     if($newsletter === false) {
