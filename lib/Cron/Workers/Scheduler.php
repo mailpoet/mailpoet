@@ -32,14 +32,12 @@ class Scheduler {
         ->findOne($queue->newsletter_id);
       if(!$newsletter || $newsletter->deleted_at !== null) {
         $queue->delete();
-      } else {
-        if($newsletter->type === 'welcome') {
-          $this->processWelcomeNewsletter($newsletter, $queue);
-        } elseif($newsletter->type === 'notification') {
-          $this->processPostNotificationNewsletter($newsletter, $queue);
-        } elseif($newsletter->type === 'standard') {
-          $this->processScheduledStandardNewsletter($newsletter, $queue);
-        }
+      } elseif($newsletter->type === 'welcome') {
+        $this->processWelcomeNewsletter($newsletter, $queue);
+      } elseif($newsletter->type === 'notification') {
+        $this->processPostNotificationNewsletter($newsletter, $queue);
+      } elseif($newsletter->type === 'standard') {
+        $this->processScheduledStandardNewsletter($newsletter, $queue);
       }
       CronHelper::checkExecutionTimer($this->timer);
     }

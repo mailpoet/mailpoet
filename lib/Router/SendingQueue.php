@@ -82,7 +82,9 @@ class SendingQueue {
 
     if ((bool)$newsletter['isScheduled']) {
       $queue->status = 'scheduled';
-      $queue->scheduled_at = Scheduler::standard($newsletter['scheduledAt']);
+      $queue->scheduled_at = Scheduler::scheduleFromTimestamp(
+        $newsletter['scheduledAt']
+      );
 
       $message = __('The newsletter has been scheduled.');
     } else {

@@ -73,7 +73,11 @@ class Scheduler {
     }
   }
 
-  static function standard($timestamp) {
+  /**
+   * Create a properly formatted timestamp for use in Scheduler from
+   * arbitrarily formatted timestamp strings.
+   */
+  static function scheduleFromTimestamp($timestamp) {
     return Carbon::parse($timestamp)->format('Y-m-d H:i:s');
   }
 
