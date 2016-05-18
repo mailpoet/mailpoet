@@ -66,12 +66,15 @@ class Scheduler {
   }
 
   function processPostNotificationNewsletter($newsletter, $queue) {
-    $segments = unserialize($newsletter->segments);
+    $segments = $newsletter->segments()->findArray();
     if(empty($segments)) {
       $queue->delete();
       return;
     }
-    $subscribers = Subscriber::getSubscribedInSegments($segments)
+    $segment_ids = array_map(function($segment) {
+      return $segment['id'];
+    }, $segments);
+    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
       ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
     $subscribers = array_unique($subscribers);
