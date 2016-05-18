@@ -36,14 +36,14 @@ class SendingQueue {
       $newsletter = $newsletter->asArray();
     }
 
-    if($newsletter->type === 'welcome') {
+    if($newsletter['type'] === 'welcome') {
       return array(
         'result' => true,
         'data' => array(
           'message' => __('Your welcome notification is activated.')
         )
       );
-    } elseif ($newsletter->type === 'notification') {
+    } elseif ($newsletter['type'] === 'notification') {
       $newsletter = Scheduler::processPostNotificationSchedule($newsletter['id']);
       Scheduler::createPostNotificationQueue($newsletter);
     }
@@ -67,7 +67,7 @@ class SendingQueue {
     }
 
     if($newsletter['type'] === 'notification') {
-      $schedule = Cron::factory($newsletter->schedule);
+      $schedule = Cron::factory($newsletter['schedule']);
       $queue->scheduled_at =
         $schedule->getNextRunDate(current_time('mysql'))->format('Y-m-d H:i:s');
       $queue->status = 'scheduled';
