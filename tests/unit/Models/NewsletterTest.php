@@ -2,6 +2,7 @@
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Subscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterOptionField;
@@ -61,7 +62,6 @@ class NewsletterTest extends MailPoetTest {
   function testItHasACreatedAtOnCreation() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     expect($newsletter->created_at)->notNull();
-    expect($newsletter->created_at)->notEquals('0000-00-00 00:00:00');
   }
 
   function testItHasAnUpdatedAtOnCreation() {
@@ -111,10 +111,17 @@ class NewsletterTest extends MailPoetTest {
     $sending_queue = SendingQueue::create();
     $sending_queue->newsletter_id = $this->newsletter->id;
     $sending_queue->save();
+
+    $subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'john.doe@mailpoet.com'
+    ));
+
     $opens = StatisticsOpens::create();
+    $opens->subscriber_id = $subscriber->id;
     $opens->newsletter_id = $this->newsletter->id;
     $opens->queue_id = $sending_queue->id;
     $opens->save();
+
     $newsletter->queue = $newsletter->getQueue()->asArray();
     $statistics = $newsletter->getStatistics();
     expect($statistics->opened)->equals(1);
