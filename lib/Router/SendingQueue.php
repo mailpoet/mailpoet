@@ -43,7 +43,7 @@ class SendingQueue {
       $options['segments'] = serialize($data['segments']);
       unset($data['options']);
     }
-    if ($options &&
+    if($options &&
       ($newsletter['type'] === 'notification' || $newsletter['type'] === 'welcome')
     ) {
       $option_fields = NewsletterOptionField::where(
@@ -54,7 +54,7 @@ class SendingQueue {
           $relation = NewsletterOption::where('option_field_id', $option_field['id'])
             ->where('newsletter_id', $newsletter['id'])
             ->findOne();
-          if (!$relation) {
+          if(!$relation) {
             $relation = NewsletterOption::create();
             $relation->newsletter_id = $newsletter['id'];
             $relation->option_field_id = $option_field['id'];
@@ -63,7 +63,7 @@ class SendingQueue {
           $relation->save();
         }
       }
-      if ($newsletter['type'] === 'notification') {
+      if($newsletter['type'] === 'notification') {
         // convert scheduling options into cron format and add to queue
         $newsletter = Scheduler::processPostNotificationSchedule($newsletter['id']);
         Scheduler::createPostNotificationQueue($newsletter);

@@ -43,7 +43,7 @@ class SendingQueue {
       }
       $newsletter = $newsletter->asArray();
       $newsletter['body'] = $this->getOrRenderNewsletterBody($queue, $newsletter);
-      if ($newsletter['type'] === 'notification' &&
+      if($newsletter['type'] === 'notification' &&
           strpos($newsletter['body']['html'], 'data-post-id') === false
       ){
         $queue->delete();
@@ -61,14 +61,14 @@ class SendingQueue {
               $subscribers_ids) {
         $subscribers = Subscriber::whereIn('id', $subscribers_ids)
           ->findArray();
-        if (count($subscribers_ids) !== count($subscribers)) {
+        if(count($subscribers_ids) !== count($subscribers)) {
           $queue->subscribers->to_process = $this->recalculateSubscriberCount(
             Helpers::arrayColumn($subscribers, 'id'),
             $subscribers_ids,
             $queue->subscribers->to_process
           );
         }
-        if (!count($queue->subscribers->to_process)) {
+        if(!count($queue->subscribers->to_process)) {
           $this->updateQueue($queue);
           continue;
         }

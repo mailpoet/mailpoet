@@ -119,7 +119,7 @@ class MailChimp {
   }
 
   function getDataCenter($APIKey) {
-    if (!preg_match('/-[a-zA-Z0-9]{3,}/', $APIKey)) return false;
+    if(!preg_match('/-[a-zA-Z0-9]{3,}/', $APIKey)) return false;
     // double parantheses: http://phpsadness.com/sad/51
     $key_parts = explode('-', $APIKey);
     return end($key_parts);

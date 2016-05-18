@@ -25,7 +25,7 @@ class StructureTransformer {
       $top_ancestor = $this->findTopAncestor($item);
       $offset = $top_ancestor->index();
 
-      if ($item->hasParent('a')) {
+      if($item->hasParent('a')) {
         $item = $item->parent;
       }
 
@@ -46,8 +46,8 @@ class StructureTransformer {
    */
   private function transformTagsToBlocks($root, $image_full_width) {
     return array_map(function($item) use ($image_full_width) {
-      if ($item->tag === 'img' || $item->tag === 'a' && $item->query('img')) {
-        if ($item->tag === 'a') {
+      if($item->tag === 'img' || $item->tag === 'a' && $item->query('img')) {
+        if($item->tag === 'a') {
           $link = $item->getAttribute('href');
           $image = $item->children[0];
         } else {
@@ -87,11 +87,11 @@ class StructureTransformer {
     $updated_structure = array();
     $text_accumulator = '';
     foreach ($structure as $item) {
-      if ($item['type'] === 'text') {
+      if($item['type'] === 'text') {
         $text_accumulator .= $item['text'];
       }
-      if ($item['type'] !== 'text') {
-        if (!empty($text_accumulator)) {
+      if($item['type'] !== 'text') {
+        if(!empty($text_accumulator)) {
           $updated_structure[] = array(
             'type' => 'text',
             'text' => trim($text_accumulator),
@@ -102,7 +102,7 @@ class StructureTransformer {
       }
     }
 
-    if (!empty($text_accumulator)) {
+    if(!empty($text_accumulator)) {
       $updated_structure[] = array(
         'type' => 'text',
         'text' => trim($text_accumulator),

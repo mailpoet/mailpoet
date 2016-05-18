@@ -26,7 +26,7 @@ class AutomatedLatestContent {
 
     $wherePostUnsent = 'ID NOT IN (' . $sentPostsQuery . ')';
 
-    if (!empty($where)) $wherePostUnsent = ' AND ' . $wherePostUnsent;
+    if(!empty($where)) $wherePostUnsent = ' AND ' . $wherePostUnsent;
 
     return $where . $wherePostUnsent;
   }
@@ -48,7 +48,7 @@ class AutomatedLatestContent {
     if(isset($args['posts']) && is_array($args['posts'])) {
       $parameters['post__in'] = $args['posts'];
     }
-    if (!empty($posts_to_exclude)) {
+    if(!empty($posts_to_exclude)) {
       $parameters['post__not_in'] = $posts_to_exclude;
     }
     $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
@@ -106,13 +106,13 @@ class AutomatedLatestContent {
   }
 
   private function _attachSentPostsFilter() {
-    if ($this->newsletter_id > 0) {
+    if($this->newsletter_id > 0) {
       add_action('posts_where', array($this, 'filterOutSentPosts'));
     }
   }
 
   private function _detachSentPostsFilter() {
-    if ($this->newsletter_id > 0) {
+    if($this->newsletter_id > 0) {
       remove_action('posts_where', array($this, 'filterOutSentPosts'));
     }
   }

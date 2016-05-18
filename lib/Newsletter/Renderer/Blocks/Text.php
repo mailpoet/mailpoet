@@ -81,7 +81,7 @@ class Text {
           false;
         // if previous or next paragraphs are empty OR previous paragraph
         // is a heading, insert a break line
-        if (!$next_element ||
+        if(!$next_element ||
             !$previous_element ||
             (preg_match('/h\d+/', $previous_element_tag))
         ) {

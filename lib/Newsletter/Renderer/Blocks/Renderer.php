@@ -29,13 +29,13 @@ class Renderer {
   }
 
   function createElementFromBlockType($block, $column_count) {
-    if ($block['type'] === 'automatedLatestContent') {
+    if($block['type'] === 'automatedLatestContent') {
       $content = $this->processAutomatedLatestContent($block, $column_count);
       return $content;
     }
     $block = StylesHelper::applyTextAlignment($block);
     $block_class = __NAMESPACE__ . '\\' . ucfirst($block['type']);
-    if (!class_exists($block_class)) {
+    if(!class_exists($block_class)) {
       return '';
     }
     return $block_class::render($block, $column_count);

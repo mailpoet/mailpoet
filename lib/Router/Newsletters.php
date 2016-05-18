@@ -142,7 +142,7 @@ class Newsletters {
     }
     $newsletter_id = (isset($data['id'])) ? (int)$data['id'] : 0;
     $newsletter = Newsletter::findOne($newsletter_id);
-    if (!$newsletter) {
+    if(!$newsletter) {
       return array(
         'result' => false,
         'errors' => array(__('Newsletter could not be read.'))

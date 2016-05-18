@@ -10,7 +10,7 @@ use \MailPoet\Segments\WP;
 use \MailPoet\Models\Setting;
 use \MailPoet\Settings\Pages;
 
-if (!defined('ABSPATH')) exit;
+if(!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -36,7 +36,7 @@ class Populator {
         $column_conditions = array_map(function($key) use ($field) {
           return $key . '=' . $field[$key];
         }, $field);
-        if ($wpdb->get_var("SELECT COUNT(*) FROM " . $table . " WHERE " . implode(' AND ', $column_conditions)) === 0) {
+        if($wpdb->get_var("SELECT COUNT(*) FROM " . $table . " WHERE " . implode(' AND ', $column_conditions)) === 0) {
           $wpdb->insert(
             $table,
             $field
@@ -207,7 +207,7 @@ class Populator {
     $_this = $this;
 
     array_map(function($row) use ($_this, $table) {
-      if (!$_this->rowExists($table, $row)) {
+      if(!$_this->rowExists($table, $row)) {
         $_this->insertRow($table, $row);
       }
     }, $rows);

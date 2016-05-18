@@ -25,7 +25,7 @@ class TitleListTransformer {
     $alignment = $this->args['titleAlignment'];
     $alignment = (in_array($alignment, array('left', 'right', 'center'))) ? $alignment : 'left';
 
-    if ($this->args['titleIsLink']) {
+    if($this->args['titleIsLink']) {
       $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
     }
 
