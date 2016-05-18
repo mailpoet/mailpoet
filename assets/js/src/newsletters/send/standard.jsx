@@ -21,7 +21,9 @@ define(
     var settings = window.mailpoet_settings || {},
         currentTime = window.mailpoet_current_time || '00:00',
         defaultDateTime = window.mailpoet_current_date + ' ' + '00:00:00';
-        timeOfDayItems = window.mailpoet_schedule_time_of_day;
+        timeOfDayItems = window.mailpoet_schedule_time_of_day,
+        dateDisplayFormat = window.mailpoet_date_display_format,
+        dateStorageFormat = window.mailpoet_date_storage_format;
 
     var datepickerTranslations = {
       closeText: MailPoet.I18n.t('close'),
@@ -85,26 +87,46 @@ define(
       ],
     };
 
-    var isScheduledField = {
-      name: 'isScheduled',
-    };
-
     var DateText = React.createClass({
+      onChange: function(event) {
+        // Swap display format to storage format
+        var displayDate = event.target.value,
+            storageDate = this.getStorageDate(displayDate);
+
+        event.target.value = storageDate;
+        this.props.onChange(event);
+      },
       componentDidMount: function() {
         var $element = jQuery(this.refs.dateInput),
             that = this;
         if ($element.datepicker) {
+          // Override jQuery UI datepicker Date parsing and formatting
+          jQuery.datepicker.parseDate = function(format, value) {
+            // Transform string format to Date object
+            return MailPoet.Date.toDate(value, {
+              parseFormat: dateDisplayFormat,
+              format: format
+            });
+          };
+          jQuery.datepicker.formatDate = function(format, value) {
+            // Transform Date object to string format
+            var newValue = MailPoet.Date.format(value, {
+              format: format
+            });
+            return newValue;
+          };
+
           $element.datepicker(_.extend({
-            dateFormat: "yy-mm-dd",
+            dateFormat: this.props.displayFormat,
             isRTL: false,
             onSelect: function(value) {
-              that.props.onChange({
+              that.onChange({
                 target: {
                   name: that.getFieldName(),
                   value: value,
                 },
               });
-            }
+            },
           }, datepickerTranslations));
 
           this.datepickerInitialized = true;
@@ -118,14 +140,26 @@ define(
       getFieldName: function() {
         return this.props.name || 'date';
       },
+      getDisplayDate: function(date) {
+        return MailPoet.Date.format(date, {
+          parseFormat: this.props.storageFormat,
+          format: this.props.displayFormat
+        });
+      },
+      getStorageDate: function(date) {
+        return MailPoet.Date.format(date, {
+          parseFormat: this.props.displayFormat,
+          format: this.props.storageFormat
+        });
+      },
       render: function() {
         return (
           <input
             type="text"
             size="10"
             name={this.getFieldName()}
-            value={this.props.value}
-            onChange={this.props.onChange}
+            value={this.getDisplayDate(this.props.value)}
+            onChange={this.onChange}
             ref="dateInput"
             {...this.props.validation} />
         );
@@ -203,6 +237,8 @@ define(
               name="date"
               value={this.state.date}
               onChange={this.handleChange}
+              displayFormat={dateDisplayFormat}
+              storageFormat={dateStorageFormat}
               validation={this.props.dateValidation}/>
             <TimeSelect
               name="time"
@@ -241,7 +277,6 @@ define(
         return {
           'data-parsley-required': true,
           'data-parsley-required-message': MailPoet.I18n.t('noScheduledDateError'),
-          'data-parsley-pattern': '[0-9]{4}-[0-9]{2}-[0-9]{2}',
           'data-parsley-errors-container': '#mailpoet_scheduling',
         };
       },

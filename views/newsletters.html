@@ -12,6 +12,8 @@
     var mailpoet_current_date = <%= json_encode(current_date) %>;
     var mailpoet_current_time = <%= json_encode(current_time) %>;
     var mailpoet_schedule_time_of_day = <%= json_encode(schedule_time_of_day) %>;
+    var mailpoet_date_display_format = "<%= wp_date_format() %>";
+    var mailpoet_date_storage_format = "Y-m-d";
   </script>
 <% endblock %>
 

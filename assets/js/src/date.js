@@ -40,8 +40,17 @@ define('date',
       return this;
     },
     format: function(date, options) {
+      options = options || {};
       this.init(options);
-      return Moment(date).format(this.convertFormat(this.options.format));
+
+      return Moment(date, this.convertFormat(options.parseFormat))
+        .format(this.convertFormat(this.options.format));
+    },
+    toDate: function(date, options) {
+      options = options || {};
+      this.init(options);
+
+      return Moment(date, this.convertFormat(options.parseFormat)).toDate();
     },
     short: function(date) {
       return this.format(date, {
@@ -112,6 +121,8 @@ define('date',
           Z: 'z'
         }
       };
+
+      if (!format || format.length <= 0) return format;
 
       const replacements = format_mappings['date'];
 
