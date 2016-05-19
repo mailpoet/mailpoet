@@ -206,7 +206,7 @@ define(
 
         return (
           <div>
-            { beforeFormContent  }
+            { beforeFormContent }
             <form
               id={ this.props.id }
               ref="form"
