@@ -2,6 +2,7 @@
 <% set minYear = currentYear - 100 %>
 
 <select id="{{ id }}_years">
+  <option value=""><%= __('Year') %></option>
   <% for year in currentYear..minYear %>
     <option
       <% if(currentYear == year) %>

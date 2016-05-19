@@ -37,9 +37,13 @@ define(
         return this.props.errors ? this.props.errors : this.state.errors;
       },
       componentDidMount: function() {
-        if(this.props.params.id !== undefined) {
-          if(this.isMounted()) {
+        if(this.isMounted()) {
+          if(this.props.params.id !== undefined) {
             this.loadItem(this.props.params.id);
+          } else {
+            this.setState({
+              item: jQuery('.mailpoet_form').serializeObject()
+            });
           }
         }
       },
@@ -102,7 +106,6 @@ define(
             item[field.name] = this.state.item[field.name];
           }
         }.bind(this));
-
         // set id if specified
         if(this.props.params.id !== undefined) {
           item.id = this.props.params.id;
@@ -167,12 +170,15 @@ define(
           { 'mailpoet_form_loading': this.state.loading || this.props.loading }
         );
 
+        var beforeFormContent = false;
+        var afterFormContent = false;
+
         if (this.props.beforeFormContent !== undefined) {
-          var beforeFormContent = this.props.beforeFormContent(this.getValues())
+          beforeFormContent = this.props.beforeFormContent(this.getValues());
         }
 
         if (this.props.afterFormContent !== undefined) {
-          var afterFormContent = this.props.afterFormContent(this.getValues())
+          afterFormContent = this.props.afterFormContent(this.getValues());
         }
 
         var fields = this.props.fields.map(function(field, i) {

@@ -1,5 +1,6 @@
 <% set currentMonth = 'now'|date('n') %>
 <select id="{{ id }}_months">
+  <option value=""><%= __('Month') %></option>
   <% for month in 1..12 %>
     <option
       <% if(currentMonth == month) %>

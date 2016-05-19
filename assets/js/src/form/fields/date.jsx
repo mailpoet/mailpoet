@@ -9,6 +9,13 @@ define([
     render() {
       const yearsRange = 100;
       const years = [];
+
+      if (this.props.placeholder !== undefined) {
+        years.push((
+          <option value="" key={ 0 }>{ this.props.placeholder }</option>
+        ));
+      }
+
       const currentYear = Moment().year();
       for (let i = currentYear; i >= currentYear - yearsRange; i--) {
         years.push((
@@ -33,6 +40,13 @@ define([
   class FormFieldDateMonth extends React.Component {
     render() {
       const months = [];
+
+      if (this.props.placeholder !== undefined) {
+        months.push((
+          <option value="" key={ 0 }>{ this.props.placeholder }</option>
+        ));
+      }
+
       for (let i = 1; i <= 12; i++) {
         months.push((
           <option
@@ -56,6 +70,13 @@ define([
   class FormFieldDateDay extends React.Component {
     render() {
       const days = [];
+
+      if (this.props.placeholder !== undefined) {
+        days.push((
+          <option value="" key={ 0 }>{ this.props.placeholder }</option>
+        ));
+      }
+
       for (let i = 1; i <= 31; i++) {
         days.push((
           <option
@@ -81,9 +102,9 @@ define([
     constructor(props) {
       super(props);
       this.state = {
-        year: Moment().year(),
-        month: 1,
-        day: 1
+        year: undefined,
+        month: undefined,
+        day: undefined
       }
     }
     componentDidMount() {
@@ -98,7 +119,6 @@ define([
     }
     extractTimeStamp() {
       const timeStamp = parseInt(this.props.item[this.props.field.name], 10);
-
       this.setState({
         year: Moment.unix(timeStamp).year(),
         // Moment returns the month as [0..11]
@@ -112,7 +132,7 @@ define([
         `${this.state.month}/${this.state.day}/${this.state.year}`,
         'M/D/YYYY'
       ).valueOf();
-      if (!isNaN(newTimeStamp) && parseInt(newTimeStamp, 10) > 0) {
+      if (~~(newTimeStamp) > 0) {
         // convert milliseconds to seconds
         newTimeStamp /= 1000;
         return this.props.onValueChange({
@@ -158,6 +178,7 @@ define([
               key={ 'year' }
               name={ this.props.field.name }
               year={ this.state.year }
+              placeholder={ this.props.field.year_placeholder }
             />);
           break;
 
@@ -169,6 +190,7 @@ define([
               name={ this.props.field.name }
               month={ this.state.month }
               monthNames={ monthNames }
+              placeholder={ this.props.field.month_placeholder }
             />);
           break;
 
@@ -179,6 +201,7 @@ define([
               key={ 'day' }
               name={ this.props.field.name }
               day={ this.state.day }
+              placeholder={ this.props.field.day_placeholder }
             />);
           break;
         }
