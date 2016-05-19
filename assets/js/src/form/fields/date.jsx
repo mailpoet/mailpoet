@@ -119,7 +119,6 @@ define([
     }
     extractTimeStamp() {
       const timeStamp = parseInt(this.props.item[this.props.field.name], 10);
-
       this.setState({
         year: Moment.unix(timeStamp).year(),
         // Moment returns the month as [0..11]

@@ -253,7 +253,7 @@ define(
         var statistics_column =
           (!mailpoet_settings.tracking || !mailpoet_settings.tracking.enabled) ?
             false :
-            <td className="column {statistics_class}" data-colname="Statistics">
+            <td className="column {statistics_class}" data-colname={ MailPoet.I18n.t('statistics') }>
               { this.renderStatistics(newsletter) }
             </td>;
 
@@ -265,17 +265,17 @@ define(
               </strong>
               { actions }
             </td>
-            <td className="column" data-colname="Status">
+            <td className="column" data-colname={ MailPoet.I18n.t('status') }>
               { this.renderStatus(newsletter) }
             </td>
-            <td className="column" data-colname="Lists">
+            <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
               { segments }
             </td>
             { statistics_column }
-            <td className="column-date" data-colname="Subscribed on">
+            <td className="column-date" data-colname={ MailPoet.I18n.t('createdOn') }>
               <abbr>{ MailPoet.Date.format(newsletter.created_at) }</abbr>
             </td>
-            <td className="column-date" data-colname="Last modified on">
+            <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
               <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
             </td>
           </div>

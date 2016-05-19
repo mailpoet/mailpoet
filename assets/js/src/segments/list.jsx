@@ -99,7 +99,6 @@ const bulk_actions = [
 const item_actions = [
   {
     name: 'edit',
-    label: MailPoet.I18n.t('edit'),
     link: function(item) {
       return (
         <Link to={ `/edit/${item.id}` }>{MailPoet.I18n.t('edit')}</Link>
@@ -111,7 +110,7 @@ const item_actions = [
   },
   {
     name: 'duplicate_segment',
-    label: 'Duplicate',
+    label: MailPoet.I18n.t('duplicate'),
     onClick: function(item, refresh) {
       return MailPoet.Ajax.post({
         endpoint: 'segments',
@@ -130,13 +129,13 @@ const item_actions = [
   },
   {
     name: 'read_more',
-    label: MailPoet.I18n.t('readMore'),
-    className: 'read_more',
-    onClick: function(item, refresh) {
-      // TODO: add URL with KB article
-      var url = 'http://example.com',
-        link = window.open(url, '_blank');
-      win.focus();
+    link: function(item) {
+      return (
+        <a
+          href="https://www.mailpoet.com/#TODO"
+          target="_blank"
+        >{MailPoet.I18n.t('readMore')}</a>
+      );
     },
     display: function(segment) {
       return (segment.type === 'wp_users');
@@ -145,7 +144,6 @@ const item_actions = [
   {
     name: 'synchronize_segment',
     label: MailPoet.I18n.t('forceSync'),
-    className: 'update',
     onClick: function(item, refresh) {
       MailPoet.Modal.loading(true);
       MailPoet.Ajax.post({
@@ -187,32 +185,42 @@ const SegmentList = React.createClass({
       'manage-column',
       'column-primary',
       'has-row-actions'
-    ),
-      subscribed = segment.subscribers_count.subscribed || 0,
-      unconfirmed = segment.subscribers_count.unconfirmed || 0,
-      unsubscribed = segment.subscribers_count.unsubscribed || 0;
+    );
+
+    const subscribed = ~~(segment.subscribers_count.subscribed || 0);
+    const unconfirmed = ~~(segment.subscribers_count.unconfirmed || 0);
+    const unsubscribed = ~~(segment.subscribers_count.unsubscribed || 0);
+
+    let segment_name = (
+      <Link to={ `/edit/${segment.id}` }>{ segment.name }</Link>
+    );
+
+    // the WP users segment is not editable so just display its name
+    if (segment.type === 'wp_users') {
+      segment_name = segment.name;
+    }
 
     return (
       <div>
         <td className={ rowClasses }>
           <strong>
-            <a>{ segment.name }</a>
+            { segment_name }
           </strong>
           { actions }
         </td>
-        <td className="column-date" data-colname="Description">
+        <td className="column-date" data-colname={ MailPoet.I18n.t('description') }>
           <abbr>{ segment.description }</abbr>
         </td>
-        <td className="column-date" data-colname="Subscribed">
-          <abbr>{ parseInt(subscribed).toLocaleString() }</abbr>
+        <td className="column-date" data-colname={ MailPoet.I18n.t('subscribed') }>
+          <abbr>{ subscribed }</abbr>
         </td>
-        <td className="column-date" data-colname="Unconfirmed">
-          <abbr>{ parseInt(unconfirmed).toLocaleString() }</abbr>
+        <td className="column-date" data-colname={ MailPoet.I18n.t('unconfirmed') }>
+          <abbr>{ unconfirmed }</abbr>
         </td>
-        <td className="column-date" data-colname="Unsubscribed">
-          <abbr>{ parseInt(unsubscribed).toLocaleString() }</abbr>
+        <td className="column-date" data-colname={ MailPoet.I18n.t('unsubscribed') }>
+          <abbr>{ unsubscribed }</abbr>
         </td>
-        <td className="column-date" data-colname="Created on">
+        <td className="column-date" data-colname={ MailPoet.I18n.t('createdOn') }>
           <abbr>{ MailPoet.Date.format(segment.created_at) }</abbr>
         </td>
       </div>

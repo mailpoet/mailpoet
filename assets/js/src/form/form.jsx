@@ -106,7 +106,6 @@ define(
             item[field.name] = this.state.item[field.name];
           }
         }.bind(this));
-
         // set id if specified
         if(this.props.params.id !== undefined) {
           item.id = this.props.params.id;
