@@ -8,6 +8,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Util\Helpers;
+use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
@@ -32,14 +33,12 @@ class Scheduler {
         ->findOne($queue->newsletter_id);
       if(!$newsletter || $newsletter->deleted_at !== null) {
         $queue->delete();
-      } else {
-        if($newsletter->type === 'welcome') {
-          $this->processWelcomeNewsletter($newsletter, $queue);
-        } else {
-          if($newsletter->type === 'notification') {
-            $this->processPostNotificationNewsletter($newsletter, $queue);
-          }
-        }
+      } elseif($newsletter->type === 'welcome') {
+        $this->processWelcomeNewsletter($newsletter, $queue);
+      } elseif($newsletter->type === 'notification') {
+        $this->processPostNotificationNewsletter($newsletter, $queue);
+      } elseif($newsletter->type === 'standard') {
+        $this->processScheduledStandardNewsletter($newsletter, $queue);
       }
       CronHelper::checkExecutionTimer($this->timer);
     }
@@ -68,19 +67,51 @@ class Scheduler {
   }
 
   function processPostNotificationNewsletter($newsletter, $queue) {
-    $segments = unserialize($newsletter->segments);
+    $segments = $newsletter->segments()->findArray();
     if(empty($segments)) {
-      $queue->delete();
+      $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
       return;
     }
-    $subscribers = Subscriber::getSubscribedInSegments($segments)
+    $segment_ids = array_map(function($segment) {
+      return $segment['id'];
+    }, $segments);
+    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
       ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
     $subscribers = array_unique($subscribers);
     if(empty($subscribers)) {
-      $queue->delete();
+      $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
       return;
     }
+    // schedule new queue if the post notification is not destined for immediate delivery
+    if ($newsletter->intervalType !== NewsletterScheduler::INTERVAL_IMMEDIATELY) {
+      $new_queue = SendingQueue::create();
+      $new_queue->newsletter_id = $newsletter->id;
+      $new_queue->status = NewsletterScheduler::STATUS_SCHEDULED;
+      self::deleteQueueOrUpdateNextRunDate($new_queue, $newsletter);
+    }
+    $queue->subscribers = serialize(
+      array(
+        'to_process' => $subscribers
+      )
+    );
+    $queue->count_total = $queue->count_to_process = count($subscribers);
+    $queue->status = null;
+    $queue->save();
+  }
+
+  function processScheduledStandardNewsletter($newsletter, $queue) {
+    $segments = $newsletter->segments()->findArray();
+    $segment_ids = array_map(function($segment) {
+      return $segment['id'];
+    }, $segments);
+
+    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
+      ->findArray();
+    $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
+    $subscribers = array_unique($subscribers);
+
+    // update current queue
     $queue->subscribers = serialize(
       array(
         'to_process' => $subscribers
@@ -131,5 +162,16 @@ class Scheduler {
       return false;
     }
     return true;
+  }
+
+  private function deleteQueueOrUpdateNextRunDate($queue, $newsletter) {
+    if($newsletter->intervalType === NewsletterScheduler::INTERVAL_IMMEDIATELY) {
+      $queue->delete();
+    } else {
+      $next_run_date = NewsletterScheduler::getNextRunDate($newsletter->schedule);
+      $queue->scheduled_at = $next_run_date;
+      $queue->save();
+    }
+    return;
   }
 }

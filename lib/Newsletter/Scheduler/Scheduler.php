@@ -12,6 +12,13 @@ class Scheduler {
   const SECONDS_IN_HOUR = 3600;
   const LAST_WEEKDAY_FORMAT = 'L';
   const WORDPRESS_ALL_ROLES = 'mailpoet_all';
+  const INTERVAL_IMMEDIATELY = 'immediately';
+  const INTERVAL_IMMEDIATE = 'immediate';
+  const INTERVAL_DAILY = 'daily';
+  const INTERVAL_WEEKLY = 'weekly';
+  const INTERVAL_MONTHLY = 'monthly';
+  const INTERVAL_NTHWEEKDAY = 'nthWeekDay';
+  const STATUS_SCHEDULED = 'scheduled';
 
   static function processPostNotificationSchedule($newsletter_id) {
     $newsletter = Newsletter::filter('filterWithOptions')
@@ -26,21 +33,21 @@ class Scheduler {
       $newsletter['nthWeekDay'] :
       '#' . $newsletter['nthWeekDay'];
     switch($interval_type) {
-      case 'immediately':
+      case self::INTERVAL_IMMEDIATELY:
         $schedule = '* * * * *';
         break;
-      case 'immediate':
-      case 'daily':
+      case self::INTERVAL_IMMEDIATE:
+      case self::INTERVAL_DAILY:
         $schedule = sprintf('0 %s * * *', $hour);
         break;
-      case 'weekly':
+      case self::INTERVAL_WEEKLY:
         $schedule = sprintf('0 %s * * %s', $hour, $week_day);
         break;
-      case 'monthly':
-        $schedule = sprintf('0 %s %s * *', $hour, $month_day);
-        break;
-      case 'nthWeekDay':
+      case self::INTERVAL_NTHWEEKDAY:
         $schedule = sprintf('0 %s ? * %s%s', $hour, $week_day, $nth_week_day);
+        break;
+      case self::INTERVAL_MONTHLY:
+        $schedule = sprintf('0 %s %s * *', $hour, $month_day);
         break;
     }
     $option_field = NewsletterOptionField::where('name', 'schedule')
@@ -71,6 +78,14 @@ class Scheduler {
         $scheduled_notification = self::createPostNotificationQueue($newsletter);
       }
     }
+  }
+
+  /**
+   * Create a properly formatted timestamp for use in Scheduler from
+   * arbitrarily formatted timestamp strings.
+   */
+  static function scheduleFromTimestamp($timestamp) {
+    return Carbon::parse($timestamp)->format('Y-m-d H:i:s');
   }
 
   static function scheduleSubscriberWelcomeNotification(
@@ -149,7 +164,7 @@ class Scheduler {
       default:
         $scheduled_at = $current_time;
     }
-    $queue->status = 'scheduled';
+    $queue->status = self::STATUS_SCHEDULED;
     $queue->scheduled_at = $scheduled_at;
     $queue->save();
   }

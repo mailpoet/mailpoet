@@ -9,6 +9,11 @@
     var mailpoet_settings = <%= json_encode(settings) %>;
     var mailpoet_lists = <%= json_encode(lists) %>;
     var mailpoet_roles = <%= json_encode(roles) %>;
+    var mailpoet_current_date = <%= json_encode(current_date) %>;
+    var mailpoet_current_time = <%= json_encode(current_time) %>;
+    var mailpoet_schedule_time_of_day = <%= json_encode(schedule_time_of_day) %>;
+    var mailpoet_date_display_format = "<%= wp_date_format() %>";
+    var mailpoet_date_storage_format = "Y-m-d";
   </script>
 <% endblock %>
 
@@ -62,6 +67,7 @@
     'edit': __('Edit'),
     'notSentYet': __('Not sent yet.'),
     'scheduledFor': __('Scheduled for'),
+    'scheduleIt': __('Schedule it'),
     'newsletterQueueCompleted': __('Sent to %$1d of %$2d.'),
     'resume': __('Resume'),
     'pause': __('Pause'),
@@ -145,5 +151,50 @@
     'saveDraftAndClose': __('Save as draft and close'),
     'orSimply': __('or simply'),
     'goBackToDesign': __('go back to design'),
+    'websiteTimeIs': __("Your website’s time is"),
+    'noScheduledDateError': __('Please enter the scheduled date'),
+
+    'close': __('Close'),
+    'today': __('Today'),
+    'january': __('January'),
+    'february': __('February'),
+    'march': __('March'),
+    'april': __('April'),
+    'may': __('May'),
+    'june': __('June'),
+    'july': __('July'),
+    'august': __('August'),
+    'september': __('September'),
+    'october': __('October'),
+    'november': __('November'),
+    'december': __('December'),
+    'januaryShort': __('Jan'),
+    'februaryShort': __('Feb'),
+    'marchShort': __('Mar'),
+    'aprilShort': __('Apr'),
+    'mayShort': __('May'),
+    'juneShort': __('Jun'),
+    'julyShort': __('Jul'),
+    'augustShort': __('Aug'),
+    'septemberShort': __('Sep'),
+    'octoberShort': __('Oct'),
+    'novemberShort': __('Nov'),
+    'decemberShort': __('Dec'),
+    'sundayShort': __('Sun'),
+    'mondayShort': __('Mon'),
+    'tuesdayShort': __('Tue'),
+    'wednesdayShort': __('Wed'),
+    'thursdayShort': __('Thu'),
+    'fridayShort': __('Fri'),
+    'saturdayShort': __('Sat'),
+    'sundayMin': __('S'),
+    'mondayMin': __('M'),
+    'tuesdayMin': __('T'),
+    'wednesdayMin': __('W'),
+    'thursdayMin': __('T'),
+    'fridayMin': __('F'),
+    'saturdayMin': __('S'),
+    'next': __('Next'),
+    'previous': __('Previous')
   }) %>
 <% endblock %>

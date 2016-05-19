@@ -23,6 +23,7 @@ class SendingQueue {
   private $timer;
   const BATCH_SIZE = 50;
   const DIVIDER = '***MailPoet***';
+  const STATUS_COMPLETED = 'completed';
 
   function __construct($timer = false) {
     $this->mta_config = $this->getMailerConfig();
@@ -320,7 +321,7 @@ class SendingQueue {
       $queue->count_processed + $queue->count_to_process;
     if(!$queue->count_to_process) {
       $queue->processed_at = current_time('mysql');
-      $queue->status = 'completed';
+      $queue->status = self::STATUS_COMPLETED;
     }
     $queue->subscribers = serialize((array) $queue->subscribers);
     $queue->save();

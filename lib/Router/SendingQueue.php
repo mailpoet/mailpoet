@@ -36,40 +36,6 @@ class SendingQueue {
       $newsletter = $newsletter->asArray();
     }
 
-    // create or update newsletter options, including schedule time
-    $options = array();
-    if(isset($data['options'])) {
-      $options = $data['options'];
-      $options['segments'] = serialize($data['segments']);
-      unset($data['options']);
-    }
-    if($options &&
-      ($newsletter['type'] === 'notification' || $newsletter['type'] === 'welcome')
-    ) {
-      $option_fields = NewsletterOptionField::where(
-        'newsletter_type', $newsletter['type']
-      )->findArray();
-      foreach($option_fields as $option_field) {
-        if(isset($options[$option_field['name']])) {
-          $relation = NewsletterOption::where('option_field_id', $option_field['id'])
-            ->where('newsletter_id', $newsletter['id'])
-            ->findOne();
-          if(!$relation) {
-            $relation = NewsletterOption::create();
-            $relation->newsletter_id = $newsletter['id'];
-            $relation->option_field_id = $option_field['id'];
-          }
-          $relation->value = $options[$option_field['name']];
-          $relation->save();
-        }
-      }
-      if($newsletter['type'] === 'notification') {
-        // convert scheduling options into cron format and add to queue
-        $newsletter = Scheduler::processPostNotificationSchedule($newsletter['id']);
-        Scheduler::createPostNotificationQueue($newsletter);
-      }
-    }
-
     if($newsletter['type'] === 'welcome') {
       return array(
         'result' => true,
@@ -77,6 +43,9 @@ class SendingQueue {
           'message' => __('Your welcome notification is activated.')
         )
       );
+    } elseif ($newsletter['type'] === 'notification') {
+      $newsletter = Scheduler::processPostNotificationSchedule($newsletter['id']);
+      Scheduler::createPostNotificationQueue($newsletter);
     }
 
     $queue = \MailPoet\Models\SendingQueue::whereNull('status')
@@ -89,14 +58,15 @@ class SendingQueue {
       );
     }
 
+    $queue = \MailPoet\Models\SendingQueue::where('status', 'scheduled')
+      ->where('newsletter_id', $newsletter['id'])
+      ->findOne();
+    if(!$queue) {
+      $queue = \MailPoet\Models\SendingQueue::create();
+      $queue->newsletter_id = $newsletter['id'];
+    }
+
     if($newsletter['type'] === 'notification') {
-      $queue = \MailPoet\Models\SendingQueue::where('status', 'scheduled')
-        ->where('newsletter_id', $newsletter['id'])
-        ->findOne();
-      if(!$queue) {
-        $queue = \MailPoet\Models\SendingQueue::create();
-        $queue->newsletter_id = $newsletter['id'];
-      }
       $schedule = Cron::factory($newsletter['schedule']);
       $queue->scheduled_at =
         $schedule->getNextRunDate(current_time('mysql'))->format('Y-m-d H:i:s');
@@ -110,26 +80,39 @@ class SendingQueue {
       );
     }
 
-    $queue = \MailPoet\Models\SendingQueue::create();
-    $queue->newsletter_id = $newsletter['id'];
-
-    $subscribers = Subscriber::getSubscribedInSegments($data['segments'])
-      ->findArray();
-    $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
-    $subscribers = array_unique($subscribers);
-    if(!count($subscribers)) {
-      return array(
-        'result' => false,
-        'errors' => array(__('There are no subscribers.'))
+    if ((bool)$newsletter['isScheduled']) {
+      $queue->status = 'scheduled';
+      $queue->scheduled_at = Scheduler::scheduleFromTimestamp(
+        $newsletter['scheduledAt']
       );
+
+      $message = __('The newsletter has been scheduled.');
+    } else {
+      $segments = $newsletter->segments()->findArray();
+      $segment_ids = array_map(function($segment) {
+        return $segment['id'];
+      }, $segments);
+      $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
+        ->findArray();
+      $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
+      $subscribers = array_unique($subscribers);
+      if(!count($subscribers)) {
+        return array(
+          'result' => false,
+          'errors' => array(__('There are no subscribers.'))
+        );
+      }
+      $queue->subscribers = serialize(
+        array(
+          'to_process' => $subscribers
+        )
+      );
+      $queue->count_total = $queue->count_to_process = count($subscribers);
+
+      $message = __('The newsletter is being sent...');
     }
-    $queue->subscribers = serialize(
-      array(
-        'to_process' => $subscribers
-      )
-    );
-    $queue->count_total = $queue->count_to_process = count($subscribers);
     $queue->save();
+
     $errors = $queue->getErrors();
     if(!empty($errors)) {
       return array(
@@ -140,7 +123,7 @@ class SendingQueue {
       return array(
         'result' => true,
         'data' => array(
-          'message' => __('The newsletter is being sent...')
+          'message' => $message
         )
       );
     }

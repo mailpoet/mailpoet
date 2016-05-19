@@ -14,6 +14,7 @@ use MailPoet\Subscribers\ImportExport\BootStrapMenu;
 use MailPoet\Util\DKIM;
 use MailPoet\Util\Permissions;
 use MailPoet\Listing;
+use MailPoet\WP\DateTime;
 
 if(!defined('ABSPATH')) exit;
 
@@ -401,6 +402,18 @@ class Menu {
     $data['settings'] = Setting::getAll();
     $data['roles'] = $wp_roles->get_names();
     $data['roles']['mailpoet_all'] = __('In any WordPress role');
+
+    $date_time = new DateTime();
+    $data['current_date'] = $date_time->getCurrentDate(DateTime::DEFAULT_DATE_FORMAT);
+    $data['current_time'] = $date_time->getCurrentTime();
+    $data['schedule_time_of_day'] = $date_time->getTimeInterval(
+      '00:00:00',
+      '+1 hour',
+      24
+    );
+
+    wp_enqueue_script('jquery-ui');
+    wp_enqueue_script('jquery-ui-datepicker');
 
     echo $this->renderer->render('newsletters.html', $data);
   }
