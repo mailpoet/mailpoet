@@ -48,6 +48,9 @@ class Export {
       if(is_writable($this->export_path) === false) {
         throw new \Exception(__("Couldn't save export file on the server."));
       }
+      if(!extension_loaded('zip')) {
+        throw new \Exception(__('Export requires a ZIP extension to be installed on the host.'));
+      }
       $processed_subscribers = call_user_func(
         array(
           $this,

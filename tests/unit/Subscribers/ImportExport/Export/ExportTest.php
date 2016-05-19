@@ -231,15 +231,12 @@ class ExportTest extends MailPoetTest {
   function testItCanProcess() {
     $this->export->export_file = $this->export->getExportFile('csv');
     $this->export->export_format_option = 'csv';
-    $this->export->process();
-    $CSV_file_size = filesize($this->export->export_file);
+    $result = $this->export->process();
+    expect($result['result'])->true();
     $this->export->export_file = $this->export->getExportFile('xlsx');
     $this->export->export_format_option = 'xlsx';
-    $this->export->process();
-    $XLS_file_size = filesize($this->export->export_file);
-    expect($CSV_file_size)->greaterThan(0);
-    expect($XLS_file_size)->greaterThan(0);
-    expect($XLS_file_size)->greaterThan($CSV_file_size);
+    $result = $this->export->process();
+    expect($result['result'])->true();
   }
 
   function _after() {
