@@ -10,9 +10,9 @@ define([
       const yearsRange = 100;
       const years = [];
 
-      if (this.props.empty_value_label !== undefined) {
+      if (this.props.placeholder !== undefined) {
         years.push((
-          <option value="" key={ 0 }>{ this.props.empty_value_label }</option>
+          <option value="" key={ 0 }>{ this.props.placeholder }</option>
         ));
       }
 
@@ -41,9 +41,9 @@ define([
     render() {
       const months = [];
 
-      if (this.props.empty_value_label !== undefined) {
+      if (this.props.placeholder !== undefined) {
         months.push((
-          <option value="" key={ 0 }>{ this.props.empty_value_label }</option>
+          <option value="" key={ 0 }>{ this.props.placeholder }</option>
         ));
       }
 
@@ -71,9 +71,9 @@ define([
     render() {
       const days = [];
 
-      if (this.props.empty_value_label !== undefined) {
+      if (this.props.placeholder !== undefined) {
         days.push((
-          <option value="" key={ 0 }>{ this.props.empty_value_label }</option>
+          <option value="" key={ 0 }>{ this.props.placeholder }</option>
         ));
       }
 
@@ -178,7 +178,7 @@ define([
               key={ 'year' }
               name={ this.props.field.name }
               year={ this.state.year }
-              empty_value_label={ this.props.field.empty_year_label }
+              placeholder={ this.props.field.year_placeholder }
             />);
           break;
 
@@ -190,7 +190,7 @@ define([
               name={ this.props.field.name }
               month={ this.state.month }
               monthNames={ monthNames }
-              empty_value_label={ this.props.field.empty_month_label }
+              placeholder={ this.props.field.month_placeholder }
             />);
           break;
 
@@ -201,7 +201,7 @@ define([
               key={ 'day' }
               name={ this.props.field.name }
               day={ this.state.day }
-              empty_value_label={ this.props.field.empty_day_label }
+              placeholder={ this.props.field.day_placeholder }
             />);
           break;
         }

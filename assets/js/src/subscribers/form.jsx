@@ -117,16 +117,16 @@ define(
         field.values = custom_field.params.values;
       }
 
-      // add empty values' label for selects (date, select)
+      // add placeholders for selects (date, select)
       switch(custom_field.type) {
         case 'date':
-          field.empty_year_label = MailPoet.I18n.t('year');
-          field.empty_month_label = MailPoet.I18n.t('month');
-          field.empty_day_label = MailPoet.I18n.t('day');
+          field.year_placeholder = MailPoet.I18n.t('year');
+          field.month_placeholder = MailPoet.I18n.t('month');
+          field.day_placeholder = MailPoet.I18n.t('day');
         break;
 
         case 'select':
-          field.empty_value_label = '-';
+          field.placeholder = '-';
         break;
       }
 
