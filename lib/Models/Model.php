@@ -74,7 +74,7 @@ class Model extends \Sudzy\ValidModel {
     return self::bulkAction($orm, function($ids) use($model) {
       self::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
-          'SET `deleted_at`=NOW()',
+          'SET `deleted_at` = NOW()',
           'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'
         )),
         $ids

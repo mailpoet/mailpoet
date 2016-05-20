@@ -599,7 +599,7 @@ class Subscriber extends Model {
     return parent::bulkAction($orm, function($ids) {
       parent::rawExecute(join(' ', array(
           'UPDATE `'.self::$_table.'`',
-          'SET `deleted_at`=NOW()',
+          'SET `deleted_at` = NOW()',
           'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')',
           'AND `wp_user_id` IS NULL'
         )),
