@@ -159,7 +159,7 @@ define(
             size="10"
             name={this.getFieldName()}
             value={this.getDisplayDate(this.props.value)}
-            readOnly="readOnly"
+            readOnly={ true }
             onChange={this.onChange}
             ref="dateInput"
             {...this.props.validation} />
