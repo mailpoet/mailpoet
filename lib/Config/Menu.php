@@ -355,7 +355,7 @@ class Menu {
     $data = array();
 
     $data['items_per_page'] = $this->getLimitPerPage('subscribers');
-    $data['segments'] = Segment::getSegmentsWithSubscriberCount();
+    $data['segments'] = Segment::findArray();
 
     $data['custom_fields'] = array_map(function($field) {
       $field['params'] = unserialize($field['params']);
@@ -484,7 +484,7 @@ class Menu {
     );
   }
 
-  function getLimitPerPage($model = null) {
+  private function getLimitPerPage($model = null) {
     if($model === null) {
       return Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
     }
