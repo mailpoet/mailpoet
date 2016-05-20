@@ -124,7 +124,8 @@ class Model extends \Sudzy\ValidModel {
       }
     }
 
-    return $total;
+    $last_statement = $orm->get_last_statement();
+    return $last_statement->rowCount();
   }
 
   function duplicate($data = array()) {

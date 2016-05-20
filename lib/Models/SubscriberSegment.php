@@ -17,10 +17,18 @@ class SubscriberSegment extends Model {
   }
 
   static function removeSubscriptions($subscriber, $segment_ids = array()) {
+    $wp_users_segment = Segment::getWPUsers();
+
     if($subscriber->id > 0) {
       if(!empty($segment_ids)) {
-        // subscribe to segments
+        // unsubscribe from segments
         foreach($segment_ids as $segment_id) {
+
+          // do not remove subscriptions to the WP Users segment
+          if($wp_users_segment->id === (int)$segment_id) {
+            continue;
+          }
+
           if((int)$segment_id > 0) {
             self::createOrUpdate(array(
               'subscriber_id' => $subscriber->id,
@@ -29,9 +37,11 @@ class SubscriberSegment extends Model {
             ));
           }
         }
+        return true;
       } else {
-        // unsubscribe from all segments
-        SubscriberSegment::where('subscriber_id', $subscriber->id)
+        // unsubscribe from all segments (except the WP users segment)
+        return SubscriberSegment::where('subscriber_id', $subscriber->id)
+          ->whereNotEqual('segment_id', $wp_users_segment->id)
           ->findResultSet()
           ->set('status', Subscriber::STATUS_UNSUBSCRIBED)
           ->save();
@@ -52,9 +62,11 @@ class SubscriberSegment extends Model {
             ));
           }
         }
+
+        return true;
       } else {
         // subscribe to all segments
-        SubscriberSegment::where('subscriber_id', $subscriber->id)
+        return SubscriberSegment::where('subscriber_id', $subscriber->id)
           ->findResultSet()
           ->set('status', Subscriber::STATUS_SUBSCRIBED)
           ->save();
