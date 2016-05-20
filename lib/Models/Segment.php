@@ -154,6 +154,7 @@ class Segment extends Model {
         'WHERE subscribers.status = "subscribed" ' :
         'WHERE relation.segment_id IS NOT NULL ') .
       'AND subscribers.deleted_at IS NULL ' .
+      'AND relation.status = "subscribed" ' .
       'GROUP BY segments.id) ' .
       'UNION ALL ' .
       '(SELECT 0 as id, "' . __('Not In List') . '" as name, COUNT(*) as subscribers ' .
@@ -163,6 +164,7 @@ class Segment extends Model {
         'WHERE relation.subscriber_id is NULL AND subscribers.status = "subscribed" ' :
         'WHERE relation.subscriber_id is NULL ') .
       'AND subscribers.deleted_at IS NULL ' .
+      'AND relation.status = "subscribed" ' .
       'HAVING subscribers) ' .
       'ORDER BY name'
     )->findArray();

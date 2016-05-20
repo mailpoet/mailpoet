@@ -185,7 +185,7 @@ class SegmentTest extends MailPoetTest {
       }
     }
     $segments = Segment::getSegmentsForExport();
-    expect(count($segments))->equals(2);
+    expect(count($segments))->equals(1);
     expect($segments[0]['name'])->equals('Not In List');
     $segments = Segment::getSegmentsForExport($withConfirmedSubscribers = true);
     expect(count($segments))->equals(1);
