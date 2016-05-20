@@ -181,26 +181,22 @@ class SegmentTest extends MailPoetTest {
         $association = SubscriberSegment::create();
         $association->subscriber_id = $subscriber->id;
         $association->segment_id = $this->segment->id;
+        $association->status = 'subscribed';
         $association->save();
       }
     }
     $segments = Segment::getSegmentsForExport();
-    expect(count($segments))->equals(1);
+    expect(count($segments))->equals(2);
     expect($segments[0]['name'])->equals('Not In List');
     $segments = Segment::getSegmentsForExport($withConfirmedSubscribers = true);
     expect(count($segments))->equals(1);
   }
 
   function _after() {
-    ORM::forTable(Segment::$_table)
-      ->deleteMany();
-    ORM::forTable(Subscriber::$_table)
-      ->deleteMany();
-    ORM::forTable(SubscriberSegment::$_table)
-      ->deleteMany();
-    ORM::forTable(Newsletter::$_table)
-      ->deleteMany();
-    ORM::forTable(NewsletterSegment::$_table)
-      ->deleteMany();
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
   }
 }
