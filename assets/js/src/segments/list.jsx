@@ -212,13 +212,13 @@ const SegmentList = React.createClass({
           <abbr>{ segment.description }</abbr>
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('subscribed') }>
-          <abbr>{ subscribed }</abbr>
+          <abbr>{ subscribed.toLocaleString() }</abbr>
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('unconfirmed') }>
-          <abbr>{ unconfirmed }</abbr>
+          <abbr>{ unconfirmed.toLocaleString() }</abbr>
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('unsubscribed') }>
-          <abbr>{ unsubscribed }</abbr>
+          <abbr>{ unsubscribed.toLocaleString() }</abbr>
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('createdOn') }>
           <abbr>{ MailPoet.Date.format(segment.created_at) }</abbr>
