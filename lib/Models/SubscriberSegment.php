@@ -25,7 +25,10 @@ class SubscriberSegment extends Model {
         foreach($segment_ids as $segment_id) {
 
           // do not remove subscriptions to the WP Users segment
-          if($wp_users_segment->id === (int)$segment_id) {
+          if(
+            $wp_users_segment !== false
+            && ($wp_users_segment->id === (int)$segment_id)
+          ) {
             continue;
           }
 
@@ -40,9 +43,15 @@ class SubscriberSegment extends Model {
         return true;
       } else {
         // unsubscribe from all segments (except the WP users segment)
-        return SubscriberSegment::where('subscriber_id', $subscriber->id)
-          ->whereNotEqual('segment_id', $wp_users_segment->id)
-          ->findResultSet()
+        $subscritpions = SubscriberSegment::where('subscriber_id', $subscriber->id);
+
+        if($wp_users_segment !== false) {
+          $subscritpions = $subscritpions->whereNotEqual(
+            'segment_id', $wp_users_segment->id
+          );
+        }
+
+        $subscritpions->findResultSet()
           ->set('status', Subscriber::STATUS_UNSUBSCRIBED)
           ->save();
       }

@@ -26,6 +26,5 @@ class BulkAction {
       array($this->model_class, 'bulk'.ucfirst($this->action)),
       array($this->listing->getSelection(), $this->data)
     );
-    return $models->count();
   }
 }

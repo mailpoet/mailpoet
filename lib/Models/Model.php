@@ -122,10 +122,12 @@ class Model extends \Sudzy\ValidModel {
       if(is_callable($callback)) {
         $callback($ids);
       }
+
+      $last_statement = $orm->get_last_statement();
+      return $last_statement->rowCount();
     }
 
-    $last_statement = $orm->get_last_statement();
-    return $last_statement->rowCount();
+    return false;
   }
 
   function duplicate($data = array()) {

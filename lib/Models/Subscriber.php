@@ -497,20 +497,19 @@ class Subscriber extends Model {
   static function bulkMoveToList($orm, $data = array()) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
+
     if($segment !== false) {
+      $subscribers_count = 0;
       $subscribers = $orm->findResultSet();
       foreach($subscribers as $subscriber) {
-        // remove subscriber from all segments
-        SubscriberSegment::where('subscriber_id', $subscriber->id)->deleteMany();
-
-        // create relation with segment
-        $association = SubscriberSegment::create();
-        $association->subscriber_id = $subscriber->id;
-        $association->segment_id = $segment->id;
-        $association->save();
+        try {
+          SubscriberSegment::setSubscriptions($subscriber, array($segment->id));
+          $subscribers_count++;
+        } catch(Exception $e) {
+        }
       }
       return array(
-        'subscribers' => $subscribers->count(),
+        'subscribers' => $subscribers_count,
         'segment' => $segment->name
       );
     }
@@ -522,16 +521,20 @@ class Subscriber extends Model {
     $segment = Segment::findOne($segment_id);
 
     if($segment !== false) {
+      $subscribers_count = 0;
+
       // delete relations with segment
       $subscribers = $orm->findResultSet();
       foreach($subscribers as $subscriber) {
-        SubscriberSegment::where('subscriber_id', $subscriber->id)
-          ->where('segment_id', $segment->id)
-          ->deleteMany();
+        try {
+          SubscriberSegment::removeSubscriptions($subscriber, array($segment->id));
+          $subscribers_count++;
+        } catch(Exception $e) {
+        }
       }
 
       return array(
-        'subscribers' => $subscribers->count(),
+        'subscribers' => $subscribers_count,
         'segment' => $segment->name
       );
     }
@@ -582,7 +585,6 @@ class Subscriber extends Model {
           SubscriberSegment::addSubscriptions($subscriber, array($segment->id));
           $subscribers_count++;
         } catch(Exception $e) {
-          continue;
         }
       }
       return array(
@@ -607,13 +609,17 @@ class Subscriber extends Model {
   }
 
   static function bulkDelete($orm) {
-    $wp_users_segment = Segment::getWPUsers();
+    return parent::bulkAction($orm, function($ids) {
+      $wp_users_segment = Segment::getWPUsers();
 
-    return parent::bulkAction($orm, function($ids) use ($wp_users_segment) {
       // delete subscribers' relations to segments (except WP Users' segment)
-      SubscriberSegment::whereIn('subscriber_id', $ids)
-        ->whereNotEqual('segment_id', $wp_users_segment->id)
-        ->deleteMany();
+      $subscriptions = SubscriberSegment::whereIn('subscriber_id', $ids);
+      if($wp_users_segment !== false) {
+        $subscriptions = $subscriptions->whereNotEqual(
+          'segment_id', $wp_users_segment->id
+        );
+      }
+      $subscriptions->deleteMany();
 
       // delete subscribers (except WP Users)
       Subscriber::whereIn('id', $ids)
