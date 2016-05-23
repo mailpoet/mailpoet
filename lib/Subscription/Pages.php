@@ -249,13 +249,15 @@ class Pages {
       );
     }, $segments);
 
+
     $fields = array(
       array(
         'id' => 'first_name',
         'type' => 'text',
         'params' => array(
           'label' => __('First name'),
-          'value' => $subscriber->first_name
+          'value' => $subscriber->first_name,
+          'disabled' => ($subscriber->wp_user_id !== null)
         )
       ),
       array(
@@ -263,7 +265,8 @@ class Pages {
         'type' => 'text',
         'params' => array(
           'label' => __('Last name'),
-          'value' => $subscriber->last_name
+          'value' => $subscriber->last_name,
+          'disabled' => ($subscriber->wp_user_id !== null)
         )
       ),
       array(
@@ -329,12 +332,23 @@ class Pages {
     $form_html .= '<p class="mailpoet_paragraph">';
     $form_html .= '<label>Email *<br /><strong>'.$subscriber->email.'</strong></label>';
     $form_html .= '<br /><span style="font-size:85%;">';
+    // special case for WP users as they cannot edit their subscriber's email
     if($subscriber->wp_user_id !== null) {
-      $form_html .= str_replace(
-        array('[link]', '[/link]'),
-        array('<a href="'.wp_login_url().'" target="_blank">', '</a>'),
-        __('[link]Log in to your account[/link] to update your email.')
-      );
+      // check if subscriber's associated WP user is the currently logged in WP user
+      $wp_current_user = wp_get_current_user();
+      if($wp_current_user->user_email === $subscriber->email) {
+        $form_html .= str_replace(
+          array('[link]', '[/link]'),
+          array('<a href="'.get_edit_profile_url().'" target="_blank">', '</a>'),
+          __('[link]Edit your profile[/link] to update your email.')
+        );
+      } else {
+        $form_html .= str_replace(
+          array('[link]', '[/link]'),
+          array('<a href="'.wp_login_url().'" target="_blank">', '</a>'),
+          __('[link]Log in to your account[/link] to update your email.')
+        );
+      }
     } else {
       $form_html .= __('Need to change your email address? Unsubscribe here, then simply sign up again.');
     }

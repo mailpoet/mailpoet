@@ -81,6 +81,16 @@ class Hooks {
         );
       }
     }
+
+    // Manage subscription
+    add_action(
+      'admin_post_mailpoet_subscription_update',
+      '\MailPoet\Subscription\Manage::onSave'
+    );
+    add_action(
+      'admin_post_nopriv_mailpoet_subscription_update',
+      '\MailPoet\Subscription\Manage::onSave'
+    );
   }
 
   function setupWPUsers() {

@@ -116,11 +116,11 @@ abstract class Base {
   protected static function getInputModifiers($block = array()) {
     $modifiers = array();
 
-    if(isset($block['params']['readonly'])) {
+    if(isset($block['params']['readonly']) && $block['params']['readonly']) {
       $modifiers[] = 'readonly';
     }
 
-    if(isset($block['params']['disabled'])) {
+    if(isset($block['params']['disabled']) && $block['params']['disabled']) {
       $modifiers[] = 'disabled';
     }
     return join(' ', $modifiers);
