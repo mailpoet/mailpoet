@@ -10,7 +10,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Util\Helpers;
-use Cron\CronExpression as Cron;
 
 if(!defined('ABSPATH')) exit;
 
@@ -65,9 +64,7 @@ class SendingQueue {
     }
 
     if($newsletter->type === 'notification') {
-      $schedule = Cron::factory($newsletter->schedule);
-      $queue->scheduled_at =
-        $schedule->getNextRunDate(current_time('mysql'))->format('Y-m-d H:i:s');
+      $queue->scheduled_at = Scheduler::getNextRunDate($newsletter->schedule);
       $queue->status = 'scheduled';
       $queue->save();
       return array(
