@@ -43,7 +43,7 @@ class Subscriber extends Model {
 
   function delete() {
     // WP Users cannot be deleted
-    if($this->wp_user_id !== null) {
+    if($this->isWPUser()) {
       return false;
     } else {
       // delete all relations to segments
@@ -55,11 +55,15 @@ class Subscriber extends Model {
 
   function trash() {
     // WP Users cannot be trashed
-    if($this->wp_user_id !== null) {
+    if($this->isWPUser()) {
       return false;
     } else {
       return parent::trash();
     }
+  }
+
+  function isWPUser() {
+    return ($this->wp_user_id !== null);
   }
 
   function sendConfirmationEmail() {
@@ -173,7 +177,7 @@ class Subscriber extends Model {
 
       if($subscriber->save()) {
         // link subscriber to segments
-        SubscriberSegment::addSubscriptions($subscriber, $segment_ids);
+        SubscriberSegment::subscribeToSegments($subscriber, $segment_ids);
 
         // signup confirmation
         if($subscriber->status !== self::STATUS_SUBSCRIBED) {
@@ -435,10 +439,10 @@ class Subscriber extends Model {
           ($new_status === self::STATUS_UNSUBSCRIBED)
       ) {
         // make sure we unsubscribe the user from all segments
-        SubscriberSegment::removeSubscriptions($subscriber);
+        SubscriberSegment::unsubscribeFromSegments($subscriber);
       } else {
         if($segment_ids !== false) {
-          SubscriberSegment::setSubscriptions($subscriber, $segment_ids);
+          SubscriberSegment::resetSubscriptions($subscriber, $segment_ids);
         }
       }
     }
@@ -502,11 +506,8 @@ class Subscriber extends Model {
       $subscribers_count = 0;
       $subscribers = $orm->findResultSet();
       foreach($subscribers as $subscriber) {
-        try {
-          SubscriberSegment::setSubscriptions($subscriber, array($segment->id));
-          $subscribers_count++;
-        } catch(Exception $e) {
-        }
+        SubscriberSegment::resetSubscriptions($subscriber, array($segment->id));
+        $subscribers_count++;
       }
       return array(
         'subscribers' => $subscribers_count,
@@ -526,11 +527,8 @@ class Subscriber extends Model {
       // delete relations with segment
       $subscribers = $orm->findResultSet();
       foreach($subscribers as $subscriber) {
-        try {
-          SubscriberSegment::removeSubscriptions($subscriber, array($segment->id));
-          $subscribers_count++;
-        } catch(Exception $e) {
-        }
+        SubscriberSegment::unsubscribeFromSegments($subscriber, array($segment->id));
+        $subscribers_count++;
       }
 
       return array(
@@ -545,12 +543,8 @@ class Subscriber extends Model {
     $subscribers = $orm->findResultSet();
     $subscribers_count = 0;
     foreach($subscribers as $subscriber) {
-      try {
-        SubscriberSegment::removeSubscriptions($subscriber);
-        $subscribers_count++;
-      } catch(Exception $e) {
-        continue;
-      }
+      SubscriberSegment::unsubscribeFromSegments($subscriber);
+      $subscribers_count++;
     }
 
     return $subscribers_count;
@@ -582,7 +576,7 @@ class Subscriber extends Model {
       $subscribers = $orm->findMany();
       foreach($subscribers as $subscriber) {
         try {
-          SubscriberSegment::addSubscriptions($subscriber, array($segment->id));
+          SubscriberSegment::subscribeToSegments($subscriber, array($segment->id));
           $subscribers_count++;
         } catch(Exception $e) {
         }
@@ -609,20 +603,12 @@ class Subscriber extends Model {
   }
 
   static function bulkDelete($orm) {
-    return parent::bulkAction($orm, function($ids) {
-      $wp_users_segment = Segment::getWPUsers();
-
-      // delete subscribers' relations to segments (except WP Users' segment)
-      $subscriptions = SubscriberSegment::whereIn('subscriber_id', $ids);
-      if($wp_users_segment !== false) {
-        $subscriptions = $subscriptions->whereNotEqual(
-          'segment_id', $wp_users_segment->id
-        );
-      }
-      $subscriptions->deleteMany();
+    return parent::bulkAction($orm, function($subscriber_ids) {
+      // delete all subscriber/segment relationships
+      SubscriberSegment::deleteSubscriptionsForAll($subscriber_ids);
 
       // delete subscribers (except WP Users)
-      Subscriber::whereIn('id', $ids)
+      Subscriber::whereIn('id', $subscriber_ids)
         ->whereNull('wp_user_id')
         ->deleteMany();
     });

@@ -16,18 +16,19 @@ class SubscriberSegment extends Model {
     return $this->has_one(__NAMESPACE__.'\Subscriber', 'id', 'subscriber_id');
   }
 
-  static function removeSubscriptions($subscriber, $segment_ids = array()) {
-    $wp_users_segment = Segment::getWPUsers();
+  static function unsubscribeFromSegments($subscriber, $segment_ids = array()) {
+    if($subscriber !== false && $subscriber->id > 0) {
 
-    if($subscriber->id > 0) {
+      $wp_segment = Segment::getWPSegment();
+
       if(!empty($segment_ids)) {
         // unsubscribe from segments
         foreach($segment_ids as $segment_id) {
 
           // do not remove subscriptions to the WP Users segment
           if(
-            $wp_users_segment !== false
-            && ($wp_users_segment->id === (int)$segment_id)
+            $wp_segment !== false
+            && ($wp_segment->id === (int)$segment_id)
           ) {
             continue;
           }
@@ -43,22 +44,23 @@ class SubscriberSegment extends Model {
         return true;
       } else {
         // unsubscribe from all segments (except the WP users segment)
-        $subscritpions = SubscriberSegment::where('subscriber_id', $subscriber->id);
+        $subscriptions = self::where('subscriber_id', $subscriber->id);
 
-        if($wp_users_segment !== false) {
-          $subscritpions = $subscritpions->whereNotEqual(
-            'segment_id', $wp_users_segment->id
+        if($wp_segment !== false) {
+          $subscriptions = $subscriptions->whereNotEqual(
+            'segment_id', $wp_segment->id
           );
         }
 
-        $subscritpions->findResultSet()
+        return $subscriptions->findResultSet()
           ->set('status', Subscriber::STATUS_UNSUBSCRIBED)
           ->save();
       }
     }
+    return false;
   }
 
-  static function addSubscriptions($subscriber, $segment_ids = array()) {
+  static function subscribeToSegments($subscriber, $segment_ids = array()) {
     if($subscriber->id > 0) {
       if(!empty($segment_ids)) {
         // subscribe to segments
@@ -75,17 +77,51 @@ class SubscriberSegment extends Model {
         return true;
       } else {
         // subscribe to all segments
-        return SubscriberSegment::where('subscriber_id', $subscriber->id)
+        return self::where('subscriber_id', $subscriber->id)
           ->findResultSet()
           ->set('status', Subscriber::STATUS_SUBSCRIBED)
           ->save();
       }
     }
+    return false;
   }
 
-  static function setSubscriptions($subscriber, $segment_ids = array()) {
-    self::removeSubscriptions($subscriber);
-    self::addSubscriptions($subscriber, $segment_ids);
+  static function resetSubscriptions($subscriber, $segment_ids = array()) {
+    self::unsubscribeFromSegments($subscriber);
+    return self::subscribeToSegments($subscriber, $segment_ids);
+  }
+
+  static function deleteSubscriptionsForAll($subscriber_ids = array()) {
+    if(!empty($subscriber_ids)) {
+      // delete subscribers' relations to segments (except WP Users' segment)
+      $subscriptions = SubscriberSegment::whereIn('subscriber_id', $subscriber_ids);
+
+      $wp_segment = Segment::getWPSegment();
+      if($wp_segment !== false) {
+        $subscriptions = $subscriptions->whereNotEqual(
+          'segment_id', $wp_segment->id
+        );
+      }
+      return $subscriptions->deleteMany();
+    }
+    return false;
+  }
+
+  static function deleteSubscriptions($subscriber) {
+    if($subscriber !== false && $subscriber->id > 0) {
+      // delete all relationships to segments (except the WP users segment)
+      $subscriptions = self::where('subscriber_id', $subscriber->id);
+
+      $wp_segment = Segment::getWPSegment();
+      if($wp_segment !== false) {
+        $subscriptions = $subscriptions->whereNotEqual(
+          'segment_id', $wp_segment->id
+        );
+      }
+
+      return $subscriptions->delete();
+    }
+    return false;
   }
 
   static function subscribed($orm) {

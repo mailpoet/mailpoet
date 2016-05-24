@@ -109,18 +109,18 @@ class Populator {
 
   private function createDefaultSegments() {
     // WP Users segment
-    $wp_users_segment = Segment::getWPUsers();
+    $wp_segment = Segment::getWPSegment();
 
-    if($wp_users_segment === false) {
+    if($wp_segment === false) {
       // create the wp users list
-      $wp_users_segment = Segment::create();
-      $wp_users_segment->hydrate(array(
+      $wp_segment = Segment::create();
+      $wp_segment->hydrate(array(
         'name' => __('WordPress Users'),
         'description' =>
           __('The list containing all of your WordPress users.'),
         'type' => 'wp_users'
       ));
-      $wp_users_segment->save();
+      $wp_segment->save();
     }
 
     // Synchronize WP Users

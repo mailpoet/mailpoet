@@ -93,7 +93,7 @@ class Segment extends Model {
     return $this;
   }
 
-  static function getWPUsers() {
+  static function getWPSegment() {
     return self::where('type', 'wp_users')->findOne();
   }
 
