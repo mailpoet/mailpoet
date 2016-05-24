@@ -184,7 +184,8 @@ class Segment extends Model {
       $segment->set($data);
     }
 
-    return $segment->save();
+    $segment->save();
+    return $segment;
   }
 
   static function getPublic() {

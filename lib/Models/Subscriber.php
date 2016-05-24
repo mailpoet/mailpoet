@@ -47,7 +47,7 @@ class Subscriber extends Model {
       return false;
     } else {
       // delete all relations to segments
-      SubscriberSegment::where('subscriber_id', $this->id)->deleteMany();
+      SubscriberSegment::deleteSubscriptions($this);
 
       return parent::delete();
     }
@@ -590,14 +590,14 @@ class Subscriber extends Model {
   }
 
   static function bulkTrash($orm) {
-    return parent::bulkAction($orm, function($ids) {
+    return parent::bulkAction($orm, function($subscriber_ids) use($orm) {
       parent::rawExecute(join(' ', array(
           'UPDATE `'.self::$_table.'`',
           'SET `deleted_at` = NOW()',
-          'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')',
+          'WHERE `id` IN ('.rtrim(str_repeat('?,', count($subscriber_ids)), ',').')',
           'AND `wp_user_id` IS NULL'
         )),
-        $ids
+        $subscriber_ids
       );
     });
   }
@@ -605,7 +605,7 @@ class Subscriber extends Model {
   static function bulkDelete($orm) {
     return parent::bulkAction($orm, function($subscriber_ids) {
       // delete all subscriber/segment relationships
-      SubscriberSegment::deleteSubscriptionsForAll($subscriber_ids);
+      SubscriberSegment::deleteManySubscriptions($subscriber_ids);
 
       // delete subscribers (except WP Users)
       Subscriber::whereIn('id', $subscriber_ids)

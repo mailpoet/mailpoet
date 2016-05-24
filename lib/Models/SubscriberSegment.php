@@ -41,7 +41,6 @@ class SubscriberSegment extends Model {
             ));
           }
         }
-        return true;
       } else {
         // unsubscribe from all segments (except the WP users segment)
         $subscriptions = self::where('subscriber_id', $subscriber->id);
@@ -52,10 +51,11 @@ class SubscriberSegment extends Model {
           );
         }
 
-        return $subscriptions->findResultSet()
+        $subscriptions->findResultSet()
           ->set('status', Subscriber::STATUS_UNSUBSCRIBED)
           ->save();
       }
+      return true;
     }
     return false;
   }
@@ -73,7 +73,6 @@ class SubscriberSegment extends Model {
             ));
           }
         }
-
         return true;
       } else {
         // subscribe to all segments
@@ -91,10 +90,12 @@ class SubscriberSegment extends Model {
     return self::subscribeToSegments($subscriber, $segment_ids);
   }
 
-  static function deleteSubscriptionsForAll($subscriber_ids = array()) {
+  static function deleteManySubscriptions($subscriber_ids = array()) {
     if(!empty($subscriber_ids)) {
       // delete subscribers' relations to segments (except WP Users' segment)
-      $subscriptions = SubscriberSegment::whereIn('subscriber_id', $subscriber_ids);
+      $subscriptions = SubscriberSegment::whereIn(
+        'subscriber_id', $subscriber_ids
+      );
 
       $wp_segment = Segment::getWPSegment();
       if($wp_segment !== false) {
@@ -109,17 +110,8 @@ class SubscriberSegment extends Model {
 
   static function deleteSubscriptions($subscriber) {
     if($subscriber !== false && $subscriber->id > 0) {
-      // delete all relationships to segments (except the WP users segment)
-      $subscriptions = self::where('subscriber_id', $subscriber->id);
-
-      $wp_segment = Segment::getWPSegment();
-      if($wp_segment !== false) {
-        $subscriptions = $subscriptions->whereNotEqual(
-          'segment_id', $wp_segment->id
-        );
-      }
-
-      return $subscriptions->delete();
+      // delete all relationships to segments
+      return self::where('subscriber_id', $subscriber->id)->deleteMany();
     }
     return false;
   }
@@ -152,6 +144,7 @@ class SubscriberSegment extends Model {
     return $subscription->save();
   }
 
+  // TO BE REVIEWED
   static function createMultiple($segmnets, $subscribers) {
     $values = Helpers::flattenArray(
       array_map(function ($segment) use ($subscribers) {

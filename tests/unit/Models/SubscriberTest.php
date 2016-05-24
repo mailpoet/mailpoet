@@ -423,6 +423,30 @@ class SubscriberTest extends MailPoetTest {
       Subscriber::getSubscribedInSegments(array(1))->findArray();
     expect(count($subscribed_subscribers_in_segment))->equals(2);
   }
+
+  function testItCannotTrashAWPUser() {
+    $wp_subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'some.wp.user@mailpoet.com',
+      'wp_user_id' => 1
+    ));
+    expect($wp_subscriber->trash())->equals(false);
+
+    $subscriber = Subscriber::findOne($wp_subscriber->id);
+    expect($subscriber)->notEquals(false);
+    expect($subscriber->deleted_at)->equals(null);
+  }
+
+  function testItCannotDeleteAWPUser() {
+    $wp_subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'some.wp.user@mailpoet.com',
+      'wp_user_id' => 1
+    ));
+    expect($wp_subscriber->delete())->equals(false);
+
+    $subscriber = Subscriber::findOne($wp_subscriber->id);
+    expect($subscriber)->notEquals(false);
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
