@@ -71,7 +71,7 @@ class Scheduler {
     $newsletters = self::getNewsletters('notification');
     if(!count($newsletters)) return;
     foreach($newsletters as $newsletter) {
-      $post = NewsletterPost::where('newsletter_id', $newsletter['id'])
+      $post = NewsletterPost::where('newsletter_id', $newsletter->id)
         ->where('post_id', $post_id)
         ->findOne();
       if($post === false) {
@@ -95,8 +95,8 @@ class Scheduler {
     $newsletters = self::getNewsletters('welcome');
     if(!count($newsletters)) return;
     foreach($newsletters as $newsletter) {
-      if($newsletter['event'] === 'segment' &&
-        in_array($newsletter['segment'], $segments)
+      if($newsletter->event === 'segment' &&
+        in_array($newsletter->segment, $segments)
       ) {
         self::createWelcomeNotificationQueue($newsletter, $subscriber_id);
       }
@@ -111,19 +111,19 @@ class Scheduler {
     $newsletters = self::getNewsletters('welcome');
     if(!count($newsletters)) return;
     foreach($newsletters as $newsletter) {
-      if($newsletter['event'] === 'user') {
+      if($newsletter->event === 'user') {
         if($old_user_data) {
           // do not schedule welcome newsletter if roles have not changed
           $old_role = (array) $old_user_data->roles;
           $new_role = (array) $wp_user->roles;
-          if($newsletter['role'] === self::WORDPRESS_ALL_ROLES ||
+          if($newsletter->role === self::WORDPRESS_ALL_ROLES ||
             !array_diff($old_role, $new_role)
           ) {
             continue;
           }
         }
-        if($newsletter['role'] === self::WORDPRESS_ALL_ROLES ||
-          in_array($newsletter['role'], $wp_user['roles'])
+        if($newsletter->role === self::WORDPRESS_ALL_ROLES ||
+          in_array($newsletter->role, $wp_user['roles'])
         ) {
           self::createWelcomeNotificationQueue($newsletter, $subscriber_id);
         }
@@ -135,20 +135,20 @@ class Scheduler {
     return Newsletter::where('type', $type)
       ->whereNull('deleted_at')
       ->filter('filterWithOptions')
-      ->findArray();
+      ->findMany();
   }
 
   static function createWelcomeNotificationQueue($newsletter, $subscriber_id) {
     $queue = SendingQueue::create();
-    $queue->newsletter_id = $newsletter['id'];
+    $queue->newsletter_id = $newsletter->id;
     $queue->subscribers = serialize(
       array(
         'to_process' => array($subscriber_id)
       )
     );
     $queue->count_total = $queue->count_to_process = 1;
-    $after_time_type = $newsletter['afterTimeType'];
-    $after_time_number = $newsletter['afterTimeNumber'];
+    $after_time_type = $newsletter->afterTimeType;
+    $after_time_number = $newsletter->afterTimeNumber;
     $scheduled_at = null;
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     switch($after_time_type) {
