@@ -32,24 +32,22 @@ class SendingQueue {
         'result' => false,
         'errors' => array(__('Newsletter does not exist.'))
       );
-    } else {
-      $newsletter = $newsletter->asArray();
     }
 
-    if($newsletter['type'] === 'welcome') {
+    if($newsletter->type === 'welcome') {
       return array(
         'result' => true,
         'data' => array(
           'message' => __('Your welcome notification is activated.')
         )
       );
-    } elseif ($newsletter['type'] === 'notification') {
-      $newsletter = Scheduler::processPostNotificationSchedule($newsletter['id']);
+    } elseif ($newsletter->type === 'notification') {
+      $newsletter = Scheduler::processPostNotificationSchedule($newsletter->id);
       Scheduler::createPostNotificationQueue($newsletter);
     }
 
     $queue = \MailPoet\Models\SendingQueue::whereNull('status')
-      ->where('newsletter_id', $newsletter['id'])
+      ->where('newsletter_id', $newsletter->id)
       ->findOne();
     if(!empty($queue)) {
       return array(
@@ -59,15 +57,15 @@ class SendingQueue {
     }
 
     $queue = \MailPoet\Models\SendingQueue::where('status', 'scheduled')
-      ->where('newsletter_id', $newsletter['id'])
+      ->where('newsletter_id', $newsletter->id)
       ->findOne();
     if(!$queue) {
       $queue = \MailPoet\Models\SendingQueue::create();
-      $queue->newsletter_id = $newsletter['id'];
+      $queue->newsletter_id = $newsletter->id;
     }
 
-    if($newsletter['type'] === 'notification') {
-      $schedule = Cron::factory($newsletter['schedule']);
+    if($newsletter->type === 'notification') {
+      $schedule = Cron::factory($newsletter->schedule);
       $queue->scheduled_at =
         $schedule->getNextRunDate(current_time('mysql'))->format('Y-m-d H:i:s');
       $queue->status = 'scheduled';
@@ -80,10 +78,10 @@ class SendingQueue {
       );
     }
 
-    if ((bool)$newsletter['isScheduled']) {
+    if ((bool)$newsletter->isScheduled) {
       $queue->status = 'scheduled';
       $queue->scheduled_at = Scheduler::scheduleFromTimestamp(
-        $newsletter['scheduledAt']
+        $newsletter->scheduledAt
       );
 
       $message = __('The newsletter has been scheduled.');

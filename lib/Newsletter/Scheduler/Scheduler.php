@@ -64,7 +64,7 @@ class Scheduler {
     $relation->value = $schedule;
     $relation->save();
     return Newsletter::filter('filterWithOptions')
-      ->findOne($newsletter_id)->asArray();
+      ->findOne($newsletter_id);
   }
 
   static function schedulePostNotification($post_id) {
@@ -170,14 +170,14 @@ class Scheduler {
   }
 
   static function createPostNotificationQueue($newsletter) {
-    $next_run_date = self::getNextRunDate($newsletter['schedule']);
+    $next_run_date = self::getNextRunDate($newsletter->schedule);
     // do not schedule duplicate queues for the same time
-    $existing_queue = SendingQueue::where('newsletter_id', $newsletter['id'])
+    $existing_queue = SendingQueue::where('newsletter_id', $newsletter->id)
       ->where('scheduled_at', $next_run_date)
       ->findOne();
     if($existing_queue) return;
     $queue = SendingQueue::create();
-    $queue->newsletter_id = $newsletter['id'];
+    $queue->newsletter_id = $newsletter->id;
     $queue->status = 'scheduled';
     $queue->scheduled_at = $next_run_date;
     $queue->save();
