@@ -94,7 +94,21 @@ class Segment extends Model {
   }
 
   static function getWPSegment() {
-    return self::where('type', 'wp_users')->findOne();
+    $wp_segment = self::where('type', 'wp_users')->findOne();
+
+    if($wp_segment === false) {
+      // create the wp users segment
+      $wp_segment = Segment::create();
+      $wp_segment->hydrate(array(
+        'name' => __('WordPress Users'),
+        'description' =>
+          __('The list containing all of your WordPress users.'),
+        'type' => 'wp_users'
+      ));
+      $wp_segment->save();
+    }
+
+    return $wp_segment;
   }
 
   static function search($orm, $search = '') {

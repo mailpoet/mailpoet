@@ -12,6 +12,8 @@ class SubscriberSegmentTest extends MailPoetTest {
     ));
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
+
+    $this->wp_segment = Segment::getWPSegment();
   }
 
   function testItCanSubscribeToSegments() {
@@ -201,6 +203,43 @@ class SubscriberSegmentTest extends MailPoetTest {
 
     $subscriptions_count = SubscriberSegment::filter('subscribed')->count();
     expect($subscriptions_count)->equals(1);
+  }
+
+  function testItCannotUnsubscribeFromWPSegment() {
+    // subscribe to a segment and the WP segment
+    $result = SubscriberSegment::subscribeToSegments($this->subscriber, array(
+        $this->segment_1->id,
+        $this->wp_segment->id
+    ));
+    expect($result)->true();
+
+    // unsubscribe from all segments
+    $result = SubscriberSegment::unsubscribeFromSegments($this->subscriber);
+    expect($result)->true();
+
+    // the subscriber should still be subscribed to the WP segment
+    $subscribed_segments = $this->subscriber->segments()->findArray();
+    expect($subscribed_segments)->count(1);
+    expect($subscribed_segments[0]['name'])->equals($this->wp_segment->name);
+  }
+
+  function testItCanDeleteSubscriptionToWPSegment() {
+    // subscribe to a segment and the WP segment
+    $result = SubscriberSegment::subscribeToSegments($this->subscriber, array(
+        $this->segment_1->id,
+        $this->wp_segment->id
+    ));
+    expect($result)->true();
+
+    // delete all subscriber's subscriptions
+    $result = SubscriberSegment::deleteSubscriptions($this->subscriber);
+    expect($result)->true();
+
+    // it should have removed all subscriptions (even to the WP segment)
+    $subscriptions_count = SubscriberSegment::where(
+        'subscriber_id', $this->subscriber->id
+      )->count();
+    expect($subscriptions_count)->equals(0);
   }
 
   function _after() {
