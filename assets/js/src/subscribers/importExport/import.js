@@ -529,6 +529,7 @@ define(
               segmentSelectElement
                   .html('')
                   .select2('destroy');
+              toggleNextStepButton('off');
             }
             segmentSelectElement
                 .select2({
@@ -1080,7 +1081,6 @@ define(
                   });
                 importData.step2 = importResults;
                 enableSegmentSelection(mailpoetSegments);
-                toggleNextStepButton('off');
                 router.navigate('step3', {trigger: true});
               }
             });
