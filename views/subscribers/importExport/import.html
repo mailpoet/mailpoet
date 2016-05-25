@@ -25,7 +25,8 @@
     mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
     mailpoetColumns = <%= subscriberFields|raw %>,
     mailpoetSegments = <%= segments|raw %>,
-    emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-_]{0,61}[a-zA-Z0-9])+.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    // HTML5 email regex: https://html.spec.whatwg.org/multipage/forms.html#valid-e-mail-address
+    emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 </script>
 <% endblock %>
 

@@ -304,28 +304,28 @@ define(
                 advancedOptionDelimiter = '',
                 advancedOptionNewline = '',
                 advancedOptionComments = false,
-            // trim spaces, commas, periods,
-            // single/double quotes and convert to lowercase
+                // trim spaces, commas, periods,
+                // single/double quotes and convert to lowercase
                 detectAndCleanupEmail = function (email) {
-                  email = email.toLowerCase();
-                  var test,
-                      cleanEmail =
-                          email
-                          // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
-                          // right trim non-printable characters (e.g., "email@email.com�")
-                              .replace(/^["';.,\s]+|[^\x20-\x7E]+$|["';.,_\s]+$/g, '')
-                              // remove spaces (e.g., "email @ email . com")
-                              // remove urlencoded characters
-                              .replace(/\s+|%\d+|,+/g, '')
-                              .toLowerCase();
-                  // detect e-mails that will otherwise be rejected by ^email_regex$
+                  var test;
+                  // decode HTML entities
+                  email = jQuery('<div />').html(email).text();
+                  email = email
+                    .toLowerCase()
+                    // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
+                    // right trim non-printable characters (e.g., "email@email.com�")
+                    .replace(/^["';.,\s]+|[^\x20-\x7E]+$|["';.,_\s]+$/g, '')
+                    // remove spaces (e.g., "email @ email . com")
+                    // remove urlencoded characters
+                    .replace(/\s+|%\d+|,+/g, '');
+                  // detect e-mails that will be otherwise rejected by email regex
                   if (test = /<(.*?)>/.exec(email)) {
-                    // is email inside angle brackets (e.g., 'some@email.com <some@email.com>')?
-                    return test[1].trim();
+                    // is the email inside angle brackets (e.g., 'some@email.com <some@email.com>')?
+                    email = test[1].trim();
                   }
-                  else if (test = /mailto:(?:\s+)?(.*)/.exec(email)) {
-                    // is email in 'mailto:email' format?
-                    return test[1].trim();
+                  if (test = /mailto:(?:\s+)?(.*)/.exec(email)) {
+                    // is the email in 'mailto:email' format?
+                    email = test[1].trim();
                   }
                   return email;
                 };
