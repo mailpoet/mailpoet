@@ -1,14 +1,15 @@
 define(
-    [
+[
       'backbone',
       'underscore',
       'jquery',
       'mailpoet',
       'handlebars',
       'papaparse',
-      'select2',
       'asyncqueue',
-      'xss'
+      'xss',
+      'moment',
+      'select2'
     ],
     function (
       Backbone,
@@ -18,7 +19,8 @@ define(
       Handlebars,
       Papa,
       AsyncQueue,
-      xss
+      xss,
+      Moment
     ) {
       if (!jQuery('#mailpoet_subscribers_import').length) {
         return;
@@ -924,31 +926,9 @@ define(
               // DATE filter: if column type is date, check if we can recognize it
               if (column.type === 'date' && matchedColumn !== -1) {
                 jQuery.map(subscribersClone.subscribers, function (data, position) {
-                  var rowData = data[matchedColumn],
-                      date = new Date(rowData.replace(/-/g, '/')), // IE doesn't like
-                  // dashes as date separators
-                      month_name = [
-                        MailPoet.I18n.t('january'),
-                        MailPoet.I18n.t('february'),
-                        MailPoet.I18n.t('march'),
-                        MailPoet.I18n.t('april'),
-                        MailPoet.I18n.t('may'),
-                        MailPoet.I18n.t('june'),
-                        MailPoet.I18n.t('july'),
-                        MailPoet.I18n.t('august'),
-                        MailPoet.I18n.t('september'),
-                        MailPoet.I18n.t('october'),
-                        MailPoet.I18n.t('november'),
-                        MailPoet.I18n.t('december')
-                      ];
-
+                  var rowData = data[matchedColumn];
                   if (position !== fillterPosition) {
-                    // check for valid date:
-                    // * invalid date object returns NaN for getTime() and NaN
-                    // is the only object not strictly equal to itself
-                    // * date must have period/dash/slash OR be at least 4
-                    // characters long (e.g., year)
-                    // * must be before now
+                    // check if date exists
                     if (rowData.trim() === '') {
                       data[matchedColumn] =
                           '<span class="mailpoet_data_match mailpoet_import_error" title="'
@@ -958,25 +938,12 @@ define(
                       preventNextStep = true;
                       return;
                     }
-                    else if (date.getTime() === date.getTime() &&
-                        (/[.-\/]/.test(rowData) || rowData.length >= 4) &&
-                        date.getTime() < (new Date()).getTime()
-                    ) {
-                      date = '/ '
-                          + month_name[date.getMonth()]
-                          + ' ' + date.getDate() + ', '
-                          + date.getFullYear() + ' '
-                          + date.getHours() + ':'
-                          + ((date.getMinutes() < 10 ? '0' : '')
-                          + date.getMinutes()) + ' '
-                          + ((date.getHours() >= 12)
-                                  ? MailPoet.I18n.t('pm')
-                                  : MailPoet.I18n.t('am')
-                          );
+                    // check if date is valid and is before today
+                    if (Moment(rowData).isValid() && Moment(rowData).isBefore(Moment())) {
                       data[matchedColumn] +=
                           '<span class="mailpoet_data_match" title="'
                           + MailPoet.I18n.t('verifyDateMatch') + '">'
-                          + MailPoet.Date.format(date) + '</span>';
+                          + MailPoet.Date.format(rowData) + '</span>';
                     }
                     else {
                       data[matchedColumn] +=
