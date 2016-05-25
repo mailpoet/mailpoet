@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Subscribers\ImportExport\Import;
 
+use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
@@ -68,7 +69,7 @@ class Import {
             $subscriber_fields,
             $subscriber_custom_fields
           );
-        if ($wp_users) {
+        if($wp_users) {
           $this->synchronizeWPUsers($wp_users);
         }
       }
@@ -79,12 +80,19 @@ class Import {
       );
     }
     $segments = new BootStrapMenu('import');
+    $segments = $segments->getSegments();
+    $segments_with_welcome_notification =
+      ($created_subscribers || $updated_subscribers) ?
+        $this->getSegmentsWithWelcomeNotification($this->segments) :
+        false;
     return array(
       'result' => true,
       'data' => array(
         'created' => count($created_subscribers),
         'updated' => count($updated_subscribers),
-        'segments' => $segments->getSegments()
+        'segments' => $segments,
+        'segments_with_welcome_notification' =>
+          ($segments_with_welcome_notification) ? true : false
       ),
       'profiler' => $this->timeExecution()
     );
@@ -362,5 +370,24 @@ class Import {
   function timeExecution() {
     $profiler_end = microtime(true);
     return ($profiler_end - $this->profiler_start) / 60;
+  }
+
+  function getSegmentsWithWelcomeNotification($segments_ids) {
+    return NewsletterOption::table_alias('options')
+      ->join(
+        MP_NEWSLETTERS_TABLE,
+        'newsletters.id = options.newsletter_id',
+        'newsletters'
+      )
+      ->join(
+        MP_NEWSLETTER_OPTION_FIELDS_TABLE,
+        'option_fields.id = options.option_field_id',
+        'option_fields'
+      )
+      ->whereNull('newsletters.deleted_at')
+      ->where('newsletters.type', 'welcome')
+      ->where('option_fields.name', 'segment')
+      ->whereIn('options.value', $segments_ids)
+      ->findMany();
   }
 }

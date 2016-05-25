@@ -1050,6 +1050,7 @@ define(
                       importResults.created = response.data.created;
                       importResults.updated = response.data.updated;
                       importResults.segments = response.data.segments;
+                      importResults.segments_with_welcome_notification = response.data.segments_with_welcome_notification;
                     }
                     queue.run();
                   })
@@ -1118,9 +1119,10 @@ define(
                     .replace('%1$s', '<strong>' + importData.step2.updated.toLocaleString() + '</strong>')
                     .replace('%2$s', '"' + importData.step2.segments.join('", "') + '"')
                     : false,
-                noaction: (!importData.step2.updated && !importData.step2.created)
+                no_action: (!importData.step2.created && !importData.step2.updated)
                     ? true
-                    : false
+                    : false,
+                segments_with_welcome_notification: importData.step2.segments_with_welcome_notification
               };
 
           jQuery('#subscribers_data_import_results')

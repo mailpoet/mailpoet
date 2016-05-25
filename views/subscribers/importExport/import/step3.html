@@ -25,8 +25,11 @@
         {{#if updated}}
         <li>{{{updated}}}</li>
         {{/if}}
-        {{#if noaction}}
+        {{#if no_action}}
         <li><%= __('No new subscribers were found/added.') %></li>
+        {{/if}}
+        {{#if segments_with_welcome_notification}}
+        <li><%= __('Important note: imported subscribers will not receive any welcome emails.') %></li>
         {{/if}}
       </ul>
   </script>
