@@ -181,7 +181,7 @@ class SegmentTest extends MailPoetTest {
         $association = SubscriberSegment::create();
         $association->subscriber_id = $subscriber->id;
         $association->segment_id = $this->segment->id;
-        $association->status = 'subscribed';
+        $association->status = Subscriber::STATUS_SUBSCRIBED;
         $association->save();
       }
     }

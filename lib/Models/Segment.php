@@ -35,7 +35,7 @@ class Segment extends Model {
       __NAMESPACE__.'\SubscriberSegment',
       'segment_id',
       'subscriber_id'
-    )->where(MP_SUBSCRIBER_SEGMENT_TABLE.'.status', 'subscribed');
+    )->where(MP_SUBSCRIBER_SEGMENT_TABLE.'.status', Subscriber::STATUS_SUBSCRIBED);
   }
 
   function duplicate($data = array()) {
@@ -76,16 +76,16 @@ class Segment extends Model {
         'subscribers'
       )
       ->select_expr(
-        'SUM(CASE subscribers.status WHEN "subscribed" THEN 1 ELSE 0 END)',
-        'subscribed'
+        'SUM(CASE subscribers.status WHEN "' . Subscriber::STATUS_SUBSCRIBED . '" THEN 1 ELSE 0 END)',
+        Subscriber::STATUS_SUBSCRIBED
       )
       ->select_expr(
-        'SUM(CASE subscribers.status WHEN "unsubscribed" THEN 1 ELSE 0 END)',
-        'unsubscribed'
+        'SUM(CASE subscribers.status WHEN "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
+        Subscriber::STATUS_UNSUBSCRIBED
       )
       ->select_expr(
-        'SUM(CASE subscribers.status WHEN "unconfirmed" THEN 1 ELSE 0 END)',
-        'unconfirmed'
+        'SUM(CASE subscribers.status WHEN "' . Subscriber::STATUS_UNCONFIRMED . '" THEN 1 ELSE 0 END)',
+        Subscriber::STATUS_UNCONFIRMED
       )
       ->findOne()
       ->asArray();
@@ -127,7 +127,7 @@ class Segment extends Model {
   static function getSegmentsWithSubscriberCount() {
     return self::selectMany(array(self::$_table.'.id', self::$_table.'.name'))
       ->selectExpr(
-        self::$_table.'.*, COUNT(IF('.MP_SUBSCRIBER_SEGMENT_TABLE.'.status="subscribed",1,NULL)) `subscribers`'
+        self::$_table.'.*, COUNT(IF('.MP_SUBSCRIBER_SEGMENT_TABLE.'.status="' . Subscriber::STATUS_SUBSCRIBED .'",1,NULL)) `subscribers`'
       )
       ->leftOuterJoin(
         MP_SUBSCRIBER_SEGMENT_TABLE,
@@ -151,20 +151,19 @@ class Segment extends Model {
       'LEFT JOIN ' . self::$_table . ' segments ON segments.id = relation.segment_id ' .
       'LEFT JOIN ' . MP_SUBSCRIBERS_TABLE . ' subscribers ON subscribers.id = relation.subscriber_id ' .
       (($withConfirmedSubscribers) ?
-        'WHERE subscribers.status = "subscribed" ' :
+        'WHERE subscribers.status = "' . Subscriber::STATUS_SUBSCRIBED . '" ' :
         'WHERE relation.segment_id IS NOT NULL ') .
       'AND subscribers.deleted_at IS NULL ' .
-      'AND relation.status = "subscribed" ' .
+      'AND relation.status = "' . Subscriber::STATUS_SUBSCRIBED . '" ' .
       'GROUP BY segments.id) ' .
       'UNION ALL ' .
       '(SELECT 0 as id, "' . __('Not In List') . '" as name, COUNT(*) as subscribers ' .
       'FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers ' .
       'LEFT JOIN ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation on relation.subscriber_id = subscribers.id ' .
       (($withConfirmedSubscribers) ?
-        'WHERE relation.subscriber_id is NULL AND subscribers.status = "subscribed" ' :
+        'WHERE relation.subscriber_id is NULL AND subscribers.status = "' . Subscriber::STATUS_SUBSCRIBED . '" ' :
         'WHERE relation.subscriber_id is NULL ') .
       'AND subscribers.deleted_at IS NULL ' .
-      'AND relation.status = "subscribed" ' .
       'HAVING subscribers) ' .
       'ORDER BY name'
     )->findArray();
