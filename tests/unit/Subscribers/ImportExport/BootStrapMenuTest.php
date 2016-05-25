@@ -54,9 +54,9 @@ class BootStrapMenuTest extends MailPoetTest {
   }
 
   function testItCanGetPublicSegmentsForImport() {
-
     $segments = $this->bootStrapImportMenu->getSegments();
-    expect(count($segments))->equals(2);
+    expect($segments[0]['subscriberCount'])->equals(1);
+    expect($segments[1]['subscriberCount'])->equals(1);
 
     $subscriber = Subscriber::where(
       'email', 'john@mailpoet.com'
@@ -70,7 +70,8 @@ class BootStrapMenuTest extends MailPoetTest {
     expect($subscriber)->false();
 
     $segments = $this->bootStrapImportMenu->getSegments();
-    expect(count($segments))->equals(1);
+    expect($segments[0]['subscriberCount'])->equals(1);
+    expect($segments[1]['subscriberCount'])->equals(0);
   }
 
   function testItCanGetPublicSegmentsForExport() {
