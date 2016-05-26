@@ -18,19 +18,17 @@
   </table>
 
   <script id="subscribers_data_import_results_template" type="text/x-handlebars-template">
-      <ul>
-        {{#if created}}
-        <li>{{{created}}}</li>
-        {{/if}}
-        {{#if updated}}
-        <li>{{{updated}}}</li>
-        {{/if}}
-        {{#if no_action}}
-        <li><%= __('No new subscribers were found/added.') %></li>
-        {{/if}}
-        {{#if added_to_segment_with_welcome_notification}}
-        <li><%= __('Important note: imported subscribers will not receive any welcome emails.') %></li>
-        {{/if}}
-      </ul>
+      {{#if created}}
+      <p>{{{created}}}</p>
+      {{/if}}
+      {{#if updated}}
+      <p>{{{updated}}}</p>
+      {{/if}}
+      {{#if no_action}}
+      <p><%= __('No new subscribers were found/added.') %></p>
+      {{/if}}
+      {{#if added_to_segment_with_welcome_notification}}
+      <p><%= __('Important note: imported subscribers will not receive any welcome emails.') %></p>
+      {{/if}}
   </script>
 </div>

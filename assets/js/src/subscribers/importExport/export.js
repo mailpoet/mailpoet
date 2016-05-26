@@ -154,8 +154,7 @@ define(
              .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
              .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
              .replace('[/link]', '</a>');
-            jQuery('#export_result_notice > ul > li').html(resultMessage);
-            jQuery('#export_result_notice').show();
+            jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
             window.location.href = response.data.exportFileURL;
           }
         })

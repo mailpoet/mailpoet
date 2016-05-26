@@ -5,21 +5,15 @@
 
   <script id="subscribers_data_parse_results_template" type="text/x-handlebars-template">
     <div class="error">
-      <ul>
-        <li>{{{notice}}}</li>
-        <li><a class="mailpoet_subscribers_data_parse_results_details_show"
-         href="javascript:;"><%= __('Show more details.') %></a></li>
-      </ul>
+      <p>{{{notice}}} <a class="mailpoet_subscribers_data_parse_results_details_show" href="javascript:;"><%= __('Show more details.') %></a><p>
       <div class="mailpoet_subscribers_data_parse_results_details mailpoet_hidden">
         <hr>
-        <ul>
-          {{#if duplicate}}
-          <li>{{{duplicate}}}</li>
-          {{/if}}
-          {{#if invalid}}
-          <li>{{{invalid}}}</li>
-          {{/if}}
-        </ul>
+        {{#if duplicate}}
+        <p>{{{duplicate}}}</p>
+        {{/if}}
+        {{#if invalid}}
+        <p>{{{invalid}}}</p>
+        {{/if}}
       </div>
     </div>
   </script>
