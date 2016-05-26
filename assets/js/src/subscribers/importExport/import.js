@@ -71,7 +71,7 @@ define(
                   jQuery('#method_paste > div.mailpoet_method_process')
                       .find('a.mailpoet_process'),
               mailChimpKeyInputElement = jQuery('#mailchimp_key'),
-              mailChimpKeyVerifyButtonEelement = jQuery('#mailchimp_key_verify'),
+              mailChimpKeyVerifyButtonElement = jQuery('#mailchimp_key_verify'),
               mailChimpListsContainerElement = jQuery('#mailchimp_lists'),
               mailChimpProcessButtonElement =
                   jQuery('#method_mailchimp > div.mailpoet_method_process')
@@ -178,15 +178,11 @@ define(
               jQuery('.mailpoet_mailchimp-key-status')
                   .html('')
                   .removeClass('mailpoet_mailchimp-ok mailpoet_mailchimp-error');
-              mailChimpKeyVerifyButtonEelement.prop('disabled', true);
               toggleNextStepButton(mailChimpProcessButtonElement, 'off');
-            }
-            else {
-              mailChimpKeyVerifyButtonEelement.prop('disabled', false);
             }
           });
 
-          mailChimpKeyVerifyButtonEelement.click(function () {
+          mailChimpKeyVerifyButtonElement.click(function () {
             MailPoet.Modal.loading(true);
             MailPoet.Ajax.post({
               endpoint: 'ImportExport',
@@ -1051,7 +1047,7 @@ define(
                       importResults.created = response.data.created;
                       importResults.updated = response.data.updated;
                       importResults.segments = response.data.segments;
-                      importResults.segments_with_welcome_notification = response.data.segments_with_welcome_notification;
+                      importResults.added_to_segment_with_welcome_notification = response.data.added_to_segment_with_welcome_notification;
                     }
                     queue.run();
                   })
@@ -1119,10 +1115,8 @@ define(
                     .replace('%1$s', '<strong>' + importData.step2.updated.toLocaleString() + '</strong>')
                     .replace('%2$s', '"' + importData.step2.segments.join('", "') + '"')
                     : false,
-                no_action: (!importData.step2.created && !importData.step2.updated)
-                    ? true
-                    : false,
-                segments_with_welcome_notification: importData.step2.segments_with_welcome_notification
+                no_action: (!importData.step2.created && !importData.step2.updated),
+                added_to_segment_with_welcome_notification: importData.step2.added_to_segment_with_welcome_notification
               };
 
           jQuery('#subscribers_data_import_results')

@@ -10,7 +10,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Settings\Charsets;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
-use MailPoet\Subscribers\ImportExport\BootStrapMenu;
+use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\DKIM;
 use MailPoet\Util\Permissions;
 use MailPoet\Listing;
@@ -438,14 +438,14 @@ class Menu {
   }
 
   function import() {
-    $import = new BootStrapMenu('import');
+    $import = new ImportExportFactory('import');
     $data = $import->bootstrap();
     $data['sub_menu'] = 'mailpoet-subscribers';
     echo $this->renderer->render('subscribers/importExport/import.html', $data);
   }
 
   function export() {
-    $export = new BootStrapMenu('export');
+    $export = new ImportExportFactory('export');
     $data = $export->bootstrap();
     $data['sub_menu'] = 'mailpoet-subscribers';
     echo $this->renderer->render('subscribers/importExport/export.html', $data);

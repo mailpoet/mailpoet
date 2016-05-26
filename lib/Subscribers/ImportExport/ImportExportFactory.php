@@ -5,7 +5,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Util\Helpers;
 
-class BootStrapMenu {
+class ImportExportFactory {
   public $action;
 
   function __construct($action = null) {

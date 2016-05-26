@@ -1,11 +1,11 @@
 <?php
 namespace MailPoet\Subscribers\ImportExport\Import;
 
-use MailPoet\Models\NewsletterOption;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Subscribers\ImportExport\BootStrapMenu;
+use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\Helpers;
 
 class Import {
@@ -79,11 +79,11 @@ class Import {
         'errors' => array($e->getMessage())
       );
     }
-    $segments = new BootStrapMenu('import');
-    $segments = $segments->getSegments();
-    $segments_with_welcome_notification =
+    $import_factory = new ImportExportFactory('import');
+    $segments = $import_factory->getSegments();
+    $welcome_notifications_in_segments =
       ($created_subscribers || $updated_subscribers) ?
-        $this->getSegmentsWithWelcomeNotification($this->segments) :
+        Newsletter::getWelcomeNotificationsForSegments($this->segments) :
         false;
     return array(
       'result' => true,
@@ -91,8 +91,8 @@ class Import {
         'created' => count($created_subscribers),
         'updated' => count($updated_subscribers),
         'segments' => $segments,
-        'segments_with_welcome_notification' =>
-          ($segments_with_welcome_notification) ? true : false
+        'added_to_segment_with_welcome_notification' =>
+          ($welcome_notifications_in_segments) ? true : false
       ),
       'profiler' => $this->timeExecution()
     );
@@ -370,24 +370,5 @@ class Import {
   function timeExecution() {
     $profiler_end = microtime(true);
     return ($profiler_end - $this->profiler_start) / 60;
-  }
-
-  function getSegmentsWithWelcomeNotification($segments_ids) {
-    return NewsletterOption::table_alias('options')
-      ->join(
-        MP_NEWSLETTERS_TABLE,
-        'newsletters.id = options.newsletter_id',
-        'newsletters'
-      )
-      ->join(
-        MP_NEWSLETTER_OPTION_FIELDS_TABLE,
-        'option_fields.id = options.option_field_id',
-        'option_fields'
-      )
-      ->whereNull('newsletters.deleted_at')
-      ->where('newsletters.type', 'welcome')
-      ->where('option_fields.name', 'segment')
-      ->whereIn('options.value', $segments_ids)
-      ->findMany();
   }
 }

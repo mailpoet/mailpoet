@@ -1,5 +1,5 @@
 <div id="step3" class="mailpoet_hidden">
-  <div id="subscribers_data_import_results" class="updated notice mailpoet_hidden">
+  <div id="subscribers_data_import_results" class="updated mailpoet_hidden">
     <!-- Template data -->
   </div>
 
@@ -28,7 +28,7 @@
         {{#if no_action}}
         <li><%= __('No new subscribers were found/added.') %></li>
         {{/if}}
-        {{#if segments_with_welcome_notification}}
+        {{#if added_to_segment_with_welcome_notification}}
         <li><%= __('Important note: imported subscribers will not receive any welcome emails.') %></li>
         {{/if}}
       </ul>
