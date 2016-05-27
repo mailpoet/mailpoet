@@ -101,15 +101,14 @@ class SubscriberSegment extends Model {
       foreach($subscriber_ids as &$subscriber_id) {
         $values[] = (int)$subscriber_id;
         $values[] = (int)$segment_id;
-        $values[] = Subscriber::STATUS_SUBSCRIBED;
         $row_count++;
       }
     }
 
     $query = array(
       'INSERT IGNORE INTO `'.self::$_table.'`',
-      '(`subscriber_id`, `segment_id`, `status`)',
-      'VALUES '.rtrim(str_repeat('(?, ?, ?),', $row_count), ',')
+      '(`subscriber_id`, `segment_id`)',
+      'VALUES '.rtrim(str_repeat('(?, ?),', $row_count), ',')
     );
     self::rawExecute(join(' ', $query), $values);
 
