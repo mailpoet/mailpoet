@@ -4,11 +4,11 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Subscribers\ImportExport\BootStrapMenu;
+use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 
-class BootStrapMenuTest extends MailPoetTest {
+class ImportExportFactoryTest extends MailPoetTest {
   function _before() {
-        $segment_1 = Segment::createOrUpdate(array('name' => 'Unconfirmed Segment'));
+    $segment_1 = Segment::createOrUpdate(array('name' => 'Unconfirmed Segment'));
     $segment_2 = Segment::createOrUpdate(array('name' => 'Confirmed Segment'));
 
     $subscriber_1 = Subscriber::createOrUpdate(array(
@@ -40,12 +40,12 @@ class BootStrapMenuTest extends MailPoetTest {
       'type' => 'date'
     ));
 
-    $this->bootStrapImportMenu = new BootStrapMenu('import');
-    $this->bootStrapExportMenu = new BootStrapMenu('export');
+    $this->importFactory = new ImportExportFactory('import');
+    $this->exportFactory = new ImportExportFactory('export');
   }
 
   function testItCanGetSegmentsWithSubscriberCount() {
-    $segments = $this->bootStrapImportMenu->getSegments();
+    $segments = $this->importFactory->getSegments();
     expect(count($segments))->equals(2);
     expect($segments[0]['name'])->equals('Confirmed Segment');
     expect($segments[0]['subscriberCount'])->equals(1);
@@ -54,7 +54,7 @@ class BootStrapMenuTest extends MailPoetTest {
   }
 
   function testItCanGetPublicSegmentsForImport() {
-    $segments = $this->bootStrapImportMenu->getSegments();
+    $segments = $this->importFactory->getSegments();
     expect($segments[0]['subscriberCount'])->equals(1);
     expect($segments[1]['subscriberCount'])->equals(1);
 
@@ -69,24 +69,24 @@ class BootStrapMenuTest extends MailPoetTest {
     )->whereNull('deleted_at')->findOne();
     expect($subscriber)->false();
 
-    $segments = $this->bootStrapImportMenu->getSegments();
+    $segments = $this->importFactory->getSegments();
     expect($segments[0]['subscriberCount'])->equals(1);
     expect($segments[1]['subscriberCount'])->equals(0);
   }
 
   function testItCanGetPublicSegmentsForExport() {
-    $segments = $this->bootStrapExportMenu->getSegments();
+    $segments = $this->exportFactory->getSegments();
     expect(count($segments))->equals(2);
     $subscriber = Subscriber::where('email', 'john@mailpoet.com')
       ->findOne();
     $subscriber->deleted_at = date('Y-m-d H:i:s');
     $subscriber->save();
-    $segments = $this->bootStrapExportMenu->getSegments();
+    $segments = $this->exportFactory->getSegments();
     expect(count($segments))->equals(1);
   }
 
   function testItCanGetSegmentsForExport() {
-    $segments = $this->bootStrapExportMenu->getSegments();
+    $segments = $this->exportFactory->getSegments();
     expect(count($segments))->equals(2);
 
     expect($segments[0]['name'])->equals('Confirmed Segment');
@@ -96,7 +96,7 @@ class BootStrapMenuTest extends MailPoetTest {
   }
 
   function testItCanGetSegmentsWithConfirmedSubscribersForExport() {
-    $segments = $this->bootStrapExportMenu->getSegments(
+    $segments = $this->exportFactory->getSegments(
       $withConfirmedSubscribers = true
     );
     expect(count($segments))->equals(1);
@@ -104,7 +104,7 @@ class BootStrapMenuTest extends MailPoetTest {
   }
 
   function testItCanGetSubscriberFields() {
-    $subsriberFields = $this->bootStrapImportMenu->getSubscriberFields();
+    $subsriberFields = $this->importFactory->getSubscriberFields();
     $fields = array(
       'email',
       'first_name',
@@ -118,8 +118,8 @@ class BootStrapMenuTest extends MailPoetTest {
 
   function testItCanFormatSubsciberFields() {
     $formattedSubscriberFields =
-      $this->bootStrapImportMenu->formatSubscriberFields(
-        $this->bootStrapImportMenu->getSubscriberFields()
+      $this->importFactory->formatSubscriberFields(
+        $this->importFactory->getSubscriberFields()
       );
     $fields = array(
       'id',
@@ -136,7 +136,7 @@ class BootStrapMenuTest extends MailPoetTest {
 
   function testItCanGetSubsciberCustomFields() {
     $subscriberCustomFields =
-      $this->bootStrapImportMenu
+      $this->importFactory
         ->getSubscriberCustomFields();
     expect($subscriberCustomFields[0]['type'])
       ->equals('date');
@@ -144,8 +144,8 @@ class BootStrapMenuTest extends MailPoetTest {
 
   function testItCanFormatSubsciberCustomFields() {
     $formattedSubscriberCustomFields =
-      $this->bootStrapImportMenu->formatSubscriberCustomFields(
-        $this->bootStrapImportMenu->getSubscriberCustomFields()
+      $this->importFactory->formatSubscriberCustomFields(
+        $this->importFactory->getSubscriberCustomFields()
       );
     $fields = array(
       'id',
@@ -161,7 +161,7 @@ class BootStrapMenuTest extends MailPoetTest {
   }
 
   function testItCanFormatFieldsForSelect2Import() {
-    $bootStrapMenu = clone($this->bootStrapImportMenu);
+    $ImportExportFactory = clone($this->importFactory);
     $select2FieldsWithoutCustomFields = array(
       array(
         'name' => 'Actions',
@@ -178,8 +178,8 @@ class BootStrapMenuTest extends MailPoetTest {
       ),
       array(
         'name' => 'System columns',
-        'children' => $bootStrapMenu->formatSubscriberFields(
-          $bootStrapMenu->getSubscriberFields()
+        'children' => $ImportExportFactory->formatSubscriberFields(
+          $ImportExportFactory->getSubscriberFields()
         )
       )
     );
@@ -188,25 +188,25 @@ class BootStrapMenuTest extends MailPoetTest {
       array(
         array(
           'name' => __('User columns'),
-          'children' => $bootStrapMenu->formatSubscriberCustomFields(
-            $bootStrapMenu->getSubscriberCustomFields()
+          'children' => $ImportExportFactory->formatSubscriberCustomFields(
+            $ImportExportFactory->getSubscriberCustomFields()
           )
         )
       ));
-    $formattedFieldsForSelect2 = $bootStrapMenu->formatFieldsForSelect2(
-      $bootStrapMenu->getSubscriberFields(),
-      $bootStrapMenu->getSubscriberCustomFields()
+    $formattedFieldsForSelect2 = $ImportExportFactory->formatFieldsForSelect2(
+      $ImportExportFactory->getSubscriberFields(),
+      $ImportExportFactory->getSubscriberCustomFields()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
-    $formattedFieldsForSelect2 = $bootStrapMenu->formatFieldsForSelect2(
-      $bootStrapMenu->getSubscriberFields(),
+    $formattedFieldsForSelect2 = $ImportExportFactory->formatFieldsForSelect2(
+      $ImportExportFactory->getSubscriberFields(),
       array()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
 
   function testItCanFormatFieldsForSelect2Export() {
-    $bootStrapMenu = clone($this->bootStrapExportMenu);
+    $ImportExportFactory = clone($this->exportFactory);
     $select2FieldsWithoutCustomFields = array(
       array(
         'name' => 'Actions',
@@ -223,8 +223,8 @@ class BootStrapMenuTest extends MailPoetTest {
       ),
       array(
         'name' => 'System columns',
-        'children' => $bootStrapMenu->formatSubscriberFields(
-          $bootStrapMenu->getSubscriberFields()
+        'children' => $ImportExportFactory->formatSubscriberFields(
+          $ImportExportFactory->getSubscriberFields()
         )
       )
     );
@@ -233,25 +233,25 @@ class BootStrapMenuTest extends MailPoetTest {
       array(
         array(
           'name' => __('User columns'),
-          'children' => $bootStrapMenu->formatSubscriberCustomFields(
-            $bootStrapMenu->getSubscriberCustomFields()
+          'children' => $ImportExportFactory->formatSubscriberCustomFields(
+            $ImportExportFactory->getSubscriberCustomFields()
           )
         )
       ));
-    $formattedFieldsForSelect2 = $bootStrapMenu->formatFieldsForSelect2(
-      $bootStrapMenu->getSubscriberFields(),
-      $bootStrapMenu->getSubscriberCustomFields()
+    $formattedFieldsForSelect2 = $ImportExportFactory->formatFieldsForSelect2(
+      $ImportExportFactory->getSubscriberFields(),
+      $ImportExportFactory->getSubscriberCustomFields()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
-    $formattedFieldsForSelect2 = $bootStrapMenu->formatFieldsForSelect2(
-      $bootStrapMenu->getSubscriberFields(),
+    $formattedFieldsForSelect2 = $ImportExportFactory->formatFieldsForSelect2(
+      $ImportExportFactory->getSubscriberFields(),
       array()
     );
     expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
 
   function testItCanBootStrapImport() {
-    $import = clone($this->bootStrapImportMenu);
+    $import = clone($this->importFactory);
     $importMenu = $import->bootstrap();
     expect(count(json_decode($importMenu['segments'], true)))
       ->equals(2);
@@ -268,7 +268,7 @@ class BootStrapMenuTest extends MailPoetTest {
   }
 
   function testItCanBootStrapExport() {
-    $export = clone($this->bootStrapImportMenu);
+    $export = clone($this->importFactory);
     $exportMenu = $export->bootstrap();
     expect(count(json_decode($exportMenu['segments'], true)))
       ->equals(2);
