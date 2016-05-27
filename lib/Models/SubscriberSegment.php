@@ -109,7 +109,7 @@ class SubscriberSegment extends Model {
     $query = array(
       'INSERT IGNORE INTO `'.self::$_table.'`',
       '(`subscriber_id`, `segment_id`, `status`)',
-      'VALUES '.rtrim(str_repeat('(?, ?, ?), ', $row_count), ', ')
+      'VALUES '.rtrim(str_repeat('(?, ?, ?),', $row_count), ',')
     );
     self::rawExecute(join(' ', $query), $values);
 
