@@ -498,54 +498,72 @@ class Subscriber extends Model {
     ));
   }
 
+  static function bulkAddToList($orm, $data = array()) {
+    $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
+    $segment = Segment::findOne($segment_id);
+
+    if($segment === false) return false;
+
+    $subscribers_count = parent::bulkAction($orm,
+      function($subscriber_ids) use($segment) {
+        SubscriberSegment::subscribeManyToSegments(
+          $subscriber_ids, array($segment->id)
+        );
+      }
+    );
+
+    return array(
+      'subscribers' => $subscribers_count,
+      'segment' => $segment->name
+    );
+  }
+
   static function bulkMoveToList($orm, $data = array()) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
-    if($segment !== false) {
-      $subscribers_count = 0;
-      $subscribers = $orm->findResultSet();
-      foreach($subscribers as $subscriber) {
-        SubscriberSegment::resetSubscriptions($subscriber, array($segment->id));
-        $subscribers_count++;
-      }
-      return array(
-        'subscribers' => $subscribers_count,
-        'segment' => $segment->name
-      );
-    }
-    return false;
+    if($segment === false) return false;
+
+    $subscribers_count = parent::bulkAction($orm,
+      function($subscriber_ids) use($segment) {
+        SubscriberSegment::deleteManySubscriptions($subscriber_ids);
+        SubscriberSegment::subscribeManyToSegments(
+          $subscriber_ids, array($segment->id)
+        );
+    });
+
+    return array(
+      'subscribers' => $subscribers_count,
+      'segment' => $segment->name
+    );
   }
 
   static function bulkRemoveFromList($orm, $data = array()) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
-    if($segment !== false) {
-      $subscribers_count = 0;
+    if($segment === false) return false;
 
-      // delete relations with segment
-      $subscribers = $orm->findResultSet();
-      foreach($subscribers as $subscriber) {
-        SubscriberSegment::unsubscribeFromSegments($subscriber, array($segment->id));
-        $subscribers_count++;
+    $subscribers_count = parent::bulkAction($orm,
+      function($subscriber_ids) use($segment) {
+        SubscriberSegment::deleteManySubscriptions(
+          $subscriber_ids, array($segment->id)
+        );
       }
+    );
 
-      return array(
-        'subscribers' => $subscribers_count,
-        'segment' => $segment->name
-      );
-    }
-    return false;
+    return array(
+      'subscribers' => $subscribers_count,
+      'segment' => $segment->name
+    );
   }
 
-  static function bulkRemoveFromAllLists($orm) {
-    $subscribers = $orm->findResultSet();
-    $subscribers_count = 0;
-    foreach($subscribers as $subscriber) {
-      SubscriberSegment::unsubscribeFromSegments($subscriber);
-      $subscribers_count++;
-    }
+  static function bulkRemoveFromAllLists($orm, $data = array()) {
+    $subscribers_count = $orm->count();
+
+    parent::bulkAction($orm, function($subscriber_ids) {
+      SubscriberSegment::deleteManySubscriptions($subscriber_ids);
+    });
 
     return $subscribers_count;
   }
@@ -567,31 +585,9 @@ class Subscriber extends Model {
     return false;
   }
 
-  static function bulkAddToList($orm, $data = array()) {
-    $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
-    $segment = Segment::findOne($segment_id);
-
-    if($segment !== false) {
-      $subscribers_count = 0;
-      $subscribers = $orm->findMany();
-      foreach($subscribers as $subscriber) {
-        try {
-          SubscriberSegment::subscribeToSegments($subscriber, array($segment->id));
-          $subscribers_count++;
-        } catch(Exception $e) {
-        }
-      }
-      return array(
-        'subscribers' => $subscribers_count,
-        'segment' => $segment->name
-      );
-    }
-    return false;
-  }
-
   static function bulkTrash($orm) {
-    return parent::bulkAction($orm, function($subscriber_ids) use($orm) {
-      parent::rawExecute(join(' ', array(
+    return parent::bulkAction($orm, function($subscriber_ids) {
+      self::rawExecute(join(' ', array(
           'UPDATE `'.self::$_table.'`',
           'SET `deleted_at` = NOW()',
           'WHERE `id` IN ('.rtrim(str_repeat('?,', count($subscriber_ids)), ',').')',

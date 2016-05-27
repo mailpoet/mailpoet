@@ -17,72 +17,68 @@ class SubscriberSegment extends Model {
   }
 
   static function unsubscribeFromSegments($subscriber, $segment_ids = array()) {
-    if($subscriber !== false && $subscriber->id > 0) {
+    if($subscriber === false) return false;
 
-      $wp_segment = Segment::getWPSegment();
+    $wp_segment = Segment::getWPSegment();
 
-      if(!empty($segment_ids)) {
-        // unsubscribe from segments
-        foreach($segment_ids as $segment_id) {
+    if(!empty($segment_ids)) {
+      // unsubscribe from segments
+      foreach($segment_ids as $segment_id) {
 
-          // do not remove subscriptions to the WP Users segment
-          if(
-            $wp_segment !== false
-            && ($wp_segment->id === (int)$segment_id)
-          ) {
-            continue;
-          }
-
-          if((int)$segment_id > 0) {
-            self::createOrUpdate(array(
-              'subscriber_id' => $subscriber->id,
-              'segment_id' => $segment_id,
-              'status' => Subscriber::STATUS_UNSUBSCRIBED
-            ));
-          }
-        }
-      } else {
-        // unsubscribe from all segments (except the WP users segment)
-        $subscriptions = self::where('subscriber_id', $subscriber->id);
-
-        if($wp_segment !== false) {
-          $subscriptions = $subscriptions->whereNotEqual(
-            'segment_id', $wp_segment->id
-          );
+        // do not remove subscriptions to the WP Users segment
+        if(
+          $wp_segment !== false
+          && ($wp_segment->id === (int)$segment_id)
+        ) {
+          continue;
         }
 
-        $subscriptions->findResultSet()
-          ->set('status', Subscriber::STATUS_UNSUBSCRIBED)
-          ->save();
+        if((int)$segment_id > 0) {
+          self::createOrUpdate(array(
+            'subscriber_id' => $subscriber->id,
+            'segment_id' => $segment_id,
+            'status' => Subscriber::STATUS_UNSUBSCRIBED
+          ));
+        }
       }
-      return true;
+    } else {
+      // unsubscribe from all segments (except the WP users segment)
+      $subscriptions = self::where('subscriber_id', $subscriber->id);
+
+      if($wp_segment !== false) {
+        $subscriptions = $subscriptions->whereNotEqual(
+          'segment_id', $wp_segment->id
+        );
+      }
+
+      $subscriptions->findResultSet()
+        ->set('status', Subscriber::STATUS_UNSUBSCRIBED)
+        ->save();
     }
-    return false;
+    return true;
   }
 
   static function subscribeToSegments($subscriber, $segment_ids = array()) {
-    if($subscriber->id > 0) {
-      if(!empty($segment_ids)) {
-        // subscribe to segments
-        foreach($segment_ids as $segment_id) {
-          if((int)$segment_id > 0) {
-            self::createOrUpdate(array(
-              'subscriber_id' => $subscriber->id,
-              'segment_id' => $segment_id,
-              'status' => Subscriber::STATUS_SUBSCRIBED
-            ));
-          }
+    if($subscriber === false) return false;
+    if(!empty($segment_ids)) {
+      // subscribe to specified segments
+      foreach($segment_ids as $segment_id) {
+        if((int)$segment_id > 0) {
+          self::createOrUpdate(array(
+            'subscriber_id' => $subscriber->id,
+            'segment_id' => $segment_id,
+            'status' => Subscriber::STATUS_SUBSCRIBED
+          ));
         }
-        return true;
-      } else {
-        // subscribe to all segments
-        return self::where('subscriber_id', $subscriber->id)
-          ->findResultSet()
-          ->set('status', Subscriber::STATUS_SUBSCRIBED)
-          ->save();
       }
+      return true;
+    } else {
+      // (re)subscribe to all segments linked to the subscriber
+      return self::where('subscriber_id', $subscriber->id)
+        ->findResultSet()
+        ->set('status', Subscriber::STATUS_SUBSCRIBED)
+        ->save();
     }
-    return false;
   }
 
   static function resetSubscriptions($subscriber, $segment_ids = array()) {
@@ -90,30 +86,59 @@ class SubscriberSegment extends Model {
     return self::subscribeToSegments($subscriber, $segment_ids);
   }
 
-  static function deleteManySubscriptions($subscriber_ids = array()) {
-    if(!empty($subscriber_ids)) {
-      // delete subscribers' relations to segments (except WP Users' segment)
-      $subscriptions = SubscriberSegment::whereIn(
-        'subscriber_id', $subscriber_ids
-      );
-
-      $wp_segment = Segment::getWPSegment();
-      if($wp_segment !== false) {
-        $subscriptions = $subscriptions->whereNotEqual(
-          'segment_id', $wp_segment->id
-        );
-      }
-      return $subscriptions->deleteMany();
+  static function subscribeManyToSegments(
+    $subscriber_ids = array(),
+    $segment_ids = array()
+  ) {
+    if(empty($subscriber_ids) || empty($segment_ids)) {
+      return false;
     }
-    return false;
+
+    // create many subscriptions to each segment
+    foreach($segment_ids as $segment_id) {
+      $query = array(
+        'INSERT IGNORE INTO `'.self::$_table.'`',
+        '(`subscriber_id`, `segment_id`, `status`)',
+        'VALUES '.rtrim(str_repeat(
+            "(?, ".(int)$segment_id.", '".Subscriber::STATUS_SUBSCRIBED."'), ",
+            count($subscriber_ids)
+          ), ', ')
+      );
+      self::rawExecute(join(' ', $query), $subscriber_ids);
+    }
+
+    return true;
   }
 
-  static function deleteSubscriptions($subscriber) {
-    if($subscriber !== false && $subscriber->id > 0) {
-      // delete all relationships to segments
-      return self::where('subscriber_id', $subscriber->id)->deleteMany();
+  static function deleteManySubscriptions($subscriber_ids = array(), $segment_ids = array()) {
+    if(empty($subscriber_ids)) return false;
+
+    // delete subscribers' relations to segments (except WP segment)
+    $subscriptions = self::whereIn(
+      'subscriber_id', $subscriber_ids
+    );
+
+    $wp_segment = Segment::getWPSegment();
+    if($wp_segment !== false) {
+      $subscriptions = $subscriptions->whereNotEqual(
+        'segment_id', $wp_segment->id
+      );
     }
-    return false;
+    return $subscriptions->deleteMany();
+  }
+
+  static function deleteSubscriptions($subscriber, $segment_ids = array()) {
+    if($subscriber === false) return false;
+
+    $wp_segment = Segment::getWPSegment();
+
+    $subscriptions = self::where('subscriber_id', $subscriber->id)
+      ->whereNotEqual('segment_id', $wp_segment->id);
+
+    if(!empty($segment_ids)) {
+      $subscriptions = $subscriptions->whereIn('segment_id', $segment_ids);
+    }
+    return $subscriptions->deleteMany();
   }
 
   static function subscribed($orm) {
@@ -142,28 +167,5 @@ class SubscriberSegment extends Model {
     }
 
     return $subscription->save();
-  }
-
-  // TO BE REVIEWED
-  static function createMultiple($segmnets, $subscribers) {
-    $values = Helpers::flattenArray(
-      array_map(function ($segment) use ($subscribers) {
-        return array_map(function ($subscriber) use ($segment) {
-          return array(
-            $segment,
-            $subscriber
-          );
-        }, $subscribers);
-      }, $segmnets)
-    );
-    return self::rawExecute(
-      'INSERT IGNORE INTO `' . self::$_table . '` ' .
-      '(segment_id, subscriber_id) ' .
-      'VALUES ' . rtrim(
-        str_repeat(
-          '(?, ?), ', count($subscribers) * count($segmnets)), ', '
-      ),
-      $values
-    );
   }
 }

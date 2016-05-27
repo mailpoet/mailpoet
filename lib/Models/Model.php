@@ -5,6 +5,7 @@ if(!defined('ABSPATH')) exit;
 
 class Model extends \Sudzy\ValidModel {
   protected $_errors;
+  const MAX_BATCH_SIZE = 200;
 
   function __construct() {
     $this->_errors = array();
@@ -109,25 +110,50 @@ class Model extends \Sudzy\ValidModel {
   static function bulkAction($orm, $callback = false) {
     $total = $orm->count();
 
-    if($total > 0) {
-      $models = $orm->select(static::$_table.'.id')
+    if($total === 0) return false;
+
+    $affected_rows = 0;
+
+    if($total > self::MAX_BATCH_SIZE) {
+      for(
+        $i = 0, $batches = ceil($total / self::MAX_BATCH_SIZE);
+        $i < $batches;
+        $i++
+      ) {
+        $rows = $orm->select('id')
+          ->offset($i * self::MAX_BATCH_SIZE)
+          ->limit(self::MAX_BATCH_SIZE)
+          ->findArray();
+
+        $ids = array_map(function($model) {
+          return (int)$model['id'];
+        }, $rows);
+
+        if($callback !== false) {
+          $callback($ids);
+        }
+
+        // increment number of affected rows
+        $affected_rows += $orm->get_last_statement()->rowCount();
+      }
+    } else {
+      $rows = $orm->select(static::$_table.'.id')
         ->offset(null)
         ->limit(null)
         ->findArray();
 
       $ids = array_map(function($model) {
         return (int)$model['id'];
-      }, $models);
+      }, $rows);
 
-      if(is_callable($callback)) {
+      if($callback !== false) {
         $callback($ids);
       }
 
-      $last_statement = $orm->get_last_statement();
-      return $last_statement->rowCount();
+      // get number of affected rows
+      $affected_rows = $orm->get_last_statement()->rowCount();
     }
-
-    return false;
+    return $affected_rows;
   }
 
   function duplicate($data = array()) {

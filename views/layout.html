@@ -52,14 +52,14 @@ jQuery('.toplevel_page_mailpoet.menu-top-last')
 
 <script type="text/javascript">
   var mailpoet_date_format = "<%= wp_datetime_format() %>";
-</script>
 
-<script>
-  HS.beacon.config({
-    icon: 'message',
-    zIndex: 50000,
-    instructions: '<%= __('Want to give feedback to the MailPoet team? Write them right here with as much information as possible.') %>',
-  });
+  if(window['HS'] !== undefined) {
+    HS.beacon.config({
+      icon: 'message',
+      zIndex: 50000,
+      instructions: '<%= __('Want to give feedback to the MailPoet team? Write them right here with as much information as possible.') %>',
+    });
+  }
 </script>
 
 <% block after_javascript %><% endblock %>
