@@ -343,6 +343,7 @@ class ImportTest extends MailPoetTest {
 
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
   }

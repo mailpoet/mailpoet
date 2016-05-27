@@ -63,9 +63,9 @@ class Migrator {
       'name varchar(90) NOT NULL,',
       'type varchar(90) NOT NULL DEFAULT "default",',
       'description varchar(250) NOT NULL DEFAULT "",',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
-      'deleted_at TIMESTAMP NULL,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'deleted_at TIMESTAMP NULL,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY name (name)'
     );
@@ -77,7 +77,7 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(20) NOT NULL,',
       'value longtext,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY name (name)'
@@ -91,7 +91,7 @@ class Migrator {
       'name varchar(90) NOT NULL,',
       'type varchar(90) NOT NULL,',
       'params longtext NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY name (name)'
@@ -114,7 +114,7 @@ class Migrator {
       'count_failed mediumint(9) NOT NULL DEFAULT 0,',
       'scheduled_at TIMESTAMP NULL,',
       'processed_at TIMESTAMP NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',
       'PRIMARY KEY  (id)',
@@ -130,7 +130,7 @@ class Migrator {
       'last_name tinytext NOT NULL DEFAULT "",',
       'email varchar(150) NOT NULL,',
       'status varchar(12) NOT NULL DEFAULT "' . Subscriber::STATUS_UNCONFIRMED . '",',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',
       'PRIMARY KEY  (id),',
@@ -145,7 +145,7 @@ class Migrator {
       'subscriber_id mediumint(9) NOT NULL,',
       'segment_id mediumint(9) NOT NULL,',
       'status varchar(12) NOT NULL DEFAULT "' . Subscriber::STATUS_SUBSCRIBED . '",',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY subscriber_segment (subscriber_id,segment_id)'
@@ -159,7 +159,7 @@ class Migrator {
       'subscriber_id mediumint(9) NOT NULL,',
       'custom_field_id mediumint(9) NOT NULL,',
       'value varchar(255) NOT NULL DEFAULT "",',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY subscriber_id_custom_field_id (subscriber_id,custom_field_id)'
@@ -178,7 +178,7 @@ class Migrator {
       'reply_to_name varchar(150) NOT NULL DEFAULT "",',
       'preheader varchar(250) NOT NULL DEFAULT "",',
       'body longtext,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',
       'PRIMARY KEY  (id)'
@@ -194,7 +194,7 @@ class Migrator {
       'body LONGTEXT,',
       'thumbnail LONGTEXT,',
       'readonly TINYINT(1) DEFAULT 0,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)'
     );
@@ -206,7 +206,7 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'newsletter_type varchar(90) NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY name_newsletter_type (newsletter_type,name)'
@@ -220,7 +220,7 @@ class Migrator {
       'newsletter_id mediumint(9) NOT NULL,',
       'option_field_id mediumint(9) NOT NULL,',
       'value varchar(255) NOT NULL DEFAULT "",',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY newsletter_id_option_field_id (newsletter_id,option_field_id)'
@@ -233,7 +233,7 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
       'segment_id mediumint(9) NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY newsletter_segment (newsletter_id,segment_id)'
@@ -248,7 +248,7 @@ class Migrator {
       'queue_id mediumint(9) NOT NULL,',
       'url varchar(255) NOT NULL,',
       'hash varchar(20) NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)',
     );
@@ -260,7 +260,7 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
       'post_id mediumint(9) NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)',
     );
@@ -274,7 +274,7 @@ class Migrator {
       'body longtext,',
       'settings longtext,',
       'styles longtext,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',
       'PRIMARY KEY  (id)'
@@ -302,7 +302,7 @@ class Migrator {
       'queue_id mediumint(9) NOT NULL,',
       'link_id mediumint(9) NOT NULL,',
       'count mediumint(9) NOT NULL,',
-      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)',
     );
