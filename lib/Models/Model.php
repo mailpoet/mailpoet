@@ -72,9 +72,9 @@ class Model extends \Sudzy\ValidModel {
   static function bulkTrash($orm) {
     $model = get_called_class();
     return self::bulkAction($orm, function($ids) use($model) {
-       self::rawExecute(join(' ', array(
+      self::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
-          'SET `deleted_at`=NOW()',
+          'SET `deleted_at` = NOW()',
           'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'
         )),
         $ids
@@ -90,7 +90,7 @@ class Model extends \Sudzy\ValidModel {
   }
 
   function restore() {
-    return $this->set_expr('deleted_at', 'NULl')->save();
+    return $this->set_expr('deleted_at', 'NULL')->save();
   }
 
   static function bulkRestore($orm) {
@@ -98,7 +98,7 @@ class Model extends \Sudzy\ValidModel {
     return self::bulkAction($orm, function($ids) use($model) {
        self::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
-          'SET `deleted_at`=NULL',
+          'SET `deleted_at` = NULL',
           'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'
         )),
         $ids
@@ -109,22 +109,23 @@ class Model extends \Sudzy\ValidModel {
   static function bulkAction($orm, $callback = false) {
     $total = $orm->count();
 
-    if($total > 0) {
-      $models = $orm->select(static::$_table.'.id')
-        ->offset(null)
-        ->limit(null)
-        ->findArray();
+    if($total === 0) return false;
 
-      $ids = array_map(function($model) {
-        return (int)$model['id'];
-      }, $models);
+    $rows = $orm->select(static::$_table.'.id')
+      ->offset(null)
+      ->limit(null)
+      ->findArray();
 
-      if(is_callable($callback)) {
-        $callback($ids);
-      }
+    $ids = array_map(function($model) {
+      return (int)$model['id'];
+    }, $rows);
+
+    if($callback !== false) {
+      $callback($ids);
     }
 
-    return $total;
+    // get number of affected rows
+    return $orm->get_last_statement()->rowCount();
   }
 
   function duplicate($data = array()) {

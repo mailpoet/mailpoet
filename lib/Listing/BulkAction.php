@@ -22,10 +22,18 @@ class BulkAction {
   }
 
   function apply() {
+    $bulk_action_method = 'bulk'.ucfirst($this->action);
+
+    if(!method_exists($this->model_class, $bulk_action_method)) {
+      throw new Exception(
+        $this->model_class. ' has not method "'.$bulk_action_method.'"'
+      );
+      return false;
+    }
+
     return call_user_func_array(
-      array($this->model_class, 'bulk'.ucfirst($this->action)),
+      array($this->model_class, $bulk_action_method),
       array($this->listing->getSelection(), $this->data)
     );
-    return $models->count();
   }
 }

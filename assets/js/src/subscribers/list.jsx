@@ -106,11 +106,6 @@ const bulk_actions = [
           return !!(
             !segment.deleted_at && segment.type === 'default'
           );
-        },
-        getLabel: function (segment) {
-          return (segment.subscribers > 0) ?
-          segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')' :
-            segment.name;
         }
       };
 
@@ -126,7 +121,7 @@ const bulk_actions = [
     onSuccess: function(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
-        .replace('%$1d', ~~response.subscribers)
+        .replace('%$1d', ~~(response.subscribers))
         .replace('%$2s', response.segment)
       );
     }
@@ -142,11 +137,6 @@ const bulk_actions = [
           return !!(
             !segment.deleted_at && segment.type === 'default'
           );
-        },
-        getLabel: function (segment) {
-          return (segment.subscribers > 0) ?
-            segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')' :
-            segment.name;
         }
       };
 
@@ -178,11 +168,6 @@ const bulk_actions = [
           return !!(
             segment.type === 'default'
           );
-        },
-        getLabel: function (segment) {
-          return (segment.subscribers > 0) ?
-          segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')' :
-            segment.name;
         }
       };
 
@@ -234,14 +219,17 @@ const item_actions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
-    link: function(item) {
+    link: function(subscriber) {
       return (
-        <Link to={ `/edit/${item.id}` }>{MailPoet.I18n.t('edit')}</Link>
+        <Link to={ `/edit/${subscriber.id}` }>{MailPoet.I18n.t('edit')}</Link>
       );
     }
   },
   {
-    name: 'trash'
+    name: 'trash',
+    display: function(subscriber) {
+      return !!(~~subscriber.wp_user_id === 0);
+    }
   }
 ];
 
@@ -280,15 +268,11 @@ const SubscriberList = React.createClass({
     }
 
     let segments = false;
-    let subscribed_segments = [];
-
-    // WordPress Users
-    if (~~(subscriber.wp_user_id) > 0) {
-      subscribed_segments.push(MailPoet.I18n.t('WPUsersSegment'));
-    }
 
     // Subscriptions
     if (subscriber.subscriptions.length > 0) {
+      let subscribed_segments = [];
+
       subscriber.subscriptions.map((subscription) => {
         const segment = this.getSegmentFromId(subscription.segment_id);
         if(segment === false) return;
@@ -296,13 +280,14 @@ const SubscriberList = React.createClass({
           subscribed_segments.push(segment.name);
         }
       });
+
+      segments = (
+        <span>
+          { subscribed_segments.join(', ') }
+        </span>
+      );
     }
 
-    segments = (
-      <span>
-        { subscribed_segments.join(', ') }
-      </span>
-    );
 
     let avatar = false;
     if(subscriber.avatar_url) {

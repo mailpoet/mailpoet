@@ -42,10 +42,28 @@ class Subscriber extends Model {
   }
 
   function delete() {
-    // delete all relations to segments
-    SubscriberSegment::where('subscriber_id', $this->id)->deleteMany();
+    // WP Users cannot be deleted
+    if($this->isWPUser()) {
+      return false;
+    } else {
+      // delete all relations to segments
+      SubscriberSegment::deleteSubscriptions($this);
 
-    return parent::delete();
+      return parent::delete();
+    }
+  }
+
+  function trash() {
+    // WP Users cannot be trashed
+    if($this->isWPUser()) {
+      return false;
+    } else {
+      return parent::trash();
+    }
+  }
+
+  function isWPUser() {
+    return ($this->wp_user_id !== null);
   }
 
   function sendConfirmationEmail() {
@@ -159,7 +177,7 @@ class Subscriber extends Model {
 
       if($subscriber->save()) {
         // link subscriber to segments
-        SubscriberSegment::addSubscriptions($subscriber, $segment_ids);
+        SubscriberSegment::subscribeToSegments($subscriber, $segment_ids);
 
         // signup confirmation
         if($subscriber->status !== self::STATUS_SUBSCRIBED) {
@@ -203,7 +221,7 @@ class Subscriber extends Model {
     );
 
     $segment_list[] = array(
-      'label' => str_replace(' (0)', '', $subscribers_without_segment_label),
+      'label' => $subscribers_without_segment_label,
       'value' => 'none'
     );
 
@@ -212,9 +230,14 @@ class Subscriber extends Model {
         ->filter('groupBy', $group)
         ->count();
 
-      $label = sprintf('%s (%s)', $segment->name, number_format($subscribers_count));
+      $label = sprintf(
+        '%s (%s)',
+        $segment->name,
+        number_format($subscribers_count)
+      );
+
       $segment_list[] = array(
-        'label' => str_replace(' (0)', '', $label),
+        'label' => $label,
         'value' => $segment->id()
       );
     }
@@ -416,10 +439,10 @@ class Subscriber extends Model {
           ($new_status === self::STATUS_UNSUBSCRIBED)
       ) {
         // make sure we unsubscribe the user from all segments
-        SubscriberSegment::removeSubscriptions($subscriber);
+        SubscriberSegment::unsubscribeFromSegments($subscriber);
       } else {
         if($segment_ids !== false) {
-          SubscriberSegment::setSubscriptions($subscriber, $segment_ids);
+          SubscriberSegment::resetSubscriptions($subscriber, $segment_ids);
         }
       }
     }
@@ -475,68 +498,74 @@ class Subscriber extends Model {
     ));
   }
 
+  static function bulkAddToList($orm, $data = array()) {
+    $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
+    $segment = Segment::findOne($segment_id);
+
+    if($segment === false) return false;
+
+    $subscribers_count = parent::bulkAction($orm,
+      function($subscriber_ids) use($segment) {
+        SubscriberSegment::subscribeManyToSegments(
+          $subscriber_ids, array($segment->id)
+        );
+      }
+    );
+
+    return array(
+      'subscribers' => $subscribers_count,
+      'segment' => $segment->name
+    );
+  }
+
   static function bulkMoveToList($orm, $data = array()) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
-    if($segment !== false) {
-      $subscribers = $orm->findResultSet();
-      foreach($subscribers as $subscriber) {
-        // remove subscriber from all segments
-        SubscriberSegment::where('subscriber_id', $subscriber->id)->deleteMany();
 
-        // create relation with segment
-        $association = SubscriberSegment::create();
-        $association->subscriber_id = $subscriber->id;
-        $association->segment_id = $segment->id;
-        $association->save();
-      }
-      return array(
-        'subscribers' => $subscribers->count(),
-        'segment' => $segment->name
-      );
-    }
-    return false;
+    if($segment === false) return false;
+
+    $subscribers_count = parent::bulkAction($orm,
+      function($subscriber_ids) use($segment) {
+        SubscriberSegment::deleteManySubscriptions($subscriber_ids);
+        SubscriberSegment::subscribeManyToSegments(
+          $subscriber_ids, array($segment->id)
+        );
+    });
+
+    return array(
+      'subscribers' => $subscribers_count,
+      'segment' => $segment->name
+    );
   }
 
   static function bulkRemoveFromList($orm, $data = array()) {
     $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
     $segment = Segment::findOne($segment_id);
 
-    if($segment !== false) {
-      // delete relations with segment
-      $subscribers = $orm->findResultSet();
-      foreach($subscribers as $subscriber) {
-        SubscriberSegment::where('subscriber_id', $subscriber->id)
-          ->where('segment_id', $segment->id)
-          ->deleteMany();
-      }
+    if($segment === false) return false;
 
-      return array(
-        'subscribers' => $subscribers->count(),
-        'segment' => $segment->name
+    $subscribers_count = $orm->count();
+
+    parent::bulkAction($orm, function($subscriber_ids) use($segment) {
+      SubscriberSegment::deleteManySubscriptions(
+        $subscriber_ids, array($segment->id)
       );
-    }
-    return false;
+    });
+
+    return array(
+      'subscribers' => $subscribers_count,
+      'segment' => $segment->name
+    );
   }
 
-  static function bulkRemoveFromAllLists($orm) {
-    $segments = Segment::findMany();
-    $segment_ids = array_map(function($segment) {
-      return $segment->id();
-    }, $segments);
+  static function bulkRemoveFromAllLists($orm, $data = array()) {
+    $subscribers_count = $orm->count();
 
-    if(!empty($segment_ids)) {
-      // delete relations with segment
-      $subscribers = $orm->findResultSet();
-      foreach($subscribers as $subscriber) {
-        SubscriberSegment::where('subscriber_id', $subscriber->id)
-          ->whereIn('segment_id', $segment_ids)
-          ->deleteMany();
-      }
+    parent::bulkAction($orm, function($subscriber_ids) {
+      SubscriberSegment::deleteManySubscriptions($subscriber_ids);
+    });
 
-      return $subscribers->count();
-    }
-    return false;
+    return $subscribers_count;
   }
 
   static function bulkSendConfirmationEmail($orm) {
@@ -556,36 +585,30 @@ class Subscriber extends Model {
     return false;
   }
 
-  static function bulkAddToList($orm, $data = array()) {
-    $segment_id = (isset($data['segment_id']) ? (int)$data['segment_id'] : 0);
-    $segment = Segment::findOne($segment_id);
-
-    if($segment !== false) {
-      $subscribers_count = 0;
-      $subscribers = $orm->findMany();
-      foreach($subscribers as $subscriber) {
-        // create relation with segment
-        $association = \MailPoet\Models\SubscriberSegment::create();
-        $association->subscriber_id = $subscriber->id;
-        $association->segment_id = $segment->id;
-        if($association->save()) {
-          $subscribers_count++;
-        }
-      }
-      return array(
-        'subscribers' => $subscribers_count,
-        'segment' => $segment->name
+  static function bulkTrash($orm) {
+    return parent::bulkAction($orm, function($subscriber_ids) {
+      self::rawExecute(join(' ', array(
+          'UPDATE `'.self::$_table.'`',
+          'SET `deleted_at` = NOW()',
+          'WHERE `id` IN ('.
+            rtrim(str_repeat('?,', count($subscriber_ids)), ',')
+          .')',
+          'AND `wp_user_id` IS NULL'
+        )),
+        $subscriber_ids
       );
-    }
-    return false;
+    });
   }
 
   static function bulkDelete($orm) {
-    return parent::bulkAction($orm, function($ids) {
-      // delete subscribers
-      Subscriber::whereIn('id', $ids)->deleteMany();
-      // delete subscribers' relations to segments
-      SubscriberSegment::whereIn('subscriber_id', $ids)->deleteMany();
+    return parent::bulkAction($orm, function($subscriber_ids) {
+      // delete all subscriber/segment relationships
+      SubscriberSegment::deleteManySubscriptions($subscriber_ids);
+
+      // delete subscribers (except WP Users)
+      Subscriber::whereIn('id', $subscriber_ids)
+        ->whereNull('wp_user_id')
+        ->deleteMany();
     });
   }
 

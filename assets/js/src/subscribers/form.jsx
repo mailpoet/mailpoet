@@ -73,7 +73,7 @@ define(
           });
         },
         filter: function(segment) {
-          return !!(!segment.deleted_at);
+          return !!(!segment.deleted_at && segment.type === 'default');
         },
         getSearchLabel: function(segment, subscriber) {
           let label = '';

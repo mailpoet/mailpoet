@@ -8,7 +8,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 class WP {
   static function synchronizeUser($wp_user_id, $old_wp_user_data = false) {
     $wp_user = \get_userdata($wp_user_id);
-    $wp_users_segment = Segment::getWPUsers();
+    $wp_users_segment = Segment::getWPSegment();
 
     if($wp_user === false or $wp_users_segment === false) return;
 
@@ -53,7 +53,7 @@ class WP {
         $subscriber = Subscriber::createOrUpdate($data);
         if($subscriber->getErrors() === false && $subscriber->id > 0) {
           // add subscriber to the WP Users segment
-          SubscriberSegment::addSubscriptions(
+          SubscriberSegment::subscribeToSegments(
             $subscriber,
             array($wp_users_segment->id)
           );
@@ -73,7 +73,7 @@ class WP {
 
   static function synchronizeUsers() {
     // get wordpress users list
-    $wp_users_segment = Segment::getWPUsers();
+    $wp_users_segment = Segment::getWPSegment();
 
     // fetch all wp users id
     $wp_users = \get_users(array(

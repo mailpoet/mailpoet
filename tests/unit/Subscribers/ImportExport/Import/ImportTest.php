@@ -1,6 +1,7 @@
 <?php
 
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\Import\Import;
@@ -40,7 +41,9 @@ class ImportTest extends MailPoetTest {
       'last_name',
       'email'
     );
-    $this->segments = range(0, 1);
+    $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
+    $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
+
     $this->subscriber_custom_fields = array(777);
     $this->import = new Import($this->data);
     $this->subscribers_data = $this->import->transformSubscribersData(
@@ -224,7 +227,7 @@ class ImportTest extends MailPoetTest {
     expect(count($db_subscribers))->equals(2);
     $this->import->addSubscribersToSegments(
       $db_subscribers,
-      $this->segments
+      array($this->segment_1->id, $this->segment_2->id)
     );
     $subscribers_segments = SubscriberSegment::findArray();
     expect(count($subscribers_segments))->equals(4);
@@ -277,7 +280,7 @@ class ImportTest extends MailPoetTest {
   }
 
 
-  function testItCanaddSubscribersToSegments() {
+  function testItCanAddSubscribersToSegments() {
     $subscribers_data = $this->subscribers_data;
     $this->import->createOrUpdateSubscribers(
       'create',
@@ -292,7 +295,7 @@ class ImportTest extends MailPoetTest {
     );
     $this->import->addSubscribersToSegments(
       $db_subscribers,
-      $this->segments
+      array($this->segment_1->id, $this->segment_2->id)
     );
     $subscribers_segments = SubscriberSegment::findArray();
     // 2 subscribers * 2 segments
@@ -340,6 +343,7 @@ class ImportTest extends MailPoetTest {
 
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
   }

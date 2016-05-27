@@ -93,8 +93,22 @@ class Segment extends Model {
     return $this;
   }
 
-  static function getWPUsers() {
-    return self::where('type', 'wp_users')->findOne();
+  static function getWPSegment() {
+    $wp_segment = self::where('type', 'wp_users')->findOne();
+
+    if($wp_segment === false) {
+      // create the wp users segment
+      $wp_segment = Segment::create();
+      $wp_segment->hydrate(array(
+        'name' => __('WordPress Users'),
+        'description' =>
+          __('The list containing all of your WordPress users.'),
+        'type' => 'wp_users'
+      ));
+      $wp_segment->save();
+    }
+
+    return $wp_segment;
   }
 
   static function search($orm, $search = '') {
@@ -184,10 +198,31 @@ class Segment extends Model {
       $segment->set($data);
     }
 
-    return $segment->save();
+    $segment->save();
+    return $segment;
   }
 
   static function getPublic() {
     return self::getPublished()->where('type', 'default')->orderByAsc('name');
+  }
+
+  static function bulkTrash($orm) {
+    return parent::bulkAction($orm, function($ids) {
+      parent::rawExecute(join(' ', array(
+        'UPDATE `'.self::$_table.'`',
+        'SET `deleted_at` = NOW()',
+        'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')',
+        'AND `type` = "default"'
+      )), $ids);
+    });
+  }
+
+  static function bulkDelete($orm) {
+    return parent::bulkAction($orm, function($ids) {
+      // delete segments (only default)
+      Segment::whereIn('id', $ids)
+        ->where('type', 'default')
+        ->deleteMany();
+    });
   }
 }

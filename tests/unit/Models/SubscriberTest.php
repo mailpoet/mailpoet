@@ -390,39 +390,70 @@ class SubscriberTest extends MailPoetTest {
   }
 
   function testItCanGetOnlySubscribedSubscribersInSegments() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    $columns = array(
-      'first_name',
-      'last_name',
-      'email',
-      'status'
+    $subscriber_1 = Subscriber::createOrUpdate(array(
+      'first_name' => 'Adam',
+      'last_name' => 'Smith',
+      'email' => 'adam@smith.com',
+      'status' => Subscriber::STATUS_UNCONFIRMED
+    ));
+
+    $subscriber_2 = Subscriber::createOrUpdate(array(
+      'first_name' => 'Mary',
+      'last_name' => 'Jane',
+      'email' => 'mary@jane.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED
+    ));
+
+    $segment = Segment::createOrUpdate(array(
+      'name' => 'Only Subscribed Subscribers Segment'
+    ));
+
+    //Subscriber::createMultiple($columns, $values);
+    $result = SubscriberSegment::subscribeManyToSegments(
+      array($subscriber_1->id, $subscriber_2->id),
+      array($segment->id)
     );
-    $values = array(
-      array(
-        'first_name' => 'Adam',
-        'last_name' => 'Smith',
-        'email' => 'adam@smith.com',
-        'status' => 'unconfirmed'
-      ),
-      array(
-        'first_name' => 'Mary',
-        'last_name' => 'Jane',
-        'email' => 'mary@jane.com',
-        'status' => 'subscribed'
-      )
-    );
-    Subscriber::createMultiple($columns, $values);
-    SubscriberSegment::createMultiple(array(1), array(1,2));
-    $subscribed_subscribers_in_segment =
-      Subscriber::getSubscribedInSegments(array(1))->findArray();
-    expect(count($subscribed_subscribers_in_segment))->equals(1);
-    $subscriber = Subscriber::findOne(1);
-    $subscriber->status = 'subscribed';
+    expect($result)->true();
+
+    $subscribed_subscribers_in_segment = Subscriber::getSubscribedInSegments(
+      array($segment->id)
+    )->findArray();
+    expect($subscribed_subscribers_in_segment)->count(1);
+
+    // update 1st subscriber's state to subscribed
+    $subscriber = Subscriber::findOne($subscriber_1->id);
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
-    $subscribed_subscribers_in_segment =
-      Subscriber::getSubscribedInSegments(array(1))->findArray();
-    expect(count($subscribed_subscribers_in_segment))->equals(2);
+
+    $subscribed_subscribers_in_segment = Subscriber::getSubscribedInSegments(
+      array($segment->id)
+    )->findArray();
+    expect($subscribed_subscribers_in_segment)->count(2);
   }
+
+  function testItCannotTrashAWPUser() {
+    $wp_subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'some.wp.user@mailpoet.com',
+      'wp_user_id' => 1
+    ));
+    expect($wp_subscriber->trash())->equals(false);
+
+    $subscriber = Subscriber::findOne($wp_subscriber->id);
+    expect($subscriber)->notEquals(false);
+    expect($subscriber->deleted_at)->equals(null);
+  }
+
+  function testItCannotDeleteAWPUser() {
+    $wp_subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'some.wp.user@mailpoet.com',
+      'wp_user_id' => 1
+    ));
+    expect($wp_subscriber->delete())->equals(false);
+
+    $subscriber = Subscriber::findOne($wp_subscriber->id);
+    expect($subscriber)->notEquals(false);
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);

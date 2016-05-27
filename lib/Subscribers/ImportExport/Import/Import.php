@@ -361,9 +361,11 @@ class Import {
     return array_walk($wp_users, '\MailPoet\Segments\WP::synchronizeUser');
   }
 
-  function addSubscribersToSegments($subscribers, $segments) {
-    foreach(array_chunk($subscribers, 200) as $data) {
-      SubscriberSegment::createMultiple($segments, $data);
+  function addSubscribersToSegments($subscriber_ids, $segment_ids) {
+    foreach(array_chunk($subscriber_ids, 200) as $subscriber_ids_chunk) {
+      SubscriberSegment::subscribeManyToSegments(
+        $subscriber_ids_chunk, $segment_ids
+      );
     }
   }
 
