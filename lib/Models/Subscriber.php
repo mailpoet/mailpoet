@@ -544,13 +544,13 @@ class Subscriber extends Model {
 
     if($segment === false) return false;
 
-    $subscribers_count = parent::bulkAction($orm,
-      function($subscriber_ids) use($segment) {
-        SubscriberSegment::deleteManySubscriptions(
-          $subscriber_ids, array($segment->id)
-        );
-      }
-    );
+    $subscribers_count = $orm->count();
+
+    parent::bulkAction($orm, function($subscriber_ids) use($segment) {
+      SubscriberSegment::deleteManySubscriptions(
+        $subscriber_ids, array($segment->id)
+      );
+    });
 
     return array(
       'subscribers' => $subscribers_count,
@@ -590,7 +590,9 @@ class Subscriber extends Model {
       self::rawExecute(join(' ', array(
           'UPDATE `'.self::$_table.'`',
           'SET `deleted_at` = NOW()',
-          'WHERE `id` IN ('.rtrim(str_repeat('?,', count($subscriber_ids)), ',').')',
+          'WHERE `id` IN ('.
+            rtrim(str_repeat('?,', count($subscriber_ids)), ',')
+          .')',
           'AND `wp_user_id` IS NULL'
         )),
         $subscriber_ids

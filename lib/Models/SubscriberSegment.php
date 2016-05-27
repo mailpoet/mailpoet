@@ -95,17 +95,23 @@ class SubscriberSegment extends Model {
     }
 
     // create many subscriptions to each segment
-    foreach($segment_ids as $segment_id) {
-      $query = array(
-        'INSERT IGNORE INTO `'.self::$_table.'`',
-        '(`subscriber_id`, `segment_id`, `status`)',
-        'VALUES '.rtrim(str_repeat(
-            "(?, ".(int)$segment_id.", '".Subscriber::STATUS_SUBSCRIBED."'), ",
-            count($subscriber_ids)
-          ), ', ')
-      );
-      self::rawExecute(join(' ', $query), $subscriber_ids);
+    $values = array();
+    $row_count = 0;
+    foreach($segment_ids as &$segment_id) {
+      foreach($subscriber_ids as &$subscriber_id) {
+        $values[] = (int)$subscriber_id;
+        $values[] = (int)$segment_id;
+        $values[] = Subscriber::STATUS_SUBSCRIBED;
+        $row_count++;
+      }
     }
+
+    $query = array(
+      'INSERT IGNORE INTO `'.self::$_table.'`',
+      '(`subscriber_id`, `segment_id`, `status`)',
+      'VALUES '.rtrim(str_repeat('(?, ?, ?), ', $row_count), ', ')
+    );
+    self::rawExecute(join(' ', $query), $values);
 
     return true;
   }

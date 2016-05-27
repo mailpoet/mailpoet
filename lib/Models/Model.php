@@ -5,7 +5,6 @@ if(!defined('ABSPATH')) exit;
 
 class Model extends \Sudzy\ValidModel {
   protected $_errors;
-  const MAX_BATCH_SIZE = 200;
 
   function __construct() {
     $this->_errors = array();
@@ -91,7 +90,7 @@ class Model extends \Sudzy\ValidModel {
   }
 
   function restore() {
-    return $this->set_expr('deleted_at', 'NULl')->save();
+    return $this->set_expr('deleted_at', 'NULL')->save();
   }
 
   static function bulkRestore($orm) {
@@ -99,7 +98,7 @@ class Model extends \Sudzy\ValidModel {
     return self::bulkAction($orm, function($ids) use($model) {
        self::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
-          'SET `deleted_at`=NULL',
+          'SET `deleted_at` = NULL',
           'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'
         )),
         $ids
@@ -112,48 +111,21 @@ class Model extends \Sudzy\ValidModel {
 
     if($total === 0) return false;
 
-    $affected_rows = 0;
+    $rows = $orm->select(static::$_table.'.id')
+      ->offset(null)
+      ->limit(null)
+      ->findArray();
 
-    if($total > self::MAX_BATCH_SIZE) {
-      for(
-        $i = 0, $batches = ceil($total / self::MAX_BATCH_SIZE);
-        $i < $batches;
-        $i++
-      ) {
-        $rows = $orm->select('id')
-          ->offset($i * self::MAX_BATCH_SIZE)
-          ->limit(self::MAX_BATCH_SIZE)
-          ->findArray();
+    $ids = array_map(function($model) {
+      return (int)$model['id'];
+    }, $rows);
 
-        $ids = array_map(function($model) {
-          return (int)$model['id'];
-        }, $rows);
-
-        if($callback !== false) {
-          $callback($ids);
-        }
-
-        // increment number of affected rows
-        $affected_rows += $orm->get_last_statement()->rowCount();
-      }
-    } else {
-      $rows = $orm->select(static::$_table.'.id')
-        ->offset(null)
-        ->limit(null)
-        ->findArray();
-
-      $ids = array_map(function($model) {
-        return (int)$model['id'];
-      }, $rows);
-
-      if($callback !== false) {
-        $callback($ids);
-      }
-
-      // get number of affected rows
-      $affected_rows = $orm->get_last_statement()->rowCount();
+    if($callback !== false) {
+      $callback($ids);
     }
-    return $affected_rows;
+
+    // get number of affected rows
+    return $orm->get_last_statement()->rowCount();
   }
 
   function duplicate($data = array()) {

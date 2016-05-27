@@ -121,7 +121,7 @@ const bulk_actions = [
     onSuccess: function(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
-        .replace('%$1d', ~~response.subscribers)
+        .replace('%$1d', ~~(response.subscribers))
         .replace('%$2s', response.segment)
       );
     }
