@@ -5,7 +5,7 @@
 <div id="mailpoet_subscribers_import" class="wrap">
   <h1 class="title">
     <%= __('Import') %>
-    <a class="page-title-action" href="?page=mailpoet-subscribers#/"><%= __('Back to list') %></a>
+    <a class="page-title-action" href="?page=mailpoet-subscribers#/"><%= __('Back to subscribers') %></a>
   </h1>
   <!-- STEP 1: method selection -->
   <% include 'subscribers/importExport/import/step1.html' %>
@@ -25,7 +25,8 @@
     mailpoetColumnsSelect2 = <%= subscriberFieldsSelect2|raw %>,
     mailpoetColumns = <%= subscriberFields|raw %>,
     mailpoetSegments = <%= segments|raw %>,
-    emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-_]{0,61}[a-zA-Z0-9])+.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    // HTML5 email regex: https://html.spec.whatwg.org/multipage/forms.html#valid-e-mail-address
+    emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 </script>
 <% endblock %>
 

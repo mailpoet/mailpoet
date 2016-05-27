@@ -1,10 +1,11 @@
 <?php
 namespace MailPoet\Subscribers\ImportExport\Import;
 
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Subscribers\ImportExport\BootStrapMenu;
+use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\Helpers;
 
 class Import {
@@ -68,7 +69,7 @@ class Import {
             $subscriber_fields,
             $subscriber_custom_fields
           );
-        if ($wp_users) {
+        if($wp_users) {
           $this->synchronizeWPUsers($wp_users);
         }
       }
@@ -78,13 +79,20 @@ class Import {
         'errors' => array($e->getMessage())
       );
     }
-    $segments = new BootStrapMenu('import');
+    $import_factory = new ImportExportFactory('import');
+    $segments = $import_factory->getSegments();
+    $welcome_notifications_in_segments =
+      ($created_subscribers || $updated_subscribers) ?
+        Newsletter::getWelcomeNotificationsForSegments($this->segments) :
+        false;
     return array(
       'result' => true,
       'data' => array(
         'created' => count($created_subscribers),
         'updated' => count($updated_subscribers),
-        'segments' => $segments->getSegments()
+        'segments' => $segments,
+        'added_to_segment_with_welcome_notification' =>
+          ($welcome_notifications_in_segments) ? true : false
       ),
       'profiler' => $this->timeExecution()
     );

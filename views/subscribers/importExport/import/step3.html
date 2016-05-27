@@ -1,5 +1,5 @@
 <div id="step3" class="mailpoet_hidden">
-  <div id="subscribers_data_import_results" class="mailpoet_hidden notice">
+  <div id="subscribers_data_import_results" class="updated mailpoet_hidden">
     <!-- Template data -->
   </div>
 
@@ -18,16 +18,17 @@
   </table>
 
   <script id="subscribers_data_import_results_template" type="text/x-handlebars-template">
-    <ul>
       {{#if created}}
-      <li>{{{created}}}</li>
+      <p>{{{created}}}</p>
       {{/if}}
       {{#if updated}}
-      <li>{{{updated}}}</li>
+      <p>{{{updated}}}</p>
       {{/if}}
-      {{#if noaction}}
-      <li><%= __('No new subscribers were found/added.') %></li>
+      {{#if no_action}}
+      <p><%= __('No new subscribers were found/added.') %></p>
       {{/if}}
-    </ul>
+      {{#if added_to_segment_with_welcome_notification}}
+      <p><%= __('Important note: imported subscribers will not receive any welcome emails.') %></p>
+      {{/if}}
   </script>
 </div>

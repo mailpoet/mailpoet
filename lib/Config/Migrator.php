@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Config;
 
+use MailPoet\Models\Subscriber;
+
 if(!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -127,7 +129,7 @@ class Migrator {
       'first_name tinytext NOT NULL DEFAULT "",',
       'last_name tinytext NOT NULL DEFAULT "",',
       'email varchar(150) NOT NULL,',
-      'status varchar(12) NOT NULL DEFAULT "unconfirmed",',
+      'status varchar(12) NOT NULL DEFAULT "' . Subscriber::STATUS_UNCONFIRMED . '",',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',
@@ -142,7 +144,7 @@ class Migrator {
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'subscriber_id mediumint(9) NOT NULL,',
       'segment_id mediumint(9) NOT NULL,',
-      'status varchar(12) NOT NULL DEFAULT "subscribed",',
+      'status varchar(12) NOT NULL DEFAULT "' . Subscriber::STATUS_SUBSCRIBED . '",',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',

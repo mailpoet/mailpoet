@@ -6,7 +6,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Subscribers\ImportExport\BootStrapMenu;
+use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\XLSXWriter;
 
@@ -258,8 +258,8 @@ class Export {
   }
 
   function formatSubscriberFields($subscriber_fields, $subscriber_custom_fields) {
-    $bootstrap_menu = new BootStrapMenu();
-    $translated_fields = $bootstrap_menu->getSubscriberFields();
+    $export_factory = new ImportExportFactory();
+    $translated_fields = $export_factory->getSubscriberFields();
     return array_map(function($field) use (
       $translated_fields, $subscriber_custom_fields
     ) {

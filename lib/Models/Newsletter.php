@@ -5,6 +5,8 @@ if(!defined('ABSPATH')) exit;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
+  const TYPE_WELCOME = 'wecome';
+  const TYPE_NOTIFICATION = 'notification';
 
   function __construct() {
     parent::__construct();
@@ -258,5 +260,26 @@ class Newsletter extends Model {
 
     $newsletter->save();
     return $newsletter;
+  }
+
+  static function getWelcomeNotificationsForSegments($segments) {
+    return NewsletterOption::table_alias('options')
+      ->select('options.newsletter_id')
+      ->select('options.value', 'segment_id')
+      ->join(
+        self::$_table,
+        'newsletters.id = options.newsletter_id',
+        'newsletters'
+      )
+      ->join(
+        MP_NEWSLETTER_OPTION_FIELDS_TABLE,
+        'option_fields.id = options.option_field_id',
+        'option_fields'
+      )
+      ->whereNull('newsletters.deleted_at')
+      ->where('newsletters.type', 'welcome')
+      ->where('option_fields.name', 'segment')
+      ->whereIn('options.value', $segments)
+      ->findMany();
   }
 }

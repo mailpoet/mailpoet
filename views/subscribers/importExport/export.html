@@ -4,13 +4,11 @@
 <div id="mailpoet_subscribers_export" class="wrap">
   <h1 class="title">
     <%= __('Export') %>
-    <a class="page-title-action" href="?page=mailpoet-subscribers#/"><%= __('Back to list') %></a>
+    <a class="page-title-action" href="?page=mailpoet-subscribers#/"><%= __('Back to subscribers') %></a>
   </h1>
   <% if segments is empty %>
-  <div class="notice">
-    <ul>
-      <li><%= __("Yikes! Couldn't find any subscribers.") %></li>
-    </ul>
+  <div class="error">
+    <p><%= __("Yikes! Couldn't find any subscribers.") %></p>
   </div>
   <% endif %>
   <div class="inside">
@@ -18,10 +16,8 @@
   </div>
 </div>
 <script id="mailpoet_subscribers_export_template" type="text/x-handlebars-template">
-  <div id="export_result_notice" class="notice mailpoet_hidden">
-    <ul>
-      <li></li>
-    </ul>
+  <div id="export_result_notice" class="updated mailpoet_hidden">
+    <!-- Result message -->
   </div>
   <table class="form-table">
     <tbody>

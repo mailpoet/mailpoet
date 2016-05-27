@@ -127,7 +127,8 @@ class Segment extends Model {
   static function getSegmentsWithSubscriberCount() {
     return self::selectMany(array(self::$_table.'.id', self::$_table.'.name'))
       ->selectExpr(
-        self::$_table.'.*, COUNT(IF('.MP_SUBSCRIBER_SEGMENT_TABLE.'.status="' . Subscriber::STATUS_SUBSCRIBED .'",1,NULL)) `subscribers`'
+        self::$_table.'.*, ' .
+        'COUNT(IF('.MP_SUBSCRIBER_SEGMENT_TABLE.'.status="' . Subscriber::STATUS_SUBSCRIBED .'" AND '.MP_SUBSCRIBERS_TABLE.'.deleted_at IS NULL,1,NULL)) `subscribers`'
       )
       ->leftOuterJoin(
         MP_SUBSCRIBER_SEGMENT_TABLE,
@@ -135,7 +136,6 @@ class Segment extends Model {
       ->leftOuterJoin(
         MP_SUBSCRIBERS_TABLE,
         array(MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id', '=', MP_SUBSCRIBERS_TABLE.'.id'))
-      ->whereNull(MP_SUBSCRIBERS_TABLE.'.deleted_at')
       ->groupBy(self::$_table.'.id')
       ->groupBy(self::$_table.'.name')
       ->orderByAsc(self::$_table.'.name')

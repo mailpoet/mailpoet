@@ -1,14 +1,15 @@
 define(
-    [
+[
       'backbone',
       'underscore',
       'jquery',
       'mailpoet',
       'handlebars',
       'papaparse',
-      'select2',
       'asyncqueue',
-      'xss'
+      'xss',
+      'moment',
+      'select2'
     ],
     function (
       Backbone,
@@ -18,7 +19,8 @@ define(
       Handlebars,
       Papa,
       AsyncQueue,
-      xss
+      xss,
+      Moment
     ) {
       if (!jQuery('#mailpoet_subscribers_import').length) {
         return;
@@ -69,7 +71,7 @@ define(
                   jQuery('#method_paste > div.mailpoet_method_process')
                       .find('a.mailpoet_process'),
               mailChimpKeyInputElement = jQuery('#mailchimp_key'),
-              mailChimpKeyVerifyButtonEelement = jQuery('#mailchimp_key_verify'),
+              mailChimpKeyVerifyButtonElement = jQuery('#mailchimp_key_verify'),
               mailChimpListsContainerElement = jQuery('#mailchimp_lists'),
               mailChimpProcessButtonElement =
                   jQuery('#method_mailchimp > div.mailpoet_method_process')
@@ -176,15 +178,11 @@ define(
               jQuery('.mailpoet_mailchimp-key-status')
                   .html('')
                   .removeClass('mailpoet_mailchimp-ok mailpoet_mailchimp-error');
-              mailChimpKeyVerifyButtonEelement.prop('disabled', true);
               toggleNextStepButton(mailChimpProcessButtonElement, 'off');
-            }
-            else {
-              mailChimpKeyVerifyButtonEelement.prop('disabled', false);
             }
           });
 
-          mailChimpKeyVerifyButtonEelement.click(function () {
+          mailChimpKeyVerifyButtonElement.click(function () {
             MailPoet.Modal.loading(true);
             MailPoet.Ajax.post({
               endpoint: 'ImportExport',
@@ -304,28 +302,28 @@ define(
                 advancedOptionDelimiter = '',
                 advancedOptionNewline = '',
                 advancedOptionComments = false,
-            // trim spaces, commas, periods,
-            // single/double quotes and convert to lowercase
+                // trim spaces, commas, periods,
+                // single/double quotes and convert to lowercase
                 detectAndCleanupEmail = function (email) {
-                  email = email.toLowerCase();
-                  var test,
-                      cleanEmail =
-                          email
-                          // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
-                          // right trim non-printable characters (e.g., "email@email.com�")
-                              .replace(/^["';.,\s]+|[^\x20-\x7E]+$|["';.,_\s]+$/g, '')
-                              // remove spaces (e.g., "email @ email . com")
-                              // remove urlencoded characters
-                              .replace(/\s+|%\d+|,+/g, '')
-                              .toLowerCase();
-                  // detect e-mails that will otherwise be rejected by ^email_regex$
+                  var test;
+                  // decode HTML entities
+                  email = jQuery('<div />').html(email).text();
+                  email = email
+                    .toLowerCase()
+                    // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
+                    // right trim non-printable characters (e.g., "email@email.com�")
+                    .replace(/^["';.,\s]+|[^\x20-\x7E]+$|["';.,_\s]+$/g, '')
+                    // remove spaces (e.g., "email @ email . com")
+                    // remove urlencoded characters
+                    .replace(/\s+|%\d+|,+/g, '');
+                  // detect e-mails that will be otherwise rejected by email regex
                   if (test = /<(.*?)>/.exec(email)) {
-                    // is email inside angle brackets (e.g., 'some@email.com <some@email.com>')?
-                    return test[1].trim();
+                    // is the email inside angle brackets (e.g., 'some@email.com <some@email.com>')?
+                    email = test[1].trim();
                   }
-                  else if (test = /mailto:(?:\s+)?(.*)/.exec(email)) {
-                    // is email in 'mailto:email' format?
-                    return test[1].trim();
+                  if (test = /mailto:(?:\s+)?(.*)/.exec(email)) {
+                    // is the email in 'mailto:email' format?
+                    email = test[1].trim();
                   }
                   return email;
                 };
@@ -527,6 +525,7 @@ define(
               segmentSelectElement
                   .html('')
                   .select2('destroy');
+              toggleNextStepButton('off');
             }
             segmentSelectElement
                 .select2({
@@ -924,31 +923,9 @@ define(
               // DATE filter: if column type is date, check if we can recognize it
               if (column.type === 'date' && matchedColumn !== -1) {
                 jQuery.map(subscribersClone.subscribers, function (data, position) {
-                  var rowData = data[matchedColumn],
-                      date = new Date(rowData.replace(/-/g, '/')), // IE doesn't like
-                  // dashes as date separators
-                      month_name = [
-                        MailPoet.I18n.t('january'),
-                        MailPoet.I18n.t('february'),
-                        MailPoet.I18n.t('march'),
-                        MailPoet.I18n.t('april'),
-                        MailPoet.I18n.t('may'),
-                        MailPoet.I18n.t('june'),
-                        MailPoet.I18n.t('july'),
-                        MailPoet.I18n.t('august'),
-                        MailPoet.I18n.t('september'),
-                        MailPoet.I18n.t('october'),
-                        MailPoet.I18n.t('november'),
-                        MailPoet.I18n.t('december')
-                      ];
-
+                  var rowData = data[matchedColumn];
                   if (position !== fillterPosition) {
-                    // check for valid date:
-                    // * invalid date object returns NaN for getTime() and NaN
-                    // is the only object not strictly equal to itself
-                    // * date must have period/dash/slash OR be at least 4
-                    // characters long (e.g., year)
-                    // * must be before now
+                    // check if date exists
                     if (rowData.trim() === '') {
                       data[matchedColumn] =
                           '<span class="mailpoet_data_match mailpoet_import_error" title="'
@@ -958,25 +935,12 @@ define(
                       preventNextStep = true;
                       return;
                     }
-                    else if (date.getTime() === date.getTime() &&
-                        (/[.-\/]/.test(rowData) || rowData.length >= 4) &&
-                        date.getTime() < (new Date()).getTime()
-                    ) {
-                      date = '/ '
-                          + month_name[date.getMonth()]
-                          + ' ' + date.getDate() + ', '
-                          + date.getFullYear() + ' '
-                          + date.getHours() + ':'
-                          + ((date.getMinutes() < 10 ? '0' : '')
-                          + date.getMinutes()) + ' '
-                          + ((date.getHours() >= 12)
-                                  ? MailPoet.I18n.t('pm')
-                                  : MailPoet.I18n.t('am')
-                          );
+                    // check if date is valid and is before today
+                    if (Moment(rowData).isValid() && Moment(rowData).isBefore(Moment())) {
                       data[matchedColumn] +=
                           '<span class="mailpoet_data_match" title="'
                           + MailPoet.I18n.t('verifyDateMatch') + '">'
-                          + MailPoet.Date.format(date) + '</span>';
+                          + MailPoet.Date.format(rowData) + '</span>';
                     }
                     else {
                       data[matchedColumn] +=
@@ -1083,6 +1047,7 @@ define(
                       importResults.created = response.data.created;
                       importResults.updated = response.data.updated;
                       importResults.segments = response.data.segments;
+                      importResults.added_to_segment_with_welcome_notification = response.data.added_to_segment_with_welcome_notification;
                     }
                     queue.run();
                   })
@@ -1112,7 +1077,6 @@ define(
                   });
                 importData.step2 = importResults;
                 enableSegmentSelection(mailpoetSegments);
-                toggleNextStepButton('off');
                 router.navigate('step3', {trigger: true});
               }
             });
@@ -1151,9 +1115,8 @@ define(
                     .replace('%1$s', '<strong>' + importData.step2.updated.toLocaleString() + '</strong>')
                     .replace('%2$s', '"' + importData.step2.segments.join('", "') + '"')
                     : false,
-                noaction: (!importData.step2.updated && !importData.step2.created)
-                    ? true
-                    : false
+                no_action: (!importData.step2.created && !importData.step2.updated),
+                added_to_segment_with_welcome_notification: importData.step2.added_to_segment_with_welcome_notification
               };
 
           jQuery('#subscribers_data_import_results')
