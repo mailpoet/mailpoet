@@ -7,20 +7,6 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
 class Link {
-  /*
-    {
-      text: '<%= __('Unsubscribe') %>',-
-      shortcode: 'subscription:unsubscribe',
-    },
-    {
-      text: '<%= __('Manage subscription') %>',
-      shortcode: 'subscription:manage',
-    },
-    {
-      text: '<%= __('View in browser link') %>',
-      shortcode: 'newsletter:view_in_browser',
-    }
-   */
   static function process($action,
     $default_value = false,
     $newsletter,

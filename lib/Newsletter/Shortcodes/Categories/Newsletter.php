@@ -7,28 +7,6 @@ use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 require_once( ABSPATH . "wp-includes/pluggable.php" );
 
 class Newsletter {
-  /*
-    {
-      text: '<%= __('Newsletter Subject') %>',-
-      shortcode: 'newsletter:subject',
-    },
-    {
-      text: '<%= __('Total number of posts or pages') %>',
-      shortcode: 'newsletter:total',
-    },
-    {
-      text: '<%= __('Latest post title') %>',
-      shortcode: 'newsletter:post_title',
-    },
-    {
-      text: '<%= __('Issue number') %>',
-      shortcode: 'newsletter:number',
-    },
-    {
-      text: '<%= __('Issue number') %>',
-      shortcode: 'newsletter:number',
-    }
-   */
   static function process($action,
     $default_value = false,
     $newsletter,
