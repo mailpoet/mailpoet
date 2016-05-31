@@ -13,6 +13,7 @@ define([
     'newsletter_editor/blocks/divider',
     'newsletter_editor/components/communication',
     'mailpoet',
+    'backbone.supermodel',
     'underscore',
     'jquery'
   ], function(
@@ -22,6 +23,7 @@ define([
     DividerBlock,
     CommunicationComponent,
     MailPoet,
+    SuperModel,
     _,
     jQuery
   ) {
@@ -30,6 +32,36 @@ define([
 
   var Module = {},
       base = BaseBlock;
+
+  Module.ALCSupervisor = SuperModel.extend({
+    initialize: function() {
+      this.listenTo(App.getChannel(), 'automatedLatestContentRefresh', this.refresh);
+    },
+    refresh: function() {
+      var models = App.findModels(function(model) {
+        return model.get('type') === 'automatedLatestContent';
+      }) || [];
+
+      if (models.length === 0) return;
+      var blocks = _.map(models, function(model) {
+        return model.toJSON();
+      });
+
+      CommunicationComponent.getBulkTransformedPosts({
+        blocks: blocks,
+      }).then(_.partial(this.refreshBlocks, models));
+    },
+    refreshBlocks: function(models, renderedBlocks) {
+      _.each(
+        _.zip(models, renderedBlocks),
+        function(args) {
+          var model = args[0],
+              contents = args[1];
+          model.trigger('refreshPosts', contents);
+        }
+      );
+    },
+  });
 
   Module.AutomatedLatestContentBlockModel = base.BlockModel.extend({
     stale: ['_container'],
@@ -72,34 +104,32 @@ define([
     },
     initialize: function() {
       base.BlockView.prototype.initialize.apply(this, arguments);
-      this.fetchPosts();
       this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
       this.listenTo(this.get('readMoreButton'), 'change', this._scheduleFetchPosts);
       this.listenTo(this.get('divider'), 'change', this._scheduleFetchPosts);
-    },
-    fetchPosts: function() {
-      var that = this;
-      CommunicationComponent.getTransformedPosts(this.toJSON()).done(function(content) {
-        that.get('_container').get('blocks').reset(content, {parse: true});
-        that.trigger('postsChanged');
-      }).fail(function(error) {
-        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
+      this.on('add remove update reset', function(model, collection, options) {
+        App.getChannel().trigger('automatedLatestContentRefresh');
       });
+      this.on('refreshPosts', this.updatePosts, this);
+    },
+    updatePosts: function(posts) {
+      this.get('_container.blocks').reset(posts, {parse: true});
     },
     /**
      * Batch more changes during a specific time, instead of fetching
      * ALC posts on each model change
      */
     _scheduleFetchPosts: function() {
-      var timeout = 500,
+      var TIMEOUT = 500,
         that = this;
       if (this._fetchPostsTimer !== undefined) {
         clearTimeout(this._fetchPostsTimer);
       }
       this._fetchPostsTimer = setTimeout(function() {
-        that.fetchPosts();
+        //that.fetchPosts();
+        App.getChannel().trigger('automatedLatestContentRefresh');
         that._fetchPostsTimer = undefined;
-      }, timeout);
+      }, TIMEOUT);
     },
   });
 
@@ -361,6 +391,11 @@ define([
       widgetView: Module.AutomatedLatestContentWidgetView,
       priority: 97,
     });
+  });
+
+  App.on('start', function() {
+    App._ALCSupervisor = new Module.ALCSupervisor();
+    App._ALCSupervisor.refresh();
   });
 
   return Module;

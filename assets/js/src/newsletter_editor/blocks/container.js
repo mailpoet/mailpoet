@@ -65,6 +65,13 @@ define([
       }
       return response;
     },
+    getChildren: function() {
+      var models = this.get('blocks').map(function(model, index, list) {
+        return [model, model.getChildren()];
+      });
+
+      return _.flatten(models);
+    },
   });
 
   Module.ContainerBlockView = Marionette.CompositeView.extend({

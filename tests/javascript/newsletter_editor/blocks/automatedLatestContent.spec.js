@@ -1,22 +1,71 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/automatedLatestContent',
+    'newsletter_editor/blocks/container',
     'amd-inject-loader!newsletter_editor/blocks/automatedLatestContent',
     'newsletter_editor/components/communication',
-  ], function(EditorApplication, AutomatedLatestContentBlock, AutomatedLatestContentInjector, CommunicationComponent) {
+  ], function(
+    EditorApplication,
+    AutomatedLatestContentBlock,
+    ContainerBlock,
+    AutomatedLatestContentInjector,
+    CommunicationComponent
+  ) {
+
+  describe('Automated Latest Content Supervisor', function() {
+    var model;
+    beforeEach(function() {
+      model = new AutomatedLatestContentBlock.ALCSupervisor();
+    });
+
+    it('fetches posts in bulk from the server', function() {
+      global.stubChannel(EditorApplication);
+      EditorApplication.findModels = sinon.stub().returns([new Backbone.SuperModel()]);
+
+      var mock = sinon.mock({ getBulkTransformedPosts: function() {} })
+        .expects('getBulkTransformedPosts').once().returns(jQuery.Deferred());
+
+      var module = AutomatedLatestContentInjector({
+        'newsletter_editor/components/communication': {
+          getBulkTransformedPosts: mock
+        },
+      });
+
+      var model = new module.ALCSupervisor();
+      model.refresh();
+
+      mock.verify();
+    });
+
+    it('refreshes posts for given blocks', function() {
+      var block1 = new Backbone.SuperModel(),
+        block2 = new Backbone.SuperModel(),
+        postsSet1 = [
+          { type: 'customTypeOne' },
+        ],
+        postsSet2 = [
+          { type: 'customTypeTwo' },
+          { type: 'customTypeTwo' },
+        ],
+        mock1 = sinon.mock(block1),
+        mock2 = sinon.mock(block2);
+
+      mock1.expects('trigger').once().withArgs('refreshPosts', postsSet1);
+      mock2.expects('trigger').once().withArgs('refreshPosts', postsSet2);
+
+      model.refreshBlocks([block1, block2], [postsSet1, postsSet2]);
+
+      mock1.verify();
+      mock2.verify();
+    });
+  });
 
   describe('Automated latest content', function () {
     describe('model', function () {
       var model, module;
 
       before(function() {
-        module = AutomatedLatestContentInjector({
-          'newsletter_editor/components/communication': {
-            getTransformedPosts: function() {
-              return jQuery.Deferred();
-            }
-          },
-        });
+        module = AutomatedLatestContentBlock;
       });
 
       beforeEach(function () {
@@ -28,6 +77,7 @@ define([
 
       afterEach(function () {
         delete EditorApplication.getChannel;
+        delete EditorApplication.getBlockTypeModel;
       });
 
       it('has automatedLatestContent type', function () {
@@ -192,19 +242,25 @@ define([
         expect(model.get('divider.styles.block.backgroundColor')).to.equal('#456789');
         expect(model.get('divider.styles.block.padding')).to.equal('38px');
       });
+
+      it('accepts displayable posts', function() {
+        EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
+        var model = new (module.AutomatedLatestContentBlockModel)();
+
+        model.updatePosts([{
+          type: 'someCustomType',
+        }]);
+
+        expect(model.get('_container.blocks').size()).to.equal(1);
+        expect(model.get('_container.blocks').first().get('type')).to.equal('someCustomType');
+      });
     });
 
     describe('block view', function () {
       var model, view, module;
 
       before(function() {
-        module = AutomatedLatestContentInjector({
-          'newsletter_editor/components/communication': {
-            getTransformedPosts: function() {
-              return jQuery.Deferred();
-            }
-          },
-        });
+        module = AutomatedLatestContentBlock;
       });
 
       beforeEach(function () {
@@ -232,9 +288,6 @@ define([
       before(function() {
         module = AutomatedLatestContentInjector({
           'newsletter_editor/components/communication': {
-            getTransformedPosts: function() {
-              return jQuery.Deferred();
-            },
             getPostTypes: function() {
               return jQuery.Deferred();
             }

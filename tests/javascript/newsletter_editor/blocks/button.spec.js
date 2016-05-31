@@ -237,7 +237,7 @@ define([
         });
 
         it('has a specified font family', function () {
-          expect(view.$('.mailpoet_editor_button').css('font-family')).to.equal(model.get('styles.block.fontFamily'));
+          expect(view.$('.mailpoet_editor_button').css('font-family')).to.contain(model.get('styles.block.fontFamily'));
         });
 
         it('has a specified font size', function () {
