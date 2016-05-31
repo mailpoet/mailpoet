@@ -62,6 +62,7 @@ define([
         invalid_elements: "script",
         block_formats: 'Paragraph=p',
         relative_urls: false,
+        remove_script_host: false,
 
         plugins: "link textcolor colorpicker mailpoet_custom_fields",
 

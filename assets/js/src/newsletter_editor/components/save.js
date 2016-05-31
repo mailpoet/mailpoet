@@ -283,8 +283,10 @@ define([
         return;
       }
 
+      var contents = JSON.stringify(jsonObject);
       if (App.getConfig().get('validation.validateUnsubscribeLinkPresent') &&
-          JSON.stringify(jsonObject).indexOf("[link:subscription_unsubscribe_url]") < 0) {
+          contents.indexOf("[link:subscription_unsubscribe_url]") < 0 &&
+          contents.indexOf("[link:subscription_unsubscribe]") < 0) {
         this.showValidationError(MailPoet.I18n.t('unsubscribeLinkMissing'));
         return;
       }

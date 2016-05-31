@@ -60,6 +60,7 @@ define([
           invalid_elements: "script",
           block_formats: 'Heading 1=h1;Heading 2=h2;Heading 3=h3;Paragraph=p',
           relative_urls: false,
+          remove_script_host: false,
 
           plugins: "link code textcolor colorpicker mailpoet_custom_fields",
 
