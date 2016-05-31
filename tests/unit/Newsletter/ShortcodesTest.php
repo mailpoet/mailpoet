@@ -1,9 +1,11 @@
 <?php
 
 use MailPoet\Config\Populator;
+use MailPoet\Models\CustomField;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
@@ -113,28 +115,50 @@ class ShortcodesTest extends MailPoetTest {
     expect($result['0'])->equals(2);
   }
 
-  function testItCanProcessUserShortcodes() {
+  function testItCanProcessSubscriberShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $result =
-      $shortcodes_object->process(array('[user:firstname]'));
+      $shortcodes_object->process(array('[subscriber:firstname]'));
     expect($result[0])->equals($this->subscriber->first_name);
     $result =
-      $shortcodes_object->process(array('[user:lastname]'));
+      $shortcodes_object->process(array('[subscriber:lastname]'));
     expect($result[0])->equals($this->subscriber->last_name);
     $result =
-      $shortcodes_object->process(array('[user:displayname]'));
+      $shortcodes_object->process(array('[subscriber:displayname]'));
     expect($result[0])->equals($this->WP_user->user_login);
     $subscribers = Subscriber::where('status', 'subscribed')
       ->findMany();
     $subscriber_count = count($subscribers);
     $result =
-      $shortcodes_object->process(array('[user:count]'));
+      $shortcodes_object->process(array('[subscriber:count]'));
     expect($result[0])->equals($subscriber_count);
     $this->subscriber->status = 'unsubscribed';
     $this->subscriber->save();
     $result =
-      $shortcodes_object->process(array('[user:count]'));
+      $shortcodes_object->process(array('[subscriber:count]'));
     expect($result[0])->equals(--$subscriber_count);
+  }
+
+  function testItCanProcessSubscriberCustomFieldShortcodes() {
+    $shortcodes_object = $this->shortcodes_object;
+    $subscriber = $this->subscriber;
+    $custom_field = CustomField::create();
+    $custom_field->name = 'custom_field_name';
+    $custom_field->type = 'text';
+    $custom_field->save();
+    $result = $shortcodes_object->process(
+      array('[subscriber:cf_' . $custom_field->id . ']')
+    );
+    expect($result[0])->false();
+    $subscriber_custom_field = SubscriberCustomField::create();
+    $subscriber_custom_field->subscriber_id = $subscriber->id;
+    $subscriber_custom_field->custom_field_id = $custom_field->id;
+    $subscriber_custom_field->value = 'custom_field_value';
+    $subscriber_custom_field->save();
+    $result = $shortcodes_object->process(
+      array('[subscriber:cf_' . $custom_field->id . ']')
+    );
+    expect($result[0])->equals($subscriber_custom_field->value);
   }
 
   function testItCanProcessLinkShortcodes() {
@@ -245,6 +269,8 @@ class ShortcodesTest extends MailPoetTest {
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
     wp_delete_post($this->WP_post, true);
     wp_delete_user($this->WP_user->ID);
   }

@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\SubscriberCustomField;
+use MailPoet\Models\Subscriber as SubscriberModel;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
@@ -30,7 +31,7 @@ class Subscriber {
         return $default_value;
       break;
       case 'count':
-        return Subscriber::filter('subscribed')->count();
+        return SubscriberModel::filter('subscribed')->count();
       break;
       case preg_match('/cf_(\d+)/', $action, $custom_field) ? true : false:
         if(empty($subscriber['id'])) return false;

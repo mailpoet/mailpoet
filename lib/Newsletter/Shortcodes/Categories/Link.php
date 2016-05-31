@@ -2,7 +2,7 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Setting;
-use MailPoet\Models\Subscriber;
+use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
@@ -102,7 +102,7 @@ class Link {
         $subscriber['id'] :
         $subscriber,
       'subscriber_token' => (isset($subscriber['id'])) ?
-        Subscriber::generateToken($subscriber['email']) :
+        SubscriberModel::generateToken($subscriber['email']) :
         false,
       'queue' => (isset($queue['id'])) ?
         $queue['id'] :
