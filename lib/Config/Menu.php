@@ -7,6 +7,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
+use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoet\Settings\Charsets;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
@@ -419,15 +420,8 @@ class Menu {
   }
 
   function newletterEditor() {
-    $custom_fields = array_map(function($field) {
-      return array(
-        'text' =>  $field['name'],
-        'shortcode' => 'field:' . $field['id'],
-      );
-    }, CustomField::findArray());
-
     $data = array(
-      'customFields' => $custom_fields,
+      'shortcodes' => ShortcodesHelper::getShortcodes(),
       'settings' => Setting::getAll(),
       'sub_menu' => 'mailpoet-newsletters'
     );
