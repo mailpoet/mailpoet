@@ -50,11 +50,11 @@ class AutomatedLatestContent {
     $used_posts = array();
     $rendered_posts = array();
 
-    foreach ($args['blocks'] as $block) {
+    foreach($args['blocks'] as $block) {
       $posts = $alc->getPosts($block, $used_posts);
       $rendered_posts[] = $alc->transformPosts($block, $posts);
 
-      foreach ($posts as $post) {
+      foreach($posts as $post) {
         $used_posts[] = $post->ID;
       }
     }
