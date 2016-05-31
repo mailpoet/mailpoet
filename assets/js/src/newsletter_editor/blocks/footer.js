@@ -61,6 +61,7 @@ define([
         valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br",
         invalid_elements: "script",
         block_formats: 'Paragraph=p',
+        relative_urls: false,
 
         plugins: "link textcolor colorpicker mailpoet_custom_fields",
 
