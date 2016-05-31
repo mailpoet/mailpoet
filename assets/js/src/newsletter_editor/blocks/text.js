@@ -53,14 +53,14 @@ define([
 
           menubar: false,
           toolbar1: "formatselect bold italic forecolor | link unlink",
-          toolbar2: "alignleft aligncenter alignright alignjustify | bullist numlist blockquote | code mailpoet_custom_fields",
+          toolbar2: "alignleft aligncenter alignright alignjustify | bullist numlist blockquote | code mailpoet_shortcodes",
 
           //forced_root_block: 'p',
           valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],h1[class|style],h2[class|style],h3[class|style],ol[class|style],ul[class|style],li[class|style],strong[class|style],em[class|style],strike,br,blockquote[class|style],table[class|style],tr[class|style],th[class|style],td[class|style]",
           invalid_elements: "script",
           block_formats: 'Heading 1=h1;Heading 2=h2;Heading 3=h3;Paragraph=p',
 
-          plugins: "link code textcolor colorpicker mailpoet_custom_fields",
+          plugins: "link code textcolor colorpicker mailpoet_shortcodes",
 
           setup: function(editor) {
             editor.on('change', function(e) {
@@ -76,8 +76,8 @@ define([
             });
           },
 
-          mailpoet_custom_fields: App.getConfig().get('customFields').toJSON(),
-          mailpoet_custom_fields_window_title: MailPoet.I18n.t('customFieldsWindowTitle'),
+          mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
+          mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle'),
         });
       }
     },
