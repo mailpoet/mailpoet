@@ -5,7 +5,9 @@ if(!defined('ABSPATH')) exit;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
-  const TYPE_WELCOME = 'wecome';
+
+  const TYPE_STANDARD = 'standard';
+  const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
 
   function __construct() {
@@ -127,7 +129,7 @@ class Newsletter extends Model {
     return $orm->where_like('subject', '%' . $search . '%');
   }
 
-  static function filters($orm, $group = 'all') {
+  static function filters($query_function = false, $group = 'all') {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
@@ -136,13 +138,16 @@ class Newsletter extends Model {
     );
 
     foreach($segments as $segment) {
-      $newsletters_count = $segment->newsletters()
-        ->filter('groupBy', $group)
-        ->count();
+      $newsletters = $segment->newsletters()->filter('groupBy', $group);
+      if($query_function !== false) {
+        $newsletters = $query_function($newsletters);
+      }
+      $newsletters_count = $newsletters->count();
+
       if($newsletters_count > 0) {
         $segment_list[] = array(
           'label' => sprintf('%s (%d)', $segment->name, $newsletters_count),
-          'value' => $segment->id()
+          'value' => $segment->id
         );
       }
     }
@@ -190,26 +195,27 @@ class Newsletter extends Model {
     return $orm;
   }
 
-  static function groups() {
+  static function groups($query_function = false) {
     return array(
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Newsletter::getPublished()->count()
+        'count' => $query_function(Newsletter::getPublished())->count()
       ),
       array(
         'name' => 'trash',
         'label' => __('Trash'),
-        'count' => Newsletter::getTrashed()->count()
+        'count' => $query_function(Newsletter::getTrashed())->count()
       )
     );
   }
 
   static function groupBy($orm, $group = null) {
     if($group === 'trash') {
-      return $orm->whereNotNull('deleted_at');
+      $orm->whereNotNull('deleted_at');
     }
-    return $orm->whereNull('deleted_at');
+    $orm->whereNull('deleted_at');
+    return $orm;
   }
 
   static function createOrUpdate($data = array()) {

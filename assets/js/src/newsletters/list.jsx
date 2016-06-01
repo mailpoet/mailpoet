@@ -295,6 +295,31 @@ define(
               limit={ mailpoet_listing_per_page }
               params={ this.props.params }
               endpoint="newsletters"
+              action="listingStandard"
+              onRenderItem={this.renderItem}
+              columns={columns}
+              bulk_actions={ bulk_actions }
+              item_actions={ item_actions }
+              messages={ messages }
+              auto_refresh={ true } />
+
+              <Listing
+              limit={ mailpoet_listing_per_page }
+              params={ this.props.params }
+              endpoint="newsletters"
+              action="listingWelcome"
+              onRenderItem={this.renderItem}
+              columns={columns}
+              bulk_actions={ bulk_actions }
+              item_actions={ item_actions }
+              messages={ messages }
+              auto_refresh={ true } />
+
+              <Listing
+              limit={ mailpoet_listing_per_page }
+              params={ this.props.params }
+              endpoint="newsletters"
+              action="listingNotification"
               onRenderItem={this.renderItem}
               columns={columns}
               bulk_actions={ bulk_actions }

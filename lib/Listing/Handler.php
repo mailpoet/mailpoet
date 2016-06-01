@@ -8,11 +8,22 @@ class Handler {
 
   private $data = array();
   private $model = null;
+  private $model_class = null;
+  private $query_function = false;
 
-  function __construct($model_class, $data = array()) {
-    $class = new \ReflectionClass($model_class);
-    $this->table_name = $class->getStaticPropertyValue('_table');
-    $this->model = $model_class::select('*');
+  function __construct($model_class, $data = array(), $query_function = false) {
+    $this->table_name = $model_class::$_table;
+    $this->model_class = $model_class;
+    $this->model = \Model::factory($this->model_class);
+
+    if($query_function !== false) {
+      // execute query function to filter results
+      $query_function($this->model);
+
+      // store query function for later use with groups/filters
+      $this->query_function = $query_function;
+    }
+
     $this->data = array(
       // pagination
       'offset' => (isset($data['offset']) ? (int)$data['offset'] : 0),
@@ -32,11 +43,6 @@ class Handler {
       // selection
       'selection' => (isset($data['selection']) ? $data['selection'] : null)
     );
-
-    $this->setFilter();
-    $this->setSearch();
-    $this->setGroup();
-    $this->setOrder();
   }
 
   private function setSearch() {
@@ -83,7 +89,24 @@ class Handler {
     }, $models);
   }
 
-  function get() {
+  function getData() {
+    // get groups
+    $groups = call_user_func_array(
+      array($this->model_class, 'groups'),
+      array($this->query_function)
+    );
+
+    // get filters
+    $filters = call_user_func_array(
+      array($this->model_class, 'filters'),
+      array($this->query_function, $this->data['group'])
+    );
+
+    $this->setGroup();
+    $this->setFilter();
+    $this->setSearch();
+    $this->setOrder();
+
     $count = $this->model->count();
 
     $items = $this->model
@@ -91,10 +114,11 @@ class Handler {
       ->limit($this->data['limit'])
       ->findMany();
 
+
     return array(
       'count' => $count,
-      'filters' => $this->model->filter('filters', $this->data['group']),
-      'groups' => $this->model->filter('groups'),
+      'filters' => $filters,
+      'groups' => $groups,
       'items' => $items
     );
   }

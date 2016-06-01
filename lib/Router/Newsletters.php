@@ -216,19 +216,52 @@ class Newsletters {
     }
   }
 
-  function listing($data = array()) {
+  function listingStandard($data = array()) {
     $listing = new Listing\Handler(
       '\MailPoet\Models\Newsletter',
-      $data
+      $data,
+      function($orm) {
+        return $orm ->where('type', Newsletter::TYPE_STANDARD);
+      }
     );
 
-    $listing_data = $listing->get();
+    return $this->getListingData($listing, $data);
+  }
+
+  function listingWelcome($data = array()) {
+    $listing = new Listing\Handler(
+      '\MailPoet\Models\Newsletter',
+      $data,
+      function($orm) {
+        return $orm->where('type', Newsletter::TYPE_WELCOME);
+      }
+    );
+
+
+    return $this->getListingData($listing, $data);
+  }
+
+  function listingNotification($data = array()) {
+    $listing = new Listing\Handler(
+      '\MailPoet\Models\Newsletter',
+      $data,
+      function($orm) {
+        return $orm->where('type', Newsletter::TYPE_NOTIFICATION);
+      }
+    );
+
+    return $this->getListingData($listing, $data);
+  }
+
+  function getListingData($listing, $data = array()) {
+    $listing_data = $listing->getData();
 
     foreach($listing_data['items'] as $key => $newsletter) {
       $newsletter = $newsletter
         ->withSegments()
         ->withSendingQueue();
-      if((boolean) Setting::getValue('tracking.enabled')) {
+
+      if((bool) Setting::getValue('tracking.enabled')) {
         $newsletter = $newsletter->withStatistics();
       }
       $listing_data['items'][$key] = $newsletter->asArray();
