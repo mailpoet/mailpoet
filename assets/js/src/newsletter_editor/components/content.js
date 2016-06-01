@@ -60,6 +60,11 @@ define([
       return Module.newsletter;
   };
 
+  Module.findModels = function(predicate) {
+    var blocks = App._contentContainer.getChildren();
+    return _.filter(blocks, predicate);
+  };
+
   App.on('before:start', function(options) {
     // Expose block methods globally
     App.registerBlockType = Module.registerBlockType;
@@ -68,6 +73,7 @@ define([
     App.toJSON = Module.toJSON;
     App.getBody = Module.getBody;
     App.getNewsletter = Module.getNewsletter;
+    App.findModels = Module.findModels;
 
     Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['body']));
   });

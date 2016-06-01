@@ -43,4 +43,22 @@ class AutomatedLatestContent {
     $posts = $this->ALC->getPosts($args);
     return $this->ALC->transformPosts($args, $posts);
   }
+
+  function getBulkTransformedPosts($args) {
+    $alc = new \MailPoet\Newsletter\AutomatedLatestContent();
+
+    $used_posts = array();
+    $rendered_posts = array();
+
+    foreach($args['blocks'] as $block) {
+      $posts = $alc->getPosts($block, $used_posts);
+      $rendered_posts[] = $alc->transformPosts($block, $posts);
+
+      foreach($posts as $post) {
+        $used_posts[] = $post->ID;
+      }
+    }
+
+    return $rendered_posts;
+  }
 }

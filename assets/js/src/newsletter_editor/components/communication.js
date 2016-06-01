@@ -62,6 +62,13 @@ define([
     });
   };
 
+  Module.getBulkTransformedPosts = function(options) {
+    return Module._query({
+      action: 'getBulkTransformedPosts',
+      options: options,
+    });
+  };
+
   Module.saveNewsletter = function(options) {
     return MailPoet.Ajax.post({
       endpoint: 'newsletters',

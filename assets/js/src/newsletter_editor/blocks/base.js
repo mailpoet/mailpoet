@@ -40,6 +40,9 @@ define([
       // Remove stale attributes from resulting JSON object
       return _.omit(SuperModel.prototype.toJSON.call(this), this.stale);
     },
+    getChildren: function() {
+      return [];
+    },
   });
 
   Module.BlockView = AugmentedView.extend({
