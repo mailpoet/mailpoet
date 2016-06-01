@@ -25,20 +25,20 @@ tinymce.PluginManager.add('mailpoet_shortcodes', function(editor, url) {
     icon: 'mailpoet_shortcodes',
     onclick: function() {
       var shortcodes = [],
-        configshortcodes = editor.settings.mailpoet_shortcodes;
+        configShortcodes = editor.settings.mailpoet_shortcodes;
 
-      for (var segment in configshortcodes) {
-        if (configshortcodes.hasOwnProperty(segment)) {
+      for (var segment in configShortcodes) {
+        if (configShortcodes.hasOwnProperty(segment)) {
           shortcodes.push({
             type: 'label',
             text: segment,
           });
 
-          for (var i = 0; i < configshortcodes[segment].length; i += 1) {
+          for (var i = 0; i < configShortcodes[segment].length; i += 1) {
             shortcodes.push({
               type: 'button',
-              text: configshortcodes[segment][i].text,
-              onClick: generateOnClickFunc(configshortcodes[segment][i].shortcode)
+              text: configShortcodes[segment][i].text,
+              onClick: generateOnClickFunc(configShortcodes[segment][i].shortcode)
             });
           }
         }
