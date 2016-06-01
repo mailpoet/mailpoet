@@ -2,25 +2,11 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Setting;
-use MailPoet\Models\Subscriber;
+use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
 class Link {
-  /*
-    {
-      text: '<%= __('Unsubscribe') %>',-
-      shortcode: 'subscription:unsubscribe',
-    },
-    {
-      text: '<%= __('Manage subscription') %>',
-      shortcode: 'subscription:manage',
-    },
-    {
-      text: '<%= __('View in browser link') %>',
-      shortcode: 'newsletter:view_in_browser',
-    }
-   */
   static function process($action,
     $default_value = false,
     $newsletter,
@@ -116,7 +102,7 @@ class Link {
         $subscriber['id'] :
         $subscriber,
       'subscriber_token' => (isset($subscriber['id'])) ?
-        Subscriber::generateToken($subscriber['email']) :
+        SubscriberModel::generateToken($subscriber['email']) :
         false,
       'queue' => (isset($queue['id'])) ?
         $queue['id'] :

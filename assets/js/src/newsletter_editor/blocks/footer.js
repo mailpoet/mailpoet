@@ -56,7 +56,7 @@ define([
         inline: true,
 
         menubar: false,
-        toolbar: "bold italic link unlink forecolor mailpoet_custom_fields",
+        toolbar: "bold italic link unlink forecolor mailpoet_shortcodes",
 
         valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br",
         invalid_elements: "script",
@@ -64,7 +64,7 @@ define([
         relative_urls: false,
         remove_script_host: false,
 
-        plugins: "link textcolor colorpicker mailpoet_custom_fields",
+        plugins: "link textcolor colorpicker mailpoet_shortcodes",
 
         setup: function(editor) {
           editor.on('change', function(e) {
@@ -80,8 +80,8 @@ define([
           });
         },
 
-        mailpoet_custom_fields: App.getConfig().get('customFields').toJSON(),
-        mailpoet_custom_fields_window_title: MailPoet.I18n.t('customFieldsWindowTitle'),
+        mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
+        mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle'),
       });
     },
   });
