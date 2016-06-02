@@ -66,24 +66,20 @@ class MailerTest extends MailPoetTest {
 
   function testItRequiresMailerMethod() {
     try {
-      $exeption = false;
       $mailer = new Mailer();
+      $this->fail('Mailer did not throw an exception');
     } catch(Exception $e) {
       expect($e->getMessage())->equals('Mailer is not configured.');
-      $exception = true;
     }
-    expect($exception)->true();
   }
 
   function testItRequiresSender() {
     try {
-      $exeption = false;
       $mailer = new Mailer($mailer = $this->mailer);
+      $this->fail('Mailer did not throw an exception');
     } catch(Exception $e) {
       expect($e->getMessage())->equals('Sender name and email are not configured.');
-      $exception = true;
     }
-    expect($exception)->true();
   }
 
   function testItCanConstruct() {
@@ -105,13 +101,11 @@ class MailerTest extends MailPoetTest {
 
   function testItThrowsUnknownMailerException() {
     try {
-      $exception = false;
       $mailer = new Mailer(array('method' => 'Unknown'), $this->sender);
+      $this->fail('Mailer did not throw an exception');
     } catch(Exception $e) {
       expect($e->getMessage())->equals('Mailing method does not exist.');
-      $exception = true;
     }
-    expect($exception)->true();
   }
 
 
