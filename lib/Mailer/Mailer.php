@@ -85,7 +85,6 @@ class Mailer {
         break;
       default:
         throw new \Exception(__('Mailing method does not exist.'));
-        break;
     }
     return $mailer_instance;
   }
@@ -121,7 +120,7 @@ class Mailer {
         );
       }
     }
-    if(!$reply_to['address']) {
+    if(empty($reply_to['address'])) {
       $reply_to['address'] = $this->sender['from_email'];
     }
     return array(
