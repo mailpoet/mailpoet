@@ -3,6 +3,43 @@ use MailPoet\Mailer\Mailer;
 
 class MailerTest extends MailPoetTest {
   function _before() {
+    $this->available_mailer_methods = array(
+      array(
+        'method' => 'AmazonSES',
+        'region' => 'us-west-2',
+        'access_key' => '1234567890',
+        'secret_key' => 'abcdefghijk',
+      ),
+      array(
+        'method' => 'ElasticEmail',
+        'api_key' => 'abcdefghijk'
+      ),
+      array(
+        'method' => 'MailGun',
+        'domain' => 'example.com',
+        'api_key' => 'abcdefghijk'
+      ),
+      array(
+        'method' => 'MailPoet',
+        'mailpoet_api_key' => 'abcdefghijk'
+      ),
+      array(
+        'method' => 'SendGrid',
+        'api_key' => 'abcdefghijk'
+      ),
+      array(
+        'method' => 'PHPMail'
+      ),
+      array(
+        'method' => 'SMTP',
+        'host' => 'example.com',
+        'port' => 25,
+        'authentication' => true,
+        'login' => 'username',
+        'password' => 'password',
+        'encryption' => 'tls',
+      )
+    );
     $this->sender = array(
       'name' => 'Sender',
       'address' => 'staff@mailinator.com'
@@ -13,7 +50,9 @@ class MailerTest extends MailPoetTest {
     );
     $this->mailer = array(
       'method' => 'MailPoet',
-      'mailpoet_api_key' => 'dhNSqj1XHkVltIliyQDvMiKzQShOA5rs0m_DdRUVZHU'
+      'mailpoet_api_key' => getenv('WP_TEST_MAILER_MAILPOET_API') ?
+        getenv('WP_TEST_MAILER_MAILPOET_API') :
+        '1234567890'
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -28,7 +67,8 @@ class MailerTest extends MailPoetTest {
   function testItRequiresMailerMethod() {
     try {
       $mailer = new Mailer();
-    } catch (Exception $e) {
+      $this->fail('Mailer did not throw an exception');
+    } catch(Exception $e) {
       expect($e->getMessage())->equals('Mailer is not configured.');
     }
   }
@@ -36,7 +76,8 @@ class MailerTest extends MailPoetTest {
   function testItRequiresSender() {
     try {
       $mailer = new Mailer($mailer = $this->mailer);
-    } catch (Exception $e) {
+      $this->fail('Mailer did not throw an exception');
+    } catch(Exception $e) {
       expect($e->getMessage())->equals('Sender name and email are not configured.');
     }
   }
@@ -49,18 +90,30 @@ class MailerTest extends MailPoetTest {
     expect($mailer->reply_to['reply_to_email'])->equals($this->reply_to['address']);
   }
 
-  function testItCanBuildMailerInstance() {
-    $mailer = new Mailer($this->mailer, $this->sender);
-    expect(get_class($mailer->mailer_instance))
-      ->equals('MailPoet\Mailer\Methods\MailPoet');
+  function testItCanBuildKnownMailerInstances() {
+    foreach($this->available_mailer_methods as $method) {
+      $mailer = new Mailer($method, $this->sender);
+      $mailer->buildMailer();
+      expect(get_class($mailer->mailer_instance))
+        ->equals('MailPoet\Mailer\Methods\\' . $method['method']);
+    }
   }
 
-  function testItCanAbortWhenMethodDoesNotExist() {
+  function testItThrowsUnknownMailerException() {
     try {
-      $mailer = new Mailer(array('method' => 'test'), $this->sender);
-    } catch (Exception $e) {
+      $mailer = new Mailer(array('method' => 'Unknown'), $this->sender);
+      $this->fail('Mailer did not throw an exception');
+    } catch(Exception $e) {
       expect($e->getMessage())->equals('Mailing method does not exist.');
     }
+  }
+
+
+  function testItSetsReplyToAddressWhenOnlyNameIsAvailable() {
+    $reply_to = array('name' => 'test');
+    $mailer = new Mailer($this->mailer, $this->sender, $reply_to);
+    $reply_to = $mailer->getReplyTo();
+    expect($reply_to['reply_to_email'])->equals($this->sender['address']);
   }
 
   function testItCanTransformSubscriber() {
