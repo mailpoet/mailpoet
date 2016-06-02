@@ -427,14 +427,11 @@ define(
 
           this.clearSelection();
 
-          const action = (this.props.action !== undefined)
-            ? this.props.action
-            : 'listing';
-
           MailPoet.Ajax.post({
             endpoint: this.props.endpoint,
-            action: action,
+            action: 'listing',
             data: {
+              tab: (this.props.tab) ? this.props.tab : '',
               offset: (this.state.page - 1) * this.state.limit,
               limit: this.state.limit,
               group: this.state.group,

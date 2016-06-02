@@ -150,7 +150,7 @@ class Newsletters {
     }
     $newsletter->body = $data['body'];
     $newsletter->save();
-    $wp_user =wp_get_current_user();
+    $wp_user = wp_get_current_user();
     $subscriber = Subscriber::where('email', $wp_user->data->user_email)
       ->findOne();
     $subscriber = ($subscriber) ? $subscriber->asArray() : $subscriber;
@@ -216,54 +216,24 @@ class Newsletters {
     }
   }
 
-  function listingStandard($data = array()) {
+  function listing($data = array()) {
     $listing = new Listing\Handler(
       '\MailPoet\Models\Newsletter',
-      $data,
-      function($orm) {
-        return $orm ->where('type', Newsletter::TYPE_STANDARD);
-      }
+      $data
     );
+    $listing_data = $listing->get();
 
-    return $this->getListingData($listing, $data);
-  }
-
-  function listingWelcome($data = array()) {
-    $listing = new Listing\Handler(
-      '\MailPoet\Models\Newsletter',
-      $data,
-      function($orm) {
-        return $orm->where('type', Newsletter::TYPE_WELCOME);
-      }
-    );
-
-
-    return $this->getListingData($listing, $data);
-  }
-
-  function listingNotification($data = array()) {
-    $listing = new Listing\Handler(
-      '\MailPoet\Models\Newsletter',
-      $data,
-      function($orm) {
-        return $orm->where('type', Newsletter::TYPE_NOTIFICATION);
-      }
-    );
-
-    return $this->getListingData($listing, $data);
-  }
-
-  function getListingData($listing, $data = array()) {
-    $listing_data = $listing->getData();
+    $is_tracking_enabled = (bool)Setting::getValue('tracking.enabled');
 
     foreach($listing_data['items'] as $key => $newsletter) {
       $newsletter = $newsletter
         ->withSegments()
         ->withSendingQueue();
 
-      if((bool) Setting::getValue('tracking.enabled')) {
+      if($is_tracking_enabled) {
         $newsletter = $newsletter->withStatistics();
       }
+
       $listing_data['items'][$key] = $newsletter->asArray();
     }
 

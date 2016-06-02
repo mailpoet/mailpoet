@@ -9,22 +9,15 @@ class Handler {
   private $data = array();
   private $model = null;
   private $model_class = null;
-  private $query_function = false;
 
-  function __construct($model_class, $data = array(), $query_function = false) {
+  function __construct($model_class, $data = array()) {
     $this->table_name = $model_class::$_table;
     $this->model_class = $model_class;
     $this->model = \Model::factory($this->model_class);
 
-    if($query_function !== false) {
-      // execute query function to filter results
-      $query_function($this->model);
-
-      // store query function for later use with groups/filters
-      $this->query_function = $query_function;
-    }
-
     $this->data = array(
+      // tabs
+      'tab' => (isset($data['tab']) ? $data['tab'] : false),
       // pagination
       'offset' => (isset($data['offset']) ? (int)$data['offset'] : 0),
       'limit' => (isset($data['limit'])
@@ -89,30 +82,46 @@ class Handler {
     }, $models);
   }
 
-  function getData() {
+  function get() {
     // get groups
     $groups = call_user_func_array(
       array($this->model_class, 'groups'),
-      array($this->query_function)
+      array($this->data)
     );
 
     // get filters
     $filters = call_user_func_array(
       array($this->model_class, 'filters'),
-      array($this->query_function, $this->data['group'])
+      array($this->data)
     );
 
-    $this->setGroup();
-    $this->setFilter();
-    $this->setSearch();
-    $this->setOrder();
+    if(method_exists($this->model_class, 'listingQuery')) {
+      $custom_query = call_user_func_array(
+        array($this->model_class, 'listingQuery'),
+        array($this->data)
+      );
 
-    $count = $this->model->count();
+      $items = $custom_query
+        ->offset($this->data['offset'])
+        ->limit($this->data['limit'])
+        ->{'order_by_'.$this->data['sort_order']}(
+          $this->table_name.'.'.$this->data['sort_by']
+        )
+        ->findMany();
+      $count = $custom_query->count();
+    } else {
+      $this->setFilter();
+      $this->setGroup();
+      $this->setSearch();
+      $this->setOrder();
 
-    $items = $this->model
-      ->offset($this->data['offset'])
-      ->limit($this->data['limit'])
-      ->findMany();
+      $items = $this->model
+        ->offset($this->data['offset'])
+        ->limit($this->data['limit'])
+        ->findMany();
+
+      $count = $this->model->count();
+    }
 
 
     return array(

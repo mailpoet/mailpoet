@@ -126,10 +126,13 @@ class Newsletter extends Model {
   }
 
   static function search($orm, $search = '') {
-    return $orm->where_like('subject', '%' . $search . '%');
+    if(strlen(trim($search)) > 0) {
+      $orm->whereLike('subject', '%' . $search . '%');
+    }
+    return $orm;
   }
 
-  static function filters($query_function = false, $group = 'all') {
+  static function filters($data = array()) {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
@@ -138,10 +141,10 @@ class Newsletter extends Model {
     );
 
     foreach($segments as $segment) {
-      $newsletters = $segment->newsletters()->filter('groupBy', $group);
-      if($query_function !== false) {
-        $newsletters = $query_function($newsletters);
-      }
+      $newsletters = $segment->newsletters()
+        ->where('type', $data['tab'])
+        ->filter('groupBy', $data['group']);
+
       $newsletters_count = $newsletters->count();
 
       if($newsletters_count > 0) {
@@ -195,26 +198,34 @@ class Newsletter extends Model {
     return $orm;
   }
 
-  static function groups($query_function = false) {
+  static function groups($data = array()) {
     return array(
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => $query_function(Newsletter::getPublished())->count()
+        'count' => Newsletter::getPublished()->where('type', $data['tab'])->count()
       ),
       array(
         'name' => 'trash',
         'label' => __('Trash'),
-        'count' => $query_function(Newsletter::getTrashed())->count()
+        'count' => Newsletter::getTrashed()->where('type', $data['tab'])->count()
       )
     );
+  }
+
+  static function listingQuery($data = array()) {
+    return self::where('type', $data['tab'])
+      ->filter('filterBy', $data['filter'])
+      ->filter('groupBy', $data['group'])
+      ->filter('search', $data['search']);
   }
 
   static function groupBy($orm, $group = null) {
     if($group === 'trash') {
       $orm->whereNotNull('deleted_at');
+    } else {
+      $orm->whereNull('deleted_at');
     }
-    $orm->whereNull('deleted_at');
     return $orm;
   }
 

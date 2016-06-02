@@ -295,7 +295,7 @@ define(
               limit={ mailpoet_listing_per_page }
               params={ this.props.params }
               endpoint="newsletters"
-              action="listingStandard"
+              tab="standard"
               onRenderItem={this.renderItem}
               columns={columns}
               bulk_actions={ bulk_actions }
@@ -307,7 +307,7 @@ define(
               limit={ mailpoet_listing_per_page }
               params={ this.props.params }
               endpoint="newsletters"
-              action="listingWelcome"
+              tab="welcome"
               onRenderItem={this.renderItem}
               columns={columns}
               bulk_actions={ bulk_actions }
@@ -319,7 +319,7 @@ define(
               limit={ mailpoet_listing_per_page }
               params={ this.props.params }
               endpoint="newsletters"
-              action="listingNotification"
+              tab="notification"
               onRenderItem={this.renderItem}
               columns={columns}
               bulk_actions={ bulk_actions }
