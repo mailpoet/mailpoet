@@ -162,13 +162,13 @@ class Newsletter extends Model {
     return $filters;
   }
 
-  static function filterBy($orm, $filters = null) {
-    if(!empty($filters)) {
-      foreach($filters as $key => $value) {
+  static function filterBy($orm, $data = array()) {
+    if(!empty($data['filter'])) {
+      foreach($data['filter'] as $key => $value) {
         if($key === 'segment') {
           $segment = Segment::findOne($value);
           if($segment !== false) {
-            $orm = $segment->newsletters();
+            $orm = $segment->newsletters()->where('type', $data['tab']);
           }
         }
       }
@@ -215,7 +215,7 @@ class Newsletter extends Model {
 
   static function listingQuery($data = array()) {
     return self::where('type', $data['tab'])
-      ->filter('filterBy', $data['filter'])
+      ->filter('filterBy', $data)
       ->filter('groupBy', $data['group'])
       ->filter('search', $data['search']);
   }

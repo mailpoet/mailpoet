@@ -66,10 +66,21 @@ class Handler {
   }
 
   function getSelection() {
-    if(!empty($this->data['selection'])) {
-      $this->model->whereIn($this->table_name.'.id', $this->data['selection']);
+    if(method_exists($this->model_class, 'listingQuery')) {
+      $custom_query = call_user_func_array(
+        array($this->model_class, 'listingQuery'),
+        array($this->data)
+      );
+      if(!empty($this->data['selection'])) {
+        $custom_query->whereIn($this->table_name.'.id', $this->data['selection']);
+      }
+      return $custom_query;
+    } else {
+      if(!empty($this->data['selection'])) {
+        $this->model->whereIn($this->table_name.'.id', $this->data['selection']);
+      }
+      return $this->model;
     }
-    return $this->model;
   }
 
   function getSelectionIds() {
@@ -101,6 +112,8 @@ class Handler {
         array($this->data)
       );
 
+      $count = $custom_query->count();
+
       $items = $custom_query
         ->offset($this->data['offset'])
         ->limit($this->data['limit'])
@@ -108,19 +121,19 @@ class Handler {
           $this->table_name.'.'.$this->data['sort_by']
         )
         ->findMany();
-      $count = $custom_query->count();
+
     } else {
       $this->setFilter();
       $this->setGroup();
       $this->setSearch();
       $this->setOrder();
 
+      $count = $this->model->count();
+
       $items = $this->model
         ->offset($this->data['offset'])
         ->limit($this->data['limit'])
         ->findMany();
-
-      $count = $this->model->count();
     }
 
 

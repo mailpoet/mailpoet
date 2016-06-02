@@ -540,6 +540,7 @@ define(
 
         var data = params || {};
         data.listing = {
+          tab: (this.props.tab) ? this.props.tab : '',
           offset: 0,
           limit: 0,
           filter: this.state.filter,

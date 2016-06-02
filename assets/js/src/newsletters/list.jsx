@@ -250,13 +250,6 @@ define(
           return segment.name
         }).join(', ');
 
-        var statistics_column =
-          (!mailpoet_settings.tracking || !mailpoet_settings.tracking.enabled) ?
-            false :
-            <td className="column {statistics_class}" data-colname={ MailPoet.I18n.t('statistics') }>
-              { this.renderStatistics(newsletter) }
-            </td>;
-
         return (
           <div>
             <td className={ rowClasses }>
@@ -271,7 +264,9 @@ define(
             <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
               { segments }
             </td>
-            { statistics_column }
+            <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
+              { this.renderStatistics(newsletter) }
+            </td>
             <td className="column-date" data-colname={ MailPoet.I18n.t('createdOn') }>
               <abbr>{ MailPoet.Date.format(newsletter.created_at) }</abbr>
             </td>
@@ -282,14 +277,23 @@ define(
         );
       },
       render: function() {
-        if (!mailpoet_settings.tracking || !mailpoet_settings.tracking.enabled) {
-          columns = _.without(columns, _.findWhere(columns, {name: 'statistics'}));
-        }
         return (
           <div>
             <h1 className="title">
               {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
             </h1>
+
+            <h2 className="nav-tab-wrapper">
+              <Link to="/standard" className="nav-tab nav-tab-active">
+                { MailPoet.I18n.t('tabStandardTitle') }
+              </Link>
+              <Link to="/welcome" className="nav-tab">
+                { MailPoet.I18n.t('tabWelcomeTitle') }
+              </Link>
+              <Link to="/notification" className="nav-tab">
+                { MailPoet.I18n.t('tabNotificationTitle') }
+              </Link>
+            </h2>
 
             <Listing
               limit={ mailpoet_listing_per_page }

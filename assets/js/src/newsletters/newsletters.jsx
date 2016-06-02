@@ -25,13 +25,21 @@ if(container) {
     <Router history={ history }>
       <Route path="/" component={ App }>
         <IndexRoute component={ NewsletterList } />
+        {/* New newsletters */}
         <Route path="new" component={ NewsletterTypes } />
-        <Route name="standard" path="new/standard" component={ NewsletterStandard } />
-        <Route name="welcome" path="new/welcome" component={ NewsletterWelcome } />
-        <Route name="notification" path="new/notification" component={ NewsletterNotification } />
+        <Route name="new/standard" path="new/standard" component={ NewsletterStandard } />
+        <Route name="new/welcome" path="new/welcome" component={ NewsletterWelcome } />
+        <Route name="new/notification" path="new/notification" component={ NewsletterNotification } />
+        {/* Form: template selection */}
         <Route name="template" path="template/:id" component={ NewsletterTemplates } />
-        <Route path="send/:id" component={ NewsletterSend } />
+        {/* Listing: tabs */}
+        <Route name="listing/standard" path="standard" component={ NewsletterList } />
+        <Route name="listing/welcome" path="welcome" component={ NewsletterList } />
+        <Route name="listing/notification" path="notification" component={ NewsletterList } />
+        {/* Listing: filtering */}
         <Route path="filter[:filter]" component={ NewsletterList } />
+        {/* Form: sending options */}
+        <Route path="send/:id" component={ NewsletterSend } />
         <Route path="*" component={ NewsletterList } />
       </Route>
     </Router>
