@@ -95,16 +95,22 @@ class Handler {
 
   function get() {
     // get groups
-    $groups = call_user_func_array(
-      array($this->model_class, 'groups'),
-      array($this->data)
-    );
+    $groups = array();
+    if(method_exists($this->model_class, 'groups')) {
+      $groups = call_user_func_array(
+        array($this->model_class, 'groups'),
+        array($this->data)
+      );
+    }
 
     // get filters
-    $filters = call_user_func_array(
-      array($this->model_class, 'filters'),
-      array($this->data)
-    );
+    $filters = array();
+    if(method_exists($this->model_class, 'filters')) {
+      $filters = call_user_func_array(
+        array($this->model_class, 'filters'),
+        array($this->data)
+      );
+    }
 
     if(method_exists($this->model_class, 'listingQuery')) {
       $custom_query = call_user_func_array(
