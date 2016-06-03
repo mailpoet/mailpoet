@@ -1,7 +1,10 @@
 <?php
 namespace MailPoet\Twig;
 
-class Assets extends \Twig_Extension {
+class Assets
+  extends \Twig_Extension
+  implements \Twig_Extension_GlobalsInterface
+{
 
   private $_globals;
 
