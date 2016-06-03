@@ -2,37 +2,138 @@ import React from 'react'
 import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
 import { createHashHistory } from 'history'
 
+import Listing from 'listing/listing.jsx'
 import ListingTabs from 'newsletters/listings/tabs.jsx'
-import ListingStandard from 'newsletters/listings/standard.jsx'
-import ListingWelcome from 'newsletters/listings/welcome.jsx'
-import ListingNotification from 'newsletters/listings/notification.jsx'
+
 import classNames from 'classnames'
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
 
-const NewsletterList = React.createClass({
-  pauseSending(item) {
+const messages = {
+  onTrash(response) {
+    const count = ~~response;
+    let message = null;
+
+    if (count === 1) {
+      message = (
+        MailPoet.I18n.t('oneNewsletterTrashed')
+      );
+    } else {
+      message = (
+        MailPoet.I18n.t('multipleNewslettersTrashed')
+      ).replace('%$1d', count);
+    }
+    MailPoet.Notice.success(message);
+  },
+  onDelete(response) {
+    const count = ~~response;
+    let message = null;
+
+    if (count === 1) {
+      message = (
+        MailPoet.I18n.t('oneNewsletterDeleted')
+      );
+    } else {
+      message = (
+        MailPoet.I18n.t('multipleNewslettersDeleted')
+      ).replace('%$1d', count);
+    }
+    MailPoet.Notice.success(message);
+  },
+  onRestore(response) {
+    const count = ~~response;
+    let message = null;
+
+    if (count === 1) {
+      message = (
+        MailPoet.I18n.t('oneNewsletterRestored')
+      );
+    } else {
+      message = (
+        MailPoet.I18n.t('multipleNewslettersRestored')
+      ).replace('%$1d', count);
+    }
+    MailPoet.Notice.success(message);
+  }
+};
+
+var columns = [
+  {
+    name: 'subject',
+    label: MailPoet.I18n.t('subject'),
+    sortable: true
+  },
+  {
+    name: 'status',
+    label: MailPoet.I18n.t('status')
+  },
+  {
+    name: 'segments',
+    label: MailPoet.I18n.t('lists')
+  },
+  {
+    name: 'statistics',
+    label: MailPoet.I18n.t('statistics')
+  },
+  {
+    name: 'created_at',
+    label: MailPoet.I18n.t('createdOn'),
+    sortable: true
+  },
+  {
+    name: 'updated_at',
+    label: MailPoet.I18n.t('lastModifiedOn'),
+    sortable: true
+  }
+];
+
+var bulk_actions = [
+  {
+    name: 'trash',
+    label: MailPoet.I18n.t('trash'),
+    onSuccess: messages.onTrash
+  }
+];
+
+var item_actions = [
+  {
+    name: 'edit',
+    link: function(item) {
+      return (
+        <a href={ `?page=mailpoet-newsletter-editor&id=${ item.id }` }>
+          {MailPoet.I18n.t('edit')}
+        </a>
+      );
+    }
+  },
+  {
+    name: 'trash'
+  }
+];
+
+const NewsletterListWelcome = React.createClass({
+  pauseSending: function(item) {
     MailPoet.Ajax.post({
       endpoint: 'sendingQueue',
       action: 'pause',
       data: item.id
-    }).done(() => {
+    }).done(function() {
       jQuery('#resume_'+item.id).show();
       jQuery('#pause_'+item.id).hide();
     });
   },
-  resumeSending(item) {
+  resumeSending: function(item) {
     MailPoet.Ajax.post({
       endpoint: 'sendingQueue',
       action: 'resume',
       data: item.id
-    }).done(() => {
+    }).done(function() {
       jQuery('#pause_'+item.id).show();
       jQuery('#resume_'+item.id).hide();
     });
   },
-  renderStatus(item) {
-    if (!item.queue) {
+  renderStatus: function(item) {
+    if(!item.queue) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
@@ -42,19 +143,19 @@ const NewsletterList = React.createClass({
           <span>{MailPoet.I18n.t('scheduledFor')}  { MailPoet.Date.format(item.queue.scheduled_at) } </span>
         )
       }
-      const progressClasses = classNames(
+      var progressClasses = classNames(
         'mailpoet_progress',
         { 'mailpoet_progress_complete': item.queue.status === 'completed'}
       );
 
       // calculate percentage done
-      const percentage = Math.round(
+      var percentage = Math.round(
         (item.queue.count_processed * 100) / (item.queue.count_total)
       );
 
-      let label = false;
+      var label = false;
 
-      if (item.queue.status === 'completed') {
+      if(item.queue.status === 'completed') {
         label = (
           <span>
             {
@@ -105,13 +206,8 @@ const NewsletterList = React.createClass({
       );
     }
   },
-  renderStatistics(item) {
-    if (
-      !item.statistics
-      || !item.queue
-      || ~~(item.queue.count_processed) === 0
-      || item.queue.status === 'scheduled'
-    ) {
+  renderStatistics: function(item) {
+    if(!item.statistics || !item.queue || item.queue.count_processed == 0 || item.queue.status === 'scheduled') {
       return (
         <span>
           {MailPoet.I18n.t('notSentYet')}
@@ -119,32 +215,30 @@ const NewsletterList = React.createClass({
       );
     }
 
-    const percentage_clicked = Math.round(
+    var percentage_clicked = Math.round(
       (item.statistics.clicked * 100) / (item.queue.count_processed)
     );
-    const percentage_opened = Math.round(
+    var percentage_opened = Math.round(
       (item.statistics.opened * 100) / (item.queue.count_processed)
     );
-    const percentage_unsubscribed = Math.round(
+    var percentage_unsubscribed = Math.round(
       (item.statistics.unsubscribed * 100) / (item.queue.count_processed)
     );
 
     return (
       <span>
-        { percentage_opened }%,
-        { percentage_clicked }%,
-        { percentage_unsubscribed }%
+        { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
       </span>
     );
   },
-  renderItem(newsletter, actions) {
-    const rowClasses = classNames(
+  renderItem: function(newsletter, actions) {
+    var rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'
     );
 
-    const segments = newsletter.segments.map(function(segment) {
+    var segments = newsletter.segments.map(function(segment) {
       return segment.name
     }).join(', ');
 
@@ -174,20 +268,29 @@ const NewsletterList = React.createClass({
       </div>
     );
   },
-  render() {
-    console.log(this.props.params);
+  render: function() {
     return (
       <div>
         <h1 className="title">
           {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
         </h1>
 
-        <ListingTabs tab="standard" />
-
-        <ListingStandard params={ this.props.params } />
+        <ListingTabs tab="welcome" />
+        <Listing
+          limit={ mailpoet_listing_per_page }
+          params={ this.props.params }
+          endpoint="newsletters"
+          tab="welcome"
+          onRenderItem={this.renderItem}
+          columns={columns}
+          bulk_actions={ bulk_actions }
+          item_actions={ item_actions }
+          messages={ messages }
+          auto_refresh={ true }
+        />
       </div>
     );
   }
 });
 
-module.exports = NewsletterList;
+module.exports = NewsletterListWelcome;
