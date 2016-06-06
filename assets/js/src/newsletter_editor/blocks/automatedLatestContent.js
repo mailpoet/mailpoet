@@ -194,9 +194,6 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    behaviors: {
-      ColorPickerBehavior: {},
-    },
     templateHelpers: function() {
       return {
         model: this.model.toJSON(),
@@ -211,6 +208,7 @@ define([
       this.$('.mailpoet_automated_latest_content_categories_and_tags').select2({
         multiple: true,
         allowClear: true,
+        placeholder: MailPoet.I18n.t('categoriesAndTags'),
         ajax: {
           data: function (params) {
             return {

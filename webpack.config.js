@@ -147,6 +147,7 @@ config.push(_.extend({}, baseConfig, {
       'newsletter_editor/behaviors/ColorPickerBehavior.js',
       'newsletter_editor/behaviors/ContainerDropZoneBehavior.js',
       'newsletter_editor/behaviors/DraggableBehavior.js',
+      'newsletter_editor/behaviors/HighlightEditingBehavior.js',
       'newsletter_editor/behaviors/ResizableBehavior.js',
       'newsletter_editor/behaviors/SortableBehavior.js',
       'newsletter_editor/blocks/base.js',
@@ -205,6 +206,10 @@ config.push(_.extend({}, baseConfig, {
       'filesaver',
       'velocity-animate',
 
+      'mailpoet',
+      'notice',
+      'i18n',
+
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
       'newsletter_editor/components/config.js',
@@ -218,6 +223,7 @@ config.push(_.extend({}, baseConfig, {
       'newsletter_editor/behaviors/ColorPickerBehavior.js',
       'newsletter_editor/behaviors/ContainerDropZoneBehavior.js',
       'newsletter_editor/behaviors/DraggableBehavior.js',
+      'newsletter_editor/behaviors/HighlightEditingBehavior.js',
       'newsletter_editor/behaviors/ResizableBehavior.js',
       'newsletter_editor/behaviors/SortableBehavior.js',
       'newsletter_editor/blocks/base.js',

@@ -70,9 +70,6 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    behaviors: {
-      ColorPickerBehavior: {},
-    },
   });
 
   Module.SpacerWidgetView = base.WidgetView.extend({

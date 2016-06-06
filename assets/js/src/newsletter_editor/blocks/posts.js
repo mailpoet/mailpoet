@@ -23,7 +23,19 @@ define([
     'newsletter_editor/blocks/button',
     'newsletter_editor/blocks/divider',
     'select2'
-  ], function(Backbone, Marionette, Radio, _, jQuery, MailPoet, App, CommunicationComponent, BaseBlock, ButtonBlock, DividerBlock) {
+  ], function(
+    Backbone,
+    Marionette,
+    Radio,
+    _,
+    jQuery,
+    MailPoet,
+    App,
+    CommunicationComponent,
+    BaseBlock,
+    ButtonBlock,
+    DividerBlock
+  ) {
 
   "use strict";
 
@@ -195,6 +207,7 @@ define([
       };
     },
     initialize: function() {
+      this.model.trigger('startEditing');
       this.selectionView = new PostSelectionSettingsView({ model: this.model });
       this.displayOptionsView = new PostsDisplayOptionsSettingsView({ model: this.model });
     },
@@ -209,8 +222,6 @@ define([
         element: this.$el,
         template: '',
         position: 'right',
-        overlay: true,
-        highlight: blockView.$el,
         width: App.getConfig().get('sidepanelWidth'),
         onCancel: function() {
           // Self destroy the block if the user closes settings modal
@@ -274,6 +285,7 @@ define([
       this.$('.mailpoet_posts_categories_and_tags').select2({
         multiple: true,
         allowClear: true,
+        placeholder: MailPoet.I18n.t('categoriesAndTags'),
         ajax: {
           data: function (params) {
             return {
@@ -404,9 +416,6 @@ define([
         "keyup .mailpoet_posts_read_more_text": _.partial(this.changeField, "readMoreText"),
         "change .mailpoet_posts_sort_by": _.partial(this.changeField, "sortBy"),
       };
-    },
-    behaviors: {
-      ColorPickerBehavior: {},
     },
     templateHelpers: function() {
       return {

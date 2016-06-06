@@ -99,23 +99,6 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    behaviors: {
-      ColorPickerBehavior: {},
-    },
-    initialize: function(params) {
-      var panelParams = {
-        element: this.$el,
-        template: '',
-        position: 'right',
-        width: App.getConfig().get('sidepanelWidth'),
-      };
-      this.renderOptions = params.renderOptions || {};
-      if (this.renderOptions.displayFormat === 'subpanel') {
-        MailPoet.Modal.subpanel(panelParams);
-      } else {
-        MailPoet.Modal.panel(panelParams);
-      }
-    },
     templateHelpers: function() {
       return {
         model: this.model.toJSON(),

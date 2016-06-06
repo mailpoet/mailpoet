@@ -125,6 +125,7 @@ define([
           return view.renderOptions.depth === 1;
         },
       },
+      HighlightEditingBehavior: {}
     },
     onDragSubstituteBy: function() {
       // For two and three column layouts display their respective widgets,
@@ -308,9 +309,6 @@ define([
         "change .mailpoet_field_container_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
         "click .mailpoet_done_editing": "close",
       };
-    },
-    behaviors: {
-      ColorPickerBehavior: {},
     },
     regions: {
       columnsSettingsRegion: '.mailpoet_container_columns_settings',
