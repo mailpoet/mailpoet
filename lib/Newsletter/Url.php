@@ -33,11 +33,10 @@ class Url {
         $queue
     );
     $params = array(
-      'mailpoet',
-      'endpoint=view_in_browser',
-      'data=' . rtrim(base64_encode(serialize($data)), '=')
+      'mailpoet' => '',
+      'endpoint' => 'view_in_browser',
+      'data' => rtrim(base64_encode(serialize($data)), '=')
     );
-    $url = home_url();
-    return $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
+    return add_query_arg($params, home_url());
   }
 }
