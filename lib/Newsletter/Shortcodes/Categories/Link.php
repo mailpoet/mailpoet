@@ -26,7 +26,7 @@ class Link {
           $url,
           __('Unsubscribe')
         );
-        break;
+      break;
 
       case 'subscription_unsubscribe_url':
         return self::processUrl(
@@ -34,7 +34,7 @@ class Link {
           SubscriptionUrl::getUnsubscribeUrl($subscriber),
           $queue
         );
-        break;
+      break;
 
       case 'subscription_manage':
         $url = self::processUrl(
@@ -47,7 +47,7 @@ class Link {
           $url,
           __('Manage subscription')
         );
-        break;
+      break;
 
       case 'subscription_manage_url':
         return self::processUrl(
@@ -55,7 +55,7 @@ class Link {
           SubscriptionUrl::getManageUrl($subscriber),
           $queue
         );
-        break;
+      break;
 
       case 'newsletter_view_in_browser':
         $action = 'view_in_browser_url';
@@ -66,12 +66,12 @@ class Link {
           $url,
           __('View in your browser')
         );
-        break;
+      break;
 
       case 'newsletter_view_in_browser_url':
         $url = ViewInBrowserUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
         return self::processUrl($action, $url, $queue);
-        break;
+      break;
 
       default:
         $shortcode = self::getShortcode($action);
@@ -85,7 +85,7 @@ class Link {
         return ($url !== $shortcode) ?
           self::processUrl($action, $url, $queue) :
           false;
-        break;
+      break;
     }
   }
 
@@ -106,13 +106,13 @@ class Link {
           $unsubscribe->track($subscriber['id'], $queue['id'], $newsletter['id']);
         }
         $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
-        break;
+      break;
       case 'subscription_manage_url':
         $url = SubscriptionUrl::getManageUrl($subscriber);
-        break;
+      break;
       case 'newsletter_view_in_browser_url':
         $url = Link::getViewInBrowserUrl($newsletter, $subscriber, $queue);
-        break;
+      break;
       default:
         $shortcode = self::getShortcode($shortcode_action);
         $url = apply_filters(
@@ -123,7 +123,7 @@ class Link {
           $queue
         );
         $url = ($url !== $shortcode_action) ? $url : false;
-        break;
+      break;
     }
     return $url;
   }
