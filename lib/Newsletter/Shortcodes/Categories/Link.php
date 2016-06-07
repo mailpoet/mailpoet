@@ -111,7 +111,7 @@ class Link {
         $url = SubscriptionUrl::getManageUrl($subscriber);
       break;
       case 'newsletter_view_in_browser_url':
-        $url = Link::getViewInBrowserUrl($newsletter, $subscriber, $queue);
+        $url = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
       break;
       default:
         $shortcode = self::getShortcode($shortcode_action);

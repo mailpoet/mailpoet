@@ -35,7 +35,7 @@ class Url {
     $params = array(
       'mailpoet' => '',
       'endpoint' => 'view_in_browser',
-      'data' => rtrim(base64_encode(serialize($data)), '=')
+      'data' => base64_encode(serialize($data))
     );
     return add_query_arg($params, home_url());
   }

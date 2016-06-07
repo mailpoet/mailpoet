@@ -11,7 +11,7 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
-use MailPoet\Newsletter\Shortcodes\Categories\Link;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -154,7 +154,7 @@ class Newsletters {
     $subscriber = Subscriber::where('email', $wp_user->data->user_email)
       ->findOne();
     $subscriber = ($subscriber) ? $subscriber->asArray() : $subscriber;
-    $preview_url = Link::getViewInBrowserUrl($data, $subscriber);
+    $preview_url = NewsletterUrl::getViewInBrowserUrl($data, $subscriber);
     return array(
       'result' => true,
       'data' => array('url' => $preview_url)
