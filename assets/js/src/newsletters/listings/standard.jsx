@@ -107,6 +107,26 @@ var item_actions = [
     }
   },
   {
+    name: 'duplicate',
+    label: MailPoet.I18n.t('duplicate'),
+    onClick: function(item, refresh) {
+      return MailPoet.Ajax.post({
+        endpoint: 'newsletters',
+        action: 'duplicate',
+        data: item.id
+      }).done(function(response) {
+        if (response !== false && response.subject !== undefined) {
+          MailPoet.Notice.success(
+            (MailPoet.I18n.t('newsletterDuplicated')).replace(
+              '%$1s', response.subject
+            )
+          );
+        }
+        refresh();
+      });
+    }
+  },
+  {
     name: 'trash'
   }
 ];

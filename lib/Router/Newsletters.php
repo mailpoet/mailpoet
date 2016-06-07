@@ -124,13 +124,15 @@ class Newsletters {
   }
 
   function duplicate($id = false) {
+    $result = false;
+
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
-      return $newsletter->duplicate(array(
+      $result = $newsletter->duplicate(array(
         'subject' => sprintf(__('Copy of %s'), $newsletter->subject)
       ))->asArray();
     }
-    return false;
+    return $result;
   }
 
   function showPreview($data = array()) {

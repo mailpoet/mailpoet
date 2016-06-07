@@ -10,6 +10,9 @@ class Newsletter extends Model {
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
 
+  const STATUS_DRAFT = 'draft';
+  const STATUS_SENT = 'sent';
+
   function __construct() {
     parent::__construct();
 
@@ -206,6 +209,16 @@ class Newsletter extends Model {
         'count' => Newsletter::getPublished()->where('type', $data['tab'])->count()
       ),
       array(
+        'name' => self::STATUS_DRAFT,
+        'label' => __('Draft'),
+        'count' => Newsletter::filter('filterDraft', $data)->count()
+      ),
+      array(
+        'name' => self::STATUS_SENT,
+        'label' => __('Sent'),
+        'count' => Newsletter::filter('filterSent', $data)->count()
+      ),
+      array(
         'name' => 'trash',
         'label' => __('Trash'),
         'count' => Newsletter::getTrashed()->where('type', $data['tab'])->count()
@@ -213,20 +226,46 @@ class Newsletter extends Model {
     );
   }
 
+  static function groupBy($orm, $data = array()) {
+    $group = (!empty($data['group'])) ? $data['group'] : 'all';
+
+    switch($group) {
+      case self::STATUS_DRAFT:
+        $orm->filter('filterDraft', $data);
+      break;
+      case self::STATUS_SENT:
+        $orm->filter('filterSent', $data);
+      break;
+      case 'trash':
+        $orm->whereNotNull('deleted_at');
+      break;
+      default:
+        $orm->whereNull('deleted_at');
+    }
+    return $orm;
+  }
+
+  static function filterDraft($orm, $data = array()) {
+    $type = isset($data['tab']) ? $data['tab'] : self::TYPE_STANDARD;
+
+    return $orm
+      ->where('type', $type)
+      ->where('status', self::STATUS_DRAFT);
+  }
+
+  static function filterSent($orm, $data = array()) {
+    $type = isset($data['tab']) ? $data['tab'] : self::TYPE_STANDARD;
+
+    return $orm
+      ->where('type', $type)
+      ->where('status', self::STATUS_SENT);
+  }
+
   static function listingQuery($data = array()) {
     return self::where('type', $data['tab'])
       ->filter('filterBy', $data)
-      ->filter('groupBy', $data['group'])
+      ->filter('groupBy', $data)
       ->filter('search', $data['search']);
-  }
-
-  static function groupBy($orm, $group = null) {
-    if($group === 'trash') {
-      $orm->whereNotNull('deleted_at');
-    } else {
-      $orm->whereNull('deleted_at');
-    }
-    return $orm;
   }
 
   static function createOrUpdate($data = array()) {

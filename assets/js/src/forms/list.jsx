@@ -90,7 +90,7 @@ const item_actions = [
     }
   },
   {
-    name: 'duplicate_form',
+    name: 'duplicate',
     label: MailPoet.I18n.t('duplicate'),
     onClick: function(item, refresh) {
       return MailPoet.Ajax.post({
@@ -98,9 +98,11 @@ const item_actions = [
         action: 'duplicate',
         data: item.id
       }).done(function(response) {
-        MailPoet.Notice.success(
-          (MailPoet.I18n.t('formDuplicated')).replace('%$1s', response.name)
-        );
+        if (response !== false && response['name'] !== undefined) {
+          MailPoet.Notice.success(
+            (MailPoet.I18n.t('formDuplicated')).replace('%$1s', response.name)
+          );
+        }
         refresh();
       });
     }
