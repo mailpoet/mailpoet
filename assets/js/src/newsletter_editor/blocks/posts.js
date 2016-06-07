@@ -215,9 +215,6 @@ define([
       var that = this,
         blockView = this.model.request('blockView');
 
-      this.selectionRegion.show(this.selectionView);
-      this.displayOptionsRegion.show(this.displayOptionsView);
-
       MailPoet.Modal.panel({
         element: this.$el,
         template: '',
@@ -228,6 +225,9 @@ define([
           that.model.destroy();
         },
       });
+
+      this.selectionRegion.show(this.selectionView);
+      this.displayOptionsRegion.show(this.displayOptionsView);
     },
     switchToDisplayOptions: function() {
       // Switch content view
@@ -277,6 +277,9 @@ define([
       Marionette.CompositeView.apply(this, arguments);
     },
     onRender: function() {
+
+    },
+    onAttach: function() {
       var that = this;
 
       // Dynamically update available post types
