@@ -33,13 +33,11 @@ class Url {
         $queue
     );
     $params = array(
+      'mailpoet',
       'endpoint=view_in_browser',
       'data=' . rtrim(base64_encode(serialize($data)), '=')
     );
-    return sprintf(
-      '%s?%s',
-      home_url(),
-      join('&', $params)
-    );
+    $url = home_url();
+    return $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
   }
 }

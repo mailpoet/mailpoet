@@ -2,7 +2,7 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Setting;
-use MailPoet\Newsletter\Url as ViewInBrowserUrl;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
@@ -59,7 +59,7 @@ class Link {
 
       case 'newsletter_view_in_browser':
         $action = 'view_in_browser_url';
-        $url = esc_attr(ViewInBrowserUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue));
+        $url = esc_attr(NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue));
         $url = self::processUrl($action, $url, $queue);
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
@@ -69,7 +69,7 @@ class Link {
       break;
 
       case 'newsletter_view_in_browser_url':
-        $url = ViewInBrowserUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
+        $url = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
         return self::processUrl($action, $url, $queue);
       break;
 
