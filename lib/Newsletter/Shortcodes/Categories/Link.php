@@ -2,7 +2,7 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Setting;
-use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Newsletter\Viewer\Url as ViewInBrowserUrl;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
@@ -26,7 +26,7 @@ class Link {
           $url,
           __('Unsubscribe')
         );
-      break;
+        break;
 
       case 'subscription_unsubscribe_url':
         return self::processUrl(
@@ -34,7 +34,7 @@ class Link {
           SubscriptionUrl::getUnsubscribeUrl($subscriber),
           $queue
         );
-      break;
+        break;
 
       case 'subscription_manage':
         $url = self::processUrl(
@@ -47,7 +47,7 @@ class Link {
           $url,
           __('Manage subscription')
         );
-      break;
+        break;
 
       case 'subscription_manage_url':
         return self::processUrl(
@@ -55,21 +55,21 @@ class Link {
           SubscriptionUrl::getManageUrl($subscriber),
           $queue
         );
-      break;
+        break;
 
       case 'newsletter_view_in_browser':
         $action = 'view_in_browser_url';
-        $url = esc_attr(self::getViewInBrowserUrl($newsletter, $subscriber, $queue));
+        $url = esc_attr(ViewInBrowserUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue));
         $url = self::processUrl($action, $url, $queue);
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
           $url,
           __('View in your browser')
         );
-      break;
+        break;
 
       case 'newsletter_view_in_browser_url':
-        $url = self::getViewInBrowserUrl($newsletter, $subscriber, $queue);
+        $url = ViewInBrowserUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
         return self::processUrl($action, $url, $queue);
         break;
 
@@ -85,31 +85,8 @@ class Link {
         return ($url !== $shortcode) ?
           self::processUrl($action, $url, $queue) :
           false;
-      break;
+        break;
     }
-  }
-
-  static function getViewInBrowserUrl(
-    $newsletter,
-    $subscriber = false,
-    $queue = false
-  ) {
-    $data = array(
-      'newsletter' => (isset($newsletter['id'])) ?
-        $newsletter['id'] :
-        $newsletter,
-      'subscriber' => (isset($subscriber['id'])) ?
-        $subscriber['id'] :
-        $subscriber,
-      'subscriber_token' => (isset($subscriber['id'])) ?
-        SubscriberModel::generateToken($subscriber['email']) :
-        false,
-      'queue' => (isset($queue['id'])) ?
-        $queue['id'] :
-        $queue
-    );
-    $data = rtrim(base64_encode(serialize($data)), '=');
-    return home_url() . '/?mailpoet&endpoint=view_in_browser&data=' . $data;
   }
 
   static function processUrl($action, $url, $queue) {
