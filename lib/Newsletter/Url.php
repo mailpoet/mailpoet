@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Newsletter\Viewer;
+namespace MailPoet\Newsletter;
 
 use MailPoet\Models\Subscriber;
 

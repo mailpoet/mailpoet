@@ -2,7 +2,7 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Setting;
-use MailPoet\Newsletter\Viewer\Url as ViewInBrowserUrl;
+use MailPoet\Newsletter\Url as ViewInBrowserUrl;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
