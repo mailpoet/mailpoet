@@ -58,7 +58,7 @@ class Link {
       break;
 
       case 'newsletter_view_in_browser':
-        $action = 'view_in_browser_url';
+        $action = 'newsletter_view_in_browser_url';
         $url = esc_attr(NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue));
         $url = self::processUrl($action, $url, $queue);
         return sprintf(
