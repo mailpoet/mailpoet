@@ -68,7 +68,7 @@ class Forms {
       ),
       'settings' => array(
         'on_success' => 'message',
-        'success_message' => __('Check your inbox or spam folder now to confirm your subscription.'),
+        'success_message' => __('Check your inbox or spam folder to confirm your subscription.'),
         'segments' => null,
         'segments_selected_by' => 'admin'
       )

@@ -359,7 +359,7 @@ class SendingQueue {
     if($this->mta_log['sent'] === $frequency_limit &&
       $elapsed_time <= $frequency_interval
     ) {
-      throw new \Exception(__('Sending frequency limit reached.'));
+      throw new \Exception(__('Sending frequency limit has been reached.'));
     }
     if($elapsed_time > $frequency_interval) {
       $this->mta_log = array(

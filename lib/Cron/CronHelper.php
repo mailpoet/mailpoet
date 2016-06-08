@@ -72,7 +72,7 @@ class CronHelper {
   static function checkExecutionTimer($timer) {
     $elapsed_time = microtime(true) - $timer;
     if($elapsed_time >= self::DAEMON_EXECUTION_LIMIT) {
-      throw new \Exception(__('Maximum execution time reached.'));
+      throw new \Exception(__('Maximum execution time has been reached.'));
     }
   }
 }

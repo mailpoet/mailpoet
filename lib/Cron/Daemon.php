@@ -20,7 +20,7 @@ class Daemon {
   private $timer;
 
   function __construct($data) {
-    if(empty($data)) $this->abortWithError(__('Invalid or missing cron data.'));
+    if(empty($data)) $this->abortWithError(__('Invalid or missing Cron data.'));
     ignore_user_abort();
     $this->daemon = CronHelper::getDaemon();
     $this->token = CronHelper::createToken();

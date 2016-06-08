@@ -174,7 +174,7 @@ class Pages {
       }, $this->subscriber->segments()->findMany());
 
       if(empty($segment_names)) {
-        $title = __("You've subscribed!");
+        $title = __("You're now subscribed!");
       } else {
         $title = sprintf(
           __("You've subscribed to: %s"),
@@ -193,7 +193,7 @@ class Pages {
 
   private function getUnsubscribeTitle() {
     if($this->isPreview() || $this->subscriber !== false) {
-      return __("You've successfully unsubscribed");
+      return __("You are now unsubscribed");
     }
   }
 
@@ -354,7 +354,7 @@ class Pages {
   private function getUnsubscribeContent() {
     $content = '';
     if($this->isPreview() || $this->subscriber !== false) {
-      $content .= '<p>'.__('You made a mistake?').' <strong>';
+      $content .= '<p>'.__('Accidentally unsubscribed?').' <strong>';
       $content .= '[mailpoet_manage]';
       $content .= '</strong></p>';
     }

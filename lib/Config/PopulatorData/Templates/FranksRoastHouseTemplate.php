@@ -46,7 +46,7 @@ class FranksRoastHouseTemplate {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">View it in your browser</a>"),
+                    "text" => __("<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser.</a>"),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "#ccc6c6"
@@ -67,7 +67,7 @@ class FranksRoastHouseTemplate {
                     "type" => "image",
                     "link" => "http://www.example.com",
                     "src" => $this->template_image_url . "/header-v2.jpg",
-                    "alt" => __("Frank's Roast House"),
+                    "alt" => __("Frank's Café"),
                     "fullWidth" => true,
                     "width" => "600px",
                     "height" => "220px",
@@ -88,7 +88,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Hello there&nbsp;[user:firstname | default:Coffee Drinker]</p>\n<p></p>\n<p>Sit back&nbsp;and enjoy a cup of joe as you have a read of our latest newsletter.&nbsp;</p>")
+                    "text" => __("<p>Hi there&nbsp;[user:firstname | default:coffee drinker]</p>\n<p></p>\n<p>Sit back&nbsp;and enjoy your favorite roast as you read this week's newsletter.&nbsp;</p>")
                   ),
                   array(
                     "type" => "image",
@@ -106,7 +106,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\">--- Guest Coffee: <em>Brew Bros. ---</em></h1>\n<p><em></em></p>\n<p>Pop into our North Avenue store to try our latest guest coffee from independent coffee roasters, Brew Bros. This young duo only started creating their own blends two years ago, but have quickly gained&nbsp;popularity through a number of pop-up events and collaborations with local street food vendors.</p>\n<p></p>\n<blockquote>\n<p><span style=\"color: #ff6600;\"><em>Tasting notes: A rich, caramel flavour with subtle overtones of molasses. The perfect wake-up morning espresso.</em></span></p>\n</blockquote>")
+                    "text" => __("<h1 style=\"text-align: center;\">--- Guest Coffee Roaster: <em>Brew Bros. ---</em></h1>\n<p><em></em></p>\n<p>Visit our Center Avenue store to try the latest guest coffee from Brew Bros, a local coffee roaster. This young duo started only two years ago, but have quickly gained&nbsp;popularity through pop-up shops, local events, and collaborations with food trucks.</p>\n<p></p>\n<blockquote>\n<p><span style=\"color: #ff6600;\"><em>Tasting notes: A rich, caramel flavor with subtle hints of molasses. The perfect wake-up morning espresso!</em></span></p>\n</blockquote>")
                   )
                 )
               )
@@ -150,7 +150,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>We're offering free lunch for a month if you can invent a new sandwich to go on our menu.</p>\n<p></p>\n<p></p>\n<p>Simply tweet your ideas to <a href=\"http://www.example.com\" title=\"This isn't a real twitter account\">@franksroasthouse</a> and use #sandwichcomp and we'll let you know if you're a winner.</p>")
+                    "text" => __("<p>Have an idea for the Next Great Sandwich? Tell us! We're offering free lunch for a month if you can invent an awesome new sandwich for our menu.</p>\n<p></p>\n<p></p>\n<p>Simply tweet your ideas to <a href=\"http://www.example.com\" title=\"This isn't a real twitter account\">@franksroasthouse</a> and use #sandwichcomp and we'll let you know if you're a winner.</p>")
                   ),
                   array(
                     "type" => "button",
@@ -175,7 +175,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h3 style=\"text-align: center;\">Follow us</h3>")
+                    "text" => __("<h3 style=\"text-align: center;\">Follow Us</h3>")
                   ),
                   array(
                     "type" => "social",
@@ -250,11 +250,11 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Watch out Westville Street, we're coming to you very soon!&nbsp;</p>\n<p></p>\n<p>Keep an eye on your mailboxes, we'll have some special offers for our email subscribers and an exclusive Preview Evening invite.<br /><br /></p>")
+                    "text" => __("<p>Watch out Broad Street, we're coming to you very soon!&nbsp;</p>\n<p></p>\n<p>Keep an eye on your inbox, as we'll have some special offers for our email subscribers plus an exclusive launch party invite!<br /><br /></p>")
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h2>We're Now Open Longer</h2>\n<p></p>\n<p>That's right, Franks is now open for even longer, so you can get your caffeine fix almost any time of the day! Here's our new opening hours:</p>\n<p></p>\n<ul>\n<li>Monday - Thursday: 6am - 12am</li>\n<li>Friday - Saturday: 6am - 1:30am</li>\n<li>Sunday: 7:30am - 11pm</li>\n</ul>")
+                    "text" => __("<h2>New and Improved Hours!</h2>\n<p></p>\n<p>Frank's is now open even later, so you can get your caffeine fix all day long! Here's our new opening hours:</p>\n<p></p>\n<ul>\n<li>Monday - Thursday: 6am - 12am</li>\n<li>Friday - Saturday: 6am - 1:30am</li>\n<li>Sunday: 7:30am - 11pm</li>\n</ul>")
                   )
                 )
               )

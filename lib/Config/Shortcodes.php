@@ -114,7 +114,7 @@ class Shortcodes {
 
   function renderArchiveSubject($newsletter) {
     return '<a href="TODO" target="_blank" title="'
-      .esc_attr(__('Preview in new tab')).'">'
+      .esc_attr(__('Preview in a new tab')).'">'
       .esc_attr($newsletter->subject).
     '</a>';
   }
