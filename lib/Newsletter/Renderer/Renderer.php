@@ -60,16 +60,16 @@ class Renderer {
       switch($selector) {
         case 'text':
           $selector = 'td.mailpoet_paragraph, td.mailpoet_blockquote, li.mailpoet_paragraph';
-          break;
+        break;
         case 'body':
           $selector = 'body, .mailpoet-wrapper';
-          break;
+        break;
         case 'link':
           $selector = '.mailpoet-wrapper a';
-          break;
+        break;
         case 'wrapper':
           $selector = '.mailpoet_content-wrapper';
-          break;
+        break;
       }
       $css .= StylesHelper::setStyle($style, $selector);
     }
@@ -92,11 +92,15 @@ class Renderer {
   }
 
   function postProcessTemplate($template) {
-    // replace all !important tags except for in the body tag
     $DOM = $this->DOM_parser->parseStr($template);
     $template = $DOM->query('.mailpoet_template');
+    // replace all !important tags except for in the body tag
     $template->html(
       str_replace('!important', '', $template->html())
+    );
+    // encode ampersand
+    $template->html(
+      str_replace('&', '&amp;', $template->html())
     );
     $template = apply_filters(
       'mailpoet_rendering_post_process',
