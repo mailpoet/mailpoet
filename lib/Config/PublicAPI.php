@@ -2,7 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Cron\Daemon;
-use MailPoet\Newsletter\Viewer\ViewInBrowser;
+use MailPoet\Newsletter\ViewInBrowser;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscription;

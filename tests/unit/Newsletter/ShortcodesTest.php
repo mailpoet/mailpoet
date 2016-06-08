@@ -165,25 +165,25 @@ class ShortcodesTest extends MailPoetTest {
     $shortcodes_object = $this->shortcodes_object;
     $result =
       $shortcodes_object->process(array('[link:subscription_unsubscribe]'));
-    expect(preg_match('/^<a.*?\/a>$/', $result['0']))->equals(1);
-    expect(preg_match('/action=unsubscribe/', $result['0']))->equals(1);
+    expect($result['0'])->regExp('/^<a.*?\/a>$/');
+    expect($result['0'])->regExp('/action=unsubscribe/');
     $result =
       $shortcodes_object->process(array('[link:subscription_unsubscribe_url]'));
-    expect(preg_match('/^http.*?action=unsubscribe/', $result['0']))->equals(1);
+    expect($result['0'])->regExp('/^http.*?action=unsubscribe/');
     $result =
       $shortcodes_object->process(array('[link:subscription_manage]'));
-    expect(preg_match('/^<a.*?\/a>$/', $result['0']))->equals(1);
-    expect(preg_match('/action=manage/', $result['0']))->equals(1);
+    expect($result['0'])->regExp('/^<a.*?\/a>$/');
+    expect($result['0'])->regExp('/action=manage/');
     $result =
       $shortcodes_object->process(array('[link:subscription_manage_url]'));
-    expect(preg_match('/^http.*?action=manage/', $result['0']))->equals(1);
+    expect($result['0'])->regExp('/^http.*?action=manage/');
     $result =
       $shortcodes_object->process(array('[link:newsletter_view_in_browser]'));
-    expect(preg_match('/^<a.*?\/a>$/', $result['0']))->equals(1);
-    expect(preg_match('/endpoint=view_in_browser/', $result['0']))->equals(1);
+    expect($result['0'])->regExp('/^<a.*?\/a>$/');
+    expect($result['0'])->regExp('/endpoint=view_in_browser/');
     $result =
       $shortcodes_object->process(array('[link:newsletter_view_in_browser_url]'));
-    expect(preg_match('/^http.*?endpoint=view_in_browser/', $result['0']))->equals(1);
+    expect($result['0'])->regExp('/^http.*?endpoint=view_in_browser/');
   }
 
   function testItReturnsShortcodeWhenTrackingEnabled() {
@@ -191,9 +191,9 @@ class ShortcodesTest extends MailPoetTest {
     $shortcode = '[link:subscription_unsubscribe_url]';
     $result =
       $shortcodes_object->process(array($shortcode));
-    expect(preg_match('/^http.*?action=unsubscribe/', $result['0']))->equals(1);
+    expect($result['0'])->regExp('/^http.*?action=unsubscribe/');
     Setting::setValue('tracking.enabled', true);
-    $shortcodes = array(
+    $initial_shortcodes = array(
       '[link:subscription_unsubscribe]',
       '[link:subscription_unsubscribe_url]',
       '[link:subscription_manage]',
@@ -201,13 +201,26 @@ class ShortcodesTest extends MailPoetTest {
       '[link:newsletter_view_in_browser]',
       '[link:newsletter_view_in_browser_url]'
     );
+    $expected_transformed_shortcodes = array(
+      '[link:subscription_unsubscribe_url]',
+      '[link:subscription_unsubscribe_url]',
+      '[link:subscription_manage_url]',
+      '[link:subscription_manage_url]',
+      '[link:newsletter_view_in_browser_url]',
+      '[link:newsletter_view_in_browser_url]'
+    );
     // tracking function only works during sending, so queue object must not be false
     $shortcodes_object->queue = true;
-    $result =
-      $shortcodes_object->process($shortcodes);
-    // all returned shortcodes must end with url
-    $result = join(',', $result);
-    expect(substr_count($result, '_url'))->equals(count($shortcodes));
+    $result = $shortcodes_object->process($initial_shortcodes);
+    foreach($result as $index => $transformed_shortcode) {
+      // 1. result must not contain a link
+      expect($transformed_shortcode)->regExp('/^((?!href="http).)*$/');
+      // 2. result must include a URL shortcode. for example:
+      // [link:subscription_unsubscribe] should become
+      // [link:subscription_unsubscribe_url]
+      expect($transformed_shortcode)
+        ->regExp('/' . preg_quote($expected_transformed_shortcodes[$index]) . '/');
+    }
   }
 
   function testItCanProcessCustomLinkShortcodes() {

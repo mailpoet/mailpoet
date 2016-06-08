@@ -2,7 +2,7 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Setting;
-use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
@@ -58,8 +58,8 @@ class Link {
       break;
 
       case 'newsletter_view_in_browser':
-        $action = 'view_in_browser_url';
-        $url = esc_attr(self::getViewInBrowserUrl($newsletter, $subscriber, $queue));
+        $action = 'newsletter_view_in_browser_url';
+        $url = esc_attr(NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue));
         $url = self::processUrl($action, $url, $queue);
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
@@ -69,9 +69,9 @@ class Link {
       break;
 
       case 'newsletter_view_in_browser_url':
-        $url = self::getViewInBrowserUrl($newsletter, $subscriber, $queue);
+        $url = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
         return self::processUrl($action, $url, $queue);
-        break;
+      break;
 
       default:
         $shortcode = self::getShortcode($action);
@@ -87,29 +87,6 @@ class Link {
           false;
       break;
     }
-  }
-
-  static function getViewInBrowserUrl(
-    $newsletter,
-    $subscriber = false,
-    $queue = false
-  ) {
-    $data = array(
-      'newsletter' => (isset($newsletter['id'])) ?
-        $newsletter['id'] :
-        $newsletter,
-      'subscriber' => (isset($subscriber['id'])) ?
-        $subscriber['id'] :
-        $subscriber,
-      'subscriber_token' => (isset($subscriber['id'])) ?
-        SubscriberModel::generateToken($subscriber['email']) :
-        false,
-      'queue' => (isset($queue['id'])) ?
-        $queue['id'] :
-        $queue
-    );
-    $data = rtrim(base64_encode(serialize($data)), '=');
-    return home_url() . '/?mailpoet&endpoint=view_in_browser&data=' . $data;
   }
 
   static function processUrl($action, $url, $queue) {
@@ -129,13 +106,13 @@ class Link {
           $unsubscribe->track($subscriber['id'], $queue['id'], $newsletter['id']);
         }
         $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
-        break;
+      break;
       case 'subscription_manage_url':
         $url = SubscriptionUrl::getManageUrl($subscriber);
-        break;
+      break;
       case 'newsletter_view_in_browser_url':
-        $url = Link::getViewInBrowserUrl($newsletter, $subscriber, $queue);
-        break;
+        $url = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
+      break;
       default:
         $shortcode = self::getShortcode($shortcode_action);
         $url = apply_filters(
@@ -146,7 +123,7 @@ class Link {
           $queue
         );
         $url = ($url !== $shortcode_action) ? $url : false;
-        break;
+      break;
     }
     return $url;
   }
