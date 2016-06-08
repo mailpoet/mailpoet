@@ -33,8 +33,7 @@ class Clicks {
       ->findOne();
     if(!$statistics) {
       // track open event in case it did not register
-      $open = new Opens($data, $display_image = false);
-      $open->track();
+      $this->trackOpenEvent($data);
       $statistics = StatisticsClicks::create();
       $statistics->newsletter_id = $newsletter['id'];
       $statistics->link_id = $link['id'];
@@ -47,8 +46,7 @@ class Clicks {
       $statistics->save();
     }
     $url = $this->processUrl($link['url'], $newsletter, $subscriber, $queue);
-    header('Location: ' . $url, true, 302);
-    exit;
+    $this->redirectToUrl($url);
   }
 
   function getNewsletter($newsletter_id) {
@@ -81,13 +79,22 @@ class Clicks {
         $subscriber,
         $queue
       );
-      if(!$url) $this->abort();
     }
     return $url;
   }
 
-  private function abort() {
+  function trackOpenEvent($data) {
+    $open = new Opens($data, $display_image = false);
+    return $open->track();
+  }
+
+  function abort() {
     header('HTTP/1.0 404 Not Found');
+    exit;
+  }
+
+  function redirectToUrl($url) {
+    header('Location: ' . $url, true, 302);
     exit;
   }
 }
