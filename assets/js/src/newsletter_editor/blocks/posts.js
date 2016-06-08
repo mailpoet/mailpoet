@@ -175,6 +175,7 @@ define([
         renderOptions = {
           disableTextEditor: true,
           disableDragAndDrop: true,
+          emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
         };
       this.postsRegion.show(new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
     },
@@ -215,6 +216,9 @@ define([
       var that = this,
         blockView = this.model.request('blockView');
 
+      this.selectionRegion.show(this.selectionView);
+      this.displayOptionsRegion.show(this.displayOptionsView);
+
       MailPoet.Modal.panel({
         element: this.$el,
         template: '',
@@ -226,8 +230,6 @@ define([
         },
       });
 
-      this.selectionRegion.show(this.selectionView);
-      this.displayOptionsRegion.show(this.displayOptionsView);
     },
     switchToDisplayOptions: function() {
       // Switch content view
@@ -277,9 +279,6 @@ define([
       Marionette.CompositeView.apply(this, arguments);
     },
     onRender: function() {
-
-    },
-    onAttach: function() {
       var that = this;
 
       // Dynamically update available post types
@@ -462,9 +461,11 @@ define([
       if (value == 'titleOnly') {
         this.$('.mailpoet_posts_title_as_list').removeClass('mailpoet_hidden');
         this.$('.mailpoet_posts_image_full_width_option').addClass('mailpoet_hidden');
+        this.$('.mailpoet_posts_image_separator').addClass('mailpoet_hidden');
       } else {
         this.$('.mailpoet_posts_title_as_list').addClass('mailpoet_hidden');
         this.$('.mailpoet_posts_image_full_width_option').removeClass('mailpoet_hidden');
+        this.$('.mailpoet_posts_image_separator').removeClass('mailpoet_hidden');
 
         // Reset titleFormat if it was set to List when switching away from displayType=titleOnly
         if (this.model.get('titleFormat') === 'ul') {

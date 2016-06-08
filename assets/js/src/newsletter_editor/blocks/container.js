@@ -294,6 +294,7 @@ define([
     templateHelpers: function() {
       return {
         isRoot: this.renderOptions.depth === 0,
+        emptyContainerMessage: this.renderOptions.emptyContainerMessage || '',
       };
     },
   });

@@ -132,7 +132,7 @@
         </div>
     </div>
 
-    <hr class="mailpoet_separator" />
+    <hr class="mailpoet_separator mailpoet_automated_latest_content_image_separator {{#ifCond model.displayType '===' 'titleOnly'}}mailpoet_hidden{{/ifCond}}" />
 
     <div class="mailpoet_form_field mailpoet_automated_latest_content_featured_image_position_container {{#ifCond model.displayType '!==' 'excerpt'}}mailpoet_hidden{{/ifCond}}">
         <div class="mailpoet_form_field_title"><%= __('Featured image position') %></div>
