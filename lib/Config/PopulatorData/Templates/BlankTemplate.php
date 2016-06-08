@@ -12,7 +12,7 @@ class BlankTemplate {
   function get() {
     return array(
       'name' => __("A Blank Template"),
-      'description' => __("A blank canvas ready for you to create something wonderful."),
+      'description' => __("A blank canvas, ready for you to create something wonderful."),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

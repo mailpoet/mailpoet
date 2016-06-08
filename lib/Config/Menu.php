@@ -212,7 +212,7 @@ class Menu {
     add_submenu_page(
       true,
       $this->setPageTitle(__('Newsletter')),
-      __('Newsletter editor'),
+      __('Newsletter Editor'),
       'manage_options',
       'mailpoet-newsletter-editor',
       array(

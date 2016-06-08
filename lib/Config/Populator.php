@@ -120,7 +120,7 @@ class Populator {
       $default_segment->hydrate(array(
         'name' => __('My First List'),
         'description' =>
-          __('The list created automatically on install of MailPoet')
+          __('The list is automatically created when you install MailPoet')
       ));
       $default_segment->save();
     }
