@@ -232,10 +232,15 @@ class Newsletters {
         ->withSegments()
         ->withSendingQueue();
 
+      // get statistics if tracking is enabled
       if($is_tracking_enabled) {
         $newsletter = $newsletter->withStatistics();
       }
 
+      // get preview url
+      $newsletter->preview_url = NewsletterUrl::getViewInBrowserUrl($newsletter);
+
+      // convert object to array
       $listing_data['items'][$key] = $newsletter->asArray();
     }
 

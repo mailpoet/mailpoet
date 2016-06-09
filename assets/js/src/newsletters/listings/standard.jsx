@@ -92,6 +92,16 @@ var bulk_actions = [
 
 var item_actions = [
   {
+    name: 'view',
+    link: function(item) {
+      return (
+        <a href={ item.preview_url } target="_blank">
+          {MailPoet.I18n.t('preview')}
+        </a>
+      );
+    }
+  },
+  {
     name: 'edit',
     link: function(item) {
       return (
