@@ -158,7 +158,8 @@ const NewsletterListWelcome = React.createClass({
     });
   },
   updateStatus: function(e) {
-    //e.preventDefault();
+    // make the event persist so that we can still override the selected value
+    // in the ajax callback
     e.persist();
 
     MailPoet.Ajax.post({
