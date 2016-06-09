@@ -103,7 +103,7 @@ class Link {
         // track unsubscribe event
         if((boolean) Setting::getValue('tracking.enabled')) {
           $unsubscribe = new Unsubscribes();
-          $unsubscribe->track($subscriber['id'], $queue['id'], $newsletter['id']);
+          $unsubscribe->track($newsletter['id'], $subscriber['id'], $queue['id']);
         }
         $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
       break;

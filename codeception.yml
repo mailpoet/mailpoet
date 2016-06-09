@@ -26,6 +26,3 @@ coverage:
         include:
             - lib/*
         exclude:
-    blacklist:
-        include:
-        exclude:
