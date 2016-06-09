@@ -216,8 +216,8 @@ define([
       var that = this,
         blockView = this.model.request('blockView');
 
-      this.selectionRegion.show(this.selectionView);
-      this.displayOptionsRegion.show(this.displayOptionsView);
+      this.showChildView('selectionRegion', this.selectionView);
+      this.showChildView('displayOptionsRegion', this.displayOptionsView);
 
       MailPoet.Modal.panel({
         element: this.$el,
@@ -230,6 +230,9 @@ define([
         },
       });
 
+      // Inform child views that they have been attached to document
+      this.selectionView.triggerMethod('attach');
+      this.displayOptionsView.triggerMethod('attach');
     },
     switchToDisplayOptions: function() {
       // Switch content view
@@ -279,10 +282,14 @@ define([
       Marionette.CompositeView.apply(this, arguments);
     },
     onRender: function() {
+      // Dynamically update available post types
+      CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
+    },
+    onAttach: function() {
       var that = this;
 
       // Dynamically update available post types
-      CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
+      //CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
 
       this.$('.mailpoet_posts_categories_and_tags').select2({
         multiple: true,
