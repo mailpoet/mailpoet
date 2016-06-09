@@ -157,14 +157,38 @@ const NewsletterListWelcome = React.createClass({
       jQuery('#resume_'+newsletter.id).hide();
     });
   },
-  updateStatus: function(newsletter_id) {
-    return true;
+  updateStatus: function(e) {
+    //e.preventDefault();
+    e.persist();
+
+    MailPoet.Ajax.post({
+      endpoint: 'newsletters',
+      action: 'setStatus',
+      data: {
+        id: ~~(e.target.getAttribute('data-id')),
+        status: e.target.value
+      }
+    }).done(function(response) {
+      if (response.result === false) {
+        MailPoet.Notice.error(MailPoet.I18n.t('welcomeEmailActivationFailed'));
+
+        // reset value to actual newsletter's status
+         e.target.value = response.status;
+      } else {
+        if(response.status === 'active') {
+          MailPoet.Notice.success(MailPoet.I18n.t('welcomeEmailActivated'));
+        }
+        // force refresh of listing so that groups are updated
+        this.forceUpdate();
+      }
+    }.bind(this));
   },
   renderStatus: function(newsletter) {
     return (
       <select
-        value={ newsletter.status }
-        onChange={ this.updateStatus.bind(null, newsletter.id) }
+        data-id={ newsletter.id }
+        defaultValue={ newsletter.status }
+        onChange={ this.updateStatus }
       >
         <option value="active">{ MailPoet.I18n.t('active') }</option>
         <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
@@ -250,10 +274,10 @@ const NewsletterListWelcome = React.createClass({
           params={ this.props.params }
           endpoint="newsletters"
           tab="welcome"
-          onRenderItem={this.renderItem}
-          columns={columns}
+          onRenderItem={ this.renderItem }
+          columns={ columns }
           bulk_actions={ bulk_actions }
-          newsletter_actions={ newsletter_actions }
+          item_actions={ newsletter_actions }
           messages={ messages }
           auto_refresh={ true }
         />

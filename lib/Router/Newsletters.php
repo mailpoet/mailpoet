@@ -98,6 +98,28 @@ class Newsletters {
     }
   }
 
+  function setStatus($data = array()) {
+    $id = (isset($data['id'])) ? (int)$data['id'] : null;
+    $newsletter = Newsletter::findOne($id);
+    $status = (isset($data['status']) ? $data['status'] : null);
+
+    $result = false;
+    $errors = array();
+
+    if($newsletter !== false && $status !== null) {
+      $newsletter->setStatus($status);
+
+      $result = (
+        $newsletter->getErrors() === false && $newsletter->status === $status
+      );
+    }
+
+    return array(
+      'result' => $result,
+      'status' => $newsletter->status
+    );
+  }
+
   function restore($id) {
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
@@ -142,7 +164,7 @@ class Newsletters {
         'errors' => array(__('Newsletter data is missing.'))
       );
     }
-    $newsletter_id = (isset($data['id'])) ? (int)$data['id'] : 0;
+    $newsletter_id = (isset($data['id'])) ? (int)$data['id'] : null;
     $newsletter = Newsletter::findOne($newsletter_id);
     if(!$newsletter) {
       return array(
@@ -164,7 +186,7 @@ class Newsletters {
   }
 
   function sendPreview($data = array()) {
-    $id = (isset($data['id'])) ? (int)$data['id'] : 0;
+    $id = (isset($data['id'])) ? (int)$data['id'] : null;
     $newsletter = Newsletter::findOne($id);
 
     if($newsletter === false) {

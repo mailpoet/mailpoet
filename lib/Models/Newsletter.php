@@ -40,6 +40,20 @@ class Newsletter extends Model {
     return parent::save();
   }
 
+  function setStatus($status = null) {
+    if(in_array($status, array(
+      self::STATUS_DRAFT,
+      self::STATUS_SCHEDULED,
+      self::STATUS_SENDING,
+      self::STATUS_SENT,
+      self::STATUS_ACTIVE
+    ))) {
+      $this->set('status', $status);
+      $this->save();
+    }
+    return $this;
+  }
+
   function duplicate($data = array()) {
     $data = $this->asArray();
     unset($data['id']);
