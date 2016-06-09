@@ -132,8 +132,9 @@ class Scheduler {
   }
 
   static function getNewsletters($type) {
-    return Newsletter::where('type', $type)
-      ->whereNull('deleted_at')
+    return Newsletter::getPublished()
+      ->filter('filterType', $type)
+      ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
       ->filter('filterWithOptions')
       ->findMany();
   }

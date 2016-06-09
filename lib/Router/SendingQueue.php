@@ -33,14 +33,14 @@ class SendingQueue {
       );
     }
 
-    if($newsletter->type === 'welcome') {
+    if($newsletter->type === Newsletter::TYPE_WELCOME) {
       return array(
         'result' => true,
         'data' => array(
           'message' => __('Your welcome notification is activated.')
         )
       );
-    } elseif ($newsletter->type === 'notification') {
+    } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
       $newsletter = Scheduler::processPostNotificationSchedule($newsletter->id);
       Scheduler::createPostNotificationQueue($newsletter);
     }
@@ -156,5 +156,26 @@ class SendingQueue {
     return array(
       'result' => $result
     );
+  }
+
+  function activate($newsletter_id) {
+    $newsletter = Newsletter::findOne($newsletter_id);
+    $result = false;
+
+    if($newsletter !== false) {
+      $queue = $newsletter->getQueue();
+
+      if($queue !== false) {
+        $result = $queue->resume();
+      }
+    }
+
+    return array(
+      'result' => $result
+    );
+  }
+
+  function deactivate($newsletter_id) {
+
   }
 }

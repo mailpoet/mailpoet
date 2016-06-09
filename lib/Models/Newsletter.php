@@ -287,14 +287,16 @@ class Newsletter extends Model {
           array(
             'name' => self::STATUS_DRAFT,
             'label' => __('Not active'),
-            'count' => Newsletter::filter('filterType', $type)
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
               ->filter('filterStatus', self::STATUS_DRAFT)
               ->count()
           ),
           array(
             'name' => self::STATUS_ACTIVE,
             'label' => __('Active'),
-            'count' => Newsletter::filter('filterType', $type)
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
               ->filter('filterStatus', self::STATUS_ACTIVE)
               ->count()
           )

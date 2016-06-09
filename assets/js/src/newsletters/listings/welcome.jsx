@@ -68,17 +68,12 @@ var columns = [
     label: MailPoet.I18n.t('status')
   },
   {
-    name: 'segments',
-    label: MailPoet.I18n.t('lists')
+    name: 'settings',
+    label: MailPoet.I18n.t('settings')
   },
   {
     name: 'statistics',
     label: MailPoet.I18n.t('statistics')
-  },
-  {
-    name: 'created_at',
-    label: MailPoet.I18n.t('createdOn'),
-    sortable: true
   },
   {
     name: 'updated_at',
@@ -95,15 +90,45 @@ var bulk_actions = [
   }
 ];
 
-var item_actions = [
+var newsletter_actions = [
+  {
+    name: 'view',
+    link: function(newsletter) {
+      return (
+        <a href={ newsletter.preview_url } target="_blank">
+          {MailPoet.I18n.t('preview')}
+        </a>
+      );
+    }
+  },
   {
     name: 'edit',
-    link: function(item) {
+    link: function(newsletter) {
       return (
-        <a href={ `?page=mailpoet-newsletter-editor&id=${ item.id }` }>
+        <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
           {MailPoet.I18n.t('edit')}
         </a>
       );
+    }
+  },
+  {
+    name: 'duplicate',
+    label: MailPoet.I18n.t('duplicate'),
+    onClick: function(newsletter, refresh) {
+      return MailPoet.Ajax.post({
+        endpoint: 'newsletters',
+        action: 'duplicate',
+        data: newsletter.id
+      }).done(function(response) {
+        if (response !== false && response.subject !== undefined) {
+          MailPoet.Notice.success(
+            (MailPoet.I18n.t('newsletterDuplicated')).replace(
+              '%$1s', response.subject
+            )
+          );
+        }
+        refresh();
+      });
     }
   },
   {
@@ -112,102 +137,49 @@ var item_actions = [
 ];
 
 const NewsletterListWelcome = React.createClass({
-  pauseSending: function(item) {
+  pauseSending: function(newsletter) {
     MailPoet.Ajax.post({
       endpoint: 'sendingQueue',
       action: 'pause',
-      data: item.id
+      data: newsletter.id
     }).done(function() {
-      jQuery('#resume_'+item.id).show();
-      jQuery('#pause_'+item.id).hide();
+      jQuery('#resume_'+newsletter.id).show();
+      jQuery('#pause_'+newsletter.id).hide();
     });
   },
-  resumeSending: function(item) {
+  resumeSending: function(newsletter) {
     MailPoet.Ajax.post({
       endpoint: 'sendingQueue',
       action: 'resume',
-      data: item.id
+      data: newsletter.id
     }).done(function() {
-      jQuery('#pause_'+item.id).show();
-      jQuery('#resume_'+item.id).hide();
+      jQuery('#pause_'+newsletter.id).show();
+      jQuery('#resume_'+newsletter.id).hide();
     });
   },
-  renderStatus: function(item) {
-    if(!item.queue) {
-      return (
-        <span>{MailPoet.I18n.t('notSentYet')}</span>
-      );
-    } else {
-      if (item.queue.status === 'scheduled') {
-        return (
-          <span>{MailPoet.I18n.t('scheduledFor')}  { MailPoet.Date.format(item.queue.scheduled_at) } </span>
-        )
-      }
-      var progressClasses = classNames(
-        'mailpoet_progress',
-        { 'mailpoet_progress_complete': item.queue.status === 'completed'}
-      );
-
-      // calculate percentage done
-      var percentage = Math.round(
-        (item.queue.count_processed * 100) / (item.queue.count_total)
-      );
-
-      var label = false;
-
-      if(item.queue.status === 'completed') {
-        label = (
-          <span>
-            {
-              MailPoet.I18n.t('newsletterQueueCompleted')
-              .replace("%$1d", item.queue.count_processed - item.queue.count_failed)
-              .replace("%$2d", item.queue.count_total)
-            }
-          </span>
-        );
-      } else {
-        label = (
-          <span>
-            { item.queue.count_processed } / { item.queue.count_total }
-            &nbsp;&nbsp;
-            <a
-              id={ 'resume_'+item.id }
-              className="button"
-              style={{ display: (item.queue.status === 'paused') ? 'inline-block': 'none' }}
-              href="javascript:;"
-              onClick={ this.resumeSending.bind(null, item) }
-            >{MailPoet.I18n.t('resume')}</a>
-            <a
-              id={ 'pause_'+item.id }
-              className="button mailpoet_pause"
-              style={{ display: (item.queue.status === null) ? 'inline-block': 'none' }}
-              href="javascript:;"
-              onClick={ this.pauseSending.bind(null, item) }
-            >{MailPoet.I18n.t('pause')}</a>
-          </span>
-        );
-      }
-
-      return (
-        <div>
-          <div className={ progressClasses }>
-              <span
-                className="mailpoet_progress_bar"
-                style={ { width: percentage + "%"} }
-              ></span>
-              <span className="mailpoet_progress_label">
-                { percentage + "%" }
-              </span>
-          </div>
-          <p style={{ textAlign:'center' }}>
-            { label }
-          </p>
-        </div>
-      );
-    }
+  updateStatus: function(newsletter_id) {
+    return true;
   },
-  renderStatistics: function(item) {
-    if(!item.statistics || !item.queue || item.queue.count_processed == 0 || item.queue.status === 'scheduled') {
+  renderStatus: function(newsletter) {
+    return (
+      <select
+        value={ newsletter.status }
+        onChange={ this.updateStatus.bind(null, newsletter.id) }
+      >
+        <option value="active">{ MailPoet.I18n.t('active') }</option>
+        <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
+      </select>
+    );
+  },
+  renderSettings: function(newsletter) {
+    return (
+      <span>
+        Settings...
+      </span>
+    );
+  },
+  renderStatistics: function(newsletter) {
+    if(!newsletter.statistics || !newsletter.queue || newsletter.queue.count_processed == 0 || newsletter.queue.status === 'scheduled') {
       return (
         <span>
           {MailPoet.I18n.t('notSentYet')}
@@ -216,13 +188,13 @@ const NewsletterListWelcome = React.createClass({
     }
 
     var percentage_clicked = Math.round(
-      (item.statistics.clicked * 100) / (item.queue.count_processed)
+      (newsletter.statistics.clicked * 100) / (newsletter.queue.count_processed)
     );
     var percentage_opened = Math.round(
-      (item.statistics.opened * 100) / (item.queue.count_processed)
+      (newsletter.statistics.opened * 100) / (newsletter.queue.count_processed)
     );
     var percentage_unsubscribed = Math.round(
-      (item.statistics.unsubscribed * 100) / (item.queue.count_processed)
+      (newsletter.statistics.unsubscribed * 100) / (newsletter.queue.count_processed)
     );
 
     return (
@@ -253,14 +225,11 @@ const NewsletterListWelcome = React.createClass({
         <td className="column" data-colname={ MailPoet.I18n.t('status') }>
           { this.renderStatus(newsletter) }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
-          { segments }
+        <td className="column" data-colname={ MailPoet.I18n.t('settings') }>
+          { this.renderSettings(newsletter) }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
           { this.renderStatistics(newsletter) }
-        </td>
-        <td className="column-date" data-colname={ MailPoet.I18n.t('createdOn') }>
-          <abbr>{ MailPoet.Date.format(newsletter.created_at) }</abbr>
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
@@ -284,7 +253,7 @@ const NewsletterListWelcome = React.createClass({
           onRenderItem={this.renderItem}
           columns={columns}
           bulk_actions={ bulk_actions }
-          item_actions={ item_actions }
+          newsletter_actions={ newsletter_actions }
           messages={ messages }
           auto_refresh={ true }
         />
