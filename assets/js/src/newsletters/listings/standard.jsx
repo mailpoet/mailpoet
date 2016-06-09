@@ -76,11 +76,6 @@ var columns = [
     label: MailPoet.I18n.t('statistics')
   },
   {
-    name: 'created_at',
-    label: MailPoet.I18n.t('createdOn'),
-    sortable: true
-  },
-  {
     name: 'updated_at',
     label: MailPoet.I18n.t('lastModifiedOn'),
     sortable: true
@@ -266,7 +261,9 @@ const NewsletterListStandard = React.createClass({
       <div>
         <td className={ rowClasses }>
           <strong>
-            <a>{ newsletter.subject }</a>
+            <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
+              { newsletter.subject }
+            </a>
           </strong>
           { actions }
         </td>
@@ -278,9 +275,6 @@ const NewsletterListStandard = React.createClass({
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
           { this.renderStatistics(newsletter) }
-        </td>
-        <td className="column-date" data-colname={ MailPoet.I18n.t('createdOn') }>
-          <abbr>{ MailPoet.Date.format(newsletter.created_at) }</abbr>
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>

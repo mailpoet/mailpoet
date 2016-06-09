@@ -10,8 +10,14 @@ class Newsletter extends Model {
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
 
+  // standard newsletters
   const STATUS_DRAFT = 'draft';
+  const STATUS_SCHEDULED = 'scheduled';
+  const STATUS_SENDING = 'sending';
   const STATUS_SENT = 'sent';
+  // automatic newsletters status
+  const STATUS_ACTIVE = 'active';
+
 
   function __construct() {
     parent::__construct();
@@ -32,6 +38,30 @@ class Newsletter extends Model {
       : $this->body
     );
     return parent::save();
+  }
+
+  function duplicate($data = array()) {
+    $data = $this->asArray();
+    unset($data['id']);
+
+    $duplicate =  self::create();
+    $duplicate->hydrate($data);
+    $duplicate->set_expr('created_at', 'NOW()');
+    $duplicate->set_expr('updated_at', 'NOW()');
+    $duplicate->set_expr('deleted_at', 'NULL');
+
+    // reset status
+    $duplicate->set('status', self::STATUS_DRAFT);
+
+    // duplicate segments linked (if need be)
+
+    // duplicate options (if need be)
+
+    if($duplicate->save()) {
+      return $duplicate;
+    } else {
+      return false;
+    }
   }
 
   function asArray() {
@@ -202,63 +232,129 @@ class Newsletter extends Model {
   }
 
   static function groups($data = array()) {
-    return array(
+    $type = isset($data['tab']) ? $data['tab'] : self::TYPE_STANDARD;
+
+    $groups = array(
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Newsletter::getPublished()->where('type', $data['tab'])->count()
-      ),
-      array(
-        'name' => self::STATUS_DRAFT,
-        'label' => __('Draft'),
-        'count' => Newsletter::filter('filterDraft', $data)->count()
-      ),
-      array(
-        'name' => self::STATUS_SENT,
-        'label' => __('Sent'),
-        'count' => Newsletter::filter('filterSent', $data)->count()
-      ),
-      array(
-        'name' => 'trash',
-        'label' => __('Trash'),
-        'count' => Newsletter::getTrashed()->where('type', $data['tab'])->count()
+        'count' => Newsletter::getPublished()
+          ->filter('filterType', $type)
+          ->count()
       )
     );
+
+    switch($type) {
+      case self::TYPE_STANDARD:
+        $groups = array_merge($groups, array(
+          array(
+            'name' => self::STATUS_DRAFT,
+            'label' => __('Draft'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_DRAFT)
+              ->count()
+          ),
+          array(
+            'name' => self::STATUS_SCHEDULED,
+            'label' => __('Scheduled'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_SCHEDULED)
+              ->count()
+          ),
+          array(
+            'name' => self::STATUS_SENDING,
+            'label' => __('Sending'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_SENDING)
+              ->count()
+          ),
+          array(
+            'name' => self::STATUS_SENT,
+            'label' => __('Sent'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_SENT)
+              ->count()
+          )
+        ));
+      break;
+
+      case self::TYPE_WELCOME:
+        $groups = array_merge($groups, array(
+          array(
+            'name' => self::STATUS_DRAFT,
+            'label' => __('Not active'),
+            'count' => Newsletter::filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_DRAFT)
+              ->count()
+          ),
+          array(
+            'name' => self::STATUS_ACTIVE,
+            'label' => __('Active'),
+            'count' => Newsletter::filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_ACTIVE)
+              ->count()
+          )
+        ));
+      break;
+
+      case self::TYPE_NOTIFICATION:
+
+      break;
+    }
+
+    $groups[] = array(
+      'name' => 'trash',
+      'label' => __('Trash'),
+      'count' => Newsletter::getTrashed()
+        ->filter('filterType', $type)
+        ->count()
+    );
+
+    return $groups;
   }
 
   static function groupBy($orm, $data = array()) {
+    $type = (!empty($data['type'])) ? $data['type'] : false;
     $group = (!empty($data['group'])) ? $data['group'] : 'all';
 
     switch($group) {
       case self::STATUS_DRAFT:
-        $orm->filter('filterDraft', $data);
-      break;
+      case self::STATUS_SCHEDULED:
+      case self::STATUS_SENDING:
       case self::STATUS_SENT:
-        $orm->filter('filterSent', $data);
+      case self::STATUS_ACTIVE:
+        $orm
+          ->whereNull('deleted_at')
+          ->filter('filterType', $type)
+          ->filter('filterStatus', $group);
       break;
+
       case 'trash':
         $orm->whereNotNull('deleted_at');
       break;
+
       default:
         $orm->whereNull('deleted_at');
     }
     return $orm;
   }
 
-  static function filterDraft($orm, $data = array()) {
-    $type = isset($data['tab']) ? $data['tab'] : self::TYPE_STANDARD;
-
-    return $orm
-      ->where('type', $type)
-      ->where('status', self::STATUS_DRAFT);
+  static function filterStatus($orm, $status = false) {
+    if($status !== false) {
+      $orm->where('status', $status);
+    }
+    return $orm;
   }
 
-  static function filterSent($orm, $data = array()) {
-    $type = isset($data['tab']) ? $data['tab'] : self::TYPE_STANDARD;
-
-    return $orm
-      ->where('type', $type)
-      ->where('status', self::STATUS_SENT);
+  static function filterType($orm, $type = false) {
+    if($type !== false) {
+      $orm->where('type', $type);
+    }
+    return $orm;
   }
 
   static function listingQuery($data = array()) {
