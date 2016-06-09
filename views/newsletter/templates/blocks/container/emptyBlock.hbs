@@ -1,2 +1,2 @@
-<div class="mailpoet_container_empty">{{#if isRoot}}<%= __('Drop layout here') %>{{else}}<%= __('Drop content here') %>{{/if}}</div>
+<div class="mailpoet_container_empty">{{#ifCond emptyContainerMessage '!==' ''}}{{emptyContainerMessage}}{{else}}{{#if isRoot}}<%= __('Drop layout here') %>{{else}}<%= __('Drop content here') %>{{/if}}{{/ifCond}}</div>
 {{debug}}

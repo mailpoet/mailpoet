@@ -106,9 +106,6 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    behaviors: {
-      ColorPickerBehavior: {},
-    },
     templateHelpers: function() {
       return {
         model: this.model.toJSON(),

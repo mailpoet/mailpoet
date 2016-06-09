@@ -112,7 +112,16 @@ define([
             }
           }
         },
-      }).preventDefault('auto');
+      })
+      .preventDefault('auto')
+      .actionChecker(function (pointer, event, action) {
+        // Disable dragging with right click
+        if (event.button !== 0) {
+          return null;
+        }
+
+        return action;
+      });
 
       if (this.options.drop !== undefined) {
         interactable.getDropModel = this.options.drop;

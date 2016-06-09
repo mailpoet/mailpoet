@@ -80,6 +80,7 @@ define([
           }
         },
       },
+      HighlightEditingBehavior: {},
     },
     templateHelpers: function() {
       return {
@@ -218,8 +219,12 @@ define([
 
   Module.BlockSettingsView = Marionette.LayoutView.extend({
     className: 'mailpoet_editor_settings',
-    initialize: function() {
-      MailPoet.Modal.panel({
+    behaviors: {
+      ColorPickerBehavior: {},
+    },
+    initialize: function(params) {
+      this.model.trigger('startEditing');
+      var panelParams = {
         element: this.$el,
         template: '',
         position: 'right',
@@ -227,7 +232,13 @@ define([
         onCancel: function() {
           this.destroy();
         }.bind(this),
-      });
+      };
+      this.renderOptions = params.renderOptions || {};
+      if (this.renderOptions.displayFormat === 'subpanel') {
+        MailPoet.Modal.subpanel(panelParams);
+      } else {
+        MailPoet.Modal.panel(panelParams);
+      }
     },
     close: function(event) {
       this.destroy();
@@ -256,6 +267,7 @@ define([
     },
     onBeforeDestroy: function() {
       MailPoet.Modal.close();
+      this.model.trigger('stopEditing');
     },
   });
 

@@ -154,6 +154,7 @@ define([
         renderOptions = {
           disableTextEditor: true,
           disableDragAndDrop: true,
+          emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
         };
       this.toolsView = new Module.AutomatedLatestContentBlockToolsView({ model: this.model });
       this.toolsRegion.show(this.toolsView);
@@ -194,9 +195,6 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    behaviors: {
-      ColorPickerBehavior: {},
-    },
     templateHelpers: function() {
       return {
         model: this.model.toJSON(),
@@ -211,6 +209,7 @@ define([
       this.$('.mailpoet_automated_latest_content_categories_and_tags').select2({
         multiple: true,
         allowClear: true,
+        placeholder: MailPoet.I18n.t('categoriesAndTags'),
         ajax: {
           data: function (params) {
             return {
@@ -317,9 +316,11 @@ define([
       if (value == 'titleOnly') {
         this.$('.mailpoet_automated_latest_content_title_as_list').removeClass('mailpoet_hidden');
         this.$('.mailpoet_automated_latest_content_image_full_width_option').addClass('mailpoet_hidden');
+        this.$('.mailpoet_automated_latest_content_image_separator').addClass('mailpoet_hidden');
       } else {
         this.$('.mailpoet_automated_latest_content_title_as_list').addClass('mailpoet_hidden');
         this.$('.mailpoet_automated_latest_content_image_full_width_option').removeClass('mailpoet_hidden');
+        this.$('.mailpoet_automated_latest_content_image_separator').removeClass('mailpoet_hidden');
 
         // Reset titleFormat if it was set to List when switching away from displayType=titleOnly
         if (this.model.get('titleFormat') === 'ul') {

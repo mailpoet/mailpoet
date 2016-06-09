@@ -23,7 +23,19 @@ define([
     'newsletter_editor/blocks/button',
     'newsletter_editor/blocks/divider',
     'select2'
-  ], function(Backbone, Marionette, Radio, _, jQuery, MailPoet, App, CommunicationComponent, BaseBlock, ButtonBlock, DividerBlock) {
+  ], function(
+    Backbone,
+    Marionette,
+    Radio,
+    _,
+    jQuery,
+    MailPoet,
+    App,
+    CommunicationComponent,
+    BaseBlock,
+    ButtonBlock,
+    DividerBlock
+  ) {
 
   "use strict";
 
@@ -163,6 +175,7 @@ define([
         renderOptions = {
           disableTextEditor: true,
           disableDragAndDrop: true,
+          emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
         };
       this.postsRegion.show(new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
     },
@@ -195,6 +208,7 @@ define([
       };
     },
     initialize: function() {
+      this.model.trigger('startEditing');
       this.selectionView = new PostSelectionSettingsView({ model: this.model });
       this.displayOptionsView = new PostsDisplayOptionsSettingsView({ model: this.model });
     },
@@ -202,21 +216,23 @@ define([
       var that = this,
         blockView = this.model.request('blockView');
 
-      this.selectionRegion.show(this.selectionView);
-      this.displayOptionsRegion.show(this.displayOptionsView);
+      this.showChildView('selectionRegion', this.selectionView);
+      this.showChildView('displayOptionsRegion', this.displayOptionsView);
 
       MailPoet.Modal.panel({
         element: this.$el,
         template: '',
         position: 'right',
-        overlay: true,
-        highlight: blockView.$el,
         width: App.getConfig().get('sidepanelWidth'),
         onCancel: function() {
           // Self destroy the block if the user closes settings modal
           that.model.destroy();
         },
       });
+
+      // Inform child views that they have been attached to document
+      this.selectionView.triggerMethod('attach');
+      this.displayOptionsView.triggerMethod('attach');
     },
     switchToDisplayOptions: function() {
       // Switch content view
@@ -266,14 +282,19 @@ define([
       Marionette.CompositeView.apply(this, arguments);
     },
     onRender: function() {
+      // Dynamically update available post types
+      CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
+    },
+    onAttach: function() {
       var that = this;
 
       // Dynamically update available post types
-      CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
+      //CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
 
       this.$('.mailpoet_posts_categories_and_tags').select2({
         multiple: true,
         allowClear: true,
+        placeholder: MailPoet.I18n.t('categoriesAndTags'),
         ajax: {
           data: function (params) {
             return {
@@ -405,9 +426,6 @@ define([
         "change .mailpoet_posts_sort_by": _.partial(this.changeField, "sortBy"),
       };
     },
-    behaviors: {
-      ColorPickerBehavior: {},
-    },
     templateHelpers: function() {
       return {
         model: this.model.toJSON(),
@@ -450,9 +468,11 @@ define([
       if (value == 'titleOnly') {
         this.$('.mailpoet_posts_title_as_list').removeClass('mailpoet_hidden');
         this.$('.mailpoet_posts_image_full_width_option').addClass('mailpoet_hidden');
+        this.$('.mailpoet_posts_image_separator').addClass('mailpoet_hidden');
       } else {
         this.$('.mailpoet_posts_title_as_list').addClass('mailpoet_hidden');
         this.$('.mailpoet_posts_image_full_width_option').removeClass('mailpoet_hidden');
+        this.$('.mailpoet_posts_image_separator').removeClass('mailpoet_hidden');
 
         // Reset titleFormat if it was set to List when switching away from displayType=titleOnly
         if (this.model.get('titleFormat') === 'ul') {

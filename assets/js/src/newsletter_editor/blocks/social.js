@@ -139,6 +139,7 @@ define([
           }
         },
       },
+      HighlightEditingBehavior: {},
     },
     onDragSubstituteBy: function() { return Module.SocialWidgetView; },
     constructor: function() {
