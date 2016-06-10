@@ -26,3 +26,6 @@ coverage:
         include:
             - lib/*
         exclude:
+            - lib/Util/Sudzy/*
+            - lib/Util/CSS.php
+            - lib/Util/XLSXWriter.php

@@ -44,7 +44,7 @@ class SegmentsTest extends MailPoetTest {
     $router = new Segments();
     $response = $router->save(/* missing data */);
     expect($response['result'])->false();
-    expect($response['errors'][0])->equals('You need to specify a name.');
+    expect($response['errors'][0])->equals('Please specify a name.');
 
     $response = $router->save($segment_data);
     expect($response['result'])->true();
