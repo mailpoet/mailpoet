@@ -65,7 +65,7 @@ class SubscribersTest extends MailPoetTest {
 
     $response = $router->save(/* missing data */);
     expect($response['result'])->false();
-    expect($response['errors'][0])->equals('You need to enter your email address.');
+    expect($response['errors'][0])->equals('Please enter your email address.');
 
     $invalid_data = array(
       'email' => 'john.doe@invalid',

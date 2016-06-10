@@ -26,8 +26,8 @@ class NewsletterTemplateTest extends MailPoetTest {
     $errors = $result->getErrors();
 
     expect(is_array($errors))->true();
-    expect($errors[0])->equals('You need to specify a name.');
-    expect($errors[1])->equals('Template body cannot be empty.');
+    expect($errors[0])->equals('Please specify a name.');
+    expect($errors[1])->equals('The template body cannot be empty.');
   }
 
   function testItHasName() {

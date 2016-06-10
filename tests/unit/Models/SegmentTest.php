@@ -72,7 +72,7 @@ class SegmentTest extends MailPoetTest {
     $errors = $result->getErrors();
 
     expect(is_array($errors))->true();
-    expect($errors[0])->equals('You need to specify a name.');
+    expect($errors[0])->equals('Please specify a name.');
   }
 
   function testItHasACreatedAtOnCreation() {
@@ -187,7 +187,7 @@ class SegmentTest extends MailPoetTest {
     }
     $segments = Segment::getSegmentsForExport();
     expect(count($segments))->equals(2);
-    expect($segments[0]['name'])->equals('Not In List');
+    expect($segments[0]['name'])->equals('Not in a List');
     $segments = Segment::getSegmentsForExport($withConfirmedSubscribers = true);
     expect(count($segments))->equals(1);
   }
