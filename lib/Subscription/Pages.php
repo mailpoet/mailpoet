@@ -200,7 +200,7 @@ class Pages {
 
   private function getConfirmContent() {
     if($this->isPreview() || $this->subscriber !== false) {
-      return __("Yup, we've added you to our list. You'll hear from us shortly.");
+      return __("Yup, we've added you to our email list. You'll hear from us shortly.");
     }
   }
 
@@ -340,7 +340,7 @@ class Pages {
         __('[link]Log in to your account[/link] to update your email.')
       );
     } else {
-      $form_html .= __('Need to change your email address? Unsubscribe here and simply sign up again.');
+      $form_html .= __('Need to change your email address? Unsubscribe here, then simply sign up again.');
     }
     $form_html .= '</span>';
     $form_html .= '</p>';
