@@ -68,7 +68,7 @@ class Scheduler {
   }
 
   static function schedulePostNotification($post_id) {
-    $newsletters = self::getNewsletters('notification');
+    $newsletters = self::getNewsletters(Newsletter::TYPE_NOTIFICATION);
     if(!count($newsletters)) return;
     foreach($newsletters as $newsletter) {
       $post = NewsletterPost::where('newsletter_id', $newsletter->id)
@@ -92,8 +92,9 @@ class Scheduler {
     $subscriber_id,
     array $segments
   ) {
-    $newsletters = self::getNewsletters('welcome');
-    if(!count($newsletters)) return;
+    $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
+    if(empty($newsletters)) return;
+
     foreach($newsletters as $newsletter) {
       if($newsletter->event === 'segment' &&
         in_array($newsletter->segment, $segments)
@@ -108,14 +109,16 @@ class Scheduler {
     array $wp_user,
     $old_user_data
   ) {
-    $newsletters = self::getNewsletters('welcome');
-    if(!count($newsletters)) return;
+    $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
+    if(empty($newsletters)) return;
+
     foreach($newsletters as $newsletter) {
       if($newsletter->event === 'user') {
         if($old_user_data) {
           // do not schedule welcome newsletter if roles have not changed
-          $old_role = (array) $old_user_data->roles;
-          $new_role = (array) $wp_user->roles;
+          $old_role = (array)$old_user_data->roles;
+          $new_role = (array)$wp_user->roles;
+
           if($newsletter->role === self::WORDPRESS_ALL_ROLES ||
             !array_diff($old_role, $new_role)
           ) {

@@ -47,7 +47,7 @@ class SettingTest extends MailPoetTest {
       ->equals($default_settings['signup_confirmation']);
   }
 
-  function testItReturnsDefaultValueIfNotSet() {
+  function testItCanSetAndGetValues() {
     // try to get an "unknown" key
     $setting = Setting::getValue('unknown_key', 'default_value');
     expect($setting)->equals('default_value');
@@ -67,6 +67,26 @@ class SettingTest extends MailPoetTest {
     // try to get an "unknown" subkey of an "unknown" key
     $setting = Setting::getValue('unknown_key.unknown_subkey', 'default_value');
     expect($setting)->equals('default_value');
+  }
+
+  function testItShouldReturnDefaultsSetInModelIfNotSet() {
+    // model specified default settings
+    $default_settings = Setting::getDefaults();
+
+    // try to get the MTA settings (which don't exist in the database)
+    $mta_settings = Setting::getValue('mta');
+    expect($mta_settings)->equals($default_settings['mta']);
+  }
+
+  function testItShouldReturnCustomDefaultsInsteadOfDefaultsSetInModel() {
+    // try to get the MTA settings (which don't exist in the database)
+    // but specify a custom default value
+    $custom_mta_settings = Setting::getValue('mta', array(
+      'custom_default' => 'value'
+    ));
+    expect($custom_mta_settings)->equals(array(
+      'custom_default' => 'value'
+    ));
   }
 
   function testItCanCreateOrUpdate() {

@@ -56,7 +56,11 @@ class Setting extends Model {
     if(count($keys) === 1) {
       $setting = Setting::where('name', $key)->findOne();
       if($setting === false) {
-        return $default;
+        if($default === null && array_key_exists($key, $defaults)) {
+          return $defaults[$key];
+        } else {
+          return $default;
+        }
       } else {
         if(is_serialized($setting->value)) {
           $value = unserialize($setting->value);
