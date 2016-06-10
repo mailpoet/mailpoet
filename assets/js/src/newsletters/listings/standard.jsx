@@ -300,6 +300,7 @@ const NewsletterListStandard = React.createClass({
         </h1>
 
         <ListingTabs tab="standard" />
+
         <Listing
           limit={ mailpoet_listing_per_page }
           params={ this.props.params }

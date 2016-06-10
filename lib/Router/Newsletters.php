@@ -247,16 +247,20 @@ class Newsletters {
     );
     $listing_data = $listing->get();
 
-    $is_tracking_enabled = (bool)Setting::getValue('tracking.enabled');
-
     foreach($listing_data['items'] as $key => $newsletter) {
-      $newsletter = $newsletter
-        ->withSegments()
-        ->withSendingQueue();
 
-      // get statistics if tracking is enabled
-      if($is_tracking_enabled) {
-        $newsletter = $newsletter->withStatistics();
+      if($newsletter->type === Newsletter::TYPE_STANDARD) {
+        $newsletter
+          ->withSegments()
+          ->withSendingQueue()
+          ->withStatistics();
+      } else if($newsletter->type === Newsletter::TYPE_WELCOME) {
+        $newsletter
+          ->withStatistics();
+      } else if($newsletter->type === Newsletter::TYPE_WELCOME) {
+        $newsletter
+          ->withSegments()
+          ->withStatistics();
       }
 
       // get preview url

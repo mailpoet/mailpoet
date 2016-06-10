@@ -137,26 +137,6 @@ var newsletter_actions = [
 ];
 
 const NewsletterListWelcome = React.createClass({
-  pauseSending: function(newsletter) {
-    MailPoet.Ajax.post({
-      endpoint: 'sendingQueue',
-      action: 'pause',
-      data: newsletter.id
-    }).done(function() {
-      jQuery('#resume_'+newsletter.id).show();
-      jQuery('#pause_'+newsletter.id).hide();
-    });
-  },
-  resumeSending: function(newsletter) {
-    MailPoet.Ajax.post({
-      endpoint: 'sendingQueue',
-      action: 'resume',
-      data: newsletter.id
-    }).done(function() {
-      jQuery('#pause_'+newsletter.id).show();
-      jQuery('#resume_'+newsletter.id).hide();
-    });
-  },
   updateStatus: function(e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -235,15 +215,13 @@ const NewsletterListWelcome = React.createClass({
       'has-row-actions'
     );
 
-    var segments = newsletter.segments.map(function(segment) {
-      return segment.name
-    }).join(', ');
-
     return (
       <div>
         <td className={ rowClasses }>
           <strong>
-            <a>{ newsletter.subject }</a>
+            <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
+              { newsletter.subject }
+            </a>
           </strong>
           { actions }
         </td>
@@ -266,10 +244,11 @@ const NewsletterListWelcome = React.createClass({
     return (
       <div>
         <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
+          { MailPoet.I18n.t('pageTitle') } <Link className="page-title-action" to="/new">{ MailPoet.I18n.t('new') }</Link>
         </h1>
 
         <ListingTabs tab="welcome" />
+
         <Listing
           limit={ mailpoet_listing_per_page }
           params={ this.props.params }

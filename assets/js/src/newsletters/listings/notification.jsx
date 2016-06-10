@@ -95,12 +95,12 @@ var bulk_actions = [
   }
 ];
 
-var item_actions = [
+var newsletter_actions = [
   {
     name: 'edit',
-    link: function(item) {
+    link: function(newsletter) {
       return (
-        <a href={ `?page=mailpoet-newsletter-editor&id=${ item.id }` }>
+        <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
           {MailPoet.I18n.t('edit')}
         </a>
       );
@@ -112,102 +112,54 @@ var item_actions = [
 ];
 
 const NewsletterListNotification = React.createClass({
-  pauseSending: function(item) {
+  updateStatus: function(e) {
+    // make the event persist so that we can still override the selected value
+    // in the ajax callback
+    e.persist();
+
     MailPoet.Ajax.post({
-      endpoint: 'sendingQueue',
-      action: 'pause',
-      data: item.id
-    }).done(function() {
-      jQuery('#resume_'+item.id).show();
-      jQuery('#pause_'+item.id).hide();
-    });
-  },
-  resumeSending: function(item) {
-    MailPoet.Ajax.post({
-      endpoint: 'sendingQueue',
-      action: 'resume',
-      data: item.id
-    }).done(function() {
-      jQuery('#pause_'+item.id).show();
-      jQuery('#resume_'+item.id).hide();
-    });
-  },
-  renderStatus: function(item) {
-    if(!item.queue) {
-      return (
-        <span>{MailPoet.I18n.t('notSentYet')}</span>
-      );
-    } else {
-      if (item.queue.status === 'scheduled') {
-        return (
-          <span>{MailPoet.I18n.t('scheduledFor')}  { MailPoet.Date.format(item.queue.scheduled_at) } </span>
-        )
+      endpoint: 'newsletters',
+      action: 'setStatus',
+      data: {
+        id: ~~(e.target.getAttribute('data-id')),
+        status: e.target.value
       }
-      var progressClasses = classNames(
-        'mailpoet_progress',
-        { 'mailpoet_progress_complete': item.queue.status === 'completed'}
-      );
+    }).done(function(response) {
+      if (response.result === false) {
+        MailPoet.Notice.error(MailPoet.I18n.t('postNotificationActivationFailed'));
 
-      // calculate percentage done
-      var percentage = Math.round(
-        (item.queue.count_processed * 100) / (item.queue.count_total)
-      );
-
-      var label = false;
-
-      if(item.queue.status === 'completed') {
-        label = (
-          <span>
-            {
-              MailPoet.I18n.t('newsletterQueueCompleted')
-              .replace("%$1d", item.queue.count_processed - item.queue.count_failed)
-              .replace("%$2d", item.queue.count_total)
-            }
-          </span>
-        );
+        // reset value to actual newsletter's status
+         e.target.value = response.status;
       } else {
-        label = (
-          <span>
-            { item.queue.count_processed } / { item.queue.count_total }
-            &nbsp;&nbsp;
-            <a
-              id={ 'resume_'+item.id }
-              className="button"
-              style={{ display: (item.queue.status === 'paused') ? 'inline-block': 'none' }}
-              href="javascript:;"
-              onClick={ this.resumeSending.bind(null, item) }
-            >{MailPoet.I18n.t('resume')}</a>
-            <a
-              id={ 'pause_'+item.id }
-              className="button mailpoet_pause"
-              style={{ display: (item.queue.status === null) ? 'inline-block': 'none' }}
-              href="javascript:;"
-              onClick={ this.pauseSending.bind(null, item) }
-            >{MailPoet.I18n.t('pause')}</a>
-          </span>
-        );
+        if (response.status === 'active') {
+          MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
+        }
+        // force refresh of listing so that groups are updated
+        this.forceUpdate();
       }
-
-      return (
-        <div>
-          <div className={ progressClasses }>
-              <span
-                className="mailpoet_progress_bar"
-                style={ { width: percentage + "%"} }
-              ></span>
-              <span className="mailpoet_progress_label">
-                { percentage + "%" }
-              </span>
-          </div>
-          <p style={{ textAlign:'center' }}>
-            { label }
-          </p>
-        </div>
-      );
-    }
+    }.bind(this));
   },
-  renderStatistics: function(item) {
-    if(!item.statistics || !item.queue || item.queue.count_processed == 0 || item.queue.status === 'scheduled') {
+  renderStatus: function(newsletter) {
+    return (
+      <select
+        data-id={ newsletter.id }
+        defaultValue={ newsletter.status }
+        onChange={ this.updateStatus }
+      >
+        <option value="active">{ MailPoet.I18n.t('active') }</option>
+        <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
+      </select>
+    );
+  },
+  renderSettings: function(newsletter) {
+    return (
+      <span>
+        Settings...
+      </span>
+    );
+  },
+  renderStatistics: function(newsletter) {
+    if (!newsletter.statistics || !newsletter.queue || newsletter.queue.count_processed == 0 || newsletter.queue.status === 'scheduled') {
       return (
         <span>
           {MailPoet.I18n.t('notSentYet')}
@@ -216,13 +168,13 @@ const NewsletterListNotification = React.createClass({
     }
 
     var percentage_clicked = Math.round(
-      (item.statistics.clicked * 100) / (item.queue.count_processed)
+      (newsletter.statistics.clicked * 100) / (newsletter.queue.count_processed)
     );
     var percentage_opened = Math.round(
-      (item.statistics.opened * 100) / (item.queue.count_processed)
+      (newsletter.statistics.opened * 100) / (newsletter.queue.count_processed)
     );
     var percentage_unsubscribed = Math.round(
-      (item.statistics.unsubscribed * 100) / (item.queue.count_processed)
+      (newsletter.statistics.unsubscribed * 100) / (newsletter.queue.count_processed)
     );
 
     return (
@@ -246,7 +198,9 @@ const NewsletterListNotification = React.createClass({
       <div>
         <td className={ rowClasses }>
           <strong>
-            <a>{ newsletter.subject }</a>
+            <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
+              { newsletter.subject }
+            </a>
           </strong>
           { actions }
         </td>
@@ -276,15 +230,16 @@ const NewsletterListNotification = React.createClass({
         </h1>
 
         <ListingTabs tab="notification" />
+
         <Listing
           limit={ mailpoet_listing_per_page }
           params={ this.props.params }
           endpoint="newsletters"
           tab="notification"
-          onRenderItem={this.renderItem}
-          columns={columns}
+          onRenderItem={ this.renderItem }
+          columns={ columns }
           bulk_actions={ bulk_actions }
-          item_actions={ item_actions }
+          item_actions={ newsletter_actions }
           messages={ messages }
           auto_refresh={ true }
         />

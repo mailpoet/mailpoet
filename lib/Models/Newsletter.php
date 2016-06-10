@@ -67,9 +67,9 @@ class Newsletter extends Model {
     // reset status
     $duplicate->set('status', self::STATUS_DRAFT);
 
-    // duplicate segments linked (if need be)
+    // TODO: duplicate segments linked (if need be)
 
-    // duplicate options (if need be)
+    // TODO: duplicate options (if need be)
 
     if($duplicate->save()) {
       return $duplicate;
@@ -189,8 +189,8 @@ class Newsletter extends Model {
 
     foreach($segments as $segment) {
       $newsletters = $segment->newsletters()
-        ->where('type', $data['tab'])
-        ->filter('groupBy', $data['group']);
+        ->filter('filterType', $data['tab'])
+        ->filter('groupBy', $data);
 
       $newsletters_count = $newsletters->count();
 
@@ -246,7 +246,7 @@ class Newsletter extends Model {
   }
 
   static function groups($data = array()) {
-    $type = isset($data['tab']) ? $data['tab'] : self::TYPE_STANDARD;
+    $type = isset($data['tab']) ? $data['tab'] : null;
 
     $groups = array(
       array(
@@ -297,6 +297,7 @@ class Newsletter extends Model {
       break;
 
       case self::TYPE_WELCOME:
+      case self::TYPE_NOTIFICATION:
         $groups = array_merge($groups, array(
           array(
             'name' => self::STATUS_DRAFT,
@@ -316,10 +317,6 @@ class Newsletter extends Model {
           )
         ));
       break;
-
-      case self::TYPE_NOTIFICATION:
-
-      break;
     }
 
     $groups[] = array(
@@ -334,7 +331,6 @@ class Newsletter extends Model {
   }
 
   static function groupBy($orm, $data = array()) {
-    $type = (!empty($data['type'])) ? $data['type'] : false;
     $group = (!empty($data['group'])) ? $data['group'] : 'all';
 
     switch($group) {
@@ -345,7 +341,6 @@ class Newsletter extends Model {
       case self::STATUS_ACTIVE:
         $orm
           ->whereNull('deleted_at')
-          ->filter('filterType', $type)
           ->filter('filterStatus', $group);
       break;
 
@@ -360,21 +355,31 @@ class Newsletter extends Model {
   }
 
   static function filterStatus($orm, $status = false) {
-    if($status !== false) {
+    if(in_array($status, array(
+      self::STATUS_DRAFT,
+      self::STATUS_SCHEDULED,
+      self::STATUS_SENDING,
+      self::STATUS_SENT,
+      self::STATUS_ACTIVE
+    ))) {
       $orm->where('status', $status);
     }
     return $orm;
   }
 
   static function filterType($orm, $type = false) {
-    if($type !== false) {
+    if(in_array($type, array(
+      self::TYPE_STANDARD,
+      self::TYPE_WELCOME,
+      self::TYPE_NOTIFICATION
+    ))) {
       $orm->where('type', $type);
     }
     return $orm;
   }
 
   static function listingQuery($data = array()) {
-    return self::where('type', $data['tab'])
+    return self::filter('filterType', $data['tab'])
       ->filter('filterBy', $data)
       ->filter('groupBy', $data)
       ->filter('search', $data['search']);
