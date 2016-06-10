@@ -28,4 +28,5 @@ coverage:
         exclude:
             - lib/Util/Sudzy/*
             - lib/Util/CSS.php
+            - lib/Util/Helpers.php
             - lib/Util/XLSXWriter.php
