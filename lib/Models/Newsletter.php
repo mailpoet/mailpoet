@@ -12,7 +12,7 @@ class Newsletter extends Model {
     parent::__construct();
 
     $this->addValidations('type', array(
-      'required' => __('You need to specify a type.')
+      'required' => __('Please specify a type.')
     ));
   }
 
@@ -131,7 +131,7 @@ class Newsletter extends Model {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
-      'label' => __('All lists'),
+      'label' => __('All Lists'),
       'value' => ''
     );
 

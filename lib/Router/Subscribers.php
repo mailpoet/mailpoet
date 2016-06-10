@@ -79,7 +79,7 @@ class Subscribers {
     unset($data['segments']);
 
     if(empty($segment_ids)) {
-      $errors[] = __('You need to select a list');
+      $errors[] = __('Please select a list');
     }
 
     if(!empty($errors)) {

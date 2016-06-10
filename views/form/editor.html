@@ -3,12 +3,12 @@
 <% block title %>
 <h1 class="title">
   <%= __('Form') %>
-  <a class="page-title-action" href="?page=mailpoet-forms#/"><%= __('Back to list') %></a>
+  <a class="page-title-action" href="?page=mailpoet-forms#/"><%= __('Back to List') %></a>
 </h1>
   <h2>
     <input
       type="text"
-      placeholder="<%= __('Click to change the name!') %>"
+      placeholder="<%= __('Click here to change the name!') %>"
       id="mailpoet_form_name"
       value="<%= form.name %>"
     />
@@ -47,14 +47,14 @@
             <div id="mailpoet_settings_segment_selection">
               <!-- Form settings: list selection -->
               <p>
-                <strong><%= __('This form adds subscribers to these lists:') %></strong>
+                <strong><%= __('This form adds the subscribers to these lists:') %></strong>
               </p>
               <select
                 id="mailpoet_form_segments"
                 name="segments"
-                data-placeholder="<%= __('Choose a list') %>"
+                data-placeholder="<%= __('Please choose a list') %>"
                 multiple
-                data-parsley-required-message="<%= __('You need to select a list.') %>"
+                data-parsley-required-message="<%= __('Please select a list.') %>"
                 required
               >
                 <% for segment in segments %>
@@ -86,14 +86,14 @@
                     <% if(form.settings.on_success == 'page') %>
                       checked="checked"
                     <% endif %>
-                  /><%= __('Go to page') %>
+                  /><%= __('Go to Page') %>
                 </label>
               </p>
               <!-- default success message -->
               <% if form.settings.success_message %>
                 <% set success_message = form.settings.success_message %>
               <% else %>
-                <% set success_message = __('Check your inbox now to confirm your subscription.') %>
+                <% set success_message = __('Check your inbox to confirm your subscription.') %>
               <% endif %>
 
               <p
@@ -128,7 +128,7 @@
         <div>
           <!-- Form export links -->
           <p>
-            <%= __("Add this form to your sidebar or footer in the [link]Widgets[/link].")
+            <%= __("Add this form to your sidebar or footer on the [link]Widgets page[/link].")
               | replace({
                   '[link]': '<a href="widgets.php" target="_blank">',
                   '[/link]': '</a>'
@@ -137,7 +137,7 @@
             %>
           </p>
           <p>
-            <%= __("Copy and paste this [link]shortcode[/link] into a post or page alternatively.")
+            <%= __("Copy and paste this [link]shortcode[/link] into a post or page.")
               | replace({
                   '[link]': '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="shortcode">',
                   '[/link]': '</a>'
@@ -146,7 +146,7 @@
             %>
           </p>
           <p>
-            <%= __('%sHTML%s, %sPHP%s and %siframe%s versions are also available.', 'wysija-newsletters')
+            <%= __('%sHTML%s, %sPHP%s and %siFrame%s versions are also available.', 'wysija-newsletters')
               | format(
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="html">',
                 '</a>',
@@ -254,7 +254,7 @@
         name: "<%= __('Random text or HTML') %>",
         type: 'html',
         params: {
-            text: "<%= __('Subscribe to our newsletter and join our [mailpoet_subscribers_count] subscribers.') %>"
+            text: "<%= __('Subscribe to our newsletter and join [mailpoet_subscribers_count] other subscribers.') %>"
         },
         multiple: true,
         readonly: true
@@ -414,7 +414,7 @@
               }
             }).done(function(response) {
               MailPoet.Notice.success(
-                "<%= __('Form name successfully updated!') %>"
+                "<%= __('The form name was successfully updated!') %>"
               );
             });
           }
@@ -494,7 +494,7 @@
                   MailPoet.Notice.error(response.errors.join('<br />'));
                 } else {
                   MailPoet.Notice.error(
-                    "<%= __('An error occured, please reload the page and try again.') %>"
+                    "<%= __('An error occurred. Please reload the page and try again.') %>"
                   );
                 }
 
@@ -505,7 +505,7 @@
                 var message = null;
 
                 if(response.is_widget === true) {
-                  message = "<%= __('Saved! The changes are already active in your widget.') %>";
+                  message = "<%= __('Saved! The changes are now active in your widget.') %>";
                 } else {
                   message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw %>";
                 }

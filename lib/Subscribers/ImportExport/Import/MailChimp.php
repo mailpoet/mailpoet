@@ -132,7 +132,7 @@ class MailChimp {
   function processError($error) {
     switch ($error) {
       case 'API':
-        $errorMessage = __('Invalid API key.');
+        $errorMessage = __('Invalid API Key.');
         break;
       case 'connection':
         $errorMessage = __('Could not connect to your MailChimp account.');
@@ -141,7 +141,7 @@ class MailChimp {
         $errorMessage = __('The selected lists do not have matching columns (headers).');
         break;
       case 'size':
-        $errorMessage = __('Information received from MailChimp is too large for processing. Please limit the number of lists.');
+        $errorMessage = __('The information received from MailChimp is too large for processing. Please limit the number of lists.');
         break;
       case 'subscribers':
         $errorMessage = __('Did not find any active subscribers.');

@@ -70,7 +70,7 @@ class SendingQueue {
       return array(
         'result' => true,
         'data' => array(
-          'message' => __('Your post notifications is activated.')
+          'message' => __('Your post notifications are activated.')
         )
       );
     }

@@ -21,11 +21,11 @@ class ShortcodesHelper {
           'shortcode' => 'subscriber:email',
         ),
         array(
-          'text' => __('Wordpress user display name'),
+          'text' => __('Wordpress User Display Name'),
           'shortcode' => 'subscriber:displayname | default:member',
         ),
         array(
-          'text' => __('Total of subscribers'),
+          'text' => __('Total Number of Subscribers'),
           'shortcode' => 'subscriber:count',
         )
       ),
@@ -37,15 +37,15 @@ class ShortcodesHelper {
       ),
       __('Post Notifications') => array(
         array(
-          'text' => __('Total number of posts or pages'),
+          'text' => __('Total Number of Posts or Pages'),
           'shortcode' => 'newsletter:total',
         ),
         array(
-          'text' => __('Latest post title'),
+          'text' => __('Most Recent Post Title'),
           'shortcode' => 'newsletter:post_title',
         ),
         array(
-          'text' => __('Issue number'),
+          'text' => __('Issue Number'),
           'shortcode' => 'newsletter:number',
         )
       ),
@@ -55,7 +55,7 @@ class ShortcodesHelper {
           'shortcode' => 'date:d',
         ),
         array(
-          'text' => __('Current day of the month in ordinal, ie. 2nd, 3rd, etc.'),
+          'text' => __('Current day of the month in ordinal form, i.e. 2nd, 3rd, 4th, etc.'),
           'shortcode' => 'date:dordinal',
         ),
         array(

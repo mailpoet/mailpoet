@@ -18,7 +18,7 @@ class Subscriber extends Model {
     parent::__construct();
 
     $this->addValidations('email', array(
-      'required' => __('You need to enter your email address.'),
+      'required' => __('Please enter your email address.'),
       'isEmail' => __('Your email address is invalid.')
     ));
   }

@@ -10,10 +10,10 @@ class NewsletterTemplate extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('You need to specify a name.')
+      'required' => __('Please specify a name.')
     ));
     $this->addValidations('body', array(
-      'required' => __('Template body cannot be empty.')
+      'required' => __('The template body cannot be empty.')
     ));
   }
 

@@ -7,7 +7,7 @@ class Permissions {
       'mailpoet_newsletters' =>
         __('Who can create newsletters?'),
       'mailpoet_newsletter_styles' =>
-        __('Who can see the styles tab in the visual editor?'),
+        __('Who can see the Styles tab in the visual editor?'),
       'mailpoet_subscribers' =>
         __('Who can manage subscribers?'),
       'mailpoet_settings' =>
