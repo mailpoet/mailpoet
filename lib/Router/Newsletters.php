@@ -257,7 +257,7 @@ class Newsletters {
       } else if($newsletter->type === Newsletter::TYPE_WELCOME) {
         $newsletter
           ->withStatistics();
-      } else if($newsletter->type === Newsletter::TYPE_WELCOME) {
+      } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
           ->withSegments()
           ->withStatistics();
