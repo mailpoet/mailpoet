@@ -9,6 +9,7 @@ class Links {
   const DATA_TAG = '[mailpoet_data]';
 
   static function extract($content) {
+    $extracted_links = array();
     // adopted from WP's wp_extract_urls() function &  modified to work on hrefs
     # match href=' or href="
     $regex = '#(?:href.*?=.*?)(["\']?)('
@@ -29,31 +30,57 @@ class Links {
     // extract shortcodes with [link:*] format
     $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract($content, $categories = array('link'));
-    // extract links
-    preg_match_all($regex, $content, $links);
-    return array_merge(
-      array_unique($links[2]),
-      $shortcodes
-    );
+    $extracted_links = array_map(function ($shortcode) {
+      return array(
+        'html' => $shortcode,
+        'link' => $shortcode
+      );
+    }, $shortcodes);
+    // extract urls with href="url" format
+    preg_match_all($regex, $content, $matched_urls);
+    for($index = 0; $index <= count($matched_urls[1]); $index++) {
+      $extracted_links[] = array(
+        'html' => $matched_urls[0][$index],
+        'link' => $matched_urls[2][$index]
+      );
+    }
+    return $extracted_links;
   }
 
   static function process($content) {
-    $links = self::extract($content);
+    $extracted_links = self::extract($content);
     $processed_links = array();
-    foreach($links as $link) {
+    foreach($extracted_links as $extracted_link) {
       $hash = Security::generateRandomString(5);
       $processed_links[] = array(
         'hash' => $hash,
-        'url' => $link
+        'url' => $extracted_link['link']
       );
-      $encoded_link = sprintf(
-        '%s/?mailpoet&endpoint=track&action=click&data=%s-%s',
-        home_url(),
-        self::DATA_TAG,
-        $hash
+      $params = array(
+        'mailpoet' => '',
+        'endpoint' => 'track',
+        'action' => 'click',
+        'data' => self::DATA_TAG . '-' . $hash
       );
-      $link_regex = '/' . preg_quote($link, '/') . '/';
-      $content = preg_replace($link_regex, $encoded_link, $content);
+      $tracked_link = add_query_arg($params, home_url());
+      // first, replace URL in the extracted HTML source with encoded link
+      $tracked_link_html_source = str_replace(
+        $extracted_link['link'], $tracked_link,
+        $extracted_link['html']
+      );
+      // second, replace original extracted HTML source with tracked URL source
+      $content = str_replace(
+        $extracted_link['html'], $tracked_link_html_source, $content
+      );
+      // third, replace text version URL with tracked link: [description](url)
+      // regex is used to avoid replacing description URLs that are wrapped in round brackets
+      // i.e., <a href="http://google.com">(http://google.com)</a> => [(http://google.com)](http://tracked_link)
+      $regex_escaped_tracked_link = preg_quote($tracked_link, '/');
+      $content = preg_replace(
+        '/(\[' . $regex_escaped_tracked_link . '\])(\(' . $regex_escaped_tracked_link . '\))/',
+        '[$1](' . $tracked_link . ')',
+        $content
+      );
     }
     return array(
       $content,
