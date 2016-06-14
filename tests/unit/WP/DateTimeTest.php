@@ -77,6 +77,6 @@ class DateTimeTest extends MailPoetTest {
   }
 
   function _afterStep() {
-    Wordpress::releaseAllFunctions();
+    WordPress::releaseAllFunctions();
   }
 }

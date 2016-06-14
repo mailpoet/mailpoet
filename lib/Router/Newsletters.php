@@ -263,10 +263,6 @@ class Newsletters {
           ->withOptions()
           ->withTotalSent()
           ->withStatistics();
-
-        $options = $newsletter->options()->findArray();
-        $newsletter->options = Helpers::arrayColumn($options, 'value', 'name');
-
       } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
           ->withSegments()

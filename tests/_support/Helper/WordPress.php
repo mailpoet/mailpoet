@@ -29,7 +29,8 @@ class WordPress extends \Codeception\Module
 namespace MailPoet\WP;
 
 function get_option($key) {
-  if ($callback = \Helper\Wordpress::getInterceptor('get_option'))
+  if($callback = \Helper\WordPress::getInterceptor('get_option')) {
     return $callback($key);
+  }
   return \get_option($key);
 }

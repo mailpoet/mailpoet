@@ -10,6 +10,8 @@ import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
 import _ from 'underscore'
 
+const mailpoet_roles = window.mailpoet_roles || {};
+
 const messages = {
   onTrash(response) {
     const count = ~~response;
@@ -74,7 +76,8 @@ var columns = [
   },
   {
     name: 'statistics',
-    label: MailPoet.I18n.t('statistics')
+    label: MailPoet.I18n.t('statistics'),
+    display: mailpoet_tracking_enabled
   },
   {
     name: 'updated_at',
@@ -187,12 +190,20 @@ const NewsletterListWelcome = React.createClass({
     );
   },
   renderSettings: function(newsletter) {
-    let settings;
+    let sendingEvent;
+    let sendingDelay;
 
+    // set sending event
     switch (newsletter.options.event) {
       case 'user':
         // WP User
-        settings = MailPoet.I18n.t('onWordpressUserRegistration');
+        if (newsletter.options.role === 'mailpoet_all') {
+          sendingEvent = MailPoet.I18n.t('welcomeEventWPUserAnyRole');
+        } else {
+          sendingEvent = MailPoet.I18n.t('welcomeEventWPUserWithRole').replace(
+            '%$1s', mailpoet_roles[newsletter.options.role]
+          );
+        }
       break;
 
       case 'segment':
@@ -201,40 +212,69 @@ const NewsletterListWelcome = React.createClass({
           return (~~(segment.id) === ~~(newsletter.options.segment));
         });
 
-        settings = MailPoet.I18n.t('onSubscriptionToList') + ' ' +segment.name;
+        sendingEvent = MailPoet.I18n.t('welcomeEventSegment').replace(
+            '%$1s', segment.name
+          );
       break;
+    }
+
+    // set sending delay
+    if (newsletter.options.afterTimeType !== 'immediate') {
+      switch (newsletter.options.afterTimeType) {
+        case 'hours':
+          sendingDelay = MailPoet.I18n.t('sendingDelayHours').replace(
+            '%$1d', newsletter.options.afterTimeNumber
+          );
+        break;
+
+        case 'days':
+          sendingDelay = MailPoet.I18n.t('sendingDelayDays').replace(
+            '%$1d', newsletter.options.afterTimeNumber
+          );
+        break;
+
+        case 'weeks':
+          sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace(
+            '%$1d', newsletter.options.afterTimeNumber
+          );
+        break;
+      }
+      sendingEvent += ' [' + sendingDelay + ']';
     }
 
     return (
       <span>
-        { settings }
+        { sendingEvent }.
       </span>
     );
   },
   renderStatistics: function(newsletter) {
-    if(!newsletter.statistics || !newsletter.queue || newsletter.queue.count_processed == 0 || newsletter.queue.status === 'scheduled') {
-      return (
-        <span>
-          {MailPoet.I18n.t('notSentYet')}
-        </span>
-      );
+    if (mailpoet_tracking_enabled === false) {
+      return;
     }
 
-    var percentage_clicked = Math.round(
-      (newsletter.statistics.clicked * 100) / (newsletter.queue.count_processed)
-    );
-    var percentage_opened = Math.round(
-      (newsletter.statistics.opened * 100) / (newsletter.queue.count_processed)
-    );
-    var percentage_unsubscribed = Math.round(
-      (newsletter.statistics.unsubscribed * 100) / (newsletter.queue.count_processed)
-    );
+    if(newsletter.statistics && newsletter.queue && newsletter.queue.status !== 'scheduled') {
+      const total_sent = ~~(newsletter.queue.count_processed);
+      const percentage_clicked = Math.round(
+        (~~(newsletter.statistics.clicked) * 100) / total_sent
+      );
+      const percentage_opened = Math.round(
+        (~~(newsletter.statistics.opened) * 100) / total_sent
+      );
+      const percentage_unsubscribed = Math.round(
+        (~~(newsletter.statistics.unsubscribed) * 100) / total_sent
+      );
 
-    return (
-      <span>
-        { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
-      </span>
-    );
+      return (
+        <span>
+          { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
+        </span>
+      );
+    } else {
+      return (
+        <span>{MailPoet.I18n.t('notSentYet')}</span>
+      );
+    }
   },
   renderItem: function(newsletter, actions) {
     var rowClasses = classNames(

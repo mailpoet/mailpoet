@@ -25,7 +25,7 @@ define(
       name: 'event',
       values: {
         'segment': MailPoet.I18n.t('onSubscriptionToList'),
-        'user': MailPoet.I18n.t('onWordpressUserRegistration'),
+        'user': MailPoet.I18n.t('onWPUserRegistration'),
       }
     };
 

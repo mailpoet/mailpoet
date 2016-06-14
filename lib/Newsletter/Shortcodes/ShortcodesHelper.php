@@ -21,7 +21,7 @@ class ShortcodesHelper {
           'shortcode' => 'subscriber:email',
         ),
         array(
-          'text' => __('Wordpress User Display Name'),
+          'text' => __('WordPress User Display Name'),
           'shortcode' => 'subscriber:displayname | default:member',
         ),
         array(
