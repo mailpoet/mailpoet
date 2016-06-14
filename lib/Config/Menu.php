@@ -383,7 +383,7 @@ class Menu {
     $data = array();
 
     $data['items_per_page'] = $this->getLimitPerPage('newsletters');
-    $data['segments'] = Segment::getPublished()->findArray();
+    $data['segments'] = Segment::getSegmentsWithSubscriberCount($type = false);
     $data['settings'] = Setting::getAll();
     $data['roles'] = $wp_roles->get_names();
     $data['roles']['mailpoet_all'] = __('In any WordPress role');

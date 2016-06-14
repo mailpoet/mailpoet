@@ -139,8 +139,8 @@ class Segment extends Model {
     return $orm;
   }
 
-  static function getSegmentsWithSubscriberCount() {
-    return self::selectMany(array(self::$_table.'.id', self::$_table.'.name'))
+  static function getSegmentsWithSubscriberCount($type = 'default') {
+    $query = self::selectMany(array(self::$_table.'.id', self::$_table.'.name'))
       ->selectExpr(
         self::$_table.'.*, ' .
         'COUNT(IF('.MP_SUBSCRIBER_SEGMENT_TABLE.'.status="' . Subscriber::STATUS_SUBSCRIBED .'" AND '.MP_SUBSCRIBERS_TABLE.'.deleted_at IS NULL,1,NULL)) `subscribers`'
@@ -154,9 +154,13 @@ class Segment extends Model {
       ->groupBy(self::$_table.'.id')
       ->groupBy(self::$_table.'.name')
       ->orderByAsc(self::$_table.'.name')
-      ->where(self::$_table.'.type', 'default')
-      ->whereNull(self::$_table.'.deleted_at')
-      ->findArray();
+      ->whereNull(self::$_table.'.deleted_at');
+
+    if (!empty($type)) {
+      $query->where(self::$_table.'.type', $type);
+    }
+
+    return $query->findArray();
   }
 
   static function getSegmentsForExport($withConfirmedSubscribers = false) {
