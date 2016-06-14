@@ -43,8 +43,9 @@ define('date',
       options = options || {};
       this.init(options);
 
-      return Moment(date, this.convertFormat(options.parseFormat))
-        .format(this.convertFormat(this.options.format));
+      var date = Moment(date, this.convertFormat(options.parseFormat));
+      if (options.offset === 0) date = date.utc();
+      return date.format(this.convertFormat(this.options.format));
     },
     toDate: function(date, options) {
       options = options || {};

@@ -1,6 +1,8 @@
 import _ from 'underscore'
 import MailPoet from 'mailpoet'
 
+const timeFormat = window.mailpoet_time_format || 'H:i';
+
 // welcome emails
 const _timeDelayValues = {
   'immediate': MailPoet.I18n.t('delayImmediately'),
@@ -28,7 +30,7 @@ const _timeOfDayValues = _.object(_.map(
   }), function(seconds) {
     let date = new Date(null);
     date.setSeconds(seconds);
-    const timeLabel = date.toISOString().substr(11, 5);
+    const timeLabel = MailPoet.Date.format(date, { format: timeFormat, offset: 0 });
     return [seconds, timeLabel];
   })
 );
