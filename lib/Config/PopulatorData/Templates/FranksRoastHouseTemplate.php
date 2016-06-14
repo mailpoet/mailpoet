@@ -88,7 +88,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Hi there&nbsp;[user:firstname | default:coffee drinker]</p>\n<p></p>\n<p>Sit back&nbsp;and enjoy your favorite roast as you read this week's newsletter.&nbsp;</p>")
+                    "text" => __("<p>Hi there&nbsp;[subscriber:firstname | default:coffee drinker]</p>\n<p></p>\n<p>Sit back&nbsp;and enjoy your favorite roast as you read this week's newsletter.&nbsp;</p>")
                   ),
                   array(
                     "type" => "image",
