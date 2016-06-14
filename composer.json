@@ -1,4 +1,10 @@
 {
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/mailpoet/html2text"
+    }
+  ],
   "require": {
     "php": ">=5.3.3",
     "twig/twig": "1.*",
@@ -11,7 +17,7 @@
     "phpseclib/phpseclib": "*",
     "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
-    "soundasleep/html2text": "^0.3.0"
+    "soundasleep/html2text": "dev-master"
   },
   "require-dev": {
     "codeception/codeception": "*",

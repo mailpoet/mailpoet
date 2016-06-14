@@ -87,7 +87,6 @@ class Renderer {
   }
 
   function renderTextVersion($template) {
-    $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
     return \Html2Text\Html2Text::convert($template);
   }
 
