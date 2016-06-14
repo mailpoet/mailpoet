@@ -6,6 +6,8 @@ if(!defined('ABSPATH')) exit;
 class SendingQueue extends Model {
   public static $_table = MP_SENDING_QUEUES_TABLE;
 
+  const STATUS_COMPLETED = 'completed';
+
   function __construct() {
     parent::__construct();
   }

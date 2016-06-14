@@ -150,9 +150,13 @@ class Newsletters {
 
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
-      $result = $newsletter->duplicate(array(
+      $duplicate = $newsletter->duplicate(array(
         'subject' => sprintf(__('Copy of %s'), $newsletter->subject)
-      ))->asArray();
+      ));
+
+      if($duplicate !== false && $duplicate->getErrors() === false) {
+        $result = $newsletter->asArray();
+      }
     }
     return $result;
   }
@@ -256,7 +260,13 @@ class Newsletters {
           ->withStatistics();
       } else if($newsletter->type === Newsletter::TYPE_WELCOME) {
         $newsletter
+          ->withOptions()
+          ->withTotalSent()
           ->withStatistics();
+
+        $options = $newsletter->options()->findArray();
+        $newsletter->options = Helpers::arrayColumn($options, 'value', 'name');
+
       } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
           ->withSegments()

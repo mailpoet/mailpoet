@@ -9,6 +9,8 @@ import classNames from 'classnames'
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
 
+const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
+
 const messages = {
   onTrash(response) {
     const count = ~~response;
@@ -73,7 +75,8 @@ var columns = [
   },
   {
     name: 'statistics',
-    label: MailPoet.I18n.t('statistics')
+    label: MailPoet.I18n.t('statistics'),
+    display: mailpoet_tracking_enabled
   },
   {
     name: 'updated_at',
@@ -81,6 +84,7 @@ var columns = [
     sortable: true
   }
 ];
+
 
 var bulk_actions = [
   {
@@ -231,30 +235,33 @@ const NewsletterListStandard = React.createClass({
       );
     }
   },
-  renderStatistics: function(item) {
-    if(!item.statistics || !item.queue || item.queue.count_processed == 0 || item.queue.status === 'scheduled') {
-      return (
-        <span>
-          {MailPoet.I18n.t('notSentYet')}
-        </span>
-      );
+  renderStatistics: function(newsletter) {
+    if (mailpoet_tracking_enabled === false) {
+      return;
     }
 
-    var percentage_clicked = Math.round(
-      (item.statistics.clicked * 100) / (item.queue.count_processed)
-    );
-    var percentage_opened = Math.round(
-      (item.statistics.opened * 100) / (item.queue.count_processed)
-    );
-    var percentage_unsubscribed = Math.round(
-      (item.statistics.unsubscribed * 100) / (item.queue.count_processed)
-    );
+    if(newsletter.statistics && newsletter.queue && newsletter.queue.status !== 'scheduled') {
+      const total_sent = ~~(newsletter.queue.count_processed);
+      const percentage_clicked = Math.round(
+        (~~(newsletter.statistics.clicked) * 100) / total_sent
+      );
+      const percentage_opened = Math.round(
+        (~~(newsletter.statistics.opened) * 100) / total_sent
+      );
+      const percentage_unsubscribed = Math.round(
+        (~~(newsletter.statistics.unsubscribed) * 100) / total_sent
+      );
 
-    return (
-      <span>
-        { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
-      </span>
-    );
+      return (
+        <span>
+          { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
+        </span>
+      );
+    } else {
+      return (
+        <span>{MailPoet.I18n.t('notSentYet')}</span>
+      );
+    }
   },
   renderItem: function(newsletter, actions) {
     var rowClasses = classNames(
@@ -283,9 +290,11 @@ const NewsletterListStandard = React.createClass({
         <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
           { segments }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
-          { this.renderStatistics(newsletter) }
-        </td>
+        {(mailpoet_tracking_enabled === true) ? (
+          <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
+            { this.renderStatistics(newsletter) }
+          </td>
+        ) : null }
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
         </td>

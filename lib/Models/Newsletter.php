@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Models;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -55,11 +56,19 @@ class Newsletter extends Model {
   }
 
   function duplicate($data = array()) {
-    $data = $this->asArray();
-    unset($data['id']);
+    // get current newsletter's data as an array
+    $newsletter_data = $this->asArray();
 
-    $duplicate =  self::create();
+    // remove id so that it creates a new record
+    unset($newsletter_data['id']);
+
+    // merge data with newsletter data (allows override)
+    $data = array_merge($newsletter_data, $data);
+
+    $duplicate = self::create();
     $duplicate->hydrate($data);
+
+    // reset timestamps
     $duplicate->set_expr('created_at', 'NOW()');
     $duplicate->set_expr('updated_at', 'NOW()');
     $duplicate->set_expr('deleted_at', 'NULL');
@@ -67,15 +76,25 @@ class Newsletter extends Model {
     // reset status
     $duplicate->set('status', self::STATUS_DRAFT);
 
-    // TODO: duplicate segments linked (if need be)
+    $duplicate->save();
 
-    // TODO: duplicate options (if need be)
+    if($duplicate->getErrors() === false) {
+      // create relationships between duplicate and segments
+      $segments = $this->segments()->findArray();
 
-    if($duplicate->save()) {
-      return $duplicate;
-    } else {
-      return false;
+      if(!empty($segments)) {
+        foreach($segments as $segment) {
+          $relation = NewsletterSegment::create();
+          $relation->segment_id = $segment['id'];
+          $relation->newsletter_id = $duplicate->id();
+          $result = $relation->save();
+        }
+      }
+
+      // TODO: duplicate options (if need be)
     }
+
+    return $duplicate;
   }
 
   function asArray() {
@@ -133,6 +152,24 @@ class Newsletter extends Model {
     return $this;
   }
 
+  function withOptions() {
+    $options = $this->options()->findArray();
+    if(empty($options)) {
+      $this->options = array();
+    } else {
+      $this->options = Helpers::arrayColumn($options, 'value', 'name');
+    }
+    return $this;
+  }
+
+  function withTotalSent() {
+    // total of subscribers who received the email
+    $this->total_sent = (int)SendingQueue::where('newsletter_id', $this->id)
+      ->where('status', SendingQueue::STATUS_COMPLETED)
+      ->sum('count_processed');
+    return $this;
+  }
+
   function withStatistics() {
     $statistics = $this->getStatistics();
     if($statistics === false) {
@@ -140,6 +177,7 @@ class Newsletter extends Model {
     } else {
       $this->statistics = $statistics->asArray();
     }
+
     return $this;
   }
 
@@ -149,9 +187,9 @@ class Newsletter extends Model {
     }
     return SendingQueue::tableAlias('queues')
       ->selectExpr(
-        'count(DISTINCT(clicks.subscriber_id)) as clicked, ' .
-        'count(DISTINCT(opens.subscriber_id)) as opened, ' .
-        'count(DISTINCT(unsubscribes.subscriber_id)) as unsubscribed '
+        'COUNT(DISTINCT(clicks.subscriber_id)) as clicked, ' .
+        'COUNT(DISTINCT(opens.subscriber_id)) as opened, ' .
+        'COUNT(DISTINCT(unsubscribes.subscriber_id)) as unsubscribed '
       )
       ->leftOuterJoin(
         MP_STATISTICS_CLICKS_TABLE,
@@ -300,19 +338,19 @@ class Newsletter extends Model {
       case self::TYPE_NOTIFICATION:
         $groups = array_merge($groups, array(
           array(
-            'name' => self::STATUS_DRAFT,
-            'label' => __('Not active'),
-            'count' => Newsletter::getPublished()
-              ->filter('filterType', $type)
-              ->filter('filterStatus', self::STATUS_DRAFT)
-              ->count()
-          ),
-          array(
             'name' => self::STATUS_ACTIVE,
             'label' => __('Active'),
             'count' => Newsletter::getPublished()
               ->filter('filterType', $type)
               ->filter('filterStatus', self::STATUS_ACTIVE)
+              ->count()
+          ),
+          array(
+            'name' => self::STATUS_DRAFT,
+            'label' => __('Not active'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_DRAFT)
               ->count()
           )
         ));
@@ -379,7 +417,15 @@ class Newsletter extends Model {
   }
 
   static function listingQuery($data = array()) {
-    return self::filter('filterType', $data['tab'])
+    return self::select(array(
+        'id',
+        'subject',
+        'type',
+        'status',
+        'updated_at',
+        'deleted_at'
+      ))
+      ->filter('filterType', $data['tab'])
       ->filter('filterBy', $data)
       ->filter('groupBy', $data)
       ->filter('search', $data['search']);

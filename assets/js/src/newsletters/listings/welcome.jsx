@@ -8,6 +8,7 @@ import ListingTabs from 'newsletters/listings/tabs.jsx'
 import classNames from 'classnames'
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
+import _ from 'underscore'
 
 const messages = {
   onTrash(response) {
@@ -165,21 +166,48 @@ const NewsletterListWelcome = React.createClass({
     }.bind(this));
   },
   renderStatus: function(newsletter) {
+    let total_sent;
+    total_sent = (
+      MailPoet.I18n.t('sentToXSubscribers')
+      .replace('%$1d', newsletter.total_sent)
+    );
+
     return (
-      <select
-        data-id={ newsletter.id }
-        defaultValue={ newsletter.status }
-        onChange={ this.updateStatus }
-      >
-        <option value="active">{ MailPoet.I18n.t('active') }</option>
-        <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
-      </select>
+      <div>
+        <select
+          data-id={ newsletter.id }
+          defaultValue={ newsletter.status }
+          onChange={ this.updateStatus }
+        >
+          <option value="active">{ MailPoet.I18n.t('active') }</option>
+          <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
+        </select>
+        <p>{ total_sent }</p>
+      </div>
     );
   },
   renderSettings: function(newsletter) {
+    let settings;
+
+    switch (newsletter.options.event) {
+      case 'user':
+        // WP User
+        settings = MailPoet.I18n.t('onWordpressUserRegistration');
+      break;
+
+      case 'segment':
+        // get segment
+        const segment = _.find(mailpoet_segments, function(segment) {
+          return (~~(segment.id) === ~~(newsletter.options.segment));
+        });
+
+        settings = MailPoet.I18n.t('onSubscriptionToList') + ' ' +segment.name;
+      break;
+    }
+
     return (
       <span>
-        Settings...
+        { settings }
       </span>
     );
   },

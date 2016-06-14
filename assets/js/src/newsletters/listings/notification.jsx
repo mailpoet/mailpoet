@@ -68,17 +68,12 @@ var columns = [
     label: MailPoet.I18n.t('status')
   },
   {
-    name: 'segments',
-    label: MailPoet.I18n.t('lists')
+    name: 'settings',
+    label: MailPoet.I18n.t('settings')
   },
   {
-    name: 'statistics',
-    label: MailPoet.I18n.t('statistics')
-  },
-  {
-    name: 'created_at',
-    label: MailPoet.I18n.t('createdOn'),
-    sortable: true
+    name: 'history',
+    label: MailPoet.I18n.t('history')
   },
   {
     name: 'updated_at',
@@ -97,6 +92,16 @@ var bulk_actions = [
 
 var newsletter_actions = [
   {
+    name: 'view',
+    link: function(newsletter) {
+      return (
+        <a href={ newsletter.preview_url } target="_blank">
+          {MailPoet.I18n.t('preview')}
+        </a>
+      );
+    }
+  },
+  {
     name: 'edit',
     link: function(newsletter) {
       return (
@@ -104,6 +109,26 @@ var newsletter_actions = [
           {MailPoet.I18n.t('edit')}
         </a>
       );
+    }
+  },
+  {
+    name: 'duplicate',
+    label: MailPoet.I18n.t('duplicate'),
+    onClick: function(newsletter, refresh) {
+      return MailPoet.Ajax.post({
+        endpoint: 'newsletters',
+        action: 'duplicate',
+        data: newsletter.id
+      }).done(function(response) {
+        if (response !== false && response.subject !== undefined) {
+          MailPoet.Notice.success(
+            (MailPoet.I18n.t('newsletterDuplicated')).replace(
+              '%$1s', response.subject
+            )
+          );
+        }
+        refresh();
+      });
     }
   },
   {
@@ -158,41 +183,12 @@ const NewsletterListNotification = React.createClass({
       </span>
     );
   },
-  renderStatistics: function(newsletter) {
-    if (!newsletter.statistics || !newsletter.queue || newsletter.queue.count_processed == 0 || newsletter.queue.status === 'scheduled') {
-      return (
-        <span>
-          {MailPoet.I18n.t('notSentYet')}
-        </span>
-      );
-    }
-
-    var percentage_clicked = Math.round(
-      (newsletter.statistics.clicked * 100) / (newsletter.queue.count_processed)
-    );
-    var percentage_opened = Math.round(
-      (newsletter.statistics.opened * 100) / (newsletter.queue.count_processed)
-    );
-    var percentage_unsubscribed = Math.round(
-      (newsletter.statistics.unsubscribed * 100) / (newsletter.queue.count_processed)
-    );
-
-    return (
-      <span>
-        { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
-      </span>
-    );
-  },
   renderItem: function(newsletter, actions) {
     var rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'
     );
-
-    var segments = newsletter.segments.map(function(segment) {
-      return segment.name
-    }).join(', ');
 
     return (
       <div>
@@ -207,14 +203,11 @@ const NewsletterListNotification = React.createClass({
         <td className="column" data-colname={ MailPoet.I18n.t('status') }>
           { this.renderStatus(newsletter) }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
-          { segments }
+        <td className="column" data-colname={ MailPoet.I18n.t('settings') }>
+          { this.renderSettings(newsletter) }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
-          { this.renderStatistics(newsletter) }
-        </td>
-        <td className="column-date" data-colname={ MailPoet.I18n.t('createdOn') }>
-          <abbr>{ MailPoet.Date.format(newsletter.created_at) }</abbr>
+        <td className="column" data-colname={ MailPoet.I18n.t('history') }>
+          <a href="#TODO">{ MailPoet.I18n.t('viewHistory') }</a>
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>

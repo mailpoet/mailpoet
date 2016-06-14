@@ -413,6 +413,8 @@ class Menu {
       24
     );
 
+    $data['tracking_enabled'] = Setting::getValue('tracking.enabled');
+
     wp_enqueue_script('jquery-ui');
     wp_enqueue_script('jquery-ui-datepicker');
 
