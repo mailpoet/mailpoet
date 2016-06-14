@@ -7,6 +7,7 @@ use MailPoet\Util\Security;
 
 class Links {
   const DATA_TAG = '[mailpoet_data]';
+  const HASH_LENGTH = 5;
 
   static function extract($content) {
     $extracted_links = array();
@@ -30,7 +31,7 @@ class Links {
     // extract shortcodes with [link:*] format
     $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract($content, $categories = array('link'));
-    $extracted_links = array_map(function ($shortcode) {
+    $extracted_links = array_map(function($shortcode) {
       return array(
         'html' => $shortcode,
         'link' => $shortcode
@@ -38,11 +39,14 @@ class Links {
     }, $shortcodes);
     // extract urls with href="url" format
     preg_match_all($regex, $content, $matched_urls);
-    for($index = 0; $index <= count($matched_urls[1]); $index++) {
-      $extracted_links[] = array(
-        'html' => $matched_urls[0][$index],
-        'link' => $matched_urls[2][$index]
-      );
+    $matched_urls_count = count($matched_urls[1]);
+    if($matched_urls_count) {
+      for($index = 0; $index <= $matched_urls_count; $index++) {
+        $extracted_links[] = array(
+          'html' => $matched_urls[0][$index],
+          'link' => $matched_urls[2][$index]
+        );
+      }
     }
     return $extracted_links;
   }
@@ -51,7 +55,7 @@ class Links {
     $extracted_links = self::extract($content);
     $processed_links = array();
     foreach($extracted_links as $extracted_link) {
-      $hash = Security::generateRandomString(5);
+      $hash = Security::generateRandomString(self::HASH_LENGTH);
       $processed_links[] = array(
         'hash' => $hash,
         'url' => $extracted_link['link']
