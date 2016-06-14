@@ -187,9 +187,8 @@ class Newsletters {
     $body = implode($divider, $data_for_shortcodes);
 
     $wp_user = wp_get_current_user();
-    $subscriber = Subscriber::where('email', $wp_user->data->user_email)
-      ->findOne();
-    $subscriber = ($subscriber) ? $subscriber->asArray() : $subscriber;
+    $subscriber = Subscriber::findOne($wp_user->data->user_email);
+    $subscriber = ($subscriber) ? $subscriber->asArray() : false;
 
     $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
       $newsletter,
