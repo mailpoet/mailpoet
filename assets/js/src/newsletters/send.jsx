@@ -124,9 +124,22 @@ define(
       },
       handleSave: function(e) {
         e.preventDefault();
+        this._save(e).done(() => {
+          this.context.router.push(`/${ this.state.item.type || '' }`);
+        });
+      },
+      handleRedirectToEditor: function(e) {
+        e.preventDefault();
+        var redirectTo = e.target.href;
+
+        this._save(e).done(() => {
+          window.location = redirectTo;
+        });
+      },
+      _save: function(e) {
         this.setState({ loading: true });
 
-        MailPoet.Ajax.post({
+        return MailPoet.Ajax.post({
           endpoint: 'newsletters',
           action: 'save',
           data: this.state.item,
@@ -134,7 +147,6 @@ define(
           this.setState({ loading: false });
 
           if(response.result === true) {
-            this.context.router.push(`/${ this.state.item.type || '' }`);
             MailPoet.Notice.success(
               MailPoet.I18n.t('newsletterUpdated')
             );
@@ -189,7 +201,8 @@ define(
                 <a
                   href={
                     '?page=mailpoet-newsletter-editor&id='+this.props.params.id
-                  }>
+                  }
+                  onClick={this.handleRedirectToEditor}>
                   {MailPoet.I18n.t('goBackToDesign')}
                 </a>.
               </p>
