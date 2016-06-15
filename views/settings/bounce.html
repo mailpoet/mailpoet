@@ -1,19 +1,19 @@
-<h3><%= __('How does it work?') %></h3>
+<h3><%= __('How Does This Work?') %></h3>
 <ol>
   <li>
-    <%= __('Create an email account dedicated solely to bounce handling.') %>
+    <%= __('Create an email account dedicated solely to handling bounced emails.') %>
   </li>
   <li>
-    <%= __('Fill out the form below so we can connect to it.') %>
+    <%= __('Fill out the form below so that we can connect to it.') %>
   </li>
   <li>
-    <%= __('Take it easy, the plugin does the rest.') %>
+    <%= __('Sit back, relax, and let the plugin do the rest.') %>
   </li>
 </ol>
 
 <p class="description">
   <%=
-    __('Need help? Check out %1$sour guide%2$s on how to fill out the form.')
+    __('Need help? Check out %1$sour guide%2$s on how to fill out this form.')
     | format(
       '<a target="_blank" href="#todo/automated-bounce-handling-install-guide/">',
       '</a>'
@@ -107,7 +107,7 @@
               <% if(settings.bounce.protocol == 'pear') %>
                 selected="selected"
               <% endif %>
-            ><%= __('POP3 without imap extension') %></option>
+            ><%= __('POP3 without IMAP extension') %></option>
             <option
               value="nntp"
               <% if(settings.bounce.protocol == 'nntp') %>
@@ -263,7 +263,7 @@
             id="mailpoet_bounce_test"
             class="button-secondary"
             href="javascript:;"
-          ><%= __('Does it work? Try to connect.') %></a>
+          ><%= __('Is it working? Try to connect.') %></a>
         </label>
       </th>
       <td id="mailpoet_bounce_test_result"></td>
