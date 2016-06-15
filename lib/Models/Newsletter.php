@@ -248,12 +248,14 @@ class Newsletter extends Model {
   }
 
   static function filterBy($orm, $data = array()) {
+    $type = isset($data['tab']) ? $data['tab'] : null;
+
     if(!empty($data['filter'])) {
       foreach($data['filter'] as $key => $value) {
         if($key === 'segment') {
           $segment = Segment::findOne($value);
           if($segment !== false) {
-            $orm = $segment->newsletters()->where('type', $data['tab']);
+            $orm = $segment->newsletters()->filter('filterType', $type);
           }
         }
       }

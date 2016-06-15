@@ -155,7 +155,7 @@ class Newsletters {
       ));
 
       if($duplicate !== false && $duplicate->getErrors() === false) {
-        $result = $newsletter->asArray();
+        $result = $duplicate->asArray();
       }
     }
     return $result;
