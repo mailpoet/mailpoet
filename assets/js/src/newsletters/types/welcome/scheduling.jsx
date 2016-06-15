@@ -5,8 +5,7 @@ define(
     'react-router',
     'mailpoet',
     'form/fields/select.jsx',
-    'form/fields/text.jsx',
-    'newsletters/breadcrumb.jsx'
+    'form/fields/text.jsx'
   ],
   function(
     _,
@@ -14,8 +13,7 @@ define(
     Router,
     MailPoet,
     Select,
-    Text,
-    Breadcrumb
+    Text
   ) {
 
     var availableRoles = window.mailpoet_roles || {};

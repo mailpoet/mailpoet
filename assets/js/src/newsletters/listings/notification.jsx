@@ -57,7 +57,7 @@ const messages = {
   }
 };
 
-var columns = [
+const columns = [
   {
     name: 'subject',
     label: MailPoet.I18n.t('subject'),
@@ -65,7 +65,8 @@ var columns = [
   },
   {
     name: 'status',
-    label: MailPoet.I18n.t('status')
+    label: MailPoet.I18n.t('status'),
+    width: 100
   },
   {
     name: 'settings',
@@ -73,7 +74,8 @@ var columns = [
   },
   {
     name: 'history',
-    label: MailPoet.I18n.t('history')
+    label: MailPoet.I18n.t('history'),
+    width: 100
   },
   {
     name: 'updated_at',
@@ -82,7 +84,7 @@ var columns = [
   }
 ];
 
-var bulk_actions = [
+const bulk_actions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('trash'),
@@ -90,7 +92,7 @@ var bulk_actions = [
   }
 ];
 
-var newsletter_actions = [
+const newsletter_actions = [
   {
     name: 'view',
     link: function(newsletter) {
@@ -177,14 +179,122 @@ const NewsletterListNotification = React.createClass({
     );
   },
   renderSettings: function(newsletter) {
+    /// TO REFACTOR in order to avoid duplication with */scheduling.jsx
+    /// ========================================================================
+    const SECONDS_IN_DAY = 86400;
+    const TIME_STEP_SECONDS = 3600;
+    const numberOfTimeSteps = SECONDS_IN_DAY / TIME_STEP_SECONDS;
+
+    const timeOfDayValues = _.object(_.map(
+      _.times(numberOfTimeSteps,function(step) {
+        return step * TIME_STEP_SECONDS;
+      }), function(seconds) {
+        let date = new Date(null);
+        date.setSeconds(seconds);
+        const timeLabel = date.toISOString().substr(11, 5);
+        return [seconds, timeLabel];
+      })
+    );
+
+    const weekDayValues = {
+      0: MailPoet.I18n.t('sunday'),
+      1: MailPoet.I18n.t('monday'),
+      2: MailPoet.I18n.t('tuesday'),
+      3: MailPoet.I18n.t('wednesday'),
+      4: MailPoet.I18n.t('thursday'),
+      5: MailPoet.I18n.t('friday'),
+      6: MailPoet.I18n.t('saturday')
+    };
+
+    const NUMBER_OF_DAYS_IN_MONTH = 28;
+    const monthDayValues = _.object(
+      _.map(
+        _.times(NUMBER_OF_DAYS_IN_MONTH, function(day) {
+          return day;
+        }), function(day) {
+          const labels = {
+            0: MailPoet.I18n.t('first'),
+            1: MailPoet.I18n.t('second'),
+            2: MailPoet.I18n.t('third')
+          };
+          let label;
+          if (labels[day] !== undefined) {
+            label = labels[day];
+          } else {
+            label = MailPoet.I18n.t('nth').replace("%$1d", day + 1);
+          }
+          return [day, label];
+        }
+      )
+    );
+
+    const nthWeekDayValues = {
+      '1': MailPoet.I18n.t('first'),
+      '2': MailPoet.I18n.t('second'),
+      '3': MailPoet.I18n.t('third'),
+      'L': MailPoet.I18n.t('last')
+    };
+    /// ========================================================================
+
+    let sendingFrequency;
+    let sendingToSegments;
+
+    // set sending frequency
+    switch (newsletter.options.intervalType) {
+      case 'daily':
+        sendingFrequency = MailPoet.I18n.t('sendDaily').replace(
+          '%$1s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
+      break;
+
+      case 'weekly':
+        sendingFrequency = MailPoet.I18n.t('sendWeekly').replace(
+          '%$1s', weekDayValues[newsletter.options.weekDay]
+        ).replace(
+          '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
+      break;
+
+      case 'monthly':
+        sendingFrequency = MailPoet.I18n.t('sendMonthly').replace(
+          '%$1s', monthDayValues[newsletter.options.monthDay]
+        ).replace(
+          '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
+      break;
+
+      case 'nthWeekDay':
+        sendingFrequency = MailPoet.I18n.t('sendNthWeekDay').replace(
+          '%$1s', nthWeekDayValues[newsletter.options.nthWeekDay]
+        ).replace(
+          '%$2s', weekDayValues[newsletter.options.weekDay]
+        ).replace(
+          '%$3s', timeOfDayValues[newsletter.options.timeOfDay]
+        );
+      break;
+
+      case 'immediately':
+        sendingFrequency = MailPoet.I18n.t('sendImmediately');
+      break;
+    }
+
+    // set segments
+    const segments = newsletter.segments.map(function(segment) {
+      return segment.name
+    }).join(', ');
+
+    sendingToSegments = MailPoet.I18n.t('ifNewContentToSegments').replace(
+      '%$1s', segments
+    );
+
     return (
       <span>
-        Settings...
+        { sendingFrequency } { sendingToSegments }
       </span>
     );
   },
   renderItem: function(newsletter, actions) {
-    var rowClasses = classNames(
+    const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'

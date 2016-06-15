@@ -59,7 +59,7 @@ const messages = {
   }
 };
 
-var columns = [
+const columns = [
   {
     name: 'subject',
     label: MailPoet.I18n.t('subject'),
@@ -86,7 +86,7 @@ var columns = [
 ];
 
 
-var bulk_actions = [
+const bulk_actions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('trash'),
@@ -94,7 +94,7 @@ var bulk_actions = [
   }
 ];
 
-var item_actions = [
+const item_actions = [
   {
     name: 'view',
     link: function(item) {
@@ -172,17 +172,17 @@ const NewsletterListStandard = React.createClass({
           <span>{MailPoet.I18n.t('scheduledFor')}  { MailPoet.Date.format(item.queue.scheduled_at) } </span>
         )
       }
-      var progressClasses = classNames(
+      const progressClasses = classNames(
         'mailpoet_progress',
         { 'mailpoet_progress_complete': item.queue.status === 'completed'}
       );
 
       // calculate percentage done
-      var percentage = Math.round(
+      const percentage = Math.round(
         (item.queue.count_processed * 100) / (item.queue.count_total)
       );
 
-      var label = false;
+      let label;
 
       if(item.queue.status === 'completed') {
         label = (
@@ -264,13 +264,13 @@ const NewsletterListStandard = React.createClass({
     }
   },
   renderItem: function(newsletter, actions) {
-    var rowClasses = classNames(
+    const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'
     );
 
-    var segments = newsletter.segments.map(function(segment) {
+    const segments = newsletter.segments.map(function(segment) {
       return segment.name
     }).join(', ');
 
@@ -290,7 +290,7 @@ const NewsletterListStandard = React.createClass({
         <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
           { segments }
         </td>
-        {(mailpoet_tracking_enabled === true) ? (
+        { (mailpoet_tracking_enabled === true) ? (
           <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
             { this.renderStatistics(newsletter) }
           </td>

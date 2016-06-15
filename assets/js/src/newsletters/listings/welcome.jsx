@@ -11,6 +11,7 @@ import MailPoet from 'mailpoet'
 import _ from 'underscore'
 
 const mailpoet_roles = window.mailpoet_roles || {};
+const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
 
 const messages = {
   onTrash(response) {
@@ -60,7 +61,7 @@ const messages = {
   }
 };
 
-var columns = [
+const columns = [
   {
     name: 'subject',
     label: MailPoet.I18n.t('subject'),
@@ -68,7 +69,8 @@ var columns = [
   },
   {
     name: 'status',
-    label: MailPoet.I18n.t('status')
+    label: MailPoet.I18n.t('status'),
+    width: 145
   },
   {
     name: 'settings',
@@ -86,7 +88,7 @@ var columns = [
   }
 ];
 
-var bulk_actions = [
+const bulk_actions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('trash'),
@@ -94,7 +96,7 @@ var bulk_actions = [
   }
 ];
 
-var newsletter_actions = [
+const newsletter_actions = [
   {
     name: 'view',
     link: function(newsletter) {
@@ -160,7 +162,7 @@ const NewsletterListWelcome = React.createClass({
         // reset value to actual newsletter's status
          e.target.value = response.status;
       } else {
-        if(response.status === 'active') {
+        if (response.status === 'active') {
           MailPoet.Notice.success(MailPoet.I18n.t('welcomeEmailActivated'));
         }
         // force refresh of listing so that groups are updated
@@ -172,19 +174,21 @@ const NewsletterListWelcome = React.createClass({
     let total_sent;
     total_sent = (
       MailPoet.I18n.t('sentToXSubscribers')
-      .replace('%$1d', newsletter.total_sent)
+      .replace('%$1d', newsletter.total_sent.toLocaleString())
     );
 
     return (
       <div>
-        <select
-          data-id={ newsletter.id }
-          defaultValue={ newsletter.status }
-          onChange={ this.updateStatus }
-        >
-          <option value="active">{ MailPoet.I18n.t('active') }</option>
-          <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
-        </select>
+        <p>
+          <select
+            data-id={ newsletter.id }
+            defaultValue={ newsletter.status }
+            onChange={ this.updateStatus }
+          >
+            <option value="active">{ MailPoet.I18n.t('active') }</option>
+            <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
+          </select>
+        </p>
         <p>{ total_sent }</p>
       </div>
     );
@@ -253,8 +257,9 @@ const NewsletterListWelcome = React.createClass({
       return;
     }
 
-    if(newsletter.statistics && newsletter.queue && newsletter.queue.status !== 'scheduled') {
-      const total_sent = ~~(newsletter.queue.count_processed);
+    if (newsletter.total_sent > 0 && newsletter.statistics) {
+      const total_sent = ~~(newsletter.total_sent);
+
       const percentage_clicked = Math.round(
         (~~(newsletter.statistics.clicked) * 100) / total_sent
       );
@@ -277,7 +282,7 @@ const NewsletterListWelcome = React.createClass({
     }
   },
   renderItem: function(newsletter, actions) {
-    var rowClasses = classNames(
+    const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'
@@ -299,9 +304,11 @@ const NewsletterListWelcome = React.createClass({
         <td className="column" data-colname={ MailPoet.I18n.t('settings') }>
           { this.renderSettings(newsletter) }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
-          { this.renderStatistics(newsletter) }
-        </td>
+        { (mailpoet_tracking_enabled === true) ? (
+          <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
+            { this.renderStatistics(newsletter) }
+          </td>
+        ) : null }
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
         </td>

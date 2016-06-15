@@ -265,6 +265,7 @@ class Newsletters {
           ->withStatistics();
       } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
+          ->withOptions()
           ->withSegments()
           ->withStatistics();
       }
