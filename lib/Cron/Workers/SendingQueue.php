@@ -325,7 +325,12 @@ class SendingQueue {
 
       // set newsletter status to sent
       $newsletter = Newsletter::findOne($queue->newsletter_id);
-      $newsletter->setStatus(Newsletter::STATUS_SENT);
+      // if it's a standard newsletter, update its status
+      if($newsletter->type === Newsletter::TYPE_STANDARD) {
+        $newsletter->setStatus(Newsletter::STATUS_SENT);
+      } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+        // TODO: Check with Vlad
+      }
     }
     $queue->subscribers = serialize((array) $queue->subscribers);
     $queue->save();
