@@ -157,25 +157,4 @@ class SendingQueue {
       'result' => $result
     );
   }
-
-  function activate($newsletter_id) {
-    $newsletter = Newsletter::findOne($newsletter_id);
-    $result = false;
-
-    if($newsletter !== false) {
-      $queue = $newsletter->getQueue();
-
-      if($queue !== false) {
-        $result = $queue->resume();
-      }
-    }
-
-    return array(
-      'result' => $result
-    );
-  }
-
-  function deactivate($newsletter_id) {
-
-  }
 }
