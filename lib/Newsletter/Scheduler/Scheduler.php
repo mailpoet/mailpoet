@@ -18,7 +18,6 @@ class Scheduler {
   const INTERVAL_WEEKLY = 'weekly';
   const INTERVAL_MONTHLY = 'monthly';
   const INTERVAL_NTHWEEKDAY = 'nthWeekDay';
-  const STATUS_SCHEDULED = 'scheduled';
 
   static function processPostNotificationSchedule($newsletter_id) {
     $newsletter = Newsletter::filter('filterWithOptions')
@@ -168,7 +167,7 @@ class Scheduler {
       default:
         $scheduled_at = $current_time;
     }
-    $queue->status = self::STATUS_SCHEDULED;
+    $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->scheduled_at = $scheduled_at;
     $queue->save();
   }
@@ -182,7 +181,7 @@ class Scheduler {
     if($existing_queue) return;
     $queue = SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->status = self::STATUS_SCHEDULED;
+    $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->scheduled_at = $next_run_date;
     $queue->save();
     return $queue;
