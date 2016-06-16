@@ -3,6 +3,7 @@ namespace MailPoet\Newsletter\Links;
 
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
+use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 
 class Links {
@@ -39,16 +40,16 @@ class Links {
     }, $shortcodes);
     // extract urls with href="url" format
     preg_match_all($regex, $content, $matched_urls);
-    $matched_urls_count = count($matched_urls[1]);
+    $matched_urls_count = count($matched_urls[0]);
     if($matched_urls_count) {
-      for($index = 0; $index <= $matched_urls_count; $index++) {
+      for($index = 0; $index < $matched_urls_count; $index++) {
         $extracted_links[] = array(
           'html' => $matched_urls[0][$index],
           'link' => $matched_urls[2][$index]
         );
       }
     }
-    return $extracted_links;
+    return Helpers::arrayUnique($extracted_links);
   }
 
   static function process($content) {
@@ -79,9 +80,9 @@ class Links {
       // third, replace text version URL with tracked link: [description](url)
       // regex is used to avoid replacing description URLs that are wrapped in round brackets
       // i.e., <a href="http://google.com">(http://google.com)</a> => [(http://google.com)](http://tracked_link)
-      $regex_escaped_tracked_link = preg_quote($tracked_link, '/');
+      $regex_escaped_extracted_link = preg_quote($extracted_link['link'], '/');
       $content = preg_replace(
-        '/(\[' . $regex_escaped_tracked_link . '\])(\(' . $regex_escaped_tracked_link . '\))/',
+        '/\[(' . $regex_escaped_extracted_link . ')\](\(' . $regex_escaped_extracted_link . '\))/',
         '[$1](' . $tracked_link . ')',
         $content
       );
@@ -117,8 +118,9 @@ class Links {
     return $content;
   }
 
-  static function save($links, $newsletter_id, $queue_id) {
+  static function save(array $links, $newsletter_id, $queue_id) {
     foreach($links as $link) {
+      if(empty($link['hash'] || empty($link['url']))) continue;
       $newsletter_link = NewsletterLink::create();
       $newsletter_link->newsletter_id = $newsletter_id;
       $newsletter_link->queue_id = $queue_id;

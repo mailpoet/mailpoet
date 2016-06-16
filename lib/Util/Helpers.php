@@ -113,4 +113,13 @@ class Helpers {
     $func = create_function('$c', 'return "_" . strtolower($c[1]);');
     return preg_replace_callback('/([A-Z])/', $func, $str);
   }
+
+  static function arrayUnique($arr) {
+    return array_map(
+      'unserialize',
+      array_unique(
+        array_map('serialize', $arr)
+      )
+    );
+  }
 }
