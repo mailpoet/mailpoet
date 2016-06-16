@@ -322,6 +322,10 @@ class SendingQueue {
     if(!$queue->count_to_process) {
       $queue->processed_at = current_time('mysql');
       $queue->status = SendingQueueModel::STATUS_COMPLETED;
+
+      // set newsletter status to sent
+      $newsletter = Newsletter::findOne($queue->newsletter_id);
+      $newsletter->setStatus(Newsletter::STATUS_SENT);
     }
     $queue->subscribers = serialize((array) $queue->subscribers);
     $queue->save();

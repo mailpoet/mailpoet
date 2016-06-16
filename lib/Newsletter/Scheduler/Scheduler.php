@@ -182,7 +182,7 @@ class Scheduler {
     if($existing_queue) return;
     $queue = SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
-    $queue->status = 'scheduled';
+    $queue->status = self::STATUS_SCHEDULED;
     $queue->scheduled_at = $next_run_date;
     $queue->save();
     return $queue;

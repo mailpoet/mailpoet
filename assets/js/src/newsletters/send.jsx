@@ -105,8 +105,9 @@ define(
             }
           }).done((response) => {
             this.setState({ loading: false });
+
             if(response.result === true) {
-              this.context.router.push('/');
+              this.context.router.push(`/${ this.state.item.type || '' }`);
               MailPoet.Notice.success(response.data.message);
             } else {
               if(response.errors) {
@@ -133,7 +134,7 @@ define(
           this.setState({ loading: false });
 
           if(response.result === true) {
-            this.context.router.push('/');
+            this.context.router.push(`/${ this.state.item.type || '' }`);
             MailPoet.Notice.success(
               MailPoet.I18n.t('newsletterUpdated')
             );

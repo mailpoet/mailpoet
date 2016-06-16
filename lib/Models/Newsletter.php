@@ -86,12 +86,24 @@ class Newsletter extends Model {
         foreach($segments as $segment) {
           $relation = NewsletterSegment::create();
           $relation->segment_id = $segment['id'];
-          $relation->newsletter_id = $duplicate->id();
-          $result = $relation->save();
+          $relation->newsletter_id = $duplicate->id;
+          $relation->save();
         }
       }
 
-      // TODO: duplicate options (if need be)
+      // duplicate options
+      $options = NewsletterOption::where('newsletter_id', $this->id)
+        ->findArray();
+
+      if(!empty($options)) {
+        foreach($options as $option) {
+          $relation = NewsletterOption::create();
+          $relation->newsletter_id = $duplicate->id;
+          $relation->option_field_id = $option['option_field_id'];
+          $relation->value = $option['value'];
+          $relation->save();
+        }
+      }
     }
 
     return $duplicate;

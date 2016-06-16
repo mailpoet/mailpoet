@@ -94,12 +94,12 @@ const bulk_actions = [
   }
 ];
 
-const item_actions = [
+const newsletter_actions = [
   {
     name: 'view',
-    link: function(item) {
+    link: function(newsletter) {
       return (
-        <a href={ item.preview_url } target="_blank">
+        <a href={ newsletter.preview_url } target="_blank">
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -107,9 +107,9 @@ const item_actions = [
   },
   {
     name: 'edit',
-    link: function(item) {
+    link: function(newsletter) {
       return (
-        <a href={ `?page=mailpoet-newsletter-editor&id=${ item.id }` }>
+        <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
           {MailPoet.I18n.t('edit')}
         </a>
       );
@@ -118,11 +118,11 @@ const item_actions = [
   {
     name: 'duplicate',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: function(item, refresh) {
+    onClick: function(newsletter, refresh) {
       return MailPoet.Ajax.post({
         endpoint: 'newsletters',
         action: 'duplicate',
-        data: item.id
+        data: newsletter.id
       }).done(function(response) {
         if (response !== false && response.subject !== undefined) {
           MailPoet.Notice.success(
@@ -141,77 +141,77 @@ const item_actions = [
 ];
 
 const NewsletterListStandard = React.createClass({
-  pauseSending: function(item) {
+  pauseSending: function(newsletter) {
     MailPoet.Ajax.post({
       endpoint: 'sendingQueue',
       action: 'pause',
-      data: item.id
+      data: newsletter.id
     }).done(function() {
-      jQuery('#resume_'+item.id).show();
-      jQuery('#pause_'+item.id).hide();
+      jQuery('#resume_'+newsletter.id).show();
+      jQuery('#pause_'+newsletter.id).hide();
     });
   },
-  resumeSending: function(item) {
+  resumeSending: function(newsletter) {
     MailPoet.Ajax.post({
       endpoint: 'sendingQueue',
       action: 'resume',
-      data: item.id
+      data: newsletter.id
     }).done(function() {
-      jQuery('#pause_'+item.id).show();
-      jQuery('#resume_'+item.id).hide();
+      jQuery('#pause_'+newsletter.id).show();
+      jQuery('#resume_'+newsletter.id).hide();
     });
   },
-  renderStatus: function(item) {
-    if(!item.queue) {
+  renderStatus: function(newsletter) {
+    if (!newsletter.queue) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
     } else {
-      if (item.queue.status === 'scheduled') {
+      if (newsletter.queue.status === 'scheduled') {
         return (
-          <span>{MailPoet.I18n.t('scheduledFor')}  { MailPoet.Date.format(item.queue.scheduled_at) } </span>
+          <span>{MailPoet.I18n.t('scheduledFor')}  { MailPoet.Date.format(newsletter.queue.scheduled_at) } </span>
         )
       }
       const progressClasses = classNames(
         'mailpoet_progress',
-        { 'mailpoet_progress_complete': item.queue.status === 'completed'}
+        { 'mailpoet_progress_complete': newsletter.queue.status === 'completed'}
       );
 
       // calculate percentage done
       const percentage = Math.round(
-        (item.queue.count_processed * 100) / (item.queue.count_total)
+        (newsletter.queue.count_processed * 100) / (newsletter.queue.count_total)
       );
 
       let label;
 
-      if(item.queue.status === 'completed') {
+      if (newsletter.queue.status === 'completed') {
         label = (
           <span>
             {
               MailPoet.I18n.t('newsletterQueueCompleted')
-              .replace("%$1d", item.queue.count_processed - item.queue.count_failed)
-              .replace("%$2d", item.queue.count_total)
+              .replace("%$1d", newsletter.queue.count_processed - newsletter.queue.count_failed)
+              .replace("%$2d", newsletter.queue.count_total)
             }
           </span>
         );
       } else {
         label = (
           <span>
-            { item.queue.count_processed } / { item.queue.count_total }
+            { newsletter.queue.count_processed } / { newsletter.queue.count_total }
             &nbsp;&nbsp;
             <a
-              id={ 'resume_'+item.id }
+              id={ 'resume_'+newsletter.id }
               className="button"
-              style={{ display: (item.queue.status === 'paused') ? 'inline-block': 'none' }}
+              style={{ display: (newsletter.queue.status === 'paused') ? 'inline-block': 'none' }}
               href="javascript:;"
-              onClick={ this.resumeSending.bind(null, item) }
+              onClick={ this.resumeSending.bind(null, newsletter) }
             >{MailPoet.I18n.t('resume')}</a>
             <a
-              id={ 'pause_'+item.id }
+              id={ 'pause_'+newsletter.id }
               className="button mailpoet_pause"
-              style={{ display: (item.queue.status === null) ? 'inline-block': 'none' }}
+              style={{ display: (newsletter.queue.status === null) ? 'inline-block': 'none' }}
               href="javascript:;"
-              onClick={ this.pauseSending.bind(null, item) }
+              onClick={ this.pauseSending.bind(null, newsletter) }
             >{MailPoet.I18n.t('pause')}</a>
           </span>
         );
@@ -240,17 +240,24 @@ const NewsletterListStandard = React.createClass({
       return;
     }
 
-    if(newsletter.statistics && newsletter.queue && newsletter.queue.status !== 'scheduled') {
+    if (newsletter.statistics && newsletter.queue && newsletter.queue.status !== 'scheduled') {
       const total_sent = ~~(newsletter.queue.count_processed);
-      const percentage_clicked = Math.round(
-        (~~(newsletter.statistics.clicked) * 100) / total_sent
-      );
-      const percentage_opened = Math.round(
-        (~~(newsletter.statistics.opened) * 100) / total_sent
-      );
-      const percentage_unsubscribed = Math.round(
-        (~~(newsletter.statistics.unsubscribed) * 100) / total_sent
-      );
+
+      let percentage_clicked = 0;
+      let percentage_opened = 0;
+      let percentage_unsubscribed = 0;
+
+      if (total_sent > 0) {
+        percentage_clicked = Math.round(
+          (~~(newsletter.statistics.clicked) * 100) / total_sent
+        );
+        percentage_opened = Math.round(
+          (~~(newsletter.statistics.opened) * 100) / total_sent
+        );
+        percentage_unsubscribed = Math.round(
+          (~~(newsletter.statistics.unsubscribed) * 100) / total_sent
+        );
+      }
 
       return (
         <span>
@@ -318,7 +325,7 @@ const NewsletterListStandard = React.createClass({
           onRenderItem={this.renderItem}
           columns={columns}
           bulk_actions={ bulk_actions }
-          item_actions={ item_actions }
+          item_actions={ newsletter_actions }
           messages={ messages }
           auto_refresh={ true }
         />
