@@ -23,7 +23,7 @@ define(
       },
       {
         name: 'options',
-        label: MailPoet.I18n.t('selectPeriodicity'),
+        label: MailPoet.I18n.t('selectFrequency'),
         type: 'reactComponent',
         component: Scheduling,
       },
