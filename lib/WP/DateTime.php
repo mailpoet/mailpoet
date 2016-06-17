@@ -40,7 +40,7 @@ class DateTime {
 
   /**
    * Generates a list of time strings within an interval,
-   * formatted and mapped from DEFAULT_TIME_FORMAT to Wordpress time strings.
+   * formatted and mapped from DEFAULT_TIME_FORMAT to WordPress time strings.
    */
   function getTimeInterval(
     $start_time='00:00:00',

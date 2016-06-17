@@ -165,7 +165,9 @@ class NewsletterTest extends MailPoetTest {
 
     // filter by segment
     $newsletters = Newsletter::filter('filterBy', array(
-      'segment' => $this->segment_1->id
+      'filter' => array(
+        'segment' => $this->segment_1->id
+      )
     ))->findArray();
 
     expect($newsletters)->count(1);
@@ -175,28 +177,39 @@ class NewsletterTest extends MailPoetTest {
     NewsletterSegment::deleteMany();
 
     $newsletters = Newsletter::filter('filterBy', array(
-      'segment' => $this->segment_1->id
-    ))->findArray();
+      'filter' => array(
+        'segment' => $this->segment_1->id
+      )))->findArray();
 
     expect($newsletters)->isEmpty();
   }
 
   function testItCanBeGrouped() {
-    $newsletters = Newsletter::filter('groupBy', 'all')->findArray();
+    $newsletters = Newsletter::filter('groupBy', array(
+      'group' => 'all'
+    ))->findArray();
     expect($newsletters)->count(1);
 
-    $newsletters = Newsletter::filter('groupBy', 'trash')->findArray();
+    $newsletters = Newsletter::filter('groupBy', array(
+      'group' => 'trash'
+    ))->findArray();
     expect($newsletters)->count(0);
 
     $this->newsletter->trash();
-    $newsletters = Newsletter::filter('groupBy', 'trash')->findArray();
+    $newsletters = Newsletter::filter('groupBy', array(
+      'group' => 'trash'
+    ))->findArray();
     expect($newsletters)->count(1);
 
-    $newsletters = Newsletter::filter('groupBy', 'all')->findArray();
+    $newsletters = Newsletter::filter('groupBy', array(
+      'group' => 'all'
+    ))->findArray();
     expect($newsletters)->count(0);
 
     $this->newsletter->restore();
-    $newsletters = Newsletter::filter('groupBy', 'all')->findArray();
+    $newsletters = Newsletter::filter('groupBy', array(
+      'group' => 'all'
+    ))->findArray();
     expect($newsletters)->count(1);
   }
 

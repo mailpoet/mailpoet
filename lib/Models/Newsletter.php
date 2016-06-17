@@ -1,12 +1,24 @@
 <?php
 namespace MailPoet\Models;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
-  const TYPE_WELCOME = 'wecome';
+
+  const TYPE_STANDARD = 'standard';
+  const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
+
+  // standard newsletters
+  const STATUS_DRAFT = 'draft';
+  const STATUS_SCHEDULED = 'scheduled';
+  const STATUS_SENDING = 'sending';
+  const STATUS_SENT = 'sent';
+  // automatic newsletters status
+  const STATUS_ACTIVE = 'active';
+
 
   function __construct() {
     parent::__construct();
@@ -27,6 +39,74 @@ class Newsletter extends Model {
       : $this->body
     );
     return parent::save();
+  }
+
+  function setStatus($status = null) {
+    if(in_array($status, array(
+      self::STATUS_DRAFT,
+      self::STATUS_SCHEDULED,
+      self::STATUS_SENDING,
+      self::STATUS_SENT,
+      self::STATUS_ACTIVE
+    ))) {
+      $this->set('status', $status);
+      $this->save();
+    }
+    return $this;
+  }
+
+  function duplicate($data = array()) {
+    // get current newsletter's data as an array
+    $newsletter_data = $this->asArray();
+
+    // remove id so that it creates a new record
+    unset($newsletter_data['id']);
+
+    // merge data with newsletter data (allows override)
+    $data = array_merge($newsletter_data, $data);
+
+    $duplicate = self::create();
+    $duplicate->hydrate($data);
+
+    // reset timestamps
+    $duplicate->set_expr('created_at', 'NOW()');
+    $duplicate->set_expr('updated_at', 'NOW()');
+    $duplicate->set_expr('deleted_at', 'NULL');
+
+    // reset status
+    $duplicate->set('status', self::STATUS_DRAFT);
+
+    $duplicate->save();
+
+    if($duplicate->getErrors() === false) {
+      // create relationships between duplicate and segments
+      $segments = $this->segments()->findArray();
+
+      if(!empty($segments)) {
+        foreach($segments as $segment) {
+          $relation = NewsletterSegment::create();
+          $relation->segment_id = $segment['id'];
+          $relation->newsletter_id = $duplicate->id;
+          $relation->save();
+        }
+      }
+
+      // duplicate options
+      $options = NewsletterOption::where('newsletter_id', $this->id)
+        ->findArray();
+
+      if(!empty($options)) {
+        foreach($options as $option) {
+          $relation = NewsletterOption::create();
+          $relation->newsletter_id = $duplicate->id;
+          $relation->option_field_id = $option['option_field_id'];
+          $relation->value = $option['value'];
+          $relation->save();
+        }
+      }
+    }
+
+    return $duplicate;
   }
 
   function asArray() {
@@ -84,6 +164,24 @@ class Newsletter extends Model {
     return $this;
   }
 
+  function withOptions() {
+    $options = $this->options()->findArray();
+    if(empty($options)) {
+      $this->options = array();
+    } else {
+      $this->options = Helpers::arrayColumn($options, 'value', 'name');
+    }
+    return $this;
+  }
+
+  function withTotalSent() {
+    // total of subscribers who received the email
+    $this->total_sent = (int)SendingQueue::where('newsletter_id', $this->id)
+      ->where('status', SendingQueue::STATUS_COMPLETED)
+      ->sum('count_processed');
+    return $this;
+  }
+
   function withStatistics() {
     $statistics = $this->getStatistics();
     if($statistics === false) {
@@ -91,6 +189,7 @@ class Newsletter extends Model {
     } else {
       $this->statistics = $statistics->asArray();
     }
+
     return $this;
   }
 
@@ -100,9 +199,9 @@ class Newsletter extends Model {
     }
     return SendingQueue::tableAlias('queues')
       ->selectExpr(
-        'count(DISTINCT(clicks.subscriber_id)) as clicked, ' .
-        'count(DISTINCT(opens.subscriber_id)) as opened, ' .
-        'count(DISTINCT(unsubscribes.subscriber_id)) as unsubscribed '
+        'COUNT(DISTINCT(clicks.subscriber_id)) as clicked, ' .
+        'COUNT(DISTINCT(opens.subscriber_id)) as opened, ' .
+        'COUNT(DISTINCT(unsubscribes.subscriber_id)) as unsubscribed '
       )
       ->leftOuterJoin(
         MP_STATISTICS_CLICKS_TABLE,
@@ -124,10 +223,13 @@ class Newsletter extends Model {
   }
 
   static function search($orm, $search = '') {
-    return $orm->where_like('subject', '%' . $search . '%');
+    if(strlen(trim($search)) > 0) {
+      $orm->whereLike('subject', '%' . $search . '%');
+    }
+    return $orm;
   }
 
-  static function filters($orm, $group = 'all') {
+  static function filters($data = array()) {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
@@ -136,13 +238,16 @@ class Newsletter extends Model {
     );
 
     foreach($segments as $segment) {
-      $newsletters_count = $segment->newsletters()
-        ->filter('groupBy', $group)
-        ->count();
+      $newsletters = $segment->newsletters()
+        ->filter('filterType', $data['tab'])
+        ->filter('groupBy', $data);
+
+      $newsletters_count = $newsletters->count();
+
       if($newsletters_count > 0) {
         $segment_list[] = array(
           'label' => sprintf('%s (%d)', $segment->name, $newsletters_count),
-          'value' => $segment->id()
+          'value' => $segment->id
         );
       }
     }
@@ -154,13 +259,15 @@ class Newsletter extends Model {
     return $filters;
   }
 
-  static function filterBy($orm, $filters = null) {
-    if(!empty($filters)) {
-      foreach($filters as $key => $value) {
+  static function filterBy($orm, $data = array()) {
+    $type = isset($data['tab']) ? $data['tab'] : null;
+
+    if(!empty($data['filter'])) {
+      foreach($data['filter'] as $key => $value) {
         if($key === 'segment') {
           $segment = Segment::findOne($value);
           if($segment !== false) {
-            $orm = $segment->newsletters();
+            $orm = $segment->newsletters()->filter('filterType', $type);
           }
         }
       }
@@ -190,26 +297,152 @@ class Newsletter extends Model {
     return $orm;
   }
 
-  static function groups() {
-    return array(
+  static function groups($data = array()) {
+    $type = isset($data['tab']) ? $data['tab'] : null;
+
+    $groups = array(
       array(
         'name' => 'all',
         'label' => __('All'),
-        'count' => Newsletter::getPublished()->count()
-      ),
-      array(
-        'name' => 'trash',
-        'label' => __('Trash'),
-        'count' => Newsletter::getTrashed()->count()
+        'count' => Newsletter::getPublished()
+          ->filter('filterType', $type)
+          ->count()
       )
     );
+
+    switch($type) {
+      case self::TYPE_STANDARD:
+        $groups = array_merge($groups, array(
+          array(
+            'name' => self::STATUS_DRAFT,
+            'label' => __('Draft'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_DRAFT)
+              ->count()
+          ),
+          array(
+            'name' => self::STATUS_SCHEDULED,
+            'label' => __('Scheduled'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_SCHEDULED)
+              ->count()
+          ),
+          array(
+            'name' => self::STATUS_SENDING,
+            'label' => __('Sending'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_SENDING)
+              ->count()
+          ),
+          array(
+            'name' => self::STATUS_SENT,
+            'label' => __('Sent'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_SENT)
+              ->count()
+          )
+        ));
+      break;
+
+      case self::TYPE_WELCOME:
+      case self::TYPE_NOTIFICATION:
+        $groups = array_merge($groups, array(
+          array(
+            'name' => self::STATUS_ACTIVE,
+            'label' => __('Active'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_ACTIVE)
+              ->count()
+          ),
+          array(
+            'name' => self::STATUS_DRAFT,
+            'label' => __('Not active'),
+            'count' => Newsletter::getPublished()
+              ->filter('filterType', $type)
+              ->filter('filterStatus', self::STATUS_DRAFT)
+              ->count()
+          )
+        ));
+      break;
+    }
+
+    $groups[] = array(
+      'name' => 'trash',
+      'label' => __('Trash'),
+      'count' => Newsletter::getTrashed()
+        ->filter('filterType', $type)
+        ->count()
+    );
+
+    return $groups;
   }
 
-  static function groupBy($orm, $group = null) {
-    if($group === 'trash') {
-      return $orm->whereNotNull('deleted_at');
+  static function groupBy($orm, $data = array()) {
+    $group = (!empty($data['group'])) ? $data['group'] : 'all';
+
+    switch($group) {
+      case self::STATUS_DRAFT:
+      case self::STATUS_SCHEDULED:
+      case self::STATUS_SENDING:
+      case self::STATUS_SENT:
+      case self::STATUS_ACTIVE:
+        $orm
+          ->whereNull('deleted_at')
+          ->filter('filterStatus', $group);
+      break;
+
+      case 'trash':
+        $orm->whereNotNull('deleted_at');
+      break;
+
+      default:
+        $orm->whereNull('deleted_at');
     }
-    return $orm->whereNull('deleted_at');
+    return $orm;
+  }
+
+  static function filterStatus($orm, $status = false) {
+    if(in_array($status, array(
+      self::STATUS_DRAFT,
+      self::STATUS_SCHEDULED,
+      self::STATUS_SENDING,
+      self::STATUS_SENT,
+      self::STATUS_ACTIVE
+    ))) {
+      $orm->where('status', $status);
+    }
+    return $orm;
+  }
+
+  static function filterType($orm, $type = false) {
+    if(in_array($type, array(
+      self::TYPE_STANDARD,
+      self::TYPE_WELCOME,
+      self::TYPE_NOTIFICATION
+    ))) {
+      $orm->where('type', $type);
+    }
+    return $orm;
+  }
+
+  static function listingQuery($data = array()) {
+    return self::select(array(
+        'id',
+        'subject',
+        'type',
+        'status',
+        'updated_at',
+        'deleted_at'
+      ))
+      ->filter('filterType', $data['tab'])
+      ->filter('filterBy', $data)
+      ->filter('groupBy', $data)
+      ->filter('search', $data['search']);
   }
 
   static function createOrUpdate($data = array()) {

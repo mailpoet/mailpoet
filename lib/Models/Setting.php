@@ -41,7 +41,10 @@ class Setting extends Model {
       'signup_confirmation' => array(
         'enabled' => true,
         'subject' => sprintf(__('Confirm your subscription to %1$s'), get_option('blogname')),
-        'body' => __("Hello!\n\nHurray! You've subscribed to our site.\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe team!")
+        'body' => __("Hello!\n\nHurray! You've subscribed to our site.\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team")
+      ),
+      'tracking' => array(
+        'enabled' => true
       )
     );
   }
@@ -53,7 +56,11 @@ class Setting extends Model {
     if(count($keys) === 1) {
       $setting = Setting::where('name', $key)->findOne();
       if($setting === false) {
-        return $default;
+        if($default === null && array_key_exists($key, $defaults)) {
+          return $defaults[$key];
+        } else {
+          return $default;
+        }
       } else {
         if(is_serialized($setting->value)) {
           $value = unserialize($setting->value);

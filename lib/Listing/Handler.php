@@ -8,12 +8,16 @@ class Handler {
 
   private $data = array();
   private $model = null;
+  private $model_class = null;
 
   function __construct($model_class, $data = array()) {
-    $class = new \ReflectionClass($model_class);
-    $this->table_name = $class->getStaticPropertyValue('_table');
-    $this->model = $model_class::select('*');
+    $this->table_name = $model_class::$_table;
+    $this->model_class = $model_class;
+    $this->model = \Model::factory($this->model_class);
+
     $this->data = array(
+      // tabs
+      'tab' => (isset($data['tab']) ? $data['tab'] : false),
       // pagination
       'offset' => (isset($data['offset']) ? (int)$data['offset'] : 0),
       'limit' => (isset($data['limit'])
@@ -32,11 +36,6 @@ class Handler {
       // selection
       'selection' => (isset($data['selection']) ? $data['selection'] : null)
     );
-
-    $this->setFilter();
-    $this->setSearch();
-    $this->setGroup();
-    $this->setOrder();
   }
 
   private function setSearch() {
@@ -67,10 +66,21 @@ class Handler {
   }
 
   function getSelection() {
-    if(!empty($this->data['selection'])) {
-      $this->model->whereIn($this->table_name.'.id', $this->data['selection']);
+    if(method_exists($this->model_class, 'listingQuery')) {
+      $custom_query = call_user_func_array(
+        array($this->model_class, 'listingQuery'),
+        array($this->data)
+      );
+      if(!empty($this->data['selection'])) {
+        $custom_query->whereIn($this->table_name.'.id', $this->data['selection']);
+      }
+      return $custom_query;
+    } else {
+      if(!empty($this->data['selection'])) {
+        $this->model->whereIn($this->table_name.'.id', $this->data['selection']);
+      }
+      return $this->model;
     }
-    return $this->model;
   }
 
   function getSelectionIds() {
@@ -84,17 +94,59 @@ class Handler {
   }
 
   function get() {
-    $count = $this->model->count();
+    // get groups
+    $groups = array();
+    if(method_exists($this->model_class, 'groups')) {
+      $groups = call_user_func_array(
+        array($this->model_class, 'groups'),
+        array($this->data)
+      );
+    }
 
-    $items = $this->model
-      ->offset($this->data['offset'])
-      ->limit($this->data['limit'])
-      ->findMany();
+    // get filters
+    $filters = array();
+    if(method_exists($this->model_class, 'filters')) {
+      $filters = call_user_func_array(
+        array($this->model_class, 'filters'),
+        array($this->data)
+      );
+    }
+
+    if(method_exists($this->model_class, 'listingQuery')) {
+      $custom_query = call_user_func_array(
+        array($this->model_class, 'listingQuery'),
+        array($this->data)
+      );
+
+      $count = $custom_query->count();
+
+      $items = $custom_query
+        ->offset($this->data['offset'])
+        ->limit($this->data['limit'])
+        ->{'order_by_'.$this->data['sort_order']}(
+          $this->table_name.'.'.$this->data['sort_by']
+        )
+        ->findMany();
+
+    } else {
+      $this->setFilter();
+      $this->setGroup();
+      $this->setSearch();
+      $this->setOrder();
+
+      $count = $this->model->count();
+
+      $items = $this->model
+        ->offset($this->data['offset'])
+        ->limit($this->data['limit'])
+        ->findMany();
+    }
+
 
     return array(
       'count' => $count,
-      'filters' => $this->model->filter('filters', $this->data['group']),
-      'groups' => $this->model->filter('groups'),
+      'filters' => $filters,
+      'groups' => $groups,
       'items' => $items
     );
   }

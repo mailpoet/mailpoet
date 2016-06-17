@@ -9,12 +9,14 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
   function add($data) {
+    // check that the sending method has been configured properly
     try {
       new Mailer(false);
     } catch(\Exception $e) {
@@ -24,59 +26,81 @@ class SendingQueue {
       );
     }
 
+    // check that the newsletter exists
     $newsletter = Newsletter::filter('filterWithOptions')
       ->findOne($data['newsletter_id']);
-    if(!$newsletter) {
+
+    if($newsletter === false) {
       return array(
         'result' => false,
-        'errors' => array(__('Newsletter does not exist.'))
+        'errors' => array(__('This newsletter does not exist.'))
       );
     }
 
-    if($newsletter->type === 'welcome') {
-      return array(
-        'result' => true,
-        'data' => array(
-          'message' => __('Your welcome notification is activated.')
-        )
-      );
-    } elseif ($newsletter->type === 'notification') {
+    if($newsletter->type === Newsletter::TYPE_WELCOME) {
+      // set welcome email active
+      $result = $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
+      $errors = $result->getErrors();
+
+      if(!empty($errors)) {
+        return array(
+          'result' => false,
+          'errors' => $errors
+        );
+      } else {
+        return array(
+          'result' => true,
+          'data' => array(
+            'message' => __('Your welcome email has been activated.')
+          )
+        );
+      }
+    } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+      // Post Notifications
       $newsletter = Scheduler::processPostNotificationSchedule($newsletter->id);
       Scheduler::createPostNotificationQueue($newsletter);
+
+      // set post notification active
+      $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
     }
 
-    $queue = \MailPoet\Models\SendingQueue::whereNull('status')
+    $queue = SendingQueueModel::whereNull('status')
       ->where('newsletter_id', $newsletter->id)
       ->findOne();
+
     if(!empty($queue)) {
       return array(
         'result' => false,
-        'errors' => array(__('Send operation is already in progress.'))
+        'errors' => array(__('This newsletter is already being sent.'))
       );
     }
 
-    $queue = \MailPoet\Models\SendingQueue::where('status', 'scheduled')
-      ->where('newsletter_id', $newsletter->id)
+    $queue = SendingQueueModel::where('newsletter_id', $newsletter->id)
+      ->where('status', SendingQueueModel::STATUS_SCHEDULED)
       ->findOne();
     if(!$queue) {
-      $queue = \MailPoet\Models\SendingQueue::create();
+      $queue = SendingQueueModel::create();
       $queue->newsletter_id = $newsletter->id;
     }
 
-    if($newsletter->type === 'notification') {
+    if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
       $queue->scheduled_at = Scheduler::getNextRunDate($newsletter->schedule);
-      $queue->status = 'scheduled';
+      $queue->status = SendingQueueModel::STATUS_SCHEDULED;
       $queue->save();
       return array(
         'result' => true,
         'data' => array(
-          'message' => __('Your post notifications are activated.')
+          'message' => __('Your post notification has been activated.')
         )
       );
     }
 
-    if ((bool)$newsletter->isScheduled) {
-      $queue->status = 'scheduled';
+    if((bool)$newsletter->isScheduled) {
+      // set newsletter status
+      $newsletter->setStatus(Newsletter::STATUS_SCHEDULED);
+
+      // set queue status
+      $queue->status = SendingQueueModel::STATUS_SCHEDULED;
       $queue->scheduled_at = Scheduler::scheduleFromTimestamp(
         $newsletter->scheduledAt
       );
@@ -103,6 +127,9 @@ class SendingQueue {
         )
       );
       $queue->count_total = $queue->count_to_process = count($subscribers);
+
+      // set newsletter status
+      $newsletter->setStatus(Newsletter::STATUS_SENDING);
 
       $message = __('The newsletter is being sent...');
     }

@@ -91,7 +91,7 @@ class Mailer {
 
   function getMailer($mailer = false) {
     if(!$mailer) {
-      $mailer = Setting::getValue('mta', null);
+      $mailer = Setting::getValue('mta');
       if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured.'));
     }
     $mailer['class'] = 'MailPoet\\Mailer\\Methods\\' . $mailer['method'];

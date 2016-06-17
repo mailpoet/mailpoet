@@ -98,6 +98,28 @@ class Newsletters {
     }
   }
 
+  function setStatus($data = array()) {
+    $id = (isset($data['id'])) ? (int)$data['id'] : null;
+    $newsletter = Newsletter::findOne($id);
+    $status = (isset($data['status']) ? $data['status'] : null);
+
+    $result = false;
+    $errors = array();
+
+    if($newsletter !== false && $status !== null) {
+      $newsletter->setStatus($status);
+
+      $result = (
+        $newsletter->getErrors() === false && $newsletter->status === $status
+      );
+    }
+
+    return array(
+      'result' => $result,
+      'status' => $newsletter->status
+    );
+  }
+
   function restore($id) {
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
@@ -124,13 +146,19 @@ class Newsletters {
   }
 
   function duplicate($id = false) {
+    $result = false;
+
     $newsletter = Newsletter::findOne($id);
     if($newsletter !== false) {
-      return $newsletter->duplicate(array(
+      $duplicate = $newsletter->duplicate(array(
         'subject' => sprintf(__('Copy of %s'), $newsletter->subject)
-      ))->asArray();
+      ));
+
+      if($duplicate !== false && $duplicate->getErrors() === false) {
+        $result = $duplicate->asArray();
+      }
     }
-    return false;
+    return $result;
   }
 
   function showPreview($data = array()) {
@@ -140,7 +168,7 @@ class Newsletters {
         'errors' => array(__('Newsletter data is missing.'))
       );
     }
-    $newsletter_id = (isset($data['id'])) ? (int)$data['id'] : 0;
+    $newsletter_id = (isset($data['id'])) ? (int)$data['id'] : null;
     $newsletter = Newsletter::findOne($newsletter_id);
     if(!$newsletter) {
       return array(
@@ -150,7 +178,7 @@ class Newsletters {
     }
     $newsletter->body = $data['body'];
     $newsletter->save();
-    $wp_user =wp_get_current_user();
+    $wp_user = wp_get_current_user();
     $subscriber = Subscriber::where('email', $wp_user->data->user_email)
       ->findOne();
     $subscriber = ($subscriber) ? $subscriber->asArray() : $subscriber;
@@ -162,7 +190,7 @@ class Newsletters {
   }
 
   function sendPreview($data = array()) {
-    $id = (isset($data['id'])) ? (int)$data['id'] : 0;
+    $id = (isset($data['id'])) ? (int)$data['id'] : null;
     $newsletter = Newsletter::findOne($id);
 
     if($newsletter === false) {
@@ -221,16 +249,31 @@ class Newsletters {
       '\MailPoet\Models\Newsletter',
       $data
     );
-
     $listing_data = $listing->get();
 
     foreach($listing_data['items'] as $key => $newsletter) {
-      $newsletter = $newsletter
-        ->withSegments()
-        ->withSendingQueue();
-      if((boolean) Setting::getValue('tracking.enabled')) {
-        $newsletter = $newsletter->withStatistics();
+
+      if($newsletter->type === Newsletter::TYPE_STANDARD) {
+        $newsletter
+          ->withSegments()
+          ->withSendingQueue()
+          ->withStatistics();
+      } else if($newsletter->type === Newsletter::TYPE_WELCOME) {
+        $newsletter
+          ->withOptions()
+          ->withTotalSent()
+          ->withStatistics();
+      } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+        $newsletter
+          ->withOptions()
+          ->withSegments()
+          ->withStatistics();
       }
+
+      // get preview url
+      $newsletter->preview_url = NewsletterUrl::getViewInBrowserUrl($newsletter);
+
+      // convert object to array
       $listing_data['items'][$key] = $newsletter->asArray();
     }
 

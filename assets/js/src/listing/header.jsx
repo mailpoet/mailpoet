@@ -87,9 +87,9 @@ define([
         <th
           className={ classes }
           id={this.props.column.name }
-          scope="col">
-          {label}
-        </th>
+          scope="col"
+          width={ this.props.column.width || null }
+        >{label}</th>
       );
     }
   });

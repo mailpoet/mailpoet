@@ -18,7 +18,6 @@ define(
 
     var field = {
       name: 'options',
-      label: 'Periodicity',
       type: 'reactComponent',
       component: Scheduling,
     };

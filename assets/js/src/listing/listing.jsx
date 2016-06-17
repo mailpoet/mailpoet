@@ -431,6 +431,7 @@ define(
             endpoint: this.props.endpoint,
             action: 'listing',
             data: {
+              tab: (this.props.tab) ? this.props.tab : '',
               offset: (this.state.page - 1) * this.state.limit,
               limit: this.state.limit,
               group: this.state.group,
@@ -539,6 +540,7 @@ define(
 
         var data = params || {};
         data.listing = {
+          tab: (this.props.tab) ? this.props.tab : '',
           offset: 0,
           limit: 0,
           filter: this.state.filter,
@@ -674,6 +676,12 @@ define(
             sort_by =  this.state.sort_by,
             sort_order =  this.state.sort_order;
 
+        // columns
+        var columns = this.props.columns || [];
+        columns = columns.filter(function(column) {
+          return (column.display === undefined || !!(column.display) === true);
+        });
+
         // bulk actions
         var bulk_actions = this.props.bulk_actions || [];
 
@@ -759,7 +767,7 @@ define(
                   selection={ this.state.selection }
                   sort_by={ sort_by }
                   sort_order={ sort_order }
-                  columns={ this.props.columns }
+                  columns={ columns }
                   is_selectable={ bulk_actions.length > 0 } />
               </thead>
 
@@ -769,7 +777,7 @@ define(
                 onRestoreItem={ this.handleRestoreItem }
                 onTrashItem={ this.handleTrashItem }
                 onRefreshItems={ this.handleRefreshItems }
-                columns={ this.props.columns }
+                columns={ columns }
                 is_selectable={ bulk_actions.length > 0 }
                 onSelectItem={ this.handleSelectItem }
                 onSelectAll={ this.handleSelectAll }
@@ -789,7 +797,7 @@ define(
                   selection={ this.state.selection }
                   sort_by={ sort_by }
                   sort_order={ sort_order }
-                  columns={ this.props.columns }
+                  columns={ columns }
                   is_selectable={ bulk_actions.length > 0 } />
               </tfoot>
 

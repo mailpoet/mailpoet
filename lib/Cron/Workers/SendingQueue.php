@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsNewsletters;
@@ -23,7 +24,6 @@ class SendingQueue {
   private $timer;
   const BATCH_SIZE = 50;
   const DIVIDER = '***MailPoet***';
-  const STATUS_COMPLETED = 'completed';
 
   function __construct($timer = false) {
     $this->mta_config = $this->getMailerConfig();
@@ -295,7 +295,7 @@ class SendingQueue {
   }
 
   function getQueues() {
-    return \MailPoet\Models\SendingQueue::orderByDesc('priority')
+    return SendingQueueModel::orderByDesc('priority')
       ->whereNull('deleted_at')
       ->whereNull('status')
       ->findResultSet();
@@ -321,7 +321,16 @@ class SendingQueue {
       $queue->count_processed + $queue->count_to_process;
     if(!$queue->count_to_process) {
       $queue->processed_at = current_time('mysql');
-      $queue->status = self::STATUS_COMPLETED;
+      $queue->status = SendingQueueModel::STATUS_COMPLETED;
+
+      // set newsletter status to sent
+      $newsletter = Newsletter::findOne($queue->newsletter_id);
+      // if it's a standard newsletter, update its status
+      if($newsletter->type === Newsletter::TYPE_STANDARD) {
+        $newsletter->setStatus(Newsletter::STATUS_SENT);
+      } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+        // TODO: Check with Vlad
+      }
     }
     $queue->subscribers = serialize((array) $queue->subscribers);
     $queue->save();

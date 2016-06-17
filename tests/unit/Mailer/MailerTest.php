@@ -1,5 +1,6 @@
 <?php
 use MailPoet\Mailer\Mailer;
+use MailPoet\Models\Setting;
 
 class MailerTest extends MailPoetTest {
   function _before() {
@@ -65,6 +66,9 @@ class MailerTest extends MailPoetTest {
   }
 
   function testItRequiresMailerMethod() {
+    // reset mta settings so that we have no default mailer
+    Setting::setValue('mta', null);
+
     try {
       $mailer = new Mailer();
       $this->fail('Mailer did not throw an exception');
