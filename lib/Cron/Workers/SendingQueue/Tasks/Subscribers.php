@@ -16,26 +16,48 @@ class Subscribers {
   }
 
   static function updateToProcessList(
-    array $existing_subscribers_ids,
+    array $found_subscribers_ids,
     array $subscribers_to_process_ids,
-    array $queue_subscribers_to_process_ids
+    array $queue_subscribers
   ) {
     // compare existing subscriber to the ones that queued for processing
     $subscibers_to_exclude = array_diff(
       $subscribers_to_process_ids,
-      $existing_subscribers_ids
+      $found_subscribers_ids
     );
     // remove nonexistent subscribers from the processing list
-    return array_diff(
-      $queue_subscribers_to_process_ids,
-      $subscibers_to_exclude
+    $queue_subscribers['to_process'] = array_diff(
+      $subscibers_to_exclude,
+      $queue_subscribers['to_process']
     );
+    return $queue_subscribers;
   }
 
-  static function updateFailedList(array $subscribers, array $failed_subscribers) {
-    return array_merge(
-      $subscribers,
+  static function updateFailedList(
+    array $failed_subscribers, array $queue_subscribers
+  ) {
+    $queue_subscribers['failed'] = array_merge(
+      $queue_subscribers['failed'],
       $failed_subscribers
     );
+    $queue_subscribers['to_process'] = array_diff(
+      $failed_subscribers,
+      $queue_subscribers['to_process']
+    );
+    return $queue_subscribers;
+  }
+
+  static function updateProcessedList(
+    array $processed_subscribers, array $queue_subscribers
+  ) {
+    $queue_subscribers['processed'] = array_merge(
+      $queue_subscribers['processed'],
+      $processed_subscribers
+    );
+    $queue_subscribers['to_process'] = array_diff(
+      $processed_subscribers,
+      $queue_subscribers['to_process']
+    );
+    return $queue_subscribers;
   }
 }

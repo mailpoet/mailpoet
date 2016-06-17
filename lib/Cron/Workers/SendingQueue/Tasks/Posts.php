@@ -13,17 +13,16 @@ class Posts {
     preg_match_all(
       '/data-post-id="(\d+)"/ism',
       $newsletter['rendered_body']['html'],
-      $matached_posts);
-    $matached_posts = $matached_posts[1];
-    if(!count($matached_posts)) {
+      $matched_posts_ids);
+    $matched_posts_ids = $matched_posts_ids[1];
+    if(!count($matched_posts_ids)) {
       return $newsletter;
     }
-    foreach($matached_posts as $post) {
+    foreach($matched_posts_ids as $post_id) {
       $newletter_post = NewsletterPost::create();
       $newletter_post->newsletter_id = $newsletter['id'];
-      $newletter_post->post_id = $post;
+      $newletter_post->post_id = $post_id;
       $newletter_post->save();
     }
-    return $newsletter;
   }
 }

@@ -7,7 +7,7 @@ use MailPoet\Util\Helpers;
 if(!defined('ABSPATH')) exit;
 
 class Statistics {
-  static function updateBulkNewsletterStatistics(
+  static function processAndLogBulkNewsletterStatistics(
     array $processed_subscribers_ids, $newsletter_id, $queue_id
   ) {
     $newsletter_statistics = array();
@@ -19,12 +19,10 @@ class Statistics {
       );
     }
     $newsletter_statistics = Helpers::flattenArray($newsletter_statistics);
-    return StatisticsNewsletters::createMultiple($newsletter_statistics);
+    return self::logStatistics($newsletter_statistics);
   }
 
-  static function updateBulkNewsletterStatistics(
-    array $processed_subscribers_ids, $newsletter_id, $queue_id
-  ) {
-
+  static function logStatistics($newsletter_statistics) {
+    return StatisticsNewsletters::createMultiple($newsletter_statistics);
   }
 }
