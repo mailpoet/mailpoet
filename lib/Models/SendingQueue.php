@@ -18,7 +18,7 @@ class SendingQueue extends Model {
     if($this->count_processed === $this->count_total) {
       return false;
     } else {
-      $this->set('status', STATUS_PAUSED);
+      $this->set('status', self::STATUS_PAUSED);
       $this->save();
       return ($this->getErrors() === false && $this->id() > 0);
     }
