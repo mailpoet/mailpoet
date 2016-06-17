@@ -6,7 +6,7 @@
         <label>
           <%= __('Enable signup confirmation') %>
           <p class="description">
-            <%= __('Prevent people from being subscribed to your list unwillingly,this option ensures you to keep a clean list.') %>
+            <%= __('Prevent people from being unwillingly subscribed to your mailing list. This option ensures you to keep a clean list.') %>
             <a href="#TODO" target="_blank"><%= __('Learn more.') %></a>
           </p>
         </label>
@@ -143,7 +143,7 @@
         <label>
           <%= __('Confirmation page') %>
           <p class="description">
-            <%= __('When subscribers click on the activation link, they are redirected to a page of your choice.') %>
+            <%= __('When subscribers click on the activation link, they are redirected to this page.') %>
           </p>
         </label>
       </th>
@@ -185,9 +185,9 @@
         var result = false;
 
         if(parseInt($(this).val(), 10) === 1) {
-          result = confirm("<%= __('Subscribers will now need to activate their subscription by email in order to receive your newsletters. This is recommended.') %>");
+          result = confirm("<%= __('Subscribers will need to activate their subscription via email in order to receive your newsletters. This is highly recommended.') %>");
         } else {
-          result = confirm("<%= __('Unconfirmed subscribers will receive your newsletters from now on without the need to activate their subscriptions.') %>");
+          result = confirm("<%= __('Unconfirmed subscribers will receive your newsletters from without needing to activate their subscriptions.') %>");
         }
         // if the user confirmed changing the signup confirmation (yes/no)
         if(result === true) {

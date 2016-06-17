@@ -47,7 +47,7 @@
         <label for="settings[bounce_email]">
           <%= __('Bounce email') %>
           <p class="description">
-            <%= __('To which address should all the bounced emails go?') %>
+            <%= __('Your bounced emails will be sent to this address.') %>
           </p>
       </th>
       <td>
@@ -66,7 +66,7 @@
       <th scope="row">
         <label>
           <%= __('Open and click tracking') %>
-          <p class="description"><%= __('Some users prefer not to track their subscribers.') %></p>
+          <p class="description"><%= __('Some users prefer to not track their subscribers.') %></p>
       </th>
       <td>
         <p>
@@ -100,7 +100,7 @@
         <label>
           <%= __('Share anonymous data') %>
           <p class="description">
-            <%= __('Share anonymous data and help us improve the plugin.') %>
+            <%= __('Share anonymous data and help us improve the plugin! We appreciate your help.') %>
             <a
               href="http://support.mailpoet.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=advanced_settings"
               target="_blank"
@@ -140,7 +140,7 @@
         <label for="settings[charset]">
           <%= __('Charset') %>
           <p class="description">
-            <%= __('Squares or weird characters are displayed in your emails? Select the encoding for your language.') %>
+            <%= __('Squares, circles, or other weird characters in your emails? Select the correct encoding for your language.') %>
           </p>
         </label>
       </th>
@@ -202,7 +202,7 @@
     <tr>
       <th scope="row">
         <label><%= __('Reinstall from scratch') %>
-        <p class="description"><%= __('Want to start all over again? This will wipe out MailPoet and reinstall anew.') %></p>
+        <p class="description"><%= __('Want to start from the beginning? This will completely wipe out MailPoet and reinstall from scratch.') %></p>
       </th>
       <td>
         <p>
@@ -221,7 +221,7 @@
     $(function() {
       $('#mailpoet_reinstall').on('click', function() {
         if(confirm(
-          "<%= __('If you confirm this, all your current MailPoet data will be erased (newsletters, statistics, subscribers, etc...)') %>"
+          "<%= __('If you continue, all of your current MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc...)') %>"
         )) {
           MailPoet.Modal.loading(true);
           MailPoet.Ajax.post({
@@ -232,7 +232,7 @@
               window.location = "<%= admin_url('admin.php?page=mailpoet-newsletters') %>";
             } else {
               MailPoet.Notice.error(
-                "<%= __('MailPoet could not be reinstalled. You might need to remove it manually first.') %>",
+                "<%= __('MailPoet could not be reinstalled. You may need to remove it manually first.') %>",
               { scroll: true });
             }
           });

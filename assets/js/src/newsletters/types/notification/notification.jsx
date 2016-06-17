@@ -71,7 +71,7 @@ define(
             <h1>{MailPoet.I18n.t('postNotificationNewsletterTypeTitle')}</h1>
             <Breadcrumb step="type" />
 
-            <h3>{MailPoet.I18n.t('selectPeriodicity')}</h3>
+            <h3>{MailPoet.I18n.t('selectFrequency')}</h3>
 
             <Scheduling
               item={this.state}

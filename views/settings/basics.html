@@ -6,7 +6,7 @@
         <label for="settings[notification_email]">
           <%= __("Email notifications") %>
           <p class="description">
-            <%= __('Enter the email addresses that should receive notifications (separate by comma).') %>
+            <%= __('These email addresses will receive notifications (separate each address with a comma).') %>
           </p>
         </label>
       </th>
@@ -74,7 +74,7 @@
       <th scope="row">
         <label for="settings[subscribe_on_comment]">
           <%= __('Subscribe in comments') %>
-          <p class="description"><%= __('Visitors who submit a comment on a post can click on a checkbox to subscribe.') %></p>
+          <p class="description"><%= __('Visitors that comment on a post can click on a checkbox to subscribe to your list.') %></p>
         </label>
       </th>
       <td>
@@ -133,7 +133,7 @@
         <label for="settings[subscribe_on_register]">
           <%= __('Subscribe in registration form') %>
           <p class="description">
-            <%= __('Allow users who register to your site to subscribe on a list of your choice.') %>
+            <%= __('Allow users who register on your site to subscribe to a list.') %>
           </p>
         </label>
       </th>
@@ -167,7 +167,7 @@
               />
             </p>
             <p>
-              <label><%= __('Users will be subscribed to these lists:') %></label>
+              <label><%= __('Users will be subscribed from these lists:') %></label>
             </p>
             <p>
               <select
@@ -200,7 +200,7 @@
         <label for="subscription_manage_page">
           <%= __('Manage Subscription page') %>
           <p class="description">
-            <%= __('The page your subscribers see when they click on "Manage your subscription" in your emails.') %>
+            <%= __('Your subscribers will be directed to this page when they click the "Manage your subscription" link in your email.') %>
           </p>
         </label>
       </th>
@@ -234,7 +234,7 @@
           <select
             id="mailpoet_subscription_edit_segments"
             name="subscription[segments][]"
-            data-placeholder="<%= __('Leave empty to show all lists') %>"
+            data-placeholder="<%= __('Leave this field empty to display all lists') %>"
             multiple
           >
             <% for segment in segments %>
@@ -255,9 +255,9 @@
         <label for="subscription_unsubscribe_page">
           <%= __('Unsubscribe page') %>
           <p class="description">
-            <%= __('The page your subscribers see when they click on "Unsubscribe" in your emails.') %>
+            <%= __('Your subscribers will be directed to this page when they click the "Unsubscribe" link in your email.') %>
             <br />
-            <%= __('Use this shortcode in your own pages: [mailpoet_manage text="Manage your subscription"].') %>
+            <%= __('Use this shortcode on your website\'s WordPress pages: [mailpoet_manage text="Manage your subscription"].') %>
           </p>
         </label>
       </th>
@@ -292,7 +292,7 @@
         <label>
           <%= __('Archive page shortcode') %>
           <p class="description">
-            <%= __('Paste this shortcode in a page to display a list of past newsletters.') %>
+            <%= __('Paste this shortcode on a page to display a list of past newsletters.') %>
           </p>
         </label>
       </th>
@@ -312,7 +312,7 @@
             id="mailpoet_shortcode_archives_list"
             data-shortcode="mailpoet_archive"
             data-output="mailpoet_shortcode_archives"
-            data-placeholder="<%= __('Leave empty to show all lists') %>"
+            data-placeholder="<%= __('Leave this field empty to display all lists') %>"
             multiple
           >
             <% for segment in segments %>
@@ -326,9 +326,9 @@
     <tr>
       <th scope="row">
         <label>
-          <%= __('Shortcode to display total number of subscribers') %>
+          <%= __('This shortcode displays the total number of subscribers') %>
           <p class="description">
-            <%= __('Paste this shortcode to display the number of confirmed subscribers in post or page.') %>
+            <%= __('Paste this shortcode on a post or page to display the total number of confirmed subscribers.') %>
           </p>
         </label>
       </th>
@@ -348,7 +348,7 @@
             id="mailpoet_shortcode_subscribers_count"
             data-shortcode="mailpoet_subscribers_count"
             data-output="mailpoet_shortcode_subscribers"
-            data-placeholder="<%= __('Leave empty to show all lists') %>"
+            data-placeholder="<%= __('Leave this field empty to display all lists') %>"
             multiple
           >
             <% for segment in segments %>
