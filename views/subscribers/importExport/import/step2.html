@@ -34,7 +34,7 @@
         <th scope="row">
           <label>
             <%= __('Pick one or many segments') %>
-            <p class="description"><%= __('Pick the segments you want to import those subscribers to.') %>
+            <p class="description"><%= __('Pick the segments you want to import these subscribers to.') %>
           </label>
         </th>
         <td>
@@ -134,7 +134,7 @@
         <input id="new_segment_name" type="text" name="name"/>
       </p>
       <p class="mailpoet_validation_error" data-error="segment_name_required">
-        <%= __('You need to specify a name.') %>
+        <%= __('Please specify a name.') %>
       </p>
       <p class="mailpoet_validation_error" data-error="segment_name_not_unique">
         <%= __('Another record already exists. Please specify a different "%1$s".')|format('name') %>
@@ -184,7 +184,7 @@
         </select>
       </p>
       <p class="mailpoet_validation_error" data-error="type_required">
-        <%= __('You need to select a type') %>
+        <%= __('Please select a type') %>
       </p>
 
       <p>
@@ -192,7 +192,7 @@
         <input id="new_column_name" type="text" name="name" value="{{ name }}"/>
       </p>
       <p class="mailpoet_validation_error" data-error="name_required">
-        <%= __('You need to specify a name.') %>
+        <%= __('Please to specify a name.') %>
       </p>
       <p class="mailpoet_validation_error" data-error="name_not_unique">
         <%= __('This name is already taken.') %>

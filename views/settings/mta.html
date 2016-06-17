@@ -97,12 +97,12 @@
     data-group="website"
     <% if(settings.mta_group == 'website') %>class="mailpoet_active"<% endif %>
   >
-    <h3><%= __('Your web host/server') %></h3>
+    <h3><%= __('Your web host / web server') %></h3>
 
     <p class="mailpoet_description">
       <strong><%= __('Free, but not recommended.') %></strong>
       <br />
-      <%= __('Web hosts generally have a bad reputation as senders. Your newsletter might be considered spam.') %>
+      <%= __('Web hosts generally have a bad reputation as a sender. Your newsletter will probably be considered spam.') %>
     </p>
 
     <div class="mailpoet_status">
@@ -119,12 +119,12 @@
     data-group="smtp"
     <% if(settings.mta_group == 'smtp') %>class="mailpoet_active"<% endif %>
   >
-    <h3><%= __('Third party') %></h3>
+    <h3><%= __('Third-party') %></h3>
 
     <p class="mailpoet_description">
       <strong><%= __('Currently the best solution.') %></strong>
       <br />
-      <%= __('Send with an alternate email provider. Usually not free.') %>
+      <%= __('Send with an external email provider. This is usually not free.') %>
     </p>
 
     <div class="mailpoet_status">
@@ -203,7 +203,7 @@
 
                 <!-- web hosts -->
                 <optgroup
-                  label="<%= __('Select your host recommended frequency') %>"
+                  label="<%= __('Input your host's recommended sending frequency') %>"
                 >
                 <% for host_key, host in hosts.web %>
                   <option
@@ -262,9 +262,9 @@
               </p>
               <br />
               <p>
-                <%= __('<strong>Warning!</strong> Sending more than the recommended amount of emails might break the terms of your host or provider.') %>'
+                <%= __('<strong>Warning!</strong> Sending more than the recommended amount of emails? You may break the terms of your web host or provider.') %>'
                 <br />
-                <%= __('Double check with them what maximum number of emails you can send daily.') %>
+                <%= __('Please ask your host for the maximum number of emails you are allowed to send per day.') %>
               </p>
             </div>
           </td>
@@ -293,7 +293,7 @@
                 <%= __('Custom SMTP') %>
               </option>
               <!-- providers -->
-              <optgroup label="<%= __('Select your prodivder') %>">
+              <optgroup label="<%= __('Select your provider') %>">
                 <% for host_key, host in hosts.smtp %>
                   <option
                     value="<%= host_key %>"
@@ -537,7 +537,7 @@
         <tr class="mailpoet_smtp_field" data-field="encryption">
           <th scope="row">
             <label for="settings[mta_encryption]">
-              <%= __('Secure connection') %>
+              <%= __('Secure Connection') %>
             </label>
           </th>
           <td>
@@ -564,7 +564,7 @@
             <label>
               <%= __('Authentication') %>
               <p class="description">
-                <%= __('Leave this option to Yes. Only a tiny portion of SMTP services ask Authentication to be turned off.') %>
+                <%= __('Leave this option set to Yes. Only a tiny portion of SMTP services prefer Authentication to be turned off.') %>
               </p>
             </label>
           </th>
@@ -604,15 +604,15 @@
       <tr id="mailpoet_mta_spf">
         <th scope="row">
           <label>
-            <%= __('SPF signature (recommended)') %>
+            <%= __('SPF Signature (Highly recommended!)') %>
             <p class="description">
-              <%= __('Improves your spam score by allowing the recipient to verify that your website is allowed to send emails from your domain.') %>
+              <%= __('Improves your delivery rate by verifying that you're allowed to send emails from your domain.') %>
             </p>
           </label>
         </th>
         <td>
           <p>
-            <%= __('SPF is set in your DNS. Check the support documents of your host to set it up.') %>
+            <%= __('SPF is set up in your DNS. Read your host's support documentation for more information.') %>
           </p>
         </td>
       </tr>
@@ -620,7 +620,7 @@
       <tr id="mailpoet_mta_dkim" style="display:none;">
         <th scope="row">
           <label for="settings[dkim_enabled]">
-            <%= __('DKIM signature (recommended)') %>
+            <%= __('DKIM Signature (Highly recommended!)') %>
             <p class="description">
               <%= __('Improve your spam score. MailPoet can sign all your emails with DKIM.') %>
               <a
@@ -684,7 +684,7 @@
       <tr>
         <th scope="row">
           <label for="mailpoet_mta_test_email">
-            <%= __('Test sending') %>
+            <%= __('Test the sending method') %>
           </label>
         </th>
         <td>
@@ -761,7 +761,7 @@
           data: {
             mailer: mailer,
             newsletter: {
-              subject: "<%= __('Sending method test.') %>",
+              subject: "<%= __('This is a sending method test.') %>",
               body: {
                 text: "<%= __('Yup, it works. You can start blasting away emails to the moon.') %>"
               }
@@ -789,7 +789,7 @@
             else {
               if(mailer.method === 'PHPMail') {
                 MailPoet.Notice.error(
-                  "<%= __('The email could not be sent. Contact your host to help you fix any sending issues with your server.') %>",
+                  "<%= __('The email could not be sent. Please contact your host to fix this issue.') %>",
                   { scroll: true, static: true }
                 );
               } else {

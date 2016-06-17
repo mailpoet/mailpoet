@@ -10,7 +10,7 @@
         <td>
           <div id="select_method">
             <label>
-              <input type="radio" name="select_method"><span><%= __('Copy paste in a text box') %></span>
+              <input type="radio" name="select_method"><span><%= __('Paste the data into a text box') %></span>
             </label> <label>
             <input type="radio" name="select_method"><span><%= __('Upload a file') %></span>
           </label> <label>
@@ -28,7 +28,7 @@
         <tbody>
         <tr>
           <th scope="row">
-            <label for="paste_input"> <%= __('Copy and paste your subscribers from Excel/Sheets') %>
+            <label for="paste_input"> <%= __('Copy and paste your subscribers from Excel/Spreadsheets') %>
               <p class="description">
                 <%= csvDescription|replace({'[link]': csvKBLink, '[/link]': '</a>'})|raw %>
               </p>
