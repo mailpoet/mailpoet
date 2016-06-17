@@ -6,7 +6,7 @@ const _timeDelayValues = {
   'immediate': MailPoet.I18n.t('delayImmediately'),
   'hours': MailPoet.I18n.t('delayHoursAfter'),
   'days': MailPoet.I18n.t('delayDaysAfter'),
-  'weeks': MailPoet.I18n.t('delayWeeksAfter'),
+  'weeks': MailPoet.I18n.t('delayWeeksAfter')
 };
 
 const _intervalValues = {
@@ -14,7 +14,7 @@ const _intervalValues = {
   'weekly': MailPoet.I18n.t('weekly'),
   'monthly': MailPoet.I18n.t('monthly'),
   'nthWeekDay': MailPoet.I18n.t('monthlyEvery'),
-  'immediately': MailPoet.I18n.t('immediately'),
+  'immediately': MailPoet.I18n.t('immediately')
 };
 
 // notification emails
