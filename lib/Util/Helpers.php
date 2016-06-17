@@ -2,6 +2,8 @@
 namespace MailPoet\Util;
 
 class Helpers {
+  const DIVIDER = '***MailPoet***';
+
   static function getMaxPostSize($bytes = false) {
     $maxPostSize = ini_get('post_max_size');
     if(!$bytes) return $maxPostSize;
@@ -121,5 +123,13 @@ class Helpers {
         array_map('serialize', $arr)
       )
     );
+  }
+
+  static function joinObject($object = array()) {
+    return implode(self::DIVIDER, $object);
+  }
+
+  static function splitObject($object = array()) {
+    return explode(self::DIVIDER, $object);
   }
 }

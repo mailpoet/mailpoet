@@ -5,6 +5,7 @@ class Shortcodes {
   public $newsletter;
   public $subscriber;
   public $queue;
+  const SHORTCODE_CATEGORY_NAMESPACE = __NAMESPACE__ . '\\Categories\\';
 
   function __construct(
     $newsletter = false,
@@ -22,14 +23,17 @@ class Shortcodes {
       $queue;
   }
 
-  function extract($content, $categories= false) {
+  function extract($content, $categories = false) {
     $categories = (is_array($categories)) ? implode('|', $categories) : false;
     $regex = sprintf(
       '/\[%s:.*?\]/ism',
       ($categories) ? '(?:' . $categories . ')' : '(?:\w+)'
     );
     preg_match_all($regex, $content, $shortcodes);
-    return array_unique($shortcodes[0]);
+    $shortcodes = $shortcodes[0];
+    return (count($shortcodes)) ?
+      array_unique($shortcodes) :
+      false;
   }
 
   function match($shortcode) {
@@ -43,18 +47,19 @@ class Shortcodes {
 
   function process($shortcodes, $content = false) {
     $processed_shortcodes = array_map(
-      function($shortcode) use($content) {
+      function($shortcode) use ($content) {
         $shortcode_details = $this->match($shortcode);
-        $shortcode_category = isset($shortcode_details['category']) ?
+        $shortcode_category = !empty($shortcode_details['category']) ?
           ucfirst($shortcode_details['category']) :
           false;
-        $shortcode_action = isset($shortcode_details['action']) ?
+        $shortcode_action = !empty($shortcode_details['action']) ?
           $shortcode_details['action'] :
           false;
         $shortcode_class =
-          __NAMESPACE__ . '\\Categories\\' . $shortcode_category;
-        $shortcode_default_value = isset($shortcode_details['default'])
-          ? $shortcode_details['default'] : false;
+          self::SHORTCODE_CATEGORY_NAMESPACE . $shortcode_category;
+        $shortcode_default_value = !empty($shortcode_details['default']) ?
+          $shortcode_details['default'] :
+          false;
         if(!class_exists($shortcode_class)) {
           $custom_shortcode = apply_filters(
             'mailpoet_newsletter_shortcode',
@@ -82,6 +87,9 @@ class Shortcodes {
 
   function replace($content, $categories = false) {
     $shortcodes = $this->extract($content, $categories);
+    if(!$shortcodes) {
+      return $content;
+    }
     $processed_shortcodes = $this->process($shortcodes, $content);
     $shortcodes = array_intersect_key($shortcodes, $processed_shortcodes);
     return str_replace($shortcodes, $processed_shortcodes, $content);

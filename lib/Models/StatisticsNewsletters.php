@@ -11,6 +11,9 @@ class StatisticsNewsletters extends Model {
   }
 
   static function createMultiple($data) {
+    if (count($data) % 3 !== 0) {
+      return false;
+    }
     return self::rawExecute(
       'INSERT INTO `' . self::$_table . '` ' .
       '(newsletter_id, subscriber_id, queue_id) ' .
