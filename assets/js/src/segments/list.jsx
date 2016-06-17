@@ -244,6 +244,8 @@ const SegmentList = React.createClass({
           columns={ columns }
           bulk_actions={ bulk_actions }
           item_actions={ item_actions }
+          sort_by="name"
+          sort_order="asc"
         />
       </div>
     );
