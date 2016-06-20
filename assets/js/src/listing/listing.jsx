@@ -365,42 +365,42 @@ const Listing = React.createClass({
     }.bind(this));
   },
   setParams: function() {
-    let params = Object.keys(this.state)
-      .filter(key => {
-        return (
-          [
-            'group',
-            'filter',
-            'search',
-            'page',
-            'sort_by',
-            'sort_order'
-          ].indexOf(key) !== -1
-        )
-      })
-      .map(key => {
-        let value = this.state[key];
-        if (value === Object(value)) {
-          value = jQuery.param(value)
-        } else if (value === Boolean(value)) {
-          value = value.toString()
-        }
-
-        if (value !== '' && value !== null) {
-          return `${key}[${value}]`
-        }
-      })
-      .filter(key => { return (key !== undefined) })
-      .join('/');
-
-    // prepend with tab is specified
-    if (this.props.tab !== undefined) {
-      params = `/${ this.props.tab }/${ params }`;
-    } else {
-      params = `/${ params }`;
-    }
-
     if (this.props.location) {
+      let params = Object.keys(this.state)
+        .filter(key => {
+          return (
+            [
+              'group',
+              'filter',
+              'search',
+              'page',
+              'sort_by',
+              'sort_order'
+            ].indexOf(key) !== -1
+          )
+        })
+        .map(key => {
+          let value = this.state[key];
+          if (value === Object(value)) {
+            value = jQuery.param(value)
+          } else if (value === Boolean(value)) {
+            value = value.toString()
+          }
+
+          if (value !== '' && value !== null) {
+            return `${key}[${value}]`
+          }
+        })
+        .filter(key => { return (key !== undefined) })
+        .join('/');
+
+      // prepend url with "tab" if specified
+      if (this.props.tab !== undefined) {
+        params = `/${ this.props.tab }/${ params }`;
+      } else {
+        params = `/${ params }`;
+      }
+
       if (this.props.location.pathname !== params) {
         this.context.router.push(`${params}`);
       }

@@ -129,6 +129,11 @@ class SubscriberSegment extends Model {
         'segment_id', $wp_segment->id
       );
     }
+
+    if(!empty($segment_ids)) {
+      $subscriptions = $subscriptions->whereIn('segment_id', $segment_ids);
+    }
+
     return $subscriptions->deleteMany();
   }
 
