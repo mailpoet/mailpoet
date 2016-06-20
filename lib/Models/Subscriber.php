@@ -206,7 +206,9 @@ class Subscriber extends Model {
     );
   }
 
-  static function filters($orm, $group = 'all') {
+  static function filters($data = array()) {
+    $group = (!empty($data['group'])) ? $data['group'] : 'all';
+
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(

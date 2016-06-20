@@ -21,8 +21,7 @@ const columns = [
   },
   {
     name: 'segments',
-    label: MailPoet.I18n.t('lists'),
-    sortable: false
+    label: MailPoet.I18n.t('lists')
   },
 
   {

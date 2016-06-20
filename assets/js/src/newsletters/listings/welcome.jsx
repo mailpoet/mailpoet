@@ -11,6 +11,7 @@ import MailPoet from 'mailpoet'
 import _ from 'underscore'
 
 const mailpoet_roles = window.mailpoet_roles || {};
+const mailpoet_segments = window.mailpoet_segments || {};
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
 
 const messages = {
@@ -216,39 +217,51 @@ const NewsletterListWelcome = React.createClass({
           return (~~(segment.id) === ~~(newsletter.options.segment));
         });
 
-        sendingEvent = MailPoet.I18n.t('welcomeEventSegment').replace(
+        if (segment === undefined) {
+          return (
+            <span className="mailpoet_error">
+              { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }
+            </span>
+          );
+        } else {
+          sendingEvent = MailPoet.I18n.t('welcomeEventSegment').replace(
             '%$1s', segment.name
           );
+        }
       break;
     }
 
     // set sending delay
-    if (newsletter.options.afterTimeType !== 'immediate') {
-      switch (newsletter.options.afterTimeType) {
-        case 'hours':
-          sendingDelay = MailPoet.I18n.t('sendingDelayHours').replace(
-            '%$1d', newsletter.options.afterTimeNumber
-          );
-        break;
+    if (sendingEvent) {
+      if (newsletter.options.afterTimeType !== 'immediate') {
+        switch (newsletter.options.afterTimeType) {
+          case 'hours':
+            sendingDelay = MailPoet.I18n.t('sendingDelayHours').replace(
+              '%$1d', newsletter.options.afterTimeNumber
+            );
+          break;
 
-        case 'days':
-          sendingDelay = MailPoet.I18n.t('sendingDelayDays').replace(
-            '%$1d', newsletter.options.afterTimeNumber
-          );
-        break;
+          case 'days':
+            sendingDelay = MailPoet.I18n.t('sendingDelayDays').replace(
+              '%$1d', newsletter.options.afterTimeNumber
+            );
+          break;
 
-        case 'weeks':
-          sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace(
-            '%$1d', newsletter.options.afterTimeNumber
-          );
-        break;
+          case 'weeks':
+            sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace(
+              '%$1d', newsletter.options.afterTimeNumber
+            );
+          break;
+        }
+        sendingEvent += ' [' + sendingDelay + ']';
       }
-      sendingEvent += ' [' + sendingDelay + ']';
+      // add a "period" at the end if we do have a sendingEvent
+      sendingEvent += '.';
     }
 
     return (
       <span>
-        { sendingEvent }.
+        { sendingEvent }
       </span>
     );
   },
@@ -326,6 +339,7 @@ const NewsletterListWelcome = React.createClass({
 
         <Listing
           limit={ mailpoet_listing_per_page }
+          location={ this.props.location }
           params={ this.props.params }
           endpoint="newsletters"
           tab="welcome"
@@ -335,6 +349,8 @@ const NewsletterListWelcome = React.createClass({
           item_actions={ newsletter_actions }
           messages={ messages }
           auto_refresh={ true }
+          sort_by="subject"
+          sort_order="asc"
         />
       </div>
     );

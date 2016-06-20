@@ -1,13 +1,11 @@
 import React from 'react'
-import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
-import { createHashHistory } from 'history'
-
-import Listing from 'listing/listing.jsx'
-import ListingTabs from 'newsletters/listings/tabs.jsx'
-
+import { Router, Link } from 'react-router'
 import classNames from 'classnames'
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
+
+import Listing from 'listing/listing.jsx'
+import ListingTabs from 'newsletters/listings/tabs.jsx'
 
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
 
@@ -319,6 +317,7 @@ const NewsletterListStandard = React.createClass({
 
         <Listing
           limit={ mailpoet_listing_per_page }
+          location={ this.props.location }
           params={ this.props.params }
           endpoint="newsletters"
           tab="standard"
@@ -328,6 +327,8 @@ const NewsletterListStandard = React.createClass({
           item_actions={ newsletter_actions }
           messages={ messages }
           auto_refresh={ true }
+          sort_by="subject"
+          sort_order="asc"
         />
       </div>
     );

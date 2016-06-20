@@ -379,21 +379,26 @@ const Listing = React.createClass({
         )
       })
       .map(key => {
-        let value = this.state[key]
+        let value = this.state[key];
         if (value === Object(value)) {
           value = jQuery.param(value)
         } else if (value === Boolean(value)) {
           value = value.toString()
         }
 
-        if (value !== '') {
+        if (value !== '' && value !== null) {
           return `${key}[${value}]`
         }
       })
       .filter(key => { return (key !== undefined) })
       .join('/');
 
-    params = '/' + params;
+    // prepend with tab is specified
+    if (this.props.tab !== undefined) {
+      params = `/${ this.props.tab }/${ params }`;
+    } else {
+      params = `/${ params }`;
+    }
 
     if (this.props.location) {
       if (this.props.location.pathname !== params) {

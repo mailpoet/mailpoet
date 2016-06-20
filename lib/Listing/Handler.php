@@ -76,6 +76,10 @@ class Handler {
       }
       return $custom_query;
     } else {
+      $this->setFilter();
+      $this->setGroup();
+      $this->setSearch();
+
       if(!empty($this->data['selection'])) {
         $this->model->whereIn($this->table_name.'.id', $this->data['selection']);
       }

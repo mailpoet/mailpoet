@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
+import { Router, Route, IndexRedirect, Link, useRouterHistory } from 'react-router'
 import { createHashHistory } from 'history'
 
 import NewsletterTypes from 'newsletters/types.jsx'
@@ -29,11 +29,14 @@ if(container) {
   ReactDOM.render((
     <Router history={ history }>
       <Route path="/" component={ App }>
-        <IndexRoute component={ NewsletterListStandard } />
+        <IndexRedirect to="standard" />
         {/* Listings */}
         <Route name="listing/standard" path="standard" component={ NewsletterListStandard } />
         <Route name="listing/welcome" path="welcome" component={ NewsletterListWelcome } />
         <Route name="listing/notification" path="notification" component={ NewsletterListNotification } />
+        <Route path="standard/*" component={ NewsletterListStandard } />
+        <Route path="welcome/*" component={ NewsletterListWelcome } />
+        <Route path="notification/*" component={ NewsletterListNotification } />
         {/* Newsletter: type selection */}
         <Route path="new" component={ NewsletterTypes } />
         {/* New newsletter: types */}
@@ -44,8 +47,6 @@ if(container) {
         <Route name="template" path="template/:id" component={ NewsletterTemplates } />
         {/* Sending options */}
         <Route path="send/:id" component={ NewsletterSend } />
-
-        <Route path="*" component={ NewsletterListStandard } />
       </Route>
     </Router>
   ), container);
