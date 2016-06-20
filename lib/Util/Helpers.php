@@ -7,26 +7,28 @@ class Helpers {
   static function getMaxPostSize($bytes = false) {
     $maxPostSize = ini_get('post_max_size');
     if(!$bytes) return $maxPostSize;
-    switch (substr($maxPostSize, -1)) {
+    switch(substr($maxPostSize, -1)) {
       case 'M':
       case 'm':
-        return (int)$maxPostSize * 1048576;
+        return (int) $maxPostSize * 1048576;
       case 'K':
       case 'k':
-        return (int)$maxPostSize * 1024;
+        return (int) $maxPostSize * 1024;
       case 'G':
       case 'g':
-        return (int)$maxPostSize * 1073741824;
+        return (int) $maxPostSize * 1073741824;
       default:
         return $maxPostSize;
     }
   }
 
-  static function flattenArray($array) {
-    if(!$array) return;
-    $flattened_array = array();
-    array_walk_recursive($array, function ($a) use (&$flattened_array) { $flattened_array[] = $a; });
-    return $flattened_array;
+  static function flattenMultidimensionalArray($array) {
+    if(!$array) return $array;
+    return iterator_to_array(
+      new \RecursiveIteratorIterator(
+        new \RecursiveArrayIterator($array)
+      )
+    );
   }
 
   /*
@@ -71,13 +73,13 @@ class Helpers {
     $paramsIndexKey = null;
     if(isset($params[2])) {
       if(is_float($params[2]) || is_int($params[2])) {
-        $paramsIndexKey = (int)$params[2];
+        $paramsIndexKey = (int) $params[2];
       } else {
         $paramsIndexKey = (string) $params[2];
       }
     }
     $resultArray = array();
-    foreach ($paramsInput as $row) {
+    foreach($paramsInput as $row) {
       $key = $value = null;
       $keySet = $valueSet = false;
       if($paramsIndexKey !== null && array_key_exists($paramsIndexKey, $row)) {
@@ -114,15 +116,6 @@ class Helpers {
     $str[0] = strtolower($str[0]);
     $func = create_function('$c', 'return "_" . strtolower($c[1]);');
     return preg_replace_callback('/([A-Z])/', $func, $str);
-  }
-
-  static function arrayUnique($arr) {
-    return array_map(
-      'unserialize',
-      array_unique(
-        array_map('serialize', $arr)
-      )
-    );
   }
 
   static function joinObject($object = array()) {
