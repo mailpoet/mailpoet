@@ -22,13 +22,11 @@ class Helpers {
     }
   }
 
-  static function flattenMultidimensionalArray($array) {
-    if(!$array) return $array;
-    return iterator_to_array(
-      new \RecursiveIteratorIterator(
-        new \RecursiveArrayIterator($array)
-      )
-    );
+  static function flattenArray($array) {
+    if(!$array) return;
+    $flattened_array = array();
+    array_walk_recursive($array, function ($a) use (&$flattened_array) { $flattened_array[] = $a; });
+    return $flattened_array;
   }
 
   /*
