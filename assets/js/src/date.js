@@ -68,7 +68,7 @@ define('date',
       });
     },
     convertFormat: function(format) {
-      const format_mappings = {
+      var format_mappings = {
         date: {
           D: 'ddd',
           l: 'dddd',
@@ -124,9 +124,9 @@ define('date',
 
       if (!format || format.length <= 0) return format;
 
-      const replacements = format_mappings['date'];
+      var replacements = format_mappings['date'];
 
-      let outputFormat = '';
+      var outputFormat = '';
 
       Object.keys(replacements).forEach(function(key) {
         if (format.indexOf(key) !== -1) {
