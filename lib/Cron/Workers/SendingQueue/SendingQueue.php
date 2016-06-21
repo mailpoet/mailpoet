@@ -21,7 +21,7 @@ class SendingQueue {
 
   function __construct($timer = false) {
     $this->mailer_task = new MailerTask();
-    $this->newsletter_task = new NewsletterTask();
+    $this->newsletter_task = new NewsletterTask($this->mailer_task);
     $this->timer = ($timer) ? $timer : microtime(true);
   }
 
@@ -40,8 +40,6 @@ class SendingQueue {
       }
       // get subscribers
       $queue->subscribers = SubscribersTask::get($queue->subscribers);
-      // configure mailer with newsletter data (from/reply-to)
-      $mailer = $this->mailer_task->configureMailer($newsletter);
       foreach(array_chunk($queue->subscribers['to_process'], self::BATCH_SIZE)
               as $subscribers_to_process_ids
       ) {
@@ -62,7 +60,6 @@ class SendingQueue {
         }
         $queue = $this->processQueue(
           $queue,
-          $mailer,
           $newsletter,
           $found_subscribers
         );
@@ -70,7 +67,7 @@ class SendingQueue {
     }
   }
 
-  function processQueue($queue, $mailer, $newsletter, $subscribers) {
+  function processQueue($queue, $newsletter, $subscribers) {
     // determine if processing is done in bulk or individually
     $processing_method = $this->mailer_task->getProcessingMethod();
     $prepared_newsletters = array();
@@ -89,7 +86,6 @@ class SendingQueue {
       }
       // format subscriber name/address according to mailer settings
       $prepared_subscribers[] = $this->mailer_task->prepareSubscriberForSending(
-        $mailer,
         $subscriber
       );
       $prepared_subscribers_ids[] = $subscriber['id'];
@@ -102,7 +98,7 @@ class SendingQueue {
       if($processing_method === 'individual') {
         $queue = $this->sendNewsletters(
           $queue,
-          $mailer,
+          $newsletter,
           $prepared_subscribers_ids,
           $prepared_newsletters[0],
           $prepared_subscribers[0],
@@ -116,7 +112,7 @@ class SendingQueue {
     if($processing_method === 'bulk') {
       $queue = $this->sendNewsletters(
         $queue,
-        $mailer,
+        $newsletter,
         $prepared_subscribers_ids,
         $prepared_newsletters,
         $prepared_subscribers,
@@ -127,24 +123,25 @@ class SendingQueue {
   }
 
   function sendNewsletters(
-    $queue, $mailer, $subscribers_ids, $newsletters, $subscribers, $statistics
+    $queue, $newsletter_object, $prepared_subscribers_ids, $prepared_newsletters,
+    $prepared_subscribers, $statistics
   ) {
     // send newsletter
     $send_result = $this->mailer_task->send(
-      $mailer,
-      $newsletters,
-      $subscribers
+      $newsletter_object,
+      $prepared_newsletters,
+      $prepared_subscribers
     );
     if(!$send_result) {
       // update failed/to process list
       $queue->subscribers = SubscribersTask::updateFailedList(
-        $subscribers_ids,
+        $prepared_subscribers_ids,
         $queue->subscribers
       );
     } else {
       // update processed/to process list
       $queue->subscribers = SubscribersTask::updateProcessedList(
-        $subscribers_ids,
+        $prepared_subscribers_ids,
         $queue->subscribers
       );
       // log statistics
@@ -154,7 +151,7 @@ class SendingQueue {
       $subscribers_to_process_count = count($queue->subscribers['to_process']);
     }
     $queue = $this->updateQueue($queue);
-    if ($subscribers_to_process_count) {
+    if($subscribers_to_process_count) {
       $this->mailer_task->checkSendingLimit();
     }
     CronHelper::checkExecutionTimer($this->timer);

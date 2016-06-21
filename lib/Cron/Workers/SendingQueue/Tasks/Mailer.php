@@ -13,9 +13,10 @@ class Mailer {
   function __construct() {
     $this->mta_config = $this->getMailerConfig();
     $this->mta_log = $this->getMailerLog();
+    $this->mailer = $this->configureMailer();
   }
 
-  function configureMailer(array $newsletter) {
+  function configureMailer(array $newsletter = null, $mailer = false) {
     $sender['address'] = (!empty($newsletter['sender_address'])) ?
       $newsletter['sender_address'] :
       false;
@@ -34,7 +35,13 @@ class Mailer {
     if(!$reply_to['address']) {
       $reply_to = false;
     }
-    $mailer = new MailerFactory($method = false, $sender, $reply_to);
+    if (!$mailer) {
+      $mailer = new MailerFactory($method = false, $sender, $reply_to);
+    }
+    else {
+      $mailer->mailer_instance->sender = $mailer->getSender($sender);
+      $mailer->mailer_instance->reply_to = $mailer->getReplyTo($reply_to);
+    }
     return $mailer;
   }
 
@@ -69,16 +76,15 @@ class Mailer {
       'individual';
   }
 
-  function prepareSubscriberForSending($mailer, $subscriber) {
-    return ($mailer instanceof \MailPoet\Mailer\Mailer) ?
-      $mailer->transformSubscriber($subscriber) :
-      false;
+  function prepareSubscriberForSending(array $subscriber) {
+      return $this->mailer->transformSubscriber($subscriber);
   }
 
-  function send($mailer, $newsletter, $subscriber) {
-    return ($mailer instanceof \MailPoet\Mailer\Mailer) ?
-      $mailer->mailer_instance->send($newsletter, $subscriber) :
-      false;
+  function send(array $newsletter_object, $prepared_newsletters,
+    $prepared_subscribers
+  ) {
+    $mailer = $this->configureMailer($newsletter_object, $this->mailer);
+    return $mailer->mailer_instance->send($prepared_newsletters, $prepared_subscribers);
   }
 
   function checkSendingLimit() {
