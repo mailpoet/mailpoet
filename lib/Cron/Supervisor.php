@@ -26,7 +26,6 @@ class Supervisor {
       $daemon['status'] === Daemon::STATUS_STOPPED
     ) {
       return $this->formatDaemonStatusMessage($daemon['status']);
-
     }
     $elapsed_time = time() - (int)$daemon['updated_at'];
     // if it's been less than 40 seconds since last execution and we're not

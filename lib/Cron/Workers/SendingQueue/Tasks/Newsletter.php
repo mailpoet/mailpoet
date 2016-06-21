@@ -14,13 +14,21 @@ use MailPoet\Util\Helpers;
 if(!defined('ABSPATH')) exit;
 
 class Newsletter {
-  static function get($newsletter_id) {
+  public $tracking_enabled;
+  public $tracking_image_inserted;
+
+  function __construct() {
+    $this->tracking_enabled = (boolean) Setting::getValue('tracking.enabled');
+    $this->tracking_image_inserted = false;
+  }
+
+  function get($newsletter_id) {
     $newsletter = NewsletterModel::findOne($newsletter_id);
     return ($newsletter) ? $newsletter->asArray() : false;
   }
 
-  static function getAndPreProcess(array $queue) {
-    $newsletter = self::get($queue['newsletter_id']);
+  function getAndPreProcess(array $queue) {
+    $newsletter = $this->get($queue['newsletter_id']);
     if(!$newsletter) {
       return false;
     }
@@ -31,16 +39,18 @@ class Newsletter {
       return $newsletter;
     }
     // if tracking is enabled, do additional processing
-    if((boolean) Setting::getValue('tracking.enabled')) {
-      // add tracking image
-      OpenTracking::addTrackingImage();
+    if($this->tracking_enabled) {
+      // hook once to the newsletter post-processing filter and add tracking image
+      if(!$this->tracking_image_inserted) {
+        $this->tracking_image_inserted = OpenTracking::addTrackingImage();
+      }
       // render newsletter
-      $newsletter = self::render($newsletter);
+      $newsletter = $this->render($newsletter);
       // hash and save all links
       $newsletter = LinksTask::process($newsletter, $queue);
     } else {
       // render newsletter
-      $newsletter = self::render($newsletter);
+      $newsletter = $this->render($newsletter);
     }
     // check if this is a post notification and if it contains posts
     $newsletter_contains_posts = strpos($newsletter['rendered_body']['html'], 'data-post-id');
@@ -52,13 +62,13 @@ class Newsletter {
     return $newsletter;
   }
 
-  static function render($newsletter) {
+  function render($newsletter) {
     $renderer = new Renderer($newsletter);
     $newsletter['rendered_body'] = $renderer->render();
     return $newsletter;
   }
 
-  static function prepareNewsletterForSending(
+  function prepareNewsletterForSending(
     array $newsletter, array $subscriber, array $queue
   ) {
     // shortcodes and links will be replaced in the subject, html and text body
@@ -76,7 +86,7 @@ class Newsletter {
       $subscriber,
       $queue
     );
-    if((boolean) Setting::getValue('tracking.enabled')) {
+    if($this->tracking_enabled) {
       $prepared_newsletter = NewsletterLinks::replaceSubscriberData(
         $newsletter['id'],
         $subscriber['id'],

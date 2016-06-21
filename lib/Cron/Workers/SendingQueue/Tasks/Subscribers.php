@@ -4,8 +4,8 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 if(!defined('ABSPATH')) exit;
 
 class Subscribers {
-  static function get(array $queue) {
-    $subscribers = unserialize($queue['subscribers']);
+  static function get($subscribers) {
+    $subscribers = unserialize($subscribers);
     if(empty($subscribers['processed'])) {
       $subscribers['processed'] = array();
     }
@@ -41,8 +41,8 @@ class Subscribers {
       $failed_subscribers
     );
     $queue_subscribers['to_process'] = array_diff(
-      $failed_subscribers,
-      $queue_subscribers['to_process']
+      $queue_subscribers['to_process'],
+      $failed_subscribers
     );
     return $queue_subscribers;
   }
@@ -55,8 +55,8 @@ class Subscribers {
       $processed_subscribers
     );
     $queue_subscribers['to_process'] = array_diff(
-      $processed_subscribers,
-      $queue_subscribers['to_process']
+      $queue_subscribers['to_process'],
+      $processed_subscribers
     );
     return $queue_subscribers;
   }

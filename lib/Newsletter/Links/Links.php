@@ -49,7 +49,7 @@ class Links {
         );
       }
     }
-    return Helpers::arrayUnique($extracted_links);
+    return array_unique($extracted_links, SORT_REGULAR);
   }
 
   static function process($content) {

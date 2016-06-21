@@ -2,10 +2,9 @@
 namespace MailPoet\Newsletter\Renderer\PostProcess;
 
 use MailPoet\Newsletter\Links\Links;
+use MailPoet\Newsletter\Renderer\Renderer;
 
 class OpenTracking {
-  const OPEN_TRACKING_FILTER_NAME = 'mailpoet_rendering_post_process';
-
   static function process($template) {
     $DOM = new \pQuery();
     $DOM = $DOM->parseStr($template);
@@ -20,11 +19,9 @@ class OpenTracking {
   }
 
   static function addTrackingImage() {
-    if(array_key_exists(self::OPEN_TRACKING_FILTER_NAME, $GLOBALS['wp_filter'])) {
-      return;
-    };
-    add_filter('mailpoet_rendering_post_process', function ($template) {
+    add_filter(Renderer::POST_PROCESS_FILTER, function ($template) {
       return OpenTracking::process($template);
     });
+    return true;
   }
 }

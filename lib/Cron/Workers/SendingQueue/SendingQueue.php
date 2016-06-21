@@ -4,51 +4,48 @@ namespace MailPoet\Cron\Workers\SendingQueue;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
-use MailPoet\Cron\Workers\SendingQueue\Tasks\Statistics as StatisticsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Subscribers as SubscribersTask;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
-use MailPoet\Models\Subscriber;
+use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
+use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
-  public $mta_config;
+  public $mailer_task;
+  public $newsletter_task;
   private $timer;
   const BATCH_SIZE = 50;
 
   function __construct($timer = false) {
-    $this->mta_config = MailerTask::getMailerConfig();
+    $this->mailer_task = new MailerTask();
+    $this->newsletter_task = new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
-    CronHelper::checkExecutionTimer($this->timer);
   }
 
   function process() {
-    return;
-    $mta_log = MailerTask::getMailerLog();
-    MailerTask::checkSendingLimit($this->mta_config, $mta_log);
+    $this->mailer_task->checkSendingLimit();
     foreach($this->getQueues() as $queue) {
       // get and pre-process newsletter (render, replace shortcodes/links, etc.)
-      $newsletter = NewsletterTask::getAndPreProcess($queue->asArray());
+      $newsletter = $this->newsletter_task->getAndPreProcess($queue->asArray());
       if(!$newsletter) {
         $queue->delete();
         continue;
       }
       if(is_null($queue->newsletter_rendered_body)) {
         $queue->newsletter_rendered_body = json_encode($newsletter['rendered_body']);
-        //$queue->save();
+        $queue->save();
       }
       // get subscribers
-      $queue->subscribers = SubscribersTask::get($queue->asArray());
+      $queue->subscribers = SubscribersTask::get($queue->subscribers);
       // configure mailer with newsletter data (from/reply-to)
-      $mailer = MailerTask::configureMailer($newsletter);
-      // determine if processing is done in bulk or individually
-      $processing_method = MailerTask::getProcessingMethod($this->mta_config);
+      $mailer = $this->mailer_task->configureMailer($newsletter);
       foreach(array_chunk($queue->subscribers['to_process'], self::BATCH_SIZE)
               as $subscribers_to_process_ids
       ) {
-        $found_subscribers = Subscriber::whereIn('id', $subscribers_to_process_ids)
+        $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)
           ->findArray();
         $found_subscribers_ids = Helpers::arrayColumn($found_subscribers, 'id');
         // if some subscribers weren't found, remove them from the processing list
@@ -63,30 +60,26 @@ class SendingQueue {
           $this->updateQueue($queue);
           continue;
         }
-        $queue->subscribers = call_user_func_array(
-          array(
-            $this,
-            $processing_method
-          ),
-          array(
-            $mailer,
-            $mta_log,
-            $newsletter,
-            $found_subscribers,
-            $queue
-          )
+        $queue = $this->processQueue(
+          $queue,
+          $mailer,
+          $newsletter,
+          $found_subscribers
         );
       }
     }
   }
 
-  // TODO: merge processBulkSubscribers with processIndividualSubscriber
-  function processBulkSubscribers($mailer, $mta_log, $newsletter, $subscribers, $queue) {
-    $subscribers_ids = Helpers::arrayColumn($subscribers, 'id');
+  function processQueue($queue, $mailer, $newsletter, $subscribers) {
+    // determine if processing is done in bulk or individually
+    $processing_method = $this->mailer_task->getProcessingMethod();
+    $prepared_newsletters = array();
+    $prepared_subscribers = array();
+    $statistics = array();
     foreach($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
       $prepared_newsletters[] =
-        NewsletterTask::prepareNewsletterForSending(
+        $this->newsletter_task->prepareNewsletterForSending(
           $newsletter,
           $subscriber,
           $queue->asArray()
@@ -95,13 +88,53 @@ class SendingQueue {
         $queue->newsletter_rendered_subject = $prepared_newsletters[0]['subject'];
       }
       // format subscriber name/address according to mailer settings
-      $prepared_subscribers[] = MailerTask::prepareSubscriberForSending(
+      $prepared_subscribers[] = $this->mailer_task->prepareSubscriberForSending(
         $mailer,
         $subscriber
       );
+      $prepared_subscribers_ids[] = $subscriber['id'];
+      // keep track of values for statistics purposes
+      $statistics[] = array(
+        'newsletter_id' => $newsletter['id'],
+        'subscriber_id' => $subscriber['id'],
+        'queue_id' => $queue->id
+      );
+      if($processing_method === 'individual') {
+        $queue = $this->sendNewsletters(
+          $queue,
+          $mailer,
+          $prepared_subscribers_ids,
+          $prepared_newsletters[0],
+          $prepared_subscribers[0],
+          $statistics
+        );
+        $prepared_newsletters = array();
+        $prepared_subscribers = array();
+        $statistics = array();
+      }
     }
-    // send
-    $send_result = MailerTask::send($mailer, $prepared_newsletters, $prepared_subscribers);
+    if($processing_method === 'bulk') {
+      $queue = $this->sendNewsletters(
+        $queue,
+        $mailer,
+        $prepared_subscribers_ids,
+        $prepared_newsletters,
+        $prepared_subscribers,
+        $statistics
+      );
+    }
+    return $queue;
+  }
+
+  function sendNewsletters(
+    $queue, $mailer, $subscribers_ids, $newsletters, $subscribers, $statistics
+  ) {
+    // send newsletter
+    $send_result = $this->mailer_task->send(
+      $mailer,
+      $newsletters,
+      $subscribers
+    );
     if(!$send_result) {
       // update failed/to process list
       $queue->subscribers = SubscribersTask::updateFailedList(
@@ -115,65 +148,17 @@ class SendingQueue {
         $queue->subscribers
       );
       // log statistics
-      StatisticsTask::processAndLogBulkNewsletterStatistics(
-        $subscribers_ids,
-        $newsletter['id'],
-        $queue->id
-      );
+      StatisticsNewslettersModel::createMultiple($statistics);
       // keep track of sent items
-      $mta_log = MailerTask::updateMailerLog($mta_log);
+      $this->mailer_task->updateMailerLog();
+      $subscribers_to_process_count = count($queue->subscribers['to_process']);
     }
-    $this->updateQueue($queue);
-    MailerTask::checkSendingLimit($this->mta_config, $mta_log);
+    $queue = $this->updateQueue($queue);
+    if ($subscribers_to_process_count) {
+      $this->mailer_task->checkSendingLimit();
+    }
     CronHelper::checkExecutionTimer($this->timer);
-  }
-
-  function processIndividualSubscriber($mailer, $mta_log, $newsletter, $subscribers, $queue) {
-    $subscribers_ids = Helpers::arrayColumn($subscribers, 'id');
-    foreach($subscribers as $subscriber) {
-      // render shortcodes and replace subscriber data in tracked links
-      $prepared_newsletter =
-        NewsletterTask::prepareNewsletterForSending(
-          $newsletter,
-          $subscriber,
-          $queue->asArray()
-        );
-      if(!$queue->newsletter_rendered_subject) {
-        $queue->newsletter_rendered_subject = $prepared_newsletter['subject'];
-      }
-      // format subscriber name/address according to mailer settings
-      $prepared_subscriber = MailerTask::prepareSubscriberForSending(
-        $mailer,
-        $subscriber
-      );
-      $send_result = MailerTask::send($mailer, $prepared_newsletter, $prepared_subscriber);
-      if(!$send_result) {
-        // update failed/to process list
-        $queue->subscribers = SubscribersTask::updateFailedList(
-          $subscribers_ids,
-          $queue->subscribers
-        );
-      } else {
-        // update processed/to process list
-        $queue->subscribers = SubscribersTask::updateProcessedList(
-          $subscribers_ids,
-          $queue->subscribers
-        );
-        // log statistics
-        StatisticsTask::logStatistics(
-          array(
-            $newsletter['id'],
-            $subscriber['id'],
-            $queue->id
-          )
-        );
-        // keep track of sent items
-        $mta_log = MailerTask::updateMailerLog($mta_log);
-      }
-      $queue = $this->updateQueue($queue);
-      MailerTask::checkSendingLimit($this->mta_config, $mta_log);
-      CronHelper::checkExecutionTimer($this->timer);
-    }
+    return $queue;
   }
 
   function getQueues() {

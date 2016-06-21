@@ -7,7 +7,15 @@ use MailPoet\Models\Setting;
 if(!defined('ABSPATH')) exit;
 
 class Mailer {
-  static function configureMailer(array $newsletter) {
+  public $mta_config;
+  public $mta_log;
+
+  function __construct() {
+    $this->mta_config = $this->getMailerConfig();
+    $this->mta_log = $this->getMailerLog();
+  }
+
+  function configureMailer(array $newsletter) {
     $sender['address'] = (!empty($newsletter['sender_address'])) ?
       $newsletter['sender_address'] :
       false;
@@ -30,7 +38,7 @@ class Mailer {
     return $mailer;
   }
 
-  static function getMailerConfig() {
+  function getMailerConfig() {
     $mta_config = Setting::getValue('mta');
     if(!$mta_config) {
       throw new \Exception(__('Mailer is not configured.'));
@@ -38,13 +46,7 @@ class Mailer {
     return $mta_config;
   }
 
-  static function updateMailerLog($mta_log) {
-    $mta_log['sent']++;
-    Setting::setValue('mta_log', $mta_log);
-    return $mta_log;
-  }
-
-  static function getMailerLog() {
+  function getMailerLog() {
     $mta_log = Setting::getValue('mta_log');
     if(!$mta_log) {
       $mta_log = array(
@@ -56,40 +58,45 @@ class Mailer {
     return $mta_log;
   }
 
-  static function getProcessingMethod($mta_config) {
-    return ($mta_config['method'] === 'MailPoet') ?
-      'processBulkSubscribers' :
-      'processIndividualSubscriber';
+  function updateMailerLog() {
+    $this->mta_log['sent']++;
+    Setting::setValue('mta_log', $this->mta_log);
   }
 
-  static function prepareSubscriberForSending($mailer, $subscriber) {
+  function getProcessingMethod() {
+    return ($this->mta_config['method'] === 'MailPoet') ?
+      'bulk' :
+      'individual';
+  }
+
+  function prepareSubscriberForSending($mailer, $subscriber) {
     return ($mailer instanceof \MailPoet\Mailer\Mailer) ?
       $mailer->transformSubscriber($subscriber) :
       false;
   }
 
-  static function send($mailer, $newsletter, $subscriber) {
+  function send($mailer, $newsletter, $subscriber) {
     return ($mailer instanceof \MailPoet\Mailer\Mailer) ?
       $mailer->mailer_instance->send($newsletter, $subscriber) :
       false;
   }
 
-  static function checkSendingLimit($mta_config, $mta_log) {
-    $frequency_interval = (int) $mta_config['frequency']['interval'] * 60;
-    $frequency_limit = (int) $mta_config['frequency']['emails'];
-    $elapsed_time = time() - (int) $mta_log['started'];
-    if($mta_log['sent'] === $frequency_limit &&
+  function checkSendingLimit() {
+    if($this->mta_config['method'] === 'MailPoet') return;
+    $frequency_interval = (int) $this->mta_config['frequency']['interval'] * 60;
+    $frequency_limit = (int) $this->mta_config['frequency']['emails'];
+    $elapsed_time = time() - (int) $this->mta_log['started'];
+    if($this->mta_log['sent'] === $frequency_limit &&
       $elapsed_time <= $frequency_interval
     ) {
       throw new \Exception(__('Sending frequency limit has been reached.'));
     }
     if($elapsed_time > $frequency_interval) {
-      $mta_log = array(
+      $this->mta_log = array(
         'sent' => 0,
         'started' => time()
       );
-      Setting::setValue('mta_log', $mta_log);
+      Setting::setValue('mta_log', $this->mta_log);
     }
-    return;
   }
 }
