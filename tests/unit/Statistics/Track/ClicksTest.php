@@ -18,6 +18,8 @@ class ClicksTest extends MailPoetTest {
     // create subscriber
     $subscriber = Subscriber::create();
     $subscriber->email = 'test@example.com';
+    $subscriber->first_name = 'First';
+    $subscriber->last_name = 'Last';
     $this->subscriber = $subscriber->save();
     // create queue
     $queue = SendingQueue::create();

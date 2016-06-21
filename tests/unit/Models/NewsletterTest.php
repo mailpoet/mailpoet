@@ -113,7 +113,9 @@ class NewsletterTest extends MailPoetTest {
     $sending_queue->save();
 
     $subscriber = Subscriber::createOrUpdate(array(
-      'email' => 'john.doe@mailpoet.com'
+      'email' => 'john.doe@mailpoet.com',
+      'first_name' => 'John',
+      'last_name' => 'Doe'
     ));
 
     $opens = StatisticsOpens::create();
@@ -123,7 +125,7 @@ class NewsletterTest extends MailPoetTest {
     $opens->save();
 
     $newsletter->queue = $newsletter->getQueue()->asArray();
-    $statistics = $newsletter->getStatistics();
+    $statistics = $newsletter->getStatistics( $sending_queue->id);
     expect($statistics->opened)->equals(1);
     expect($statistics->clicked)->equals(0);
     expect($statistics->unsubscribed)->equals(0);
@@ -250,5 +252,6 @@ class NewsletterTest extends MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
   }
 }
