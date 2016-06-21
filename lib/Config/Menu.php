@@ -12,7 +12,6 @@ use MailPoet\Settings\Charsets;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
-use MailPoet\Util\DKIM;
 use MailPoet\Util\Permissions;
 use MailPoet\Listing;
 use MailPoet\WP\DateTime;
@@ -293,21 +292,6 @@ class Menu {
   function settings() {
     $settings = Setting::getAll();
     $flags = $this->_getFlags();
-
-    // dkim: check if public/private keys have been generated
-    if(
-      empty($settings['dkim'])
-      or empty($settings['dkim']['public_key'])
-      or empty($settings['dkim']['private_key'])
-    ) {
-      // generate public/private keys
-      $keys = DKIM::generateKeys();
-      $settings['dkim'] = array(
-        'public_key' => $keys['public'],
-        'private_key' => $keys['private'],
-        'domain' => preg_replace('/^www\./', '', $_SERVER['SERVER_NAME'])
-      );
-    }
 
     $data = array(
       'settings' => $settings,

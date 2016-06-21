@@ -2,9 +2,6 @@
 namespace MailPoet\Util;
 
 class Url {
-  function __construct() {
-  }
-
   static function getCurrentUrl() {
     return home_url(add_query_arg(null, null));
   }
