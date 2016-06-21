@@ -313,7 +313,7 @@ class SubscriberTest extends MailPoetTest {
     expect($subscribed_subscribers_in_segment)->count(2);
   }
 
-  function testItCannotTrashAWPUser() {
+  function testItCannotTrashWpUser() {
     $wp_subscriber = Subscriber::createOrUpdate(array(
       'email' => 'some.wp.user@mailpoet.com',
       'wp_user_id' => 1
@@ -325,7 +325,7 @@ class SubscriberTest extends MailPoetTest {
     expect($subscriber->deleted_at)->equals(null);
   }
 
-  function testItCannotDeleteAWPUser() {
+  function testItCannotDeleteWpUser() {
     $wp_subscriber = Subscriber::createOrUpdate(array(
       'email' => 'some.wp.user@mailpoet.com',
       'wp_user_id' => 1

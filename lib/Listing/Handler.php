@@ -87,16 +87,6 @@ class Handler {
     }
   }
 
-  function getSelectionIds() {
-    $models = $this->getSelection()
-      ->select('id')
-      ->findArray();
-
-    return array_map(function($model) {
-      return (int)$model['id'];
-    }, $models);
-  }
-
   function get() {
     // get groups
     $groups = array();

@@ -25,7 +25,7 @@ class BulkAction {
     $bulk_action_method = 'bulk'.ucfirst($this->action);
 
     if(!method_exists($this->model_class, $bulk_action_method)) {
-      throw new Exception(
+      throw new \Exception(
         $this->model_class. ' has not method "'.$bulk_action_method.'"'
       );
       return false;
