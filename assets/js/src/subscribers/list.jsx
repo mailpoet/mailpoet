@@ -38,55 +38,55 @@ const columns = [
 
 const messages = {
   onTrash: function(response) {
-    if(response) {
+    if (response) {
       var message = null;
-      if(~~response === 1) {
+      if (~~response === 1) {
         message = (
           MailPoet.I18n.t('oneSubscriberTrashed')
         );
-      } else if(~~response > 1) {
+      } else if (~~response > 1) {
         message = (
           MailPoet.I18n.t('multipleSubscribersTrashed')
         ).replace('%$1d', ~~response);
       }
 
-      if(message !== null) {
+      if (message !== null) {
         MailPoet.Notice.success(message);
       }
     }
   },
   onDelete: function(response) {
-    if(response) {
+    if (response) {
       var message = null;
-      if(~~response === 1) {
+      if (~~response === 1) {
         message = (
           MailPoet.I18n.t('oneSubscriberDeleted')
         );
-      } else if(~~response > 1) {
+      } else if (~~response > 1) {
         message = (
           MailPoet.I18n.t('multipleSubscribersDeleted')
         ).replace('%$1d', ~~response);
       }
 
-      if(message !== null) {
+      if (message !== null) {
         MailPoet.Notice.success(message);
       }
     }
   },
   onRestore: function(response) {
-    if(response) {
+    if (response) {
       var message = null;
-      if(~~response === 1) {
+      if (~~response === 1) {
         message = (
           MailPoet.I18n.t('oneSubscriberRestored')
         );
-      } else if(~~response > 1) {
+      } else if (~~response > 1) {
         message = (
           MailPoet.I18n.t('multipleSubscribersRestored')
         ).replace('%$1d', ~~response);
       }
 
-      if(message !== null) {
+      if (message !== null) {
         MailPoet.Notice.success(message);
       }
     }
@@ -274,7 +274,7 @@ const SubscriberList = React.createClass({
 
       subscriber.subscriptions.map((subscription) => {
         const segment = this.getSegmentFromId(subscription.segment_id);
-        if(segment === false) return;
+        if (segment === false) return;
         if (subscription.status === 'subscribed') {
           subscribed_segments.push(segment.name);
         }
@@ -289,7 +289,7 @@ const SubscriberList = React.createClass({
 
 
     let avatar = false;
-    if(subscriber.avatar_url) {
+    if (subscriber.avatar_url) {
       avatar = (
         <img
           className="avatar"
@@ -350,6 +350,8 @@ const SubscriberList = React.createClass({
           item_actions={ item_actions }
           messages={ messages }
           onGetItems={ this.onGetItems }
+          sort_by={ 'created_at' }
+          sort_order={ 'desc' }
         />
       </div>
     )

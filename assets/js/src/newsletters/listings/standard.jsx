@@ -327,8 +327,8 @@ const NewsletterListStandard = React.createClass({
           item_actions={ newsletter_actions }
           messages={ messages }
           auto_refresh={ true }
-          sort_by="subject"
-          sort_order="asc"
+          sort_by="updated_at"
+          sort_order="desc"
         />
       </div>
     );

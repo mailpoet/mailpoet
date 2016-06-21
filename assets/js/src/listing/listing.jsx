@@ -300,36 +300,21 @@ const Listing = React.createClass({
       selection: false
     };
   },
-  componentDidUpdate: function(prevProps, prevState) {
-    // reset group to "all" if trash gets emptied
-    if (
-      // we were viewing the trash
-      (prevState.group === 'trash' && prevState.count > 0)
-      &&
-      // we are still viewing the trash but there are no items left
-      (this.state.group === 'trash' && this.state.count === 0)
-      &&
-      // only do this when no filter is set
-      (Object.keys(this.state.filter).length === 0)
-    ) {
-      this.handleGroup('all');
-    }
-  },
   getParam: function(param) {
     const regex = /(.*)\[(.*)\]/;
     const matches = regex.exec(param);
     return [matches[1], matches[2]]
   },
   initWithParams: function(params) {
-    let state = this.state || {};
-    let original_state = state;
+    let state = this.getInitialState();
+
      // check for url params
     if (params.splat !== undefined) {
       params.splat.split('/').map(param => {
         let [key, value] = this.getParam(param);
         switch(key) {
           case 'filter':
-            let filters = {}
+            let filters = {};
             value.split('&').map(function(pair) {
                 let [k, v] = pair.split('=')
                 filters[k] = v
@@ -344,7 +329,6 @@ const Listing = React.createClass({
       });
     }
 
-    // defaults override
     // limit per page
     if (this.props.limit !== undefined) {
       state.limit = Math.abs(~~this.props.limit);
@@ -408,7 +392,7 @@ const Listing = React.createClass({
   },
   componentDidMount: function() {
     if (this.isMounted()) {
-      const params = this.props.params || {}
+      const params = this.props.params || {};
       this.initWithParams(params);
 
       if (this.props.auto_refresh) {
@@ -419,8 +403,8 @@ const Listing = React.createClass({
     }
   },
   componentWillReceiveProps: function(nextProps) {
-    const params = nextProps.params || {}
-    this.initWithParams(params)
+    const params = nextProps.params || {};
+    this.initWithParams(params);
   },
   getItems: function() {
     if (this.isMounted()) {
@@ -450,9 +434,10 @@ const Listing = React.createClass({
           loading: false
         }, function() {
           if (this.props['onGetItems'] !== undefined) {
-              this.props.onGetItems(
-                ~~(this.state.groups[0]['count'])
-              );
+            const count = (response.groups[0] !== undefined)
+              ? ~~(response.groups[0].count)
+              : 0;
+            this.props.onGetItems(count);
           }
         }.bind(this));
       }.bind(this));
@@ -519,16 +504,21 @@ const Listing = React.createClass({
     }.bind(this));
   },
   handleEmptyTrash: function() {
-    this.handleBulkAction('all', {
+    return this.handleBulkAction('all', {
       action: 'delete',
       group: 'trash'
-    }, function(response) {
-      MailPoet.Notice.success(
-        MailPoet.I18n.t('permanentlyDeleted').replace('%d', response)
-      );
-    });
+    }).then(function(response) {
+      if (~~(response) > 0) {
+        MailPoet.Notice.success(
+          MailPoet.I18n.t('permanentlyDeleted').replace('%d', response)
+        );
+      }
+
+      // redirect to default group
+      this.handleGroup('all');
+    }.bind(this));
   },
-  handleBulkAction: function(selected_ids, params, callback) {
+  handleBulkAction: function(selected_ids, params) {
     if (
       this.state.selection === false
       && this.state.selected_ids.length === 0
@@ -552,13 +542,12 @@ const Listing = React.createClass({
       data.listing.selection = selected_ids;
     }
 
-    MailPoet.Ajax.post({
+    return MailPoet.Ajax.post({
       endpoint: this.props.endpoint,
       action: 'bulkAction',
       data: data
-    }).done(function(response) {
+    }).done(function() {
       this.getItems();
-      callback(response);
     }.bind(this));
   },
   handleSearch: function(search) {
