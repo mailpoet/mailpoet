@@ -21,7 +21,7 @@ class SendingQueue {
 
   function __construct($timer = false) {
     $this->mailer_task = new MailerTask();
-    $this->newsletter_task = new NewsletterTask($this->mailer_task);
+    $this->newsletter_task = new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
   }
 
@@ -34,6 +34,8 @@ class SendingQueue {
         $queue->delete();
         continue;
       }
+      // configure mailer
+      $this->mailer_task->configureMailer($newsletter);
       if(is_null($queue->newsletter_rendered_body)) {
         $queue->newsletter_rendered_body = json_encode($newsletter['rendered_body']);
         $queue->save();
@@ -98,7 +100,6 @@ class SendingQueue {
       if($processing_method === 'individual') {
         $queue = $this->sendNewsletters(
           $queue,
-          $newsletter,
           $prepared_subscribers_ids,
           $prepared_newsletters[0],
           $prepared_subscribers[0],
@@ -112,7 +113,6 @@ class SendingQueue {
     if($processing_method === 'bulk') {
       $queue = $this->sendNewsletters(
         $queue,
-        $newsletter,
         $prepared_subscribers_ids,
         $prepared_newsletters,
         $prepared_subscribers,
@@ -123,12 +123,11 @@ class SendingQueue {
   }
 
   function sendNewsletters(
-    $queue, $newsletter_object, $prepared_subscribers_ids, $prepared_newsletters,
+    $queue, $prepared_subscribers_ids, $prepared_newsletters,
     $prepared_subscribers, $statistics
   ) {
     // send newsletter
     $send_result = $this->mailer_task->send(
-      $newsletter_object,
       $prepared_newsletters,
       $prepared_subscribers
     );
