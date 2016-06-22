@@ -9,11 +9,12 @@ if(!defined('ABSPATH')) exit;
 class Mailer {
   public $mta_config;
   public $mta_log;
-  public $mailer = null;
+  public $mailer;
 
   function __construct() {
     $this->mta_config = $this->getMailerConfig();
     $this->mta_log = $this->getMailerLog();
+    $this->mailer = $this->configureMailer();
   }
 
   function configureMailer(array $newsletter = null) {
@@ -75,9 +76,10 @@ class Mailer {
   }
 
   function send($prepared_newsletters, $prepared_subscribers) {
-    return ($this->mailer) ?
-      $this->mailer->mailer_instance->send($prepared_newsletters, $prepared_subscribers) :
-      false;
+    return $this->mailer->mailer_instance->send(
+      $prepared_newsletters,
+      $prepared_subscribers
+    );
   }
 
   function checkSendingLimit() {
