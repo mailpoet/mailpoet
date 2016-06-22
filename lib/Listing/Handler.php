@@ -27,8 +27,8 @@ class Handler {
       // searching
       'search' => (isset($data['search']) ? $data['search'] : null),
       // sorting
-      'sort_by' => (isset($data['sort_by']) ? $data['sort_by'] : 'id'),
-      'sort_order' => (isset($data['sort_order']) ? $data['sort_order'] : 'asc'),
+      'sort_by' => (!empty($data['sort_by']) ? $data['sort_by'] : 'id'),
+      'sort_order' => (!empty($data['sort_order']) ? $data['sort_order'] : 'asc'),
       // grouping
       'group' => (isset($data['group']) ? $data['group'] : null),
       // filters
@@ -76,6 +76,10 @@ class Handler {
       }
       return $custom_query;
     } else {
+      $this->setFilter();
+      $this->setGroup();
+      $this->setSearch();
+
       if(!empty($this->data['selection'])) {
         $this->model->whereIn($this->table_name.'.id', $this->data['selection']);
       }

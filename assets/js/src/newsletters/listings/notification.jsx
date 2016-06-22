@@ -189,53 +189,62 @@ const NewsletterListNotification = React.createClass({
     let sendingFrequency;
     let sendingToSegments;
 
-    // set sending frequency
-    switch (newsletter.options.intervalType) {
-      case 'daily':
-        sendingFrequency = MailPoet.I18n.t('sendDaily').replace(
-          '%$1s', timeOfDayValues[newsletter.options.timeOfDay]
-        );
-      break;
-
-      case 'weekly':
-        sendingFrequency = MailPoet.I18n.t('sendWeekly').replace(
-          '%$1s', weekDayValues[newsletter.options.weekDay]
-        ).replace(
-          '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
-        );
-      break;
-
-      case 'monthly':
-        sendingFrequency = MailPoet.I18n.t('sendMonthly').replace(
-          '%$1s', monthDayValues[newsletter.options.monthDay]
-        ).replace(
-          '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
-        );
-      break;
-
-      case 'nthWeekDay':
-        sendingFrequency = MailPoet.I18n.t('sendNthWeekDay').replace(
-          '%$1s', nthWeekDayValues[newsletter.options.nthWeekDay]
-        ).replace(
-          '%$2s', weekDayValues[newsletter.options.weekDay]
-        ).replace(
-          '%$3s', timeOfDayValues[newsletter.options.timeOfDay]
-        );
-      break;
-
-      case 'immediately':
-        sendingFrequency = MailPoet.I18n.t('sendImmediately');
-      break;
-    }
-
-    // set segments
+    // get list of segments' name
     const segments = newsletter.segments.map(function(segment) {
       return segment.name
-    }).join(', ');
+    });
 
-    sendingToSegments = MailPoet.I18n.t('ifNewContentToSegments').replace(
-      '%$1s', segments
-    );
+    // check if the user has specified segments to send to
+    if(segments.length === 0) {
+      return (
+        <span className="mailpoet_error">
+          { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }
+        </span>
+      );
+    } else {
+      sendingToSegments = MailPoet.I18n.t('ifNewContentToSegments').replace(
+        '%$1s', segments.join(', ')
+      );
+
+      // set sending frequency
+      switch (newsletter.options.intervalType) {
+        case 'daily':
+          sendingFrequency = MailPoet.I18n.t('sendDaily').replace(
+            '%$1s', timeOfDayValues[newsletter.options.timeOfDay]
+          );
+        break;
+
+        case 'weekly':
+          sendingFrequency = MailPoet.I18n.t('sendWeekly').replace(
+            '%$1s', weekDayValues[newsletter.options.weekDay]
+          ).replace(
+            '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
+          );
+        break;
+
+        case 'monthly':
+          sendingFrequency = MailPoet.I18n.t('sendMonthly').replace(
+            '%$1s', monthDayValues[newsletter.options.monthDay]
+          ).replace(
+            '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
+          );
+        break;
+
+        case 'nthWeekDay':
+          sendingFrequency = MailPoet.I18n.t('sendNthWeekDay').replace(
+            '%$1s', nthWeekDayValues[newsletter.options.nthWeekDay]
+          ).replace(
+            '%$2s', weekDayValues[newsletter.options.weekDay]
+          ).replace(
+            '%$3s', timeOfDayValues[newsletter.options.timeOfDay]
+          );
+        break;
+
+        case 'immediately':
+          sendingFrequency = MailPoet.I18n.t('sendImmediately');
+        break;
+      }
+    }
 
     return (
       <span>
@@ -286,6 +295,7 @@ const NewsletterListNotification = React.createClass({
 
         <Listing
           limit={ mailpoet_listing_per_page }
+          location={ this.props.location }
           params={ this.props.params }
           endpoint="newsletters"
           tab="notification"
@@ -295,6 +305,8 @@ const NewsletterListNotification = React.createClass({
           item_actions={ newsletter_actions }
           messages={ messages }
           auto_refresh={ true }
+          sort_by="updated_at"
+          sort_order="desc"
         />
       </div>
     );

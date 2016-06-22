@@ -59,19 +59,19 @@ class SubscriberTest extends MailPoetTest {
     $subscriber =
       Subscriber::where('email', $this->data['email'])
         ->findOne();
-    expect($subscriber->status)->equals('unconfirmed');
+    expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
   function testItCanChangeStatus() {
     $subscriber = Subscriber::where('email', $this->data['email'])->findOne();
-    $subscriber->status = 'subscribed';
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
 
     expect($subscriber->id() > 0)->true();
     expect($subscriber->getErrors())->false();
     $subscriber_updated = Subscriber::where('email', $this->data['email'])
       ->findOne();
-    expect($subscriber_updated->status)->equals('subscribed');
+    expect($subscriber_updated->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
   function testItHasSearchFilter() {
@@ -87,20 +87,20 @@ class SubscriberTest extends MailPoetTest {
   }
 
   function testItHasGroupFilter() {
-    $subscribers = Subscriber::filter('groupBy', 'unconfirmed')
+    $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_UNCONFIRMED)
       ->findMany();
     foreach($subscribers as $subscriber) {
-      expect($subscriber->status)->equals('unconfirmed');
+      expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
     }
-    $subscribers = Subscriber::filter('groupBy', 'subscribed')
+    $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_SUBSCRIBED)
       ->findMany();
     foreach($subscribers as $subscriber) {
-      expect($subscriber->status)->equals('subscribed');
+      expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
     }
-    $subscribers = Subscriber::filter('groupBy', 'unsubscribed')
+    $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_UNSUBSCRIBED)
       ->findMany();
     foreach($subscribers as $subscriber) {
-      expect($subscriber->status)->equals('unsubscribed');
+      expect($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
     }
   }
 

@@ -1,6 +1,5 @@
 import React from 'react'
 import { Router, Link } from 'react-router'
-
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
 import classNames from 'classnames'
@@ -15,23 +14,19 @@ var columns = [
   },
   {
     name: 'description',
-    label: MailPoet.I18n.t('description'),
-    sortable: false
+    label: MailPoet.I18n.t('description')
   },
   {
     name: 'subscribed',
-    label: MailPoet.I18n.t('subscribed'),
-    sortable: false
+    label: MailPoet.I18n.t('subscribed')
   },
   {
     name: 'unconfirmed',
-    label: MailPoet.I18n.t('unconfirmed'),
-    sortable: false
+    label: MailPoet.I18n.t('unconfirmed')
   },
   {
     name: 'unsubscribed',
-    label: MailPoet.I18n.t('unsubscribed'),
-    sortable: false
+    label: MailPoet.I18n.t('unsubscribed')
   },
   {
     name: 'created_at',
@@ -244,6 +239,8 @@ const SegmentList = React.createClass({
           columns={ columns }
           bulk_actions={ bulk_actions }
           item_actions={ item_actions }
+          sort_by="name"
+          sort_order="asc"
         />
       </div>
     );

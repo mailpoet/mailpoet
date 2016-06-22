@@ -13,8 +13,7 @@ const columns = [
   },
   {
     name: 'segments',
-    label: MailPoet.I18n.t('segments'),
-    sortable: false
+    label: MailPoet.I18n.t('segments')
   },
   {
     name: 'created_at',

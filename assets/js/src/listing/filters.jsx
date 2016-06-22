@@ -10,10 +10,10 @@ function(
 ) {
   var ListingFilters = React.createClass({
     handleFilterAction: function() {
-      let filters = {}
+      let filters = {};
       this.getAvailableFilters().map((filter, i) => {
         filters[this.refs['filter-'+i].name] = this.refs['filter-'+i].value
-      })
+      });
       return this.props.onSelectFilter(filters);
     },
     handleEmptyTrash: function() {
@@ -21,7 +21,6 @@ function(
     },
     getAvailableFilters: function() {
       let filters = this.props.filters;
-
       return Object.keys(filters).filter(function(filter) {
         return !(
           filters[filter].length === 0
@@ -30,26 +29,29 @@ function(
             && !filters[filter][0].value
           )
         );
-      })
+      });
+    },
+    componentDidUpdate: function() {
+      const selected_filters = this.props.filter;
+      const available_filters = this.getAvailableFilters().map(
+        function(filter, i) {
+          if (selected_filters[filter] !== undefined && selected_filters[filter]) {
+            jQuery(this.refs['filter-'+i])
+              .val(selected_filters[filter])
+              .trigger('change');
+          }
+        }.bind(this)
+      );
     },
     render: function() {
       const filters = this.props.filters;
-      const selected_filters = this.props.filter;
-
       const available_filters = this.getAvailableFilters()
         .map(function(filter, i) {
-          let default_value = false;
-          if (selected_filters[filter] !== undefined && selected_filters[filter]) {
-            default_value = selected_filters[filter]
-          } else {
-            jQuery(`select[name="${filter}"]`).val('');
-          }
           return (
             <select
               ref={ `filter-${i}` }
               key={ `filter-${i}` }
               name={ filter }
-              defaultValue={ default_value }
             >
             { filters[filter].map(function(option, j) {
               return (
@@ -63,7 +65,7 @@ function(
           );
       }.bind(this));
 
-      let button = false;
+      let button;
 
       if (available_filters.length > 0) {
         button = (
@@ -76,7 +78,7 @@ function(
         );
       }
 
-      let empty_trash = false;
+      let empty_trash;
       if (this.props.group === 'trash') {
         empty_trash = (
           <input

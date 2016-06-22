@@ -132,10 +132,11 @@ class Segment extends Model {
 
   static function groupBy($orm, $group = null) {
     if($group === 'trash') {
-      return $orm->whereNotNull('deleted_at');
+      $orm->whereNotNull('deleted_at');
     } else {
-      $orm = $orm->whereNull('deleted_at');
+      $orm->whereNull('deleted_at');
     }
+    return $orm;
   }
 
   static function getSegmentsWithSubscriberCount() {
