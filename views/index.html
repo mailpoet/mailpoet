@@ -2,5 +2,9 @@
 
 <% block content %>
   <h1><%= 'Welcome!' %></h1>
-  <p><%= __(' %sSetup%s MailPoet and start sending.') | format('<a href="/wp-admin/admin.php?page=mailpoet-settings">', '</a>') | raw %></p>
+  <p><%= __(' %sSetup%s MailPoet and start sending.')
+    | format('<a href="%s">', '</a>')
+    | format(admin_url('admin.php?page=mailpoet-settings'))
+    | raw
+  %></p>
 <% endblock %>
