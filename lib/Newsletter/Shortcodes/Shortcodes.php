@@ -5,7 +5,7 @@ class Shortcodes {
   public $newsletter;
   public $subscriber;
   public $queue;
-  const SHORTCODE_CATEGORY_NAMESPACE = __NAMESPACE__ . '\\Categories\\';
+  const SHORTCODE_CATEGORY_NAMESPACE = 'MailPoet\Newsletter\Shortcodes\Categories\\';
 
   function __construct(
     $newsletter = false,
