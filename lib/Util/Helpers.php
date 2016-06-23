@@ -2,19 +2,21 @@
 namespace MailPoet\Util;
 
 class Helpers {
+  const DIVIDER = '***MailPoet***';
+
   static function getMaxPostSize($bytes = false) {
     $maxPostSize = ini_get('post_max_size');
     if(!$bytes) return $maxPostSize;
-    switch (substr($maxPostSize, -1)) {
+    switch(substr($maxPostSize, -1)) {
       case 'M':
       case 'm':
-        return (int)$maxPostSize * 1048576;
+        return (int) $maxPostSize * 1048576;
       case 'K':
       case 'k':
-        return (int)$maxPostSize * 1024;
+        return (int) $maxPostSize * 1024;
       case 'G':
       case 'g':
-        return (int)$maxPostSize * 1073741824;
+        return (int) $maxPostSize * 1073741824;
       default:
         return $maxPostSize;
     }
@@ -69,13 +71,13 @@ class Helpers {
     $paramsIndexKey = null;
     if(isset($params[2])) {
       if(is_float($params[2]) || is_int($params[2])) {
-        $paramsIndexKey = (int)$params[2];
+        $paramsIndexKey = (int) $params[2];
       } else {
         $paramsIndexKey = (string) $params[2];
       }
     }
     $resultArray = array();
-    foreach ($paramsInput as $row) {
+    foreach($paramsInput as $row) {
       $key = $value = null;
       $keySet = $valueSet = false;
       if($paramsIndexKey !== null && array_key_exists($paramsIndexKey, $row)) {
@@ -112,5 +114,13 @@ class Helpers {
     $str[0] = strtolower($str[0]);
     $func = create_function('$c', 'return "_" . strtolower($c[1]);');
     return preg_replace_callback('/([A-Z])/', $func, $str);
+  }
+
+  static function joinObject($object = array()) {
+    return implode(self::DIVIDER, $object);
+  }
+
+  static function splitObject($object = array()) {
+    return explode(self::DIVIDER, $object);
   }
 }

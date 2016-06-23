@@ -1,8 +1,8 @@
 <?php
 namespace MailPoet\Cron;
 
-use MailPoet\Cron\Workers\Scheduler;
-use MailPoet\Cron\Workers\SendingQueue;
+use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
@@ -41,22 +41,22 @@ class Daemon {
     }
     $this->abortIfStopped($daemon);
     try {
-      $scheduler = new Scheduler();
-      $scheduler->process($this->timer);
-      $queue = new SendingQueue();
-      $queue->process($this->timer);
+      $scheduler = new SchedulerWorker($this->timer);
+      $scheduler->process();
+      $queue = new SendingQueueWorker($this->timer);
+      $queue->process();
     } catch(\Exception $e) {
-      // continue processing, no need to catch errors
+      // continue processing, no need to handle errors
     }
     $elapsed_time = microtime(true) - $this->timer;
     if($elapsed_time < CronHelper::DAEMON_EXECUTION_LIMIT) {
       sleep(CronHelper::DAEMON_EXECUTION_LIMIT - $elapsed_time);
     }
-    // after each execution, re-read daemon data in case it was deleted or
+    // after each execution, re-read daemon data in case its status was changed
     // its status has changed
     $daemon = CronHelper::getDaemon();
     if(!$daemon || $daemon['token'] !== $this->data['token']) {
-      exit;
+      self::terminate();
     }
     $daemon['counter']++;
     $this->abortIfStopped($daemon);
@@ -69,11 +69,13 @@ class Daemon {
   }
 
   function abortIfStopped($daemon) {
-    if($daemon['status'] === self::STATUS_STOPPED) exit;
+    if($daemon['status'] === self::STATUS_STOPPED) {
+      self::terminate();
+    }
     if($daemon['status'] === self::STATUS_STOPPING) {
       $daemon['status'] = self::STATUS_STOPPED;
       CronHelper::saveDaemon($daemon);
-      exit;
+      self::terminate();
     }
   }
 
@@ -83,6 +85,10 @@ class Daemon {
 
   function callSelf() {
     CronHelper::accessDaemon($this->token, self::REQUEST_TIMEOUT);
+    self::terminate();
+  }
+
+  function terminate() {
     exit;
   }
 }

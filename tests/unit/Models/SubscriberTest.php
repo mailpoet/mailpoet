@@ -188,7 +188,7 @@ class SubscriberTest extends MailPoetTest {
     $values[0]['first_name'] = 'John';
     Subscriber::updateMultiple($columns, $values);
     $subscribers = Subscriber::findArray();
-     expect($subscribers[0]['first_name'])->equals($values[0]['first_name']);
+    expect($subscribers[0]['first_name'])->equals($values[0]['first_name']);
   }
 
   function testItCanSubscribe() {
@@ -316,6 +316,8 @@ class SubscriberTest extends MailPoetTest {
   function testItCannotTrashAWPUser() {
     $wp_subscriber = Subscriber::createOrUpdate(array(
       'email' => 'some.wp.user@mailpoet.com',
+      'first_name' => 'Some',
+      'last_name' => 'WP User',
       'wp_user_id' => 1
     ));
     expect($wp_subscriber->trash())->equals(false);
@@ -328,6 +330,8 @@ class SubscriberTest extends MailPoetTest {
   function testItCannotDeleteAWPUser() {
     $wp_subscriber = Subscriber::createOrUpdate(array(
       'email' => 'some.wp.user@mailpoet.com',
+      'first_name' => 'Some',
+      'last_name' => 'WP User',
       'wp_user_id' => 1
     ));
     expect($wp_subscriber->delete())->equals(false);

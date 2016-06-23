@@ -10,6 +10,7 @@ class Renderer {
   public $CSS_inliner;
   public $newsletter;
   const NEWSLETTER_TEMPLATE = 'Template.html';
+  const POST_PROCESS_FILTER = 'mailpoet_rendering_post_process';
 
   function __construct(array $newsletter) {
     $this->newsletter = $newsletter;
@@ -102,7 +103,7 @@ class Renderer {
       str_replace('&', '&amp;', $template->html())
     );
     $template = apply_filters(
-      'mailpoet_rendering_post_process',
+      self::POST_PROCESS_FILTER,
       $DOM->__toString()
     );
     return $template;

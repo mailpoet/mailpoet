@@ -8,6 +8,8 @@ class SubscriberSegmentTest extends MailPoetTest {
   function _before() {
     $this->subscriber = Subscriber::createOrUpdate(array(
       'email' => 'john.doe@mailpoet.com',
+      'first_name' => 'John',
+      'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED
     ));
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
@@ -133,6 +135,8 @@ class SubscriberSegmentTest extends MailPoetTest {
     // create a second subscriber
     $subscriber_2 = Subscriber::createOrUpdate(array(
       'email' => 'jane.doe@mailpoet.com',
+      'first_name' => 'Jane',
+      'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED
     ));
     // subscribe her to segments
