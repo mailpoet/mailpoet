@@ -48,6 +48,27 @@ class SubscriberTest extends MailPoetTest {
       ->equals($this->data['email']);
   }
 
+  function testItShouldSetErrors() {
+    // model validation
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(array(
+      'email' => 'invalid_email'
+    ));
+    $subscriber->save();
+    $errors = $subscriber->getErrors();
+    expect($errors)->contains("Your email address is invalid.");
+
+    // pdo error
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(array(
+      'email' => 'test@test.com',
+      'invalid_column' => true
+    ));
+    $subscriber->save();
+    $errors = $subscriber->getErrors();
+    expect($errors[0])->contains("Unknown column 'invalid_column' in 'field list'");
+  }
+
   function emailMustBeUnique() {
     $conflict_subscriber = Subscriber::create();
     $conflict_subscriber->hydrate($this->data);
@@ -124,7 +145,7 @@ class SubscriberTest extends MailPoetTest {
   function testItCanHaveCustomFields() {
     $custom_field = CustomField::createOrUpdate(array(
       'name' => 'DOB',
-      'type' => 'date',
+      'type' => 'date'
     ));
 
     $association = SubscriberCustomField::create();
@@ -136,6 +157,63 @@ class SubscriberTest extends MailPoetTest {
     $subscriber = Subscriber::filter('filterWithCustomFields')
       ->findOne($this->subscriber->id);
     expect($subscriber->DOB)->equals($association->value);
+  }
+
+  function testItCanCreateSubscriberWithCustomFields() {
+    $custom_field = CustomField::createOrUpdate(array(
+      'name' => 'City',
+      'type' => 'text'
+    ));
+
+    $custom_field_2 = CustomField::createOrUpdate(array(
+      'name' => 'Age',
+      'type' => 'text'
+    ));
+
+    $subscriber_with_custom_field = Subscriber::createOrUpdate(array(
+      'email' => 'user.with.cf@mailpoet.com',
+      'cf_'.$custom_field->id => 'Paris',
+      'cf_'.$custom_field_2->id => array(12, 23, 34)
+    ));
+
+    $subscriber = Subscriber::findOne($subscriber_with_custom_field->id)
+      ->withCustomFields();
+
+    expect($subscriber->id)->equals($subscriber_with_custom_field->id);
+    expect($subscriber->email)->equals('user.with.cf@mailpoet.com');
+    expect($subscriber->{'cf_'.$custom_field->id})->equals('Paris');
+    // array values are not supported so it should have assigned the first value
+    expect($subscriber->{'cf_'.$custom_field_2->id})->equals(12);
+  }
+
+  function testItShouldUnsubscribeFromAllSegments() {
+    $segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
+    $segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
+
+    $subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'jean.louis@mailpoet.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'segments' => array(
+        $segment_1->id,
+        $segment_2->id
+      )
+    ));
+
+    $subscriber = Subscriber::findOne($subscriber->id);
+
+    $subscribed_segments = $subscriber->segments()->findArray();
+    expect($subscribed_segments)->count(2);
+    expect($subscribed_segments[0]['name'] = 'Segment 1');
+    expect($subscribed_segments[1]['name'] = 'Segment 2');
+
+    // update subscriber status
+    $unsubscribed_subscriber = Subscriber::createOrUpdate(array(
+      'email' => 'jean.louis@mailpoet.com',
+      'status' => Subscriber::STATUS_UNSUBSCRIBED
+    ));
+
+    $subscribed_segments = $subscriber->segments()->findArray();
+    expect($subscribed_segments)->count(0);
   }
 
   function testItCanCreateOrUpdate() {
