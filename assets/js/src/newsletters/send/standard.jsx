@@ -266,7 +266,6 @@ define(
             newValue = {};
         newValue[event.target.name] = event.target.value;
 
-        console.log('Handling change', this, event.target.name, event.target.value);
         return this.props.onValueChange({
           target: {
             name: this.props.field.name,
