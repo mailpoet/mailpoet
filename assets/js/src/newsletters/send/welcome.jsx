@@ -71,7 +71,16 @@ define(
       }
     ];
 
-    return fields;
+    return {
+      getFields: function(newsletter) {
+        return fields;
+      },
+      getSendButtonOptions: function(newsletter) {
+        return {
+          value: MailPoet.I18n.t('activate')
+        };
+      },
+    };
   }
 );
 

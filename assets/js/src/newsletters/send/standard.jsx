@@ -401,6 +401,29 @@ define(
       }
     ];
 
-    return fields;
+    return {
+      getFields: function(newsletter) {
+        return fields;
+      },
+      getSendButtonOptions: function(newsletter) {
+        newsletter = newsletter || {};
+
+        var isScheduled =
+            typeof newsletter.options === 'object'
+            && newsletter.options.isScheduled === '1',
+          options = {
+            value: isScheduled
+              ? MailPoet.I18n.t('schedule')
+              : MailPoet.I18n.t('send')
+          };
+
+        if (newsletter.status === 'sent'
+            || newsletter.status === 'sending') {
+          options['disabled'] = 'disabled';
+        }
+
+        return options;
+      },
+    };
   }
 );

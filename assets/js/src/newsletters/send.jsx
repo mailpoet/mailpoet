@@ -34,14 +34,19 @@ define(
         };
       },
       getFieldsByNewsletter: function(newsletter) {
+        var type = this.getSubtype(newsletter);
+        return type.getFields(newsletter);
+      },
+      getSendButtonOptions: function() {
+        var type = this.getSubtype(this.state.item);
+        return type.getSendButtonOptions(this.state.item);
+      },
+      getSubtype: function(newsletter) {
         switch(newsletter.type) {
           case 'notification': return NotificationNewsletterFields;
           case 'welcome': return WelcomeNewsletterFields;
           default: return StandardNewsletterFields;
         }
-      },
-      isAutomatedNewsletter: function() {
-        return this.state.item.type !== 'standard';
       },
       isValid: function() {
         return jQuery('#mailpoet_newsletter').parsley().isValid();
@@ -128,7 +133,7 @@ define(
           this.context.router.push(`/${ this.state.item.type || '' }`);
         });
       },
-      handleRedirectToEditor: function(e) {
+      handleRedirectToDesign: function(e) {
         e.preventDefault();
         var redirectTo = e.target.href;
 
@@ -188,10 +193,9 @@ define(
                   className="button button-primary"
                   type="button"
                   onClick={ this.handleSend }
-                  value={
-                    this.isAutomatedNewsletter()
-                    ? MailPoet.I18n.t('activate')
-                    : MailPoet.I18n.t('send')} />
+                  value={MailPoet.I18n.t('send')}
+                  {...this.getSendButtonOptions()}
+                  />
                 &nbsp;
                 <input
                   className="button button-secondary"
@@ -202,7 +206,7 @@ define(
                   href={
                     '?page=mailpoet-newsletter-editor&id='+this.props.params.id
                   }
-                  onClick={this.handleRedirectToEditor}>
+                  onClick={this.handleRedirectToDesign}>
                   {MailPoet.I18n.t('goBackToDesign')}
                 </a>.
               </p>

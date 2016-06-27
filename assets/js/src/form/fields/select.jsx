@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'underscore'
 
 const FormFieldSelect = React.createClass({
   render() {
@@ -8,6 +9,7 @@ const FormFieldSelect = React.createClass({
 
     let filter = false;
     let placeholder = false;
+    let sortBy = false;
 
     if (this.props.field.placeholder !== undefined) {
       placeholder = (
@@ -19,7 +21,28 @@ const FormFieldSelect = React.createClass({
       filter = this.props.field.filter;
     }
 
-    const options = Object.keys(this.props.field.values).map(
+    if (_.isFunction(this.props.field.sortBy)) {
+      sortBy = this.props.field.sortBy;
+    }
+
+    let keys;
+    if (sortBy) {
+      // Extract keys from sorted [key, value] select value pairs, sorted by
+      // provided sorting order.
+      keys =
+        _.map(
+          _.sortBy(
+            _.pairs(this.props.field.values),
+            (item) => sortBy(item[0], item[1])
+          ),
+          (item) => item[0]
+        );
+      console.log(JSON.stringify(this.props.field.values), keys);
+    } else {
+      keys = Object.keys(this.props.field.values)
+    }
+
+    const options = keys.map(
       (value, index) => {
 
         if (filter !== false && filter(this.props.item, value) === false) {

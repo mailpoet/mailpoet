@@ -36,7 +36,8 @@ const availableSegmentValues = _.object(_.map(
 ));
 const segmentField = {
   name: 'segment',
-  values: availableSegmentValues
+  values: availableSegmentValues,
+  sortBy: (key, value) => value.toLowerCase()
 };
 
 const roleField = {
