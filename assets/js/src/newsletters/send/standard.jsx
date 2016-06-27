@@ -253,13 +253,20 @@ define(
 
     var StandardScheduling = React.createClass({
       _getCurrentValue: function() {
-        return this.props.item[this.props.field.name] || {};
+        return _.defaults(
+          this.props.item[this.props.field.name] || {},
+          {
+            isScheduled: '0',
+            schedueldAt: defaultDateTime
+          }
+        );
       },
       handleValueChange: function(event) {
         var oldValue = this._getCurrentValue(),
             newValue = {};
         newValue[event.target.name] = event.target.value;
 
+        console.log('Handling change', this, event.target.name, event.target.value);
         return this.props.onValueChange({
           target: {
             name: this.props.field.name,
