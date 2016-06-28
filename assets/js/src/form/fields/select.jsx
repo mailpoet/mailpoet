@@ -37,7 +37,6 @@ const FormFieldSelect = React.createClass({
           ),
           (item) => item[0]
         );
-      console.log(JSON.stringify(this.props.field.values), keys);
     } else {
       keys = Object.keys(this.props.field.values)
     }
