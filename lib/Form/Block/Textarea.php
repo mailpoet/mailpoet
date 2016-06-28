@@ -21,7 +21,7 @@ class Textarea extends Base {
 
     $html .= static::getInputModifiers($block);
 
-    $html .= '></textarea>';
+    $html .= '>'.static::getFieldValue($block).'</textarea>';
 
     $html .= '</p>';
 
