@@ -253,7 +253,13 @@ define(
 
     var StandardScheduling = React.createClass({
       _getCurrentValue: function() {
-        return this.props.item[this.props.field.name] || {};
+        return _.defaults(
+          this.props.item[this.props.field.name] || {},
+          {
+            isScheduled: '0',
+            scheduledAt: defaultDateTime
+          }
+        );
       },
       handleValueChange: function(event) {
         var oldValue = this._getCurrentValue(),
@@ -290,7 +296,7 @@ define(
               <DateTime
                 name="scheduledAt"
                 value={this._getCurrentValue().scheduledAt}
-                onChange={this.handleValueChange} 
+                onChange={this.handleValueChange}
                 dateValidation={this.getDateValidation()} />
               &nbsp;
               <span>
@@ -401,6 +407,30 @@ define(
       }
     ];
 
-    return fields;
+    return {
+      getFields: function(newsletter) {
+        return fields;
+      },
+      getSendButtonOptions: function(newsletter) {
+        newsletter = newsletter || {};
+
+        let isScheduled = (
+          typeof newsletter.options === 'object'
+          && newsletter.options.isScheduled === '1'
+        );
+        let options = {
+          value: (isScheduled
+            ? MailPoet.I18n.t('schedule')
+            : MailPoet.I18n.t('send'))
+        };
+
+        if (newsletter.status === 'sent'
+            || newsletter.status === 'sending') {
+          options['disabled'] = 'disabled';
+        }
+
+        return options;
+      },
+    };
   }
 );

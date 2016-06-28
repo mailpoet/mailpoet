@@ -9,7 +9,12 @@ import {
 } from 'newsletters/scheduling/common.jsx'
 
 const availableRoles = window.mailpoet_roles || {};
-const availableSegments = window.mailpoet_segments || {};
+const availableSegments = _.filter(
+  window.mailpoet_segments || [],
+  function (segment) {
+    return segment.type === 'default';
+  }
+);
 
 const events = {
   name: 'event',
@@ -31,7 +36,8 @@ const availableSegmentValues = _.object(_.map(
 ));
 const segmentField = {
   name: 'segment',
-  values: availableSegmentValues
+  values: availableSegmentValues,
+  sortBy: (key, value) => value.toLowerCase()
 };
 
 const roleField = {
