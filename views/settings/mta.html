@@ -38,23 +38,6 @@
   name="mta[frequency][interval]"
   value="<%= settings.mta.frequency.interval %>"
 />
-<!-- dkim: public / private keys  -->
-<input
-  type="hidden"
-  name="dkim[public_key]"
-  value="<%= settings.dkim.public_key %>"
-/>
-<input
-  type="hidden"
-  name="dkim[private_key]"
-  value="<%= settings.dkim.private_key %>"
-/>
-<!-- dkim: domain -->
-<input
-  type="hidden"
-  name="dkim[domain]"
-  value="<%= settings.dkim.domain %>"
-/>
 
 <!-- smtp: available sending methods -->
 <ul class="mailpoet_sending_methods clearfix">
@@ -614,70 +597,6 @@
           <p>
             <%= __("SPF is set up in your DNS. Read your host's support documentation for more information.") %>
           </p>
-        </td>
-      </tr>
-      <!-- dkim -->
-      <tr id="mailpoet_mta_dkim" style="display:none;">
-        <th scope="row">
-          <label for="settings[dkim_enabled]">
-            <%= __('DKIM Signature (Highly recommended!)') %>
-            <p class="description">
-              <%= __('Improve your spam score. MailPoet can sign all your emails with DKIM.') %>
-              <a
-                href="#todo/guide-to-dkim-in-wysija/"
-                target="_blank"
-                title=""
-              ><%= __('Read more.') %></a>
-            </p>
-          </label>
-        </th>
-        <td>
-          <p>
-            <input
-              data-toggle="mailpoet_mta_dkim_content"
-              type="checkbox"
-              value="1"
-              id="settings[dkim_enabled]"
-              name="dkim[enabled]"
-              <% if(settings.dkim.enabled) %>checked="checked"<% endif %>
-            />
-          </p>
-          <div id="mailpoet_mta_dkim_content">
-            <fieldset style="border: 1px solid #ccc;margin: 0;padding: 10px;">
-              <legend>
-                <%= __('Configure your DNS by adding a key/value record in TXT as shown below.') %>
-                <a
-                  href="http://support.mailpoet.com/knowledgebase/guide-to-dkim-in-wysija/?utm_source=wpadmin&utm_campaign=settings"
-                  target="_blank"
-                ><%= __('Read more.') %></a>
-              </legend>
-              <p>
-                <label>
-                  <%= __('Key') %>
-                  <input
-                    type="text"
-                    class="regular-text"
-                    onClick="this.focus();this.select();"
-                    readonly="readonly"
-                    value="wys._domainkey"
-                    size="12"
-                  />
-                </label>
-                &nbsp;
-                <label>
-                  <%= __('Value') %>
-                  <input
-                    type="text"
-                    class="regular-text"
-
-                    onClick="this.focus();this.select();"
-                    readonly="readonly"
-                    value="v=DKIM1;s=email;t=s;p=<%= settings.dkim.public_key %>"
-                  />
-                </label>
-              </p>
-            </fieldset>
-          </div>
         </td>
       </tr>
       <!-- test method -->

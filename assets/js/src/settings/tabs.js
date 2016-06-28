@@ -34,15 +34,12 @@ define(
           // show sending methods
           jQuery('.mailpoet_sending_methods').fadeIn();
         } else {
-          // toggle SPF/DKIM (hidden if the sending method is MailPoet)
+          // toggle SPF (hidden if the sending method is MailPoet)
           jQuery('#mailpoet_mta_spf')[
             (group === 'mailpoet')
             ? 'hide'
             : 'show'
           ]();
-
-          // (HIDDEN FOR BETA)
-          jQuery('#mailpoet_mta_dkim').hide();
 
           // hide sending methods
           jQuery('.mailpoet_sending_methods').hide();

@@ -59,8 +59,6 @@ class Model extends \Sudzy\ValidModel {
         default:
           $this->setError($e->getMessage());
       }
-    } catch(\Exception $e) {
-      $this->setError($e->getMessage());
     }
     return $this;
   }

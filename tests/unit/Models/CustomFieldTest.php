@@ -34,6 +34,19 @@ class CustomFieldTest extends MailPoetTest {
     expect($this->custom_field->getErrors())->false();
   }
 
+  function testItCanBeUpdated() {
+    expect($this->custom_field->name)->equals($this->data['name']);
+
+    $updated_custom_field = CustomField::createOrUpdate(array(
+      'id' => $this->custom_field->id,
+      'name' => 'Country'
+    ));
+
+    expect($updated_custom_field->getErrors())->false();
+    expect($updated_custom_field->name)->equals('Country');
+    expect($updated_custom_field->id)->equals($this->custom_field->id);
+  }
+
   function testItHasAName() {
     expect($this->custom_field->name)->equals($this->data['name']);
   }

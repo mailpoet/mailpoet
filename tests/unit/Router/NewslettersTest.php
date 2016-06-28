@@ -9,12 +9,12 @@ class NewslettersTest extends MailPoetTest {
   function _before() {
     $this->newsletter = Newsletter::createOrUpdate(array(
       'subject' => 'My Standard Newsletter',
-      'type' => 'standard'
+      'type' => Newsletter::TYPE_STANDARD
     ));
 
     $this->post_notification = Newsletter::createOrUpdate(array(
       'subject' => 'My Post Notification',
-      'type' => 'notification'
+      'type' => Newsletter::TYPE_NOTIFICATION
     ));
   }
 
@@ -34,7 +34,7 @@ class NewslettersTest extends MailPoetTest {
   function testItCanSaveANewNewsletter() {
     $valid_data = array(
       'subject' => 'My First Newsletter',
-      'type' => 'standard'
+      'type' => Newsletter::TYPE_STANDARD
     );
 
     $router = new Newsletters();
@@ -98,26 +98,26 @@ class NewslettersTest extends MailPoetTest {
     $router = new Newsletters();
     $response = $router->duplicate($this->newsletter->id());
     expect($response['subject'])->equals('Copy of My Standard Newsletter');
-    expect($response['type'])->equals('standard');
+    expect($response['type'])->equals(Newsletter::TYPE_STANDARD);
     expect($response['body'])->equals($this->newsletter->body);
 
     $response = $router->duplicate($this->post_notification->id());
     expect($response['subject'])->equals('Copy of My Post Notification');
-    expect($response['type'])->equals('notification');
+    expect($response['type'])->equals(Newsletter::TYPE_NOTIFICATION);
     expect($response['body'])->equals($this->post_notification->body);
   }
 
   function testItCanCreateANewsletter() {
     $data = array(
       'subject' => 'My New Newsletter',
-      'type' => 'standard'
+      'type' => Newsletter::TYPE_STANDARD
     );
     $router = new Newsletters();
     $response = $router->create($data);
     expect($response['result'])->true();
     expect($response['newsletter']['id'] > 0)->true();
     expect($response['newsletter']['subject'])->equals('My New Newsletter');
-    expect($response['newsletter']['type'])->equals('standard');
+    expect($response['newsletter']['type'])->equals(Newsletter::TYPE_STANDARD);
     expect($response['newsletter']['body'])->equals(array());
     expect($response)->hasntKey('errors');
 
@@ -174,6 +174,110 @@ class NewslettersTest extends MailPoetTest {
     expect($response['items'][1]['segments'])->count(1);
     expect($response['items'][1]['segments'][0]['id'])
       ->equals($segment_2->id);
+  }
+
+  function testItCanFilterListing() {
+    // create 2 segments
+    $segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
+    $segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
+
+    // link standard newsletter to the 2 segments
+    $newsletter_segment = NewsletterSegment::create();
+    $newsletter_segment->hydrate(array(
+      'newsletter_id' => $this->newsletter->id(),
+      'segment_id' => $segment_1->id()
+    ));
+    $newsletter_segment->save();
+
+    $newsletter_segment = NewsletterSegment::create();
+    $newsletter_segment->hydrate(array(
+      'newsletter_id' => $this->newsletter->id(),
+      'segment_id' => $segment_2->id()
+    ));
+    $newsletter_segment->save();
+
+    // link post notification to the 2nd segment
+    $newsletter_segment = NewsletterSegment::create();
+    $newsletter_segment->hydrate(array(
+      'newsletter_id' => $this->post_notification->id(),
+      'segment_id' => $segment_2->id()
+    ));
+    $newsletter_segment->save();
+
+    $router = new Newsletters();
+
+    // filter by 1st segment
+    $response = $router->listing(array(
+      'filter' => array(
+        'segment' => $segment_1->id
+      )
+    ));
+
+    // we should only get the standard newsletter
+    expect($response['count'])->equals(1);
+    expect($response['items'][0]['subject'])->equals($this->newsletter->subject);
+
+    // filter by 2nd segment
+    $response = $router->listing(array(
+      'filter' => array(
+        'segment' => $segment_2->id
+      )
+    ));
+
+    // we should have the 2 newsletters
+    expect($response['count'])->equals(2);
+  }
+
+  function testItCanLimitListing() {
+    $router = new Newsletters();
+    // get 1st page (limit items per page to 1)
+    $response = $router->listing(array(
+      'limit' => 1,
+      'sort_by' => 'subject',
+      'sort_order' => 'asc'
+    ));
+
+    expect($response['count'])->equals(2);
+    expect($response['items'])->count(1);
+    expect($response['items'][0]['subject'])->equals(
+      $this->post_notification->subject
+    );
+
+    // get 1st page (limit items per page to 1)
+    $response = $router->listing(array(
+      'limit' => 1,
+      'offset' => 1,
+      'sort_by' => 'subject',
+      'sort_order' => 'asc'
+    ));
+
+    expect($response['count'])->equals(2);
+    expect($response['items'])->count(1);
+    expect($response['items'][0]['subject'])->equals(
+      $this->newsletter->subject
+    );
+  }
+
+  function testItCanBulkDeleteSelectionOfNewsletters() {
+    $newsletter = Newsletter::createOrUpdate(array(
+      'subject' => 'To be deleted',
+      'type' => Newsletter::TYPE_STANDARD
+    ));
+
+    $selection_ids = array(
+      $newsletter->id,
+      $this->newsletter->id
+    );
+
+    $router = new Newsletters();
+    $response = $router->bulkAction(array(
+      'listing' => array(
+        'selection' => $selection_ids
+      ),
+      'action' => 'delete'
+    ));
+
+    expect($response)->equals(count($selection_ids));
   }
 
   function testItCanBulkDeleteNewsletters() {

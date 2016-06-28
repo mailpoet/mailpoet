@@ -25,6 +25,15 @@ class SettingTest extends MailPoetTest {
     expect($default_settings['signup_confirmation']['enabled'])->true();
   }
 
+  function testItCanLoadDefaults() {
+    Setting::$defaults = null;
+    expect(Setting::$defaults)->null();
+
+    $default_settings = Setting::getDefaults();
+    expect(Setting::$defaults)->notEmpty();
+    expect($default_settings['signup_confirmation']['enabled'])->true();
+  }
+
   function testItCanGetAllSettingsIncludingDefaults() {
     Setting::setValue('key_1', 'value_1');
     Setting::setValue('key_2', 'value_2');

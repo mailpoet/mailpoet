@@ -28,6 +28,14 @@ class StatisticsFormsTest extends MailPoetTest {
     expect(StatisticsForms::count())->equals(3);
   }
 
+  function testItCannotRecordStatsWithoutFormOrSubscriber() {
+    $record = StatisticsForms::record($form_id = null, $subscriber_id = 1);
+    expect($record)->false();
+
+    $record = StatisticsForms::record($form_id = 1, $subscriber_id = null);
+    expect($record)->false();
+  }
+
   function _after() {
     StatisticsForms::deleteMany();
   }

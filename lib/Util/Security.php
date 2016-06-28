@@ -11,11 +11,9 @@ class Security {
   static function generateRandomString($length = 5) {
     // non-cryptographically strong random generator
     return substr(
-      md5(
-        uniqid(
-          mt_rand(), true)
-      ),
+      md5(uniqid(mt_rand(), true)),
       0,
-      (!is_int($length) || $length <= 5 || $length >= 32) ? 5 : $length);
+      min(max(5, (int)$length), 32)
+    );
   }
 }
