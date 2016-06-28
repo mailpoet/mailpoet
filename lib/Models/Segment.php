@@ -156,7 +156,7 @@ class Segment extends Model {
       ->orderByAsc(self::$_table.'.name')
       ->whereNull(self::$_table.'.deleted_at');
 
-    if (!empty($type)) {
+    if(!empty($type)) {
       $query->where(self::$_table.'.type', $type);
     }
 

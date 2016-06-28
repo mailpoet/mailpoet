@@ -257,7 +257,7 @@ define(
           this.props.item[this.props.field.name] || {},
           {
             isScheduled: '0',
-            schedueldAt: defaultDateTime
+            scheduledAt: defaultDateTime
           }
         );
       },
@@ -296,7 +296,7 @@ define(
               <DateTime
                 name="scheduledAt"
                 value={this._getCurrentValue().scheduledAt}
-                onChange={this.handleValueChange} 
+                onChange={this.handleValueChange}
                 dateValidation={this.getDateValidation()} />
               &nbsp;
               <span>
