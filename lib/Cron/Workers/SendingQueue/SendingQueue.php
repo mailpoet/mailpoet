@@ -107,6 +107,7 @@ class SendingQueue {
         );
         $prepared_newsletters = array();
         $prepared_subscribers = array();
+        $prepared_subscribers_ids = array();
         $statistics = array();
       }
     }
@@ -181,8 +182,10 @@ class SendingQueue {
         $newsletter->setStatus(NewsletterModel::STATUS_SENT);
       }
     }
-    $queue->subscribers = serialize((array) $queue->subscribers);
+    $subscribers = $queue->subscribers;
+    $queue->subscribers = serialize((array) $subscribers);
     $queue->save();
+    $queue->subscribers = $subscribers;
     return $queue;
   }
 }
