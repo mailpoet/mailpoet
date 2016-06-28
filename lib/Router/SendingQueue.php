@@ -104,6 +104,8 @@ class SendingQueue {
       $queue->scheduled_at = Scheduler::scheduleFromTimestamp(
         $newsletter->scheduledAt
       );
+      $queue->subscribers = null;
+      $queue->count_total = $queue->count_to_process = 0;
 
       $message = __('The newsletter has been scheduled.');
     } else {
@@ -121,6 +123,8 @@ class SendingQueue {
           'errors' => array(__('There are no subscribers.'))
         );
       }
+      $queue->status = null;
+      $queue->scheduled_at = null;
       $queue->subscribers = serialize(
         array(
           'to_process' => $subscribers
