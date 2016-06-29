@@ -172,6 +172,5 @@ class Scheduler {
       $queue->scheduled_at = $next_run_date;
       $queue->save();
     }
-    return;
   }
 }
