@@ -87,16 +87,12 @@ class Pages {
       switch($this->action) {
         case 'confirm':
           return $this->getConfirmTitle();
-        break;
 
         case 'manage':
-
           return $this->getManageTitle();
-        break;
 
         case 'unsubscribe':
           return $this->getUnsubscribeTitle();
-        break;
       }
     }
     return $page_title;

@@ -40,7 +40,6 @@ class Handlebars extends \Twig_Extension {
       break;
       default:
         return;
-      break;
     }
 
     $output = array();
