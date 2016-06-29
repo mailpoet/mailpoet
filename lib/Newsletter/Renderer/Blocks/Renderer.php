@@ -23,8 +23,7 @@ class Renderer {
       // vertical orientation denotes column container
       if($block['type'] === 'container' && $block['orientation'] === 'vertical') {
         $column_content[] = $rendered_block_element;
-      }
-      else {
+      } else {
         $block_content .= $rendered_block_element;
       }
     }, $data['blocks']);

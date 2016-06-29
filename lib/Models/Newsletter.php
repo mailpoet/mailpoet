@@ -278,7 +278,7 @@ class Newsletter extends Model {
   static function filterWithOptions($orm) {
     $orm = $orm->select(MP_NEWSLETTERS_TABLE.'.*');
     $optionFields = NewsletterOptionField::findArray();
-    foreach ($optionFields as $optionField) {
+    foreach($optionFields as $optionField) {
       $orm = $orm->select_expr(
         'IFNULL(GROUP_CONCAT(CASE WHEN ' .
         MP_NEWSLETTER_OPTION_FIELDS_TABLE . '.id=' . $optionField['id'] . ' THEN ' .

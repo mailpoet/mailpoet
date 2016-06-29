@@ -16,7 +16,7 @@ class PostListTransformer {
     $results = array();
     $use_divider = $this->args['showDivider'] === 'true';
 
-    foreach ($posts as $index => $post) {
+    foreach($posts as $index => $post) {
       if($use_divider && $index > 0) {
         $results[] = $this->args['divider'];
       }

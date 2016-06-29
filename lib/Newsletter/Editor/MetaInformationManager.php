@@ -7,7 +7,7 @@ class MetaInformationManager {
 
   function appendMetaInformation($content, $post, $args) {
     // Append author and categories above and below contents
-    foreach (array('above', 'below') as $position) {
+    foreach(array('above', 'below') as $position) {
       $position_field = $position . 'Text';
       $text = array();
 

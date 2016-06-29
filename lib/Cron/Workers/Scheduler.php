@@ -84,7 +84,7 @@ class Scheduler {
       return;
     }
     // schedule new queue if the post notification is not destined for immediate delivery
-    if ($newsletter->intervalType !== NewsletterScheduler::INTERVAL_IMMEDIATELY) {
+    if($newsletter->intervalType !== NewsletterScheduler::INTERVAL_IMMEDIATELY) {
       $new_queue = SendingQueue::create();
       $new_queue->newsletter_id = $newsletter->id;
       $new_queue->status = NewsletterScheduler::STATUS_SCHEDULED;
