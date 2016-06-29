@@ -28,7 +28,6 @@ class BulkAction {
       throw new \Exception(
         $this->model_class. ' has not method "'.$bulk_action_method.'"'
       );
-      return false;
     }
 
     return call_user_func_array(

@@ -36,7 +36,6 @@ class Export {
           'hspace="0"',
           'allowtransparency="true"></iframe>'
         ));
-      break;
 
       case 'php':
         $output = array(
@@ -44,7 +43,6 @@ class Export {
           'echo $form_widget->widget(array(\'form\' => '.(int)$form['id'].', \'form_type\' => \'php\'));'
           );
         return join("\n", $output);
-      break;
 
       case 'html':
         // TODO: get locale setting in order to load translations
@@ -82,11 +80,9 @@ class Export {
           'form_type' => 'php'
         ));
         return join("\n", $output);
-      break;
 
       case 'shortcode':
         return '[mailpoet_form id="'.(int)$form['id'].'"]';
-      break;
     }
   }
 }
