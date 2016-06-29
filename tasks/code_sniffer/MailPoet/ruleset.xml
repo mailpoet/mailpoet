@@ -20,12 +20,12 @@
   <!-- Disallow usage of BOMs -->
   <rule ref="Generic.Files.ByteOrderMark"/>
   <!-- Lines can be 80 chars long, show errors at 120 chars -->
-  <rule ref="Generic.Files.LineLength">
-    <properties>
-      <property name="lineLimit" value="80"/>
-      <property name="absoluteLineLimit" value="120"/>
-    </properties>
-  </rule>
+  <!--<rule ref="Generic.Files.LineLength">-->
+    <!--<properties>-->
+      <!--<property name="lineLimit" value="80"/>-->
+      <!--<property name="absoluteLineLimit" value="120"/>-->
+    <!--</properties>-->
+  <!--</rule>-->
   <!-- Use Unix newlines -->
   <rule ref="Generic.Files.LineEndings">
     <properties>
