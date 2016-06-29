@@ -41,7 +41,7 @@ class PostContentManager {
       '<img>', '<p>', '<em>', '<span>', '<b>', '<strong>', '<i>', '<h1>',
       '<h2>', '<h3>', '<a>', '<ul>', '<ol>', '<li>', '<br>'
     );
-    $content = strip_tags($content, implode('',$tags_not_being_stripped));
+    $content = strip_tags($content, implode('', $tags_not_being_stripped));
     $content = wpautop($content);
 
     return $content;
