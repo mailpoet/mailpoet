@@ -141,6 +141,20 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('vendor/bin/codecept run -g failed');
   }
 
+  function qaLint() {
+    $this->_exec('./tasks/php_lint.sh lib/ tests/');
+  }
+
+  function qaCodeSniffer() {
+    $this->_exec(
+      './vendor/bin/phpcs '.
+      '--standard=./tasks/code_sniffer/MailPoet '.
+      '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,'.
+      './lib/Config/PopulatorData/Templates/* '.
+      'lib/'
+    );
+  }
+
   protected function loadEnv() {
     $dotenv = new Dotenv\Dotenv(__DIR__);
     $dotenv->load();
