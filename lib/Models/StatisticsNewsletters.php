@@ -6,10 +6,6 @@ if(!defined('ABSPATH')) exit;
 class StatisticsNewsletters extends Model {
   public static $_table = MP_STATISTICS_NEWSLETTERS_TABLE;
 
-  function __construct() {
-    parent::__construct();
-  }
-
   static function createMultiple(array $data) {
     $values = array();
     foreach($data as $value) {
