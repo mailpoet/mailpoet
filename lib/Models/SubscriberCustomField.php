@@ -8,10 +8,6 @@ if(!defined('ABSPATH')) exit;
 class SubscriberCustomField extends Model {
   public static $_table = MP_SUBSCRIBER_CUSTOM_FIELD_TABLE;
 
-  function __construct() {
-    parent::__construct();
-  }
-
   static function createOrUpdate($data = array()) {
     $custom_field = CustomField::findOne($data['custom_field_id']);
     if($custom_field === false) {

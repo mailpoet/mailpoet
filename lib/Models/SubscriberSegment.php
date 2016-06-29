@@ -8,10 +8,6 @@ if(!defined('ABSPATH')) exit;
 class SubscriberSegment extends Model {
   public static $_table = MP_SUBSCRIBER_SEGMENT_TABLE;
 
-  function __construct() {
-    parent::__construct();
-  }
-
   function subscriber() {
     return $this->has_one(__NAMESPACE__.'\Subscriber', 'id', 'subscriber_id');
   }

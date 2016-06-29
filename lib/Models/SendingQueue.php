@@ -10,10 +10,6 @@ class SendingQueue extends Model {
   const STATUS_SCHEDULED = 'scheduled';
   const STATUS_PAUSED = 'paused';
 
-  function __construct() {
-    parent::__construct();
-  }
-
   function pause() {
     if($this->count_processed === $this->count_total) {
       return false;
