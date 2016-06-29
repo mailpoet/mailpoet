@@ -86,7 +86,9 @@ class Router {
   }
 
   function checkPermissions() {
-    if(!current_user_can('manage_options')) { die(); }
+    if(!current_user_can('manage_options')) {
+      die();
+    }
   }
 
   function verifyToken() {

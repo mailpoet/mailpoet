@@ -41,7 +41,7 @@ class Renderer {
 
   static function renderBlocks($blocks = array()) {
     $html = '';
-    foreach ($blocks as $key => $block) {
+    foreach($blocks as $key => $block) {
       $html .= static::renderBlock($block)."\n";
     }
 

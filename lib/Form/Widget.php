@@ -67,7 +67,7 @@ class Widget extends \WP_Widget {
     <p>
       <select class="widefat" id="<?php echo $this->get_field_id('form') ?>" name="<?php echo $this->get_field_name('form'); ?>">
         <?php
-        foreach ($forms as $form) {
+        foreach($forms as $form) {
           $is_selected = ($selected_form === (int)$form['id']) ? 'selected="selected"' : '';
         ?>
         <option value="<?php echo (int)$form['id']; ?>" <?php echo $is_selected; ?>><?php echo esc_html($form['name']); ?></option>

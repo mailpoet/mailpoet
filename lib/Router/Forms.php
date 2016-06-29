@@ -149,7 +149,7 @@ class Forms {
       // or if it's selected by the admin
       $has_segment_selection = false;
 
-      foreach ($body as $i => $block) {
+      foreach($body as $i => $block) {
         if($block['type'] === 'segment') {
           $has_segment_selection = true;
           if(!empty($block['params']['values'])) {

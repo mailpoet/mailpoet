@@ -23,7 +23,7 @@ class MailChimp {
       return $this->processError('connection');
     } else {
       $response = '';
-      while (!feof($connection)) {
+      while(!feof($connection)) {
         $buffer = fgets($connection, 4096);
         if(trim($buffer) !== '') {
           $response .= $buffer;
@@ -38,7 +38,7 @@ class MailChimp {
       return $this->processError('API');
     }
 
-    foreach ($response->data as $list) {
+    foreach($response->data as $list) {
       $lists[] = array(
         'id' => $list->id,
         'name' => $list->name
@@ -61,7 +61,7 @@ class MailChimp {
     }
 
     $bytes_fetched = 0;
-    foreach ($lists as $list) {
+    foreach($lists as $list) {
       $url = sprintf($this->export_url, $this->data_center, $this->api_key, $list);
       $connection = @fopen($url, 'r');
       if(!$connection) {
@@ -69,7 +69,7 @@ class MailChimp {
       } else {
         $i = 0;
         $header = array();
-        while (!feof($connection)) {
+        while(!feof($connection)) {
           $buffer = fgets($connection, 4096);
           if(trim($buffer) !== '') {
             $obj = json_decode($buffer);

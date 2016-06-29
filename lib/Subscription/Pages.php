@@ -238,7 +238,7 @@ class Pages {
     }
     $subscribed_segment_ids = array();
     if(!empty($this->subscriber->subscriptions)) {
-      foreach ($this->subscriber->subscriptions as $subscription) {
+      foreach($this->subscriber->subscriptions as $subscription) {
         if($subscription['status'] === Subscriber::STATUS_SUBSCRIBED) {
           $subscribed_segment_ids[] = $subscription['segment_id'];
         }
