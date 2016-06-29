@@ -162,7 +162,7 @@ class Subscriber extends Model {
       $subscriber = self::findOne($subscriber->id);
 
       // restore deleted subscriber
-      if($subscriber->deleted_at !== NULL) {
+      if($subscriber->deleted_at !== null) {
         $subscriber->setExpr('deleted_at', 'NULL');
       }
 

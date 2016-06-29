@@ -148,7 +148,7 @@ EOL;
         }, explode(';', trim($rules[$index]))));
 
         // check if we have multiple selectors
-        if(strpos($selector, ',') !== FALSE) {
+        if(strpos($selector, ',') !== false) {
           $selectors_array = array_filter(array_map(function($value) {
             return trim($value);
           }, explode(',', $selector)));
