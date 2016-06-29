@@ -90,7 +90,7 @@ class Link {
   }
 
   static function processUrl($action, $url, $queue) {
-    return ($queue !== false && (boolean) Setting::getValue('tracking.enabled')) ?
+    return ($queue !== false && (boolean)Setting::getValue('tracking.enabled')) ?
       self::getShortcode($action) :
       $url;
   }
@@ -101,7 +101,7 @@ class Link {
     switch($shortcode_action) {
       case 'subscription_unsubscribe_url':
         // track unsubscribe event
-        if((boolean) Setting::getValue('tracking.enabled')) {
+        if((boolean)Setting::getValue('tracking.enabled')) {
           $unsubscribe = new Unsubscribes();
           $unsubscribe->track($newsletter['id'], $subscriber['id'], $queue['id']);
         }

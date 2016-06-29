@@ -18,7 +18,7 @@ class Newsletter {
   public $tracking_image_inserted;
 
   function __construct() {
-    $this->tracking_enabled = (boolean) Setting::getValue('tracking.enabled');
+    $this->tracking_enabled = (boolean)Setting::getValue('tracking.enabled');
     $this->tracking_image_inserted = false;
   }
 

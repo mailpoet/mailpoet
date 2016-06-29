@@ -181,7 +181,7 @@ class SendingQueue {
         $newsletter->setStatus(NewsletterModel::STATUS_SENT);
       }
     }
-    $queue->subscribers = serialize((array) $queue->subscribers);
+    $queue->subscribers = serialize((array)$queue->subscribers);
     $queue->save();
     return $queue;
   }

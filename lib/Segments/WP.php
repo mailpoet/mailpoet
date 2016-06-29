@@ -62,7 +62,7 @@ class WP {
           if($schedule_welcome_newsletter === true) {
             Scheduler::scheduleWPUserWelcomeNotification(
               $subscriber->id,
-              (array) $wp_user,
+              (array)$wp_user,
               $old_wp_user_data
             );
           }
