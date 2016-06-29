@@ -58,7 +58,7 @@ class ViewInBrowser {
       $queue
     );
     $rendered_newsletter = $shortcodes->replace($newsletter_body['html']);
-    if($queue && (boolean) Setting::getValue('tracking.enabled')) {
+    if($queue && (boolean)Setting::getValue('tracking.enabled')) {
       $rendered_newsletter = Links::replaceSubscriberData(
         $newsletter->id,
         $subscriber->id,
