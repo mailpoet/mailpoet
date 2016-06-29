@@ -3,7 +3,7 @@
   <description>MailPoet specific rule set</description>
 
   <!-- Control structures must have at least one statement in the body -->
-  <rule ref="Generic.CodeAnalysis.EmptyStatement"/>
+  <!--<rule ref="Generic.CodeAnalysis.EmptyStatement"/>-->
   <!-- For loops with only second expression should be while loops -->
   <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop"/>
   <!-- Same variable should not be used for two nested loops as incrementers -->
