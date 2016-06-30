@@ -16,7 +16,7 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class  extends \Codeception\Actor
+class Actions extends \Codeception\Actor
 {
     use _generated\Actions;
 
