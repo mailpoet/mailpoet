@@ -99,13 +99,13 @@ class Link {
           $unsubscribe->track($newsletter['id'], $subscriber['id'], $queue['id']);
         }
         $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
-      break;
+        break;
       case 'subscription_manage_url':
         $url = SubscriptionUrl::getManageUrl($subscriber);
-      break;
+        break;
       case 'newsletter_view_in_browser_url':
         $url = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
-      break;
+        break;
       default:
         $shortcode = self::getShortcode($shortcode_action);
         $url = apply_filters(
@@ -116,7 +116,7 @@ class Link {
           $queue
         );
         $url = ($url !== $shortcode_action) ? $url : false;
-      break;
+        break;
     }
     return $url;
   }

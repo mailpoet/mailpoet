@@ -55,7 +55,7 @@ class Model extends \Sudzy\ValidModel {
           } else {
             $this->setError($e->getMessage());
           }
-        break;
+          break;
         default:
           $this->setError($e->getMessage());
       }
@@ -94,7 +94,7 @@ class Model extends \Sudzy\ValidModel {
   static function bulkRestore($orm) {
     $model = get_called_class();
     return self::bulkAction($orm, function($ids) use($model) {
-       self::rawExecute(join(' ', array(
+      self::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
           'SET `deleted_at` = NULL',
           'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'

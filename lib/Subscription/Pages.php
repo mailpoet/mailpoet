@@ -114,13 +114,13 @@ class Pages {
     switch($this->action) {
       case 'confirm':
         $content = $this->getConfirmContent();
-      break;
+        break;
       case 'manage':
         $content = $this->getManageContent();
-      break;
+        break;
       case 'unsubscribe':
         $content = $this->getUnsubscribeContent();
-      break;
+        break;
     }
 
     if(strpos($page_content, '[mailpoet_page]') !== false) {

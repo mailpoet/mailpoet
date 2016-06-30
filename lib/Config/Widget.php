@@ -87,7 +87,7 @@ class Widget {
   function setupDependencies() {
     wp_enqueue_style('mailpoet_public', Env::$assets_url.'/css/public.css');
 
-     wp_enqueue_script('mailpoet_vendor',
+    wp_enqueue_script('mailpoet_vendor',
       Env::$assets_url.'/js/vendor.js',
       array(),
       Env::$version,
