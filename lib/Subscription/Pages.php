@@ -10,6 +10,8 @@ use \MailPoet\Models\Segment;
 use \MailPoet\Util\Helpers;
 use \MailPoet\Util\Url;
 use \MailPoet\Subscription;
+use \MailPoet\Form\Renderer as FormRenderer;
+use \MailPoet\Form\Block\Date as FormBlockDate;
 
 class Pages {
   const DEMO_EMAIL = 'demo@mailpoet.com';
@@ -220,6 +222,14 @@ class Pages {
       $custom_field->id = 'cf_'.$custom_field->id;
       $custom_field = $custom_field->asArray();
       $custom_field['params']['value'] = $subscriber->{$custom_field['id']};
+
+      if($custom_field['type'] === 'date') {
+        $date_formats = FormBlockDate::getDateFormats();
+        $custom_field['params']['date_format'] = $date_formats[
+          $custom_field['params']['date_type']
+        ][0];
+      }
+
       return $custom_field;
     }, CustomField::findMany());
 
@@ -257,7 +267,7 @@ class Pages {
         'params' => array(
           'label' => __('First name'),
           'value' => $subscriber->first_name,
-          'disabled' => ($subscriber->wp_user_id !== null)
+          'disabled' => ($subscriber->isWPUser())
         )
       ),
       array(
@@ -266,7 +276,7 @@ class Pages {
         'params' => array(
           'label' => __('Last name'),
           'value' => $subscriber->last_name,
-          'disabled' => ($subscriber->wp_user_id !== null)
+          'disabled' => ($subscriber->isWPUser())
         )
       ),
       array(
@@ -333,7 +343,7 @@ class Pages {
     $form_html .= '<label>Email *<br /><strong>'.$subscriber->email.'</strong></label>';
     $form_html .= '<br /><span style="font-size:85%;">';
     // special case for WP users as they cannot edit their subscriber's email
-    if($subscriber->wp_user_id !== null) {
+    if($subscriber->isWPUser()) {
       // check if subscriber's associated WP user is the currently logged in WP user
       $wp_current_user = wp_get_current_user();
       if($wp_current_user->user_email === $subscriber->email) {
@@ -356,7 +366,7 @@ class Pages {
     $form_html .= '</p>';
 
     // subscription form
-    $form_html .= \MailPoet\Form\Renderer::renderBlocks($form);
+    $form_html .= FormRenderer::renderBlocks($form);
     $form_html .= '</form>';
     return $form_html;
   }

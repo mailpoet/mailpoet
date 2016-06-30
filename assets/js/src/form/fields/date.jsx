@@ -222,14 +222,13 @@ define([
     }
     render() {
       const monthNames = window.mailpoet_month_names || [];
-
+      const dateFormats = window.mailpoet_date_formats || {};
       const dateType = this.props.field.params.date_type;
-
-      const dateSelects = dateType.split('_');
+      const dateSelects = dateFormats[dateType][0].split('/');
 
       const fields = dateSelects.map(type => {
         switch(type) {
-          case 'year':
+          case 'yyyy':
             return (<FormFieldDateYear
               onValueChange={ this.onValueChange.bind(this) }
               ref={ 'year' }
@@ -240,7 +239,7 @@ define([
             />);
           break;
 
-          case 'month':
+          case 'mm':
             return (<FormFieldDateMonth
               onValueChange={ this.onValueChange.bind(this) }
               ref={ 'month' }
@@ -252,7 +251,7 @@ define([
             />);
           break;
 
-          case 'day':
+          case 'dd':
             return (<FormFieldDateDay
               onValueChange={ this.onValueChange.bind(this) }
               ref={ 'day' }

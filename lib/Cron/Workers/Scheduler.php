@@ -150,7 +150,7 @@ class Scheduler {
   function verifyWPSubscriber($subscriber_id, $newsletter, $queue) {
     // check if user has the proper role
     $subscriber = Subscriber::findOne($subscriber_id);
-    if(!$subscriber || $subscriber->wp_user_id === null) {
+    if(!$subscriber || $subscriber->isWPUser() === false) {
       $queue->delete();
       return false;
     }
