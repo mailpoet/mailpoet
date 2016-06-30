@@ -4,7 +4,7 @@ namespace MailPoet\Models;
 if(!defined('ABSPATH')) exit;
 
 class Form extends Model {
-  static $_table = MP_FORMS_TABLE;
+  public static $_table = MP_FORMS_TABLE;
 
   function __construct() {
     parent::__construct();
