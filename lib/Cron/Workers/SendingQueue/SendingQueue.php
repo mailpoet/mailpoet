@@ -41,7 +41,7 @@ class SendingQueue {
         $queue->save();
       }
       // get subscribers
-      $queue->subscribers = SubscribersTask::get($queue->subscribers);
+      $queue->subscribers = $queue->getSubscribers();
       foreach(array_chunk($queue->subscribers['to_process'], self::BATCH_SIZE)
               as $subscribers_to_process_ids
       ) {
@@ -163,7 +163,7 @@ class SendingQueue {
     return SendingQueueModel::orderByDesc('priority')
       ->whereNull('deleted_at')
       ->whereNull('status')
-      ->findResultSet();
+      ->findMany();
   }
 
   function updateQueue($queue) {
@@ -183,10 +183,6 @@ class SendingQueue {
         $newsletter->setStatus(NewsletterModel::STATUS_SENT);
       }
     }
-    $subscribers = $queue->subscribers;
-    $queue->subscribers = serialize((array) $subscribers);
-    $queue->save();
-    $queue->subscribers = $subscribers;
-    return $queue;
+    return $queue->save();
   }
 }
