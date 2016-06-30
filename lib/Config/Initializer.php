@@ -187,6 +187,7 @@ class Initializer {
       $supervisor = new Supervisor();
       $supervisor->checkDaemon();
     } catch(\Exception $e) {
+      // Prevent Daemon exceptions from breaking out and breaking UI
     }
   }
 
