@@ -145,13 +145,19 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('./tasks/php_lint.sh lib/ tests/');
   }
 
-  function qaCodeSniffer() {
+  function qaCodeSniffer($severity='errors') {
+    if ($severity === 'all') {
+      $severityFlag = '-w';
+    } else {
+      $severityFlag = '-n';
+    }
     $this->_exec(
       './vendor/bin/phpcs '.
       '--standard=./tasks/code_sniffer/MailPoet '.
       '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,'.
       './lib/Config/PopulatorData/Templates/* '.
-      'lib/'
+      'lib/ '.
+      $severityFlag
     );
   }
 
