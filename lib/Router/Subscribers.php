@@ -124,7 +124,7 @@ class Subscribers {
               Url::redirectTo($success_page_url);
             }
           }
-        break;
+          break;
 
         case 'message':
         default:
@@ -143,7 +143,7 @@ class Subscribers {
 
             Url::redirectBack($params);
           }
-        break;
+          break;
       }
     }
   }

@@ -10,13 +10,13 @@ class Helpers {
     switch(substr($maxPostSize, -1)) {
       case 'M':
       case 'm':
-        return (int) $maxPostSize * 1048576;
+        return (int)$maxPostSize * 1048576;
       case 'K':
       case 'k':
-        return (int) $maxPostSize * 1024;
+        return (int)$maxPostSize * 1024;
       case 'G':
       case 'g':
-        return (int) $maxPostSize * 1073741824;
+        return (int)$maxPostSize * 1073741824;
       default:
         return $maxPostSize;
     }
@@ -25,7 +25,9 @@ class Helpers {
   static function flattenArray($array) {
     if(!$array) return;
     $flattened_array = array();
-    array_walk_recursive($array, function ($a) use (&$flattened_array) { $flattened_array[] = $a; });
+    array_walk_recursive($array, function ($a) use (&$flattened_array) {
+      $flattened_array[] = $a;
+    });
     return $flattened_array;
   }
 
@@ -67,13 +69,13 @@ class Helpers {
       return false;
     }
     $paramsInput = $params[0];
-    $paramsColumnKey = ($params[1] !== null) ? (string) $params[1] : null;
+    $paramsColumnKey = ($params[1] !== null) ? (string)$params[1] : null;
     $paramsIndexKey = null;
     if(isset($params[2])) {
       if(is_float($params[2]) || is_int($params[2])) {
-        $paramsIndexKey = (int) $params[2];
+        $paramsIndexKey = (int)$params[2];
       } else {
-        $paramsIndexKey = (string) $params[2];
+        $paramsIndexKey = (string)$params[2];
       }
     }
     $resultArray = array();
@@ -82,7 +84,7 @@ class Helpers {
       $keySet = $valueSet = false;
       if($paramsIndexKey !== null && array_key_exists($paramsIndexKey, $row)) {
         $keySet = true;
-        $key = (string) $row[$paramsIndexKey];
+        $key = (string)$row[$paramsIndexKey];
       }
       if($paramsColumnKey === null) {
         $valueSet = true;

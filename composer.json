@@ -25,7 +25,8 @@
     "codegyre/robo": "*",
     "vlucas/phpdotenv": "*",
     "umpirsky/twig-gettext-extractor": "1.1.*",
-    "raveren/kint": "^1.0"
+    "raveren/kint": "^1.0",
+    "squizlabs/php_codesniffer": "2.*"
   },
   "autoload": {
     "psr-4": {

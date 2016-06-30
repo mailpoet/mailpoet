@@ -41,7 +41,7 @@ class Renderer {
 
   static function renderBlocks($blocks = array()) {
     $html = '';
-    foreach ($blocks as $key => $block) {
+    foreach($blocks as $key => $block) {
       $html .= static::renderBlock($block)."\n";
     }
 
@@ -53,43 +53,43 @@ class Renderer {
     switch($block['type']) {
       case 'html':
         $html .= Block\Html::render($block);
-      break;
+        break;
 
       case 'divider':
         $html .= Block\Divider::render();
-      break;
+        break;
 
       case 'checkbox':
         $html .= Block\Checkbox::render($block);
-      break;
+        break;
 
       case 'radio':
         $html .= Block\Radio::render($block);
-      break;
+        break;
 
       case 'segment':
         $html .= Block\Segment::render($block);
-      break;
+        break;
 
       case 'date':
         $html .= Block\Date::render($block);
-      break;
+        break;
 
       case 'select':
         $html .= Block\Select::render($block);
-      break;
+        break;
 
       case 'text':
         $html .= Block\Text::render($block);
-      break;
+        break;
 
       case 'textarea':
         $html .= Block\Textarea::render($block);
-      break;
+        break;
 
       case 'submit':
         $html .= Block\Submit::render($block);
-      break;
+        break;
     }
     return $html;
   }

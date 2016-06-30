@@ -26,7 +26,6 @@ class Link {
           $url,
           __('Unsubscribe')
         );
-      break;
 
       case 'subscription_unsubscribe_url':
         return self::processUrl(
@@ -34,7 +33,6 @@ class Link {
           SubscriptionUrl::getUnsubscribeUrl($subscriber),
           $queue
         );
-      break;
 
       case 'subscription_manage':
         $url = self::processUrl(
@@ -47,7 +45,6 @@ class Link {
           $url,
           __('Manage subscription')
         );
-      break;
 
       case 'subscription_manage_url':
         return self::processUrl(
@@ -55,7 +52,6 @@ class Link {
           SubscriptionUrl::getManageUrl($subscriber),
           $queue
         );
-      break;
 
       case 'newsletter_view_in_browser':
         $action = 'newsletter_view_in_browser_url';
@@ -66,12 +62,10 @@ class Link {
           $url,
           __('View in your browser')
         );
-      break;
 
       case 'newsletter_view_in_browser_url':
         $url = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
         return self::processUrl($action, $url, $queue);
-      break;
 
       default:
         $shortcode = self::getShortcode($action);
@@ -85,12 +79,11 @@ class Link {
         return ($url !== $shortcode) ?
           self::processUrl($action, $url, $queue) :
           false;
-      break;
     }
   }
 
   static function processUrl($action, $url, $queue) {
-    return ($queue !== false && (boolean) Setting::getValue('tracking.enabled')) ?
+    return ($queue !== false && (boolean)Setting::getValue('tracking.enabled')) ?
       self::getShortcode($action) :
       $url;
   }
@@ -101,18 +94,18 @@ class Link {
     switch($shortcode_action) {
       case 'subscription_unsubscribe_url':
         // track unsubscribe event
-        if((boolean) Setting::getValue('tracking.enabled')) {
+        if((boolean)Setting::getValue('tracking.enabled')) {
           $unsubscribe = new Unsubscribes();
           $unsubscribe->track($newsletter['id'], $subscriber['id'], $queue['id']);
         }
         $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
-      break;
+        break;
       case 'subscription_manage_url':
         $url = SubscriptionUrl::getManageUrl($subscriber);
-      break;
+        break;
       case 'newsletter_view_in_browser_url':
         $url = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
-      break;
+        break;
       default:
         $shortcode = self::getShortcode($shortcode_action);
         $url = apply_filters(
@@ -123,7 +116,7 @@ class Link {
           $queue
         );
         $url = ($url !== $shortcode_action) ? $url : false;
-      break;
+        break;
     }
     return $url;
   }

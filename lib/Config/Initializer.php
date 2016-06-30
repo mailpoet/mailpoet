@@ -57,11 +57,6 @@ class Initializer {
     \ORM::configure(Env::$db_source_name);
     \ORM::configure('username', Env::$db_username);
     \ORM::configure('password', Env::$db_password);
-    \ORM::configure('logging', WP_DEBUG);
-    \ORM::configure('logger', function($query, $time) {
-      // error_log("\n".$query."\n");
-    });
-
     \ORM::configure('driver_options', array(
       \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
       \PDO::MYSQL_ATTR_INIT_COMMAND =>
@@ -187,6 +182,7 @@ class Initializer {
       $supervisor = new Supervisor();
       $supervisor->checkDaemon();
     } catch(\Exception $e) {
+      // Prevent Daemon exceptions from breaking out and breaking UI
     }
   }
 

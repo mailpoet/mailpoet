@@ -293,11 +293,10 @@ class Import {
         );
       }
     }
-    $query = Subscriber::selectMany(
-      array(
-        'id',
-        'email'
-      ));
+    $query = Subscriber::selectMany(array(
+      'id',
+      'email'
+    ));
     $query = ($action === 'update') ?
       $query->where('updated_at', $this->updated_at) :
       $query->where('created_at', $this->created_at);

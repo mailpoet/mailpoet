@@ -17,18 +17,15 @@ class Newsletter {
     switch($action) {
       case 'subject':
         return ($newsletter) ? $newsletter['subject'] : false;
-      break;
 
       case 'total':
         return substr_count($content, 'data-post-id');
-      break;
 
       case 'post_title':
         preg_match_all('/data-post-id="(\d+)"/ism', $content, $posts);
         $post_ids = array_unique($posts[1]);
         $latest_post = self::getLatestWPPost($post_ids);
         return ($latest_post) ? $latest_post['post_title'] : false;
-      break;
 
       case 'number':
         if($newsletter['type'] !== 'notification') return false;
@@ -37,11 +34,9 @@ class Newsletter {
             ->where('status', 'completed')
             ->count();
         return ++$sent_newsletters;
-      break;
 
       default:
         return false;
-      break;
     }
   }
 

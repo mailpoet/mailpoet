@@ -179,23 +179,25 @@ class Export {
 
   function getSubscribers($offset, $limit) {
     // JOIN subscribers on segment and subscriber_segment tables
-    $subscribers = Subscriber::
-    left_outer_join(
+    $subscribers = Subscriber::left_outer_join(
       SubscriberSegment::$_table,
       array(
         Subscriber::$_table . '.id',
         '=',
         SubscriberSegment::$_table . '.subscriber_id'
-      ))
+      )
+    )
       ->left_outer_join(
         Segment::$_table,
         array(
           Segment::$_table . '.id',
           '=',
           SubscriberSegment::$_table . '.segment_id'
-        ))
+        )
+      )
       ->filter('filterWithCustomFieldsForExport')
       ->groupBy(Subscriber::$_table . '.id');
+
     if($this->subscribers_without_segment !== false) {
       // if there are subscribers who do not belong to any segment, use
       // a CASE function to group them under "Not In Segment"

@@ -149,15 +149,18 @@ class Forms {
       // or if it's selected by the admin
       $has_segment_selection = false;
 
-      foreach ($body as $i => $block) {
+      foreach($body as $i => $block) {
         if($block['type'] === 'segment') {
           $has_segment_selection = true;
           if(!empty($block['params']['values'])) {
-            $list_selection = array_map(function($segment) {
-              if(!empty($segment)) {
-                return (int)$segment['id'];
-              }
-            }, $block['params']['values']);
+            $list_selection = array_filter(
+              array_map(function($segment) {
+                return (isset($segment['id'])
+                  ? (int)$segment['id']
+                  : null
+                );
+              }, $block['params']['values'])
+            );
           }
           break;
         }

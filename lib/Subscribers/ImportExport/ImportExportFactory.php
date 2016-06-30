@@ -34,10 +34,6 @@ class ImportExportFactory {
       'last_name' => __('Last name'),
       'status' => __('Status')
       // TODO: add additional fields from MP2
-      /*
-            'confirmed_ip' => __('IP address')
-            'confirmed_at' => __('Subscription date')
-      */
     );
   }
 

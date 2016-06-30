@@ -7,8 +7,6 @@ class Reporter {
     'Plugin Version' => 'pluginVersion',
   );
 
-  function __construct() {}
-
   function getData() {
     $_this = $this;
 

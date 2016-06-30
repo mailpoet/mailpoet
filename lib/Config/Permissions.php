@@ -25,7 +25,7 @@ class Permissions {
       'mailpoet_statistics'
     );
 
-    foreach($roles as $role_key){
+    foreach($roles as $role_key) {
         // get role based on role key
       $role = get_role($role_key);
 

@@ -21,7 +21,7 @@ class StructureTransformer {
    * and inserts tags before top ancestor
    */
   private function hoistImagesToRoot($root) {
-    foreach ($root->query('img') as $item) {
+    foreach($root->query('img') as $item) {
       $top_ancestor = $this->findTopAncestor($item);
       $offset = $top_ancestor->index();
 
@@ -34,7 +34,7 @@ class StructureTransformer {
   }
 
   private static function findTopAncestor($item) {
-    while ($item->parent->parent !== null) {
+    while($item->parent->parent !== null) {
       $item = $item->parent;
     }
     return $item;
@@ -86,7 +86,7 @@ class StructureTransformer {
   private function mergeNeighboringBlocks($structure) {
     $updated_structure = array();
     $text_accumulator = '';
-    foreach ($structure as $item) {
+    foreach($structure as $item) {
       if($item['type'] === 'text') {
         $text_accumulator .= $item['text'];
       }

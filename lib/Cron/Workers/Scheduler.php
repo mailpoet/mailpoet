@@ -84,7 +84,7 @@ class Scheduler {
       return;
     }
     // schedule new queue if the post notification is not destined for immediate delivery
-    if ($newsletter->intervalType !== NewsletterScheduler::INTERVAL_IMMEDIATELY) {
+    if($newsletter->intervalType !== NewsletterScheduler::INTERVAL_IMMEDIATELY) {
       $new_queue = SendingQueue::create();
       $new_queue->newsletter_id = $newsletter->id;
       $new_queue->status = NewsletterScheduler::STATUS_SCHEDULED;
@@ -154,7 +154,7 @@ class Scheduler {
       $queue->delete();
       return false;
     }
-    $wp_user = (array) get_userdata($subscriber->wp_user_id);
+    $wp_user = (array)get_userdata($subscriber->wp_user_id);
     if($newsletter->role !== \MailPoet\Newsletter\Scheduler\Scheduler::WORDPRESS_ALL_ROLES
       && !in_array($newsletter->role, $wp_user['roles'])
     ) {
@@ -172,6 +172,5 @@ class Scheduler {
       $queue->scheduled_at = $next_run_date;
       $queue->save();
     }
-    return;
   }
 }

@@ -5,8 +5,4 @@ if(!defined('ABSPATH')) exit;
 
 class StatisticsClicks extends Model {
   public static $_table = MP_STATISTICS_CLICKS_TABLE;
-
-  function __construct() {
-    parent::__construct();
-  }
 }

@@ -34,13 +34,12 @@ class Handlebars extends \Twig_Extension {
     switch($args_count) {
       case 2:
         list($id, $file) = $args;
-      break;
+        break;
       case 3:
         list($id, $file, $alias) = $args;
-      break;
+        break;
       default:
         return;
-      break;
     }
 
     $output = array();

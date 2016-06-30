@@ -37,7 +37,7 @@ class Localizer {
       Env::$plugin_name,
       false,
       dirname(plugin_basename(Env::$file)) . '/lang/'
-   );
+    );
   }
 
   function setGlobalRtl() {

@@ -3,6 +3,7 @@ namespace MailPoet\Config;
 
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Newsletter;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -41,7 +42,8 @@ class Migrator {
 
     $_this = $this;
     $migrate = function($model) use($_this) {
-      dbDelta($_this->$model());
+      $modelMethod = Helpers::underscoreToCamelCase($model);
+      dbDelta($_this->$modelMethod());
     };
 
     array_map($migrate, $this->models);
@@ -86,7 +88,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function custom_fields() {
+  function customFields() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
@@ -100,7 +102,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function sending_queues() {
+  function sendingQueues() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
@@ -140,7 +142,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function subscriber_segment() {
+  function subscriberSegment() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'subscriber_id mediumint(9) NOT NULL,',
@@ -154,7 +156,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function subscriber_custom_field() {
+  function subscriberCustomField() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'subscriber_id mediumint(9) NOT NULL,',
@@ -188,7 +190,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletter_templates() {
+  function newsletterTemplates() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(250) NOT NULL,',
@@ -203,7 +205,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletter_option_fields() {
+  function newsletterOptionFields() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
@@ -216,7 +218,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletter_option() {
+  function newsletterOption() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
@@ -230,7 +232,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletter_segment() {
+  function newsletterSegment() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
@@ -243,7 +245,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletter_links() {
+  function newsletterLinks() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
@@ -257,7 +259,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function newsletter_posts() {
+  function newsletterPosts() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
@@ -284,7 +286,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statistics_newsletters() {
+  function statisticsNewsletters() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
@@ -296,7 +298,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statistics_clicks() {
+  function statisticsClicks() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
@@ -311,7 +313,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statistics_opens() {
+  function statisticsOpens() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
@@ -323,7 +325,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statistics_unsubscribes() {
+  function statisticsUnsubscribes() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'newsletter_id mediumint(9) NOT NULL,',
@@ -335,7 +337,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function statistics_forms() {
+  function statisticsForms() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'form_id mediumint(9) NOT NULL,',
@@ -348,7 +350,7 @@ class Migrator {
   }
 
   private function sqlify($model, $attributes) {
-    $table = $this->prefix . $model;
+    $table = $this->prefix . Helpers::camelCaseToUnderscore($model);
 
     $sql = array();
     $sql[] = "CREATE TABLE " . $table . " (";

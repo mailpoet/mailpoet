@@ -87,16 +87,12 @@ class Pages {
       switch($this->action) {
         case 'confirm':
           return $this->getConfirmTitle();
-        break;
 
         case 'manage':
-
           return $this->getManageTitle();
-        break;
 
         case 'unsubscribe':
           return $this->getUnsubscribeTitle();
-        break;
       }
     }
     return $page_title;
@@ -118,13 +114,13 @@ class Pages {
     switch($this->action) {
       case 'confirm':
         $content = $this->getConfirmContent();
-      break;
+        break;
       case 'manage':
         $content = $this->getManageContent();
-      break;
+        break;
       case 'unsubscribe':
         $content = $this->getUnsubscribeContent();
-      break;
+        break;
     }
 
     if(strpos($page_content, '[mailpoet_page]') !== false) {
@@ -238,7 +234,7 @@ class Pages {
     }
     $subscribed_segment_ids = array();
     if(!empty($this->subscriber->subscriptions)) {
-      foreach ($this->subscriber->subscriptions as $subscription) {
+      foreach($this->subscriber->subscriptions as $subscription) {
         if($subscription['status'] === Subscriber::STATUS_SUBSCRIBED) {
           $subscribed_segment_ids[] = $subscription['segment_id'];
         }

@@ -162,7 +162,7 @@ class Subscriber extends Model {
       $subscriber = self::findOne($subscriber->id);
 
       // restore deleted subscriber
-      if($subscriber->deleted_at !== NULL) {
+      if($subscriber->deleted_at !== null) {
         $subscriber->setExpr('deleted_at', 'NULL');
       }
 
@@ -313,7 +313,7 @@ class Subscriber extends Model {
   static function filterWithCustomFields($orm) {
     $orm = $orm->select(MP_SUBSCRIBERS_TABLE.'.*');
     $customFields = CustomField::findArray();
-    foreach ($customFields as $customField) {
+    foreach($customFields as $customField) {
       $orm = $orm->select_expr(
         'IFNULL(GROUP_CONCAT(CASE WHEN ' .
         MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
@@ -322,12 +322,20 @@ class Subscriber extends Model {
     $orm = $orm
       ->leftOuterJoin(
         MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
-        array(MP_SUBSCRIBERS_TABLE.'.id', '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'))
+        array(
+          MP_SUBSCRIBERS_TABLE.'.id',
+          '=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'
+        )
+      )
       ->leftOuterJoin(
         MP_CUSTOM_FIELDS_TABLE,
-        array(MP_CUSTOM_FIELDS_TABLE.'.id','=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'))
+        array(
+          MP_CUSTOM_FIELDS_TABLE.'.id',
+          '=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'
+        )
+      )
       ->groupBy(MP_SUBSCRIBERS_TABLE.'.id');
     return $orm;
   }
@@ -335,7 +343,7 @@ class Subscriber extends Model {
   static function filterWithCustomFieldsForExport($orm) {
     $orm = $orm->select(MP_SUBSCRIBERS_TABLE.'.*');
     $customFields = CustomField::findArray();
-    foreach ($customFields as $customField) {
+    foreach($customFields as $customField) {
       $orm = $orm->selectExpr(
         'MAX(CASE WHEN ' .
         MP_CUSTOM_FIELDS_TABLE . '.id=' . $customField['id'] . ' THEN ' .
@@ -345,12 +353,18 @@ class Subscriber extends Model {
     $orm = $orm
       ->leftOuterJoin(
         MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
-        array(MP_SUBSCRIBERS_TABLE.'.id', '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'))
+        array(
+          MP_SUBSCRIBERS_TABLE.'.id', '=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'
+        )
+      )
       ->leftOuterJoin(
         MP_CUSTOM_FIELDS_TABLE,
-        array(MP_CUSTOM_FIELDS_TABLE.'.id','=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'));
+        array(
+          MP_CUSTOM_FIELDS_TABLE.'.id','=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'
+        )
+      );
     return $orm;
   }
 
@@ -532,7 +546,8 @@ class Subscriber extends Model {
         SubscriberSegment::subscribeManyToSegments(
           $subscriber_ids, array($segment->id)
         );
-    });
+      }
+    );
 
     return array(
       'subscribers' => $subscribers_count,
@@ -651,10 +666,11 @@ class Subscriber extends Model {
       '(' . implode(', ', $columns) . ') ' .
       'VALUES ' . rtrim(
         str_repeat(
-          '(' . rtrim(str_repeat('?,', count($columns)), ',') . ')' . ', '
-          , count($values)
-        )
-        , ', '),
+          '(' . rtrim(str_repeat('?,', count($columns)), ',') . ')' . ', ',
+          count($values)
+        ),
+        ', '
+      ),
       Helpers::flattenArray($values)
     );
   }

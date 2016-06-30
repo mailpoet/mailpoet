@@ -6,10 +6,6 @@ if(!defined('ABSPATH')) exit;
 class StatisticsForms extends Model {
   public static $_table = MP_STATISTICS_FORMS_TABLE;
 
-  function __construct() {
-    parent::__construct();
-  }
-
   public static function record($form_id, $subscriber_id) {
     if($form_id > 0 && $subscriber_id > 0) {
       // check if we already have a record for today

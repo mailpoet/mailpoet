@@ -52,7 +52,7 @@ class DateTime {
     $formatted_time = $start_time;
     $timestamp = strtotime($formatted_time);
 
-    for ($step = 0; $step < $total_steps; $step += 1) {
+    for($step = 0; $step < $total_steps; $step += 1) {
       $formatted_time = $this->formatTime($timestamp, self::DEFAULT_TIME_FORMAT);
       $label_time = $this->formatTime($timestamp);
       $steps[$formatted_time] = $label_time;
