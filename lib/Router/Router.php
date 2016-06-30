@@ -73,7 +73,6 @@ class Router {
       $response = $endpoint->$method($data);
       wp_send_json($response);
     } catch(\Exception $e) {
-      error_log($e->getMessage());
       exit;
     }
   }

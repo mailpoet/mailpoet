@@ -153,11 +153,14 @@ class Forms {
         if($block['type'] === 'segment') {
           $has_segment_selection = true;
           if(!empty($block['params']['values'])) {
-            $list_selection = array_map(function($segment) {
-              if(!empty($segment)) {
-                return (int)$segment['id'];
-              }
-            }, $block['params']['values']);
+            $list_selection = array_filter(
+              array_map(function($segment) {
+                return (isset($segment['id'])
+                  ? (int)$segment['id']
+                  : null
+                );
+              }, $block['params']['values'])
+            );
           }
           break;
         }
