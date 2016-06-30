@@ -177,8 +177,12 @@ class Initializer {
   }
 
   function setupPublicAPI() {
-    $publicAPI = new PublicAPI();
-    $publicAPI->init();
+    try {
+      $publicAPI = new PublicAPI();
+      $publicAPI->init();
+    } catch(\Exception $e) {
+      // continue execution
+    }
   }
 
   function runQueueSupervisor() {
