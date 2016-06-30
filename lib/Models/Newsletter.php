@@ -287,12 +287,20 @@ class Newsletter extends Model {
     $orm = $orm
       ->left_outer_join(
         MP_NEWSLETTER_OPTION_TABLE,
-        array(MP_NEWSLETTERS_TABLE.'.id', '=',
-          MP_NEWSLETTER_OPTION_TABLE.'.newsletter_id'))
+        array(
+          MP_NEWSLETTERS_TABLE.'.id',
+          '=',
+          MP_NEWSLETTER_OPTION_TABLE.'.newsletter_id'
+        )
+      )
       ->left_outer_join(
         MP_NEWSLETTER_OPTION_FIELDS_TABLE,
-        array(MP_NEWSLETTER_OPTION_FIELDS_TABLE.'.id','=',
-          MP_NEWSLETTER_OPTION_TABLE.'.option_field_id'))
+        array(
+          MP_NEWSLETTER_OPTION_FIELDS_TABLE.'.id',
+          '=',
+          MP_NEWSLETTER_OPTION_TABLE.'.option_field_id'
+        )
+      )
       ->group_by(MP_NEWSLETTERS_TABLE.'.id');
     return $orm;
   }
@@ -346,7 +354,7 @@ class Newsletter extends Model {
               ->count()
           )
         ));
-      break;
+        break;
 
       case self::TYPE_WELCOME:
       case self::TYPE_NOTIFICATION:
@@ -368,7 +376,7 @@ class Newsletter extends Model {
               ->count()
           )
         ));
-      break;
+        break;
     }
 
     $groups[] = array(
@@ -394,11 +402,11 @@ class Newsletter extends Model {
         $orm
           ->whereNull('deleted_at')
           ->filter('filterStatus', $group);
-      break;
+        break;
 
       case 'trash':
         $orm->whereNotNull('deleted_at');
-      break;
+        break;
 
       default:
         $orm->whereNull('deleted_at');

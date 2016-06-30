@@ -322,12 +322,20 @@ class Subscriber extends Model {
     $orm = $orm
       ->leftOuterJoin(
         MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
-        array(MP_SUBSCRIBERS_TABLE.'.id', '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'))
+        array(
+          MP_SUBSCRIBERS_TABLE.'.id',
+          '=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'
+        )
+      )
       ->leftOuterJoin(
         MP_CUSTOM_FIELDS_TABLE,
-        array(MP_CUSTOM_FIELDS_TABLE.'.id','=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'))
+        array(
+          MP_CUSTOM_FIELDS_TABLE.'.id',
+          '=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'
+        )
+      )
       ->groupBy(MP_SUBSCRIBERS_TABLE.'.id');
     return $orm;
   }
@@ -345,12 +353,18 @@ class Subscriber extends Model {
     $orm = $orm
       ->leftOuterJoin(
         MP_SUBSCRIBER_CUSTOM_FIELD_TABLE,
-        array(MP_SUBSCRIBERS_TABLE.'.id', '=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'))
+        array(
+          MP_SUBSCRIBERS_TABLE.'.id', '=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.subscriber_id'
+        )
+      )
       ->leftOuterJoin(
         MP_CUSTOM_FIELDS_TABLE,
-        array(MP_CUSTOM_FIELDS_TABLE.'.id','=',
-          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'));
+        array(
+          MP_CUSTOM_FIELDS_TABLE.'.id','=',
+          MP_SUBSCRIBER_CUSTOM_FIELD_TABLE.'.custom_field_id'
+        )
+      );
     return $orm;
   }
 
@@ -532,7 +546,8 @@ class Subscriber extends Model {
         SubscriberSegment::subscribeManyToSegments(
           $subscriber_ids, array($segment->id)
         );
-    });
+      }
+    );
 
     return array(
       'subscribers' => $subscribers_count,
@@ -653,8 +668,9 @@ class Subscriber extends Model {
         str_repeat(
           '(' . rtrim(str_repeat('?,', count($columns)), ',') . ')' . ', '
           , count($values)
-        )
-        , ', '),
+        ),
+        ', '
+      ),
       Helpers::flattenArray($values)
     );
   }

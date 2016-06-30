@@ -14,20 +14,16 @@ class BootStrapMenu {
     return ($this->daemon) ?
       array_merge(
         array(
-          'timeSinceStart' =>
-            Carbon::createFromFormat(
-              'Y-m-d H:i:s',
-              $this->daemon->created_at,
-              'UTC'
-            )
-              ->diffForHumans(),
-          'timeSinceUpdate' =>
-            Carbon::createFromFormat(
-              'Y-m-d H:i:s',
-              $this->daemon->updated_at,
-              'UTC'
-            )
-              ->diffForHumans()
+          'timeSinceStart' => Carbon::createFromFormat(
+            'Y-m-d H:i:s',
+            $this->daemon->created_at,
+            'UTC'
+          )->diffForHumans(),
+          'timeSinceUpdate' => Carbon::createFromFormat(
+            'Y-m-d H:i:s',
+            $this->daemon->updated_at,
+            'UTC'
+          )->diffForHumans()
         ),
         json_decode($this->daemon->value, true)
       ) :
