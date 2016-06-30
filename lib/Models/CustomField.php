@@ -39,6 +39,62 @@ class CustomField extends Model {
     return parent::save();
   }
 
+  function formatValue($value = null) {
+    // format custom field data depending on type
+    if(is_array($value) && $this->type === 'date' ) {
+      $custom_field_data = $this->asArray();
+
+      $date_type = (isset($custom_field_data['params']['date_type'])
+        ? $custom_field_data['params']['date_type']
+        : 'year_month_day'
+      );
+      $date_parts = explode('_', $date_type);
+
+      switch($date_type) {
+        case 'year_month_day':
+          $value = sprintf(
+            '%04d-%02d-%02d',
+            $value['year'],
+            $value['month'],
+            $value['day']
+          );
+        break;
+
+        case 'year_month':
+          $value = sprintf(
+            '%04d-%02d',
+            $value['year'],
+            $value['month']
+          );
+        break;
+
+        case 'month':
+          if((int)$value['month'] === 0) {
+            $value = '';
+          } else {
+            $value = sprintf(
+              '%02d',
+              $value['month']
+            );
+          }
+        break;
+
+        case 'year':
+          if((int)$value['year'] === 0) {
+            $value = '';
+          } else {
+            $value = sprintf(
+              '%04d',
+              $value['year']
+            );
+          }
+        break;
+      }
+    }
+
+    return $value;
+  }
+
   function subscribers() {
     return $this->hasManyThrough(
       __NAMESPACE__ . '\Subscriber',

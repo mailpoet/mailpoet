@@ -27,7 +27,7 @@ define([
       }
       return (
         <select
-          name={ this.props.name + '[year]' }
+          name={ `${this.props.name}[year]` }
           value={ this.props.year }
           onChange={ this.props.onValueChange }
         >
@@ -57,7 +57,7 @@ define([
       }
       return (
         <select
-          name={ this.props.name + '[month]' }
+          name={ `${this.props.name}[month]` }
           value={ this.props.month }
           onChange={ this.props.onValueChange }
         >
@@ -88,7 +88,7 @@ define([
 
       return (
         <select
-          name={ this.props.name + '[day]' }
+          name={ `${this.props.name}[day]` }
           value={ this.props.day }
           onChange={ this.props.onValueChange }
         >
@@ -102,46 +102,99 @@ define([
     constructor(props) {
       super(props);
       this.state = {
-        year: undefined,
-        month: undefined,
-        day: undefined
+        year: '',
+        month: '',
+        day: ''
       }
     }
     componentDidMount() {
+      this.extractDateParts();
     }
     componentDidUpdate(prevProps, prevState) {
       if (
         (this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)
       ) {
-        this.extractTimeStamp();
+        this.extractDateParts();
       }
     }
-    extractTimeStamp() {
-      const timeStamp = parseInt(this.props.item[this.props.field.name], 10);
+    extractDateParts() {
+      const value = (this.props.item[this.props.field.name] !== undefined)
+        ? this.props.item[this.props.field.name].trim()
+        : '';
+
+      if(value === '') {
+        return;
+      }
+
+      const dateType = this.props.field.params.date_type;
+      const dateParts = value.split('-');
+      let year = '';
+      let month = '';
+      let day = '';
+
+      switch(dateType) {
+        case 'year_month_day':
+          year = ~~(dateParts[0]);
+          month = ~~(dateParts[1]);
+          day = ~~(dateParts[2]);
+        break;
+
+        case 'year_month':
+          year = ~~(dateParts[0]);
+          month = ~~(dateParts[1]);
+        break;
+
+        case 'month':
+          month = ~~(dateParts[0]);
+        break;
+
+        case 'year':
+          year = ~~(dateParts[0]);
+        break;
+      }
+
       this.setState({
-        year: Moment.unix(timeStamp).year(),
-        // Moment returns the month as [0..11]
-        // We increment it to match PHP's mktime() which expects [1..12]
-        month: Moment.unix(timeStamp).month() + 1,
-        day: Moment.unix(timeStamp).date()
+        year: year,
+        month: month,
+        day: day
       });
     }
-    updateTimeStamp(field) {
-      let newTimeStamp = Moment(
-        `${this.state.month}/${this.state.day}/${this.state.year}`,
-        'M/D/YYYY'
-      ).valueOf();
-      if (~~(newTimeStamp) > 0) {
-        // convert milliseconds to seconds
-        newTimeStamp /= 1000;
-        return this.props.onValueChange({
-          target: {
-            name: field,
-            value: newTimeStamp
-          }
-        });
+    formatValue() {
+      const dateType = this.props.field.params.date_type;
+
+      let value;
+
+      switch(dateType) {
+        case 'year_month_day':
+          value = {
+            'year': this.state.year,
+            'month': this.state.month,
+            'day': this.state.day
+          };
+        break;
+
+        case 'year_month':
+          value = {
+            'year': this.state.year,
+            'month': this.state.month
+          };
+        break;
+
+        case 'month':
+          value = {
+            'month': this.state.month
+          };
+        break;
+
+        case 'year':
+          value = {
+            'year': this.state.year
+          };
+        break;
       }
+
+      return value;
     }
     onValueChange(e) {
       // extract property from name
@@ -153,12 +206,17 @@ define([
         field = matches[1];
         property = matches[2];
 
-        let value = parseInt(e.target.value, 10);
+        let value = ~~(e.target.value);
 
         this.setState({
           [`${property}`]: value
         }, () => {
-          this.updateTimeStamp(field);
+          this.props.onValueChange({
+            target: {
+              name: field,
+              value: this.formatValue()
+            }
+          });
         });
       }
     }
