@@ -42,9 +42,11 @@ class SendingQueue {
       }
       // get subscribers
       $queue->subscribers = SubscribersTask::get($queue->subscribers);
-      foreach(array_chunk($queue->subscribers['to_process'], self::BATCH_SIZE)
-              as $subscribers_to_process_ids
-      ) {
+      $subscriber_batches = array_chunk(
+        $queue->subscribers['to_process'],
+        self::BATCH_SIZE
+      );
+      foreach($subscriber_batches as $subscribers_to_process_ids) {
         $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)
           ->findArray();
         $found_subscribers_ids = Helpers::arrayColumn($found_subscribers, 'id');

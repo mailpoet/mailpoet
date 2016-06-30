@@ -58,8 +58,8 @@ class SubscriberCustomField extends Model {
       '(custom_field_id, subscriber_id, value) ' .
       'VALUES ' . rtrim(
         str_repeat(
-          '(?, ?, ?)' . ', '
-          , count($values)
+          '(?, ?, ?)' . ', ',
+          count($values)
         ), ', '
       ),
       Helpers::flattenArray($values)
