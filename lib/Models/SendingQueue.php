@@ -39,4 +39,35 @@ class SendingQueue extends Model {
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);
   }
+
+  function save() {
+    if(!is_serialized($this->subscribers)) {
+      $this->set('subscribers', serialize($this->subscribers));
+    }
+    parent::save();
+    $this->subscribers = $this->getSubscribers();
+    return $this;
+  }
+
+  function getSubscribers() {
+    if(!is_serialized($this->subscribers)) {
+      return $this->subscribers;
+    }
+    $subscribers = unserialize($this->subscribers);
+    if(empty($subscribers['processed'])) {
+      $subscribers['processed'] = array();
+    }
+    if(empty($subscribers['failed'])) {
+      $subscribers['failed'] = array();
+    }
+    return $subscribers;
+  }
+
+  function asArray() {
+    $model = parent::asArray();
+    $model['subscribers'] = (is_serialized($this->subscribers))
+      ? unserialize($this->subscribers)
+      : $this->subscribers;
+    return $model;
+  }
 }

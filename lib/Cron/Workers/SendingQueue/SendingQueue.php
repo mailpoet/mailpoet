@@ -41,7 +41,7 @@ class SendingQueue {
         $queue->save();
       }
       // get subscribers
-      $queue->subscribers = SubscribersTask::get($queue->subscribers);
+      $queue->subscribers = $queue->getSubscribers();
       foreach(array_chunk($queue->subscribers['to_process'], self::BATCH_SIZE)
               as $subscribers_to_process_ids
       ) {
@@ -74,6 +74,7 @@ class SendingQueue {
     $processing_method = $this->mailer_task->getProcessingMethod();
     $prepared_newsletters = array();
     $prepared_subscribers = array();
+    $prepared_subscribers_ids = array();
     $statistics = array();
     foreach($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
@@ -107,6 +108,7 @@ class SendingQueue {
         );
         $prepared_newsletters = array();
         $prepared_subscribers = array();
+        $prepared_subscribers_ids = array();
         $statistics = array();
       }
     }
@@ -161,7 +163,7 @@ class SendingQueue {
     return SendingQueueModel::orderByDesc('priority')
       ->whereNull('deleted_at')
       ->whereNull('status')
-      ->findResultSet();
+      ->findMany();
   }
 
   function updateQueue($queue) {
@@ -181,8 +183,6 @@ class SendingQueue {
         $newsletter->setStatus(NewsletterModel::STATUS_SENT);
       }
     }
-    $queue->subscribers = serialize((array) $queue->subscribers);
-    $queue->save();
-    return $queue;
+    return $queue->save();
   }
 }
