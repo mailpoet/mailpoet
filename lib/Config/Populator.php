@@ -9,6 +9,7 @@ use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
 use \MailPoet\Models\Setting;
 use \MailPoet\Settings\Pages;
+use \MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -29,7 +30,8 @@ class Populator {
     $_this = $this;
 
     $populate = function($model) use($_this, $wpdb) {
-      $fields = $_this->$model();
+      $modelMethod = Helpers::underscoreToCamelCase($model);
+      $fields = $_this->$modelMethod();
       $table = $_this->prefix . $model;
 
       array_map(function($field) use ($wpdb, $table) {
@@ -126,7 +128,7 @@ class Populator {
     }
   }
 
-  function newsletter_option_fields() {
+  private function newsletterOptionFields() {
     return array(
       array(
         'name' => 'isScheduled',
@@ -184,7 +186,7 @@ class Populator {
     );
   }
 
-  private function newsletter_templates() {
+  private function newsletterTemplates() {
     return array(
       (new FranksRoastHouseTemplate(Env::$assets_url))->get(),
       (new BlankTemplate(Env::$assets_url))->get(),
@@ -194,7 +196,8 @@ class Populator {
   }
 
   private function populate($model) {
-    $rows = $this->$model();
+    $modelMethod = Helpers::underscoreToCamelCase($model);
+    $rows = $this->$modelMethod();
     $table = $this->prefix . $model;
     $_this = $this;
 

@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Twig;
 
-class i18n extends \Twig_Extension {
+class I18n extends \Twig_Extension {
 
   private $_text_domain;
 

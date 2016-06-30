@@ -30,7 +30,7 @@ class Renderer {
   }
 
   function setupTranslations() {
-    $this->renderer->addExtension(new Twig\i18n(Env::$plugin_name));
+    $this->renderer->addExtension(new Twig\I18n(Env::$plugin_name));
   }
 
   function setupFunctions() {
