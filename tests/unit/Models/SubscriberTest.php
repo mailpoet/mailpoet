@@ -166,14 +166,30 @@ class SubscriberTest extends MailPoetTest {
     ));
 
     $custom_field_2 = CustomField::createOrUpdate(array(
-      'name' => 'Age',
-      'type' => 'text'
+      'name' => 'Birthday',
+      'type' => 'date',
+      'params' => array(
+        'date_type' => 'year_month_day'
+      )
+    ));
+
+    $custom_field_3 = CustomField::createOrUpdate(array(
+      'name' => 'Registered on',
+      'type' => 'date',
+      'params' => array(
+        'date_type' => 'year_month'
+      )
     ));
 
     $subscriber_with_custom_field = Subscriber::createOrUpdate(array(
       'email' => 'user.with.cf@mailpoet.com',
       'cf_'.$custom_field->id => 'Paris',
-      'cf_'.$custom_field_2->id => array(12, 23, 34)
+      'cf_'.$custom_field_2->id => array(
+        'day' => 9,
+        'month' => 3,
+        'year' => 1984
+      ), // date as array value
+      'cf_'.$custom_field_3->id => '2013-07' // date as string value
     ));
 
     $subscriber = Subscriber::findOne($subscriber_with_custom_field->id)
@@ -182,8 +198,10 @@ class SubscriberTest extends MailPoetTest {
     expect($subscriber->id)->equals($subscriber_with_custom_field->id);
     expect($subscriber->email)->equals('user.with.cf@mailpoet.com');
     expect($subscriber->{'cf_'.$custom_field->id})->equals('Paris');
-    // array values are not supported so it should have assigned the first value
-    expect($subscriber->{'cf_'.$custom_field_2->id})->equals(12);
+    // date specified as array gets converted to string
+    expect($subscriber->{'cf_'.$custom_field_2->id})->equals('1984-03-09');
+    // date specified as string is stored as is
+    expect($subscriber->{'cf_'.$custom_field_3->id})->equals('2013-07');
   }
 
   function testItShouldUnsubscribeFromAllSegments() {
