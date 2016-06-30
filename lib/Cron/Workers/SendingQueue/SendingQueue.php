@@ -74,6 +74,7 @@ class SendingQueue {
     $processing_method = $this->mailer_task->getProcessingMethod();
     $prepared_newsletters = array();
     $prepared_subscribers = array();
+    $prepared_subscribers_ids = array();
     $statistics = array();
     foreach($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
