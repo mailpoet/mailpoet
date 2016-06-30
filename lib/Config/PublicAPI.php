@@ -25,13 +25,11 @@ class PublicAPI {
     $this->action = isset($_GET['action']) ?
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
-    $this->data = isset($_GET['data']) ?
-      unserialize(base64_decode($_GET['data'])) :
-      false;
+    $this->data = $this->getAndValidateData();
   }
 
   function init() {
-    if(!$this->api && !$this->endpoint) return;
+    if(!$this->api || !$this->endpoint) return;
     $this->_checkAndCallMethod($this, $this->endpoint, $terminate_request = true);
   }
 
@@ -73,5 +71,14 @@ class PublicAPI {
         $method
       )
     );
+  }
+
+  function getAndValidateData() {
+    if (!isset($_GET['data'])) return false;
+    $data = base64_decode($_GET['data']);
+    if (!is_serialized($data)) {
+      throw new \Exception(__('Invalid data format.'));
+    }
+    return unserialize($data);
   }
 }
