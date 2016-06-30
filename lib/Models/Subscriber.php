@@ -666,8 +666,8 @@ class Subscriber extends Model {
       '(' . implode(', ', $columns) . ') ' .
       'VALUES ' . rtrim(
         str_repeat(
-          '(' . rtrim(str_repeat('?,', count($columns)), ',') . ')' . ', '
-          , count($values)
+          '(' . rtrim(str_repeat('?,', count($columns)), ',') . ')' . ', ',
+          count($values)
         ),
         ', '
       ),
