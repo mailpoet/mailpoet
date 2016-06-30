@@ -13,7 +13,7 @@
   <!-- Final methods don't need final in classes marked as final -->
   <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
   <!-- All parameters in function signature should be used within the function -->
-  <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
+  <!--<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>-->
   <!-- Don't use methods that extend and only call the parent method -->
   <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
 
@@ -51,12 +51,8 @@
   <!-- Nesting level should be kept under 5, not more than 10 -->
   <rule ref="Generic.Metrics.NestingLevel"/>
 
-  <!-- Function names should use camelCaps -->
-  <rule ref="Generic.NamingConventions.CamelCapsFunctionName">
-    <properties>
-      <property name="strict" value="false"/>
-    </properties>
-  </rule>
+  <!-- Method names should use camelCaps -->
+  <rule ref="PSR1.Methods.CamelCapsMethodName"/>
   <!-- Constants should be all uppercase with underscores separating words -->
   <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
 
@@ -68,7 +64,7 @@
   <!-- System keywords should always be lower case -->
   <rule ref="Generic.PHP.LowerCaseKeyword"/>
   <!-- Disallow silencing errors with @ -->
-  <rule ref="Generic.PHP.NoSilencedErrors"/>
+  <!--<rule ref="Generic.PHP.NoSilencedErrors"/>-->
 
   <!-- Disallow indenting with tabs -->
   <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
