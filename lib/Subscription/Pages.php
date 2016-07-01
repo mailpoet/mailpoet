@@ -225,9 +225,9 @@ class Pages {
 
       if($custom_field['type'] === 'date') {
         $date_formats = FormBlockDate::getDateFormats();
-        $custom_field['params']['date_format'] = $date_formats[
-          $custom_field['params']['date_type']
-        ][0];
+        $custom_field['params']['date_format'] = array_shift(
+          $date_formats[$custom_field['params']['date_type']]
+        );
       }
 
       return $custom_field;

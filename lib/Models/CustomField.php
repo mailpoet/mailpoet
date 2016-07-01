@@ -58,7 +58,7 @@ class CustomField extends Model {
             $value['month'],
             $value['day']
           );
-        break;
+          break;
 
         case 'year_month':
           $value = sprintf(
@@ -66,7 +66,7 @@ class CustomField extends Model {
             $value['year'],
             $value['month']
           );
-        break;
+          break;
 
         case 'month':
           if((int)$value['month'] === 0) {
@@ -77,7 +77,7 @@ class CustomField extends Model {
               $value['month']
             );
           }
-        break;
+          break;
 
         case 'year':
           if((int)$value['year'] === 0) {
@@ -88,7 +88,7 @@ class CustomField extends Model {
               $value['year']
             );
           }
-        break;
+          break;
       }
     }
 

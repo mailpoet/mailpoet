@@ -47,20 +47,20 @@ class Date extends Base {
           $year = (isset($value[0]) ? (int)$value[0] : null);
           $month = (isset($value[1]) ? (int)$value[1] : null);
           $day = (isset($value[2]) ? (int)$value[2] : null);
-        break;
+          break;
 
         case 'year_month':
           $year = (isset($value[0]) ? (int)$value[0] : null);
           $month = (isset($value[1]) ? (int)$value[1] : null);
-        break;
+          break;
 
         case 'month':
           $month = (isset($value[0]) ? (int)$value[0] : null);
-        break;
+          break;
 
         case 'year':
           $year = (isset($value[0]) ? (int)$value[0] : null);
-        break;
+          break;
       }
     }
 
