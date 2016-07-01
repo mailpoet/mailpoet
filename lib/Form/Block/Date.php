@@ -39,14 +39,29 @@ class Date extends Base {
     $month = null;
     $year = null;
 
-    if($value) {
-      $day = (int)strftime('%d', $value);
-      $month = (int)strftime('%m', $value);
-      $year = (int)strftime('%Y', $value);
-    } else if(!empty($block['params']['is_default_today'])) {
-      $day = (int)strftime('%d');
-      $month = (int)strftime('%m');
-      $year = (int)strftime('%Y');
+    if(strlen(trim($value)) > 0) {
+      $value = explode('-', $value);
+
+      switch($block['params']['date_type']) {
+        case 'year_month_day':
+          $year = (isset($value[0]) ? (int)$value[0] : null);
+          $month = (isset($value[1]) ? (int)$value[1] : null);
+          $day = (isset($value[2]) ? (int)$value[2] : null);
+          break;
+
+        case 'year_month':
+          $year = (isset($value[0]) ? (int)$value[0] : null);
+          $month = (isset($value[1]) ? (int)$value[1] : null);
+          break;
+
+        case 'month':
+          $month = (isset($value[0]) ? (int)$value[0] : null);
+          break;
+
+        case 'year':
+          $year = (isset($value[0]) ? (int)$value[0] : null);
+          break;
+      }
     }
 
     foreach($date_selectors as $date_selector) {

@@ -7,6 +7,7 @@ class Manage {
 
   static function onSave() {
     $action = (isset($_POST['action']) ? $_POST['action'] : null);
+
     if($action !== 'mailpoet_subscription_update') {
       Url::redirectBack();
     }

@@ -417,13 +417,8 @@ class Subscriber extends Model {
 
     // custom fields
     $custom_fields = array();
-
     foreach($data as $key => $value) {
       if(strpos($key, 'cf_') === 0) {
-        if(is_array($value)) {
-          $value = array_filter($value);
-          $value = reset($value);
-        }
         $custom_fields[(int)substr($key, 3)] = $value;
         unset($data[$key]);
       }
@@ -443,9 +438,7 @@ class Subscriber extends Model {
 
     if($subscriber->save()) {
       if(!empty($custom_fields)) {
-        foreach($custom_fields as $custom_field_id => $value) {
-          $subscriber->setCustomField($custom_field_id, $value);
-        }
+        $subscriber->saveCustomFields($custom_fields);
       }
 
       // check for status change
@@ -503,6 +496,25 @@ class Subscriber extends Model {
       return $default;
     } else {
       return $custom_field->value;
+    }
+  }
+
+  function saveCustomFields($custom_fields_data = array()) {
+    // get custom field ids
+    $custom_field_ids = array_keys($custom_fields_data);
+
+    // get custom fields
+    $custom_fields = CustomField::findMany($custom_field_ids);
+
+    foreach($custom_fields as $custom_field) {
+      $value = (isset($custom_fields_data[$custom_field->id])
+        ? $custom_fields_data[$custom_field->id]
+        : null
+      );
+      // format value
+      $value = $custom_field->formatValue($value);
+
+      $this->setCustomField($custom_field->id, $value);
     }
   }
 
