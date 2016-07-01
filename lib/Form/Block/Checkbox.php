@@ -22,7 +22,7 @@ class Checkbox extends Base {
 
     foreach($options as $option) {
       $html .= '<label class="mailpoet_checkbox_label">';
-      $html .= '<input type="hidden" name="'.$field_name.'" value="" />';
+      $html .= '<input type="hidden" name="'.$field_name.'" value="0" />';
       $html .= '<input type="checkbox" class="mailpoet_checkbox" ';
 
       $html .= 'name="'.$field_name.'" ';
@@ -34,7 +34,7 @@ class Checkbox extends Base {
           $selected_value === ''
           && isset($option['is_checked'])
           && $option['is_checked']
-        ) || ($selected_value === $value)
+        ) || ($selected_value)
       ) ? 'checked="checked"' : '';
 
       $html .= $field_validation;
