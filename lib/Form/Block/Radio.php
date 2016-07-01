@@ -18,6 +18,8 @@ class Radio extends Base {
       : array()
     );
 
+    $selected_value = self::getFieldValue($block);
+
     foreach($options as $option) {
       $html .= '<label class="mailpoet_radio_label">';
 
@@ -36,9 +38,11 @@ class Radio extends Base {
       $html .= 'value="'.esc_attr($value).'" ';
 
       $html .= (
-        (isset($option['is_checked']) && $option['is_checked'])
-        ||
-        (self::getFieldValue($block) === $value)
+        (
+          $selected_value === ''
+          && isset($option['is_checked'])
+          && $option['is_checked']
+        ) || ($selected_value === $value)
       ) ? 'checked="checked"' : '';
 
       $html .= $field_validation;

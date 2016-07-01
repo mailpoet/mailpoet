@@ -18,6 +18,8 @@ class Checkbox extends Base {
       : array()
     );
 
+    $selected_value = self::getFieldValue($block);
+
     foreach($options as $option) {
       $html .= '<label class="mailpoet_checkbox_label">';
       $html .= '<input type="hidden" name="'.$field_name.'" value="" />';
@@ -28,9 +30,11 @@ class Checkbox extends Base {
       $html .= 'value="1" ';
 
       $html .= (
-        (isset($option['is_checked']) && $option['is_checked'])
-        ||
-        (self::getFieldValue($block))
+        (
+          $selected_value === ''
+          && isset($option['is_checked'])
+          && $option['is_checked']
+        ) || ($selected_value === $value)
       ) ? 'checked="checked"' : '';
 
       $html .= $field_validation;
