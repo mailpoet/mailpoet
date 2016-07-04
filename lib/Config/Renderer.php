@@ -14,7 +14,8 @@ class Renderer {
       $file_system,
       array(
         'cache' => $this->detectCache(),
-        'debug' => WP_DEBUG
+        'debug' => WP_DEBUG,
+        'auto_reload' => true
       )
     );
   }
@@ -26,6 +27,7 @@ class Renderer {
     $this->setupHandlebars();
     $this->setupGlobalVariables();
     $this->setupSyntax();
+
     return $this->renderer;
   }
 
