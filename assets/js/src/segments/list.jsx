@@ -186,13 +186,20 @@ const SegmentList = React.createClass({
     const unconfirmed = ~~(segment.subscribers_count.unconfirmed || 0);
     const unsubscribed = ~~(segment.subscribers_count.unsubscribed || 0);
 
-    let segment_name = (
-      <Link to={ `/edit/${segment.id}` }>{ segment.name }</Link>
-    );
+    let segment_name;
 
-    // the WP users segment is not editable so just display its name
     if (segment.type === 'wp_users') {
-      segment_name = segment.name;
+      // the WP users segment is not editable so just display its name
+      segment_name = (
+        <span className="row-title">{ segment.name }</span>
+      );
+    } else {
+      segment_name = (
+        <Link
+          className="row-title"
+          to={ `/edit/${segment.id}` }
+        >{ segment.name }</Link>
+      );
     }
 
     return (

@@ -283,9 +283,10 @@ const NewsletterListStandard = React.createClass({
       <div>
         <td className={ rowClasses }>
           <strong>
-            <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
-              { newsletter.subject }
-            </a>
+            <a
+              className="row-title"
+              href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }
+            >{ newsletter.subject }</a>
           </strong>
           { actions }
         </td>

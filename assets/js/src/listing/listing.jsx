@@ -546,9 +546,9 @@ const Listing = React.createClass({
       endpoint: this.props.endpoint,
       action: 'bulkAction',
       data: data
-    }).done(function() {
+    }).done(() => {
       this.getItems();
-    }.bind(this));
+    });
   },
   handleSearch: function(search) {
     this.setState({

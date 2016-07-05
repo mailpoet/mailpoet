@@ -924,6 +924,10 @@
         ((options.daily_emails) / 86400) * 10)
       ) / 10;
 
+
+      // format daily emails number according to locale
+      options.daily_emails = options.daily_emails.toLocaleString();
+
       $('#mailpoet_'+method+'_daily_emails').html(
         sending_frequency_template(options)
       );
@@ -935,6 +939,10 @@
 
     function setSendingFrequency(options) {
       options.daily_emails = ~~((1440 / options.interval) * options.emails);
+
+      // format daily emails number according to locale
+      options.daily_emails = options.daily_emails.toLocaleString();
+
       $(options.output).html(
         sending_frequency_template(options)
       );

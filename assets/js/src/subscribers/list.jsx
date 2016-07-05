@@ -47,7 +47,7 @@ const messages = {
       } else if (~~response > 1) {
         message = (
           MailPoet.I18n.t('multipleSubscribersTrashed')
-        ).replace('%$1d', ~~response);
+        ).replace('%$1d', (~~response).toLocaleString());
       }
 
       if (message !== null) {
@@ -83,7 +83,7 @@ const messages = {
       } else if (~~response > 1) {
         message = (
           MailPoet.I18n.t('multipleSubscribersRestored')
-        ).replace('%$1d', ~~response);
+        ).replace('%$1d', (~~response).toLocaleString());
       }
 
       if (message !== null) {
@@ -120,7 +120,7 @@ const bulk_actions = [
     onSuccess: function(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
-        .replace('%$1d', ~~(response.subscribers))
+        .replace('%$1d', (~~(response.subscribers)).toLocaleString())
         .replace('%$2s', response.segment)
       );
     }
@@ -151,7 +151,7 @@ const bulk_actions = [
     onSuccess: function(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersAddedToList')
-        .replace('%$1d', ~~response.subscribers)
+        .replace('%$1d', (~~response.subscribers).toLocaleString())
         .replace('%$2s', response.segment)
       );
     }
@@ -182,7 +182,7 @@ const bulk_actions = [
     onSuccess: function(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromList')
-        .replace('%$1d', ~~response.subscribers)
+        .replace('%$1d', (~~response.subscribers).toLocaleString())
         .replace('%$2s', response.segment)
       );
     }
@@ -193,7 +193,7 @@ const bulk_actions = [
     onSuccess: function(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists')
-        .replace('%$1d', ~~response)
+        .replace('%$1d', (~~response).toLocaleString())
       );
     }
   },
@@ -203,7 +203,7 @@ const bulk_actions = [
     onSuccess: function(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleConfirmationEmailsSent')
-        .replace('%$1d', ~~response)
+        .replace('%$1d', (~~response).toLocaleString())
       );
     }
   },
@@ -304,9 +304,12 @@ const SubscriberList = React.createClass({
     return (
       <div>
         <td className={ row_classes }>
-          <strong><Link to={ `/edit/${ subscriber.id }` }>
-            { subscriber.email }
-          </Link></strong>
+          <strong>
+            <Link
+              className="row-title"
+              to={ `/edit/${ subscriber.id }` }
+            >{ subscriber.email }</Link>
+          </strong>
           <p style={{margin: 0}}>
             { subscriber.first_name } { subscriber.last_name }
           </p>
