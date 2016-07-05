@@ -35,28 +35,18 @@ class Menu {
   }
 
   function setup() {
-    add_menu_page(
+    global $submenu;
+
+    $main_page_slug = 'mailpoet-newsletters';
+
+    $newsletters_page = add_menu_page(
       'MailPoet',
       'MailPoet',
-      'manage_options',
-      'mailpoet',
-      array(
-        $this,
-        'home'
-      ),
-      $this->assets_url . '/img/menu_icon.png',
-      30
-    );
-    $newsletters_page = add_submenu_page(
-      'mailpoet',
-      $this->setPageTitle(__('Newsletters')),
-      __('Newsletters'),
       'manage_options',
       'mailpoet-newsletters',
-      array(
-        $this,
-        'newsletters'
-      )
+      array($this, 'newsletters'),
+      $this->assets_url . '/img/menu_icon.png',
+      30
     );
 
     // add limit per page to screen options
@@ -71,15 +61,12 @@ class Menu {
     });
 
     $forms_page = add_submenu_page(
-      'mailpoet',
+      $main_page_slug,
       $this->setPageTitle(__('Forms')),
       __('Forms'),
       'manage_options',
       'mailpoet-forms',
-      array(
-        $this,
-        'forms'
-      )
+      array($this, 'forms')
     );
     // add limit per page to screen options
     add_action('load-'.$forms_page, function() {
@@ -93,15 +80,12 @@ class Menu {
     });
 
     $subscribers_page = add_submenu_page(
-      'mailpoet',
+      $main_page_slug,
       $this->setPageTitle(__('Subscribers')),
       __('Subscribers'),
       'manage_options',
       'mailpoet-subscribers',
-      array(
-        $this,
-        'subscribers'
-      )
+      array($this, 'subscribers')
     );
     // add limit per page to screen options
     add_action('load-'.$subscribers_page, function() {
@@ -115,15 +99,12 @@ class Menu {
     });
 
     $segments_page = add_submenu_page(
-      'mailpoet',
+      $main_page_slug,
       $this->setPageTitle(__('Segments')),
       __('Segments'),
       'manage_options',
       'mailpoet-segments',
-      array(
-        $this,
-        'segments'
-      )
+      array($this, 'segments')
     );
 
     // add limit per page to screen options
@@ -138,15 +119,12 @@ class Menu {
     });
 
     add_submenu_page(
-      'mailpoet',
+      $main_page_slug,
       $this->setPageTitle( __('Settings')),
       __('Settings'),
       'manage_options',
       'mailpoet-settings',
-      array(
-        $this,
-        'settings'
-      )
+      array($this, 'settings')
     );
     add_submenu_page(
       'admin.php?page=mailpoet-subscribers',
@@ -154,10 +132,7 @@ class Menu {
       __('Import'),
       'manage_options',
       'mailpoet-import',
-      array(
-        $this,
-        'import'
-      )
+      array($this, 'import')
     );
 
     add_submenu_page(
@@ -166,10 +141,7 @@ class Menu {
       __('Export'),
       'manage_options',
       'mailpoet-export',
-      array(
-        $this,
-        'export'
-      )
+      array($this, 'export')
     );
 
     add_submenu_page(
@@ -178,10 +150,7 @@ class Menu {
       __('Welcome'),
       'manage_options',
       'mailpoet-welcome',
-      array(
-        $this,
-        'welcome'
-      )
+      array($this, 'welcome')
     );
 
     add_submenu_page(
@@ -190,10 +159,7 @@ class Menu {
       __('Update'),
       'manage_options',
       'mailpoet-update',
-      array(
-        $this,
-        'update'
-      )
+      array($this, 'update')
     );
 
     add_submenu_page(
@@ -202,10 +168,7 @@ class Menu {
       __('Form editor'),
       'manage_options',
       'mailpoet-form-editor',
-      array(
-        $this,
-        'formEditor'
-      )
+      array($this, 'formEditor')
     );
 
     add_submenu_page(
@@ -214,28 +177,28 @@ class Menu {
       __('Newsletter Editor'),
       'manage_options',
       'mailpoet-newsletter-editor',
-      array(
-        $this,
-        'newletterEditor'
-      )
+      array($this, 'newletterEditor')
     );
 
     add_submenu_page(
-      'mailpoet',
+      $main_page_slug,
       $this->setPageTitle(__('Cron')),
       __('Cron'),
       'manage_options',
       'mailpoet-cron',
-      array(
-        $this,
-        'cron'
-      )
+      array($this, 'cron')
     );
-  }
 
-  function home() {
-    $data = array();
-    echo $this->renderer->render('index.html', $data);
+
+    // override main page's submenu title
+    if(!empty($submenu[$main_page_slug][0][0])) {
+      $submenu[$main_page_slug][0][0] = __('Newsletters');
+    }
+
+    // override main page title
+    if(!empty($submenu[$main_page_slug][0][3])) {
+      $submenu[$main_page_slug][0][3] = $this->setPageTitle(__('Newsletters'));
+    }
   }
 
   function welcome() {
@@ -253,13 +216,14 @@ class Menu {
       or
       strpos($redirect_url, 'mailpoet') === false
     ) {
-      $redirect_url = admin_url('admin.php?page=mailpoet');
+      $redirect_url = admin_url('admin.php?page=mailpoet-newsletters');
     }
 
     $data = array(
       'settings' => Setting::getAll(),
       'current_user' => wp_get_current_user(),
-      'redirect_url' => $redirect_url
+      'redirect_url' => $redirect_url,
+      'sub_menu' => 'mailpoet-newsletters'
     );
     echo $this->renderer->render('welcome.html', $data);
   }
@@ -277,13 +241,14 @@ class Menu {
       or
       strpos($redirect_url, 'mailpoet') === false
     ) {
-      $redirect_url = admin_url('admin.php?page=mailpoet');
+      $redirect_url = admin_url('admin.php?page=mailpoet-newsletters');
     }
 
     $data = array(
       'settings' => Setting::getAll(),
       'current_user' => wp_get_current_user(),
-      'redirect_url' => $redirect_url
+      'redirect_url' => $redirect_url,
+      'sub_menu' => 'mailpoet-newsletters'
     );
 
     echo $this->renderer->render('update.html', $data);
