@@ -27,26 +27,6 @@ class Populator {
   function up() {
     global $wpdb;
 
-    $_this = $this;
-
-    $populate = function($model) use($_this, $wpdb) {
-      $modelMethod = Helpers::underscoreToCamelCase($model);
-      $fields = $_this->$modelMethod();
-      $table = $_this->prefix . $model;
-
-      array_map(function($field) use ($wpdb, $table) {
-        $column_conditions = array_map(function($key) use ($field) {
-          return $key . '=' . $field[$key];
-        }, $field);
-        if($wpdb->get_var("SELECT COUNT(*) FROM " . $table . " WHERE " . implode(' AND ', $column_conditions)) === 0) {
-          $wpdb->insert(
-            $table,
-            $field
-          );
-        }
-      }, $fields);
-    };
-
     array_map(array($this, 'populate'), $this->models);
 
     $this->createDefaultSegments();
@@ -95,18 +75,22 @@ class Populator {
       'address' => $current_user->user_email
     );
 
-    // default from name & address
-    Setting::setValue('sender', $sender);
+    if(!Setting::getValue('sender')) {
+      // default from name & address
+      Setting::setValue('sender', $sender);
+    }
 
-    // enable signup confirmation by default
-    Setting::setValue('signup_confirmation', array(
-      'enabled' => true,
-      'from' => array(
-        'name' => get_option('blogname'),
-        'address' => get_option('admin_email')
-      ),
-      'reply_to' => $sender
-    ));
+    if(!Setting::getValue('signup_confirmation')) {
+      // enable signup confirmation by default
+      Setting::setValue('signup_confirmation', array(
+        'enabled' => true,
+        'from' => array(
+          'name' => get_option('blogname'),
+          'address' => get_option('admin_email')
+        ),
+        'reply_to' => $sender
+      ));
+    }
   }
 
   private function createDefaultSegments() {
