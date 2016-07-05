@@ -304,9 +304,12 @@ const SubscriberList = React.createClass({
     return (
       <div>
         <td className={ row_classes }>
-          <strong><Link to={ `/edit/${ subscriber.id }` }>
-            { subscriber.email }
-          </Link></strong>
+          <strong>
+            <Link
+              className="row-title"
+              to={ `/edit/${ subscriber.id }` }
+            >{ subscriber.email }</Link>
+          </strong>
           <p style={{margin: 0}}>
             { subscriber.first_name } { subscriber.last_name }
           </p>
