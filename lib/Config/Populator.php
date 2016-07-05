@@ -75,12 +75,12 @@ class Populator {
       'address' => $current_user->user_email
     );
 
-    if (!Setting::getValue('sender')) {
+    if(!Setting::getValue('sender')) {
       // default from name & address
       Setting::setValue('sender', $sender);
     }
 
-    if (!Setting::getValue('signup_confirmation')) {
+    if(!Setting::getValue('signup_confirmation')) {
       // enable signup confirmation by default
       Setting::setValue('signup_confirmation', array(
         'enabled' => true,
