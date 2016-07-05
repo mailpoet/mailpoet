@@ -47,13 +47,13 @@ function(
 
       data.action = this.state.action;
 
-      var callback = function() {};
+      var onSuccess = function() {};
       if(action['onSuccess'] !== undefined) {
-        callback = action.onSuccess;
+        onSuccess = action.onSuccess;
       }
 
       if(data.action) {
-        this.props.onBulkAction(selected_ids, data, callback);
+        this.props.onBulkAction(selected_ids, data).then(onSuccess);
       }
 
       this.setState({
