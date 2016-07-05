@@ -14,6 +14,7 @@ use \MailPoet\Form\Renderer as FormRenderer;
 use \MailPoet\Form\Block\Date as FormBlockDate;
 
 class Pages {
+  // TODO: possible refactor
   const DEMO_EMAIL = 'demo@mailpoet.com';
 
   private $action;

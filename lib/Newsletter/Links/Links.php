@@ -1,9 +1,10 @@
 <?php
 namespace MailPoet\Newsletter\Links;
 
+use MailPoet\API\API;
+use MailPoet\API\Endpoints\Track as TrackAPI;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
-use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 
 class Links {
@@ -61,13 +62,11 @@ class Links {
         'hash' => $hash,
         'url' => $extracted_link['link']
       );
-      $params = array(
-        'mailpoet' => '',
-        'endpoint' => 'track',
-        'action' => 'click',
-        'data' => self::DATA_TAG . '-' . $hash
+      $tracked_link = API::buildRequest(
+        TrackAPI::ENDPOINT,
+        TrackAPI::ACTION_CLICK,
+        self::DATA_TAG . '-' . $hash
       );
-      $tracked_link = add_query_arg($params, home_url());
       // first, replace URL in the extracted HTML source with encoded link
       $tracked_link_html_source = str_replace(
         $extracted_link['link'], $tracked_link,

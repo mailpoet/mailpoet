@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Cron;
 
+use MailPoet\API\API;
+use MailPoet\API\Endpoints\Queue as QueueAPI;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Security;
 
@@ -39,8 +41,11 @@ class CronHelper {
 
   static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
     $data = serialize(array('token' => $token));
-    $url = '/?mailpoet&endpoint=queue&action=run&data=' .
-      base64_encode($data);
+    $url = API::buildRequest(
+      QueueAPI::ENDPOINT,
+      QueueAPI::ACTION_RUN,
+      base64_encode($data)
+    );
     $args = array(
       'timeout' => $timeout,
       'user-agent' => 'MailPoet (www.mailpoet.com) Cron'

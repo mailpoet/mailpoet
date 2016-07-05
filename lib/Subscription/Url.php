@@ -1,10 +1,13 @@
 <?php
 namespace MailPoet\Subscription;
 
-use \MailPoet\Models\Subscriber;
-use \MailPoet\Models\Setting;
+use MailPoet\API\API;
+use MailPoet\API\Endpoints\Subscription;
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\Setting;
 
 class Url {
+  // TODO: possible refactor
   static function getConfirmationUrl($subscriber = false) {
     $post = get_post(Setting::getValue('subscription.pages.confirmation'));
     return self::getSubscriptionUrl($post, 'confirm', $subscriber);
@@ -43,7 +46,8 @@ class Url {
     }
 
     $params = array(
-      'endpoint=subscription',
+      API::API_NAME,
+      'endpoint='.Subscription::ENDPOINT,
       'action='.$action,
       'data='.rtrim(base64_encode(serialize($data)), '=')
     );

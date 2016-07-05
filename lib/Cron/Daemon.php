@@ -56,7 +56,7 @@ class Daemon {
     // its status has changed
     $daemon = CronHelper::getDaemon();
     if(!$daemon || $daemon['token'] !== $this->data['token']) {
-      self::terminate();
+      $this->terminateRequest();
     }
     $daemon['counter']++;
     $this->abortIfStopped($daemon);
@@ -70,12 +70,12 @@ class Daemon {
 
   function abortIfStopped($daemon) {
     if($daemon['status'] === self::STATUS_STOPPED) {
-      self::terminate();
+      $this->terminateRequest();
     }
     if($daemon['status'] === self::STATUS_STOPPING) {
       $daemon['status'] = self::STATUS_STOPPED;
       CronHelper::saveDaemon($daemon);
-      self::terminate();
+      $this->terminateRequest();
     }
   }
 
@@ -85,10 +85,10 @@ class Daemon {
 
   function callSelf() {
     CronHelper::accessDaemon($this->token, self::REQUEST_TIMEOUT);
-    self::terminate();
+    $this->terminateRequest();
   }
 
-  function terminate() {
+  function terminateRequest() {
     exit;
   }
 }
