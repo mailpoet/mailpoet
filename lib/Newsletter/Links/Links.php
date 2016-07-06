@@ -68,6 +68,7 @@ class Links {
       $tracked_link = API::buildRequest(
         TrackAPI::ENDPOINT,
         TrackAPI::ACTION_CLICK,
+        $data,
         $encode_data = false
       );
       // first, replace URL in the extracted HTML source with encoded link

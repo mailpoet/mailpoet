@@ -22,7 +22,9 @@ class API {
     $this->action = isset($_GET['action']) ?
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
-    $this->data = self::decodeRequestData($_GET['data']);
+    $this->data = isset($_GET['data']) ?
+      self::decodeRequestData($_GET['data']) :
+      false;
   }
 
   function init() {
@@ -47,7 +49,6 @@ class API {
   }
 
   static function decodeRequestData($data) {
-    if(!$data) return false;
     $data = base64_decode($data);
     return (is_serialized($data)) ?
       unserialize($data) :
