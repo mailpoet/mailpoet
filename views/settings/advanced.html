@@ -1,44 +1,3 @@
-<table id="mailpoet_role_permissions" class="widefat fixed">
-  <thead>
-    <tr>
-      <th class="manage-column">
-        <%= __('Roles and permissions') %>
-      </th>
-      <% for role in permissions.roles %>
-        <th class="manage-column">
-          <%= role %>
-        </th>
-      <% endfor %>
-    </tr>
-  </thead>
-  <tbody>
-    <% for capability in permissions.capabilities %>
-    <tr class="<%= cycle(['alternate', ''], loop.index0) %>">
-      <td>
-        <%= capability.label %>
-      </td>
-      <% for role_key, role in capability.roles %>
-      <td>
-        <input
-          class="mailpoet_role_permission"
-          type="checkbox"
-          data-role="<%= role_key %>"
-          data-capability="<%= role.capability %>"
-          value="1"
-          <% if(role.is_capable) %>
-            checked="checked"
-          <% endif %>
-          <% if(role.is_disabled) %>
-            disabled="disabled"
-          <% endif %>
-        />
-      </td>
-      <% endfor %>
-    </tr>
-    <% endfor %>
-  </tbody>
-</table>
-
 <table class="form-table">
   <tbody>
     <!-- bounce email -->
@@ -159,42 +118,6 @@
               ><%= charset %></option>
             <% endfor %>
           </select>
-        </p>
-      </td>
-    </tr>
-    <!-- debug mode -->
-    <tr>
-      <th scope="row">
-        <label>
-          <%= __('Debug mode') %>
-          <p class="description">
-            <%= __("Enable this to show MailPoet's errors. Our support might ask you to enable this if you seek their help.") %>
-          </p>
-        </label>
-      </th>
-      <td>
-        <p>
-          <label>
-            <input
-              type="radio"
-              name="debug[enabled]"
-              value="1"
-              <% if(settings.debug.enabled) %>
-                checked="checked"
-              <% endif %>
-            /><%= __('Yes') %>
-          </label>
-          &nbsp;
-          <label>
-            <input
-              type="radio"
-              name="debug[enabled]"
-              value=""
-              <% if not(settings.debug.enabled) %>
-                checked="checked"
-              <% endif %>
-            /><%= __('No') %>
-          </label>
         </p>
       </td>
     </tr>
