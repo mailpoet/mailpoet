@@ -49,7 +49,7 @@ class Url {
       API::API_NAME,
       'endpoint='.Subscription::ENDPOINT,
       'action='.$action,
-      'data='.rtrim(base64_encode(serialize($data)), '=')
+      'data='. API::encodeRequestData($data)
     );
 
     // add parameters

@@ -22,7 +22,7 @@ class API {
     $this->action = isset($_GET['action']) ?
       Helpers::underscoreToCamelCase($_GET['action']) :
       false;
-    $this->data = $this->validateRequestData();
+    $this->data = self::decodeRequestData($_GET['data']);
   }
 
   function init() {
@@ -46,15 +46,22 @@ class API {
     );
   }
 
-  function validateRequestData() {
-    if(!isset($_GET['data'])) return false;
-    $data = base64_decode($_GET['data']);
+  static function decodeRequestData($data) {
+    if(!$data) return false;
+    $data = base64_decode($data);
     return (is_serialized($data)) ?
       unserialize($data) :
-      $this->terminateRequest(404, __('Invalid API data format.'));
+      self::terminateRequest(404, __('Invalid API data format.'));
   }
 
-  static function buildRequest($endpoint, $action, $data) {
+  static function encodeRequestData($data) {
+    return rtrim(base64_encode(serialize($data)), '=');
+  }
+
+  static function buildRequest($endpoint, $action, $data, $encode_data = true) {
+    if($encode_data) {
+      $data = base64_encode(serialize($data));
+    }
     $params = array(
       self::API_NAME => '',
       'endpoint' => $endpoint,

@@ -62,10 +62,13 @@ class Links {
         'hash' => $hash,
         'url' => $extracted_link['link']
       );
+      $data = self::DATA_TAG . '-' . $hash;
+      // do not encode data; it's replaced with subscriber-specific data
+      // and encoded during send operation (Links::replaceSubscriberData())
       $tracked_link = API::buildRequest(
         TrackAPI::ENDPOINT,
         TrackAPI::ACTION_CLICK,
-        self::DATA_TAG . '-' . $hash
+        $encode_data = false
       );
       // first, replace URL in the extracted HTML source with encoded link
       $tracked_link_html_source = str_replace(
@@ -111,7 +114,7 @@ class Links {
         'queue' => $queue_id,
         'hash' => $hash
       );
-      $data = rtrim(base64_encode(serialize($data)), '=');
+      $data = API::encodeRequestData($data);
       $content = str_replace($link, $data, $content);
     }
     return $content;

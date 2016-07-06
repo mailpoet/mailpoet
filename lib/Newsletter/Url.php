@@ -2,7 +2,7 @@
 namespace MailPoet\Newsletter;
 
 use MailPoet\API\API;
-use MailPoet\API\Endpoints\ViewInBrowser;
+use MailPoet\API\Endpoints\ViewInBrowser as ViewInBrowserAPI;
 use MailPoet\Models\Subscriber;
 
 class Url {
@@ -36,9 +36,9 @@ class Url {
     );
     $params = array(
       API::API_NAME,
-      'endpoint' => ViewInBrowser::ENDPOINT,
-      'action' => ViewInBrowser::ACTION_VIEW,
-      'data' => base64_encode(serialize($data))
+      ViewInBrowserAPI::ENDPOINT,
+      ViewInBrowserAPI::ACTION_VIEW,
+      $data
     );
     return add_query_arg($params, home_url());
   }

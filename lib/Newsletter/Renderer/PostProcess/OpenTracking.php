@@ -11,10 +11,14 @@ class OpenTracking {
     $DOM = new \pQuery();
     $DOM = $DOM->parseStr($template);
     $template = $DOM->query('body');
+    $data = Links::DATA_TAG;
+    // do not encode data; it's replaced with subscriber-specific data
+    // and encoded during send operation (Links::replaceSubscriberData())
     $url = API::buildRequest(
       TrackAPI::ENDPOINT,
       TrackAPI::ACTION_OPEN,
-      Links::DATA_TAG
+      $data,
+      $encode_data = false
     );
     $open_tracking_image = sprintf(
       '<img alt="" class="" src="%s"/>',
@@ -25,7 +29,7 @@ class OpenTracking {
   }
 
   static function addTrackingImage() {
-    add_filter(Renderer::POST_PROCESS_FILTER, function ($template) {
+    add_filter(Renderer::POST_PROCESS_FILTER, function($template) {
       return OpenTracking::process($template);
     });
     return true;

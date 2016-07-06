@@ -40,11 +40,11 @@ class CronHelper {
   }
 
   static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
-    $data = serialize(array('token' => $token));
+    $data = array('token' => $token);
     $url = API::buildRequest(
       QueueAPI::ENDPOINT,
       QueueAPI::ACTION_RUN,
-      base64_encode($data)
+      $data
     );
     $args = array(
       'timeout' => $timeout,
