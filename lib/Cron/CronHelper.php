@@ -50,10 +50,7 @@ class CronHelper {
       'timeout' => $timeout,
       'user-agent' => 'MailPoet (www.mailpoet.com) Cron'
     );
-    $result = wp_remote_get(
-      self::getSiteUrl() . $url,
-      $args
-    );
+    $result = wp_remote_get($url, $args);
     return wp_remote_retrieve_body($result);
   }
 
