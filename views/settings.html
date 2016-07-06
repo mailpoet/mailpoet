@@ -57,22 +57,15 @@
       // on dom loaded
       $(function() {
         // save settings
-        // $('.mailpoet_settings_submit').on('click', function(e) {
         $('#mailpoet_settings_form').parsley().on('form:submit', function(parsley) {
-          // serialize form data
-          var settings_data = $('#mailpoet_settings_form').serializeObject(),
-              permissions = $('.mailpoet_role_permission'),
-              permissions_data = [];
+          // if we're setting up a sending method, try to activate it
+          if ($('.mailpoet_mta_setup_save').is(':visible')) {
+            $('.mailpoet_mta_setup_save').trigger('click');
+            return false;
+          }
 
-          // format permissions
-          for(var i = permissions.length - 1; i >= 0; i--) {
-            var permission = $(permissions[i]);
-            permissions_data.push({
-              role: permission.data('role'),
-              capability: permission.data('capability'),
-              is_capable: (permission.is(':checked') ? 1 : 0)
-            });
-          };
+          // serialize form data
+          var settings_data = $('#mailpoet_settings_form').serializeObject();
 
           // show loading screen
           MailPoet.Modal.loading(true);
@@ -83,12 +76,6 @@
             data: settings_data
           }).done(function(response) {
             if(response === true) {
-              MailPoet.Ajax.post({
-                endpoint: 'permissions',
-                action: 'set',
-                data: permissions_data
-              });
-
               MailPoet.Notice.success(
                 "<%= __('Settings saved.') %>",
                 { scroll: true }
