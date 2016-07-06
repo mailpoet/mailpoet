@@ -34,12 +34,10 @@ class Url {
         $queue['id'] :
         $queue
     );
-    $params = array(
-      API::API_NAME,
+    return API::buildRequest(
       ViewInBrowserAPI::ENDPOINT,
       ViewInBrowserAPI::ACTION_VIEW,
       $data
     );
-    return add_query_arg($params, home_url());
   }
 }
