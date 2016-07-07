@@ -11,7 +11,7 @@ class API {
   public $action;
   public $data;
   const API_NAME = 'mailpoet_api';
-  const ENDPOINT_NAMESCAPE = '\MailPoet\API\Endpoints\\';
+  const ENDPOINT_NAMESPACE = '\MailPoet\API\Endpoints\\';
   const API_RESPONSE_CODE_ERROR = 404;
 
   function __construct($api_data = false) {
@@ -34,7 +34,7 @@ class API {
       $this->terminateRequest(self::API_RESPONSE_CODE_ERROR, __('Invalid API endpoint.'));
     }
     $this->callEndpoint(
-      self::ENDPOINT_NAMESCAPE . $this->endpoint,
+      self::ENDPOINT_NAMESPACE . $this->endpoint,
       $this->action,
       $this->data
     );
