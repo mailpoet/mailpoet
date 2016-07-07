@@ -34,13 +34,14 @@ class API {
       $this->terminateRequest(self::API_RESPONSE_CODE_ERROR, __('Invalid API endpoint.'));
     }
     $this->callEndpoint(
-      self::ENDPOINT_NAMESPACE . $this->endpoint,
+      $this->endpoint,
       $this->action,
       $this->data
     );
   }
 
   function callEndpoint($endpoint, $action, $data) {
+    $endpoint = self::ENDPOINT_NAMESPACE . ucfirst($endpoint);
     if(!method_exists($endpoint, $action)) {
       $this->terminateRequest(self::API_RESPONSE_CODE_ERROR, __('Invalid API action.'));
     }
