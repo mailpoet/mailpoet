@@ -59,10 +59,8 @@ class API {
     return rtrim(base64_encode(serialize($data)), '=');
   }
 
-  static function buildRequest($endpoint, $action, $data, $encode_data = true) {
-    if($encode_data) {
-      $data = base64_encode(serialize($data));
-    }
+  static function buildRequest($endpoint, $action, $data) {
+    $data = base64_encode(serialize($data));
     $params = array(
       self::API_NAME => '',
       'endpoint' => $endpoint,

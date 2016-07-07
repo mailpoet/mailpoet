@@ -1,8 +1,6 @@
 <?php
 namespace MailPoet\Newsletter\Renderer\PostProcess;
 
-use MailPoet\API\API;
-use MailPoet\API\Endpoints\Track as TrackAPI;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
 
@@ -11,15 +9,9 @@ class OpenTracking {
     $DOM = new \pQuery();
     $DOM = $DOM->parseStr($template);
     $template = $DOM->query('body');
-    $data = Links::DATA_TAG;
-    // do not encode data; it's replaced with subscriber-specific data
-    // and encoded during send operation (Links::replaceSubscriberData())
-    $url = API::buildRequest(
-      TrackAPI::ENDPOINT,
-      TrackAPI::ACTION_OPEN,
-      $data,
-      $encode_data = false
-    );
+    // url is a temporary data tag that will be further replaced with
+    // the proper track API URL during sending
+    $url = Links::DATA_TAG_OPEN;
     $open_tracking_image = sprintf(
       '<img alt="" class="" src="%s"/>',
       $url
@@ -29,7 +21,7 @@ class OpenTracking {
   }
 
   static function addTrackingImage() {
-    add_filter(Renderer::POST_PROCESS_FILTER, function($template) {
+    add_filter(Renderer::POST_PROCESS_FILTER, function ($template) {
       return OpenTracking::process($template);
     });
     return true;
