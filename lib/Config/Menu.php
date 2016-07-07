@@ -11,7 +11,6 @@ use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
-use MailPoet\Util\Permissions;
 use MailPoet\Listing;
 use MailPoet\WP\DateTime;
 
@@ -259,7 +258,6 @@ class Menu {
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),
-      'permissions' => Permissions::getAll(),
       'hosts' => array(
         'web' => Hosts::getWebHosts(),
         'smtp' => Hosts::getSMTPHosts()
