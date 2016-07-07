@@ -12,7 +12,16 @@
         </p>
       </th>
       <td>
-        <p>
+        <p
+          id="mailpoet_signup_confirmation_notice"
+          <% if (settings.mta_group != "mailpoet") %>style="display:none;"<% endif %>
+        >
+          <%=- __('Sending with MailPoet requires signup confirmation to be turned on.') -%>
+        </p>
+        <p
+          id="mailpoet_signup_confirmation_input"
+          <% if (settings.mta_group == "mailpoet") %>style="display:none;"<% endif %>
+        >
           <label>
             <input
               type="radio"
@@ -60,8 +69,6 @@
             placeholder="<%= __('Your name') %>"
           />
           <input type="email"
-            data-parsley-type="email"
-            data-parsley-error-message="<%= __('You need to specify a valid email address') %>"
             id="settings[signup_confirmation_from_email]"
             name="signup_confirmation[from][address]"
             value="<%= settings.signup_confirmation.from.address %>"
@@ -88,8 +95,6 @@
             placeholder="<%= __('Your name') %>"
             />
           <input type="email"
-            data-parsley-type="email"
-            data-parsley-error-message="<%= __('You need to specify a valid email address') %>"
             id="settings[signup_confirmation_reply_email]"
             name="signup_confirmation[reply_to][address]"
             value="<%= settings.signup_confirmation.reply_to.address %>"
@@ -186,7 +191,7 @@
       $('.mailpoet_signup_confirmation').on('click', function() {
         var result = false;
 
-        if(parseInt($(this).val(), 10) === 1) {
+        if(~~($(this).val()) === 1) {
           result = confirm("<%= __('Subscribers will need to activate their subscription via email in order to receive your newsletters. This is highly recommended.') %>");
         } else {
           result = confirm("<%= __('Unconfirmed subscribers will receive your newsletters from without needing to activate their subscriptions.') %>");
@@ -201,7 +206,7 @@
 
       function toggleSignupOptions() {
         var is_enabled =
-          (parseInt($('.mailpoet_signup_confirmation:checked').val(), 10) === 1);
+          (~~($('.mailpoet_signup_confirmation:checked').val()) === 1);
         $('#mailpoet_signup_options')[(is_enabled) ? 'show' : 'hide']();
       }
     });

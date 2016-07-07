@@ -56,14 +56,17 @@
     jQuery(function($) {
       // on dom loaded
       $(function() {
-        // save settings
-        $('#mailpoet_settings_form').parsley().on('form:submit', function(parsley) {
+        // on form submission
+        $('#mailpoet_settings_form').on('submit', function() {
           // if we're setting up a sending method, try to activate it
           if ($('.mailpoet_mta_setup_save').is(':visible')) {
             $('.mailpoet_mta_setup_save').trigger('click');
-            return false;
           }
+          saveSettings();
+          return false;
+        });
 
+        function saveSettings() {
           // serialize form data
           var settings_data = $('#mailpoet_settings_form').serializeObject();
 
@@ -94,9 +97,7 @@
             );
             MailPoet.Modal.loading(false);
           });
-
-          return false;
-        });
+        }
 
         // setup toggle checkboxes
         function toggleContent() {
@@ -106,6 +107,7 @@
             : 'hide'
           ]();
         }
+
         $(document).on('click', 'input[data-toggle]', toggleContent);
         $('input[data-toggle]').each(toggleContent);
 

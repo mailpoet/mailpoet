@@ -19,8 +19,6 @@
             value="<%= settings.sender.name %>"
             placeholder="<%= __('Your name') %>" />
           <input type="email"
-            data-parsley-type="email"
-            data-parsley-error-message="<%= __('You need to specify a valid email address') %>"
             id="settings[from_email]"
             name="sender[address]"
             value="<%= settings.sender.address %>"
@@ -35,8 +33,6 @@
             value="<%= settings.reply_to.name %>"
             placeholder="<%= __('Your name') %>" />
           <input type="email"
-            data-parsley-type="email"
-            data-parsley-error-message="<%= __('You need to specify a valid email address') %>"
             id="settings[reply_email]"
             name="reply_to[address]"
             value="<%= settings.reply_to.address %>"
@@ -113,7 +109,7 @@
               id="settings[subscribe_on_comment_label]"
               name="subscribe[on_comment][label]"
               class="regular-text"
-              <%if(settings.subscribe.on_comment.label) %>
+              <% if(settings.subscribe.on_comment.label) %>
                   value="<%= settings.subscribe.on_comment.label %>"
               <% else %>
                 value="<%= __('Yes, add me to your mailing list.') %>"
@@ -177,7 +173,7 @@
                 id="settings[subscribe_on_register_label]"
                 name="subscribe[on_register][label]"
                 class="regular-text"
-                <%if(settings.subscribe.on_register.label) %>
+                <% if(settings.subscribe.on_register.label) %>
                   value="<%= settings.subscribe.on_register.label %>"
                 <% else %>
                   value="<%= __('Yes, add me to your mailing list.') %>"
