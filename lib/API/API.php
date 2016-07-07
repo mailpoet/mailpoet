@@ -12,32 +12,37 @@ class API {
   public $data;
   const API_NAME = 'mailpoet_api';
   const ENDPOINT_NAMESCAPE = '\MailPoet\API\Endpoints\\';
+  const API_RESPONSE_CODE_ERROR = 404;
 
-  function __construct() {
-    $this->api_request = isset($_GET[self::API_NAME]) ? true : false;
-    $this->endpoint = isset($_GET['endpoint']) ?
-      Helpers::underscoreToCamelCase($_GET['endpoint']) :
+  function __construct($api_data = false) {
+    $api_data = ($api_data) ? $api_data : $_GET;
+    $this->api_request = isset($api_data[self::API_NAME]);
+    $this->endpoint = isset($api_data['endpoint']) ?
+      Helpers::underscoreToCamelCase($api_data['endpoint']) :
       false;
-    $this->endpoint = self::ENDPOINT_NAMESCAPE . ucfirst($this->endpoint);
-    $this->action = isset($_GET['action']) ?
-      Helpers::underscoreToCamelCase($_GET['action']) :
+    $this->action = isset($api_data['action']) ?
+      Helpers::underscoreToCamelCase($api_data['action']) :
       false;
-    $this->data = isset($_GET['data']) ?
-      self::decodeRequestData($_GET['data']) :
+    $this->data = isset($api_data['data']) ?
+      self::decodeRequestData($api_data['data']) :
       false;
   }
 
   function init() {
     if(!$this->api_request) return;
     if(!$this->endpoint) {
-      $this->terminateRequest(404, __('Invalid API endpoint.'));
+      $this->terminateRequest(self::API_RESPONSE_CODE_ERROR, __('Invalid API endpoint.'));
     }
-    $this->callEndpoint($this->endpoint, $this->action, $this->data);
+    $this->callEndpoint(
+      self::ENDPOINT_NAMESCAPE . $this->endpoint,
+      $this->action,
+      $this->data
+    );
   }
 
   function callEndpoint($endpoint, $action, $data) {
     if(!method_exists($endpoint, $action)) {
-      $this->terminateRequest(404, __('Invalid API action.'));
+      $this->terminateRequest(self::API_RESPONSE_CODE_ERROR, __('Invalid API action.'));
     }
     call_user_func(
       array(
@@ -52,7 +57,7 @@ class API {
     $data = base64_decode($data);
     return (is_serialized($data)) ?
       unserialize($data) :
-      self::terminateRequest(404, __('Invalid API data format.'));
+      self::terminateRequest(self::API_RESPONSE_CODE_ERROR, __('Invalid API data format.'));
   }
 
   static function encodeRequestData($data) {
@@ -60,7 +65,7 @@ class API {
   }
 
   static function buildRequest($endpoint, $action, $data) {
-    $data = base64_encode(serialize($data));
+    $data = self::encodeRequestData($data);
     $params = array(
       self::API_NAME => '',
       'endpoint' => $endpoint,

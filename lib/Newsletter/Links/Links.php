@@ -97,7 +97,7 @@ class Links {
     $queue_id,
     $content
   ) {
-    // match [mailpoet_click]-urlHash or [mailpoet_open]
+    // match data tags
     $regex = sprintf(
       '/((%s|%s)(?:-\w+)?)/',
       preg_quote(self::DATA_TAG_CLICK),
