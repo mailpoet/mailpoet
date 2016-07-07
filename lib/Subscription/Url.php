@@ -45,7 +45,7 @@ class Url {
     }
 
     $params = array(
-      API::API_NAME,
+      API::NAME,
       'endpoint='.Subscription::ENDPOINT,
       'action='.$action,
       'data='.API::encodeRequestData($data)
