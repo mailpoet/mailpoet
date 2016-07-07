@@ -39,8 +39,6 @@ class Daemon {
     ) {
       $this->abortWithError(__('Invalid or missing token.'));
     }
-    $daemon['token'] = $this->token;
-    CronHelper::saveDaemon($daemon);
     $this->abortIfStopped($daemon);
     try {
       $scheduler = new SchedulerWorker($this->timer);
@@ -57,13 +55,14 @@ class Daemon {
     // after each execution, re-read daemon data in case its status was changed
     // its status has changed
     $daemon = CronHelper::getDaemon();
-    if(!$daemon || $daemon['token'] !== $this->token) {
+    if(!$daemon || $daemon['token'] !== $this->data['token']) {
       $this->terminateRequest();
     }
     $this->abortIfStopped($daemon);
     if($daemon['status'] === self::STATUS_STARTING) {
       $daemon['status'] = self::STATUS_STARTED;
     }
+    $daemon['token'] = $this->token;
     CronHelper::saveDaemon($daemon);
     $this->callSelf();
   }
