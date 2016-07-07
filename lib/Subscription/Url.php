@@ -7,7 +7,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
 
 class Url {
-  // TODO: possible refactor
   static function getConfirmationUrl($subscriber = false) {
     $post = get_post(Setting::getValue('subscription.pages.confirmation'));
     return self::getSubscriptionUrl($post, 'confirm', $subscriber);
@@ -49,7 +48,7 @@ class Url {
       API::API_NAME,
       'endpoint='.Subscription::ENDPOINT,
       'action='.$action,
-      'data='. API::encodeRequestData($data)
+      'data='.API::encodeRequestData($data)
     );
 
     // add parameters
