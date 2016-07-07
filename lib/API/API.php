@@ -29,19 +29,19 @@ class API {
   }
 
   function init() {
+    $endpoint = self::ENDPOINT_NAMESPACE . ucfirst($this->endpoint);
     if(!$this->api_request) return;
-    if(!$this->endpoint) {
+    if(!$this->endpoint || !class_exists($endpoint)) {
       $this->terminateRequest(self::API_RESPONSE_CODE_ERROR, __('Invalid API endpoint.'));
     }
     $this->callEndpoint(
-      $this->endpoint,
+      $endpoint,
       $this->action,
       $this->data
     );
   }
 
   function callEndpoint($endpoint, $action, $data) {
-    $endpoint = self::ENDPOINT_NAMESPACE . ucfirst($endpoint);
     if(!method_exists($endpoint, $action)) {
       $this->terminateRequest(self::API_RESPONSE_CODE_ERROR, __('Invalid API action.'));
     }
