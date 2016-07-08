@@ -33,7 +33,6 @@ class Initializer {
       $this->setupRenderer();
       $this->setupLocalizer();
       $this->setupMenu();
-      $this->setupPermissions();
       $this->setupAnalytics();
       $this->setupChangelog();
       $this->setupShortcodes();
@@ -144,11 +143,6 @@ class Initializer {
   function setupAnalytics() {
     $widget = new Analytics();
     $widget->init();
-  }
-
-  function setupPermissions() {
-    $permissions = new Permissions();
-    $permissions->init();
   }
 
   function setupChangelog() {

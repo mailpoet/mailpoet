@@ -1,14 +1,54 @@
 <table class="form-table">
   <tbody>
-    <!-- email addresses receiving notifications -->
     <tr>
+      <th scope="row">
+        <label for="settings[from_name]">
+          <%= __("Default sender") %>
+        </label>
+        <p class="description">
+          <%= __('These email addresses will be the defaults for each new email created.') %>
+        </p>
+      </th>
+      <td>
+        <!-- default from name & email -->
+        <p>
+          <label for="settings[from_name]"><%= __('From') %></label>
+          <input type="text"
+            id="settings[from_name]"
+            name="sender[name]"
+            value="<%= settings.sender.name %>"
+            placeholder="<%= __('Your name') %>" />
+          <input type="email"
+            id="settings[from_email]"
+            name="sender[address]"
+            value="<%= settings.sender.address %>"
+            placeholder="from@mydomain.com" />
+        </p>
+        <!-- default reply_to name & email -->
+        <p>
+          <label for="settings[reply_name]"><%= __('Reply-to') %></label>
+          <input type="text"
+            id="settings[reply_name]"
+            name="reply_to[name]"
+            value="<%= settings.reply_to.name %>"
+            placeholder="<%= __('Your name') %>" />
+          <input type="email"
+            id="settings[reply_email]"
+            name="reply_to[address]"
+            value="<%= settings.reply_to.address %>"
+            placeholder="reply_to@mydomain.com" />
+        </p>
+      </td>
+    </tr>
+    <!-- email addresses receiving notifications -->
+    <tr style="display:none">
       <th scope="row">
         <label for="settings[notification_email]">
           <%= __("Email notifications") %>
-          <p class="description">
-            <%= __('These email addresses will receive notifications (separate each address with a comma).') %>
-          </p>
         </label>
+        <p class="description">
+          <%= __('These email addresses will receive notifications (separate each address with a comma).') %>
+        </p>
       </th>
       <td>
         <p>
@@ -21,50 +61,22 @@
         </p>
         <p>
           <label for="settings[notification_on_subscribe]">
-          <input type="checkbox" id="settings[notification_on_subscribe]"
-          name="notification[on_subscribe]"
-          value="1"
-          <% if(settings.notification.on_subscribe) %>checked="checked"<% endif %> />
-          <%= __('When someone subscribes') %>
+            <input type="checkbox" id="settings[notification_on_subscribe]"
+            name="notification[on_subscribe]"
+            value="1"
+            <% if(settings.notification.on_subscribe) %>checked="checked"<% endif %> />
+            <%= __('When someone subscribes') %>
           </label>
         </p>
         <p>
           <label for="settings[notification_on_unsubscribe]">
-          <input type="checkbox"
-          id="settings[notification_on_unsubscribe]"
-          name="notification[on_unsubscribe]"
-          value="1"
-          <% if(settings.notification.on_unsubscribe) %>checked="checked"<% endif %> />
-          <%= __('When someone unsubscribes') %>
+            <input type="checkbox"
+            id="settings[notification_on_unsubscribe]"
+            name="notification[on_unsubscribe]"
+            value="1"
+            <% if(settings.notification.on_unsubscribe) %>checked="checked"<% endif %> />
+            <%= __('When someone unsubscribes') %>
           </label>
-        </p>
-        <!-- email notification: from name & email -->
-        <p>
-          <label for="settings[from_name]"><%= __('From') %></label>
-          <input type="text"
-            id="settings[from_name]"
-            name="sender[name]"
-            value="<%= settings.sender.name %>"
-            placeholder="<%= __('Your name') %>" />
-          <input type="text"
-            id="settings[from_email]"
-            name="sender[address]"
-            value="<%= settings.sender.address %>"
-            placeholder="info@mydomain.com" />
-        </p>
-        <!-- email notification: reply_to name & email -->
-        <p>
-          <label for="settings[notification_reply_name]"><%= __('Reply-to') %></label>
-          <input type="text"
-            id="settings[notification_reply_name]"
-            name="reply_to[name]"
-            value="<%= settings.reply_to.name %>"
-            placeholder="<%= __('Your name') %>" />
-          <input type="text"
-            id="settings[notification_reply_email]"
-            name="reply_to[address]"
-            value="<%= settings.reply_to.address %>"
-            placeholder="info@mydomain.com" />
         </p>
       </td>
     </tr>
@@ -74,8 +86,10 @@
       <th scope="row">
         <label for="settings[subscribe_on_comment]">
           <%= __('Subscribe in comments') %>
-          <p class="description"><%= __('Visitors that comment on a post can click on a checkbox to subscribe to your list.') %></p>
         </label>
+        <p class="description">
+          <%= __('Visitors that comment on a post can click on a checkbox to subscribe to your list.') %>
+        </p>
       </th>
       <td>
         <p>
@@ -95,7 +109,7 @@
               id="settings[subscribe_on_comment_label]"
               name="subscribe[on_comment][label]"
               class="regular-text"
-              <%if(settings.subscribe.on_comment.label) %>
+              <% if(settings.subscribe.on_comment.label) %>
                   value="<%= settings.subscribe.on_comment.label %>"
               <% else %>
                 value="<%= __('Yes, add me to your mailing list.') %>"
@@ -132,10 +146,10 @@
       <th scope="row">
         <label for="settings[subscribe_on_register]">
           <%= __('Subscribe in registration form') %>
-          <p class="description">
-            <%= __('Allow users who register on your site to subscribe to a list.') %>
-          </p>
         </label>
+        <p class="description">
+          <%= __('Allow users who register on your site to subscribe to a list.') %>
+        </p>
       </th>
       <td>
         <% if(flags.registration_enabled == true) %>
@@ -159,7 +173,7 @@
                 id="settings[subscribe_on_register_label]"
                 name="subscribe[on_register][label]"
                 class="regular-text"
-                <%if(settings.subscribe.on_register.label) %>
+                <% if(settings.subscribe.on_register.label) %>
                   value="<%= settings.subscribe.on_register.label %>"
                 <% else %>
                   value="<%= __('Yes, add me to your mailing list.') %>"
@@ -199,10 +213,10 @@
       <th scope="row">
         <label for="subscription_manage_page">
           <%= __('Manage Subscription page') %>
-          <p class="description">
-            <%= __('Your subscribers will be directed to this page when they click the "Manage your subscription" link in your email.') %>
-          </p>
         </label>
+        <p class="description">
+          <%= __('Your subscribers will be directed to this page when they click the "Manage your subscription" link in your email.') %>
+        </p>
       </th>
       <td>
         <p>
@@ -254,12 +268,12 @@
       <th scope="row">
         <label for="subscription_unsubscribe_page">
           <%= __('Unsubscribe page') %>
-          <p class="description">
-            <%= __('Your subscribers will be directed to this page when they click the "Unsubscribe" link in your email.') %>
-            <br />
-            <%= __('Use this shortcode on your website\'s WordPress pages: [mailpoet_manage text="Manage your subscription"].') %>
-          </p>
         </label>
+        <p class="description">
+          <%= __('Your subscribers will be directed to this page when they click the "Unsubscribe" link in your email.') %>
+          <br />
+          <%= __('Use this shortcode on your website\'s WordPress pages: [mailpoet_manage text="Manage your subscription"].') %>
+        </p>
       </th>
       <td>
         <p>
@@ -291,10 +305,10 @@
       <th scope="row">
         <label>
           <%= __('Archive page shortcode') %>
-          <p class="description">
-            <%= __('Paste this shortcode on a page to display a list of past newsletters.') %>
-          </p>
         </label>
+        <p class="description">
+          <%= __('Paste this shortcode on a page to display a list of past newsletters.') %>
+        </p>
       </th>
       <td>
         <p>
@@ -327,10 +341,10 @@
       <th scope="row">
         <label>
           <%= __('This shortcode displays the total number of subscribers') %>
-          <p class="description">
-            <%= __('Paste this shortcode on a post or page to display the total number of confirmed subscribers.') %>
-          </p>
         </label>
+        <p class="description">
+          <%= __('Paste this shortcode on a post or page to display the total number of confirmed subscribers.') %>
+        </p>
       </th>
       <td>
         <p>

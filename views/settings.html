@@ -19,7 +19,6 @@
         <a class="nav-tab" href="#signup"><%= __('Signup Confirmation') %></a>
         <a class="nav-tab" href="#mta"><%= __('Send With...') %></a>
         <a class="nav-tab" href="#advanced"><%= __('Advanced') %></a>
-        <a class="nav-tab" href="#bounce"><%= __('Bounce Handling') %></a>
       </h2>
 
       <!-- basics -->
@@ -42,11 +41,6 @@
         <% include 'settings/advanced.html' %>
       </div>
 
-      <!-- bounce -->
-      <div data-tab="bounce" class="mailpoet_panel">
-        <% include 'settings/bounce.html' %>
-      </div>
-
       <p class="submit mailpoet_settings_submit" style="display:none;">
         <input
           type="submit"
@@ -62,24 +56,19 @@
     jQuery(function($) {
       // on dom loaded
       $(function() {
-        // save settings
-        $('.mailpoet_settings_submit').on('click', function(e) {
-          e.preventDefault();
+        // on form submission
+        $('#mailpoet_settings_form').on('submit', function() {
+          // if we're setting up a sending method, try to activate it
+          if ($('.mailpoet_mta_setup_save').is(':visible')) {
+            $('.mailpoet_mta_setup_save').trigger('click');
+          }
+          saveSettings();
+          return false;
+        });
 
+        function saveSettings() {
           // serialize form data
-          var settings_data = $('#mailpoet_settings_form').serializeObject(),
-              permissions = $('.mailpoet_role_permission'),
-              permissions_data = []
-
-          // format permissions
-          for(var i = permissions.length - 1; i >= 0; i--) {
-            var permission = $(permissions[i]);
-            permissions_data.push({
-              role: permission.data('role'),
-              capability: permission.data('capability'),
-              is_capable: (permission.is(':checked') ? 1 : 0)
-            });
-          };
+          var settings_data = $('#mailpoet_settings_form').serializeObject();
 
           // show loading screen
           MailPoet.Modal.loading(true);
@@ -90,12 +79,6 @@
             data: settings_data
           }).done(function(response) {
             if(response === true) {
-              MailPoet.Ajax.post({
-                endpoint: 'permissions',
-                action: 'set',
-                data: permissions_data
-              });
-
               MailPoet.Notice.success(
                 "<%= __('Settings saved.') %>",
                 { scroll: true }
@@ -114,7 +97,7 @@
             );
             MailPoet.Modal.loading(false);
           });
-        });
+        }
 
         // setup toggle checkboxes
         function toggleContent() {
@@ -124,6 +107,7 @@
             : 'hide'
           ]();
         }
+
         $(document).on('click', 'input[data-toggle]', toggleContent);
         $('input[data-toggle]').each(toggleContent);
 

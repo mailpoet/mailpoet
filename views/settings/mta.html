@@ -343,10 +343,10 @@
           <th scope="row">
             <label for="settings[mta_host]">
               <%= __('SMTP Hostname') %>
-              <p class="description">
-                <%= __('e.g.:smtp.mydomain.com') %>
-              </p>
             </label>
+            <p class="description">
+              <%= __('e.g.:smtp.mydomain.com') %>
+            </p>
           </th>
           <td>
             <input
@@ -362,8 +362,6 @@
           <th scope="row">
             <label for="settings[mta_port]">
               <%= __('SMTP Port') %>
-              <p class="description">
-              </p>
             </label>
           </th>
           <td>
@@ -449,10 +447,10 @@
           <th scope="row">
             <label for="settings[mta_domain]">
               <%= __('Domain') %>
-              <p class="description">
-                <%= __('e.g.:smtp.mydomain.com') %>
-              </p>
             </label>
+            <p class="description">
+              <%= __('e.g.:smtp.mydomain.com') %>
+            </p>
           </th>
           <td>
             <input
@@ -546,10 +544,10 @@
           <th scope="row">
             <label>
               <%= __('Authentication') %>
-              <p class="description">
-                <%= __('Leave this option set to Yes. Only a tiny portion of SMTP services prefer Authentication to be turned off.') %>
-              </p>
             </label>
+            <p class="description">
+              <%= __('Leave this option set to Yes. Only a tiny portion of SMTP services prefer Authentication to be turned off.') %>
+            </p>
           </th>
           <td>
             <label>
@@ -588,10 +586,10 @@
         <th scope="row">
           <label>
             <%= __('SPF Signature (Highly recommended!)') %>
-            <p class="description">
-              <%= __("Improves your delivery rate by verifying that you're allowed to send emails from your domain.") %>
-            </p>
           </label>
+          <p class="description">
+            <%= __("Improves your delivery rate by verifying that you're allowed to send emails from your domain.") %>
+          </p>
         </th>
         <td>
           <p>
@@ -609,8 +607,8 @@
         <td>
           <p>
             <input
-              id="mailpoet_mta_test_email"
               type="text"
+              id="mailpoet_mta_test_email"
               class="regular-text"
               value="<%= current_user.user_email %>"
             />
@@ -649,6 +647,16 @@
 
     // om dom loaded
     $(function() {
+      // constrain number type inputs
+      $('input[type="number"]').on('keyup', function() {
+        var currentValue = $(this).val();
+        if(!currentValue) return;
+
+        var minValue = $(this).attr('min');
+        var maxValue = $(this).attr('max');
+        $(this).val(Math.min(Math.max(minValue, currentValue), maxValue));
+      });
+
       // testing sending method
       $('#mailpoet_mta_test').on('click', function() {
         // get form data
@@ -773,13 +781,39 @@
           $('#mta_frequency_emails').val(emails);
           $('#mta_frequency_interval').val(interval);
 
+          // enforce signup confirmation depending on selected group
+          setSignupConfirmation(group);
+
           // back to selection of sending methods
           MailPoet.Router.navigate('mta', { trigger: true });
 
           // save settings
-          $('.mailpoet_settings_submit').trigger('click');
+          $('.mailpoet_settings_submit > input').trigger('click');
         }
       });
+
+      function setSignupConfirmation(group) {
+        if (group === 'mailpoet') {
+          // force signup confirmation (select "Yes")
+          $('.mailpoet_signup_confirmation[value="1"]').attr('checked', true);
+          $('.mailpoet_signup_confirmation[value=""]').attr('checked', false);
+
+          // hide radio inputs
+          $('#mailpoet_signup_confirmation_input').hide();
+
+          // show mailpoet specific notice
+          $('#mailpoet_signup_confirmation_notice').show();
+
+          // show signup confirmation options
+          $('#mailpoet_signup_options').show();
+        } else {
+          // show radio inputs
+          $('#mailpoet_signup_confirmation_input').show();
+
+          // hide mailpoet specific notice
+          $('#mailpoet_signup_confirmation_notice').hide();
+        }
+      }
 
       function setSendingMethodGroup(group) {
         // deactivate other sending methods
@@ -958,7 +992,7 @@
       };
 
       // cast time as int
-      value = parseInt(value, 10);
+      value = ~~(value);
 
       // format time depending on the value
       if(value >= 60) {
