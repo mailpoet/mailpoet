@@ -1,13 +1,15 @@
 <?php
 namespace MailPoet\Newsletter\Links;
 
+use MailPoet\API\API;
+use MailPoet\API\Endpoints\Track as TrackAPI;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
-use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 
 class Links {
-  const DATA_TAG = '[mailpoet_data]';
+  const DATA_TAG_CLICK = '[mailpoet_click_data]';
+  const DATA_TAG_OPEN = '[mailpoet_open_data]';
   const HASH_LENGTH = 5;
 
   static function extract($content) {
@@ -32,7 +34,7 @@ class Links {
     // extract shortcodes with [link:*] format
     $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract($content, $categories = array('link'));
-    $extracted_links = array_map(function($shortcode) {
+    $extracted_links = array_map(function ($shortcode) {
       return array(
         'html' => $shortcode,
         'link' => $shortcode
@@ -61,13 +63,9 @@ class Links {
         'hash' => $hash,
         'url' => $extracted_link['link']
       );
-      $params = array(
-        'mailpoet' => '',
-        'endpoint' => 'track',
-        'action' => 'click',
-        'data' => self::DATA_TAG . '-' . $hash
-      );
-      $tracked_link = add_query_arg($params, home_url());
+      // replace link with a temporary data tag + hash
+      // it will be further replaced with the proper track API URL during sending
+      $tracked_link = self::DATA_TAG_CLICK . '-' . $hash;
       // first, replace URL in the extracted HTML source with encoded link
       $tracked_link_html_source = str_replace(
         $extracted_link['link'], $tracked_link,
@@ -99,12 +97,17 @@ class Links {
     $queue_id,
     $content
   ) {
-    $regex = sprintf('/data=(%s(?:-\w+)?)/', preg_quote(self::DATA_TAG));
-    preg_match_all($regex, $content, $links);
-    foreach($links[1] as $link) {
+    // match data tags
+    $regex = sprintf(
+      '/((%s|%s)(?:-\w+)?)/',
+      preg_quote(self::DATA_TAG_CLICK),
+      preg_quote(self::DATA_TAG_OPEN)
+    );
+    preg_match_all($regex, $content, $matches);
+    foreach($matches[1] as $index => $match) {
       $hash = null;
-      if(preg_match('/-/', $link)) {
-        list(, $hash) = explode('-', $link);
+      if(preg_match('/-/', $match)) {
+        list(, $hash) = explode('-', $match);
       }
       $data = array(
         'newsletter' => $newsletter_id,
@@ -112,8 +115,15 @@ class Links {
         'queue' => $queue_id,
         'hash' => $hash
       );
-      $data = rtrim(base64_encode(serialize($data)), '=');
-      $content = str_replace($link, $data, $content);
+      $API_action = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
+        TrackAPI::ACTION_CLICK :
+        TrackAPI::ACTION_OPEN;
+      $link = API::buildRequest(
+        TrackAPI::ENDPOINT,
+        $API_action,
+        $data
+      );
+      $content = str_replace($match, $link, $content);
     }
     return $content;
   }

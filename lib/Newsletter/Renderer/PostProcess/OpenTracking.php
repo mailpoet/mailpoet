@@ -9,10 +9,12 @@ class OpenTracking {
     $DOM = new \pQuery();
     $DOM = $DOM->parseStr($template);
     $template = $DOM->query('body');
+    // url is a temporary data tag that will be further replaced with
+    // the proper track API URL during sending
+    $url = Links::DATA_TAG_OPEN;
     $open_tracking_image = sprintf(
-      '<img alt="" class="" src="%s/%s"/>',
-      home_url(),
-      esc_attr('?mailpoet&endpoint=track&action=open&data=' . Links::DATA_TAG)
+      '<img alt="" class="" src="%s"/>',
+      $url
     );
     $template->html($template->html() . $open_tracking_image);
     return $DOM->__toString();

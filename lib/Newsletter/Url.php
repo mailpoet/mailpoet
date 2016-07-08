@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Newsletter;
 
+use MailPoet\API\API;
+use MailPoet\API\Endpoints\ViewInBrowser as ViewInBrowserAPI;
 use MailPoet\Models\Subscriber;
 
 class Url {
@@ -32,11 +34,10 @@ class Url {
         $queue['id'] :
         $queue
     );
-    $params = array(
-      'mailpoet' => '',
-      'endpoint' => 'view_in_browser',
-      'data' => base64_encode(serialize($data))
+    return API::buildRequest(
+      ViewInBrowserAPI::ENDPOINT,
+      ViewInBrowserAPI::ACTION_VIEW,
+      $data
     );
-    return add_query_arg($params, home_url());
   }
 }

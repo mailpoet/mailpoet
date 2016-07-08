@@ -30,7 +30,6 @@ class Daemon {
 
   function run() {
     $daemon = $this->daemon;
-    set_time_limit(0);
     if(!$daemon) {
       $this->abortWithError(__('Daemon does not exist.'));
     }
@@ -39,6 +38,8 @@ class Daemon {
     ) {
       $this->abortWithError(__('Invalid or missing token.'));
     }
+    $daemon['token'] = $this->token;
+    CronHelper::saveDaemon($daemon);
     $this->abortIfStopped($daemon);
     try {
       $scheduler = new SchedulerWorker($this->timer);
@@ -55,27 +56,25 @@ class Daemon {
     // after each execution, re-read daemon data in case its status was changed
     // its status has changed
     $daemon = CronHelper::getDaemon();
-    if(!$daemon || $daemon['token'] !== $this->data['token']) {
-      self::terminate();
+    if(!$daemon || $daemon['token'] !== $this->token) {
+      $this->terminateRequest();
     }
-    $daemon['counter']++;
     $this->abortIfStopped($daemon);
     if($daemon['status'] === self::STATUS_STARTING) {
       $daemon['status'] = self::STATUS_STARTED;
     }
-    $daemon['token'] = $this->token;
     CronHelper::saveDaemon($daemon);
     $this->callSelf();
   }
 
   function abortIfStopped($daemon) {
     if($daemon['status'] === self::STATUS_STOPPED) {
-      self::terminate();
+      $this->terminateRequest();
     }
     if($daemon['status'] === self::STATUS_STOPPING) {
       $daemon['status'] = self::STATUS_STOPPED;
       CronHelper::saveDaemon($daemon);
-      self::terminate();
+      $this->terminateRequest();
     }
   }
 
@@ -85,10 +84,10 @@ class Daemon {
 
   function callSelf() {
     CronHelper::accessDaemon($this->token, self::REQUEST_TIMEOUT);
-    self::terminate();
+    $this->terminateRequest();
   }
 
-  function terminate() {
+  function terminateRequest() {
     exit;
   }
 }

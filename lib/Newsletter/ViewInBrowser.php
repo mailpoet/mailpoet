@@ -70,7 +70,7 @@ class ViewInBrowser {
   }
 
   private function abort() {
-    header('HTTP/1.0 404 Not Found');
+    status_header(404);
     exit;
   }
 }

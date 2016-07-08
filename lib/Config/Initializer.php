@@ -48,7 +48,7 @@ class Initializer {
 
   function onInit() {
     $this->setupRouter();
-    $this->setupPublicAPI();
+    $this->setupAPI();
     $this->setupPages();
   }
 
@@ -165,9 +165,9 @@ class Initializer {
     $hooks->init();
   }
 
-  function setupPublicAPI() {
-    $publicAPI = new PublicAPI();
-    $publicAPI->init();
+  function setupAPI() {
+    $API = new \MailPoet\API\API();
+    $API->init();
   }
 
   function runQueueSupervisor() {
