@@ -73,12 +73,14 @@ class Scheduler {
       return;
     }
     $segment_ids = array_map(function($segment) {
-      return $segment['id'];
+      return (int)$segment['id'];
     }, $segments);
+
     $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
       ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
     $subscribers = array_unique($subscribers);
+
     if(empty($subscribers)) {
       $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
       return;

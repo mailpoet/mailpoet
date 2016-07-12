@@ -121,7 +121,6 @@ class Handler {
           $this->table_name.'.'.$this->data['sort_by']
         )
         ->findMany();
-
     } else {
       $this->setFilter();
       $this->setGroup();

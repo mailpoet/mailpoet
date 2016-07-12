@@ -14,6 +14,7 @@ import NewsletterTypeNotification from 'newsletters/types/notification/notificat
 import NewsletterListStandard from 'newsletters/listings/standard.jsx'
 import NewsletterListWelcome from 'newsletters/listings/welcome.jsx'
 import NewsletterListNotification from 'newsletters/listings/notification.jsx'
+import NewsletterListNotificationHistory from 'newsletters/listings/notification_history.jsx'
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
@@ -34,8 +35,11 @@ if(container) {
         <Route name="listing/standard" path="standard" component={ NewsletterListStandard } />
         <Route name="listing/welcome" path="welcome" component={ NewsletterListWelcome } />
         <Route name="listing/notification" path="notification" component={ NewsletterListNotification } />
+        <Route name="listing/notification/history" path="notification/history/:id" component={ NewsletterListNotificationHistory } />
+
         <Route path="standard/*" component={ NewsletterListStandard } />
         <Route path="welcome/*" component={ NewsletterListWelcome } />
+        <Route path="notification/history/:id/*" component={ NewsletterListNotificationHistory } />
         <Route path="notification/*" component={ NewsletterListNotification } />
         {/* Newsletter: type selection */}
         <Route path="new" component={ NewsletterTypes } />

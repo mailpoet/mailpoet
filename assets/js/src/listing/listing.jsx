@@ -379,8 +379,16 @@ const Listing = React.createClass({
         .join('/');
 
       // prepend url with "tab" if specified
-      if (this.props.tab !== undefined) {
-        params = `/${ this.props.tab }/${ params }`;
+      if (this.props.tab !== undefined || this.props.base_path !== undefined) {
+        let base_path = (this.props.base_path !== undefined)
+          ? this.props.base_path
+          : this.props.tab;
+
+        // TODO: add method to replace dynamic path elements
+        base_path = base_path.replace(':id', this.props.params.id);
+        // /-TODO--
+
+        params = `/${ base_path }/${ params }`;
       } else {
         params = `/${ params }`;
       }

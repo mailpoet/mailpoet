@@ -277,7 +277,9 @@ const NewsletterListNotification = React.createClass({
           { this.renderSettings(newsletter) }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('history') }>
-          <a href="#TODO">{ MailPoet.I18n.t('viewHistory') }</a>
+          <Link
+            to={ `/notification/history/${ newsletter.id }` }
+          >{ MailPoet.I18n.t('viewHistory') }</Link>
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>

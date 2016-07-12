@@ -245,6 +245,7 @@ class Newsletters {
   }
 
   function listing($data = array()) {
+
     $listing = new Listing\Handler(
       '\MailPoet\Models\Newsletter',
       $data
@@ -266,7 +267,11 @@ class Newsletters {
       } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
           ->withOptions()
+          ->withSegments();
+      } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION_HISTORY) {
+        $newsletter
           ->withSegments()
+          ->withSendingQueue()
           ->withStatistics();
       }
 
