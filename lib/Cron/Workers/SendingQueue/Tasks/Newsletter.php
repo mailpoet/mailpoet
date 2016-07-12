@@ -57,8 +57,8 @@ class Newsletter {
     if($newsletter['type'] === 'notification' && !$newsletter_contains_posts) {
       return false;
     }
-    // save all posts
-    $newsletter = PostsTask::extractAndSave($newsletter);
+    // extract and save newsletter posts
+    PostsTask::extractAndSave($newsletter);
     return $newsletter;
   }
 

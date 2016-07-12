@@ -87,7 +87,7 @@ class Scheduler {
     if($newsletter->intervalType !== NewsletterScheduler::INTERVAL_IMMEDIATELY) {
       $new_queue = SendingQueue::create();
       $new_queue->newsletter_id = $newsletter->id;
-      $new_queue->status = NewsletterScheduler::STATUS_SCHEDULED;
+      $new_queue->status = SendingQueue::STATUS_SCHEDULED;
       self::deleteQueueOrUpdateNextRunDate($new_queue, $newsletter);
     }
     $queue->subscribers = serialize(
