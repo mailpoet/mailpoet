@@ -23,8 +23,19 @@ class Renderer {
 
   function render() {
     $newsletter = $this->newsletter;
-    $rendered_body = $this->renderBody($newsletter['body']['content']);
-    $rendered_styles = $this->renderStyles($newsletter['body']['globalStyles']);
+    $body = (is_array($newsletter['body']))
+      ? $newsletter['body']
+      : array();
+    $content = (array_key_exists('content', $body))
+      ? $body['content']
+      : array();
+    $styles = (array_key_exists('globalStyles', $body))
+      ? $body['globalStyles']
+      : array();
+
+    $rendered_body = $this->renderBody($content);
+    $rendered_styles = $this->renderStyles($styles);
+
     $template = $this->injectContentIntoTemplate($this->template, array(
       $newsletter['subject'],
       $rendered_styles,
@@ -33,6 +44,7 @@ class Renderer {
     ));
     $template = $this->inlineCSSStyles($template);
     $template = $this->postProcessTemplate($template);
+
     return array(
       'html' => $template,
       'text' => $this->renderTextVersion($template)
@@ -40,6 +52,10 @@ class Renderer {
   }
 
   function renderBody($content) {
+    $blocks = (array_key_exists('blocks', $content))
+      ? $content['blocks']
+      : array();
+
     $rendered_content = array_map(function($content_block) {
       $column_count = count($content_block['blocks']);
       $column_data = $this->blocks_renderer->render(
@@ -51,7 +67,7 @@ class Renderer {
         $column_count,
         $column_data
       );
-    }, $content['blocks']);
+    }, $blocks);
     return implode('', $rendered_content);
   }
 
