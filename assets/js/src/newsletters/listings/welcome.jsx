@@ -344,6 +344,7 @@ const NewsletterListWelcome = React.createClass({
           params={ this.props.params }
           endpoint="newsletters"
           tab="welcome"
+          base_url="welcome"
           onRenderItem={ this.renderItem }
           columns={ columns }
           bulk_actions={ bulk_actions }

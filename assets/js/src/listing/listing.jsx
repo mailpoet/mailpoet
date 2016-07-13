@@ -1,6 +1,7 @@
 import MailPoet from 'mailpoet'
 import jQuery from 'jquery'
 import React from 'react'
+import _ from 'underscore'
 import { Router, Link } from 'react-router'
 import classNames from 'classnames'
 import ListingBulkActions from 'listing/bulk_actions.jsx'
@@ -13,7 +14,7 @@ import ListingFilters from 'listing/filters.jsx'
 const ListingItem = React.createClass({
   getInitialState: function() {
     return {
-      toggled: true
+      expanded: false
     };
   },
   handleSelectItem: function(e) {
@@ -34,7 +35,7 @@ const ListingItem = React.createClass({
     this.props.onDeleteItem(id);
   },
   handleToggleItem: function(id) {
-    this.setState({ toggled: !this.state.toggled });
+    this.setState({ expanded: !this.state.expanded });
   },
   render: function() {
     var checkbox = false;
@@ -182,7 +183,7 @@ const ListingItem = React.createClass({
       );
     }
 
-    const row_classes = classNames({ 'is-expanded': !this.state.toggled });
+    const row_classes = classNames({ 'is-expanded': this.state.expanded });
 
     return (
       <tr className={ row_classes }>
@@ -303,13 +304,12 @@ const Listing = React.createClass({
   getParam: function(param) {
     const regex = /(.*)\[(.*)\]/;
     const matches = regex.exec(param);
-    return [matches[1], matches[2]]
+    return [matches[1], matches[2]];
   },
   initWithParams: function(params) {
     let state = this.getInitialState();
-
      // check for url params
-    if (params.splat !== undefined) {
+    if (params.splat) {
       params.splat.split('/').map(param => {
         let [key, value] = this.getParam(param);
         switch(key) {
@@ -348,6 +348,16 @@ const Listing = React.createClass({
       this.getItems();
     }.bind(this));
   },
+  getExtraParams: function() {
+    // get all route parameters (without the "splat")
+    let extras = _.omit(this.props.params, 'splat');
+    // TO REFACTOR:
+    // set the "tab" in the routes definition
+    if (this.props.tab) {
+      extras.tab = this.props.tab;
+    }
+    return extras;
+  },
   setParams: function() {
     if (this.props.location) {
       let params = Object.keys(this.state)
@@ -378,25 +388,37 @@ const Listing = React.createClass({
         .filter(key => { return (key !== undefined) })
         .join('/');
 
-      // prepend url with "tab" if specified
-      if (this.props.tab !== undefined || this.props.base_path !== undefined) {
-        let base_path = (this.props.base_path !== undefined)
-          ? this.props.base_path
-          : this.props.tab;
+      // set url
+      let url = this.getUrlWithParams(params);
 
-        // TODO: add method to replace dynamic path elements
-        base_path = base_path.replace(':id', this.props.params.id);
-        // /-TODO--
-
-        params = `/${ base_path }/${ params }`;
-      } else {
-        params = `/${ params }`;
-      }
-
-      if (this.props.location.pathname !== params) {
-        this.context.router.push(`${params}`);
+      if (this.props.location.pathname !== url) {
+        this.context.router.push(`${url}`);
       }
     }
+  },
+  getUrlWithParams: function(params) {
+    let base_url = (this.props.base_url !== undefined)
+      ? this.props.base_url
+      : null;
+
+    if (base_url !== null) {
+      base_url = this.setBaseUrlParams(base_url);
+      return `/${ base_url }/${ params }`;
+    } else {
+      return `/${ params }`;
+    }
+  },
+  setBaseUrlParams: function(base_url) {
+    if (base_url.contains(':') === true) {
+      const params = this.getExtraParams();
+      Object.keys(params).map((key) => {
+        if (base_url.contains(':'+key)) {
+          base_url = base_url.replace(':'+key, params[key]);
+        }
+      });
+    }
+
+    return base_url;
   },
   componentDidMount: function() {
     if (this.isMounted()) {
@@ -424,7 +446,7 @@ const Listing = React.createClass({
         endpoint: this.props.endpoint,
         action: 'listing',
         data: {
-          tab: (this.props.tab) ? this.props.tab : '',
+          params: this.getExtraParams(),
           offset: (this.state.page - 1) * this.state.limit,
           limit: this.state.limit,
           group: this.state.group,
@@ -539,7 +561,7 @@ const Listing = React.createClass({
 
     var data = params || {};
     data.listing = {
-      tab: (this.props.tab) ? this.props.tab : '',
+      params: this.getExtraParams(),
       offset: 0,
       limit: 0,
       filter: this.state.filter,

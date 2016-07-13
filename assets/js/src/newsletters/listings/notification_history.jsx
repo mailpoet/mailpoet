@@ -192,8 +192,8 @@ const NewsletterListNotificationHistory = React.createClass({
         <td className={ rowClasses }>
           <strong>
             <a
-              className="row-title"
-              href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }
+              href={ newsletter.preview_url }
+              target="_blank"
             >{ newsletter.subject }</a>
           </strong>
           { actions }
@@ -235,7 +235,7 @@ const NewsletterListNotificationHistory = React.createClass({
           params={ this.props.params }
           endpoint="newsletters"
           tab="notification_history"
-          base_path="notification/history/:id"
+          base_url="notification/history/:parent_id"
           onRenderItem={ this.renderItem }
           columns={columns}
           item_actions={ newsletter_actions }

@@ -20,7 +20,7 @@ const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
 const App = React.createClass({
   render() {
-    return this.props.children
+    return this.props.children;
   }
 });
 
@@ -32,21 +32,16 @@ if(container) {
       <Route path="/" component={ App }>
         <IndexRedirect to="standard" />
         {/* Listings */}
-        <Route name="listing/standard" path="standard" component={ NewsletterListStandard } />
-        <Route name="listing/welcome" path="welcome" component={ NewsletterListWelcome } />
-        <Route name="listing/notification" path="notification" component={ NewsletterListNotification } />
-        <Route name="listing/notification/history" path="notification/history/:id" component={ NewsletterListNotificationHistory } />
-
-        <Route path="standard/*" component={ NewsletterListStandard } />
-        <Route path="welcome/*" component={ NewsletterListWelcome } />
-        <Route path="notification/history/:id/*" component={ NewsletterListNotificationHistory } />
-        <Route path="notification/*" component={ NewsletterListNotification } />
+        <Route path="standard(/)**" params={{ tab: 'standard' }} component={ NewsletterListStandard } />
+        <Route path="welcome(/)**" component={ NewsletterListWelcome } />
+        <Route path="notification/history/:parent_id(/)**" component={ NewsletterListNotificationHistory } />
+        <Route path="notification(/)**" component={ NewsletterListNotification } />
         {/* Newsletter: type selection */}
         <Route path="new" component={ NewsletterTypes } />
         {/* New newsletter: types */}
-        <Route name="new/standard" path="new/standard" component={ NewsletterTypeStandard } />
-        <Route name="new/welcome" path="new/welcome" component={ NewsletterTypeWelcome } />
-        <Route name="new/notification" path="new/notification" component={ NewsletterTypeNotification } />
+        <Route path="new/standard" component={ NewsletterTypeStandard } />
+        <Route path="new/welcome" component={ NewsletterTypeWelcome } />
+        <Route path="new/notification" component={ NewsletterTypeNotification } />
         {/* Template selection */}
         <Route name="template" path="template/:id" component={ NewsletterTemplates } />
         {/* Sending options */}

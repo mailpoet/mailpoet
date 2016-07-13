@@ -20,7 +20,6 @@ class Newsletter extends Model {
   // automatic newsletters status
   const STATUS_ACTIVE = 'active';
 
-
   function __construct() {
     parent::__construct();
 
@@ -260,7 +259,7 @@ class Newsletter extends Model {
   }
 
   static function filters($data = array()) {
-    $type = isset($data['tab']) ? $data['tab'] : null;
+    $type = isset($data['params']['tab']) ? $data['params']['tab'] : null;
 
     // newsletter types without filters
     if(in_array($type, array(
@@ -299,18 +298,32 @@ class Newsletter extends Model {
   }
 
   static function filterBy($orm, $data = array()) {
-    $type = isset($data['tab']) ? $data['tab'] : null;
-
+    // apply filters
     if(!empty($data['filter'])) {
       foreach($data['filter'] as $key => $value) {
         if($key === 'segment') {
           $segment = Segment::findOne($value);
           if($segment !== false) {
-            $orm = $segment->newsletters()->filter('filterType', $type);
+            $orm = $segment->newsletters();
           }
         }
       }
     }
+
+    // filter by type
+    $type = isset($data['params']['tab']) ? $data['params']['tab'] : null;
+    if($type !== null) {
+      $orm->filter('filterType', $type);
+    }
+
+    // filter by parent id
+    $parent_id = isset($data['params']['parent_id'])
+      ? (int)$data['params']['parent_id']
+      : null;
+    if($parent_id !== null) {
+      $orm->where('parent_id', $parent_id);
+    }
+
     return $orm;
   }
 
@@ -345,7 +358,7 @@ class Newsletter extends Model {
   }
 
   static function groups($data = array()) {
-    $type = isset($data['tab']) ? $data['tab'] : null;
+    $type = isset($data['params']['tab']) ? $data['params']['tab'] : null;
 
     // newsletter types without groups
     if(in_array($type, array(
@@ -494,7 +507,6 @@ class Newsletter extends Model {
         'updated_at',
         'deleted_at'
       ))
-      ->filter('filterType', $data['tab'])
       ->filter('filterBy', $data)
       ->filter('groupBy', $data)
       ->filter('search', $data['search']);

@@ -302,6 +302,7 @@ const NewsletterListNotification = React.createClass({
           params={ this.props.params }
           endpoint="newsletters"
           tab="notification"
+          base_url="notification"
           onRenderItem={ this.renderItem }
           columns={ columns }
           bulk_actions={ bulk_actions }
