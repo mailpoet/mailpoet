@@ -21,6 +21,52 @@
         </p>
       </td>
     </tr>
+    <!-- task scheduler -->
+    <tr>
+      <th scope="row">
+        <label>
+          <%= __('Newsletter task scheduler') %>
+        </label>
+        <p class="description">
+          <%= __('Select what will activate your newsletter queue.') %>
+          <a href="#TODO"
+             target="_blank"
+          ><%= __('Read more.') %></a>
+        </p>
+      </th>
+      <td>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="task_scheduler[enabled]"
+              value=""
+              <% if not(settings.task_scheduler.enabled) %>
+              checked="checked"
+              <% endif %>
+            /><%= __('Visitors to your website (recommended)') %>
+          </label>
+        </p>
+        <p>
+          <label>
+            <input
+              type="radio"
+              name="task_scheduler[enabled]"
+              value="1"
+              <% if (settings.task_scheduler.enabled) %>
+                checked="checked"
+                <% endif %>
+              /><%= __("MailPoet's own script. Doesn't work with [link]these hosts[/link].")
+                    |replace({
+                      '[link]': '<a target="_blank" href="#TODO">',
+                      '[/link]': '</a>'
+                      })
+                    |raw
+                 %>
+          </label>
+        </p>
+      </td>
+    </tr>
     <!-- link tracking -->
     <tr>
       <th scope="row">
@@ -35,23 +81,23 @@
         <p>
           <label>
             <input
-                    type="radio"
-                    name="tracking[enabled]"
-                    value="1"
-            <% if(settings.tracking.enabled) %>
-            checked="checked"
-            <% endif %>
+              type="radio"
+              name="tracking[enabled]"
+              value="1"
+              <% if(settings.tracking.enabled) %>
+              checked="checked"
+              <% endif %>
             /><%= __('Yes') %>
           </label>
           &nbsp;
           <label>
             <input
-                    type="radio"
-                    name="tracking[enabled]"
-                    value=""
-            <% if not(settings.tracking.enabled) %>
-            checked="checked"
-            <% endif %>
+              type="radio"
+              name="tracking[enabled]"
+              value=""
+              <% if not(settings.tracking.enabled) %>
+              checked="checked"
+              <% endif %>
             /><%= __('No') %>
           </label>
         </p>
