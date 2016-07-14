@@ -8,7 +8,7 @@
 
 <!--  number of emails per day -->
 <%=
-  __("That's <strong>%1$s emails</strong> per day.")
+  __("That's <strong>%1$s emails</strong> per day")
   | format('{{ daily_emails }}')
   | raw
 %>
@@ -17,7 +17,7 @@
   <br /><br />
   <span style="color: #d54e21;">
     <%=
-      __("That's %1$s emails per second. <strong>We highly recommend to send 1 email per second at most.</strong> This is the time MailPoet needs to process and send a single email from most hosts. <strong>Alternatively, send with MailPoet which can be 50 times faster.</strong>")
+      __("That's %1$s emails per second. <strong>We highly recommend to send 1 email per second, at the absolute maximum.</strong> MailPoet needs at least one second to process and send a single email (on most hosts.) <strong>Alternatively, send with MailPoet, which can be up to 50 times faster.</strong>")
       | format('{{ emails_per_second }}')
       | raw
     %>

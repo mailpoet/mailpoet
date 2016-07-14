@@ -8,7 +8,7 @@
   <h2>
     <input
       type="text"
-      placeholder="<%= __('Click here to change the name!') %>"
+      placeholder="<%= __('Click here to change the name') %>"
       id="mailpoet_form_name"
       value="<%= form.name %>"
     />
@@ -52,7 +52,7 @@
               <select
                 id="mailpoet_form_segments"
                 name="segments"
-                data-placeholder="<%= __('Please choose a list') %>"
+                data-placeholder="<%= __('Please select a list') %>"
                 multiple
                 data-parsley-required-message="<%= __('Please select a list.') %>"
                 required
@@ -598,7 +598,7 @@
           var name = $(this).siblings('.mailpoet_form_field').attr('wysija_name');
 
           if(window.confirm(
-            "<%= __('Delete this field for all your subscribers?') %>"
+            "<%= __('This field will be deleted for all your subscribers. Are you sure?') %>"
           )) {
             MailPoet.Ajax.post({
               endpoint: 'customFields',

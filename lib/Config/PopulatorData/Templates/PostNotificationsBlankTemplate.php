@@ -13,8 +13,8 @@ class PostNotificationsBlankTemplate {
 
   function get() {
     return array(
-      'name' => __("Post Notifications Blank Template"),
-      'description' => __("A simple and plain post notifications template for you to create your own email from."),
+      'name' => __("Blank Post Notifications Template"),
+      'description' => __("A simple post notifications template. Customize it and make it your own!"),
       'readonly' => 0,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -72,7 +72,7 @@ class PostNotificationsBlankTemplate {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<p style=\"text-align: right;\">Your&nbsp;posts below are generated using our <strong>Automated Latest Content widget</strong> in the right sidebar.</p>")
+                    "text" => __("<p style=\"text-align: right;\">Your&nbsp;posts below are generated using our <strong>Automated Latest Content widget</strong> on the right sidebar.</p>")
                   )
                 )
               ),

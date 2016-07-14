@@ -9,10 +9,10 @@ class NewsletterOptionField extends Model {
   function __construct() {
     parent::__construct();
     $this->addValidations('name', array(
-      'required' => __('Please specify a name.')
+      'required' => __('Please specify a name')
     ));
     $this->addValidations('newsletter_type', array(
-      'required' => __('Please specify a newsletter type.')
+      'required' => __('Please specify a newsletter type')
     ));
   }
 

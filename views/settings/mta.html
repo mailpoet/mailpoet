@@ -55,7 +55,7 @@
     </h3>
 
     <p class="mailpoet_description">
-      <strong><%= __('Currently in closed beta.') %></strong>
+      <strong><%= __('Currently in Closed Beta') %></strong>
       <br />
       <%= __('[link]Sign up to our newsletter[/link] to get our latest news on our sending service plus other useful tips and tricks.')
         | replace({
@@ -83,9 +83,9 @@
     <h3><%= __('Your web host / web server') %></h3>
 
     <p class="mailpoet_description">
-      <strong><%= __('Free, but not recommended.') %></strong>
+      <strong><%= __('Free, but not recommended') %></strong>
       <br />
-      <%= __('Web hosts generally have a bad reputation as a sender. Your newsletter will probably be considered spam.') %>
+      <%= __('Web hosts generally have a bad reputation as a sender. Your newsletter will probably be considered spam') %>
     </p>
 
     <div class="mailpoet_status">
@@ -105,9 +105,9 @@
     <h3><%= __('Third-party') %></h3>
 
     <p class="mailpoet_description">
-      <strong><%= __('Currently the best solution.') %></strong>
+      <strong><%= __('Currently the best solution') %></strong>
       <br />
-      <%= __('Send with an external email provider. This is usually not free.') %>
+      <%= __('Send with an external email provider. This is usually not free') %>
     </p>
 
     <div class="mailpoet_status">
@@ -245,9 +245,9 @@
               </p>
               <br />
               <p>
-                <%= __('<strong>Warning!</strong> Sending more than the recommended amount of emails? You may break the terms of your web host or provider.') %>'
+                <%= __('<strong>Warning!</strong> Sending more than the recommended amount of emails? You may break the terms of your web host or provider!') %>'
                 <br />
-                <%= __('Please ask your host for the maximum number of emails you are allowed to send per day.') %>
+                <%= __('Please ask your host for the maximum number of emails you are allowed to send per day') %>
               </p>
             </div>
           </td>
@@ -546,7 +546,7 @@
               <%= __('Authentication') %>
             </label>
             <p class="description">
-              <%= __('Leave this option set to Yes. Only a tiny portion of SMTP services prefer Authentication to be turned off.') %>
+              <%= __('Leave this option set to Yes. Only a tiny portion of SMTP services prefer Authentication to be turned off') %>
             </p>
           </th>
           <td>
@@ -588,12 +588,12 @@
             <%= __('SPF Signature (Highly recommended!)') %>
           </label>
           <p class="description">
-            <%= __("Improves your delivery rate by verifying that you're allowed to send emails from your domain.") %>
+            <%= __("Improves your delivery rate by verifying that you're allowed to send emails from your domain") %>
           </p>
         </th>
         <td>
           <p>
-            <%= __("SPF is set up in your DNS. Read your host's support documentation for more information.") %>
+            <%= __("SPF is set up in your DNS. Read your host's support documentation for more information") %>
           </p>
         </td>
       </tr>
@@ -631,7 +631,7 @@
             <a
               href="javascript:;"
               class="mailpoet_mta_setup_cancel"
-            ><%= __('or cancel.') %></a>
+            ><%= __('or Cancel') %></a>
           </p>
         </th>
         <td></td>
@@ -688,9 +688,9 @@
           data: {
             mailer: mailer,
             newsletter: {
-              subject: "<%= __('This is a sending method test.') %>",
+              subject: "<%= __('This is a Sending Method Test') %>",
               body: {
-                text: "<%= __('Yup, it works. You can start blasting away emails to the moon.') %>"
+                text: "<%= __('Yup, it works! You can start blasting away emails to the moon.') %>"
               }
             },
             subscriber: {
@@ -709,7 +709,7 @@
           } else {
             if (response.errors) {
               MailPoet.Notice.error(
-                "<%= __('The email could not be sent.') %> " + response.errors,
+                "<%= __('The email could not be sent: ') %> " + response.errors,
                 { scroll: true }
               );
             }

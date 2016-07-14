@@ -254,7 +254,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h2>New and Improved Hours!</h2>\n<p></p>\n<p>Frank's is now open even later, so you can get your caffeine fix all day long! Here's our new opening hours:</p>\n<p></p>\n<ul>\n<li>Monday - Thursday: 6am - 12am</li>\n<li>Friday - Saturday: 6am - 1:30am</li>\n<li>Sunday: 7:30am - 11pm</li>\n</ul>")
+                    "text" => __("<h2>New and Improved Hours!</h2>\n<p></p>\n<p>Frank's is now open even later, so you can get your caffeine fix all day (and night) long! Here's our new opening hours:</p>\n<p></p>\n<ul>\n<li>Monday - Thursday: 6am - 12am</li>\n<li>Friday - Saturday: 6am - 1:30am</li>\n<li>Sunday: 7:30am - 11pm</li>\n</ul>")
                   )
                 )
               )

@@ -80,19 +80,19 @@
           }).done(function(response) {
             if(response === true) {
               MailPoet.Notice.success(
-                "<%= __('Settings saved.') %>",
+                "<%= __('Settings saved') %>",
                 { scroll: true }
               );
             } else {
               MailPoet.Notice.error(
-                "<%= __('Settings could not be saved.') %>",
+                "<%= __('Settings could not be saved') %>",
                 { scroll: true }
               );
             }
             MailPoet.Modal.loading(false);
           }).error(function(errors) {
             MailPoet.Notice.error(
-              "<%= __('An error occurred. Please check your settings.') %>",
+              "<%= __('An error occurred. Please check the settings.') %>",
               { scroll: true }
             );
             MailPoet.Modal.loading(false);

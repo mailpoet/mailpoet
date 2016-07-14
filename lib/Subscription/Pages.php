@@ -161,21 +161,21 @@ class Pages {
   private function getConfirmTitle() {
     if($this->isPreview()) {
       $title = sprintf(
-        __("You've subscribed to: %s"),
+        __("You have subscribed to: %s"),
         'demo 1, demo 2'
       );
     } else if($this->subscriber === false) {
-      $title = __('Your confirmation link expired, please subscribe again.');
+      $title = __('Your confirmation link expired, please subscribe again');
     } else {
       $segment_names = array_map(function($segment) {
         return $segment->name;
       }, $this->subscriber->segments()->findMany());
 
       if(empty($segment_names)) {
-        $title = __("You're now subscribed!");
+        $title = __("You are now subscribed!");
       } else {
         $title = sprintf(
-          __("You've subscribed to: %s"),
+          __("You have subscribed to: %s"),
           join(', ', $segment_names)
         );
       }

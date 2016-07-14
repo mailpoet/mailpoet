@@ -33,7 +33,7 @@ class SendingQueue {
     if($newsletter === false) {
       return array(
         'result' => false,
-        'errors' => array(__('This newsletter does not exist.'))
+        'errors' => array(__('This newsletter does not exist'))
       );
     }
 
@@ -51,7 +51,7 @@ class SendingQueue {
         return array(
           'result' => true,
           'data' => array(
-            'message' => __('Your welcome email has been activated.')
+            'message' => __('Your welcome email has been activated')
           )
         );
       }
@@ -71,7 +71,7 @@ class SendingQueue {
     if(!empty($queue)) {
       return array(
         'result' => false,
-        'errors' => array(__('This newsletter is already being sent.'))
+        'errors' => array(__('This newsletter is already being sent'))
       );
     }
 
@@ -90,7 +90,7 @@ class SendingQueue {
       return array(
         'result' => true,
         'data' => array(
-          'message' => __('Your post notification has been activated.')
+          'message' => __('Your post notification has been activated')
         )
       );
     }
@@ -107,7 +107,7 @@ class SendingQueue {
       $queue->subscribers = null;
       $queue->count_total = $queue->count_to_process = 0;
 
-      $message = __('The newsletter has been scheduled.');
+      $message = __('The newsletter has been scheduled');
     } else {
       $segments = $newsletter->segments()->findArray();
       $segment_ids = array_map(function($segment) {
@@ -120,7 +120,7 @@ class SendingQueue {
       if(!count($subscribers)) {
         return array(
           'result' => false,
-          'errors' => array(__('There are no subscribers.'))
+          'errors' => array(__('There are no subscribers'))
         );
       }
       $queue->status = null;
