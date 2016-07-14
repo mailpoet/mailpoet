@@ -72,7 +72,7 @@ class Populator {
     if(!Setting::getValue('task_scheduler')) {
       // disable task scheduler (cron) be default
       Setting::setValue('task_scheduler', array(
-        'enabled' => false
+        'method' => 'WordPress'
       ));
     }
 

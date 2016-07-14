@@ -39,9 +39,9 @@
           <label>
             <input
               type="radio"
-              name="task_scheduler[enabled]"
-              value=""
-              <% if not(settings.task_scheduler.enabled) %>
+              name="task_scheduler[method]"
+              value="WordPress"
+              <% if (settings.task_scheduler.method == 'WordPress') %>
               checked="checked"
               <% endif %>
             /><%= __('Visitors to your website (recommended)') %>
@@ -51,9 +51,9 @@
           <label>
             <input
               type="radio"
-              name="task_scheduler[enabled]"
-              value="1"
-              <% if (settings.task_scheduler.enabled) %>
+              name="task_scheduler[method]"
+              value="MailPoet"
+              <% if (settings.task_scheduler.method == 'MailPoet') %>
                 checked="checked"
                 <% endif %>
               /><%= __("MailPoet's own script. Doesn't work with [link]these hosts[/link].")
