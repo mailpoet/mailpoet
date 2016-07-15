@@ -56,7 +56,13 @@ class Newsletter extends Model {
     return $this;
   }
 
-  function duplicate($data = array()) {
+  function duplicate(
+    $data = array(),
+    $reset_status = true,
+    $reset_timestamps = true,
+    $duplicate_options = true,
+    $duplicate_segments = true
+  ) {
     // get current newsletter's data as an array
     $newsletter_data = $this->asArray();
 
@@ -69,45 +75,68 @@ class Newsletter extends Model {
     $duplicate = self::create();
     $duplicate->hydrate($data);
 
-    // reset timestamps
-    $duplicate->set_expr('created_at', 'NOW()');
-    $duplicate->set_expr('updated_at', 'NOW()');
-    $duplicate->set_expr('deleted_at', 'NULL');
+    if($reset_timestamps) {
+      // reset timestamps
+      $duplicate->set_expr('created_at', 'NOW()');
+      $duplicate->set_expr('updated_at', 'NOW()');
+      $duplicate->set_expr('deleted_at', 'NULL');
+    }
 
-    // reset status
-    $duplicate->set('status', self::STATUS_DRAFT);
+    if($reset_status){
+      // reset status
+      $duplicate->set('status', self::STATUS_DRAFT);
+    }
 
     $duplicate->save();
 
     if($duplicate->getErrors() === false) {
-      // create relationships between duplicate and segments
-      $segments = $this->segments()->findArray();
+      if($duplicate_segments) {
+        // create relationships between duplicate and segments
+        $segments = $this->segments()
+          ->findArray();
 
-      if(!empty($segments)) {
-        foreach($segments as $segment) {
-          $relation = NewsletterSegment::create();
-          $relation->segment_id = $segment['id'];
-          $relation->newsletter_id = $duplicate->id;
-          $relation->save();
+        if(!empty($segments)) {
+          foreach($segments as $segment) {
+            $relation = NewsletterSegment::create();
+            $relation->segment_id = $segment['id'];
+            $relation->newsletter_id = $duplicate->id;
+            $relation->save();
+          }
         }
       }
 
-      // duplicate options
-      $options = NewsletterOption::where('newsletter_id', $this->id)
-        ->findArray();
+      if($duplicate_options) {
+        // duplicate options
+        $options = NewsletterOption::where('newsletter_id', $this->id)
+          ->findArray();
 
-      if(!empty($options)) {
-        foreach($options as $option) {
-          $relation = NewsletterOption::create();
-          $relation->newsletter_id = $duplicate->id;
-          $relation->option_field_id = $option['option_field_id'];
-          $relation->value = $option['value'];
-          $relation->save();
+        if(!empty($options)) {
+          foreach($options as $option) {
+            $relation = NewsletterOption::create();
+            $relation->newsletter_id = $duplicate->id;
+            $relation->option_field_id = $option['option_field_id'];
+            $relation->value = $option['value'];
+            $relation->save();
+          }
         }
       }
     }
 
     return $duplicate;
+  }
+
+  function createNotificationHistory() {
+    return $this->duplicate(
+      array(
+        'parent_id' => $this->id,
+        'type' => self::TYPE_NOTIFICATION_HISTORY,
+        'status' => self::STATUS_SENDING
+      ),
+      $reset_status = false,
+      $reset_timestamps = true,
+      $duplicate_options = false,
+      $duplicate_segments = true
+    );
   }
 
   function asArray() {
