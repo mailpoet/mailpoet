@@ -7,7 +7,7 @@
           <%= __('Bounce email') %>
         </label>
         <p class="description">
-          <%= __('Your bounced emails will be sent to this address.') %>
+          <%= __('Your bounced emails will be sent to this address') %>
         </p>
       </th>
       <td>
@@ -74,7 +74,7 @@
           <%= __('Open and click tracking') %>
         </label>
         <p class="description">
-          <%= __('Some users prefer to not track their subscribers.') %>
+          <%= __('Some users prefer to not track their subscribers') %>
         </p>
       </th>
       <td>
@@ -110,7 +110,7 @@
           <%= __('Share anonymous data') %>
         </label>
         <p class="description">
-          <%= __('Share anonymous data and help us improve the plugin! We appreciate your help.') %>
+          <%= __('Share anonymous data and help us improve the plugin. We appreciate your help!') %>
           <a
             href="http://support.mailpoet.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=advanced_settings"
             target="_blank"
@@ -148,7 +148,7 @@
       <th scope="row">
         <label><%= __('Reinstall from scratch') %></label>
         <p class="description">
-          <%= __('Want to start from the beginning? This will completely wipe out MailPoet and reinstall from scratch.') %>
+          <%= __('Want to start over? This will completely wipe out MailPoet and reinstall from scratch.') %>
         </p>
       </th>
       <td>
@@ -168,7 +168,7 @@
     $(function() {
       $('#mailpoet_reinstall').on('click', function() {
         if(confirm(
-          "<%= __('If you continue, all of your current MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc...)') %>"
+          "<%= __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.)') %>"
         )) {
           MailPoet.Modal.loading(true);
           MailPoet.Ajax.post({

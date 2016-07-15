@@ -165,7 +165,7 @@ class Newsletters {
     if(!isset($data['body'])) {
       return array(
         'result' => false,
-        'errors' => array(__('Newsletter data is missing.'))
+        'errors' => array(__('Newsletter data is missing'))
       );
     }
     $newsletter_id = (isset($data['id'])) ? (int)$data['id'] : null;
@@ -173,7 +173,7 @@ class Newsletters {
     if(!$newsletter) {
       return array(
         'result' => false,
-        'errors' => array(__('Newsletter could not be read.'))
+        'errors' => array(__('Newsletter could not be read'))
       );
     }
     $newsletter->body = $data['body'];

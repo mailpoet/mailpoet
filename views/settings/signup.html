@@ -151,7 +151,7 @@
           <%= __('Confirmation page') %>
         </label>
         <p class="description">
-          <%= __('When subscribers click on the activation link, they are redirected to this page.') %>
+          <%= __('When subscribers click on the activation link, they are redirected to this page') %>
         </p>
       </th>
       <td>
@@ -192,9 +192,9 @@
         var result = false;
 
         if(~~($(this).val()) === 1) {
-          result = confirm("<%= __('Subscribers will need to activate their subscription via email in order to receive your newsletters. This is highly recommended.') %>");
+          result = confirm("<%= __('Subscribers will need to activate their subscription via email in order to receive your newsletters. This is highly recommended!') %>");
         } else {
-          result = confirm("<%= __('Unconfirmed subscribers will receive your newsletters from without needing to activate their subscriptions.') %>");
+          result = confirm("<%= __('Unconfirmed subscribers will receive your newsletters from without needing to activate their subscriptions. This is not recommended!') %>");
         }
         // if the user confirmed changing the signup confirmation (yes/no)
         if(result === true) {

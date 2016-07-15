@@ -69,7 +69,7 @@ class Subscribers {
     $form = Form::findOne($data['form_id']);
     unset($data['form_id']);
     if($form === false || !$form->id()) {
-      $errors[] = __('This form does not exist.');
+      $errors[] = __('This form does not exist');
     }
 
     $segment_ids = (!empty($data['segments'])

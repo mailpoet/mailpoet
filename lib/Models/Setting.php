@@ -17,7 +17,7 @@ class Setting extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('Please specify a name.')
+      'required' => __('Please specify a name')
     ));
   }
 

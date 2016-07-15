@@ -84,7 +84,7 @@ class Mailer {
         );
         break;
       default:
-        throw new \Exception(__('Mailing method does not exist.'));
+        throw new \Exception(__('Mailing method does not exist'));
     }
     return $mailer_instance;
   }
@@ -92,7 +92,7 @@ class Mailer {
   function getMailer($mailer = false) {
     if(!$mailer) {
       $mailer = Setting::getValue('mta');
-      if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured.'));
+      if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured'));
     }
     $mailer['class'] = 'MailPoet\\Mailer\\Methods\\' . $mailer['method'];
     return $mailer;
@@ -101,7 +101,7 @@ class Mailer {
   function getSender($sender = false) {
     if(empty($sender)) {
       $sender = Setting::getValue('sender', array());
-      if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured.'));
+      if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured'));
     }
     return array(
       'from_name' => $sender['name'],

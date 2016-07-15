@@ -14,7 +14,7 @@ class WelcomeTemplate {
   function get() {
     return array(
       'name' => __("Welcome Email Example"),
-      'description' => __("A really simple welcome email idea to help you say hello your new subscribers."),
+      'description' => __("A simple welcome email idea to help welcome your new subscribers."),
       'readonly' => 0,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -101,7 +101,7 @@ class WelcomeTemplate {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>What's in a Welcome Email?&nbsp;</strong></h1>\n<p>How about thanking the person and telling them what they can expect from signing up as a subscriber,&nbsp;for example, how frequently they might receive newsletters from you and what type of content. If you also write a blog, why not share a few of your most recent posts using Automated Latest Content?</p>\n<p>Get help with your welcome email in our blog post: <a href=\"http://www.mailpoet.com/improve-your-signup-welcome-email/\">http://www.mailpoet.com/improve-your-signup-welcome-email/</a></p>\n<p></p>")
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>What's should you put in a Welcome Email?&nbsp;</strong></h1>\n<p>We recommend thanking the person (for subscribing!) and telling them what they can expect in the future. &nbsp; For example, how the type of content you'll be sending (and how often you'll be sending it.) If you have a blog, why not share a few of your recent posts using the Automated Latest Content widget?</p>\n<p>Get some more tips on your Welcome Email in our blog post: <a href=\"http://www.mailpoet.com/improve-your-signup-welcome-email/\">http://www.mailpoet.com/improve-your-signup-welcome-email/</a></p>\n<p></p>")
                   )
                 )
               )

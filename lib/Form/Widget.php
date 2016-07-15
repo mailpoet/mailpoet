@@ -17,7 +17,7 @@ class Widget extends \WP_Widget {
       'mailpoet_form',
       __('MailPoet Form'),
       array(
-        'description' => __('Add a newsletter subscription form.')
+        'description' => __('Add a newsletter subscription form')
       )
     );
   }

@@ -34,7 +34,7 @@ abstract class Base {
     if(in_array($block['type'], array('radio', 'checkbox'))) {
       $rules['group'] = 'custom_field_'.$block['id'];
       $rules['errors-container'] = '.mailpoet_error_'.$block['id'];
-      $rules['required-message'] = __('Please select at least one option.');
+      $rules['required-message'] = __('Please select at least one option');
     }
 
     $validation = array();

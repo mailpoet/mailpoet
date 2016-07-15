@@ -43,7 +43,7 @@ class Mailer {
   function getMailerConfig() {
     $mta_config = Setting::getValue('mta');
     if(!$mta_config) {
-      throw new \Exception(__('Mailer is not configured.'));
+      throw new \Exception(__('Mailer is not configured'));
     }
     return $mta_config;
   }
@@ -90,7 +90,7 @@ class Mailer {
     if($this->mta_log['sent'] === $frequency_limit &&
       $elapsed_time <= $frequency_interval
     ) {
-      throw new \Exception(__('Sending frequency limit has been reached.'));
+      throw new \Exception(__('Sending frequency limit has been reached'));
     }
     if($elapsed_time > $frequency_interval) {
       $this->mta_log = array(

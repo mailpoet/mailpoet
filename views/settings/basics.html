@@ -6,7 +6,7 @@
           <%= __("Default sender") %>
         </label>
         <p class="description">
-          <%= __('These email addresses will be the defaults for each new email created.') %>
+          <%= __('These email addresses will be selected by default for each new email') %>
         </p>
       </th>
       <td>
@@ -47,7 +47,7 @@
           <%= __("Email notifications") %>
         </label>
         <p class="description">
-          <%= __('These email addresses will receive notifications (separate each address with a comma).') %>
+          <%= __('These email addresses will receive notifications (separate each address with a comma)') %>
         </p>
       </th>
       <td>
@@ -88,7 +88,7 @@
           <%= __('Subscribe in comments') %>
         </label>
         <p class="description">
-          <%= __('Visitors that comment on a post can click on a checkbox to subscribe to your list.') %>
+          <%= __('Visitors that comment on a post can subscribe to your list via a checkbox') %>
         </p>
       </th>
       <td>
@@ -112,7 +112,7 @@
               <% if(settings.subscribe.on_comment.label) %>
                   value="<%= settings.subscribe.on_comment.label %>"
               <% else %>
-                value="<%= __('Yes, add me to your mailing list.') %>"
+                value="<%= __('Yes, add me to your mailing list') %>"
               <% endif %>
             />
           </p>
@@ -148,7 +148,7 @@
           <%= __('Subscribe in registration form') %>
         </label>
         <p class="description">
-          <%= __('Allow users who register on your site to subscribe to a list.') %>
+          <%= __('Allow users who register on your site to subscribe to a list') %>
         </p>
       </th>
       <td>
@@ -176,7 +176,7 @@
                 <% if(settings.subscribe.on_register.label) %>
                   value="<%= settings.subscribe.on_register.label %>"
                 <% else %>
-                  value="<%= __('Yes, add me to your mailing list.') %>"
+                  value="<%= __('Yes, add me to your mailing list') %>"
                 <% endif %>
               />
             </p>
@@ -203,7 +203,7 @@
           </div>
         <% else %>
           <p>
-            <em><%= __('Registration is disabled on this site.') %></em>
+            <em><%= __('Registration is disabled on this site') %></em>
           </p>
         <% endif %>
       </td>
@@ -215,7 +215,7 @@
           <%= __('Manage Subscription page') %>
         </label>
         <p class="description">
-          <%= __('Your subscribers will be directed to this page when they click the "Manage your subscription" link in your email.') %>
+          <%= __('When your subscribers click the "Manage your subscription" link, they will be directed to this page') %>
         </p>
       </th>
       <td>
@@ -270,9 +270,9 @@
           <%= __('Unsubscribe page') %>
         </label>
         <p class="description">
-          <%= __('Your subscribers will be directed to this page when they click the "Unsubscribe" link in your email.') %>
+          <%= __('When your subscribers click the "Unsubscribe" link, they will be directed to this page') %>
           <br />
-          <%= __('Use this shortcode on your website\'s WordPress pages: [mailpoet_manage text="Manage your subscription"].') %>
+          <%= __('Use this shortcode on your website\'s WordPress pages: [mailpoet_manage text="Manage your subscription"]') %>
         </p>
       </th>
       <td>
@@ -307,7 +307,7 @@
           <%= __('Archive page shortcode') %>
         </label>
         <p class="description">
-          <%= __('Paste this shortcode on a page to display a list of past newsletters.') %>
+          <%= __('Paste this shortcode on a page to display a list of past newsletters') %>
         </p>
       </th>
       <td>
@@ -343,7 +343,7 @@
           <%= __('This shortcode displays the total number of subscribers') %>
         </label>
         <p class="description">
-          <%= __('Paste this shortcode on a post or page to display the total number of confirmed subscribers.') %>
+          <%= __('Paste this shortcode on a post or page to display the total number of confirmed subscribers') %>
         </p>
       </th>
       <td>
