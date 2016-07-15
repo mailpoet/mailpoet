@@ -178,10 +178,11 @@ class SendingQueue {
     if(!$queue->count_to_process) {
       $queue->processed_at = current_time('mysql');
       $queue->status = SendingQueueModel::STATUS_COMPLETED;
-      // set newsletter status to sent
+      // if it's a standard or post notificaiton newsletter, update its status to sent
       $newsletter = NewsletterModel::findOne($queue->newsletter_id);
-      // if it's a standard newsletter, update its status
-      if($newsletter->type === NewsletterModel::TYPE_STANDARD) {
+      if($newsletter->type === NewsletterModel::TYPE_STANDARD ||
+         $newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY
+      ) {
         $newsletter->setStatus(NewsletterModel::STATUS_SENT);
       }
     }

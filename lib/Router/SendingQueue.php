@@ -37,8 +37,10 @@ class SendingQueue {
       );
     }
 
-    if($newsletter->type === Newsletter::TYPE_WELCOME) {
-      // set welcome email active
+    if($newsletter->type === Newsletter::TYPE_WELCOME ||
+       $newsletter->type === Newsletter::TYPE_NOTIFICATION
+    ) {
+      // set newsletter status to active
       $result = $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
       $errors = $result->getErrors();
 
@@ -48,20 +50,16 @@ class SendingQueue {
           'errors' => $errors
         );
       } else {
+        $message = ($newsletter->type === Newsletter::TYPE_WELCOME) ?
+          __('Your welcome email has been activated') :
+          __('Your post notification has been activated');
         return array(
           'result' => true,
           'data' => array(
-            'message' => __('Your welcome email has been activated')
+            'message' => $message
           )
         );
       }
-    } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
-      // Post Notifications
-      $newsletter = Scheduler::processPostNotificationSchedule($newsletter->id);
-      Scheduler::createPostNotificationQueue($newsletter);
-
-      // set post notification active
-      $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
     }
 
     $queue = SendingQueueModel::whereNull('status')
@@ -81,18 +79,6 @@ class SendingQueue {
     if(!$queue) {
       $queue = SendingQueueModel::create();
       $queue->newsletter_id = $newsletter->id;
-    }
-
-    if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
-      $queue->scheduled_at = Scheduler::getNextRunDate($newsletter->schedule);
-      $queue->status = SendingQueueModel::STATUS_SCHEDULED;
-      $queue->save();
-      return array(
-        'result' => true,
-        'data' => array(
-          'message' => __('Your post notification has been activated')
-        )
-      );
     }
 
     if((bool)$newsletter->isScheduled) {
