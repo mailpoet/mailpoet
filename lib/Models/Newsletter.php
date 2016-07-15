@@ -10,6 +10,7 @@ class Newsletter extends Model {
   const TYPE_STANDARD = 'standard';
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
+  const TYPE_NOTIFICATION_HISTORY = 'notification_history';
 
   // standard newsletters
   const STATUS_DRAFT = 'draft';
@@ -230,6 +231,15 @@ class Newsletter extends Model {
   }
 
   static function filters($data = array()) {
+    $type = isset($data['tab']) ? $data['tab'] : null;
+
+    // newsletter types without filters
+    if(in_array($type, array(
+      self::TYPE_NOTIFICATION_HISTORY
+    ))) {
+      return false;
+    }
+
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
@@ -239,7 +249,7 @@ class Newsletter extends Model {
 
     foreach($segments as $segment) {
       $newsletters = $segment->newsletters()
-        ->filter('filterType', $data['tab'])
+        ->filter('filterType', $type)
         ->filter('groupBy', $data);
 
       $newsletters_count = $newsletters->count();
@@ -307,6 +317,13 @@ class Newsletter extends Model {
 
   static function groups($data = array()) {
     $type = isset($data['tab']) ? $data['tab'] : null;
+
+    // newsletter types without groups
+    if(in_array($type, array(
+      self::TYPE_NOTIFICATION_HISTORY
+    ))) {
+      return false;
+    }
 
     $groups = array(
       array(
@@ -431,7 +448,8 @@ class Newsletter extends Model {
     if(in_array($type, array(
       self::TYPE_STANDARD,
       self::TYPE_WELCOME,
-      self::TYPE_NOTIFICATION
+      self::TYPE_NOTIFICATION,
+      self::TYPE_NOTIFICATION_HISTORY
     ))) {
       $orm->where('type', $type);
     }
