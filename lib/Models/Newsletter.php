@@ -20,7 +20,6 @@ class Newsletter extends Model {
   // automatic newsletters status
   const STATUS_ACTIVE = 'active';
 
-
   function __construct() {
     parent::__construct();
 
@@ -56,13 +55,7 @@ class Newsletter extends Model {
     return $this;
   }
 
-  function duplicate(
-    $data = array(),
-    $reset_status = true,
-    $reset_timestamps = true,
-    $duplicate_options = true,
-    $duplicate_segments = true
-  ) {
+  function duplicate($data = array()) {
     // get current newsletter's data as an array
     $newsletter_data = $this->asArray();
 
@@ -75,49 +68,40 @@ class Newsletter extends Model {
     $duplicate = self::create();
     $duplicate->hydrate($data);
 
-    if($reset_timestamps) {
-      // reset timestamps
-      $duplicate->set_expr('created_at', 'NOW()');
-      $duplicate->set_expr('updated_at', 'NOW()');
-      $duplicate->set_expr('deleted_at', 'NULL');
-    }
+    // reset timestamps
+    $duplicate->set_expr('created_at', 'NOW()');
+    $duplicate->set_expr('updated_at', 'NOW()');
+    $duplicate->set_expr('deleted_at', 'NULL');
 
-    if($reset_status){
-      // reset status
-      $duplicate->set('status', self::STATUS_DRAFT);
-    }
+    // reset status
+    $duplicate->set('status', self::STATUS_DRAFT);
 
     $duplicate->save();
 
     if($duplicate->getErrors() === false) {
-      if($duplicate_segments) {
-        // create relationships between duplicate and segments
-        $segments = $this->segments()
-          ->findArray();
+      // create relationships between duplicate and segments
+      $segments = $this->segments()->findArray();
 
-        if(!empty($segments)) {
-          foreach($segments as $segment) {
-            $relation = NewsletterSegment::create();
-            $relation->segment_id = $segment['id'];
-            $relation->newsletter_id = $duplicate->id;
-            $relation->save();
-          }
+      if(!empty($segments)) {
+        foreach($segments as $segment) {
+          $relation = NewsletterSegment::create();
+          $relation->segment_id = $segment['id'];
+          $relation->newsletter_id = $duplicate->id;
+          $relation->save();
         }
       }
 
-      if($duplicate_options) {
-        // duplicate options
-        $options = NewsletterOption::where('newsletter_id', $this->id)
-          ->findArray();
+      // duplicate options
+      $options = NewsletterOption::where('newsletter_id', $this->id)
+        ->findArray();
 
-        if(!empty($options)) {
-          foreach($options as $option) {
-            $relation = NewsletterOption::create();
-            $relation->newsletter_id = $duplicate->id;
-            $relation->option_field_id = $option['option_field_id'];
-            $relation->value = $option['value'];
-            $relation->save();
-          }
+      if(!empty($options)) {
+        foreach($options as $option) {
+          $relation = NewsletterOption::create();
+          $relation->newsletter_id = $duplicate->id;
+          $relation->option_field_id = $option['option_field_id'];
+          $relation->value = $option['value'];
+          $relation->save();
         }
       }
     }
@@ -126,17 +110,41 @@ class Newsletter extends Model {
   }
 
   function createNotificationHistory() {
-    return $this->duplicate(
+    // get current newsletter's data as an array
+    $newsletter_data = $this->asArray();
+
+    // remove id so that it creates a new record
+    unset($newsletter_data['id']);
+
+    // update newsletter columns
+    $data = array_merge(
+      $newsletter_data,
       array(
         'parent_id' => $this->id,
         'type' => self::TYPE_NOTIFICATION_HISTORY,
         'status' => self::STATUS_SENDING
-      ),
-      $reset_status = false,
-      $reset_timestamps = true,
-      $duplicate_options = false,
-      $duplicate_segments = true
-    );
+    ));
+
+    $notification_history = self::create();
+    $notification_history->hydrate($data);
+
+    $notification_history->save();
+
+    if($notification_history->getErrors() === false) {
+      // create relationships between notification history and segments
+      $segments = $this->segments()->findArray();
+
+      if(!empty($segments)) {
+        foreach($segments as $segment) {
+          $relation = NewsletterSegment::create();
+          $relation->segment_id = $segment['id'];
+          $relation->newsletter_id = $notification_history->id;
+          $relation->save();
+        }
+      }
+    }
+
+    return $notification_history;
   }
 
   function asArray() {
