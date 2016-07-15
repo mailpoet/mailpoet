@@ -348,15 +348,15 @@ const Listing = React.createClass({
       this.getItems();
     }.bind(this));
   },
-  getExtraParams: function() {
+  getParams: function() {
     // get all route parameters (without the "splat")
-    let extras = _.omit(this.props.params, 'splat');
+    let params = _.omit(this.props.params, 'splat');
     // TO REFACTOR:
-    // set the "tab" in the routes definition
-    if (this.props.tab) {
-      extras.tab = this.props.tab;
+    // find a way to set the "type" in the routes definition
+    if (this.props.type) {
+      params.type = this.props.type;
     }
-    return extras;
+    return params;
   },
   setParams: function() {
     if (this.props.location) {
@@ -409,10 +409,10 @@ const Listing = React.createClass({
     }
   },
   setBaseUrlParams: function(base_url) {
-    if (base_url.contains(':') === true) {
-      const params = this.getExtraParams();
+    if (base_url.indexOf(':') !== -1) {
+      const params = this.getParams();
       Object.keys(params).map((key) => {
-        if (base_url.contains(':'+key)) {
+        if (base_url.indexOf(':'+key) !== -1) {
           base_url = base_url.replace(':'+key, params[key]);
         }
       });
@@ -446,7 +446,7 @@ const Listing = React.createClass({
         endpoint: this.props.endpoint,
         action: 'listing',
         data: {
-          params: this.getExtraParams(),
+          params: this.getParams(),
           offset: (this.state.page - 1) * this.state.limit,
           limit: this.state.limit,
           group: this.state.group,
@@ -561,7 +561,7 @@ const Listing = React.createClass({
 
     var data = params || {};
     data.listing = {
-      params: this.getExtraParams(),
+      params: this.getParams(),
       offset: 0,
       limit: 0,
       filter: this.state.filter,

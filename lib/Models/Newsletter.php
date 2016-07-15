@@ -219,8 +219,6 @@ class Newsletter extends Model {
           ->where('queues.newsletter_id', $this->id)
           ->where('queues.status', SendingQueue::STATUS_COMPLETED)
           ->findOne();
-        break;
-
       default:
         if($this->queue === false) {
           return false;
@@ -259,7 +257,7 @@ class Newsletter extends Model {
   }
 
   static function filters($data = array()) {
-    $type = isset($data['params']['tab']) ? $data['params']['tab'] : null;
+    $type = isset($data['params']['type']) ? $data['params']['type'] : null;
 
     // newsletter types without filters
     if(in_array($type, array(
@@ -311,7 +309,7 @@ class Newsletter extends Model {
     }
 
     // filter by type
-    $type = isset($data['params']['tab']) ? $data['params']['tab'] : null;
+    $type = isset($data['params']['type']) ? $data['params']['type'] : null;
     if($type !== null) {
       $orm->filter('filterType', $type);
     }
@@ -358,7 +356,7 @@ class Newsletter extends Model {
   }
 
   static function groups($data = array()) {
-    $type = isset($data['params']['tab']) ? $data['params']['tab'] : null;
+    $type = isset($data['params']['type']) ? $data['params']['type'] : null;
 
     // newsletter types without groups
     if(in_array($type, array(
