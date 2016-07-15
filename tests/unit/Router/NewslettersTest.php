@@ -48,7 +48,7 @@ class NewslettersTest extends MailPoetTest {
 
     $response = $router->save($invalid_data);
     expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please specify a type.');
+    expect($response['errors'][0])->equals('Please specify a type');
   }
 
   function testItCanSaveAnExistingNewsletter() {
@@ -123,7 +123,7 @@ class NewslettersTest extends MailPoetTest {
 
     $response = $router->create();
     expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please specify a type.');
+    expect($response['errors'][0])->equals('Please specify a type');
   }
 
   function testItCanGetListingData() {
