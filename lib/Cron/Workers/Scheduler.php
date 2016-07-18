@@ -67,6 +67,7 @@ class Scheduler {
   }
 
   function processPostNotificationNewsletter($newsletter, $queue) {
+    // ensure that segments exist
     $segments = $newsletter->segments()->findArray();
     if(empty($segments)) {
       $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
@@ -76,6 +77,7 @@ class Scheduler {
       return (int)$segment['id'];
     }, $segments);
 
+    // ensure that subscribers are in segments
     $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
       ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
@@ -85,13 +87,13 @@ class Scheduler {
       $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
       return;
     }
-    // schedule new queue if the post notification is not destined for immediate delivery
-    if($newsletter->intervalType !== NewsletterScheduler::INTERVAL_IMMEDIATELY) {
-      $new_queue = SendingQueue::create();
-      $new_queue->newsletter_id = $newsletter->id;
-      $new_queue->status = SendingQueue::STATUS_SCHEDULED;
-      self::deleteQueueOrUpdateNextRunDate($new_queue, $newsletter);
-    }
+
+    // create a duplicate newsletter that acts as a history record
+    $notification_history = $this->createNotificationHistory($newsletter->id);
+    if(!$notification_history) return;
+
+    // queue newsletter for delivery
+    $queue->newsletter_id = $notification_history->id;
     $queue->subscribers = serialize(
       array(
         'to_process' => $subscribers
@@ -166,7 +168,7 @@ class Scheduler {
     return true;
   }
 
-  private function deleteQueueOrUpdateNextRunDate($queue, $newsletter) {
+  function deleteQueueOrUpdateNextRunDate($queue, $newsletter) {
     if($newsletter->intervalType === NewsletterScheduler::INTERVAL_IMMEDIATELY) {
       $queue->delete();
     } else {
@@ -174,5 +176,13 @@ class Scheduler {
       $queue->scheduled_at = $next_run_date;
       $queue->save();
     }
+  }
+
+  function createNotificationHistory($newsletter_id) {
+    $newsletter = Newsletter::findOne($newsletter_id);
+    $notification_history = $newsletter->createNotificationHistory();
+    return ($notification_history->getErrors() === false) ?
+      $notification_history :
+      false;
   }
 }

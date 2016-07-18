@@ -109,6 +109,44 @@ class Newsletter extends Model {
     return $duplicate;
   }
 
+  function createNotificationHistory() {
+    // get current newsletter's data as an array
+    $newsletter_data = $this->asArray();
+
+    // remove id so that it creates a new record
+    unset($newsletter_data['id']);
+
+    // update newsletter columns
+    $data = array_merge(
+      $newsletter_data,
+      array(
+        'parent_id' => $this->id,
+        'type' => self::TYPE_NOTIFICATION_HISTORY,
+        'status' => self::STATUS_SENDING
+    ));
+
+    $notification_history = self::create();
+    $notification_history->hydrate($data);
+
+    $notification_history->save();
+
+    if($notification_history->getErrors() === false) {
+      // create relationships between notification history and segments
+      $segments = $this->segments()->findArray();
+
+      if(!empty($segments)) {
+        foreach($segments as $segment) {
+          $relation = NewsletterSegment::create();
+          $relation->segment_id = $segment['id'];
+          $relation->newsletter_id = $notification_history->id;
+          $relation->save();
+        }
+      }
+    }
+
+    return $notification_history;
+  }
+
   function asArray() {
     $model = parent::asArray();
 
