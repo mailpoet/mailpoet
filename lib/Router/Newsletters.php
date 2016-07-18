@@ -267,7 +267,8 @@ class Newsletters {
       } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
           ->withOptions()
-          ->withSegments();
+          ->withSegments()
+          ->withChildrenCount();
       } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION_HISTORY) {
         $newsletter
           ->withSegments()

@@ -123,7 +123,8 @@ class Newsletter extends Model {
         'parent_id' => $this->id,
         'type' => self::TYPE_NOTIFICATION_HISTORY,
         'status' => self::STATUS_SENDING
-    ));
+      )
+    );
 
     $notification_history = self::create();
     $notification_history->hydrate($data);
@@ -163,6 +164,14 @@ class Newsletter extends Model {
     return parent::delete();
   }
 
+  function children() {
+    return $this->has_many(
+      __NAMESPACE__.'\Newsletter',
+      'parent_id',
+      'id'
+    );
+  }
+
   function segments() {
     return $this->has_many_through(
       __NAMESPACE__.'\Segment',
@@ -174,6 +183,11 @@ class Newsletter extends Model {
 
   function withSegments() {
     $this->segments = $this->segments()->findArray();
+    return $this;
+  }
+
+  function withChildrenCount() {
+    $this->children_count = $this->children()->count();
     return $this;
   }
 
