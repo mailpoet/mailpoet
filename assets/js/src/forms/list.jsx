@@ -150,10 +150,10 @@ const FormList = React.createClass({
           </strong>
           { actions }
         </td>
-        <td className="column-format" data-colname={MailPoet.I18n.t('segments')}>
+        <td className="column" data-colname={MailPoet.I18n.t('segments')}>
           { segments }
         </td>
-        <td className="column-format" data-colname={MailPoet.I18n.t('signups')}>
+        <td className="column" data-colname={MailPoet.I18n.t('signups')}>
           { form.signups }
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('createdOn')}>
