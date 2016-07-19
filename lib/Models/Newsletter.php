@@ -56,7 +56,6 @@ class Newsletter extends Model {
   }
 
   function duplicate($data = array()) {
-    // get current newsletter's data as an array
     $newsletter_data = $this->asArray();
 
     // remove id so that it creates a new record
@@ -110,13 +109,11 @@ class Newsletter extends Model {
   }
 
   function createNotificationHistory() {
-    // get current newsletter's data as an array
     $newsletter_data = $this->asArray();
 
     // remove id so that it creates a new record
     unset($newsletter_data['id']);
 
-    // update newsletter columns
     $data = array_merge(
       $newsletter_data,
       array(
@@ -245,59 +242,41 @@ class Newsletter extends Model {
   }
 
   function getStatistics() {
-    switch($this->type) {
-      case self::TYPE_WELCOME:
-        return SendingQueue::tableAlias('queues')
-          ->selectExpr(
-            'COUNT(DISTINCT(clicks.subscriber_id)) as clicked, ' .
-            'COUNT(DISTINCT(opens.subscriber_id)) as opened, ' .
-            'COUNT(DISTINCT(unsubscribes.subscriber_id)) as unsubscribed '
-          )
-          ->leftOuterJoin(
-            MP_STATISTICS_CLICKS_TABLE,
-            'queues.id = clicks.queue_id',
-            'clicks'
-          )
-          ->leftOuterJoin(
-            MP_STATISTICS_OPENS_TABLE,
-            'queues.id = opens.queue_id',
-            'opens'
-          )
-          ->leftOuterJoin(
-            MP_STATISTICS_UNSUBSCRIBES_TABLE,
-            'queues.id = unsubscribes.queue_id',
-            'unsubscribes'
-          )
-          ->where('queues.newsletter_id', $this->id)
-          ->where('queues.status', SendingQueue::STATUS_COMPLETED)
-          ->findOne();
-      default:
-        if($this->queue === false) {
-          return false;
-        }
-        return SendingQueue::tableAlias('queues')
-          ->selectExpr(
-            'COUNT(DISTINCT(clicks.subscriber_id)) as clicked, ' .
-            'COUNT(DISTINCT(opens.subscriber_id)) as opened, ' .
-            'COUNT(DISTINCT(unsubscribes.subscriber_id)) as unsubscribed '
-          )
-          ->leftOuterJoin(
-            MP_STATISTICS_CLICKS_TABLE,
-            'queues.id = clicks.queue_id',
-            'clicks'
-          )
-          ->leftOuterJoin(
-            MP_STATISTICS_OPENS_TABLE,
-            'queues.id = opens.queue_id',
-            'opens'
-          )
-          ->leftOuterJoin(
-            MP_STATISTICS_UNSUBSCRIBES_TABLE,
-            'queues.id = unsubscribes.queue_id',
-            'unsubscribes'
-          )
+    $statistics_query = SendingQueue::tableAlias('queues')
+      ->selectExpr(
+        'COUNT(DISTINCT(clicks.subscriber_id)) as clicked, ' .
+        'COUNT(DISTINCT(opens.subscriber_id)) as opened, ' .
+        'COUNT(DISTINCT(unsubscribes.subscriber_id)) as unsubscribed '
+      )
+      ->leftOuterJoin(
+        MP_STATISTICS_CLICKS_TABLE,
+        'queues.id = clicks.queue_id',
+        'clicks'
+      )
+      ->leftOuterJoin(
+        MP_STATISTICS_OPENS_TABLE,
+        'queues.id = opens.queue_id',
+        'opens'
+      )
+      ->leftOuterJoin(
+        MP_STATISTICS_UNSUBSCRIBES_TABLE,
+        'queues.id = unsubscribes.queue_id',
+        'unsubscribes'
+      );
+
+    if($this->type === self::TYPE_WELCOME) {
+      return $statistics_query
+        ->where('queues.newsletter_id', $this->id)
+        ->where('queues.status', SendingQueue::STATUS_COMPLETED)
+        ->findOne();
+    } else {
+      if($this->queue === false) {
+        return false;
+      } else {
+        return $statistics_query
           ->where('queues.id', $this->queue['id'])
           ->findOne();
+      }
     }
   }
 

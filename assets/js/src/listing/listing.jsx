@@ -351,8 +351,9 @@ const Listing = React.createClass({
   getParams: function() {
     // get all route parameters (without the "splat")
     let params = _.omit(this.props.params, 'splat');
-    // TO REFACTOR:
+    // TODO:
     // find a way to set the "type" in the routes definition
+    // so that it appears in `this.props.params`
     if (this.props.type) {
       params.type = this.props.type;
     }
