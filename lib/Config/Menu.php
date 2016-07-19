@@ -255,6 +255,7 @@ class Menu {
     $data = array(
       'settings' => $settings,
       'segments' => Segment::getPublic()->findArray(),
+      'task_scheduler' => TaskScheduler::getAvailableMethods(),
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),
