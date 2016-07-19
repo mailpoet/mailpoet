@@ -39,6 +39,11 @@ class Form extends Model {
     return parent::save();
   }
 
+  function withSignups() {
+    $this->signups = StatisticsForms::where('form_id', $this->id)->count();
+    return $this;
+  }
+
   static function search($orm, $search = '') {
     return $orm->whereLike('name', '%'.$search.'%');
   }

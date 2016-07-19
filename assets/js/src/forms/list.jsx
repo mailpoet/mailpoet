@@ -16,6 +16,10 @@ const columns = [
     label: MailPoet.I18n.t('segments')
   },
   {
+    name: 'signups',
+    label: MailPoet.I18n.t('signups')
+  },
+  {
     name: 'created_at',
     label: MailPoet.I18n.t('createdOn'),
     sortable: true
@@ -148,6 +152,9 @@ const FormList = React.createClass({
         </td>
         <td className="column-format" data-colname={MailPoet.I18n.t('segments')}>
           { segments }
+        </td>
+        <td className="column-format" data-colname={MailPoet.I18n.t('signups')}>
+          { form.signups }
         </td>
         <td className="column-date" data-colname={MailPoet.I18n.t('createdOn')}>
           <abbr>{ MailPoet.Date.format(form.created_at) }</abbr>

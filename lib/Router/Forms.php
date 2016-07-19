@@ -29,7 +29,10 @@ class Forms {
 
     // fetch segments relations for each returned item
     foreach($listing_data['items'] as $key => $form) {
-      $form = $form->asArray();
+      $form = $form
+        ->withSignups()
+        ->asArray();
+
       $form['segments'] = (
         !empty($form['settings']['segments'])
         ? $form['settings']['segments']
