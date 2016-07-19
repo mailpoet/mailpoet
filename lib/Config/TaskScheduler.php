@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Config;
 
+use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
@@ -48,6 +49,11 @@ class TaskScheduler {
     // or are already being processed
     if($scheduled_queues || $running_queues) {
       return $this->configureMailpoetScheduler();
+    }
+    // stop (delete) daemon since the WP task scheduler is enabled
+    $cron_daemon = CronHelper::getDaemon();
+    if ($cron_daemon) {
+      CronHelper::deleteDaemon();
     }
     return;
   }
