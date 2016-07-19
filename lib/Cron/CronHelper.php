@@ -12,6 +12,7 @@ class CronHelper {
   const DAEMON_EXECUTION_LIMIT = 20;
   const DAEMON_EXECUTION_TIMEOUT = 35;
   const DAEMON_REQUEST_TIMEOUT = 2;
+  const DAEMON_SETTING = 'cron_daemon';
 
   static function createDaemon($token) {
     $daemon = array(
@@ -23,15 +24,25 @@ class CronHelper {
   }
 
   static function getDaemon() {
-    return Setting::getValue('cron_daemon');
+    return Setting::getValue(self::DAEMON_SETTING);
   }
 
   static function saveDaemon($daemon) {
     $daemon['updated_at'] = time();
     return Setting::setValue(
-      'cron_daemon',
+      self::DAEMON_SETTING,
       $daemon
     );
+  }
+
+  static function stopDaemon() {
+    $daemon = self::getDaemon();
+    $daemon['status'] = Daemon::STATUS_STOPPED;
+    return self::saveDaemon($daemon);
+  }
+
+  static function deleteDaemon() {
+    return Setting::deleteSetting(self::DAEMON_SETTING);
   }
 
   static function createToken() {

@@ -160,4 +160,13 @@ class Setting extends Model {
 
     return $setting->save();
   }
+
+  public static function getSetting($setting) {
+    return self::where('name', $setting)->findOne();
+  }
+
+  public static function deleteSetting($setting) {
+    $setting = self::where('name', $setting)->findOne();
+    return ($setting) ? $setting->delete() : false;
+  }
 }

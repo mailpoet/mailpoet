@@ -53,10 +53,13 @@ define(
       }.bind(this));
     },
     render: function() {
-      if(this.state.status === 'loading') {
-        return(<div>{MailPoet.I18n.t('loadingDaemonStatus')}</div>);
-      }
       switch(this.state.status) {
+        case 'loading':
+          return(
+            <div>
+              {MailPoet.I18n.t('loadingDaemonStatus')}
+            </div>
+          );
         case 'started':
           return(
             <div>
@@ -83,6 +86,20 @@ define(
               <br />
               <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'start')}>{MailPoet.I18n.t('start')}</a>
             </div>
+          );
+        break;
+        case 'wordpress_task_scheduler_enabled':
+          return(
+            <div>
+              {MailPoet.I18n.t('wordpressTaskSchedulerEnabled')}
+            </div>
+          );
+        break;
+        case false:
+          return(
+            <div>
+              {MailPoet.I18n.t('daemonNotRunning')}
+              </div>
           );
         break;
       }

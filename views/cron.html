@@ -6,9 +6,11 @@
 
 <% block translations %>
   <%= localize({
+    'daemonNotRunning': __('Daemon is not running'),
+    'wordpressTaskSchedulerEnabled': __('Daemon is not running because WordPress task scheduler is enabled and there are no scheduled or in-progress jobs'),
     'daemonControlError': __('Cron daemon error'),
     'loadingDaemonStatus': __('Loading daemon status...'),
-    'cronDaemonIsRunning': __('Cron daemon is running.'),
+    'cronDaemonIsRunning': __('Cron daemon is running'),
     'stop': __('Stop'),
     'start': __('Start'),
     'cronDaemonState': __('Cron is %$1s')
