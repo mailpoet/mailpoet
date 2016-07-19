@@ -24,9 +24,7 @@ class Scheduler {
   }
 
   function process() {
-    $scheduled_queues = SendingQueue::where('status', 'scheduled')
-      ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
-      ->findMany();
+    $scheduled_queues = self::getScheduledQueues();
     if(!count($scheduled_queues)) return;
     foreach($scheduled_queues as $i => $queue) {
       $newsletter = Newsletter::filter('filterWithOptions')
@@ -184,5 +182,11 @@ class Scheduler {
     return ($notification_history->getErrors() === false) ?
       $notification_history :
       false;
+  }
+  
+  static function getScheduledQueues() {
+    return SendingQueue::where('status', 'scheduled')
+      ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
+      ->findMany();
   }
 }

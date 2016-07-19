@@ -107,7 +107,7 @@ class Initializer {
       $this->setupShortcodes();
       $this->setupHooks();
       $this->setupImages();
-      $this->runQueueSupervisor();
+      $this->setupTaskScheduler();
 
       $this->plugin_initialized = true;
     } catch(\Exception $e) {
@@ -192,14 +192,9 @@ class Initializer {
     $router->init();
   }
 
-  function runQueueSupervisor() {
-    if(php_sapi_name() === 'cli') return;
-    try {
-      $supervisor = new Supervisor();
-      $supervisor->checkDaemon();
-    } catch(\Exception $e) {
-      // Prevent Daemon exceptions from breaking out and breaking UI
-    }
+  function setupTaskScheduler() {
+    $task_scheduler = new TaskScheduler();
+    $task_scheduler->init();
   }
 
   function setupImages() {

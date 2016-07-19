@@ -27,7 +27,7 @@ class SendingQueue {
 
   function process() {
     $this->mailer_task->checkSendingLimit();
-    foreach($this->getQueues() as $queue) {
+    foreach(self::getRunningQueues() as $queue) {
       // get and pre-process newsletter (render, replace shortcodes/links, etc.)
       $newsletter = $this->newsletter_task->getAndPreProcess($queue->asArray());
       if(!$newsletter) {
@@ -162,6 +162,13 @@ class SendingQueue {
   }
 
   function getQueues() {
+    return SendingQueueModel::orderByDesc('priority')
+      ->whereNull('deleted_at')
+      ->whereNull('status')
+      ->findMany();
+  }
+
+  static function getRunningQueues() {
     return SendingQueueModel::orderByDesc('priority')
       ->whereNull('deleted_at')
       ->whereNull('status')
