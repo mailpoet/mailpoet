@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Router;
 use \MailPoet\Models\Form;
+use \MailPoet\Models\StatisticsForms;
 use \MailPoet\Form\Renderer as FormRenderer;
 use \MailPoet\Listing;
 use \MailPoet\Form\Util;
@@ -30,6 +31,9 @@ class Forms {
     // fetch segments relations for each returned item
     foreach($listing_data['items'] as $key => $form) {
       $form = $form->asArray();
+
+      $form['signups'] = StatisticsForms::getTotalSignups($form['id']);
+
       $form['segments'] = (
         !empty($form['settings']['segments'])
         ? $form['settings']['segments']

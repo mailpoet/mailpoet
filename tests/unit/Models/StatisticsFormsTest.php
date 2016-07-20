@@ -36,6 +36,20 @@ class StatisticsFormsTest extends MailPoetTest {
     expect($record)->false();
   }
 
+  function testItCanReturnTheTotalSignupsOfAForm() {
+    // simulate 2 signups for form #1
+    StatisticsForms::record($form_id = 1, $subscriber_id = 2);
+    StatisticsForms::record($form_id = 1, $subscriber_id = 1);
+    // simulate 1 signup for form #2
+    StatisticsForms::record($form_id = 2, $subscriber_id = 2);
+
+    $form_1_signups = StatisticsForms::getTotalSignups($form_id = 1);
+    expect($form_1_signups)->equals(2);
+
+    $form_2_signups = StatisticsForms::getTotalSignups($form_id = 2);
+    expect($form_2_signups)->equals(1);
+  }
+
   function _after() {
     StatisticsForms::deleteMany();
   }
