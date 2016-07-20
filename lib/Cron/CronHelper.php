@@ -81,7 +81,7 @@ class CronHelper {
     throw new \Exception(__('Site URL is unreachable.'));
   }
 
-  static function checkExecutionTimer($timer) {
+  static function enforceExecutionLimit($timer) {
     $elapsed_time = microtime(true) - $timer;
     if($elapsed_time >= self::DAEMON_EXECUTION_LIMIT) {
       throw new \Exception(__('Maximum execution time has been reached.'));

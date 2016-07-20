@@ -20,7 +20,8 @@ class Scheduler {
 
   function __construct($timer = false) {
     $this->timer = ($timer) ? $timer : microtime(true);
-    CronHelper::checkExecutionTimer($this->timer);
+    // abort if execution limit is reached
+    CronHelper::enforceExecutionLimit($this->timer);
   }
 
   function process() {
@@ -38,7 +39,7 @@ class Scheduler {
       } elseif($newsletter->type === 'standard') {
         $this->processScheduledStandardNewsletter($newsletter, $queue);
       }
-      CronHelper::checkExecutionTimer($this->timer);
+      CronHelper::enforceExecutionLimit($this->timer);
     }
   }
 

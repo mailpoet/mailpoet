@@ -5,6 +5,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
@@ -45,14 +46,17 @@ class TaskScheduler {
   function configureWordpressScheduler() {
     $scheduled_queues = SchedulerWorker::getScheduledQueues();
     $running_queues = SendingQueueWorker::getRunningQueues();
-    // run cron only when there are scheduled queues ready to be processed
-    // or are already being processed
-    if($scheduled_queues || $running_queues) {
+    $sending_limit_reached = MailerLog::isSendingLimitReached();
+    // run cron only when:
+    //   1) there are scheduled queues ready to be processed
+    //   2) queues are already being processed
+    //   3) sending limit has not been reached
+    if(($scheduled_queues || $running_queues) && !$sending_limit_reached) {
       return $this->configureMailpoetScheduler();
     }
-    // stop (delete) daemon since the WP task scheduler is enabled
+    // in all other cases stop (delete) the daemon
     $cron_daemon = CronHelper::getDaemon();
-    if ($cron_daemon) {
+    if($cron_daemon) {
       CronHelper::deleteDaemon();
     }
     return;

@@ -12,9 +12,18 @@ class Mailer {
   public $sender;
   public $reply_to;
   public $mailer_instance;
+  const MAILER_CONFIG = 'mta';
+  const SENDING_LIMIT_INTERVAL_MULTIPLIER = 60;
+  const METHOD_MAILPOET = 'MailPoet';
+  const METHOD_MAILGUN = 'MailGun';
+  const METHOD_ELASTICEMAIL = 'ElasticEmail';
+  const METHOD_AMAZONSES = 'AmazonSES';
+  const METHOD_SENDGRID = 'SendGrid';
+  const METHOD_PHPMAIL = 'PHPMail';
+  const METHOD_SMTP = 'SMTP';
 
   function __construct($mailer = false, $sender = false, $reply_to = false) {
-    $this->mailer = $this->getMailer($mailer);
+    $this->mailer = self::getMailer($mailer);
     $this->sender = $this->getSender($sender);
     $this->reply_to = $this->getReplyTo($reply_to);
     $this->mailer_instance = $this->buildMailer();
@@ -27,7 +36,7 @@ class Mailer {
 
   function buildMailer() {
     switch($this->mailer['method']) {
-      case 'AmazonSES':
+      case self::METHOD_AMAZONSES:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['region'],
           $this->mailer['access_key'],
@@ -35,43 +44,43 @@ class Mailer {
           $this->sender,
           $this->reply_to
         );
-        break;
-      case 'ElasticEmail':
+      break;
+      case self::METHOD_ELASTICEMAIL:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['api_key'],
           $this->sender,
           $this->reply_to
         );
-        break;
-      case 'MailGun':
+      break;
+      case self::METHOD_MAILGUN:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['domain'],
           $this->mailer['api_key'],
           $this->sender,
           $this->reply_to
         );
-        break;
-      case 'MailPoet':
+      break;
+      case self::METHOD_MAILPOET:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['mailpoet_api_key'],
           $this->sender,
           $this->reply_to
         );
-        break;
-      case 'SendGrid':
+      break;
+      case self::METHOD_SENDGRID:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['api_key'],
           $this->sender,
           $this->reply_to
         );
-        break;
-      case 'PHPMail':
+      break;
+      case self::METHOD_PHPMAIL:
         $mailer_instance = new $this->mailer['class'](
           $this->sender,
           $this->reply_to
         );
-        break;
-      case 'SMTP':
+      break;
+      case self::METHOD_SMTP:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['host'],
           $this->mailer['port'],
@@ -82,19 +91,22 @@ class Mailer {
           $this->sender,
           $this->reply_to
         );
-        break;
+      break;
       default:
         throw new \Exception(__('Mailing method does not exist'));
     }
     return $mailer_instance;
   }
 
-  function getMailer($mailer = false) {
+  static function getMailer($mailer = false) {
     if(!$mailer) {
-      $mailer = Setting::getValue('mta');
+      $mailer = Setting::getValue(self::MAILER_CONFIG);
       if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured'));
     }
     $mailer['class'] = 'MailPoet\\Mailer\\Methods\\' . $mailer['method'];
+    $mailer['frequency_interval'] =
+      (int)$mailer['frequency']['interval'] * self::SENDING_LIMIT_INTERVAL_MULTIPLIER;
+    $mailer['frequency_limit'] = (int)$mailer['frequency']['emails'];
     return $mailer;
   }
 

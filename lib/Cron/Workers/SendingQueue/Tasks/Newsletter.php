@@ -104,8 +104,8 @@ class Newsletter {
     );
   }
 
-  function markNewsletterAsSent($queue_id) {
-    $newsletter = NewsletterModel::findOne($queue_id);
+  function markNewsletterAsSent($newsletter_id) {
+    $newsletter = NewsletterModel::findOne($newsletter_id);
     // if it's a standard newsletter, update its status
     if($newsletter->type === NewsletterModel::TYPE_STANDARD) {
       $newsletter->setStatus(NewsletterModel::STATUS_SENT);

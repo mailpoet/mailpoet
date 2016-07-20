@@ -2,19 +2,17 @@
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Mailer\Mailer as MailerFactory;
-use MailPoet\Models\Setting;
+use MailPoet\Mailer\MailerLog;
 
 if(!defined('ABSPATH')) exit;
 
 class Mailer {
-  public $mta_config;
-  public $mta_log;
   public $mailer;
+  public $mailer_log;
 
   function __construct() {
-    $this->mta_config = $this->getMailerConfig();
-    $this->mta_log = $this->getMailerLog();
     $this->mailer = $this->configureMailer();
+    $this->mailer_log = $this->getMailerLog();
   }
 
   function configureMailer(array $newsletter = null) {
@@ -40,33 +38,17 @@ class Mailer {
     return $this->mailer;
   }
 
-  function getMailerConfig() {
-    $mta_config = Setting::getValue('mta');
-    if(!$mta_config) {
-      throw new \Exception(__('Mailer is not configured'));
-    }
-    return $mta_config;
-  }
-
   function getMailerLog() {
-    $mta_log = Setting::getValue('mta_log');
-    if(!$mta_log) {
-      $mta_log = array(
-        'sent' => 0,
-        'started' => time()
-      );
-      Setting::setValue('mta_log', $mta_log);
-    }
-    return $mta_log;
+    return MailerLog::getMailerLog();
   }
 
   function updateMailerLog() {
-    $this->mta_log['sent']++;
-    Setting::setValue('mta_log', $this->mta_log);
+    $this->mailer_log['sent']++;
+    return MailerLog::updateMailerLog($this->mailer_log);
   }
 
   function getProcessingMethod() {
-    return ($this->mta_config['method'] === 'MailPoet') ?
+    return ($this->mailer->mailer['method'] === MailerFactory::METHOD_MAILPOET) ?
       'bulk' :
       'individual';
   }
@@ -82,22 +64,9 @@ class Mailer {
     );
   }
 
-  function checkSendingLimit() {
-    if($this->mta_config['method'] === 'MailPoet') return;
-    $frequency_interval = (int)$this->mta_config['frequency']['interval'] * 60;
-    $frequency_limit = (int)$this->mta_config['frequency']['emails'];
-    $elapsed_time = time() - (int)$this->mta_log['started'];
-    if($this->mta_log['sent'] === $frequency_limit &&
-      $elapsed_time <= $frequency_interval
-    ) {
+  function enforceSendingLimit() {
+    if(MailerLog::isSendingLimitReached()) {
       throw new \Exception(__('Sending frequency limit has been reached'));
-    }
-    if($elapsed_time > $frequency_interval) {
-      $this->mta_log = array(
-        'sent' => 0,
-        'started' => time()
-      );
-      Setting::setValue('mta_log', $this->mta_log);
     }
   }
 }
