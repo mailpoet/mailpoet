@@ -25,13 +25,10 @@ class TaskScheduler {
       switch($this->method) {
         case self::METHOD_MAILPOET:
           return $this->configureMailpoetScheduler();
-        break;
         case self::METHOD_WORDPRESS:
           return $this->configureWordpressScheduler();
-        break;
         default:
           throw new \Exception(__("Task scheduler is not configured"));
-        break;
       };
     } catch(\Exception $e) {
       // ignore exceptions as they should not prevent the rest of the site from loading
@@ -41,7 +38,6 @@ class TaskScheduler {
   function configureMailpoetScheduler() {
     $supervisor = new Supervisor();
     $supervisor->checkDaemon();
-    return;
   }
 
   function configureWordpressScheduler() {
@@ -60,7 +56,6 @@ class TaskScheduler {
     if($cron_daemon) {
       CronHelper::deleteDaemon();
     }
-    return;
   }
 
   static function getAvailableMethods() {
