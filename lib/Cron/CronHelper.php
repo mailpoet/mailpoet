@@ -42,7 +42,7 @@ class CronHelper {
   }
 
   static function deleteDaemon() {
-    return Setting::deleteSetting(self::DAEMON_SETTING);
+    return Setting::deleteValue(self::DAEMON_SETTING);
   }
 
   static function createToken() {
