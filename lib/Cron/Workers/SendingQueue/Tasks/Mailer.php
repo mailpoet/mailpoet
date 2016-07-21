@@ -48,7 +48,7 @@ class Mailer {
   }
 
   function getProcessingMethod() {
-    return ($this->mailer->mailer['method'] === MailerFactory::METHOD_MAILPOET) ?
+    return ($this->mailer->mailer_config['method'] === MailerFactory::METHOD_MAILPOET) ?
       'bulk' :
       'individual';
   }

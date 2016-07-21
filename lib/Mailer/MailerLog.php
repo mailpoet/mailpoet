@@ -32,15 +32,15 @@ class MailerLog {
   }
 
   static function isSendingLimitReached() {
-    $mailer = Mailer::getMailer();
+    $mailer_config = Mailer::getMailerConfig();
     $mailer_log = self::getMailerLog();
     $elapsed_time = time() - (int)$mailer_log['started'];
-    if($mailer_log['sent'] === $mailer['frequency_limit'] &&
-      $elapsed_time <= $mailer['frequency_interval']
+    if($mailer_log['sent'] === $mailer_config['frequency_limit'] &&
+      $elapsed_time <= $mailer_config['frequency_interval']
     ) {
       return true;
     }
-    if($elapsed_time > $mailer['frequency_interval']) {
+    if($elapsed_time > $mailer_config['frequency_interval']) {
       self::createOrResetMailerLog();
     }
     return false;

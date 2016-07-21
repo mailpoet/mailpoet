@@ -8,7 +8,7 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 if(!defined('ABSPATH')) exit;
 
 class Mailer {
-  public $mailer;
+  public $mailer_config;
   public $sender;
   public $reply_to;
   public $mailer_instance;
@@ -23,7 +23,7 @@ class Mailer {
   const METHOD_SMTP = 'SMTP';
 
   function __construct($mailer = false, $sender = false, $reply_to = false) {
-    $this->mailer = self::getMailer($mailer);
+    $this->mailer_config = self::getMailerConfig($mailer);
     $this->sender = $this->getSender($sender);
     $this->reply_to = $this->getReplyTo($reply_to);
     $this->mailer_instance = $this->buildMailer();
@@ -35,59 +35,59 @@ class Mailer {
   }
 
   function buildMailer() {
-    switch($this->mailer['method']) {
+    switch($this->mailer_config['method']) {
       case self::METHOD_AMAZONSES:
-        $mailer_instance = new $this->mailer['class'](
-          $this->mailer['region'],
-          $this->mailer['access_key'],
-          $this->mailer['secret_key'],
+        $mailer_instance = new $this->mailer_config['class'](
+          $this->mailer_config['region'],
+          $this->mailer_config['access_key'],
+          $this->mailer_config['secret_key'],
           $this->sender,
           $this->reply_to
         );
         break;
       case self::METHOD_ELASTICEMAIL:
-        $mailer_instance = new $this->mailer['class'](
-          $this->mailer['api_key'],
+        $mailer_instance = new $this->mailer_config['class'](
+          $this->mailer_config['api_key'],
           $this->sender,
           $this->reply_to
         );
         break;
       case self::METHOD_MAILGUN:
-        $mailer_instance = new $this->mailer['class'](
-          $this->mailer['domain'],
-          $this->mailer['api_key'],
+        $mailer_instance = new $this->mailer_config['class'](
+          $this->mailer_config['domain'],
+          $this->mailer_config['api_key'],
           $this->sender,
           $this->reply_to
         );
         break;
       case self::METHOD_MAILPOET:
-        $mailer_instance = new $this->mailer['class'](
-          $this->mailer['mailpoet_api_key'],
+        $mailer_instance = new $this->mailer_config['class'](
+          $this->mailer_config['mailpoet_api_key'],
           $this->sender,
           $this->reply_to
         );
         break;
       case self::METHOD_SENDGRID:
-        $mailer_instance = new $this->mailer['class'](
-          $this->mailer['api_key'],
+        $mailer_instance = new $this->mailer_config['class'](
+          $this->mailer_config['api_key'],
           $this->sender,
           $this->reply_to
         );
         break;
       case self::METHOD_PHPMAIL:
-        $mailer_instance = new $this->mailer['class'](
+        $mailer_instance = new $this->mailer_config['class'](
           $this->sender,
           $this->reply_to
         );
         break;
       case self::METHOD_SMTP:
-        $mailer_instance = new $this->mailer['class'](
-          $this->mailer['host'],
-          $this->mailer['port'],
-          $this->mailer['authentication'],
-          $this->mailer['login'],
-          $this->mailer['password'],
-          $this->mailer['encryption'],
+        $mailer_instance = new $this->mailer_config['class'](
+          $this->mailer_config['host'],
+          $this->mailer_config['port'],
+          $this->mailer_config['authentication'],
+          $this->mailer_config['login'],
+          $this->mailer_config['password'],
+          $this->mailer_config['encryption'],
           $this->sender,
           $this->reply_to
         );
@@ -98,7 +98,7 @@ class Mailer {
     return $mailer_instance;
   }
 
-  static function getMailer($mailer = false) {
+  static function getMailerConfig($mailer = false) {
     if(!$mailer) {
       $mailer = Setting::getValue(self::MAILER_CONFIG);
       if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured'));
