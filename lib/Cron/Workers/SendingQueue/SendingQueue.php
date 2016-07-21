@@ -2,10 +2,10 @@
 namespace MailPoet\Cron\Workers\SendingQueue;
 
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Workers\SendingQueue\Tasks\Cron;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Subscribers as SubscribersTask;
-use MailPoet\Cron\Workers\SendingQueue\Tasks\TaskScheduler as TaskSchedulerTask;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
@@ -76,7 +76,7 @@ class SendingQueue {
         CronHelper::enforceExecutionLimit($this->timer);
       }
     }
-    TaskSchedulerTask::complete();
+    Cron::complete();
   }
 
   function processQueue($queue, $newsletter, $subscribers) {

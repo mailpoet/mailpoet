@@ -2,7 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Models;
-use MailPoet\Cron\Supervisor;
+use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
 use MailPoet\API;
 use MailPoet\WP\Notice as WPNotice;
@@ -107,7 +107,7 @@ class Initializer {
       $this->setupShortcodes();
       $this->setupHooks();
       $this->setupImages();
-      $this->setupTaskScheduler();
+      $this->setupCronTrigger();
 
       $this->plugin_initialized = true;
     } catch(\Exception $e) {
@@ -192,8 +192,8 @@ class Initializer {
     $router->init();
   }
 
-  function setupTaskScheduler() {
-    $task_scheduler = new TaskScheduler();
+  function setupCronTrigger() {
+    $task_scheduler = new CronTrigger();
     $task_scheduler->init();
   }
 

@@ -1,8 +1,8 @@
 <?php
 namespace MailPoet\API\Endpoints;
 
-use MailPoet\Config\TaskScheduler;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Models\Setting;
 
@@ -28,12 +28,12 @@ class Cron {
   }
 
   function getStatus() {
-    $task_scheduler = TaskScheduler::getCurrentMethod();
+    $task_scheduler = CronTrigger::getCurrentMethod();
     $daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
     if($daemon) {
       return $daemon;
     }
-    $status = ($task_scheduler === TaskScheduler::METHOD_WORDPRESS) ?
+    $status = ($task_scheduler === CronTrigger::METHOD_WORDPRESS) ?
       'wordpress_task_scheduler_enabled' :
       false;
     return array('status' => $status);

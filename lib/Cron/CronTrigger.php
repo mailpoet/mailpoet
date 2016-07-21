@@ -1,8 +1,6 @@
 <?php
-namespace MailPoet\Config;
+namespace MailPoet\Cron;
 
-use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\Supervisor;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Mailer\MailerLog;
@@ -10,9 +8,10 @@ use MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
 
-class TaskScheduler {
+class CronTrigger {
   const METHOD_WORDPRESS = 'WordPress';
   const METHOD_MAILPOET = 'MailPoet';
+  const SETTING_VALUE = 'cron_trigger';
 
   function __construct() {
     $this->method = self::getCurrentMethod();
@@ -24,23 +23,23 @@ class TaskScheduler {
       if(php_sapi_name() === 'cli') return;
       switch($this->method) {
         case self::METHOD_MAILPOET:
-          return $this->configureMailpoetScheduler();
+          return $this->configureMailpoetTrigger();
         case self::METHOD_WORDPRESS:
-          return $this->configureWordpressScheduler();
+          return $this->configureWordpressTrigger();
         default:
-          throw new \Exception(__("Task scheduler is not configured"));
+          throw new \Exception(__('Task scheduler is not configured'));
       };
     } catch(\Exception $e) {
       // ignore exceptions as they should not prevent the rest of the site from loading
     }
   }
 
-  function configureMailpoetScheduler() {
+  function configureMailpoetTrigger() {
     $supervisor = new Supervisor();
     $supervisor->checkDaemon();
   }
 
-  function configureWordpressScheduler() {
+  function configureWordpressTrigger() {
     $scheduled_queues = SchedulerWorker::getScheduledQueues();
     $running_queues = SendingQueueWorker::getRunningQueues();
     $sending_limit_reached = MailerLog::isSendingLimitReached();
@@ -49,7 +48,7 @@ class TaskScheduler {
     //   2) queues are already being processed
     //   3) sending limit has not been reached
     if(($scheduled_queues || $running_queues) && !$sending_limit_reached) {
-      return $this->configureMailpoetScheduler();
+      return $this->configureMailpoetTrigger();
     }
     // in all other cases stop (delete) the daemon
     $cron_daemon = CronHelper::getDaemon();
@@ -66,6 +65,6 @@ class TaskScheduler {
   }
 
   static function getCurrentMethod() {
-    return Setting::getValue('task_scheduler.method');
+    return Setting::getValue('cron_trigger.method');
   }
 }

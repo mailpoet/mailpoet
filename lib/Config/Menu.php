@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Config;
 
+use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\CustomField;
@@ -255,7 +256,7 @@ class Menu {
     $data = array(
       'settings' => $settings,
       'segments' => Segment::getPublic()->findArray(),
-      'task_scheduler' => TaskScheduler::getAvailableMethods(),
+      'cron_trigger' => CronTrigger::getAvailableMethods(),
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),

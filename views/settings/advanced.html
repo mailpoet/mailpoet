@@ -51,9 +51,9 @@
           <label>
             <input
               type="radio"
-              name="task_scheduler[method]"
-              value="MailPoet"
-              <% if (settings.task_scheduler.method == 'MailPoet') %>
+              name="cron_trigger[method]"
+              value="<%= cron_trigger.mailpoet %>"
+              <% if (settings.cron_trigger.method == cron_trigger.mailpoet) %>
                 checked="checked"
                 <% endif %>
               /><%= __("MailPoet's own script. Doesn't work with [link]these hosts[/link].")
