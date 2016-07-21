@@ -29,9 +29,9 @@ class Cron {
 
   function getStatus() {
     $task_scheduler = TaskScheduler::getCurrentMethod();
-    $daemon = Setting::getSetting(CronHelper::DAEMON_SETTING);
+    $daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
     if($daemon) {
-      return unserialize($daemon->value);
+      return $daemon;
     }
     $status = ($task_scheduler === TaskScheduler::METHOD_WORDPRESS) ?
       'wordpress_task_scheduler_enabled' :
