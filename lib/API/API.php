@@ -56,9 +56,16 @@ class API {
 
   static function decodeRequestData($data) {
     $data = base64_decode($data);
-    return (is_serialized($data)) ?
-      unserialize($data) :
-      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid API data format.'));
+
+    if(is_serialized($data)) {
+      $data = unserialize($data);
+    }
+
+    if(!is_array($data)) {
+      $data = array();
+    }
+
+    return $data;
   }
 
   static function encodeRequestData($data) {

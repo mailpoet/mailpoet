@@ -10,6 +10,7 @@ class Subscription {
 
   static function confirm($data) {
     $subscription = new UserSubscription\Pages('confirm', $data);
+    $subscription->confirm();
   }
 
   static function manage($data) {
@@ -18,5 +19,6 @@ class Subscription {
 
   static function unsubscribe($data) {
     $subscription = new UserSubscription\Pages('unsubscribe', $data);
+    $subscription->unsubscribe();
   }
 }
