@@ -7,7 +7,6 @@ if(!defined('ABSPATH')) exit;
 
 class MailerLog {
   const MAILER_LOG_CONFIG = 'mta_log';
-  const SENDING_LIMIT_INTERVAL_MULTIPLIER = 60;
 
   static function getMailerLog() {
     $mailer_log = Setting::getValue(self::MAILER_LOG_CONFIG);
