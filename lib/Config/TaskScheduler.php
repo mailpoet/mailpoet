@@ -19,28 +19,29 @@ class TaskScheduler {
   }
 
   function init() {
-    // configure task scheduler only outside of cli environment
-    if(php_sapi_name() === 'cli') return;
-    switch($this->method) {
-      case self::METHOD_MAILPOET:
-        return $this->configureMailpoetScheduler();
-      break;
-      case self::METHOD_WORDPRESS:
-        return $this->configureWordpressScheduler();
-      break;
-      default:
-        throw new \Exception(__("Task scheduler is not configured"));
-      break;
-    };
+    try {
+      // configure task scheduler only outside of cli environment
+      if(php_sapi_name() === 'cli') return;
+      switch($this->method) {
+        case self::METHOD_MAILPOET:
+          return $this->configureMailpoetScheduler();
+        break;
+        case self::METHOD_WORDPRESS:
+          return $this->configureWordpressScheduler();
+        break;
+        default:
+          throw new \Exception(__("Task scheduler is not configured"));
+        break;
+      };
+    } catch(\Exception $e) {
+      // ignore exceptions as they should not prevent the rest of the site from loading
+    }
   }
 
   function configureMailpoetScheduler() {
-    try {
-      $supervisor = new Supervisor();
-      $supervisor->checkDaemon();
-    } catch(\Exception $e) {
-      // exceptions should not prevent the rest of the site loading
-    }
+    $supervisor = new Supervisor();
+    $supervisor->checkDaemon();
+    return;
   }
 
   function configureWordpressScheduler() {

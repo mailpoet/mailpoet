@@ -44,14 +44,14 @@ class Mailer {
           $this->sender,
           $this->reply_to
         );
-      break;
+        break;
       case self::METHOD_ELASTICEMAIL:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['api_key'],
           $this->sender,
           $this->reply_to
         );
-      break;
+        break;
       case self::METHOD_MAILGUN:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['domain'],
@@ -59,27 +59,27 @@ class Mailer {
           $this->sender,
           $this->reply_to
         );
-      break;
+        break;
       case self::METHOD_MAILPOET:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['mailpoet_api_key'],
           $this->sender,
           $this->reply_to
         );
-      break;
+        break;
       case self::METHOD_SENDGRID:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['api_key'],
           $this->sender,
           $this->reply_to
         );
-      break;
+        break;
       case self::METHOD_PHPMAIL:
         $mailer_instance = new $this->mailer['class'](
           $this->sender,
           $this->reply_to
         );
-      break;
+        break;
       case self::METHOD_SMTP:
         $mailer_instance = new $this->mailer['class'](
           $this->mailer['host'],
@@ -91,7 +91,7 @@ class Mailer {
           $this->sender,
           $this->reply_to
         );
-      break;
+        break;
       default:
         throw new \Exception(__('Mailing method does not exist'));
     }
@@ -103,6 +103,11 @@ class Mailer {
       $mailer = Setting::getValue(self::MAILER_CONFIG);
       if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured'));
     }
+    if(empty($mailer['frequency'])) {
+      $default_settings = Setting::getDefaults();
+      $mailer['frequency'] = $default_settings['mta']['frequency'];
+    }
+    // add additional variables to the mailer object
     $mailer['class'] = 'MailPoet\\Mailer\\Methods\\' . $mailer['method'];
     $mailer['frequency_interval'] =
       (int)$mailer['frequency']['interval'] * self::SENDING_LIMIT_INTERVAL_MULTIPLIER;
