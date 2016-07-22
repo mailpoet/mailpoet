@@ -15,9 +15,6 @@ class CronTrigger {
 
   function __construct() {
     $this->current_method = self::getCurrentMethod();
-    if(!in_array($this->current_method, self::$available_methods)) {
-      throw new \Exception(__('Task scheduler is not configured'));
-    }
   }
 
   function init() {
