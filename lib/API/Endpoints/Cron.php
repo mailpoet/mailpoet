@@ -28,14 +28,9 @@ class Cron {
   }
 
   function getStatus() {
-    $task_scheduler = CronTrigger::getCurrentMethod();
     $daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
-    if($daemon) {
-      return $daemon;
-    }
-    $status = ($task_scheduler === CronTrigger::METHOD_WORDPRESS) ?
-      'wordpress_task_scheduler_enabled' :
-      false;
-    return array('status' => $status);
+    return ($daemon) ?
+      $daemon :
+      array('status' => false);
   }
 }

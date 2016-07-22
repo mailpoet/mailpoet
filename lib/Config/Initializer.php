@@ -193,8 +193,8 @@ class Initializer {
   }
 
   function setupCronTrigger() {
-    $task_scheduler = new CronTrigger();
-    $task_scheduler->init();
+    $cron_trigger = new CronTrigger();
+    $cron_trigger->init();
   }
 
   function setupImages() {
