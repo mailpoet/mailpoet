@@ -11,7 +11,7 @@ if(!defined('ABSPATH')) exit;
 class CronTrigger {
   const METHOD_WORDPRESS = 'WordPress';
   const METHOD_MAILPOET = 'MailPoet';
-  const SETTING_VALUE = 'cron_trigger';
+  const SETTING_NAME = 'cron_trigger';
 
   function __construct() {
     $this->method = self::getCurrentMethod();

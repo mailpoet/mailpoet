@@ -6,10 +6,10 @@ use MailPoet\Models\Setting;
 if(!defined('ABSPATH')) exit;
 
 class MailerLog {
-  const SETTING_VALUE = 'mta_log';
+  const SETTING_NAME = 'mta_log';
 
   static function getMailerLog() {
-    $mailer_log = Setting::getValue(self::SETTING_VALUE);
+    $mailer_log = Setting::getValue(self::SETTING_NAME);
     if(!$mailer_log) {
       $mailer_log = self::createOrResetMailerLog();
     }
@@ -21,12 +21,12 @@ class MailerLog {
       'sent' => 0,
       'started' => time()
     );
-    Setting::setValue(self::SETTING_VALUE, $mailer_log);
+    Setting::setValue(self::SETTING_NAME, $mailer_log);
     return $mailer_log;
   }
 
   static function updateMailerLog($mailer_log) {
-    Setting::setValue(self::SETTING_VALUE, $mailer_log);
+    Setting::setValue(self::SETTING_NAME, $mailer_log);
     return $mailer_log;
   }
 

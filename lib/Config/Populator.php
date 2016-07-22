@@ -75,9 +75,9 @@ class Populator {
   private function createDefaultSettings() {
     $current_user = wp_get_current_user();
 
-    if(!Setting::getValue(CronTrigger::SETTING_VALUE)) {
+    if(!Setting::getValue(CronTrigger::SETTING_NAME)) {
       // disable task scheduler (cron) be default
-      Setting::setValue(CronTrigger::SETTING_VALUE, array(
+      Setting::setValue(CronTrigger::SETTING_NAME, array(
         'method' => CronTrigger::METHOD_WORDPRESS
       ));
     }
