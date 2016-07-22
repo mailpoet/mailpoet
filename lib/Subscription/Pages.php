@@ -20,7 +20,7 @@ class Pages {
   private $data;
   private $subscriber;
 
-  function __construct($action, $data) {
+  function __construct($action, $data = array()) {
     $this->action = $action;
     $this->data = $data;
     $this->subscriber = $this->getSubscriber();
@@ -59,10 +59,8 @@ class Pages {
 
   function confirm() {
     if($this->subscriber !== false) {
-      if($this->subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
-        $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-        $this->subscriber->save();
-      }
+      $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+      $this->subscriber->save();
     }
   }
 
@@ -78,14 +76,19 @@ class Pages {
   function setPageTitle($page_title = '') {
     global $post;
 
-    if($post->post_title !== __('MailPoet Page')) return $page_title;
+    if($this->isPreview() === false && $this->subscriber === false) {
+      return __("Hmmm... we don't have a record of you");
+    }
+
     if(
-      ($this->isMailPoetPage($post->ID) === false)
+      ($post->post_title !== __('MailPoet Page'))
       ||
       ($page_title !== single_post_title('', false))
     ) {
+      // when it's a custom page, just return the original page title
       return $page_title;
     } else {
+      // when it's our own page, generate page title based on requested action
       switch($this->action) {
         case 'confirm':
           return $this->getConfirmTitle();
@@ -97,36 +100,31 @@ class Pages {
           return $this->getUnsubscribeTitle();
       }
     }
-    return $page_title;
   }
 
   function setPageContent($page_content = '[mailpoet_page]') {
     global $post;
 
-    if(
-      ($this->isPreview() === false)
-      &&
-      ($this->isMailPoetPage($post->ID) === false)
-    ) {
-      return $page_content;
-    }
-
-    $content = '';
-
-    switch($this->action) {
-      case 'confirm':
-        $content = $this->getConfirmContent();
-        break;
-      case 'manage':
-        $content = $this->getManageContent();
-        break;
-      case 'unsubscribe':
-        $content = $this->getUnsubscribeContent();
-        break;
+    // if we're not in preview mode and the subscriber does not exist
+    if($this->isPreview() === false && $this->subscriber === false) {
+      return __("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.");
     }
 
     if(strpos($page_content, '[mailpoet_page]') !== false) {
-      return str_replace('[mailpoet_page]', $content, $page_content);
+      $content = '';
+
+      switch($this->action) {
+        case 'confirm':
+          $content = $this->getConfirmContent();
+          break;
+        case 'manage':
+          $content = $this->getManageContent();
+          break;
+        case 'unsubscribe':
+          $content = $this->getUnsubscribeContent();
+          break;
+      }
+      return str_replace('[mailpoet_page]', trim($content), $page_content);
     } else {
       return $page_content;
     }
@@ -150,22 +148,12 @@ class Pages {
     return $meta;
   }
 
-  function isMailPoetPage($page_id = null) {
-    $mailpoet_page_ids = array_unique(array_values(
-      Setting::getValue('subscription.pages', array())
-    ));
-
-    return (in_array($page_id, $mailpoet_page_ids));
-  }
-
   private function getConfirmTitle() {
     if($this->isPreview()) {
       $title = sprintf(
         __("You have subscribed to: %s"),
         'demo 1, demo 2'
       );
-    } else if($this->subscriber === false) {
-      $title = __('Your confirmation link expired, please subscribe again');
     } else {
       $segment_names = array_map(function($segment) {
         return $segment->name;

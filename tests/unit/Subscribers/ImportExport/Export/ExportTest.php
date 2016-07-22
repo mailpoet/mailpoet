@@ -225,7 +225,7 @@ class ExportTest extends MailPoetTest {
     $this->export->export_path = '/fake_folder';
     $result = $this->export->process();
     expect($result['errors'][0])
-      ->equals("Couldn't save export file on the server.");
+      ->equals("Couldn't save export file on the server");
   }
 
   function testItCanProcess() {

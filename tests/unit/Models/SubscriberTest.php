@@ -56,7 +56,7 @@ class SubscriberTest extends MailPoetTest {
     ));
     $subscriber->save();
     $errors = $subscriber->getErrors();
-    expect($errors)->contains("Your email address is invalid.");
+    expect($errors)->contains("Your email address is invalid!");
 
     // pdo error
     $subscriber = Subscriber::create();

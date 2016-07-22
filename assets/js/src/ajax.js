@@ -1,4 +1,4 @@
-define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
+define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, _) {
   'use strict';
   MailPoet.Ajax = {
       version: 0.5,
@@ -51,6 +51,13 @@ define('ajax', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         // set request params
         var params = this.getParams();
         var jqXHR;
+
+        // remove null values from the data object
+        if (_.isObject(params.data)) {
+          params.data = _.pick(params.data, function(value) {
+            return (value !== null)
+          })
+        }
 
         // make ajax request depending on method
         if(method === 'get') {

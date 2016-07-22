@@ -4,6 +4,7 @@ use \MailPoet\Models\Newsletter;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\SubscriberSegment;
 use \MailPoet\Subscription;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 
 class Shortcodes {
   function __construct() {
@@ -113,7 +114,9 @@ class Shortcodes {
   }
 
   function renderArchiveSubject($newsletter) {
-    return '<a href="TODO" target="_blank" title="'
+    $preview_url = NewsletterUrl::getViewInBrowserUrl($newsletter);
+
+    return '<a href="'.esc_attr($preview_url).'" target="_blank" title="'
       .esc_attr(__('Preview in a new tab')).'">'
       .esc_attr($newsletter->subject).
     '</a>';

@@ -19,7 +19,7 @@ class FormTest extends MailPoetTest {
     $errors = $result->getErrors();
 
     expect(is_array($errors))->true();
-    expect($errors[0])->equals('Please specify a name.');
+    expect($errors[0])->equals('Please specify a name');
   }
 
   function testItCanBeGrouped() {

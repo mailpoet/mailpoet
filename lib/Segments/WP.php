@@ -8,9 +8,9 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 class WP {
   static function synchronizeUser($wp_user_id, $old_wp_user_data = false) {
     $wp_user = \get_userdata($wp_user_id);
-    $wp_users_segment = Segment::getWPSegment();
+    $wp_segment = Segment::getWPSegment();
 
-    if($wp_user === false or $wp_users_segment === false) return;
+    if($wp_user === false or $wp_segment === false) return;
 
     $subscriber = Subscriber::where('wp_user_id', $wp_user->ID)
       ->findOne();
@@ -20,8 +20,14 @@ class WP {
       case 'delete_user':
       case 'deleted_user':
       case 'remove_user_from_blog':
-        if($subscriber !== false && $subscriber->id()) {
-          $subscriber->delete();
+        if($subscriber !== false) {
+          // unlink subscriber to wp user
+          $subscriber->setExpr('wp_user_id', 'NULL')->save();
+
+          // delete subscription to wp segment
+          SubscriberSegment::where('subscriber_id', $subscriber->id)
+            ->where('segment_id', $wp_segment->id)
+            ->deleteMany();
         }
         break;
       case 'profile_update':
@@ -55,7 +61,7 @@ class WP {
           // add subscriber to the WP Users segment
           SubscriberSegment::subscribeToSegments(
             $subscriber,
-            array($wp_users_segment->id)
+            array($wp_segment->id)
           );
 
           // welcome email
@@ -73,7 +79,7 @@ class WP {
 
   static function synchronizeUsers() {
     // get wordpress users list
-    $wp_users_segment = Segment::getWPSegment();
+    $wp_segment = Segment::getWPSegment();
 
     // fetch all wp users id
     $wp_users = \get_users(array(

@@ -59,7 +59,7 @@ class FormsTest extends MailPoetTest {
     $router = new Forms();
     $response = $router->save(/* missing data */);
     expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please specify a name.');
+    expect($response['errors'][0])->equals('Please specify a name');
 
     $response = $router->save($form_data);
     expect($response['result'])->true();

@@ -72,8 +72,8 @@ class CustomFieldTest extends MailPoetTest {
     $errors = $result->getErrors();
 
     expect(is_array($errors))->true();
-    expect($errors[0])->equals('Please specify a name.');
-    expect($errors[1])->equals('Please specify a type.');
+    expect($errors[0])->equals('Please specify a name');
+    expect($errors[1])->equals('Please specify a type');
   }
 
   function testItHasACreatedAtOnCreation() {
