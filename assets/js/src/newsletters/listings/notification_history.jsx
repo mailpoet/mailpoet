@@ -11,59 +11,10 @@ import { QueueMixin, StatisticsMixin } from 'newsletters/listings/mixins.jsx'
 
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
 
-const messages = {
-  onTrash(response) {
-    const count = ~~response;
-    let message = null;
-
-    if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterTrashed')
-      );
-    } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%$1d', count);
-    }
-    MailPoet.Notice.success(message);
-  },
-  onDelete(response) {
-    const count = ~~response;
-    let message = null;
-
-    if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterDeleted')
-      );
-    } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%$1d', count);
-    }
-    MailPoet.Notice.success(message);
-  },
-  onRestore(response) {
-    const count = ~~response;
-    let message = null;
-
-    if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterRestored')
-      );
-    } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%$1d', count);
-    }
-    MailPoet.Notice.success(message);
-  }
-};
-
 const columns = [
   {
     name: 'subject',
     label: MailPoet.I18n.t('subject'),
-    sortable: true
   },
   {
     name: 'status',
@@ -79,18 +30,8 @@ const columns = [
     display: mailpoet_tracking_enabled
   },
   {
-    name: 'updated_at',
-    label: MailPoet.I18n.t('lastModifiedOn'),
-    sortable: true
-  }
-];
-
-
-const bulk_actions = [
-  {
-    name: 'trash',
-    label: MailPoet.I18n.t('trash'),
-    onSuccess: messages.onTrash
+    name: 'processed_at',
+    label: MailPoet.I18n.t('sentOn'),
   }
 ];
 
@@ -104,43 +45,10 @@ const newsletter_actions = [
         </a>
       );
     }
-  },
-  {
-    name: 'edit',
-    link: function(newsletter) {
-      return (
-        <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
-          {MailPoet.I18n.t('edit')}
-        </a>
-      );
-    }
-  },
-  {
-    name: 'duplicate',
-    label: MailPoet.I18n.t('duplicate'),
-    onClick: function(newsletter, refresh) {
-      return MailPoet.Ajax.post({
-        endpoint: 'newsletters',
-        action: 'duplicate',
-        data: newsletter.id
-      }).done(function(response) {
-        if (response !== false && response.subject !== undefined) {
-          MailPoet.Notice.success(
-            (MailPoet.I18n.t('newsletterDuplicated')).replace(
-              '%$1s', response.subject
-            )
-          );
-        }
-        refresh();
-      });
-    }
-  },
-  {
-    name: 'trash'
   }
 ];
 
-const NewsletterListStandard = React.createClass({
+const NewsletterListNotificationHistory = React.createClass({
   mixins: [QueueMixin, StatisticsMixin],
   renderItem: function(newsletter, actions) {
     const rowClasses = classNames(
@@ -158,8 +66,8 @@ const NewsletterListStandard = React.createClass({
         <td className={ rowClasses }>
           <strong>
             <a
-              className="row-title"
-              href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }
+              href={ newsletter.preview_url }
+              target="_blank"
             >{ newsletter.subject }</a>
           </strong>
           { actions }
@@ -188,20 +96,23 @@ const NewsletterListStandard = React.createClass({
           {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
         </h1>
 
-        <ListingTabs tab="standard" />
+        <ListingTabs tab="notification" />
+
+        <Link
+          className="page-title-action"
+          to="/notification"
+        >{MailPoet.I18n.t('backToPostNotifications')}</Link>
 
         <Listing
           limit={ mailpoet_listing_per_page }
           location={ this.props.location }
           params={ this.props.params }
           endpoint="newsletters"
-          type="standard"
-          base_url="standard"
-          onRenderItem={this.renderItem}
+          type="notification_history"
+          base_url="notification/history/:parent_id"
+          onRenderItem={ this.renderItem }
           columns={columns}
-          bulk_actions={ bulk_actions }
           item_actions={ newsletter_actions }
-          messages={ messages }
           auto_refresh={ true }
           sort_by="updated_at"
           sort_order="desc"
@@ -211,4 +122,4 @@ const NewsletterListStandard = React.createClass({
   }
 });
 
-module.exports = NewsletterListStandard;
+module.exports = NewsletterListNotificationHistory;

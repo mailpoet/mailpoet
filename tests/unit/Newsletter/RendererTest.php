@@ -19,7 +19,9 @@ class NewsletterRendererTest extends MailPoetTest {
       ),
       'id' => 1,
       'subject' => 'Some subject',
-      'preheader' => 'Some preheader'
+      'preheader' => 'Some preheader',
+      'type' => 'standard',
+      'status' => 'active'
     );
     $this->renderer = new Renderer($this->newsletter);
     $this->column_renderer = new ColumnRenderer();

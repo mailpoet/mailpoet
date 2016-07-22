@@ -252,6 +252,20 @@ const NewsletterListNotification = React.createClass({
       </span>
     );
   },
+  renderHistoryLink: function(newsletter) {
+    const childrenCount = ~~(newsletter.children_count);
+    if (childrenCount === 0) {
+      return (
+        MailPoet.I18n.t('notSentYet')
+      );
+    } else {
+      return (
+        <Link
+          to={ `/notification/history/${ newsletter.id }` }
+        >{ MailPoet.I18n.t('viewHistory') }</Link>
+      );
+    }
+  },
   renderItem: function(newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
@@ -277,7 +291,7 @@ const NewsletterListNotification = React.createClass({
           { this.renderSettings(newsletter) }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('history') }>
-          <a href="#TODO">{ MailPoet.I18n.t('viewHistory') }</a>
+          { this.renderHistoryLink(newsletter) }
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
@@ -299,7 +313,8 @@ const NewsletterListNotification = React.createClass({
           location={ this.props.location }
           params={ this.props.params }
           endpoint="newsletters"
-          tab="notification"
+          type="notification"
+          base_url="notification"
           onRenderItem={ this.renderItem }
           columns={ columns }
           bulk_actions={ bulk_actions }

@@ -16,8 +16,8 @@ class Handler {
     $this->model = \Model::factory($this->model_class);
 
     $this->data = array(
-      // tabs
-      'tab' => (isset($data['tab']) ? $data['tab'] : false),
+      // extra parameters
+      'params' => (isset($data['params']) ? $data['params'] : array()),
       // pagination
       'offset' => (isset($data['offset']) ? (int)$data['offset'] : 0),
       'limit' => (isset($data['limit'])
@@ -121,7 +121,6 @@ class Handler {
           $this->table_name.'.'.$this->data['sort_by']
         )
         ->findMany();
-
     } else {
       $this->setFilter();
       $this->setGroup();

@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Renderer {
@@ -10,7 +11,10 @@ class Renderer {
   function __construct(array $newsletter, $posts = false) {
     $this->newsletter = $newsletter;
     $this->posts = array();
-    $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent($this->newsletter['id']);
+    $newsletter_id = ($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) ?
+      $newsletter['parent_id'] :
+      $newsletter['id'];
+    $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent($newsletter_id);
   }
 
   function render($data, $column_count) {
@@ -45,12 +49,12 @@ class Renderer {
 
   function processAutomatedLatestContent($args, $column_count) {
     $posts_to_exclude = $this->getPosts();
-    $ALCPosts = $this->ALC->getPosts($args, $posts_to_exclude);
-    foreach($ALCPosts as $post) {
+    $ALC_posts = $this->ALC->getPosts($args, $posts_to_exclude);
+    foreach($ALC_posts as $post) {
       $posts_to_exclude[] = $post->ID;
     }
     $transformed_posts = array(
-      'blocks' => $this->ALC->transformPosts($args, $ALCPosts)
+      'blocks' => $this->ALC->transformPosts($args, $ALC_posts)
     );
     $this->setPosts($posts_to_exclude);
     $transformed_posts = StylesHelper::applyTextAlignment($transformed_posts);

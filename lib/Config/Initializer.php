@@ -56,6 +56,7 @@ class Initializer {
     \ORM::configure(Env::$db_source_name);
     \ORM::configure('username', Env::$db_username);
     \ORM::configure('password', Env::$db_password);
+    \ORM::configure('logging', WP_DEBUG);
     \ORM::configure('driver_options', array(
       \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
       \PDO::MYSQL_ATTR_INIT_COMMAND =>
