@@ -32,7 +32,7 @@ class API {
     $endpoint = self::ENDPOINT_NAMESPACE . ucfirst($this->endpoint);
     if(!$this->api_request) return;
     if(!$this->endpoint || !class_exists($endpoint)) {
-      $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid API endpoint.'));
+      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid API endpoint.'));
     }
     $this->callEndpoint(
       $endpoint,
@@ -43,7 +43,7 @@ class API {
 
   function callEndpoint($endpoint, $action, $data) {
     if(!method_exists($endpoint, $action)) {
-      $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid API action.'));
+      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid API action.'));
     }
     call_user_func(
       array(
@@ -76,7 +76,7 @@ class API {
     return add_query_arg($params, home_url());
   }
 
-  function terminateRequest($code, $message) {
+  static function terminateRequest($code, $message) {
     status_header($code, $message);
     exit;
   }
