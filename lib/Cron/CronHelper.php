@@ -11,10 +11,10 @@ if(!defined('ABSPATH')) exit;
 class CronHelper {
   const DAEMON_EXECUTION_LIMIT = 20;
   const DAEMON_EXECUTION_TIMEOUT = 35;
-  const DAEMON_REQUEST_TIMEOUT = 2;
+  const DAEMON_REQUEST_TIMEOUT = 5;
   const DAEMON_SETTING = 'cron_daemon';
 
-  static function createDaemon($token) {
+  static function createOrRestartDaemon($token) {
     $daemon = array(
       'status' => Daemon::STATUS_STARTING,
       'token' => $token
@@ -49,7 +49,7 @@ class CronHelper {
     return Security::generateRandomString();
   }
 
-  static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
+  static function accessDaemon($token) {
     $data = array('token' => $token);
     $url = FrontRouter::buildRequest(
       QueueEndpoint::ENDPOINT,
@@ -57,7 +57,9 @@ class CronHelper {
       $data
     );
     $args = array(
-      'timeout' => $timeout,
+      'blocking' => false,
+      'sslverify' => false,
+      'timeout' => self::DAEMON_REQUEST_TIMEOUT,
       'user-agent' => 'MailPoet (www.mailpoet.com) Cron'
     );
     $result = wp_remote_get($url, $args);

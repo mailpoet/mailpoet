@@ -16,7 +16,6 @@ class Daemon {
   const STATUS_STOPPING = 'stopping';
   const STATUS_STARTED = 'started';
   const STATUS_STARTING = 'starting';
-  const REQUEST_TIMEOUT = 5;
   private $timer;
 
   function __construct($data) {
@@ -78,13 +77,14 @@ class Daemon {
     }
   }
 
-  function abortWithError($message) {
-    exit('[mailpoet_cron_error:' . base64_encode($message) . ']');
+  function callSelf() {
+    CronHelper::accessDaemon($this->token);
+    $this->terminateRequest();
   }
 
-  function callSelf() {
-    CronHelper::accessDaemon($this->token, self::REQUEST_TIMEOUT);
-    $this->terminateRequest();
+  function abortWithError($message) {
+    status_header(404, $message);
+    exit;
   }
 
   function terminateRequest() {
