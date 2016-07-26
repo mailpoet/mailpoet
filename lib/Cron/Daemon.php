@@ -16,6 +16,7 @@ class Daemon {
   const STATUS_STOPPING = 'stopping';
   const STATUS_STARTED = 'started';
   const STATUS_STARTING = 'starting';
+  const REQUEST_TIMEOUT = 5;
   private $timer;
 
   function __construct($data) {
@@ -78,7 +79,7 @@ class Daemon {
   }
 
   function callSelf() {
-    CronHelper::accessDaemon($this->token);
+    CronHelper::accessDaemon($this->token, self::REQUEST_TIMEOUT);
     $this->terminateRequest();
   }
 
