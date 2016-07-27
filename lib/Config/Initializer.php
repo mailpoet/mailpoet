@@ -4,12 +4,16 @@ namespace MailPoet\Config;
 use MailPoet\Models;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Router;
+use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
+
+  protected $plugin_initialized = false;
+
   function __construct($params = array(
     'file' => '',
     'version' => '1.0.0'
@@ -26,30 +30,6 @@ class Initializer {
     add_action('plugins_loaded', array($this, 'setup'));
     add_action('init', array($this, 'onInit'));
     add_action('widgets_init', array($this, 'setupWidget'));
-  }
-
-  function setup() {
-    try {
-      $this->setupRenderer();
-      $this->setupLocalizer();
-      $this->setupMenu();
-      $this->setupAnalytics();
-      $this->setupChangelog();
-      $this->setupShortcodes();
-      $this->setupHooks();
-      $this->setupImages();
-      $this->runQueueSupervisor();
-    } catch(\Exception $e) {
-      // if anything goes wrong during init
-      // automatically deactivate the plugin
-      deactivate_plugins(Env::$file);
-    }
-  }
-
-  function onInit() {
-    $this->setupRouter();
-    $this->setupAPI();
-    $this->setupPages();
   }
 
   function setupDB() {
@@ -116,6 +96,51 @@ class Initializer {
     $populator->up();
   }
 
+  function setup() {
+    try {
+      $this->setupRenderer();
+      $this->setupLocalizer();
+      $this->setupMenu();
+      $this->setupAnalytics();
+      $this->setupChangelog();
+      $this->setupShortcodes();
+      $this->setupHooks();
+      $this->setupImages();
+      $this->runQueueSupervisor();
+
+      $this->plugin_initialized = true;
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e);
+    }
+  }
+
+  function onInit() {
+    if(!$this->plugin_initialized) {
+      return;
+    }
+
+    try {
+      $this->setupRouter();
+      $this->setupAPI();
+      $this->setupPages();
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e);
+    }
+  }
+
+  function setupWidget() {
+    if(!$this->plugin_initialized) {
+      return;
+    }
+
+    try {
+      $widget = new Widget($this->renderer);
+      $widget->init();
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e);
+    }
+  }
+
   function setupRenderer() {
     $renderer = new Renderer();
     $this->renderer = $renderer->init();
@@ -136,14 +161,9 @@ class Initializer {
     $router->init();
   }
 
-  function setupWidget() {
-    $widget = new Widget($this->renderer);
-    $widget->init();
-  }
-
   function setupAnalytics() {
-    $widget = new Analytics();
-    $widget->init();
+    $analytics = new Analytics();
+    $analytics->init();
   }
 
   function setupChangelog() {
@@ -183,5 +203,9 @@ class Initializer {
 
   function setupImages() {
     add_image_size('mailpoet_newsletter_max', 1320);
+  }
+
+  function handleFailedInitialization($message) {
+    return WPNotice::displayError($message);
   }
 }
