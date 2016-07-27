@@ -109,7 +109,7 @@ class Initializer {
 
       $this->plugin_initialized = true;
     } catch(\Exception $e) {
-      $this->handleFailedInitialization($e->getMessage());
+      $this->handleFailedInitialization($e);
     }
   }
 
@@ -123,7 +123,7 @@ class Initializer {
       $this->setupAPI();
       $this->setupPages();
     } catch(\Exception $e) {
-      $this->handleFailedInitialization($e->getMessage());
+      $this->handleFailedInitialization($e);
     }
   }
 
@@ -136,7 +136,7 @@ class Initializer {
       $widget = new Widget($this->renderer);
       $widget->init();
     } catch(\Exception $e) {
-      $this->handleFailedInitialization($e->getMessage());
+      $this->handleFailedInitialization($e);
     }
   }
 
