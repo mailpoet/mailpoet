@@ -3,6 +3,14 @@ namespace MailPoet\WP;
 
 class Notice {
 
+  const TYPE_ERROR = 'error';
+  const TYPE_WARNING = 'warning';
+  const TYPE_SUCCESS = 'success';
+  const TYPE_INFO = 'info';
+
+  private $type;
+  private $message;
+
   protected function __construct($type, $message) {
     $this->type = $type;
     $this->message = $message;
@@ -14,19 +22,19 @@ class Notice {
       __('MailPoet Error:'),
       $message
     );
-    self::createNotice('error', $message);
+    self::createNotice(self::TYPE_ERROR, $message);
   }
 
   static function displayWarning($message) {
-    self::createNotice('warning', $message);
+    self::createNotice(self::TYPE_WARNING, $message);
   }
 
   static function displaySuccess($message) {
-    self::createNotice('success', $message);
+    self::createNotice(self::TYPE_SUCCESS, $message);
   }
 
   static function displayInfo($message) {
-    self::createNotice('info', $message);
+    self::createNotice(self::TYPE_INFO, $message);
   }
 
   protected static function createNotice($type, $message) {
