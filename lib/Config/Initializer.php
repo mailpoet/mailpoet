@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Models;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Router;
+use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
 
@@ -204,26 +205,7 @@ class Initializer {
     add_image_size('mailpoet_newsletter_max', 1320);
   }
 
-  function handleFailedInitialization($error_message) {
-    return $this->displayAdminErrorNotice($error_message);
-  }
-
-  /**
-   * TODO: Extract notice and error handling into a separate component.
-   */
-  protected function displayAdminErrorNotice($message) {
-    $this->error_message = $message;
-    return add_action('admin_notices', array($this, 'displayWPNotice'));
-  }
-
-  function displayWPNotice() {
-    $class = 'notice notice-error';
-    $message = sprintf(
-      "<b>%s </b> %s",
-      __('MailPoet Error:'),
-      $this->error_message
-    );
-
-    printf('<div class="%1$s"><p>%2$s</p></div>', $class, $message);
+  function handleFailedInitialization($message) {
+    return WPNotice::displayError($message);
   }
 }
