@@ -1,10 +1,11 @@
 <?php
-namespace MailPoet\Router;
+namespace MailPoet\API;
+
 use \MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
-class Router {
+class API {
   function __construct() {
   }
 

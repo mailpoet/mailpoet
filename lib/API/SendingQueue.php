@@ -1,5 +1,6 @@
 <?php
-namespace MailPoet\Router;
+namespace MailPoet\API;
+
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;

@@ -1,5 +1,6 @@
 <?php
-use \MailPoet\Router\Forms;
+use \MailPoet\API
+    \Forms;
 use \MailPoet\Models\Form;
 use \MailPoet\Models\Segment;
 

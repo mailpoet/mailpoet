@@ -1,6 +1,7 @@
 <?php
 
-use \MailPoet\Router\CustomFields;
+use \MailPoet\API
+    \CustomFields;
 use \MailPoet\Models\CustomField;
 
 class CustomFieldsTest extends MailPoetTest {

@@ -1,5 +1,6 @@
 <?php
-namespace MailPoet\Router;
+namespace MailPoet\API;
+
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\SubscriberSegment;
 use \MailPoet\Models\SegmentFilter;

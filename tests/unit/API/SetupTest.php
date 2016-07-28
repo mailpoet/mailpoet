@@ -1,5 +1,6 @@
 <?php
-use \MailPoet\Router\Setup;
+use \MailPoet\API
+    \Setup;
 use \MailPoet\Models\Setting;
 
 class SetupTest extends MailPoetTest {

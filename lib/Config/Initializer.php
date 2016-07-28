@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Models;
 use MailPoet\Cron\Supervisor;
 use MailPoet\Router;
+use MailPoet\API;
 use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
@@ -120,11 +121,7 @@ class Initializer {
     }
 
     try {
-      // legacy router
-      $this->setupRouter();
-      // new api (will replace legacy router completely)
       $this->setupAPI();
-
       $this->setupFrontRouter();
       $this->setupPages();
     } catch(\Exception $e) {
@@ -160,11 +157,6 @@ class Initializer {
     $menu->init();
   }
 
-  function setupRouter() {
-    $router = new Router\Router();
-    $router->init();
-  }
-
   function setupAnalytics() {
     $analytics = new Analytics();
     $analytics->init();
@@ -191,7 +183,8 @@ class Initializer {
   }
 
   function setupAPI() {
-
+    $api = new API\API();
+    $api->init();
   }
 
   function setupFrontRouter() {
