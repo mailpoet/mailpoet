@@ -212,7 +212,7 @@ class Subscriber extends Model {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
-      'label' => __('All segments'),
+      'label' => __('All Lists'),
       'value' => ''
     );
 
