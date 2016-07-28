@@ -80,7 +80,7 @@ class Links {
       // i.e., <a href="http://google.com">(http://google.com)</a> => [(http://google.com)](http://tracked_link)
       $regex_escaped_extracted_link = preg_quote($extracted_link['link'], '/');
       $content = preg_replace(
-        '/\[(' . $regex_escaped_extracted_link . ')\](\(' . $regex_escaped_extracted_link . '\))/',
+        '/\[(.*?)\](\(' . $regex_escaped_extracted_link . '\))/',
         '[$1](' . $tracked_link . ')',
         $content
       );
