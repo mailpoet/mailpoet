@@ -611,4 +611,31 @@ class Newsletter extends Model {
       ->whereIn('options.value', $segments)
       ->findMany();
   }
+
+  static function getArchives($segment_ids = array()) {
+    $orm = self::table_alias('newsletters')
+      ->distinct()->select('newsletters.*')
+      ->whereIn('newsletters.type', array(
+        self::TYPE_STANDARD,
+        self::TYPE_NOTIFICATION_HISTORY
+      ))
+      ->join(
+        MP_SENDING_QUEUES_TABLE,
+        'queues.newsletter_id = newsletters.id',
+        'queues'
+      )
+      ->where('queues.status', SendingQueue::STATUS_COMPLETED)
+      ->select('queues.processed_at')
+      ->orderByDesc('queues.processed_at');
+
+    if(!empty($segment_ids)) {
+      $orm->join(
+        MP_NEWSLETTER_SEGMENT_TABLE,
+        'newsletter_segments.newsletter_id = newsletters.id',
+        'newsletter_segments'
+      )
+      ->whereIn('newsletter_segments.segment_id', $segment_ids);
+    }
+    return $orm->findMany();
+  }
 }

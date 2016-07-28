@@ -67,17 +67,16 @@ class Shortcodes {
   }
 
   function getArchive($params) {
+    $segment_ids = array();
     if(!empty($params['segments'])) {
       $segment_ids = array_map(function($segment_id) {
         return (int)trim($segment_id);
       }, explode(',', $params['segments']));
     }
 
-    $newsletters = array();
     $html = '';
 
-    // TODO: needs more advanced newsletters in order to finish
-    $newsletters = Newsletter::limit(10)->orderByDesc('created_at')->findMany();
+    $newsletters = Newsletter::getArchives($segment_ids);
 
     if(empty($newsletters)) {
       return apply_filters(
@@ -109,7 +108,7 @@ class Shortcodes {
   function renderArchiveDate($newsletter) {
     return date_i18n(
       get_option('date_format'),
-      strtotime($newsletter->created_at)
+      strtotime($newsletter->processed_at)
     );
   }
 
