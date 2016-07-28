@@ -17,7 +17,7 @@ class ImportExportFactory {
       Segment::getSegmentsWithSubscriberCount() :
       Segment::getSegmentsForExport($with_confirmed_subscribers);
     return array_map(function($segment) {
-      if(!$segment['name']) $segment['name'] = __('Not In Segment');
+      if(!$segment['name']) $segment['name'] = __('Not In List');
       if(!$segment['id']) $segment['id'] = 0;
       return array(
         'id' => $segment['id'],
@@ -70,11 +70,11 @@ class ImportExportFactory {
       array(
         array(
           'id' => 'ignore',
-          'name' => __('Ignore column...'),
+          'name' => __('Ignore field...'),
         ),
         array(
           'id' => 'create',
-          'name' => __('Create new column...')
+          'name' => __('Create new field...')
         ),
       ) :
       array(
@@ -93,13 +93,13 @@ class ImportExportFactory {
         'children' => $actions
       ),
       array(
-        'name' => __('System columns'),
+        'name' => __('System fields'),
         'children' => $this->formatSubscriberFields($subscriber_fields)
       )
     );
     if($subscriber_custom_fields) {
       array_push($select2Fields, array(
-        'name' => __('User columns'),
+        'name' => __('User fields'),
         'children' => $this->formatSubscriberCustomFields(
           $subscriber_custom_fields
         )

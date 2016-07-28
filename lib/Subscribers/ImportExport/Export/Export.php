@@ -84,7 +84,7 @@ class Export {
     // Excel to automatically recognize the encoding
     fwrite($CSV_file, chr(0xEF) . chr(0xBB) . chr(0xBF));
     if($this->group_by_segment_option) {
-      $formatted_subscriber_fields[] = __('Segment');
+      $formatted_subscriber_fields[] = __('List');
     }
     fwrite(
       $CSV_file,

@@ -218,7 +218,7 @@ class Subscriber extends Model {
 
     $subscribers_without_segment = self::filter('withoutSegments')->count();
     $subscribers_without_segment_label = sprintf(
-      __('Subscribers without a segment (%s)'),
+      __('Subscribers without a list (%s)'),
       number_format($subscribers_without_segment)
     );
 
