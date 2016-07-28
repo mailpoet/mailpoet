@@ -172,7 +172,7 @@ class Export {
     return $XLSX_writer->writeSheetRow(
       ($this->group_by_segment_option) ?
         ucwords($segment) :
-        __('All Segments'),
+        __('All Lists'),
       $data
     );
   }

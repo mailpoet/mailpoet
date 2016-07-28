@@ -51,7 +51,7 @@ class SendingQueue {
         return array(
           'result' => true,
           'data' => array(
-            'message' => __('Your welcome email has been activated')
+            'message' => __('Your Welcome Email has been activated')
           )
         );
       }
@@ -120,7 +120,7 @@ class SendingQueue {
       if(!count($subscribers)) {
         return array(
           'result' => false,
-          'errors' => array(__('There are no subscribers'))
+          'errors' => array(__('There are no subscribers in that list!'))
         );
       }
       $queue->status = null;
