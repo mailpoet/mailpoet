@@ -25,8 +25,10 @@ class Shortcodes {
 
   function extract($content, $categories = false) {
     $categories = (is_array($categories)) ? implode('|', $categories) : false;
+    // match: [category:shortcode] or [category|category|...:shortcode]
+    // dot not match: [category://shortcode] - avoids matching http/ftp links
     $regex = sprintf(
-      '/\[%s:.*?\]/ism',
+      '/\[%s:(?!\/\/).*?\]/ism',
       ($categories) ? '(?:' . $categories . ')' : '(?:\w+)'
     );
     preg_match_all($regex, $content, $shortcodes);
