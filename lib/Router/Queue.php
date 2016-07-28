@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\API\Endpoints;
+namespace MailPoet\Router;
 
 use MailPoet\Cron\Daemon;
 

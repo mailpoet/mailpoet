@@ -1,8 +1,8 @@
 <?php
 namespace MailPoet\Cron;
 
-use MailPoet\API\API;
-use MailPoet\API\Endpoints\Queue as QueueAPI;
+use MailPoet\Router\Front as FrontRouter;
+use MailPoet\Router\Queue as QueueEndpoint;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Security;
 
@@ -40,9 +40,9 @@ class CronHelper {
 
   static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
     $data = array('token' => $token);
-    $url = API::buildRequest(
-      QueueAPI::ENDPOINT,
-      QueueAPI::ACTION_RUN,
+    $url = FrontRouter::buildRequest(
+      QueueEndpoint::ENDPOINT,
+      QueueEndpoint::ACTION_RUN,
       $data
     );
     $args = array(

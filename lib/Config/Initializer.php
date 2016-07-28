@@ -120,8 +120,12 @@ class Initializer {
     }
 
     try {
+      // legacy router
       $this->setupRouter();
+      // new api (will replace legacy router completely)
       $this->setupAPI();
+
+      $this->setupFrontRouter();
       $this->setupPages();
     } catch(\Exception $e) {
       $this->handleFailedInitialization($e);
@@ -187,8 +191,12 @@ class Initializer {
   }
 
   function setupAPI() {
-    $API = new \MailPoet\API\API();
-    $API->init();
+
+  }
+
+  function setupFrontRouter() {
+    $router = new Router\Front();
+    $router->init();
   }
 
   function runQueueSupervisor() {

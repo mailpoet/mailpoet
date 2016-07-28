@@ -1,17 +1,16 @@
 <?php
-namespace MailPoet\API;
+namespace MailPoet\Router;
 
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
-class API {
+class Front {
   public $api_request;
   public $endpoint;
   public $action;
   public $data;
   const NAME = 'mailpoet_api';
-  const ENDPOINT_NAMESPACE = '\MailPoet\API\Endpoints\\';
   const RESPONSE_ERROR = 404;
 
   function __construct($api_data = false) {
@@ -29,10 +28,10 @@ class API {
   }
 
   function init() {
-    $endpoint = self::ENDPOINT_NAMESPACE . ucfirst($this->endpoint);
+    $endpoint = ucfirst($this->endpoint);
     if(!$this->api_request) return;
     if(!$this->endpoint || !class_exists($endpoint)) {
-      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid API endpoint.'));
+      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid Router endpoint.'));
     }
     $this->callEndpoint(
       $endpoint,
@@ -43,7 +42,7 @@ class API {
 
   function callEndpoint($endpoint, $action, $data) {
     if(!method_exists($endpoint, $action)) {
-      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid API action.'));
+      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid Router action.'));
     }
     call_user_func(
       array(
