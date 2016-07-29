@@ -214,17 +214,17 @@ define(
 
               <div className="mailpoet_actions">
                   <a
-                    className="button button-primary"
-                    onClick={ this.handleSelectTemplate.bind(null, template) }
-                  >
-                    {MailPoet.I18n.t('select')}
-                  </a>
-                  &nbsp;
-                  <a
                     className="button button-secondary"
                     onClick={ this.handleShowTemplate.bind(null, template) }
                   >
                     {MailPoet.I18n.t('preview')}
+                  </a>
+                  &nbsp;
+                  <a
+                    className="button button-primary"
+                    onClick={ this.handleSelectTemplate.bind(null, template) }
+                  >
+                    {MailPoet.I18n.t('select')}
                   </a>
               </div>
               { (template.readonly === "1") ? false : deleteLink }
