@@ -2,9 +2,14 @@
 namespace MailPoet\Config;
 
 use MailPoet\Config\PopulatorData\Templates\FranksRoastHouseTemplate;
-use MailPoet\Config\PopulatorData\Templates\BlankTemplate;
-use MailPoet\Config\PopulatorData\Templates\WelcomeTemplate;
-use MailPoet\Config\PopulatorData\Templates\PostNotificationsBlankTemplate;
+use MailPoet\Config\PopulatorData\Templates\NewsletterBlank1Column;
+use MailPoet\Config\PopulatorData\Templates\NewsletterBlank12Column;
+use MailPoet\Config\PopulatorData\Templates\NewsletterBlank121Column;
+use MailPoet\Config\PopulatorData\Templates\NewsletterBlank13Column;
+use MailPoet\Config\PopulatorData\Templates\PostNotificationsBlank1Column;
+use MailPoet\Config\PopulatorData\Templates\WelcomeBlank1Column;
+use MailPoet\Config\PopulatorData\Templates\WelcomeBlank12Column;
+use MailPoet\Config\PopulatorData\Templates\SimpleText;
 use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
 use \MailPoet\Models\Setting;
@@ -180,9 +185,14 @@ class Populator {
   private function newsletterTemplates() {
     return array(
       (new FranksRoastHouseTemplate(Env::$assets_url))->get(),
-      (new BlankTemplate(Env::$assets_url))->get(),
-      (new WelcomeTemplate(Env::$assets_url))->get(),
-      (new PostNotificationsBlankTemplate(Env::$assets_url))->get(),
+      (new NewsletterBlank1Column(Env::$assets_url))->get(),
+      (new NewsletterBlank12Column(Env::$assets_url))->get(),
+      (new NewsletterBlank121Column(Env::$assets_url))->get(),
+      (new NewsletterBlank13Column(Env::$assets_url))->get(),
+      (new PostNotificationsBlank1Column(Env::$assets_url))->get(),
+      (new WelcomeBlank1Column(Env::$assets_url))->get(),
+      (new WelcomeBlank12Column(Env::$assets_url))->get(),
+      (new SimpleText(Env::$assets_url))->get(),
     );
   }
 
