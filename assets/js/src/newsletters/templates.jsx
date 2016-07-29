@@ -221,9 +221,8 @@ define(
                   </a>
                   &nbsp;
                   <a
-                    style={ { display: 'none' }}
                     className="button button-secondary"
-                    onClick={ this.handlePreviewTemplate.bind(null, template) }
+                    onClick={ this.handleShowTemplate.bind(null, template) }
                   >
                     {MailPoet.I18n.t('preview')}
                   </a>
