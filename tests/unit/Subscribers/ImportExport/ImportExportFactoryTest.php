@@ -168,16 +168,16 @@ class ImportExportFactoryTest extends MailPoetTest {
         'children' => array(
           array(
             'id' => 'ignore',
-            'name' => 'Ignore column...',
+            'name' => 'Ignore field...',
           ),
           array(
             'id' => 'create',
-            'name' => 'Create new column...'
+            'name' => 'Create new field...'
           ),
         )
       ),
       array(
-        'name' => 'System columns',
+        'name' => 'System fields',
         'children' => $ImportExportFactory->formatSubscriberFields(
           $ImportExportFactory->getSubscriberFields()
         )
@@ -187,7 +187,7 @@ class ImportExportFactoryTest extends MailPoetTest {
       $select2FieldsWithoutCustomFields,
       array(
         array(
-          'name' => __('User columns'),
+          'name' => __('User fields'),
           'children' => $ImportExportFactory->formatSubscriberCustomFields(
             $ImportExportFactory->getSubscriberCustomFields()
           )
@@ -222,7 +222,7 @@ class ImportExportFactoryTest extends MailPoetTest {
         )
       ),
       array(
-        'name' => 'System columns',
+        'name' => 'System fields',
         'children' => $ImportExportFactory->formatSubscriberFields(
           $ImportExportFactory->getSubscriberFields()
         )
@@ -232,7 +232,7 @@ class ImportExportFactoryTest extends MailPoetTest {
       $select2FieldsWithoutCustomFields,
       array(
         array(
-          'name' => __('User columns'),
+          'name' => __('User fields'),
           'children' => $ImportExportFactory->formatSubscriberCustomFields(
             $ImportExportFactory->getSubscriberCustomFields()
           )
@@ -258,7 +258,7 @@ class ImportExportFactoryTest extends MailPoetTest {
     // email, first_name, last_name, status + 1 custom field
     expect(count(json_decode($importMenu['subscriberFields'], true)))
       ->equals(5);
-    // action, system columns, user columns
+    // action, system fields, user fields
     expect(count(json_decode($importMenu['subscriberFieldsSelect2'], true)))
       ->equals(3);
     expect($importMenu['maxPostSize'])->equals(ini_get('post_max_size'));
@@ -272,7 +272,7 @@ class ImportExportFactoryTest extends MailPoetTest {
     $exportMenu = $export->bootstrap();
     expect(count(json_decode($exportMenu['segments'], true)))
       ->equals(2);
-    // action, system columns, user columns
+    // action, system fields, user fields
     expect(count(json_decode($exportMenu['subscriberFieldsSelect2'], true)))
       ->equals(3);
   }

@@ -14,7 +14,7 @@ class PostNotificationsBlankTemplate {
   function get() {
     return array(
       'name' => __("Blank Post Notifications Template"),
-      'description' => __("A simple post notifications template. Customize it and make it your own!"),
+      'description' => __("A simple Post Notifications template. Customize it and make it your own!"),
       'readonly' => 0,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -46,7 +46,7 @@ class PostNotificationsBlankTemplate {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h2 style=\"text-align: center;\">Ready to get started on your&nbsp;post notifications email?</h2>\n<p style=\"text-align: center;\">&nbsp;</p>")
+                    "text" => __("<h2 style=\"text-align: center;\">Ready to get started on your&nbsp;Post Notifications email?</h2>\n<p style=\"text-align: center;\">&nbsp;</p>")
                   )
                 )
               )

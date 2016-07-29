@@ -51,8 +51,8 @@ class SendingQueue {
         );
       } else {
         $message = ($newsletter->type === Newsletter::TYPE_WELCOME) ?
-          __('Your welcome email has been activated') :
-          __('Your post notification has been activated');
+          __('Your Welcome Email has been activated') :
+          __('Your Post Notification has been activated');
         return array(
           'result' => true,
           'data' => array(
@@ -106,7 +106,7 @@ class SendingQueue {
       if(!count($subscribers)) {
         return array(
           'result' => false,
-          'errors' => array(__('There are no subscribers'))
+          'errors' => array(__('There are no subscribers in that list!'))
         );
       }
       $queue->status = null;

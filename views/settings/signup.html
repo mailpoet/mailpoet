@@ -7,8 +7,8 @@
           <%= __('Enable signup confirmation') %>
         </label>
         <p class="description">
-          <%= __('Prevent people from being unwillingly subscribed to your mailing list. This option ensures you to keep a clean list.') %>
-          <a href="#TODO" target="_blank"><%= __('Learn more.') %></a>
+          <%= __("If you enable this option, your subscribers will first receive a confirmation email after they subscribe. Once they confirm their subscription (via this email), they will be marked as 'confirmed' and will begin to receive your email newsletters.") %>
+          <a href="#TODO" target="_blank"><%= __('Read more about Double Opt-in confirmation.') %></a>
         </p>
       </th>
       <td>
@@ -16,7 +16,7 @@
           id="mailpoet_signup_confirmation_notice"
           <% if (settings.mta_group != "mailpoet") %>style="display:none;"<% endif %>
         >
-          <%=- __('Sending with MailPoet requires signup confirmation to be turned on.') -%>
+          <%=- __('Signup confirmation is mandatory when using the MailPoet Sending Service.') -%>
         </p>
         <p
           id="mailpoet_signup_confirmation_input"
@@ -151,7 +151,7 @@
           <%= __('Confirmation page') %>
         </label>
         <p class="description">
-          <%= __('When subscribers click on the activation link, they are redirected to this page') %>
+          <%= __('When subscribers click on the activation link, they will be redirected to this page') %>
         </p>
       </th>
       <td>

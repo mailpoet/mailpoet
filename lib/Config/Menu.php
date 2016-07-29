@@ -105,8 +105,8 @@ class Menu {
 
     $segments_page = add_submenu_page(
       $main_page_slug,
-      $this->setPageTitle(__('Segments')),
-      __('Segments'),
+      $this->setPageTitle(__('Lists')),
+      __('Lists'),
       'manage_options',
       'mailpoet-segments',
       array($this, 'segments')
@@ -169,8 +169,8 @@ class Menu {
 
     add_submenu_page(
       true,
-      $this->setPageTitle(__('Form')),
-      __('Form editor'),
+      $this->setPageTitle(__('Form Editor')),
+      __('Form Editor'),
       'manage_options',
       'mailpoet-form-editor',
       array($this, 'formEditor')

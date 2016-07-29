@@ -14,7 +14,7 @@ class WelcomeTemplate {
   function get() {
     return array(
       'name' => __("Welcome Email Example"),
-      'description' => __("A simple welcome email idea to help welcome your new subscribers."),
+      'description' => __("A simple Welcome Email idea to help welcome your new subscribers."),
       'readonly' => 0,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

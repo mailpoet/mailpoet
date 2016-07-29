@@ -3,7 +3,7 @@
 <% block title %>
 <h1 class="title">
   <%= __('Form') %>
-  <a class="page-title-action" href="?page=mailpoet-forms#/"><%= __('Back to List') %></a>
+  <a class="page-title-action" href="?page=mailpoet-forms#/"><%= __('Back') %></a>
 </h1>
   <h2>
     <input
@@ -137,7 +137,7 @@
             %>
           </p>
           <p>
-            <%= __("Copy and paste this [link]shortcode[/link] into a post or page.")
+            <%= __("Copy and paste this [link]shortcode[/link] on to a post or page.")
               | replace({
                   '[link]': '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="shortcode">',
                   '[/link]': '</a>'
