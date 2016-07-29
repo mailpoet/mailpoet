@@ -22,13 +22,14 @@ class SendingQueue {
     $this->mailer_task = new MailerTask();
     $this->newsletter_task = new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
-    // abort if sending and/or execution limit are reached
-    $this->mailer_task->enforceSendingLimit();
+    // abort if sending limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
   }
 
   function process() {
     foreach(self::getRunningQueues() as $queue) {
+      // abort if sending limit is reached
+      $this->mailer_task->enforceSendingLimit();
       // get and pre-process newsletter (render, replace shortcodes/links, etc.)
       $newsletter = $this->newsletter_task->getAndPreProcess($queue->asArray());
       if(!$newsletter) {
@@ -158,10 +159,9 @@ class SendingQueue {
       StatisticsNewslettersModel::createMultiple($statistics);
       // keep track of sent items
       $this->mailer_task->updateMailerLog();
-      $subscribers_to_process_count = count($queue->subscribers['to_process']);
       $queue = $this->updateQueue($queue);
-      // check sending limit if there are still subscribers left to send
-      if(isset($subscribers_to_process_count)) {
+      // enforce sending limit if there are still subscribers left to process
+      if($queue->count_to_process) {
         $this->mailer_task->enforceSendingLimit();
       }
     }
