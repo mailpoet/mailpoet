@@ -145,9 +145,6 @@ define(
           }
         }.bind(this));
       },
-      handlePreviewTemplate: function(template) {
-        console.log('preview template #'+template.id);
-      },
       handleDeleteTemplate: function(template) {
         this.setState({ loading: true });
         if(
@@ -214,18 +211,17 @@ define(
 
               <div className="mailpoet_actions">
                   <a
+                    className="button button-secondary"
+                    onClick={ this.handleShowTemplate.bind(null, template) }
+                  >
+                    {MailPoet.I18n.t('preview')}
+                  </a>
+                  &nbsp;
+                  <a
                     className="button button-primary"
                     onClick={ this.handleSelectTemplate.bind(null, template) }
                   >
                     {MailPoet.I18n.t('select')}
-                  </a>
-                  &nbsp;
-                  <a
-                    style={ { display: 'none' }}
-                    className="button button-secondary"
-                    onClick={ this.handlePreviewTemplate.bind(null, template) }
-                  >
-                    {MailPoet.I18n.t('preview')}
                   </a>
               </div>
               { (template.readonly === "1") ? false : deleteLink }
