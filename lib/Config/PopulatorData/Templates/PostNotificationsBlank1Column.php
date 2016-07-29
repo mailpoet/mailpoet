@@ -7,7 +7,7 @@ class PostNotificationsBlank1Column {
 
   function __construct($assets_url) {
     $this->assets_url = $assets_url;
-    $this->template_image_url = $this->assets_url . '/img/post_notifications_template';
+    $this->template_image_url = $this->assets_url . '/img/blank_templates';
     $this->social_icon_url = $this->assets_url . '/img/newsletter_editor/social-icons';
   }
 
