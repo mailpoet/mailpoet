@@ -145,9 +145,6 @@ define(
           }
         }.bind(this));
       },
-      handlePreviewTemplate: function(template) {
-        console.log('preview template #'+template.id);
-      },
       handleDeleteTemplate: function(template) {
         this.setState({ loading: true });
         if(
