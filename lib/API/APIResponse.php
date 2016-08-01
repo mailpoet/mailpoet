@@ -1,5 +1,8 @@
 <?php
 namespace MailPoet\API;
+
+if(!defined('ABSPATH')) exit;
+
 abstract class APIResponse {
   const STATUS_OK = 200;
   const STATUS_BAD_REQUEST = 400;
@@ -36,53 +39,4 @@ abstract class APIResponse {
   }
 
   abstract function getData();
-}
-
-class SuccessResponse extends APIResponse {
-  public $data;
-
-  function __construct($data = array(), $meta = array(), $status = self::STATUS_OK) {
-    parent::__construct($status, $meta);
-    $this->data = $data;
-  }
-
-  function getData() {
-    if(empty($this->data)) {
-      return false;
-    } else {
-      return array(
-        'data' => $this->data
-      );
-    }
-  }
-}
-
-class ErrorResponse extends APIResponse {
-  public $errors;
-
-  function __construct($errors = array(), $meta = array(), $status = self::STATUS_NOT_FOUND) {
-    parent::__construct($status, $meta);
-    $this->errors = $this->formatErrors($errors);
-  }
-
-  function getData() {
-    if(empty($this->errors)) {
-      return false;
-    } else {
-      return array(
-        'errors' => $this->errors
-      );
-    }
-  }
-
-  function formatErrors($errors = array()) {
-    $formatted_errors = array();
-    foreach($errors as $error => $message) {
-      $formatted_errors[] = array(
-        'error' => $error,
-        'message' => $message
-      );
-    }
-    return $formatted_errors;
-  }
 }

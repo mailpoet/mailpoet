@@ -56,7 +56,7 @@ class API {
 
   function setupPublic() {
     if($this->checkToken() === false) {
-      $response = new ErrorResponse(array(
+      $response = new APIErrorResponse(array(
         'unauthorized' => __('This request is not authorized.')
       ), APIResponse::STATUS_UNAUTHORIZED);
       $response->send();
@@ -130,17 +130,17 @@ class API {
     $data = array(), $meta = array(), $status = APIResponse::STATUS_OK
   ) {
 
-    return new SuccessResponse($data, $meta, $status);
+    return new APISuccessResponse($data, $meta, $status);
   }
 
   function errorResponse(
     $errors = array(), $meta = array(), $status = APIResponse::STATUS_NOT_FOUND
   ) {
 
-    return new ErrorResponse($errors, $meta, $status);
+    return new APIErrorResponse($errors, $meta, $status);
   }
 
   function badRequest($errors = array(), $meta = array()) {
-    return new ErrorResponse($errors, $meta, APIResponse::STATUS_BAD_REQUEST);
+    return new APIErrorResponse($errors, $meta, APIResponse::STATUS_BAD_REQUEST);
   }
 }
