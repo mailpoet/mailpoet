@@ -1,6 +1,6 @@
 <?php
-namespace MailPoet\API;
-
+namespace MailPoet\API
+    ;
 
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 use MailPoet\Models\CustomField;

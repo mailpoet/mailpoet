@@ -41,7 +41,8 @@
               type="radio"
               name="task_scheduler[method]"
               value="WordPress"
-              <% if (settings.task_scheduler.method == 'WordPress') %>
+              <% if not(settings.task_scheduler.method)
+                or (settings.task_scheduler.method == 'WordPress') %>
               checked="checked"
               <% endif %>
             /><%= __('Visitors to your website (recommended)') %>

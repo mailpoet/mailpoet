@@ -35,14 +35,34 @@ class API {
   }
 
   function setupAdmin() {
-    $this->verifyToken();
-    $this->checkPermissions();
-    return $this->processRoute();
+    if($this->checkToken() === false) {
+      $this->errorResponse(
+        array('unauthorized' => __('This request is not authorized.')),
+        array(),
+        APIResponse::STATUS_UNAUTHORIZED
+      )->send();
+    }
+
+    if($this->checkPermissions() === false) {
+      $this->errorResponse(
+        array('forbidden' => __('You do not have the required permissions.')),
+        array(),
+        APIResponse::STATUS_FORBIDDEN
+      )->send();
+    }
+
+    $this->processRoute();
   }
 
   function setupPublic() {
-    $this->verifyToken();
-    return $this->processRoute();
+    if($this->checkToken() === false) {
+      $response = new ErrorResponse(array(
+        'unauthorized' => __('This request is not authorized.')
+      ), APIResponse::STATUS_UNAUTHORIZED);
+      $response->send();
+    }
+
+    $this->processRoute();
   }
 
   function processRoute() {
@@ -72,9 +92,18 @@ class API {
     try {
       $endpoint = new $endpoint();
       $response = $endpoint->$method($data);
-      wp_send_json($response);
+
+      // TODO: remove this condition once the API unification is complete
+      if(is_object($response)) {
+        $response->send();
+      } else {
+        // LEGACY API
+        wp_send_json($response);
+      }
     } catch(\Exception $e) {
-      exit;
+      $this->errorResponse(array(
+        $e->getMessage()
+      ))->send();
     }
   }
 
@@ -86,18 +115,32 @@ class API {
   }
 
   function checkPermissions() {
-    if(!current_user_can('manage_options')) {
-      die();
-    }
+    return current_user_can('manage_options');
   }
 
-  function verifyToken() {
-    if(
-      empty($_POST['token'])
-      ||
-      !wp_verify_nonce($_POST['token'], 'mailpoet_token')
-    ) {
-      die();
-    }
+  function checkToken() {
+    return (
+      isset($_POST['token'])
+      &&
+      wp_verify_nonce($_POST['token'], 'mailpoet_token')
+    );
+  }
+
+  function successResponse(
+    $data = array(), $meta = array(), $status = APIResponse::STATUS_OK
+  ) {
+
+    return new SuccessResponse($data, $meta, $status);
+  }
+
+  function errorResponse(
+    $errors = array(), $meta = array(), $status = APIResponse::STATUS_NOT_FOUND
+  ) {
+
+    return new ErrorResponse($errors, $meta, $status);
+  }
+
+  function badRequest($errors = array(), $meta = array()) {
+    return new ErrorResponse($errors, $meta, APIResponse::STATUS_BAD_REQUEST);
   }
 }

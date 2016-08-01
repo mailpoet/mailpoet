@@ -1,5 +1,6 @@
 <?php
-namespace MailPoet\API;
+namespace MailPoet\API
+    ;
 
 use \MailPoet\Config\Activator;
 

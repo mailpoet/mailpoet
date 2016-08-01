@@ -1,6 +1,6 @@
 <?php
-namespace MailPoet\API;
-
+namespace MailPoet\API
+    ;
 
 use MailPoet\Listing;
 use MailPoet\Models\Newsletter;

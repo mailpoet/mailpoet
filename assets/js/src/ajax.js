@@ -8,9 +8,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
         endpoint: null,
         action: null,
         token: null,
-        data: {},
-        onSuccess: function(data, textStatus, xhr) {},
-        onError: function(xhr, textStatus, errorThrown) {}
+        data: {}
       },
       get: function(options) {
         return this.request('get', options);
@@ -72,9 +70,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
             url: this.options.url,
             type : 'post',
             data: params,
-            dataType: 'json',
-            success : this.options.onSuccess,
-            error : this.options.onError
+            dataType: 'json'
           });
         }
 

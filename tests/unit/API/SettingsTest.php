@@ -1,6 +1,6 @@
 <?php
-use \MailPoet\API
-    \Settings;
+use \MailPoet\API\APIResponse;
+use \MailPoet\API\Settings;
 use \MailPoet\Models\Setting;
 
 class SettingsTest extends MailPoetTest {
@@ -11,13 +11,16 @@ class SettingsTest extends MailPoetTest {
   function testItCanGetSettings() {
     $router = new Settings();
 
-    $settings = $router->get();
-    expect($settings)->notEmpty();
-    expect($settings['some']['setting']['key'])->true();
+    $response = $router->get();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    expect($response->data)->notEmpty();
+    expect($response->data['some']['setting']['key'])->true();
 
     Setting::deleteMany();
-    $settings = $router->get();
-    expect($settings)->equals(Setting::getDefaults());
+    $response = $router->get();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(Setting::getDefaults());
   }
 
   function testItCanSetSettings() {
@@ -33,16 +36,16 @@ class SettingsTest extends MailPoetTest {
     $router = new Settings();
 
     $response = $router->set(/* missing data */);
-    expect($response)->false();
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
     $response = $router->set($new_settings);
-    expect($response)->true();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $settings = $router->get();
-
-    expect($settings['some']['setting'])->hasntKey('key');
-    expect($settings['some']['setting']['new_key'])->true();
-    expect($settings['some']['new_setting'])->true();
+    $response = $router->get();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data['some']['setting'])->hasntKey('key');
+    expect($response->data['some']['setting']['new_key'])->true();
+    expect($response->data['some']['new_setting'])->true();
   }
 
   function _after() {

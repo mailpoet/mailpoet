@@ -1,27 +1,26 @@
 <?php
 namespace MailPoet\API;
-
 use \MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
 
-class Settings {
+class Settings extends API {
   function __construct() {
   }
 
   function get() {
     $settings = Setting::getAll();
-    return $settings;
+    return $this->successResponse($settings);
   }
 
   function set($settings = array()) {
     if(empty($settings)) {
-      return false;
+      return $this->badRequest();
     } else {
       foreach($settings as $name => $value) {
         Setting::setValue($name, $value);
       }
-      return true;
+      return $this->successResponse();
     }
   }
 }
