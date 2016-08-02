@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\API\NewsletterTemplates;
+use \MailPoet\API\Endpoints\NewsletterTemplates;
 use \MailPoet\Models\NewsletterTemplate;
 
 class NewsletterTemplatesTest extends MailPoetTest {

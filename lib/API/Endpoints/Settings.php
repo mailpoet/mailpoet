@@ -1,10 +1,11 @@
 <?php
-namespace MailPoet\API;
+namespace MailPoet\API\Endpoints;
+use \MailPoet\API\Endpoint as APIEndpoint;
 use \MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
 
-class Settings extends API {
+class Settings extends APIEndpoint {
   function __construct() {
   }
 
@@ -20,7 +21,7 @@ class Settings extends API {
       foreach($settings as $name => $value) {
         Setting::setValue($name, $value);
       }
-      return $this->successResponse();
+      return $this->successResponse(Setting::getAll());
     }
   }
 }

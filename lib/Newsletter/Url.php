@@ -2,7 +2,7 @@
 namespace MailPoet\Newsletter;
 
 use MailPoet\Router\Front as FrontRouter;
-use MailPoet\Router\ViewInBrowser as ViewInBrowserEndpoint;
+use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
 use MailPoet\Models\Subscriber;
 
 class Url {

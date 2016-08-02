@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\API\Setup;
+use \MailPoet\API\Endpoints\Setup;
 use \MailPoet\Models\Setting;
 
 class SetupTest extends MailPoetTest {

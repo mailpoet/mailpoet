@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Router;
+namespace MailPoet\Router\Endpoints;
 
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;

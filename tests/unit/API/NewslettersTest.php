@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\API\Newsletters;
+use \MailPoet\API\Endpoints\Newsletters;
 use \MailPoet\Models\Newsletter;
 use \MailPoet\Models\NewsletterSegment;
 use \MailPoet\Models\NewsletterTemplate;

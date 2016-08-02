@@ -74,13 +74,6 @@ class Populator {
   private function createDefaultSettings() {
     $current_user = wp_get_current_user();
 
-    if(!Setting::getValue('task_scheduler')) {
-      // disable task scheduler (cron) be default
-      Setting::setValue('task_scheduler', array(
-        'method' => 'WordPress'
-      ));
-    }
-
     // default sender info based on current user
     $sender = array(
       'name' => $current_user->display_name,

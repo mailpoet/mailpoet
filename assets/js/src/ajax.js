@@ -16,9 +16,6 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
       post: function(options) {
         return this.request('post', options);
       },
-      delete: function(options) {
-        return this.request('delete', options);
-      },
       init: function(options) {
         // merge options
         this.options = jQuery.extend({}, this.defaults, options);
@@ -48,7 +45,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
 
         // set request params
         var params = this.getParams();
-        var jqXHR;
+        var deferred = jQuery.Deferred();
 
         // remove null values from the data object
         if (_.isObject(params.data)) {
@@ -59,25 +56,29 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
 
         // make ajax request depending on method
         if(method === 'get') {
-          jqXHR = jQuery.get(
+          jQuery.get(
             this.options.url,
             params,
-            this.options.onSuccess,
+            null,
             'json'
           );
         } else {
-          jqXHR = jQuery.ajax({
-            url: this.options.url,
-            type : 'post',
-            data: params,
-            dataType: 'json'
+          jQuery.post(
+            this.options.url,
+            params,
+            null,
+            'json'
+          ).then(function(data) {
+            deferred.resolve();
+          }, function(xhr) {
+            deferred.reject(xhr.responseJSON);
           });
         }
 
         // clear options
         this.options = {};
 
-        return jqXHR;
+        return deferred;
       }
   };
 });

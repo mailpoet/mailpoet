@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Router;
+namespace MailPoet\Router\Endpoints;
 
 use MailPoet\Subscription as UserSubscription;
 

@@ -1,6 +1,5 @@
 <?php
 namespace MailPoet\Router;
-
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -28,13 +27,14 @@ class Front {
   }
 
   function init() {
-    $endpoint = ucfirst($this->endpoint);
+    $class =  __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
+
     if(!$this->api_request) return;
-    if(!$this->endpoint || !class_exists($endpoint)) {
+    if(!$this->endpoint || !class_exists($class)) {
       self::terminateRequest(self::RESPONSE_ERROR, __('Invalid Router endpoint.'));
     }
     $this->callEndpoint(
-      $endpoint,
+      $class,
       $this->action,
       $this->data
     );

@@ -77,15 +77,14 @@
             endpoint: 'settings',
             action: 'set',
             data: settings_data
-          }).done(function() {
+          }).done(function(response) {
             MailPoet.Notice.success(
               "<%= __('Settings saved') %>",
               { scroll: true }
             );
             MailPoet.Modal.loading(false);
-          }).error(function(xhr) {
-            var response = xhr.responseJSON;
-            if(response.errors !== undefined) {
+          }).fail(function(response) {
+            if (response.errors !== undefined) {
               MailPoet.Notice.error(
                 response.errors.map(function(error) { return error.message; }),
                 { scroll: true }

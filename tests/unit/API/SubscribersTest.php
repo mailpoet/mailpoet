@@ -1,6 +1,6 @@
 <?php
 
-use \MailPoet\API\Subscribers;
+use \MailPoet\API\Endpoints\Subscribers;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\Segment;
 

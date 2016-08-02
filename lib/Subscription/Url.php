@@ -2,7 +2,7 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\Router\Front as FrontRouter;
-use MailPoet\Router\Subscription as SubscriptionEndpoint;
+use MailPoet\Router\Endpoints\Subscription as SubscriptionEndpoint;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
 

@@ -3,7 +3,7 @@ namespace MailPoet\API;
 
 if(!defined('ABSPATH')) exit;
 
-abstract class APIResponse {
+abstract class Response {
   const STATUS_OK = 200;
   const STATUS_BAD_REQUEST = 400;
   const STATUS_UNAUTHORIZED = 401;

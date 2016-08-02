@@ -2,7 +2,7 @@
 namespace MailPoet\Newsletter\Links;
 
 use MailPoet\Router\Front as FrontRouter;
-use MailPoet\Router\Track as TrackEndpoint;
+use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Util\Security;

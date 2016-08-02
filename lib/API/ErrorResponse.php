@@ -3,7 +3,7 @@ namespace MailPoet\API;
 
 if(!defined('ABSPATH')) exit;
 
-class APIErrorResponse extends APIResponse {
+class ErrorResponse extends Response {
   public $errors;
 
   function __construct($errors = array(), $meta = array(), $status = self::STATUS_NOT_FOUND) {

@@ -2,7 +2,7 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Router\Front as FrontRouter;
-use MailPoet\Router\Queue as QueueEndpoint;
+use MailPoet\Router\Endpoints\Queue as QueueEndpoint;
 use MailPoet\Models\Setting;
 use MailPoet\Util\Security;
 
