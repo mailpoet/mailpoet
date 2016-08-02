@@ -10,9 +10,6 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
         token: null,
         data: {}
       },
-      get: function(options) {
-        return this.request('get', options);
-      },
       post: function(options) {
         return this.request('post', options);
       },
@@ -54,26 +51,17 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
           })
         }
 
-        // make ajax request depending on method
-        if(method === 'get') {
-          jQuery.get(
-            this.options.url,
-            params,
-            null,
-            'json'
-          );
-        } else {
-          jQuery.post(
-            this.options.url,
-            params,
-            null,
-            'json'
-          ).then(function(data) {
-            deferred.resolve(data);
-          }, function(xhr) {
-            deferred.reject(xhr.responseJSON);
-          });
-        }
+        // ajax request
+        deferred = jQuery.post(
+          this.options.url,
+          params,
+          null,
+          'json'
+        ).then(function(data) {
+          return data;
+        }, function(xhr) {
+          return xhr.responseJSON;
+        });
 
         // clear options
         this.options = {};
