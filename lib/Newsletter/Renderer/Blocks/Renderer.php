@@ -19,7 +19,10 @@ class Renderer {
     } else {
       $newsletter_id = $newsletter['id'];
     }
-    $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent($newsletter_id);
+    $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent(
+      $newsletter_id,
+      $newsletter['created_at']
+    );
   }
 
   function render($data, $column_count) {

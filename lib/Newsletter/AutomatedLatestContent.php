@@ -9,8 +9,9 @@ if(!defined('ABSPATH')) exit;
 class AutomatedLatestContent {
   const DEFAULT_POSTS_PER_PAGE = 10;
 
-  function __construct($newsletter_id = false) {
+  function __construct($newsletter_id = false, $newer_than_timestamp = false) {
     $this->newsletter_id = $newsletter_id;
+    $this->newer_than_timestamp = $newer_than_timestamp;
 
     $this->_attachSentPostsFilter();
   }
@@ -58,6 +59,15 @@ class AutomatedLatestContent {
     // However, it also enables other plugins and themes to hook in and alter
     // the query.
     $parameters['suppress_filters'] = false;
+
+    if($this->newer_than_timestamp) {
+      $parameters['date_query'] = array(
+        array(
+          'column' => 'post_date',
+          'after' => $this->newer_than_timestamp
+        )
+      );
+    }
 
     return get_posts($parameters);
   }
