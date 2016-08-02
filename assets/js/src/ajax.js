@@ -69,7 +69,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
             null,
             'json'
           ).then(function(data) {
-            deferred.resolve();
+            deferred.resolve(data);
           }, function(xhr) {
             deferred.reject(xhr.responseJSON);
           });
