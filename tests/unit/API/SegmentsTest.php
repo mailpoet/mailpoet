@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\Router\Segments;
+use \MailPoet\API\Endpoints\Segments;
 use \MailPoet\Models\Segment;
 
 class SegmentsTest extends MailPoetTest {

@@ -38,6 +38,9 @@ class Setting extends Model {
           'interval' => self::DEFAULT_SENDING_FREQUENCY_INTERVAL
         )
       ),
+      'task_scheduler' => array(
+        'method' => 'WordPress'
+      ),
       'signup_confirmation' => array(
         'enabled' => true,
         'subject' => sprintf(__('Confirm your subscription to %1$s'), get_option('blogname')),

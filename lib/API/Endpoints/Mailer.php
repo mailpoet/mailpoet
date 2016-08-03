@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Router;
+namespace MailPoet\API\Endpoints;
 
 if(!defined('ABSPATH')) exit;
 

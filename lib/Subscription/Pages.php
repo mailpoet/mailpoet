@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Subscription;
 
-use \MailPoet\Router\Subscribers;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\SubscriberSegment;
 use \MailPoet\Models\CustomField;

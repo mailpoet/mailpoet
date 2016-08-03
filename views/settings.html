@@ -77,25 +77,20 @@
             endpoint: 'settings',
             action: 'set',
             data: settings_data
+          }).always(function() {
+            MailPoet.Modal.loading(false);
           }).done(function(response) {
-            if(response === true) {
-              MailPoet.Notice.success(
-                "<%= __('Settings saved') %>",
-                { scroll: true }
-              );
-            } else {
+            MailPoet.Notice.success(
+              "<%= __('Settings saved') %>",
+              { scroll: true }
+            );
+          }).fail(function(response) {
+            if (response.errors.length > 0) {
               MailPoet.Notice.error(
-                "<%= __('Settings could not be saved') %>",
+                response.errors.map(function(error) { return error.message; }),
                 { scroll: true }
               );
             }
-            MailPoet.Modal.loading(false);
-          }).error(function(errors) {
-            MailPoet.Notice.error(
-              "<%= __('An error occurred. Please check the settings.') %>",
-              { scroll: true }
-            );
-            MailPoet.Modal.loading(false);
           });
         }
 
@@ -115,7 +110,7 @@
         $('.mailpoet_page_preview').on('click', function() {
           var selection = $(this).siblings('.mailpoet_page_selection');
 
-          if(selection.length > 0) {
+          if (selection.length > 0) {
             $(this).attr('href', $(selection).find('option[value="'+$(selection).val()+'"]').data('preview-url'));
             $(this).attr('target', '_blank');
           } else {

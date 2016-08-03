@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\Router;
+namespace MailPoet\API\Endpoints;
 
 use MailPoet\Listing;
 use MailPoet\Models\Subscriber;

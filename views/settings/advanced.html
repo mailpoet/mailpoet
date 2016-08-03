@@ -41,7 +41,8 @@
               type="radio"
               name="task_scheduler[method]"
               value="WordPress"
-              <% if (settings.task_scheduler.method == 'WordPress') %>
+              <% if not(settings.task_scheduler.method)
+                or (settings.task_scheduler.method == 'WordPress') %>
               checked="checked"
               <% endif %>
             /><%= __('Visitors to your website (recommended)') %>
@@ -174,13 +175,16 @@
           MailPoet.Ajax.post({
             'endpoint': 'setup',
             'action': 'reset'
+          }).always(function() {
+            MailPoet.Modal.loading(false);
           }).done(function(response) {
-            if(response.result === true) {
-              window.location = "<%= admin_url('admin.php?page=mailpoet-newsletters') %>";
-            } else {
+            window.location = "<%= admin_url('admin.php?page=mailpoet-newsletters') %>";
+          }).fail(function(response) {
+            if (response.errors.length > 0) {
               MailPoet.Notice.error(
-                "<%= __('MailPoet could not be reinstalled. You may need to remove it manually first.') %>",
-              { scroll: true });
+                response.errors.map(function(error) { return error.message; }),
+                { scroll: true }
+              );
             }
           });
         }

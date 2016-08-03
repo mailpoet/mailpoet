@@ -1,8 +1,8 @@
 <?php
 namespace MailPoet\Newsletter\Links;
 
-use MailPoet\API\API;
-use MailPoet\API\Endpoints\Track as TrackAPI;
+use MailPoet\Router\Front as FrontRouter;
+use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Util\Security;
@@ -115,12 +115,12 @@ class Links {
         'queue' => $queue_id,
         'hash' => $hash
       );
-      $API_action = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
-        TrackAPI::ACTION_CLICK :
-        TrackAPI::ACTION_OPEN;
-      $link = API::buildRequest(
-        TrackAPI::ENDPOINT,
-        $API_action,
+      $router_action = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
+        TrackEndpoint::ACTION_CLICK :
+        TrackEndpoint::ACTION_OPEN;
+      $link = FrontRouter::buildRequest(
+        TrackEndpoint::ENDPOINT,
+        $router_action,
         $data
       );
       $content = str_replace($match, $link, $content);

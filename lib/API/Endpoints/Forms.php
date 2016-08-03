@@ -1,5 +1,6 @@
 <?php
-namespace MailPoet\Router;
+namespace MailPoet\API\Endpoints;
+
 use \MailPoet\Models\Form;
 use \MailPoet\Models\StatisticsForms;
 use \MailPoet\Form\Renderer as FormRenderer;
