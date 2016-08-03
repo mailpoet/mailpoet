@@ -36,6 +36,7 @@ class SettingsTest extends MailPoetTest {
     $router = new Settings();
 
     $response = $router->set(/* missing data */);
+    expect($response->errors[0]['error'])->equals('bad_request');
     expect($response->status)->equals(Response::STATUS_BAD_REQUEST);
 
     $response = $router->set($new_settings);

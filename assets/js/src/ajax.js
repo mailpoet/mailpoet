@@ -60,13 +60,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
         ).then(function(data) {
           return data;
         }, function(xhr) {
-          if (!xhr.responseJSON) {
-            return {
-              errors: [{ error: 'undefined', message: "An unknown error occurred." }]
-            };
-          } else {
-            return xhr.responseJSON;
-          }
+          return xhr.responseJSON;
         });
 
         // clear options
