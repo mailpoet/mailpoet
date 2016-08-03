@@ -37,7 +37,9 @@ class API {
   function setupAdmin() {
     if($this->checkToken() === false) {
       (new ErrorResponse(
-        array('unauthorized' => __('This request is not authorized.')),
+        array(
+          Error::UNAUTHORIZED => __('You need to specify a valid API token.')
+        ),
         array(),
         Response::STATUS_UNAUTHORIZED
       ))->send();
@@ -45,7 +47,9 @@ class API {
 
     if($this->checkPermissions() === false) {
       (new ErrorResponse(
-        array('forbidden' => __('You do not have the required permissions.')),
+        array(
+          Error::FORBIDDEN => __('You do not have the required permissions.')
+        ),
         array(),
         Response::STATUS_FORBIDDEN
       ))->send();
@@ -56,10 +60,13 @@ class API {
 
   function setupPublic() {
     if($this->checkToken() === false) {
-      $response = new ErrorResponse(array(
-        'unauthorized' => __('This request is not authorized.')
-      ), Response::STATUS_UNAUTHORIZED);
-      $response->send();
+      (new ErrorResponse(
+        array(
+          Error::UNAUTHORIZED => __('You need to specify a valid API token.')
+        ),
+        array(),
+        Response::STATUS_UNAUTHORIZED
+      ))->send();
     }
 
     $this->processRoute();
@@ -101,7 +108,9 @@ class API {
         wp_send_json($response);
       }
     } catch(\Exception $e) {
-      (new ErrorResponse(array($e->getMessage())))->send();
+      (new ErrorResponse(
+        array($e->getCode() => $e->getMessage())
+      ))->send();
     }
   }
 

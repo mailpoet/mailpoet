@@ -6,9 +6,6 @@ use \MailPoet\Config\Activator;
 if(!defined('ABSPATH')) exit;
 
 class Setup extends APIEndpoint {
-  function __construct() {
-  }
-
   function reset() {
     try {
       $activator = new Activator();

@@ -7,9 +7,6 @@ use \MailPoet\Models\Setting;
 if(!defined('ABSPATH')) exit;
 
 class Settings extends APIEndpoint {
-  function __construct() {
-  }
-
   function get() {
     return $this->successResponse(Setting::getAll());
   }
