@@ -17,7 +17,7 @@ abstract class Endpoint {
   ) {
     if(empty($errors)) {
       $errors = array(
-        'unknown' => __('An unknown error occurred.')
+        Error::UNKNOWN  => __('An unknown error occurred.')
       );
     }
     return new ErrorResponse($errors, $meta, $status);
@@ -26,7 +26,7 @@ abstract class Endpoint {
   function badRequest($errors = array(), $meta = array()) {
     if(empty($errors)) {
       $errors = array(
-        'bad_request' => __('Invalid request parameters.')
+        Error::BAD_REQUEST => __('Invalid request parameters.')
       );
     }
     return new ErrorResponse($errors, $meta, Response::STATUS_BAD_REQUEST);

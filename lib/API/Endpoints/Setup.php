@@ -17,7 +17,7 @@ class Setup extends APIEndpoint {
       return $this->successResponse();
     } catch(\Exception $e) {
       return $this->errorResponse(array(
-        $e->getMessage()
+        $e->getCode() => $e->getMessage()
       ));
     }
   }
