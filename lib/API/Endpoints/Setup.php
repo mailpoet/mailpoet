@@ -1,10 +1,11 @@
 <?php
 namespace MailPoet\API\Endpoints;
+use \MailPoet\API\Endpoint as APIEndpoint;
 use \MailPoet\Config\Activator;
 
 if(!defined('ABSPATH')) exit;
 
-class Setup {
+class Setup extends APIEndpoint {
   function __construct() {
   }
 
@@ -13,12 +14,11 @@ class Setup {
       $activator = new Activator();
       $activator->deactivate();
       $activator->activate();
-      $result = true;
+      return $this->successResponse();
     } catch(\Exception $e) {
-      $result = false;
+      return $this->errorResponse(array(
+        $e->getMessage()
+      ));
     }
-    return array(
-      'result' => $result
-    );
   }
 }

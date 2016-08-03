@@ -21,7 +21,7 @@ class Settings extends APIEndpoint {
       foreach($settings as $name => $value) {
         Setting::setValue($name, $value);
       }
-      return $this->successResponse(Setting::getAll());
+      return $this->successResponse();
     }
   }
 }

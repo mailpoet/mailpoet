@@ -77,20 +77,20 @@
             endpoint: 'settings',
             action: 'set',
             data: settings_data
+          }).always(function() {
+            MailPoet.Modal.loading(false);
           }).done(function(response) {
             MailPoet.Notice.success(
               "<%= __('Settings saved') %>",
               { scroll: true }
             );
-            MailPoet.Modal.loading(false);
           }).fail(function(response) {
-            if (response.errors !== undefined) {
+            if (response.errors.length > 0) {
               MailPoet.Notice.error(
                 response.errors.map(function(error) { return error.message; }),
                 { scroll: true }
               );
             }
-            MailPoet.Modal.loading(false);
           });
         }
 

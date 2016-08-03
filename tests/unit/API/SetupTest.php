@@ -1,4 +1,5 @@
 <?php
+use \MailPoet\API\Response;
 use \MailPoet\API\Endpoints\Setup;
 use \MailPoet\Models\Setting;
 
@@ -8,12 +9,12 @@ class SetupTest extends MailPoetTest {
   }
 
   function testItCanReinstall() {
-    /*$router = new Setup();
+    $router = new Setup();
     $response = $router->reset();
-    expect($response['result'])->true();
+    expect($response->status)->equals(Response::STATUS_OK);
 
     $signup_confirmation = Setting::getValue('signup_confirmation.enabled');
-    expect($signup_confirmation)->true();*/
+    expect($signup_confirmation)->true();
   }
 
   function _after() {
