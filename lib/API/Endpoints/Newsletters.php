@@ -178,11 +178,10 @@ class Newsletters {
     }
     $newsletter->body = $data['body'];
     $newsletter->save();
-    $wp_user = wp_get_current_user();
-    $subscriber = Subscriber::where('email', $wp_user->data->user_email)
-      ->findOne();
-    $subscriber = ($subscriber) ? $subscriber->asArray() : $subscriber;
-    $preview_url = NewsletterUrl::getViewInBrowserUrl($data, $subscriber);
+    $subscriber = Subscriber::getCurrentWPUser();
+    $preview_url = NewsletterUrl::getViewInBrowserUrl(
+      $data, $subscriber, $queue = false, $preview = true
+    );
     return array(
       'result' => true,
       'data' => array('url' => $preview_url)
@@ -207,15 +206,14 @@ class Newsletters {
 
     $newsletter = $newsletter->asArray();
 
-    $renderer = new Renderer($newsletter);
+    $renderer = new Renderer($newsletter, $preview = true);
     $rendered_newsletter = $renderer->render();
     $divider = '***MailPoet***';
     $data_for_shortcodes =
       array_merge(array($newsletter['subject']), $rendered_newsletter);
     $body = implode($divider, $data_for_shortcodes);
 
-    $wp_user = wp_get_current_user();
-    $subscriber = Subscriber::findOne($wp_user->data->user_email);
+    $subscriber = Subscriber::getCurrentWPUser();
     $subscriber = ($subscriber) ? $subscriber->asArray() : false;
 
     $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(

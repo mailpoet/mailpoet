@@ -66,6 +66,11 @@ class Subscriber extends Model {
     return ($this->wp_user_id !== null);
   }
 
+  static function getCurrentWPUser() {
+    $wp_user = wp_get_current_user();
+    return self::where('wp_user_id', $wp_user->ID)->findOne();
+  }
+
   function sendConfirmationEmail() {
     if($this->status === self::STATUS_UNCONFIRMED) {
       $signup_confirmation = Setting::getValue('signup_confirmation');

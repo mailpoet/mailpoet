@@ -7,13 +7,18 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 class Renderer {
   public $newsletter;
   public $posts;
+  public $ALC;
 
-  function __construct(array $newsletter, $posts = false) {
+  function __construct(array $newsletter, $preview) {
     $this->newsletter = $newsletter;
     $this->posts = array();
-    $newsletter_id = ($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) ?
-      $newsletter['parent_id'] :
-      $newsletter['id'];
+    if($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
+      $newsletter_id = $newsletter['parent_id'];
+    } else if($preview) {
+      $newsletter_id = false;
+    } else {
+      $newsletter_id = $newsletter['id'];
+    }
     $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent($newsletter_id);
   }
 

@@ -49,7 +49,7 @@ class ViewInBrowser {
     if($queue) {
       $newsletter_body = json_decode($queue->newsletter_rendered_body, true);
     } else {
-      $renderer = new Renderer($newsletter->asArray());
+      $renderer = new Renderer($newsletter->asArray(), $preview = true);
       $newsletter_body = $renderer->render();
     }
     $shortcodes = new Shortcodes(
