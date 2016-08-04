@@ -25,8 +25,7 @@ class Url {
     if(is_object($queue)) {
       $queue = $queue->asArray();
     } else if(!$queue &&
-      $newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY &&
-      $newsletter['status'] === Newsletter::STATUS_SENT
+      $newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY
     ) {
       $queue = SendingQueue::where('newsletter_id', $newsletter['id'])->findOne();
       $queue = ($queue) ? $queue->asArray() : false;

@@ -12,7 +12,7 @@ class Renderer {
   function __construct(array $newsletter, $preview) {
     $this->newsletter = $newsletter;
     $this->posts = array();
-    if ($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
+    if($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
       $newsletter_id = $newsletter['parent_id'];
     } else if($preview) {
       $newsletter_id = false;
