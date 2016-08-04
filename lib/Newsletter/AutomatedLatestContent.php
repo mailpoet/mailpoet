@@ -9,6 +9,9 @@ if(!defined('ABSPATH')) exit;
 class AutomatedLatestContent {
   const DEFAULT_POSTS_PER_PAGE = 10;
 
+  private $newsletter_id;
+  private $newer_than_timestamp;
+
   function __construct($newsletter_id = false, $newer_than_timestamp = false) {
     $this->newsletter_id = $newsletter_id;
     $this->newer_than_timestamp = $newer_than_timestamp;
