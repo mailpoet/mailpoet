@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterPost;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Renderer {
@@ -14,14 +15,23 @@ class Renderer {
     $this->posts = array();
     if($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) {
       $newsletter_id = $newsletter['parent_id'];
+
+      $last_post = NewsletterPost::getNewestNewsletterPost($newsletter_id);
+      if($last_post) {
+        $newer_than_timestamp = $last_post->created_at;
+      } else {
+        $newer_than_timestamp = $newsletter['created_at'];
+      }
     } else if($preview) {
       $newsletter_id = false;
+      $newer_than_timestamp = false;
     } else {
       $newsletter_id = $newsletter['id'];
+      $newer_than_timestamp = false;
     }
     $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent(
       $newsletter_id,
-      $newsletter['created_at']
+      $newer_than_timestamp
     );
   }
 
