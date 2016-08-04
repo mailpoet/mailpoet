@@ -11,7 +11,8 @@ class Url {
   static function getViewInBrowserUrl(
     $newsletter,
     $subscriber = false,
-    $queue = false
+    $queue = false,
+    $preview = false
   ) {
     if(is_object($newsletter)) {
       $newsletter = $newsletter->asArray();
@@ -24,7 +25,7 @@ class Url {
     }
     if(is_object($queue)) {
       $queue = $queue->asArray();
-    } else {
+    } else if(!$preview && !empty($newsletter['id'])) {
       $queue = SendingQueue::where('newsletter_id', $newsletter['id'])->findOne();
       $queue = ($queue) ? $queue->asArray() : false;
     }
