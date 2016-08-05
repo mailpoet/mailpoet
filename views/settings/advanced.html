@@ -39,9 +39,9 @@
           <label>
             <input
               type="radio"
-              name="task_scheduler[method]"
-              value="<%= task_scheduler.wordpress %>"
-              <% if (settings.task_scheduler.method == task_scheduler.wordpress) %>
+              name="cron_trigger[method]"
+              value="<%= cron_trigger.wordpress %>"
+              <% if (settings.cron_trigger.method == cron_trigger.wordpress) %>
               checked="checked"
               <% endif %>
             /><%= __('Visitors to your website (recommended)') %>
