@@ -78,32 +78,31 @@
           action: 'save',
           data: data
         }).done(function(response) {
-          if(response.result === true) {
-            // close popup
-            MailPoet.Modal.close();
+          // close popup
+          MailPoet.Modal.close();
 
-            if(WysijaForm.updateBlock(response.field) === true) {
-              // trigger save, if a block has been updated
-              mailpoet_form_save(false);
-            }
+          if(WysijaForm.updateBlock(response.data) === true) {
+            // trigger save, if a block has been updated
+            mailpoet_form_save(false);
+          }
 
-            mailpoet_form_fields();
+          mailpoet_form_fields();
 
-            if(data.id) {
-              MailPoet.Notice.success(
-                "<%= __('Updated custom field “"+data.name+"“') %>"
-              );
-            } else {
-              MailPoet.Notice.success(
-                "<%= __('Added custom field “"+data.name+"“') %>"
-              );
-            }
+          if(data.id) {
+            MailPoet.Notice.success(
+              "<%= __('Updated custom field “"+data.name+"“') %>"
+            );
           } else {
-            if(response.errors.length > 0) {
-              $(response.errors).each(function(i, error) {
-                MailPoet.Notice.error(error, {positionAfter: '#field_name'});
-              });
-            }
+            MailPoet.Notice.success(
+              "<%= __('Added custom field “"+data.name+"“') %>"
+            );
+          }
+        }).fail(function(response) {
+          if(response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { positionAfter: '#field_name' }
+            );
           }
         });
         return false;
