@@ -1,9 +1,11 @@
 <?php
 namespace MailPoet\API\Endpoints;
+use \MailPoet\API\Endpoint as APIEndpoint;
+use \MailPoet\API\Error as APIError;
 
 if(!defined('ABSPATH')) exit;
 
-class AutomatedLatestContent {
+class AutomatedLatestContent extends APIEndpoint {
   public $ALC;
 
   function __construct() {
@@ -11,46 +13,57 @@ class AutomatedLatestContent {
   }
 
   function getPostTypes() {
-    return get_post_types(array(), 'objects');
+    return $this->successResponse(
+      get_post_types(array(), 'objects')
+    );
   }
 
-  function getTaxonomies($args) {
-    $post_type = (isset($args['postType'])) ? $args['postType'] : 'post';
-    return get_object_taxonomies($post_type, 'objects');
+  function getTaxonomies($data = array()) {
+    $post_type = (isset($data['postType'])) ? $data['postType'] : 'post';
+    return $this->successResponse(
+      get_object_taxonomies($post_type, 'objects')
+    );
   }
 
-  function getTerms($args) {
-    $taxonomies = (isset($args['taxonomies'])) ? $args['taxonomies'] : array();
-    $search = (isset($args['search'])) ? $args['search'] : '';
-    $limit = (isset($args['limit'])) ? (int)$args['limit'] : 10;
-    $page = (isset($args['page'])) ? (int)$args['page'] : 1;
-    return get_terms(
-      $taxonomies,
-      array(
-        'hide_empty' => false,
-        'search' => $search,
-        'number' => $limit,
-        'offset' => $limit * ($page - 1)
+  function getTerms($data = array()) {
+    $taxonomies = (isset($data['taxonomies'])) ? $data['taxonomies'] : array();
+    $search = (isset($data['search'])) ? $data['search'] : '';
+    $limit = (isset($data['limit'])) ? (int)$data['limit'] : 10;
+    $page = (isset($data['page'])) ? (int)$data['page'] : 1;
+
+    return $this->successResponse(
+      get_terms(
+        $taxonomies,
+        array(
+          'hide_empty' => false,
+          'search' => $search,
+          'number' => $limit,
+          'offset' => $limit * ($page - 1)
+        )
       )
     );
   }
 
-  function getPosts($args) {
-    return $this->ALC->getPosts($args);
+  function getPosts($data = array()) {
+    return $this->successResponse(
+      $this->ALC->getPosts($data)
+    );
   }
 
-  function getTransformedPosts($args) {
-    $posts = $this->ALC->getPosts($args);
-    return $this->ALC->transformPosts($args, $posts);
+  function getTransformedPosts($data = array()) {
+    $posts = $this->ALC->getPosts($data);
+    return $this->successResponse(
+      $this->ALC->transformPosts($data, $posts)
+    );
   }
 
-  function getBulkTransformedPosts($args) {
+  function getBulkTransformedPosts($data = array()) {
     $alc = new \MailPoet\Newsletter\AutomatedLatestContent();
 
     $used_posts = array();
     $rendered_posts = array();
 
-    foreach($args['blocks'] as $block) {
+    foreach($data['blocks'] as $block) {
       $posts = $alc->getPosts($block, $used_posts);
       $rendered_posts[] = $alc->transformPosts($block, $posts);
 
@@ -59,6 +72,6 @@ class AutomatedLatestContent {
       }
     }
 
-    return $rendered_posts;
+    return $this->successResponse($rendered_posts);
   }
 }

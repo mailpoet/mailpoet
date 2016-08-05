@@ -8,7 +8,6 @@ abstract class Endpoint {
   function successResponse(
     $data = array(), $meta = array(), $status = Response::STATUS_OK
   ) {
-
     return new SuccessResponse($data, $meta, $status);
   }
 

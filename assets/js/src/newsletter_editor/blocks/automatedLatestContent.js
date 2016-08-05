@@ -51,9 +51,9 @@ define([
         blocks: blocks,
       }).then(_.partial(this.refreshBlocks, models));
     },
-    refreshBlocks: function(models, renderedBlocks) {
+    refreshBlocks: function(models, response) {
       _.each(
-        _.zip(models, renderedBlocks),
+        _.zip(models, response.data),
         function(args) {
           var model = args[0],
               contents = args[1];
@@ -217,17 +217,19 @@ define([
             };
           },
           transport: function(options, success, failure) {
-            var taxonomies,
-                promise = CommunicationComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
-              taxonomies = tax;
+            var taxonomies;
+            var promise = CommunicationComponent.getTaxonomies(
+              that.model.get('contentType')
+            ).then(function(response) {
+              taxonomies = response.data;
               // Fetch available terms based on the list of taxonomies already fetched
               var promise = CommunicationComponent.getTerms({
                 search: options.data.term,
                 taxonomies: _.keys(taxonomies)
-              }).then(function(terms) {
+              }).then(function(response) {
                 return {
                   taxonomies: taxonomies,
-                  terms: terms,
+                  terms: response.data
                 };
               });
               return promise;

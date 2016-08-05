@@ -12,8 +12,10 @@ define([
               post: function() {
                 var deferred = jQuery.Deferred();
                 deferred.resolve({
-                  'post': 'val1',
-                  'page': 'val2',
+                  data: {
+                    'post': 'val1',
+                    'page': 'val2',
+                  }
                 });
                 return deferred;
               }

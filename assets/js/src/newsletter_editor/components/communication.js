@@ -27,8 +27,8 @@ define([
     return Module._cachedQuery({
       action: 'getPostTypes',
       options: {},
-    }).then(function(types) {
-      return _.values(types);
+    }).then(function(response) {
+      return _.values(response.data);
     });
   };
 

@@ -108,8 +108,8 @@ define([
     },
     fetchAvailablePosts: function() {
       var that = this;
-      CommunicationComponent.getPosts(this.toJSON()).done(function(posts) {
-        that.get('_availablePosts').reset(posts);
+      CommunicationComponent.getPosts(this.toJSON()).done(function(response) {
+        that.get('_availablePosts').reset(response.data);
         that.get('_selectedPosts').reset(); // Empty out the collection
         that.trigger('change:_availablePosts');
       }).fail(function() {
@@ -127,8 +127,8 @@ define([
         return;
       }
 
-      CommunicationComponent.getTransformedPosts(data).done(function(posts) {
-        that.get('_transformedPosts').get('blocks').reset(posts, {parse: true});
+      CommunicationComponent.getTransformedPosts(data).done(function(response) {
+        that.get('_transformedPosts').get('blocks').reset(response.data, {parse: true});
       }).fail(function() {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
       });
@@ -143,8 +143,8 @@ define([
 
       if (data.posts.length === 0) return;
 
-      CommunicationComponent.getTransformedPosts(data).done(function(posts) {
-        collection.add(posts, { at: index });
+      CommunicationComponent.getTransformedPosts(data).done(function(response) {
+        collection.add(response.data, { at: index });
       }).fail(function() {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
       });
@@ -302,17 +302,19 @@ define([
             };
           },
           transport: function(options, success, failure) {
-            var taxonomies,
-                promise = CommunicationComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
-              taxonomies = tax;
+            var taxonomies;
+            var promise = CommunicationComponent.getTaxonomies(
+              that.model.get('contentType')
+            ).then(function(response) {
+              taxonomies = response.data;
               // Fetch available terms based on the list of taxonomies already fetched
               var promise = CommunicationComponent.getTerms({
                 search: options.data.term,
                 taxonomies: _.keys(taxonomies)
-              }).then(function(terms) {
+              }).then(function(response) {
                 return {
                   taxonomies: taxonomies,
-                  terms: terms,
+                  terms: response.data
                 };
               });
               return promise;

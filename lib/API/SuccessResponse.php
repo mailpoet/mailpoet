@@ -12,12 +12,8 @@ class SuccessResponse extends Response {
   }
 
   function getData() {
-    if(empty($this->data)) {
-      return false;
-    } else {
-      return array(
-        'data' => $this->data
-      );
-    }
+    return array(
+      'data' => $this->data
+    );
   }
 }

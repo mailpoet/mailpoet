@@ -53,7 +53,7 @@ define([
       mock1.expects('trigger').once().withArgs('refreshPosts', postsSet1);
       mock2.expects('trigger').once().withArgs('refreshPosts', postsSet2);
 
-      model.refreshBlocks([block1, block2], [postsSet1, postsSet2]);
+      model.refreshBlocks([block1, block2], { data: [postsSet1, postsSet2] });
 
       mock1.verify();
       mock2.verify();
