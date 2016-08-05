@@ -126,6 +126,11 @@ class Newsletter extends Model {
     $notification_history = self::create();
     $notification_history->hydrate($data);
 
+    // reset timestamps
+    $notification_history->set_expr('created_at', 'NOW()');
+    $notification_history->set_expr('updated_at', 'NOW()');
+    $notification_history->set_expr('deleted_at', 'NULL');
+
     $notification_history->save();
 
     if($notification_history->getErrors() === false) {

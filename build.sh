@@ -16,6 +16,9 @@ npm install
 # Production libraries.
 ./composer.phar install --no-dev
 
+# Translations
+./do makepot
+
 # Copy release folders.
 cp -Rf lang $plugin_name
 cp -RfL assets $plugin_name

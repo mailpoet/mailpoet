@@ -12,7 +12,7 @@ npm-debug.log
 /views/cache/**
 temp
 .idea
-wysija-newsletters.zip
+mailpoet.zip
 tests/javascript/testBundles
 assets/css/*.css
 assets/js/*.js
