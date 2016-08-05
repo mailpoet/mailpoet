@@ -20,7 +20,7 @@ class Renderer {
       if($last_post) {
         $newer_than_timestamp = $last_post->created_at;
       } else {
-        $newer_than_timestamp = $newsletter['created_at'];
+        $newer_than_timestamp = false;
       }
     } else if($preview) {
       $newsletter_id = false;
