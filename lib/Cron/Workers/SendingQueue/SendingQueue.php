@@ -5,6 +5,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Subscribers as SubscribersTask;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
@@ -22,14 +23,14 @@ class SendingQueue {
     $this->mailer_task = new MailerTask();
     $this->newsletter_task = new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
-    // abort if sending limit is reached
+    // abort if execution or sending limit are reached
     CronHelper::enforceExecutionLimit($this->timer);
   }
 
   function process() {
     foreach(self::getRunningQueues() as $queue) {
       // abort if sending limit is reached
-      $this->mailer_task->enforceSendingLimit();
+      MailerLog::enforceSendingLimit();
       // get and pre-process newsletter (render, replace shortcodes/links, etc.)
       $newsletter = $this->newsletter_task->getAndPreProcess($queue->asArray());
       if(!$newsletter) {
@@ -157,16 +158,17 @@ class SendingQueue {
       );
       // log statistics
       StatisticsNewslettersModel::createMultiple($statistics);
-      // keep track of sent items
-      $this->mailer_task->updateMailerLog();
+      // update the sent count
+      $this->mailer_task->updateSentCount();
       $queue = $this->updateQueue($queue);
       // enforce sending limit if there are still subscribers left to process
       if($queue->count_to_process) {
-        $this->mailer_task->enforceSendingLimit();
+        MailerLog::enforceSendingLimit();
       }
     }
     return $queue;
   }
+
   static function getRunningQueues() {
     return SendingQueueModel::orderByDesc('priority')
       ->whereNull('deleted_at')

@@ -8,11 +8,9 @@ if(!defined('ABSPATH')) exit;
 
 class Mailer {
   public $mailer;
-  public $mailer_log;
 
   function __construct() {
     $this->mailer = $this->configureMailer();
-    $this->mailer_log = $this->getMailerLog();
   }
 
   function configureMailer(array $newsletter = null) {
@@ -42,9 +40,8 @@ class Mailer {
     return MailerLog::getMailerLog();
   }
 
-  function updateMailerLog() {
-    $this->mailer_log['sent']++;
-    return MailerLog::updateMailerLog($this->mailer_log);
+  function updateSentCount() {
+    return MailerLog::incrementSentCount();
   }
 
   function getProcessingMethod() {
@@ -62,11 +59,5 @@ class Mailer {
       $prepared_newsletters,
       $prepared_subscribers
     );
-  }
-
-  function enforceSendingLimit() {
-    if(MailerLog::isSendingLimitReached()) {
-      throw new \Exception(__('Sending frequency limit has been reached'));
-    }
   }
 }
