@@ -379,7 +379,12 @@ class Menu {
   function import() {
     $import = new ImportExportFactory('import');
     $data = $import->bootstrap();
-    $data['sub_menu'] = 'mailpoet-subscribers';
+    $data = array_merge($data, array(
+      'date_types' => Block\Date::getDateTypes(),
+      'date_formats' => Block\Date::getDateFormats(),
+      'month_names' => Block\Date::getMonthNames(),
+      'sub_menu' => 'mailpoet-subscribers'
+    ));
     echo $this->renderer->render('subscribers/importExport/import.html', $data);
   }
 

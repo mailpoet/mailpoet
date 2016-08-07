@@ -745,114 +745,70 @@ define(
               .on('select2:selecting', function (selectEvent) {
                 var selectElement = this,
                     selectedOptionId = selectEvent.params.args.data.id;
+                // CREATE CUSTOM FIELD
                 if (selectedOptionId === 'create') {
                   selectEvent.preventDefault();
                   jQuery(selectElement).select2('close');
                   MailPoet.Modal.popup({
-                    title: MailPoet.I18n.t('addNewColumn'),
-                    template: jQuery('#new_column_template').html()
+                    title: MailPoet.I18n.t('addNewField'),
+                    template: jQuery('#form_template_field_form').html()
                   });
-                  jQuery('#new_column_name').keypress(function (e) {
-                    if (e.which == 13) {
-                      jQuery('#new_column_process').click();
-                    }
-                  });
-                  jQuery('#new_column_process').click(function () {
-                    var name = jQuery('#new_column_name').val().trim(),
-                        type = jQuery('#new_column_type').val().trim(),
-                        columnNames = mailpoetColumns.map(function (el) {
-                          return el.name.toLowerCase();
-                        });
-                    isDuplicateColumnName =
-                        (name && columnNames.indexOf(name.toLowerCase()) > -1)
-                            ? true
-                            : false;
-                    if (name === '') {
-                      jQuery('.mailpoet_validation_error[data-error="name_required"]')
-                          .show();
-                    } else {
-                      jQuery('.mailpoet_validation_error[data-error="name_required"]')
-                          .hide();
-                    }
-                    if (type === '') {
-                      jQuery('.mailpoet_validation_error[data-error="type_required"]')
-                          .show();
-                    } else {
-                      jQuery('.mailpoet_validation_error[data-error="type_required"]')
-                          .hide();
-                    }
-                    if (isDuplicateColumnName) {
-                      jQuery('.mailpoet_validation_error[data-error="name_not_unique"]')
-                          .show();
-                    } else {
-                      jQuery('.mailpoet_validation_error[data-error="name_not_unique"]')
-                          .hide();
-                    }
-                    // create new field
-                    if (name && type && !isDuplicateColumnName) {
-                      MailPoet.Modal
-                          .close()
-                          .loading(true);
-                      MailPoet.Ajax
-                          .post({
-                            endpoint: 'ImportExport',
-                            action: 'addCustomField',
-                            data: {
-                              name: name,
-                              type: type
-                            }
-                          })
-                          .done(function (response) {
-                            if (response.result === true) {
-                              var new_column_data = {
-                                'id': response.customField.id,
-                                'name': name,
-                                'type': type,
-                                'custom': true,
-                              };
-                              // if this is the first custom column, create an "optgroup"
-                              if (mailpoetColumnsSelect2.length === 2) {
-                                mailpoetColumnsSelect2.push({
-                                  'name': MailPoet.I18n.t('userColumns'),
-                                  'children': []
-                                });
-                              }
-                              mailpoetColumnsSelect2[2].children.push(new_column_data);
-                              mailpoetColumns.push(new_column_data);
-                              jQuery('select.mailpoet_subscribers_column_data_match')
-                                  .each(function () {
-                                    jQuery(this)
-                                        .html('')
-                                        .select2('destroy')
-                                        .select2({
-                                          data: mailpoetColumnsSelect2,
-                                          width: '15em',
-                                          templateResult: function (item) {
-                                            return item.name;
-                                          },
-                                          templateSelection: function (item) {
-                                            return item.name;
-                                          }
-                                        })
-                                  });
-                              jQuery(selectElement).data('column-id', new_column_data.id);
-                              filterSubscribers();
-                            }
-                            else {
-                              MailPoet.Notice.error(MailPoet.I18n.t('customFieldCreateError'));
-                            }
-                            MailPoet.Modal.loading(false);
-                          })
-                          .fail(function (error) {
-                            MailPoet.Modal.loading(false);
-                            MailPoet.Notice.error(
-                                MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
-                            );
+                  jQuery('#form_field_new').parsley().on('form:submit', function(parsley) {
+                    // get data
+                    var data = jQuery(this.$element).serializeObject();
+
+                    // save custom field
+                    MailPoet.Ajax.post({
+                      endpoint: 'customFields',
+                      action: 'save',
+                      data: data
+                    }).done(function(response) {
+                      if(response.result === true) {
+                        var new_column_data = {
+                          'id': response.field.id,
+                          'name': response.field.name,
+                          'type': response.field.type,
+                          'custom': true
+                        };
+                        // if this is the first custom column, create an "optgroup"
+                        if (mailpoetColumnsSelect2.length === 2) {
+                          mailpoetColumnsSelect2.push({
+                            'name': MailPoet.I18n.t('userColumns'),
+                            'children': []
                           });
-                    }
-                  });
-                  jQuery('#new_column_cancel').click(function () {
-                    MailPoet.Modal.close();
+                        }
+                        mailpoetColumnsSelect2[2].children.push(new_column_data);
+                        mailpoetColumns.push(new_column_data);
+                        jQuery('select.mailpoet_subscribers_column_data_match')
+                          .each(function () {
+                            jQuery(this)
+                              .html('')
+                              .select2('destroy')
+                              .select2({
+                                data: mailpoetColumnsSelect2,
+                                width: '15em',
+                                templateResult: function (item) {
+                                  return item.name;
+                                },
+                                templateSelection: function (item) {
+                                  return item.name;
+                                }
+                              })
+                          });
+                        jQuery(selectElement).data('column-id', new_column_data.id);
+                        filterSubscribers();
+                        // close popup
+                        MailPoet.Modal.close();
+                      }
+                      else {
+                        if(response.errors.length > 0) {
+                          jQuery(response.errors).each(function(i, error) {
+                            MailPoet.Notice.error(error, {positionAfter: '#field_name'});
+                          });
+                        }
+                      }
+                    });
+                    return false;
                   });
                 }
                 // CHANGE COLUMN
