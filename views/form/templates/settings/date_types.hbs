@@ -22,5 +22,7 @@
         .find('option:selected')
         .data('format'));
     });
+    // set default format
+    $('select[name="params[date_type]"]').trigger('change');
   });
 <{{!}}/script>

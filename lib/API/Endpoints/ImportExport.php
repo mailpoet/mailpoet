@@ -32,22 +32,6 @@ class ImportExport {
     );
   }
 
-  function addCustomField($data) {
-    $customField = CustomField::create();
-    $customField->hydrate($data);
-    $result = $customField->save();
-    return (
-      ($result) ?
-        array(
-          'result' => true,
-          'customField' => $customField->asArray()
-        ) :
-        array(
-          'result' => false
-        )
-    );
-  }
-
   function processImport($data) {
     $import = new \MailPoet\Subscribers\ImportExport\Import\Import(
       json_decode($data, true)
