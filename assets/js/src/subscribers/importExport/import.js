@@ -768,6 +768,7 @@ define(
                           'id': response.field.id,
                           'name': response.field.name,
                           'type': response.field.type,
+                          'params': response.field.params,
                           'custom': true
                         };
                         // if this is the first custom column, create an "optgroup"
@@ -880,6 +881,7 @@ define(
               if (column.type === 'date' && matchedColumn !== -1) {
                 jQuery.map(subscribersClone.subscribers, function (data, position) {
                   var rowData = data[matchedColumn];
+                  var dateFormat = column.params.date_format.toUpperCase();
                   if (position !== fillterPosition) {
                     // check if date exists
                     if (rowData.trim() === '') {
@@ -892,17 +894,21 @@ define(
                       return;
                     }
                     // check if date is valid and is before today
-                    if (Moment(rowData).isValid() && Moment(rowData).isBefore(Moment())) {
+                    if (Moment(rowData, dateFormat, true).isValid() &&
+                        Moment(rowData, dateFormat, true).isBefore(Moment())
+                    ) {
                       data[matchedColumn] +=
                           '<span class="mailpoet_data_match" title="'
                           + MailPoet.I18n.t('verifyDateMatch') + '">'
-                          + MailPoet.Date.format(rowData) + '</span>';
+                          + MailPoet.Date.format(Moment(rowData, dateFormat, true))
+                          + '</span>';
                     }
                     else {
                       data[matchedColumn] +=
                           '<span class="mailpoet_data_match mailpoet_import_error" title="'
                           + MailPoet.I18n.t('noDateFieldMatch') + '">'
-                          + MailPoet.I18n.t('dateMatchError') + '</span>';
+                          + MailPoet.I18n.t('dateMatchError') + ' (' + dateFormat + ') '
+                          + '</span>';
                       preventNextStep = true;
                     }
                   }

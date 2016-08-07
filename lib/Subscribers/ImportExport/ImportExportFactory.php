@@ -58,6 +58,7 @@ class ImportExportFactory {
         'id' => $field['id'],
         'name' => $field['name'],
         'type' => $field['type'],
+        'params' => unserialize($field['params']),
         'custom' => true
       );
     }, $subscriber_custom_fields);
