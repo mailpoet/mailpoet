@@ -211,7 +211,7 @@ define(
                 }
               }
               MailPoet.Modal.loading(false);
-            }).error(function (error) {
+            }).fail(function (error) {
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
                   MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
@@ -242,7 +242,7 @@ define(
                 MailPoet.Notice.error(response.errors);
               }
               MailPoet.Modal.loading(false);
-            }).error(function () {
+            }).fail(function () {
               MailPoet.Modal.loading(false);
               MailPoet.Notice.error(
                   MailPoet.I18n.t('serverError') + result.statusText.toLowerCase() + '.'
@@ -631,7 +631,7 @@ define(
                         );
                       }
                     })
-                    .error(function (error) {
+                    .fail(function (error) {
                       MailPoet.Modal.close();
                       MailPoet.Notice.error(
                           MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
@@ -843,7 +843,7 @@ define(
                             }
                             MailPoet.Modal.loading(false);
                           })
-                          .error(function (error) {
+                          .fail(function (error) {
                             MailPoet.Modal.loading(false);
                             MailPoet.Notice.error(
                                 MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
@@ -1051,7 +1051,7 @@ define(
                     }
                     queue.run();
                   })
-                  .error(function (error) {
+                  .fail(function (error) {
                     importResults.errors.push(
                       MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
                     );

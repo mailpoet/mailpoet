@@ -1,0 +1,794 @@
+<% extends 'layout.html' %>
+
+<% block title %>
+<h1 class="title">
+  <%= __('Form') %>
+  <a class="page-title-action" href="?page=mailpoet-forms#/"><%= __('Back') %></a>
+</h1>
+  <h2>
+    <input
+      type="text"
+      placeholder="<%= __('Click here to change the name') %>"
+      id="mailpoet_form_name"
+      value="<%= form.name %>"
+    />
+  </h2>
+<% endblock %>
+
+<% block content %>
+  <div id="mailpoet_form_wrapper" class="clearfix">
+    <!-- Form Editor Container -->
+    <div id="mailpoet_form_container">
+      <!-- Form Editor -->
+      <div id="mailpoet_form_editor">
+          <div id="mailpoet_form_body"></div>
+          <p id="block_placeholder" class="block_placeholder"></p>
+      </div>
+
+      <p class="submit">
+        <a id="mailpoet_form_save" href="javascript:;" class="button button-primary" ><%= __('Save') %></a>
+      </p>
+    </div>
+
+    <!-- Form Editor: Toolbar -->
+    <div id="mailpoet_form_toolbar" style="visibility:hidden;">
+      <div class="mailpoet_toolbar_section closed" data-section="settings">
+        <a href="javascript:;" class="mailpoet_toggle"><br /></a>
+        <h3><%= __('Settings') %></h3>
+
+        <div>
+          <!-- Form settings -->
+          <form id="mailpoet_form_settings" action="" method="POST">
+            <input
+              type="hidden"
+              id="mailpoet_form_id"
+              value="<%= form.id | default(0) %>"
+            />
+            <div id="mailpoet_settings_segment_selection">
+              <!-- Form settings: list selection -->
+              <p>
+                <strong><%= __('This form adds the subscribers to these lists:') %></strong>
+              </p>
+              <select
+                id="mailpoet_form_segments"
+                name="segments"
+                data-placeholder="<%= __('Please select a list') %>"
+                multiple
+                data-parsley-required-message="<%= __('Please select a list.') %>"
+                required
+              >
+                <% for segment in segments %>
+                  <option value="<%= segment.id %>"><%= segment.name %></option>
+                <% endfor %>
+              </select>
+            </div>
+
+            <div id="mailpoet_on_success">
+              <!-- Form settings: after submit -->
+              <p>
+                <label><strong><%= __('After submit...') %></strong></label>
+                <label>
+                  <input class="mailpoet_radio"
+                    type="radio"
+                    name="on_success"
+                    value="message"
+                    <% if(form.settings.on_success is empty or form.settings.on_success == 'message') %>
+                      checked="checked"
+                    <% endif %>
+                  /><%= __('Show message') %>
+                </label>
+                &nbsp;
+                <label>
+                  <input class="mailpoet_radio"
+                    type="radio"
+                    name="on_success"
+                    value="page"
+                    <% if(form.settings.on_success == 'page') %>
+                      checked="checked"
+                    <% endif %>
+                  /><%= __('Go to Page') %>
+                </label>
+              </p>
+              <!-- default success message -->
+              <% if form.settings.success_message %>
+                <% set success_message = form.settings.success_message %>
+              <% else %>
+                <% set success_message = __('Check your inbox to confirm your subscription.') %>
+              <% endif %>
+
+              <p
+                id="mailpoet_on_success_message"
+                class="mailpoet_on_success_option"
+              >
+                <textarea name="success_message"><%= success_message %></textarea>
+              </p>
+              <p
+                id="mailpoet_on_success_page"
+                class="mailpoet_on_success_option"
+              >
+                <select name="success_page">
+                  <% for page in pages %>
+                    <option value="<%= page.id %>"
+                      <%- if form.settings.success_page == page.id %>
+                        <%=- ' selected="selected"' %>
+                      <%- endif %>><%= page.title %></option>
+                  <% endfor %>
+                </select>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Toolbar: Shortcodes / Export -->
+      <div class="mailpoet_toolbar_section closed" data-section="shortcodes">
+        <a href="javascript:;" class="mailpoet_toggle"><br /></a>
+        <h3><%= __('Form Placement') %></h3>
+
+        <div>
+          <!-- Form export links -->
+          <p>
+            <%= __("Add this form to your sidebar or footer on the [link]Widgets page[/link].")
+              | replace({
+                  '[link]': '<a href="widgets.php" target="_blank">',
+                  '[/link]': '</a>'
+                })
+              | raw
+            %>
+          </p>
+          <p>
+            <%= __("Copy and paste this [link]shortcode[/link] on to a post or page.")
+              | replace({
+                  '[link]': '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="shortcode">',
+                  '[/link]': '</a>'
+                })
+              | raw
+            %>
+          </p>
+          <p>
+            <%= __('%sHTML%s, %sPHP%s and %siFrame%s versions are also available.', 'wysija-newsletters')
+              | format(
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="html">',
+                '</a>',
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="php">',
+                '</a>',
+                '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="iframe">',
+                '</a>'
+              )
+              | raw
+            %>
+         </p>
+
+          <!-- Form export -->
+          <div id="mailpoet_form_export"></div>
+        </div>
+      </div>
+
+        <!-- Toolbar: Fields -->
+      <div class="mailpoet_toolbar_section closed" data-section="fields">
+        <a href="javascript:;" class="mailpoet_toggle"><br /></a>
+        <h3><%= __('Fields') %></h3>
+
+        <div>
+          <ul id="mailpoet_toolbar_fields">
+          </ul>
+          <p class="mailpoet_align_center">
+            <a id="mailpoet_form_add_field" class="button button-primary" href="javascript:;" style="width:100%;"><%= __('Add New Field') %></a>
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Toolbar: Styles -->
+      <div class="mailpoet_toolbar_section closed" data-section="styles">
+        <a href="javascript:;" class="mailpoet_toggle"><br /></a>
+        <h3><%= __('Styles') %></h3>
+        <div>
+          <textarea id="mailpoet_form_styles"><%= styles %></textarea>
+        <br />
+        <p class="mailpoet_align_center">
+          <a
+            id="mailpoet_form_preview"
+            href="javascript:;"
+            class="button button-primary"
+            style="width:100%;"
+          ><%= __('Preview') %></a>
+        </p>
+      </div>
+        </div>
+
+    <!-- End | Form Editor: Toolbar -->
+    </div>
+
+    <!-- Form Editor: History -->
+    <div id="mailpoet_form_history"></div>
+  </div>
+
+  <%= javascript(
+    'vendor.js',
+    'lib/prototype.min.js',
+    'lib/scriptaculous.min.js',
+    'form_editor.js'
+  )%>
+
+  <script type="text/javascript">
+    var mailpoet_segments = <%= json_encode(segments) %>;
+
+    var mailpoet_default_fields = [
+      {
+        id: 'divider',
+        name: "<%= __('Divider') %>",
+        type: 'divider',
+        multiple: true,
+        readonly: true
+      },
+      {
+        id: "first_name",
+        name: "<%= __('First name') %>",
+        type: 'text',
+        params: {
+          label: "<%= __('First name') %>"
+        },
+        readonly: true
+      },
+      {
+        id: "last_name",
+        name: "<%= __('Last name') %>",
+        type: 'text',
+        params: {
+          label: "<%= __('Last name') %>"
+        },
+        readonly: true
+      },
+      {
+        id: "segments",
+        name: "<%= __('List selection') %>",
+        type: 'segment',
+        params: {
+          label: "<%= __('Select list(s):') %>"
+        },
+        readonly: true
+      },
+      {
+        id: 'html',
+        name: "<%= __('Random text or HTML') %>",
+        type: 'html',
+        params: {
+            text: "<%= __('Subscribe to our newsletter and join [mailpoet_subscribers_count] other subscribers.') %>"
+        },
+        multiple: true,
+        readonly: true
+      }
+    ];
+
+    jQuery(function($) {
+      function mailpoet_form_toggle_segments() {
+        // hide list selection if a list widget has been dragged into the editor
+        $('mailpoet_settings_segment_selection')[
+          (WysijaForm.hasSegmentSelection())
+          ? 'hide' : 'show'
+        ]();
+      }
+
+      function mailpoet_form_fields() {
+        // form editor: default fields
+        var template = Handlebars.compile($('#form_template_fields').html());
+
+        var data = {
+          fields: mailpoet_default_fields
+        };
+
+        return MailPoet.Ajax.post({
+          endpoint: 'customFields',
+          action: 'getAll',
+        }).done(function(response) {
+          if(response !== false) {
+            data.fields  = $.merge(response, data.fields);
+          }
+
+          // render toolbar
+          jQuery('#mailpoet_toolbar_fields').html(template(data));
+
+          setTimeout(function() {
+            WysijaForm.init();
+          }, 1);
+        });
+      }
+      window.mailpoet_form_fields = mailpoet_form_fields;
+
+      // enable code mirror editor on styles textarea
+      MailPoet.CodeEditor = CodeMirror.fromTextArea(
+        document.getElementById('mailpoet_form_styles'),
+        {
+          lineNumbers: true,
+          tabMode: "indent",
+          matchBrackets: true,
+          theme: 'neo',
+          mode: 'css'
+        }
+      );
+
+      // toolbar sections
+      $(document).on(
+        'click',
+        '.mailpoet_toolbar_section.closed',
+        mailpoet_toolbar_tab
+      );
+
+      function mailpoet_toolbar_tab(tab, callback) {
+        var section = null;
+
+        if($.type(tab) === 'string') {
+          section = $('.mailpoet_toolbar_section[data-section="'+tab+'"]');
+        } else {
+          section = $(this);
+        }
+
+        var current_section = $('.mailpoet_toolbar_section:not(.closed)');
+
+        if(current_section.data('section') === section.data('section')) {
+          if(callback !== undefined && $.type(callback) === 'function') {
+            callback();
+          }
+        } else {
+          // close currently opened section
+          $('.mailpoet_toolbar_section:not(.closed)').addClass('closed');
+
+          // open selected section after a mini delay
+          setTimeout(function() {
+            $(section).removeClass('closed');
+            if(callback !== undefined && $.type(callback) === 'function') {
+              setTimeout(function() {
+                callback();
+              }, 151);
+            }
+          }.bind(this), 150);
+        }
+        return false;
+      }
+
+      // toolbar: open default section
+      mailpoet_toolbar_tab('settings');
+
+      // form: edit name (in place editor)
+      $('#mailpoet_form_edit_name').on('click', function() {
+        mailpoet_edit_form_name();
+        return false;
+      });
+
+      $('#mailpoet_form_name_input').on('keypress', function(e) {
+        if(e.which === 13) {
+          mailpoet_edit_form_name();
+          return false;
+        }
+      });
+
+      function mailpoet_edit_form_name() {
+        var is_editing = $('#mailpoet_form_name')
+          .data('mailpoet_editing') || false;
+
+        if(!is_editing) {
+          // set input value and show
+          $('#mailpoet_form_name_input')
+            .val($('#mailpoet_form_name').text())
+            .show();
+
+          // set editing mode
+          $('#mailpoet_form_name').data('mailpoet_editing', true);
+
+          // hide form name
+          $('#mailpoet_form_name').hide();
+
+          // focus on text input
+          $('#mailpoet_form_name_input').focus();
+
+          // set edit name label
+          $('#mailpoet_form_edit_name').html("<%= __('Save') %>");
+        } else {
+          var current_value = $('#mailpoet_form_name').html(),
+            new_value = $('#mailpoet_form_name_input').val();
+
+          // hide text input
+          $('#mailpoet_form_name_input').hide();
+
+          // set value
+          $('#mailpoet_form_name').text(new_value);
+
+          // set editing mode
+          $('#mailpoet_form_name').data('mailpoet_editing', false);
+
+          // show form name
+          $('#mailpoet_form_name').show();
+
+          // set edit name label
+          $('#mailpoet_form_edit_name').text("<%= __('Edit name') %>");
+
+          // save change if necessary
+          if(new_value !== '' && current_value !== new_value) {
+            MailPoet.Ajax.post({
+              endpoint: 'forms',
+              action: 'save',
+              data:  {
+                id: $('#mailpoet_form_id').val(),
+                name: new_value
+              }
+            }).done(function(response) {
+              MailPoet.Notice.success(
+                "<%= __('The form name was successfully updated!') %>"
+              );
+            });
+          }
+        }
+      }
+
+      // on dom loaded
+      $(function() {
+        // load form
+        WysijaForm.load(<%= json_encode(form) | raw %>);
+
+        // save form
+        $('#mailpoet_form_save').on('click', function() {
+          mailpoet_form_save();
+          mailpoet_form_export();
+          return false;
+        });
+
+        // edit name
+        $('#mailpoet_form_name').on('keyup', function(e) {
+          if(e.which === 13) {
+            $('#mailpoet_form_save').trigger('click');
+            this.blur();
+          }
+        });
+
+        // preview form
+        $(document).on('click', '#mailpoet_form_preview', function() {
+          mailpoet_form_preview();
+          return false;
+        });
+
+        function mailpoet_form_preview() {
+          MailPoet.Ajax.post({
+            endpoint: 'forms',
+            action: 'previewEditor',
+            data: WysijaForm.save()
+          }).done(function(response) {
+            MailPoet.Modal.popup({
+              title: "<%= __('Form preview') %>",
+              template: $('#mailpoet_form_preview_template').html(),
+              data: response
+            });
+          })
+        }
+
+        function mailpoet_form_save(callback) {
+          var form = WysijaForm.save();
+          form.id = $('#mailpoet_form_id').val();
+
+          // reset error messages
+          $('#mailpoet_form_settings').parsley().reset();
+
+          // validate segments to subscribe to
+          if(WysijaForm.hasSegmentSelection()) {
+            // validate segment selection in form
+            if(WysijaForm.isSegmentSelectionValid() === false) {
+              return false;
+            }
+          }
+
+          // check if the form is valid
+          if($('#mailpoet_form_settings').parsley().isValid() === false) {
+            // refresh settings and trigger validation
+            mailpoet_toolbar_tab('settings', function() {
+              $('#mailpoet_form_settings').parsley().validate();
+            });
+          } else {
+            // save form
+            MailPoet.Ajax.post({
+              endpoint: 'forms',
+              action: 'saveEditor',
+              data: form
+            }).done(function(response) {
+              if(response.result === false) {
+                if(response.errors.length > 0) {
+                  MailPoet.Notice.error(response.errors.join('<br />'));
+                } else {
+                  MailPoet.Notice.error(
+                    "<%= __('An error occurred. Please reload the page and try again.') %>"
+                  );
+                }
+
+                return false;
+              }
+
+              if(callback !== false) {
+                var message = null;
+
+                if(response.is_widget === true) {
+                  message = "<%= __('Saved! The changes are now active in your widget.') %>";
+                } else {
+                  message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw %>";
+                }
+
+                if(message !== null) {
+                  MailPoet.Notice.hide();
+                  MailPoet.Notice.success(message, {
+                    scroll: true,
+                    static: (response.is_widget === false)
+                  });
+                }
+
+                // if there is a callback, call it!
+                if(callback !== undefined) {
+                  callback();
+                }
+              }
+            });
+          }
+        }
+        window.mailpoet_form_save = mailpoet_form_save;
+
+        // toolbar: on success toggle
+        $(document).on('change', 'input[name="on_success"]', toggleOnSuccessOptions);
+        toggleOnSuccessOptions();
+
+        function toggleOnSuccessOptions() {
+          // hide all options
+          $('.mailpoet_on_success_option').hide();
+
+          // display selected option
+          var value = $('input[name="on_success"]:checked').val();
+          $('#mailpoet_on_success_'+value).show();
+        }
+
+        function mailpoet_form_export() {
+          var template = Handlebars.compile($('#form_template_exports').html());
+          MailPoet.Ajax.post({
+            endpoint: 'forms',
+            action: 'exportsEditor',
+            data: $('#mailpoet_form_id').val()
+          }).done(function(response) {
+            if(response.result !== false) {
+              $('#mailpoet_form_export').html(template({ exports: response }));
+            }
+          });
+        }
+        mailpoet_form_export();
+
+        $(document).on('click', '.mailpoet_form_export_toggle', function() {
+          $('.mailpoet_form_export_output').hide();
+          $('#mailpoet_form_export_'+$(this).data('type')).show();
+          return false;
+        });
+
+        // add new field
+        $(document).on('click', '#mailpoet_form_add_field', function() {
+          // open popup
+          MailPoet.Modal.popup({
+            title: "<%= __('Add new field') %>",
+            template: $('#form_template_field_form').html()
+          });
+
+          return false;
+        });
+
+        // edit field
+        $(document).on('click', '.mailpoet_form_field_edit', function() {
+          var id = $(this).data('id');
+
+          MailPoet.Ajax.post({
+            endpoint: 'customFields',
+            action: 'get',
+            data: id
+          }).done(function(response) {
+            if(response.result !== false) {
+              MailPoet.Modal.popup({
+                title: "<%= __('Edit field') %>",
+                template: $('#form_template_field_form').html(),
+                data: response
+              });
+            }
+          });
+        });
+
+        // delete field
+        $(document).on('click', '.mailpoet_form_field_delete', function() {
+          var id = $(this).data('id');
+          var item = $(this).parent();
+          var name = $(this).siblings('.mailpoet_form_field').attr('wysija_name');
+
+          if(window.confirm(
+            "<%= __('This field will be deleted for all your subscribers. Are you sure?') %>"
+          )) {
+            MailPoet.Ajax.post({
+              endpoint: 'customFields',
+              action: 'delete',
+              data: id
+            }).done(function(response) {
+              if(response.result === true) {
+                item.remove();
+
+                if(response.field !== undefined) {
+                  WysijaForm.removeBlock(response.field, function() {
+                    mailpoet_form_save(false);
+                  });
+                }
+
+                mailpoet_form_fields();
+                MailPoet.Notice.success(
+                  "<%= __('Removed custom field “"+name+"“') %>"
+                );
+              }
+            });
+          }
+        });
+
+        // undo button
+        $(document).on('click', '#mailpoet_form_undo', function() {
+          // pop last element off the history
+          WysijaHistory.dequeue();
+
+          return false;
+        });
+
+        // get form fields
+        mailpoet_form_fields();
+
+        // toolbar: segment selection
+        var selected_segments = <%= form.settings.segments | json_encode | raw %>;
+
+        //  enable select2 for segment selection
+        var select2 = $('#mailpoet_form_segments').select2({
+          width:'100%',
+          templateResult: function(item) {
+            if(item.element && item.element.selected) {
+              return null;
+            } else {
+              return item.text;
+            }
+          }
+        });
+
+        var hasRemoved = false;
+        select2.on('select2:unselecting', function(e) {
+          hasRemoved = true;
+        });
+        select2.on('select2:opening', function(e) {
+          if(hasRemoved === true) {
+            hasRemoved = false;
+            e.preventDefault();
+          }
+        });
+
+        // set selected values
+        $('#mailpoet_form_segments')
+          .val(<%= form.settings.segments | json_encode | raw %>)
+          .trigger('change');
+      });
+    });
+  </script>
+<% endblock %>
+
+<% block templates %>
+  <!-- toolbar templates -->
+  <%= partial('form_template_fields', 'form/templates/toolbar/fields.hbs') %>
+  <%= partial('form_template_exports', 'form/templates/toolbar/exports.hbs') %>
+
+  <!-- block templates -->
+  <%= partial('form_template_block', 'form/templates/blocks/container.hbs') %>
+  <%= partial('form_template_divider', 'form/templates/blocks/divider.hbs') %>
+  <%= partial('form_template_text', 'form/templates/blocks/text.hbs') %>
+  <%= partial('form_template_submit', 'form/templates/blocks/submit.hbs') %>
+  <%= partial('form_template_segment', 'form/templates/blocks/segment.hbs') %>
+  <%= partial('form_template_radio', 'form/templates/blocks/radio.hbs') %>
+  <%= partial('form_template_select', 'form/templates/blocks/select.hbs') %>
+  <%= partial('form_template_checkbox', 'form/templates/blocks/checkbox.hbs') %>
+  <%= partial('form_template_textarea', 'form/templates/blocks/textarea.hbs') %>
+  <%= partial('form_template_html', 'form/templates/blocks/html.hbs') %>
+  <%= partial('form_template_date_years',
+    'form/templates/blocks/date_years.hbs',
+    '_settings_date_years'
+  ) %>
+  <%= partial('form_template_date_months',
+    'form/templates/blocks/date_months.hbs',
+    '_settings_date_months'
+  ) %>
+  <%= partial('form_template_date_days',
+    'form/templates/blocks/date_days.hbs',
+    '_settings_date_days'
+  ) %>
+  <%= partial('form_template_date', 'form/templates/blocks/date.hbs') %>
+
+  <!-- field settings -->
+  <%= partial('form_template_field_settings', 'form/templates/settings/field.hbs') %>
+
+  <%= partial('field_settings_label',
+    'form/templates/settings/label.hbs',
+    '_settings_label'
+  ) %>
+  <%= partial('field_settings_label_within',
+    'form/templates/settings/label_within.hbs',
+    '_settings_label_within'
+  ) %>
+  <%= partial('field_settings_required',
+    'form/templates/settings/required.hbs',
+    '_settings_required'
+  ) %>
+  <%= partial('field_settings_validate',
+    'form/templates/settings/validate.hbs',
+    '_settings_validate'
+  ) %>
+  <%= partial('field_settings_values',
+    'form/templates/settings/values.hbs',
+    '_settings_values'
+  ) %>
+  <%= partial('field_settings_date_default',
+    'form/templates/settings/date_default.hbs',
+    '_settings_date_default'
+  ) %>
+  <%= partial('field_settings_submit',
+    'form/templates/settings/submit.hbs',
+    '_settings_submit'
+  ) %>
+
+  <%= partial('field_settings_values_item',
+  'form/templates/settings/values_item.hbs') %>
+  <%= partial(
+    'field_settings_date_format',
+    'form/templates/settings/date_formats.hbs',
+    '_settings_date_format'
+  ) %>
+  <%= partial(
+    'field_settings_date_type',
+    'form/templates/settings/date_types.hbs',
+    '_settings_date_type'
+  ) %>
+  <%= partial('field_settings_segment_selection_item',
+    'form/templates/settings/segment_selection_item.hbs'
+  ) %>
+  <%= partial('field_settings_segment_selection',
+    'form/templates/settings/segment_selection.hbs',
+    '_settings_segment_selection'
+  ) %>
+
+  <!-- custom field: new -->
+  <%= partial('form_template_field_form',
+    'form/templates/settings/field_form.hbs'
+  ) %>
+
+  <!-- form preview -->
+  <%= partial('mailpoet_form_preview_template',
+    'form/templates/preview.hbs'
+  ) %>
+
+  <!-- field settings depending on field type -->
+  <script id="form_template_field_text" type="text/x-handlebars-template">
+    {{> _settings_required }}
+    {{> _settings_validate }}
+  </script>
+
+  <script id="form_template_field_textarea" type="text/x-handlebars-template">
+    {{> _settings_required }}
+    {{> _settings_validate }}
+  </script>
+
+  <script id="form_template_field_radio" type="text/x-handlebars-template">
+    {{> _settings_values }}
+    {{> _settings_required }}
+  </script>
+
+  <script id="form_template_field_checkbox" type="text/x-handlebars-template">
+    {{> _settings_values }}
+    {{> _settings_required }}
+  </script>
+
+  <script id="form_template_field_select" type="text/x-handlebars-template">
+    {{> _settings_values }}
+    {{> _settings_required }}
+  </script>
+
+  <script id="form_template_field_date" type="text/x-handlebars-template">
+    {{> _settings_required }}
+    {{> _settings_date_type }}
+  </script>
+<% endblock %>
