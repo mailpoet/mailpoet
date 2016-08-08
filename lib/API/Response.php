@@ -27,7 +27,7 @@ abstract class Response {
     if(!empty($this->meta)) {
       $response['meta'] = $this->meta;
     }
-    if(!empty($data)) {
+    if($data !== null) {
       $response = array_merge($response, $data);
     }
 

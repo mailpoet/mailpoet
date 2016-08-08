@@ -699,36 +699,20 @@
               email: recipient
             }
           }
-        }).done(function(response) {
+        }).always(function() {
           MailPoet.Modal.loading(false);
-          if(response.result === true) {
-            MailPoet.Notice.success(
-              "<%= __('The email has been sent! Check your inbox.') %>",
+        }).done(function(response) {
+          MailPoet.Notice.success(
+            "<%= __('The email has been sent! Check your inbox.') %>",
+            { scroll: true }
+          );
+        }).fail(function(response) {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
               { scroll: true }
             );
-          } else {
-            if (response.errors) {
-              MailPoet.Notice.error(
-                "<%= __('The email could not be sent: ') %> " + response.errors,
-                { scroll: true }
-              );
-            }
-            else {
-              if(mailer.method === 'PHPMail') {
-                MailPoet.Notice.error(
-                  "<%= __('The email could not be sent. Please contact your host to fix this issue.') %>",
-                  { scroll: true, static: true }
-                );
-              } else {
-                MailPoet.Notice.error(
-                  "<%= __('The email could not be sent. Please check your settings.') %>",
-                  { scroll: true }
-                );
-              }
-            }
           }
-        }).error(function(response) {
-          MailPoet.Modal.loading(false);
         });
       });
 
