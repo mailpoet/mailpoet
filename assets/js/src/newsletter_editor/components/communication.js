@@ -27,8 +27,8 @@ define([
     return Module._cachedQuery({
       action: 'getPostTypes',
       options: {},
-    }).then(function(types) {
-      return _.values(types);
+    }).then(function(response) {
+      return _.values(response.data);
     });
   };
 
@@ -36,36 +36,46 @@ define([
     return Module._cachedQuery({
       action: 'getTaxonomies',
       options: {
-        postType: postType,
-      },
+        postType: postType
+      }
+    }).then(function(response) {
+      return response.data;
     });
   };
 
   Module.getTerms = function(options) {
     return Module._cachedQuery({
       action: 'getTerms',
-      options: options,
+      options: options
+    }).then(function(response) {
+      return response.data;
     });
   };
 
   Module.getPosts = function(options) {
     return Module._cachedQuery({
       action: 'getPosts',
-      options: options,
+      options: options
+    }).then(function(response) {
+      return response.data;
     });
   };
 
   Module.getTransformedPosts = function(options) {
     return Module._cachedQuery({
       action: 'getTransformedPosts',
-      options: options,
+      options: options
+    }).then(function(response) {
+      return response.data;
     });
   };
 
   Module.getBulkTransformedPosts = function(options) {
     return Module._query({
       action: 'getBulkTransformedPosts',
-      options: options,
+      options: options
+    }).then(function(response) {
+      return response.data;
     });
   };
 

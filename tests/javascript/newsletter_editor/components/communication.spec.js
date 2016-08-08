@@ -12,8 +12,10 @@ define([
               post: function() {
                 var deferred = jQuery.Deferred();
                 deferred.resolve({
-                  'post': 'val1',
-                  'page': 'val2',
+                  data: {
+                    'post': 'val1',
+                    'page': 'val2',
+                  }
                 });
                 return deferred;
               }
@@ -71,13 +73,17 @@ define([
       expect(spy.args[0][0].data.postType).to.equal('post');
     });
 
-    it('fetches post types from the server', function() {
+    it('fetches taxonomies from the server', function() {
       var module = CommunicationInjector({
           "mailpoet": {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
-                deferred.resolve({ 'category': 'val1' });
+                deferred.resolve({
+                  data: {
+                    'category': 'val1'
+                  }
+                });
                 return deferred;
               }
             },
@@ -108,13 +114,13 @@ define([
 
   describe('getTerms', function() {
     it('sends terms to endpoint', function() {
-      var spy,
-          post = function(params) {
-            var deferred = jQuery.Deferred();
-            deferred.resolve({});
-            return deferred;
-          },
-          module;
+      var spy;
+      var post = function(params) {
+        var deferred = jQuery.Deferred();
+        deferred.resolve({});
+        return deferred;
+      }
+      var module;
       spy = sinon.spy(post);
       module = CommunicationInjector({
         "mailpoet": {
@@ -136,7 +142,12 @@ define([
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
-                deferred.resolve({ 'term1': 'term1val1', 'term2': 'term2val2' });
+                deferred.resolve({
+                  data: {
+                    'term1': 'term1val1',
+                    'term2': 'term2val2'
+                  }
+                });
                 return deferred;
               }
             },
@@ -199,7 +210,12 @@ define([
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
-                deferred.resolve([{post_title: 'title 1'}, {post_title: 'post title 2'}]);
+                deferred.resolve({
+                  data: [
+                    {post_title: 'title 1'},
+                    {post_title: 'post title 2'}
+                  ]
+                });
                 return deferred;
               }
             },
@@ -265,7 +281,12 @@ define([
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
-                deferred.resolve([{type: 'text', text: 'something'}, {type: 'text', text: 'something else'}]);
+                deferred.resolve({
+                  data: [
+                    {type: 'text', text: 'something'},
+                    {type: 'text', text: 'something else'}
+                  ]
+                });
                 return deferred;
               }
             },

@@ -217,8 +217,10 @@ define([
             };
           },
           transport: function(options, success, failure) {
-            var taxonomies,
-                promise = CommunicationComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
+            var taxonomies;
+            var promise = CommunicationComponent.getTaxonomies(
+              that.model.get('contentType')
+            ).then(function(tax) {
               taxonomies = tax;
               // Fetch available terms based on the list of taxonomies already fetched
               var promise = CommunicationComponent.getTerms({
@@ -227,7 +229,7 @@ define([
               }).then(function(terms) {
                 return {
                   taxonomies: taxonomies,
-                  terms: terms,
+                  terms: terms
                 };
               });
               return promise;
