@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
-use MailPoet\Models\Newsletter;
+use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterPost;
 
 if(!defined('ABSPATH')) exit;
@@ -19,7 +19,7 @@ class Posts {
     if(!count($matched_posts_ids)) {
       return $newsletter;
     }
-    $newsletter_id = ($newsletter['type'] === Newsletter::TYPE_NOTIFICATION_HISTORY) ?
+    $newsletter_id = ($newsletter['type'] === NewsletterModel::TYPE_NOTIFICATION_HISTORY) ?
       $newsletter['parent_id'] :
       $newsletter['id'];
     foreach($matched_posts_ids as $post_id) {

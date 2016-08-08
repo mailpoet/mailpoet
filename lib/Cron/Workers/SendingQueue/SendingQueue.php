@@ -5,7 +5,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Subscribers as SubscribersTask;
-use MailPoet\Models\Newsletter as NewsletterModel;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
@@ -23,11 +23,14 @@ class SendingQueue {
     $this->mailer_task = new MailerTask();
     $this->newsletter_task = new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
+    // abort if execution or sending limit are reached
+    CronHelper::enforceExecutionLimit($this->timer);
   }
 
   function process() {
-    $this->mailer_task->checkSendingLimit();
-    foreach($this->getQueues() as $queue) {
+    foreach(self::getRunningQueues() as $queue) {
+      // abort if sending limit is reached
+      MailerLog::enforceSendingLimit();
       // get and pre-process newsletter (render, replace shortcodes/links, etc.)
       $newsletter = $this->newsletter_task->getAndPreProcess($queue->asArray());
       if(!$newsletter) {
@@ -67,6 +70,11 @@ class SendingQueue {
           $newsletter,
           $found_subscribers
         );
+        if($queue->status === SendingQueueModel::STATUS_COMPLETED) {
+          $this->newsletter_task->markNewsletterAsSent($queue->newsletter_id);
+        }
+        // abort if execution limit is reached
+        CronHelper::enforceExecutionLimit($this->timer);
       }
     }
   }
@@ -141,6 +149,7 @@ class SendingQueue {
         $prepared_subscribers_ids,
         $queue->subscribers
       );
+      $queue = $this->updateQueue($queue);
     } else {
       // update processed/to process list
       $queue->subscribers = SubscribersTask::updateProcessedList(
@@ -149,19 +158,18 @@ class SendingQueue {
       );
       // log statistics
       StatisticsNewslettersModel::createMultiple($statistics);
-      // keep track of sent items
-      $this->mailer_task->updateMailerLog();
-      $subscribers_to_process_count = count($queue->subscribers['to_process']);
+      // update the sent count
+      $this->mailer_task->updateSentCount();
+      $queue = $this->updateQueue($queue);
+      // enforce sending limit if there are still subscribers left to process
+      if($queue->count_to_process) {
+        MailerLog::enforceSendingLimit();
+      }
     }
-    $queue = $this->updateQueue($queue);
-    if($subscribers_to_process_count) {
-      $this->mailer_task->checkSendingLimit();
-    }
-    CronHelper::checkExecutionTimer($this->timer);
     return $queue;
   }
 
-  function getQueues() {
+  static function getRunningQueues() {
     return SendingQueueModel::orderByDesc('priority')
       ->whereNull('deleted_at')
       ->whereNull('status')
@@ -178,13 +186,6 @@ class SendingQueue {
     if(!$queue->count_to_process) {
       $queue->processed_at = current_time('mysql');
       $queue->status = SendingQueueModel::STATUS_COMPLETED;
-      // if it's a standard or post notificaiton newsletter, update its status to sent
-      $newsletter = NewsletterModel::findOne($queue->newsletter_id);
-      if($newsletter->type === NewsletterModel::TYPE_STANDARD ||
-         $newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY
-      ) {
-        $newsletter->setStatus(NewsletterModel::STATUS_SENT);
-      }
     }
     return $queue->save();
   }

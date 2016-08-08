@@ -20,13 +20,12 @@ class Scheduler {
 
   function __construct($timer = false) {
     $this->timer = ($timer) ? $timer : microtime(true);
-    CronHelper::checkExecutionTimer($this->timer);
+    // abort if execution limit is reached
+    CronHelper::enforceExecutionLimit($this->timer);
   }
 
   function process() {
-    $scheduled_queues = SendingQueue::where('status', 'scheduled')
-      ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
-      ->findMany();
+    $scheduled_queues = self::getScheduledQueues();
     if(!count($scheduled_queues)) return;
     foreach($scheduled_queues as $i => $queue) {
       $newsletter = Newsletter::filter('filterWithOptions')
@@ -40,7 +39,7 @@ class Scheduler {
       } elseif($newsletter->type === 'standard') {
         $this->processScheduledStandardNewsletter($newsletter, $queue);
       }
-      CronHelper::checkExecutionTimer($this->timer);
+      CronHelper::enforceExecutionLimit($this->timer);
     }
   }
 
@@ -184,5 +183,11 @@ class Scheduler {
     return ($notification_history->getErrors() === false) ?
       $notification_history :
       false;
+  }
+  
+  static function getScheduledQueues() {
+    return SendingQueue::where('status', 'scheduled')
+      ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
+      ->findMany();
   }
 }

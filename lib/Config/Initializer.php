@@ -2,7 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Models;
-use MailPoet\Cron\Supervisor;
+use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
 use MailPoet\API;
 use MailPoet\WP\Notice as WPNotice;
@@ -107,7 +107,7 @@ class Initializer {
       $this->setupShortcodes();
       $this->setupHooks();
       $this->setupImages();
-      $this->runQueueSupervisor();
+      $this->setupCronTrigger();
 
       $this->plugin_initialized = true;
     } catch(\Exception $e) {
@@ -192,14 +192,9 @@ class Initializer {
     $router->init();
   }
 
-  function runQueueSupervisor() {
-    if(php_sapi_name() === 'cli') return;
-    try {
-      $supervisor = new Supervisor();
-      $supervisor->checkDaemon();
-    } catch(\Exception $e) {
-      // Prevent Daemon exceptions from breaking out and breaking UI
-    }
+  function setupCronTrigger() {
+    $cron_trigger = new CronTrigger();
+    $cron_trigger->init();
   }
 
   function setupImages() {

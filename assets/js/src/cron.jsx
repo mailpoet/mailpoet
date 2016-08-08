@@ -21,8 +21,6 @@ define(
           action: 'getStatus'
         })
         .done(function(response) {
-          jQuery('.button-primary')
-            .removeClass('disabled');
           if(response.status !== undefined) {
             this.setState(response);
           } else {
@@ -36,55 +34,26 @@ define(
         setInterval(this.getCronData, 5000);
       }
     },
-    controlCron: function(action) {
-      if(jQuery('.button-primary').hasClass('disabled')) {
-        return;
-      }
-      jQuery('.button-primary')
-        .addClass('disabled');
-      MailPoet.Ajax.post({
-        endpoint: 'cron',
-        action: action,
-      })
-      .done(function(response) {
-        if(!response.result) {
-          MailPoet.Notice.error(MailPoet.I18n.t('daemonControlError'));
-        }
-      }.bind(this));
-    },
     render: function() {
-      if(this.state.status === 'loading') {
-        return(<div>{MailPoet.I18n.t('loadingDaemonStatus')}</div>);
-      }
       switch(this.state.status) {
-        case 'started':
+        case 'loading':
           return(
             <div>
-              {MailPoet.I18n.t('cronDaemonIsRunning')}
-              <br/>
-              <br/>
-              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'stop')}>{MailPoet.I18n.t('stop')}</a>
+              {MailPoet.I18n.t('loadingDaemonStatus')}
             </div>
           );
-        break;
-        case 'starting':
-        case 'stopping':
+        case false:
           return(
             <div>
-              {MailPoet.I18n.t('cronDaemonState').replace('%$1s', this.state.status)}
-            </div>
+              {MailPoet.I18n.t('daemonNotRunning')}
+              </div>
           );
-        break;
-        case 'stopped':
+        default:
           return(
             <div>
               {MailPoet.I18n.t('cronDaemonState').replace('%$1s', this.state.status)}
-              <br />
-              <br />
-              <a href="#" className="button-primary" onClick={this.controlCron.bind(null, 'start')}>{MailPoet.I18n.t('start')}</a>
             </div>
           );
-        break;
       }
     }
   });

@@ -66,44 +66,40 @@ class MailChimp {
       $connection = @fopen($url, 'r');
       if(!$connection) {
         return $this->processError('connection');
-      } else {
-        $i = 0;
-        $header = array();
-        while(!feof($connection)) {
-          $buffer = fgets($connection, 4096);
-          if(trim($buffer) !== '') {
-            $obj = json_decode($buffer);
-            if($i === 0) {
-              $header = $obj;
-              if(is_object($header) && isset($header->error)) {
-                return $this->processError('lists');
-              }
-              if(!isset($header_hash)) {
-                $header_hash = md5(implode(',', $header));
-              } else {
-                if(md5(implode(',', $header) !== $header_hash)) {
-                  return $this->processError('headers');
-                }
-              }
-            } else {
-              $subscribers[] = $obj;
-            }
-            $i++;
-          }
-
-          $bytes_fetched += strlen($buffer);
-          if($bytes_fetched > $this->max_post_size) {
-            return $this->processError('size');
-
-          }
-        }
-        fclose($connection);
       }
+      $i = 0;
+      $header = array();
+      while(!feof($connection)) {
+        $buffer = fgets($connection, 4096);
+        if(trim($buffer) !== '') {
+          $obj = json_decode($buffer);
+          if($i === 0) {
+            $header = $obj;
+            if(is_object($header) && isset($header->error)) {
+              return $this->processError('lists');
+            }
+            if(!isset($header_hash)) {
+              $header_hash = md5(implode(',', $header));
+            } else {
+              if(md5(implode(',', $header) !== $header_hash)) {
+                return $this->processError('headers');
+              }
+            }
+          } else {
+            $subscribers[] = $obj;
+          }
+          $i++;
+        }
+        $bytes_fetched += strlen($buffer);
+        if($bytes_fetched > $this->max_post_size) {
+          return $this->processError('size');
+        }
+      }
+      fclose($connection);
     }
 
     if(!count($subscribers)) {
       return $this->processError('subscribers');
-
     }
 
     return array(
@@ -130,7 +126,7 @@ class MailChimp {
   }
 
   function processError($error) {
-    switch ($error) {
+    switch($error) {
       case 'API':
         $errorMessage = __('Invalid API Key.');
         break;

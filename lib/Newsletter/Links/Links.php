@@ -130,7 +130,7 @@ class Links {
 
   static function save(array $links, $newsletter_id, $queue_id) {
     foreach($links as $link) {
-      if(empty($link['hash'] || empty($link['url']))) continue;
+      if(empty($link['hash']) || empty($link['url'])) continue;
       $newsletter_link = NewsletterLink::create();
       $newsletter_link->newsletter_id = $newsletter_id;
       $newsletter_link->queue_id = $queue_id;

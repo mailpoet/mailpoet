@@ -10,6 +10,7 @@ use MailPoet\Config\PopulatorData\Templates\PostNotificationsBlank1Column;
 use MailPoet\Config\PopulatorData\Templates\WelcomeBlank1Column;
 use MailPoet\Config\PopulatorData\Templates\WelcomeBlank12Column;
 use MailPoet\Config\PopulatorData\Templates\SimpleText;
+use MailPoet\Cron\CronTrigger;
 use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
 use \MailPoet\Models\Setting;
@@ -73,6 +74,13 @@ class Populator {
 
   private function createDefaultSettings() {
     $current_user = wp_get_current_user();
+
+    if(!Setting::getValue(CronTrigger::SETTING_NAME)) {
+      // disable task scheduler (cron) be default
+      Setting::setValue(CronTrigger::SETTING_NAME, array(
+        'method' => CronTrigger::DEFAULT_METHOD
+      ));
+    }
 
     // default sender info based on current user
     $sender = array(
