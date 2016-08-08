@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Form\Block;
 
+use Carbon\Carbon;
+
 class Date extends Base {
 
   static function render($block) {
@@ -191,5 +193,51 @@ class Date extends Base {
     }
 
     return $html;
+  }
+
+  static function validateDate($date, $date_format) {
+    $parsed_date = explode('/', $date);
+    if($date_format === 'mm/dd/yyyy' && count($parsed_date) === 3) {
+      $parsed_date = array(
+        'mm' => $parsed_date[0],
+        'dd' => $parsed_date[1],
+        'yyyy' => $parsed_date[2]
+      );
+    } else if($date_format === 'mm/yyyy' && count($parsed_date) === 2) {
+      $parsed_date = array(
+        'mm' => $parsed_date[0],
+        'dd' => '01',
+        'yyyy' => $parsed_date[1]
+      );
+    } else if($date_format === 'mm' && count($parsed_date) === 1) {
+      $parsed_date = array(
+        'mm' => $parsed_date[0],
+        'dd' => '01',
+        'yyyy' => date('Y')
+      );
+    } else if($date_format === 'dd' && count($parsed_date) === 1) {
+      $parsed_date = array(
+        'mm' => '01',
+        'dd' => $parsed_date[0],
+        'yyyy' => date('Y')
+      );
+    } else {
+      $parsed_date = false;
+      $date = false;
+    }
+    if($parsed_date) {
+      try {
+        $date = sprintf(
+          '%s-%s-%s 00:00:00',
+          $parsed_date['yyyy'],
+          $parsed_date['mm'],
+          $parsed_date['dd']
+        );
+        $date = Carbon::parse($date)->toDateTimeString();
+      } catch(\Exception $e) {
+        $date = false;
+      }
+    }
+    return $date;
   }
 }
