@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\Cron\CronTrigger;
+
 if(!defined('ABSPATH')) exit;
 
 class Setting extends Model {
@@ -38,8 +40,8 @@ class Setting extends Model {
           'interval' => self::DEFAULT_SENDING_FREQUENCY_INTERVAL
         )
       ),
-      'task_scheduler' => array(
-        'method' => 'WordPress'
+      CronTrigger::SETTING_NAME => array(
+        'method' => CronTrigger::DEFAULT_METHOD
       ),
       'signup_confirmation' => array(
         'enabled' => true,

@@ -11,6 +11,7 @@ class CronTrigger {
     'mailpoet' => 'MailPoet',
     'wordpress' => 'WordPress'
   );
+  const DEFAULT_METHOD = 'WordPress';
   const SETTING_NAME = 'cron_trigger';
 
   function __construct() {

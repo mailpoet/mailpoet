@@ -78,7 +78,7 @@ class Populator {
     if(!Setting::getValue(CronTrigger::SETTING_NAME)) {
       // disable task scheduler (cron) be default
       Setting::setValue(CronTrigger::SETTING_NAME, array(
-        'method' => 'WordPress'
+        'method' => CronTrigger::DEFAULT_METHOD
       ));
     }
 
