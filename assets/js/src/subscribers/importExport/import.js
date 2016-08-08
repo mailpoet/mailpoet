@@ -455,7 +455,7 @@ define(
                   null,
                   new Array(subscribers.subscribers[0].length)
               ).map(String.prototype.valueOf, filler),
-              fillterPosition;
+              fillerPosition;
 
           showCurrentStep();
 
@@ -707,7 +707,7 @@ define(
             // display filler data (e.g., ellipsis) if we've reached the maximum number of rows and
             // subscribers count is greater than the maximum number of rows we're displaying
             if (index === maxRowsToShow && subscribers.subscribersCount > (maxRowsToShow + 1)) {
-              fillterPosition = index;
+              fillerPosition = index;
               return filler;
             }
             // if we're on the last line, show the total count of subscribers data
@@ -882,7 +882,8 @@ define(
                 jQuery.map(subscribersClone.subscribers, function (data, position) {
                   var rowData = data[matchedColumn];
                   var dateFormat = column.params.date_format.toUpperCase();
-                  if (position !== fillterPosition) {
+                  var date = Moment(rowData, dateFormat, true);
+                  if (position !== fillerPosition) {
                     // check if date exists
                     if (rowData.trim() === '') {
                       data[matchedColumn] =
@@ -893,14 +894,12 @@ define(
                       preventNextStep = true;
                       return;
                     }
-                    // check if date is valid and is before today
-                    if (Moment(rowData, dateFormat, true).isValid() &&
-                        Moment(rowData, dateFormat, true).isBefore(Moment())
-                    ) {
+                    // check if date is valid
+                    if (date.isValid()) {
                       data[matchedColumn] +=
                           '<span class="mailpoet_data_match" title="'
                           + MailPoet.I18n.t('verifyDateMatch') + '">'
-                          + MailPoet.Date.format(Moment(rowData, dateFormat, true))
+                          + MailPoet.Date.format(date)
                           + '</span>';
                     }
                     else {
