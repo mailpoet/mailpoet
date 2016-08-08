@@ -1,9 +1,9 @@
 <?php
 namespace MailPoet\Cron;
 
-use MailPoet\Router\Front as FrontRouter;
-use MailPoet\Router\Endpoints\Queue as QueueEndpoint;
 use MailPoet\Models\Setting;
+use MailPoet\Router\Endpoints\Queue as QueueEndpoint;
+use MailPoet\Router\Front as FrontRouter;
 use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
@@ -14,13 +14,17 @@ class CronHelper {
   const DAEMON_REQUEST_TIMEOUT = 2;
   const DAEMON_SETTING = 'cron_daemon';
 
-  static function createOrRestartDaemon($token) {
+  static function createDaemon($token) {
     $daemon = array(
       'status' => Daemon::STATUS_STARTING,
       'token' => $token
     );
     self::saveDaemon($daemon);
     return $daemon;
+  }
+
+  static function restartDaemon($token) {
+    return self::createDaemon($token);
   }
 
   static function getDaemon() {
