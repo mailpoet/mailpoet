@@ -1,6 +1,9 @@
 <?php
 namespace MailPoet\Subscribers\ImportExport\Import;
 
+use Carbon\Carbon;
+use MailPoet\Form\Block\Date;
+use MailPoet\Models\CustomField;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
@@ -41,7 +44,7 @@ class Import {
   function process() {
     $subscriber_fields = $this->subscriber_fields;
     $subscriber_custom_fields = $this->subscriber_custom_fields;
-    $subscribers_data = $this->subscribers_data;
+    $subscribers_data = $this->validateSubscribersData($this->subscribers_data);
     list ($subscribers_data, $subscriber_fields) =
       $this->filterSubscriberStatus($subscribers_data, $subscriber_fields);
     $this->deleteExistingTrashedSubscribers($subscribers_data);
@@ -96,6 +99,35 @@ class Import {
       ),
       'profiler' => $this->timeExecution()
     );
+  }
+
+  function validateSubscribersData($subscribers_data) {
+    $invalid_records = array();
+    foreach($subscribers_data as $column => &$data) {
+      // if this is a custom column
+      if(in_array($column, $this->subscriber_custom_fields)) {
+        $custom_field = CustomField::findOne($column);
+        // validate date type
+        if($custom_field->type === 'date') {
+          $custom_field->params = unserialize($custom_field->params);
+          $date_format = $custom_field->params['date_format'];
+          $data = array_map(function($index, $date) use($date_format, &$invalid_records) {
+            $date = Date::validateDate($date, $date_format);
+            if(!$date) {
+              $invalid_records[] = $index;
+            }
+            return $date;
+          }, array_keys($data), $data);
+        }
+      }
+    }
+    if($invalid_records) {
+      foreach($subscribers_data as $column => &$data) {
+        $data = array_diff_key($data, array_flip($invalid_records));
+        $data = array_values($data);
+      }
+    }
+    return $subscribers_data;
   }
 
   function transformSubscribersData($subscribers, $columns) {
