@@ -61,7 +61,7 @@ class SimpleText {
                   ),
                   array(
                     "type" => "image",
-                    "link" => "http://example.org",
+                    "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
                     "alt" => __("Fake logo"),
                     "fullWidth" => false,

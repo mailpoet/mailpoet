@@ -19,7 +19,7 @@ define([
       return this._getDefaults({
         type: 'button',
         text: 'Button',
-        url: 'http://google.com',
+        url: '',
         styles: {
           block: {
             backgroundColor: '#ff0000',
