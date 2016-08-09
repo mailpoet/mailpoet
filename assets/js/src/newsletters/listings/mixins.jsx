@@ -8,7 +8,9 @@ const _QueueMixin = {
     MailPoet.Ajax.post({
       endpoint: 'sendingQueue',
       action: 'pause',
-      data: newsletter.id
+      data: {
+        id: newsletter.id
+      }
     }).done(function() {
       jQuery('#resume_'+newsletter.id).show();
       jQuery('#pause_'+newsletter.id).hide();
@@ -18,7 +20,9 @@ const _QueueMixin = {
     MailPoet.Ajax.post({
       endpoint: 'sendingQueue',
       action: 'resume',
-      data: newsletter.id
+      data: {
+        id: newsletter.id
+      }
     }).done(function() {
       jQuery('#pause_'+newsletter.id).show();
       jQuery('#resume_'+newsletter.id).hide();

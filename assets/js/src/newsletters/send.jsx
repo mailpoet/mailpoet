@@ -101,27 +101,31 @@ define(
               return MailPoet.Ajax.post({
                 endpoint: 'sendingQueue',
                 action: 'add',
-                data: _.extend({}, this.state.item, {
-                  newsletter_id: this.props.params.id,
-                }),
+                data: {
+                  id: this.props.params.id
+                }
               });
             } else {
               return response;
             }
           }).done((response) => {
             this.setState({ loading: false });
-
-            if(response.result === true) {
-              this.context.router.push(`/${ this.state.item.type || '' }`);
-              MailPoet.Notice.success(response.data.message);
+            // redirect to listing based on newsletter type
+            this.context.router.push(`/${ this.state.item.type || '' }`);
+            // display success message depending on newsletter type
+            if (this.state.item.type === 'welcome') {
+              MailPoet.Notice.success(MailPoet.I18n.t('welcomeEmailActivated'));
+            } else if (this.state.item.type === 'notification') {
+              MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
             } else {
-              if(response.errors) {
-                MailPoet.Notice.error(response.errors);
-              } else {
-                MailPoet.Notice.error(
-                  MailPoet.I18n.t('newsletterSendingError').replace("%$1s", '?page=mailpoet-settings')
-                );
-              }
+              MailPoet.Notice.success(MailPoet.I18n.t('newsletterBeingSent'));
+            }
+          }).fail((response) => {
+            if (response.errors.length > 0) {
+              MailPoet.Notice.error(
+                response.errors.map(function(error) { return error.message; }),
+                { scroll: true }
+              );
             }
           });
         }
