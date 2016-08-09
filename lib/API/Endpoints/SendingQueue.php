@@ -21,8 +21,7 @@ class SendingQueue extends APIEndpoint {
     $id = (isset($data['id']) ? (int)$data['id'] : null);
 
     // check that the newsletter exists
-    $newsletter = Newsletter::filter('filterWithOptions')
-      ->findOne($data['id']);
+    $newsletter = Newsletter::filter('filterWithOptions')->findOne($id);
 
     if($newsletter === false) {
       return $this->errorResponse(array(
@@ -118,7 +117,7 @@ class SendingQueue extends APIEndpoint {
         return $this->errorResponse($errors);
       } else {
         return $this->successResponse(
-          Newsletter::findOne($newsletter->id)->asArray()
+          $newsletter->getQueue()->asArray()
         );
       }
     }
@@ -142,7 +141,7 @@ class SendingQueue extends APIEndpoint {
       } else {
         $queue->pause();
         return $this->successResponse(
-          Newsletter::findOne($newsletter->id)->asArray()
+          $newsletter->getQueue()->asArray()
         );
       }
     }
@@ -166,7 +165,7 @@ class SendingQueue extends APIEndpoint {
       } else {
         $queue->resume();
         return $this->successResponse(
-          Newsletter::findOne($newsletter->id)->asArray()
+          $newsletter->getQueue()->asArray()
         );
       }
     }

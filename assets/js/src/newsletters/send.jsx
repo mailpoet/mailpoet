@@ -108,8 +108,9 @@ define(
             } else {
               return response;
             }
-          }).done((response) => {
+          }).always(() => {
             this.setState({ loading: false });
+          }).done((response) => {
             // redirect to listing based on newsletter type
             this.context.router.push(`/${ this.state.item.type || '' }`);
             // display success message depending on newsletter type
@@ -118,7 +119,11 @@ define(
             } else if (this.state.item.type === 'notification') {
               MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
             } else {
-              MailPoet.Notice.success(MailPoet.I18n.t('newsletterBeingSent'));
+              if (response.data.status === 'scheduled') {
+                MailPoet.Notice.success(MailPoet.I18n.t('newsletterHasBeenScheduled'));
+              } else {
+                MailPoet.Notice.success(MailPoet.I18n.t('newsletterBeingSent'));
+              }
             }
           }).fail((response) => {
             if (response.errors.length > 0) {
