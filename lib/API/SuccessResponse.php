@@ -12,6 +12,8 @@ class SuccessResponse extends Response {
   }
 
   function getData() {
+    if($this->data === null) return null;
+
     return array(
       'data' => $this->data
     );

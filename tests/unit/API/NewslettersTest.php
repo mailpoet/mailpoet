@@ -1,4 +1,6 @@
 <?php
+use \MailPoet\API\Response as APIResponse;
+use \MailPoet\API\Error as APIError;
 use \MailPoet\API\Endpoints\Newsletters;
 use \MailPoet\Models\Newsletter;
 use \MailPoet\Models\NewsletterSegment;
@@ -39,16 +41,18 @@ class NewslettersTest extends MailPoetTest {
 
     $router = new Newsletters();
     $response = $router->save($valid_data);
-    expect($response['result'])->true();
-    expect($response)->hasntKey('errors');
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Newsletter::findOne($response->data['id'])->asArray()
+    );
 
     $invalid_data = array(
       'subject' => 'Missing newsletter type'
     );
 
     $response = $router->save($invalid_data);
-    expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please specify a type');
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please specify a type');
   }
 
   function testItCanSaveAnExistingNewsletter() {
@@ -59,10 +63,48 @@ class NewslettersTest extends MailPoetTest {
     );
 
     $response = $router->save($newsletter_data);
-    expect($response['result'])->true();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Newsletter::findOne($this->newsletter->id)->asArray()
+    );
 
-    $updated_newsletter = Newsletter::findOne($this->newsletter->id());
+    $updated_newsletter = Newsletter::findOne($this->newsletter->id);
     expect($updated_newsletter->subject)->equals('My Updated Newsletter');
+  }
+
+  function testItCanSetANewsletterStatus() {
+    $router = new Newsletters();
+    // set status to sending
+    $response = $router->setStatus(array(
+      'id' => $this->newsletter->id,
+      'status' => Newsletter::STATUS_SENDING
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data['status'])->equals(Newsletter::STATUS_SENDING);
+
+    // set status to draft
+    $response = $router->setStatus(array(
+      'id' => $this->newsletter->id,
+      'status' => Newsletter::STATUS_DRAFT
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data['status'])->equals(Newsletter::STATUS_DRAFT);
+
+    // no status specified throws an error
+    $response = $router->setStatus(array(
+      'id' => $this->newsletter->id,
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])
+      ->equals('You need to specify a status.');
+
+    // invalid newsletter id throws an error
+    $response = $router->setStatus(array(
+      'status' => Newsletter::STATUS_DRAFT
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])
+      ->equals('This newsletter does not exist.');
   }
 
   function testItCanRestoreANewsletter() {

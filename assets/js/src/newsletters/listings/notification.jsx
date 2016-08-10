@@ -158,20 +158,18 @@ const NewsletterListNotification = React.createClass({
         id: ~~(e.target.getAttribute('data-id')),
         status: e.target.value
       }
-    }).done(function(response) {
-      if (response.result === false) {
-        MailPoet.Notice.error(MailPoet.I18n.t('postNotificationActivationFailed'));
-
-        // reset value to actual newsletter's status
-         e.target.value = response.status;
-      } else {
-        if (response.status === 'active') {
-          MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
-        }
-        // force refresh of listing so that groups are updated
-        this.forceUpdate();
+    }).done((response) => {
+      if (response.data.status === 'active') {
+        MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
       }
-    }.bind(this));
+      // force refresh of listing so that groups are updated
+      this.forceUpdate();
+    }).fail((response) => {
+      MailPoet.Notice.error(MailPoet.I18n.t('postNotificationActivationFailed'));
+
+      // reset value to actual newsletter's status
+      e.target.value = response.status;
+    });
   },
   renderStatus: function(newsletter) {
     return (

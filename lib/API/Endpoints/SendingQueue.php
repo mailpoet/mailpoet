@@ -1,5 +1,7 @@
 <?php
 namespace MailPoet\API\Endpoints;
+use MailPoet\API\Endpoint as APIEndpoint;
+use MailPoet\API\Error as APIError;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
@@ -14,63 +16,41 @@ use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
-class SendingQueue {
-  function add($data) {
+class SendingQueue extends APIEndpoint {
+  function add($data = array()) {
+    $newsletter_id = (isset($data['newsletter_id'])
+      ? (int)$data['newsletter_id']
+      : false
+    );
+
+    // check that the newsletter exists
+    $newsletter = Newsletter::filter('filterWithOptions')
+      ->findOne($newsletter_id);
+
+    if($newsletter === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This newsletter does not exist.')
+      ));
+    }
+
     // check that the sending method has been configured properly
     try {
       new Mailer(false);
     } catch(\Exception $e) {
-      return array(
-        'result' => false,
-        'errors' => array($e->getMessage())
-      );
+      return $this->errorResponse(array(
+        $e->getCode() => $e->getMessage()
+      ));
     }
 
-    // check that the newsletter exists
-    $newsletter = Newsletter::filter('filterWithOptions')
-      ->findOne($data['newsletter_id']);
-
-    if($newsletter === false) {
-      return array(
-        'result' => false,
-        'errors' => array(__('This newsletter does not exist'))
-      );
-    }
-
-    if($newsletter->type === Newsletter::TYPE_WELCOME ||
-       $newsletter->type === Newsletter::TYPE_NOTIFICATION
-    ) {
-      // set newsletter status to active
-      $result = $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
-      $errors = $result->getErrors();
-
-      if(!empty($errors)) {
-        return array(
-          'result' => false,
-          'errors' => $errors
-        );
-      } else {
-        $message = ($newsletter->type === Newsletter::TYPE_WELCOME) ?
-          __('Your Welcome Email has been activated') :
-          __('Your Post Notification has been activated');
-        return array(
-          'result' => true,
-          'data' => array(
-            'message' => $message
-          )
-        );
-      }
-    }
-
+    // add newsletter to the sending queue
     $queue = SendingQueueModel::whereNull('status')
-      ->where('newsletter_id', $newsletter->id)
-      ->findOne();
+    ->where('newsletter_id', $newsletter->id)
+    ->findOne();
 
     if(!empty($queue)) {
-      return array(
-        'result' => false,
-        'errors' => array(__('This newsletter is already being sent'))
-      );
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This newsletter is already being sent.')
+      ));
     }
 
     $queue = SendingQueueModel::where('newsletter_id', $newsletter->id)
@@ -92,8 +72,6 @@ class SendingQueue {
       );
       $queue->subscribers = null;
       $queue->count_total = $queue->count_to_process = 0;
-
-      $message = __('The newsletter has been scheduled');
     } else {
       $segments = $newsletter->segments()->findArray();
       $segment_ids = array_map(function($segment) {
@@ -104,10 +82,9 @@ class SendingQueue {
       $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
       $subscribers = array_unique($subscribers);
       if(!count($subscribers)) {
-        return array(
-          'result' => false,
-          'errors' => array(__('There are no subscribers in that list!'))
-        );
+        return $this->errorResponse(array(
+          APIError::UNKNOWN => __('There are no subscribers in that list!')
+        ));
       }
       $queue->status = null;
       $queue->scheduled_at = null;
@@ -120,58 +97,69 @@ class SendingQueue {
 
       // set newsletter status
       $newsletter->setStatus(Newsletter::STATUS_SENDING);
-
-      $message = __('The newsletter is being sent...');
     }
     $queue->save();
 
     $errors = $queue->getErrors();
     if(!empty($errors)) {
-      return array(
-        'result' => false,
-        'errors' => $errors
-      );
+      return $this->errorResponse($errors);
     } else {
-      return array(
-        'result' => true,
-        'data' => array(
-          'message' => $message
-        )
+      return $this->successResponse(
+        $newsletter->getQueue()->asArray()
       );
     }
   }
 
-  function pause($newsletter_id) {
+  function pause($data = array()) {
+    $newsletter_id = (isset($data['newsletter_id'])
+      ? (int)$data['newsletter_id']
+      : false
+    );
     $newsletter = Newsletter::findOne($newsletter_id);
-    $result = false;
 
-    if($newsletter !== false) {
+    if($newsletter === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This newsletter does not exist.')
+      ));
+    } else {
       $queue = $newsletter->getQueue();
 
-      if($queue !== false) {
-        $result = $queue->pause();
+      if($queue === false) {
+        return $this->errorResponse(array(
+          APIError::UNKNOWN => __('This newsletter has not been sent yet.')
+        ));
+      } else {
+        $queue->pause();
+        return $this->successResponse(
+          $newsletter->getQueue()->asArray()
+        );
       }
     }
-
-    return array(
-      'result' => $result
-    );
   }
 
-  function resume($newsletter_id) {
+  function resume($data = array()) {
+    $newsletter_id = (isset($data['newsletter_id'])
+      ? (int)$data['newsletter_id']
+      : false
+    );
     $newsletter = Newsletter::findOne($newsletter_id);
-    $result = false;
-
-    if($newsletter !== false) {
+    if($newsletter === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This newsletter does not exist.')
+      ));
+    } else {
       $queue = $newsletter->getQueue();
 
-      if($queue !== false) {
-        $result = $queue->resume();
+      if($queue === false) {
+        return $this->errorResponse(array(
+          APIError::UNKNOWN => __('This newsletter has not been sent yet.')
+        ));
+      } else {
+        $queue->resume();
+        return $this->successResponse(
+          $newsletter->getQueue()->asArray()
+        );
       }
     }
-
-    return array(
-      'result' => $result
-    );
   }
 }

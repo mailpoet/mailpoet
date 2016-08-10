@@ -1,11 +1,12 @@
 <?php
 namespace MailPoet\API\Endpoints;
+use MailPoet\API\Endpoint as APIEndpoint;
+use MailPoet\API\Error as APIError;
 
 if(!defined('ABSPATH')) exit;
 
-class Mailer {
-  function send($data) {
-    $response = array();
+class Mailer extends APIEndpoint {
+  function send($data = array()) {
     try {
       $mailer = new \MailPoet\Mailer\Mailer(
         (isset($data['mailer'])) ? $data['mailer'] : false,
@@ -14,10 +15,17 @@ class Mailer {
       );
       $result = $mailer->send($data['newsletter'], $data['subscriber']);
     } catch(\Exception $e) {
-      $result = false;
-      $response['errors'] = array($e->getMessage());
+      return $this->errorResponse(array(
+        $e->getCode() => $e->getMessage()
+      ));
     }
-    $response['result'] = ($result) ? true : false;
-    return $response;
+
+    if($result === false) {
+      return $this->errorResponse(array(
+        APIError::BAD_REQUEST => __("The email could not be sent. Please check your settings.")
+      ));
+    } else {
+      return $this->successResponse(null);
+    }
   }
 }

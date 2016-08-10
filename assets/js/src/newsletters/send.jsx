@@ -87,6 +87,15 @@ define(
       handleSend: function(e) {
         e.preventDefault();
 
+        const onFail = (response) => {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { scroll: true }
+            );
+          }
+        };
+
         if(!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
@@ -96,34 +105,57 @@ define(
             endpoint: 'newsletters',
             action: 'save',
             data: this.state.item,
-          }).then((response) => {
-            if (response.result === true) {
-              return MailPoet.Ajax.post({
-                endpoint: 'sendingQueue',
-                action: 'add',
-                data: _.extend({}, this.state.item, {
-                  newsletter_id: this.props.params.id,
-                }),
-              });
-            } else {
-              return response;
-            }
           }).done((response) => {
-            this.setState({ loading: false });
+            switch (response.data.type) {
+              case 'notification':
+              case 'welcome':
+                return MailPoet.Ajax.post({
+                  endpoint: 'newsletters',
+                  action: 'setStatus',
+                  data: {
+                    id: this.props.params.id,
+                    status: 'active'
+                  }
+                }).done((response) => {
+                  // redirect to listing based on newsletter type
+                  this.context.router.push(`/${ this.state.item.type || '' }`);
 
-            if(response.result === true) {
-              this.context.router.push(`/${ this.state.item.type || '' }`);
-              MailPoet.Notice.success(response.data.message);
-            } else {
-              if(response.errors) {
-                MailPoet.Notice.error(response.errors);
-              } else {
-                MailPoet.Notice.error(
-                  MailPoet.I18n.t('newsletterSendingError').replace("%$1s", '?page=mailpoet-settings')
-                );
-              }
+                  // display success message depending on newsletter type
+                  if (response.data.type === 'welcome') {
+                    MailPoet.Notice.success(
+                      MailPoet.I18n.t('welcomeEmailActivated')
+                    );
+                  } else if (response.data.type === 'notification') {
+                    MailPoet.Notice.success(
+                      MailPoet.I18n.t('postNotificationActivated')
+                    );
+                  }
+                }).fail(onFail);
+              default:
+                return MailPoet.Ajax.post({
+                  endpoint: 'sendingQueue',
+                  action: 'add',
+                  data: {
+                    newsletter_id: this.props.params.id
+                  }
+                }).done((response) => {
+                  // redirect to listing based on newsletter type
+                  this.context.router.push(`/${ this.state.item.type || '' }`);
+
+                  if (response.data.status === 'scheduled') {
+                    MailPoet.Notice.success(
+                      MailPoet.I18n.t('newsletterHasBeenScheduled')
+                    );
+                  } else {
+                    MailPoet.Notice.success(
+                      MailPoet.I18n.t('newsletterBeingSent')
+                    );
+                  }
+                }).fail(onFail);
             }
-          });
+          }).always(() => {
+            this.setState({ loading: false });
+          }).fail(onFail);
         }
         return false;
       },

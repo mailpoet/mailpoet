@@ -8,20 +8,38 @@ const _QueueMixin = {
     MailPoet.Ajax.post({
       endpoint: 'sendingQueue',
       action: 'pause',
-      data: newsletter.id
+      data: {
+        newsletter_id: newsletter.id
+      }
     }).done(function() {
       jQuery('#resume_'+newsletter.id).show();
       jQuery('#pause_'+newsletter.id).hide();
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(function(error) { return error.message; }),
+          { scroll: true }
+        );
+      }
     });
   },
   resumeSending: function(newsletter) {
     MailPoet.Ajax.post({
       endpoint: 'sendingQueue',
       action: 'resume',
-      data: newsletter.id
+      data: {
+        newsletter_id: newsletter.id
+      }
     }).done(function() {
       jQuery('#pause_'+newsletter.id).show();
       jQuery('#resume_'+newsletter.id).hide();
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(function(error) { return error.message; }),
+          { scroll: true }
+        );
+      }
     });
   },
   renderQueueStatus: function(newsletter) {

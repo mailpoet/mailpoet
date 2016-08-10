@@ -13,7 +13,7 @@ class ErrorResponse extends Response {
 
   function getData() {
     if(empty($this->errors)) {
-      return false;
+      return null;
     } else {
       return array(
         'errors' => $this->errors

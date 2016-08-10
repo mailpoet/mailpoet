@@ -134,16 +134,17 @@ define(
             id: this.props.params.id,
             body: body
           }
-        }).done(function(response) {
-          if(response.result === true) {
-            // TODO: Move this URL elsewhere
-            window.location = 'admin.php?page=mailpoet-newsletter-editor&id=' + this.props.params.id;
-          } else {
-            response.errors.map(function(error) {
-              MailPoet.Notice.error(error);
-            });
+        }).done((response) => {
+          // TODO: Move this URL elsewhere
+          window.location = 'admin.php?page=mailpoet-newsletter-editor&id=' + response.data.id;
+        }).fail((response) => {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { scroll: true }
+            );
           }
-        }.bind(this));
+        });
       },
       handleDeleteTemplate: function(template) {
         this.setState({ loading: true });

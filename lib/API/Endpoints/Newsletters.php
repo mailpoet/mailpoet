@@ -1,5 +1,7 @@
 <?php
 namespace MailPoet\API\Endpoints;
+use MailPoet\API\Endpoint as APIEndpoint;
+use MailPoet\API\Error as APIError;
 
 use MailPoet\Listing;
 use MailPoet\Models\Newsletter;
@@ -18,10 +20,7 @@ if(!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
-class Newsletters {
-  function __construct() {
-  }
-
+class Newsletters extends APIEndpoint {
   function get($id = false) {
     $newsletter = Newsletter::findOne($id);
     if($newsletter === false) {
@@ -55,10 +54,7 @@ class Newsletters {
     $errors = $newsletter->getErrors();
 
     if(!empty($errors)) {
-      return array(
-        'result' => false,
-        'errors' => $errors
-      );
+      return $this->badRequest($errors);
     } else {
       if(!empty($segment_ids)) {
         NewsletterSegment::where('newsletter_id', $newsletter->id)
@@ -92,32 +88,39 @@ class Newsletters {
         }
       }
 
-      return array(
-        'result' => true
+      return $this->successResponse(
+        Newsletter::findOne($newsletter->id)->asArray()
       );
     }
   }
 
   function setStatus($data = array()) {
-    $id = (isset($data['id'])) ? (int)$data['id'] : null;
+    $id = (isset($data['id'])) ? (int)$data['id'] : false;
     $newsletter = Newsletter::findOne($id);
     $status = (isset($data['status']) ? $data['status'] : null);
 
-    $result = false;
-    $errors = array();
-
-    if($newsletter !== false && $status !== null) {
-      $newsletter->setStatus($status);
-
-      $result = (
-        $newsletter->getErrors() === false && $newsletter->status === $status
-      );
+    if(!$status) {
+      return $this->badRequest(array(
+        APIError::BAD_REQUEST  => __('You need to specify a status.')
+      ));
     }
 
-    return array(
-      'result' => $result,
-      'status' => $newsletter->status
-    );
+    if($newsletter === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This newsletter does not exist.')
+      ));
+    }
+
+    $newsletter->setStatus($status);
+    $errors = $newsletter->getErrors();
+
+    if(!empty($errors)) {
+      return $this->errorResponse($errors);
+    } else {
+      return $this->successResponse(
+        $newsletter->asArray()
+      );
+    }
   }
 
   function restore($id) {
@@ -189,7 +192,7 @@ class Newsletters {
   }
 
   function sendPreview($data = array()) {
-    $id = (isset($data['id'])) ? (int)$data['id'] : null;
+    $id = (isset($data['id'])) ? (int)$data['id'] : false;
     $newsletter = Newsletter::findOne($id);
 
     if($newsletter === false) {
