@@ -8,6 +8,7 @@ final class Error {
   const BAD_REQUEST = 'bad_request';
   const UNAUTHORIZED = 'unauthorized';
   const FORBIDDEN = 'forbidden';
+  const NOT_FOUND = 'not_found';
 
   private function __construct() {
 

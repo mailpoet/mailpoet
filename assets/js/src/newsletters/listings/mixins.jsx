@@ -9,11 +9,18 @@ const _QueueMixin = {
       endpoint: 'sendingQueue',
       action: 'pause',
       data: {
-        id: newsletter.id
+        newsletter_id: newsletter.id
       }
     }).done(function() {
       jQuery('#resume_'+newsletter.id).show();
       jQuery('#pause_'+newsletter.id).hide();
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(function(error) { return error.message; }),
+          { scroll: true }
+        );
+      }
     });
   },
   resumeSending: function(newsletter) {
@@ -21,11 +28,18 @@ const _QueueMixin = {
       endpoint: 'sendingQueue',
       action: 'resume',
       data: {
-        id: newsletter.id
+        newsletter_id: newsletter.id
       }
     }).done(function() {
       jQuery('#pause_'+newsletter.id).show();
       jQuery('#resume_'+newsletter.id).hide();
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(function(error) { return error.message; }),
+          { scroll: true }
+        );
+      }
     });
   },
   renderQueueStatus: function(newsletter) {
