@@ -1,4 +1,6 @@
 <?php
+use \MailPoet\API\Response as APIResponse;
+use \MailPoet\API\Error as APIError;
 use \MailPoet\API\Endpoints\NewsletterTemplates;
 use \MailPoet\Models\NewsletterTemplate;
 
@@ -22,29 +24,32 @@ class NewsletterTemplatesTest extends MailPoetTest {
 
     $router = new NewsletterTemplates();
     $response = $router->get(/* missing id */);
-    expect($response)->false();
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])
+      ->equals('This template does not exist.');
 
-    $response = $router->get('not_an_id');
-    expect($response)->false();
+    $response = $router->get(array('id' => 'not_an_id'));
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])
+      ->equals('This template does not exist.');
 
-    $response = $router->get($template->id());
-    expect($response['name'])->equals('Template #1');
-    expect($response['body']['key1'])->equals('value1');
+    $response = $router->get(array('id' => $template->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      $template->asArray()
+    );
   }
 
 
   function testItCanGetAllNewsletterTemplates() {
-    $templates = NewsletterTemplate::findArray();
+    $templates = array_map(function($template) {
+      return $template->asArray();
+    }, NewsletterTemplate::findMany());
 
     $router = new NewsletterTemplates();
     $response = $router->getAll();
-    expect($response)->count(2);
-
-    expect($response[0]['name'])->equals('Template #1');
-    expect($response[0]['body']['key1'])->equals('value1');
-
-    expect($response[1]['name'])->equals('Template #2');
-    expect($response[1]['body']['key2'])->equals('value2');
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals($templates);
   }
 
   function testItCanSaveANewsletterTemplate() {
@@ -56,12 +61,10 @@ class NewsletterTemplatesTest extends MailPoetTest {
 
     $router = new NewsletterTemplates();
     $response = $router->save($template_data);
-    expect($response)->true();
-
-    $template = NewsletterTemplate::where('name', 'Template #3')->findOne();
-    expect($template->name)->equals('Template #3');
-    expect($template->description)->equals('My Third Template');
-    expect($template->body)->equals('{"key3": "value3"}');
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      NewsletterTemplate::findOne($response->data['id'])->asArray()
+    );
   }
 
   function testItCanDeleteANewsletterTemplate() {
@@ -69,10 +72,15 @@ class NewsletterTemplatesTest extends MailPoetTest {
     expect($template->deleted_at)->null();
 
     $router = new NewsletterTemplates();
-    $response = $router->delete($template->id());
-    expect($response)->true();
+    $response = $router->delete(/* missing id */);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])
+      ->equals('This template does not exist.');
 
-    $deleted_template = NewsletterTemplate::findOne($template->id());
+    $response = $router->delete(array('id' => $template->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    $deleted_template = NewsletterTemplate::findOne($template->id);
     expect($deleted_template)->false();
   }
 

@@ -8,9 +8,8 @@ use MailPoet\Models\NewsletterTemplate;
 if(!defined('ABSPATH')) exit;
 
 class NewsletterTemplates extends APIEndpoint {
-
   function get($data = array()) {
-    $id = (isset($data['id']) ? (int)$data['id'] : null);
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
     if($template === false) {
       return $this->errorResponse(array(
@@ -46,7 +45,7 @@ class NewsletterTemplates extends APIEndpoint {
   }
 
   function delete($data = array()) {
-    $id = (isset($data['id']) ? (int)$data['id'] : null);
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
     if($template === false) {
       return $this->errorResponse(array(
@@ -54,7 +53,7 @@ class NewsletterTemplates extends APIEndpoint {
       ));
     } else {
       $template->delete();
-      $this->successResponse(null);
+      return $this->successResponse(null, array('count' => 1));
     }
   }
 }
