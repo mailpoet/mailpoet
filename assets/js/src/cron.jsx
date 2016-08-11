@@ -19,14 +19,15 @@ define(
       MailPoet.Ajax.post({
           endpoint: 'cron',
           action: 'getStatus'
-        })
-        .done(function(response) {
-          if(response.status !== undefined) {
-            this.setState(response);
-          } else {
-            this.replaceState();
-          }
-        }.bind(this));
+        }).done((response) => {
+          this.setState({
+            status: response.data.status
+          });
+        }).fail((response) => {
+          this.setState({
+            status: false
+          });
+        });
     },
     componentDidMount: function() {
       if(this.isMounted()) {
@@ -35,26 +36,28 @@ define(
       }
     },
     render: function() {
+      let status;
+
       switch(this.state.status) {
-        case 'loading':
-          return(
-            <div>
-              {MailPoet.I18n.t('loadingDaemonStatus')}
-            </div>
-          );
         case false:
-          return(
-            <div>
-              {MailPoet.I18n.t('daemonNotRunning')}
-              </div>
-          );
-        default:
-          return(
-            <div>
-              {MailPoet.I18n.t('cronDaemonState').replace('%$1s', this.state.status)}
-            </div>
-          );
+        case 'stopping':
+        case 'stopped':
+          status = MailPoet.I18n.t('cronDaemonIsNotRunning');
+          break;
+        case 'starting':
+        case 'started':
+          status = MailPoet.I18n.t('cronDaemonIsRunning');
+          break;
+        case 'loading':
+          status = MailPoet.I18n.t('loadingDaemonStatus');
+          break;
       }
+
+      return (
+        <div>
+          { status }
+        </div>
+      );
     }
   });
 
