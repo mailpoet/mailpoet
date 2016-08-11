@@ -20,7 +20,8 @@ class Renderer {
       if($last_post) {
         $newer_than_timestamp = $last_post->created_at;
       } else {
-        $newer_than_timestamp = false;
+        $parent = Newsletter::findOne($newsletter_id);
+        $newer_than_timestamp = $parent->created_at;
       }
     } else if($preview) {
       $newsletter_id = false;
