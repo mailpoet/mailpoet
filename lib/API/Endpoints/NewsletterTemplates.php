@@ -1,41 +1,59 @@
 <?php
 namespace MailPoet\API\Endpoints;
+use \MailPoet\API\Endpoint as APIEndpoint;
+use \MailPoet\API\Error as APIError;
 
 use MailPoet\Models\NewsletterTemplate;
 
 if(!defined('ABSPATH')) exit;
 
-class NewsletterTemplates {
-  function __construct() {
-  }
-
-  function get($id = false) {
+class NewsletterTemplates extends APIEndpoint {
+  function get($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
     if($template === false) {
-      return false;
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This template does not exist.')
+      ));
     } else {
-      return $template->asArray();
+      return $this->successResponse(
+        $template->asArray()
+      );
     }
   }
 
   function getAll() {
     $collection = NewsletterTemplate::findMany();
-    return array_map(function($item) {
+    $templates = array_map(function($item) {
       return $item->asArray();
     }, $collection);
+
+    return $this->successResponse($templates);
   }
 
   function save($data = array()) {
     $template = NewsletterTemplate::createOrUpdate($data);
-    return ($template->getErrors() === false && $template->id() > 0);
+    $errors = $template->getErrors();
+
+    if(!empty($errors)) {
+      return $this->errorResponse($errors);
+    } else {
+      return $this->successResponse(
+        NewsletterTemplate::findOne($template->id)->asArray()
+      );
+    }
   }
 
-  function delete($id) {
+  function delete($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $template = NewsletterTemplate::findOne($id);
-    if($template !== false) {
-      return $template->delete();
+    if($template === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This template does not exist.')
+      ));
     } else {
-      return false;
+      $template->delete();
+      return $this->successResponse(null, array('count' => 1));
     }
   }
 }

@@ -104,7 +104,7 @@ define([
       return MailPoet.Ajax.post({
         endpoint: 'newsletterTemplates',
         action: 'save',
-        data: data,
+        data: data
       });
     });
 

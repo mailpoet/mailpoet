@@ -30,33 +30,35 @@ define(
           endpoint: 'newsletterTemplates',
           action: 'save',
           data: template
-        }).done(function(response) {
+        }).always(function() {
           MailPoet.Modal.loading(false);
-          if(response.result === true) {
-            this.props.onImport(template);
-          } else {
-            response.map(function(error) {
-              MailPoet.Notice.error(error);
-            });
+        }).done((response) => {
+          this.props.onImport(response.data);
+        }).fail((response) => {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { scroll: true }
+            );
           }
-        }.bind(this));
+        });
       },
       handleSubmit: function(e) {
         e.preventDefault();
 
         if (_.size(this.refs.templateFile.files) <= 0) return false;
 
-        var file = _.first(this.refs.templateFile.files),
-            reader = new FileReader(),
-            saveTemplate = this.saveTemplate;
+        var file = _.first(this.refs.templateFile.files);
+        var reader = new FileReader();
+        var saveTemplate = this.saveTemplate;
 
-        reader.onload = function(e) {
+        reader.onload = (e) => {
           try {
             saveTemplate(JSON.parse(e.target.result));
           } catch (err) {
             MailPoet.Notice.error(MailPoet.I18n.t('templateFileMalformedError'));
           }
-        }.bind(this);
+        };
 
         reader.readAsText(file);
       },
@@ -97,12 +99,12 @@ define(
         MailPoet.Ajax.post({
           endpoint: 'newsletterTemplates',
           action: 'getAll',
-        }).done(function(response) {
+        }).always(() => {
           MailPoet.Modal.loading(false);
-          if(this.isMounted()) {
-
-            if(response.length === 0) {
-              response = [
+        }).done((response) => {
+          if (this.isMounted()) {
+            if (response.data.length === 0) {
+              response.data = [
                 {
                   name:
                     MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
@@ -110,14 +112,14 @@ define(
                     MailPoet.I18n.t('mailpoetGuideTemplateDescription'),
                   readonly: "1"
                 }
-              ]
+              ];
             }
             this.setState({
-              templates: response,
+              templates: response.data,
               loading: false
             });
           }
-        }.bind(this));
+        });
       },
       handleSelectTemplate: function(template) {
         var body = template.body;
@@ -158,10 +160,12 @@ define(
           MailPoet.Ajax.post({
             endpoint: 'newsletterTemplates',
             action: 'delete',
-            data: template.id
-          }).done(function(response) {
+            data: {
+              id: template.id
+            }
+          }).done((response) => {
             this.getTemplates();
-          }.bind(this));
+          });
         } else {
            this.setState({ loading: false });
         }
@@ -170,7 +174,7 @@ define(
         MailPoet.Modal.popup({
           title: template.name,
           template: '<div class="mailpoet_boxes_preview" style="background-color: {{ body.globalStyles.body.backgroundColor }}"><img src="{{ thumbnail }}" /></div>',
-          data: template,
+          data: template
         });
       },
       handleTemplateImport: function() {
