@@ -67,19 +67,19 @@ class Date extends Base {
     }
 
     foreach($date_selectors as $date_selector) {
-      if($date_selector === 'dd') {
+      if($date_selector === 'DD') {
         $block['selected'] = $day;
         $html .= '<select class="mailpoet_date_day" ';
         $html .= 'name="'.$field_name.'[day]" placeholder="'.__('Day').'">';
         $html .= static::getDays($block);
         $html .= '</select>';
-      } else if($date_selector === 'mm') {
+      } else if($date_selector === 'MM') {
         $block['selected'] = $month;
         $html .= '<select class="mailpoet_date_month" ';
         $html .= 'name="'.$field_name.'[month]" placeholder="'.__('Month').'">';
         $html .= static::getMonths($block);
         $html .= '</select>';
-      } else if($date_selector === 'yyyy') {
+      } else if($date_selector === 'YYYY') {
         $block['selected'] = $year;
         $html .= '<select class="mailpoet_date_year" ';
         $html .= 'name="'.$field_name.'[year]" placeholder="'.__('Year').'">';
@@ -102,10 +102,10 @@ class Date extends Base {
 
   static function getDateFormats() {
     return array(
-      'year_month_day' => array('mm/dd/yyyy', 'dd/mm/yyyy', 'yyyy/mm/dd'),
-      'year_month' => array('mm/yyyy', 'yyyy/mm'),
-      'year' => array('yyyy'),
-      'month' => array('mm')
+      'year_month_day' => array('MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'),
+      'year_month' => array('MM/YYYY', 'YYYY/MM'),
+      'year' => array('YYYY'),
+      'month' => array('MM')
     );
   }
   static function getMonthNames() {
@@ -195,49 +195,64 @@ class Date extends Base {
     return $html;
   }
 
-  static function validateDate($date, $date_format) {
-    $parsed_date = explode('/', $date);
-    if($date_format === 'mm/dd/yyyy' && count($parsed_date) === 3) {
-      $parsed_date = array(
-        'mm' => $parsed_date[0],
-        'dd' => $parsed_date[1],
-        'yyyy' => $parsed_date[2]
-      );
-    } else if($date_format === 'mm/yyyy' && count($parsed_date) === 2) {
-      $parsed_date = array(
-        'mm' => $parsed_date[0],
-        'dd' => '01',
-        'yyyy' => $parsed_date[1]
-      );
-    } else if($date_format === 'mm' && count($parsed_date) === 1) {
-      $parsed_date = array(
-        'mm' => $parsed_date[0],
-        'dd' => '01',
-        'yyyy' => date('Y')
-      );
-    } else if($date_format === 'dd' && count($parsed_date) === 1) {
-      $parsed_date = array(
-        'mm' => '01',
-        'dd' => $parsed_date[0],
-        'yyyy' => date('Y')
-      );
-    } else {
-      $parsed_date = false;
-      $date = false;
+  static function convertDateToDatetime($date, $date_format) {
+    $datetime = false;
+    if ($date_format === 'datetime') {
+      $datetime = $date;
     }
-    if($parsed_date) {
-      try {
-        $date = sprintf(
-          '%s-%s-%s 00:00:00',
-          $parsed_date['yyyy'],
-          $parsed_date['mm'],
-          $parsed_date['dd']
+    else {
+      $parsed_date = explode('/', $date);
+      $parsed_date_format = explode('/', $date_format);
+      $year_position = array_search('YYYY', $parsed_date_format);
+      $month_position = array_search('MM', $parsed_date_format);
+      $day_position = array_search('DD', $parsed_date_format);
+        if(count($parsed_date) === 3) {
+        // create date from any combination of mm, dd and yyyy
+        $parsed_date = array(
+          'year' => $parsed_date[$year_position],
+          'month' => $parsed_date[$month_position],
+          'day' => $parsed_date[$day_position]
         );
-        $date = Carbon::parse($date)->toDateTimeString();
-      } catch(\Exception $e) {
-        $date = false;
+      } else if(count($parsed_date) === 2) {
+        // create date from any combination of mm and dd
+        $parsed_date = array(
+          'year' => $parsed_date[$year_position],
+          'month' => $parsed_date[$month_position],
+          'day' => '01'
+        );
+      } else if($date_format === 'MM' && count($parsed_date) === 1) {
+        // create date from mm
+        $parsed_date = array(
+          'month' => $parsed_date[$month_position],
+          'day' => '01',
+          'year' => date('Y')
+        );
+      } else if($date_format === 'YYYY' && count($parsed_date) === 1) {
+        // create date from dd
+        $parsed_date = array(
+          'year' => $parsed_date[$year_position],
+          'month' => '01',
+          'day' => '01'
+        );
+      } else {
+        $parsed_date = false;
+      }
+      if($parsed_date) {
+        $datetime = sprintf(
+          '%s-%s-%s 00:00:00',
+          $parsed_date['year'],
+          $parsed_date['month'],
+          $parsed_date['day']
+        );
       }
     }
-    return $date;
+    if($datetime) {
+      try {
+        $datetime = Carbon::parse($datetime)->toDateTimeString();
+      } catch(\Exception $e) {
+        $datetime = false;
+      }
+    }
+    return $datetime;
   }
 }

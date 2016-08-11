@@ -127,37 +127,12 @@ define([
         return;
       }
 
-      const dateType = this.props.field.params.date_type;
-      const dateParts = value.split('-');
-      let year = '';
-      let month = '';
-      let day = '';
-
-      switch(dateType) {
-        case 'year_month_day':
-          year = ~~(dateParts[0]);
-          month = ~~(dateParts[1]);
-          day = ~~(dateParts[2]);
-        break;
-
-        case 'year_month':
-          year = ~~(dateParts[0]);
-          month = ~~(dateParts[1]);
-        break;
-
-        case 'month':
-          month = ~~(dateParts[0]);
-        break;
-
-        case 'year':
-          year = ~~(dateParts[0]);
-        break;
-      }
+      const dateTime = Moment(value);
 
       this.setState({
-        year: year,
-        month: month,
-        day: day
+        year: dateTime.format('YYYY'),
+        month: dateTime.format('M'),
+        day: dateTime.format('D')
       });
     }
     formatValue() {
@@ -228,7 +203,7 @@ define([
 
       const fields = dateSelects.map(type => {
         switch(type) {
-          case 'yyyy':
+          case 'YYYY':
             return (<FormFieldDateYear
               onValueChange={ this.onValueChange.bind(this) }
               ref={ 'year' }
@@ -239,7 +214,7 @@ define([
             />);
           break;
 
-          case 'mm':
+          case 'MM':
             return (<FormFieldDateMonth
               onValueChange={ this.onValueChange.bind(this) }
               ref={ 'month' }
@@ -251,7 +226,7 @@ define([
             />);
           break;
 
-          case 'dd':
+          case 'DD':
             return (<FormFieldDateDay
               onValueChange={ this.onValueChange.bind(this) }
               ref={ 'day' }
