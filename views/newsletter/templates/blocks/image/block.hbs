@@ -1,3 +1,3 @@
 <div class="mailpoet_tools"></div>
-<div class="mailpoet_content" style="text-align: {{ model.styles.block.textAlign }}"><a href="{{ model.link }}" onClick="return false;"><img src="{{ model.src }}" alt="{{ model.alt }}" onerror="if (this.src != '{{ imageMissingSrc }}') {this.src = '{{ imageMissingSrc }}'; this.style.width='auto';}" /></a></div>
+<div class="mailpoet_content" style="text-align: {{ model.styles.block.textAlign }}"><a href="{{ model.link }}" onClick="return false;"><img src="{{#ifCond model.src '!=' ''}}{{ model.src }}{{ else }}{{ imageMissingSrc }}{{/ifCond}}" alt="{{ model.alt }}" onerror="if(this.src != '{{ imageMissingSrc }}') {this.src = '{{ imageMissingSrc }}'; this.style.width='auto';}"  /></a></div>
 <div class="mailpoet_block_highlight"></div>
