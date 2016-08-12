@@ -93,6 +93,7 @@ define([
       return {
         model: this.model.toJSON(),
         allIconSets: allIconSets.toJSON(),
+        imageMissingSrc: App.getConfig().get('urls.imageMissing'),
       };
     },
   });
@@ -383,7 +384,7 @@ define([
               {
                 type: 'socialIcon',
                 iconType: 'facebook',
-                link: 'http://example.com',
+                link: 'http://www.facebook.com',
                 image: App.getAvailableStyles().get('socialIconSets.default.facebook'),
                 height: '32px',
                 width: '32px',
@@ -392,7 +393,7 @@ define([
               {
                 type: 'socialIcon',
                 iconType: 'twitter',
-                link: 'http://example.com',
+                link: 'http://www.twitter.com',
                 image: App.getAvailableStyles().get('socialIconSets.default.twitter'),
                 height: '32px',
                 width: '32px',

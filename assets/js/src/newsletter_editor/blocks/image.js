@@ -17,8 +17,8 @@ define([
     defaults: function() {
       return this._getDefaults({
         type: 'image',
-        link: 'http://example.org',
-        src: 'no-image.png',
+        link: '',
+        src: '',
         alt: 'An image of...',
         fullWidth: true, // true | false
         width: '64px',

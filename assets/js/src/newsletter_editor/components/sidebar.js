@@ -65,10 +65,6 @@ define([
         var $openRegion = this.$el.find('.mailpoet_sidebar_region:not(.closed)'),
           $targetRegion = this.$el.find(event.target).closest('.mailpoet_sidebar_region');
 
-        if ($openRegion.get(0) === $targetRegion.get(0)) {
-          return;
-        }
-
         $openRegion.find('.mailpoet_region_content').velocity(
           'slideUp',
           {
@@ -79,16 +75,19 @@ define([
             }.bind(this)
           }
         );
-        $targetRegion.find('.mailpoet_region_content').velocity(
-          'slideDown',
-          {
-            duration: 250,
-            easing: "easeIn",
-            complete: function() {
-              $targetRegion.removeClass('closed');
-            },
-          }
-        );
+
+        if ($openRegion.get(0) !== $targetRegion.get(0)) {
+          $targetRegion.find('.mailpoet_region_content').velocity(
+            'slideDown',
+            {
+              duration: 250,
+              easing: "easeIn",
+              complete: function() {
+                $targetRegion.removeClass('closed');
+              },
+            }
+          );
+        }
       },
     },
     initialize: function(options) {

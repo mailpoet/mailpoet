@@ -87,24 +87,11 @@ define(
       handleSend: function(e) {
         e.preventDefault();
 
-        const onFail = (response) => {
-          if (response.errors.length > 0) {
-            MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
-              { scroll: true }
-            );
-          }
-        };
-
         if(!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
-          this.setState({ loading: true });
-
-          MailPoet.Ajax.post({
-            endpoint: 'newsletters',
-            action: 'save',
-            data: this.state.item,
+          this._save(e).done(() => {
+            this.setState({ loading: true });
           }).done((response) => {
             switch (response.data.type) {
               case 'notification':
@@ -130,7 +117,7 @@ define(
                       MailPoet.I18n.t('postNotificationActivated')
                     );
                   }
-                }).fail(onFail);
+                }).fail(this._showError);
               default:
                 return MailPoet.Ajax.post({
                   endpoint: 'sendingQueue',
@@ -151,48 +138,61 @@ define(
                       MailPoet.I18n.t('newsletterBeingSent')
                     );
                   }
-                }).fail(onFail);
+                }).fail(this._showError);
             }
-          }).always(() => {
+          }).fail(this._showError).always(() => {
             this.setState({ loading: false });
-          }).fail(onFail);
+          });
         }
         return false;
       },
       handleSave: function(e) {
         e.preventDefault();
-        this._save(e).done(() => {
+
+        this._save(e).done((response) => {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('newsletterUpdated')
+          );
+        }).done(() => {
           this.context.router.push(`/${ this.state.item.type || '' }`);
-        });
+        }).fail(this._showError);
       },
       handleRedirectToDesign: function(e) {
         e.preventDefault();
         var redirectTo = e.target.href;
 
-        this._save(e).done(() => {
+        this._save(e).done((response) => {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('newsletterUpdated')
+          );
+        }).done(() => {
           window.location = redirectTo;
-        });
+        }).fail(this._showError);
       },
       _save: function(e) {
+        var data = this.state.item;
         this.setState({ loading: true });
+
+        // Ensure that body is  JSON encoded
+        if (!_.isUndefined(data.body)) {
+          data.body = JSON.stringify(data.body);
+        }
 
         return MailPoet.Ajax.post({
           endpoint: 'newsletters',
           action: 'save',
-          data: this.state.item,
-        }).done((response) => {
+          data: data,
+        }).always(() => {
           this.setState({ loading: false });
-
-          if(response.result === true) {
-            MailPoet.Notice.success(
-              MailPoet.I18n.t('newsletterUpdated')
-            );
-          } else {
-            if(response.errors) {
-              MailPoet.Notice.error(response.errors);
-            }
-          }
         });
+      },
+      _showError: (response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true }
+          );
+        }
       },
       handleFormChange: function(e) {
         var item = this.state.item,
