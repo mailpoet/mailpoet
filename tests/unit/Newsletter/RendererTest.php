@@ -150,6 +150,18 @@ class NewsletterRendererTest extends MailPoetTest {
     expect($DOM('tr > td > img', 0)->attr('style'))->notEmpty();
   }
 
+  function testItDoesNotRenderImageWithoutSrc() {
+    $image = array(
+      'src' => '',
+      'width' => '100',
+      'height' => '200',
+      'link' => '',
+      'alt' => 'some test alt text'
+    );
+    $rendered_image = Image::render($image, $columnCount = 1);
+    expect($rendered_image)->equals('');
+  }
+
   function testItRendersImageWithLink() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
@@ -304,6 +316,20 @@ class NewsletterRendererTest extends MailPoetTest {
     expect($DOM('td > a:nth-of-type(10) > img')->attr('alt'))->equals('custom');
     // there should be 10 icons
     expect(count($DOM('a > img')))->equals(10);
+  }
+
+  function testItDoesNotRenderSocialIconsWithoutImageSrc() {
+    $block = array(
+      'icons' => array(
+        'image' => '',
+        'width' => '100',
+        'height' => '100',
+        'link' => '',
+        'iconType' => 'custom',
+      )
+    );
+    $rendered_block = Social::render($block, $columnCount = 1);
+    expect($rendered_block)->equals('');
   }
 
   function testItRendersFooter() {
