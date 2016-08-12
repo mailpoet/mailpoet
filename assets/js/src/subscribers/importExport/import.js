@@ -51,6 +51,12 @@ define(
          *  STEP 1 (upload or copy/paste)
          */
         router.on('route:step1', function () {
+          // set or reset temporary validation rule on all columns
+          mailpoetColumns = jQuery.map(mailpoetColumns, function (column, columnIndex) {
+            column.validation_rule = false;
+            return column;
+          });
+
           if (typeof (importData.step1) !== 'undefined') {
             showCurrentStep();
             return;
@@ -797,6 +803,7 @@ define(
                               })
                           });
                         jQuery(selectElement).data('column-id', new_column_data.id);
+                        jQuery(selectElement).data('validation-rule', false);
                         filterSubscribers();
                         // close popup
                         MailPoet.Modal.close();
@@ -847,22 +854,22 @@ define(
                 .remove();
             var subscribersClone = jQuery.extend(true, {}, subscribers),
                 preventNextStep = false,
-                displayedColumnsIds = jQuery.map(
-                    jQuery('.mailpoet_subscribers_column_data_match'), function (data) {
-                      var columnId = jQuery(data).data('column-id');
-                      jQuery(data).val(columnId).trigger('change');
-                      return columnId;
+                displayedColumns = jQuery.map(
+                    jQuery('.mailpoet_subscribers_column_data_match'), function (element, elementIndex) {
+                      var columnId = jQuery(element).data('column-id');
+                      var validationRule = jQuery(element).data('validation-rule');
+                      jQuery(element).val(columnId).trigger('change');
+                      return { id: columnId, index: elementIndex, validationRule: validationRule, element: element };
                     });
             // iterate through the object of mailpoet columns
-            jQuery.map(mailpoetColumns, function (column) {
+            jQuery.map(mailpoetColumns, function (column, columnIndex) {
               // check if the column id matches the selected id of one of the
               // subscriber's data columns
-              var matchedColumn = jQuery.inArray(column.id, displayedColumnsIds);
-
-              // EMAIL filter: if the last value in the column doesn't have a valid
+              var matchedColumn = _.find(displayedColumns, function(data) { return data.id === column.id; });
+              // EMAIL filter: if the first value in the column doesn't have a valid
               // email, hide the next button
-              if (column.id === "email") {
-                if (!emailRegex.test(subscribersClone.subscribers[0][matchedColumn])) {
+              if (column.id === 'email') {
+                if (!emailRegex.test(subscribersClone.subscribers[0][matchedColumn.index])) {
                   preventNextStep = true;
                   if (!jQuery('[data-id="notice_invalidEmail"]').length) {
                     MailPoet.Notice.error(MailPoet.I18n.t('columnContainsInvalidElement'), {
@@ -878,39 +885,63 @@ define(
                 }
               }
               // DATE filter: if column type is date, check if we can recognize it
-              if (column.type === 'date' && matchedColumn !== -1) {
-                jQuery.map(subscribersClone.subscribers, function (data, position) {
-                  var rowData = data[matchedColumn];
-                  var dateFormat = column.params.date_format.toUpperCase();
-                  var date = Moment(rowData, dateFormat, true);
-                  if (position !== fillerPosition) {
-                    // check if date exists
-                    if (rowData.trim() === '') {
-                      data[matchedColumn] =
-                          '<span class="mailpoet_data_match mailpoet_import_error" title="'
-                          + MailPoet.I18n.t('noDateFieldMatch') + '">'
-                          + MailPoet.I18n.t('emptyDate')
-                          + '</span>';
-                      preventNextStep = true;
-                      return;
+              if (column.type === 'date' && matchedColumn) {
+                var allowedDateFormats = [
+                  Moment.ISO_8601,
+                  'YYYY/MM/DD',
+                  'MM/DD/YYYY',
+                  'DD/MM/YYYY',
+                  'YYYY/MM/DD',
+                  'YYYY/DD/MM',
+                  'MM/YYYY',
+                  'YYYY/MM',
+                  'YYYY'
+                ];
+                var firstRowData = subscribersClone.subscribers[0][matchedColumn.index];
+                var validationRule = false;
+                // check if date exists
+                if (firstRowData.trim() === '') {
+                  subscribersClone.subscribers[0][matchedColumn.index] =
+                    '<span class="mailpoet_data_match mailpoet_import_error" title="'
+                    + MailPoet.I18n.t('noDateFieldMatch') + '">'
+                    + MailPoet.I18n.t('emptyDate')
+                    + '</span>';
+                  preventNextStep = true;
+                }
+                else {
+                  for (var format in allowedDateFormats) {
+                    var testedFormat = allowedDateFormats[format]
+                    if (Moment(firstRowData, testedFormat, true).isValid()) {
+                      var validationRule = (typeof(testedFormat) === 'function') ?
+                        'datetime' :
+                        testedFormat
+                      // set validation on the column element
+                      jQuery(matchedColumn.element).data('validation-rule', validationRule);
+                      break;
                     }
-                    // check if date is valid
-                    if (date.isValid()) {
-                      data[matchedColumn] +=
-                          '<span class="mailpoet_data_match" title="'
-                          + MailPoet.I18n.t('verifyDateMatch') + '">'
-                          + MailPoet.Date.format(date)
-                          + '</span>';
-                    }
-                    else {
-                      data[matchedColumn] +=
-                          '<span class="mailpoet_data_match mailpoet_import_error" title="'
-                          + MailPoet.I18n.t('noDateFieldMatch') + '">'
-                          + MailPoet.I18n.t('dateMatchError') + ' (' + dateFormat + ') '
-                          + '</span>';
-                      preventNextStep = true;
-                    }
+                    if (validationRule === 'datetime') validationRule = Moment.ISO_8601;
                   }
+                }
+                jQuery.map(subscribersClone.subscribers, function (data, index) {
+                  if (index === fillerPosition) return;
+                  var rowData = data[matchedColumn.index];
+                  var date = Moment(rowData, testedFormat, true);
+                  // validate date:
+                  if (date.isValid()) {
+                    data[matchedColumn.index] +=
+                        '<span class="mailpoet_data_match" title="'
+                        + MailPoet.I18n.t('verifyDateMatch') + '">'
+                        + MailPoet.Date.format(date)
+                        + '</span>';
+                  }
+                  else {
+                    data[matchedColumn.index] +=
+                      '<span class="mailpoet_data_match mailpoet_import_error" title="'
+                      + MailPoet.I18n.t('noDateFieldMatch') + '">'
+                      + MailPoet.I18n.t('dateMatchError')
+                      + '</span>';
+                    preventNextStep = true;
+                  };
                 });
                 if (preventNextStep && !jQuery('.mailpoet_invalidDate').length) {
                   MailPoet.Notice.error(MailPoet.I18n.t('columnContainsInvalidDate'), {
@@ -980,10 +1011,11 @@ define(
             _.each(jQuery('select.mailpoet_subscribers_column_data_match'),
               function (column, columnIndex) {
                 var columnId = jQuery(column).data('column-id');
+                var validationRule = jQuery(column).data('validation-rule');
                 if (columnId === 'ignore') {
                   return;
                 }
-                columns[columnId] = columnIndex;
+                columns[columnId] = { index: columnIndex, validation_rule: validationRule };
               });
 
             _.each(subscribers, function () {

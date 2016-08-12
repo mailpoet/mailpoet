@@ -197,16 +197,15 @@ class Date extends Base {
 
   static function convertDateToDatetime($date, $date_format) {
     $datetime = false;
-    if ($date_format === 'datetime') {
+    if($date_format === 'datetime') {
       $datetime = $date;
-    }
-    else {
+    } else {
       $parsed_date = explode('/', $date);
       $parsed_date_format = explode('/', $date_format);
       $year_position = array_search('YYYY', $parsed_date_format);
       $month_position = array_search('MM', $parsed_date_format);
       $day_position = array_search('DD', $parsed_date_format);
-        if(count($parsed_date) === 3) {
+      if(count($parsed_date) === 3) {
         // create date from any combination of mm, dd and yyyy
         $parsed_date = array(
           'year' => $parsed_date[$year_position],

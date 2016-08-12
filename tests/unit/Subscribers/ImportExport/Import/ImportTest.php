@@ -1,5 +1,6 @@
 <?php
 
+use MailPoet\Models\CustomField;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SubscriberCustomField;
@@ -9,6 +10,13 @@ use MailPoet\Util\Helpers;
 
 class ImportTest extends MailPoetTest {
   function _before() {
+    $custom_field = CustomField::create();
+    $custom_field->name = 'country';
+    $custom_field->type = 'text';
+    $custom_field->save();
+    $this->subscriber_custom_fields = array((string)$custom_field->id);
+    $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
+    $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
     $this->data = array(
       'subscribers' => array(
         array(
@@ -25,13 +33,13 @@ class ImportTest extends MailPoetTest {
         )
       ),
       'columns' => array(
-        'first_name' => 0,
-        'last_name' => 1,
-        'email' => 2,
-        777 => 3
+        'first_name' => array('index' => 0),
+        'last_name' => array('index' => 1),
+        'email' => array('index' => 2),
+        (string)$custom_field->id => array('index' => 3)
       ),
       'segments' => array(
-        195
+        $this->segment_1->id
       ),
       'timestamp' => time(),
       'updateSubscribers' => true
@@ -41,10 +49,6 @@ class ImportTest extends MailPoetTest {
       'last_name',
       'email'
     );
-    $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
-    $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
-
-    $this->subscriber_custom_fields = array(777);
     $this->import = new Import($this->data);
     $this->subscribers_data = $this->import->transformSubscribersData(
       $this->data['subscribers'],
@@ -63,13 +67,14 @@ class ImportTest extends MailPoetTest {
   }
 
   function testItCanTransformSubscribers() {
+    $custom_field = $this->subscriber_custom_fields[0];
     expect($this->import->subscribers_data['first_name'][0])
       ->equals($this->data['subscribers'][0][0]);
     expect($this->import->subscribers_data['last_name'][0])
       ->equals($this->data['subscribers'][0][1]);
     expect($this->import->subscribers_data['email'][0])
       ->equals($this->data['subscribers'][0][2]);
-    expect($this->import->subscribers_data['777'][0])
+    expect($this->import->subscribers_data[$custom_field][0])
       ->equals($this->data['subscribers'][0][3]);
   }
 
@@ -242,6 +247,7 @@ class ImportTest extends MailPoetTest {
 
   function testItCanCreateOrUpdateCustomFields() {
     $subscribers_data = $this->subscribers_data;
+    $custom_field = $this->subscriber_custom_fields[0];
     $this->import->createOrUpdateSubscribers(
       'create',
       $subscribers_data,
@@ -266,8 +272,8 @@ class ImportTest extends MailPoetTest {
     $subscriber_custom_fields = SubscriberCustomField::findArray();
     expect(count($subscriber_custom_fields))->equals(2);
     expect($subscriber_custom_fields[0]['value'])
-      ->equals($subscribers_data[777][0]);
-    $subscribers_data[777][1] = 'Rio';
+      ->equals($subscribers_data[$custom_field][0]);
+    $subscribers_data[$custom_field][1] = 'Rio';
     $this->import->createOrUpdateCustomFields(
       'update',
       $db_subscribers,
@@ -276,7 +282,7 @@ class ImportTest extends MailPoetTest {
     );
     $subscriber_custom_fields = SubscriberCustomField::findArray();
     expect($subscriber_custom_fields[1]['value'])
-      ->equals($subscribers_data[777][1]);
+      ->equals($subscribers_data[$custom_field][1]);
   }
 
 
@@ -320,7 +326,7 @@ class ImportTest extends MailPoetTest {
 
   function testItCanUpdateSubscribers() {
     $result = $this->import->process();
-    expect($result['data']['updated'])->equals(0);
+     expect($result['data']['updated'])->equals(0);
     $result = $this->import->process();
     expect($result['data']['updated'])->equals(2);
     $this->import->update_subscribers = false;
@@ -345,6 +351,7 @@ class ImportTest extends MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
   }
 }
