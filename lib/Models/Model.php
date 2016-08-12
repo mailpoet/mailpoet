@@ -145,11 +145,8 @@ class Model extends \Sudzy\ValidModel {
     $duplicate->set_expr('updated_at', 'NOW()');
     $duplicate->set_expr('deleted_at', 'NULL');
 
-    if($duplicate->save()) {
-      return $duplicate;
-    } else {
-      return false;
-    }
+    $duplicate->save();
+    return $duplicate;
   }
 
   private function setTimestamp() {

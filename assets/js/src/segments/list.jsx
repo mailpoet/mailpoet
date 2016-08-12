@@ -36,11 +36,11 @@ var columns = [
 ];
 
 const messages = {
-  onTrash: function(response) {
-    var count = ~~response;
-    var message = null;
+  onTrash: (response) => {
+    let count = ~~response.meta.count;
+    let message = null;
 
-    if(count === 1) {
+    if (count === 1) {
       message = (
         MailPoet.I18n.t('oneSegmentTrashed')
       );
@@ -51,11 +51,11 @@ const messages = {
     }
     MailPoet.Notice.success(message);
   },
-  onDelete: function(response) {
-    var count = ~~response;
-    var message = null;
+  onDelete: (response) => {
+    let count = ~~response.meta.count;
+    let message = null;
 
-    if(count === 1) {
+    if (count === 1) {
       message = (
         MailPoet.I18n.t('oneSegmentDeleted')
       );
@@ -66,11 +66,11 @@ const messages = {
     }
     MailPoet.Notice.success(message);
   },
-  onRestore: function(response) {
-    var count = ~~response;
-    var message = null;
+  onRestore: (response) => {
+    let count = ~~response.meta.count;
+    let message = null;
 
-    if(count === 1) {
+    if (count === 1) {
       message = (
         MailPoet.I18n.t('oneSegmentRestored')
       );
@@ -106,16 +106,23 @@ const item_actions = [
   {
     name: 'duplicate_segment',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: function(item, refresh) {
+    onClick: (item, refresh) => {
       return MailPoet.Ajax.post({
         endpoint: 'segments',
         action: 'duplicate',
-        data: item.id
-      }).done(function(response) {
+        data: {
+          id: item.id
+        }
+      }).done((response) => {
         MailPoet.Notice.success(
-          (MailPoet.I18n.t('listDuplicated')).replace('%$1s', response.name)
+          MailPoet.I18n.t('listDuplicated').replace('%$1s', response.data.name)
         );
         refresh();
+      }).fail((response) => {
+        MailPoet.Notice.error(
+          response.errors.map(function(error) { return error.message; }),
+          { scroll: true }
+        );
       });
     },
     display: function(segment) {
