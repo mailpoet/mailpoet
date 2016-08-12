@@ -93,6 +93,7 @@ define([
       return {
         model: this.model.toJSON(),
         allIconSets: allIconSets.toJSON(),
+        imageMissingSrc: App.getConfig().get('urls.imageMissing'),
       };
     },
   });
