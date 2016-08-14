@@ -42,4 +42,16 @@ class DateTest extends MailPoetTest {
       ->equals('2016-05-10 00:00:00');
   }
 
+  function testItCanClearDate() {
+    expect(Date::convertDateToDatetime('0/10/5', 'YYYY/MM/DD'))
+      ->equals(date('Y') . '-10-05 00:00:00');
+    expect(Date::convertDateToDatetime('0/0/5', 'YYYY/MM/DD'))
+      ->equals(date('Y') . '-' . date('m') . '-05 00:00:00');
+    expect(Date::convertDateToDatetime('0/0/0', 'YYYY/MM/DD'))
+      ->equals('');
+    expect(Date::convertDateToDatetime('0', 'YYYY'))
+      ->equals('');
+    expect(Date::convertDateToDatetime('0', 'MM'))
+      ->equals('');
+  }
 }

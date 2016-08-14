@@ -904,7 +904,7 @@ define(
                   subscribersClone.subscribers[0][matchedColumn.index] =
                     '<span class="mailpoet_data_match mailpoet_import_error" title="'
                     + MailPoet.I18n.t('noDateFieldMatch') + '">'
-                    + MailPoet.I18n.t('emptyDate')
+                    + MailPoet.I18n.t('emptyFirstRowDate')
                     + '</span>';
                   preventNextStep = true;
                 }
@@ -923,10 +923,10 @@ define(
                   }
                 }
                 jQuery.map(subscribersClone.subscribers, function (data, index) {
-                  if (index === fillerPosition) return;
                   var rowData = data[matchedColumn.index];
+                  if (index === fillerPosition || rowData.trim() === '') return;
                   var date = Moment(rowData, testedFormat, true);
-                  // validate date:
+                  // validate date
                   if (date.isValid()) {
                     data[matchedColumn.index] +=
                         '<span class="mailpoet_data_match" title="'

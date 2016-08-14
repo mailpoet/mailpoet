@@ -127,6 +127,7 @@ class Import {
         if($custom_field->type === 'date') {
           $data = array_map(
             function($index, $date) use($validation_rule, &$invalid_records) {
+              if (empty($date)) return $date;
               $date = Date::convertDateToDatetime($date, $validation_rule);
               if(!$date) {
                 $invalid_records[] = $index;

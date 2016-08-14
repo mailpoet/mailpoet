@@ -206,46 +206,67 @@ class Date extends Base {
       $month_position = array_search('MM', $parsed_date_format);
       $day_position = array_search('DD', $parsed_date_format);
       if(count($parsed_date) === 3) {
-        // create date from any combination of mm, dd and yyyy
+        // create date from any combination of month, day and year
         $parsed_date = array(
           'year' => $parsed_date[$year_position],
           'month' => $parsed_date[$month_position],
           'day' => $parsed_date[$day_position]
         );
       } else if(count($parsed_date) === 2) {
-        // create date from any combination of mm and dd
+        // create date from any combination of month and year
         $parsed_date = array(
           'year' => $parsed_date[$year_position],
           'month' => $parsed_date[$month_position],
           'day' => '01'
         );
       } else if($date_format === 'MM' && count($parsed_date) === 1) {
-        // create date from mm
-        $parsed_date = array(
-          'month' => $parsed_date[$month_position],
-          'day' => '01',
-          'year' => date('Y')
-        );
+        // create date from month
+        if((int)$parsed_date[$month_position] === 0) {
+          $datetime = '';
+          $parsed_date = false;
+        } else {
+          $parsed_date = array(
+            'month' => $parsed_date[$month_position],
+            'day' => '01',
+            'year' => date('Y')
+          );
+        }
       } else if($date_format === 'YYYY' && count($parsed_date) === 1) {
-        // create date from dd
-        $parsed_date = array(
-          'year' => $parsed_date[$year_position],
-          'month' => '01',
-          'day' => '01'
-        );
+        // create date from year
+        if((int)$parsed_date[$year_position] === 0) {
+          $datetime = '';
+          $parsed_date = false;
+        } else {
+          $parsed_date = array(
+            'year' => $parsed_date[$year_position],
+            'month' => '01',
+            'day' => '01'
+          );
+        }
       } else {
         $parsed_date = false;
       }
       if($parsed_date) {
-        $datetime = sprintf(
-          '%s-%s-%s 00:00:00',
-          $parsed_date['year'],
-          $parsed_date['month'],
-          $parsed_date['day']
-        );
+        $year = $parsed_date['year'];
+        $month = $parsed_date['month'];
+        $day = $parsed_date['day'];
+        // if all date parts are set to 0, date value is empty
+        if((int)$year === 0 && (int)$month === 0 && (int)$day === 0) {
+          $datetime = '';
+        } else {
+          if((int)$year === 0) $year = date('Y');
+          if((int)$month === 0) $month = date('m');
+          if((int)$day === 0) $day = date('d');
+          $datetime = sprintf(
+            '%s-%s-%s 00:00:00',
+            $year,
+            $month,
+            $day
+          );
+        }
       }
     }
-    if($datetime) {
+    if($datetime !== false && !empty($datetime)) {
       try {
         $datetime = Carbon::parse($datetime)->toDateTimeString();
       } catch(\Exception $e) {
