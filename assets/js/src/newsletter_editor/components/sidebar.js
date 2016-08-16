@@ -247,17 +247,18 @@ define([
         action: 'showPreview',
         data: json,
       }).done(function(response){
-        MailPoet.Modal.loading(false);
-
         if (response.result === true) {
           window.open(response.data.url, '_blank')
+          MailPoet.Notice.success(MailPoet.I18n.t('previewShouldOpenInNewTab'));
+        } else {
+          MailPoet.Notice.error(response.errors);
         }
-        MailPoet.Notice.error(response.errors);
       }).fail(function(error) {
-        MailPoet.Modal.loading(false);
         MailPoet.Notice.error(
           MailPoet.I18n.t('newsletterPreviewFailed')
         );
+      }).always(function() {
+        MailPoet.Modal.loading(false);
       });
     },
     sendPreview: function() {
