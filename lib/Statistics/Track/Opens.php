@@ -22,7 +22,7 @@ class Opens {
     $newsletter = $this->getNewsletter($data['newsletter']);
     $queue = $this->getQueue($data['queue']);
     // verify if queue belongs to the newsletter
-    if ($newsletter && $queue) {
+    if($newsletter && $queue) {
       $queue = ($queue['newsletter_id'] === $newsletter['id']) ?
         $queue :
         false;
@@ -30,7 +30,7 @@ class Opens {
     $subscriber = $this->getSubscriber($data['subscriber']);
     // verify if subscriber belongs to the queue
     if($queue && $subscriber) {
-      // check if this newsletter was sent to
+      if(empty($queue['']))
       $subscriber = (in_array($subscriber['id'], $queue['subscribers']['processed'])) ?
         $subscriber :
         false;

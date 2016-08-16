@@ -22,7 +22,7 @@ class Clicks {
     $newsletter = $this->getNewsletter($data['newsletter']);
     $queue = $this->getQueue($data['queue']);
     // verify if queue belongs to the newsletter
-    if ($newsletter && $queue) {
+    if($newsletter && $queue) {
       $queue = ($queue['newsletter_id'] === $newsletter['id']) ?
         $queue :
         false;
