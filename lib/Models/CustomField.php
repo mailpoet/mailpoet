@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\Form\Block\Date;
+
 if(!defined('ABSPATH')) exit;
 
 class CustomField extends Model {
@@ -43,28 +45,27 @@ class CustomField extends Model {
     // format custom field data depending on type
     if(is_array($value) && $this->type === 'date' ) {
       $custom_field_data = $this->asArray();
-
+      $date_format = $custom_field_data['params']['date_format'];
       $date_type = (isset($custom_field_data['params']['date_type'])
         ? $custom_field_data['params']['date_type']
         : 'year_month_day'
       );
       $date_parts = explode('_', $date_type);
-
       switch($date_type) {
         case 'year_month_day':
           $value = sprintf(
-            '%04d-%02d-%02d',
-            $value['year'],
+            '%s/%s/%s',
             $value['month'],
-            $value['day']
+            $value['day'],
+            $value['year']
           );
           break;
 
         case 'year_month':
           $value = sprintf(
-            '%04d-%02d',
-            $value['year'],
-            $value['month']
+            '%s/%s',
+            $value['month'],
+            $value['year']
           );
           break;
 
@@ -73,8 +74,19 @@ class CustomField extends Model {
             $value = '';
           } else {
             $value = sprintf(
-              '%02d',
+              '%s',
               $value['month']
+            );
+          }
+          break;
+
+        case 'day':
+          if((int)$value['day'] === 0) {
+            $value = '';
+          } else {
+            $value = sprintf(
+              '%s',
+              $value['day']
             );
           }
           break;
@@ -89,6 +101,10 @@ class CustomField extends Model {
             );
           }
           break;
+      }
+
+      if(!empty($value)) {
+        $value = Date::convertDateToDatetime($value, $date_format);
       }
     }
 

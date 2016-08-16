@@ -158,7 +158,7 @@ define(
             window.location.href = response.data.exportFileURL;
           }
         })
-        .error(function (error) {
+        .fail(function (error) {
           MailPoet.Modal.loading(false);
           MailPoet.Notice.error(
            MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'

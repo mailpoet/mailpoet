@@ -92,7 +92,7 @@
       {{#show_and_match_columns .}}
       {{#.}}
       <th>
-        <select class="mailpoet_subscribers_column_data_match" id="{{column_id}}" data-column-id="{{column_id}}" id="column_{{@index}}">
+        <select class="mailpoet_subscribers_column_data_match" data-column-id="{{column_id}}" data-validation-rule="false" id="column_{{@index}}">
       </th>
       {{/.}}
       {{/show_and_match_columns}}
@@ -157,57 +157,7 @@
       </form>
     </script>
 
-    <!-- New column template -->
-    <script id="new_column_template" type="text/x-handlebars-template">
-      <p>
-        <label><%= __('Field type') %>:</label>
-        <select id="new_column_type" name="type">
-          <option value="">--</option>
-          <option value="input">
-            <%= __('Text Input') %>
-          </option>
-          <option value="textarea">
-            <%= __('Text Area') %>
-          </option>
-          <option value="radio">
-            <%= __('Radio buttons') %>
-          </option>
-          <option value="checkbox">
-            <%= __('Checkbox') %>
-          </option>
-          <option value="select">
-            <%= __('Select') %>
-          </option>
-          <option value="date">
-            <%= __('Date') %>
-          </option>
-        </select>
-      </p>
-      <p class="mailpoet_validation_error" data-error="type_required">
-        <%= __('Please select a type') %>
-      </p>
-
-      <p>
-        <label><%= __('Field name') %>:</label>
-        <input id="new_column_name" type="text" name="name" value="{{ name }}"/>
-      </p>
-      <p class="mailpoet_validation_error" data-error="name_required">
-        <%= __('Please specify a name') %>
-      </p>
-      <p class="mailpoet_validation_error" data-error="name_not_unique">
-        <%= __('This name is already taken') %>
-      </p>
-
-      <hr/>
-
-      <p class="mailpoet_align_right">
-        <input type="submit" value="<%= __('Done') %>" id="new_column_process"
-         class="button-primary "/>
-        <input type="submit" value="<%= __('Cancel') %>" id="new_column_cancel"
-         class="button-primary"/>
-      </p>
-
-      </form>
-    </script>
+    <!-- New custom field logic -->
+    <% include 'form/custom_fields.html' %>
   </div>
 </div>

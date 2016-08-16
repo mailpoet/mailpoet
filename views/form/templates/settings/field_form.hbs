@@ -43,8 +43,9 @@
     </select>
   </p>
   <p>
-    <label><%= __("Field name:") %></label>
+    <label for="field_name"><%= __("Field name:") %></label>
     <input
+      id="field_name"
       type="text"
       name="name"
       value="{{ name }}"
@@ -100,7 +101,7 @@
           } else {
             if(response.errors.length > 0) {
               $(response.errors).each(function(i, error) {
-                MailPoet.Notice.error(error);
+                MailPoet.Notice.error(error, {positionAfter: '#field_name'});
               });
             }
           }

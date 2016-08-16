@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Subscribers\ImportExport\Import;
 
+use MailPoet\Form\Block\Date;
+use MailPoet\Models\CustomField;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
@@ -32,16 +34,32 @@ class Import {
     $this->subscriber_custom_fields = $this->getCustomSubscriberFields(
       array_keys($data['columns'])
     );
+    $this->subscriber_fields_validation_rules = $this->getSubscriberFieldsValidationRules(
+      $data['columns']
+    );
     $this->subscribers_count = count(reset($this->subscribers_data));
     $this->created_at = date('Y-m-d H:i:s', (int)$data['timestamp']);
     $this->updated_at = date('Y-m-d H:i:s', (int)$data['timestamp'] + 1);
     $this->profiler_start = microtime(true);
   }
 
+  function getSubscriberFieldsValidationRules($subscriber_fields) {
+    $validation_rules = array();
+    foreach($subscriber_fields as $column => $field) {
+      $validation_rules[$column] = (!empty($field['validation_rule'])) ?
+        $field['validation_rule'] :
+        false;
+    }
+    return $validation_rules;
+  }
+
   function process() {
     $subscriber_fields = $this->subscriber_fields;
     $subscriber_custom_fields = $this->subscriber_custom_fields;
-    $subscribers_data = $this->subscribers_data;
+    $subscribers_data = $this->validateSubscribersFields(
+      $this->subscribers_data,
+      $this->subscriber_fields_validation_rules
+    );
     list ($subscribers_data, $subscriber_fields) =
       $this->filterSubscriberStatus($subscribers_data, $subscriber_fields);
     $this->deleteExistingTrashedSubscribers($subscribers_data);
@@ -98,9 +116,39 @@ class Import {
     );
   }
 
+  function validateSubscribersFields($subscribers_data, $validation_rules) {
+    $invalid_records = array();
+    foreach($subscribers_data as $column => &$data) {
+      $validation_rule = $validation_rules[$column];
+      // if this is a custom column
+      if(in_array($column, $this->subscriber_custom_fields)) {
+        $custom_field = CustomField::findOne($column);
+        // validate date type
+        if($custom_field->type === 'date') {
+          $data = array_map(
+            function($index, $date) use($validation_rule, &$invalid_records) {
+              if (empty($date)) return $date;
+              $date = Date::convertDateToDatetime($date, $validation_rule);
+              if(!$date) {
+                $invalid_records[] = $index;
+              }
+              return $date;
+            }, array_keys($data), $data);
+        }
+      }
+    }
+    if($invalid_records) {
+      foreach($subscribers_data as $column => &$data) {
+        $data = array_diff_key($data, array_flip($invalid_records));
+        $data = array_values($data);
+      }
+    }
+    return $subscribers_data;
+  }
+
   function transformSubscribersData($subscribers, $columns) {
-    foreach($columns as $column => $index) {
-      $transformed_subscribers[$column] = Helpers::arrayColumn($subscribers, $index);
+    foreach($columns as $column => $data) {
+      $transformed_subscribers[$column] = Helpers::arrayColumn($subscribers, $data['index']);
     }
     return $transformed_subscribers;
   }
