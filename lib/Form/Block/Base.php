@@ -2,7 +2,7 @@
 namespace MailPoet\Form\Block;
 
 abstract class Base {
-  protected static function getInputValidation($block) {
+  protected static function getInputValidation($block, $extra_rules = array()) {
     $rules = array();
 
     if($block['id'] === 'email') {
@@ -37,7 +37,14 @@ abstract class Base {
       $rules['required-message'] = __('Please select at least one option');
     }
 
+    if($block['type'] === 'date') {
+      $rules['group'] = 'custom_field_'.$block['id'];
+      $rules['errors-container'] = '.mailpoet_error_'.$block['id'];
+    }
+
     $validation = array();
+
+    $rules = array_merge($rules, $extra_rules);
 
     if(!empty($rules)) {
       $rules = array_unique($rules);

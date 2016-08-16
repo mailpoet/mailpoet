@@ -19,7 +19,6 @@ class Date extends Base {
     $html = '';
 
     $field_name = static::getFieldName($block);
-    $field_validation = static::getInputValidation($block);
 
     $date_formats = static::getDateFormats();
 
@@ -70,23 +69,34 @@ class Date extends Base {
       if($date_selector === 'DD') {
         $block['selected'] = $day;
         $html .= '<select class="mailpoet_date_day" ';
+        $html .= static::getInputValidation($block, array(
+          'required-message' => __('Please select a day')
+        ));
         $html .= 'name="'.$field_name.'[day]" placeholder="'.__('Day').'">';
         $html .= static::getDays($block);
         $html .= '</select>';
       } else if($date_selector === 'MM') {
         $block['selected'] = $month;
         $html .= '<select class="mailpoet_date_month" ';
+        $html .= static::getInputValidation($block, array(
+          'required-message' => __('Please select a month')
+        ));
         $html .= 'name="'.$field_name.'[month]" placeholder="'.__('Month').'">';
         $html .= static::getMonths($block);
         $html .= '</select>';
       } else if($date_selector === 'YYYY') {
         $block['selected'] = $year;
         $html .= '<select class="mailpoet_date_year" ';
+        $html .= static::getInputValidation($block, array(
+          'required-message' => __('Please select a year')
+        ));
         $html .= 'name="'.$field_name.'[year]" placeholder="'.__('Year').'">';
         $html .= static::getYears($block);
         $html .= '</select>';
       }
     }
+
+    $html .= '<span class="mailpoet_error_'.$block['id'].'"></span>';
 
     return $html;
   }
