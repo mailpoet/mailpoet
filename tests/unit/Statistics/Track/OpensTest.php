@@ -22,6 +22,7 @@ class OpensTest extends MailPoetTest {
     // create queue
     $queue = SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
+    $queue->subscribers = array('processed' => array($subscriber->id));
     $this->queue = $queue->save();
     // instantiate class
     $this->opens = new Opens($data = true, $return_image = false);

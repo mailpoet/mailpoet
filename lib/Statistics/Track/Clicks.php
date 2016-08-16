@@ -20,8 +20,21 @@ class Clicks {
   function track($data = false) {
     $data = ($data) ? $data : $this->data;
     $newsletter = $this->getNewsletter($data['newsletter']);
-    $subscriber = $this->getSubscriber($data['subscriber']);
     $queue = $this->getQueue($data['queue']);
+    // verify if queue belongs to the newsletter
+    if ($newsletter && $queue) {
+      $queue = ($queue['newsletter_id'] === $newsletter['id']) ?
+        $queue :
+        false;
+    }
+    $subscriber = $this->getSubscriber($data['subscriber']);
+    // verify if subscriber belongs to the queue
+    if($queue && $subscriber) {
+      // check if this newsletter was sent to
+      $subscriber = (in_array($subscriber['id'], $queue['subscribers']['processed'])) ?
+        $subscriber :
+        false;
+    }
     $link = $this->getLink($data['hash']);
     if(!$subscriber || !$newsletter || !$link || !$queue) {
       $this->abort();

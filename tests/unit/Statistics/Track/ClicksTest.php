@@ -24,6 +24,7 @@ class ClicksTest extends MailPoetTest {
     // create queue
     $queue = SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
+    $queue->subscribers = array('processed' => array($subscriber->id));
     $this->queue = $queue->save();
     // create link
     $link = NewsletterLink::create();
