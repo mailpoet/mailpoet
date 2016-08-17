@@ -221,7 +221,7 @@ define(
           });
 
           mailChimpProcessButtonElement.click(function () {
-            if (mailChimpProcessButtonElement.closest('table a').hasClass('disabled')) {
+            if (mailChimpProcessButtonElement.closest('table a').hasClass('button-disabled')) {
               return;
             }
             MailPoet.Modal.loading(true);
@@ -234,10 +234,10 @@ define(
               }
             }).always(function(response) {
               MailPoet.Modal.loading(false);
-            }).done(function (response) {
+            }).done(function(response) {
               importData.step1 = response.data;
               router.navigate('step2', {trigger: true});
-            }).fail(function () {
+            }).fail(function(response) {
               if (response.errors.length > 0) {
                 MailPoet.Notice.error(
                   response.errors.map(function(error) { return error.message; }),
