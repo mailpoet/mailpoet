@@ -10,7 +10,6 @@ class ViewInBrowser {
   const ACTION_VIEW = 'view';
 
   static function view($data) {
-    $viewer = new NewsletterViewInBrowser($data);
-    $viewer->view();
+    NewsletterViewInBrowser::view($data);
   }
 }

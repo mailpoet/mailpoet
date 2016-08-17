@@ -12,44 +12,78 @@ use MailPoet\Newsletter\Shortcodes\Shortcodes;
 class ViewInBrowser {
   public $data;
 
-  function __construct($data) {
-    $this->data = $data;
-  }
-
-  function view($data = false) {
-    $data = ($data) ? $data : $this->data;
-    $newsletter = ($data['newsletter'] !== false) ?
-      Newsletter::findOne($data['newsletter']) :
-      false;
-    if(!$newsletter) $this->abort();
-    $subscriber = ($data['subscriber'] !== false) ?
-      $this->verifySubscriber($data['subscriber'], $data['subscriber_token']) :
-      false;
-    $queue = ($data['queue'] !== false) ?
-      SendingQueue::findOne($data['queue']) :
-      false;
+  static function view($data) {
+    $data = self::processData($data);
+    if(!$data) return false;
     $rendered_newsletter =
-      $this->getAndRenderNewsletter($newsletter, $subscriber, $queue);
+      self::getAndRenderNewsletter(
+        $data['newsletter'],
+        $data['subscriber'],
+        $data['queue'],
+        $data['preview']
+      );
     header('Content-Type: text/html; charset=utf-8');
     echo $rendered_newsletter;
     exit;
   }
 
-  function verifySubscriber($subscriber_id, $subscriber_token) {
-    $subscriber = Subscriber::findOne($subscriber_id);
-    if(!$subscriber ||
-      !Subscriber::verifyToken($subscriber->email, $subscriber_token)
+  static function processData($data) {
+    if(empty($data['subscriber_id']) ||
+      empty($data['subscriber_token']) ||
+      empty($data['newsletter_id'])
     ) {
       return false;
     }
-    return $subscriber;
+    $data['newsletter'] = self::getNewsletter($data['newsletter_id']);
+    $data['subscriber'] = self::getSubscriber($data['subscriber_id']);
+    $data['queue'] = self::getQueue($data['queue_id']);
+    $data_processed_successfully =
+      ($data['subscriber'] && $data['newsletter']);
+    return ($data_processed_successfully) ?
+      self::validateData($data) :
+      false;
   }
 
-  function getAndRenderNewsletter($newsletter, $subscriber, $queue) {
-    if($queue) {
-      $newsletter_body = json_decode($queue->newsletter_rendered_body, true);
+  static function validateData($data) {
+    if(!$data['subscriber']) return false;
+    $subscriber_token_match =
+      Subscriber::verifyToken($data['subscriber']['email'], $data['subscriber_token']);
+    // return if this is an administrator user previewing the newsletter
+    if($data['subscriber']['wp_user_id'] && $subscriber_token_match && $data['preview']) {
+      return ($subscriber_token_match) ? $data : false;
+    }
+    // if queue exists, check if the newsletter was sent to the subscriber
+    if($data['queue'] && $data['subscriber']) {
+      $is_valid_subscriber =
+        (!empty($data['queue']['subscribers']['processed']) &&
+          in_array($data['subscriber']['id'], $data['queue']['subscribers']['processed']));
+      $data = ($is_valid_subscriber && $subscriber_token_match) ? $data : false;
     } else {
-      $renderer = new Renderer($newsletter->asArray(), $preview = true);
+      $data = ($subscriber_token_match) ? $data : false;
+    }
+    return $data;
+  }
+
+  static function getNewsletter($newsletter_id) {
+    $newsletter = Newsletter::findOne($newsletter_id);
+    return ($newsletter) ? $newsletter->asArray() : $newsletter;
+  }
+
+  static function getQueue($queue_id) {
+    $queue = SendingQueue::findOne($queue_id);
+    return ($queue) ? $queue->asArray() : $queue;
+  }
+
+  static function getSubscriber($subscriber_id) {
+    $subscriber = Subscriber::findOne($subscriber_id);
+    return ($subscriber) ? $subscriber->asArray() : $subscriber;
+  }
+
+  static function getAndRenderNewsletter($newsletter, $subscriber, $queue, $preview) {
+    if($queue && $queue['newsletter_rendered_body']) {
+      $newsletter_body = json_decode($queue['newsletter_rendered_body'], true);
+    } else {
+      $renderer = new Renderer($newsletter, $preview);
       $newsletter_body = $renderer->render();
     }
     $shortcodes = new Shortcodes(
@@ -60,16 +94,16 @@ class ViewInBrowser {
     $rendered_newsletter = $shortcodes->replace($newsletter_body['html']);
     if($queue && (boolean)Setting::getValue('tracking.enabled')) {
       $rendered_newsletter = Links::replaceSubscriberData(
-        $newsletter->id,
-        $subscriber->id,
-        $queue->id,
-        $rendered_newsletter
+        $subscriber['id'],
+        $queue['id'],
+        $rendered_newsletter,
+        $preview
       );
     }
     return $rendered_newsletter;
   }
 
-  private function abort() {
+  private static function abort() {
     status_header(404);
     exit;
   }

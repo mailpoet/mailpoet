@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Links;
 
+use MailPoet\Models\Subscriber;
 use MailPoet\Router\Front as FrontRouter;
 use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Models\NewsletterLink;
@@ -92,10 +93,10 @@ class Links {
   }
 
   static function replaceSubscriberData(
-    $newsletter_id,
     $subscriber_id,
     $queue_id,
-    $content
+    $content,
+    $preview = false
   ) {
     // match data tags
     $regex = sprintf(
@@ -103,6 +104,7 @@ class Links {
       preg_quote(self::DATA_TAG_CLICK),
       preg_quote(self::DATA_TAG_OPEN)
     );
+    $subscriber = Subscriber::findOne($subscriber_id);
     preg_match_all($regex, $content, $matches);
     foreach($matches[1] as $index => $match) {
       $hash = null;
@@ -110,10 +112,11 @@ class Links {
         list(, $hash) = explode('-', $match);
       }
       $data = array(
-        'newsletter' => $newsletter_id,
-        'subscriber' => $subscriber_id,
-        'queue' => $queue_id,
-        'hash' => $hash
+        'subscriber_id' => $subscriber->id,
+        'subscriber_token' => Subscriber::generateToken($subscriber->email),
+        'queue_id' => $queue_id,
+        'link_hash' => $hash,
+        'preview' => $preview
       );
       $router_action = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
         TrackEndpoint::ACTION_CLICK :
