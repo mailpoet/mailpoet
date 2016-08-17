@@ -25,59 +25,86 @@ class MailChimpTest extends MailPoetTest {
 
   function testItFailsWithIncorrectAPIKey() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    $mailchimp = clone($this->mailchimp);
-    $mailchimp->api_key = false;
-    $lists = $mailchimp->getLists();
-    expect($lists['result'])->false();
-    expect($lists['errors'][0])->contains('API');
-    $subscribers = $mailchimp->getLists();
-    expect($subscribers['result'])->false();
-    expect($subscribers['errors'][0])->contains('API');
+
+    try {
+      $mailchimp = clone($this->mailchimp);
+      $mailchimp->api_key = false;
+      $lists = $mailchimp->getLists();
+      $this->fail('MailChimp getLists() did not throw an exception');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->contains('Invalid API Key');
+    }
   }
 
   function testItCanGetLists() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    $lists = $this->mailchimp->getLists();
-    expect($lists['result'])->true();
-    expect(count($lists['data']))->equals(2);
-    expect(isset($lists['data'][0]['id']))->true();
-    expect(isset($lists['data'][0]['name']))->true();
+    try {
+      $lists = $this->mailchimp->getLists();
+    } catch(\Exception $e) {
+      $this->fail('MailChimp getLists() threw an exception');
+    }
+    expect($lists)->count(2);
+    expect($lists[0]['id'])->notEmpty();
+    expect($lists[0]['name'])->notEmpty();
   }
 
   function testItFailsWithIncorrectLists() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    $subscribers = $this->mailchimp->getSubscribers();
-    expect($subscribers['result'])->false();
-    expect($subscribers['errors'][0])->contains('lists');
-    $subscribers = $this->mailchimp->getSubscribers(array(12));
-    expect($subscribers['result'])->false();
-    expect($subscribers['errors'][0])->contains('lists');
+
+    try {
+      $subscribers = $this->mailchimp->getSubscribers();
+      $this->fail('MailChimp getSubscribers() did not throw an exception');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->contains('Did not find any valid lists');
+    }
+
+    try {
+      $subscribers = $this->mailchimp->getSubscribers(array(12));
+      $this->fail('MailChimp getSubscribers() did not throw an exception');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->contains('Did not find any valid lists');
+    }
   }
 
   function testItCanGetSubscribers() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    $subscribers = $this->mailchimp->getSubscribers(array($this->lists[0]));
-    expect($subscribers['result'])->true();
-    expect(isset($subscribers['data']['invalid']))->true();
-    expect(isset($subscribers['data']['duplicate']))->true();
-    expect(isset($subscribers['data']['header']))->true();
-    expect(count($subscribers['data']['subscribers']))->equals(1);
-    expect($subscribers['data']['subscribersCount'])->equals(1);
+
+    try {
+      $subscribers = $this->mailchimp->getSubscribers(array($this->lists[0]));
+    } catch(\Exception $e) {
+      $this->fail('MailChimp getSubscribers() threw an exception');
+    }
+
+    expect($subscribers)->hasKey('invalid');
+    expect($subscribers)->hasKey('duplicate');
+    expect($subscribers['header'])->notEmpty();
+    expect($subscribers['subscribers'])->count(1);
+    expect($subscribers['subscribersCount'])->equals(1);
   }
 
   function testItFailsWhenListHeadersDontMatch() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    $subscribers = $this->mailchimp->getSubscribers($this->lists);
-    expect($subscribers['result'])->false();
-    expect($subscribers['errors'][0])->contains('header');
+
+    try {
+      $subscribers = $this->mailchimp->getSubscribers($this->lists);
+      $this->fail('MailChimp getSubscribers() did not throw an exception');
+    } catch(\Exception $e) {
+      expect($e->getMessage())
+        ->contains('The selected lists do not have matching columns (headers)');
+    }
   }
 
   function testItFailsWhenSubscribersDataTooLarge() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     $mailchimp = clone($this->mailchimp);
     $mailchimp->max_post_size = 10;
-    $subscribers = $mailchimp->getSubscribers($this->lists);
-    expect($subscribers['result'])->false();
-    expect($subscribers['errors'][0])->contains('large');
+
+    try {
+      $subscribers = $mailchimp->getSubscribers($this->lists);
+      $this->fail('MailChimp getSubscribers() did not throw an exception');
+    } catch(\Exception $e) {
+      expect($e->getMessage())
+        ->contains('The information received from MailChimp is too large for processing');
+    }
   }
 }
