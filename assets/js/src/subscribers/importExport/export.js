@@ -133,8 +133,7 @@ define(
          return;
        }
        MailPoet.Modal.loading(true);
-       MailPoet.Ajax
-        .post({
+       MailPoet.Ajax.post({
           endpoint: 'ImportExport',
           action: 'processExport',
           data: JSON.stringify({
@@ -144,25 +143,22 @@ define(
             'segments': (exportData.segments) ? segmentsContainerElement.val() : false,
             'subscriber_fields': subscriberFieldsContainerElement.val()
           })
-        })
-        .done(function (response) {
+        }).always(function(response) {
           MailPoet.Modal.loading(false);
-          if (response.result === false) {
-            MailPoet.Notice.error(response.errors);
-          } else {
-            resultMessage = MailPoet.I18n.t('exportMessage')
-             .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
-             .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
-             .replace('[/link]', '</a>');
-            jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
-            window.location.href = response.data.exportFileURL;
+        }).done(function(response) {
+          resultMessage = MailPoet.I18n.t('exportMessage')
+           .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
+           .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
+           .replace('[/link]', '</a>');
+          jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
+          window.location.href = response.data.exportFileURL;
+        }).fail(function(response) {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { scroll: true }
+            );
           }
-        })
-        .fail(function (error) {
-          MailPoet.Modal.loading(false);
-          MailPoet.Notice.error(
-           MailPoet.I18n.t('serverError') + error.statusText.toLowerCase() + '.'
-          );
         });
      });
    });

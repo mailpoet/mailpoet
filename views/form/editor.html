@@ -282,9 +282,7 @@
           endpoint: 'customFields',
           action: 'getAll',
         }).done(function(response) {
-          if(response !== false) {
-            data.fields  = $.merge(response, data.fields);
-          }
+          data.fields  = $.merge(response.data, data.fields);
 
           // render toolbar
           jQuery('#mailpoet_toolbar_fields').html(template(data));
@@ -489,18 +487,6 @@
               action: 'saveEditor',
               data: form
             }).done(function(response) {
-              if(response.result === false) {
-                if(response.errors.length > 0) {
-                  MailPoet.Notice.error(response.errors.join('<br />'));
-                } else {
-                  MailPoet.Notice.error(
-                    "<%= __('An error occurred. Please reload the page and try again.') %>"
-                  );
-                }
-
-                return false;
-              }
-
               if(callback !== false) {
                 var message = null;
 
@@ -522,6 +508,13 @@
                 if(callback !== undefined) {
                   callback();
                 }
+              }
+            }).fail(function(response) {
+              if (response.errors.length > 0) {
+                MailPoet.Notice.error(
+                  response.errors.map(function(error) { return error.message; }),
+                  { scroll: true }
+                );
               }
             });
           }
@@ -579,14 +572,21 @@
           MailPoet.Ajax.post({
             endpoint: 'customFields',
             action: 'get',
-            data: id
+            data: {
+              id: id
+            }
           }).done(function(response) {
-            if(response.result !== false) {
-              MailPoet.Modal.popup({
-                title: "<%= __('Edit field') %>",
-                template: $('#form_template_field_form').html(),
-                data: response
-              });
+            MailPoet.Modal.popup({
+              title: "<%= __('Edit field') %>",
+              template: $('#form_template_field_form').html(),
+              data: response.data
+            });
+          }).fail(function(response) {
+            if (response.errors.length > 0) {
+              MailPoet.Notice.error(
+                response.errors.map(function(error) { return error.message; }),
+                { scroll: true }
+              );
             }
           });
         });
@@ -603,22 +603,20 @@
             MailPoet.Ajax.post({
               endpoint: 'customFields',
               action: 'delete',
-              data: id
-            }).done(function(response) {
-              if(response.result === true) {
-                item.remove();
-
-                if(response.field !== undefined) {
-                  WysijaForm.removeBlock(response.field, function() {
-                    mailpoet_form_save(false);
-                  });
-                }
-
-                mailpoet_form_fields();
-                MailPoet.Notice.success(
-                  "<%= __('Removed custom field “"+name+"“') %>"
-                );
+              data: {
+                id: id
               }
+            }).done(function(response) {
+              item.remove();
+
+              WysijaForm.removeBlock(id, function() {
+                mailpoet_form_save(false);
+              });
+
+              mailpoet_form_fields();
+              MailPoet.Notice.success(
+                "<%= __('Removed custom field “"+name+"“') %>"
+              );
             });
           }
         });

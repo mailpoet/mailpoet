@@ -326,17 +326,17 @@ class ImportTest extends MailPoetTest {
 
   function testItCanUpdateSubscribers() {
     $result = $this->import->process();
-     expect($result['data']['updated'])->equals(0);
+    expect($result['updated'])->equals(0);
     $result = $this->import->process();
-    expect($result['data']['updated'])->equals(2);
+    expect($result['updated'])->equals(2);
     $this->import->update_subscribers = false;
     $result = $this->import->process();
-    expect($result['data']['updated'])->equals(0);
+    expect($result['updated'])->equals(0);
   }
 
   function testItCanProcess() {
     $result = $this->import->process();
-    expect($result['data']['created'])->equals(2);
+    expect($result['created'])->equals(2);
     Subscriber::where('email', 'mary@jane.com')
       ->findOne()
       ->delete();
@@ -344,7 +344,7 @@ class ImportTest extends MailPoetTest {
     $this->import->created_at = date('Y-m-d H:i:s', $timestamp);
     $this->import->updated_at = date('Y-m-d H:i:s', $timestamp + 1);
     $result = $this->import->process();
-    expect($result['data']['created'])->equals(1);
+    expect($result['created'])->equals(1);
   }
 
   function _after() {

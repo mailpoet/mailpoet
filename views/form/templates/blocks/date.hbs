@@ -9,17 +9,17 @@
     {{> _settings_date_days }}
     {{> _settings_date_years }}
   {{/unless}}
-  {{#ifCond params.date_format "==" "mm/dd/yyyy"}}
+  {{#ifCond params.date_format "==" "MM/DD/YYYY"}}
     {{> _settings_date_months }}
     {{> _settings_date_days }}
     {{> _settings_date_years }}
   {{/ifCond}}
-  {{#ifCond params.date_format "==" "dd/mm/yyyy"}}
+  {{#ifCond params.date_format "==" "DD/MM/YYYY"}}
     {{> _settings_date_days }}
     {{> _settings_date_months }}
     {{> _settings_date_years }}
   {{/ifCond}}
-  {{#ifCond params.date_format "==" "yyyy/mm/dd"}}
+  {{#ifCond params.date_format "==" "YYYY/MM/DD"}}
     {{> _settings_date_years }}
     {{> _settings_date_months }}
     {{> _settings_date_days }}
@@ -31,11 +31,11 @@
     {{> _settings_date_months }}
     {{> _settings_date_years }}
   {{/unless}}
-  {{#ifCond params.date_format "==" "mm/yyyy"}}
+  {{#ifCond params.date_format "==" "MM/YYYY"}}
     {{> _settings_date_months }}
     {{> _settings_date_years }}
   {{/ifCond}}
-  {{#ifCond params.date_format "==" "yyyy/mm"}}
+  {{#ifCond params.date_format "==" "YYYY/MM"}}
     {{> _settings_date_years }}
     {{> _settings_date_months }}
   {{/ifCond}}

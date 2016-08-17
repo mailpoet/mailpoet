@@ -1,5 +1,7 @@
 <?php
 namespace MailPoet\API\Endpoints;
+use \MailPoet\API\Endpoint as APIEndpoint;
+use \MailPoet\API\Error as APIError;
 
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 use MailPoet\Models\CustomField;
@@ -7,42 +9,69 @@ use MailPoet\Models\Segment;
 
 if(!defined('ABSPATH')) exit;
 
-class ImportExport {
+class ImportExport extends APIEndpoint {
   function getMailChimpLists($data) {
-    $mailChimp = new MailChimp($data['api_key']);
-    return $mailChimp->getLists();
+    try {
+      $mailChimp = new MailChimp($data['api_key']);
+      $lists = $mailChimp->getLists();
+      return $this->successResponse($lists);
+    } catch(\Exception $e) {
+      return $this->errorResponse(array(
+        $e->getCode() => $e->getMessage()
+      ));
+    }
   }
 
   function getMailChimpSubscribers($data) {
-    $mailChimp = new MailChimp($data['api_key']);
-    return $mailChimp->getSubscribers($data['lists']);
+    try {
+      $mailChimp = new MailChimp($data['api_key']);
+      $subscribers = $mailChimp->getSubscribers($data['lists']);
+      return $this->successResponse($subscribers);
+    } catch(\Exception $e) {
+      return $this->errorResponse(array(
+        $e->getCode() => $e->getMessage()
+      ));
+    }
   }
 
   function addSegment($data) {
     $segment = Segment::createOrUpdate($data);
-    return (
-      ($segment->id) ?
-        array(
-          'result' => true,
-          'segment' => $segment->asArray()
-        ) :
-        array(
-          'result' => false
-        )
-    );
+    $errors = $segment->getErrors();
+
+    if(!empty($errors)) {
+      return $this->errorResponse($errors);
+    } else {
+      return $this->successResponse(
+        Segment::findOne($segment->id)->asArray()
+      );
+    }
   }
 
   function processImport($data) {
-    $import = new \MailPoet\Subscribers\ImportExport\Import\Import(
-      json_decode($data, true)
-    );
-    return $import->process();
+    try {
+      $import = new \MailPoet\Subscribers\ImportExport\Import\Import(
+        json_decode($data, true)
+      );
+      $process = $import->process();
+      return $this->successResponse($process);
+    } catch(\Exception $e) {
+      return $this->errorResponse(array(
+        $e->getCode() => $e->getMessage()
+      ));
+    }
   }
 
   function processExport($data) {
-    $export = new \MailPoet\Subscribers\ImportExport\Export\Export(
-      json_decode($data, true)
-    );
-    return $export->process();
+    try {
+      $export = new \MailPoet\Subscribers\ImportExport\Export\Export(
+        json_decode($data, true)
+      );
+      $process = $export->process();
+      return $this->successResponse($process);
+    } catch(\Exception $e) {
+      return $this->errorResponse(array(
+        $e->getCode() => $e->getMessage()
+      ));
+    }
   }
 }

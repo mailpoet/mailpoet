@@ -1,6 +1,7 @@
 <?php
 
 use \MailPoet\API\Endpoints\CustomFields;
+use \MailPoet\API\Response as APIResponse;
 use \MailPoet\Models\CustomField;
 
 class CustomFieldsTest extends MailPoetTest {
@@ -58,9 +59,10 @@ class CustomFieldsTest extends MailPoetTest {
   function testItCanGetAllCustomFields() {
     $router = new CustomFields();
     $response = $router->getAll();
-    expect($response)->count(count($this->custom_fields));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->count(count($this->custom_fields));
 
-    foreach($response as $custom_field) {
+    foreach($response->data as $custom_field) {
       expect($custom_field['name'])->notEmpty();
       expect($custom_field['type'])->notEmpty();
       expect($custom_field['params'])->notEmpty();
@@ -72,14 +74,14 @@ class CustomFieldsTest extends MailPoetTest {
     $custom_field_id = $custom_field->id();
 
     $router = new CustomFields();
-    $response = $router->delete($custom_field_id);
-    expect($response['result'])->true();
+    $response = $router->delete(array('id' => $custom_field_id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
 
     $custom_field = CustomField::where('type', 'date')->findOne();
     expect($custom_field)->false();
 
-    $response = $router->delete($custom_field_id);
-    expect($response['result'])->false();
+    $response = $router->delete(array('id' => $custom_field_id));
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   function testItCanSaveACustomField() {
@@ -90,37 +92,37 @@ class CustomFieldsTest extends MailPoetTest {
 
     $router = new CustomFields();
     $response = $router->save($new_custom_field);
-    expect($response['result'])->true();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
 
     // missing type
     $response = $router->save(array('name' => 'New custom field'));
-    expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please specify a type');
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please specify a type');
 
     // missing name
     $response = $router->save(array('type' => 'text'));
-    expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please specify a name');
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please specify a name');
 
     // missing data
     $response = $router->save();
-    expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please specify a name');
-    expect($response['errors'][1])->equals('Please specify a type');
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please specify a name');
+    expect($response->errors[1]['message'])->equals('Please specify a type');
   }
 
   function testItCanGetACustomField() {
     $custom_field = CustomField::where('name', 'CF: text')->findOne();
 
     $router = new CustomFields();
-    $response = $router->get($custom_field->id());
-    expect($response)->notEmpty();
-    expect($response['name'])->equals('CF: text');
-    expect($response['type'])->equals('text');
-    expect($response['params'])->notEmpty();
+    $response = $router->get(array('id' => $custom_field->id()));
 
-    $response = $router->get('not_an_id');
-    expect($response)->false();
+    expect($response->data['name'])->equals('CF: text');
+    expect($response->data['type'])->equals('text');
+    expect($response->data['params'])->notEmpty();
+
+    $response = $router->get(array('id' => 'not_an_id'));
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   function _after() {
