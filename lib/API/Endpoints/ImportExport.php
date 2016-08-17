@@ -27,7 +27,7 @@ class ImportExport extends APIEndpoint {
       $mailChimp = new MailChimp($data['api_key']);
       $subscribers = $mailChimp->getSubscribers($data['lists']);
       return $this->successResponse($subscribers);
-   } catch(\Exception $e) {
+    } catch(\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));
