@@ -58,17 +58,11 @@ class Export {
         )
       );
     } catch(\Exception $e) {
-      return array(
-        'result' => false,
-        'errors' => array($e->getMessage())
-      );
+      throw new \Exception($e->getMessage());
     }
     return array(
-      'result' => true,
-      'data' => array(
-        'totalExported' => $processed_subscribers,
-        'exportFileURL' => $this->export_file_URL
-      )
+      'totalExported' => $processed_subscribers,
+      'exportFileURL' => $this->export_file_URL
     );
   }
 
