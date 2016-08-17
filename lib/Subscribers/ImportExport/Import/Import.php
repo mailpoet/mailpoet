@@ -19,7 +19,6 @@ class Import {
   public $subscribers_count;
   public $created_at;
   public $updated_at;
-  public $profiler_start;
 
   public function __construct($data) {
     $this->subscribers_data = $this->transformSubscribersData(
@@ -40,7 +39,6 @@ class Import {
     $this->subscribers_count = count(reset($this->subscribers_data));
     $this->created_at = date('Y-m-d H:i:s', (int)$data['timestamp']);
     $this->updated_at = date('Y-m-d H:i:s', (int)$data['timestamp'] + 1);
-    $this->profiler_start = microtime(true);
   }
 
   function getSubscriberFieldsValidationRules($subscriber_fields) {
@@ -92,10 +90,7 @@ class Import {
         }
       }
     } catch(\PDOException $e) {
-      return array(
-        'result' => false,
-        'errors' => array($e->getMessage())
-      );
+      throw new \Exception($e->getMessage());
     }
     $import_factory = new ImportExportFactory('import');
     $segments = $import_factory->getSegments();
@@ -104,15 +99,11 @@ class Import {
         Newsletter::getWelcomeNotificationsForSegments($this->segments) :
         false;
     return array(
-      'result' => true,
-      'data' => array(
-        'created' => count($created_subscribers),
-        'updated' => count($updated_subscribers),
-        'segments' => $segments,
-        'added_to_segment_with_welcome_notification' =>
-          ($welcome_notifications_in_segments) ? true : false
-      ),
-      'profiler' => $this->timeExecution()
+      'created' => count($created_subscribers),
+      'updated' => count($updated_subscribers),
+      'segments' => $segments,
+      'added_to_segment_with_welcome_notification' =>
+        ($welcome_notifications_in_segments) ? true : false
     );
   }
 
@@ -414,10 +405,5 @@ class Import {
         $subscriber_ids_chunk, $segment_ids
       );
     }
-  }
-
-  function timeExecution() {
-    $profiler_end = microtime(true);
-    return ($profiler_end - $this->profiler_start) / 60;
   }
 }

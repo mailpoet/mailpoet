@@ -14,13 +14,13 @@ class MailChimp {
 
   function getLists() {
     if(!$this->api_key || !$this->data_center) {
-      return $this->processError('API');
+      return $this->throwException('API');
     }
 
     $connection = @fopen(sprintf($this->lists_url, $this->data_center, $this->api_key), 'r');
 
     if(!$connection) {
-      return $this->processError('connection');
+      return $this->throwException('connection');
     } else {
       $response = '';
       while(!feof($connection)) {
@@ -35,7 +35,7 @@ class MailChimp {
     $response = json_decode($response);
 
     if(!$response) {
-      return $this->processError('API');
+      return $this->throwException('API');
     }
 
     foreach($response->data as $list) {
@@ -45,19 +45,16 @@ class MailChimp {
       );
     }
 
-    return array(
-      'result' => true,
-      'data' => $lists
-    );
+    return $lists;
   }
 
   function getSubscribers($lists = array()) {
     if(!$this->api_key || !$this->data_center) {
-      return $this->processError('API');
+      return $this->throwException('API');
     }
 
     if(!$lists) {
-      return $this->processError('lists');
+      return $this->throwException('lists');
     }
 
     $bytes_fetched = 0;
@@ -65,7 +62,7 @@ class MailChimp {
       $url = sprintf($this->export_url, $this->data_center, $this->api_key, $list);
       $connection = @fopen($url, 'r');
       if(!$connection) {
-        return $this->processError('connection');
+        return $this->throwException('connection');
       }
       $i = 0;
       $header = array();
@@ -76,13 +73,13 @@ class MailChimp {
           if($i === 0) {
             $header = $obj;
             if(is_object($header) && isset($header->error)) {
-              return $this->processError('lists');
+              return $this->throwException('lists');
             }
             if(!isset($header_hash)) {
               $header_hash = md5(implode(',', $header));
             } else {
               if(md5(implode(',', $header) !== $header_hash)) {
-                return $this->processError('headers');
+                return $this->throwException('headers');
               }
             }
           } else {
@@ -92,25 +89,22 @@ class MailChimp {
         }
         $bytes_fetched += strlen($buffer);
         if($bytes_fetched > $this->max_post_size) {
-          return $this->processError('size');
+          return $this->throwException('size');
         }
       }
       fclose($connection);
     }
 
     if(!count($subscribers)) {
-      return $this->processError('subscribers');
+      return $this->throwException('subscribers');
     }
 
     return array(
-      'result' => true,
-      'data' => array(
-        'subscribers' => $subscribers,
-        'invalid' => false,
-        'duplicate' => false,
-        'header' => $header,
-        'subscribersCount' => count($subscribers)
-      )
+      'subscribers' => $subscribers,
+      'invalid' => false,
+      'duplicate' => false,
+      'header' => $header,
+      'subscribersCount' => count($subscribers)
     );
   }
 
@@ -125,7 +119,7 @@ class MailChimp {
     return (preg_match('/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{3,}/', $APIKey)) ? $APIKey : false;
   }
 
-  function processError($error) {
+  function throwException($error) {
     switch($error) {
       case 'API':
         $errorMessage = __('Invalid API Key.');
@@ -146,9 +140,6 @@ class MailChimp {
         $errorMessage = __('Did not find any valid lists');
         break;
     }
-    return array(
-      'result' => false,
-      'errors' => array($errorMessage)
-    );
+    throw new \Exception($errorMessage);
   }
 }
