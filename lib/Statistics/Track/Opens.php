@@ -11,9 +11,10 @@ class Opens {
     $subscriber = $data->subscriber;
     $queue = $data->queue;
     $newsletter = $data->newsletter;
+    $wp_user_preview = ($data->preview && $subscriber->isWPUser());
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
-    if(!$data->preview && !$subscriber->isWPUser()) {
+    if(!$wp_user_preview) {
       StatisticsOpens::getOrCreate(
         $subscriber->id,
         $newsletter->id,

@@ -89,14 +89,13 @@ class Link {
   }
 
   static function processShortcodeAction(
-    $shortcode_action, $newsletter, $subscriber, $queue
+    $shortcode_action, $newsletter, $subscriber, $queue, $wp_user_preview
   ) {
     switch($shortcode_action) {
       case 'subscription_unsubscribe_url':
         // track unsubscribe event
         if((boolean)Setting::getValue('tracking.enabled')) {
-          $unsubscribe = new Unsubscribes();
-          $unsubscribe->track($newsletter['id'], $subscriber['id'], $queue['id']);
+          Unsubscribes::track($newsletter, $subscriber, $queue, $wp_user_preview);
         }
         $url = SubscriptionUrl::getUnsubscribeUrl($subscriber);
         break;

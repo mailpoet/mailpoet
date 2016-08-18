@@ -13,9 +13,10 @@ class Clicks {
     $queue = $data->queue;
     $newsletter = $data->newsletter;
     $link = $data->link;
+    $wp_user_preview = ($data->preview && $subscriber->isWPUser());
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
-    if(!$data->preview && !$subscriber->isWPUser()) {
+    if(!$wp_user_preview) {
       $statistics = StatisticsClicks::createOrUpdateClickCount(
         $link->id,
         $subscriber->id,
@@ -27,18 +28,19 @@ class Clicks {
         self::trackOpenEvent($data);
       }
     }
-    $url = self::processUrl($link->url, $newsletter, $subscriber, $queue);
+    $url = self::processUrl($link->url, $newsletter, $subscriber, $queue, $wp_user_preview);
     self::redirectToUrl($url);
   }
 
-  static function processUrl($url, $newsletter, $subscriber, $queue) {
+  static function processUrl($url, $newsletter, $subscriber, $queue, $wp_user_preview) {
     if(preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
       if(!$shortcode['action']) self::abort();
       $url = Link::processShortcodeAction(
         $shortcode['action'],
         $newsletter,
         $subscriber,
-        $queue
+        $queue,
+        $wp_user_preview
       );
     }
     return $url;
