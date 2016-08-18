@@ -295,7 +295,7 @@ define([
         it('updates the model when text is changed', function () {
           var newValue = 'something else';
 
-          view.$('.mailpoet_field_button_text').val(newValue).keyup();
+          view.$('.mailpoet_field_button_text').val(newValue).trigger('input');
 
           expect(model.get('text')).to.equal(newValue);
         });
@@ -303,7 +303,7 @@ define([
         it('updates the model when link is changed', function () {
           var newValue = 'http://google.com/?q=123456';
 
-          view.$('.mailpoet_field_button_url').val(newValue).keyup();
+          view.$('.mailpoet_field_button_url').val(newValue).trigger('input');
 
           expect(model.get('url')).to.equal(newValue);
         });
@@ -357,7 +357,7 @@ define([
           expect(model.get('styles.block.borderWidth')).to.equal('3px');
         });
         it('updates the range slider when border width input changes', function () {
-          view.$('.mailpoet_field_button_border_width_input').val('5').keyup();
+          view.$('.mailpoet_field_button_border_width_input').val('5').trigger('input');
           expect(view.$('.mailpoet_field_button_border_width').val()).to.equal('5');
         });
         it('updates the input when border width range slider changes', function () {
@@ -370,7 +370,7 @@ define([
           expect(model.get('styles.block.borderRadius')).to.equal('7px');
         });
         it('updates the range slider when border radius input changes', function () {
-          view.$('.mailpoet_field_button_border_radius_input').val('7').keyup();
+          view.$('.mailpoet_field_button_border_radius_input').val('7').trigger('input');
           expect(view.$('.mailpoet_field_button_border_radius').val()).to.equal('7');
         });
         it('updates the input when border radius range slider changes', function () {
@@ -383,7 +383,7 @@ define([
           expect(model.get('styles.block.width')).to.equal('127px');
         });
         it('updates the range slider when width input changes', function () {
-          view.$('.mailpoet_field_button_width_input').val('127').keyup();
+          view.$('.mailpoet_field_button_width_input').val('127').trigger('input');
           expect(view.$('.mailpoet_field_button_width').val()).to.equal('127');
         });
         it('updates the input when width range slider changes', function () {
@@ -396,7 +396,7 @@ define([
           expect(model.get('styles.block.lineHeight')).to.equal('37px');
         });
         it('updates the range slider when line height input changes', function () {
-          view.$('.mailpoet_field_button_line_height_input').val('37').keyup();
+          view.$('.mailpoet_field_button_line_height_input').val('37').trigger('input');
           expect(view.$('.mailpoet_field_button_line_height').val()).to.equal('37');
         });
         it('updates the input when line height range slider changes', function () {

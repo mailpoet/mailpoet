@@ -88,8 +88,7 @@ define([
 
         "input .mailpoet_field_divider_border_width": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width_input', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
         "change .mailpoet_field_divider_border_width": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width_input', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
-        "change .mailpoet_field_divider_border_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
-        "keyup .mailpoet_field_divider_border_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
+        "input .mailpoet_field_divider_border_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
 
         "change .mailpoet_field_divider_border_color": _.partial(this.changeColorField, "styles.block.borderColor"),
         "change .mailpoet_field_divider_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),

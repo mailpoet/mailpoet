@@ -351,7 +351,7 @@ define([
 
         it('changes the model if post amount changes', function () {
           var newValue = '11';
-          view.$('.mailpoet_automated_latest_content_show_amount').val(newValue).keyup();
+          view.$('.mailpoet_automated_latest_content_show_amount').val(newValue).trigger('input');
           expect(model.get('amount')).to.equal(newValue);
         });
 
@@ -411,7 +411,7 @@ define([
 
         it('changes the model if author preceded by  changes', function () {
           var newValue = 'New author preceded by test';
-          view.$('.mailpoet_automated_latest_content_author_preceded_by').val(newValue).keyup();
+          view.$('.mailpoet_automated_latest_content_author_preceded_by').val(newValue).trigger('input');
           expect(model.get('authorPrecededBy')).to.equal(newValue);
         });
 
@@ -423,7 +423,7 @@ define([
 
         it('changes the model if categories preceded by changes', function () {
           var newValue = 'New categories preceded by test';
-          view.$('.mailpoet_automated_latest_content_categories').val(newValue).keyup();
+          view.$('.mailpoet_automated_latest_content_categories').val(newValue).trigger('input');
           expect(model.get('categoriesPrecededBy')).to.equal(newValue);
         });
 
@@ -435,7 +435,7 @@ define([
 
         it('changes the model if read more text changes', function () {
           var newValue = 'New read more text';
-          view.$('.mailpoet_automated_latest_content_read_more_text').val(newValue).keyup();
+          view.$('.mailpoet_automated_latest_content_read_more_text').val(newValue).trigger('input');
           expect(model.get('readMoreText')).to.equal(newValue);
         });
 

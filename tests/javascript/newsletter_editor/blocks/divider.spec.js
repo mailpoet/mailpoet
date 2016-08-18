@@ -150,13 +150,13 @@ define([
           expect(model.get('styles.block.borderStyle')).to.equal('inset');
         });
 
-        it('updates the model when divider width changes', function () {
+        it('updates the model when divider width slider changes', function () {
           view.$('.mailpoet_field_divider_border_width').val('17').change();
           expect(model.get('styles.block.borderWidth')).to.equal('17px');
         });
 
         it('updates the range slider when divider width input changes', function () {
-          view.$('.mailpoet_field_divider_border_width_input').val('19').keyup();
+          view.$('.mailpoet_field_divider_border_width_input').val('19').trigger('input');
           expect(view.$('.mailpoet_field_divider_border_width').val()).to.equal('19');
         });
 

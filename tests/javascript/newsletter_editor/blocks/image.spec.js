@@ -164,19 +164,19 @@ define([
       describe('once rendered', function () {
         it('updates the model when link changes', function () {
           var newValue = 'http://example.org/someNewLink';
-          view.$('.mailpoet_field_image_link').val(newValue).keyup();
+          view.$('.mailpoet_field_image_link').val(newValue).trigger('input');
           expect(model.get('link')).to.equal(newValue);
         });
 
         it('updates the model when src changes', function () {
           var newValue = 'http://example.org/someNewImage.png';
-          view.$('.mailpoet_field_image_address').val(newValue).keyup();
+          view.$('.mailpoet_field_image_address').val(newValue).trigger('input');
           expect(model.get('src')).to.equal(newValue);
         });
 
         it('updates the model when alt changes', function () {
           var newValue = 'Some new alt text';
-          view.$('.mailpoet_field_image_alt_text').val(newValue).keyup();
+          view.$('.mailpoet_field_image_alt_text').val(newValue).trigger('input');
           expect(model.get('alt')).to.equal(newValue);
         });
 
