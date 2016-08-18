@@ -51,7 +51,7 @@ class Segments extends APIEndpoint {
     $errors = $segment->getErrors();
 
     if(!empty($errors)) {
-      return $this->errorResponse($errors);
+      return $this->badRequest($errors);
     } else {
       return $this->successResponse(
         Segment::findOne($segment->id)->asArray()

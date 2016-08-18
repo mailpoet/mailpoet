@@ -1,5 +1,7 @@
 <?php
 namespace MailPoet\API\Endpoints;
+use \MailPoet\API\Endpoint as APIEndpoint;
+use \MailPoet\API\Error as APIError;
 
 use MailPoet\Listing;
 use MailPoet\Models\Subscriber;
@@ -13,19 +15,22 @@ use MailPoet\Util\Url;
 
 if(!defined('ABSPATH')) exit;
 
-class Subscribers {
-  function __construct() {
-  }
-
-  function get($id = null) {
+class Subscribers extends APIEndpoint {
+  function get($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
-    if($subscriber !== false) {
-      $subscriber = $subscriber
-        ->withCustomFields()
-        ->withSubscriptions()
-        ->asArray();
+    if($subscriber === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This subscriber does not exist.')
+      ));
+    } else {
+      return $this->successResponse(
+        $subscriber
+          ->withCustomFields()
+          ->withSubscriptions()
+          ->asArray()
+      );
     }
-    return $subscriber;
   }
 
   function listing($data = array()) {
@@ -44,22 +49,6 @@ class Subscribers {
     }
 
     return $listing_data;
-  }
-
-  function save($data = array()) {
-    $subscriber = Subscriber::createOrUpdate($data);
-    $errors = $subscriber->getErrors();
-
-    if(!empty($errors)) {
-      return array(
-        'result' => false,
-        'errors' => $errors
-      );
-    } else {
-      return array(
-        'result' => true
-      );
-    }
   }
 
   function subscribe($data = array()) {
@@ -148,37 +137,76 @@ class Subscribers {
     }
   }
 
-  function restore($id) {
+  function save($data = array()) {
+    $subscriber = Subscriber::createOrUpdate($data);
+    $errors = $subscriber->getErrors();
+
+    if(!empty($errors)) {
+      return $this->badRequest($errors);
+    } else {
+      return $this->successResponse(
+        Subscriber::findOne($subscriber->id)->asArray()
+      );
+    }
+  }
+
+  function restore($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
-    if($subscriber !== false) {
+    if($subscriber === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This subscriber does not exist.')
+      ));
+    } else {
       $subscriber->restore();
+      return $this->successResponse(
+        Subscriber::findOne($subscriber->id)->asArray(),
+        array('count' => 1)
+      );
     }
-    return ($subscriber->getErrors() === false);
   }
 
-  function trash($id) {
+  function trash($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
-    if($subscriber !== false) {
+    if($subscriber === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This subscriber does not exist.')
+      ));
+    } else {
       $subscriber->trash();
+      return $this->successResponse(
+        Subscriber::findOne($subscriber->id)->asArray(),
+        array('count' => 1)
+      );
     }
-    return ($subscriber->getErrors() === false);
   }
 
-  function delete($id) {
+  function delete($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);
-    if($subscriber !== false) {
+    if($subscriber === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This subscriber does not exist.')
+      ));
+    } else {
       $subscriber->delete();
-      return 1;
+      return $this->successResponse(null, array('count' => 1));
     }
-    return false;
   }
 
   function bulkAction($data = array()) {
-    $bulk_action = new Listing\BulkAction(
-      '\MailPoet\Models\Subscriber',
-      $data
-    );
-
-    return $bulk_action->apply();
+    try {
+      $bulk_action = new Listing\BulkAction(
+        '\MailPoet\Models\Subscriber',
+        $data
+      );
+      $count = $bulk_action->apply();
+      return $this->successResponse(null, array('count' => $count));
+    } catch(\Exception $e) {
+      return $this->errorResponse(array(
+        $e->getCode() => $e->getMessage()
+      ));
+    }
   }
 }

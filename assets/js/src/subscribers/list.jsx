@@ -330,16 +330,23 @@ const SubscriberList = React.createClass({
       </div>
     );
   },
-  onGetItems: function(count) {
-    jQuery('#mailpoet_export_button')[(count > 0) ? 'show' : 'hide']();
-  },
   render: function() {
     return (
       <div>
         <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
-          <a className="page-title-action" href="?page=mailpoet-import#step1">{MailPoet.I18n.t('import')}</a>
-          <a id="mailpoet_export_button" className="page-title-action" href="?page=mailpoet-export">{MailPoet.I18n.t('export')}</a>
+          {MailPoet.I18n.t('pageTitle')} <Link
+            className="page-title-action"
+            to="/new"
+          >{MailPoet.I18n.t('new')}</Link>
+          <a
+            className="page-title-action"
+            href="?page=mailpoet-import#step1"
+          >{MailPoet.I18n.t('import')}</a>
+          <a
+            id="mailpoet_export_button"
+            className="page-title-action"
+            href="?page=mailpoet-export"
+          >{MailPoet.I18n.t('export')}</a>
         </h1>
 
         <Listing
@@ -352,7 +359,6 @@ const SubscriberList = React.createClass({
           bulk_actions={ bulk_actions }
           item_actions={ item_actions }
           messages={ messages }
-          onGetItems={ this.onGetItems }
           sort_by={ 'created_at' }
           sort_order={ 'desc' }
         />

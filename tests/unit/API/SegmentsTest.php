@@ -1,5 +1,6 @@
 <?php
 use \MailPoet\API\Endpoints\Segments;
+use \MailPoet\API\Response as APIResponse;
 use \MailPoet\Models\Segment;
 
 class SegmentsTest extends MailPoetTest {
@@ -13,13 +14,18 @@ class SegmentsTest extends MailPoetTest {
     $router = new Segments();
 
     $response = $router->get(/* missing id */);
-    expect($response)->false();
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->equals('This list does not exist.');
 
-    $response = $router->get('not_an_id');
-    expect($response)->false();
+    $response = $router->get(array('id' => 'not_an_id'));
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->equals('This list does not exist.');
 
-    $response = $router->get($this->segment_1->id());
-    expect($response['name'])->equals($this->segment_1->name);
+    $response = $router->get(array('id' => $this->segment_1->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Segment::findOne($this->segment_1->id)->asArray()
+    );
   }
 
   function testItCanGetListingData() {
@@ -43,14 +49,14 @@ class SegmentsTest extends MailPoetTest {
 
     $router = new Segments();
     $response = $router->save(/* missing data */);
-    expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please specify a name');
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please specify a name');
 
     $response = $router->save($segment_data);
-    expect($response['result'])->true();
-
-    $segment = Segment::where('name', 'New Segment')->findOne();
-    expect($segment->name)->equals($segment_data['name']);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Segment::where('name', 'New Segment')->findOne()->asArray()
+    );
   }
 
   function testItCannotSaveDuplicate() {
@@ -60,8 +66,8 @@ class SegmentsTest extends MailPoetTest {
 
     $router = new Segments();
     $response = $router->save($duplicate_entry);
-    expect($response['result'])->false();
-    expect($response['errors'][0])->equals(
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals(
       'Another record already exists. Please specify a different "name".'
     );
   }
@@ -69,64 +75,71 @@ class SegmentsTest extends MailPoetTest {
   function testItCanRestoreASegment() {
     $this->segment_1->trash();
 
-    $trashed_segment = Segment::findOne($this->segment_1->id());
+    $trashed_segment = Segment::findOne($this->segment_1->id);
     expect($trashed_segment->deleted_at)->notNull();
 
     $router = new Segments();
-    $response = $router->restore($this->segment_1->id());
-    expect($response)->true();
-
-    $restored_segment = Segment::findOne($this->segment_1->id());
-    expect($restored_segment->deleted_at)->null();
+    $response = $router->restore(array('id' => $this->segment_1->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Segment::findOne($this->segment_1->id)->asArray()
+    );
+    expect($response->data['deleted_at'])->null();
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanTrashASegment() {
     $router = new Segments();
-    $response = $router->trash($this->segment_2->id());
-    expect($response)->true();
-
-    $trashed_segment = Segment::findOne($this->segment_2->id());
-    expect($trashed_segment->deleted_at)->notNull();
+    $response = $router->trash(array('id' => $this->segment_2->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Segment::findOne($this->segment_2->id)->asArray()
+    );
+    expect($response->data['deleted_at'])->notNull();
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanDeleteASegment() {
     $router = new Segments();
-    $response = $router->delete($this->segment_3->id());
-    expect($response)->equals(1);
-
-    $deleted_segment = Segment::findOne($this->segment_3->id());
-    expect($deleted_segment)->false();
+    $response = $router->delete(array('id' => $this->segment_3->id));
+    expect($response->data)->isEmpty();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanDuplicateASegment() {
     $router = new Segments();
-    $response = $router->duplicate($this->segment_1->id());
-    expect($response['name'])->equals('Copy of '.$this->segment_1->name);
-
-    $duplicated_segment = Segment::findOne($response['id']);
-    expect($duplicated_segment->name)->equals('Copy of '.$this->segment_1->name);
+    $response = $router->duplicate(array('id' => $this->segment_1->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Segment::where('name', 'Copy of Segment 1')->findOne()->asArray()
+    );
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanBulkDeleteSegments() {
-    expect(Segment::count())->equals(3);
-
-    $segments = Segment::findMany();
-    foreach($segments as $segment) {
-      $segment->trash();
-    }
+    $router = new Segments();
+    $response = $router->bulkAction(array(
+      'action' => 'trash',
+      'listing' => array('group' => 'all')
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(3);
 
     $router = new Segments();
     $response = $router->bulkAction(array(
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
-    expect($response)->equals(3);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(3);
 
     $response = $router->bulkAction(array(
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
-    expect($response)->equals(0);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(0);
   }
 
   function _after() {

@@ -26,7 +26,7 @@ class BulkAction {
 
     if(!method_exists($this->model_class, $bulk_action_method)) {
       throw new \Exception(
-        $this->model_class. ' has not method "'.$bulk_action_method.'"'
+        $this->model_class. ' has no method "'.$bulk_action_method.'"'
       );
     }
 

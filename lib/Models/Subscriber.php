@@ -23,12 +23,13 @@ class Subscriber extends Model {
     ));
   }
 
-  static function findOne($id = null) {
+  static function findOne($id = false) {
     if(is_int($id) || (string)(int)$id === $id) {
       return parent::findOne($id);
-    } else {
+    } else if(strlen(trim($id)) > 0) {
       return parent::where('email', $id)->findOne();
     }
+    return false;
   }
 
   function segments() {

@@ -469,14 +469,6 @@ const Listing = React.createClass({
             // redirect to default group
             this.handleGroup('all');
           }
-
-          // TODO: remove this....
-          if (this.props['onGetItems'] !== undefined) {
-            const count = (response.groups[0] !== undefined)
-              ? ~~(response.groups[0].count)
-              : 0;
-            this.props.onGetItems(count);
-          }
         });
       });
     }
