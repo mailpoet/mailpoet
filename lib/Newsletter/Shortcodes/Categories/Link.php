@@ -112,7 +112,8 @@ class Link {
           $shortcode,
           $newsletter,
           $subscriber,
-          $queue
+          $queue,
+          $wp_user_preview
         );
         $url = ($url !== $shortcode_action) ? $url : false;
         break;
