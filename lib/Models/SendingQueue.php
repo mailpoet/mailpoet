@@ -59,6 +59,15 @@ class SendingQueue extends Model {
     return $subscribers;
   }
 
+  function getRenderedNewsletterBody() {
+    return json_decode($this->newsletter_rendered_body, true);
+  }
+
+  function isSubscriberProcessed($subscriber_id) {
+    $subscribers = $this->getSubscribers();
+    return in_array($subscriber_id, $subscribers['processed']);
+  }
+
   function asArray() {
     $model = parent::asArray();
     $model['subscribers'] = (is_serialized($this->subscribers))
