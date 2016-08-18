@@ -283,7 +283,7 @@ class Newsletters extends APIEndpoint {
       if($newsletter->status === Newsletter::STATUS_SENT ||
          $newsletter->status === Newsletter::STATUS_SENDING
       ) {
-        $queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
+        $queue = $newsletter->getQueue();
       }
 
       // get preview url
