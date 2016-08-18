@@ -10,8 +10,6 @@ use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 
 class ViewInBrowser {
-  public $data;
-
   static function view($data) {
     $data = self::processData($data);
     if(!$data) self::abort();
@@ -53,10 +51,8 @@ class ViewInBrowser {
       return $data;
     }
     // if queue exists, check if the newsletter was sent to the subscriber
-    if($data->queue) {
-      $data = ($data->queue->isSubscriberProcessed($data->subscriber->id)) ?
-        $data :
-        false;
+    if($data->queue && !$data->queue->isSubscriberProcessed($data->subscriber->id)) {
+      $data = false;
     }
     return $data;
   }
