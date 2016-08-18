@@ -23,10 +23,8 @@ class Clicks {
         $newsletter->id,
         $queue->id
       );
-      if($statistics->isNew()) {
-        // track open event in case it did not register
-        self::trackOpenEvent($data);
-      }
+      // track open event
+      Opens::track($data, $display_image = false);
     }
     $url = self::processUrl($link->url, $newsletter, $subscriber, $queue, $wp_user_preview);
     self::redirectToUrl($url);
@@ -44,10 +42,6 @@ class Clicks {
       );
     }
     return $url;
-  }
-
-  static function trackOpenEvent($data) {
-    return Opens::track($data, $display_image = false);
   }
 
   static function abort() {
