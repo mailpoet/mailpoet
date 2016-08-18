@@ -8,35 +8,26 @@ if(!defined('ABSPATH')) exit;
 
 class Clicks {
   static function track($data) {
-    if(!$data || empty($data['link'])) return false;
-    $subscriber = $data['subscriber'];
-    $queue = $data['queue'];
-    $newsletter = $data['newsletter'];
-    $link = $data['link'];
+    if(!$data || empty($data->link)) self::abort();
+    $subscriber = $data->subscriber;
+    $queue = $data->queue;
+    $newsletter = $data->newsletter;
+    $link = $data->link;
     // log statistics only if the action did not come from
-    // an admin user previewing the newsletter
-    if(!$data['preview'] && !$subscriber['wp_user_id']) {
-      $statistics = StatisticsClicks::where('link_id', $link['id'])
-        ->where('subscriber_id', $subscriber['id'])
-        ->where('newsletter_id', $newsletter['id'])
-        ->where('queue_id', $queue['id'])
-      ->findOne();
-      if(!$statistics) {
+    // a WP user previewing the newsletter
+    if(!$data->preview && !$subscriber->isWPUser()) {
+      $statistics = StatisticsClicks::createOrUpdateClickCount(
+        $link->id,
+        $subscriber->id,
+        $newsletter->id,
+        $queue->id
+      );
+      if($statistics->isNew()) {
         // track open event in case it did not register
         self::trackOpenEvent($data);
-        $statistics = StatisticsClicks::create();
-        $statistics->newsletter_id = $newsletter['id'];
-        $statistics->link_id = $link['id'];
-        $statistics->subscriber_id = $subscriber['id'];
-        $statistics->queue_id = $queue['id'];
-        $statistics->count = 1;
-        $statistics->save();
-      } else {
-        $statistics->count++;
-        $statistics->save();
       }
     }
-    $url = self::processUrl($link['url'], $newsletter, $subscriber, $queue);
+    $url = self::processUrl($link->url, $newsletter, $subscriber, $queue);
     self::redirectToUrl($url);
   }
 

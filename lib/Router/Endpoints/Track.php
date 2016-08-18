@@ -24,60 +24,36 @@ class Track {
   }
 
   static function _processTrackData($data) {
-    if(empty($data['queue_id']) ||
-       empty($data['subscriber_id']) ||
-       empty($data['subscriber_token'])
+    $data = (object)$data;
+    if(empty($data->queue_id) ||
+       empty($data->subscriber_id) ||
+       empty($data->subscriber_token)
     ) {
       return false;
     }
-    $data['queue'] = self::_getQueue($data['queue_id']);
-    $data['subscriber'] = self::_getSubscriber($data['subscriber_id']);
-    $data['newsletter'] = (!empty($data['queue']['newsletter_id'])) ?
-      self::_getNewsletter($data['queue']['newsletter_id']) :
+    $data->queue = SendingQueue::findOne($data->queue_id);
+    $data->subscriber = Subscriber::findOne($data->subscriber_id);
+    $data->newsletter = (!empty($data->queue->newsletter_id)) ?
+      Newsletter::findOne($data->queue->newsletter_id) :
       false;
-    if(!empty($data['link_hash'])) {
-      $data['link'] = self::_getLink($data['link_hash']);
+    if(!empty($data->link_hash)) {
+      $data->link = NewsletterLink::getByHash($data->link_hash);
     }
-    $data_processed_successfully =
-      ($data['queue'] && $data['subscriber'] && $data['newsletter']);
-    return ($data_processed_successfully) ?
-      self::_validateTrackData($data) :
-      false;
+    return self::_validateTrackData($data);
   }
 
   static function _validateTrackData($data) {
-    if(!$data['subscriber']) return false;
+    if(!$data->subscriber || !$data->queue || !$data->newsletter) return false;
     $subscriber_token_match =
-      Subscriber::verifyToken($data['subscriber']['email'], $data['subscriber_token']);
-    // return if this is an administrator user previewing the newsletter
-    if($data['subscriber']['wp_user_id'] && $data['preview']) {
-      return ($subscriber_token_match) ? $data : false;
+      Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token);
+    if(!$subscriber_token_match) return false;
+    // return if this is a WP user previewing the newsletter
+    if($data->subscriber->isWPUser() && $data->preview) {
+      return $data;
     }
     // check if the newsletter was sent to the subscriber
-    $is_valid_subscriber =
-      (!empty($data['queue']['subscribers']['processed']) &&
-        in_array($data['subscriber']['id'], $data['queue']['subscribers']['processed']));
-    return ($is_valid_subscriber && $subscriber_token_match) ? $data : false;
-  }
-
-  static function _getNewsletter($newsletter_id) {
-    $newsletter = Newsletter::findOne($newsletter_id);
-    return ($newsletter) ? $newsletter->asArray() : $newsletter;
-  }
-
-  static function _getSubscriber($subscriber_id) {
-    $subscriber = Subscriber::findOne($subscriber_id);
-    return ($subscriber) ? $subscriber->asArray() : $subscriber;
-  }
-
-  static function _getQueue($queue_id) {
-    $queue = SendingQueue::findOne($queue_id);
-    return ($queue) ? $queue->asArray() : $queue;
-  }
-
-  static function _getLink($link_hash) {
-    $link = NewsletterLink::where('hash', $link_hash)
-      ->findOne();
-    return ($link) ? $link->asArray() : $link;
+    return ($data->queue->isSubscriberProcessed($data->subscriber->id)) ?
+      $data :
+      false;
   }
 }
