@@ -11,8 +11,8 @@ use MailPoet\Newsletter\Shortcodes\Shortcodes;
 
 class ViewInBrowser {
   static function view($data) {
-    $data = self::processData($data);
-    if(!$data) self::abort();
+    $data = self::preProcessData($data);
+    if(!self::validateData($data)) self::abort();
     $rendered_newsletter =
       self::getAndRenderNewsletter(
         $data->newsletter,
@@ -25,7 +25,7 @@ class ViewInBrowser {
     exit;
   }
 
-  static function processData($data) {
+  static function preProcessData($data) {
     $data = (object)$data;
     if(empty($data->subscriber_id) ||
        empty($data->subscriber_token) ||
@@ -38,11 +38,11 @@ class ViewInBrowser {
     $data->queue = ($data->queue_id) ?
       SendingQueue::findOne($data->queue_id) :
       false;
-    return self::validateData($data);
+    return $data;
   }
 
   static function validateData($data) {
-    if(!$data->subscriber || !$data->newsletter) return false;
+    if(!$data || !$data->subscriber || !$data->newsletter) return false;
     $subscriber_token_match =
       Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token);
     if(!$subscriber_token_match) return false;
