@@ -41,6 +41,9 @@ define([
         imageMissingSrc: App.getConfig().get('urls.imageMissing'),
       }, base.BlockView.prototype.templateHelpers.apply(this));
     },
+    behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
+      ShowSettingsBehavior: {},
+    }),
     onRender: function() {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.toolsRegion.show(this.toolsView);

@@ -43,6 +43,9 @@ define([
         minLength: 0, // TODO: Move this number to editor configuration
         modelField: 'styles.block.padding',
       },
+      ShowSettingsBehavior: {
+        ignoreFrom: '.mailpoet_resize_handle'
+      },
     }, base.BlockView.prototype.behaviors),
     onDragSubstituteBy: function() { return Module.DividerWidgetView; },
     initialize: function() {

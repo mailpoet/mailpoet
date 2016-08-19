@@ -141,6 +141,7 @@ define([
         },
       },
       HighlightEditingBehavior: {},
+      ShowSettingsBehavior: {},
     },
     onDragSubstituteBy: function() { return Module.SocialWidgetView; },
     constructor: function() {
@@ -149,6 +150,7 @@ define([
       Marionette.CompositeView.apply(this, arguments);
     },
     initialize: function() {
+      this.on('showSettings', this.showSettings, this);
       this.on('dom:refresh', this.showBlock, this);
       this._isFirstRender = true;
     },
@@ -175,6 +177,9 @@ define([
     hideTools: function(_event) {
       this.$(this.ui.tools).hide();
       _event.stopPropagation();
+    },
+    showSettings: function(options) {
+      this.toolsView.triggerMethod('showSettings', options);
     },
     getDropFunc: function() {
       return function() {

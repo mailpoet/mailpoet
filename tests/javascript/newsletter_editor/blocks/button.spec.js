@@ -16,7 +16,9 @@ define([
       });
 
       afterEach(function () {
-        delete EditorApplication.getChannel;
+        if(EditorApplication.getChannel) {
+          delete EditorApplication.getChannel;
+        }
       });
 
       it("has a button type", function () {
@@ -246,6 +248,13 @@ define([
 
         it('has a specified font weight', function () {
           expect(view.$('.mailpoet_editor_button').css('font-weight')).to.equal(model.get('styles.block.fontWeight'));
+        });
+
+        it('opens settings if clicked', function () {
+          var mock = sinon.mock().once();
+          model.on('startEditing', mock);
+          view.$('.mailpoet_editor_button').click();
+          mock.verify();
         });
       });
     });

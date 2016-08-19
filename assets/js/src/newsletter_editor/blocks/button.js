@@ -44,6 +44,9 @@ define([
     className: "mailpoet_block mailpoet_button_block mailpoet_droppable_block",
     getTemplate: function() { return templates.buttonBlock; },
     onDragSubstituteBy: function() { return Module.ButtonWidgetView; },
+    behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
+      ShowSettingsBehavior: {},
+    }),
     initialize: function() {
       base.BlockView.prototype.initialize.apply(this, arguments);
 
