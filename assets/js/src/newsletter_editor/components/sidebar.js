@@ -232,6 +232,12 @@ define([
       'click .mailpoet_show_preview': 'showPreview',
       'click #mailpoet_send_preview': 'sendPreview',
     },
+    onBeforeDestroy: function() {
+      if (this.previewView) {
+        this.previewView.destroy();
+        this.previewView = null;
+      }
+    },
     showPreview: function() {
       var json = App.toJSON();
 
@@ -246,14 +252,27 @@ define([
         endpoint: 'newsletters',
         action: 'showPreview',
         data: json,
-      }).done(function(response){
+      }).done(function(response) {
         if (response.result === true) {
-          window.open(response.data.url, '_blank')
-          MailPoet.Notice.success(MailPoet.I18n.t('previewShouldOpenInNewTab'));
+          this.previewView = new Module.NewsletterPreviewView({
+            previewUrl: response.data.url
+          });
+
+          var view = this.previewView.render();
+
+          MailPoet.Modal.popup({
+            template: '',
+            element: this.previewView.$el,
+            title: MailPoet.I18n.t('newsletterPreview'),
+            onCancel: function() {
+              this.previewView.destroy();
+              this.previewView = null;
+            }.bind(this)
+          });
         } else {
           MailPoet.Notice.error(response.errors);
         }
-      }).fail(function(error) {
+      }.bind(this)).fail(function(error) {
         MailPoet.Notice.error(
           MailPoet.I18n.t('newsletterPreviewFailed')
         );
@@ -307,6 +326,22 @@ define([
         MailPoet.Modal.loading(false);
       });
     },
+  });
+
+  Module.NewsletterPreviewView = Marionette.ItemView.extend({
+    getTemplate: function() { return templates.newsletterPreview; },
+    initialize: function(options) {
+      this.previewUrl = options.previewUrl;
+      this.width = App.getConfig().get('newsletterPreview.width');
+      this.height = App.getConfig().get('newsletterPreview.height')
+    },
+    templateHelpers: function() {
+      return {
+        previewUrl: this.previewUrl,
+        width: this.width,
+        height: this.height,
+      };
+    }
   });
 
   App.on('before:start', function(options) {

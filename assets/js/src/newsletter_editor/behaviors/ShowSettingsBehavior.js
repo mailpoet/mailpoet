@@ -1,7 +1,7 @@
 /**
  * Show Settings Behavior
  *
- * Adds a color picker integration with the view
+ * Opens up settings of a BlockView if contents are clicked upon
  */
 define([
     'backbone.marionette',
@@ -11,17 +11,17 @@ define([
 
   BehaviorsLookup.ShowSettingsBehavior = Marionette.Behavior.extend({
     defaults: {
-      ignoreFrom: '',
+      ignoreFrom: '', // selector
     },
     events: {
       'click .mailpoet_content': 'showSettings',
     },
     showSettings: function(event) {
-      if(!this.isIgnoredEvent(event.target)) {
+      if(!this.isIgnoredElement(event.target)) {
         this.view.triggerMethod('showSettings');
       }
     },
-    isIgnoredEvent: function(element) {
+    isIgnoredElement: function(element) {
       return this.options.ignoreFrom
         && this.options.ignoreFrom.length > 0
         && jQuery(element).is(this.options.ignoreFrom);
