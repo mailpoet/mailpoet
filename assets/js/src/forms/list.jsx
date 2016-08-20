@@ -99,14 +99,21 @@ const item_actions = [
       return MailPoet.Ajax.post({
         endpoint: 'forms',
         action: 'duplicate',
-        data: item.id
-      }).done(function(response) {
-        if (response !== false && response['name'] !== undefined) {
-          MailPoet.Notice.success(
-            (MailPoet.I18n.t('formDuplicated')).replace('%$1s', response.name)
+        data: {
+          id: item.id
+        }
+      }).done((response) => {
+        MailPoet.Notice.success(
+          (MailPoet.I18n.t('formDuplicated')).replace('%$1s', response.data.name)
+        );
+        refresh();
+      }).fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true }
           );
         }
-        refresh();
       });
     }
   },
@@ -120,9 +127,14 @@ const FormList = React.createClass({
     MailPoet.Ajax.post({
       endpoint: 'forms',
       action: 'create'
-    }).done(function(response) {
-      if(response.result && response.form_id) {
-        window.location = mailpoet_form_edit_url + response.form_id;
+    }).done((response) => {
+      window.location = mailpoet_form_edit_url + response.data.id;
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(function(error) { return error.message; }),
+          { scroll: true }
+        );
       }
     });
   },

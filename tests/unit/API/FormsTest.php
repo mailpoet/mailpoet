@@ -1,31 +1,34 @@
 <?php
 use \MailPoet\API\Endpoints\Forms;
+use \MailPoet\API\Response as APIResponse;
 use \MailPoet\Models\Form;
 use \MailPoet\Models\Segment;
 
 class FormsTest extends MailPoetTest {
   function _before() {
-    Form::createOrUpdate(array('name' => 'Form 1'));
-    Form::createOrUpdate(array('name' => 'Form 2'));
-    Form::createOrUpdate(array('name' => 'Form 3'));
+    $this->form_1 = Form::createOrUpdate(array('name' => 'Form 1'));
+    $this->form_2 = Form::createOrUpdate(array('name' => 'Form 2'));
+    $this->form_3 = Form::createOrUpdate(array('name' => 'Form 3'));
     Segment::createOrUpdate(array('name' => 'Segment 1'));
     Segment::createOrUpdate(array('name' => 'Segment 2'));
   }
 
   function testItCanGetAForm() {
-    $form = Form::where('name', 'Form 1')->findOne();
-
     $router = new Forms();
 
     $response = $router->get(/* missing id */);
-    expect($response)->false();
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->equals('This form does not exist.');
 
-    $response = $router->get('not_an_id');
-    expect($response)->false();
+    $response = $router->get(array('id' => 'not_an_id'));
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->equals('This form does not exist.');
 
-    $response = $router->get($form->id);
-    expect($response['id'])->equals($form->id);
-    expect($response['name'])->equals($form->name);
+    $response = $router->get(array('id' => $this->form_1->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Form::findOne($this->form_1->id)->asArray()
+    );
   }
 
   function testItCanGetListingData() {
@@ -43,12 +46,11 @@ class FormsTest extends MailPoetTest {
   function testItCanCreateANewForm() {
     $router = new Forms();
     $response = $router->create();
-    expect($response['result'])->true();
-    expect($response['form_id'] > 0)->true();
-    expect($response)->hasntKey('errors');
-
-    $created_form = Form::findOne($response['form_id']);
-    expect($created_form->name)->equals('New form');
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Form::findOne($response->data['id'])->asArray()
+    );
+    expect($response->data['name'])->equals('New form');
   }
 
   function testItCanSaveAForm() {
@@ -58,133 +60,127 @@ class FormsTest extends MailPoetTest {
 
     $router = new Forms();
     $response = $router->save(/* missing data */);
-    expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please specify a name');
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please specify a name');
 
     $response = $router->save($form_data);
-    expect($response['result'])->true();
-    expect($response['form_id'] > 0)->true();
-
-    $form = Form::where('name', 'My first form')->findOne();
-    expect($form->id)->equals($response['form_id']);
-    expect($form->name)->equals('My first form');
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Form::where('name', 'My first form')->findOne()->asArray()
+    );
   }
 
   function testItCanPreviewAForm() {
     $router = new Forms();
 
     $response = $router->create();
-    expect($response['result'])->true();
-    expect($response['form_id'] > 0)->true();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Form::where('name', 'New form')->findOne()->asArray()
+    );
 
-    $form = Form::findOne($response['form_id']);
-    $response = $router->previewEditor($form->asArray());
-    expect($response['html'])->notEmpty();
-    expect($response['css'])->notEmpty();
+    $response = $router->previewEditor($response->data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data['html'])->notEmpty();
+    expect($response->data['css'])->notEmpty();
   }
 
   function testItCanExportAForm() {
     $router = new Forms();
 
     $response = $router->create();
-    expect($response['result'])->true();
-    expect($response['form_id'] > 0)->true();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $response = $router->exportsEditor($response['form_id']);
-    expect($response['html'])->notEmpty();
-    expect($response['php'])->notEmpty();
-    expect($response['iframe'])->notEmpty();
-    expect($response['shortcode'])->notEmpty();
+    $response = $router->exportsEditor($response->data);
+    expect($response->data['html'])->notEmpty();
+    expect($response->data['php'])->notEmpty();
+    expect($response->data['iframe'])->notEmpty();
+    expect($response->data['shortcode'])->notEmpty();
   }
 
   function testItCanSaveFormEditor() {
     $router = new Forms();
 
     $response = $router->create();
-    expect($response['result'])->true();
-    expect($response['form_id'] > 0)->true();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $form = Form::findOne($response['form_id'])->asArray();
+    $form = Form::findOne($response->data['id'])->asArray();
     $form['name'] = 'Updated form';
 
     $response = $router->saveEditor($form);
-    expect($response['result'])->true();
-    expect($response['is_widget'])->false();
-
-    $saved_form = Form::findOne($form['id']);
-    expect($saved_form->name)->equals('Updated form');
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['is_widget'])->false();
+    expect($response->data['name'])->equals('Updated form');
   }
 
   function testItCanRestoreAForm() {
-    $form = Form::where('name', 'Form 1')->findOne();
-    $form->trash();
+    $this->form_1->trash();
 
-    $trashed_form = Form::findOne($form->id);
+    $trashed_form = Form::findOne($this->form_1->id);
     expect($trashed_form->deleted_at)->notNull();
 
     $router = new Forms();
-    $response = $router->restore($form->id);
-    expect($response)->true();
-
-    $restored_form = Form::findOne($form->id);
-    expect($restored_form->deleted_at)->null();
+    $response = $router->restore(array('id' => $this->form_1->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Form::findOne($this->form_1->id)->asArray()
+    );
+    expect($response->data['deleted_at'])->null();
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanTrashAForm() {
-    $form = Form::where('name', 'Form 1')->findOne();
-    expect($form->deleted_at)->null();
-
     $router = new Forms();
-    $response = $router->trash($form->id);
-    expect($response)->true();
-
-    $trashed_form = Form::findOne($form->id);
-    expect($trashed_form->deleted_at)->notNull();
+    $response = $router->trash(array('id' => $this->form_2->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Form::findOne($this->form_2->id)->asArray()
+    );
+    expect($response->data['deleted_at'])->notNull();
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanDeleteAForm() {
-    $form = Form::where('name', 'Form 2')->findOne();
-    expect($form->deleted_at)->null();
-
     $router = new Forms();
-    $response = $router->delete($form->id);
-    expect($response)->equals(1);
-
-    $deleted_form = Form::findOne($form->id);
-    expect($deleted_form)->false();
+    $response = $router->delete(array('id' => $this->form_3->id));
+    expect($response->data)->isEmpty();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanDuplicateAForm() {
-    $form = Form::where('name', 'Form 3')->findOne();
-
     $router = new Forms();
-    $response = $router->duplicate($form->id);
-    expect($response['name'])->equals('Copy of '.$form->name);
-
-    $duplicated_form = Form::findOne($response['id']);
-    expect($duplicated_form->name)->equals('Copy of '.$form->name);
+    $response = $router->duplicate(array('id' => $this->form_1->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Form::where('name', 'Copy of Form 1')->findOne()->asArray()
+    );
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanBulkDeleteForms() {
-    expect(Form::count())->equals(3);
-
-    $forms = Form::findMany();
-    foreach($forms as $form) {
-      $form->trash();
-    }
+    $router = new Forms();
+    $response = $router->bulkAction(array(
+      'action' => 'trash',
+      'listing' => array('group' => 'all')
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(3);
 
     $router = new Forms();
     $response = $router->bulkAction(array(
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
-    expect($response)->equals(3);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(3);
 
     $response = $router->bulkAction(array(
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
-    expect($response)->equals(0);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(0);
   }
 
   function _after() {

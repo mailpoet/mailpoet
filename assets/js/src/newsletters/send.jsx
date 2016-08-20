@@ -66,22 +66,22 @@ define(
         MailPoet.Ajax.post({
           endpoint: 'newsletters',
           action: 'get',
-          data: id
-        }).done((response) => {
-          if(response === false) {
-            this.setState({
-              loading: false,
-              item: {},
-            }, function() {
-              this.context.router.push('/new');
-            }.bind(this));
-          } else {
-            this.setState({
-              loading: false,
-              item: response,
-              fields: this.getFieldsByNewsletter(response),
-            });
+          data: {
+            id: id
           }
+        }).done((response) => {
+          this.setState({
+            loading: false,
+            item: response.data,
+            fields: this.getFieldsByNewsletter(response.data)
+          });
+        }).fail((response) => {
+          this.setState({
+            loading: false,
+            item: {}
+          }, () => {
+            this.context.router.push('/new');
+          });
         });
       },
       handleSend: function(e) {

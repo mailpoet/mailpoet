@@ -11,7 +11,7 @@ define([
     return MailPoet.Ajax.post({
       endpoint: 'automatedLatestContent',
       action: args.action,
-      data: args.options || {},
+      data: args.options || {}
     });
   };
   Module._cachedQuery = _.memoize(Module._query, JSON.stringify);
@@ -19,14 +19,14 @@ define([
   Module.getNewsletter = function(options) {
     return Module._query({
       action: 'get',
-      options: options,
+      options: options
     });
   };
 
   Module.getPostTypes = function() {
     return Module._cachedQuery({
       action: 'getPostTypes',
-      options: {},
+      options: {}
     }).then(function(response) {
       return _.values(response.data);
     });
@@ -83,7 +83,7 @@ define([
     return MailPoet.Ajax.post({
       endpoint: 'newsletters',
       action: 'save',
-      data: options || {},
+      data: options || {}
     });
   };
 
@@ -91,7 +91,7 @@ define([
     return MailPoet.Ajax.post({
       endpoint: 'newsletters',
       action: 'sendPreview',
-      data: options || {},
+      data: options || {}
     });
   };
 

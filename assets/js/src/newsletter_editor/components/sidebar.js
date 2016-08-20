@@ -252,32 +252,31 @@ define([
         endpoint: 'newsletters',
         action: 'showPreview',
         data: json,
-      }).done(function(response) {
-        if (response.result === true) {
-          this.previewView = new Module.NewsletterPreviewView({
-            previewUrl: response.data.url
-          });
-
-          var view = this.previewView.render();
-
-          MailPoet.Modal.popup({
-            template: '',
-            element: this.previewView.$el,
-            title: MailPoet.I18n.t('newsletterPreview'),
-            onCancel: function() {
-              this.previewView.destroy();
-              this.previewView = null;
-            }.bind(this)
-          });
-        } else {
-          MailPoet.Notice.error(response.errors);
-        }
-      }.bind(this)).fail(function(error) {
-        MailPoet.Notice.error(
-          MailPoet.I18n.t('newsletterPreviewFailed')
-        );
       }).always(function() {
         MailPoet.Modal.loading(false);
+      }).done(function(response) {
+        this.previewView = new Module.NewsletterPreviewView({
+          previewUrl: response.meta.preview_url
+        });
+
+        var view = this.previewView.render();
+
+        MailPoet.Modal.popup({
+          template: '',
+          element: this.previewView.$el,
+          title: MailPoet.I18n.t('newsletterPreview'),
+          onCancel: function() {
+            this.previewView.destroy();
+            this.previewView = null;
+          }.bind(this)
+        });
+      }.bind(this)).fail(function(response) {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true }
+          );
+        }
       });
     },
     sendPreview: function() {
@@ -302,28 +301,19 @@ define([
       // send test email
       MailPoet.Modal.loading(true);
 
-      CommunicationComponent.previewNewsletter(data).done(function(response) {
-        if(response.result !== undefined && response.result === true) {
-          MailPoet.Notice.success(MailPoet.I18n.t('newsletterPreviewSent'), { scroll: true });
-        } else {
-          if (_.isArray(response.errors)) {
-            response.errors.map(function(error) {
-              MailPoet.Notice.error(error, { scroll: true });
-            });
-          } else {
-            MailPoet.Notice.error(
-              MailPoet.I18n.t('newsletterPreviewFailedToSend'),
-              {
-                scroll: true,
-                static: true,
-              }
-            );
-          }
-        }
+      CommunicationComponent.previewNewsletter(data).always(function() {
         MailPoet.Modal.loading(false);
+      }).done(function(response) {
+        MailPoet.Notice.success(
+          MailPoet.I18n.t('newsletterPreviewSent'),
+          { scroll: true });
       }).fail(function(response) {
-        // an error occurred
-        MailPoet.Modal.loading(false);
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true, static: true }
+          );
+        }
       });
     },
   });

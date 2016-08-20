@@ -324,9 +324,7 @@
     'shortcodesWindowTitle': __('Select a shortcode'),
     'unsubscribeLinkMissing': __('All newsletters must include an "Unsubscribe" link. Add a footer widget to your newsletter to continue'),
     'newsletterPreviewEmailMissing': __('Enter an email address to send the preview newsletter to'),
-    'newsletterPreviewFailed': __('Preview failed. Please check console log'),
     'newsletterPreviewSent': __('Your test email has been sent!'),
-    'newsletterPreviewFailedToSend': __('Attempt to send a newsletter preview email failed. Please verify that your sending method is configured correctly and try again'),
     'templateNameMissing': __('Please add a template name'),
     'templateDescriptionMissing': __('Please add a template description'),
     'templateSaved': __('Template has been saved.'),
@@ -1197,14 +1195,23 @@
     MailPoet.Ajax.post({
       endpoint: 'newsletters',
       action: 'get',
-      data: <%= params('id') %>
-    }).done(function(newsletter) {
+      data: {
+        id: <%= params('id') %>
+      }
+    }).always(function() {
+      MailPoet.Modal.loading(false);
+    }).done(function(response) {
       EditorApplication.start({
-        newsletter: newsletter,
+        newsletter: response.data,
         config: config,
       });
-
-      MailPoet.Modal.loading(false);
+    }).fail(function(response) {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(function(error) { return error.message; }),
+          { scroll: true }
+        );
+      }
     });
   </script>
 <% endblock %>

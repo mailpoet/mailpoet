@@ -28,17 +28,16 @@ define(
             type: type,
             subject: MailPoet.I18n.t('draftNewsletterTitle'),
           }
-        }).done(function(response) {
-          if(response.result && response.newsletter.id) {
-            this.context.router.push(`/template/${response.newsletter.id}`);
-          } else {
-            if(response.errors.length > 0) {
-              response.errors.map(function(error) {
-                MailPoet.Notice.error(error);
-              });
-            }
+        }).done((response) => {
+          this.context.router.push(`/template/${response.data.id}`);
+        }).fail((response) => {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { scroll: true }
+            );
           }
-        }.bind(this));
+        });
       },
       render: function() {
         return (
