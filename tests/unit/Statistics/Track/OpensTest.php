@@ -3,6 +3,7 @@
 use Codeception\Util\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\Opens;
@@ -24,93 +25,64 @@ class OpensTest extends MailPoetTest {
     $queue->newsletter_id = $newsletter->id;
     $queue->subscribers = array('processed' => array($subscriber->id));
     $this->queue = $queue->save();
+    // build track data
+    $this->track_data = (object)array(
+      'queue' => $queue,
+      'subscriber' => $subscriber,
+      'newsletter' => $newsletter,
+      'subscriber_token' => Subscriber::generateToken($subscriber->email),
+      'preview' => false
+    );
     // instantiate class
-    $this->opens = new Opens($data = true, $return_image = false);
+    $this->opens = new Opens();
   }
 
-  function testItCanConstruct() {
-    $opens = new Opens($data = 'test', $return_image = true);
-    expect($opens->data)->equals('test');
-    expect($opens->return_image)->true();
-  }
-
-  function testItCanGetNewsletter() {
-    $newsletter = $this->opens->getNewsletter($this->newsletter->id);
-    expect(is_array($newsletter))->true();
-    expect($newsletter['id'])->equals($this->newsletter->id);
-  }
-
-  function testItCanGetSubscriber() {
-    $subscriber = $this->opens->getSubscriber($this->subscriber->id);
-    expect(is_array($subscriber))->true();
-    expect($subscriber['id'])->equals($this->subscriber->id);
-  }
-
-  function testItCanGetQueue() {
-    $queue = $this->opens->getQueue($this->queue->id);
-    expect(is_array($queue))->true();
-    expect($queue['id'])->equals($this->queue->id);
-  }
-
-  function testItReturnsWhenItCantFindData() {
-    // should return false when newsletter can't be found
-    $data = array(
-      'newsletter' => 999,
-      'subscriber' => $this->subscriber->id,
-      'queue' => $this->queue->id
-    );
-    expect($this->opens->track($data))->false();
-    // should return false when subscriber can't be found
-    $data = array(
-      'newsletter' => $this->newsletter->id,
-      'subscriber' => 999,
-      'queue' => $this->queue->id
-    );
-    expect($this->opens->track($data))->false();
-    // should return false when queue can't be found
-    $data = array(
-      'newsletter' => $this->newsletter->id,
-      'subscriber' => $this->subscriber->id,
-      'queue' => 999
-    );
-    expect($this->opens->track($data))->false();
-  }
-
-  function testItReturnsTrueOrImageUponCompletion() {
-    $data = array(
-      'newsletter' => $this->newsletter->id,
-      'subscriber' => $this->subscriber->id,
-      'queue' => $this->queue->id
-    );
-    $opens = Stub::make(new Opens(true), array(
-      'returnImage' => Stub::exactly(1, function () { }),
-      'data' => $data,
-      'return_image' => true
+  function testItReturnsImageWhenTrackDataIsEmpty() {
+    $opens = Stub::make($this->opens, array(
+      'returnResponse' => Stub::exactly(1, function() { })
     ), $this);
-    // it should run returnImage() method when $return_image is set to true
-    $opens->track();
-    $opens = Stub::make(new Opens(true), array(
-      'returnImage' => Stub::exactly(0, function () { }),
-      'data' => $data,
-      'return_image' => false
-    ), $this);
-    // it should return true when $return_image is set to false
-    expect($opens->track())->true();
+    $opens->track(false);
+    expect(StatisticsOpens::findMany())->isEmpty();
   }
 
-  function testItTracksOnlyUniqueOpenEvent() {
-    $data = array(
-      'newsletter' => $this->newsletter->id,
-      'subscriber' => $this->subscriber->id,
-      'queue' => $this->queue->id
-    );
-    $open_events = StatisticsOpens::findArray();
-    expect(count($open_events))->equals(0);
-    // tracking twice the same event should only create 1 record
-    $open = $this->opens->track($data);
-    $open = $this->opens->track($data);
-    $open_events = StatisticsOpens::findArray();
-    expect(count($open_events))->equals(1);
+  function testItDoesNotTrackOpenEventFromWpUserWhenPreviewIsEnabled() {
+    $data = $this->track_data;
+    $data->subscriber->wp_user_id = 99;
+    $data->preview = true;
+    $opens = Stub::make($this->opens, array(
+      'returnResponse' => function() { }
+    ), $this);
+    $opens->track($data);
+    expect(StatisticsOpens::findMany())->isEmpty();
+  }
+
+  function testItReturnsNothingWhenImageDisplayIsDisabled() {
+    expect($this->opens->track($this->track_data, $display_image = false))->isEmpty();
+  }
+
+  function testItTracksOpenEvent() {
+    $opens = Stub::make($this->opens, array(
+      'returnResponse' => function() { }
+    ), $this);
+    $opens->track($this->track_data);
+    expect(StatisticsOpens::findMany())->notEmpty();
+  }
+
+  function testItDoesNotTrackRepeatedOpenEvents() {
+    $opens = Stub::make($this->opens, array(
+      'returnResponse' => function() { }
+    ), $this);
+    for($count = 0; $count <= 2; $count++) {
+      $opens->track($this->track_data);
+    }
+    expect(count(StatisticsOpens::findMany()))->equals(1);
+  }
+
+  function testItReturnsImageAfterTracking() {
+    $opens = Stub::make($this->opens, array(
+      'returnResponse' => Stub::exactly(1, function() { })
+    ), $this);
+    $opens->track($this->track_data);
   }
 
   function _after() {
@@ -118,5 +90,6 @@ class OpensTest extends MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
   }
 }
