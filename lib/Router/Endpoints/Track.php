@@ -16,18 +16,20 @@ class Track {
   const ACTION_OPEN = 'open';
 
   static function click($data) {
-    Clicks::track(self::_processTrackData($data));
+    $click_event = new Clicks();
+    return $click_event->track(self::_processTrackData($data));
   }
 
   static function open($data) {
-    Opens::track(self::_processTrackData($data));
+    $open_event = new Opens();
+    return $open_event->track(self::_processTrackData($data));
   }
 
   static function _processTrackData($data) {
     $data = (object)$data;
     if(empty($data->queue_id) ||
-       empty($data->subscriber_id) ||
-       empty($data->subscriber_token)
+      empty($data->subscriber_id) ||
+      empty($data->subscriber_token)
     ) {
       return false;
     }

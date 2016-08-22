@@ -6,8 +6,10 @@ use MailPoet\Models\StatisticsOpens;
 if(!defined('ABSPATH')) exit;
 
 class Opens {
-  static function track($data, $display_image = true) {
-    if(!$data) return self::returnResponse($display_image);
+  function track($data, $display_image = true) {
+    if(!$data) {
+      return $this->returnResponse($display_image);
+    }
     $subscriber = $data->subscriber;
     $queue = $data->queue;
     $newsletter = $data->newsletter;
@@ -21,10 +23,10 @@ class Opens {
         $queue->id
       );
     }
-    return self::returnResponse($display_image);
+    return $this->returnResponse($display_image);
   }
 
-  static function returnResponse($display_image) {
+  function returnResponse($display_image) {
     if(!$display_image) return;
     // return 1x1 pixel transparent gif image
     header('Content-Type: image/gif');

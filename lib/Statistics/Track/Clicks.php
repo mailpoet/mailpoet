@@ -7,8 +7,10 @@ use MailPoet\Newsletter\Shortcodes\Categories\Link;
 if(!defined('ABSPATH')) exit;
 
 class Clicks {
-  static function track($data) {
-    if(!$data || empty($data->link)) self::abort();
+  function track($data) {
+    if(!$data || empty($data->link)) {
+      return $this->abort();
+    }
     $subscriber = $data->subscriber;
     $queue = $data->queue;
     $newsletter = $data->newsletter;
@@ -17,22 +19,23 @@ class Clicks {
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
     if(!$wp_user_preview) {
-      $statistics = StatisticsClicks::createOrUpdateClickCount(
+      StatisticsClicks::createOrUpdateClickCount(
         $link->id,
         $subscriber->id,
         $newsletter->id,
         $queue->id
       );
       // track open event
-      Opens::track($data, $display_image = false);
+      $open_event = new Opens();
+      $open_event->track($data, $display_image = false);
     }
-    $url = self::processUrl($link->url, $newsletter, $subscriber, $queue, $wp_user_preview);
-    self::redirectToUrl($url);
+    $url = $this->processUrl($link->url, $newsletter, $subscriber, $queue, $wp_user_preview);
+    $this->redirectToUrl($url);
   }
 
-  static function processUrl($url, $newsletter, $subscriber, $queue, $wp_user_preview) {
+  function processUrl($url, $newsletter, $subscriber, $queue, $wp_user_preview) {
     if(preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
-      if(!$shortcode['action']) self::abort();
+      if(!$shortcode['action']) $this->abort();
       $url = Link::processShortcodeAction(
         $shortcode['action'],
         $newsletter,
@@ -44,12 +47,12 @@ class Clicks {
     return $url;
   }
 
-  static function abort() {
+  function abort() {
     status_header(404);
     exit;
   }
 
-  static function redirectToUrl($url) {
+  function redirectToUrl($url) {
     header('Location: ' . $url, true, 302);
     exit;
   }
