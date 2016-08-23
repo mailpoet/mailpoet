@@ -30,18 +30,19 @@ class Url {
       $queue = ($queue) ? $queue->asArray() : false;
     }
     $data = array(
-      'newsletter' => (!empty($newsletter['id'])) ?
+      'newsletter_id' => (!empty($newsletter['id'])) ?
         $newsletter['id'] :
         $newsletter,
-      'subscriber' => (!empty($subscriber['id'])) ?
+      'subscriber_id' => (!empty($subscriber['id'])) ?
         $subscriber['id'] :
         $subscriber,
       'subscriber_token' => (!empty($subscriber['id'])) ?
         Subscriber::generateToken($subscriber['email']) :
         false,
-      'queue' => (!empty($queue['id'])) ?
+      'queue_id' => (!empty($queue['id'])) ?
         $queue['id'] :
-        $queue
+        $queue,
+      'preview' => $preview
     );
     return FrontRouter::buildRequest(
       ViewInBrowserEndpoint::ENDPOINT,

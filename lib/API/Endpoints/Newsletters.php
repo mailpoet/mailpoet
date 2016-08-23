@@ -5,6 +5,7 @@ use MailPoet\API\Error as APIError;
 
 use MailPoet\Listing;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\NewsletterSegment;
@@ -252,8 +253,10 @@ class Newsletters extends APIEndpoint {
       $data
     );
     $listing_data = $listing->get();
+    $subscriber = Subscriber::getCurrentWPUser();
 
     foreach($listing_data['items'] as $key => $newsletter) {
+      $queue = false;
 
       if($newsletter->type === Newsletter::TYPE_STANDARD) {
         $newsletter
@@ -277,8 +280,15 @@ class Newsletters extends APIEndpoint {
           ->withStatistics();
       }
 
+      if($newsletter->status === Newsletter::STATUS_SENT ||
+         $newsletter->status === Newsletter::STATUS_SENDING
+      ) {
+        $queue = $newsletter->getQueue();
+      }
+
       // get preview url
-      $newsletter->preview_url = NewsletterUrl::getViewInBrowserUrl($newsletter);
+      $newsletter->preview_url = NewsletterUrl::getViewInBrowserUrl(
+        $newsletter, $subscriber, $queue, $preview = true);
 
       // convert object to array
       $listing_data['items'][$key] = $newsletter->asArray();

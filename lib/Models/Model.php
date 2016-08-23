@@ -5,6 +5,7 @@ if(!defined('ABSPATH')) exit;
 
 class Model extends \Sudzy\ValidModel {
   protected $_errors;
+  protected $_new_record;
 
   function __construct() {
     $this->_errors = array();
@@ -36,6 +37,7 @@ class Model extends \Sudzy\ValidModel {
 
   function save() {
     $this->setTimestamp();
+    $this->_new_record = $this->isNew();
     try {
       parent::save();
     } catch(\Sudzy\ValidationException $e) {
@@ -61,6 +63,12 @@ class Model extends \Sudzy\ValidModel {
       }
     }
     return $this;
+  }
+
+  function isNew() {
+    return (isset($this->_new_record)) ?
+      $this->_new_record :
+      parent::isNew();
   }
 
   function trash() {

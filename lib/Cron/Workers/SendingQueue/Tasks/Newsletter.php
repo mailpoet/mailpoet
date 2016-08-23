@@ -88,7 +88,6 @@ class Newsletter {
     );
     if($this->tracking_enabled) {
       $prepared_newsletter = NewsletterLinks::replaceSubscriberData(
-        $newsletter['id'],
         $subscriber['id'],
         $queue['id'],
         $prepared_newsletter

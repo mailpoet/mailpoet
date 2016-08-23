@@ -1,6 +1,10 @@
 <?php
 namespace MailPoet\Router\Endpoints;
 
+use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterLink;
+use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 
@@ -12,12 +16,46 @@ class Track {
   const ACTION_OPEN = 'open';
 
   static function click($data) {
-    $clicks = new Clicks($data);
-    $clicks->track();
+    $click_event = new Clicks();
+    return $click_event->track(self::_processTrackData($data));
   }
 
   static function open($data) {
-    $opens = new Opens($data);
-    $opens->track();
+    $open_event = new Opens();
+    return $open_event->track(self::_processTrackData($data));
+  }
+
+  static function _processTrackData($data) {
+    $data = (object)$data;
+    if(empty($data->queue_id) ||
+      empty($data->subscriber_id) ||
+      empty($data->subscriber_token)
+    ) {
+      return false;
+    }
+    $data->queue = SendingQueue::findOne($data->queue_id);
+    $data->subscriber = Subscriber::findOne($data->subscriber_id);
+    $data->newsletter = (!empty($data->queue->newsletter_id)) ?
+      Newsletter::findOne($data->queue->newsletter_id) :
+      false;
+    if(!empty($data->link_hash)) {
+      $data->link = NewsletterLink::getByHash($data->link_hash);
+    }
+    return self::_validateTrackData($data);
+  }
+
+  static function _validateTrackData($data) {
+    if(!$data->subscriber || !$data->queue || !$data->newsletter) return false;
+    $subscriber_token_match =
+      Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token);
+    if(!$subscriber_token_match) return false;
+    // return if this is a WP user previewing the newsletter
+    if($data->subscriber->isWPUser() && $data->preview) {
+      return $data;
+    }
+    // check if the newsletter was sent to the subscriber
+    return ($data->queue->isSubscriberProcessed($data->subscriber->id)) ?
+      $data :
+      false;
   }
 }

@@ -24,6 +24,7 @@ class ClicksTest extends MailPoetTest {
     // create queue
     $queue = SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
+    $queue->subscribers = array('processed' => array($subscriber->id));
     $this->queue = $queue->save();
     // create link
     $link = NewsletterLink::create();
@@ -32,174 +33,117 @@ class ClicksTest extends MailPoetTest {
     $link->newsletter_id = $newsletter->id;
     $link->queue_id = $queue->id;
     $this->link = $link->save();
-    // instantiate class
-    $this->clicks = new Clicks(true);
-  }
-
-  function testItCanConstruct() {
-    $clicks = new Clicks('test');
-    expect($clicks->data)->equals('test');
-  }
-
-  function testItCanGetNewsletter() {
-    $newsletter = $this->clicks->getNewsletter($this->newsletter->id);
-    expect(is_array($newsletter))->true();
-    expect($newsletter['id'])->equals($this->newsletter->id);
-  }
-
-  function testItCanGetSubscriber() {
-    $subscriber = $this->clicks->getSubscriber($this->subscriber->id);
-    expect(is_array($subscriber))->true();
-    expect($subscriber['id'])->equals($this->subscriber->id);
-  }
-
-  function testItCanGetQueue() {
-    $queue = $this->clicks->getQueue($this->queue->id);
-    expect(is_array($queue))->true();
-    expect($queue['id'])->equals($this->queue->id);
-  }
-
-  function testItCanGetLink() {
-    $link = $this->clicks->getLink($this->link->hash);
-    expect(is_array($link))->true();
-    expect($link['id'])->equals($this->link->id);
-  }
-
-  function testItTreatsUrlAsUrl() {
-    $link = $this->clicks->processUrl(
-      'http://example.com',
-      (array) $this->newsletter,
-      (array) $this->subscriber,
-      (array) $this->queue
+    // build track data
+    $this->track_data = (object)array(
+      'queue' => $queue,
+      'subscriber' => $subscriber,
+      'newsletter' => $newsletter,
+      'subscriber_token' => Subscriber::generateToken($subscriber->email),
+      'link' => $link,
+      'preview' => false
     );
-    expect($link)->equals('http://example.com');
+    // instantiate class
+    $this->clicks = new Clicks();
   }
 
-  function testItConvertsShortcodeToUrl() {
+  function testItAbortsWhenTrackDataIsEmptyOrMissingLink() {
+    // abort function should be called twice:
+    $clicks = Stub::make($this->clicks, array(
+      'abort' => Stub::exactly(2, function() { })
+    ), $this);
+    $data = $this->track_data;
+    // 1. when tracking data does not exist
+    $clicks->track(false);
+    // 2. when link model object is missing
+    unset($data->link);
+    $clicks->track($data);
+  }
+
+  function testItDoesNotTrackEventsFromWpUserWhenPreviewIsEnabled() {
+    $data = $this->track_data;
+    $data->subscriber->wp_user_id = 99;
+    $data->preview = true;
+    $clicks = Stub::make($this->clicks, array(
+      'redirectToUrl' => function() { }
+    ), $this);
+    $clicks->track($data);
+    expect(StatisticsClicks::findMany())->isEmpty();
+    expect(StatisticsOpens::findMany())->isEmpty();
+  }
+
+  function testItTracksClickAndOpenEvent() {
+    $data = $this->track_data;
+    $clicks = Stub::make($this->clicks, array(
+      'redirectToUrl' => function() { }
+    ), $this);
+    $clicks->track($data);
+    expect(StatisticsClicks::findMany())->notEmpty();
+    expect(StatisticsOpens::findMany())->notEmpty();
+  }
+
+  function testItRedirectsToUrlAfterTracking() {
+    $clicks = Stub::make($this->clicks, array(
+      'redirectToUrl' => Stub::exactly(1, function() { })
+    ), $this);
+    $clicks->track($this->track_data);
+  }
+
+  function testItIncrementsClickEventCount() {
+    $clicks = Stub::make($this->clicks, array(
+      'redirectToUrl' => function() { }
+    ), $this);
+    $clicks->track($this->track_data);
+    expect(StatisticsClicks::findMany()[0]->count)->equals(1);
+    $clicks->track($this->track_data);
+    expect(StatisticsClicks::findMany()[0]->count)->equals(2);
+  }
+
+  function testItConvertsShortcodesToUrl() {
     $link = $this->clicks->processUrl(
       '[link:newsletter_view_in_browser_url]',
-      (array) $this->newsletter,
-      (array) $this->subscriber,
-      (array) $this->queue
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
     );
     expect($link)->contains('&endpoint=view_in_browser');
   }
 
   function testItFailsToConvertsInvalidShortcodeToUrl() {
-    $clicks = Stub::make(new Clicks(true), array(
-      'abort' => Stub::exactly(1, function () { })
+    $clicks = Stub::make($this->clicks, array(
+      'abort' => Stub::exactly(1, function() { })
     ), $this);
     // should call abort() method if shortcode action does not exist
     $link = $clicks->processUrl(
       '[link:]',
-      (array) $this->newsletter,
-      (array) $this->subscriber,
-      (array) $this->queue
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
     );
   }
 
-  function testItFailsToConvertsNonexistentShortcodeToUrl() {
+  function testItDoesNotConvertNonexistentShortcodeToUrl() {
     $link = $this->clicks->processUrl(
       '[link:unknown_shortcode]',
-      (array) $this->newsletter,
-      (array) $this->subscriber,
-      (array) $this->queue
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
     );
     expect($link)->equals('[link:unknown_shortcode]');
   }
 
-  function testItAbortsWhenItCantFindData() {
-    $clicks = Stub::make(new Clicks(true), array(
-      'abort' => Stub::exactly(4, function () { }),
-      'redirectToUrl' => function() { }
-    ), $this);
-    // should call abort() method when newsletter can't be found
-    $data = array(
-      'newsletter' => 999,
-      'subscriber' => $this->subscriber->id,
-      'queue' => $this->queue->id,
-      'hash' => $this->link->hash
-    );
-    $click = $clicks->track($data);
-    // should call abort() method when subscriber can't be found
-    $data = array(
-      'newsletter' => $this->newsletter->id,
-      'subscriber' => 999,
-      'queue' => $this->queue->id,
-      'hash' => $this->link->hash
-    );
-    $click = $clicks->track($data);
-    // should call abort() method when queue can't be found
-    $data = array(
-      'newsletter' => $this->newsletter->id,
-      'subscriber' => $this->subscriber->id,
-      'queue' => 999,
-      'hash' => $this->link->hash
-    );
-    $click = $clicks->track($data);
-    // should call abort() method when link can't be found
-    $data = array(
-      'newsletter' => $this->newsletter->id,
-      'subscriber' => $this->subscriber->id,
-      'queue' =>  $this->queue->id,
-      'hash' => 999
-    );
-    $click = $clicks->track($data);
-  }
 
-  function testItShouldAlwaysTrackOpenEvent() {
-    $data = array(
-      'newsletter' => $this->newsletter->id,
-      'subscriber' => $this->subscriber->id,
-      'queue' => $this->queue->id,
-      'hash' => $this->link->hash
+  function testItDoesNotConvertRegulaUrls() {
+    $link = $this->clicks->processUrl(
+      'http://example.com',
+      $this->newsletter,
+      $this->subscriber,
+      $this->queue,
+      $preview = false
     );
-    $clicks = Stub::make(new Clicks(true), array(
-      'redirectToUrl' => function() { }
-    ), $this);
-    $open_events = StatisticsOpens::findArray();
-    expect(count($open_events))->equals(0);
-    $click = $clicks->track($data);
-    $open_events = StatisticsOpens::findArray();
-    expect(count($open_events))->equals(1);
-  }
-
-  function testItTracksUniqueAndRepeatClickEvent() {
-    $data = array(
-      'newsletter' => $this->newsletter->id,
-      'subscriber' => $this->subscriber->id,
-      'queue' => $this->queue->id,
-      'hash' => $this->link->hash
-    );
-    $clicks = Stub::make(new Clicks(true), array(
-      'redirectToUrl' => function() { }
-    ), $this);
-    $click_events = StatisticsClicks::findArray();
-    expect(count($click_events))->equals(0);
-    // track unique click event
-    $click = $clicks->track($data);
-    $click_events = StatisticsClicks::findArray();
-    expect(count($click_events))->equals(1);
-    expect($click_events[0]['count'])->equals(1);
-    // track repeat click event
-    $click = $clicks->track($data);
-    $click_events = StatisticsClicks::findArray();
-    expect(count($click_events))->equals(1);
-    expect($click_events[0]['count'])->equals(2);
-  }
-
-  function testItRedirectsAfterTracking() {
-    $data = array(
-      'newsletter' => $this->newsletter->id,
-      'subscriber' => $this->subscriber->id,
-      'queue' => $this->queue->id,
-      'hash' => $this->link->hash
-    );
-    $clicks = Stub::make(new Clicks(true), array(
-      'redirectToUrl' => Stub::exactly(1, function() { })
-    ), $this);
-    // should call redirectToUrl() method
-    $click = $clicks->track($data);
+    expect($link)->equals('http://example.com');
   }
 
   function _after() {

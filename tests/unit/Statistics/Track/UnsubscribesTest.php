@@ -1,12 +1,9 @@
 <?php
 
-use Codeception\Util\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\Subscriber;
-use MailPoet\Statistics\Track\Opens;
 use MailPoet\Statistics\Track\Unsubscribes;
 
 class UnsubscribesTest extends MailPoetTest {
@@ -24,27 +21,30 @@ class UnsubscribesTest extends MailPoetTest {
     // create queue
     $queue = SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
+    $queue->subscribers = array('processed' => array($subscriber->id));
     $this->queue = $queue->save();
     // instantiate class
     $this->unsubscribes = new Unsubscribes();
   }
 
-  function testItCanUniqueTrack() {
-    $unsubscribe_events = StatisticsUnsubscribes::findArray();
-    expect(count($unsubscribe_events))->equals(0);
-    // only 1 unique unsubscribe event should be recorded
-    $unsubscribes = $this->unsubscribes->track(
+  function testItTracksUnsubscribeEvent() {
+    $this->unsubscribes->track(
       $this->newsletter->id,
       $this->subscriber->id,
       $this->queue->id
     );
-    $unsubscribes = $this->unsubscribes->track(
-      $this->newsletter->id,
-      $this->subscriber->id,
-      $this->queue->id
-    );
-    $unsubscribe_events = StatisticsUnsubscribes::findArray();
-    expect(count($unsubscribe_events))->equals(1);
+    expect(count(StatisticsUnsubscribes::findMany()))->equals(1);
+  }
+
+  function testItDoesNotTrackRepeatedUnsubscribeEvents() {
+    for($count = 0; $count <= 2; $count++) {
+      $this->unsubscribes->track(
+        $this->newsletter->id,
+        $this->subscriber->id,
+        $this->queue->id
+      );
+    }
+    expect(count(StatisticsUnsubscribes::findMany()))->equals(1);
   }
 
   function _after() {
