@@ -8,6 +8,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
@@ -368,6 +369,7 @@ class Menu {
     $data = array(
       'shortcodes' => ShortcodesHelper::getShortcodes(),
       'settings' => Setting::getAll(),
+      'current_wp_user' => Subscriber::getCurrentWPUser(),
       'sub_menu' => 'mailpoet-newsletters'
     );
     wp_enqueue_media();
