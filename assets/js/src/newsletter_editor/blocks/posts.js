@@ -273,7 +273,7 @@ define([
       return {
         'change .mailpoet_settings_posts_content_type': _.partial(this.changeField, 'contentType'),
         'change .mailpoet_posts_post_status': _.partial(this.changeField, 'postStatus'),
-        'keyup .mailpoet_posts_search_term': _.partial(this.changeField, 'search'),
+        'input .mailpoet_posts_search_term': _.partial(this.changeField, 'search'),
       };
     },
     constructor: function() {
@@ -414,17 +414,17 @@ define([
         "change .mailpoet_posts_title_format": 'changeTitleFormat',
         "change .mailpoet_posts_title_as_links": _.partial(this.changeBoolField, 'titleIsLink'),
         "change .mailpoet_posts_show_divider": _.partial(this.changeBoolField, 'showDivider'),
-        "keyup .mailpoet_posts_show_amount": _.partial(this.changeField, "amount"),
+        "input .mailpoet_posts_show_amount": _.partial(this.changeField, "amount"),
         "change .mailpoet_posts_content_type": _.partial(this.changeField, "contentType"),
         "change .mailpoet_posts_include_or_exclude": _.partial(this.changeField, "inclusionType"),
         "change .mailpoet_posts_title_alignment": _.partial(this.changeField, "titleAlignment"),
         "change .mailpoet_posts_image_full_width": _.partial(this.changeBoolField, "imageFullWidth"),
         "change .mailpoet_posts_featured_image_position": _.partial(this.changeField, "featuredImagePosition"),
         "change .mailpoet_posts_show_author": _.partial(this.changeField, "showAuthor"),
-        "keyup .mailpoet_posts_author_preceded_by": _.partial(this.changeField, "authorPrecededBy"),
+        "input .mailpoet_posts_author_preceded_by": _.partial(this.changeField, "authorPrecededBy"),
         "change .mailpoet_posts_show_categories": _.partial(this.changeField, "showCategories"),
-        "keyup .mailpoet_posts_categories": _.partial(this.changeField, "categoriesPrecededBy"),
-        "keyup .mailpoet_posts_read_more_text": _.partial(this.changeField, "readMoreText"),
+        "input .mailpoet_posts_categories": _.partial(this.changeField, "categoriesPrecededBy"),
+        "input .mailpoet_posts_read_more_text": _.partial(this.changeField, "readMoreText"),
         "change .mailpoet_posts_sort_by": _.partial(this.changeField, "sortBy"),
       };
     },

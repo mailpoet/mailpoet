@@ -44,6 +44,9 @@ define([
     className: "mailpoet_block mailpoet_button_block mailpoet_droppable_block",
     getTemplate: function() { return templates.buttonBlock; },
     onDragSubstituteBy: function() { return Module.ButtonWidgetView; },
+    behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
+      ShowSettingsBehavior: {},
+    }),
     initialize: function() {
       base.BlockView.prototype.initialize.apply(this, arguments);
 
@@ -65,8 +68,8 @@ define([
     getTemplate: function() { return templates.buttonBlockSettings; },
     events: function() {
       return {
-        "keyup .mailpoet_field_button_text": _.partial(this.changeField, "text"),
-        "keyup .mailpoet_field_button_url": _.partial(this.changeField, "url"),
+        "input .mailpoet_field_button_text": _.partial(this.changeField, "text"),
+        "input .mailpoet_field_button_url": _.partial(this.changeField, "url"),
         "change .mailpoet_field_button_alignment": _.partial(this.changeField, "styles.block.textAlign"),
         "change .mailpoet_field_button_font_color": _.partial(this.changeColorField, "styles.block.fontColor"),
         "change .mailpoet_field_button_font_family": _.partial(this.changeField, "styles.block.fontFamily"),
@@ -77,23 +80,19 @@ define([
 
         "input .mailpoet_field_button_border_width": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_width_input', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
         "change .mailpoet_field_button_border_width": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_width_input', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
-        "change .mailpoet_field_button_border_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_width', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
-        "keyup .mailpoet_field_button_border_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_width', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
+        "input .mailpoet_field_button_border_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_width', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
 
         "input .mailpoet_field_button_border_radius": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_radius_input', _.partial(this.changePixelField, "styles.block.borderRadius").bind(this)),
         "change .mailpoet_field_button_border_radius": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_radius_input', _.partial(this.changePixelField, "styles.block.borderRadius").bind(this)),
-        "change .mailpoet_field_button_border_radius_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_radius', _.partial(this.changePixelField, "styles.block.borderRadius").bind(this)),
-        "keyup .mailpoet_field_button_border_radius_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_radius', _.partial(this.changePixelField, "styles.block.borderRadius").bind(this)),
+        "input .mailpoet_field_button_border_radius_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_border_radius', _.partial(this.changePixelField, "styles.block.borderRadius").bind(this)),
 
         "input .mailpoet_field_button_width": _.partial(this.updateValueAndCall, '.mailpoet_field_button_width_input', _.partial(this.changePixelField, "styles.block.width").bind(this)),
         "change .mailpoet_field_button_width": _.partial(this.updateValueAndCall, '.mailpoet_field_button_width_input', _.partial(this.changePixelField, "styles.block.width").bind(this)),
-        "change .mailpoet_field_button_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_width', _.partial(this.changePixelField, "styles.block.width").bind(this)),
-        "keyup .mailpoet_field_button_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_width', _.partial(this.changePixelField, "styles.block.width").bind(this)),
+        "input .mailpoet_field_button_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_width', _.partial(this.changePixelField, "styles.block.width").bind(this)),
 
         "input .mailpoet_field_button_line_height": _.partial(this.updateValueAndCall, '.mailpoet_field_button_line_height_input', _.partial(this.changePixelField, "styles.block.lineHeight").bind(this)),
         "change .mailpoet_field_button_line_height": _.partial(this.updateValueAndCall, '.mailpoet_field_button_line_height_input', _.partial(this.changePixelField, "styles.block.lineHeight").bind(this)),
-        "change .mailpoet_field_button_line_height_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_line_height', _.partial(this.changePixelField, "styles.block.lineHeight").bind(this)),
-        "keyup .mailpoet_field_button_line_height_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_line_height', _.partial(this.changePixelField, "styles.block.lineHeight").bind(this)),
+        "input .mailpoet_field_button_line_height_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_line_height', _.partial(this.changePixelField, "styles.block.lineHeight").bind(this)),
 
         "click .mailpoet_field_button_replace_all_styles": "applyToAll",
         "click .mailpoet_done_editing": "close",

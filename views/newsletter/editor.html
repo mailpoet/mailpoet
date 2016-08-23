@@ -198,6 +198,10 @@
     'newsletter/templates/components/styles.hbs'
   ) %>
   <%= partial(
+    'newsletter_editor_template_newsletter_preview',
+    'newsletter/templates/components/newsletterPreview.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_sidebar',
     'newsletter/templates/components/sidebar/sidebar.hbs'
   ) %>
@@ -329,6 +333,8 @@
     'templateSaveFailed': __('Template has not been saved, please try again'),
     'categoriesAndTags': __('Categories & tags'),
     'noPostsToDisplay': __('There is no content to display'),
+    'previewShouldOpenInNewTab': __('Your preview should open in a new tab. Please ensure your browser is not blocking popups from this page.'),
+    'newsletterPreview': __('Newsletter Preview'),
   }) %>
 <% endblock %>
 
@@ -375,6 +381,9 @@
       ),
       sidebarPreview: Handlebars.compile(
         jQuery('#newsletter_editor_template_sidebar_preview').html()
+      ),
+      newsletterPreview: Handlebars.compile(
+        jQuery('#newsletter_editor_template_newsletter_preview').html()
       ),
 
       genericBlockTools: Handlebars.compile(
@@ -1170,6 +1179,10 @@
       },
       shortcodes: <%= json_encode(shortcodes) %>,
       sidepanelWidth: '331px',
+      newsletterPreview: {
+        width: '1024px',
+        height: '768px'
+      },
       validation: {
         validateUnsubscribeLinkPresent: true, // TODO: Add validation based on whether Mailpoet MTA is used or not
       },

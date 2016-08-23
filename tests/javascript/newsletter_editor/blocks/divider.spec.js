@@ -92,13 +92,13 @@ define([
     });
 
     describe('block view', function () {
-      global.stubChannel(EditorApplication);
-      global.stubConfig(EditorApplication);
-      var model = new (DividerBlock.DividerBlockModel)(),
-        view;
+      var model;
+      var view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
+        global.stubConfig(EditorApplication);
+        model = new (DividerBlock.DividerBlockModel)();
         view = new (DividerBlock.DividerBlockView)({model: model});
       });
 
@@ -113,6 +113,22 @@ define([
         model.set('styles.block.borderStyle', 'inset');
 
         expect(view.$('.mailpoet_divider').css('border-top-style')).to.equal('inset');
+      });
+
+      it('opens settings if clicked', function () {
+        var mock = sinon.mock().once();
+        model.on('startEditing', mock);
+        view.render();
+        view.$('.mailpoet_divider').click();
+        mock.verify();
+      });
+
+      it('does not open settings if clicked on the resize handle', function () {
+        var mock = sinon.mock().never();
+        model.on('startEditing', mock);
+        view.render();
+        view.$('.mailpoet_resize_handle').click();
+        mock.verify();
       });
     });
 
@@ -150,13 +166,13 @@ define([
           expect(model.get('styles.block.borderStyle')).to.equal('inset');
         });
 
-        it('updates the model when divider width changes', function () {
+        it('updates the model when divider width slider changes', function () {
           view.$('.mailpoet_field_divider_border_width').val('17').change();
           expect(model.get('styles.block.borderWidth')).to.equal('17px');
         });
 
         it('updates the range slider when divider width input changes', function () {
-          view.$('.mailpoet_field_divider_border_width_input').val('19').keyup();
+          view.$('.mailpoet_field_divider_border_width_input').val('19').trigger('input');
           expect(view.$('.mailpoet_field_divider_border_width').val()).to.equal('19');
         });
 

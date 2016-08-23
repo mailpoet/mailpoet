@@ -282,7 +282,7 @@ define([
 
         it('changes the model if search term changes', function () {
           var newValue = 'some New search term';
-          view.$('.mailpoet_posts_search_term').val(newValue).keyup();
+          view.$('.mailpoet_posts_search_term').val(newValue).trigger('input');
           expect(model.get('search')).to.equal(newValue);
         });
 
@@ -330,7 +330,7 @@ define([
 
         it('changes the model if author preceded by  changes', function () {
           var newValue = 'New author preceded by test';
-          view.$('.mailpoet_posts_author_preceded_by').val(newValue).keyup();
+          view.$('.mailpoet_posts_author_preceded_by').val(newValue).trigger('input');
           expect(model.get('authorPrecededBy')).to.equal(newValue);
         });
 
@@ -342,7 +342,7 @@ define([
 
         it('changes the model if categories preceded by changes', function () {
           var newValue = 'New categories preceded by test';
-          view.$('.mailpoet_posts_categories').val(newValue).keyup();
+          view.$('.mailpoet_posts_categories').val(newValue).trigger('input');
           expect(model.get('categoriesPrecededBy')).to.equal(newValue);
         });
 
@@ -354,7 +354,7 @@ define([
 
         it('changes the model if read more text changes', function () {
           var newValue = 'New read more text';
-          view.$('.mailpoet_posts_read_more_text').val(newValue).keyup();
+          view.$('.mailpoet_posts_read_more_text').val(newValue).trigger('input');
           expect(model.get('readMoreText')).to.equal(newValue);
         });
 

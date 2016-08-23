@@ -141,6 +141,7 @@ define([
         },
       },
       HighlightEditingBehavior: {},
+      ShowSettingsBehavior: {},
     },
     onDragSubstituteBy: function() { return Module.SocialWidgetView; },
     constructor: function() {
@@ -149,6 +150,7 @@ define([
       Marionette.CompositeView.apply(this, arguments);
     },
     initialize: function() {
+      this.on('showSettings', this.showSettings, this);
       this.on('dom:refresh', this.showBlock, this);
       this._isFirstRender = true;
     },
@@ -175,6 +177,9 @@ define([
     hideTools: function(_event) {
       this.$(this.ui.tools).hide();
       _event.stopPropagation();
+    },
+    showSettings: function(options) {
+      this.toolsView.triggerMethod('showSettings', options);
     },
     getDropFunc: function() {
       return function() {
@@ -275,9 +280,9 @@ define([
       return {
         "click .mailpoet_delete_block": "deleteIcon",
         "change .mailpoet_social_icon_field_type": _.partial(this.changeField, "iconType"),
-        "keyup .mailpoet_social_icon_field_image": _.partial(this.changeField, "image"),
-        "keyup .mailpoet_social_icon_field_link": this.changeLink,
-        "keyup .mailpoet_social_icon_field_text": _.partial(this.changeField, "text"),
+        "input .mailpoet_social_icon_field_image": _.partial(this.changeField, "image"),
+        "input .mailpoet_social_icon_field_link": this.changeLink,
+        "input .mailpoet_social_icon_field_text": _.partial(this.changeField, "text"),
       };
     },
     modelEvents: {

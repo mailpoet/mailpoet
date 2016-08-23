@@ -41,6 +41,9 @@ define([
         imageMissingSrc: App.getConfig().get('urls.imageMissing'),
       }, base.BlockView.prototype.templateHelpers.apply(this));
     },
+    behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
+      ShowSettingsBehavior: {},
+    }),
     onRender: function() {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.toolsRegion.show(this.toolsView);
@@ -61,9 +64,9 @@ define([
     getTemplate: function() { return templates.imageBlockSettings; },
     events: function() {
       return {
-        "keyup .mailpoet_field_image_link": _.partial(this.changeField, "link"),
-        "keyup .mailpoet_field_image_address": _.partial(this.changeField, "src"),
-        "keyup .mailpoet_field_image_alt_text": _.partial(this.changeField, "alt"),
+        "input .mailpoet_field_image_link": _.partial(this.changeField, "link"),
+        "input .mailpoet_field_image_address": _.partial(this.changeField, "src"),
+        "input .mailpoet_field_image_alt_text": _.partial(this.changeField, "alt"),
         "change .mailpoet_field_image_full_width": _.partial(this.changeBoolCheckboxField, "fullWidth"),
         "change .mailpoet_field_image_alignment": _.partial(this.changeField, "styles.block.textAlign"),
         "click .mailpoet_field_image_select_another_image": "showMediaManager",
