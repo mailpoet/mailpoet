@@ -114,15 +114,20 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec($command);
   }
 
-  function testCoverage($file = null) {
+  function testCoverage($opts=['file' => null, 'xml' => false]) {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
-    $this->_exec(join(' ', array(
+    $command = join(' ', array(
       'vendor/bin/codecept run',
-      (($file) ? $file : ''),
+      (($opts['file']) ? $opts['file'] : ''),
       '--coverage',
-      '--coverage-html'
-    )));
+      ($opts['xml']) ? '--coverage-xml' : '--coverage-html'
+    ));
+
+    if($opts['xml']) {
+      $command .= ' --xml';
+    }
+    $this->_exec($command);
   }
 
   function testJavascript($xml_output_file = null) {
