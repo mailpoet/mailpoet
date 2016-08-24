@@ -119,14 +119,23 @@ class RoboFile extends \Robo\Tasks {
     )));
   }
 
-  function testJavascript() {
+  function testJavascript($xml_output_file = null) {
     $this->compileJs();
 
-    $this->_exec(join(' ', array(
+    $command = join(' ', array(
       './node_modules/.bin/mocha',
       '-r tests/javascript/mochaTestHelper.js',
       'tests/javascript/testBundles/**/*.js'
-    )));
+    ));
+
+    if(!empty($xml_output_file)) {
+      $command .= sprintf(
+        ' --reporter xunit --reporter-options output="%s"',
+        $xml_output_file
+      );
+    }
+
+    $this->_exec($command);
   }
 
   function testDebug() {

@@ -1,15 +1,3 @@
-## Customize the test machine
-machine:
-  timezone:
-      America/New_York # Set the timezone
-
-  php:
-    version:
-      5.6.5
-
-  services:
-    - mysql
-
 ## Customize dependencies
 dependencies:
   pre:
@@ -19,4 +7,5 @@ dependencies:
 ## tests override
 test:
   override:
-    - ./do t:j
+    - mkdir $CIRCLE_TEST_REPORTS/mocha
+    - ./do t:j $CIRCLE_TEST_REPORTS/mocha/junit.xml
