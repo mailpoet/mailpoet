@@ -11,6 +11,7 @@ if(!defined('ABSPATH')) exit;
 class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
   const ACTION_VIEW = 'view';
+  public $allowed_actions = array(self::ACTION_VIEW);
 
   function view($data) {
     $data = $this->_processBrowserPreviewData($data);

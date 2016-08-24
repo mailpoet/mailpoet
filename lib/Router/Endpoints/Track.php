@@ -14,6 +14,10 @@ class Track {
   const ENDPOINT = 'track';
   const ACTION_CLICK = 'click';
   const ACTION_OPEN = 'open';
+  public $allowed_actions = array(
+    self::ACTION_CLICK,
+    self::ACTION_OPEN
+  );
 
   function click($data) {
     $click_event = new Clicks();
