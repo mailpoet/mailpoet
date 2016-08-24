@@ -35,7 +35,12 @@ define([
 
   Module.ALCSupervisor = SuperModel.extend({
     initialize: function() {
-      this.listenTo(App.getChannel(), 'automatedLatestContentRefresh', this.refresh);
+      var DELAY_REFRESH_FOR_MS = 500;
+      this.listenTo(
+        App.getChannel(),
+        'automatedLatestContentRefresh',
+        _.debounce(this.refresh, DELAY_REFRESH_FOR_MS)
+      );
     },
     refresh: function() {
       var models = App.findModels(function(model) {
@@ -107,9 +112,7 @@ define([
       this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
       this.listenTo(this.get('readMoreButton'), 'change', this._scheduleFetchPosts);
       this.listenTo(this.get('divider'), 'change', this._scheduleFetchPosts);
-      this.on('add remove update reset', function(model, collection, options) {
-        App.getChannel().trigger('automatedLatestContentRefresh');
-      });
+      this.on('add remove update reset', this._scheduleFetchPosts);
       this.on('refreshPosts', this.updatePosts, this);
     },
     updatePosts: function(posts) {
@@ -120,16 +123,7 @@ define([
      * ALC posts on each model change
      */
     _scheduleFetchPosts: function() {
-      var TIMEOUT = 500,
-        that = this;
-      if (this._fetchPostsTimer !== undefined) {
-        clearTimeout(this._fetchPostsTimer);
-      }
-      this._fetchPostsTimer = setTimeout(function() {
-        //that.fetchPosts();
-        App.getChannel().trigger('automatedLatestContentRefresh');
-        that._fetchPostsTimer = undefined;
-      }, TIMEOUT);
+      App.getChannel().trigger('automatedLatestContentRefresh');
     },
   });
 
