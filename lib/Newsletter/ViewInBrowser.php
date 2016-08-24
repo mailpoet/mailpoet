@@ -8,18 +8,13 @@ use MailPoet\Newsletter\Shortcodes\Shortcodes;
 
 class ViewInBrowser {
   function view($data) {
-    if(!$data) {
-      return $this->abort();
-    }
     $wp_user_preview = ($data->preview && $data->subscriber->isWPUser());
-    $rendered_newsletter =
-      $this->renderNewsletter(
-        $data->newsletter,
-        $data->subscriber,
-        $data->queue,
-        $wp_user_preview
-      );
-    return $this->displayNewsletter($rendered_newsletter);
+    return $this->renderNewsletter(
+      $data->newsletter,
+      $data->subscriber,
+      $data->queue,
+      $wp_user_preview
+    );
   }
 
   function renderNewsletter($newsletter, $subscriber, $queue, $wp_user_preview) {
@@ -33,6 +28,7 @@ class ViewInBrowser {
       $newsletter,
       $subscriber,
       $queue
+
     );
     $rendered_newsletter = $shortcodes->replace($newsletter_body['html']);
     if($queue && (boolean)Setting::getValue('tracking.enabled')) {
@@ -44,16 +40,5 @@ class ViewInBrowser {
       );
     }
     return $rendered_newsletter;
-  }
-
-  function displayNewsletter($rendered_newsletter) {
-    header('Content-Type: text/html; charset=utf-8');
-    echo $rendered_newsletter;
-    exit;
-  }
-
-  function abort() {
-    status_header(404);
-    exit;
   }
 }

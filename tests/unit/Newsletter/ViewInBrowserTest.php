@@ -98,13 +98,6 @@ class ViewInBrowserTest extends MailPoetTest {
     );
   }
 
-  function testItAbortsWhenBrowserPreviewDataIsEmpty() {
-    $view_in_browser = Stub::make($this->view_in_browser, array(
-      'abort' => Stub::exactly(1, function() { })
-    ), $this);
-    $view_in_browser->view(false);
-  }
-
   function testItRendersNewsletter() {
     $rendered_body = ViewInBrowser::renderNewsletter(
       $this->newsletter,
@@ -148,13 +141,6 @@ class ViewInBrowserTest extends MailPoetTest {
       $preview = true
     );
     expect($rendered_body)->regExp('/mailpoet_api&endpoint=track/');
-  }
-
-  function testItReturnsNewsletterPreview() {
-    $view_in_browser = Stub::make($this->view_in_browser, array(
-      'displayNewsletter' => Stub::exactly(1, function() { })
-    ), $this);
-    $view_in_browser->view($this->browser_preview_data);
   }
 
   function _after() {

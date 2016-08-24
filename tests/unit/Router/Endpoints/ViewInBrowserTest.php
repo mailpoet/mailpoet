@@ -1,5 +1,6 @@
 <?php
 
+use Codeception\Util\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
@@ -30,24 +31,47 @@ class ViewInBrowserRouterTest extends MailPoetTest {
       'subscriber_token' => Subscriber::generateToken($subscriber->email),
       'preview' => false
     );
+    // instantiate class
+    $this->view_in_browser = new ViewInBrowser();
   }
 
-  function testItReturnsFalseWhenTrackDataIsMissing() {
-    // queue ID is required
+  function testItAbortsWhenTrackDataIsMissing() {
+    $view_in_browser = Stub::make($this->view_in_browser, array(
+      '_abort' => Stub::exactly(3, function() { })
+    ), $this);
+    // newsletter ID is required
     $data = $this->browser_preview_data;
     unset($data['newsletter_id']);
-    expect(ViewInBrowser::_processBrowserPreviewData($data))->false();
+    $view_in_browser->_processBrowserPreviewData($data);
     // subscriber ID is required
     $data = $this->browser_preview_data;
     unset($data['subscriber_id']);
-    expect(ViewInBrowser::_processBrowserPreviewData($data))->false();
+    $view_in_browser->_processBrowserPreviewData($data);
     // subscriber token is required
     $data = $this->browser_preview_data;
     unset($data['subscriber_token']);
-    expect(ViewInBrowser::_processBrowserPreviewData($data))->false();
+    $view_in_browser->_processBrowserPreviewData($data);
   }
 
-  function testItFailsWhenSubscriberTokenDoesNotMatch() {
+  function testItAbortsWhenTrackDataIsInvalid() {
+    $view_in_browser = Stub::make($this->view_in_browser, array(
+      '_abort' => Stub::exactly(3, function() { })
+    ), $this);
+    // newsletter ID is invalid
+    $data = $this->browser_preview_data;
+    $data['newsletter_id'] = 99;
+    $view_in_browser->_processBrowserPreviewData($data);
+    // subscriber ID is invalid
+    $data = $this->browser_preview_data;
+    $data['subscriber_id'] = 99;
+    $view_in_browser->_processBrowserPreviewData($data);
+    // subscriber token is invalid
+    $data = $this->browser_preview_data;
+    $data['subscriber_token'] = 'invalid';
+    $view_in_browser->_processBrowserPreviewData($data);
+  }
+
+  function testItFailsValidationWhenSubscriberTokenDoesNotMatch() {
     $data = (object)array_merge(
       $this->browser_preview_data,
       array(
@@ -57,10 +81,10 @@ class ViewInBrowserRouterTest extends MailPoetTest {
       )
     );
     $data->subscriber->email = 'random@email.com';
-    expect(ViewInBrowser::_validateBrowserPreviewData($data))->false();
+    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
 
-  function testItFailsWhenSubscriberIsNotOnProcessedList() {
+  function testItFailsValidationWhenSubscriberIsNotOnProcessedList() {
     $data = (object)array_merge(
       $this->browser_preview_data,
       array(
@@ -70,7 +94,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
       )
     );
     $data->subscriber->id = 99;
-    expect(ViewInBrowser::_validateBrowserPreviewData($data))->false();
+    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
 
   function testItDoesNotRequireWpUsersToBeOnProcessedListWhenPreviewIsEnabled() {
@@ -84,14 +108,21 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     );
     $data->subscriber->wp_user_id = 99;
     $data->preview = true;
-    expect(ViewInBrowser::_validateBrowserPreviewData($data))->equals($data);
+    expect($this->view_in_browser->_validateBrowserPreviewData($data))->equals($data);
   }
 
   function testItCanProcessBrowserPreviewData() {
-    $processed_data = ViewInBrowser::_processBrowserPreviewData($this->browser_preview_data);
+    $processed_data = $this->view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
     expect($processed_data->queue->id)->equals($this->queue->id);
     expect($processed_data->subscriber->id)->equals($this->subscriber->id);
     expect($processed_data->newsletter->id)->equals($this->newsletter->id);
+  }
+
+  function testItCanViewNewsletter() {
+    $view_in_browser = Stub::make($this->view_in_browser, array(
+      '_displayNewsletter' => Stub::exactly(1, function() { })
+    ), $this);
+    $view_in_browser->view($this->browser_preview_data);
   }
 
   function _after() {
