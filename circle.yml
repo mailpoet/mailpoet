@@ -11,6 +11,7 @@ dependencies:
     - composer install
     - ./do install
 
+      # Set up Wordpress
       # No password is required for the MySQL user `ubuntu`
     - mysql -u ubuntu -e "create database wordpress"
       # Use cURL to fetch WP-CLI
@@ -33,9 +34,9 @@ dependencies:
 ## tests override
 test:
   override:
-    # TODO: Uncomment JS tests
-    #- mkdir $CIRCLE_TEST_REPORTS/mocha
-    #- ./do t:j $CIRCLE_TEST_REPORTS/mocha/junit.xml
+    # Run JS tests
+    - mkdir $CIRCLE_TEST_REPORTS/mocha
+    - ./do t:j $CIRCLE_TEST_REPORTS/mocha/junit.xml
 
     # Run PHP tests
     - ./do t:u --xml
