@@ -1,0 +1,22 @@
+## Customize the test machine
+machine:
+  timezone:
+      America/New_York # Set the timezone
+
+  php:
+    version:
+      5.6.5
+
+  services:
+    - mysql
+
+## Customize dependencies
+dependencies:
+  pre:
+    - composer install
+    - ./do install
+
+## tests override
+test:
+  override:
+    - ./do t:j
