@@ -17,7 +17,7 @@ dependencies:
       # Download WordPress into `wordpress` directory
     - ./wp-cli.phar core download --allow-root --path=wordpress
       # Generate `wp-config.php` file
-    - ./wp-cli.phar core config --allow-root --dbname=wordpress --dbuser=ubuntu --dbhost=localhost --path=wordpress
+    - ./wp-cli.phar core config --allow-root --dbname=wordpress --dbuser=ubuntu --dbhost=127.0.0.1:3306 --path=wordpress
       # Install WordPress
     - ./wp-cli.phar core install --allow-root --admin_name=admin --admin_password=admin --admin_email=admin@mailpoet.loc --url=http://mailpoet.loc:8080 --title=WordPress --path=wordpress
       # Softlink MailPoet to plugin path
@@ -25,7 +25,7 @@ dependencies:
       # Activate MailPoet
     - ./wp-cli.phar plugin activate mailpoet --path=wordpress
       # Create .env file with correct path to WP installation
-    - echo "WP_TEST_PATH=\"/home/ubuntu/wordpress\"" > .env
+    - echo "WP_TEST_PATH=\"/home/ubuntu/mailpoet/wordpress\"" > .env
 
 ## tests override
 test:
