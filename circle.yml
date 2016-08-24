@@ -36,5 +36,9 @@ test:
     # TODO: Uncomment JS tests
     #- mkdir $CIRCLE_TEST_REPORTS/mocha
     #- ./do t:j $CIRCLE_TEST_REPORTS/mocha/junit.xml
+
     # Run PHP tests
-    - ./do t:u
+    - ./do t:u --xml
+    # Copy the report
+    - mkdir $CIRCLE_TEST_REPORTS/codeception
+    - cp tests/_output/report.xml $CIRCLE_TEST_REPORTS/codeception/report.xml
