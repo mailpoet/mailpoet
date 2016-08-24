@@ -35,12 +35,14 @@ class Links {
     // extract shortcodes with [link:*] format
     $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract($content, $categories = array('link'));
-    $extracted_links = array_map(function ($shortcode) {
-      return array(
-        'html' => $shortcode,
-        'link' => $shortcode
-      );
-    }, $shortcodes);
+    if($shortcodes) {
+      $extracted_links = array_map(function($shortcode) {
+        return array(
+          'html' => $shortcode,
+          'link' => $shortcode
+        );
+      }, $shortcodes);
+    }
     // extract urls with href="url" format
     preg_match_all($regex, $content, $matched_urls);
     $matched_urls_count = count($matched_urls[0]);

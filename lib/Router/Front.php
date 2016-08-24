@@ -31,7 +31,7 @@ class Front {
 
     if(!$this->api_request) return;
     if(!$this->endpoint || !class_exists($class)) {
-      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid Router endpoint.'));
+      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint.'));
     }
     $this->callEndpoint(
       $class,
@@ -41,8 +41,9 @@ class Front {
   }
 
   function callEndpoint($endpoint, $action, $data) {
-    if(!method_exists($endpoint, $action)) {
-      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid Router action.'));
+    $endpoint = new $endpoint();
+    if(!method_exists($endpoint, $action) || !in_array($action, $endpoint->allowed_actions)) {
+      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid router action.'));
     }
     call_user_func(
       array(
