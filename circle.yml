@@ -33,7 +33,7 @@ dependencies:
 
       # Enable XDebug for coverage reports.
       # Comment out if not running PHP coverage reports, for performance
-    - sed -i 's/^;//' /opt/circleci/php/$(phpenv global)/etc/conf.d/xdebug.ini
+    #- sed -i 's/^;//' /opt/circleci/php/$(phpenv global)/etc/conf.d/xdebug.ini
 
 ## tests override
 test:
@@ -42,12 +42,12 @@ test:
     - mkdir $CIRCLE_TEST_REPORTS/mocha
     - ./do t:j $CIRCLE_TEST_REPORTS/mocha/junit.xml
 
-    # Run PHP tests
-    #- ./do t:u --xml
-    # Uncomment to run coverage tests instead
-    - ./do t:c --xml
-    # Copy the report
+      # Run PHP tests
+    - ./do t:u --xml
+      # Uncomment to run coverage tests instead
+    #- ./do t:c --xml
+      # Copy the report
     - mkdir $CIRCLE_TEST_REPORTS/codeception
     - cp tests/_output/report.xml $CIRCLE_TEST_REPORTS/codeception/report.xml
-    # Uncomment to copy PHP coverage report
-    - cp tests/_output/coverage.xml $CIRCLE_TEST_REPORTS/codeception/coverage.xml
+      # Uncomment to copy PHP coverage report
+    #- cp tests/_output/coverage.xml $CIRCLE_TEST_REPORTS/codeception/coverage.xml
