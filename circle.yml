@@ -1,11 +1,37 @@
+machine:
+  hosts:
+    mailpoet.loc: 127.0.0.1
+
 ## Customize dependencies
 dependencies:
   pre:
     - composer install
     - ./do install
 
+      # No password is required for the MySQL user `ubuntu`
+    - mysql -u ubuntu -e "create database wordpress"
+      # Use cURL to fetch WP-CLI
+    - curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+      # Make sure WP-CLI is executable
+    - chmod +x wp-cli.phar
+      # Download WordPress into `wordpress` directory
+    - ./wp-cli.phar core download --allow-root --path=wordpress
+      # Generate `wp-config.php` file
+    - ./wp-cli.phar core config --allow-root --dbname=wordpress --dbuser=ubuntu --dbhost=localhost --path=wordpress
+      # Install WordPress
+    - ./wp-cli.phar core install --allow-root --admin_name=admin --admin_password=admin --admin_email=admin@mailpoet.loc --url=http://mailpoet.loc:8080 --title=WordPress --path=wordpress
+      # Softlink MailPoet to plugin path
+    - ln -s ../../.. wordpress/wp-content/plugins/mailpoet
+      # Activate MailPoet
+    - ./wp-cli.phar plugin activate mailpoet --path=wordpress
+      # Create .env file with correct path to WP installation
+    - echo "WP_TEST_PATH=\"/home/ubuntu/wordpress\"" > .env
+
 ## tests override
 test:
   override:
-    - mkdir $CIRCLE_TEST_REPORTS/mocha
-    - ./do t:j $CIRCLE_TEST_REPORTS/mocha/junit.xml
+    # TODO: Uncomment JS tests
+    #- mkdir $CIRCLE_TEST_REPORTS/mocha
+    #- ./do t:j $CIRCLE_TEST_REPORTS/mocha/junit.xml
+    # Run PHP tests
+    - ./do t:u
