@@ -12,28 +12,33 @@ class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
   const ACTION_VIEW = 'view';
 
-  static function view($data) {
+  function view($data) {
+    $data = $this->_processBrowserPreviewData($data);
     $view_in_browser = new NewsletterViewInBrowser();
-    $view_in_browser->view(self::_processBrowserPreviewData($data));
+    return $this->_displayNewsletter($view_in_browser->view($data));
   }
 
-  static function _processBrowserPreviewData($data) {
+  function _processBrowserPreviewData($data) {
     $data = (object)$data;
     if(empty($data->subscriber_id) ||
       empty($data->subscriber_token) ||
       empty($data->newsletter_id)
     ) {
-      return false;
+      $this->_abort();
     }
-    $data->newsletter = Newsletter::findOne($data->newsletter_id);
-    $data->subscriber = Subscriber::findOne($data->subscriber_id);
-    $data->queue = ($data->queue_id) ?
-      SendingQueue::findOne($data->queue_id) :
-      false;
-    return self::_validateBrowserPreviewData($data);
+    else {
+      $data->newsletter = Newsletter::findOne($data->newsletter_id);
+      $data->subscriber = Subscriber::findOne($data->subscriber_id);
+      $data->queue = ($data->queue_id) ?
+        SendingQueue::findOne($data->queue_id) :
+        false;
+      return ($this->_validateBrowserPreviewData($data)) ?
+        $data :
+        $this->_abort();
+    }
   }
 
-  static function _validateBrowserPreviewData($data) {
+  function _validateBrowserPreviewData($data) {
     if(!$data || !$data->subscriber || !$data->newsletter) return false;
     $subscriber_token_match =
       Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token);
@@ -47,5 +52,16 @@ class ViewInBrowser {
       $data = false;
     }
     return $data;
+  }
+
+  function _displayNewsletter($rendered_newsletter) {
+    header('Content-Type: text/html; charset=utf-8');
+    echo $rendered_newsletter;
+    exit;
+  }
+
+  function _abort() {
+    status_header(404);
+    exit;
   }
 }

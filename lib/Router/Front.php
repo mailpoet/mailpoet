@@ -44,6 +44,7 @@ class Front {
     if(!method_exists($endpoint, $action)) {
       self::terminateRequest(self::RESPONSE_ERROR, __('Invalid Router action.'));
     }
+    $endpoint = new $endpoint();
     call_user_func(
       array(
         $endpoint,

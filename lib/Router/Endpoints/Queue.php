@@ -9,7 +9,7 @@ class Queue {
   const ENDPOINT = 'queue';
   const ACTION_RUN = 'run';
 
-  static function run($data) {
+  function run($data) {
     $queue = new Daemon($data);
     $queue->run();
   }
