@@ -25,8 +25,7 @@ class ViewInBrowser {
       empty($data->newsletter_id)
     ) {
       $this->_abort();
-    }
-    else {
+    } else {
       $data->newsletter = Newsletter::findOne($data->newsletter_id);
       $data->subscriber = Subscriber::findOne($data->subscriber_id);
       $data->queue = ($data->queue_id) ?
