@@ -1,133 +1,130 @@
 <?php
 
 use Codeception\Util\Stub;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
-use MailPoet\Router\Endpoints\ViewInBrowser;
+use MailPoet\Router\Front;
 
-class ViewInBrowserRouterTest extends MailPoetTest {
-  function _before() {
-    // create newsletter
-    $newsletter = Newsletter::create();
-    $newsletter->type = 'type';
-    $this->newsletter = $newsletter->save();
-    // create subscriber
-    $subscriber = Subscriber::create();
-    $subscriber->email = 'test@example.com';
-    $subscriber->first_name = 'First';
-    $subscriber->last_name = 'Last';
-    $this->subscriber = $subscriber->save();
-    // create queue
-    $queue = SendingQueue::create();
-    $queue->newsletter_id = $newsletter->id;
-    $queue->subscribers = array('processed' => array($subscriber->id));
-    $this->queue = $queue->save();
-    // build browser preview data
-    $this->browser_preview_data = array(
-      'queue_id' => $queue->id,
-      'subscriber_id' => $subscriber->id,
-      'newsletter_id' => $newsletter->id,
-      'subscriber_token' => Subscriber::generateToken($subscriber->email),
-      'preview' => false
+require_once('FrontTestMockEndpoint.php');
+
+class FrontTest extends MailPoetTest {
+  public $router_data;
+  public $router;
+
+  function __construct() {
+    $this->router_data = array(
+      'mailpoet_api' => '',
+      'endpoint' => 'mock_endpoint',
+      'action' => 'test',
+      'data' => base64_encode(serialize(array('data' => 'dummy data')))
     );
-    // instantiate class
-    $this->view_in_browser = new ViewInBrowser();
+    $this->router = new Front($this->router_data);
   }
 
-  function testItAbortsWhenTrackDataIsMissing() {
-    $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Stub::exactly(3, function() { })
-    ), $this);
-    // newsletter ID is required
-    $data = $this->browser_preview_data;
-    unset($data['newsletter_id']);
-    $view_in_browser->_processBrowserPreviewData($data);
-    // subscriber ID is required
-    $data = $this->browser_preview_data;
-    unset($data['subscriber_id']);
-    $view_in_browser->_processBrowserPreviewData($data);
-    // subscriber token is required
-    $data = $this->browser_preview_data;
-    unset($data['subscriber_token']);
-    $view_in_browser->_processBrowserPreviewData($data);
+  function testItCanGetAPIDataFromGetRequest() {
+    $data = array('data' => 'dummy data');
+    $url = 'http://example.com/?mailpoet_api&endpoint=view_in_browser&action=view&data='
+      . base64_encode(serialize($data));
+    parse_str(parse_url($url, PHP_URL_QUERY), $_GET);
+    $router = new Front();
+    expect($router->api_request)->equals(true);
+    expect($router->endpoint)->equals('viewInBrowser');
+    expect($router->action)->equals('view');
+    expect($router->data)->equals($data);
   }
 
-  function testItAbortsWhenTrackDataIsInvalid() {
-    $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Stub::exactly(3, function() { })
-    ), $this);
-    // newsletter ID is invalid
-    $data = $this->browser_preview_data;
-    $data['newsletter_id'] = 99;
-    $view_in_browser->_processBrowserPreviewData($data);
-    // subscriber ID is invalid
-    $data = $this->browser_preview_data;
-    $data['subscriber_id'] = 99;
-    $view_in_browser->_processBrowserPreviewData($data);
-    // subscriber token is invalid
-    $data = $this->browser_preview_data;
-    $data['subscriber_token'] = 'invalid';
-    $view_in_browser->_processBrowserPreviewData($data);
+  function testItContinuesExecutionWhenAPIRequestNotDetected() {
+    $router_data = $this->router_data;
+    unset($router_data['mailpoet_api']);
+    $router = Stub::construct(
+      new Front(),
+      array($router_data)
+    );
+    $result = $router->init();
+    expect($result)->null();
   }
 
-  function testItFailsValidationWhenSubscriberTokenDoesNotMatch() {
-    $data = (object)array_merge(
-      $this->browser_preview_data,
+  function testItTerminatesRequestWhenEndpointNotFound() {
+    $router_data = $this->router_data;
+    $router_data['endpoint'] = 'invalid_endpoint';
+    $router = Stub::construct(
+      new Front(),
+      array($router_data),
       array(
-        'queue' => $this->queue,
-        'subscriber' => $this->subscriber,
-        'newsletter' => $this->newsletter
+        'terminateRequest' => function($code, $error) {
+          return array(
+            $code,
+            $error
+          );
+        }
       )
     );
-    $data->subscriber->email = 'random@email.com';
-    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
-  }
-
-  function testItFailsValidationWhenSubscriberIsNotOnProcessedList() {
-    $data = (object)array_merge(
-      $this->browser_preview_data,
+    $result = $router->init();
+    expect($result)->equals(
       array(
-        'queue' => $this->queue,
-        'subscriber' => $this->subscriber,
-        'newsletter' => $this->newsletter
+        404,
+        'Invalid router endpoint.'
       )
     );
-    $data->subscriber->id = 99;
-    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
 
-  function testItDoesNotRequireWpUsersToBeOnProcessedListWhenPreviewIsEnabled() {
-    $data = (object)array_merge(
-      $this->browser_preview_data,
+  function testItTerminatesRequestWhenEndpointActionNotFound() {
+    $router_data = $this->router_data;
+    $router_data['action'] = 'invalid_action';
+    $router = Stub::construct(
+      new Front(),
+      array($router_data),
       array(
-        'queue' => $this->queue,
-        'subscriber' => $this->subscriber,
-        'newsletter' => $this->newsletter
+        'terminateRequest' => function($code, $error) {
+          return array(
+            $code,
+            $error
+          );
+        }
       )
     );
-    $data->subscriber->wp_user_id = 99;
-    $data->preview = true;
-    expect($this->view_in_browser->_validateBrowserPreviewData($data))->equals($data);
+    $result = $router->init();
+    expect($result)->equals(
+      array(
+        404,
+        'Invalid router action.'
+      )
+    );
   }
 
-  function testItCanProcessBrowserPreviewData() {
-    $processed_data = $this->view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
-    expect($processed_data->queue->id)->equals($this->queue->id);
-    expect($processed_data->subscriber->id)->equals($this->subscriber->id);
-    expect($processed_data->newsletter->id)->equals($this->newsletter->id);
+  function testItCallsEndpointAction() {
+    $data = array('data' => 'dummy data');
+    $result = $this->router->init();
+    expect($result)->equals($data);
   }
 
-  function testItCanViewNewsletter() {
-    $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_displayNewsletter' => Stub::exactly(1, function() { })
-    ), $this);
-    $view_in_browser->view($this->browser_preview_data);
+  function testItCanEncodeRequestData() {
+    $data = array('data' => 'dummy data');
+    $result = Front::encodeRequestData($data);
+    expect($result)->equals(
+      rtrim(base64_encode(serialize($data)), '=')
+    );
   }
 
-  function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+  function testItReturnsEmptyArrayWhenRequestDataIsAString() {
+    $encoded_data = 'test';
+    $result = Front::decodeRequestData($encoded_data);
+    expect($result)->equals(array());
+  }
+
+  function testItCanDecodeRequestData() {
+    $data = array('data' => 'dummy data');
+    $encoded_data = rtrim(base64_encode(serialize($data)), '=');
+    $result = Front::decodeRequestData($encoded_data);
+    expect($result)->equals($data);
+  }
+
+  function testItCanBuildRequest() {
+    $data = array('data' => 'dummy data');
+    $encoded_data = rtrim(base64_encode(serialize($data)), '=');
+    $result = Front::buildRequest(
+      'mock_endpoint',
+      'test',
+      $data
+    );
+    expect($result)->contains('?mailpoet_api&endpoint=mock_endpoint&action=test&data=' . $encoded_data);
   }
 }
