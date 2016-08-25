@@ -1,30 +1,30 @@
 <?php
 
 use Codeception\Util\Stub;
-use MailPoet\Router\Front;
+use MailPoet\Router\Router;
 
-require_once('FrontTestMockEndpoint.php');
+require_once('RouterTestMockEndpoint.php');
 
-class FrontTest extends MailPoetTest {
+class FrontRouterTest extends MailPoetTest {
   public $router_data;
   public $router;
 
   function __construct() {
     $this->router_data = array(
-      'mailpoet_api' => '',
+      Router::NAME => '',
       'endpoint' => 'mock_endpoint',
       'action' => 'test',
       'data' => base64_encode(serialize(array('data' => 'dummy data')))
     );
-    $this->router = new Front($this->router_data);
+    $this->router = new Router($this->router_data);
   }
 
   function testItCanGetAPIDataFromGetRequest() {
     $data = array('data' => 'dummy data');
-    $url = 'http://example.com/?mailpoet_api&endpoint=view_in_browser&action=view&data='
+    $url = 'http://example.com/?' . Router::NAME . '&endpoint=view_in_browser&action=view&data='
       . base64_encode(serialize($data));
     parse_str(parse_url($url, PHP_URL_QUERY), $_GET);
-    $router = new Front();
+    $router = new Router();
     expect($router->api_request)->equals(true);
     expect($router->endpoint)->equals('viewInBrowser');
     expect($router->action)->equals('view');
@@ -33,9 +33,9 @@ class FrontTest extends MailPoetTest {
 
   function testItContinuesExecutionWhenAPIRequestNotDetected() {
     $router_data = $this->router_data;
-    unset($router_data['mailpoet_api']);
+    unset($router_data[Router::NAME]);
     $router = Stub::construct(
-      new Front(),
+      new Router(),
       array($router_data)
     );
     $result = $router->init();
@@ -46,7 +46,7 @@ class FrontTest extends MailPoetTest {
     $router_data = $this->router_data;
     $router_data['endpoint'] = 'invalid_endpoint';
     $router = Stub::construct(
-      new Front(),
+      new Router(),
       array($router_data),
       array(
         'terminateRequest' => function($code, $error) {
@@ -70,7 +70,7 @@ class FrontTest extends MailPoetTest {
     $router_data = $this->router_data;
     $router_data['action'] = 'invalid_action';
     $router = Stub::construct(
-      new Front(),
+      new Router(),
       array($router_data),
       array(
         'terminateRequest' => function($code, $error) {
@@ -85,7 +85,7 @@ class FrontTest extends MailPoetTest {
     expect($result)->equals(
       array(
         404,
-        'Invalid router action.'
+        'Invalid router endpoint action.'
       )
     );
   }
@@ -98,7 +98,7 @@ class FrontTest extends MailPoetTest {
 
   function testItCanEncodeRequestData() {
     $data = array('data' => 'dummy data');
-    $result = Front::encodeRequestData($data);
+    $result = Router::encodeRequestData($data);
     expect($result)->equals(
       rtrim(base64_encode(serialize($data)), '=')
     );
@@ -106,25 +106,25 @@ class FrontTest extends MailPoetTest {
 
   function testItReturnsEmptyArrayWhenRequestDataIsAString() {
     $encoded_data = 'test';
-    $result = Front::decodeRequestData($encoded_data);
+    $result = Router::decodeRequestData($encoded_data);
     expect($result)->equals(array());
   }
 
   function testItCanDecodeRequestData() {
     $data = array('data' => 'dummy data');
     $encoded_data = rtrim(base64_encode(serialize($data)), '=');
-    $result = Front::decodeRequestData($encoded_data);
+    $result = Router::decodeRequestData($encoded_data);
     expect($result)->equals($data);
   }
 
   function testItCanBuildRequest() {
     $data = array('data' => 'dummy data');
     $encoded_data = rtrim(base64_encode(serialize($data)), '=');
-    $result = Front::buildRequest(
+    $result = Router::buildRequest(
       'mock_endpoint',
       'test',
       $data
     );
-    expect($result)->contains('?mailpoet_api&endpoint=mock_endpoint&action=test&data=' . $encoded_data);
+    expect($result)->contains(Router::NAME . '&endpoint=mock_endpoint&action=test&data=' . $encoded_data);
   }
 }

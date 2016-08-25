@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Subscription;
 
-use MailPoet\Router\Front as FrontRouter;
+use MailPoet\Router\Router;
 use MailPoet\Router\Endpoints\Subscription as SubscriptionEndpoint;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
@@ -45,10 +45,10 @@ class Url {
     }
 
     $params = array(
-      FrontRouter::NAME,
+      Router::NAME,
       'endpoint='.SubscriptionEndpoint::ENDPOINT,
       'action='.$action,
-      'data='.FrontRouter::encodeRequestData($data)
+      'data='.Router::encodeRequestData($data)
     );
 
     // add parameters

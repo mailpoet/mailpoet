@@ -1,9 +1,8 @@
 <?php
 namespace MailPoet\Newsletter;
 
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Router\Front as FrontRouter;
+use MailPoet\Router\Router;
 use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
 use MailPoet\Models\Subscriber;
 
@@ -44,7 +43,7 @@ class Url {
         $queue,
       'preview' => $preview
     );
-    return FrontRouter::buildRequest(
+    return Router::buildRequest(
       ViewInBrowserEndpoint::ENDPOINT,
       ViewInBrowserEndpoint::ACTION_VIEW,
       $data

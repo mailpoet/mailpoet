@@ -5,12 +5,12 @@ use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
-class Front {
+class Router {
   public $api_request;
   public $endpoint;
   public $action;
   public $data;
-  const NAME = 'mailpoet_api';
+  const NAME = 'mailpoet_router';
   const RESPONSE_ERROR = 404;
 
   function __construct($api_data = false) {
@@ -35,7 +35,7 @@ class Front {
     }
     $endpoint = new $endpoint_class($this->data);
     if(!method_exists($endpoint, $this->action) || !in_array($this->action, $endpoint->allowed_actions)) {
-      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router action.'));
+      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action.'));
     }
     return call_user_func(
       array(

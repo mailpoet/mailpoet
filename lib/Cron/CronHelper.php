@@ -3,7 +3,7 @@ namespace MailPoet\Cron;
 
 use MailPoet\Models\Setting;
 use MailPoet\Router\Endpoints\Queue as QueueEndpoint;
-use MailPoet\Router\Front as FrontRouter;
+use MailPoet\Router\Router;
 use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
@@ -55,7 +55,7 @@ class CronHelper {
 
   static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
     $data = array('token' => $token);
-    $url = FrontRouter::buildRequest(
+    $url = Router::buildRequest(
       QueueEndpoint::ENDPOINT,
       QueueEndpoint::ACTION_RUN,
       $data
