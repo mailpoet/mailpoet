@@ -14,7 +14,7 @@ class Track {
   const ENDPOINT = 'track';
   const ACTION_CLICK = 'click';
   const ACTION_OPEN = 'open';
-  const ALLOWED_ACTIONS = array(
+  public $allowed_actions = array(
     self::ACTION_CLICK,
     self::ACTION_OPEN
   );

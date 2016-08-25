@@ -9,9 +9,14 @@ class Queue {
   const ENDPOINT = 'queue';
   const ACTION_RUN = 'run';
   public $allowed_actions = array(self::ACTION_RUN);
+  public $data;
 
-  function run($data) {
-    $queue = new Daemon($data);
+  function __construct($data) {
+    $this->data = $data;
+  }
+
+  function run() {
+    $queue = new Daemon($this->data);
     $queue->run();
   }
 }

@@ -15,18 +15,23 @@ class Subscription {
     self::ACTION_MANAGE,
     self::ACTION_UNSUBSCRIBE
   );
+  public $data;
 
-  function confirm($data) {
-    $subscription = new UserSubscription\Pages('confirm', $data);
+  function __construct($data) {
+    $this->data = $data;
+  }
+
+  function confirm() {
+    $subscription = new UserSubscription\Pages('confirm', $this->data);
     $subscription->confirm();
   }
 
-  function manage($data) {
-    $subscription = new UserSubscription\Pages('manage', $data);
+  function manage() {
+    $subscription = new UserSubscription\Pages('manage', $this->data);
   }
 
-  function unsubscribe($data) {
-    $subscription = new UserSubscription\Pages('unsubscribe', $data);
+  function unsubscribe() {
+    $subscription = new UserSubscription\Pages('unsubscribe', $this->data);
     $subscription->unsubscribe();
   }
 }
