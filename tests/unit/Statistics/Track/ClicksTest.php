@@ -135,7 +135,7 @@ class ClicksTest extends MailPoetTest {
   }
 
 
-  function testItDoesNotConvertRegulaUrls() {
+  function testItDoesNotConvertRegularUrls() {
     $link = $this->clicks->processUrl(
       'http://example.com',
       $this->newsletter,

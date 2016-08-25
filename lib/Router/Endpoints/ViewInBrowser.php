@@ -12,11 +12,15 @@ class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
   const ACTION_VIEW = 'view';
   public $allowed_actions = array(self::ACTION_VIEW);
+  public $data;
 
-  function view($data) {
-    $data = $this->_processBrowserPreviewData($data);
+  function __construct($data) {
+    $this->data = $this->_processBrowserPreviewData($data);
+  }
+
+  function view() {
     $view_in_browser = new NewsletterViewInBrowser();
-    return $this->_displayNewsletter($view_in_browser->view($data));
+    return $this->_displayNewsletter($view_in_browser->view($this->data));
   }
 
   function _processBrowserPreviewData($data) {
@@ -54,9 +58,9 @@ class ViewInBrowser {
     return $data;
   }
 
-  function _displayNewsletter($rendered_newsletter) {
+  function _displayNewsletter($result) {
     header('Content-Type: text/html; charset=utf-8');
-    echo $rendered_newsletter;
+    echo $result;
     exit;
   }
 

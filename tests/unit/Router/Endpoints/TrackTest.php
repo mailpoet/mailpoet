@@ -39,21 +39,23 @@ class TrackTest extends MailPoetTest {
       'link_hash' => $link->hash,
       'preview' => false
     );
+    // instantiate class
+    $this->track = new Track($this->track_data);
   }
 
   function testItReturnsFalseWhenTrackDataIsMissing() {
     // queue ID is required
     $data = $this->track_data;
     unset($data['queue_id']);
-    expect(Track::_processTrackData($data))->false();
+    expect($this->track->_processTrackData($data))->false();
     // subscriber ID is required
     $data = $this->track_data;
     unset($data['subscriber_id']);
-    expect(Track::_processTrackData($data))->false();
+    expect($this->track->_processTrackData($data))->false();
     // subscriber token is required
     $data = $this->track_data;
     unset($data['subscriber_token']);
-    expect(Track::_processTrackData($data))->false();
+    expect($this->track->_processTrackData($data))->false();
   }
 
   function testItFailsWhenSubscriberTokenDoesNotMatch() {
@@ -66,7 +68,7 @@ class TrackTest extends MailPoetTest {
       )
     );
     $data->subscriber->email = 'random@email.com';
-    expect(Track::_validateTrackData($data))->false();
+    expect($this->track->_validateTrackData($data))->false();
   }
 
   function testItFailsWhenSubscriberIsNotOnProcessedList() {
@@ -79,7 +81,7 @@ class TrackTest extends MailPoetTest {
       )
     );
     $data->subscriber->id = 99;
-    expect(Track::_validateTrackData($data))->false();
+    expect($this->track->_validateTrackData($data))->false();
   }
 
   function testItDoesNotRequireWpUsersToBeOnProcessedListWhenPreviewIsEnabled() {
@@ -93,18 +95,26 @@ class TrackTest extends MailPoetTest {
     );
     $data->subscriber->wp_user_id = 99;
     $data->preview = true;
-    expect(Track::_validateTrackData($data))->equals($data);
+    expect($this->track->_validateTrackData($data))->equals($data);
   }
 
-  function testItCanGetNewsletterFromQueue() {
+  function testItRequiresValidQueueToGetNewsletter() {
     $data = $this->track_data;
     $data['newsletter_id'] = false;
-    $processed_data = Track::_processTrackData($this->track_data);
+    $data['queue_id'] = 99;
+    $processed_data = $this->track->_processTrackData($data);
+    expect($processed_data)->false();
+  }
+
+  function testItGetsNewsletterFromQueue() {
+    $data = $this->track_data;
+    $data['newsletter_id'] = false;
+    $processed_data = $this->track->_processTrackData($data);
     expect($processed_data->newsletter->id)->equals($this->newsletter->id);
   }
 
-  function testItCanProcessTrackData() {
-    $processed_data = Track::_processTrackData($this->track_data);
+  function testItProcessesTrackData() {
+    $processed_data = $this->track->_processTrackData($this->track_data);
     expect($processed_data->queue->id)->equals($this->queue->id);
     expect($processed_data->subscriber->id)->equals($this->subscriber->id);
     expect($processed_data->newsletter->id)->equals($this->newsletter->id);

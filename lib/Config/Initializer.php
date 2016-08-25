@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Models;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
 use MailPoet\API;
@@ -122,7 +121,7 @@ class Initializer {
 
     try {
       $this->setupAPI();
-      $this->setupFrontRouter();
+      $this->setupRouter();
       $this->setupPages();
     } catch(\Exception $e) {
       $this->handleFailedInitialization($e);
@@ -187,8 +186,8 @@ class Initializer {
     $api->init();
   }
 
-  function setupFrontRouter() {
-    $router = new Router\Front();
+  function setupRouter() {
+    $router = new Router\Router();
     $router->init();
   }
 

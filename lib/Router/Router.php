@@ -1,15 +1,16 @@
 <?php
 namespace MailPoet\Router;
+
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
-class Front {
+class Router {
   public $api_request;
   public $endpoint;
   public $action;
   public $data;
-  const NAME = 'mailpoet_api';
+  const NAME = 'mailpoet_router';
   const RESPONSE_ERROR = 404;
 
   function __construct($api_data = false) {
@@ -27,44 +28,31 @@ class Front {
   }
 
   function init() {
-    $class =  __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
-
+    $endpoint_class = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
     if(!$this->api_request) return;
-    if(!$this->endpoint || !class_exists($class)) {
-      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint.'));
+    if(!$this->endpoint || !class_exists($endpoint_class)) {
+      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint.'));
     }
-    $this->callEndpoint(
-      $class,
-      $this->action,
-      $this->data
-    );
-  }
-
-  function callEndpoint($endpoint, $action, $data) {
-    $endpoint = new $endpoint();
-    if(!method_exists($endpoint, $action) || !in_array($action, $endpoint->allowed_actions)) {
-      self::terminateRequest(self::RESPONSE_ERROR, __('Invalid router action.'));
+    $endpoint = new $endpoint_class($this->data);
+    if(!method_exists($endpoint, $this->action) || !in_array($this->action, $endpoint->allowed_actions)) {
+      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action.'));
     }
-    call_user_func(
+    return call_user_func(
       array(
         $endpoint,
-        $action
-      ),
-      $data
+        $this->action
+      )
     );
   }
 
   static function decodeRequestData($data) {
     $data = base64_decode($data);
-
     if(is_serialized($data)) {
       $data = unserialize($data);
     }
-
     if(!is_array($data)) {
       $data = array();
     }
-
     return $data;
   }
 
@@ -83,7 +71,7 @@ class Front {
     return add_query_arg($params, home_url());
   }
 
-  static function terminateRequest($code, $message) {
+  function terminateRequest($code, $message) {
     status_header($code, $message);
     exit;
   }

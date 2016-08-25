@@ -6,6 +6,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\ViewInBrowser;
+use MailPoet\Router\Router;
 
 class ViewInBrowserTest extends MailPoetTest {
   function __construct() {
@@ -126,8 +127,8 @@ class ViewInBrowserTest extends MailPoetTest {
       $this->queue,
       $preview = true
     );
-    expect($rendered_body)->regExp('/Hello, First/');
-    expect($rendered_body)->regExp('/mailpoet_api&endpoint=view_in_browser/');
+    expect($rendered_body)->contains('Hello, First');
+    expect($rendered_body)->contains(Router::NAME . '&endpoint=view_in_browser');
   }
 
   function testItProcessesLinksWhenTrackingIsEnabled() {
@@ -140,7 +141,7 @@ class ViewInBrowserTest extends MailPoetTest {
       $queue,
       $preview = true
     );
-    expect($rendered_body)->regExp('/mailpoet_api&endpoint=track/');
+    expect($rendered_body)->contains(Router::NAME . '&endpoint=track');
   }
 
   function _after() {

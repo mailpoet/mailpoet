@@ -2,7 +2,7 @@
 namespace MailPoet\Newsletter\Links;
 
 use MailPoet\Models\Subscriber;
-use MailPoet\Router\Front as FrontRouter;
+use MailPoet\Router\Router;
 use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -123,7 +123,7 @@ class Links {
       $router_action = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
         TrackEndpoint::ACTION_CLICK :
         TrackEndpoint::ACTION_OPEN;
-      $link = FrontRouter::buildRequest(
+      $link = Router::buildRequest(
         TrackEndpoint::ENDPOINT,
         $router_action,
         $data

@@ -32,10 +32,10 @@ class ViewInBrowserRouterTest extends MailPoetTest {
       'preview' => false
     );
     // instantiate class
-    $this->view_in_browser = new ViewInBrowser();
+    $this->view_in_browser = new ViewInBrowser($this->browser_preview_data);
   }
 
-  function testItAbortsWhenTrackDataIsMissing() {
+  function testItAbortsWhenBrowserPreviewDataIsMissing() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
       '_abort' => Stub::exactly(3, function() { })
     ), $this);
@@ -53,7 +53,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     $view_in_browser->_processBrowserPreviewData($data);
   }
 
-  function testItAbortsWhenTrackDataIsInvalid() {
+  function testItAbortsWhenBrowserPreviewDataIsInvalid() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
       '_abort' => Stub::exactly(3, function() { })
     ), $this);
@@ -111,18 +111,19 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->equals($data);
   }
 
-  function testItCanProcessBrowserPreviewData() {
+  function testItProcessesBrowserPreviewData() {
     $processed_data = $this->view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
     expect($processed_data->queue->id)->equals($this->queue->id);
     expect($processed_data->subscriber->id)->equals($this->subscriber->id);
     expect($processed_data->newsletter->id)->equals($this->newsletter->id);
   }
 
-  function testItCanViewNewsletter() {
+  function testItReturnsViewActionResult() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
       '_displayNewsletter' => Stub::exactly(1, function() { })
     ), $this);
-    $view_in_browser->view($this->browser_preview_data);
+    $view_in_browser->data = $view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
+    $view_in_browser->view();
   }
 
   function _after() {
