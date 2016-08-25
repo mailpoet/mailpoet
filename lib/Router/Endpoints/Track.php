@@ -14,19 +14,24 @@ class Track {
   const ENDPOINT = 'track';
   const ACTION_CLICK = 'click';
   const ACTION_OPEN = 'open';
-  public $allowed_actions = array(
+  const ALLOWED_ACTIONS = array(
     self::ACTION_CLICK,
     self::ACTION_OPEN
   );
+  public $data;
 
-  function click($data) {
-    $click_event = new Clicks();
-    return $click_event->track(self::_processTrackData($data));
+  function __construct($data) {
+    $this->data = $this->_processTrackData($data);
   }
 
-  function open($data) {
+  function click() {
+    $click_event = new Clicks();
+    return $click_event->track($this->data);
+  }
+
+  function open() {
     $open_event = new Opens();
-    return $open_event->track(self::_processTrackData($data));
+    return $open_event->track($this->data);
   }
 
   function _processTrackData($data) {
@@ -45,10 +50,10 @@ class Track {
     if(!empty($data->link_hash)) {
       $data->link = NewsletterLink::getByHash($data->link_hash);
     }
-    return self::_validateTrackData($data);
+    return $this->_validateTrackData($data);
   }
 
-  static function _validateTrackData($data) {
+  function _validateTrackData($data) {
     if(!$data->subscriber || !$data->queue || !$data->newsletter) return false;
     $subscriber_token_match =
       Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token);
