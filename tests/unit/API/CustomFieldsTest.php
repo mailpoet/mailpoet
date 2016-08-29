@@ -97,7 +97,7 @@ class CustomFieldsTest extends MailPoetTest {
     // missing type
     $response = $router->save(array('name' => 'New custom field'));
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a type#');
+    expect($response->errors[0]['message'])->equals('Please specify a type');
 
     // missing name
     $response = $router->save(array('type' => 'text'));
