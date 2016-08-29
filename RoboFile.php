@@ -111,7 +111,7 @@ class RoboFile extends \Robo\Tasks {
     if($opts['xml']) {
       $command .= ' --xml';
     }
-    $this->_exec($command);
+    return $this->_exec($command);
   }
 
   function testCoverage($opts=['file' => null, 'xml' => false]) {
@@ -127,7 +127,7 @@ class RoboFile extends \Robo\Tasks {
     if($opts['xml']) {
       $command .= ' --xml';
     }
-    $this->_exec($command);
+    return $this->_exec($command);
   }
 
   function testJavascript($xml_output_file = null) {
@@ -146,7 +146,7 @@ class RoboFile extends \Robo\Tasks {
       );
     }
 
-    $this->_exec($command);
+    return $this->_exec($command);
   }
 
   function testDebug() {
