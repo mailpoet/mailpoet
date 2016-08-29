@@ -102,31 +102,51 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
-  function testUnit($file = null) {
+  function testUnit($opts=['file' => null, 'xml' => false]) {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
-    $this->_exec('vendor/bin/codecept run unit -f '.(($file) ? $file : ''));
+
+    $command = 'vendor/bin/codecept run unit -f '.(($opts['file']) ? $opts['file'] : '');
+
+    if($opts['xml']) {
+      $command .= ' --xml';
+    }
+    return $this->_exec($command);
   }
 
-  function testCoverage($file = null) {
+  function testCoverage($opts=['file' => null, 'xml' => false]) {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
-    $this->_exec(join(' ', array(
+    $command = join(' ', array(
       'vendor/bin/codecept run',
-      (($file) ? $file : ''),
+      (($opts['file']) ? $opts['file'] : ''),
       '--coverage',
-      '--coverage-html'
-    )));
+      ($opts['xml']) ? '--coverage-xml' : '--coverage-html'
+    ));
+
+    if($opts['xml']) {
+      $command .= ' --xml';
+    }
+    return $this->_exec($command);
   }
 
-  function testJavascript() {
+  function testJavascript($xml_output_file = null) {
     $this->compileJs();
 
-    $this->_exec(join(' ', array(
+    $command = join(' ', array(
       './node_modules/.bin/mocha',
       '-r tests/javascript/mochaTestHelper.js',
       'tests/javascript/testBundles/**/*.js'
-    )));
+    ));
+
+    if(!empty($xml_output_file)) {
+      $command .= sprintf(
+        ' --reporter xunit --reporter-options output="%s"',
+        $xml_output_file
+      );
+    }
+
+    return $this->_exec($command);
   }
 
   function testDebug() {
