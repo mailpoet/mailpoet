@@ -137,7 +137,7 @@ define([
       });
 
       it('has text preceding categories', function () {
-        expect(model.get('categoriesPrecededBy')).to.be.a('string');
+        expect(model.get('categoriesPrecededBy')).to.be.a('boolean');
       });
 
       it('has a link or a button type for read more', function () {

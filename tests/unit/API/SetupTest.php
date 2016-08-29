@@ -14,7 +14,7 @@ class SetupTest extends MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     $signup_confirmation = Setting::getValue('signup_confirmation.enabled');
-    expect($signup_confirmation)->false();
+    expect($signup_confirmation)->true();
   }
 
   function _after() {
