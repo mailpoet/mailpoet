@@ -53,8 +53,7 @@ class Setting extends Model {
       ),
       'analytics' => array(
         'enabled' => false,
-      ),
-      'installed_at' => date("Y-m-d H:i:s"),
+      )
     );
   }
 
