@@ -1,24 +1,64 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-  <div id="mailpoet_update">
-    <h2><%= __("What's new?") %></h2>
 
-    <p>Plugin version: <strong><%= settings.version %></strong></p>
+<style type="text/css">
+#mailpoet-changelog ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+</style>
 
-    <p>
-      Current user:
-      <strong><%= current_user.user_nicename %></strong>
-      &lt;<a href="mailto:<%= current_user.user_email %>">
-        <%=- current_user.user_email -%>
-      </a>&gt;
-    </p>
+<div class="wrap about-wrap">
+  <h1><%= __('Welcome to MailPoet') %> <%= settings.version %> <sup style="font-size: .5em">beta</sup></h1>
 
-    <p>
-      <a
-        class="button button-primary"
-        href="<%= redirect_url %>"
-      >Take me to MailPoet</a>
-    </p>
+  <p class="about-text"><%= __("Thank you for helping us test and improve this new version of MailPoet. You're one of our extra-special beta testers. We really appreciate your help!") %>
+  </p>
+  <div style="position: absolute; top: .2em; right: 0;"><img src="<%= image_url('welcome_template/mailpoet-logo.png') %>" alt="MailPoet Logo" /></div>
+
+  <h2 class="nav-tab-wrapper wp-clearfix">
+    <a href="admin.php?page=mailpoet-welcome" class="nav-tab"><%= __('What’s New') %></a>
+    <a href="admin.php?page=mailpoet-update" class="nav-tab nav-tab-active"><%= __('Changelog') %></a>
+  </h2>
+
+  <div id="mailpoet-changelog" clas="feature-section one-col">
+    <h2><%= __("List of Changes") %></h2>
+    <h3>0.0.41 - 2016-08-30</h3>
+    <ul>
+      <li>Fixed custom field creation in Subscriber Import;</li>
+      <li>Converted Custom Fields, Subscriber Import and Subscriber Export API endpoints to use new response formats and added tests;</li>
+      <li>Fixed rendering of Form Editor date field to account for format uppercasing;</li>
+      <li>Fixed validation on date custom fields in Form Editor;</li>
+      <li>Changed open/click tracking to prevent tracking stats for newsletter previews and subscribers the newsletter was not sent to;</li>
+      <li>Added an option to open block settings by clicking on the block within the editor. This applies to Image, Button, Spacer, Divider and Social blocks;</li>
+      <li>Fixed notice text when clicking "Preview in browser" in newsletter editor to display a human readable message;</li>
+      <li>Fixed text pasting detection in input fields of newsletter editor;</li>
+      <li>Changed "View in browser" to display newsletter preview inside of a modal window, instead of opening up a new window.</li>
+    </ul>
+    <br>
+    <h3>0.0.40 - 2016-08-23</h3>
+    <ul>
+      <li>Fixed custom field creation in Subscriber Import;</li>
+      <li>Converted Custom Fields, Subscriber Import and Subscriber Export API endpoints to use new response formats and added tests;</li>
+      <li>Fixed rendering of Form Editor date field to account for format uppercasing;</li>
+      <li>Fixed validation on date custom fields in Form Editor;</li>
+      <li>Changed open/click tracking to prevent tracking stats for newsletter previews and subscribers the newsletter was not sent to;</li>
+      <li>Added an option to open block settings by clicking on the block within the editor. This applies to Image, Button, Spacer, Divider and Social blocks;</li>
+      <li>Fixed notice text when clicking "Preview in browser" in newsletter editor to display a human readable message;</li>
+      <li>Fixed text pasting detection in input fields of newsletter editor;</li>
+      <li>Changed "View in browser" to display newsletter preview inside of a modal window, instead of opening up a new window.</li>
+    </ul>
+    <br>
+
   </div>
+
+  <hr>
+
+  <div clas="feature-section one-col">
+    <br>
+    <p style="text-align: center"><a class="button button-primary" href="https://wordpress.org/plugins/wysija-newsletters/changelog/" target="_blank"><%= __("View all changes") %> &rarr;</a></p>
+  </div>
+
+</div>
+
 <% endblock %>
