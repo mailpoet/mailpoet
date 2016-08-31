@@ -91,7 +91,7 @@ class CronHelperTest extends MailPoetTest {
     $site_url = 'http://example.com:80';
     expect(CronHelper::getSiteUrl($site_url))->equals($site_url);
     //3. when url contains invalid port, try connecting to it. when connection fails,
-    // another attempt will be made to connect to the standard port derived form URL schema
+    // another attempt will be made to connect to the standard port derived from URL schema
     $site_url = 'http://example.com:8080';
     expect(CronHelper::getSiteUrl($site_url))->equals('http://example.com');
     //4. when connection can't be established, exception should be thrown
