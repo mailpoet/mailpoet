@@ -50,7 +50,11 @@ class Setting extends Model {
       ),
       'tracking' => array(
         'enabled' => true
-      )
+      ),
+      'analytics' => array(
+        'enabled' => false,
+      ),
+      'installed_at' => date("Y-m-d H:i:s"),
     );
   }
 

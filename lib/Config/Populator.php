@@ -104,6 +104,10 @@ class Populator {
         'reply_to' => $sender
       ));
     }
+
+    if(!Setting::getValue('installed_at')) {
+      Setting::setValue('installed_at', date("Y-m-d H:i:s"));
+    }
   }
 
   private function createDefaultSegments() {
