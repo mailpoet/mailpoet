@@ -171,11 +171,11 @@ define([
       this.regionManager.destroy();
     },
     showTools: function(_event) {
-      this.$(this.ui.tools).show();
+      this.$(this.ui.tools).addClass('mailpoet_display_tools');
       _event.stopPropagation();
     },
     hideTools: function(_event) {
-      this.$(this.ui.tools).hide();
+      this.$(this.ui.tools).removeClass('mailpoet_display_tools');
       _event.stopPropagation();
     },
     showSettings: function(options) {

@@ -186,13 +186,13 @@ define([
     },
     showTools: function() {
       if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
-        this.$(this.ui.tools).show();
+        this.$(this.ui.tools).addClass('mailpoet_display_tools');
         this.toolsView.triggerMethod('showTools');
       }
     },
     hideTools: function() {
       if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
-        this.$(this.ui.tools).hide();
+        this.$(this.ui.tools).removeClass('mailpoet_display_tools');
         this.toolsView.triggerMethod('hideTools');
       }
     },
