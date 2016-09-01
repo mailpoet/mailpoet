@@ -8,9 +8,17 @@ machine:
 ## Customize dependencies
 dependencies:
   pre:
+      # install PHP dependencies for WordPress
+    - sudo apt-get update
+    - sudo apt-get --assume-yes install php5-mysql
+      # configure Apache
+    - sudo cp ./.circle_ci/apache/mailpoet.loc.conf /etc/apache2/sites-available
+    - sudo a2ensite mailpoet.loc
+    - sudo a2enmod rewrite
+    - sudo service apache2 restart
+      # install Phoenix dependencies
     - composer install
     - ./do install
-
       # Set up Wordpress
       # No password is required for the MySQL user `ubuntu`
     - mysql -u ubuntu -e "create database wordpress"
