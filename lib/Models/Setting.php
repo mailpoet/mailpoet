@@ -50,6 +50,9 @@ class Setting extends Model {
       ),
       'tracking' => array(
         'enabled' => true
+      ),
+      'analytics' => array(
+        'enabled' => false,
       )
     );
   }
