@@ -10,6 +10,9 @@ use MailPoet\Config\PopulatorData\Templates\PostNotificationsBlank1Column;
 use MailPoet\Config\PopulatorData\Templates\WelcomeBlank1Column;
 use MailPoet\Config\PopulatorData\Templates\WelcomeBlank12Column;
 use MailPoet\Config\PopulatorData\Templates\SimpleText;
+use MailPoet\Config\PopulatorData\Templates\Restaurant;
+use MailPoet\Config\PopulatorData\Templates\StoreDiscount;
+use MailPoet\Config\PopulatorData\Templates\TravelEmail;
 use MailPoet\Cron\CronTrigger;
 use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
@@ -198,6 +201,9 @@ class Populator {
       (new WelcomeBlank1Column(Env::$assets_url))->get(),
       (new WelcomeBlank12Column(Env::$assets_url))->get(),
       (new SimpleText(Env::$assets_url))->get(),
+      (new Restaurant(Env::$assets_url))->get(),
+      (new StoreDiscount(Env::$assets_url))->get(),
+      (new TravelEmail(Env::$assets_url))->get(),
     );
   }
 
