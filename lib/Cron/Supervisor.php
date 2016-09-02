@@ -15,7 +15,7 @@ class Supervisor {
   function checkDaemon() {
     $daemon = $this->daemon;
     $execution_timeout_exceeded =
-      (time() - (int)$daemon['updated_at']) > CronHelper::DAEMON_EXECUTION_TIMEOUT;
+      (time() - (int)$daemon['updated_at']) >= CronHelper::DAEMON_EXECUTION_TIMEOUT;
     if($execution_timeout_exceeded) {
       CronHelper::restartDaemon($this->token);
       return $this->runDaemon();

@@ -192,8 +192,11 @@ class Initializer {
   }
 
   function setupCronTrigger() {
-    $cron_trigger = new CronTrigger();
-    $cron_trigger->init();
+    // setup cron trigger only outside of cli environment
+    if(php_sapi_name() !== 'cli') {
+      $cron_trigger = new CronTrigger();
+      $cron_trigger->init();
+    }
   }
 
   function setupImages() {

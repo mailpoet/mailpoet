@@ -186,15 +186,6 @@ class Menu {
       'mailpoet-newsletter-editor',
       array($this, 'newletterEditor')
     );
-
-    add_submenu_page(
-      $main_page_slug,
-      $this->setPageTitle(__('Cron')),
-      __('Cron'),
-      'manage_options',
-      'mailpoet-cron',
-      array($this, 'cron')
-    );
   }
 
   function welcome() {
@@ -416,10 +407,6 @@ class Menu {
     );
 
     echo $this->renderer->render('form/editor.html', $data);
-  }
-
-  function cron() {
-    echo $this->renderer->render('cron.html');
   }
 
   function setPageTitle($title) {

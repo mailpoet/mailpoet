@@ -113,8 +113,7 @@ config.push(_.extend({}, baseConfig, {
       'settings/tabs.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
-      'helpscout',
-      'cron.jsx'
+      'helpscout'
     ],
     form_editor: [
       'form_editor/form_editor.js',

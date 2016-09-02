@@ -20,8 +20,6 @@ class CronTrigger {
 
   function init() {
     try {
-      // configure cron trigger only outside of cli environment
-      if(php_sapi_name() === 'cli') return;
       $trigger_class = __NAMESPACE__ . '\Triggers\\' . $this->current_method;
       return (class_exists($trigger_class)) ?
         $trigger_class::run() :
