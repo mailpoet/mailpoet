@@ -99,12 +99,12 @@ define([
     },
     showTools: function(_event) {
       if (!this.showingToolsDisabled) {
-        this.$('> .mailpoet_tools').show();
+        this.$('> .mailpoet_tools').addClass('mailpoet_display_tools');
         this.toolsView.triggerMethod('showTools');
       }
     },
     hideTools: function(e) {
-      this.$('> .mailpoet_tools').hide();
+      this.$('> .mailpoet_tools').removeClass('mailpoet_display_tools');
       this.toolsView.triggerMethod('hideTools');
     },
     enableShowingTools: function() {
