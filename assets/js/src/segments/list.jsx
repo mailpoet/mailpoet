@@ -37,7 +37,7 @@ var columns = [
 
 const messages = {
   onTrash: (response) => {
-    let count = ~~response.meta.count;
+    const count = ~~response.meta.count;
     let message = null;
 
     if (count === 1) {
@@ -47,12 +47,12 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleSegmentsTrashed')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
   onDelete: (response) => {
-    let count = ~~response.meta.count;
+    const count = ~~response.meta.count;
     let message = null;
 
     if (count === 1) {
@@ -62,12 +62,12 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleSegmentsDeleted')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
   onRestore: (response) => {
-    let count = ~~response.meta.count;
+    const count = ~~response.meta.count;
     let message = null;
 
     if (count === 1) {
@@ -77,7 +77,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleSegmentsRestored')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   }

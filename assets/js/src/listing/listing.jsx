@@ -577,7 +577,7 @@ const Listing = React.createClass({
       && this.state.selected_ids.length === 0
       && selected_ids !== 'all'
     ) {
-      return;
+      return false;
     }
 
     this.setState({ loading: true });

@@ -27,48 +27,48 @@ const columns = [
 ];
 
 const messages = {
-  onTrash: function(response) {
-    var count = ~~response;
-    var message = null;
+  onTrash: (response) => {
+    const count = ~~response.meta.count;
+    let message = null;
 
-    if(count === 1) {
+    if (count === 1) {
       message = (
         MailPoet.I18n.t('oneFormTrashed')
       );
     } else {
       message = (
         MailPoet.I18n.t('multipleFormsTrashed')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
-  onDelete: function(response) {
-    var count = ~~response;
-    var message = null;
+  onDelete: (response) => {
+    const count = ~~response.meta.count;
+    let message = null;
 
-    if(count === 1) {
+    if (count === 1) {
       message = (
         MailPoet.I18n.t('oneFormDeleted')
       );
     } else {
       message = (
         MailPoet.I18n.t('multipleFormsDeleted')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
-  onRestore: function(response) {
-    var count = ~~response;
-    var message = null;
+  onRestore: (response) => {
+    const count = ~~response.meta.count;
+    let message = null;
 
-    if(count === 1) {
+    if (count === 1) {
       message = (
         MailPoet.I18n.t('oneFormRestored')
       );
     } else {
       message = (
         MailPoet.I18n.t('multipleFormsRestored')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   }

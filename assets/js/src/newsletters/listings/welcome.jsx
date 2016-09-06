@@ -15,8 +15,8 @@ const mailpoet_segments = window.mailpoet_segments || {};
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
 
 const messages = {
-  onTrash(response) {
-    const count = ~~response;
+  onTrash: (response) => {
+    const count = ~~response.meta.count;
     let message = null;
 
     if (count === 1) {
@@ -26,12 +26,12 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
-  onDelete(response) {
-    const count = ~~response;
+  onDelete: (response) => {
+    const count = ~~response.meta.count;
     let message = null;
 
     if (count === 1) {
@@ -41,12 +41,12 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
-  onRestore(response) {
-    const count = ~~response;
+  onRestore: (response) => {
+    const count = ~~response.meta.count;
     let message = null;
 
     if (count === 1) {
@@ -56,7 +56,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   }
@@ -125,16 +125,23 @@ const newsletter_actions = [
       return MailPoet.Ajax.post({
         endpoint: 'newsletters',
         action: 'duplicate',
-        data: newsletter.id
-      }).done(function(response) {
-        if (response !== false && response.subject !== undefined) {
-          MailPoet.Notice.success(
-            (MailPoet.I18n.t('newsletterDuplicated')).replace(
-              '%$1s', response.subject
-            )
+        data: {
+          id: newsletter.id
+        }
+      }).done((response) => {
+        MailPoet.Notice.success(
+          (MailPoet.I18n.t('newsletterDuplicated')).replace(
+            '%$1s', response.data.subject
+          )
+        );
+        refresh();
+      }).fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true }
           );
         }
-        refresh();
       });
     }
   },

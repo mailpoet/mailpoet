@@ -148,8 +148,8 @@ class Segments extends APIEndpoint {
         '\MailPoet\Models\Segment',
         $data
       );
-      $count = $bulk_action->apply();
-      return $this->successResponse(null, array('count' => $count));
+      $meta = $bulk_action->apply();
+      return $this->successResponse(null, $meta);
     } catch(\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()

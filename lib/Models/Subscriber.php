@@ -538,7 +538,7 @@ class Subscriber extends Model {
 
     if($segment === false) return false;
 
-    $subscribers_count = parent::bulkAction($orm,
+    $count = parent::bulkAction($orm,
       function($subscriber_ids) use($segment) {
         SubscriberSegment::subscribeManyToSegments(
           $subscriber_ids, array($segment->id)
@@ -547,7 +547,7 @@ class Subscriber extends Model {
     );
 
     return array(
-      'subscribers' => $subscribers_count,
+      'count' => $count,
       'segment' => $segment->name
     );
   }
@@ -558,7 +558,7 @@ class Subscriber extends Model {
 
     if($segment === false) return false;
 
-    $subscribers_count = parent::bulkAction($orm,
+    $count = parent::bulkAction($orm,
       function($subscriber_ids) use($segment) {
         SubscriberSegment::deleteManySubscriptions($subscriber_ids);
         SubscriberSegment::subscribeManyToSegments(
@@ -568,7 +568,7 @@ class Subscriber extends Model {
     );
 
     return array(
-      'subscribers' => $subscribers_count,
+      'count' => $count,
       'segment' => $segment->name
     );
   }
@@ -579,7 +579,7 @@ class Subscriber extends Model {
 
     if($segment === false) return false;
 
-    $subscribers_count = $orm->count();
+    $count = $orm->count();
 
     parent::bulkAction($orm, function($subscriber_ids) use($segment) {
       SubscriberSegment::deleteManySubscriptions(
@@ -588,19 +588,21 @@ class Subscriber extends Model {
     });
 
     return array(
-      'subscribers' => $subscribers_count,
+      'count' => $count,
       'segment' => $segment->name
     );
   }
 
   static function bulkRemoveFromAllLists($orm, $data = array()) {
-    $subscribers_count = $orm->count();
+    $count = $orm->count();
 
     parent::bulkAction($orm, function($subscriber_ids) {
       SubscriberSegment::deleteManySubscriptions($subscriber_ids);
     });
 
-    return $subscribers_count;
+    return array(
+      'count' => $count
+    );
   }
 
   static function bulkSendConfirmationEmail($orm) {
@@ -615,13 +617,15 @@ class Subscriber extends Model {
           $emails_sent++;
         }
       }
-      return $emails_sent;
     }
-    return false;
+
+    return array(
+      'count' => $emails_sent
+    );
   }
 
   static function bulkTrash($orm) {
-    return parent::bulkAction($orm, function($subscriber_ids) {
+    $count = parent::bulkAction($orm, function($subscriber_ids) {
       self::rawExecute(join(' ', array(
           'UPDATE `'.self::$_table.'`',
           'SET `deleted_at` = NOW()',
@@ -633,10 +637,12 @@ class Subscriber extends Model {
         $subscriber_ids
       );
     });
+
+    return array('count' => $count);
   }
 
   static function bulkDelete($orm) {
-    return parent::bulkAction($orm, function($subscriber_ids) {
+    $count = parent::bulkAction($orm, function($subscriber_ids) {
       // delete all subscriber/segment relationships
       SubscriberSegment::deleteManySubscriptions($subscriber_ids);
 
@@ -645,6 +651,8 @@ class Subscriber extends Model {
         ->whereNull('wp_user_id')
         ->deleteMany();
     });
+
+    return array('count' => $count);
   }
 
   static function subscribed($orm) {

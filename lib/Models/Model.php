@@ -77,7 +77,7 @@ class Model extends \Sudzy\ValidModel {
 
   static function bulkTrash($orm) {
     $model = get_called_class();
-    return self::bulkAction($orm, function($ids) use($model) {
+    $count = self::bulkAction($orm, function($ids) use($model) {
       self::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
           'SET `deleted_at` = NOW()',
@@ -86,13 +86,17 @@ class Model extends \Sudzy\ValidModel {
         $ids
       );
     });
+
+    return array('count' => $count);
   }
 
   static function bulkDelete($orm) {
     $model = get_called_class();
-    return self::bulkAction($orm, function($ids) use($model) {
+    $count = self::bulkAction($orm, function($ids) use($model) {
       $model::whereIn('id', $ids)->deleteMany();
     });
+
+    return array('count' => $count);
   }
 
   function restore() {
@@ -101,7 +105,7 @@ class Model extends \Sudzy\ValidModel {
 
   static function bulkRestore($orm) {
     $model = get_called_class();
-    return self::bulkAction($orm, function($ids) use($model) {
+    $count = self::bulkAction($orm, function($ids) use($model) {
       self::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
           'SET `deleted_at` = NULL',
@@ -110,6 +114,8 @@ class Model extends \Sudzy\ValidModel {
         $ids
       );
     });
+
+    return array('count' => $count);
   }
 
   static function bulkAction($orm, $callback = false) {

@@ -53,7 +53,10 @@ function(
       }
 
       if(data.action) {
-        this.props.onBulkAction(selected_ids, data).then(onSuccess);
+        const promise = this.props.onBulkAction(selected_ids, data);
+        if (promise !== false) {
+          promise.then(onSuccess);
+        };
       }
 
       this.setState({

@@ -97,8 +97,6 @@ class Newsletters extends APIEndpoint {
   }
 
   function setStatus($data = array()) {
-    $id = (isset($data['id'])) ? (int)$data['id'] : false;
-    $newsletter = Newsletter::findOne($id);
     $status = (isset($data['status']) ? $data['status'] : null);
 
     if(!$status) {
@@ -106,6 +104,9 @@ class Newsletters extends APIEndpoint {
         APIError::BAD_REQUEST  => __('You need to specify a status.')
       ));
     }
+
+    $id = (isset($data['id'])) ? (int)$data['id'] : false;
+    $newsletter = Newsletter::findOne($id);
 
     if($newsletter === false) {
       return $this->errorResponse(array(
@@ -120,7 +121,7 @@ class Newsletters extends APIEndpoint {
       return $this->errorResponse($errors);
     } else {
       return $this->successResponse(
-        $newsletter->asArray()
+        Newsletter::findOne($newsletter->id)->asArray()
       );
     }
   }
@@ -340,8 +341,8 @@ class Newsletters extends APIEndpoint {
         '\MailPoet\Models\Newsletter',
         $data
       );
-      $count = $bulk_action->apply();
-      return $this->successResponse(null, array('count' => $count));
+      $meta = $bulk_action->apply();
+      return $this->successResponse(null, $meta);
     } catch(\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()

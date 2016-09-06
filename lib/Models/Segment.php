@@ -212,7 +212,7 @@ class Segment extends Model {
   }
 
   static function bulkTrash($orm) {
-    return parent::bulkAction($orm, function($ids) {
+    $count = parent::bulkAction($orm, function($ids) {
       parent::rawExecute(join(' ', array(
         'UPDATE `'.self::$_table.'`',
         'SET `deleted_at` = NOW()',
@@ -220,14 +220,18 @@ class Segment extends Model {
         'AND `type` = "default"'
       )), $ids);
     });
+
+    return array('count' => $count);
   }
 
   static function bulkDelete($orm) {
-    return parent::bulkAction($orm, function($ids) {
+    $count = parent::bulkAction($orm, function($ids) {
       // delete segments (only default)
       Segment::whereIn('id', $ids)
         ->where('type', 'default')
         ->deleteMany();
     });
+
+    return array('count' => $count);
   }
 }
