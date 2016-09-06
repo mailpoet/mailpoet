@@ -23,30 +23,28 @@
 
   <div id="mailpoet-changelog" clas="feature-section one-col">
     <h2><%= __("List of Changes") %></h2>
-    <h3>0.0.41 - 2016-08-30</h3>
+    <h3>0.0.43 - 2016-09-06</h3>
     <ul>
-      <li>Fixed custom field creation in Subscriber Import;</li>
-      <li>Converted Custom Fields, Subscriber Import and Subscriber Export API endpoints to use new response formats and added tests;</li>
-      <li>Fixed rendering of Form Editor date field to account for format uppercasing;</li>
-      <li>Fixed validation on date custom fields in Form Editor;</li>
-      <li>Changed open/click tracking to prevent tracking stats for newsletter previews and subscribers the newsletter was not sent to;</li>
-      <li>Added an option to open block settings by clicking on the block within the editor. This applies to Image, Button, Spacer, Divider and Social blocks;</li>
-      <li>Fixed notice text when clicking "Preview in browser" in newsletter editor to display a human readable message;</li>
-      <li>Fixed text pasting detection in input fields of newsletter editor;</li>
-      <li>Changed "View in browser" to display newsletter preview inside of a modal window, instead of opening up a new window.</li>
+      <li>Fixed cron to run on sites behind proxy or running inside VMs where host and guest ports are different;</li>
+      <li>Updated Welcome and Update pages;</li>
+      <li>Added logging of plugin installation timestamp;</li>
+      <li>Added Cron Trigger and Cron Supervisor tests;</li>
+      <li>Removed Cron menu page;</li>
+      <li>Added 3 new sample newsletter templates;</li>
+      <li>Newsletter Editor: Changed Trash and Move icons to new ones and swapped default/hover colors for block tools;</li>
+      <li>Newsletter Editor: Clarified label of preheader input field;</li>
+      <li>Newsletter Editor: Added animation to display/hide block tools on mouse hover;</li>
+      <li>Changed newsletter template description text to not be partially cut off.</li>
     </ul>
     <br>
-    <h3>0.0.40 - 2016-08-23</h3>
+    <h3>0.0.42 - 2016-08-30</h3>
     <ul>
-      <li>Fixed custom field creation in Subscriber Import;</li>
-      <li>Converted Custom Fields, Subscriber Import and Subscriber Export API endpoints to use new response formats and added tests;</li>
-      <li>Fixed rendering of Form Editor date field to account for format uppercasing;</li>
-      <li>Fixed validation on date custom fields in Form Editor;</li>
-      <li>Changed open/click tracking to prevent tracking stats for newsletter previews and subscribers the newsletter was not sent to;</li>
-      <li>Added an option to open block settings by clicking on the block within the editor. This applies to Image, Button, Spacer, Divider and Social blocks;</li>
-      <li>Fixed notice text when clicking "Preview in browser" in newsletter editor to display a human readable message;</li>
-      <li>Fixed text pasting detection in input fields of newsletter editor;</li>
-      <li>Changed "View in browser" to display newsletter preview inside of a modal window, instead of opening up a new window.</li>
+      <li>Refactored "View In Browser";</li>
+      <li>Refactored Front Router and its endpoints, added tests;</li>
+      <li>Added support for CircleCI continuous integration;</li>
+      <li>Changed "Preview in browser" to use email of the current user;</li>
+      <li>Added autocompletion of email addresses used in "Preview in browser" for certain browsers;</li>
+      <li>Fixed ALC to correctly refresh when multiple ALC blocks are used.</li>
     </ul>
     <br>
 
