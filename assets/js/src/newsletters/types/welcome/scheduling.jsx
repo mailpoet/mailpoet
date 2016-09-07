@@ -113,17 +113,16 @@ const WelcomeScheduling = React.createClass({
         type: 'welcome',
         options: this.state
       }
-    }).done(function(response) {
-      if (response.result && response.newsletter.id) {
-        this.showTemplateSelection(response.newsletter.id);
-      } else {
+    }).done((response) => {
+        this.showTemplateSelection(response.data.id);
+      }).fail((response) => {
         if (response.errors.length > 0) {
-          response.errors.map(function(error) {
-            MailPoet.Notice.error(error);
-          });
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true }
+          );
         }
-      }
-    }.bind(this));
+      });
   },
   showTemplateSelection: function(newsletterId) {
     this.context.router.push(`/template/${ newsletterId }`);

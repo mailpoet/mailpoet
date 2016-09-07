@@ -1,6 +1,7 @@
 <?php
 
 use \MailPoet\API\Endpoints\Subscribers;
+use \MailPoet\API\Response as APIResponse;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\Segment;
 
@@ -21,8 +22,8 @@ class SubscribersTest extends MailPoetTest {
       'last_name' => 'Doe',
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'segments' => array(
-        $this->segment_1->id(),
-        $this->segment_2->id()
+        $this->segment_1->id,
+        $this->segment_2->id
       )
     ));
   }
@@ -30,17 +31,26 @@ class SubscribersTest extends MailPoetTest {
   function testItCanGetASubscriber() {
     $router = new Subscribers();
 
-    $response = $router->get($this->subscriber_1->id());
-    expect($response['id'])->equals($this->subscriber_1->id());
-    expect($response['email'])->equals($this->subscriber_1->email);
-    expect($response['first_name'])->equals($this->subscriber_1->first_name);
-    expect($response['last_name'])->equals($this->subscriber_1->last_name);
-
-    $response = $router->get('not_an_id');
-    expect($response)->false();
+    $response = $router->get(array('id' => 'not_an_id'));
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->equals(
+      'This subscriber does not exist.'
+    );
 
     $response = $router->get(/* missing argument */);
-    expect($response)->false();
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->equals(
+      'This subscriber does not exist.'
+    );
+
+    $response = $router->get(array('id' => $this->subscriber_1->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Subscriber::findOne($this->subscriber_1->id)
+        ->withCustomFields()
+        ->withSubscriptions()
+        ->asArray()
+    );
   }
 
   function testItCanSaveANewSubscriber() {
@@ -49,15 +59,19 @@ class SubscribersTest extends MailPoetTest {
       'first_name' => 'Raul',
       'last_name' => 'Doe',
       'segments' => array(
-        $this->segment_1->id(),
-        $this->segment_2->id()
+        $this->segment_1->id,
+        $this->segment_2->id
       )
     );
 
     $router = new Subscribers();
     $response = $router->save($valid_data);
-    expect($response['result'])->true();
-    expect($response)->hasntKey('errors');
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Subscriber::where('email', 'raul.doe@mailpoet.com')
+        ->findOne()
+        ->asArray()
+    );
 
     $subscriber = Subscriber::where('email', 'raul.doe@mailpoet.com')->findOne();
     $subscriber_segments = $subscriber->segments()->findMany();
@@ -66,60 +80,68 @@ class SubscribersTest extends MailPoetTest {
     expect($subscriber_segments[1]->name)->equals($this->segment_2->name);
 
     $response = $router->save(/* missing data */);
-    expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please enter your email address');
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])
+      ->equals('Please enter your email address');
 
     $invalid_data = array(
       'email' => 'john.doe@invalid'
     );
 
     $response = $router->save($invalid_data);
-    expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Your email address is invalid!');
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])
+      ->equals('Your email address is invalid!');
   }
 
   function testItCanSaveAnExistingSubscriber() {
     $router = new Subscribers();
     $subscriber_data = $this->subscriber_2->asArray();
     unset($subscriber_data['created_at']);
-    $subscriber_data['segments'] = array($this->segment_1->id());
+    $subscriber_data['segments'] = array($this->segment_1->id);
     $subscriber_data['first_name'] = 'Super Jane';
 
     $response = $router->save($subscriber_data);
-    expect($response['result'])->true();
-
-    $updated_subscriber = Subscriber::findOne($this->subscriber_2->id());
-    expect($updated_subscriber->email)->equals($this->subscriber_2->email);
-    expect($updated_subscriber->first_name)->equals('Super Jane');
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Subscriber::findOne($this->subscriber_2->id)->asArray()
+    );
+    expect($response->data['first_name'])->equals('Super Jane');
   }
 
   function testItCanRestoreASubscriber() {
     $this->subscriber_1->trash();
 
-    expect($this->subscriber_1->deleted_at)->notNull();
+    $trashed_subscriber = Subscriber::findOne($this->subscriber_1->id);
+    expect($trashed_subscriber->deleted_at)->notNull();
 
     $router = new Subscribers();
-    $router->restore($this->subscriber_1->id());
-
-    $restored_subscriber = Subscriber::findOne($this->subscriber_1->id());
-    expect($restored_subscriber->deleted_at)->null();
+    $response = $router->restore(array('id' => $this->subscriber_1->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Subscriber::findOne($this->subscriber_1->id)->asArray()
+    );
+    expect($response->data['deleted_at'])->null();
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanTrashASubscriber() {
     $router = new Subscribers();
-    $response = $router->trash($this->subscriber_2->id());
-    expect($response)->true();
-
-    $trashed_subscriber = Subscriber::findOne($this->subscriber_2->id());
-    expect($trashed_subscriber->deleted_at)->notNull();
+    $response = $router->trash(array('id' => $this->subscriber_2->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Subscriber::findOne($this->subscriber_2->id)->asArray()
+    );
+    expect($response->data['deleted_at'])->notNull();
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanDeleteASubscriber() {
     $router = new Subscribers();
-    $response = $router->delete($this->subscriber_1->id());
-    expect($response)->equals(1);
-
-    expect(Subscriber::findOne($this->subscriber_1->id()))->false();
+    $response = $router->delete(array('id' => $this->subscriber_1->id));
+    expect($response->data)->isEmpty();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanFilterListing() {
@@ -282,8 +304,9 @@ class SubscribersTest extends MailPoetTest {
       ),
       'action' => 'delete'
     ));
-
-    expect($response)->equals(count($selection_ids));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->isEmpty();
+    expect($response->meta['count'])->equals(count($selection_ids));
 
     $is_subscriber_1_deleted = (
       Subscriber::findOne($this->subscriber_1->id) === false
@@ -297,40 +320,38 @@ class SubscribersTest extends MailPoetTest {
   }
 
   function testItCanBulkDeleteSubscribers() {
-    expect(Subscriber::count())->equals(2);
-
-    $subscribers = Subscriber::findMany();
-    foreach($subscribers as $subscriber) {
-      $subscriber->trash();
-    }
+    $router = new Subscribers();
+    $response = $router->bulkAction(array(
+      'action' => 'trash',
+      'listing' => array('group' => 'all')
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(2);
 
     $router = new Subscribers();
     $response = $router->bulkAction(array(
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
-    expect($response)->equals(2);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(2);
 
     $response = $router->bulkAction(array(
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
-    expect($response)->equals(0);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(0);
   }
 
   function testItCannotRunAnInvalidBulkAction() {
-    try {
-      $router = new Subscribers();
-      $response = $router->bulkAction(array(
-        'action' => 'invalidAction',
-        'listing' => array()
-      ));
-      $this->fail('Bulk Action class did not throw an exception');
-    } catch(Exception $e) {
-      expect($e->getMessage())->equals(
-        '\MailPoet\Models\Subscriber has not method "bulkInvalidAction"'
-      );
-    }
+    $router = new Subscribers();
+    $response = $router->bulkAction(array(
+      'action' => 'invalidAction',
+      'listing' => array()
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->contains('has no method');
   }
 
   function _after() {

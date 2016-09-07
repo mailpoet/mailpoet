@@ -1,5 +1,7 @@
 <?php
 namespace MailPoet\API\Endpoints;
+use MailPoet\API\Endpoint as APIEndpoint;
+use MailPoet\API\Error as APIError;
 
 use \MailPoet\Models\Form;
 use \MailPoet\Models\StatisticsForms;
@@ -9,16 +11,17 @@ use \MailPoet\Form\Util;
 
 if(!defined('ABSPATH')) exit;
 
-class Forms {
-  function __construct() {
-  }
-
-  function get($id = false) {
+class Forms extends APIEndpoint {
+  function get($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-    if($form !== false) {
-      $form = $form->asArray();
+    if($form === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This form does not exist.')
+      ));
+    } else {
+      return $this->successResponse($form->asArray());
     }
-    return $form;
   }
 
   function listing($data = array()) {
@@ -87,14 +90,10 @@ class Forms {
     $errors = $form->getErrors();
 
     if(!empty($errors)) {
-      return array(
-        'result' => false,
-        'errors' => $errors
-      );
+      return $this->badRequest($errors);
     } else {
-      return array(
-        'result' => true,
-        'form_id' => $form->id()
+      return $this->successResponse(
+        Form::findOne($form->id)->asArray()
       );
     }
   }
@@ -109,74 +108,72 @@ class Forms {
     // styles
     $css = new Util\Styles(FormRenderer::getStyles($data));
 
-    return array(
+    return $this->successResponse(array(
       'html' => $html,
       'css' => $css->render()
-    );
+    ));
   }
 
-  function exportsEditor($id) {
-    $exports = false;
-
+  function exportsEditor($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-
-    if($form !== false) {
+    if($form === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This form does not exist.')
+      ));
+    } else {
       $exports = Util\Export::getAll($form->asArray());
+      return $this->successResponse($exports);
     }
-
-    return $exports;
   }
 
   function saveEditor($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
+
     $form_id = (isset($data['id']) ? (int)$data['id'] : 0);
     $name = (isset($data['name']) ? $data['name'] : __('New form'));
     $body = (isset($data['body']) ? $data['body'] : array());
     $settings = (isset($data['settings']) ? $data['settings'] : array());
     $styles = (isset($data['styles']) ? $data['styles'] : '');
 
-    if(empty($body) || empty($settings)) {
-      // error
-      return false;
-    } else {
-      // check if the form is used as a widget
-      $is_widget = false;
-      $widgets = get_option('widget_mailpoet_form');
-      if(!empty($widgets)) {
-        foreach($widgets as $widget) {
-          if(isset($widget['form']) && (int)$widget['form'] === $form_id) {
-            $is_widget = true;
-            break;
-          }
-        }
-      }
-
-      // check if the user gets to pick his own lists
-      // or if it's selected by the admin
-      $has_segment_selection = false;
-
-      foreach($body as $i => $block) {
-        if($block['type'] === 'segment') {
-          $has_segment_selection = true;
-          if(!empty($block['params']['values'])) {
-            $list_selection = array_filter(
-              array_map(function($segment) {
-                return (isset($segment['id'])
-                  ? (int)$segment['id']
-                  : null
-                );
-              }, $block['params']['values'])
-            );
-          }
+    // check if the form is used as a widget
+    $is_widget = false;
+    $widgets = get_option('widget_mailpoet_form');
+    if(!empty($widgets)) {
+      foreach($widgets as $widget) {
+        if(isset($widget['form']) && (int)$widget['form'] === $form_id) {
+          $is_widget = true;
           break;
         }
       }
+    }
 
-      // check list selection
-      if($has_segment_selection === true) {
-        $settings['segments_selected_by'] = 'user';
-      } else {
-        $settings['segments_selected_by'] = 'admin';
+    // check if the user gets to pick his own lists
+    // or if it's selected by the admin
+    $has_segment_selection = false;
+
+    foreach($body as $i => $block) {
+      if($block['type'] === 'segment') {
+        $has_segment_selection = true;
+        if(!empty($block['params']['values'])) {
+          $list_selection = array_filter(
+            array_map(function($segment) {
+              return (isset($segment['id'])
+                ? (int)$segment['id']
+                : null
+              );
+            }, $block['params']['values'])
+          );
+        }
+        break;
       }
+    }
+
+    // check list selection
+    if($has_segment_selection === true) {
+      $settings['segments_selected_by'] = 'user';
+    } else {
+      $settings['segments_selected_by'] = 'admin';
     }
 
     $form = Form::createOrUpdate(array(
@@ -187,64 +184,101 @@ class Forms {
       'styles' => $styles
     ));
 
-    if($form->getErrors() === false) {
-      return array(
-        'result' => true,
-        'is_widget' => $is_widget
-      );
+    $errors = $form->getErrors();
+
+    if(!empty($errors)) {
+      return $this->badRequest($errors);
     } else {
-      return array(
-        'result' => false,
-        'errors' => $form->getErrors()
+      return $this->successResponse(
+        Form::findOne($form->id)->asArray(),
+        array('is_widget' => $is_widget)
       );
     }
   }
 
-  function restore($id) {
+  function restore($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-    if($form !== false) {
+    if($form === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This form does not exist.')
+      ));
+    } else {
       $form->restore();
+      return $this->successResponse(
+        Form::findOne($form->id)->asArray(),
+        array('count' => 1)
+      );
     }
-    return ($form->getErrors() === false);
   }
 
-  function trash($id) {
+  function trash($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-    if($form !== false) {
+    if($form === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This form does not exist.')
+      ));
+    } else {
       $form->trash();
+      return $this->successResponse(
+        Form::findOne($form->id)->asArray(),
+        array('count' => 1)
+      );
     }
-    return ($form->getErrors() === false);
   }
 
-  function delete($id) {
+  function delete($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-    if($form !== false) {
+    if($form === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This form does not exist.')
+      ));
+    } else {
       $form->delete();
-      return 1;
+      return $this->successResponse(null, array('count' => 1));
     }
-    return false;
   }
 
-  function duplicate($id) {
-    $result = false;
-
+  function duplicate($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);
-    if($form !== false) {
+
+    if($form === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This form does not exist.')
+      ));
+    } else {
       $data = array(
         'name' => sprintf(__('Copy of %s'), $form->name)
       );
-      $result = $form->duplicate($data)->asArray();
-    }
+      $duplicate = $form->duplicate($data);
+      $errors = $duplicate->getErrors();
 
-    return $result;
+      if(!empty($errors)) {
+        return $this->errorResponse($errors);
+      } else {
+        return $this->successResponse(
+          Form::findOne($duplicate->id)->asArray(),
+          array('count' => 1)
+        );
+      }
+    }
   }
 
   function bulkAction($data = array()) {
-    $bulk_action = new Listing\BulkAction(
-      '\MailPoet\Models\Form',
-      $data
-    );
-
-    return $bulk_action->apply();
+    try {
+      $bulk_action = new Listing\BulkAction(
+        '\MailPoet\Models\Form',
+        $data
+      );
+      $meta = $bulk_action->apply();
+      return $this->successResponse(null, $meta);
+    } catch(\Exception $e) {
+      return $this->errorResponse(array(
+        $e->getCode() => $e->getMessage()
+      ));
+    }
   }
 }

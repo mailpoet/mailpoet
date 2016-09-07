@@ -1,5 +1,7 @@
 <?php
 namespace MailPoet\API\Endpoints;
+use \MailPoet\API\Endpoint as APIEndpoint;
+use \MailPoet\API\Error as APIError;
 
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\SubscriberSegment;
@@ -9,16 +11,16 @@ use \MailPoet\Segments\WP;
 
 if(!defined('ABSPATH')) exit;
 
-class Segments {
-  function __construct() {
-  }
-
-  function get($id = false) {
+class Segments extends APIEndpoint {
+  function get($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if($segment === false) {
-      return false;
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This list does not exist.')
+      ));
     } else {
-      return $segment->asArray();
+      return $this->successResponse($segment->asArray());
     }
   }
 
@@ -49,68 +51,109 @@ class Segments {
     $errors = $segment->getErrors();
 
     if(!empty($errors)) {
-      return array(
-        'result' => false,
-        'errors' => $errors
-      );
+      return $this->badRequest($errors);
     } else {
-      return array(
-        'result' => true
+      return $this->successResponse(
+        Segment::findOne($segment->id)->asArray()
       );
     }
   }
 
-  function restore($id) {
+  function restore($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
-    if($segment !== false) {
+    if($segment === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This list does not exist.')
+      ));
+    } else {
       $segment->restore();
+      return $this->successResponse(
+        Segment::findOne($segment->id)->asArray(),
+        array('count' => 1)
+      );
     }
-    return ($segment->getErrors() === false);
   }
 
-  function trash($id) {
+  function trash($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
-    if($segment !== false) {
+    if($segment === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This list does not exist.')
+      ));
+    } else {
       $segment->trash();
+      return $this->successResponse(
+        Segment::findOne($segment->id)->asArray(),
+        array('count' => 1)
+      );
     }
-    return ($segment->getErrors() === false);
   }
 
-  function delete($id) {
+  function delete($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
-    if($segment !== false) {
+    if($segment === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This list does not exist.')
+      ));
+    } else {
       $segment->delete();
-      return 1;
+      return $this->successResponse(null, array('count' => 1));
     }
-    return false;
   }
 
-  function duplicate($id) {
-    $result = false;
-
+  function duplicate($data = array()) {
+    $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
-    if($segment !== false) {
+
+    if($segment === false) {
+      return $this->errorResponse(array(
+        APIError::NOT_FOUND => __('This list does not exist.')
+      ));
+    } else {
       $data = array(
         'name' => sprintf(__('Copy of %s'), $segment->name)
       );
-      $result = $segment->duplicate($data)->asArray();
-    }
+      $duplicate = $segment->duplicate($data);
+      $errors = $duplicate->getErrors();
 
-    return $result;
+      if(!empty($errors)) {
+        return $this->errorResponse($errors);
+      } else {
+        return $this->successResponse(
+          Segment::findOne($duplicate->id)->asArray(),
+          array('count' => 1)
+        );
+      }
+    }
   }
 
   function synchronize() {
-    $result = WP::synchronizeUsers();
+    try {
+      WP::synchronizeUsers();
+    } catch(\Exception $e) {
+      return $this->errorResponse(array(
+        $e->getCode() => $e->getMessage()
+      ));
+    }
 
-    return $result;
+    return $this->successResponse(null);
   }
 
   function bulkAction($data = array()) {
-    $bulk_action = new Listing\BulkAction(
-      '\MailPoet\Models\Segment',
-      $data
-    );
-
-    return $bulk_action->apply();
+    try {
+      $bulk_action = new Listing\BulkAction(
+        '\MailPoet\Models\Segment',
+        $data
+      );
+      $meta = $bulk_action->apply();
+      return $this->successResponse(null, $meta);
+    } catch(\Exception $e) {
+      return $this->errorResponse(array(
+        $e->getCode() => $e->getMessage()
+      ));
+    }
   }
 }

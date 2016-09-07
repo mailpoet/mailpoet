@@ -456,22 +456,21 @@ const Listing = React.createClass({
           sort_by: this.state.sort_by,
           sort_order: this.state.sort_order
         }
-      }).done(function(response) {
+      }).done((response) => {
         this.setState({
           items: response.items || [],
           filters: response.filters || {},
           groups: response.groups || [],
           count: response.count || 0,
           loading: false
-        }, function() {
-          if (this.props['onGetItems'] !== undefined) {
-            const count = (response.groups[0] !== undefined)
-              ? ~~(response.groups[0].count)
-              : 0;
-            this.props.onGetItems(count);
+        }, () => {
+          // if viewing an empty trash
+          if (this.state.group === 'trash' && response.count === 0) {
+            // redirect to default group
+            this.handleGroup('all');
           }
-        }.bind(this));
-      }.bind(this));
+        });
+      });
     }
   },
   handleRestoreItem: function(id) {
@@ -483,8 +482,10 @@ const Listing = React.createClass({
     MailPoet.Ajax.post({
       endpoint: this.props.endpoint,
       action: 'restore',
-      data: id
-    }).done(function(response) {
+      data: {
+        id: id
+      }
+    }).done((response) => {
       if (
         this.props.messages !== undefined
         && this.props.messages['onRestore'] !== undefined
@@ -492,7 +493,12 @@ const Listing = React.createClass({
         this.props.messages.onRestore(response);
       }
       this.getItems();
-    }.bind(this));
+    }).fail((response) => {
+      MailPoet.Notice.error(
+        response.errors.map(function(error) { return error.message; }),
+        { scroll: true }
+      );
+    });
   },
   handleTrashItem: function(id) {
     this.setState({
@@ -503,8 +509,10 @@ const Listing = React.createClass({
     MailPoet.Ajax.post({
       endpoint: this.props.endpoint,
       action: 'trash',
-      data: id
-    }).done(function(response) {
+      data: {
+        id: id
+      }
+    }).done((response) => {
       if (
         this.props.messages !== undefined
         && this.props.messages['onTrash'] !== undefined
@@ -512,7 +520,12 @@ const Listing = React.createClass({
         this.props.messages.onTrash(response);
       }
       this.getItems();
-    }.bind(this));
+    }).fail((response) => {
+      MailPoet.Notice.error(
+        response.errors.map(function(error) { return error.message; }),
+        { scroll: true }
+      );
+    });
   },
   handleDeleteItem: function(id) {
     this.setState({
@@ -523,8 +536,10 @@ const Listing = React.createClass({
     MailPoet.Ajax.post({
       endpoint: this.props.endpoint,
       action: 'delete',
-      data: id
-    }).done(function(response) {
+      data: {
+        id: id
+      }
+    }).done((response) => {
       if (
         this.props.messages !== undefined
         && this.props.messages['onDelete'] !== undefined
@@ -532,22 +547,29 @@ const Listing = React.createClass({
         this.props.messages.onDelete(response);
       }
       this.getItems();
-    }.bind(this));
+    }).fail((response) => {
+      MailPoet.Notice.error(
+        response.errors.map(function(error) { return error.message; }),
+        { scroll: true }
+      );
+    });
   },
   handleEmptyTrash: function() {
     return this.handleBulkAction('all', {
       action: 'delete',
       group: 'trash'
-    }).then(function(response) {
-      if (~~(response) > 0) {
-        MailPoet.Notice.success(
-          MailPoet.I18n.t('permanentlyDeleted').replace('%d', response)
-        );
-      }
-
+    }).done((response) => {
+      MailPoet.Notice.success(
+        MailPoet.I18n.t('permanentlyDeleted').replace('%d', response.meta.count)
+      );
       // redirect to default group
       this.handleGroup('all');
-    }.bind(this));
+    }).fail((response) => {
+      MailPoet.Notice.error(
+        response.errors.map(function(error) { return error.message; }),
+        { scroll: true }
+      );
+    });
   },
   handleBulkAction: function(selected_ids, params) {
     if (
@@ -555,7 +577,7 @@ const Listing = React.createClass({
       && this.state.selected_ids.length === 0
       && selected_ids !== 'all'
     ) {
-      return;
+      return false;
     }
 
     this.setState({ loading: true });

@@ -66,22 +66,22 @@ define(
         MailPoet.Ajax.post({
           endpoint: this.props.endpoint,
           action: 'get',
-          data: id
-        }).done(function(response) {
-          if(response === false) {
-            this.setState({
-              loading: false,
-              item: {}
-            }, function() {
-              this.context.router.push('/new');
-            }.bind(this));
-          } else {
-            this.setState({
-              loading: false,
-              item: response
-            });
+          data: {
+            id: id
           }
-        }.bind(this));
+        }).done((response) => {
+          this.setState({
+            loading: false,
+            item: response.data
+          });
+        }).fail((response) => {
+          this.setState({
+            loading: false,
+            item: {}
+          }, function() {
+            this.context.router.push('/new');
+          });
+        });
       },
       handleSubmit: function(e) {
         e.preventDefault();
@@ -115,29 +115,25 @@ define(
           endpoint: this.props.endpoint,
           action: 'save',
           data: item
-        }).done(function(response) {
+        }).always(() => {
           this.setState({ loading: false });
-
-          if(response.result === true) {
-            if(this.props.onSuccess !== undefined) {
-              this.props.onSuccess();
-            } else {
-              this.context.router.push('/');
-            }
-
-            if(this.props.params.id !== undefined) {
-              this.props.messages.onUpdate();
-            } else {
-              this.props.messages.onCreate();
-            }
+        }).done((response) => {
+          if(this.props.onSuccess !== undefined) {
+            this.props.onSuccess();
           } else {
-            if(response.result === false) {
-              if(response.errors.length > 0) {
-                this.setState({ errors: response.errors });
-              }
-            }
+            this.context.router.push('/');
           }
-        }.bind(this));
+
+          if(this.props.params.id !== undefined) {
+            this.props.messages.onUpdate();
+          } else {
+            this.props.messages.onCreate();
+          }
+        }).fail((response) => {
+          if(response.errors.length > 0) {
+            this.setState({ errors: response.errors });
+          }
+        });
       },
       handleValueChange: function(e) {
         if (this.props.onChange) {
@@ -159,7 +155,7 @@ define(
           var errors = this.getErrors().map(function(error, index) {
             return (
               <p key={ 'error-'+index } className="mailpoet_error">
-                { error }
+                { error.message }
               </p>
             );
           });

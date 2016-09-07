@@ -23,14 +23,24 @@ class NewslettersTest extends MailPoetTest {
   function testItCanGetANewsletter() {
     $router = new Newsletters();
 
-    $response = $router->get($this->newsletter->id());
-    expect($response['id'])->equals($this->newsletter->id());
+    $response = $router->get(/* missing id */);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])
+      ->equals('This newsletter does not exist.');
 
-    $response = $router->get('not_an_id');
-    expect($response)->false();
+    $response = $router->get(array('id' => 'not_an_id'));
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])
+      ->equals('This newsletter does not exist.');
 
-    $response = $router->get(/* missing argument */);
-    expect($response)->false();
+    $response = $router->get(array('id' => $this->newsletter->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Newsletter::findOne($this->newsletter->id)
+        ->withSegments()
+        ->withOptions()
+        ->asArray()
+    );
   }
 
   function testItCanSaveANewNewsletter() {
@@ -110,43 +120,57 @@ class NewslettersTest extends MailPoetTest {
   function testItCanRestoreANewsletter() {
     $this->newsletter->trash();
 
-    expect($this->newsletter->deleted_at)->notNull();
+    $trashed_newsletter = Newsletter::findOne($this->newsletter->id);
+    expect($trashed_newsletter->deleted_at)->notNull();
 
     $router = new Newsletters();
-    $router->restore($this->newsletter->id());
-
-    $restored_subscriber = Newsletter::findOne($this->newsletter->id());
-    expect($restored_subscriber->deleted_at)->null();
+    $response = $router->restore(array('id' => $this->newsletter->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Newsletter::findOne($this->newsletter->id)->asArray()
+    );
+    expect($response->data['deleted_at'])->null();
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanTrashANewsletter() {
     $router = new Newsletters();
-    $response = $router->trash($this->newsletter->id());
-    expect($response)->true();
-
-    $trashed_subscriber = Newsletter::findOne($this->newsletter->id());
-    expect($trashed_subscriber->deleted_at)->notNull();
+    $response = $router->trash(array('id' => $this->newsletter->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Newsletter::findOne($this->newsletter->id)->asArray()
+    );
+    expect($response->data['deleted_at'])->notNull();
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanDeleteANewsletter() {
     $router = new Newsletters();
-    $response = $router->delete($this->newsletter->id());
-    expect($response)->equals(1);
-
-    expect(Newsletter::findOne($this->newsletter->id()))->false();
+    $response = $router->delete(array('id' => $this->newsletter->id));
+    expect($response->data)->isEmpty();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanDuplicateANewsletter() {
     $router = new Newsletters();
-    $response = $router->duplicate($this->newsletter->id());
-    expect($response['subject'])->equals('Copy of My Standard Newsletter');
-    expect($response['type'])->equals(Newsletter::TYPE_STANDARD);
-    expect($response['body'])->equals($this->newsletter->body);
+    $response = $router->duplicate(array('id' => $this->newsletter->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Newsletter::where('subject', 'Copy of My Standard Newsletter')
+        ->findOne()
+        ->asArray()
+    );
+    expect($response->meta['count'])->equals(1);
 
-    $response = $router->duplicate($this->post_notification->id());
-    expect($response['subject'])->equals('Copy of My Post Notification');
-    expect($response['type'])->equals(Newsletter::TYPE_NOTIFICATION);
-    expect($response['body'])->equals($this->post_notification->body);
+    $response = $router->duplicate(array('id' => $this->post_notification->id));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Newsletter::where('subject', 'Copy of My Post Notification')
+        ->findOne()
+        ->asArray()
+    );
+    expect($response->meta['count'])->equals(1);
   }
 
   function testItCanCreateANewsletter() {
@@ -156,16 +180,16 @@ class NewslettersTest extends MailPoetTest {
     );
     $router = new Newsletters();
     $response = $router->create($data);
-    expect($response['result'])->true();
-    expect($response['newsletter']['id'] > 0)->true();
-    expect($response['newsletter']['subject'])->equals('My New Newsletter');
-    expect($response['newsletter']['type'])->equals(Newsletter::TYPE_STANDARD);
-    expect($response['newsletter']['body'])->equals(array());
-    expect($response)->hasntKey('errors');
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Newsletter::where('subject', 'My New Newsletter')
+        ->findOne()
+        ->asArray()
+    );
 
     $response = $router->create();
-    expect($response['result'])->false();
-    expect($response['errors'][0])->equals('Please specify a type');
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please specify a type');
   }
 
   function testItCanGetListingData() {
@@ -174,22 +198,22 @@ class NewslettersTest extends MailPoetTest {
 
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(array(
-      'newsletter_id' => $this->newsletter->id(),
-      'segment_id' => $segment_1->id()
+      'newsletter_id' => $this->newsletter->id,
+      'segment_id' => $segment_1->id
     ));
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(array(
-      'newsletter_id' => $this->newsletter->id(),
-      'segment_id' => $segment_2->id()
+      'newsletter_id' => $this->newsletter->id,
+      'segment_id' => $segment_2->id
     ));
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(array(
-      'newsletter_id' => $this->post_notification->id(),
-      'segment_id' => $segment_2->id()
+      'newsletter_id' => $this->post_notification->id,
+      'segment_id' => $segment_2->id
     ));
     $newsletter_segment->save();
 
@@ -226,23 +250,23 @@ class NewslettersTest extends MailPoetTest {
     // link standard newsletter to the 2 segments
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(array(
-      'newsletter_id' => $this->newsletter->id(),
-      'segment_id' => $segment_1->id()
+      'newsletter_id' => $this->newsletter->id,
+      'segment_id' => $segment_1->id
     ));
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(array(
-      'newsletter_id' => $this->newsletter->id(),
-      'segment_id' => $segment_2->id()
+      'newsletter_id' => $this->newsletter->id,
+      'segment_id' => $segment_2->id
     ));
     $newsletter_segment->save();
 
     // link post notification to the 2nd segment
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->hydrate(array(
-      'newsletter_id' => $this->post_notification->id(),
-      'segment_id' => $segment_2->id()
+      'newsletter_id' => $this->post_notification->id,
+      'segment_id' => $segment_2->id
     ));
     $newsletter_segment->save();
 
@@ -301,14 +325,9 @@ class NewslettersTest extends MailPoetTest {
   }
 
   function testItCanBulkDeleteSelectionOfNewsletters() {
-    $newsletter = Newsletter::createOrUpdate(array(
-      'subject' => 'To be deleted',
-      'type' => Newsletter::TYPE_STANDARD
-    ));
-
     $selection_ids = array(
-      $newsletter->id,
-      $this->newsletter->id
+      $this->newsletter->id,
+      $this->post_notification->id
     );
 
     $router = new Newsletters();
@@ -319,29 +338,33 @@ class NewslettersTest extends MailPoetTest {
       'action' => 'delete'
     ));
 
-    expect($response)->equals(count($selection_ids));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(count($selection_ids));
   }
 
   function testItCanBulkDeleteNewsletters() {
-    expect(Newsletter::count())->equals(2);
-
-    $newsletters = Newsletter::findMany();
-    foreach($newsletters as $newsletter) {
-      $newsletter->trash();
-    }
+    $router = new Newsletters();
+    $response = $router->bulkAction(array(
+      'action' => 'trash',
+      'listing' => array('group' => 'all')
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(2);
 
     $router = new Newsletters();
     $response = $router->bulkAction(array(
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
-    expect($response)->equals(2);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(2);
 
     $response = $router->bulkAction(array(
       'action' => 'delete',
       'listing' => array('group' => 'trash')
     ));
-    expect($response)->equals(0);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->meta['count'])->equals(0);
   }
 
   function _after() {

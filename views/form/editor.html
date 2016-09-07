@@ -414,6 +414,13 @@
               MailPoet.Notice.success(
                 "<%= __('The form name was successfully updated!') %>"
               );
+            }).fail(function(response) {
+              if (response.errors.length > 0) {
+                MailPoet.Notice.error(
+                  response.errors.map(function(error) { return error.message; }),
+                  { scroll: true }
+                );
+              }
             });
           }
         }
@@ -454,9 +461,16 @@
             MailPoet.Modal.popup({
               title: "<%= __('Form preview') %>",
               template: $('#mailpoet_form_preview_template').html(),
-              data: response
+              data: response.data
             });
-          })
+          }).fail(function(response) {
+            if (response.errors.length > 0) {
+              MailPoet.Notice.error(
+                response.errors.map(function(error) { return error.message; }),
+                { scroll: true }
+              );
+            }
+          });
         }
 
         function mailpoet_form_save(callback) {
@@ -490,7 +504,7 @@
               if(callback !== false) {
                 var message = null;
 
-                if(response.is_widget === true) {
+                if(response.meta.is_widget === true) {
                   message = "<%= __('Saved! The changes are now active in your widget.') %>";
                 } else {
                   message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw %>";
@@ -500,7 +514,7 @@
                   MailPoet.Notice.hide();
                   MailPoet.Notice.success(message, {
                     scroll: true,
-                    static: (response.is_widget === false)
+                    static: (response.meta.is_widget === false)
                   });
                 }
 
@@ -539,10 +553,17 @@
           MailPoet.Ajax.post({
             endpoint: 'forms',
             action: 'exportsEditor',
-            data: $('#mailpoet_form_id').val()
+            data: {
+              id: $('#mailpoet_form_id').val()
+            }
           }).done(function(response) {
-            if(response.result !== false) {
-              $('#mailpoet_form_export').html(template({ exports: response }));
+            $('#mailpoet_form_export').html(template({ exports: response.data }));
+          }).fail(function(response) {
+            if (response.errors.length > 0) {
+              MailPoet.Notice.error(
+                response.errors.map(function(error) { return error.message; }),
+                { scroll: true }
+              );
             }
           });
         }

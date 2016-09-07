@@ -50,17 +50,16 @@ define(
             type: 'notification',
             subject: MailPoet.I18n.t('draftNewsletterTitle'),
           }),
-        }).done(function(response) {
-          if(response.result && response.newsletter.id) {
-            this.showTemplateSelection(response.newsletter.id);
-          } else {
-            if(response.errors.length > 0) {
-              response.errors.map(function(error) {
-                MailPoet.Notice.error(error);
-              });
-            }
+        }).done((response) => {
+          this.showTemplateSelection(response.data.id);
+        }).fail((response) => {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { scroll: true }
+            );
           }
-        }.bind(this));
+        });
       },
       showTemplateSelection: function(newsletterId) {
         this.context.router.push(`/template/${newsletterId}`);
