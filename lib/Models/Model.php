@@ -155,7 +155,7 @@ class Model extends \Sudzy\ValidModel {
     return $duplicate;
   }
 
-  private function setTimestamp() {
+  function setTimestamp() {
     if($this->created_at === null) {
       $this->set_expr('created_at', 'NOW()');
     }
