@@ -12,7 +12,7 @@ class Mailer {
   public $sender;
   public $reply_to;
   public $mailer_instance;
-  const MAILER_CONFIG = 'mta';
+  const MAILER_CONFIG_SETTING_NAME = 'mta';
   const SENDING_LIMIT_INTERVAL_MULTIPLIER = 60;
   const METHOD_MAILPOET = 'MailPoet';
   const METHOD_MAILGUN = 'MailGun';
@@ -100,7 +100,7 @@ class Mailer {
 
   static function getMailerConfig($mailer = false) {
     if(!$mailer) {
-      $mailer = Setting::getValue(self::MAILER_CONFIG);
+      $mailer = Setting::getValue(self::MAILER_CONFIG_SETTING_NAME);
       if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured'));
     }
     if(empty($mailer['frequency'])) {
