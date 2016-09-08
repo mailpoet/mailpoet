@@ -32,18 +32,22 @@ class Segments extends APIEndpoint {
 
     $listing_data = $listing->get();
 
-    // fetch segments relations for each returned item
-    foreach($listing_data['items'] as $key => $segment) {
+    $data = array();
+    foreach($listing_data['items'] as $segment) {
       $segment->subscribers_url = admin_url(
         'admin.php?page=mailpoet-subscribers#/filter[segment='.$segment->id.']'
       );
 
-      $listing_data['items'][$key] = $segment
+      $data[] = $segment
         ->withSubscribersCount()
         ->asArray();
     }
 
-    return $listing_data;
+    return $this->successResponse($data, array(
+      'count' => $listing_data['count'],
+      'filters' => $listing_data['filters'],
+      'groups' => $listing_data['groups']
+    ));
   }
 
   function save($data = array()) {

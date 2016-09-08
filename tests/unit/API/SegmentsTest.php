@@ -31,15 +31,17 @@ class SegmentsTest extends MailPoetTest {
   function testItCanGetListingData() {
     $router = new Segments();
     $response = $router->listing();
-    expect($response)->hasKey('filters');
-    expect($response)->hasKey('groups');
 
-    expect($response['count'])->equals(3);
-    expect($response['items'])->count(3);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    expect($response['items'][0]['name'])->equals($this->segment_1->name);
-    expect($response['items'][1]['name'])->equals($this->segment_2->name);
-    expect($response['items'][2]['name'])->equals($this->segment_3->name);
+    expect($response->meta)->hasKey('filters');
+    expect($response->meta)->hasKey('groups');
+    expect($response->meta['count'])->equals(3);
+
+    expect($response->data)->count(3);
+    expect($response->data[0]['name'])->equals($this->segment_1->name);
+    expect($response->data[1]['name'])->equals($this->segment_2->name);
+    expect($response->data[2]['name'])->equals($this->segment_3->name);
   }
 
   function testItCanSaveASegment() {

@@ -106,6 +106,7 @@ class Handler {
       );
     }
 
+    // get items and total count
     if(method_exists($this->model_class, 'listingQuery')) {
       $custom_query = call_user_func_array(
         array($this->model_class, 'listingQuery'),
@@ -134,7 +135,6 @@ class Handler {
         ->limit($this->data['limit'])
         ->findMany();
     }
-
 
     return array(
       'count' => $count,

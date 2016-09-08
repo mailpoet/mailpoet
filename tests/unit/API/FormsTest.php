@@ -34,13 +34,17 @@ class FormsTest extends MailPoetTest {
   function testItCanGetListingData() {
     $router = new Forms();
     $response = $router->listing();
-    expect($response)->hasKey('filters');
-    expect($response)->hasKey('groups');
-    expect($response['count'])->equals(3);
-    expect($response['items'])->count(3);
-    expect($response['items'][0]['name'])->equals('Form 1');
-    expect($response['items'][1]['name'])->equals('Form 2');
-    expect($response['items'][2]['name'])->equals('Form 3');
+
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    expect($response->meta)->hasKey('filters');
+    expect($response->meta)->hasKey('groups');
+    expect($response->meta['count'])->equals(3);
+
+    expect($response->data)->count(3);
+    expect($response->data[0]['name'])->equals('Form 1');
+    expect($response->data[1]['name'])->equals('Form 2');
+    expect($response->data[2]['name'])->equals('Form 3');
   }
 
   function testItCanCreateANewForm() {

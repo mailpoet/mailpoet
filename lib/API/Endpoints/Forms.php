@@ -32,8 +32,8 @@ class Forms extends APIEndpoint {
 
     $listing_data = $listing->get();
 
-    // fetch segments relations for each returned item
-    foreach($listing_data['items'] as $key => $form) {
+    $data = array();
+    foreach($listing_data['items'] as $form) {
       $form = $form->asArray();
 
       $form['signups'] = StatisticsForms::getTotalSignups($form['id']);
@@ -43,10 +43,15 @@ class Forms extends APIEndpoint {
         ? $form['settings']['segments']
         : array()
       );
-      $listing_data['items'][$key] = $form;
+
+      $data[] = $form;
     }
 
-    return $listing_data;
+    return $this->successResponse($data, array(
+      'count' => $listing_data['count'],
+      'filters' => $listing_data['filters'],
+      'groups' => $listing_data['groups']
+    ));
   }
 
   function create() {

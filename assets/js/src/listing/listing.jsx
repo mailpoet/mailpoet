@@ -456,20 +456,28 @@ const Listing = React.createClass({
           sort_by: this.state.sort_by,
           sort_order: this.state.sort_order
         }
+      }).always(() => {
+        this.setState({ loading: false });
       }).done((response) => {
         this.setState({
-          items: response.items || [],
-          filters: response.filters || {},
-          groups: response.groups || [],
-          count: response.count || 0,
-          loading: false
+          items: response.data || [],
+          filters: response.meta.filters || {},
+          groups: response.meta.groups || [],
+          count: response.meta.count || 0
         }, () => {
           // if viewing an empty trash
-          if (this.state.group === 'trash' && response.count === 0) {
+          if (this.state.group === 'trash' && response.meta.count === 0) {
             // redirect to default group
             this.handleGroup('all');
           }
         });
+      }).fail(function(response) {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true }
+          );
+        }
       });
     }
   },
