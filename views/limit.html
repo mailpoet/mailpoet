@@ -1,0 +1,28 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+
+<div class="wrap about-wrap">
+  <h1><%= __("You've reached the %d subscribers limit!") | format(limit) %></h1>
+
+  <p class="about-text">
+    <%= __("MailPoet 3 is currently limited to %d subscribers.") | format(limit) %>
+  </p>
+
+  <img
+    src="http://i2.wp.com/www.mailpoet.com/wp-content/uploads/2015/05/sad-cat.gif?resize=500%2C212"
+    alt="sad-cat"
+    width="500"
+    height="212"
+  />
+
+  <h3><%= __('Immediately, you can:') %></h3>
+  <ul>
+    <li><%= __('Delete unconfirmed subscribers to have less than %d subscribers.') | format(limit) %></li>
+    <li>
+      <a href="https://docs.mailpoet.com/"><%= __('Contact us')%></a>
+      <%= __('to become a Premium beta tester.')%>
+    </li>
+  </ul>
+</div>
+<% endblock %>

@@ -438,6 +438,36 @@ class SubscriberTest extends MailPoetTest {
     expect($subscriber)->notEquals(false);
   }
 
+  function testItCanTheTotalNumberOfSubscribers() {
+    // remove all subscribers
+    Subscriber::deleteMany();
+
+    $subscriber_1 = Subscriber::createOrUpdate(array(
+      'email' => 'subscriber_1@mailpoet.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED
+    ));
+
+    $subscriber_2 = Subscriber::createOrUpdate(array(
+      'email' => 'subscriber_2@mailpoet.com',
+      'status' => Subscriber::STATUS_UNCONFIRMED
+    ));
+
+    $subscriber_3 = Subscriber::createOrUpdate(array(
+      'email' => 'subscriber_3@mailpoet.com',
+      'status' => Subscriber::STATUS_UNSUBSCRIBED
+    ));
+
+    // counts only subscribed & unconfirmed users
+    $total = Subscriber::getTotalSubscribers();
+    expect($total)->equals(2);
+
+    $subscriber_1->status = Subscriber::STATUS_UNSUBSCRIBED;
+    $subscriber_1->save();
+
+    $total = Subscriber::getTotalSubscribers();
+    expect($total)->equals(1);
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);

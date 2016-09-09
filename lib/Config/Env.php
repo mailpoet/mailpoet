@@ -27,6 +27,7 @@ class Env {
   static $db_password;
   static $db_charset;
   static $db_timezone_offset;
+  static $subscribers_limit = 2000;
 
   static function init($file, $version) {
     global $wpdb;
