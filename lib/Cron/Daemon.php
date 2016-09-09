@@ -2,6 +2,7 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
@@ -14,7 +15,6 @@ class Daemon {
   const REQUEST_TIMEOUT = 5;
 
   function __construct($request_data = false) {
-    ignore_user_abort(true);
     $this->request_data = $request_data;
     $this->daemon = CronHelper::getDaemon();
     $this->token = CronHelper::createToken();
@@ -22,6 +22,7 @@ class Daemon {
   }
 
   function run() {
+    ignore_user_abort(true);
     if(!$this->request_data) {
       $error = __('Invalid or missing request data.');
     } else {

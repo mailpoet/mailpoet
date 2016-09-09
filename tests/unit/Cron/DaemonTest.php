@@ -19,7 +19,6 @@ class DaemonTest extends MailPoetTest {
     $daemon = new Daemon($request_data = 'request data');
     expect($daemon->daemon)->equals('daemon object');
     expect($daemon->request_data)->equals('request data');
-    expect(ignore_user_abort())->equals(1);
     expect(strlen($daemon->timer))->greaterOrEquals(5);
     expect(strlen($daemon->token))->greaterOrEquals(5);
   }
@@ -177,6 +176,8 @@ class DaemonTest extends MailPoetTest {
   }
 
   function testItCanRun() {
+    ignore_user_abort(0);
+    expect(ignore_user_abort())->equals(0);
     $daemon = Stub::make(new Daemon(true), array(
       'pauseExecution' => function() { },
       // workers should be executed
@@ -191,6 +192,7 @@ class DaemonTest extends MailPoetTest {
     Setting::setValue(CronHelper::DAEMON_SETTING, $data);
     $daemon->__construct($data);
     $daemon->run();
+    expect(ignore_user_abort())->equals(1);
   }
 
   function _after() {
