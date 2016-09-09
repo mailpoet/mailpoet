@@ -171,7 +171,11 @@ class Menu {
 
     add_submenu_page(
       true,
+<<<<<<< HEAD
+      $this->setPageTitle(__('Form')),
+=======
       $this->setPageTitle(__('Form Editor')),
+>>>>>>> master
       __('Form Editor'),
       'manage_options',
       'mailpoet-form-editor',

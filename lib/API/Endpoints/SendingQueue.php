@@ -33,6 +33,33 @@ class SendingQueue extends APIEndpoint {
       ));
     }
 
+<<<<<<< HEAD:lib/Router/SendingQueue.php
+    if($newsletter->type === Newsletter::TYPE_WELCOME) {
+      // set welcome email active
+      $result = $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
+      $errors = $result->getErrors();
+
+      if(!empty($errors)) {
+        return array(
+          'result' => false,
+          'errors' => $errors
+        );
+      } else {
+        return array(
+          'result' => true,
+          'data' => array(
+            'message' => __('Your Welcome Email has been activated')
+          )
+        );
+      }
+    } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+      // Post Notifications
+      $newsletter = Scheduler::processPostNotificationSchedule($newsletter->id);
+      Scheduler::createPostNotificationQueue($newsletter);
+
+      // set post notification active
+      $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
+=======
     // check that the sending method has been configured properly
     try {
       new Mailer(false);
@@ -40,6 +67,7 @@ class SendingQueue extends APIEndpoint {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
       ));
+>>>>>>> master:lib/API/Endpoints/SendingQueue.php
     }
 
     // add newsletter to the sending queue
@@ -82,9 +110,16 @@ class SendingQueue extends APIEndpoint {
       $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
       $subscribers = array_unique($subscribers);
       if(!count($subscribers)) {
+<<<<<<< HEAD:lib/Router/SendingQueue.php
+        return array(
+          'result' => false,
+          'errors' => array(__('There are no subscribers in that list!'))
+        );
+=======
         return $this->errorResponse(array(
           APIError::UNKNOWN => __('There are no subscribers in that list!')
         ));
+>>>>>>> master:lib/API/Endpoints/SendingQueue.php
       }
       $queue->status = null;
       $queue->scheduled_at = null;
