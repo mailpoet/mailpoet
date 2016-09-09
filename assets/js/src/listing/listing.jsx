@@ -1,6 +1,7 @@
 import MailPoet from 'mailpoet'
 import jQuery from 'jquery'
 import React from 'react'
+import _ from 'underscore'
 import { Router, Link } from 'react-router'
 import classNames from 'classnames'
 import ListingBulkActions from 'listing/bulk_actions.jsx'
@@ -13,7 +14,7 @@ import ListingFilters from 'listing/filters.jsx'
 const ListingItem = React.createClass({
   getInitialState: function() {
     return {
-      toggled: true
+      expanded: false
     };
   },
   handleSelectItem: function(e) {
@@ -34,7 +35,7 @@ const ListingItem = React.createClass({
     this.props.onDeleteItem(id);
   },
   handleToggleItem: function(id) {
-    this.setState({ toggled: !this.state.toggled });
+    this.setState({ expanded: !this.state.expanded });
   },
   render: function() {
     var checkbox = false;
@@ -182,7 +183,7 @@ const ListingItem = React.createClass({
       );
     }
 
-    const row_classes = classNames({ 'is-expanded': !this.state.toggled });
+    const row_classes = classNames({ 'is-expanded': this.state.expanded });
 
     return (
       <tr className={ row_classes }>
@@ -303,13 +304,12 @@ const Listing = React.createClass({
   getParam: function(param) {
     const regex = /(.*)\[(.*)\]/;
     const matches = regex.exec(param);
-    return [matches[1], matches[2]]
+    return [matches[1], matches[2]];
   },
   initWithParams: function(params) {
     let state = this.getInitialState();
-
      // check for url params
-    if (params.splat !== undefined) {
+    if (params.splat) {
       params.splat.split('/').map(param => {
         let [key, value] = this.getParam(param);
         switch(key) {
@@ -348,6 +348,17 @@ const Listing = React.createClass({
       this.getItems();
     }.bind(this));
   },
+  getParams: function() {
+    // get all route parameters (without the "splat")
+    let params = _.omit(this.props.params, 'splat');
+    // TODO:
+    // find a way to set the "type" in the routes definition
+    // so that it appears in `this.props.params`
+    if (this.props.type) {
+      params.type = this.props.type;
+    }
+    return params;
+  },
   setParams: function() {
     if (this.props.location) {
       let params = Object.keys(this.state)
@@ -378,17 +389,37 @@ const Listing = React.createClass({
         .filter(key => { return (key !== undefined) })
         .join('/');
 
-      // prepend url with "tab" if specified
-      if (this.props.tab !== undefined) {
-        params = `/${ this.props.tab }/${ params }`;
-      } else {
-        params = `/${ params }`;
-      }
+      // set url
+      let url = this.getUrlWithParams(params);
 
-      if (this.props.location.pathname !== params) {
-        this.context.router.push(`${params}`);
+      if (this.props.location.pathname !== url) {
+        this.context.router.push(`${url}`);
       }
     }
+  },
+  getUrlWithParams: function(params) {
+    let base_url = (this.props.base_url !== undefined)
+      ? this.props.base_url
+      : null;
+
+    if (base_url !== null) {
+      base_url = this.setBaseUrlParams(base_url);
+      return `/${ base_url }/${ params }`;
+    } else {
+      return `/${ params }`;
+    }
+  },
+  setBaseUrlParams: function(base_url) {
+    if (base_url.indexOf(':') !== -1) {
+      const params = this.getParams();
+      Object.keys(params).map((key) => {
+        if (base_url.indexOf(':'+key) !== -1) {
+          base_url = base_url.replace(':'+key, params[key]);
+        }
+      });
+    }
+
+    return base_url;
   },
   componentDidMount: function() {
     if (this.isMounted()) {
@@ -416,7 +447,7 @@ const Listing = React.createClass({
         endpoint: this.props.endpoint,
         action: 'listing',
         data: {
-          tab: (this.props.tab) ? this.props.tab : '',
+          params: this.getParams(),
           offset: (this.state.page - 1) * this.state.limit,
           limit: this.state.limit,
           group: this.state.group,
@@ -425,22 +456,21 @@ const Listing = React.createClass({
           sort_by: this.state.sort_by,
           sort_order: this.state.sort_order
         }
-      }).done(function(response) {
+      }).done((response) => {
         this.setState({
           items: response.items || [],
           filters: response.filters || {},
           groups: response.groups || [],
           count: response.count || 0,
           loading: false
-        }, function() {
-          if (this.props['onGetItems'] !== undefined) {
-            const count = (response.groups[0] !== undefined)
-              ? ~~(response.groups[0].count)
-              : 0;
-            this.props.onGetItems(count);
+        }, () => {
+          // if viewing an empty trash
+          if (this.state.group === 'trash' && response.count === 0) {
+            // redirect to default group
+            this.handleGroup('all');
           }
-        }.bind(this));
-      }.bind(this));
+        });
+      });
     }
   },
   handleRestoreItem: function(id) {
@@ -452,8 +482,10 @@ const Listing = React.createClass({
     MailPoet.Ajax.post({
       endpoint: this.props.endpoint,
       action: 'restore',
-      data: id
-    }).done(function(response) {
+      data: {
+        id: id
+      }
+    }).done((response) => {
       if (
         this.props.messages !== undefined
         && this.props.messages['onRestore'] !== undefined
@@ -461,7 +493,12 @@ const Listing = React.createClass({
         this.props.messages.onRestore(response);
       }
       this.getItems();
-    }.bind(this));
+    }).fail((response) => {
+      MailPoet.Notice.error(
+        response.errors.map(function(error) { return error.message; }),
+        { scroll: true }
+      );
+    });
   },
   handleTrashItem: function(id) {
     this.setState({
@@ -472,8 +509,10 @@ const Listing = React.createClass({
     MailPoet.Ajax.post({
       endpoint: this.props.endpoint,
       action: 'trash',
-      data: id
-    }).done(function(response) {
+      data: {
+        id: id
+      }
+    }).done((response) => {
       if (
         this.props.messages !== undefined
         && this.props.messages['onTrash'] !== undefined
@@ -481,7 +520,12 @@ const Listing = React.createClass({
         this.props.messages.onTrash(response);
       }
       this.getItems();
-    }.bind(this));
+    }).fail((response) => {
+      MailPoet.Notice.error(
+        response.errors.map(function(error) { return error.message; }),
+        { scroll: true }
+      );
+    });
   },
   handleDeleteItem: function(id) {
     this.setState({
@@ -492,8 +536,10 @@ const Listing = React.createClass({
     MailPoet.Ajax.post({
       endpoint: this.props.endpoint,
       action: 'delete',
-      data: id
-    }).done(function(response) {
+      data: {
+        id: id
+      }
+    }).done((response) => {
       if (
         this.props.messages !== undefined
         && this.props.messages['onDelete'] !== undefined
@@ -501,22 +547,29 @@ const Listing = React.createClass({
         this.props.messages.onDelete(response);
       }
       this.getItems();
-    }.bind(this));
+    }).fail((response) => {
+      MailPoet.Notice.error(
+        response.errors.map(function(error) { return error.message; }),
+        { scroll: true }
+      );
+    });
   },
   handleEmptyTrash: function() {
     return this.handleBulkAction('all', {
       action: 'delete',
       group: 'trash'
-    }).then(function(response) {
-      if (~~(response) > 0) {
-        MailPoet.Notice.success(
-          MailPoet.I18n.t('permanentlyDeleted').replace('%d', response)
-        );
-      }
-
+    }).done((response) => {
+      MailPoet.Notice.success(
+        MailPoet.I18n.t('permanentlyDeleted').replace('%d', response.meta.count)
+      );
       // redirect to default group
       this.handleGroup('all');
-    }.bind(this));
+    }).fail((response) => {
+      MailPoet.Notice.error(
+        response.errors.map(function(error) { return error.message; }),
+        { scroll: true }
+      );
+    });
   },
   handleBulkAction: function(selected_ids, params) {
     if (
@@ -524,14 +577,14 @@ const Listing = React.createClass({
       && this.state.selected_ids.length === 0
       && selected_ids !== 'all'
     ) {
-      return;
+      return false;
     }
 
     this.setState({ loading: true });
 
     var data = params || {};
     data.listing = {
-      tab: (this.props.tab) ? this.props.tab : '',
+      params: this.getParams(),
       offset: 0,
       limit: 0,
       filter: this.state.filter,

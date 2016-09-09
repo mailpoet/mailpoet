@@ -93,6 +93,7 @@ define([
       return {
         model: this.model.toJSON(),
         allIconSets: allIconSets.toJSON(),
+        imageMissingSrc: App.getConfig().get('urls.imageMissing'),
       };
     },
   });
@@ -140,6 +141,7 @@ define([
         },
       },
       HighlightEditingBehavior: {},
+      ShowSettingsBehavior: {},
     },
     onDragSubstituteBy: function() { return Module.SocialWidgetView; },
     constructor: function() {
@@ -148,6 +150,7 @@ define([
       Marionette.CompositeView.apply(this, arguments);
     },
     initialize: function() {
+      this.on('showSettings', this.showSettings, this);
       this.on('dom:refresh', this.showBlock, this);
       this._isFirstRender = true;
     },
@@ -168,12 +171,15 @@ define([
       this.regionManager.destroy();
     },
     showTools: function(_event) {
-      this.$(this.ui.tools).show();
+      this.$(this.ui.tools).addClass('mailpoet_display_tools');
       _event.stopPropagation();
     },
     hideTools: function(_event) {
-      this.$(this.ui.tools).hide();
+      this.$(this.ui.tools).removeClass('mailpoet_display_tools');
       _event.stopPropagation();
+    },
+    showSettings: function(options) {
+      this.toolsView.triggerMethod('showSettings', options);
     },
     getDropFunc: function() {
       return function() {
@@ -274,9 +280,9 @@ define([
       return {
         "click .mailpoet_delete_block": "deleteIcon",
         "change .mailpoet_social_icon_field_type": _.partial(this.changeField, "iconType"),
-        "keyup .mailpoet_social_icon_field_image": _.partial(this.changeField, "image"),
-        "keyup .mailpoet_social_icon_field_link": this.changeLink,
-        "keyup .mailpoet_social_icon_field_text": _.partial(this.changeField, "text"),
+        "input .mailpoet_social_icon_field_image": _.partial(this.changeField, "image"),
+        "input .mailpoet_social_icon_field_link": this.changeLink,
+        "input .mailpoet_social_icon_field_text": _.partial(this.changeField, "text"),
       };
     },
     modelEvents: {
@@ -383,7 +389,7 @@ define([
               {
                 type: 'socialIcon',
                 iconType: 'facebook',
-                link: 'http://example.com',
+                link: 'http://www.facebook.com',
                 image: App.getAvailableStyles().get('socialIconSets.default.facebook'),
                 height: '32px',
                 width: '32px',
@@ -392,7 +398,7 @@ define([
               {
                 type: 'socialIcon',
                 iconType: 'twitter',
-                link: 'http://example.com',
+                link: 'http://www.twitter.com',
                 image: App.getAvailableStyles().get('socialIconSets.default.twitter'),
                 height: '32px',
                 width: '32px',

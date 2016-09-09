@@ -1,12 +1,14 @@
 <?php
 namespace MailPoet\Config;
 
+use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
@@ -169,7 +171,11 @@ class Menu {
 
     add_submenu_page(
       true,
+<<<<<<< HEAD
       $this->setPageTitle(__('Form')),
+=======
+      $this->setPageTitle(__('Form Editor')),
+>>>>>>> master
       __('Form Editor'),
       'manage_options',
       'mailpoet-form-editor',
@@ -183,15 +189,6 @@ class Menu {
       'manage_options',
       'mailpoet-newsletter-editor',
       array($this, 'newletterEditor')
-    );
-
-    add_submenu_page(
-      $main_page_slug,
-      $this->setPageTitle(__('Cron')),
-      __('Cron'),
-      'manage_options',
-      'mailpoet-cron',
-      array($this, 'cron')
     );
   }
 
@@ -255,6 +252,7 @@ class Menu {
     $data = array(
       'settings' => $settings,
       'segments' => Segment::getPublic()->findArray(),
+      'cron_trigger' => CronTrigger::getAvailableMethods(),
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),
@@ -366,6 +364,7 @@ class Menu {
     $data = array(
       'shortcodes' => ShortcodesHelper::getShortcodes(),
       'settings' => Setting::getAll(),
+      'current_wp_user' => Subscriber::getCurrentWPUser(),
       'sub_menu' => 'mailpoet-newsletters'
     );
     wp_enqueue_media();
@@ -377,7 +376,12 @@ class Menu {
   function import() {
     $import = new ImportExportFactory('import');
     $data = $import->bootstrap();
-    $data['sub_menu'] = 'mailpoet-subscribers';
+    $data = array_merge($data, array(
+      'date_types' => Block\Date::getDateTypes(),
+      'date_formats' => Block\Date::getDateFormats(),
+      'month_names' => Block\Date::getMonthNames(),
+      'sub_menu' => 'mailpoet-subscribers'
+    ));
     echo $this->renderer->render('subscribers/importExport/import.html', $data);
   }
 
@@ -407,10 +411,6 @@ class Menu {
     );
 
     echo $this->renderer->render('form/editor.html', $data);
-  }
-
-  function cron() {
-    echo $this->renderer->render('cron.html');
   }
 
   function setPageTitle($title) {

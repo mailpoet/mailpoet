@@ -6,6 +6,10 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Image {
   static function render($element, $column_count) {
+    if(empty($element['src'])) {
+      return '';
+    }
+
     $element['width'] = (int)$element['width'];
     $element['height'] = (int)$element['height'];
     $element = self::adjustImageDimensions($element, $column_count);

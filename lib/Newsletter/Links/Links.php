@@ -1,8 +1,9 @@
 <?php
 namespace MailPoet\Newsletter\Links;
 
-use MailPoet\API\API;
-use MailPoet\API\Endpoints\Track as TrackAPI;
+use MailPoet\Models\Subscriber;
+use MailPoet\Router\Router;
+use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Util\Security;
@@ -34,12 +35,14 @@ class Links {
     // extract shortcodes with [link:*] format
     $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract($content, $categories = array('link'));
-    $extracted_links = array_map(function ($shortcode) {
-      return array(
-        'html' => $shortcode,
-        'link' => $shortcode
-      );
-    }, $shortcodes);
+    if($shortcodes) {
+      $extracted_links = array_map(function($shortcode) {
+        return array(
+          'html' => $shortcode,
+          'link' => $shortcode
+        );
+      }, $shortcodes);
+    }
     // extract urls with href="url" format
     preg_match_all($regex, $content, $matched_urls);
     $matched_urls_count = count($matched_urls[0]);
@@ -80,7 +83,7 @@ class Links {
       // i.e., <a href="http://google.com">(http://google.com)</a> => [(http://google.com)](http://tracked_link)
       $regex_escaped_extracted_link = preg_quote($extracted_link['link'], '/');
       $content = preg_replace(
-        '/\[(' . $regex_escaped_extracted_link . ')\](\(' . $regex_escaped_extracted_link . '\))/',
+        '/\[(.*?)\](\(' . $regex_escaped_extracted_link . '\))/',
         '[$1](' . $tracked_link . ')',
         $content
       );
@@ -92,10 +95,10 @@ class Links {
   }
 
   static function replaceSubscriberData(
-    $newsletter_id,
     $subscriber_id,
     $queue_id,
-    $content
+    $content,
+    $preview = false
   ) {
     // match data tags
     $regex = sprintf(
@@ -103,6 +106,7 @@ class Links {
       preg_quote(self::DATA_TAG_CLICK),
       preg_quote(self::DATA_TAG_OPEN)
     );
+    $subscriber = Subscriber::findOne($subscriber_id);
     preg_match_all($regex, $content, $matches);
     foreach($matches[1] as $index => $match) {
       $hash = null;
@@ -110,17 +114,18 @@ class Links {
         list(, $hash) = explode('-', $match);
       }
       $data = array(
-        'newsletter' => $newsletter_id,
-        'subscriber' => $subscriber_id,
-        'queue' => $queue_id,
-        'hash' => $hash
+        'subscriber_id' => $subscriber->id,
+        'subscriber_token' => Subscriber::generateToken($subscriber->email),
+        'queue_id' => $queue_id,
+        'link_hash' => $hash,
+        'preview' => $preview
       );
-      $API_action = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
-        TrackAPI::ACTION_CLICK :
-        TrackAPI::ACTION_OPEN;
-      $link = API::buildRequest(
-        TrackAPI::ENDPOINT,
-        $API_action,
+      $router_action = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
+        TrackEndpoint::ACTION_CLICK :
+        TrackEndpoint::ACTION_OPEN;
+      $link = Router::buildRequest(
+        TrackEndpoint::ENDPOINT,
+        $router_action,
         $data
       );
       $content = str_replace($match, $link, $content);
@@ -130,7 +135,7 @@ class Links {
 
   static function save(array $links, $newsletter_id, $queue_id) {
     foreach($links as $link) {
-      if(empty($link['hash'] || empty($link['url']))) continue;
+      if(empty($link['hash']) || empty($link['url'])) continue;
       $newsletter_link = NewsletterLink::create();
       $newsletter_link->newsletter_id = $newsletter_id;
       $newsletter_link->queue_id = $queue_id;

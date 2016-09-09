@@ -71,14 +71,14 @@ define([
     });
 
     describe('block view', function () {
-      global.stubChannel(EditorApplication);
-      global.stubConfig(EditorApplication);
-      global.stubAvailableStyles(EditorApplication);
-      var model = new (SpacerBlock.SpacerBlockModel)(),
-        view;
+      var model;
+      var view;
 
       beforeEach(function () {
         global.stubChannel(EditorApplication);
+        global.stubConfig(EditorApplication);
+        global.stubAvailableStyles(EditorApplication);
+        model = new (SpacerBlock.SpacerBlockModel)();
         view = new (SpacerBlock.SpacerBlockView)({model: model});
       });
 
@@ -95,6 +95,22 @@ define([
         model.set('styles.block.height', '71px');
 
         expect(view.$('.mailpoet_spacer').css('height')).to.equal('71px');
+      });
+
+      it('opens settings if clicked', function () {
+        var mock = sinon.mock().once();
+        model.on('startEditing', mock);
+        view.render();
+        view.$('.mailpoet_spacer').click();
+        mock.verify();
+      });
+
+      it('does not open settings if clicked on the resize handle', function () {
+        var mock = sinon.mock().never();
+        model.on('startEditing', mock);
+        view.render();
+        view.$('.mailpoet_resize_handle').click();
+        mock.verify();
       });
     });
 

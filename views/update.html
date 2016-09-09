@@ -1,24 +1,62 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-  <div id="mailpoet_update">
-    <h2><%= __("What's new?") %></h2>
 
-    <p>Plugin version: <strong><%= settings.version %></strong></p>
+<style type="text/css">
+#mailpoet-changelog ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+</style>
 
-    <p>
-      Current user:
-      <strong><%= current_user.user_nicename %></strong>
-      &lt;<a href="mailto:<%= current_user.user_email %>">
-        <%=- current_user.user_email -%>
-      </a>&gt;
-    </p>
+<div class="wrap about-wrap">
+  <h1><%= __('Welcome to MailPoet') %> <%= settings.version %> <sup style="font-size: .5em">beta</sup></h1>
 
-    <p>
-      <a
-        class="button button-primary"
-        href="<%= redirect_url %>"
-      >Take me to MailPoet</a>
-    </p>
+  <p class="about-text"><%= __("Thank you for helping us test and improve this new version of MailPoet. You're one of our extra-special beta testers. We really appreciate your help!") %>
+  </p>
+  <div style="position: absolute; top: .2em; right: 0;"><img src="<%= image_url('welcome_template/mailpoet-logo.png') %>" alt="MailPoet Logo" /></div>
+
+  <h2 class="nav-tab-wrapper wp-clearfix">
+    <a href="admin.php?page=mailpoet-welcome" class="nav-tab"><%= __('What’s New') %></a>
+    <a href="admin.php?page=mailpoet-update" class="nav-tab nav-tab-active"><%= __('Changelog') %></a>
+  </h2>
+
+  <div id="mailpoet-changelog" clas="feature-section one-col">
+    <h2><%= __("List of Changes") %></h2>
+    <h3>0.0.43 - 2016-09-06</h3>
+    <ul>
+      <li>Fixed cron to run on sites behind proxy or running inside VMs where host and guest ports are different;</li>
+      <li>Updated Welcome and Update pages;</li>
+      <li>Added logging of plugin installation timestamp;</li>
+      <li>Added Cron Trigger and Cron Supervisor tests;</li>
+      <li>Removed Cron menu page;</li>
+      <li>Added 3 new sample newsletter templates;</li>
+      <li>Newsletter Editor: Changed Trash and Move icons to new ones and swapped default/hover colors for block tools;</li>
+      <li>Newsletter Editor: Clarified label of preheader input field;</li>
+      <li>Newsletter Editor: Added animation to display/hide block tools on mouse hover;</li>
+      <li>Changed newsletter template description text to not be partially cut off.</li>
+    </ul>
+    <br>
+    <h3>0.0.42 - 2016-08-30</h3>
+    <ul>
+      <li>Refactored "View In Browser";</li>
+      <li>Refactored Front Router and its endpoints, added tests;</li>
+      <li>Added support for CircleCI continuous integration;</li>
+      <li>Changed "Preview in browser" to use email of the current user;</li>
+      <li>Added autocompletion of email addresses used in "Preview in browser" for certain browsers;</li>
+      <li>Fixed ALC to correctly refresh when multiple ALC blocks are used.</li>
+    </ul>
+    <br>
+
   </div>
+
+  <hr>
+
+  <div clas="feature-section one-col">
+    <br>
+    <p style="text-align: center"><a class="button button-primary" href="https://wordpress.org/plugins/wysija-newsletters/changelog/" target="_blank"><%= __("View all changes") %> &rarr;</a></p>
+  </div>
+
+</div>
+
 <% endblock %>

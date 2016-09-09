@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Models;
 
+use MailPoet\Cron\CronTrigger;
+
 if(!defined('ABSPATH')) exit;
 
 class Setting extends Model {
@@ -38,6 +40,9 @@ class Setting extends Model {
           'interval' => self::DEFAULT_SENDING_FREQUENCY_INTERVAL
         )
       ),
+      CronTrigger::SETTING_NAME => array(
+        'method' => CronTrigger::DEFAULT_METHOD
+      ),
       'signup_confirmation' => array(
         'enabled' => true,
         'subject' => sprintf(__('Confirm your subscription to %1$s'), get_option('blogname')),
@@ -45,6 +50,9 @@ class Setting extends Model {
       ),
       'tracking' => array(
         'enabled' => true
+      ),
+      'analytics' => array(
+        'enabled' => false,
       )
     );
   }
@@ -156,5 +164,10 @@ class Setting extends Model {
     }
 
     return $setting->save();
+  }
+
+  public static function deleteValue($value) {
+    $value = self::where('name', $value)->findOne();
+    return ($value) ? $value->delete() : false;
   }
 }

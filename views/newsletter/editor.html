@@ -198,6 +198,10 @@
     'newsletter/templates/components/styles.hbs'
   ) %>
   <%= partial(
+    'newsletter_editor_template_newsletter_preview',
+    'newsletter/templates/components/newsletterPreview.hbs'
+  ) %>
+  <%= partial(
     'newsletter_editor_template_sidebar',
     'newsletter/templates/components/sidebar/sidebar.hbs'
   ) %>
@@ -320,15 +324,21 @@
     'shortcodesWindowTitle': __('Select a shortcode'),
     'unsubscribeLinkMissing': __('All newsletters must include an "Unsubscribe" link. Add a footer widget to your newsletter to continue'),
     'newsletterPreviewEmailMissing': __('Enter an email address to send the preview newsletter to'),
+<<<<<<< HEAD
     'newsletterPreviewFailed': __('Preview failed. Please check console log'),
     'newsletterPreviewSent': __('Your test email has been sent!'),
     'newsletterPreviewFailedToSend': __('Attempt to send a newsletter preview email failed. Please verify that your sending method is configured correctly and try again'),
+=======
+    'newsletterPreviewSent': __('Your test email has been sent!'),
+>>>>>>> master
     'templateNameMissing': __('Please add a template name'),
     'templateDescriptionMissing': __('Please add a template description'),
     'templateSaved': __('Template has been saved.'),
     'templateSaveFailed': __('Template has not been saved, please try again'),
     'categoriesAndTags': __('Categories & tags'),
     'noPostsToDisplay': __('There is no content to display'),
+    'previewShouldOpenInNewTab': __('Your preview should open in a new tab. Please ensure your browser is not blocking popups from this page.'),
+    'newsletterPreview': __('Newsletter Preview'),
   }) %>
 <% endblock %>
 
@@ -375,6 +385,9 @@
       ),
       sidebarPreview: Handlebars.compile(
         jQuery('#newsletter_editor_template_sidebar_preview').html()
+      ),
+      newsletterPreview: Handlebars.compile(
+        jQuery('#newsletter_editor_template_newsletter_preview').html()
       ),
 
       genericBlockTools: Handlebars.compile(
@@ -907,12 +920,12 @@
         'website': {
           title: '<%= __('Website') %>',
           linkFieldName: '<%= __('Link') %>',
-          defaultLink: 'http://example.org',
+          defaultLink: '',
         },
         'email': {
           title: '<%= __('Email') %>',
           linkFieldName: '<%= __('Email') %>',
-          defaultLink: 'mailto:mail@example.org',
+          defaultLink: '',
         },
         'instagram': {
           title: 'Instagram',
@@ -932,7 +945,7 @@
         'custom': {
           title: '<%= __('Custom') %>',
           linkFieldName: '<%= __('Link') %>',
-          defaultLink: 'http://example.org',
+          defaultLink: '',
         },
       },
       blockDefaults: {
@@ -990,7 +1003,7 @@
         },
         button: {
           text: '<%= __('Button') %>',
-          url: 'http://example.org',
+          url: '',
           styles: {
             block: {
               backgroundColor: '#2ea1cd',
@@ -1027,7 +1040,7 @@
           },
         },
         footer: {
-          text: '<a href="[link:subscription_unsubscribe_url]"><%= __('Unsubscribe') %></a> | <a href="[link:subscription_manage_url]"><%= __('Manage subscription') %></a><br /><b><%= __('Add your postal address here!') %></b>',
+          text: '<p><a href="[link:subscription_unsubscribe_url]"><%= __('Unsubscribe') %></a> | <a href="[link:subscription_manage_url]"><%= __('Manage subscription') %></a><br /><%= __('Add your postal address here!') %></p>',
           styles: {
             block: {
               backgroundColor: 'transparent',
@@ -1045,10 +1058,8 @@
           },
         },
         image: {
-          link: 'http://example.org',
-          src: '<%= image_url(
-            'newsletter_editor/pigeon.png'
-          ) %>',
+          link: '',
+          src: '',
           alt: '<%= __('An image of...') %>',
           fullWidth: false,
           width: '281px',
@@ -1118,7 +1129,7 @@
           {
             type: 'socialIcon',
             iconType: 'facebook',
-            link: 'http://example.com',
+            link: 'http://www.facebook.com',
             image: '<%= image_url(
               'newsletter_editor/social-icons/01-social/Facebook.png'
             ) %>',
@@ -1129,7 +1140,7 @@
           {
             type: 'socialIcon',
             iconType: 'twitter',
-            link: 'http://example.com',
+            link: 'http://www.twitter.com',
             image: '<%= image_url(
               'newsletter_editor/social-icons/01-social/Twitter.png'
             ) %>',
@@ -1172,6 +1183,10 @@
       },
       shortcodes: <%= json_encode(shortcodes) %>,
       sidepanelWidth: '331px',
+      newsletterPreview: {
+        width: '1024px',
+        height: '768px'
+      },
       validation: {
         validateUnsubscribeLinkPresent: true, // TODO: Add validation based on whether Mailpoet MTA is used or not
       },
@@ -1186,14 +1201,23 @@
     MailPoet.Ajax.post({
       endpoint: 'newsletters',
       action: 'get',
-      data: <%= params('id') %>
-    }).done(function(newsletter) {
+      data: {
+        id: <%= params('id') %>
+      }
+    }).always(function() {
+      MailPoet.Modal.loading(false);
+    }).done(function(response) {
       EditorApplication.start({
-        newsletter: newsletter,
+        newsletter: response.data,
         config: config,
       });
-
-      MailPoet.Modal.loading(false);
+    }).fail(function(response) {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(function(error) { return error.message; }),
+          { scroll: true }
+        );
+      }
     });
   </script>
 <% endblock %>

@@ -39,9 +39,9 @@
           <label>
             <input
               type="radio"
-              name="task_scheduler[method]"
-              value="WordPress"
-              <% if (settings.task_scheduler.method == 'WordPress') %>
+              name="cron_trigger[method]"
+              value="<%= cron_trigger.wordpress %>"
+              <% if (settings.cron_trigger.method == cron_trigger.wordpress) %>
               checked="checked"
               <% endif %>
             /><%= __('Visitors to your website (recommended)') %>
@@ -51,9 +51,9 @@
           <label>
             <input
               type="radio"
-              name="task_scheduler[method]"
-              value="MailPoet"
-              <% if (settings.task_scheduler.method == 'MailPoet') %>
+              name="cron_trigger[method]"
+              value="<%= cron_trigger.mailpoet %>"
+              <% if (settings.cron_trigger.method == cron_trigger.mailpoet) %>
                 checked="checked"
                 <% endif %>
               /><%= __("MailPoet's own script. Doesn't work with [link]these hosts[/link].")
@@ -174,13 +174,16 @@
           MailPoet.Ajax.post({
             'endpoint': 'setup',
             'action': 'reset'
+          }).always(function() {
+            MailPoet.Modal.loading(false);
           }).done(function(response) {
-            if(response.result === true) {
-              window.location = "<%= admin_url('admin.php?page=mailpoet-newsletters') %>";
-            } else {
+            window.location = "<%= admin_url('admin.php?page=mailpoet-newsletters') %>";
+          }).fail(function(response) {
+            if (response.errors.length > 0) {
               MailPoet.Notice.error(
-                "<%= __('MailPoet could not be reinstalled. You may need to remove it manually first.') %>",
-              { scroll: true });
+                response.errors.map(function(error) { return error.message; }),
+                { scroll: true }
+              );
             }
           });
         }

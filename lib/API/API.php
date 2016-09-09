@@ -1,90 +1,135 @@
 <?php
 namespace MailPoet\API;
 
-use MailPoet\Util\Helpers;
+use \MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
 class API {
-  public $api_request;
-  public $endpoint;
-  public $action;
-  public $data;
-  const NAME = 'mailpoet_api';
-  const ENDPOINT_NAMESPACE = '\MailPoet\API\Endpoints\\';
-  const RESPONSE_ERROR = 404;
-
-  function __construct($api_data = false) {
-    $api_data = ($api_data) ? $api_data : $_GET;
-    $this->api_request = isset($api_data[self::NAME]);
-    $this->endpoint = isset($api_data['endpoint']) ?
-      Helpers::underscoreToCamelCase($api_data['endpoint']) :
-      false;
-    $this->action = isset($api_data['action']) ?
-      Helpers::underscoreToCamelCase($api_data['action']) :
-      false;
-    $this->data = isset($api_data['data']) ?
-      self::decodeRequestData($api_data['data']) :
-      false;
+  function __construct() {
   }
 
   function init() {
-    $endpoint = self::ENDPOINT_NAMESPACE . ucfirst($this->endpoint);
-    if(!$this->api_request) return;
-    if(!$this->endpoint || !class_exists($endpoint)) {
-      $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid API endpoint.'));
-    }
-    $this->callEndpoint(
-      $endpoint,
-      $this->action,
-      $this->data
+    // security token
+    add_action(
+      'admin_head',
+      array($this, 'setToken')
+    );
+
+    // Admin API (Ajax only)
+    add_action(
+      'wp_ajax_mailpoet',
+      array($this, 'setupAdmin')
+    );
+
+    // Public API (Ajax)
+    add_action(
+      'wp_ajax_nopriv_mailpoet',
+      array($this, 'setupPublic')
+    );
+    // Public API (Post)
+    add_action(
+      'admin_post_nopriv_mailpoet',
+      array($this, 'setupPublic')
     );
   }
 
-  function callEndpoint($endpoint, $action, $data) {
-    if(!method_exists($endpoint, $action)) {
-      $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid API action.'));
+  function setupAdmin() {
+    if($this->checkToken() === false) {
+      (new ErrorResponse(
+        array(
+          Error::UNAUTHORIZED => __('You need to specify a valid API token.')
+        ),
+        array(),
+        Response::STATUS_UNAUTHORIZED
+      ))->send();
     }
-    call_user_func(
-      array(
-        $endpoint,
-        $action
-      ),
-      $data
+
+    if($this->checkPermissions() === false) {
+      (new ErrorResponse(
+        array(
+          Error::FORBIDDEN => __('You do not have the required permissions.')
+        ),
+        array(),
+        Response::STATUS_FORBIDDEN
+      ))->send();
+    }
+
+    $this->processRoute();
+  }
+
+  function setupPublic() {
+    if($this->checkToken() === false) {
+      (new ErrorResponse(
+        array(
+          Error::UNAUTHORIZED => __('You need to specify a valid API token.')
+        ),
+        array(),
+        Response::STATUS_UNAUTHORIZED
+      ))->send();
+    }
+
+    $this->processRoute();
+  }
+
+  function processRoute() {
+    $class = ucfirst($_POST['endpoint']);
+    $endpoint =  __NAMESPACE__ . "\\Endpoints\\" . $class;
+    $method = $_POST['method'];
+
+    $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
+
+    if($doing_ajax) {
+      $data = isset($_POST['data']) ? stripslashes_deep($_POST['data']) : array();
+    } else {
+      $data = $_POST;
+    }
+
+    if(is_array($data) && !empty($data)) {
+      // filter out reserved keywords from data
+      $reserved_keywords = array(
+        'token',
+        'endpoint',
+        'method',
+        'mailpoet_redirect'
+      );
+      $data = array_diff_key($data, array_flip($reserved_keywords));
+    }
+
+    try {
+      $endpoint = new $endpoint();
+      $response = $endpoint->$method($data);
+
+      // TODO: remove this condition once the API unification is complete
+      if(is_object($response)) {
+        $response->send();
+      } else {
+        // LEGACY API
+        wp_send_json($response);
+      }
+    } catch(\Exception $e) {
+      (new ErrorResponse(
+        array($e->getCode() => $e->getMessage())
+      ))->send();
+    }
+  }
+
+  function setToken() {
+    $global = '<script type="text/javascript">';
+    $global .= 'var mailpoet_token = "'.Security::generateToken().'";';
+    $global .= '</script>';
+    echo $global;
+  }
+
+  function checkPermissions() {
+    return current_user_can('manage_options');
+  }
+
+  function checkToken() {
+    return (
+      isset($_POST['token'])
+      &&
+      wp_verify_nonce($_POST['token'], 'mailpoet_token')
     );
-  }
-
-  static function decodeRequestData($data) {
-    $data = base64_decode($data);
-
-    if(is_serialized($data)) {
-      $data = unserialize($data);
-    }
-
-    if(!is_array($data)) {
-      $data = array();
-    }
-
-    return $data;
-  }
-
-  static function encodeRequestData($data) {
-    return rtrim(base64_encode(serialize($data)), '=');
-  }
-
-  static function buildRequest($endpoint, $action, $data) {
-    $data = self::encodeRequestData($data);
-    $params = array(
-      self::NAME => '',
-      'endpoint' => $endpoint,
-      'action' => $action,
-      'data' => $data
-    );
-    return add_query_arg($params, home_url());
-  }
-
-  function terminateRequest($code, $message) {
-    status_header($code, $message);
-    exit;
   }
 }

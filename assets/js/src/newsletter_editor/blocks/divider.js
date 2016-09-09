@@ -43,6 +43,9 @@ define([
         minLength: 0, // TODO: Move this number to editor configuration
         modelField: 'styles.block.padding',
       },
+      ShowSettingsBehavior: {
+        ignoreFrom: '.mailpoet_resize_handle'
+      },
     }, base.BlockView.prototype.behaviors),
     onDragSubstituteBy: function() { return Module.DividerWidgetView; },
     initialize: function() {
@@ -88,8 +91,7 @@ define([
 
         "input .mailpoet_field_divider_border_width": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width_input', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
         "change .mailpoet_field_divider_border_width": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width_input', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
-        "change .mailpoet_field_divider_border_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
-        "keyup .mailpoet_field_divider_border_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
+        "input .mailpoet_field_divider_border_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
 
         "change .mailpoet_field_divider_border_color": _.partial(this.changeColorField, "styles.block.borderColor"),
         "change .mailpoet_field_divider_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),

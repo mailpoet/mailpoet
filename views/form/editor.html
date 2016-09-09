@@ -282,9 +282,7 @@
           endpoint: 'customFields',
           action: 'getAll',
         }).done(function(response) {
-          if(response !== false) {
-            data.fields  = $.merge(response, data.fields);
-          }
+          data.fields  = $.merge(response.data, data.fields);
 
           // render toolbar
           jQuery('#mailpoet_toolbar_fields').html(template(data));
@@ -416,6 +414,13 @@
               MailPoet.Notice.success(
                 "<%= __('The form name was successfully updated!') %>"
               );
+            }).fail(function(response) {
+              if (response.errors.length > 0) {
+                MailPoet.Notice.error(
+                  response.errors.map(function(error) { return error.message; }),
+                  { scroll: true }
+                );
+              }
             });
           }
         }
@@ -456,9 +461,16 @@
             MailPoet.Modal.popup({
               title: "<%= __('Form preview') %>",
               template: $('#mailpoet_form_preview_template').html(),
-              data: response
+              data: response.data
             });
-          })
+          }).fail(function(response) {
+            if (response.errors.length > 0) {
+              MailPoet.Notice.error(
+                response.errors.map(function(error) { return error.message; }),
+                { scroll: true }
+              );
+            }
+          });
         }
 
         function mailpoet_form_save(callback) {
@@ -489,22 +501,10 @@
               action: 'saveEditor',
               data: form
             }).done(function(response) {
-              if(response.result === false) {
-                if(response.errors.length > 0) {
-                  MailPoet.Notice.error(response.errors.join('<br />'));
-                } else {
-                  MailPoet.Notice.error(
-                    "<%= __('An error occurred. Please reload the page and try again.') %>"
-                  );
-                }
-
-                return false;
-              }
-
               if(callback !== false) {
                 var message = null;
 
-                if(response.is_widget === true) {
+                if(response.meta.is_widget === true) {
                   message = "<%= __('Saved! The changes are now active in your widget.') %>";
                 } else {
                   message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw %>";
@@ -514,7 +514,7 @@
                   MailPoet.Notice.hide();
                   MailPoet.Notice.success(message, {
                     scroll: true,
-                    static: (response.is_widget === false)
+                    static: (response.meta.is_widget === false)
                   });
                 }
 
@@ -522,6 +522,13 @@
                 if(callback !== undefined) {
                   callback();
                 }
+              }
+            }).fail(function(response) {
+              if (response.errors.length > 0) {
+                MailPoet.Notice.error(
+                  response.errors.map(function(error) { return error.message; }),
+                  { scroll: true }
+                );
               }
             });
           }
@@ -546,10 +553,17 @@
           MailPoet.Ajax.post({
             endpoint: 'forms',
             action: 'exportsEditor',
-            data: $('#mailpoet_form_id').val()
+            data: {
+              id: $('#mailpoet_form_id').val()
+            }
           }).done(function(response) {
-            if(response.result !== false) {
-              $('#mailpoet_form_export').html(template({ exports: response }));
+            $('#mailpoet_form_export').html(template({ exports: response.data }));
+          }).fail(function(response) {
+            if (response.errors.length > 0) {
+              MailPoet.Notice.error(
+                response.errors.map(function(error) { return error.message; }),
+                { scroll: true }
+              );
             }
           });
         }
@@ -579,14 +593,21 @@
           MailPoet.Ajax.post({
             endpoint: 'customFields',
             action: 'get',
-            data: id
+            data: {
+              id: id
+            }
           }).done(function(response) {
-            if(response.result !== false) {
-              MailPoet.Modal.popup({
-                title: "<%= __('Edit field') %>",
-                template: $('#form_template_field_form').html(),
-                data: response
-              });
+            MailPoet.Modal.popup({
+              title: "<%= __('Edit field') %>",
+              template: $('#form_template_field_form').html(),
+              data: response.data
+            });
+          }).fail(function(response) {
+            if (response.errors.length > 0) {
+              MailPoet.Notice.error(
+                response.errors.map(function(error) { return error.message; }),
+                { scroll: true }
+              );
             }
           });
         });
@@ -603,22 +624,20 @@
             MailPoet.Ajax.post({
               endpoint: 'customFields',
               action: 'delete',
-              data: id
-            }).done(function(response) {
-              if(response.result === true) {
-                item.remove();
-
-                if(response.field !== undefined) {
-                  WysijaForm.removeBlock(response.field, function() {
-                    mailpoet_form_save(false);
-                  });
-                }
-
-                mailpoet_form_fields();
-                MailPoet.Notice.success(
-                  "<%= __('Removed custom field “"+name+"“') %>"
-                );
+              data: {
+                id: id
               }
+            }).done(function(response) {
+              item.remove();
+
+              WysijaForm.removeBlock(id, function() {
+                mailpoet_form_save(false);
+              });
+
+              mailpoet_form_fields();
+              MailPoet.Notice.success(
+                "<%= __('Removed custom field “"+name+"“') %>"
+              );
             });
           }
         });
@@ -685,110 +704,12 @@
   <%= partial('form_template_checkbox', 'form/templates/blocks/checkbox.hbs') %>
   <%= partial('form_template_textarea', 'form/templates/blocks/textarea.hbs') %>
   <%= partial('form_template_html', 'form/templates/blocks/html.hbs') %>
-  <%= partial('form_template_date_years',
-    'form/templates/blocks/date_years.hbs',
-    '_settings_date_years'
-  ) %>
-  <%= partial('form_template_date_months',
-    'form/templates/blocks/date_months.hbs',
-    '_settings_date_months'
-  ) %>
-  <%= partial('form_template_date_days',
-    'form/templates/blocks/date_days.hbs',
-    '_settings_date_days'
-  ) %>
-  <%= partial('form_template_date', 'form/templates/blocks/date.hbs') %>
 
-  <!-- field settings -->
-  <%= partial('form_template_field_settings', 'form/templates/settings/field.hbs') %>
-
-  <%= partial('field_settings_label',
-    'form/templates/settings/label.hbs',
-    '_settings_label'
-  ) %>
-  <%= partial('field_settings_label_within',
-    'form/templates/settings/label_within.hbs',
-    '_settings_label_within'
-  ) %>
-  <%= partial('field_settings_required',
-    'form/templates/settings/required.hbs',
-    '_settings_required'
-  ) %>
-  <%= partial('field_settings_validate',
-    'form/templates/settings/validate.hbs',
-    '_settings_validate'
-  ) %>
-  <%= partial('field_settings_values',
-    'form/templates/settings/values.hbs',
-    '_settings_values'
-  ) %>
-  <%= partial('field_settings_date_default',
-    'form/templates/settings/date_default.hbs',
-    '_settings_date_default'
-  ) %>
-  <%= partial('field_settings_submit',
-    'form/templates/settings/submit.hbs',
-    '_settings_submit'
-  ) %>
-
-  <%= partial('field_settings_values_item',
-  'form/templates/settings/values_item.hbs') %>
-  <%= partial(
-    'field_settings_date_format',
-    'form/templates/settings/date_formats.hbs',
-    '_settings_date_format'
-  ) %>
-  <%= partial(
-    'field_settings_date_type',
-    'form/templates/settings/date_types.hbs',
-    '_settings_date_type'
-  ) %>
-  <%= partial('field_settings_segment_selection_item',
-    'form/templates/settings/segment_selection_item.hbs'
-  ) %>
-  <%= partial('field_settings_segment_selection',
-    'form/templates/settings/segment_selection.hbs',
-    '_settings_segment_selection'
-  ) %>
-
-  <!-- custom field: new -->
-  <%= partial('form_template_field_form',
-    'form/templates/settings/field_form.hbs'
-  ) %>
+  <!-- custom field settings and templates -->
+  <% include 'form/custom_fields.html' %>
 
   <!-- form preview -->
   <%= partial('mailpoet_form_preview_template',
     'form/templates/preview.hbs'
   ) %>
-
-  <!-- field settings depending on field type -->
-  <script id="form_template_field_text" type="text/x-handlebars-template">
-    {{> _settings_required }}
-    {{> _settings_validate }}
-  </script>
-
-  <script id="form_template_field_textarea" type="text/x-handlebars-template">
-    {{> _settings_required }}
-    {{> _settings_validate }}
-  </script>
-
-  <script id="form_template_field_radio" type="text/x-handlebars-template">
-    {{> _settings_values }}
-    {{> _settings_required }}
-  </script>
-
-  <script id="form_template_field_checkbox" type="text/x-handlebars-template">
-    {{> _settings_values }}
-    {{> _settings_required }}
-  </script>
-
-  <script id="form_template_field_select" type="text/x-handlebars-template">
-    {{> _settings_values }}
-    {{> _settings_required }}
-  </script>
-
-  <script id="form_template_field_date" type="text/x-handlebars-template">
-    {{> _settings_required }}
-    {{> _settings_date_type }}
-  </script>
 <% endblock %>

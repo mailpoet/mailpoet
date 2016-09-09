@@ -1,15 +1,19 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Models;
-use MailPoet\Cron\Supervisor;
+use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
+use MailPoet\API;
+use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
+
+  protected $plugin_initialized = false;
+
   function __construct($params = array(
     'file' => '',
     'version' => '1.0.0'
@@ -28,34 +32,11 @@ class Initializer {
     add_action('widgets_init', array($this, 'setupWidget'));
   }
 
-  function setup() {
-    try {
-      $this->setupRenderer();
-      $this->setupLocalizer();
-      $this->setupMenu();
-      $this->setupAnalytics();
-      $this->setupChangelog();
-      $this->setupShortcodes();
-      $this->setupHooks();
-      $this->setupImages();
-      $this->runQueueSupervisor();
-    } catch(\Exception $e) {
-      // if anything goes wrong during init
-      // automatically deactivate the plugin
-      deactivate_plugins(Env::$file);
-    }
-  }
-
-  function onInit() {
-    $this->setupRouter();
-    $this->setupAPI();
-    $this->setupPages();
-  }
-
   function setupDB() {
     \ORM::configure(Env::$db_source_name);
     \ORM::configure('username', Env::$db_username);
     \ORM::configure('password', Env::$db_password);
+    \ORM::configure('logging', WP_DEBUG);
     \ORM::configure('driver_options', array(
       \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
       \PDO::MYSQL_ATTR_INIT_COMMAND =>
@@ -115,6 +96,51 @@ class Initializer {
     $populator->up();
   }
 
+  function setup() {
+    try {
+      $this->setupRenderer();
+      $this->setupLocalizer();
+      $this->setupMenu();
+      $this->setupAnalytics();
+      $this->setupChangelog();
+      $this->setupShortcodes();
+      $this->setupHooks();
+      $this->setupImages();
+      $this->setupCronTrigger();
+
+      $this->plugin_initialized = true;
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e);
+    }
+  }
+
+  function onInit() {
+    if(!$this->plugin_initialized) {
+      return;
+    }
+
+    try {
+      $this->setupAPI();
+      $this->setupRouter();
+      $this->setupPages();
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e);
+    }
+  }
+
+  function setupWidget() {
+    if(!$this->plugin_initialized) {
+      return;
+    }
+
+    try {
+      $widget = new Widget($this->renderer);
+      $widget->init();
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e);
+    }
+  }
+
   function setupRenderer() {
     $renderer = new Renderer();
     $this->renderer = $renderer->init();
@@ -130,19 +156,9 @@ class Initializer {
     $menu->init();
   }
 
-  function setupRouter() {
-    $router = new Router\Router();
-    $router->init();
-  }
-
-  function setupWidget() {
-    $widget = new Widget($this->renderer);
-    $widget->init();
-  }
-
   function setupAnalytics() {
-    $widget = new Analytics();
-    $widget->init();
+    $analytics = new Analytics();
+    $analytics->init();
   }
 
   function setupChangelog() {
@@ -166,21 +182,28 @@ class Initializer {
   }
 
   function setupAPI() {
-    $API = new \MailPoet\API\API();
-    $API->init();
+    $api = new API\API();
+    $api->init();
   }
 
-  function runQueueSupervisor() {
-    if(php_sapi_name() === 'cli') return;
-    try {
-      $supervisor = new Supervisor();
-      $supervisor->checkDaemon();
-    } catch(\Exception $e) {
-      // Prevent Daemon exceptions from breaking out and breaking UI
+  function setupRouter() {
+    $router = new Router\Router();
+    $router->init();
+  }
+
+  function setupCronTrigger() {
+    // setup cron trigger only outside of cli environment
+    if(php_sapi_name() !== 'cli') {
+      $cron_trigger = new CronTrigger();
+      $cron_trigger->init();
     }
   }
 
   function setupImages() {
     add_image_size('mailpoet_newsletter_max', 1320);
+  }
+
+  function handleFailedInitialization($message) {
+    return WPNotice::displayError($message);
   }
 }

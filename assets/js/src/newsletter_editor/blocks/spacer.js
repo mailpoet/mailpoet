@@ -36,6 +36,9 @@ define([
         minLength: 20, // TODO: Move this number to editor configuration
         modelField: 'styles.block.height',
       },
+      ShowSettingsBehavior: {
+        ignoreFrom: '.mailpoet_resize_handle'
+      },
     }, base.BlockView.prototype.behaviors),
     modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'),
     onDragSubstituteBy: function() { return Module.SpacerWidgetView; },

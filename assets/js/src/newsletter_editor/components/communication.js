@@ -11,7 +11,7 @@ define([
     return MailPoet.Ajax.post({
       endpoint: 'automatedLatestContent',
       action: args.action,
-      data: args.options || {},
+      data: args.options || {}
     });
   };
   Module._cachedQuery = _.memoize(Module._query, JSON.stringify);
@@ -19,16 +19,16 @@ define([
   Module.getNewsletter = function(options) {
     return Module._query({
       action: 'get',
-      options: options,
+      options: options
     });
   };
 
   Module.getPostTypes = function() {
     return Module._cachedQuery({
       action: 'getPostTypes',
-      options: {},
-    }).then(function(types) {
-      return _.values(types);
+      options: {}
+    }).then(function(response) {
+      return _.values(response.data);
     });
   };
 
@@ -36,36 +36,46 @@ define([
     return Module._cachedQuery({
       action: 'getTaxonomies',
       options: {
-        postType: postType,
-      },
+        postType: postType
+      }
+    }).then(function(response) {
+      return response.data;
     });
   };
 
   Module.getTerms = function(options) {
     return Module._cachedQuery({
       action: 'getTerms',
-      options: options,
+      options: options
+    }).then(function(response) {
+      return response.data;
     });
   };
 
   Module.getPosts = function(options) {
     return Module._cachedQuery({
       action: 'getPosts',
-      options: options,
+      options: options
+    }).then(function(response) {
+      return response.data;
     });
   };
 
   Module.getTransformedPosts = function(options) {
     return Module._cachedQuery({
       action: 'getTransformedPosts',
-      options: options,
+      options: options
+    }).then(function(response) {
+      return response.data;
     });
   };
 
   Module.getBulkTransformedPosts = function(options) {
     return Module._query({
       action: 'getBulkTransformedPosts',
-      options: options,
+      options: options
+    }).then(function(response) {
+      return response.data;
     });
   };
 
@@ -73,7 +83,7 @@ define([
     return MailPoet.Ajax.post({
       endpoint: 'newsletters',
       action: 'save',
-      data: options || {},
+      data: options || {}
     });
   };
 
@@ -81,7 +91,7 @@ define([
     return MailPoet.Ajax.post({
       endpoint: 'newsletters',
       action: 'sendPreview',
-      data: options || {},
+      data: options || {}
     });
   };
 

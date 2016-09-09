@@ -116,16 +116,17 @@ define([
       });
 
       describe('once rendered', function () {
-        var model = new (ImageBlock.ImageBlockModel)({
-            link: 'http://example.org/somepath',
-            src: 'http://example.org/someimage.png',
-            alt: 'some alt',
-          }),
-          view;
+        var model;
+        var view;
 
         beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication);
+          model = new (ImageBlock.ImageBlockModel)({
+            link: 'http://example.org/somepath',
+            src: 'http://example.org/someimage.png',
+            alt: 'some alt',
+          });
           view = new (ImageBlock.ImageBlockView)({model: model});
           view.render();
         });
@@ -141,6 +142,13 @@ define([
           expect(view.$('.mailpoet_content img').attr('src')).to.not.equal(newValue);
           model.set('src', newValue);
           expect(view.$('.mailpoet_content img').attr('src')).to.equal(newValue);
+        });
+
+        it('opens settings if clicked on the image', function () {
+          var mock = sinon.mock().once();
+          model.on('startEditing', mock);
+          view.$('img').click();
+          mock.verify();
         });
       });
     });
@@ -164,19 +172,19 @@ define([
       describe('once rendered', function () {
         it('updates the model when link changes', function () {
           var newValue = 'http://example.org/someNewLink';
-          view.$('.mailpoet_field_image_link').val(newValue).keyup();
+          view.$('.mailpoet_field_image_link').val(newValue).trigger('input');
           expect(model.get('link')).to.equal(newValue);
         });
 
         it('updates the model when src changes', function () {
           var newValue = 'http://example.org/someNewImage.png';
-          view.$('.mailpoet_field_image_address').val(newValue).keyup();
+          view.$('.mailpoet_field_image_address').val(newValue).trigger('input');
           expect(model.get('src')).to.equal(newValue);
         });
 
         it('updates the model when alt changes', function () {
           var newValue = 'Some new alt text';
-          view.$('.mailpoet_field_image_alt_text').val(newValue).keyup();
+          view.$('.mailpoet_field_image_alt_text').val(newValue).trigger('input');
           expect(model.get('alt')).to.equal(newValue);
         });
 

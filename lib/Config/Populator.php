@@ -2,9 +2,18 @@
 namespace MailPoet\Config;
 
 use MailPoet\Config\PopulatorData\Templates\FranksRoastHouseTemplate;
-use MailPoet\Config\PopulatorData\Templates\BlankTemplate;
-use MailPoet\Config\PopulatorData\Templates\WelcomeTemplate;
-use MailPoet\Config\PopulatorData\Templates\PostNotificationsBlankTemplate;
+use MailPoet\Config\PopulatorData\Templates\NewsletterBlank1Column;
+use MailPoet\Config\PopulatorData\Templates\NewsletterBlank12Column;
+use MailPoet\Config\PopulatorData\Templates\NewsletterBlank121Column;
+use MailPoet\Config\PopulatorData\Templates\NewsletterBlank13Column;
+use MailPoet\Config\PopulatorData\Templates\PostNotificationsBlank1Column;
+use MailPoet\Config\PopulatorData\Templates\WelcomeBlank1Column;
+use MailPoet\Config\PopulatorData\Templates\WelcomeBlank12Column;
+use MailPoet\Config\PopulatorData\Templates\SimpleText;
+use MailPoet\Config\PopulatorData\Templates\Restaurant;
+use MailPoet\Config\PopulatorData\Templates\StoreDiscount;
+use MailPoet\Config\PopulatorData\Templates\TravelEmail;
+use MailPoet\Cron\CronTrigger;
 use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
 use \MailPoet\Models\Setting;
@@ -69,10 +78,10 @@ class Populator {
   private function createDefaultSettings() {
     $current_user = wp_get_current_user();
 
-    if(!Setting::getValue('task_scheduler')) {
+    if(!Setting::getValue(CronTrigger::SETTING_NAME)) {
       // disable task scheduler (cron) be default
-      Setting::setValue('task_scheduler', array(
-        'method' => 'WordPress'
+      Setting::setValue(CronTrigger::SETTING_NAME, array(
+        'method' => CronTrigger::DEFAULT_METHOD
       ));
     }
 
@@ -97,6 +106,10 @@ class Populator {
         ),
         'reply_to' => $sender
       ));
+    }
+
+    if(!Setting::getValue('installed_at')) {
+      Setting::setValue('installed_at', date("Y-m-d H:i:s"));
     }
   }
 
@@ -180,9 +193,17 @@ class Populator {
   private function newsletterTemplates() {
     return array(
       (new FranksRoastHouseTemplate(Env::$assets_url))->get(),
-      (new BlankTemplate(Env::$assets_url))->get(),
-      (new WelcomeTemplate(Env::$assets_url))->get(),
-      (new PostNotificationsBlankTemplate(Env::$assets_url))->get(),
+      (new NewsletterBlank1Column(Env::$assets_url))->get(),
+      (new NewsletterBlank12Column(Env::$assets_url))->get(),
+      (new NewsletterBlank121Column(Env::$assets_url))->get(),
+      (new NewsletterBlank13Column(Env::$assets_url))->get(),
+      (new PostNotificationsBlank1Column(Env::$assets_url))->get(),
+      (new WelcomeBlank1Column(Env::$assets_url))->get(),
+      (new WelcomeBlank12Column(Env::$assets_url))->get(),
+      (new SimpleText(Env::$assets_url))->get(),
+      (new Restaurant(Env::$assets_url))->get(),
+      (new StoreDiscount(Env::$assets_url))->get(),
+      (new TravelEmail(Env::$assets_url))->get(),
     );
   }
 

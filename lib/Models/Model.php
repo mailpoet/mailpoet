@@ -5,6 +5,7 @@ if(!defined('ABSPATH')) exit;
 
 class Model extends \Sudzy\ValidModel {
   protected $_errors;
+  protected $_new_record;
 
   function __construct() {
     $this->_errors = array();
@@ -36,6 +37,7 @@ class Model extends \Sudzy\ValidModel {
 
   function save() {
     $this->setTimestamp();
+    $this->_new_record = $this->isNew();
     try {
       parent::save();
     } catch(\Sudzy\ValidationException $e) {
@@ -63,13 +65,19 @@ class Model extends \Sudzy\ValidModel {
     return $this;
   }
 
+  function isNew() {
+    return (isset($this->_new_record)) ?
+      $this->_new_record :
+      parent::isNew();
+  }
+
   function trash() {
     return $this->set_expr('deleted_at', 'NOW()')->save();
   }
 
   static function bulkTrash($orm) {
     $model = get_called_class();
-    return self::bulkAction($orm, function($ids) use($model) {
+    $count = self::bulkAction($orm, function($ids) use($model) {
       self::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
           'SET `deleted_at` = NOW()',
@@ -78,13 +86,17 @@ class Model extends \Sudzy\ValidModel {
         $ids
       );
     });
+
+    return array('count' => $count);
   }
 
   static function bulkDelete($orm) {
     $model = get_called_class();
-    return self::bulkAction($orm, function($ids) use($model) {
+    $count = self::bulkAction($orm, function($ids) use($model) {
       $model::whereIn('id', $ids)->deleteMany();
     });
+
+    return array('count' => $count);
   }
 
   function restore() {
@@ -93,7 +105,7 @@ class Model extends \Sudzy\ValidModel {
 
   static function bulkRestore($orm) {
     $model = get_called_class();
-    return self::bulkAction($orm, function($ids) use($model) {
+    $count = self::bulkAction($orm, function($ids) use($model) {
       self::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
           'SET `deleted_at` = NULL',
@@ -102,6 +114,8 @@ class Model extends \Sudzy\ValidModel {
         $ids
       );
     });
+
+    return array('count' => $count);
   }
 
   static function bulkAction($orm, $callback = false) {
@@ -137,14 +151,11 @@ class Model extends \Sudzy\ValidModel {
     $duplicate->set_expr('updated_at', 'NOW()');
     $duplicate->set_expr('deleted_at', 'NULL');
 
-    if($duplicate->save()) {
-      return $duplicate;
-    } else {
-      return false;
-    }
+    $duplicate->save();
+    return $duplicate;
   }
 
-  private function setTimestamp() {
+  function setTimestamp() {
     if($this->created_at === null) {
       $this->set_expr('created_at', 'NOW()');
     }

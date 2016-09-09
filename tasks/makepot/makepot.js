@@ -29,7 +29,7 @@ module.exports = function (grunt) {
                             'tasks/.*'
                         ],
                         mainFile: 'index.php', // Main project file.
-                        potFilename: 'wysija-newsletters.pot', // Name of the POT file.
+                        potFilename: 'mailpoet.pot', // Name of the POT file.
                         potHeaders: {
                             poedit: true, // Includes common Poedit headers.
                             'x-poedit-keywordslist': true // Include a list of all possible gettext functions.

@@ -169,7 +169,8 @@ class SubscriberTest extends MailPoetTest {
       'name' => 'Birthday',
       'type' => 'date',
       'params' => array(
-        'date_type' => 'year_month_day'
+        'date_type' => 'year_month_day',
+        'date_format' => 'MM/DD/YYYY'
       )
     ));
 
@@ -177,7 +178,8 @@ class SubscriberTest extends MailPoetTest {
       'name' => 'Registered on',
       'type' => 'date',
       'params' => array(
-        'date_type' => 'year_month'
+        'date_type' => 'year_month',
+        'date_format' => 'MM/YYYY'
       )
     ));
 
@@ -199,7 +201,7 @@ class SubscriberTest extends MailPoetTest {
     expect($subscriber->email)->equals('user.with.cf@mailpoet.com');
     expect($subscriber->{'cf_'.$custom_field->id})->equals('Paris');
     // date specified as array gets converted to string
-    expect($subscriber->{'cf_'.$custom_field_2->id})->equals('1984-03-09');
+    expect($subscriber->{'cf_'.$custom_field_2->id})->equals('1984-03-09 00:00:00');
     // date specified as string is stored as is
     expect($subscriber->{'cf_'.$custom_field_3->id})->equals('2013-07');
   }

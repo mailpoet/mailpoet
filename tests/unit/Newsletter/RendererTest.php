@@ -19,7 +19,9 @@ class NewsletterRendererTest extends MailPoetTest {
       ),
       'id' => 1,
       'subject' => 'Some subject',
-      'preheader' => 'Some preheader'
+      'preheader' => 'Some preheader',
+      'type' => 'standard',
+      'status' => 'active'
     );
     $this->renderer = new Renderer($this->newsletter);
     $this->column_renderer = new ColumnRenderer();
@@ -146,6 +148,18 @@ class NewsletterRendererTest extends MailPoetTest {
     // element should be properly nested, it's width set and style applied
     expect($DOM('tr > td > img', 0)->attr('width'))->equals(620);
     expect($DOM('tr > td > img', 0)->attr('style'))->notEmpty();
+  }
+
+  function testItDoesNotRenderImageWithoutSrc() {
+    $image = array(
+      'src' => '',
+      'width' => '100',
+      'height' => '200',
+      'link' => '',
+      'alt' => 'some test alt text'
+    );
+    $rendered_image = Image::render($image, $columnCount = 1);
+    expect($rendered_image)->equals('');
   }
 
   function testItRendersImageWithLink() {
@@ -302,6 +316,20 @@ class NewsletterRendererTest extends MailPoetTest {
     expect($DOM('td > a:nth-of-type(10) > img')->attr('alt'))->equals('custom');
     // there should be 10 icons
     expect(count($DOM('a > img')))->equals(10);
+  }
+
+  function testItDoesNotRenderSocialIconsWithoutImageSrc() {
+    $block = array(
+      'icons' => array(
+        'image' => '',
+        'width' => '100',
+        'height' => '100',
+        'link' => '',
+        'iconType' => 'custom',
+      )
+    );
+    $rendered_block = Social::render($block, $columnCount = 1);
+    expect($rendered_block)->equals('');
   }
 
   function testItRendersFooter() {

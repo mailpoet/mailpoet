@@ -35,7 +35,12 @@ define([
 
   Module.ALCSupervisor = SuperModel.extend({
     initialize: function() {
-      this.listenTo(App.getChannel(), 'automatedLatestContentRefresh', this.refresh);
+      var DELAY_REFRESH_FOR_MS = 500;
+      this.listenTo(
+        App.getChannel(),
+        'automatedLatestContentRefresh',
+        _.debounce(this.refresh, DELAY_REFRESH_FOR_MS)
+      );
     },
     refresh: function() {
       var models = App.findModels(function(model) {
@@ -107,9 +112,7 @@ define([
       this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
       this.listenTo(this.get('readMoreButton'), 'change', this._scheduleFetchPosts);
       this.listenTo(this.get('divider'), 'change', this._scheduleFetchPosts);
-      this.on('add remove update reset', function(model, collection, options) {
-        App.getChannel().trigger('automatedLatestContentRefresh');
-      });
+      this.on('add remove update reset', this._scheduleFetchPosts);
       this.on('refreshPosts', this.updatePosts, this);
     },
     updatePosts: function(posts) {
@@ -120,16 +123,7 @@ define([
      * ALC posts on each model change
      */
     _scheduleFetchPosts: function() {
-      var TIMEOUT = 500,
-        that = this;
-      if (this._fetchPostsTimer !== undefined) {
-        clearTimeout(this._fetchPostsTimer);
-      }
-      this._fetchPostsTimer = setTimeout(function() {
-        //that.fetchPosts();
-        App.getChannel().trigger('automatedLatestContentRefresh');
-        that._fetchPostsTimer = undefined;
-      }, TIMEOUT);
+      App.getChannel().trigger('automatedLatestContentRefresh');
     },
   });
 
@@ -180,17 +174,17 @@ define([
         "change .mailpoet_automated_latest_content_title_format": 'changeTitleFormat',
         "change .mailpoet_automated_latest_content_title_as_links": _.partial(this.changeBoolField, 'titleIsLink'),
         "change .mailpoet_automated_latest_content_show_divider": _.partial(this.changeBoolField, 'showDivider'),
-        "keyup .mailpoet_automated_latest_content_show_amount": _.partial(this.changeField, "amount"),
+        "input .mailpoet_automated_latest_content_show_amount": _.partial(this.changeField, "amount"),
         "change .mailpoet_automated_latest_content_content_type": _.partial(this.changeField, "contentType"),
         "change .mailpoet_automated_latest_content_include_or_exclude": _.partial(this.changeField, "inclusionType"),
         "change .mailpoet_automated_latest_content_title_alignment": _.partial(this.changeField, "titleAlignment"),
         "change .mailpoet_automated_latest_content_image_full_width": _.partial(this.changeBoolField, "imageFullWidth"),
         "change .mailpoet_automated_latest_content_featured_image_position": _.partial(this.changeField, "featuredImagePosition"),
         "change .mailpoet_automated_latest_content_show_author": _.partial(this.changeField, "showAuthor"),
-        "keyup .mailpoet_automated_latest_content_author_preceded_by": _.partial(this.changeField, "authorPrecededBy"),
+        "input .mailpoet_automated_latest_content_author_preceded_by": _.partial(this.changeField, "authorPrecededBy"),
         "change .mailpoet_automated_latest_content_show_categories": _.partial(this.changeField, "showCategories"),
-        "keyup .mailpoet_automated_latest_content_categories": _.partial(this.changeField, "categoriesPrecededBy"),
-        "keyup .mailpoet_automated_latest_content_read_more_text": _.partial(this.changeField, "readMoreText"),
+        "input .mailpoet_automated_latest_content_categories": _.partial(this.changeField, "categoriesPrecededBy"),
+        "input .mailpoet_automated_latest_content_read_more_text": _.partial(this.changeField, "readMoreText"),
         "change .mailpoet_automated_latest_content_sort_by": _.partial(this.changeField, "sortBy"),
         "click .mailpoet_done_editing": "close",
       };
@@ -217,8 +211,10 @@ define([
             };
           },
           transport: function(options, success, failure) {
-            var taxonomies,
-                promise = CommunicationComponent.getTaxonomies(that.model.get('contentType')).then(function(tax) {
+            var taxonomies;
+            var promise = CommunicationComponent.getTaxonomies(
+              that.model.get('contentType')
+            ).then(function(tax) {
               taxonomies = tax;
               // Fetch available terms based on the list of taxonomies already fetched
               var promise = CommunicationComponent.getTerms({
@@ -227,7 +223,7 @@ define([
               }).then(function(terms) {
                 return {
                   taxonomies: taxonomies,
-                  terms: terms,
+                  terms: terms
                 };
               });
               return promise;

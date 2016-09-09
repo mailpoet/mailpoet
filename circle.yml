@@ -1,0 +1,61 @@
+machine:
+  timezone:
+    UTC
+
+  hosts:
+    mailpoet.loc: 127.0.0.1
+
+## Customize dependencies
+dependencies:
+  pre:
+      # install PHP dependencies for WordPress
+    - sudo apt-get update
+    - sudo apt-get --assume-yes install php5-mysql
+      # configure Apache
+    - sudo cp ./.circle_ci/apache/mailpoet.loc.conf /etc/apache2/sites-available
+    - sudo a2ensite mailpoet.loc
+    - sudo a2enmod rewrite
+    - sudo service apache2 restart
+      # install Phoenix dependencies
+    - composer install
+    - ./do install
+      # Set up Wordpress
+      # No password is required for the MySQL user `ubuntu`
+    - mysql -u ubuntu -e "create database wordpress"
+      # Use cURL to fetch WP-CLI
+    - curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+      # Make sure WP-CLI is executable
+    - chmod +x wp-cli.phar
+      # Download WordPress into `wordpress` directory
+    - ./wp-cli.phar core download --allow-root --path=wordpress
+      # Generate `wp-config.php` file
+    - echo "define(\"WP_DEBUG\", true);" | ./wp-cli.phar core config --allow-root --dbname=wordpress --dbuser=ubuntu --dbhost=127.0.0.1:3306 --path=wordpress --extra-php
+      # Install WordPress
+    - ./wp-cli.phar core install --allow-root --admin_name=admin --admin_password=admin --admin_email=admin@mailpoet.loc --url=http://mailpoet.loc:8080 --title=WordPress --path=wordpress
+      # Softlink MailPoet to plugin path
+    - ln -s ../../.. wordpress/wp-content/plugins/mailpoet
+      # Activate MailPoet
+    - ./wp-cli.phar plugin activate mailpoet --path=wordpress
+      # Create .env file with correct path to WP installation
+    - echo "WP_TEST_PATH=\"/home/ubuntu/mailpoet/wordpress\"" > .env
+
+      # Enable XDebug for coverage reports.
+      # Comment out if not running PHP coverage reports, for performance
+    #- sed -i 's/^;//' /opt/circleci/php/$(phpenv global)/etc/conf.d/xdebug.ini
+
+## tests override
+test:
+  override:
+    # Run JS tests
+    - mkdir $CIRCLE_TEST_REPORTS/mocha
+    - ./do t:j $CIRCLE_TEST_REPORTS/mocha/junit.xml
+
+      # Run PHP tests
+    - ./do t:u --xml
+      # Uncomment to run coverage tests instead
+    #- ./do t:c --xml
+      # Copy the report
+    - mkdir $CIRCLE_TEST_REPORTS/codeception
+    - cp tests/_output/report.xml $CIRCLE_TEST_REPORTS/codeception/report.xml
+      # Uncomment to copy PHP coverage report
+    #- cp tests/_output/coverage.xml $CIRCLE_TEST_REPORTS/codeception/coverage.xml

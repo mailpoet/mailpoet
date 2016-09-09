@@ -27,7 +27,7 @@
             <%= __('Image') %>
         </div>
         <div class="mailpoet_social_icon_settings_form_element">
-            <input type="text" name="image" class="mailpoet_social_icon_field_image" value="{{ model.image }}" />
+            <input type="text" name="image" class="mailpoet_social_icon_field_image" value="{{ model.image }}" placeholder="http://" />
         </div>
         </label>
     </div>
@@ -40,9 +40,9 @@
         </div>
         <div class="mailpoet_social_icon_settings_form_element">
             {{#ifCond iconType '==' 'email'}}
-            <input type="text" name="link" class="mailpoet_social_icon_field_link" value="{{emailFromMailto model.link }}" /><br />
+            <input type="text" name="link" class="mailpoet_social_icon_field_link" value="{{emailFromMailto model.link }}" placeholder="example@example.org" /><br />
             {{else}}
-            <input type="text" name="link" class="mailpoet_social_icon_field_link" value="{{ model.link }}" /><br />
+            <input type="text" name="link" class="mailpoet_social_icon_field_link" value="{{ model.link }}" placeholder="http://" /><br />
             {{/ifCond}}
         </div>
         </label>

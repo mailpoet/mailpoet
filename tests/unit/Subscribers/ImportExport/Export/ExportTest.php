@@ -222,21 +222,36 @@ class ExportTest extends MailPoetTest {
   }
 
   function testItRequiresWritableExportFile() {
-    $this->export->export_path = '/fake_folder';
-    $result = $this->export->process();
-    expect($result['errors'][0])
-      ->equals("Couldn't save export file on the server");
+    try {
+      $this->export->export_path = '/fake_folder';
+      $this->export->process();
+      $this->fail('Export did not throw an exception');
+    } catch(\Exception $e) {
+      expect($e->getMessage())
+        ->equals("Couldn't save export file on the server");
+    }
   }
 
   function testItCanProcess() {
-    $this->export->export_file = $this->export->getExportFile('csv');
-    $this->export->export_format_option = 'csv';
-    $result = $this->export->process();
-    expect($result['result'])->true();
-    $this->export->export_file = $this->export->getExportFile('xlsx');
-    $this->export->export_format_option = 'xlsx';
-    $result = $this->export->process();
-    expect($result['result'])->true();
+    try {
+      $this->export->export_file = $this->export->getExportFile('csv');
+      $this->export->export_format_option = 'csv';
+      $result = $this->export->process();
+    } catch(\Exception $e) {
+      $this->fail('Export to .csv process threw an exception');
+    }
+    expect($result['totalExported'])->equals(3);
+    expect($result['exportFileURL'])->notEmpty();
+
+    try {
+      $this->export->export_file = $this->export->getExportFile('xlsx');
+      $this->export->export_format_option = 'xlsx';
+      $result = $this->export->process();
+    } catch(\Exception $e) {
+      $this->fail('Export to .xlsx process threw an exception');
+    }
+    expect($result['totalExported'])->equals(3);
+    expect($result['exportFileURL'])->notEmpty();
   }
 
   function _after() {

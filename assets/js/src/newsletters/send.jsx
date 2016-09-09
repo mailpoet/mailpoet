@@ -66,22 +66,22 @@ define(
         MailPoet.Ajax.post({
           endpoint: 'newsletters',
           action: 'get',
-          data: id
-        }).done((response) => {
-          if(response === false) {
-            this.setState({
-              loading: false,
-              item: {},
-            }, function() {
-              this.context.router.push('/new');
-            }.bind(this));
-          } else {
-            this.setState({
-              loading: false,
-              item: response,
-              fields: this.getFieldsByNewsletter(response),
-            });
+          data: {
+            id: id
           }
+        }).done((response) => {
+          this.setState({
+            loading: false,
+            item: response.data,
+            fields: this.getFieldsByNewsletter(response.data)
+          });
+        }).fail((response) => {
+          this.setState({
+            loading: false,
+            item: {}
+          }, () => {
+            this.context.router.push('/new');
+          });
         });
       },
       handleSend: function(e) {
@@ -90,77 +90,109 @@ define(
         if(!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
-          this.setState({ loading: true });
-
-          MailPoet.Ajax.post({
-            endpoint: 'newsletters',
-            action: 'save',
-            data: this.state.item,
-          }).then((response) => {
-            if (response.result === true) {
-              return MailPoet.Ajax.post({
-                endpoint: 'sendingQueue',
-                action: 'add',
-                data: _.extend({}, this.state.item, {
-                  newsletter_id: this.props.params.id,
-                }),
-              });
-            } else {
-              return response;
-            }
+          this._save(e).done(() => {
+            this.setState({ loading: true });
           }).done((response) => {
-            this.setState({ loading: false });
+            switch (response.data.type) {
+              case 'notification':
+              case 'welcome':
+                return MailPoet.Ajax.post({
+                  endpoint: 'newsletters',
+                  action: 'setStatus',
+                  data: {
+                    id: this.props.params.id,
+                    status: 'active'
+                  }
+                }).done((response) => {
+                  // redirect to listing based on newsletter type
+                  this.context.router.push(`/${ this.state.item.type || '' }`);
 
-            if(response.result === true) {
-              this.context.router.push(`/${ this.state.item.type || '' }`);
-              MailPoet.Notice.success(response.data.message);
-            } else {
-              if(response.errors) {
-                MailPoet.Notice.error(response.errors);
-              } else {
-                MailPoet.Notice.error(
-                  MailPoet.I18n.t('newsletterSendingError').replace("%$1s", '?page=mailpoet-settings')
-                );
-              }
+                  // display success message depending on newsletter type
+                  if (response.data.type === 'welcome') {
+                    MailPoet.Notice.success(
+                      MailPoet.I18n.t('welcomeEmailActivated')
+                    );
+                  } else if (response.data.type === 'notification') {
+                    MailPoet.Notice.success(
+                      MailPoet.I18n.t('postNotificationActivated')
+                    );
+                  }
+                }).fail(this._showError);
+              default:
+                return MailPoet.Ajax.post({
+                  endpoint: 'sendingQueue',
+                  action: 'add',
+                  data: {
+                    newsletter_id: this.props.params.id
+                  }
+                }).done((response) => {
+                  // redirect to listing based on newsletter type
+                  this.context.router.push(`/${ this.state.item.type || '' }`);
+
+                  if (response.data.status === 'scheduled') {
+                    MailPoet.Notice.success(
+                      MailPoet.I18n.t('newsletterHasBeenScheduled')
+                    );
+                  } else {
+                    MailPoet.Notice.success(
+                      MailPoet.I18n.t('newsletterBeingSent')
+                    );
+                  }
+                }).fail(this._showError);
             }
+          }).fail(this._showError).always(() => {
+            this.setState({ loading: false });
           });
         }
         return false;
       },
       handleSave: function(e) {
         e.preventDefault();
-        this._save(e).done(() => {
+
+        this._save(e).done((response) => {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('newsletterUpdated')
+          );
+        }).done(() => {
           this.context.router.push(`/${ this.state.item.type || '' }`);
-        });
+        }).fail(this._showError);
       },
       handleRedirectToDesign: function(e) {
         e.preventDefault();
         var redirectTo = e.target.href;
 
-        this._save(e).done(() => {
+        this._save(e).done((response) => {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('newsletterUpdated')
+          );
+        }).done(() => {
           window.location = redirectTo;
-        });
+        }).fail(this._showError);
       },
       _save: function(e) {
+        var data = this.state.item;
         this.setState({ loading: true });
+
+        // Ensure that body is  JSON encoded
+        if (!_.isUndefined(data.body)) {
+          data.body = JSON.stringify(data.body);
+        }
 
         return MailPoet.Ajax.post({
           endpoint: 'newsletters',
           action: 'save',
-          data: this.state.item,
-        }).done((response) => {
+          data: data,
+        }).always(() => {
           this.setState({ loading: false });
-
-          if(response.result === true) {
-            MailPoet.Notice.success(
-              MailPoet.I18n.t('newsletterUpdated')
-            );
-          } else {
-            if(response.errors) {
-              MailPoet.Notice.error(response.errors);
-            }
-          }
         });
+      },
+      _showError: (response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true }
+          );
+        }
       },
       handleFormChange: function(e) {
         var item = this.state.item,

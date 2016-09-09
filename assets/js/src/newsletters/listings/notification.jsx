@@ -17,8 +17,8 @@ import {
 } from 'newsletters/scheduling/common.jsx'
 
 const messages = {
-  onTrash(response) {
-    const count = ~~response;
+  onTrash: (response) => {
+    const count = ~~response.meta.count;
     let message = null;
 
     if (count === 1) {
@@ -28,12 +28,12 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
-  onDelete(response) {
-    const count = ~~response;
+  onDelete: (response) => {
+    const count = ~~response.meta.count;
     let message = null;
 
     if (count === 1) {
@@ -43,12 +43,12 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
-  onRestore(response) {
-    const count = ~~response;
+  onRestore: (response) => {
+    const count = ~~response.meta.count;
     let message = null;
 
     if (count === 1) {
@@ -58,7 +58,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%$1d', count);
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   }
@@ -127,16 +127,23 @@ const newsletter_actions = [
       return MailPoet.Ajax.post({
         endpoint: 'newsletters',
         action: 'duplicate',
-        data: newsletter.id
-      }).done(function(response) {
-        if (response !== false && response.subject !== undefined) {
-          MailPoet.Notice.success(
-            (MailPoet.I18n.t('newsletterDuplicated')).replace(
-              '%$1s', response.subject
-            )
+        data: {
+          id: newsletter.id
+        }
+      }).done((response) => {
+        MailPoet.Notice.success(
+          (MailPoet.I18n.t('newsletterDuplicated')).replace(
+            '%$1s', response.data.subject
+          )
+        );
+        refresh();
+      }).fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true }
           );
         }
-        refresh();
       });
     }
   },
@@ -158,20 +165,18 @@ const NewsletterListNotification = React.createClass({
         id: ~~(e.target.getAttribute('data-id')),
         status: e.target.value
       }
-    }).done(function(response) {
-      if (response.result === false) {
-        MailPoet.Notice.error(MailPoet.I18n.t('postNotificationActivationFailed'));
-
-        // reset value to actual newsletter's status
-         e.target.value = response.status;
-      } else {
-        if (response.status === 'active') {
-          MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
-        }
-        // force refresh of listing so that groups are updated
-        this.forceUpdate();
+    }).done((response) => {
+      if (response.data.status === 'active') {
+        MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
       }
-    }.bind(this));
+      // force refresh of listing so that groups are updated
+      this.forceUpdate();
+    }).fail((response) => {
+      MailPoet.Notice.error(MailPoet.I18n.t('postNotificationActivationFailed'));
+
+      // reset value to actual newsletter's status
+      e.target.value = response.status;
+    });
   },
   renderStatus: function(newsletter) {
     return (
@@ -252,6 +257,20 @@ const NewsletterListNotification = React.createClass({
       </span>
     );
   },
+  renderHistoryLink: function(newsletter) {
+    const childrenCount = ~~(newsletter.children_count);
+    if (childrenCount === 0) {
+      return (
+        MailPoet.I18n.t('notSentYet')
+      );
+    } else {
+      return (
+        <Link
+          to={ `/notification/history/${ newsletter.id }` }
+        >{ MailPoet.I18n.t('viewHistory') }</Link>
+      );
+    }
+  },
   renderItem: function(newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
@@ -277,7 +296,7 @@ const NewsletterListNotification = React.createClass({
           { this.renderSettings(newsletter) }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('history') }>
-          <a href="#TODO">{ MailPoet.I18n.t('viewHistory') }</a>
+          { this.renderHistoryLink(newsletter) }
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
@@ -299,7 +318,8 @@ const NewsletterListNotification = React.createClass({
           location={ this.props.location }
           params={ this.props.params }
           endpoint="newsletters"
-          tab="notification"
+          type="notification"
+          base_url="notification"
           onRenderItem={ this.renderItem }
           columns={ columns }
           bulk_actions={ bulk_actions }

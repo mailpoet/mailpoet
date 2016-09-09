@@ -7,7 +7,7 @@ class FranksRoastHouseTemplate {
 
   function __construct($assets_url) {
     $this->assets_url = $assets_url;
-    $this->template_image_url = $this->assets_url . '/img/sample_template';
+    $this->template_image_url = $this->assets_url . '/img/sample_templates/coffee';
     $this->social_icon_url = $this->assets_url . '/img/newsletter_editor/social-icons';
   }
 

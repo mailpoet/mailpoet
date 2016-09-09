@@ -113,8 +113,7 @@ config.push(_.extend({}, baseConfig, {
       'settings/tabs.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
-      'helpscout',
-      'cron.jsx'
+      'helpscout'
     ],
     form_editor: [
       'form_editor/form_editor.js',
@@ -150,6 +149,7 @@ config.push(_.extend({}, baseConfig, {
       'newsletter_editor/behaviors/HighlightEditingBehavior.js',
       'newsletter_editor/behaviors/ResizableBehavior.js',
       'newsletter_editor/behaviors/SortableBehavior.js',
+      'newsletter_editor/behaviors/ShowSettingsBehavior.js',
       'newsletter_editor/blocks/base.js',
       'newsletter_editor/blocks/container.js',
       'newsletter_editor/blocks/button.js',
@@ -226,6 +226,7 @@ config.push(_.extend({}, baseConfig, {
       'newsletter_editor/behaviors/HighlightEditingBehavior.js',
       'newsletter_editor/behaviors/ResizableBehavior.js',
       'newsletter_editor/behaviors/SortableBehavior.js',
+      'newsletter_editor/behaviors/ShowSettingsBehavior.js',
       'newsletter_editor/blocks/base.js',
       'newsletter_editor/blocks/container.js',
       'newsletter_editor/blocks/button.js',

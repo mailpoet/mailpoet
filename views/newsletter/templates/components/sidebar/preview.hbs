@@ -1,16 +1,19 @@
 <div class="handlediv" title="Click to toggle"><br></div>
 <h3><%= __('Preview') %></h3>
 <div class="mailpoet_region_content">
-    <div class="mailpoet_form_field">
-        <label>
-            <%= __('Send preview to') %><br />
-            <input id="mailpoet_preview_to_email" class="mailpoet_input mailpoet_input_full" type="text" name="to_email" value="<%= settings.sender.address %>" />
-        </label>
-    </div>
+    <iframe name="mailpoet_save_preview_email_for_autocomplete" style="display:none" src="about:blank"></iframe>
+    <form target="mailpoet_save_preview_email_for_autocomplete" action="about:blank">
+      <div class="mailpoet_form_field">
+          <label>
+              <%= __('Send preview to') %><br />
+              <input id="mailpoet_preview_to_email" class="mailpoet_input mailpoet_input_full" type="text" name="to_email" value="<%= current_wp_user.email %>" autocomplete="email" />
+          </label>
+      </div>
 
-    <div class="mailpoet_form_field">
-        <input type="button" id="mailpoet_send_preview" class="button button-primary mailpoet_button_full" value="<%= __('Send preview') %>" />
-    </div>
+      <div class="mailpoet_form_field">
+        <input type="submit" id="mailpoet_send_preview" class="button button-primary mailpoet_button_full" value="<%= __('Send preview') %>" />
+      </div>
+    </ofmr>
 
     <hr class="mailpoet_separator" />
 

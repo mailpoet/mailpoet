@@ -1,91 +1,50 @@
 <?php
 namespace MailPoet\Statistics\Track;
 
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 
 if(!defined('ABSPATH')) exit;
 
 class Clicks {
-  public $data;
-
-  function __construct($data) {
-    $this->data = $data;
-  }
-
-  function track($data = false) {
-    $data = ($data) ? $data : $this->data;
-    $newsletter = $this->getNewsletter($data['newsletter']);
-    $subscriber = $this->getSubscriber($data['subscriber']);
-    $queue = $this->getQueue($data['queue']);
-    $link = $this->getLink($data['hash']);
-    if(!$subscriber || !$newsletter || !$link || !$queue) {
-      $this->abort();
+  function track($data) {
+    if(!$data || empty($data->link)) {
+      return $this->abort();
     }
-    $statistics = StatisticsClicks::where('link_id', $link['id'])
-      ->where('subscriber_id', $subscriber['id'])
-      ->where('newsletter_id', $newsletter['id'])
-      ->where('queue_id', $queue['id'])
-      ->findOne();
-    if(!$statistics) {
-      // track open event in case it did not register
-      $this->trackOpenEvent($data);
-      $statistics = StatisticsClicks::create();
-      $statistics->newsletter_id = $newsletter['id'];
-      $statistics->link_id = $link['id'];
-      $statistics->subscriber_id = $subscriber['id'];
-      $statistics->queue_id = $queue['id'];
-      $statistics->count = 1;
-      $statistics->save();
-    } else {
-      $statistics->count++;
-      $statistics->save();
+    $subscriber = $data->subscriber;
+    $queue = $data->queue;
+    $newsletter = $data->newsletter;
+    $link = $data->link;
+    $wp_user_preview = ($data->preview && $subscriber->isWPUser());
+    // log statistics only if the action did not come from
+    // a WP user previewing the newsletter
+    if(!$wp_user_preview) {
+      StatisticsClicks::createOrUpdateClickCount(
+        $link->id,
+        $subscriber->id,
+        $newsletter->id,
+        $queue->id
+      );
+      // track open event
+      $open_event = new Opens();
+      $open_event->track($data, $display_image = false);
     }
-    $url = $this->processUrl($link['url'], $newsletter, $subscriber, $queue);
+    $url = $this->processUrl($link->url, $newsletter, $subscriber, $queue, $wp_user_preview);
     $this->redirectToUrl($url);
   }
 
-  function getNewsletter($newsletter_id) {
-    $newsletter = Newsletter::findOne($newsletter_id);
-    return ($newsletter) ? $newsletter->asArray() : $newsletter;
-  }
-
-  function getSubscriber($subscriber_id) {
-    $subscriber = Subscriber::findOne($subscriber_id);
-    return ($subscriber) ? $subscriber->asArray() : $subscriber;
-  }
-
-  function getQueue($queue_id) {
-    $queue = SendingQueue::findOne($queue_id);
-    return ($queue) ? $queue->asArray() : $queue;
-  }
-
-  function getLink($hash) {
-    $link = NewsletterLink::where('hash', $hash)
-      ->findOne();
-    return ($link) ? $link->asArray() : $link;
-  }
-
-  function processUrl($url, $newsletter, $subscriber, $queue) {
+  function processUrl($url, $newsletter, $subscriber, $queue, $wp_user_preview) {
     if(preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
       if(!$shortcode['action']) $this->abort();
       $url = Link::processShortcodeAction(
         $shortcode['action'],
         $newsletter,
         $subscriber,
-        $queue
+        $queue,
+        $wp_user_preview
       );
     }
     return $url;
-  }
-
-  function trackOpenEvent($data) {
-    $open = new Opens($data, $display_image = false);
-    return $open->track();
   }
 
   function abort() {

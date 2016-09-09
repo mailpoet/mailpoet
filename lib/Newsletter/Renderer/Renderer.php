@@ -9,12 +9,15 @@ class Renderer {
   public $DOM_parser;
   public $CSS_inliner;
   public $newsletter;
+  public $preview;
   const NEWSLETTER_TEMPLATE = 'Template.html';
   const POST_PROCESS_FILTER = 'mailpoet_rendering_post_process';
 
-  function __construct(array $newsletter) {
-    $this->newsletter = $newsletter;
-    $this->blocks_renderer = new Blocks\Renderer($this->newsletter);
+  function __construct($newsletter, $preview = false) {
+    // TODO: remove ternary condition, refactor to use model objects
+    $this->newsletter = (is_object($newsletter)) ? $newsletter->asArray() : $newsletter;
+    $this->preview = $preview;
+    $this->blocks_renderer = new Blocks\Renderer($this->newsletter, $this->preview);
     $this->columns_renderer = new Columns\Renderer();
     $this->DOM_parser = new \pQuery();
     $this->CSS_inliner = new \MailPoet\Util\CSS();
