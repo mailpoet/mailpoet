@@ -10,77 +10,75 @@ if(!defined('ABSPATH')) exit;
 
 class Daemon {
   public $daemon;
-  public $data;
-  public $refreshed_token;
-  const STATUS_STOPPED = 'stopped';
-  const STATUS_STOPPING = 'stopping';
-  const STATUS_STARTED = 'started';
-  const STATUS_STARTING = 'starting';
+  public $request_data;
+  public $timer;
   const REQUEST_TIMEOUT = 5;
-  private $timer;
 
-  function __construct($data) {
-    if(empty($data)) $this->abortWithError(__('Invalid or missing Cron data.'));
-    ignore_user_abort();
+  function __construct($request_data = false) {
+    $this->request_data = $request_data;
     $this->daemon = CronHelper::getDaemon();
     $this->token = CronHelper::createToken();
-    $this->data = $data;
     $this->timer = microtime(true);
   }
 
   function run() {
+    ignore_user_abort(true);
+    if(!$this->request_data) {
+      $error = __('Invalid or missing request data.');
+    } else {
+      if(!$this->daemon) {
+        $error = __('Daemon does not exist.');
+      } else {
+        if(!isset($this->request_data['token']) ||
+          $this->request_data['token'] !== $this->daemon['token']
+        ) {
+          $error = 'Invalid or missing token.';
+        }
+      }
+    }
+    if(!empty($error)) {
+      return $this->abortWithError($error);
+    }
     $daemon = $this->daemon;
-    if(!$daemon) {
-      $this->abortWithError(__('Daemon does not exist.'));
-    }
-    if(!isset($this->data['token']) ||
-      $this->data['token'] !== $daemon['token']
-    ) {
-      $this->abortWithError(__('Invalid or missing token.'));
-    }
     $daemon['token'] = $this->token;
     CronHelper::saveDaemon($daemon);
-    $this->abortIfStopped($daemon);
     try {
-      $scheduler = new SchedulerWorker($this->timer);
-      $scheduler->process();
-      $queue = new SendingQueueWorker($this->timer);
-      $queue->process();
+      $this->executeScheduleWorker();
+      $this->executeQueueWorker();
     } catch(\Exception $e) {
       // continue processing, no need to handle errors
     }
+    // if workers took less time to execute than the daemon execution limit,
+    // pause daemon execution to ensure that daemon runs only once every X seconds
     $elapsed_time = microtime(true) - $this->timer;
     if($elapsed_time < CronHelper::DAEMON_EXECUTION_LIMIT) {
-      sleep(CronHelper::DAEMON_EXECUTION_LIMIT - $elapsed_time);
+      $this->pauseExecution(CronHelper::DAEMON_EXECUTION_LIMIT - $elapsed_time);
     }
-    // after each execution, re-read daemon data in case its status was changed
-    // its status has changed
+    // after each execution, re-read daemon data in case it changed
     $daemon = CronHelper::getDaemon();
     if(!$daemon || $daemon['token'] !== $this->token) {
-      $this->terminateRequest();
+      return $this->terminateRequest();
     }
-    $this->abortIfStopped($daemon);
-    if($daemon['status'] === self::STATUS_STARTING) {
-      $daemon['status'] = self::STATUS_STARTED;
-    }
-    CronHelper::saveDaemon($daemon);
-    $this->callSelf();
+    return $this->callSelf();
   }
 
-  function abortIfStopped($daemon) {
-    if($daemon['status'] === self::STATUS_STOPPED) {
-      $this->terminateRequest();
-    }
-    if($daemon['status'] === self::STATUS_STOPPING) {
-      $daemon['status'] = self::STATUS_STOPPED;
-      CronHelper::saveDaemon($daemon);
-      $this->terminateRequest();
-    }
+  function pauseExecution($pause_time) {
+    return sleep($pause_time);
+  }
+
+  function executeScheduleWorker() {
+    $scheduler = new SchedulerWorker($this->timer);
+    return $scheduler->process();
+  }
+
+  function executeQueueWorker() {
+    $queue = new SendingQueueWorker($this->timer);
+    return $queue->process();
   }
 
   function callSelf() {
     CronHelper::accessDaemon($this->token, self::REQUEST_TIMEOUT);
-    $this->terminateRequest();
+    return $this->terminateRequest();
   }
 
   function abortWithError($message) {

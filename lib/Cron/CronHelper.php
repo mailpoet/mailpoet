@@ -16,7 +16,6 @@ class CronHelper {
 
   static function createDaemon($token) {
     $daemon = array(
-      'status' => Daemon::STATUS_STARTING,
       'token' => $token
     );
     self::saveDaemon($daemon);
@@ -41,7 +40,6 @@ class CronHelper {
 
   static function stopDaemon() {
     $daemon = self::getDaemon();
-    $daemon['status'] = Daemon::STATUS_STOPPED;
     return self::saveDaemon($daemon);
   }
 

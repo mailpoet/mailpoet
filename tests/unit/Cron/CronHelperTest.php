@@ -20,7 +20,6 @@ class CronHelperTest extends MailPoetTest {
     $daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
     expect($daemon)->equals(
       array(
-        'status' => Daemon::STATUS_STARTING,
         'token' => $token,
         'updated_at' => $time
       )
@@ -34,7 +33,6 @@ class CronHelperTest extends MailPoetTest {
     $daemon = Setting::getValue(CronHelper::DAEMON_SETTING);
     expect($daemon)->equals(
       array(
-        'status' => Daemon::STATUS_STARTING,
         'token' => $token,
         'updated_at' => $time
       )
@@ -43,7 +41,6 @@ class CronHelperTest extends MailPoetTest {
 
   function testItLoadDaemon() {
     $daemon = array(
-      'status' => 'created',
       'token' => 'some_token',
       'updated_at' => '12345678'
     );
@@ -57,7 +54,6 @@ class CronHelperTest extends MailPoetTest {
   function testItCanSaveDaemon() {
     // when saving daemon, 'updated_at' value should change
     $daemon = array(
-      'status' => 'created',
       'token' => 'some_token',
       'updated_at' => '12345678'
     );
