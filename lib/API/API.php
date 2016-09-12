@@ -102,14 +102,7 @@ class API {
     try {
       $endpoint = new $endpoint();
       $response = $endpoint->$method($data);
-
-      // TODO: remove this condition once the API unification is complete
-      if(is_object($response)) {
-        $response->send();
-      } else {
-        // LEGACY API
-        wp_send_json($response);
-      }
+      $response->send();
     } catch(\Exception $e) {
       $error_response = new ErrorResponse(
         array($e->getCode() => $e->getMessage())

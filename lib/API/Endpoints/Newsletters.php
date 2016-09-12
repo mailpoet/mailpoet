@@ -285,15 +285,14 @@ class Newsletters extends APIEndpoint {
   }
 
   function listing($data = array()) {
-
     $listing = new Listing\Handler(
       '\MailPoet\Models\Newsletter',
       $data
     );
     $listing_data = $listing->get();
-    $subscriber = Subscriber::getCurrentWPUser();
 
-    foreach($listing_data['items'] as $key => $newsletter) {
+    $data = array();
+    foreach($listing_data['items'] as $newsletter) {
       $queue = false;
 
       if($newsletter->type === Newsletter::TYPE_STANDARD) {
@@ -325,14 +324,18 @@ class Newsletters extends APIEndpoint {
       }
 
       // get preview url
+      $subscriber = Subscriber::getCurrentWPUser();
       $newsletter->preview_url = NewsletterUrl::getViewInBrowserUrl(
         $newsletter, $subscriber, $queue, $preview = true);
 
-      // convert object to array
-      $listing_data['items'][$key] = $newsletter->asArray();
+      $data[] = $newsletter->asArray();
     }
 
-    return $listing_data;
+    return $this->successResponse($data, array(
+      'count' => $listing_data['count'],
+      'filters' => $listing_data['filters'],
+      'groups' => $listing_data['groups']
+    ));
   }
 
   function bulkAction($data = array()) {

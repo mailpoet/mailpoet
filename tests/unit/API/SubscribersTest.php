@@ -155,7 +155,7 @@ class SubscribersTest extends MailPoetTest {
     ));
 
     // it should return all subscribers
-    expect($response['count'])->equals(2);
+    expect($response->meta['count'])->equals(2);
 
     // filter by 1st segment
     $response = $router->listing(array(
@@ -164,8 +164,8 @@ class SubscribersTest extends MailPoetTest {
       )
     ));
 
-    expect($response['count'])->equals(1);
-    expect($response['items'][0]['email'])->equals($this->subscriber_2->email);
+    expect($response->meta['count'])->equals(1);
+    expect($response->data[0]['email'])->equals($this->subscriber_2->email);
 
     // filter by 2nd segment
     $response = $router->listing(array(
@@ -174,8 +174,8 @@ class SubscribersTest extends MailPoetTest {
       )
     ));
 
-    expect($response['count'])->equals(1);
-    expect($response['items'][0]['email'])->equals($this->subscriber_2->email);
+    expect($response->meta['count'])->equals(1);
+    expect($response->data[0]['email'])->equals($this->subscriber_2->email);
   }
 
   function testItCanSearchListing() {
@@ -191,29 +191,29 @@ class SubscribersTest extends MailPoetTest {
     $response = $router->listing(array(
       'search' => ''
     ));
-    expect($response['count'])->equals(3);
+    expect($response->meta['count'])->equals(3);
 
     // search by email
     $response = $router->listing(array(
       'search' => '.me'
     ));
-    expect($response['count'])->equals(1);
-    expect($response['items'][0]['email'])->equals($new_subscriber->email);
+    expect($response->meta['count'])->equals(1);
+    expect($response->data[0]['email'])->equals($new_subscriber->email);
 
     // search by last name
     $response = $router->listing(array(
       'search' => 'doe'
     ));
-    expect($response['count'])->equals(2);
-    expect($response['items'][0]['email'])->equals($this->subscriber_1->email);
-    expect($response['items'][1]['email'])->equals($this->subscriber_2->email);
+    expect($response->meta['count'])->equals(2);
+    expect($response->data[0]['email'])->equals($this->subscriber_1->email);
+    expect($response->data[1]['email'])->equals($this->subscriber_2->email);
 
     // search by first name
     $response = $router->listing(array(
       'search' => 'billy'
     ));
-    expect($response['count'])->equals(1);
-    expect($response['items'][0]['email'])->equals($new_subscriber->email);
+    expect($response->meta['count'])->equals(1);
+    expect($response->data[0]['email'])->equals($new_subscriber->email);
   }
 
   function testItCanGroupListing() {
@@ -222,28 +222,28 @@ class SubscribersTest extends MailPoetTest {
     $subscribed_group = $router->listing(array(
       'group' => Subscriber::STATUS_SUBSCRIBED
     ));
-    expect($subscribed_group['count'])->equals(1);
-    expect($subscribed_group['items'][0]['email'])->equals(
+    expect($subscribed_group->meta['count'])->equals(1);
+    expect($subscribed_group->data[0]['email'])->equals(
       $this->subscriber_2->email
     );
 
     $unsubscribed_group = $router->listing(array(
       'group' => Subscriber::STATUS_UNSUBSCRIBED
     ));
-    expect($unsubscribed_group['count'])->equals(0);
+    expect($unsubscribed_group->meta['count'])->equals(0);
 
     $unconfirmed_group = $router->listing(array(
       'group' => Subscriber::STATUS_UNCONFIRMED
     ));
-    expect($unconfirmed_group['count'])->equals(1);
-    expect($unconfirmed_group['items'][0]['email'])->equals(
+    expect($unconfirmed_group->meta['count'])->equals(1);
+    expect($unconfirmed_group->data[0]['email'])->equals(
       $this->subscriber_1->email
     );
 
     $trashed_group = $router->listing(array(
       'group' => 'trash'
     ));
-    expect($trashed_group['count'])->equals(0);
+    expect($trashed_group->meta['count'])->equals(0);
 
     // trash 1st subscriber
     $this->subscriber_1->trash();
@@ -251,8 +251,8 @@ class SubscribersTest extends MailPoetTest {
     $trashed_group = $router->listing(array(
       'group' => 'trash'
     ));
-    expect($trashed_group['count'])->equals(1);
-    expect($trashed_group['items'][0]['email'])->equals(
+    expect($trashed_group->meta['count'])->equals(1);
+    expect($trashed_group->data[0]['email'])->equals(
       $this->subscriber_1->email
     );
   }
@@ -266,9 +266,9 @@ class SubscribersTest extends MailPoetTest {
       'sort_order' => 'asc'
     ));
 
-    expect($response['count'])->equals(2);
-    expect($response['items'])->count(1);
-    expect($response['items'][0]['email'])->equals(
+    expect($response->meta['count'])->equals(2);
+    expect($response->data)->count(1);
+    expect($response->data[0]['email'])->equals(
       $this->subscriber_2->email
     );
 
@@ -280,9 +280,9 @@ class SubscribersTest extends MailPoetTest {
       'sort_order' => 'asc'
     ));
 
-    expect($response['count'])->equals(2);
-    expect($response['items'])->count(1);
-    expect($response['items'][0]['email'])->equals(
+    expect($response->meta['count'])->equals(2);
+    expect($response->data)->count(1);
+    expect($response->data[0]['email'])->equals(
       $this->subscriber_1->email
     );
   }

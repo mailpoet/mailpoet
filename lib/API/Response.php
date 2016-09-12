@@ -31,11 +31,11 @@ abstract class Response {
       $response = array_merge($response, $data);
     }
 
-    if(empty($response)) {
-      die();
-    } else {
-      wp_send_json($response);
+    if(!empty($response)) {
+      @header('Content-Type: application/json; charset='.get_option('blog_charset'));
+      echo wp_json_encode($response);
     }
+    die();
   }
 
   abstract function getData();

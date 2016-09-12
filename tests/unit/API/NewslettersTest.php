@@ -220,25 +220,26 @@ class NewslettersTest extends MailPoetTest {
     $router = new Newsletters();
     $response = $router->listing();
 
-    expect($response)->hasKey('filters');
-    expect($response)->hasKey('groups');
+    expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    expect($response['count'])->equals(2);
-    expect($response['items'])->count(2);
+    expect($response->meta)->hasKey('filters');
+    expect($response->meta)->hasKey('groups');
+    expect($response->meta['count'])->equals(2);
 
-    expect($response['items'][0]['subject'])->equals('My Standard Newsletter');
-    expect($response['items'][1]['subject'])->equals('My Post Notification');
+    expect($response->data)->count(2);
+    expect($response->data[0]['subject'])->equals('My Standard Newsletter');
+    expect($response->data[1]['subject'])->equals('My Post Notification');
 
     // 1st subscriber has 2 segments
-    expect($response['items'][0]['segments'])->count(2);
-    expect($response['items'][0]['segments'][0]['id'])
+    expect($response->data[0]['segments'])->count(2);
+    expect($response->data[0]['segments'][0]['id'])
       ->equals($segment_1->id);
-    expect($response['items'][0]['segments'][1]['id'])
+    expect($response->data[0]['segments'][1]['id'])
       ->equals($segment_2->id);
 
     // 2nd subscriber has 1 segment
-    expect($response['items'][1]['segments'])->count(1);
-    expect($response['items'][1]['segments'][0]['id'])
+    expect($response->data[1]['segments'])->count(1);
+    expect($response->data[1]['segments'][0]['id'])
       ->equals($segment_2->id);
   }
 
@@ -279,9 +280,11 @@ class NewslettersTest extends MailPoetTest {
       )
     ));
 
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
     // we should only get the standard newsletter
-    expect($response['count'])->equals(1);
-    expect($response['items'][0]['subject'])->equals($this->newsletter->subject);
+    expect($response->meta['count'])->equals(1);
+    expect($response->data[0]['subject'])->equals($this->newsletter->subject);
 
     // filter by 2nd segment
     $response = $router->listing(array(
@@ -290,8 +293,10 @@ class NewslettersTest extends MailPoetTest {
       )
     ));
 
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
     // we should have the 2 newsletters
-    expect($response['count'])->equals(2);
+    expect($response->meta['count'])->equals(2);
   }
 
   function testItCanLimitListing() {
@@ -303,9 +308,11 @@ class NewslettersTest extends MailPoetTest {
       'sort_order' => 'asc'
     ));
 
-    expect($response['count'])->equals(2);
-    expect($response['items'])->count(1);
-    expect($response['items'][0]['subject'])->equals(
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    expect($response->meta['count'])->equals(2);
+    expect($response->data)->count(1);
+    expect($response->data[0]['subject'])->equals(
       $this->post_notification->subject
     );
 
@@ -317,9 +324,9 @@ class NewslettersTest extends MailPoetTest {
       'sort_order' => 'asc'
     ));
 
-    expect($response['count'])->equals(2);
-    expect($response['items'])->count(1);
-    expect($response['items'][0]['subject'])->equals(
+    expect($response->meta['count'])->equals(2);
+    expect($response->data)->count(1);
+    expect($response->data[0]['subject'])->equals(
       $this->newsletter->subject
     );
   }

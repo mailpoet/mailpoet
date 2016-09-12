@@ -41,14 +41,18 @@ class Subscribers extends APIEndpoint {
 
     $listing_data = $listing->get();
 
-    // fetch segments relations for each returned item
-    foreach($listing_data['items'] as $key => $subscriber) {
-      $listing_data['items'][$key] = $subscriber
+    $data = array();
+    foreach($listing_data['items'] as $subscriber) {
+      $data[] = $subscriber
         ->withSubscriptions()
         ->asArray();
     }
 
-    return $listing_data;
+    return $this->successResponse($data, array(
+      'count' => $listing_data['count'],
+      'filters' => $listing_data['filters'],
+      'groups' => $listing_data['groups']
+    ));
   }
 
   function subscribe($data = array()) {
