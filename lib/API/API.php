@@ -36,23 +36,25 @@ class API {
 
   function setupAdmin() {
     if($this->checkToken() === false) {
-      (new ErrorResponse(
+      $error_response = new ErrorResponse(
         array(
           Error::UNAUTHORIZED => __('You need to specify a valid API token.')
         ),
         array(),
         Response::STATUS_UNAUTHORIZED
-      ))->send();
+      );
+      $error_response->send();
     }
 
     if($this->checkPermissions() === false) {
-      (new ErrorResponse(
+      $error_response = new ErrorResponse(
         array(
           Error::FORBIDDEN => __('You do not have the required permissions.')
         ),
         array(),
         Response::STATUS_FORBIDDEN
-      ))->send();
+      );
+      $error_response->send();
     }
 
     $this->processRoute();
@@ -60,13 +62,14 @@ class API {
 
   function setupPublic() {
     if($this->checkToken() === false) {
-      (new ErrorResponse(
+      $error_response = new ErrorResponse(
         array(
           Error::UNAUTHORIZED => __('You need to specify a valid API token.')
         ),
         array(),
         Response::STATUS_UNAUTHORIZED
-      ))->send();
+      );
+      $error_response->send();
     }
 
     $this->processRoute();
@@ -108,9 +111,10 @@ class API {
         wp_send_json($response);
       }
     } catch(\Exception $e) {
-      (new ErrorResponse(
+      $error_response = new ErrorResponse(
         array($e->getCode() => $e->getMessage())
-      ))->send();
+      );
+      $error_response->send();
     }
   }
 

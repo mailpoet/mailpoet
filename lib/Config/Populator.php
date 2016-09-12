@@ -1,18 +1,6 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Config\PopulatorData\Templates\FranksRoastHouseTemplate;
-use MailPoet\Config\PopulatorData\Templates\NewsletterBlank1Column;
-use MailPoet\Config\PopulatorData\Templates\NewsletterBlank12Column;
-use MailPoet\Config\PopulatorData\Templates\NewsletterBlank121Column;
-use MailPoet\Config\PopulatorData\Templates\NewsletterBlank13Column;
-use MailPoet\Config\PopulatorData\Templates\PostNotificationsBlank1Column;
-use MailPoet\Config\PopulatorData\Templates\WelcomeBlank1Column;
-use MailPoet\Config\PopulatorData\Templates\WelcomeBlank12Column;
-use MailPoet\Config\PopulatorData\Templates\SimpleText;
-use MailPoet\Config\PopulatorData\Templates\Restaurant;
-use MailPoet\Config\PopulatorData\Templates\StoreDiscount;
-use MailPoet\Config\PopulatorData\Templates\TravelEmail;
 use MailPoet\Cron\CronTrigger;
 use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
@@ -25,11 +13,30 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 class Populator {
+  public $prefix;
+  public $models;
+  public $templates;
+  const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
+
   function __construct() {
     $this->prefix = Env::$db_prefix;
     $this->models = array(
       'newsletter_option_fields',
       'newsletter_templates',
+    );
+    $this->templates = array(
+      "FranksRoastHouseTemplate",
+      "NewsletterBlank1Column",
+      "NewsletterBlank12Column",
+      "NewsletterBlank121Column",
+      "NewsletterBlank13Column",
+      "PostNotificationsBlank1Column",
+      "WelcomeBlank1Column",
+      "WelcomeBlank12Column",
+      "SimpleText",
+      "Restaurant",
+      "StoreDiscount",
+      "TravelEmail"
     );
   }
 
@@ -191,20 +198,13 @@ class Populator {
   }
 
   private function newsletterTemplates() {
-    return array(
-      (new FranksRoastHouseTemplate(Env::$assets_url))->get(),
-      (new NewsletterBlank1Column(Env::$assets_url))->get(),
-      (new NewsletterBlank12Column(Env::$assets_url))->get(),
-      (new NewsletterBlank121Column(Env::$assets_url))->get(),
-      (new NewsletterBlank13Column(Env::$assets_url))->get(),
-      (new PostNotificationsBlank1Column(Env::$assets_url))->get(),
-      (new WelcomeBlank1Column(Env::$assets_url))->get(),
-      (new WelcomeBlank12Column(Env::$assets_url))->get(),
-      (new SimpleText(Env::$assets_url))->get(),
-      (new Restaurant(Env::$assets_url))->get(),
-      (new StoreDiscount(Env::$assets_url))->get(),
-      (new TravelEmail(Env::$assets_url))->get(),
-    );
+    $templates = array();
+    foreach($this->templates as $template) {
+      $template = self::TEMPLATES_NAMESPACE . $template;
+      $template = new $template(Env::$assets_url);
+      $templates[] = $template->get();
+    }
+    return $templates;
   }
 
   private function populate($model) {
