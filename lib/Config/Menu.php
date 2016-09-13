@@ -34,6 +34,16 @@ class Menu {
     );
   }
 
+  function checkSubscribersLimit() {
+    $subscribers_count = Subscriber::getTotalSubscribers();
+    if($subscribers_count > Env::$subscribers_limit) {
+      echo $this->renderer->render('limit.html', array(
+        'limit' => Env::$subscribers_limit
+      ));
+      exit;
+    }
+  }
+
   function setup() {
     $main_page_slug = 'mailpoet-newsletters';
 
@@ -242,6 +252,8 @@ class Menu {
   }
 
   function settings() {
+    $this->checkSubscribersLimit();
+
     $settings = Setting::getAll();
     $flags = $this->_getFlags();
 
@@ -314,12 +326,16 @@ class Menu {
   }
 
   function segments() {
+    $this->checkSubscribersLimit();
+
     $data = array();
     $data['items_per_page'] = $this->getLimitPerPage('segments');
     echo $this->renderer->render('segments.html', $data);
   }
 
   function forms() {
+    $this->checkSubscribersLimit();
+
     $data = array();
 
     $data['items_per_page'] = $this->getLimitPerPage('forms');
@@ -329,6 +345,8 @@ class Menu {
   }
 
   function newsletters() {
+    $this->checkSubscribersLimit();
+
     global $wp_roles;
 
     $data = array();

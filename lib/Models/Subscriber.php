@@ -624,6 +624,13 @@ class Subscriber extends Model {
     );
   }
 
+  static function getTotalSubscribers() {
+    return self::whereIn('status', array(
+      self::STATUS_SUBSCRIBED,
+      self::STATUS_UNCONFIRMED
+    ))->count();
+  }
+
   static function bulkTrash($orm) {
     $count = parent::bulkAction($orm, function($subscriber_ids) {
       self::rawExecute(join(' ', array(
