@@ -438,7 +438,7 @@ class SubscriberTest extends MailPoetTest {
     expect($subscriber)->notEquals(false);
   }
 
-  function testItCanTheTotalNumberOfSubscribers() {
+  function testItCanGetTheTotalNumberOfSubscribers() {
     // remove all subscribers
     Subscriber::deleteMany();
 
