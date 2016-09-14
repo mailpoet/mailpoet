@@ -26,7 +26,7 @@ class Scheduler {
 
   function process() {
     $scheduled_queues = self::getScheduledQueues();
-    if(!count($scheduled_queues)) return;
+    if(!count($scheduled_queues)) return false;
     foreach($scheduled_queues as $i => $queue) {
       $newsletter = Newsletter::filter('filterWithOptions')
         ->findOne($queue->newsletter_id);
@@ -47,30 +47,30 @@ class Scheduler {
     $subscriber = unserialize($queue->subscribers);
     if(empty($subscriber['to_process'][0])) {
       $queue->delete();
-      return;
+      return false;
     }
     $subscriber_id = (int)$subscriber['to_process'][0];
     if($newsletter->event === 'segment') {
-      if($this->verifyMailPoetSubscriber($subscriber_id, $newsletter, $queue) === false) {
-        return;
+      if($this->verifyMailpoetSubscriber($subscriber_id, $newsletter, $queue) === false) {
+        return false;
       }
     } else {
       if($newsletter->event === 'user') {
         if($this->verifyWPSubscriber($subscriber_id, $newsletter, $queue) === false) {
-          return;
+          return false;
         }
       }
     }
     $queue->status = null;
     $queue->save();
+    return true;
   }
 
   function processPostNotificationNewsletter($newsletter, $queue) {
     // ensure that segments exist
     $segments = $newsletter->segments()->findArray();
     if(empty($segments)) {
-      $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
-      return;
+      return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     }
     $segment_ids = array_map(function($segment) {
       return (int)$segment['id'];
@@ -83,13 +83,12 @@ class Scheduler {
     $subscribers = array_unique($subscribers);
 
     if(empty($subscribers)) {
-      $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
-      return;
+      return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     }
 
     // create a duplicate newsletter that acts as a history record
     $notification_history = $this->createNotificationHistory($newsletter->id);
-    if(!$notification_history) return;
+    if(!$notification_history) return false;
 
     // queue newsletter for delivery
     $queue->newsletter_id = $notification_history->id;
@@ -101,6 +100,7 @@ class Scheduler {
     $queue->count_total = $queue->count_to_process = count($subscribers);
     $queue->status = null;
     $queue->save();
+    return true;
   }
 
   function processScheduledStandardNewsletter($newsletter, $queue) {
@@ -108,7 +108,6 @@ class Scheduler {
     $segment_ids = array_map(function($segment) {
       return $segment['id'];
     }, $segments);
-
     $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
       ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
@@ -123,9 +122,10 @@ class Scheduler {
     $queue->count_total = $queue->count_to_process = count($subscribers);
     $queue->status = null;
     $queue->save();
+    return true;
   }
 
-  function verifyMailPoetSubscriber($subscriber_id, $newsletter, $queue) {
+  function verifyMailpoetSubscriber($subscriber_id, $newsletter, $queue) {
     $subscriber = Subscriber::findOne($subscriber_id);
     // check if subscriber is in proper segment
     $subscriber_in_segment =
@@ -184,7 +184,7 @@ class Scheduler {
       $notification_history :
       false;
   }
-  
+
   static function getScheduledQueues() {
     return SendingQueue::where('status', 'scheduled')
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
