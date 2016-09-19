@@ -7,7 +7,6 @@ if(!defined('ABSPATH')) exit;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
-  public $_transient;
   const TYPE_STANDARD = 'standard';
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
@@ -23,7 +22,6 @@ class Newsletter extends Model {
 
   function __construct() {
     parent::__construct();
-    $this->_transient = new \stdClass();
     $this->addValidations('type', array(
       'required' => __('Please specify a type')
     ));
