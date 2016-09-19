@@ -11,6 +11,8 @@ $models = array(
   'CustomField',
   'Form',
   'Newsletter',
+  'NewsletterLink',
+  'NewsletterPost',
   'NewsletterSegment',
   'NewsletterTemplate',
   'NewsletterOption',
