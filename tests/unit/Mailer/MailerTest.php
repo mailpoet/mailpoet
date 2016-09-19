@@ -116,32 +116,32 @@ class MailerTest extends MailPoetTest {
   function testItSetsReplyToAddressWhenOnlyNameIsAvailable() {
     $reply_to = array('name' => 'test');
     $mailer = new Mailer($this->mailer, $this->sender, $reply_to);
-    $reply_to = $mailer->getReplyTo();
+    $reply_to = $mailer->getReplyToNameAndAddress();
     expect($reply_to['reply_to_email'])->equals($this->sender['address']);
   }
 
   function testItCanTransformSubscriber() {
     $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
-    expect($mailer->transformSubscriber('test@email.com'))
+    expect($mailer->formatSubscriberNameAndEmailAddress('test@email.com'))
       ->equals('test@email.com');
-    expect($mailer->transformSubscriber(
+    expect($mailer->formatSubscriberNameAndEmailAddress(
       array(
         'email' => 'test@email.com'
       ))
     )->equals('test@email.com');
-    expect($mailer->transformSubscriber(
+    expect($mailer->formatSubscriberNameAndEmailAddress(
       array(
         'first_name' => 'First',
         'email' => 'test@email.com'
       ))
     )->equals('First <test@email.com>');
-    expect($mailer->transformSubscriber(
+    expect($mailer->formatSubscriberNameAndEmailAddress(
       array(
         'last_name' => 'Last',
         'email' => 'test@email.com'
       ))
     )->equals('Last <test@email.com>');
-    expect($mailer->transformSubscriber(
+    expect($mailer->formatSubscriberNameAndEmailAddress(
       array(
         'first_name' => 'First',
         'last_name' => 'Last',

@@ -9,15 +9,13 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
-use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
   public $mailer_task;
   public $newsletter_task;
-  private $timer;
-  const BATCH_SIZE = 50;
+  public $timer;
 
   function __construct($timer = false) {
     $this->mailer_task = new MailerTask();
@@ -32,27 +30,29 @@ class SendingQueue {
       // abort if sending limit is reached
       MailerLog::enforceSendingLimit();
       // get and pre-process newsletter (render, replace shortcodes/links, etc.)
-      $newsletter = $this->newsletter_task->getAndPreProcess($queue->asArray());
+      $newsletter = $this->newsletter_task->getAndPreProcess($queue);
       if(!$newsletter) {
         $queue->delete();
         continue;
       }
-      // configure mailer
-      $this->mailer_task->configureMailer($newsletter);
       if(is_null($queue->newsletter_rendered_body)) {
-        $queue->newsletter_rendered_body = json_encode($newsletter['rendered_body']);
+        $queue->newsletter_rendered_body = json_encode($newsletter->_transient->rendered_body);
         $queue->save();
       }
+      // configure mailer
+      $this->mailer_task->configureMailer($newsletter);
       // get subscribers
       $queue->subscribers = $queue->getSubscribers();
-      $subscriber_batches = array_chunk(
-        $queue->subscribers['to_process'],
-        self::BATCH_SIZE
-      );
+      $subscriber_batches =
+        SubscribersTask::splitSubscribersIntoBatches($queue->subscribers['to_process']);
       foreach($subscriber_batches as $subscribers_to_process_ids) {
+        // abort if execution limit is reached
+        CronHelper::enforceExecutionLimit($this->timer);
         $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)
-          ->findArray();
-        $found_subscribers_ids = Helpers::arrayColumn($found_subscribers, 'id');
+          ->findMany();
+        $found_subscribers_ids = array_map(function($subscriber) {
+          return $subscriber->id;
+        }, $found_subscribers);
         // if some subscribers weren't found, remove them from the processing list
         if(count($found_subscribers_ids) !== count($subscribers_to_process_ids)) {
           $queue->subscribers = SubscribersTask::updateToProcessList(
@@ -60,10 +60,11 @@ class SendingQueue {
             $subscribers_to_process_ids,
             $queue->subscribers
           );
-        }
-        if(!count($queue->subscribers['to_process'])) {
-          $this->updateQueue($queue);
-          continue;
+          if(!count($queue->subscribers['to_process'])) {
+            $this->updateQueue($queue);
+            $this->newsletter_task->markNewsletterAsSent($newsletter);
+            continue;
+          }
         }
         $queue = $this->processQueue(
           $queue,
@@ -71,10 +72,8 @@ class SendingQueue {
           $found_subscribers
         );
         if($queue->status === SendingQueueModel::STATUS_COMPLETED) {
-          $this->newsletter_task->markNewsletterAsSent($queue->newsletter_id);
+          $this->newsletter_task->markNewsletterAsSent($newsletter);
         }
-        // abort if execution limit is reached
-        CronHelper::enforceExecutionLimit($this->timer);
       }
     }
   }
@@ -92,7 +91,7 @@ class SendingQueue {
         $this->newsletter_task->prepareNewsletterForSending(
           $newsletter,
           $subscriber,
-          $queue->asArray()
+          $queue
         );
       if(!$queue->newsletter_rendered_subject) {
         $queue->newsletter_rendered_subject = $prepared_newsletters[0]['subject'];
@@ -101,11 +100,11 @@ class SendingQueue {
       $prepared_subscribers[] = $this->mailer_task->prepareSubscriberForSending(
         $subscriber
       );
-      $prepared_subscribers_ids[] = $subscriber['id'];
+      $prepared_subscribers_ids[] = $subscriber->id;
       // keep track of values for statistics purposes
       $statistics[] = array(
-        'newsletter_id' => $newsletter['id'],
-        'subscriber_id' => $subscriber['id'],
+        'newsletter_id' => $newsletter->id,
+        'subscriber_id' => $subscriber->id,
         'queue_id' => $queue->id
       );
       if($processing_method === 'individual') {

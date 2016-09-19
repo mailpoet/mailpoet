@@ -59,6 +59,10 @@ class SendingQueue extends Model {
     return $subscribers;
   }
 
+  function getNewsletter() {
+    return Newsletter::findOne($this->newsletter_id);
+  }
+
   function getRenderedNewsletterBody() {
     return json_decode($this->newsletter_rendered_body, true);
   }
