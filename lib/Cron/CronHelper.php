@@ -38,11 +38,6 @@ class CronHelper {
     );
   }
 
-  static function stopDaemon() {
-    $daemon = self::getDaemon();
-    return self::saveDaemon($daemon);
-  }
-
   static function deleteDaemon() {
     return Setting::deleteValue(self::DAEMON_SETTING);
   }
