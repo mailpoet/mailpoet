@@ -4,24 +4,22 @@ namespace MailPoet\Cron\Workers\SendingQueue;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
-use MailPoet\Cron\Workers\SendingQueue\Tasks\Subscribers as SubscribersTask;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
-use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue {
   public $mailer_task;
   public $newsletter_task;
-  private $timer;
+  public $timer;
   const BATCH_SIZE = 50;
 
-  function __construct($timer = false) {
-    $this->mailer_task = new MailerTask();
-    $this->newsletter_task = new NewsletterTask();
+  function __construct($timer = false, $mailer_task = false, $newsletter_task = false) {
+    $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
+    $this->newsletter_task = ($newsletter_task) ? $newsletter_task : new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution or sending limit are reached
     CronHelper::enforceExecutionLimit($this->timer);
@@ -32,17 +30,13 @@ class SendingQueue {
       // abort if sending limit is reached
       MailerLog::enforceSendingLimit();
       // get and pre-process newsletter (render, replace shortcodes/links, etc.)
-      $newsletter = $this->newsletter_task->getAndPreProcess($queue->asArray());
+      $newsletter = $this->newsletter_task->getAndPreProcess($queue);
       if(!$newsletter) {
         $queue->delete();
         continue;
       }
       // configure mailer
       $this->mailer_task->configureMailer($newsletter);
-      if(is_null($queue->newsletter_rendered_body)) {
-        $queue->newsletter_rendered_body = json_encode($newsletter['rendered_body']);
-        $queue->save();
-      }
       // get subscribers
       $queue->subscribers = $queue->getSubscribers();
       $subscriber_batches = array_chunk(
@@ -50,20 +44,24 @@ class SendingQueue {
         self::BATCH_SIZE
       );
       foreach($subscriber_batches as $subscribers_to_process_ids) {
+        // abort if execution limit is reached
+        CronHelper::enforceExecutionLimit($this->timer);
         $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)
-          ->findArray();
-        $found_subscribers_ids = Helpers::arrayColumn($found_subscribers, 'id');
+          ->findMany();
+        $found_subscribers_ids = array_map(function($subscriber) {
+          return $subscriber->id;
+        }, $found_subscribers);
         // if some subscribers weren't found, remove them from the processing list
         if(count($found_subscribers_ids) !== count($subscribers_to_process_ids)) {
-          $queue->subscribers = SubscribersTask::updateToProcessList(
-            $found_subscribers_ids,
+          $subscibers_to_remove = array_diff(
             $subscribers_to_process_ids,
-            $queue->subscribers
+            $found_subscribers_ids
           );
-        }
-        if(!count($queue->subscribers['to_process'])) {
-          $this->updateQueue($queue);
-          continue;
+          $queue->removeNonexistentSubscribers($subscibers_to_remove);
+          if(!count($queue->subscribers['to_process'])) {
+            $this->newsletter_task->markNewsletterAsSent($newsletter);
+            continue;
+          }
         }
         $queue = $this->processQueue(
           $queue,
@@ -71,10 +69,8 @@ class SendingQueue {
           $found_subscribers
         );
         if($queue->status === SendingQueueModel::STATUS_COMPLETED) {
-          $this->newsletter_task->markNewsletterAsSent($queue->newsletter_id);
+          $this->newsletter_task->markNewsletterAsSent($newsletter);
         }
-        // abort if execution limit is reached
-        CronHelper::enforceExecutionLimit($this->timer);
       }
     }
   }
@@ -92,7 +88,7 @@ class SendingQueue {
         $this->newsletter_task->prepareNewsletterForSending(
           $newsletter,
           $subscriber,
-          $queue->asArray()
+          $queue
         );
       if(!$queue->newsletter_rendered_subject) {
         $queue->newsletter_rendered_subject = $prepared_newsletters[0]['subject'];
@@ -101,11 +97,11 @@ class SendingQueue {
       $prepared_subscribers[] = $this->mailer_task->prepareSubscriberForSending(
         $subscriber
       );
-      $prepared_subscribers_ids[] = $subscriber['id'];
+      $prepared_subscribers_ids[] = $subscriber->id;
       // keep track of values for statistics purposes
       $statistics[] = array(
-        'newsletter_id' => $newsletter['id'],
-        'subscriber_id' => $subscriber['id'],
+        'newsletter_id' => $newsletter->id,
+        'subscriber_id' => $subscriber->id,
         'queue_id' => $queue->id
       );
       if($processing_method === 'individual') {
@@ -145,22 +141,14 @@ class SendingQueue {
     );
     if(!$send_result) {
       // update failed/to process list
-      $queue->subscribers = SubscribersTask::updateFailedList(
-        $prepared_subscribers_ids,
-        $queue->subscribers
-      );
-      $queue = $this->updateQueue($queue);
+      $queue->updateFailedSubscribers($prepared_subscribers_ids);
     } else {
       // update processed/to process list
-      $queue->subscribers = SubscribersTask::updateProcessedList(
-        $prepared_subscribers_ids,
-        $queue->subscribers
-      );
+      $queue->updateProcessedSubscribers($prepared_subscribers_ids);
       // log statistics
       StatisticsNewslettersModel::createMultiple($statistics);
       // update the sent count
       $this->mailer_task->updateSentCount();
-      $queue = $this->updateQueue($queue);
       // enforce sending limit if there are still subscribers left to process
       if($queue->count_to_process) {
         MailerLog::enforceSendingLimit();
@@ -174,19 +162,5 @@ class SendingQueue {
       ->whereNull('deleted_at')
       ->whereNull('status')
       ->findMany();
-  }
-
-  function updateQueue($queue) {
-    $queue->count_processed =
-      count($queue->subscribers['processed']) + count($queue->subscribers['failed']);
-    $queue->count_to_process = count($queue->subscribers['to_process']);
-    $queue->count_failed = count($queue->subscribers['failed']);
-    $queue->count_total =
-      $queue->count_processed + $queue->count_to_process;
-    if(!$queue->count_to_process) {
-      $queue->processed_at = current_time('mysql');
-      $queue->status = SendingQueueModel::STATUS_COMPLETED;
-    }
-    return $queue->save();
   }
 }

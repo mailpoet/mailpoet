@@ -24,13 +24,13 @@ class Mailer {
 
   function __construct($mailer = false, $sender = false, $reply_to = false) {
     $this->mailer_config = self::getMailerConfig($mailer);
-    $this->sender = $this->getSender($sender);
-    $this->reply_to = $this->getReplyTo($reply_to);
+    $this->sender = $this->getSenderNameAndAddress($sender);
+    $this->reply_to = $this->getReplyToNameAndAddress($reply_to);
     $this->mailer_instance = $this->buildMailer();
   }
 
   function send($newsletter, $subscriber) {
-    $subscriber = $this->transformSubscriber($subscriber);
+    $subscriber = $this->formatSubscriberNameAndEmailAddress($subscriber);
     return $this->mailer_instance->send($newsletter, $subscriber);
   }
 
@@ -115,7 +115,7 @@ class Mailer {
     return $mailer;
   }
 
-  function getSender($sender = false) {
+  function getSenderNameAndAddress($sender = false) {
     if(empty($sender)) {
       $sender = Setting::getValue('sender', array());
       if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured'));
@@ -127,15 +127,15 @@ class Mailer {
     );
   }
 
-  function getReplyTo($reply_to = false) {
+  function getReplyToNameAndAddress($reply_to = array()) {
     if(!$reply_to) {
       $reply_to = Setting::getValue('reply_to', null);
-      if(!$reply_to) {
-        $reply_to = array(
-          'name' => $this->sender['from_name'],
-          'address' => $this->sender['from_email']
-        );
-      }
+      $reply_to['name'] = (!empty($reply_to['name'])) ?
+        $reply_to['name'] :
+        $this->sender['from_name'];
+      $reply_to['address'] = (!empty($reply_to['address'])) ?
+        $reply_to['address'] :
+        $this->sender['from_email'];
     }
     if(empty($reply_to['address'])) {
       $reply_to['address'] = $this->sender['from_email'];
@@ -147,7 +147,8 @@ class Mailer {
     );
   }
 
-  function transformSubscriber($subscriber) {
+  function formatSubscriberNameAndEmailAddress($subscriber) {
+    $subscriber = (is_object($subscriber)) ? $subscriber->asArray() : $subscriber;
     if(!is_array($subscriber)) return $subscriber;
     if(isset($subscriber['address'])) $subscriber['email'] = $subscriber['address'];
     $first_name = (isset($subscriber['first_name'])) ? $subscriber['first_name'] : '';

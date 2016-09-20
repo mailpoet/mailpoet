@@ -1,12 +1,12 @@
 <?php
 namespace MailPoet\Models;
+use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE;
-
   const TYPE_STANDARD = 'standard';
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
@@ -22,7 +22,6 @@ class Newsletter extends Model {
 
   function __construct() {
     parent::__construct();
-
     $this->addValidations('type', array(
       'required' => __('Please specify a type')
     ));
@@ -244,6 +243,11 @@ class Newsletter extends Model {
       $this->statistics = $statistics->asArray();
     }
     return $this;
+  }
+
+  function render() {
+    $renderer = new Renderer($this);
+    return $renderer->render();
   }
 
   function getStatistics() {

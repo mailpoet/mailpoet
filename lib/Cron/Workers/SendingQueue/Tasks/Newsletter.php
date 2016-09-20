@@ -19,65 +19,52 @@ class Newsletter {
 
   function __construct() {
     $this->tracking_enabled = (boolean)Setting::getValue('tracking.enabled');
-    $this->tracking_image_inserted = false;
   }
 
-  function get($newsletter_id) {
-    $newsletter = NewsletterModel::findOne($newsletter_id);
-    return ($newsletter) ? $newsletter->asArray() : false;
-  }
-
-  function getAndPreProcess(array $queue) {
-    $newsletter = $this->get($queue['newsletter_id']);
+  function getAndPreProcess($queue) {
+    $newsletter = $queue->newsletter()->findOne();
     if(!$newsletter) {
       return false;
     }
     // if the newsletter was previously rendered, return it
     // otherwise, process/render it
-    if(!is_null($queue['newsletter_rendered_body'])) {
-      $newsletter['rendered_body'] = json_decode($queue['newsletter_rendered_body'], true);
+    if(!is_null($queue->getNewsletterRenderedBody())) {
       return $newsletter;
     }
     // if tracking is enabled, do additional processing
     if($this->tracking_enabled) {
-      // hook once to the newsletter post-processing filter and add tracking image
-      if(!$this->tracking_image_inserted) {
-        $this->tracking_image_inserted = OpenTracking::addTrackingImage();
-      }
-      // render newsletter
-      $newsletter = $this->render($newsletter);
+      // hook to the newsletter post-processing filter and add tracking image
+      $this->tracking_image_inserted = OpenTracking::addTrackingImage();
+      // render newsletter and save its
+      $rendered_newsletter = $newsletter->render();
       // hash and save all links
-      $newsletter = LinksTask::process($newsletter, $queue);
+      $rendered_newsletter = LinksTask::process($rendered_newsletter, $newsletter, $queue);
     } else {
       // render newsletter
-      $newsletter = $this->render($newsletter);
+      $rendered_newsletter = $newsletter->render();
     }
     // check if this is a post notification and if it contains posts
-    $newsletter_contains_posts = strpos($newsletter['rendered_body']['html'], 'data-post-id');
-    if($newsletter['type'] === 'notification' && !$newsletter_contains_posts) {
+    $newsletter_contains_posts = strpos($rendered_newsletter['html'], 'data-post-id');
+    if($newsletter->type === 'notification' && !$newsletter_contains_posts) {
       return false;
     }
     // extract and save newsletter posts
-    PostsTask::extractAndSave($newsletter);
+    PostsTask::extractAndSave($rendered_newsletter, $newsletter);
+    // update queue with the rendered and pre-processed newsletter
+    $queue->newsletter_rendered_body = $rendered_newsletter;
+    $queue->save();
     return $newsletter;
   }
 
-  function render(array $newsletter) {
-    $renderer = new Renderer($newsletter);
-    $newsletter['rendered_body'] = $renderer->render();
-    return $newsletter;
-  }
-
-  function prepareNewsletterForSending(
-    array $newsletter, array $subscriber, array $queue
-  ) {
+  function prepareNewsletterForSending($newsletter, $subscriber, $queue) {
     // shortcodes and links will be replaced in the subject, html and text body
     // to speed the processing, join content into a continuous string
+    $rendered_newsletter = $queue->getNewsletterRenderedBody();
     $prepared_newsletter = Helpers::joinObject(
       array(
-        $newsletter['subject'],
-        $newsletter['rendered_body']['html'],
-        $newsletter['rendered_body']['text']
+        $newsletter->subject,
+        $rendered_newsletter['html'],
+        $rendered_newsletter['text']
       )
     );
     $prepared_newsletter = ShortcodesTask::process(
@@ -88,8 +75,8 @@ class Newsletter {
     );
     if($this->tracking_enabled) {
       $prepared_newsletter = NewsletterLinks::replaceSubscriberData(
-        $subscriber['id'],
-        $queue['id'],
+        $subscriber->id,
+        $queue->id,
         $prepared_newsletter
       );
     }
@@ -103,8 +90,7 @@ class Newsletter {
     );
   }
 
-  function markNewsletterAsSent($newsletter_id) {
-    $newsletter = NewsletterModel::findOne($newsletter_id);
+  function markNewsletterAsSent($newsletter) {
     // if it's a standard newsletter, update its status
     if($newsletter->type === NewsletterModel::TYPE_STANDARD) {
       $newsletter->setStatus(NewsletterModel::STATUS_SENT);

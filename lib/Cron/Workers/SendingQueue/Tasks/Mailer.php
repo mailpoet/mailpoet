@@ -9,22 +9,22 @@ if(!defined('ABSPATH')) exit;
 class Mailer {
   public $mailer;
 
-  function __construct() {
-    $this->mailer = $this->configureMailer();
+  function __construct($mailer = false) {
+    $this->mailer = ($mailer) ? $mailer : $this->configureMailer();
   }
 
-  function configureMailer(array $newsletter = null) {
-    $sender['address'] = (!empty($newsletter['sender_address'])) ?
-      $newsletter['sender_address'] :
+  function configureMailer($newsletter = null) {
+    $sender['address'] = (!empty($newsletter->sender_address)) ?
+      $newsletter->sender_address :
       false;
-    $sender['name'] = (!empty($newsletter['sender_name'])) ?
-      $newsletter['sender_name'] :
+    $sender['name'] = (!empty($newsletter->sender_name)) ?
+      $newsletter->sender_name :
       false;
-    $reply_to['address'] = (!empty($newsletter['reply_to_address'])) ?
-      $newsletter['reply_to_address'] :
+    $reply_to['address'] = (!empty($newsletter->reply_to_address)) ?
+      $newsletter->reply_to_address :
       false;
-    $reply_to['name'] = (!empty($newsletter['reply_to_name'])) ?
-      $newsletter['reply_to_name'] :
+    $reply_to['name'] = (!empty($newsletter->reply_to_name)) ?
+      $newsletter->reply_to_name :
       false;
     if(!$sender['address']) {
       $sender = false;
@@ -50,8 +50,8 @@ class Mailer {
       'individual';
   }
 
-  function prepareSubscriberForSending(array $subscriber) {
-    return $this->mailer->transformSubscriber($subscriber);
+  function prepareSubscriberForSending($subscriber) {
+    return $this->mailer->formatSubscriberNameAndEmailAddress($subscriber);
   }
 
   function send($prepared_newsletters, $prepared_subscribers) {
