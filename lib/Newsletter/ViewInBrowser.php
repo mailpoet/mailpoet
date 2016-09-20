@@ -19,7 +19,7 @@ class ViewInBrowser {
 
   function renderNewsletter($newsletter, $subscriber, $queue, $wp_user_preview) {
     if($queue && $queue->newsletter_rendered_body) {
-      $newsletter_body = $queue->getRenderedNewsletterBody();
+      $newsletter_body = $queue->getNewsletterRenderedBody();
     } else {
       $renderer = new Renderer($newsletter, $wp_user_preview);
       $newsletter_body = $renderer->render();

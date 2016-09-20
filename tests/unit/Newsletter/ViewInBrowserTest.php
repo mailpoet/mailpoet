@@ -1,6 +1,5 @@
 <?php
 
-use Codeception\Util\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
@@ -57,17 +56,13 @@ class ViewInBrowserTest extends MailPoetTest {
       'type' => 'standard',
       'status' => 'active'
     );
-    $this->queue_rendered_newsletter_without_tracking = json_encode(
-      array(
-        'html' => 'Newsletter from queue. Hello, [subscriber:firstname] & 
+    $this->queue_rendered_newsletter_without_tracking = array(
+      'html' => 'Newsletter from queue. Hello, [subscriber:firstname] & 
         [link:newsletter_view_in_browser_url]'
-      )
     );
-    $this->queue_rendered_newsletter_with_tracking = json_encode(
-      array(
-        'html' => 'Newsletter from queue. Hello, [subscriber:firstname] & 
+    $this->queue_rendered_newsletter_with_tracking = array(
+      'html' => 'Newsletter from queue. Hello, [subscriber:firstname] & 
         [mailpoet_click_data]-90e56'
-      )
     );
     // instantiate class
     $this->view_in_browser = new ViewInBrowser();
