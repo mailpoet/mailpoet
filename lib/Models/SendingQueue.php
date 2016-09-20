@@ -5,7 +5,6 @@ if(!defined('ABSPATH')) exit;
 
 class SendingQueue extends Model {
   public static $_table = MP_SENDING_QUEUES_TABLE;
-  private $_newsletter_rendered_body;
   const STATUS_COMPLETED = 'completed';
   const STATUS_SCHEDULED = 'scheduled';
   const STATUS_PAUSED = 'paused';
