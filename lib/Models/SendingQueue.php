@@ -10,7 +10,7 @@ class SendingQueue extends Model {
   const STATUS_PAUSED = 'paused';
 
   function newsletter() {
-    return $this->has_one(__NAMESPACE__.'\Newsletter', 'id', 'newsletter_id');
+    return $this->has_one(__NAMESPACE__ . '\Newsletter', 'id', 'newsletter_id');
   }
 
   function pause() {
@@ -83,5 +83,63 @@ class SendingQueue extends Model {
       ? unserialize($this->subscribers)
       : $this->subscribers;
     return $model;
+  }
+
+  function removeNonexistentSubscribers($subscribers_to_remove) {
+    $subscribers = $this->getSubscribers();
+    $subscribers['to_process'] = array_values(
+      array_diff(
+        $subscribers['to_process'],
+        $subscribers_to_remove
+      )
+    );
+    $this->subscribers = $subscribers;
+    $this->updateCount();
+  }
+
+  function updateFailedSubscribers($failed_subscribers) {
+    $subscribers = $this->getSubscribers();
+    $subscribers['failed'] = array_merge(
+      $subscribers['failed'],
+      $failed_subscribers
+    );
+    $subscribers['to_process'] = array_values(
+      array_diff(
+        $subscribers['to_process'],
+        $failed_subscribers
+      )
+    );
+    $this->subscribers = $subscribers;
+    $this->updateCount();
+  }
+
+  function updateProcessedSubscribers($processed_subscribers) {
+    $subscribers = $this->getSubscribers();
+    $subscribers['processed'] = array_merge(
+      $subscribers['processed'],
+      $processed_subscribers
+    );
+    $subscribers['to_process'] = array_values(
+      array_diff(
+        $subscribers['to_process'],
+        $processed_subscribers
+      )
+    );
+    $this->subscribers = $subscribers;
+    $this->updateCount();
+  }
+
+  function updateCount() {
+    $this->subscribers = $this->getSubscribers();
+    $this->count_processed =
+      count($this->subscribers['processed']) + count($this->subscribers['failed']);
+    $this->count_to_process = count($this->subscribers['to_process']);
+    $this->count_failed = count($this->subscribers['failed']);
+    $this->count_total = $this->count_processed + $this->count_to_process;
+    if(!$this->count_to_process) {
+      $this->processed_at = current_time('mysql');
+      $this->status = self::STATUS_COMPLETED;
+    }
+    return $this->save();
   }
 }

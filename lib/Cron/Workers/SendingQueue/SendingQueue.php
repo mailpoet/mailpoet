@@ -4,7 +4,6 @@ namespace MailPoet\Cron\Workers\SendingQueue;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
-use MailPoet\Cron\Workers\SendingQueue\Tasks\Subscribers as SubscribersTask;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
@@ -16,6 +15,7 @@ class SendingQueue {
   public $mailer_task;
   public $newsletter_task;
   public $timer;
+  const BATCH_SIZE = 50;
 
   function __construct($timer = false, $mailer_task = false, $newsletter_task = false) {
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
@@ -39,8 +39,10 @@ class SendingQueue {
       $this->mailer_task->configureMailer($newsletter);
       // get subscribers
       $queue->subscribers = $queue->getSubscribers();
-      $subscriber_batches =
-        SubscribersTask::splitSubscribersIntoBatches($queue->subscribers['to_process']);
+      $subscriber_batches = array_chunk(
+        $queue->subscribers['to_process'],
+        self::BATCH_SIZE
+      );
       foreach($subscriber_batches as $subscribers_to_process_ids) {
         // abort if execution limit is reached
         CronHelper::enforceExecutionLimit($this->timer);
@@ -51,13 +53,12 @@ class SendingQueue {
         }, $found_subscribers);
         // if some subscribers weren't found, remove them from the processing list
         if(count($found_subscribers_ids) !== count($subscribers_to_process_ids)) {
-          $queue->subscribers = SubscribersTask::updateToProcessList(
-            $found_subscribers_ids,
+          $subscibers_to_remove = array_diff(
             $subscribers_to_process_ids,
-            $queue->subscribers
+            $found_subscribers_ids
           );
+          $queue->removeNonexistentSubscribers($subscibers_to_remove);
           if(!count($queue->subscribers['to_process'])) {
-            $this->updateQueue($queue);
             $this->newsletter_task->markNewsletterAsSent($newsletter);
             continue;
           }
@@ -140,22 +141,14 @@ class SendingQueue {
     );
     if(!$send_result) {
       // update failed/to process list
-      $queue->subscribers = SubscribersTask::updateFailedList(
-        $prepared_subscribers_ids,
-        $queue->subscribers
-      );
-      $queue = $this->updateQueue($queue);
+      $queue->updateFailedSubscribers($prepared_subscribers_ids);
     } else {
       // update processed/to process list
-      $queue->subscribers = SubscribersTask::updateProcessedList(
-        $prepared_subscribers_ids,
-        $queue->subscribers
-      );
+      $queue->updateProcessedSubscribers($prepared_subscribers_ids);
       // log statistics
       StatisticsNewslettersModel::createMultiple($statistics);
       // update the sent count
       $this->mailer_task->updateSentCount();
-      $queue = $this->updateQueue($queue);
       // enforce sending limit if there are still subscribers left to process
       if($queue->count_to_process) {
         MailerLog::enforceSendingLimit();
@@ -169,19 +162,5 @@ class SendingQueue {
       ->whereNull('deleted_at')
       ->whereNull('status')
       ->findMany();
-  }
-
-  function updateQueue($queue) {
-    $queue->count_processed =
-      count($queue->subscribers['processed']) + count($queue->subscribers['failed']);
-    $queue->count_to_process = count($queue->subscribers['to_process']);
-    $queue->count_failed = count($queue->subscribers['failed']);
-    $queue->count_total =
-      $queue->count_processed + $queue->count_to_process;
-    if(!$queue->count_to_process) {
-      $queue->processed_at = current_time('mysql');
-      $queue->status = SendingQueueModel::STATUS_COMPLETED;
-    }
-    return $queue->save();
   }
 }
