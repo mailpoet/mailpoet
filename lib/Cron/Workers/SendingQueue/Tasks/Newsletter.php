@@ -28,7 +28,7 @@ class Newsletter {
     }
     // if the newsletter was previously rendered, return it
     // otherwise, process/render it
-    if(!is_null($queue->newsletter_rendered_body)) {
+    if(!is_null($queue->getNewsletterRenderedBody())) {
       return $newsletter;
     }
     // if tracking is enabled, do additional processing
