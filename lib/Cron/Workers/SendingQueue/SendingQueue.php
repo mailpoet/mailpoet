@@ -17,9 +17,9 @@ class SendingQueue {
   public $newsletter_task;
   public $timer;
 
-  function __construct($timer = false) {
-    $this->mailer_task = new MailerTask();
-    $this->newsletter_task = new NewsletterTask();
+  function __construct($timer = false, $mailer_task = false, $newsletter_task = false) {
+    $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
+    $this->newsletter_task = ($newsletter_task) ? $newsletter_task : new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution or sending limit are reached
     CronHelper::enforceExecutionLimit($this->timer);

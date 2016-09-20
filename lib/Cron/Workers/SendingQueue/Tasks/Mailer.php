@@ -9,8 +9,8 @@ if(!defined('ABSPATH')) exit;
 class Mailer {
   public $mailer;
 
-  function __construct() {
-    $this->mailer = $this->configureMailer();
+  function __construct($mailer = false) {
+    $this->mailer = ($mailer) ? $mailer : $this->configureMailer();
   }
 
   function configureMailer($newsletter = null) {

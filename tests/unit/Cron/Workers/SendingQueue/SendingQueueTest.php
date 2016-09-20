@@ -93,10 +93,12 @@ class SendingQueueTest extends MailPoetTest {
   }
 
   function testItCanProcessSubscribersOneByOne() {
-    $sending_queue_worker = $this->sending_queue_worker;
-    $sending_queue_worker->mailer_task = Stub::make(
-      new MailerTask(),
-      array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }))
+    $sending_queue_worker = new SendingQueueWorker(
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }))
+      )
     );
     $sending_queue_worker->process();
 
@@ -131,12 +133,14 @@ class SendingQueueTest extends MailPoetTest {
   }
 
   function testItCanProcessSubscribersInBulk() {
-    $sending_queue_worker = $this->sending_queue_worker;
-    $sending_queue_worker->mailer_task = Stub::make(
-      new MailerTask(),
-      array(
-        'send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }),
-        'getProcessingMethod' => Stub::exactly(1, function() { return 'bulk'; })
+    $sending_queue_worker = new SendingQueueWorker(
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        array(
+          'send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }),
+          'getProcessingMethod' => Stub::exactly(1, function() { return 'bulk'; })
+        )
       )
     );
     $sending_queue_worker->process();
@@ -250,10 +254,12 @@ class SendingQueueTest extends MailPoetTest {
   }
 
   function testItUpdatesFailedListWhenSendingFailed() {
-    $sending_queue_worker = $this->sending_queue_worker;
-    $sending_queue_worker->mailer_task = Stub::make(
-      new MailerTask(),
-      array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return false; }))
+    $sending_queue_worker = new SendingQueueWorker(
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return false; }))
+      )
     );
     $sending_queue_worker->process();
 

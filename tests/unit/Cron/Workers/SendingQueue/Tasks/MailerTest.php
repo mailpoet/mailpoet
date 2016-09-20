@@ -3,7 +3,6 @@ use Codeception\Util\Stub;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Mailer\Methods\PHPMail;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 
@@ -104,11 +103,14 @@ class MailerTaskTest extends MailPoetTest {
         'method' => 'PHPMail'
       )
     );
-    $mailer_task = new MailerTask();
     // mock mailer instance and ensure that send method is invoked
-    $mailer_task->mailer->mailer_instance = Stub::make(
-      $php_mail_class,
-      array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }))
+    $mailer_task = new MailerTask(
+      (object)array(
+        'mailer_instance' => Stub::make(
+          $php_mail_class,
+          array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }))
+        )
+      )
     );
     // mailer instance should be properly configured
     expect($mailer_task->mailer->mailer_instance instanceof $php_mail_class)
