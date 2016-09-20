@@ -1,4 +1,5 @@
 <?php
+use Codeception\Util\Fixtures;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
@@ -17,37 +18,10 @@ class NewsletterTaskTest extends MailPoetTest {
     $this->subscriber->first_name = 'John';
     $this->subscriber->last_name = 'Doe';
     $this->subscriber->save();
-    $this->post_id = 10;
     $this->newsletter = Newsletter::create();
     $this->newsletter->type = Newsletter::TYPE_STANDARD;
-    $this->newsletter->subject = 'Newsletter for [subscriber:firstname]';
-    $this->newsletter->body = '
-      {
-        "content": {
-          "type": "container",
-          "orientation": "vertical",
-          "blocks": [
-            {
-              "type": "container",
-              "styles": { "block": {} },
-              "orientation": "horizontal",
-              "blocks": [
-                {
-                  "type": "container",
-                  "orientation": "vertical",
-                  "styles": { "block": {} },
-                  "blocks": [
-                    {
-                      "type": "text",
-                      "text": "<a data-post-id=\"' . $this->post_id . '\" href=\"http://example.com\">Link</a>Hello [subscriber:firstname]"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      }';
+    $this->newsletter->subject = Fixtures::get('newsletter_subject_template');
+    $this->newsletter->body = Fixtures::get('newsletter_body_template');
     $this->newsletter->save();
     $this->queue = SendingQueue::create();
     $this->queue->newsletter_id = $this->newsletter->id;
@@ -115,7 +89,7 @@ class NewsletterTaskTest extends MailPoetTest {
     $newsletter_post = NewsletterPost::where('newsletter_id', $this->newsletter->id)
       ->findOne();
     expect($result)->notEquals(false);
-    expect($newsletter_post->post_id)->equals($this->post_id);
+    expect($newsletter_post->post_id)->equals('10');
   }
 
   function testItUpdatesStatusToSentOnlyForStandardNewsletters() {

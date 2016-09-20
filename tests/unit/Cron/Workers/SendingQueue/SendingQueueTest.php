@@ -1,5 +1,6 @@
 <?php
 
+use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\API\Endpoints\Cron;
 use MailPoet\Config\Populator;
@@ -27,34 +28,8 @@ class SendingQueueTest extends MailPoetTest {
     $this->subscriber->save();
     $this->newsletter = Newsletter::create();
     $this->newsletter->type = Newsletter::TYPE_STANDARD;
-    $this->newsletter->subject = 'Newsletter for [subscriber:firstname]';
-    $this->newsletter->body = '
-      {
-        "content": {
-          "type": "container",
-          "orientation": "vertical",
-          "blocks": [
-            {
-              "type": "container",
-              "styles": { "block": {} },
-              "orientation": "horizontal",
-              "blocks": [
-                {
-                  "type": "container",
-                  "orientation": "vertical",
-                  "styles": { "block": {} },
-                  "blocks": [
-                    {
-                      "type": "text",
-                      "text": "Sample newsletter"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      }';
+    $this->newsletter->subject = Fixtures::get('newsletter_subject_template');
+    $this->newsletter->body = Fixtures::get('newsletter_body_template');
     $this->newsletter->save();
     $this->queue = SendingQueue::create();
     $this->queue->newsletter_id = $this->newsletter->id;
