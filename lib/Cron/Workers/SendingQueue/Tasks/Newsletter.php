@@ -22,7 +22,7 @@ class Newsletter {
   }
 
   function getAndPreProcess($queue) {
-    $newsletter = $queue->getNewsletter();
+    $newsletter = $queue->newsletter()->findOne();
     if(!$newsletter) {
       return false;
     }

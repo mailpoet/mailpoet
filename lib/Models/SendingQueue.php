@@ -10,6 +10,10 @@ class SendingQueue extends Model {
   const STATUS_SCHEDULED = 'scheduled';
   const STATUS_PAUSED = 'paused';
 
+  function newsletter() {
+    return $this->has_one(__NAMESPACE__.'\Newsletter', 'id', 'newsletter_id');
+  }
+
   function pause() {
     if($this->count_processed === $this->count_total) {
       return false;
@@ -61,10 +65,6 @@ class SendingQueue extends Model {
       $subscribers['failed'] = array();
     }
     return $subscribers;
-  }
-
-  function getNewsletter() {
-    return Newsletter::findOne($this->newsletter_id);
   }
 
   function getNewsletterRenderedBody() {
