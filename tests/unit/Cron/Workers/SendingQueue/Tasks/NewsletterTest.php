@@ -64,35 +64,39 @@ class NewsletterTaskTest extends MailPoetTest {
     expect($this->newsletter_task->getAndPreProcess($queue))->false();
   }
 
-  function testItReturnsRenderedNewsletterBodyWhenItExists() {
+  function testItReturnsNewsletterObjectWhenRenderedNewssletterBodyExistsInTheQueue() {
     $queue = $this->queue;
-    $queue->newsletter_rendered_body = json_encode('Sample newsletter');
+    $queue->newsletter_rendered_body = true;
     $result = $this->newsletter_task->getAndPreProcess($queue);
-    expect($result->_transient->rendered_body)->equals(json_decode($queue->newsletter_rendered_body));
+    expect($result instanceof \MailPoet\Models\Newsletter)->true();
   }
 
   function testItHashesLinksAndInsertsTrackingImageWhenTrackingIsEnabled() {
     $newsletter_task = $this->newsletter_task;
     $newsletter_task->tracking_enabled = true;
-    $result = $newsletter_task->getAndPreProcess($this->queue);
+    $newsletter_task->getAndPreProcess($this->queue);
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
       ->findOne();
-    expect($result->_transient->rendered_body['html'])
+    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $rendered_newsletter = $updated_queue->getNewsletterRenderedBody();
+    expect($rendered_newsletter['html'])
       ->contains('[mailpoet_click_data]-' . $link->hash);
-    expect($result->_transient->rendered_body['html'])
+    expect($rendered_newsletter['html'])
       ->contains('[mailpoet_open_data]');
   }
 
   function testItDoesNotHashLinksAndInsertTrackingCodeWhenTrackingIsDisabled() {
     $newsletter_task = $this->newsletter_task;
     $newsletter_task->tracking_enabled = false;
-    $result = $newsletter_task->getAndPreProcess($this->queue);
+    $newsletter_task->getAndPreProcess($this->queue);
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
       ->findOne();
     expect($link)->false();
-    expect($result->_transient->rendered_body['html'])
+    $updated_queue = SendingQueue::findOne($this->queue->id);
+    $rendered_newsletter = $updated_queue->getNewsletterRenderedBody();
+    expect($rendered_newsletter['html'])
       ->notContains('[mailpoet_click_data]');
-    expect($result->_transient->rendered_body['html'])
+    expect($rendered_newsletter['html'])
       ->notContains('[mailpoet_open_data]');
   }
 

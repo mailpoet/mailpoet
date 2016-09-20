@@ -7,13 +7,10 @@ use MailPoet\Models\NewsletterPost;
 if(!defined('ABSPATH')) exit;
 
 class Posts {
-  static function extractAndSave($newsletter) {
-    if(empty($newsletter->_transient->rendered_body['html']) || empty($newsletter->id)) {
-      return false;
-    }
+  static function extractAndSave($rendered_newsletter, $newsletter) {
     preg_match_all(
       '/data-post-id="(\d+)"/ism',
-      $newsletter->_transient->rendered_body['html'],
+      $rendered_newsletter['html'],
       $matched_posts_ids);
     $matched_posts_ids = $matched_posts_ids[1];
     if(!count($matched_posts_ids)) {

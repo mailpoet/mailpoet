@@ -35,10 +35,6 @@ class SendingQueue {
         $queue->delete();
         continue;
       }
-      if(is_null($queue->newsletter_rendered_body)) {
-        $queue->newsletter_rendered_body = json_encode($newsletter->_transient->rendered_body);
-        $queue->save();
-      }
       // configure mailer
       $this->mailer_task->configureMailer($newsletter);
       // get subscribers

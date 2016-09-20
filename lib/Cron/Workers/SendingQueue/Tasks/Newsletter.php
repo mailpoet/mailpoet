@@ -29,39 +29,42 @@ class Newsletter {
     // if the newsletter was previously rendered, return it
     // otherwise, process/render it
     if(!is_null($queue->newsletter_rendered_body)) {
-      $newsletter->_transient->rendered_body = $queue->getRenderedNewsletterBody();
       return $newsletter;
     }
     // if tracking is enabled, do additional processing
     if($this->tracking_enabled) {
       // hook to the newsletter post-processing filter and add tracking image
       $this->tracking_image_inserted = OpenTracking::addTrackingImage();
-      // render newsletter
-      $newsletter->_transient->rendered_body = $newsletter->render();
+      // render newsletter and save its
+      $rendered_newsletter = $newsletter->render();
       // hash and save all links
-      $newsletter = LinksTask::process($newsletter, $queue);
+      $rendered_newsletter = LinksTask::process($rendered_newsletter, $newsletter, $queue);
     } else {
       // render newsletter
-      $newsletter->_transient->rendered_body = $newsletter->render();
+      $rendered_newsletter = $newsletter->render();
     }
     // check if this is a post notification and if it contains posts
-    $newsletter_contains_posts = strpos($newsletter->_transient->rendered_body['html'], 'data-post-id');
+    $newsletter_contains_posts = strpos($rendered_newsletter['html'], 'data-post-id');
     if($newsletter->type === 'notification' && !$newsletter_contains_posts) {
       return false;
     }
     // extract and save newsletter posts
-    PostsTask::extractAndSave($newsletter);
+    PostsTask::extractAndSave($rendered_newsletter, $newsletter);
+    // update queue with the rendered and pre-processed newsletter
+    $queue->newsletter_rendered_body = $rendered_newsletter;
+    $queue->save();
     return $newsletter;
   }
 
   function prepareNewsletterForSending($newsletter, $subscriber, $queue) {
     // shortcodes and links will be replaced in the subject, html and text body
     // to speed the processing, join content into a continuous string
+    $rendered_newsletter = $queue->getNewsletterRenderedBody();
     $prepared_newsletter = Helpers::joinObject(
       array(
         $newsletter->subject,
-        $newsletter->_transient->rendered_body['html'],
-        $newsletter->_transient->rendered_body['text']
+        $rendered_newsletter['html'],
+        $rendered_newsletter['text']
       )
     );
     $prepared_newsletter = ShortcodesTask::process(

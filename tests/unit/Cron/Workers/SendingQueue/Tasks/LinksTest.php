@@ -24,11 +24,11 @@ class LinkTaskTest extends MailPoetTest {
   }
 
   function testItCanHashAndReplaceLinks() {
-    $rendered_newsletter_body = array(
+    $rendered_newsletter = array(
       'html' => '<a href="http://example.com">Example Link</a>',
       'text' => '<a href="http://example.com">Example Link</a>'
     );
-    $result = Links::hashAndReplaceLinks($rendered_newsletter_body);
+    $result = Links::hashAndReplaceLinks($rendered_newsletter);
     $processed_rendered_newsletter_body = $result[0];
     $processed_and_hashed_links = $result[1];
     expect($processed_rendered_newsletter_body['html'])
@@ -42,15 +42,15 @@ class LinkTaskTest extends MailPoetTest {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->save();
-    $newsletter->_transient->rendered_body = array(
+    $rendered_newsletter = array(
       'html' => '<a href="http://example.com">Example Link</a>',
       'text' => '<a href="http://example.com">Example Link</a>'
     );
     $queue = (object)array('id' => 2);
-    $result = Links::process($newsletter, $queue);
+    $result = Links::process($rendered_newsletter, $newsletter, $queue);
     $newsletter_link = NewsletterLink::where('newsletter_id', $newsletter->id)
       ->findOne();
-    expect($result->_transient->rendered_body['html'])->contains($newsletter_link->hash);
+    expect($result['html'])->contains($newsletter_link->hash);
   }
 
   function _after() {
