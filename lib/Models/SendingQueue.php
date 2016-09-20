@@ -5,7 +5,7 @@ if(!defined('ABSPATH')) exit;
 
 class SendingQueue extends Model {
   public static $_table = MP_SENDING_QUEUES_TABLE;
-
+  private $_newsletter_rendered_body;
   const STATUS_COMPLETED = 'completed';
   const STATUS_SCHEDULED = 'scheduled';
   const STATUS_PAUSED = 'paused';
@@ -40,8 +40,12 @@ class SendingQueue extends Model {
     if(!is_serialized($this->subscribers)) {
       $this->set('subscribers', serialize($this->subscribers));
     }
+    if(!is_serialized($this->newsletter_rendered_body)) {
+      $this->set('newsletter_rendered_body', serialize($this->newsletter_rendered_body));
+    }
     parent::save();
     $this->subscribers = $this->getSubscribers();
+    $this->newsletter_rendered_body = $this->getNewsletterRenderedBody();
     return $this;
   }
 
@@ -63,8 +67,10 @@ class SendingQueue extends Model {
     return Newsletter::findOne($this->newsletter_id);
   }
 
-  function getRenderedNewsletterBody() {
-    return json_decode($this->newsletter_rendered_body, true);
+  function getNewsletterRenderedBody() {
+    return (!is_serialized($this->newsletter_rendered_body)) ?
+      $this->newsletter_rendered_body :
+      unserialize($this->newsletter_rendered_body);
   }
 
   function isSubscriberProcessed($subscriber_id) {
