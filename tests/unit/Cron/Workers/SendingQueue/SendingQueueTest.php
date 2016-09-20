@@ -97,7 +97,14 @@ class SendingQueueTest extends MailPoetTest {
       $timer = false,
       Stub::make(
         new MailerTask(),
-        array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }))
+        array(
+          'send' => Stub::exactly(1, function($newsletter, $subscriber) {
+            // newsletter body should not be empty
+            expect(!empty($newsletter['body']['html']))->true();
+            expect(!empty($newsletter['body']['text']))->true();
+            return true;
+          })
+        )
       )
     );
     $sending_queue_worker->process();
@@ -138,7 +145,12 @@ class SendingQueueTest extends MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }),
+          'send' => Stub::exactly(1, function($newsletter, $subscriber) {
+            // newsletter body should not be empty
+            expect(!empty($newsletter[0]['body']['html']))->true();
+            expect(!empty($newsletter[0]['body']['text']))->true();
+            return true;
+          }),
           'getProcessingMethod' => Stub::exactly(1, function() { return 'bulk'; })
         )
       )
