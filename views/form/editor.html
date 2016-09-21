@@ -274,18 +274,17 @@
         // form editor: default fields
         var template = Handlebars.compile($('#form_template_fields').html());
 
-        var data = {
-          fields: mailpoet_default_fields
-        };
-
         return MailPoet.Ajax.post({
           endpoint: 'customFields',
           action: 'getAll',
         }).done(function(response) {
-          data.fields  = $.merge(response.data, data.fields);
-
           // render toolbar
-          jQuery('#mailpoet_toolbar_fields').html(template(data));
+          jQuery('#mailpoet_toolbar_fields').html(template({
+            fields: $.merge(
+              $.merge([], mailpoet_default_fields),
+              response.data
+            )
+          }));
 
           setTimeout(function() {
             WysijaForm.init();

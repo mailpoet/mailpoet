@@ -6,9 +6,6 @@ use \MailPoet\Util\Security;
 if(!defined('ABSPATH')) exit;
 
 class API {
-  function __construct() {
-  }
-
   function init() {
     // security token
     add_action(
@@ -27,7 +24,12 @@ class API {
       'wp_ajax_nopriv_mailpoet',
       array($this, 'setupPublic')
     );
+
     // Public API (Post)
+    add_action(
+      'admin_post_mailpoet',
+      array($this, 'setupPublic')
+    );
     add_action(
       'admin_post_nopriv_mailpoet',
       array($this, 'setupPublic')
@@ -102,12 +104,16 @@ class API {
     try {
       $endpoint = new $endpoint();
       $response = $endpoint->$method($data);
-      $response->send();
+      if($doing_ajax) {
+        $response->send();
+      }
     } catch(\Exception $e) {
-      $error_response = new ErrorResponse(
-        array($e->getCode() => $e->getMessage())
-      );
-      $error_response->send();
+      if($doing_ajax) {
+        $error_response = new ErrorResponse(
+          array($e->getCode() => $e->getMessage())
+        );
+        $error_response->send();
+      }
     }
   }
 

@@ -44,29 +44,36 @@ function(
               endpoint: 'subscribers',
               action: 'subscribe',
               data: data
+            }).fail(function(response) {
+              form.find('.mailpoet_validate_error').html(
+                response.errors.map(function(error) {
+                  return error.message;
+                }).join('<br />')
+              ).show();
             }).done(function(response) {
-              if(response.result === false) {
-                form.find('.mailpoet_validate_error').html(
-                  response.errors.join('<br />')
-                ).show();
+              // successfully subscribed
+              if (
+                response.meta !== undefined
+                && response.meta.redirect_url !== undefined
+              ) {
+                // go to page
+                window.location.href = response.meta.redirect_url;
               } else {
-                // successfully subscribed
-                if(response.page !== undefined) {
-                  // go to page
-                  window.location.href = response.page;
-                } else {
-                  // display success message
-                  form.find('.mailpoet_validate_success').show();
-                }
-
-                // reset form
-                form.trigger('reset');
-                // reset validation
-                parsley.reset();
+                // display success message
+                form.find('.mailpoet_validate_success').show();
               }
 
+              // reset form
+              form.trigger('reset');
+              // reset validation
+              parsley.reset();
+
               // resize iframe
-              if(window.frameElement !== null) {
+              if (
+                window.frameElement !== null
+                && MailPoet !== undefined
+                && MailPoet['Iframe']
+              ) {
                 MailPoet.Iframe.autoSize(window.frameElement);
               }
             });

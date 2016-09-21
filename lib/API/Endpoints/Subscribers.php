@@ -57,13 +57,9 @@ class Subscribers extends APIEndpoint {
 
   function subscribe($data = array()) {
     $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
-    $errors = array();
-
-    $form = Form::findOne($data['form_id']);
+    $form_id = (isset($data['form_id']) ? (int)$data['form_id'] : false);
+    $form = Form::findOne($form_id);
     unset($data['form_id']);
-    if($form === false || !$form->id()) {
-      $errors[] = __('This form does not exist');
-    }
 
     $segment_ids = (!empty($data['segments'])
       ? (array)$data['segments']
@@ -72,71 +68,63 @@ class Subscribers extends APIEndpoint {
     unset($data['segments']);
 
     if(empty($segment_ids)) {
-      $errors[] = __('Please select a list');
+      if($doing_ajax) {
+        return $this->badRequest(array(
+          APIError::BAD_REQUEST => __('Please select a list')
+        ));
+      } else {
+        Url::redirectBack(array(
+          'mailpoet_error' => $form_id,
+          'mailpoet_success' => null
+        ));
+      }
     }
 
-    if(!empty($errors)) {
-      return array(
-        'result' => false,
-        'errors' => $errors
-      );
-    }
-
+    // try to register and subscribe user to segments
     $subscriber = Subscriber::subscribe($data, $segment_ids);
     $errors = $subscriber->getErrors();
-    $result = ($errors === false && $subscriber->id() > 0);
 
-    // record form statistics
-    if($result === true && $form !== false && $form->id > 0) {
-      StatisticsForms::record($form->id, $subscriber->id);
-    }
+    if($errors !== false) {
+      if($doing_ajax) {
+        return $this->badRequest($errors);
+      } else {
+        Url::redirectBack(array(
+          'mailpoet_error' => $form_id,
+          'mailpoet_success' => null
+        ));
+      }
+    } else {
+      $meta = array();
 
-    // get success message to display after subscription
-    $form_settings = (
-      isset($form->settings)
-      ? unserialize($form->settings)
-      : null
-    );
+      if($form !== false) {
+        // record form statistics
+        StatisticsForms::record($form->id, $subscriber->id);
 
-    if($form_settings !== null) {
-      switch($form_settings['on_success']) {
-        case 'page':
-          $success_page_url = get_permalink($form_settings['success_page']);
+        $form = $form->asArray();
 
-          // response depending on context
-          if($doing_ajax === true) {
-            return array(
-              'result' => $result,
-              'page' => $success_page_url,
-              'errors' => $errors
-            );
-          } else {
-            if($result === false) {
-              Url::redirectBack();
-            } else {
-              Url::redirectTo($success_page_url);
-            }
-          }
-          break;
+        if($form['settings']['on_success'] === 'page') {
+          // redirect to a page on a success, pass the page url in the meta
+          $meta['redirect_url'] = get_permalink($form['settings']['success_page']);
+        } else if($form['settings']['on_success'] === 'url') {
+          $meta['redirect_url'] = $form['settings']['success_url'];
+        }
+      }
 
-        case 'message':
-        default:
-          // response depending on context
-          if($doing_ajax === true) {
-            return array(
-              'result' => $result,
-              'errors' => $errors
-            );
-          } else {
-            $params = (
-              ($result === true)
-              ? array('mailpoet_success' => $form->id)
-              : array()
-            );
 
-            Url::redirectBack($params);
-          }
-          break;
+      if($doing_ajax) {
+        return $this->successResponse(
+          Subscriber::findOne($subscriber->id)->asArray(),
+          $meta
+        );
+      } else {
+        if(isset($meta['redirect_url'])) {
+          Url::redirectTo($meta['redirect_url']);
+        } else {
+          Url::redirectBack(array(
+            'mailpoet_success' => $form['id'],
+            'mailpoet_error' => null
+          ));
+        }
       }
     }
   }

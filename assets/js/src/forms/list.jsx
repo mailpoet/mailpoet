@@ -151,6 +151,10 @@ const FormList = React.createClass({
       return segment.name;
     }).join(', ');
 
+    if (form.settings.segments_selected_by === 'user') {
+      segments = MailPoet.I18n.t('userChoice') + ' ' + segments;
+    }
+
     return (
       <div>
         <td className={ row_classes }>

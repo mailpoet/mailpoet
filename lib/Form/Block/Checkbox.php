@@ -22,7 +22,6 @@ class Checkbox extends Base {
 
     foreach($options as $option) {
       $html .= '<label class="mailpoet_checkbox_label">';
-      $html .= '<input type="hidden" name="'.$field_name.'" value="0" />';
       $html .= '<input type="checkbox" class="mailpoet_checkbox" ';
 
       $html .= 'name="'.$field_name.'" ';

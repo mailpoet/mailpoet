@@ -8,7 +8,7 @@ if(!defined('ABSPATH')) exit;
 
 class CustomFields extends APIEndpoint {
   function getAll() {
-    $collection = CustomField::findMany();
+    $collection = CustomField::orderByAsc('created_at')->findMany();
     $custom_fields = array_map(function($custom_field) {
       return $custom_field->asArray();
     }, $collection);

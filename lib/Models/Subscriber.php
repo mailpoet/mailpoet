@@ -73,72 +73,69 @@ class Subscriber extends Model {
   }
 
   function sendConfirmationEmail() {
-    if($this->status === self::STATUS_UNCONFIRMED) {
-      $signup_confirmation = Setting::getValue('signup_confirmation');
+    $signup_confirmation = Setting::getValue('signup_confirmation');
 
-      $segments = $this->segments()->findMany();
-      $segment_names = array_map(function($segment) {
-        return $segment->name;
-      }, $segments);
+    $segments = $this->segments()->findMany();
+    $segment_names = array_map(function($segment) {
+      return $segment->name;
+    }, $segments);
 
-      $body = nl2br($signup_confirmation['body']);
+    $body = nl2br($signup_confirmation['body']);
 
-      // replace list of segments shortcode
-      $body = str_replace(
-        '[lists_to_confirm]',
-        '<strong>'.join(', ', $segment_names).'</strong>',
-        $body
-      );
+    // replace list of segments shortcode
+    $body = str_replace(
+      '[lists_to_confirm]',
+      '<strong>'.join(', ', $segment_names).'</strong>',
+      $body
+    );
 
-      // replace activation link
-      $body = str_replace(
-        array(
-          '[activation_link]',
-          '[/activation_link]'
-        ),
-        array(
-          '<a href="'.esc_attr(Subscription\Url::getConfirmationUrl($this)).'">',
-          '</a>'
-        ),
-        $body
-      );
+    // replace activation link
+    $body = str_replace(
+      array(
+        '[activation_link]',
+        '[/activation_link]'
+      ),
+      array(
+        '<a href="'.esc_attr(Subscription\Url::getConfirmationUrl($this)).'">',
+        '</a>'
+      ),
+      $body
+    );
 
-      // build email data
-      $email = array(
-        'subject' => $signup_confirmation['subject'],
-        'body' => array(
-          'html' => $body,
-          'text' => $body
-        )
-      );
+    // build email data
+    $email = array(
+      'subject' => $signup_confirmation['subject'],
+      'body' => array(
+        'html' => $body,
+        'text' => $body
+      )
+    );
 
-      // convert subscriber to array
-      $subscriber = $this->asArray();
+    // convert subscriber to array
+    $subscriber = $this->asArray();
 
-      // set from
-      $from = (
-        !empty($signup_confirmation['from'])
-        && !empty($signup_confirmation['from']['address'])
-      ) ? $signup_confirmation['from']
-        : false;
+    // set from
+    $from = (
+      !empty($signup_confirmation['from'])
+      && !empty($signup_confirmation['from']['address'])
+    ) ? $signup_confirmation['from']
+      : false;
 
-      // set reply to
-      $reply_to = (
-        !empty($signup_confirmation['reply_to'])
-        && !empty($signup_confirmation['reply_to']['address'])
-      ) ? $signup_confirmation['reply_to']
-        : false;
+    // set reply to
+    $reply_to = (
+      !empty($signup_confirmation['reply_to'])
+      && !empty($signup_confirmation['reply_to']['address'])
+    ) ? $signup_confirmation['reply_to']
+      : false;
 
-      // send email
-      try {
-        $mailer = new Mailer(false, $from, $reply_to);
-        return $mailer->send($email, $subscriber);
-      } catch(\Exception $e) {
-        $this->setError($e->getMessage());
-        return false;
-      }
+    // send email
+    try {
+      $mailer = new Mailer(false, $from, $reply_to);
+      return $mailer->send($email, $subscriber);
+    } catch(\Exception $e) {
+      $this->setError($e->getMessage());
+      return false;
     }
-    return false;
   }
 
   static function generateToken($email = null) {
@@ -153,27 +150,30 @@ class Subscriber extends Model {
   }
 
   static function subscribe($subscriber_data = array(), $segment_ids = array()) {
-    if(empty($subscriber_data) or empty($segment_ids)) {
-      return false;
-    }
-
     $signup_confirmation_enabled = (bool)Setting::getValue(
       'signup_confirmation.enabled'
     );
 
-    $subscriber = self::createOrUpdate($subscriber_data);
-    $errors = $subscriber->getErrors();
+    $subscriber = self::findOne($subscriber_data['email']);
 
-    if($errors === false && $subscriber->id > 0) {
+    if($subscriber === false) {
+      // create new subscriber
+      $subscriber = self::createOrUpdate($subscriber_data);
+      if($subscriber->getErrors() !== false) {
+        return $subscriber;
+      }
+
       $subscriber = self::findOne($subscriber->id);
+    }
 
-      // restore deleted subscriber
+    if($subscriber !== false) {
+      // restore trashed subscriber
       if($subscriber->deleted_at !== null) {
         $subscriber->setExpr('deleted_at', 'NULL');
       }
 
+      // set status depending on signup confirmation setting
       if($subscriber->status !== self::STATUS_SUBSCRIBED) {
-        // auto subscribe when signup confirmation is disabled
         if($signup_confirmation_enabled === true) {
           $subscriber->set('status', self::STATUS_UNCONFIRMED);
         } else {
@@ -186,9 +186,7 @@ class Subscriber extends Model {
         SubscriberSegment::subscribeToSegments($subscriber, $segment_ids);
 
         // signup confirmation
-        if($subscriber->status !== self::STATUS_SUBSCRIBED) {
-          $subscriber->sendConfirmationEmail();
-        }
+        $subscriber->sendConfirmationEmail();
 
         // welcome email
         Scheduler::scheduleSubscriberWelcomeNotification(

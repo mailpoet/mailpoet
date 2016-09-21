@@ -30,11 +30,14 @@
           <% if not(success) %>
           style="display:none;"
           <% endif %>
-        >
-          <%= form.settings.success_message %>
-        </p>
-        <p class="mailpoet_validate_error" style="display:none;">
-          <!-- errors will be displayed here -->
+        ><%= form.settings.success_message %></p>
+        <p class="mailpoet_validate_error"
+          <% if not(error) %>
+          style="display:none;"
+          <% endif %>
+        ><% if (error) %>
+           <%= __("An error occurred, make sure you have filled all the required fields.") %>
+          <% endif %>
         </p>
       </div>
     </form>
