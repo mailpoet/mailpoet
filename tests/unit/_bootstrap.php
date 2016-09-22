@@ -35,3 +35,12 @@ Fixtures::add(
   'newsletter_subject_template',
   'Newsletter for [subscriber:firstname]'
 );
+
+Fixtures::add(
+  'subscriber_template',
+  array(
+    'first_name' => 'John',
+    'last_name' => 'John',
+    'email' => 'john.doe@example.com'
+  )
+);

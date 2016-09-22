@@ -34,8 +34,8 @@ class MailerLog {
     return $mailer_log;
   }
 
-  static function incrementSentCount($mailer_log = false) {
-    $mailer_log = ($mailer_log) ? $mailer_log : self::getMailerLog();
+  static function incrementSentCount() {
+    $mailer_log = self::getMailerLog();
     (int)$mailer_log['sent']++;
     return self::updateMailerLog($mailer_log);
   }
@@ -54,7 +54,7 @@ class MailerLog {
 
   static function enforceSendingLimit() {
     if(self::isSendingLimitReached()) {
-      throw new \Exception(__('Sending frequency limit has been reached'));
+      throw new \Exception(__('Sending frequency limit has been reached.'));
     }
   }
 }
