@@ -70,10 +70,12 @@ define([
             });
 
             editor.on('focus', function(e) {
+              that.disableDragging();
               that.disableShowingTools();
             });
 
             editor.on('blur', function(e) {
+              that.enableDragging();
               that.enableShowingTools();
             });
           },
@@ -82,6 +84,12 @@ define([
           mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle'),
         });
       }
+    },
+    disableDragging: function() {
+      this.$('.mailpoet_content').addClass('mailpoet_ignore_drag');
+    },
+    enableDragging: function() {
+      this.$('.mailpoet_content').removeClass('mailpoet_ignore_drag');
     },
   });
 
