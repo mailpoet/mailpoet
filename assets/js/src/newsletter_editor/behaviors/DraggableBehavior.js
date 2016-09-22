@@ -113,7 +113,7 @@ define([
           }
         },
       })
-      .preventDefault('never')
+      .preventDefault('auto')
       .actionChecker(function (pointer, event, action) {
         // Disable dragging with right click
         if (event.button !== 0) {
