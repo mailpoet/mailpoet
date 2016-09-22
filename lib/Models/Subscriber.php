@@ -166,34 +166,32 @@ class Subscriber extends Model {
       $subscriber = self::findOne($subscriber->id);
     }
 
-    if($subscriber !== false) {
-      // restore trashed subscriber
-      if($subscriber->deleted_at !== null) {
-        $subscriber->setExpr('deleted_at', 'NULL');
+    // restore trashed subscriber
+    if($subscriber->deleted_at !== null) {
+      $subscriber->setExpr('deleted_at', 'NULL');
+    }
+
+    // set status depending on signup confirmation setting
+    if($subscriber->status !== self::STATUS_SUBSCRIBED) {
+      if($signup_confirmation_enabled === true) {
+        $subscriber->set('status', self::STATUS_UNCONFIRMED);
+      } else {
+        $subscriber->set('status', self::STATUS_SUBSCRIBED);
       }
+    }
 
-      // set status depending on signup confirmation setting
-      if($subscriber->status !== self::STATUS_SUBSCRIBED) {
-        if($signup_confirmation_enabled === true) {
-          $subscriber->set('status', self::STATUS_UNCONFIRMED);
-        } else {
-          $subscriber->set('status', self::STATUS_SUBSCRIBED);
-        }
-      }
+    if($subscriber->save()) {
+      // link subscriber to segments
+      SubscriberSegment::subscribeToSegments($subscriber, $segment_ids);
 
-      if($subscriber->save()) {
-        // link subscriber to segments
-        SubscriberSegment::subscribeToSegments($subscriber, $segment_ids);
+      // signup confirmation
+      $subscriber->sendConfirmationEmail();
 
-        // signup confirmation
-        $subscriber->sendConfirmationEmail();
-
-        // welcome email
-        Scheduler::scheduleSubscriberWelcomeNotification(
-          $subscriber->id,
-          $segment_ids
-        );
-      }
+      // welcome email
+      Scheduler::scheduleSubscriberWelcomeNotification(
+        $subscriber->id,
+        $segment_ids
+      );
     }
 
     return $subscriber;

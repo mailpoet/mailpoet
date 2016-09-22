@@ -11,7 +11,6 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
-use MailPoet\Util\Url;
 
 if(!defined('ABSPATH')) exit;
 
@@ -56,7 +55,6 @@ class Subscribers extends APIEndpoint {
   }
 
   function subscribe($data = array()) {
-    $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
     $form_id = (isset($data['form_id']) ? (int)$data['form_id'] : false);
     $form = Form::findOne($form_id);
     unset($data['form_id']);
@@ -68,31 +66,16 @@ class Subscribers extends APIEndpoint {
     unset($data['segments']);
 
     if(empty($segment_ids)) {
-      if($doing_ajax) {
-        return $this->badRequest(array(
-          APIError::BAD_REQUEST => __('Please select a list')
-        ));
-      } else {
-        Url::redirectBack(array(
-          'mailpoet_error' => $form_id,
-          'mailpoet_success' => null
-        ));
-      }
+      return $this->badRequest(array(
+        APIError::BAD_REQUEST => __('Please select a list')
+      ));
     }
 
-    // try to register and subscribe user to segments
     $subscriber = Subscriber::subscribe($data, $segment_ids);
     $errors = $subscriber->getErrors();
 
     if($errors !== false) {
-      if($doing_ajax) {
-        return $this->badRequest($errors);
-      } else {
-        Url::redirectBack(array(
-          'mailpoet_error' => $form_id,
-          'mailpoet_success' => null
-        ));
-      }
+      return $this->badRequest($errors);
     } else {
       $meta = array();
 
@@ -110,22 +93,10 @@ class Subscribers extends APIEndpoint {
         }
       }
 
-
-      if($doing_ajax) {
-        return $this->successResponse(
-          Subscriber::findOne($subscriber->id)->asArray(),
-          $meta
-        );
-      } else {
-        if(isset($meta['redirect_url'])) {
-          Url::redirectTo($meta['redirect_url']);
-        } else {
-          Url::redirectBack(array(
-            'mailpoet_success' => $form['id'],
-            'mailpoet_error' => null
-          ));
-        }
-      }
+      return $this->successResponse(
+        Subscriber::findOne($subscriber->id)->asArray(),
+        $meta
+      );
     }
   }
 

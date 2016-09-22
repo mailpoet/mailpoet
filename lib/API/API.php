@@ -24,16 +24,6 @@ class API {
       'wp_ajax_nopriv_mailpoet',
       array($this, 'setupPublic')
     );
-
-    // Public API (Post)
-    add_action(
-      'admin_post_mailpoet',
-      array($this, 'setupPublic')
-    );
-    add_action(
-      'admin_post_nopriv_mailpoet',
-      array($this, 'setupPublic')
-    );
   }
 
   function setupAdmin() {
@@ -81,14 +71,7 @@ class API {
     $class = ucfirst($_POST['endpoint']);
     $endpoint =  __NAMESPACE__ . "\\Endpoints\\" . $class;
     $method = $_POST['method'];
-
-    $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
-
-    if($doing_ajax) {
-      $data = isset($_POST['data']) ? stripslashes_deep($_POST['data']) : array();
-    } else {
-      $data = $_POST;
-    }
+    $data = isset($_POST['data']) ? stripslashes_deep($_POST['data']) : array();
 
     if(is_array($data) && !empty($data)) {
       // filter out reserved keywords from data
@@ -104,16 +87,12 @@ class API {
     try {
       $endpoint = new $endpoint();
       $response = $endpoint->$method($data);
-      if($doing_ajax) {
-        $response->send();
-      }
+      $response->send();
     } catch(\Exception $e) {
-      if($doing_ajax) {
-        $error_response = new ErrorResponse(
-          array($e->getCode() => $e->getMessage())
-        );
-        $error_response->send();
-      }
+      $error_response = new ErrorResponse(
+        array($e->getCode() => $e->getMessage())
+      );
+      $error_response->send();
     }
   }
 
