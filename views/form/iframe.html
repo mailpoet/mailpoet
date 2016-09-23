@@ -20,25 +20,6 @@
     <%= form | raw %>
     <script type="text/javascript">
       var MailPoetForm = <%= json_encode(mailpoet_form) %>;
-      function autoSize() {
-        var iframe = window.frameElement;
-        var height = document.body.scrollHeight;
-        parent.MailPoet.Iframe.setSize(iframe, height);
-      }
-
-      jQuery(function($) {
-        $(function() {
-          autoSize();
-        });
-      });
-
-      jQuery('form').on('submit', function() {
-        setTimeout(function() {
-          // make sure we resize the iframe
-          autoSize();
-        }.bind(this), 1);
-        return true;
-      }.bind(this));
     </script>
   </body>
 </html>

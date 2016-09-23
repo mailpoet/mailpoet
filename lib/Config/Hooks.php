@@ -91,6 +91,16 @@ class Hooks {
       'admin_post_nopriv_mailpoet_subscription_update',
       '\MailPoet\Subscription\Manage::onSave'
     );
+
+    // Subscription form
+    add_action(
+      'admin_post_mailpoet_subscription_form',
+      '\MailPoet\Subscription\Form::onSubmit'
+    );
+    add_action(
+      'admin_post_nopriv_mailpoet_subscription_form',
+      '\MailPoet\Subscription\Form::onSubmit'
+    );
   }
 
   function setupWPUsers() {

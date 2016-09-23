@@ -6,9 +6,6 @@ use \MailPoet\Util\Security;
 if(!defined('ABSPATH')) exit;
 
 class API {
-  function __construct() {
-  }
-
   function init() {
     // security token
     add_action(
@@ -25,11 +22,6 @@ class API {
     // Public API (Ajax)
     add_action(
       'wp_ajax_nopriv_mailpoet',
-      array($this, 'setupPublic')
-    );
-    // Public API (Post)
-    add_action(
-      'admin_post_nopriv_mailpoet',
       array($this, 'setupPublic')
     );
   }
@@ -79,14 +71,7 @@ class API {
     $class = ucfirst($_POST['endpoint']);
     $endpoint =  __NAMESPACE__ . "\\Endpoints\\" . $class;
     $method = $_POST['method'];
-
-    $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
-
-    if($doing_ajax) {
-      $data = isset($_POST['data']) ? stripslashes_deep($_POST['data']) : array();
-    } else {
-      $data = $_POST;
-    }
+    $data = isset($_POST['data']) ? stripslashes_deep($_POST['data']) : array();
 
     if(is_array($data) && !empty($data)) {
       // filter out reserved keywords from data

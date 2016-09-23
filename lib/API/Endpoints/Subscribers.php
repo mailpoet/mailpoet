@@ -11,7 +11,6 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
-use MailPoet\Util\Url;
 
 if(!defined('ABSPATH')) exit;
 
@@ -56,14 +55,9 @@ class Subscribers extends APIEndpoint {
   }
 
   function subscribe($data = array()) {
-    $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
-    $errors = array();
-
-    $form = Form::findOne($data['form_id']);
+    $form_id = (isset($data['form_id']) ? (int)$data['form_id'] : false);
+    $form = Form::findOne($form_id);
     unset($data['form_id']);
-    if($form === false || !$form->id()) {
-      $errors[] = __('This form does not exist');
-    }
 
     $segment_ids = (!empty($data['segments'])
       ? (array)$data['segments']
@@ -72,72 +66,37 @@ class Subscribers extends APIEndpoint {
     unset($data['segments']);
 
     if(empty($segment_ids)) {
-      $errors[] = __('Please select a list');
-    }
-
-    if(!empty($errors)) {
-      return array(
-        'result' => false,
-        'errors' => $errors
-      );
+      return $this->badRequest(array(
+        APIError::BAD_REQUEST => __('Please select a list')
+      ));
     }
 
     $subscriber = Subscriber::subscribe($data, $segment_ids);
     $errors = $subscriber->getErrors();
-    $result = ($errors === false && $subscriber->id() > 0);
 
-    // record form statistics
-    if($result === true && $form !== false && $form->id > 0) {
-      StatisticsForms::record($form->id, $subscriber->id);
-    }
+    if($errors !== false) {
+      return $this->badRequest($errors);
+    } else {
+      $meta = array();
 
-    // get success message to display after subscription
-    $form_settings = (
-      isset($form->settings)
-      ? unserialize($form->settings)
-      : null
-    );
+      if($form !== false) {
+        // record form statistics
+        StatisticsForms::record($form->id, $subscriber->id);
 
-    if($form_settings !== null) {
-      switch($form_settings['on_success']) {
-        case 'page':
-          $success_page_url = get_permalink($form_settings['success_page']);
+        $form = $form->asArray();
 
-          // response depending on context
-          if($doing_ajax === true) {
-            return array(
-              'result' => $result,
-              'page' => $success_page_url,
-              'errors' => $errors
-            );
-          } else {
-            if($result === false) {
-              Url::redirectBack();
-            } else {
-              Url::redirectTo($success_page_url);
-            }
-          }
-          break;
-
-        case 'message':
-        default:
-          // response depending on context
-          if($doing_ajax === true) {
-            return array(
-              'result' => $result,
-              'errors' => $errors
-            );
-          } else {
-            $params = (
-              ($result === true)
-              ? array('mailpoet_success' => $form->id)
-              : array()
-            );
-
-            Url::redirectBack($params);
-          }
-          break;
+        if($form['settings']['on_success'] === 'page') {
+          // redirect to a page on a success, pass the page url in the meta
+          $meta['redirect_url'] = get_permalink($form['settings']['success_page']);
+        } else if($form['settings']['on_success'] === 'url') {
+          $meta['redirect_url'] = $form['settings']['success_url'];
+        }
       }
+
+      return $this->successResponse(
+        Subscriber::findOne($subscriber->id)->asArray(),
+        $meta
+      );
     }
   }
 
