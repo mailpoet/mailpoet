@@ -404,6 +404,7 @@ class Newsletters extends APIEndpoint {
         &&
         $data['type'] === Newsletter::TYPE_NOTIFICATION
       ) {
+        $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
         Scheduler::processPostNotificationSchedule($newsletter);
       }
 
