@@ -34,7 +34,7 @@ class Form {
 
     $subscriber = Subscriber::subscribe($data, $segment_ids);
     $errors = $subscriber->getErrors();
-     if($errors !== false) {
+    if($errors !== false) {
       Url::redirectBack(array(
         'mailpoet_error' => $form_id,
         'mailpoet_success' => null
