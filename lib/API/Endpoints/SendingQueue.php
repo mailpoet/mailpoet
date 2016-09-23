@@ -67,7 +67,7 @@ class SendingQueue extends APIEndpoint {
 
       // set queue status
       $queue->status = SendingQueueModel::STATUS_SCHEDULED;
-      $queue->scheduled_at = Scheduler::scheduleFromTimestamp(
+      $queue->scheduled_at = Scheduler::formatDatetimeString(
         $newsletter->scheduledAt
       );
       $queue->subscribers = null;
