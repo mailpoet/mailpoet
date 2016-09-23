@@ -19,81 +19,22 @@ class Scheduler {
   const INTERVAL_MONTHLY = 'monthly';
   const INTERVAL_NTHWEEKDAY = 'nthWeekDay';
 
-  static function processPostNotificationSchedule($newsletter_id) {
-    $newsletter = Newsletter::filter('filterWithOptions')
-      ->findOne($newsletter_id);
-    if(!$newsletter) return;
-    $newsletter = $newsletter->asArray();
-    $interval_type = $newsletter['intervalType'];
-    $hour = (int)$newsletter['timeOfDay'] / self::SECONDS_IN_HOUR;
-    $week_day = $newsletter['weekDay'];
-    $month_day = $newsletter['monthDay'];
-    $nth_week_day = ($newsletter['nthWeekDay'] === self::LAST_WEEKDAY_FORMAT) ?
-      $newsletter['nthWeekDay'] :
-      '#' . $newsletter['nthWeekDay'];
-    switch($interval_type) {
-      case self::INTERVAL_IMMEDIATELY:
-        $schedule = '* * * * *';
-        break;
-      case self::INTERVAL_IMMEDIATE:
-      case self::INTERVAL_DAILY:
-        $schedule = sprintf('0 %s * * *', $hour);
-        break;
-      case self::INTERVAL_WEEKLY:
-        $schedule = sprintf('0 %s * * %s', $hour, $week_day);
-        break;
-      case self::INTERVAL_NTHWEEKDAY:
-        $schedule = sprintf('0 %s ? * %s%s', $hour, $week_day, $nth_week_day);
-        break;
-      case self::INTERVAL_MONTHLY:
-        $schedule = sprintf('0 %s %s * *', $hour, $month_day);
-        break;
-    }
-    $option_field = NewsletterOptionField::where('name', 'schedule')
-      ->findOne()
-      ->asArray();
-    $relation = NewsletterOption::where('newsletter_id', $newsletter_id)
-      ->where('option_field_id', $option_field['id'])
-      ->findOne();
-    if(!$relation) {
-      $relation = NewsletterOption::create();
-      $relation->newsletter_id = $newsletter['id'];
-      $relation->option_field_id = $option_field['id'];
-    }
-    $relation->value = $schedule;
-    $relation->save();
-    return Newsletter::filter('filterWithOptions')
-      ->findOne($newsletter_id);
-  }
-
   static function schedulePostNotification($post_id) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_NOTIFICATION);
-    if(!count($newsletters)) return;
+    if(!count($newsletters)) return false;
     foreach($newsletters as $newsletter) {
       $post = NewsletterPost::where('newsletter_id', $newsletter->id)
         ->where('post_id', $post_id)
         ->findOne();
       if($post === false) {
-        $scheduled_notification = self::createPostNotificationQueue($newsletter);
+        self::createPostNotificationQueue($newsletter);
       }
     }
   }
 
-  /**
-   * Create a properly formatted timestamp for use in Scheduler from
-   * arbitrarily formatted timestamp strings.
-   */
-  static function scheduleFromTimestamp($timestamp) {
-    return Carbon::parse($timestamp)->format('Y-m-d H:i:s');
-  }
-
-  static function scheduleSubscriberWelcomeNotification(
-    $subscriber_id,
-    array $segments
-  ) {
+  static function scheduleSubscriberWelcomeNotification($subscriber_id, $segments) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
-    if(empty($newsletters)) return;
-
+    if(empty($newsletters)) return false;
     foreach($newsletters as $newsletter) {
       if($newsletter->event === 'segment' &&
         in_array($newsletter->segment, $segments)
@@ -105,19 +46,17 @@ class Scheduler {
 
   static function scheduleWPUserWelcomeNotification(
     $subscriber_id,
-    array $wp_user,
-    $old_user_data
+    $wp_user,
+    $old_user_data = false
   ) {
     $newsletters = self::getNewsletters(Newsletter::TYPE_WELCOME);
-    if(empty($newsletters)) return;
-
+    if(empty($newsletters)) return false;
     foreach($newsletters as $newsletter) {
       if($newsletter->event === 'user') {
         if($old_user_data) {
           // do not schedule welcome newsletter if roles have not changed
           $old_role = (array)$old_user_data->roles;
           $new_role = (array)$wp_user->roles;
-
           if($newsletter->role === self::WORDPRESS_ALL_ROLES ||
             !array_diff($old_role, $new_role)
           ) {
@@ -125,20 +64,12 @@ class Scheduler {
           }
         }
         if($newsletter->role === self::WORDPRESS_ALL_ROLES ||
-          in_array($newsletter->role, $wp_user['roles'])
+          in_array($newsletter->role, (array)$wp_user->roles)
         ) {
           self::createWelcomeNotificationQueue($newsletter, $subscriber_id);
         }
       }
     }
-  }
-
-  static function getNewsletters($type) {
-    return Newsletter::getPublished()
-      ->filter('filterType', $type)
-      ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
-      ->filter('filterWithOptions')
-      ->findMany();
   }
 
   static function createWelcomeNotificationQueue($newsletter, $subscriber_id) {
@@ -169,7 +100,7 @@ class Scheduler {
     }
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->scheduled_at = $scheduled_at;
-    $queue->save();
+    return $queue->save();
   }
 
   static function createPostNotificationQueue($newsletter) {
@@ -187,9 +118,60 @@ class Scheduler {
     return $queue;
   }
 
+  static function processPostNotificationSchedule($newsletter) {
+    $interval_type = $newsletter->intervalType;
+    $hour = (int)$newsletter->timeOfDay / self::SECONDS_IN_HOUR;
+    $week_day = $newsletter->weekDay;
+    $month_day = $newsletter->monthDay;
+    $nth_week_day = ($newsletter->nthWeekDay === self::LAST_WEEKDAY_FORMAT) ?
+      $newsletter->nthWeekDay :
+      '#' . $newsletter->nthWeekDay;
+    switch($interval_type) {
+      case self::INTERVAL_IMMEDIATELY:
+        $schedule = '* * * * *';
+        break;
+      case self::INTERVAL_IMMEDIATE:
+      case self::INTERVAL_DAILY:
+        $schedule = sprintf('0 %s * * *', $hour);
+        break;
+      case self::INTERVAL_WEEKLY:
+        $schedule = sprintf('0 %s * * %s', $hour, $week_day);
+        break;
+      case self::INTERVAL_NTHWEEKDAY:
+        $schedule = sprintf('0 %s ? * %s%s', $hour, $week_day, $nth_week_day);
+        break;
+      case self::INTERVAL_MONTHLY:
+        $schedule = sprintf('0 %s %s * *', $hour, $month_day);
+        break;
+    }
+    $option_field = NewsletterOptionField::where('name', 'schedule')->findOne();
+    $relation = NewsletterOption::where('newsletter_id', $newsletter->id)
+      ->where('option_field_id', $option_field->id)
+      ->findOne();
+    if(!$relation) {
+      $relation = NewsletterOption::create();
+      $relation->newsletter_id = $newsletter->id;
+      $relation->option_field_id = $option_field->id;
+    }
+    $relation->value = $schedule;
+    $relation->save();
+  }
+
   static function getNextRunDate($schedule) {
     $schedule = \Cron\CronExpression::factory($schedule);
-    return $schedule->getNextRunDate(current_time('mysql'))
+    return $schedule->getNextRunDate(Carbon::createFromTimestamp(current_time('timestamp')))
       ->format('Y-m-d H:i:s');
+  }
+
+  static function getNewsletters($type) {
+    return Newsletter::getPublished()
+      ->filter('filterType', $type)
+      ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
+      ->filter('filterWithOptions')
+      ->findMany();
+  }
+
+  static function formatDatetimeString($datetime_string) {
+    return Carbon::parse($datetime_string)->format('Y-m-d H:i:s');
   }
 }

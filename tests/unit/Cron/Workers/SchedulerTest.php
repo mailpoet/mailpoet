@@ -307,7 +307,7 @@ class SchedulerTest extends MailPoetTest {
     // update the time queue is scheduled to run at
     $updated_queue = SendingQueue::findOne($queue->id);
     expect(Carbon::parse($updated_queue->scheduled_at))->equals(
-      Carbon::now()
+      Carbon::createFromTimestamp(current_time('timestamp'))
         ->addMinutes(Scheduler::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT)
     );
   }
