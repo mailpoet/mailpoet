@@ -8,7 +8,6 @@ use \MailPoet\Models\Subscriber;
 use \MailPoet\Form\Renderer as FormRenderer;
 use \MailPoet\Form\Util;
 use \MailPoet\Util\Security;
-use \MailPoet\Util\Url;
 
 if(!defined('ABSPATH')) exit;
 

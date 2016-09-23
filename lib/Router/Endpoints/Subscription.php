@@ -2,7 +2,6 @@
 namespace MailPoet\Router\Endpoints;
 
 use MailPoet\Subscription as UserSubscription;
-use MailPoet\Util\Url;
 
 if(!defined('ABSPATH')) exit;
 
