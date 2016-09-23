@@ -72,7 +72,7 @@ define([
           });
 
           editor.on('click', function(e) {
-            editor.focus(e);
+            editor.focus();
           });
 
           editor.on('focus', function(e) {
