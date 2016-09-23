@@ -69,6 +69,10 @@ define([
               that.model.set('text', editor.getContent());
             });
 
+            editor.on('click', function(e) {
+              editor.focus();
+            });
+
             editor.on('focus', function(e) {
               that.disableDragging();
               that.disableShowingTools();
