@@ -80,13 +80,13 @@ class CronHelper {
     $fp = @fsockopen($parsed_url['host'], $port, $errno, $errstr, 1);
     if($fp) return sprintf('%s://%s', $parsed_url['scheme'], $parsed_url['host']);
     // 4. throw an error if all connection attempts failed
-    throw new \Exception(__('Site URL is unreachable.'));
+    throw new \Exception(__('Site URL is unreachable.', Env::$plugin_name));
   }
 
   static function enforceExecutionLimit($timer) {
     $elapsed_time = microtime(true) - $timer;
     if($elapsed_time >= self::DAEMON_EXECUTION_LIMIT) {
-      throw new \Exception(__('Maximum execution time has been reached.'));
+      throw new \Exception(__('Maximum execution time has been reached.', Env::$plugin_name));
     }
   }
 }
