@@ -10,7 +10,7 @@ class Segment extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('Please specify a name')
+      'required' => __('Please specify a name', Env::$plugin_name)
     ));
   }
 
@@ -100,9 +100,9 @@ class Segment extends Model {
       // create the wp users segment
       $wp_segment = Segment::create();
       $wp_segment->hydrate(array(
-        'name' => __('WordPress Users'),
+        'name' => __('WordPress Users', Env::$plugin_name),
         'description' =>
-          __('This lists containts all of your WordPress users'),
+          __('This lists containts all of your WordPress users', Env::$plugin_name),
         'type' => 'wp_users'
       ));
       $wp_segment->save();
@@ -119,12 +119,12 @@ class Segment extends Model {
     return array(
       array(
         'name' => 'all',
-        'label' => __('All'),
+        'label' => __('All', Env::$plugin_name),
         'count' => Segment::getPublished()->count()
       ),
       array(
         'name' => 'trash',
-        'label' => __('Trash'),
+        'label' => __('Trash', Env::$plugin_name),
         'count' => Segment::getTrashed()->count()
       )
     );
@@ -176,7 +176,7 @@ class Segment extends Model {
       'AND relation.status = "' . Subscriber::STATUS_SUBSCRIBED . '" ' .
       'GROUP BY segments.id) ' .
       'UNION ALL ' .
-      '(SELECT 0 as id, "' . __('Not in a List') . '" as name, COUNT(*) as subscribers ' .
+      '(SELECT 0 as id, "' . __('Not in a List', Env::$plugin_name) . '" as name, COUNT(*) as subscribers ' .
       'FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers ' .
       'LEFT JOIN ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation on relation.subscriber_id = subscribers.id ' .
       (($withConfirmedSubscribers) ?

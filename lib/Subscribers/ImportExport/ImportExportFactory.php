@@ -17,7 +17,7 @@ class ImportExportFactory {
       Segment::getSegmentsWithSubscriberCount() :
       Segment::getSegmentsForExport($with_confirmed_subscribers);
     return array_map(function($segment) {
-      if(!$segment['name']) $segment['name'] = __('Not In List');
+      if(!$segment['name']) $segment['name'] = __('Not In List', Env::$plugin_name);
       if(!$segment['id']) $segment['id'] = 0;
       return array(
         'id' => $segment['id'],
@@ -29,10 +29,10 @@ class ImportExportFactory {
 
   function getSubscriberFields() {
     return array(
-      'email' => __('Email'),
-      'first_name' => __('First name'),
-      'last_name' => __('Last name'),
-      'status' => __('Status')
+      'email' => __('Email', Env::$plugin_name),
+      'first_name' => __('First name', Env::$plugin_name),
+      'last_name' => __('Last name', Env::$plugin_name),
+      'status' => __('Status', Env::$plugin_name)
       // TODO: add additional fields from MP2
     );
   }
@@ -71,36 +71,36 @@ class ImportExportFactory {
       array(
         array(
           'id' => 'ignore',
-          'name' => __('Ignore field...'),
+          'name' => __('Ignore field...', Env::$plugin_name),
         ),
         array(
           'id' => 'create',
-          'name' => __('Create new field...')
+          'name' => __('Create new field...', Env::$plugin_name)
         ),
       ) :
       array(
         array(
           'id' => 'select',
-          'name' => __('Select all...'),
+          'name' => __('Select all...', Env::$plugin_name),
         ),
         array(
           'id' => 'deselect',
-          'name' => __('Deselect all...')
+          'name' => __('Deselect all...', Env::$plugin_name)
         ),
       );
     $select2Fields = array(
       array(
-        'name' => __('Actions'),
+        'name' => __('Actions', Env::$plugin_name),
         'children' => $actions
       ),
       array(
-        'name' => __('System fields'),
+        'name' => __('System fields', Env::$plugin_name),
         'children' => $this->formatSubscriberFields($subscriber_fields)
       )
     );
     if($subscriber_custom_fields) {
       array_push($select2Fields, array(
-        'name' => __('User fields'),
+        'name' => __('User fields', Env::$plugin_name),
         'children' => $this->formatSubscriberCustomFields(
           $subscriber_custom_fields
         )

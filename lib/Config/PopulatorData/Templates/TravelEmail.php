@@ -13,8 +13,8 @@ class TravelEmail {
 
   function get() {
     return array(
-      'name' => __("Travel email"),
-      'description' => __("A little postcard from your trip"),
+      'name' => __("Travel email", Env::$plugin_name),
+      'description' => __("A little postcard from your trip", Env::$plugin_name),
       'readonly' => 0,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -51,7 +51,7 @@ class TravelEmail {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/header.png",
-              "alt" => __("Travelling Tales with Jane & Steven"),
+              "alt" => __("Travelling Tales with Jane & Steven", Env::$plugin_name),
               "fullWidth" => true,
               "width" => "660px",
               "height" => "165px",
@@ -70,7 +70,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "text",
-              "text" => __("<h1 style=\"text-align: center;\">Hi&nbsp;[subscriber:firstname | default:reader]!</h1>\n<p></p>\n<p>Greetings from New Zealand, we're here enjoying the sights and sounds (and bad smells!) of Rotarua. Yesterday we took advantage of the local amenities and visited&nbsp;the hot springs!&nbsp;</p>\n<p>Don't forget to stay up-to-date via twitter!</p>")
+              "text" => __("<h1 style=\"text-align: center;\">Hi&nbsp;[subscriber:firstname | default:reader]!</h1>\n<p></p>\n<p>Greetings from New Zealand, we're here enjoying the sights and sounds (and bad smells!, Env::$plugin_name) of Rotarua. Yesterday we took advantage of the local amenities and visited&nbsp;the hot springs!&nbsp;</p>\n<p>Don't forget to stay up-to-date via twitter!</p>")
             ), array(
               "type" => "social",
               "iconSet" => "circles",
@@ -81,11 +81,11 @@ class TravelEmail {
                 "image" => $this->social_icon_url . "/03-circles/Twitter.png",
                 "height" => "32px",
                 "width" => "32px",
-                "text" => __("Twitter")
+                "text" => __("Twitter", Env::$plugin_name)
               ))
             ), array(
               "type" => "text",
-              "text" => __("<h1 style=\"text-align: center;\"><strong>Photos from Rotarua</strong></h1>")
+              "text" => __("<h1 style=\"text-align: center;\"><strong>Photos from Rotarua</strong></h1>", Env::$plugin_name)
             ), array(
               "type" => "spacer",
               "styles" => array(
@@ -116,7 +116,7 @@ class TravelEmail {
               "type" => "image",
               "link" => "",
             "src" => $this->template_image_url . "/gallery1.jpg",
-              "alt" => __("hot thermals"),
+              "alt" => __("hot thermals", Env::$plugin_name),
               "fullWidth" => false,
               "width" => "640px",
               "height" => "425px",
@@ -146,7 +146,7 @@ class TravelEmail {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/gallery2.jpg",
-              "alt" => __("The view from our campsite"),
+              "alt" => __("The view from our campsite", Env::$plugin_name),
               "fullWidth" => false,
               "width" => "640px",
               "height" => "425px",
@@ -185,7 +185,7 @@ class TravelEmail {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/gallery3.jpg",
-              "alt" => __("Red sky at night"),
+              "alt" => __("Red sky at night", Env::$plugin_name),
               "fullWidth" => false,
               "width" => "640px",
               "height" => "425px",
@@ -207,7 +207,7 @@ class TravelEmail {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/gallery4.jpg",
-              "alt" => __("Don't go chasing waterfalls"),
+              "alt" => __("Don't go chasing waterfalls", Env::$plugin_name),
               "fullWidth" => false,
               "width" => "640px",
               "height" => "425px",
@@ -244,7 +244,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "button",
-              "text" => __("View NZ Photo Gallery"),
+              "text" => __("View NZ Photo Gallery", Env::$plugin_name),
               "url" => "",
               "styles" => array(
                 "block" => array(
@@ -293,7 +293,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "text",
-              "text" => __("<h2><em>Here's our top recommendations in Rotarua</em></h2>")
+              "text" => __("<h2><em>Here's our top recommendations in Rotarua</em></h2>", Env::$plugin_name)
             ), array(
               "type" => "spacer",
               "styles" => array(
@@ -324,7 +324,7 @@ class TravelEmail {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/glow-worms.jpg",
-              "alt" => __("Glow worms, Waitomo Caves"),
+              "alt" => __("Glow worms, Waitomo Caves", Env::$plugin_name),
               "fullWidth" => true,
               "width" => "640px",
               "height" => "428px",
@@ -335,7 +335,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p><em><a href=\"http://www.waitomo.com/Waitomo-Glowworm-Caves/Pages/default.aspx\"><strong>Waitomo Glow Worm Caves</strong></a></em></p>")
+              "text" => __("<p><em><a href=\"http://www.waitomo.com/Waitomo-Glowworm-Caves/Pages/default.aspx\"><strong>Waitomo Glow Worm Caves</strong></a></em></p>", Env::$plugin_name)
             ))
           ), array(
             "type" => "container",
@@ -349,7 +349,7 @@ class TravelEmail {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/luge.jpg",
-              "alt" => __("luge"),
+              "alt" => __("luge", Env::$plugin_name),
               "fullWidth" => false,
               "width" => "375px",
               "height" => "500px",
@@ -360,7 +360,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p><em><strong><a href=\"http://www.skyline.co.nz/rotorua/ssr_luge/\">Luge!</a></strong></em></p>")
+              "text" => __("<p><em><strong><a href=\"http://www.skyline.co.nz/rotorua/ssr_luge/\">Luge!</a></strong></em></p>", Env::$plugin_name)
             ))
           ), array(
             "type" => "container",
@@ -374,7 +374,7 @@ class TravelEmail {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/holiday-park.jpg",
-              "alt" => __("holiday-park"),
+              "alt" => __("holiday-park", Env::$plugin_name),
               "fullWidth" => true,
               "width" => "640px",
               "height" => "425px",
@@ -385,7 +385,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p><em><strong><a href=\"http://rotoruathermal.co.nz/\">Roturua Thermal Holiday Park</a></strong></em></p>")
+              "text" => __("<p><em><strong><a href=\"http://rotoruathermal.co.nz/\">Roturua Thermal Holiday Park</a></strong></em></p>", Env::$plugin_name)
             ))
           ))
         ), array(
@@ -414,7 +414,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p>Tomorrow we're heading towards Taupo where we'll visit the&nbsp;'Craters of the moon' and go prawn fishing!&nbsp;Hopefully the weather will stay good.</p>\n<p></p>\n<p>Keep on travellin'</p>\n<p>Jane &amp; Steven</p>")
+              "text" => __("<p>Tomorrow we're heading towards Taupo where we'll visit the&nbsp;'Craters of the moon' and go prawn fishing!&nbsp;Hopefully the weather will stay good.</p>\n<p></p>\n<p>Keep on travellin'</p>\n<p>Jane &amp; Steven</p>", Env::$plugin_name)
             ))
           ))
         ), array(
@@ -464,7 +464,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "footer",
-              "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage subscription</a></p>"),
+              "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage subscription</a></p>", Env::$plugin_name),
               "styles" => array(
                 "block" => array(
                   "backgroundColor" => "transparent"

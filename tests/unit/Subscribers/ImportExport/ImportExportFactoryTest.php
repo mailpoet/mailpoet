@@ -187,7 +187,7 @@ class ImportExportFactoryTest extends MailPoetTest {
       $select2FieldsWithoutCustomFields,
       array(
         array(
-          'name' => __('User fields'),
+          'name' => __('User fields', Env::$plugin_name),
           'children' => $ImportExportFactory->formatSubscriberCustomFields(
             $ImportExportFactory->getSubscriberCustomFields()
           )
@@ -213,11 +213,11 @@ class ImportExportFactoryTest extends MailPoetTest {
         'children' => array(
           array(
             'id' => 'select',
-            'name' => __('Select all...'),
+            'name' => __('Select all...', Env::$plugin_name),
           ),
           array(
             'id' => 'deselect',
-            'name' => __('Deselect all...')
+            'name' => __('Deselect all...', Env::$plugin_name)
           ),
         )
       ),
@@ -232,7 +232,7 @@ class ImportExportFactoryTest extends MailPoetTest {
       $select2FieldsWithoutCustomFields,
       array(
         array(
-          'name' => __('User fields'),
+          'name' => __('User fields', Env::$plugin_name),
           'children' => $ImportExportFactory->formatSubscriberCustomFields(
             $ImportExportFactory->getSubscriberCustomFields()
           )

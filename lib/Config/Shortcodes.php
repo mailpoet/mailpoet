@@ -81,7 +81,7 @@ class Shortcodes {
     if(empty($newsletters)) {
       return apply_filters(
         'mailpoet_archive_no_newsletters',
-        __('Oops! There are no newsletters to display.')
+        __('Oops! There are no newsletters to display.', Env::$plugin_name)
       );
     } else {
       $title = apply_filters('mailpoet_archive_title', '');
@@ -116,7 +116,7 @@ class Shortcodes {
     $preview_url = NewsletterUrl::getViewInBrowserUrl($newsletter);
 
     return '<a href="'.esc_attr($preview_url).'" target="_blank" title="'
-      .esc_attr(__('Preview in a new tab')).'">'
+      .esc_attr(__('Preview in a new tab', Env::$plugin_name)).'">'
       .esc_attr($newsletter->subject).
     '</a>';
   }

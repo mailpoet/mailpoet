@@ -15,9 +15,9 @@ class Widget extends \WP_Widget {
   function __construct () {
     return parent::__construct(
       'mailpoet_form',
-      __('MailPoet Form'),
+      __('MailPoet Form', Env::$plugin_name),
       array(
-        'description' => __('Add a newsletter subscription form')
+        'description' => __('Add a newsletter subscription form', Env::$plugin_name)
       )
     );
   }
@@ -40,7 +40,7 @@ class Widget extends \WP_Widget {
     $instance = wp_parse_args(
       (array)$instance,
       array(
-        'title' => __("Subscribe to Our Newsletter")
+        'title' => __("Subscribe to Our Newsletter", Env::$plugin_name)
       )
     );
 

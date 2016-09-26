@@ -13,8 +13,8 @@ class Restaurant {
 
   function get() {
     return array(
-      'name' => __("Restaurant"),
-      'description' => __("What's fresh on the menu?"),
+      'name' => __("Restaurant", Env::$plugin_name),
+      'description' => __("What's fresh on the menu?", Env::$plugin_name),
       'readonly' => 0,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

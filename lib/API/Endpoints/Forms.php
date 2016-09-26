@@ -17,7 +17,7 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.')
+        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
       ));
     } else {
       return $this->successResponse($form->asArray());
@@ -57,31 +57,31 @@ class Forms extends APIEndpoint {
   function create() {
     // create new form
     $form_data = array(
-      'name' => __('New form'),
+      'name' => __('New form', Env::$plugin_name),
       'body' => array(
         array(
           'id' => 'email',
-          'name' => __('Email'),
+          'name' => __('Email', Env::$plugin_name),
           'type' => 'text',
           'static' => true,
           'params' => array(
-            'label' => __('Email'),
+            'label' => __('Email', Env::$plugin_name),
             'required' => true
           )
         ),
         array(
           'id' => 'submit',
-          'name' => __('Submit'),
+          'name' => __('Submit', Env::$plugin_name),
           'type' => 'submit',
           'static' => true,
           'params' => array(
-            'label' => __('Subscribe!')
+            'label' => __('Subscribe!', Env::$plugin_name)
           )
         )
       ),
       'settings' => array(
         'on_success' => 'message',
-        'success_message' => __('Check your inbox or spam folder to confirm your subscription.'),
+        'success_message' => __('Check your inbox or spam folder to confirm your subscription.', Env::$plugin_name),
         'segments' => null,
         'segments_selected_by' => 'admin'
       )
@@ -124,7 +124,7 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.')
+        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
       ));
     } else {
       $exports = Util\Export::getAll($form->asArray());
@@ -136,7 +136,7 @@ class Forms extends APIEndpoint {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
 
     $form_id = (isset($data['id']) ? (int)$data['id'] : 0);
-    $name = (isset($data['name']) ? $data['name'] : __('New form'));
+    $name = (isset($data['name']) ? $data['name'] : __('New form', Env::$plugin_name));
     $body = (isset($data['body']) ? $data['body'] : array());
     $settings = (isset($data['settings']) ? $data['settings'] : array());
     $styles = (isset($data['styles']) ? $data['styles'] : '');
@@ -206,7 +206,7 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.')
+        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
       ));
     } else {
       $form->restore();
@@ -222,7 +222,7 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.')
+        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
       ));
     } else {
       $form->trash();
@@ -238,7 +238,7 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.')
+        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
       ));
     } else {
       $form->delete();
@@ -252,11 +252,11 @@ class Forms extends APIEndpoint {
 
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.')
+        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
       ));
     } else {
       $data = array(
-        'name' => sprintf(__('Copy of %s'), $form->name)
+        'name' => sprintf(__('Copy of %s', Env::$plugin_name), $form->name)
       );
       $duplicate = $form->duplicate($data);
       $errors = $duplicate->getErrors();
