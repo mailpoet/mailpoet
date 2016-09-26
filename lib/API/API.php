@@ -30,7 +30,7 @@ class API {
     if($this->checkToken() === false) {
       $error_response = new ErrorResponse(
         array(
-          Error::UNAUTHORIZED => __('You need to specify a valid API token.')
+          Error::UNAUTHORIZED => __('You need to specify a valid API token.', Env::$plugin_name)
         ),
         array(),
         Response::STATUS_UNAUTHORIZED
@@ -41,7 +41,7 @@ class API {
     if($this->checkPermissions() === false) {
       $error_response = new ErrorResponse(
         array(
-          Error::FORBIDDEN => __('You do not have the required permissions.')
+          Error::FORBIDDEN => __('You do not have the required permissions.', Env::$plugin_name)
         ),
         array(),
         Response::STATUS_FORBIDDEN
@@ -56,7 +56,7 @@ class API {
     if($this->checkToken() === false) {
       $error_response = new ErrorResponse(
         array(
-          Error::UNAUTHORIZED => __('You need to specify a valid API token.')
+          Error::UNAUTHORIZED => __('You need to specify a valid API token.', Env::$plugin_name)
         ),
         array(),
         Response::STATUS_UNAUTHORIZED

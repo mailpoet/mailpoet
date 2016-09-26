@@ -13,7 +13,7 @@ class NewsletterTemplates extends APIEndpoint {
     $template = NewsletterTemplate::findOne($id);
     if($template === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This template does not exist.')
+        APIError::NOT_FOUND => __('This template does not exist.', Env::$plugin_name)
       ));
     } else {
       return $this->successResponse(
@@ -49,7 +49,7 @@ class NewsletterTemplates extends APIEndpoint {
     $template = NewsletterTemplate::findOne($id);
     if($template === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This template does not exist.')
+        APIError::NOT_FOUND => __('This template does not exist.', Env::$plugin_name)
       ));
     } else {
       $template->delete();

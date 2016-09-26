@@ -93,7 +93,7 @@ class Mailer {
         );
         break;
       default:
-        throw new \Exception(__('Mailing method does not exist'));
+        throw new \Exception(__('Mailing method does not exist', Env::$plugin_name));
     }
     return $mailer_instance;
   }
@@ -101,7 +101,7 @@ class Mailer {
   static function getMailerConfig($mailer = false) {
     if(!$mailer) {
       $mailer = Setting::getValue(self::MAILER_CONFIG_SETTING_NAME);
-      if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured'));
+      if(!$mailer || !isset($mailer['method'])) throw new \Exception(__('Mailer is not configured', Env::$plugin_name));
     }
     if(empty($mailer['frequency'])) {
       $default_settings = Setting::getDefaults();
@@ -118,7 +118,7 @@ class Mailer {
   function getSenderNameAndAddress($sender = false) {
     if(empty($sender)) {
       $sender = Setting::getValue('sender', array());
-      if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured'));
+      if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured', Env::$plugin_name));
     }
     return array(
       'from_name' => $sender['name'],

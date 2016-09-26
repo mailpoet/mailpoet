@@ -21,7 +21,7 @@ class CustomFields extends APIEndpoint {
     $custom_field = CustomField::findOne($id);
     if($custom_field === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This custom field does not exist.')
+        APIError::NOT_FOUND => __('This custom field does not exist.', Env::$plugin_name)
       ));
     } else {
       $custom_field->delete();
@@ -48,7 +48,7 @@ class CustomFields extends APIEndpoint {
     $custom_field = CustomField::findOne($id);
     if($custom_field === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This custom field does not exist.')
+        APIError::NOT_FOUND => __('This custom field does not exist.', Env::$plugin_name)
       ));
     } else {
       return $this->successResponse($custom_field->asArray());
