@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Translations (npm install & composer install need to be run before)
+./do makepot
+
 plugin_name='mailpoet'
 
 # Remove previous build.
@@ -15,9 +18,6 @@ npm install
 
 # Production libraries.
 ./composer.phar install --no-dev
-
-# Translations
-./do makepot
 
 # Copy release folders.
 cp -Rf lang $plugin_name
