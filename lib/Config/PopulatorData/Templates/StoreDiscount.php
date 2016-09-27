@@ -13,8 +13,8 @@ class StoreDiscount {
 
   function get() {
     return array(
-      'name' => __("Store Discount", Env::$plugin_name),
-      'description' => __("Store discount email with coupon and shopping suggestions", Env::$plugin_name),
+      'name' => __("Store Discount", MAILPOET),
+      'description' => __("Store discount email with coupon and shopping suggestions", MAILPOET),
       'readonly' => 0,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -59,7 +59,7 @@ class StoreDiscount {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/bicycle-header3.png",
-              "alt" => __("bicycle-header3", Env::$plugin_name),
+              "alt" => __("bicycle-header3", MAILPOET),
               "fullWidth" => false,
               "width" => "423px",
               "height" => "135px",
@@ -70,7 +70,7 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p></p>\n<p>Hi&nbsp;[subscriber:firstname | default:reader]</p>\n<p class=\"\"></p>\n<p>Fancy 15% off your next order? Use this coupon&nbsp;on all your favourite products from our store&nbsp;until Wednesday. Just&nbsp;enter the code on the payments page and&nbsp;your discount will applied.</p>", Env::$plugin_name)
+              "text" => __("<p></p>\n<p>Hi&nbsp;[subscriber:firstname | default:reader]</p>\n<p class=\"\"></p>\n<p>Fancy 15% off your next order? Use this coupon&nbsp;on all your favourite products from our store&nbsp;until Wednesday. Just&nbsp;enter the code on the payments page and&nbsp;your discount will applied.</p>", MAILPOET)
             ), array(
               "type" => "spacer",
               "styles" => array(
@@ -110,10 +110,10 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<h1 style=\"text-align: center;\"><em><strong>Get 15% discount off your next order</strong></em></h1>", Env::$plugin_name)
+              "text" => __("<h1 style=\"text-align: center;\"><em><strong>Get 15% discount off your next order</strong></em></h1>", MAILPOET)
             ), array(
               "type" => "text",
-              "text" => __("<h2 style=\"text-align: center;\"><strong>USE CODE: WELOVEMAILPOET</strong></h2>", Env::$plugin_name)
+              "text" => __("<h2 style=\"text-align: center;\"><strong>USE CODE: WELOVEMAILPOET</strong></h2>", MAILPOET)
             ), array(
               "type" => "divider",
               "styles" => array(
@@ -153,7 +153,7 @@ class StoreDiscount {
               )
             ), array(
               "type" => "button",
-              "text" => __("SHOP NOW", Env::$plugin_name),
+              "text" => __("SHOP NOW", MAILPOET),
               "url" => "",
               "styles" => array(
                 "block" => array(
@@ -173,7 +173,7 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<h1 style=\"text-align: center;\"><strong><em>Use your discount on these great&nbsp;products...</em></strong></h1>", Env::$plugin_name)
+              "text" => __("<h1 style=\"text-align: center;\"><strong><em>Use your discount on these great&nbsp;products...</em></strong></h1>", MAILPOET)
             ), array(
               "type" => "spacer",
               "styles" => array(
@@ -204,7 +204,7 @@ class StoreDiscount {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/red-icycle.jpg",
-              "alt" => __("red-icycle", Env::$plugin_name),
+              "alt" => __("red-icycle", MAILPOET),
               "fullWidth" => false,
               "width" => "558px",
               "height" => "399px",
@@ -215,10 +215,10 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<h3 style=\"text-align: center;\">Lovely Red Bicycle</h3>\n<p>What can we say? It's a totally awesome red bike, and it's the first of its kind in our collection. No sweat!</p>\n<h3 style=\"text-align: center;\"><strong><span style=\"color: #488e88;\">$289.99</span></strong></h3>", Env::$plugin_name)
+              "text" => __("<h3 style=\"text-align: center;\">Lovely Red Bicycle</h3>\n<p>What can we say? It's a totally awesome red bike, and it's the first of its kind in our collection. No sweat!</p>\n<h3 style=\"text-align: center;\"><strong><span style=\"color: #488e88;\">$289.99</span></strong></h3>", MAILPOET)
             ), array(
               "type" => "button",
-              "text" => __("Buy", Env::$plugin_name),
+              "text" => __("Buy", MAILPOET),
               "url" => "",
               "styles" => array(
                 "block" => array(
@@ -249,7 +249,7 @@ class StoreDiscount {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/orange-bicycle.jpg",
-              "alt" => __("orange-bicycle", Env::$plugin_name),
+              "alt" => __("orange-bicycle", MAILPOET),
               "fullWidth" => false,
               "width" => "639px",
               "height" => "457px",
@@ -260,10 +260,10 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<h3 style=\"text-align: center;\">Little Orange Bicycle</h3>\n<p>Another product that's just as awesome but it's the second type, and more orange, with some blue. Cool beans!</p>\n<h3 style=\"line-height: 22.4px; text-align: center;\"><span style=\"color: #488e88;\"><strong>$209.99</strong></span></h3>", Env::$plugin_name)
+              "text" => __("<h3 style=\"text-align: center;\">Little Orange Bicycle</h3>\n<p>Another product that's just as awesome but it's the second type, and more orange, with some blue. Cool beans!</p>\n<h3 style=\"line-height: 22.4px; text-align: center;\"><span style=\"color: #488e88;\"><strong>$209.99</strong></span></h3>", MAILPOET)
             ), array(
               "type" => "button",
-              "text" => __("Buy", Env::$plugin_name),
+              "text" => __("Buy", MAILPOET),
               "url" => "",
               "styles" => array(
                 "block" => array(
@@ -320,7 +320,7 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p><em>Terms and Conditions:</em></p>\n<ul>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Must be used by midnight EST December 15 2016.</span></li>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Discount does not include shipping.</span></li>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Cannot be used in conjunction with any other offer.</span></li>\n</ul>", Env::$plugin_name)
+              "text" => __("<p><em>Terms and Conditions:</em></p>\n<ul>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Must be used by midnight EST December 15 2016.</span></li>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Discount does not include shipping.</span></li>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Cannot be used in conjunction with any other offer.</span></li>\n</ul>", MAILPOET)
             ), array(
               "type" => "social",
               "iconSet" => "grey",
@@ -331,7 +331,7 @@ class StoreDiscount {
                 "image" => $this->social_icon_url . "/02-grey/Facebook.png",
                 "height" => "32px",
                 "width" => "32px",
-                "text" => __("Facebook", Env::$plugin_name)
+                "text" => __("Facebook", MAILPOET)
               ), array(
                 "type" => "socialIcon",
                 "iconType" => "twitter",
@@ -339,11 +339,11 @@ class StoreDiscount {
                 "image" => $this->social_icon_url . "/02-grey/Twitter.png",
                 "height" => "32px",
                 "width" => "32px",
-                "text" => __("Twitter", Env::$plugin_name)
+                "text" => __("Twitter", MAILPOET)
               ))
             ), array(
               "type" => "footer",
-              "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage subscription</a></p>\n<p>1 Store Street, Shopville, CA 1345</p>", Env::$plugin_name),
+              "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage subscription</a></p>\n<p>1 Store Street, Shopville, CA 1345</p>", MAILPOET),
               "styles" => array(
                 "block" => array(
                   "backgroundColor" => "transparent"

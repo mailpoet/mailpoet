@@ -10,7 +10,7 @@ class Form extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('Please specify a name', Env::$plugin_name)
+      'required' => __('Please specify a name', MAILPOET)
     ));
   }
 
@@ -47,12 +47,12 @@ class Form extends Model {
     return array(
       array(
         'name' => 'all',
-        'label' => __('All', Env::$plugin_name),
+        'label' => __('All', MAILPOET),
         'count' => Form::getPublished()->count()
       ),
       array(
         'name' => 'trash',
-        'label' => __('Trash', Env::$plugin_name),
+        'label' => __('Trash', MAILPOET),
         'count' => Form::getTrashed()->count()
       )
     );

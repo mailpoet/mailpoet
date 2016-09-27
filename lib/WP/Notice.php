@@ -19,7 +19,7 @@ class Notice {
   static function displayError($message) {
     $message = sprintf(
       "<b>%s </b> %s",
-      __('MailPoet Error:', Env::$plugin_name),
+      __('MailPoet Error:', MAILPOET),
       $message
     );
     self::createNotice(self::TYPE_ERROR, $message);

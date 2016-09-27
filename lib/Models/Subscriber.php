@@ -18,8 +18,8 @@ class Subscriber extends Model {
     parent::__construct();
 
     $this->addValidations('email', array(
-      'required' => __('Please enter your email address', Env::$plugin_name),
-      'isEmail' => __('Your email address is invalid!', Env::$plugin_name)
+      'required' => __('Please enter your email address', MAILPOET),
+      'isEmail' => __('Your email address is invalid!', MAILPOET)
     ));
   }
 
@@ -214,13 +214,13 @@ class Subscriber extends Model {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
-      'label' => __('All Lists', Env::$plugin_name),
+      'label' => __('All Lists', MAILPOET),
       'value' => ''
     );
 
     $subscribers_without_segment = self::filter('withoutSegments')->count();
     $subscribers_without_segment_label = sprintf(
-      __('Subscribers without a list (%s, Env::$plugin_name)'),
+      __('Subscribers without a list (%s)', MAILPOET),
       number_format($subscribers_without_segment)
     );
 
@@ -276,27 +276,27 @@ class Subscriber extends Model {
     return array(
       array(
         'name' => 'all',
-        'label' => __('All', Env::$plugin_name),
+        'label' => __('All', MAILPOET),
         'count' => self::getPublished()->count()
       ),
       array(
         'name' => self::STATUS_SUBSCRIBED,
-        'label' => __('Subscribed', Env::$plugin_name),
+        'label' => __('Subscribed', MAILPOET),
         'count' => self::filter(self::STATUS_SUBSCRIBED)->count()
       ),
       array(
         'name' => self::STATUS_UNCONFIRMED,
-        'label' => __('Unconfirmed', Env::$plugin_name),
+        'label' => __('Unconfirmed', MAILPOET),
         'count' => self::filter(self::STATUS_UNCONFIRMED)->count()
       ),
       array(
         'name' => self::STATUS_UNSUBSCRIBED,
-        'label' => __('Unsubscribed', Env::$plugin_name),
+        'label' => __('Unsubscribed', MAILPOET),
         'count' => self::filter(self::STATUS_UNSUBSCRIBED)->count()
       ),
       array(
         'name' => 'trash',
-        'label' => __('Trash', Env::$plugin_name),
+        'label' => __('Trash', MAILPOET),
         'count' => self::getTrashed()->count()
       )
     );

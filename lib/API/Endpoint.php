@@ -16,7 +16,7 @@ abstract class Endpoint {
   ) {
     if(empty($errors)) {
       $errors = array(
-        Error::UNKNOWN  => __('An unknown error occurred.', Env::$plugin_name)
+        Error::UNKNOWN  => __('An unknown error occurred.', MAILPOET)
       );
     }
     return new ErrorResponse($errors, $meta, $status);
@@ -25,7 +25,7 @@ abstract class Endpoint {
   function badRequest($errors = array(), $meta = array()) {
     if(empty($errors)) {
       $errors = array(
-        Error::BAD_REQUEST => __('Invalid request parameters.', Env::$plugin_name)
+        Error::BAD_REQUEST => __('Invalid request parameters.', MAILPOET)
       );
     }
     return new ErrorResponse($errors, $meta, Response::STATUS_BAD_REQUEST);

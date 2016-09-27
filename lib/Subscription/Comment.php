@@ -20,7 +20,7 @@ class Comment {
   static function getSubscriptionField() {
     $label = Setting::getValue(
       'subscribe.on_comment.label',
-      __('Yes, please add me to your mailing list', Env::$plugin_name)
+      __('Yes, please add me to your mailing list', MAILPOET)
     );
 
     return '<p class="comment-form-mailpoet">

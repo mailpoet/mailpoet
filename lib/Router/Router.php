@@ -31,11 +31,11 @@ class Router {
     $endpoint_class = __NAMESPACE__ . "\\Endpoints\\" . ucfirst($this->endpoint);
     if(!$this->api_request) return;
     if(!$this->endpoint || !class_exists($endpoint_class)) {
-      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint.', Env::$plugin_name));
+      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint.', MAILPOET));
     }
     $endpoint = new $endpoint_class($this->data);
     if(!method_exists($endpoint, $this->action) || !in_array($this->action, $endpoint->allowed_actions)) {
-      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action.', Env::$plugin_name));
+      return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action.', MAILPOET));
     }
     return call_user_func(
       array(

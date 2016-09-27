@@ -20,7 +20,7 @@ class Subscribers extends APIEndpoint {
     $subscriber = Subscriber::findOne($id);
     if($subscriber === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This subscriber does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This subscriber does not exist.', MAILPOET)
       ));
     } else {
       return $this->successResponse(
@@ -67,7 +67,7 @@ class Subscribers extends APIEndpoint {
 
     if(empty($segment_ids)) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST => __('Please select a list', Env::$plugin_name)
+        APIError::BAD_REQUEST => __('Please select a list', MAILPOET)
       ));
     }
 
@@ -118,7 +118,7 @@ class Subscribers extends APIEndpoint {
     $subscriber = Subscriber::findOne($id);
     if($subscriber === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This subscriber does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This subscriber does not exist.', MAILPOET)
       ));
     } else {
       $subscriber->restore();
@@ -134,7 +134,7 @@ class Subscribers extends APIEndpoint {
     $subscriber = Subscriber::findOne($id);
     if($subscriber === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This subscriber does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This subscriber does not exist.', MAILPOET)
       ));
     } else {
       $subscriber->trash();
@@ -150,7 +150,7 @@ class Subscribers extends APIEndpoint {
     $subscriber = Subscriber::findOne($id);
     if($subscriber === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This subscriber does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This subscriber does not exist.', MAILPOET)
       ));
     } else {
       $subscriber->delete();

@@ -70,27 +70,27 @@ class Date extends Base {
         $block['selected'] = $day;
         $html .= '<select class="mailpoet_date_day" ';
         $html .= static::getInputValidation($block, array(
-          'required-message' => __('Please select a day', Env::$plugin_name)
+          'required-message' => __('Please select a day', MAILPOET)
         ));
-        $html .= 'name="'.$field_name.'[day]" placeholder="'.__('Day', Env::$plugin_name).'">';
+        $html .= 'name="'.$field_name.'[day]" placeholder="'.__('Day', MAILPOET).'">';
         $html .= static::getDays($block);
         $html .= '</select>';
       } else if($date_selector === 'MM') {
         $block['selected'] = $month;
         $html .= '<select class="mailpoet_date_month" ';
         $html .= static::getInputValidation($block, array(
-          'required-message' => __('Please select a month', Env::$plugin_name)
+          'required-message' => __('Please select a month', MAILPOET)
         ));
-        $html .= 'name="'.$field_name.'[month]" placeholder="'.__('Month', Env::$plugin_name).'">';
+        $html .= 'name="'.$field_name.'[month]" placeholder="'.__('Month', MAILPOET).'">';
         $html .= static::getMonths($block);
         $html .= '</select>';
       } else if($date_selector === 'YYYY') {
         $block['selected'] = $year;
         $html .= '<select class="mailpoet_date_year" ';
         $html .= static::getInputValidation($block, array(
-          'required-message' => __('Please select a year', Env::$plugin_name)
+          'required-message' => __('Please select a year', MAILPOET)
         ));
-        $html .= 'name="'.$field_name.'[year]" placeholder="'.__('Year', Env::$plugin_name).'">';
+        $html .= 'name="'.$field_name.'[year]" placeholder="'.__('Year', MAILPOET).'">';
         $html .= static::getYears($block);
         $html .= '</select>';
       }
@@ -103,10 +103,10 @@ class Date extends Base {
 
   static function getDateTypes() {
     return array(
-      'year_month_day' => __('Year, month, day', Env::$plugin_name),
-      'year_month' => __('Year, month', Env::$plugin_name),
-      'month' => __('Month (January, February,..., Env::$plugin_name)'),
-      'year' => __('Year', Env::$plugin_name)
+      'year_month_day' => __('Year, month, day', MAILPOET),
+      'year_month' => __('Year, month', MAILPOET),
+      'month' => __('Month (January, February,...)', MAILPOET),
+      'year' => __('Year', MAILPOET)
     );
   }
 
@@ -119,9 +119,9 @@ class Date extends Base {
     );
   }
   static function getMonthNames() {
-    return array(__('January', Env::$plugin_name), __('February', Env::$plugin_name), __('March', Env::$plugin_name), __('April', Env::$plugin_name),
-      __('May', Env::$plugin_name), __('June', Env::$plugin_name), __('July', Env::$plugin_name), __('August', Env::$plugin_name), __('September', Env::$plugin_name),
-      __('October', Env::$plugin_name), __('November', Env::$plugin_name), __('December', Env::$plugin_name)
+    return array(__('January', MAILPOET), __('February', MAILPOET), __('March', MAILPOET), __('April', MAILPOET),
+      __('May', MAILPOET), __('June', MAILPOET), __('July', MAILPOET), __('August', MAILPOET), __('September', MAILPOET),
+      __('October', MAILPOET), __('November', MAILPOET), __('December', MAILPOET)
     );
   }
 
@@ -138,7 +138,7 @@ class Date extends Base {
     $html = '';
 
     // empty value label
-    $html .= '<option value="">'.__('Month', Env::$plugin_name).'</option>';
+    $html .= '<option value="">'.__('Month', MAILPOET).'</option>';
 
     for($i = 1; $i < 13; $i++) {
       $is_selected = ($i === $block['selected']) ? 'selected="selected"' : '';
@@ -168,7 +168,7 @@ class Date extends Base {
     $html = '';
 
     // empty value label
-    $html .= '<option value="">'.__('Year', Env::$plugin_name).'</option>';
+    $html .= '<option value="">'.__('Year', MAILPOET).'</option>';
 
     // return years as an array
     for($i = (int)$block['to']; $i > (int)($block['from'] - 1); $i--) {
@@ -194,7 +194,7 @@ class Date extends Base {
     $html = '';
 
     // empty value label
-    $html .= '<option value="">'.__('Day', Env::$plugin_name).'</option>';
+    $html .= '<option value="">'.__('Day', MAILPOET).'</option>';
 
     // return days as an array
     for($i = 1; $i < 32; $i++) {

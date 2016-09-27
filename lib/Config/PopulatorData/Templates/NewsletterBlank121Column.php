@@ -13,8 +13,8 @@ class NewsletterBlank121Column {
 
   function get() {
     return array(
-      'name' => __("Newsletter: Blank 1:2:1 Column", Env::$plugin_name),
-      'description' => __("A blank Newsletter template with a 1:2:1 column layout.", Env::$plugin_name),
+      'name' => __("Newsletter: Blank 1:2:1 Column", MAILPOET),
+      'description' => __("A blank Newsletter template with a 1:2:1 column layout.", MAILPOET),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -52,7 +52,7 @@ class NewsletterBlank121Column {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", Env::$plugin_name),
+                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", MAILPOET),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"
@@ -104,7 +104,7 @@ class NewsletterBlank121Column {
                     "type" => "image",
                     "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
-                    "alt" => __("Fake logo", Env::$plugin_name),
+                    "alt" => __("Fake logo", MAILPOET),
                     "fullWidth" => false,
                     "width" => "598px",
                     "height" => "71px",
@@ -116,7 +116,7 @@ class NewsletterBlank121Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>Let's Get Started!</strong></h1>\n<p>It's time to design your newsletter! On&nbsp;the right sidebar, you'll find four menu items that will help&nbsp;you&nbsp;customize your&nbsp;newsletter:</p>\n<ol>\n<li>Content</li>\n<li>Layout</li>\n<li>Styles</li>\n<li>Preview</li>\n</ol>", Env::$plugin_name)
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Let's Get Started!</strong></h1>\n<p>It's time to design your newsletter! On&nbsp;the right sidebar, you'll find four menu items that will help&nbsp;you&nbsp;customize your&nbsp;newsletter:</p>\n<ol>\n<li>Content</li>\n<li>Layout</li>\n<li>Styles</li>\n<li>Preview</li>\n</ol>", MAILPOET)
                   ),
                   array(
                     "type" => "divider",
@@ -154,11 +154,11 @@ class NewsletterBlank121Column {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h2>This template has...</h2>", Env::$plugin_name)
+                    "text" => __("<h2>This template has...</h2>", MAILPOET)
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>In the right sidebar, you can&nbsp;add layout blocks to your email:</p>\n<ul>\n<li>1 column</li>\n<li>2 columns</li>\n<li>3 columns</li>\n</ul>", Env::$plugin_name)
+                    "text" => __("<p>In the right sidebar, you can&nbsp;add layout blocks to your email:</p>\n<ul>\n<li>1 column</li>\n<li>2 columns</li>\n<li>3 columns</li>\n</ul>", MAILPOET)
                   )
                 )
               ),
@@ -173,11 +173,11 @@ class NewsletterBlank121Column {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h2>... a 2-column layout.</h2>", Env::$plugin_name)
+                    "text" => __("<h2>... a 2-column layout.</h2>", MAILPOET)
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>You can change a layout's background color by clicking on the settings icon on the right edge of the&nbsp;Designer. Simply hover&nbsp;over this area to see the Settings (gear, Env::$plugin_name) icon.</p>")
+                    "text" => __("<p>You can change a layout's background color by clicking on the settings icon on the right edge of the&nbsp;Designer. Simply hover&nbsp;over this area to see the Settings (gear) icon.</p>", MAILPOET)
                   )
                 )
               )
@@ -237,7 +237,7 @@ class NewsletterBlank121Column {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h3 style=\"text-align: center;\"><span style=\"font-weight: 600;\">Let's end with&nbsp;a single column.&nbsp;</span></h3>\n<p style=\"line-height: 25.6px;\">In the right sidebar, you can&nbsp;add these layout blocks to your&nbsp;email:</p>\n<p style=\"line-height: 25.6px;\"></p>\n<ul style=\"line-height: 25.6px;\">\n<li>1 column</li>\n<li>2 columns</li>\n<li>3 columns</li>\n</ul>", Env::$plugin_name)
+                    "text" => __("<h3 style=\"text-align: center;\"><span style=\"font-weight: 600;\">Let's end with&nbsp;a single column.&nbsp;</span></h3>\n<p style=\"line-height: 25.6px;\">In the right sidebar, you can&nbsp;add these layout blocks to your&nbsp;email:</p>\n<p style=\"line-height: 25.6px;\"></p>\n<ul style=\"line-height: 25.6px;\">\n<li>1 column</li>\n<li>2 columns</li>\n<li>3 columns</li>\n</ul>", MAILPOET)
                   )
                 )
               )
@@ -311,7 +311,7 @@ class NewsletterBlank121Column {
                   ),
                   array(
                     "type" => "footer",
-                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", Env::$plugin_name),
+                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", MAILPOET),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"

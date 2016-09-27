@@ -9,10 +9,10 @@ class NewsletterOptionField extends Model {
   function __construct() {
     parent::__construct();
     $this->addValidations('name', array(
-      'required' => __('Please specify a name', Env::$plugin_name)
+      'required' => __('Please specify a name', MAILPOET)
     ));
     $this->addValidations('newsletter_type', array(
-      'required' => __('Please specify a newsletter type', Env::$plugin_name)
+      'required' => __('Please specify a newsletter type', MAILPOET)
     ));
   }
 

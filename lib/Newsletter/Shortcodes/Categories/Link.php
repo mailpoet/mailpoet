@@ -24,7 +24,7 @@ class Link {
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
           $url,
-          __('Unsubscribe', Env::$plugin_name)
+          __('Unsubscribe', MAILPOET)
         );
 
       case 'subscription_unsubscribe_url':
@@ -43,7 +43,7 @@ class Link {
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
           $url,
-          __('Manage subscription', Env::$plugin_name)
+          __('Manage subscription', MAILPOET)
         );
 
       case 'subscription_manage_url':
@@ -60,7 +60,7 @@ class Link {
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
           $url,
-          __('View in your browser', Env::$plugin_name)
+          __('View in your browser', MAILPOET)
         );
 
       case 'newsletter_view_in_browser_url':

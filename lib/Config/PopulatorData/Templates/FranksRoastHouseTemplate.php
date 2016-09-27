@@ -13,8 +13,8 @@ class FranksRoastHouseTemplate {
 
   function get() {
     return array(
-      'name' => __("Frank's Roast House", Env::$plugin_name),
-      'description' => __("Think of this as your sandbox. Play around with this example newsletter to see what MailPoet can do for you.", Env::$plugin_name),
+      'name' => __("Frank's Roast House", MAILPOET),
+      'description' => __("Think of this as your sandbox. Play around with this example newsletter to see what MailPoet can do for you.", MAILPOET),
       'readonly' => 0,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -46,7 +46,7 @@ class FranksRoastHouseTemplate {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser.</a>", Env::$plugin_name),
+                    "text" => __("<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser.</a>", MAILPOET),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "#ccc6c6"
@@ -67,7 +67,7 @@ class FranksRoastHouseTemplate {
                     "type" => "image",
                     "link" => "http://www.example.com",
                     "src" => $this->template_image_url . "/header-v2.jpg",
-                    "alt" => __("Frank's Café", Env::$plugin_name),
+                    "alt" => __("Frank's Café", MAILPOET),
                     "fullWidth" => true,
                     "width" => "600px",
                     "height" => "220px",
@@ -88,13 +88,13 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Hi there&nbsp;[subscriber:firstname | default:coffee drinker]</p>\n<p></p>\n<p>Sit back&nbsp;and enjoy your favorite roast as you read this week's newsletter.&nbsp;</p>", Env::$plugin_name)
+                    "text" => __("<p>Hi there&nbsp;[subscriber:firstname | default:coffee drinker]</p>\n<p></p>\n<p>Sit back&nbsp;and enjoy your favorite roast as you read this week's newsletter.&nbsp;</p>", MAILPOET)
                   ),
                   array(
                     "type" => "image",
                     "link" => "http://example.org",
                     "src" => $this->template_image_url . "/coffee-grain.jpg",
-                    "alt" => __('Coffee grain', Env::$plugin_name),
+                    "alt" => __('Coffee grain', MAILPOET),
                     "fullWidth" => false,
                     "width" => "1599px",
                     "height" => "777px",
@@ -106,7 +106,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\">--- Guest Coffee Roaster: <em>Brew Bros. ---</em></h1>\n<p><em></em></p>\n<p>Visit our Center Avenue store to try the latest guest coffee from Brew Bros, a local coffee roaster. This young duo started only two years ago, but have quickly gained&nbsp;popularity through pop-up shops, local events, and collaborations with food trucks.</p>\n<p></p>\n<blockquote>\n<p><span style=\"color: #ff6600;\"><em>Tasting notes: A rich, caramel flavor with subtle hints of molasses. The perfect wake-up morning espresso!</em></span></p>\n</blockquote>", Env::$plugin_name)
+                    "text" => __("<h1 style=\"text-align: center;\">--- Guest Coffee Roaster: <em>Brew Bros. ---</em></h1>\n<p><em></em></p>\n<p>Visit our Center Avenue store to try the latest guest coffee from Brew Bros, a local coffee roaster. This young duo started only two years ago, but have quickly gained&nbsp;popularity through pop-up shops, local events, and collaborations with food trucks.</p>\n<p></p>\n<blockquote>\n<p><span style=\"color: #ff6600;\"><em>Tasting notes: A rich, caramel flavor with subtle hints of molasses. The perfect wake-up morning espresso!</em></span></p>\n</blockquote>", MAILPOET)
                   )
                 )
               )
@@ -132,13 +132,13 @@ class FranksRoastHouseTemplate {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h2>Sandwich Competition</h2>", Env::$plugin_name)
+                    "text" => __("<h2>Sandwich Competition</h2>", MAILPOET)
                   ),
                   array(
                     "type" => "image",
                     "link" => "http://example.org",
                     "src" => $this->template_image_url . "/sandwich.jpg",
-                    "alt" => __('Sandwich', Env::$plugin_name),
+                    "alt" => __('Sandwich', MAILPOET),
                     "fullWidth" => false,
                     "width" => "640px",
                     "height" => "344px",
@@ -150,7 +150,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Have an idea for the Next Great Sandwich? Tell us! We're offering free lunch for a month if you can invent an awesome new sandwich for our menu.</p>\n<p></p>\n<p></p>\n<p>Simply tweet your ideas to <a href=\"http://www.example.com\" title=\"This isn't a real twitter account\">@franksroasthouse</a> and use #sandwichcomp and we'll let you know if you're a winner.</p>", Env::$plugin_name)
+                    "text" => __("<p>Have an idea for the Next Great Sandwich? Tell us! We're offering free lunch for a month if you can invent an awesome new sandwich for our menu.</p>\n<p></p>\n<p></p>\n<p>Simply tweet your ideas to <a href=\"http://www.example.com\" title=\"This isn't a real twitter account\">@franksroasthouse</a> and use #sandwichcomp and we'll let you know if you're a winner.</p>", MAILPOET)
                   ),
                   array(
                     "type" => "button",
@@ -175,7 +175,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h3 style=\"text-align: center;\">Follow Us</h3>", Env::$plugin_name)
+                    "text" => __("<h3 style=\"text-align: center;\">Follow Us</h3>", MAILPOET)
                   ),
                   array(
                     "type" => "social",
@@ -232,13 +232,13 @@ class FranksRoastHouseTemplate {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h2>New Store Opening!</h2>", Env::$plugin_name)
+                    "text" => __("<h2>New Store Opening!</h2>", MAILPOET)
                   ),
                   array(
                     "type" => "image",
                     "link" => "http://example.org",
                     "src" => $this->template_image_url . "/map-v2.jpg",
-                    "alt" => __('Map', Env::$plugin_name),
+                    "alt" => __('Map', MAILPOET),
                     "fullWidth" => false,
                     "width" => "636px",
                     "height" => "342px",
@@ -250,11 +250,11 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Watch out Broad Street, we're coming to you very soon!&nbsp;</p>\n<p></p>\n<p>Keep an eye on your inbox, as we'll have some special offers for our email subscribers plus an exclusive launch party invite!<br /><br /></p>", Env::$plugin_name)
+                    "text" => __("<p>Watch out Broad Street, we're coming to you very soon!&nbsp;</p>\n<p></p>\n<p>Keep an eye on your inbox, as we'll have some special offers for our email subscribers plus an exclusive launch party invite!<br /><br /></p>", MAILPOET)
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h2>New and Improved Hours!</h2>\n<p></p>\n<p>Frank's is now open even later, so you can get your caffeine fix all day (and night, Env::$plugin_name) long! Here's our new opening hours:</p>\n<p></p>\n<ul>\n<li>Monday - Thursday: 6am - 12am</li>\n<li>Friday - Saturday: 6am - 1:30am</li>\n<li>Sunday: 7:30am - 11pm</li>\n</ul>")
+                    "text" => __("<h2>New and Improved Hours!</h2>\n<p></p>\n<p>Frank's is now open even later, so you can get your caffeine fix all day (and night) long! Here's our new opening hours:</p>\n<p></p>\n<ul>\n<li>Monday - Thursday: 6am - 12am</li>\n<li>Friday - Saturday: 6am - 1:30am</li>\n<li>Sunday: 7:30am - 11pm</li>\n</ul>", MAILPOET)
                   )
                 )
               )
@@ -280,7 +280,7 @@ class FranksRoastHouseTemplate {
                 "blocks" => array(
                   array(
                     "type" => "footer",
-                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage subscription</a><br />12345 MailPoet Drive, EmailVille, 76543</p>", Env::$plugin_name),
+                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage subscription</a><br />12345 MailPoet Drive, EmailVille, 76543</p>", MAILPOET),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "#a9a7a7"

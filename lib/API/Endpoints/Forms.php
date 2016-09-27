@@ -17,7 +17,7 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This form does not exist.', MAILPOET)
       ));
     } else {
       return $this->successResponse($form->asArray());
@@ -57,31 +57,31 @@ class Forms extends APIEndpoint {
   function create() {
     // create new form
     $form_data = array(
-      'name' => __('New form', Env::$plugin_name),
+      'name' => __('New form', MAILPOET),
       'body' => array(
         array(
           'id' => 'email',
-          'name' => __('Email', Env::$plugin_name),
+          'name' => __('Email', MAILPOET),
           'type' => 'text',
           'static' => true,
           'params' => array(
-            'label' => __('Email', Env::$plugin_name),
+            'label' => __('Email', MAILPOET),
             'required' => true
           )
         ),
         array(
           'id' => 'submit',
-          'name' => __('Submit', Env::$plugin_name),
+          'name' => __('Submit', MAILPOET),
           'type' => 'submit',
           'static' => true,
           'params' => array(
-            'label' => __('Subscribe!', Env::$plugin_name)
+            'label' => __('Subscribe!', MAILPOET)
           )
         )
       ),
       'settings' => array(
         'on_success' => 'message',
-        'success_message' => __('Check your inbox or spam folder to confirm your subscription.', Env::$plugin_name),
+        'success_message' => __('Check your inbox or spam folder to confirm your subscription.', MAILPOET),
         'segments' => null,
         'segments_selected_by' => 'admin'
       )
@@ -124,7 +124,7 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This form does not exist.', MAILPOET)
       ));
     } else {
       $exports = Util\Export::getAll($form->asArray());
@@ -136,7 +136,7 @@ class Forms extends APIEndpoint {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
 
     $form_id = (isset($data['id']) ? (int)$data['id'] : 0);
-    $name = (isset($data['name']) ? $data['name'] : __('New form', Env::$plugin_name));
+    $name = (isset($data['name']) ? $data['name'] : __('New form', MAILPOET));
     $body = (isset($data['body']) ? $data['body'] : array());
     $settings = (isset($data['settings']) ? $data['settings'] : array());
     $styles = (isset($data['styles']) ? $data['styles'] : '');
@@ -206,7 +206,7 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This form does not exist.', MAILPOET)
       ));
     } else {
       $form->restore();
@@ -222,7 +222,7 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This form does not exist.', MAILPOET)
       ));
     } else {
       $form->trash();
@@ -238,7 +238,7 @@ class Forms extends APIEndpoint {
     $form = Form::findOne($id);
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This form does not exist.', MAILPOET)
       ));
     } else {
       $form->delete();
@@ -252,11 +252,11 @@ class Forms extends APIEndpoint {
 
     if($form === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This form does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This form does not exist.', MAILPOET)
       ));
     } else {
       $data = array(
-        'name' => sprintf(__('Copy of %s', Env::$plugin_name), $form->name)
+        'name' => sprintf(__('Copy of %s', MAILPOET), $form->name)
       );
       $duplicate = $form->duplicate($data);
       $errors = $duplicate->getErrors();

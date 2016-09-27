@@ -17,7 +17,7 @@ class Segments extends APIEndpoint {
     $segment = Segment::findOne($id);
     if($segment === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This list does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This list does not exist.', MAILPOET)
       ));
     } else {
       return $this->successResponse($segment->asArray());
@@ -68,7 +68,7 @@ class Segments extends APIEndpoint {
     $segment = Segment::findOne($id);
     if($segment === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This list does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This list does not exist.', MAILPOET)
       ));
     } else {
       $segment->restore();
@@ -84,7 +84,7 @@ class Segments extends APIEndpoint {
     $segment = Segment::findOne($id);
     if($segment === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This list does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This list does not exist.', MAILPOET)
       ));
     } else {
       $segment->trash();
@@ -100,7 +100,7 @@ class Segments extends APIEndpoint {
     $segment = Segment::findOne($id);
     if($segment === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This list does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This list does not exist.', MAILPOET)
       ));
     } else {
       $segment->delete();
@@ -114,11 +114,11 @@ class Segments extends APIEndpoint {
 
     if($segment === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This list does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This list does not exist.', MAILPOET)
       ));
     } else {
       $data = array(
-        'name' => sprintf(__('Copy of %s', Env::$plugin_name), $segment->name)
+        'name' => sprintf(__('Copy of %s', MAILPOET), $segment->name)
       );
       $duplicate = $segment->duplicate($data);
       $errors = $duplicate->getErrors();

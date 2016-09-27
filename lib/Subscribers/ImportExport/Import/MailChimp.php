@@ -122,22 +122,22 @@ class MailChimp {
   function throwException($error) {
     switch($error) {
       case 'API':
-        $errorMessage = __('Invalid API Key.', Env::$plugin_name);
+        $errorMessage = __('Invalid API Key.', MAILPOET);
         break;
       case 'connection':
-        $errorMessage = __('Could not connect to your MailChimp account.', Env::$plugin_name);
+        $errorMessage = __('Could not connect to your MailChimp account.', MAILPOET);
         break;
       case 'headers':
-        $errorMessage = __('The selected lists do not have matching columns (headers, Env::$plugin_name).');
+        $errorMessage = __('The selected lists do not have matching columns (headers).', MAILPOET);
         break;
       case 'size':
-        $errorMessage = __('The information received from MailChimp is too large for processing. Please limit the number of lists!', Env::$plugin_name);
+        $errorMessage = __('The information received from MailChimp is too large for processing. Please limit the number of lists!', MAILPOET);
         break;
       case 'subscribers':
-        $errorMessage = __('Did not find any active subscribers.', Env::$plugin_name);
+        $errorMessage = __('Did not find any active subscribers.', MAILPOET);
         break;
       case 'lists':
-        $errorMessage = __('Did not find any valid lists.', Env::$plugin_name);
+        $errorMessage = __('Did not find any valid lists.', MAILPOET);
         break;
     }
     throw new \Exception($errorMessage);

@@ -59,8 +59,8 @@ class Menu {
 
     $newsletters_page = add_submenu_page(
       $main_page_slug,
-      $this->setPageTitle(__('Newsletters', Env::$plugin_name)),
-      __('Newsletters', Env::$plugin_name),
+      $this->setPageTitle(__('Newsletters', MAILPOET)),
+      __('Newsletters', MAILPOET),
       'manage_options',
       $main_page_slug,
       array($this, 'newsletters')
@@ -79,8 +79,8 @@ class Menu {
 
     $forms_page = add_submenu_page(
       $main_page_slug,
-      $this->setPageTitle(__('Forms', Env::$plugin_name)),
-      __('Forms', Env::$plugin_name),
+      $this->setPageTitle(__('Forms', MAILPOET)),
+      __('Forms', MAILPOET),
       'manage_options',
       'mailpoet-forms',
       array($this, 'forms')
@@ -98,8 +98,8 @@ class Menu {
 
     $subscribers_page = add_submenu_page(
       $main_page_slug,
-      $this->setPageTitle(__('Subscribers', Env::$plugin_name)),
-      __('Subscribers', Env::$plugin_name),
+      $this->setPageTitle(__('Subscribers', MAILPOET)),
+      __('Subscribers', MAILPOET),
       'manage_options',
       'mailpoet-subscribers',
       array($this, 'subscribers')
@@ -117,8 +117,8 @@ class Menu {
 
     $segments_page = add_submenu_page(
       $main_page_slug,
-      $this->setPageTitle(__('Lists', Env::$plugin_name)),
-      __('Lists', Env::$plugin_name),
+      $this->setPageTitle(__('Lists', MAILPOET)),
+      __('Lists', MAILPOET),
       'manage_options',
       'mailpoet-segments',
       array($this, 'segments')
@@ -137,16 +137,16 @@ class Menu {
 
     add_submenu_page(
       $main_page_slug,
-      $this->setPageTitle( __('Settings', Env::$plugin_name)),
-      __('Settings', Env::$plugin_name),
+      $this->setPageTitle( __('Settings', MAILPOET)),
+      __('Settings', MAILPOET),
       'manage_options',
       'mailpoet-settings',
       array($this, 'settings')
     );
     add_submenu_page(
       'admin.php?page=mailpoet-subscribers',
-      $this->setPageTitle( __('Import', Env::$plugin_name)),
-      __('Import', Env::$plugin_name),
+      $this->setPageTitle( __('Import', MAILPOET)),
+      __('Import', MAILPOET),
       'manage_options',
       'mailpoet-import',
       array($this, 'import')
@@ -154,8 +154,8 @@ class Menu {
 
     add_submenu_page(
       true,
-      $this->setPageTitle(__('Export', Env::$plugin_name)),
-      __('Export', Env::$plugin_name),
+      $this->setPageTitle(__('Export', MAILPOET)),
+      __('Export', MAILPOET),
       'manage_options',
       'mailpoet-export',
       array($this, 'export')
@@ -163,8 +163,8 @@ class Menu {
 
     add_submenu_page(
       true,
-      $this->setPageTitle(__('Welcome', Env::$plugin_name)),
-      __('Welcome', Env::$plugin_name),
+      $this->setPageTitle(__('Welcome', MAILPOET)),
+      __('Welcome', MAILPOET),
       'manage_options',
       'mailpoet-welcome',
       array($this, 'welcome')
@@ -172,8 +172,8 @@ class Menu {
 
     add_submenu_page(
       true,
-      $this->setPageTitle(__('Update', Env::$plugin_name)),
-      __('Update', Env::$plugin_name),
+      $this->setPageTitle(__('Update', MAILPOET)),
+      __('Update', MAILPOET),
       'manage_options',
       'mailpoet-update',
       array($this, 'update')
@@ -181,8 +181,8 @@ class Menu {
 
     add_submenu_page(
       true,
-      $this->setPageTitle(__('Form Editor', Env::$plugin_name)),
-      __('Form Editor', Env::$plugin_name),
+      $this->setPageTitle(__('Form Editor', MAILPOET)),
+      __('Form Editor', MAILPOET),
       'manage_options',
       'mailpoet-form-editor',
       array($this, 'formEditor')
@@ -190,8 +190,8 @@ class Menu {
 
     add_submenu_page(
       true,
-      $this->setPageTitle(__('Newsletter', Env::$plugin_name)),
-      __('Newsletter Editor', Env::$plugin_name),
+      $this->setPageTitle(__('Newsletter', MAILPOET)),
+      __('Newsletter Editor', MAILPOET),
       'manage_options',
       'mailpoet-newsletter-editor',
       array($this, 'newletterEditor')
@@ -355,7 +355,7 @@ class Menu {
     $data['segments'] = Segment::getSegmentsWithSubscriberCount($type = false);
     $data['settings'] = Setting::getAll();
     $data['roles'] = $wp_roles->get_names();
-    $data['roles']['mailpoet_all'] = __('In any WordPress role', Env::$plugin_name);
+    $data['roles']['mailpoet_all'] = __('In any WordPress role', MAILPOET);
 
     $date_time = new DateTime();
     $data['current_date'] = $date_time->getCurrentDate(DateTime::DEFAULT_DATE_FORMAT);
@@ -430,7 +430,7 @@ class Menu {
   function setPageTitle($title) {
     return sprintf(
       '%s - %s',
-      __('MailPoet', Env::$plugin_name),
+      __('MailPoet', MAILPOET),
       $title
     );
   }

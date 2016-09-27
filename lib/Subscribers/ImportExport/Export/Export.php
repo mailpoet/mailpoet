@@ -46,10 +46,10 @@ class Export {
   function process() {
     try {
       if(is_writable($this->export_path) === false) {
-        throw new \Exception(__("Couldn't save export file on the server", Env::$plugin_name));
+        throw new \Exception(__("Couldn't save export file on the server", MAILPOET));
       }
       if(!extension_loaded('zip')) {
-        throw new \Exception(__('Export requires a ZIP extension to be installed on the host', Env::$plugin_name));
+        throw new \Exception(__('Export requires a ZIP extension to be installed on the host', MAILPOET));
       }
       $processed_subscribers = call_user_func(
         array(
@@ -78,7 +78,7 @@ class Export {
     // Excel to automatically recognize the encoding
     fwrite($CSV_file, chr(0xEF) . chr(0xBB) . chr(0xBF));
     if($this->group_by_segment_option) {
-      $formatted_subscriber_fields[] = __('List', Env::$plugin_name);
+      $formatted_subscriber_fields[] = __('List', MAILPOET);
     }
     fwrite(
       $CSV_file,
@@ -166,7 +166,7 @@ class Export {
     return $XLSX_writer->writeSheetRow(
       ($this->group_by_segment_option) ?
         ucwords($segment) :
-        __('All Lists', Env::$plugin_name),
+        __('All Lists', MAILPOET),
       $data
     );
   }
@@ -199,7 +199,7 @@ class Export {
         ->selectExpr(
           'MAX(CASE WHEN ' . Segment::$_table . '.name IS NOT NULL ' .
           'THEN ' . Segment::$_table . '.name ' .
-          'ELSE "' . __('Not In Segment', Env::$plugin_name) . '" END) as segment_name'
+          'ELSE "' . __('Not In Segment', MAILPOET) . '" END) as segment_name'
         )
         ->whereRaw(
           SubscriberSegment::$_table . '.segment_id IN (' .

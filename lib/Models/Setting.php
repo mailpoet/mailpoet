@@ -19,7 +19,7 @@ class Setting extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('Please specify a name', Env::$plugin_name)
+      'required' => __('Please specify a name', MAILPOET)
     ));
   }
 
@@ -45,8 +45,8 @@ class Setting extends Model {
       ),
       'signup_confirmation' => array(
         'enabled' => true,
-        'subject' => sprintf(__('Confirm your subscription to %1$s', Env::$plugin_name), get_option('blogname')),
-        'body' => __("Hello!\n\nHurray! You've subscribed to our site.\n\nPlease confirm your subscription to the list(s, Env::$plugin_name): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team")
+        'subject' => sprintf(__('Confirm your subscription to %1$s', MAILPOET), get_option('blogname')),
+        'body' => __("Hello!\n\nHurray! You've subscribed to our site.\n\nPlease confirm your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\nThe Team", MAILPOET)
       ),
       'tracking' => array(
         'enabled' => true

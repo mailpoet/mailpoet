@@ -29,7 +29,7 @@ class SendingQueue extends APIEndpoint {
 
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     }
 
@@ -49,7 +49,7 @@ class SendingQueue extends APIEndpoint {
 
     if(!empty($queue)) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter is already being sent.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter is already being sent.', MAILPOET)
       ));
     }
 
@@ -83,7 +83,7 @@ class SendingQueue extends APIEndpoint {
       $subscribers = array_unique($subscribers);
       if(!count($subscribers)) {
         return $this->errorResponse(array(
-          APIError::UNKNOWN => __('There are no subscribers in that list!', Env::$plugin_name)
+          APIError::UNKNOWN => __('There are no subscribers in that list!', MAILPOET)
         ));
       }
       $queue->status = null;
@@ -119,14 +119,14 @@ class SendingQueue extends APIEndpoint {
 
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     } else {
       $queue = $newsletter->getQueue();
 
       if($queue === false) {
         return $this->errorResponse(array(
-          APIError::UNKNOWN => __('This newsletter has not been sent yet.', Env::$plugin_name)
+          APIError::UNKNOWN => __('This newsletter has not been sent yet.', MAILPOET)
         ));
       } else {
         $queue->pause();
@@ -145,14 +145,14 @@ class SendingQueue extends APIEndpoint {
     $newsletter = Newsletter::findOne($newsletter_id);
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     } else {
       $queue = $newsletter->getQueue();
 
       if($queue === false) {
         return $this->errorResponse(array(
-          APIError::UNKNOWN => __('This newsletter has not been sent yet.', Env::$plugin_name)
+          APIError::UNKNOWN => __('This newsletter has not been sent yet.', MAILPOET)
         ));
       } else {
         $queue->resume();

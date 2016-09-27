@@ -24,10 +24,10 @@ class Daemon {
   function run() {
     ignore_user_abort(true);
     if(!$this->request_data) {
-      $error = __('Invalid or missing request data.', Env::$plugin_name);
+      $error = __('Invalid or missing request data.', MAILPOET);
     } else {
       if(!$this->daemon) {
-        $error = __('Daemon does not exist.', Env::$plugin_name);
+        $error = __('Daemon does not exist.', MAILPOET);
       } else {
         if(!isset($this->request_data['token']) ||
           $this->request_data['token'] !== $this->daemon['token']

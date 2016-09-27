@@ -27,7 +27,7 @@ class Newsletters extends APIEndpoint {
     $newsletter = Newsletter::findOne($id);
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     } else {
       return $this->successResponse(
@@ -101,7 +101,7 @@ class Newsletters extends APIEndpoint {
 
     if(!$status) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST  => __('You need to specify a status.', Env::$plugin_name)
+        APIError::BAD_REQUEST  => __('You need to specify a status.', MAILPOET)
       ));
     }
 
@@ -110,7 +110,7 @@ class Newsletters extends APIEndpoint {
 
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     }
 
@@ -131,7 +131,7 @@ class Newsletters extends APIEndpoint {
     $newsletter = Newsletter::findOne($id);
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     } else {
       $newsletter->restore();
@@ -147,7 +147,7 @@ class Newsletters extends APIEndpoint {
     $newsletter = Newsletter::findOne($id);
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     } else {
       $newsletter->trash();
@@ -163,7 +163,7 @@ class Newsletters extends APIEndpoint {
     $newsletter = Newsletter::findOne($id);
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     } else {
       $newsletter->delete();
@@ -177,11 +177,11 @@ class Newsletters extends APIEndpoint {
 
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     } else {
       $data = array(
-        'subject' => sprintf(__('Copy of %s', Env::$plugin_name), $newsletter->subject)
+        'subject' => sprintf(__('Copy of %s', MAILPOET), $newsletter->subject)
       );
       $duplicate = $newsletter->duplicate($data);
       $errors = $duplicate->getErrors();
@@ -200,7 +200,7 @@ class Newsletters extends APIEndpoint {
   function showPreview($data = array()) {
     if(empty($data['body'])) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST => __('Newsletter data is missing.', Env::$plugin_name)
+        APIError::BAD_REQUEST => __('Newsletter data is missing.', MAILPOET)
       ));
     }
 
@@ -209,7 +209,7 @@ class Newsletters extends APIEndpoint {
 
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     } else {
       $newsletter->body = $data['body'];
@@ -229,7 +229,7 @@ class Newsletters extends APIEndpoint {
   function sendPreview($data = array()) {
     if(empty($data['subscriber'])) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST => __('Please specify receiver information.', Env::$plugin_name)
+        APIError::BAD_REQUEST => __('Please specify receiver information.', MAILPOET)
       ));
     }
 
@@ -238,7 +238,7 @@ class Newsletters extends APIEndpoint {
 
     if($newsletter === false) {
       return $this->errorResponse(array(
-        APIError::NOT_FOUND => __('This newsletter does not exist.', Env::$plugin_name)
+        APIError::NOT_FOUND => __('This newsletter does not exist.', MAILPOET)
       ));
     } else {
       $newsletter = $newsletter->asArray();
