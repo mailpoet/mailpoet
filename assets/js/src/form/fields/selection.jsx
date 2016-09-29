@@ -89,10 +89,17 @@ function(
       if(this.props.field['selected'] !== undefined) {
         return this.props.field['selected'](this.props.item);
       } else if(this.props.item !== undefined && this.props.field.name !== undefined) {
-        return this.props.item[this.props.field.name];
-      } else {
-        return null;
+        if (this.allowMultipleValues()) {
+          if (Array.isArray(this.props.item[this.props.field.name])) {
+            return this.props.item[this.props.field.name].map(function(item) {
+              return item.id;
+            });
+          }
+        } else {
+          return this.props.item[this.props.field.name];
+        }
       }
+      return null;
     },
     loadCachedItems: function() {
       if(typeof(window['mailpoet_'+this.props.field.endpoint]) !== 'undefined') {
