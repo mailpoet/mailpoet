@@ -259,7 +259,7 @@ class Menu {
 
     $data = array(
       'settings' => $settings,
-      'segments' => Segment::getPublic()->findArray(),
+      'segments' => Segment::getSegmentsWithSubscriberCount(),
       'cron_trigger' => CronTrigger::getAvailableMethods(),
       'pages' => Pages::getAll(),
       'flags' => $flags,
@@ -303,7 +303,7 @@ class Menu {
     $data = array();
 
     $data['items_per_page'] = $this->getLimitPerPage('subscribers');
-    $data['segments'] = Segment::findArray();
+    $data['segments'] = Segment::getSegmentsWithSubscriberCount($type = false);
 
     $data['custom_fields'] = array_map(function($field) {
       $field['params'] = unserialize($field['params']);
@@ -416,7 +416,7 @@ class Menu {
     $data = array(
       'form' => $form,
       'pages' => Pages::getAll(),
-      'segments' => Segment::getPublic()->findArray(),
+      'segments' => Segment::getSegmentsWithSubscriberCount(),
       'styles' => FormRenderer::getStyles($form),
       'date_types' => Block\Date::getDateTypes(),
       'date_formats' => Block\Date::getDateFormats(),

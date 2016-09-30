@@ -132,7 +132,7 @@
                   <% if(segment.id in settings.subscribe.on_comment.segments) %>
                     selected="selected"
                   <% endif %>
-                ><%= segment.name %></option>
+                ><%= segment.name %> (<%= segment.subscribers %>)</option>
               <% endfor %>
             </select>
           </p>
@@ -196,7 +196,7 @@
                     <% if(segment.id in settings.subscribe.on_register.segments) %>
                       selected="selected"
                     <% endif %>
-                  ><%= segment.name %></option>
+                  ><%= segment.name %> (<%= segment.subscribers %>)</option>
                 <% endfor %>
               </select>
             </p>
@@ -257,7 +257,7 @@
                 <% if(segment.id in settings.subscription.segments) %>
                   selected="selected"
                 <% endif %>
-              ><%= segment.name %></option>
+              ><%= segment.name %> (<%= segment.subscribers %>)</option>
             <% endfor %>
           </select>
         </p>
@@ -330,7 +330,7 @@
             multiple
           >
             <% for segment in segments %>
-              <option value="<%= segment.id %>"><%= segment.name %></option>
+              <option value="<%= segment.id %>"><%= segment.name %> (<%= segment.subscribers %>)</option>
             <% endfor %>
           </select>
         </p>
@@ -366,7 +366,7 @@
             multiple
           >
             <% for segment in segments %>
-              <option value="<%= segment.id %>"><%= segment.name %></option>
+              <option value="<%= segment.id %>"><%= segment.name %> (<%= segment.subscribers %>)</option>
             <% endfor %>
           </select>
         </p>
