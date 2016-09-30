@@ -76,11 +76,11 @@ class Pages {
     global $post;
 
     if($this->isPreview() === false && $this->subscriber === false) {
-      return __("Hmmm... we don't have a record of you", MAILPOET);
+      return __("Hmmm... we don't have a record of you", 'mailpoet');
     }
 
     if(
-      ($post->post_title !== __('MailPoet Page', MAILPOET))
+      ($post->post_title !== __('MailPoet Page', 'mailpoet'))
       ||
       ($page_title !== single_post_title('', false))
     ) {
@@ -106,7 +106,7 @@ class Pages {
 
     // if we're not in preview mode and the subscriber does not exist
     if($this->isPreview() === false && $this->subscriber === false) {
-      return __("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", MAILPOET);
+      return __("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
     }
 
     if(strpos($page_content, '[mailpoet_page]') !== false) {
@@ -150,7 +150,7 @@ class Pages {
   private function getConfirmTitle() {
     if($this->isPreview()) {
       $title = sprintf(
-        __("You have subscribed to: %s", MAILPOET),
+        __("You have subscribed to: %s", 'mailpoet'),
         'demo 1, demo 2'
       );
     } else {
@@ -159,10 +159,10 @@ class Pages {
       }, $this->subscriber->segments()->findMany());
 
       if(empty($segment_names)) {
-        $title = __("You are now subscribed!", MAILPOET);
+        $title = __("You are now subscribed!", 'mailpoet');
       } else {
         $title = sprintf(
-          __("You have subscribed to: %s", MAILPOET),
+          __("You have subscribed to: %s", 'mailpoet'),
           join(', ', $segment_names)
         );
       }
@@ -172,20 +172,20 @@ class Pages {
 
   private function getManageTitle() {
     if($this->isPreview() || $this->subscriber !== false) {
-      return __("Manage your subscription", MAILPOET);
+      return __("Manage your subscription", 'mailpoet');
     }
   }
 
   private function getUnsubscribeTitle() {
     if($this->isPreview() || $this->subscriber !== false) {
-      return __("You are now unsubscribed", MAILPOET);
+      return __("You are now unsubscribed", 'mailpoet');
     }
   }
 
 
   private function getConfirmContent() {
     if($this->isPreview() || $this->subscriber !== false) {
-      return __("Yup, we've added you to our email list. You'll hear from us shortly.", MAILPOET);
+      return __("Yup, we've added you to our email list. You'll hear from us shortly.", 'mailpoet');
     }
   }
 
@@ -252,7 +252,7 @@ class Pages {
         'id' => 'first_name',
         'type' => 'text',
         'params' => array(
-          'label' => __('First name', MAILPOET),
+          'label' => __('First name', 'mailpoet'),
           'value' => $subscriber->first_name,
           'disabled' => ($subscriber->isWPUser())
         )
@@ -261,7 +261,7 @@ class Pages {
         'id' => 'last_name',
         'type' => 'text',
         'params' => array(
-          'label' => __('Last name', MAILPOET),
+          'label' => __('Last name', 'mailpoet'),
           'value' => $subscriber->last_name,
           'disabled' => ($subscriber->isWPUser())
         )
@@ -271,11 +271,11 @@ class Pages {
         'type' => 'select',
         'params' => array(
           'required' => true,
-          'label' => __('Status', MAILPOET),
+          'label' => __('Status', 'mailpoet'),
           'values' => array(
             array(
               'value' => array(
-                Subscriber::STATUS_SUBSCRIBED => __('Subscribed', MAILPOET)
+                Subscriber::STATUS_SUBSCRIBED => __('Subscribed', 'mailpoet')
               ),
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_SUBSCRIBED
@@ -283,7 +283,7 @@ class Pages {
             ),
             array(
               'value' => array(
-                Subscriber::STATUS_UNSUBSCRIBED => __('Unsubscribed', MAILPOET)
+                Subscriber::STATUS_UNSUBSCRIBED => __('Unsubscribed', 'mailpoet')
               ),
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_UNSUBSCRIBED
@@ -302,7 +302,7 @@ class Pages {
           'id' => 'segments',
           'type' => 'segment',
           'params' => array(
-            'label' => __('Your lists', MAILPOET),
+            'label' => __('Your lists', 'mailpoet'),
             'values' => $segments
           )
         ),
@@ -310,7 +310,7 @@ class Pages {
           'id' => 'submit',
           'type' => 'submit',
           'params' => array(
-            'label' => __('Save', MAILPOET)
+            'label' => __('Save', 'mailpoet')
           )
         )
       )
@@ -337,17 +337,17 @@ class Pages {
         $form_html .= str_replace(
           array('[link]', '[/link]'),
           array('<a href="'.get_edit_profile_url().'" target="_blank">', '</a>'),
-          __('[link]Edit your profile[/link] to update your email.', MAILPOET)
+          __('[link]Edit your profile[/link] to update your email.', 'mailpoet')
         );
       } else {
         $form_html .= str_replace(
           array('[link]', '[/link]'),
           array('<a href="'.wp_login_url().'" target="_blank">', '</a>'),
-          __('[link]Log in to your account[/link] to update your email.', MAILPOET)
+          __('[link]Log in to your account[/link] to update your email.', 'mailpoet')
         );
       }
     } else {
-      $form_html .= __('Need to change your email address? Unsubscribe here, then simply sign up again.', MAILPOET);
+      $form_html .= __('Need to change your email address? Unsubscribe here, then simply sign up again.', 'mailpoet');
     }
     $form_html .= '</span>';
     $form_html .= '</p>';
@@ -361,7 +361,7 @@ class Pages {
   private function getUnsubscribeContent() {
     $content = '';
     if($this->isPreview() || $this->subscriber !== false) {
-      $content .= '<p>'.__('Accidentally unsubscribed?', MAILPOET).' <strong>';
+      $content .= '<p>'.__('Accidentally unsubscribed?', 'mailpoet').' <strong>';
       $content .= '[mailpoet_manage]';
       $content .= '</strong></p>';
     }
@@ -373,7 +373,7 @@ class Pages {
     $text = (
       isset($params['text'])
       ? $params['text']
-      : __('Manage your subscription', MAILPOET)
+      : __('Manage your subscription', 'mailpoet')
     );
 
     return '<a href="'.Subscription\Url::getManageUrl(

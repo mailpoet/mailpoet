@@ -131,9 +131,9 @@ class Populator {
     if(Segment::where('type', 'default')->count() === 0) {
       $default_segment = Segment::create();
       $default_segment->hydrate(array(
-        'name' => __('My First List', MAILPOET),
+        'name' => __('My First List', 'mailpoet'),
         'description' =>
-          __('This list is automatically created when you install MailPoet', MAILPOET)
+          __('This list is automatically created when you install MailPoet', 'mailpoet')
       ));
       $default_segment->save();
     }

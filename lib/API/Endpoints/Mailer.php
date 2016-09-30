@@ -22,7 +22,7 @@ class Mailer extends APIEndpoint {
 
     if($result === false) {
       return $this->errorResponse(array(
-        APIError::BAD_REQUEST => __("The email could not be sent. Please check your settings.", MAILPOET)
+        APIError::BAD_REQUEST => __("The email could not be sent. Please check your settings.", 'mailpoet')
       ));
     } else {
       return $this->successResponse(null);

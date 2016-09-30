@@ -13,8 +13,8 @@ class Restaurant {
 
   function get() {
     return array(
-      'name' => __("Restaurant", MAILPOET),
-      'description' => __("What's fresh on the menu?", MAILPOET),
+      'name' => __("Restaurant", 'mailpoet'),
+      'description' => __("What's fresh on the menu?", 'mailpoet'),
       'readonly' => 0,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),

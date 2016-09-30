@@ -76,10 +76,10 @@ class Functions extends \Twig_Extension {
 
     $label = null;
     $labels = array(
-      'minute' => __('every minute', MAILPOET),
-      'minutes' => __('every %1$d minutes', MAILPOET),
-      'hour' => __('every hour', MAILPOET),
-      'hours' => __('every %1$d hours', MAILPOET)
+      'minute' => __('every minute', 'mailpoet'),
+      'minutes' => __('every %1$d minutes', 'mailpoet'),
+      'hour' => __('every hour', 'mailpoet'),
+      'hours' => __('every %1$d hours', 'mailpoet')
     );
 
     if($value >= 60) {

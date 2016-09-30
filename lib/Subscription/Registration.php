@@ -8,7 +8,7 @@ class Registration {
   static function extendForm() {
     $label = Setting::getValue(
       'subscribe.on_register.label',
-      __('Yes, please add me to your mailing list.', MAILPOET)
+      __('Yes, please add me to your mailing list.', 'mailpoet')
     );
 
     print '<p class="registration-form-mailpoet">

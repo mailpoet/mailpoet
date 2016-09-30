@@ -15,7 +15,7 @@ class Settings extends APIEndpoint {
     if(empty($settings)) {
       return $this->badRequest(array(
         APIError::BAD_REQUEST =>
-          __("You have not specified any settings to be saved.", MAILPOET)
+          __("You have not specified any settings to be saved.", 'mailpoet')
       ));
     } else {
       foreach($settings as $name => $value) {

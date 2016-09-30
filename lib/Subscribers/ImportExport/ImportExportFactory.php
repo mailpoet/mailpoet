@@ -17,7 +17,7 @@ class ImportExportFactory {
       Segment::getSegmentsWithSubscriberCount() :
       Segment::getSegmentsForExport($with_confirmed_subscribers);
     return array_map(function($segment) {
-      if(!$segment['name']) $segment['name'] = __('Not In List', MAILPOET);
+      if(!$segment['name']) $segment['name'] = __('Not In List', 'mailpoet');
       if(!$segment['id']) $segment['id'] = 0;
       return array(
         'id' => $segment['id'],
@@ -29,10 +29,10 @@ class ImportExportFactory {
 
   function getSubscriberFields() {
     return array(
-      'email' => __('Email', MAILPOET),
-      'first_name' => __('First name', MAILPOET),
-      'last_name' => __('Last name', MAILPOET),
-      'status' => __('Status', MAILPOET)
+      'email' => __('Email', 'mailpoet'),
+      'first_name' => __('First name', 'mailpoet'),
+      'last_name' => __('Last name', 'mailpoet'),
+      'status' => __('Status', 'mailpoet')
       // TODO: add additional fields from MP2
     );
   }
@@ -71,36 +71,36 @@ class ImportExportFactory {
       array(
         array(
           'id' => 'ignore',
-          'name' => __('Ignore field...', MAILPOET),
+          'name' => __('Ignore field...', 'mailpoet'),
         ),
         array(
           'id' => 'create',
-          'name' => __('Create new field...', MAILPOET)
+          'name' => __('Create new field...', 'mailpoet')
         ),
       ) :
       array(
         array(
           'id' => 'select',
-          'name' => __('Select all...', MAILPOET),
+          'name' => __('Select all...', 'mailpoet'),
         ),
         array(
           'id' => 'deselect',
-          'name' => __('Deselect all...', MAILPOET)
+          'name' => __('Deselect all...', 'mailpoet')
         ),
       );
     $select2Fields = array(
       array(
-        'name' => __('Actions', MAILPOET),
+        'name' => __('Actions', 'mailpoet'),
         'children' => $actions
       ),
       array(
-        'name' => __('System fields', MAILPOET),
+        'name' => __('System fields', 'mailpoet'),
         'children' => $this->formatSubscriberFields($subscriber_fields)
       )
     );
     if($subscriber_custom_fields) {
       array_push($select2Fields, array(
-        'name' => __('User fields', MAILPOET),
+        'name' => __('User fields', 'mailpoet'),
         'children' => $this->formatSubscriberCustomFields(
           $subscriber_custom_fields
         )

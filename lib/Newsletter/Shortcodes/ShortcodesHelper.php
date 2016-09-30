@@ -7,93 +7,93 @@ class ShortcodesHelper {
 
   static function getShortcodes() {
     $shortcodes = array(
-      __('Subscriber', MAILPOET) => array(
+      __('Subscriber', 'mailpoet') => array(
         array(
-          'text' => __('First Name', MAILPOET),
+          'text' => __('First Name', 'mailpoet'),
           'shortcode' => 'subscriber:firstname | default:reader',
         ),
         array(
-          'text' => __('Last Name', MAILPOET),
+          'text' => __('Last Name', 'mailpoet'),
           'shortcode' => 'subscriber:lastname | default:reader',
         ),
         array(
-          'text' => __('Email Address', MAILPOET),
+          'text' => __('Email Address', 'mailpoet'),
           'shortcode' => 'subscriber:email',
         ),
         array(
-          'text' => __('WordPress User Display Name', MAILPOET),
+          'text' => __('WordPress User Display Name', 'mailpoet'),
           'shortcode' => 'subscriber:displayname | default:member',
         ),
         array(
-          'text' => __('Total Number of Subscribers', MAILPOET),
+          'text' => __('Total Number of Subscribers', 'mailpoet'),
           'shortcode' => 'subscriber:count',
         )
       ),
-      __('Newsletter', MAILPOET) => array(
+      __('Newsletter', 'mailpoet') => array(
         array(
-          'text' => __('Newsletter Subject', MAILPOET),
+          'text' => __('Newsletter Subject', 'mailpoet'),
           'shortcode' => 'newsletter:subject',
         )
       ),
-      __('Post Notifications', MAILPOET) => array(
+      __('Post Notifications', 'mailpoet') => array(
         array(
-          'text' => __('Total Number of Posts or Pages', MAILPOET),
+          'text' => __('Total Number of Posts or Pages', 'mailpoet'),
           'shortcode' => 'newsletter:total',
         ),
         array(
-          'text' => __('Most Recent Post Title', MAILPOET),
+          'text' => __('Most Recent Post Title', 'mailpoet'),
           'shortcode' => 'newsletter:post_title',
         ),
         array(
-          'text' => __('Issue Number', MAILPOET),
+          'text' => __('Issue Number', 'mailpoet'),
           'shortcode' => 'newsletter:number',
         )
       ),
-      __('Date', MAILPOET) => array(
+      __('Date', 'mailpoet') => array(
         array(
-          'text' => __('Current day of the month number', MAILPOET),
+          'text' => __('Current day of the month number', 'mailpoet'),
           'shortcode' => 'date:d',
         ),
         array(
-          'text' => __('Current day of the month in ordinal form, i.e. 2nd, 3rd, 4th, etc.', MAILPOET),
+          'text' => __('Current day of the month in ordinal form, i.e. 2nd, 3rd, 4th, etc.', 'mailpoet'),
           'shortcode' => 'date:dordinal',
         ),
         array(
-          'text' => __('Full name of current day', MAILPOET),
+          'text' => __('Full name of current day', 'mailpoet'),
           'shortcode' => 'date:dtext',
         ),
         array(
-          'text' => __('Current month number', MAILPOET),
+          'text' => __('Current month number', 'mailpoet'),
           'shortcode' => 'date:m',
         ),
         array(
-          'text' => __('Full name of current month', MAILPOET),
+          'text' => __('Full name of current month', 'mailpoet'),
           'shortcode' => 'date:mtext',
         ),
         array(
-          'text' => __('Year', MAILPOET),
+          'text' => __('Year', 'mailpoet'),
           'shortcode' => 'date:y',
         )
       ),
-      __('Links', MAILPOET) => array(
+      __('Links', 'mailpoet') => array(
         array(
-          'text' => __('Unsubscribe link', MAILPOET),
+          'text' => __('Unsubscribe link', 'mailpoet'),
           'shortcode' => 'link:subscription_unsubscribe',
         ),
         array(
-          'text' => __('Edit subscription page link', MAILPOET),
+          'text' => __('Edit subscription page link', 'mailpoet'),
           'shortcode' => 'link:subscription_manage',
         ),
         array(
-          'text' => __('View in browser link', MAILPOET),
+          'text' => __('View in browser link', 'mailpoet'),
           'shortcode' => 'link:newsletter_view_in_browser',
         )
       )
     );
     $custom_fields = self::getCustomFields();
     if($custom_fields) {
-      $shortcodes[__('Subscriber', MAILPOET)] = array_merge(
-        $shortcodes[__('Subscriber', MAILPOET)],
+      $shortcodes[__('Subscriber', 'mailpoet')] = array_merge(
+        $shortcodes[__('Subscriber', 'mailpoet')],
         $custom_fields
       );
     }

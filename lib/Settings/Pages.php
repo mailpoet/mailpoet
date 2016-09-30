@@ -9,8 +9,8 @@ class Pages {
   function init() {
     register_post_type('mailpoet_page', array(
       'labels' => array(
-        'name' => __('MailPoet Page', MAILPOET),
-        'singular_name' => __('MailPoet Page', MAILPOET)
+        'name' => __('MailPoet Page', 'mailpoet'),
+        'singular_name' => __('MailPoet Page', 'mailpoet')
       ),
       'public' => true,
       'has_archive' => false,
@@ -34,7 +34,7 @@ class Pages {
       'post_type' => 'mailpoet_page',
       'post_author' => 1,
       'post_content' => '[mailpoet_page]',
-      'post_title' => __('MailPoet Page', MAILPOET),
+      'post_title' => __('MailPoet Page', 'mailpoet'),
       'post_name' => 'subscriptions'
     ));
     flush_rewrite_rules();

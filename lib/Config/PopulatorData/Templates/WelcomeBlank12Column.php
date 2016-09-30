@@ -13,8 +13,8 @@ class WelcomeBlank12Column {
 
   function get() {
     return array(
-      'name' => __("Welcome Email: Blank 1:2 Column", MAILPOET),
-      'description' => __("A blank Welcome Email template with a 1:2 column layout.", MAILPOET),
+      'name' => __("Welcome Email: Blank 1:2 Column", 'mailpoet'),
+      'description' => __("A blank Welcome Email template with a 1:2 column layout.", 'mailpoet'),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -52,7 +52,7 @@ class WelcomeBlank12Column {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", MAILPOET),
+                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"
@@ -104,7 +104,7 @@ class WelcomeBlank12Column {
                     "type" => "image",
                     "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
-                    "alt" => __("Fake logo", MAILPOET),
+                    "alt" => __("Fake logo", 'mailpoet'),
                     "fullWidth" => false,
                     "width" => "598px",
                     "height" => "71px",
@@ -116,7 +116,7 @@ class WelcomeBlank12Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p></p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p></p>\n<p>You recently joined our list and we'd like to give&nbsp;you a warm welcome!</p>", MAILPOET)
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p></p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p></p>\n<p>You recently joined our list and we'd like to give&nbsp;you a warm welcome!</p>", 'mailpoet')
                   ),
                   array(
                     "type" => "divider",
@@ -163,11 +163,11 @@ class WelcomeBlank12Column {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h3>Our Most Popular Posts</h3>", MAILPOET)
+                    "text" => __("<h3>Our Most Popular Posts</h3>", 'mailpoet')
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<ul>\n<li><a href=\"http://www.mailpoet.com/the-importance-of-focus-when-writing/\">The Importance of Focus When Writing</a></li>\n<li><a href=\"http://www.mailpoet.com/write-great-subject-line/\">How to Write a Great Subject Line</a></li>\n<li><a href=\"http://www.mailpoet.com/just-sit-write-advice-motivation-ernest-hemingway/\">Just Sit Down and Write &ndash; Advice on Motivation from Ernest Hemingway</a></li>\n</ul>", MAILPOET)
+                    "text" => __("<ul>\n<li><a href=\"http://www.mailpoet.com/the-importance-of-focus-when-writing/\">The Importance of Focus When Writing</a></li>\n<li><a href=\"http://www.mailpoet.com/write-great-subject-line/\">How to Write a Great Subject Line</a></li>\n<li><a href=\"http://www.mailpoet.com/just-sit-write-advice-motivation-ernest-hemingway/\">Just Sit Down and Write &ndash; Advice on Motivation from Ernest Hemingway</a></li>\n</ul>", 'mailpoet')
                   )
                 )
               ),
@@ -182,15 +182,15 @@ class WelcomeBlank12Column {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h3>What's&nbsp;Next?</h3>", MAILPOET)
+                    "text" => __("<h3>What's&nbsp;Next?</h3>", 'mailpoet')
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Add a single button to your newsletter in order to have one clear call-to-action, which will increase your click rates.</p>", MAILPOET)
+                    "text" => __("<p>Add a single button to your newsletter in order to have one clear call-to-action, which will increase your click rates.</p>", 'mailpoet')
                   ),
                   array(
                     "type" => "button",
-                    "text" => __("Read up!", MAILPOET),
+                    "text" => __("Read up!", 'mailpoet'),
                     "url" => "",
                     "styles" => array(
                       "block" => array(
@@ -281,7 +281,7 @@ class WelcomeBlank12Column {
                   ),
                   array(
                     "type" => "footer",
-                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", MAILPOET),
+                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"

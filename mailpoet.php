@@ -22,7 +22,6 @@ use \MailPoet\Config\Initializer;
 
 require 'vendor/autoload.php';
 
-define('MAILPOET', 'mailpoet');
 define('MAILPOET_VERSION', '0.0.46');
 
 $initializer = new Initializer(array(

@@ -7,7 +7,7 @@ abstract class Base {
 
     if($block['id'] === 'email') {
       $rules['required'] = true;
-      $rules['error-message'] = __('Please specify a valid email address', MAILPOET);
+      $rules['error-message'] = __('Please specify a valid email address', 'mailpoet');
     }
 
     if($block['id'] === 'segments') {
@@ -15,7 +15,7 @@ abstract class Base {
       $rules['mincheck'] = 1;
       $rules['group'] = $block['id'];
       $rules['errors-container'] = '.mailpoet_error_'.$block['id'];
-      $rules['required-message'] = __('Please select a list', MAILPOET);
+      $rules['required-message'] = __('Please select a list', 'mailpoet');
     }
 
     if(!empty($block['params']['required'])) {
@@ -25,7 +25,7 @@ abstract class Base {
     if(!empty($block['params']['validate'])) {
       if($block['params']['validate'] === 'phone') {
         $rules['pattern'] = "^[\d\+\-\.\(\)\/\s]*$";
-        $rules['error-message'] = __('Please specify a valid phone number', MAILPOET);
+        $rules['error-message'] = __('Please specify a valid phone number', 'mailpoet');
       } else {
         $rules['type'] = $block['params']['validate'];
       }
@@ -34,7 +34,7 @@ abstract class Base {
     if(in_array($block['type'], array('radio', 'checkbox'))) {
       $rules['group'] = 'custom_field_'.$block['id'];
       $rules['errors-container'] = '.mailpoet_error_'.$block['id'];
-      $rules['required-message'] = __('Please select at least one option', MAILPOET);
+      $rules['required-message'] = __('Please select at least one option', 'mailpoet');
     }
 
     if($block['type'] === 'date') {
