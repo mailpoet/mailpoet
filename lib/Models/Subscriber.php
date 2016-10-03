@@ -75,6 +75,10 @@ class Subscriber extends Model {
   function sendConfirmationEmail() {
     $signup_confirmation = Setting::getValue('signup_confirmation');
 
+    if((bool)$signup_confirmation['enabled'] === false) {
+      return false;
+    }
+
     $segments = $this->segments()->findMany();
     $segment_names = array_map(function($segment) {
       return $segment->name;
