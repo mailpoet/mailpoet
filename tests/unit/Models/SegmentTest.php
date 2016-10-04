@@ -18,13 +18,13 @@ class SegmentTest extends MailPoetTest {
       array(
         'first_name' => 'John',
         'last_name' => 'Mailer',
-        'status' => 'unsubscribed',
+        'status' => Subscriber::STATUS_UNSUBSCRIBED,
         'email' => 'john@mailpoet.com'
       ),
       array(
         'first_name' => 'Mike',
         'last_name' => 'Smith',
-        'status' => 'subscribed',
+        'status' => Subscriber::STATUS_SUBSCRIBED,
         'email' => 'mike@maipoet.com'
       )
     );
@@ -168,8 +168,8 @@ class SegmentTest extends MailPoetTest {
       $association->segment_id = $this->segment->id;
       $association->save();
     }
-    $segment = Segment::getSegmentsWithSubscriberCount();
-    expect($segment[0]['subscribers'])->equals(2);
+    $segments = Segment::getSegmentsWithSubscriberCount();
+    expect($segments[0]['subscribers'])->equals(1);
   }
 
   function testItCanGetSegmentsForExport() {

@@ -530,15 +530,11 @@ define(
                   width: '20em',
                   templateResult: function (item) {
                     item.subscriberCount = parseInt(item.subscriberCount);
-                    return (item.subscriberCount > 0)
-                        ? item.name + ' (' + item.subscriberCount.toLocaleString() + ')'
-                        : item.name;
+                    return item.name + ' (' + item.subscriberCount.toLocaleString() + ')';
                   },
                   templateSelection: function (item) {
                     item.subscriberCount = parseInt(item.subscriberCount);
-                    return (item.subscriberCount > 0)
-                        ? item.name + ' (' + item.subscriberCount.toLocaleString() + ')'
-                        : item.name;
+                    return item.name + ' (' + item.subscriberCount.toLocaleString() + ')';
                   }
                 })
                 .change(function () {

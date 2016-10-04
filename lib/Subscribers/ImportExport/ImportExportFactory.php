@@ -14,7 +14,7 @@ class ImportExportFactory {
 
   function getSegments($with_confirmed_subscribers = false) {
     $segments = ($this->action === 'import') ?
-      Segment::getSegmentsWithSubscriberCount() :
+      Segment::getSegmentsForImport() :
       Segment::getSegmentsForExport($with_confirmed_subscribers);
     return array_map(function($segment) {
       if(!$segment['name']) $segment['name'] = __('Not In List');

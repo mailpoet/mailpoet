@@ -58,7 +58,7 @@
                 required
               >
                 <% for segment in segments %>
-                  <option value="<%= segment.id %>"><%= segment.name %></option>
+                  <option value="<%= segment.id %>"><%= segment.name %> (<%= segment.subscribers %>)</option>
                 <% endfor %>
               </select>
             </div>

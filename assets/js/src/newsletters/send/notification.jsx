@@ -40,11 +40,7 @@ define(
           return !!(!segment.deleted_at);
         },
         getLabel: function(segment) {
-          var name = segment.name;
-          if (segment.subscribers > 0) {
-            name += ' (%$1s)'.replace('%$1s', parseInt(segment.subscribers).toLocaleString());
-          }
-          return name;
+          return segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')';
         },
         validation: {
           'data-parsley-required': true,

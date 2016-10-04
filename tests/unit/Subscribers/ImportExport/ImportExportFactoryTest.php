@@ -14,14 +14,14 @@ class ImportExportFactoryTest extends MailPoetTest {
     $subscriber_1 = Subscriber::createOrUpdate(array(
       'first_name' => 'John',
       'last_name' => 'Mailer',
-      'status' => 'unconfirmed',
+      'status' => Subscriber::STATUS_UNCONFIRMED,
       'email' => 'john@mailpoet.com'
     ));
 
     $subscriber_2 = Subscriber::createOrUpdate(array(
       'first_name' => 'Mike',
       'last_name' => 'Smith',
-      'status' => 'subscribed',
+      'status' => Subscriber::STATUS_SUBSCRIBED,
       'email' => 'mike@maipoet.com'
     ));
 
