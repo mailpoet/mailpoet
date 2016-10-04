@@ -27,10 +27,7 @@ const events = {
 const availableSegmentValues = _.object(_.map(
   availableSegments,
   function(segment) {
-    let name = segment.name;
-    if (segment.subscribers > 0) {
-      name += ' (%$1s)'.replace('%$1s', parseInt(segment.subscribers).toLocaleString());
-    }
+    let name = segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')';
     return [segment.id, name];
   }
 ));
