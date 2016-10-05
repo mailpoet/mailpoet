@@ -24,7 +24,7 @@ class Link {
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
           $url,
-          __('Unsubscribe')
+          __('Unsubscribe', 'mailpoet')
         );
 
       case 'subscription_unsubscribe_url':
@@ -43,7 +43,7 @@ class Link {
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
           $url,
-          __('Manage subscription')
+          __('Manage subscription', 'mailpoet')
         );
 
       case 'subscription_manage_url':
@@ -60,7 +60,7 @@ class Link {
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
           $url,
-          __('View in your browser')
+          __('View in your browser', 'mailpoet')
         );
 
       case 'newsletter_view_in_browser_url':

@@ -18,8 +18,8 @@ class Subscriber extends Model {
     parent::__construct();
 
     $this->addValidations('email', array(
-      'required' => __('Please enter your email address'),
-      'isEmail' => __('Your email address is invalid!')
+      'required' => __('Please enter your email address', 'mailpoet'),
+      'isEmail' => __('Your email address is invalid!', 'mailpoet')
     ));
   }
 
@@ -218,13 +218,13 @@ class Subscriber extends Model {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
-      'label' => __('All Lists'),
+      'label' => __('All Lists', 'mailpoet'),
       'value' => ''
     );
 
     $subscribers_without_segment = self::filter('withoutSegments')->count();
     $subscribers_without_segment_label = sprintf(
-      __('Subscribers without a list (%s)'),
+      __('Subscribers without a list (%s)', 'mailpoet'),
       number_format($subscribers_without_segment)
     );
 
@@ -280,27 +280,27 @@ class Subscriber extends Model {
     return array(
       array(
         'name' => 'all',
-        'label' => __('All'),
+        'label' => __('All', 'mailpoet'),
         'count' => self::getPublished()->count()
       ),
       array(
         'name' => self::STATUS_SUBSCRIBED,
-        'label' => __('Subscribed'),
+        'label' => __('Subscribed', 'mailpoet'),
         'count' => self::filter(self::STATUS_SUBSCRIBED)->count()
       ),
       array(
         'name' => self::STATUS_UNCONFIRMED,
-        'label' => __('Unconfirmed'),
+        'label' => __('Unconfirmed', 'mailpoet'),
         'count' => self::filter(self::STATUS_UNCONFIRMED)->count()
       ),
       array(
         'name' => self::STATUS_UNSUBSCRIBED,
-        'label' => __('Unsubscribed'),
+        'label' => __('Unsubscribed', 'mailpoet'),
         'count' => self::filter(self::STATUS_UNSUBSCRIBED)->count()
       ),
       array(
         'name' => 'trash',
-        'label' => __('Trash'),
+        'label' => __('Trash', 'mailpoet'),
         'count' => self::getTrashed()->count()
       )
     );

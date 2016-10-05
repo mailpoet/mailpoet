@@ -13,8 +13,8 @@ class NewsletterBlank12Column {
 
   function get() {
     return array(
-      'name' => __("Newsletter: Blank 1:2 Column"),
-      'description' => __("A blank Newsletter template with a 1:2 column layout."),
+      'name' => __("Newsletter: Blank 1:2 Column", 'mailpoet'),
+      'description' => __("A blank Newsletter template with a 1:2 column layout.", 'mailpoet'),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -52,7 +52,7 @@ class NewsletterBlank12Column {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>"),
+                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"
@@ -104,7 +104,7 @@ class NewsletterBlank12Column {
                     "type" => "image",
                     "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
-                    "alt" => __("Fake Logo"),
+                    "alt" => __("Fake Logo", 'mailpoet'),
                     "fullWidth" => false,
                     "width" => "598px",
                     "height" => "71px",
@@ -116,7 +116,7 @@ class NewsletterBlank12Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>Let's Get Started!</strong></h1>\n<p></p>\n<p>It's time to design your newsletter! In the right sidebar, you'll find 4 menu items that will&nbsp;help you customize your&nbsp;newsletter:</p>\n<ol>\n<li>Content</li>\n<li>Layout</li>\n<li>Styles</li>\n<li>Preview</li>\n</ol>")
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Let's Get Started!</strong></h1>\n<p></p>\n<p>It's time to design your newsletter! In the right sidebar, you'll find 4 menu items that will&nbsp;help you customize your&nbsp;newsletter:</p>\n<ol>\n<li>Content</li>\n<li>Layout</li>\n<li>Styles</li>\n<li>Preview</li>\n</ol>", 'mailpoet')
                   ),
                   array(
                     "type" => "divider",
@@ -154,11 +154,11 @@ class NewsletterBlank12Column {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h2>This template has...</h2>")
+                    "text" => __("<h2>This template has...</h2>", 'mailpoet')
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>In the right sidebar, you can&nbsp;add these layout blocks to your email:</p>\n<ul>\n<li>1 column</li>\n<li>2 columns</li>\n<li>3 columns</li>\n</ul>")
+                    "text" => __("<p>In the right sidebar, you can&nbsp;add these layout blocks to your email:</p>\n<ul>\n<li>1 column</li>\n<li>2 columns</li>\n<li>3 columns</li>\n</ul>", 'mailpoet')
                   )
                 )
               ),
@@ -173,11 +173,11 @@ class NewsletterBlank12Column {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h2>... a 2-column layout.</h2>")
+                    "text" => __("<h2>... a 2-column layout.</h2>", 'mailpoet')
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p><span style=\"line-height: 25.6px;\">You can change a layout's background color by clicking on the settings icon on the right edge of the Designer. Simply hover&nbsp;over this area to see the Settings (gear) icon.</span></p>")
+                    "text" => __("<p><span style=\"line-height: 25.6px;\">You can change a layout's background color by clicking on the settings icon on the right edge of the Designer. Simply hover&nbsp;over this area to see the Settings (gear) icon.</span></p>", 'mailpoet')
                   )
                 )
               )
@@ -251,7 +251,7 @@ class NewsletterBlank12Column {
                   ),
                   array(
                     "type" => "footer",
-                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>"),
+                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"

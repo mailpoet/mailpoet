@@ -25,8 +25,6 @@ class Localizer {
     $language_path =
       Env::$languages_path
       . '/'
-      . Env::$plugin_name
-      . '-'
       . $this->locale()
       . '.mo';
     load_textdomain(Env::$plugin_name, $language_path);

@@ -13,8 +13,8 @@ class NewsletterBlank1Column {
 
   function get() {
     return array(
-      'name' => __("Newsletter: Blank 1 Column"),
-      'description' => __("A blank Newsletter template with a 1 column layout."),
+      'name' => __("Newsletter: Blank 1 Column", 'mailpoet'),
+      'description' => __("A blank Newsletter template with a 1 column layout.", 'mailpoet'),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -52,7 +52,7 @@ class NewsletterBlank1Column {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>"),
+                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"
@@ -104,7 +104,7 @@ class NewsletterBlank1Column {
                     "type" => "image",
                     "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
-                    "alt" => __("Fake logo"),
+                    "alt" => __("Fake logo", 'mailpoet'),
                     "fullWidth" => false,
                     "width" => "598px",
                     "height" => "71px",
@@ -116,7 +116,7 @@ class NewsletterBlank1Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>Let's Get Started!&nbsp;</strong></h1>\n<p></p>\n<p>It's time to design your newsletter! In the right sidebar, you'll find 4 menu items that will&nbsp;help you customize your newsletter:</p>\n<ol>\n<li>Content</li>\n<li>Layout</li>\n<li>Styles</li>\n<li>Preview</li>\n</ol>")
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Let's Get Started!&nbsp;</strong></h1>\n<p></p>\n<p>It's time to design your newsletter! In the right sidebar, you'll find 4 menu items that will&nbsp;help you customize your newsletter:</p>\n<ol>\n<li>Content</li>\n<li>Layout</li>\n<li>Styles</li>\n<li>Preview</li>\n</ol>", 'mailpoet')
                   )
                 )
               )
@@ -190,7 +190,7 @@ class NewsletterBlank1Column {
                   ),
                   array(
                     "type" => "footer",
-                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>"),
+                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"

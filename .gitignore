@@ -17,3 +17,4 @@ tests/javascript/testBundles
 assets/css/*.css
 assets/js/*.js
 .vagrant
+lang

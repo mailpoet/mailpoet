@@ -50,7 +50,7 @@ class Model extends \Sudzy\ValidModel {
             $column = $matches[1];
             $this->setError(
               sprintf(
-                __('Another record already exists. Please specify a different "%1$s".'),
+                __('Another record already exists. Please specify a different "%1$s".', 'mailpoet'),
                 $column
               )
             );

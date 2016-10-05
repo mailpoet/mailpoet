@@ -23,7 +23,7 @@ class Newsletter extends Model {
   function __construct() {
     parent::__construct();
     $this->addValidations('type', array(
-      'required' => __('Please specify a type')
+      'required' => __('Please specify a type', 'mailpoet')
     ));
   }
 
@@ -309,7 +309,7 @@ class Newsletter extends Model {
     $segments = Segment::orderByAsc('name')->findMany();
     $segment_list = array();
     $segment_list[] = array(
-      'label' => __('All Lists'),
+      'label' => __('All Lists', 'mailpoet'),
       'value' => ''
     );
 
@@ -408,7 +408,7 @@ class Newsletter extends Model {
     $groups = array(
       array(
         'name' => 'all',
-        'label' => __('All'),
+        'label' => __('All', 'mailpoet'),
         'count' => Newsletter::getPublished()
           ->filter('filterType', $type)
           ->count()
@@ -420,7 +420,7 @@ class Newsletter extends Model {
         $groups = array_merge($groups, array(
           array(
             'name' => self::STATUS_DRAFT,
-            'label' => __('Draft'),
+            'label' => __('Draft', 'mailpoet'),
             'count' => Newsletter::getPublished()
               ->filter('filterType', $type)
               ->filter('filterStatus', self::STATUS_DRAFT)
@@ -428,7 +428,7 @@ class Newsletter extends Model {
           ),
           array(
             'name' => self::STATUS_SCHEDULED,
-            'label' => __('Scheduled'),
+            'label' => __('Scheduled', 'mailpoet'),
             'count' => Newsletter::getPublished()
               ->filter('filterType', $type)
               ->filter('filterStatus', self::STATUS_SCHEDULED)
@@ -436,7 +436,7 @@ class Newsletter extends Model {
           ),
           array(
             'name' => self::STATUS_SENDING,
-            'label' => __('Sending'),
+            'label' => __('Sending', 'mailpoet'),
             'count' => Newsletter::getPublished()
               ->filter('filterType', $type)
               ->filter('filterStatus', self::STATUS_SENDING)
@@ -444,7 +444,7 @@ class Newsletter extends Model {
           ),
           array(
             'name' => self::STATUS_SENT,
-            'label' => __('Sent'),
+            'label' => __('Sent', 'mailpoet'),
             'count' => Newsletter::getPublished()
               ->filter('filterType', $type)
               ->filter('filterStatus', self::STATUS_SENT)
@@ -458,7 +458,7 @@ class Newsletter extends Model {
         $groups = array_merge($groups, array(
           array(
             'name' => self::STATUS_ACTIVE,
-            'label' => __('Active'),
+            'label' => __('Active', 'mailpoet'),
             'count' => Newsletter::getPublished()
               ->filter('filterType', $type)
               ->filter('filterStatus', self::STATUS_ACTIVE)
@@ -466,7 +466,7 @@ class Newsletter extends Model {
           ),
           array(
             'name' => self::STATUS_DRAFT,
-            'label' => __('Not active'),
+            'label' => __('Not active', 'mailpoet'),
             'count' => Newsletter::getPublished()
               ->filter('filterType', $type)
               ->filter('filterStatus', self::STATUS_DRAFT)
@@ -478,7 +478,7 @@ class Newsletter extends Model {
 
     $groups[] = array(
       'name' => 'trash',
-      'label' => __('Trash'),
+      'label' => __('Trash', 'mailpoet'),
       'count' => Newsletter::getTrashed()
         ->filter('filterType', $type)
         ->count()

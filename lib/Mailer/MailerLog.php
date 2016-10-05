@@ -54,7 +54,7 @@ class MailerLog {
 
   static function enforceSendingLimit() {
     if(self::isSendingLimitReached()) {
-      throw new \Exception(__('Sending frequency limit has been reached.'));
+      throw new \Exception(__('Sending frequency limit has been reached.', 'mailpoet'));
     }
   }
 }

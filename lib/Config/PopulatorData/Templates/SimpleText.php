@@ -13,8 +13,8 @@ class SimpleText {
 
   function get() {
     return array(
-      'name' => __("Simple Text"),
-      'description' => __("A simple plain text template - just like a regular email."),
+      'name' => __("Simple Text", 'mailpoet'),
+      'description' => __("A simple plain text template - just like a regular email.", 'mailpoet'),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
@@ -63,7 +63,7 @@ class SimpleText {
                     "type" => "image",
                     "link" => "",
                     "src" => $this->template_image_url . "/fake-logo.png",
-                    "alt" => __("Fake logo"),
+                    "alt" => __("Fake logo", 'mailpoet'),
                     "fullWidth" => false,
                     "width" => "598px",
                     "height" => "71px",
@@ -75,7 +75,7 @@ class SimpleText {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p style=\"text-align: left;\">Hi&nbsp;[subscriber:firstname | default:subscriber],</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">In MailPoet, you can write emails in plain text,&nbsp;just like in a regular email.&nbsp;This can make your email newsletters&nbsp;more personal and attention-grabbing.</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Is this too&nbsp;simple?&nbsp;You can still style your text with basic&nbsp;formatting,&nbsp;like&nbsp;<strong>bold</strong>&nbsp;or <em>italics.</em></p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Finally, you can also add a call-to-action button between 2 blocks of text, like this:</p>")
+                    "text" => __("<p style=\"text-align: left;\">Hi&nbsp;[subscriber:firstname | default:subscriber],</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">In MailPoet, you can write emails in plain text,&nbsp;just like in a regular email.&nbsp;This can make your email newsletters&nbsp;more personal and attention-grabbing.</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Is this too&nbsp;simple?&nbsp;You can still style your text with basic&nbsp;formatting,&nbsp;like&nbsp;<strong>bold</strong>&nbsp;or <em>italics.</em></p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Finally, you can also add a call-to-action button between 2 blocks of text, like this:</p>", 'mailpoet')
                   )
                 )
               )
@@ -110,7 +110,7 @@ class SimpleText {
                   ),
                   array(
                     "type" => "button",
-                    "text" => __("It's time to take action!"),
+                    "text" => __("It's time to take action!", 'mailpoet'),
                     "url" => "",
                     "styles" => array(
                       "block" => array(
@@ -131,11 +131,11 @@ class SimpleText {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Thanks for&nbsp;reading. See you soon!</p>\n<p></p>\n<p><strong><em>The MailPoet Team</em></strong></p>")
+                    "text" => __("<p>Thanks for&nbsp;reading. See you soon!</p>\n<p></p>\n<p><strong><em>The MailPoet Team</em></strong></p>", 'mailpoet')
                   ),
                   array(
                     "type" => "footer",
-                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>"),
+                    "text" => __("<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"

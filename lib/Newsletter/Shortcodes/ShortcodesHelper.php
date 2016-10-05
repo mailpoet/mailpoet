@@ -7,93 +7,93 @@ class ShortcodesHelper {
 
   static function getShortcodes() {
     $shortcodes = array(
-      __('Subscriber') => array(
+      __('Subscriber', 'mailpoet') => array(
         array(
-          'text' => __('First Name'),
+          'text' => __('First Name', 'mailpoet'),
           'shortcode' => 'subscriber:firstname | default:reader',
         ),
         array(
-          'text' => __('Last Name'),
+          'text' => __('Last Name', 'mailpoet'),
           'shortcode' => 'subscriber:lastname | default:reader',
         ),
         array(
-          'text' => __('Email Address'),
+          'text' => __('Email Address', 'mailpoet'),
           'shortcode' => 'subscriber:email',
         ),
         array(
-          'text' => __('WordPress User Display Name'),
+          'text' => __('WordPress User Display Name', 'mailpoet'),
           'shortcode' => 'subscriber:displayname | default:member',
         ),
         array(
-          'text' => __('Total Number of Subscribers'),
+          'text' => __('Total Number of Subscribers', 'mailpoet'),
           'shortcode' => 'subscriber:count',
         )
       ),
-      __('Newsletter') => array(
+      __('Newsletter', 'mailpoet') => array(
         array(
-          'text' => __('Newsletter Subject'),
+          'text' => __('Newsletter Subject', 'mailpoet'),
           'shortcode' => 'newsletter:subject',
         )
       ),
-      __('Post Notifications') => array(
+      __('Post Notifications', 'mailpoet') => array(
         array(
-          'text' => __('Total Number of Posts or Pages'),
+          'text' => __('Total Number of Posts or Pages', 'mailpoet'),
           'shortcode' => 'newsletter:total',
         ),
         array(
-          'text' => __('Most Recent Post Title'),
+          'text' => __('Most Recent Post Title', 'mailpoet'),
           'shortcode' => 'newsletter:post_title',
         ),
         array(
-          'text' => __('Issue Number'),
+          'text' => __('Issue Number', 'mailpoet'),
           'shortcode' => 'newsletter:number',
         )
       ),
-      __('Date') => array(
+      __('Date', 'mailpoet') => array(
         array(
-          'text' => __('Current day of the month number'),
+          'text' => __('Current day of the month number', 'mailpoet'),
           'shortcode' => 'date:d',
         ),
         array(
-          'text' => __('Current day of the month in ordinal form, i.e. 2nd, 3rd, 4th, etc.'),
+          'text' => __('Current day of the month in ordinal form, i.e. 2nd, 3rd, 4th, etc.', 'mailpoet'),
           'shortcode' => 'date:dordinal',
         ),
         array(
-          'text' => __('Full name of current day'),
+          'text' => __('Full name of current day', 'mailpoet'),
           'shortcode' => 'date:dtext',
         ),
         array(
-          'text' => __('Current month number'),
+          'text' => __('Current month number', 'mailpoet'),
           'shortcode' => 'date:m',
         ),
         array(
-          'text' => __('Full name of current month'),
+          'text' => __('Full name of current month', 'mailpoet'),
           'shortcode' => 'date:mtext',
         ),
         array(
-          'text' => __('Year'),
+          'text' => __('Year', 'mailpoet'),
           'shortcode' => 'date:y',
         )
       ),
-      __('Links') => array(
+      __('Links', 'mailpoet') => array(
         array(
-          'text' => __('Unsubscribe link'),
+          'text' => __('Unsubscribe link', 'mailpoet'),
           'shortcode' => 'link:subscription_unsubscribe',
         ),
         array(
-          'text' => __('Edit subscription page link'),
+          'text' => __('Edit subscription page link', 'mailpoet'),
           'shortcode' => 'link:subscription_manage',
         ),
         array(
-          'text' => __('View in browser link'),
+          'text' => __('View in browser link', 'mailpoet'),
           'shortcode' => 'link:newsletter_view_in_browser',
         )
       )
     );
     $custom_fields = self::getCustomFields();
     if($custom_fields) {
-      $shortcodes[__('Subscriber')] = array_merge(
-        $shortcodes[__('Subscriber')],
+      $shortcodes[__('Subscriber', 'mailpoet')] = array_merge(
+        $shortcodes[__('Subscriber', 'mailpoet')],
         $custom_fields
       );
     }
