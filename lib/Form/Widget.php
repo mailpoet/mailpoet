@@ -55,7 +55,7 @@ class Widget extends \WP_Widget {
     // get forms list
     $forms = Form::getPublished()->orderByAsc('name')->findArray();
     ?><p>
-      <label for="<?php $this->get_field_id( 'title' ) ?>"><?php _e( 'Title:' ); ?></label>
+      <label for="<?php $this->get_field_id( 'title' ) ?>"><?php _e('Title:', 'mailpoet'); ?></label>
       <input
         type="text"
         class="widefat"
@@ -75,7 +75,7 @@ class Widget extends \WP_Widget {
       </select>
     </p>
     <p>
-      <a href="javascript:;" onClick="createSubscriptionForm()" class="mailpoet_form_new"><?php _e("Create a new form"); ?></a>
+      <a href="javascript:;" onClick="createSubscriptionForm()" class="mailpoet_form_new"><?php _e('Create a new form', 'mailpoet'); ?></a>
     </p>
     <script type="text/javascript">
     function createSubscriptionForm() {
