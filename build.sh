@@ -17,7 +17,7 @@ npm install
 ./do compile:all
 
 # Production libraries.
-./composer.phar install --no-dev
+./composer.phar install --no-dev --prefer-dist --optimize-autoloader
 
 # Copy release folders.
 cp -Rf lang $plugin_name
