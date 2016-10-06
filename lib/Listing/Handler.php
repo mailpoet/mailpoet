@@ -46,8 +46,9 @@ class Handler {
   }
 
   private function setOrder() {
+    $sort_order = ($this->data['sort_order'] === 'asc') ? 'asc': 'desc';
     return $this->model
-      ->{'order_by_'.$this->data['sort_order']}(
+      ->{'order_by_'.$sort_order}(
         $this->table_name.'.'.$this->data['sort_by']);
   }
 
