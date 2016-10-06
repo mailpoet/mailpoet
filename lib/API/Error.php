@@ -1,7 +1,7 @@
 <?php
-if(!defined('ABSPATH')) exit;
-
 namespace MailPoet\API;
+
+if(!defined('ABSPATH')) exit;
 
 final class Error {
   const UNKNOWN = 'unknown';

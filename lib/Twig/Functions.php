@@ -1,7 +1,7 @@
 <?php
-if(!defined('ABSPATH')) exit;
-
 namespace MailPoet\Twig;
+
+if(!defined('ABSPATH')) exit;
 
 class Functions extends \Twig_Extension {
 

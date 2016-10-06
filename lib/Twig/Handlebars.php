@@ -1,7 +1,7 @@
 <?php
-if(!defined('ABSPATH')) exit;
-
 namespace MailPoet\Twig;
+
+if(!defined('ABSPATH')) exit;
 
 class Handlebars extends \Twig_Extension {
 

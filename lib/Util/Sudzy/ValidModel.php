@@ -1,7 +1,7 @@
 <?php
-if(!defined('ABSPATH')) exit;
-
 namespace Sudzy;
+
+if(!defined('ABSPATH')) exit;
 
 abstract class ValidModel extends \Model {
   protected $_validator = null; // Reference to Sudzy validator object

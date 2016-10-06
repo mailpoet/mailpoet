@@ -1,6 +1,4 @@
 <?php
-if(!defined('ABSPATH')) exit;
-
 namespace MailPoet\Cron\Workers;
 
 use Carbon\Carbon;
@@ -12,8 +10,8 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Util\Helpers;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 
+if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
-
 
 class Scheduler {
   public $timer;

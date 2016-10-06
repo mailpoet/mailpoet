@@ -1,7 +1,7 @@
 <?php
-if(!defined('ABSPATH')) exit;
-
 namespace MailPoet\Form\Block;
+
+if(!defined('ABSPATH')) exit;
 
 class Textarea extends Base {
   static function render($block) {

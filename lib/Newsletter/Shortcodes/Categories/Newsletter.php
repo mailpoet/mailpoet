@@ -1,11 +1,10 @@
 <?php
-if(!defined('ABSPATH')) exit;
-
-require_once( ABSPATH . "wp-includes/pluggable.php" );
-
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
+
+if(!defined('ABSPATH')) exit;
+require_once( ABSPATH . "wp-includes/pluggable.php" );
 
 class Newsletter {
   static function process($action,

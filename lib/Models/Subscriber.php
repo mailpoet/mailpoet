@@ -150,7 +150,7 @@ class Subscriber extends Model {
   }
 
   static function verifyToken($email, $token) {
-    return (self::generateToken($email) === $token);
+    return hash_equals(self::generateToken($email), $token);
   }
 
   static function subscribe($subscriber_data = array(), $segment_ids = array()) {
