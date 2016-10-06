@@ -1,4 +1,6 @@
 <?php
+if(!defined('ABSPATH')) exit;
+
 namespace MailPoet\Form\Block;
 
 class Checkbox extends Base {
@@ -50,4 +52,3 @@ class Checkbox extends Base {
     return $html;
   }
 }
-

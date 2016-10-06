@@ -1,9 +1,10 @@
 <?php
+if(!defined('ABSPATH')) exit;
+
 namespace MailPoet\API;
 
 use \MailPoet\Util\Security;
 
-if(!defined('ABSPATH')) exit;
 
 class API {
   function init() {
