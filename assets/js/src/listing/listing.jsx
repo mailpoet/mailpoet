@@ -624,7 +624,7 @@ const Listing = React.createClass({
   handleSort: function(sort_by, sort_order = 'asc') {
     this.setState({
       sort_by: sort_by,
-      sort_order: sort_order,
+      sort_order: (sort_order === 'asc') ? 'asc' : 'desc',
     }, function() {
       this.setParams();
     }.bind(this));
