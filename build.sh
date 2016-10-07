@@ -31,7 +31,7 @@ rm -Rf $plugin_name/assets/js/src
 # Remove extra files from 3rd party extensions
 find $plugin_name/vendor/ -type f -regextype posix-egrep -iregex ".*\/*\.(markdown|md|txt)" -print0 | xargs -0 rm -f
 find $plugin_name/vendor/ -type f -regextype posix-egrep -iregex ".*\/(readme|license|version|changes)" -print0 | xargs -0 rm -f
-find $plugin_name/vendor -type d -regextype posix-egrep -iregex ".*\/(testing|tests?|docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
+find $plugin_name/vendor -type d -regextype posix-egrep -iregex ".*\/(testing|docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
 
 # Specific files to remove
 rm $plugin_name/vendor/j4mie/idiorm/demo.php
