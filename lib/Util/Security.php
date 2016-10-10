@@ -5,8 +5,8 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Security {
-  static function generateToken() {
-    return wp_create_nonce('mailpoet_token');
+  static function generateToken($action = 'mailpoet_token') {
+    return wp_create_nonce($action);
   }
 
   static function generateRandomString($length = 5) {
