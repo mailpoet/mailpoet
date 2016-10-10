@@ -15,6 +15,11 @@ class Handler {
     $this->model_class = $model_class;
     $this->model = \Model::factory($this->model_class);
 
+    // check if sort order was specified or default to "asc"
+    $sort_order = (!empty($data['sort_order'])) ? $data['sort_order'] : 'asc';
+    // constrain sort order value to either be "asc" or "desc"
+    $sort_order = ($sort_order === 'asc') ? 'asc' : 'desc';
+
     $this->data = array(
       // extra parameters
       'params' => (isset($data['params']) ? $data['params'] : array()),
@@ -28,7 +33,7 @@ class Handler {
       'search' => (isset($data['search']) ? $data['search'] : null),
       // sorting
       'sort_by' => (!empty($data['sort_by']) ? $data['sort_by'] : 'id'),
-      'sort_order' => (!empty($data['sort_order']) ? $data['sort_order'] : 'asc'),
+      'sort_order' => $sort_order,
       // grouping
       'group' => (isset($data['group']) ? $data['group'] : null),
       // filters
@@ -46,9 +51,8 @@ class Handler {
   }
 
   private function setOrder() {
-    $sort_order = ($this->data['sort_order'] === 'asc') ? 'asc': 'desc';
     return $this->model
-      ->{'order_by_'.$sort_order}(
+      ->{'order_by_'.$this->data['sort_order']}(
         $this->table_name.'.'.$this->data['sort_by']);
   }
 
