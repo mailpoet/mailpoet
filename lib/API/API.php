@@ -13,12 +13,6 @@ class API {
   private $_data = array();
 
   function init() {
-    // security token
-    add_action(
-      'admin_head',
-      array($this, 'setToken')
-    );
-
     // Admin API (Ajax only)
     add_action(
       'wp_ajax_mailpoet',
@@ -34,7 +28,6 @@ class API {
 
   function setupAdmin() {
     $this->getRequestData();
-    $this->checkToken();
     $this->checkPermissions();
     $this->processRoute();
   }
@@ -46,15 +39,17 @@ class API {
   }
 
   function getRequestData() {
-    $this->_endpoint = isset($_POST['endpoint']) ? trim($_POST['endpoint']) : null;
-    $this->_method = (isset($_POST['method']))
+    $this->_endpoint = isset($_POST['endpoint'])
+      ? trim($_POST['endpoint'])
+      : null;
+    $this->_method = isset($_POST['method'])
       ? trim($_POST['method'])
       : null;
-    $this->_token = (isset($_POST['token']))
+    $this->_token = isset($_POST['token'])
       ? trim($_POST['token'])
       : null;
 
-    if(!$this->_endpoint || !$this->_method || !$this->_token) {
+    if(!$this->_endpoint || !$this->_method) {
       // throw exception bad request
       $error_response = new ErrorResponse(
         array(
@@ -109,7 +104,10 @@ class API {
     if($has_permission === false) {
       $error_response = new ErrorResponse(
         array(
-          Error::FORBIDDEN => __('You do not have the required permissions.', 'mailpoet')
+          Error::FORBIDDEN => __(
+            'You do not have the required permissions.',
+            'mailpoet'
+          )
         ),
         array(),
         Response::STATUS_FORBIDDEN
@@ -133,12 +131,5 @@ class API {
       );
       $error_response->send();
     }
-  }
-
-  function setToken() {
-    $global = '<script type="text/javascript">';
-    $global .= 'var mailpoet_token = "'.Security::generateToken().'";';
-    $global .= '</script>';
-    echo $global;
   }
 }
