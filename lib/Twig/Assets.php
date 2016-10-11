@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Twig;
 
+if(!defined('ABSPATH')) exit;
+
 class Assets
   extends \Twig_Extension
   implements \Twig_Extension_GlobalsInterface

@@ -1,12 +1,10 @@
 <?php
 namespace MailPoet\Cron;
-
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 
-require_once(ABSPATH . 'wp-includes/pluggable.php');
-
 if(!defined('ABSPATH')) exit;
+require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Daemon {
   public $daemon;

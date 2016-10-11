@@ -134,7 +134,7 @@ const item_actions = [
     link: function(item) {
       return (
         <a
-          href="https://www.mailpoet.com/#TODO"
+          href="http://docs.mailpoet.com/article/133-the-wordpress-users-list"
           target="_blank"
         >{MailPoet.I18n.t('readMore')}</a>
       );

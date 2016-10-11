@@ -1,6 +1,5 @@
 <?php
 namespace MailPoet\API;
-
 use \MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;

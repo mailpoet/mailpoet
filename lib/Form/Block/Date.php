@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Form\Block;
 
+if(!defined('ABSPATH')) exit;
+
 use Carbon\Carbon;
 
 class Date extends Base {

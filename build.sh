@@ -17,7 +17,7 @@ npm install
 ./do compile:all
 
 # Production libraries.
-./composer.phar install --no-dev
+./composer.phar install --no-dev --prefer-dist --optimize-autoloader
 
 # Copy release folders.
 cp -Rf lang $plugin_name
@@ -27,6 +27,21 @@ cp -Rf vendor $plugin_name
 cp -Rf views $plugin_name
 rm -Rf $plugin_name/assets/css/src
 rm -Rf $plugin_name/assets/js/src
+
+# Remove extra files (docs, examples,...) from 3rd party extensions
+find $plugin_name/vendor -type f -regextype posix-egrep -iregex ".*\/*\.(markdown|md|txt)" -print0 | xargs -0 rm -f
+find $plugin_name/vendor -type f -regextype posix-egrep -iregex ".*\/(readme|license|version|changes|changelog)" -print0 | xargs -0 rm -f
+find $plugin_name/vendor -type d -regextype posix-egrep -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
+
+# Remove unit tests from 3rd party extensions
+rm $plugin_name/vendor/j4mie/idiorm/demo.php
+rm -rf $plugin_name/vendor/twig/twig/test
+rm -rf $plugin_name/vendor/symfony/translation/Tests
+rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
+rm -rf $plugin_name/vendor/soundasleep/html2text/tests
+rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
+rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
+rm -rf $plugin_name/vendor/cerdic/css-tidy/testing
 
 # Copy release files.
 cp LICENSE $plugin_name

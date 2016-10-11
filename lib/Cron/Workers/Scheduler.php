@@ -10,9 +10,8 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Util\Helpers;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 
-require_once(ABSPATH . 'wp-includes/pluggable.php');
-
 if(!defined('ABSPATH')) exit;
+require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Scheduler {
   public $timer;

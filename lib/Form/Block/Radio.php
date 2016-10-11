@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Form\Block;
 
+if(!defined('ABSPATH')) exit;
+
 class Radio extends Base {
 
   static function render($block) {

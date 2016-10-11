@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Twig;
 
+if(!defined('ABSPATH')) exit;
+
 class I18n extends \Twig_Extension {
 
   private $_text_domain;
