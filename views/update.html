@@ -23,20 +23,25 @@
 
   <div id="mailpoet-changelog" clas="feature-section one-col">
     <h2><%= __("List of Changes") %></h2>
+    <h3>0.0.48 - 2016-10-11</h3>
+    <ul>
+      <li>Added `mailpoet` text domain to gettext translation functions;</li>
+      <li>Added `.pot` translation template file generation to build process;</li>
+      <li>Fixed SQL injection via listings in admin panel;</li>
+      <li>Fixed stored XSS in Idiorm library demo code;</li>
+      <li>Fixed constant usage before initialization errors;</li>
+      <li>Fixed subscriber token leak via timing attacks;</li>
+      <li>Added a "Read More" link to "WordPress Users" list in "Lists" admin listing;</li>
+      <li>Removed test code and docs from vendor code in our distributable zip.</li>
+    </ul>
+    <br>
+
     <h3>0.0.47 - 2016-10-04</h3>
     <ul>
       <li>Fixed subscription form to not send confirmation email when sending one is disabled in settings;</li>
       <li>Fixed segment selection field to preselect previously used segments on last newsletter creation step;</li>
       <li>Fixed segment subscriber count to be always displayed;</li>
       <li>Changed segment subscriber count to not include unsubscribed or unconfirmed subscribers.</li>
-    </ul>
-    <br>
-
-    <h3>0.0.46 - 2016-09-27</h3>
-    <ul>
-      <li>Fixed subscription forms.</li>
-      <li>Enabled dragging of text blocks in visual editor.</li>
-      <li>Added more unit tests.</li>
     </ul>
     <br>
 
