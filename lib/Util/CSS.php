@@ -29,51 +29,13 @@ use csstidy;
 */
 
 class CSS {
-
-  private $cssFiles = array();
   private $parsed_css = array();
 
-  /*
-  * Retrieves a CSS stylesheet and caches it before returning it.
-  */
-  public function getCSS($url)
-  {
-    if(!isset($cssFiles[$url]))
-    {
-      $cssFiles[$url] = file_get_contents($url);
-    }
-    return $cssFiles[$url];
-  }
-
-  /*
-  * Take a list of absolute URLs pointing to CSS stylesheets,
-  * retrieve the CSS, parse it, sort the rules by increasing order of specificity,
-  * cache the rules, return them.
-  */
-  public function getCSSFromFiles($urls)
-  {
-    $key = implode('::', $urls);
-    if(!isset($this->parsed_css[$key]))
-    {
-      $texts = array();
-      foreach($urls as $url)
-      {
-        $texts[] = $this->getCSS($url);
-      }
-      $text = implode("\n\n", $texts);
-      $this->parsed_css[$key] = $text;
-    }
-    return $this->parsed_css[$key];
-  }
-
-  public static function splitMediaQueries($css)
-  {
-
+  public static function splitMediaQueries($css) {
     $start = 0;
     $queries = '';
 
-    while (($start = strpos($css, "@media", $start)) !== false)
-    {
+    while(($start = strpos($css, "@media", $start)) !== false) {
       // stack to manage brackets
       $s = array();
 
@@ -81,23 +43,18 @@ class CSS {
       $i = strpos($css, "{", $start);
 
       // if $i is false, then there is probably a css syntax error
-      if ($i !== false)
-      {
+      if($i !== false) {
         // push bracket onto stack
         array_push($s, $css[$i]);
 
         // move past first bracket
         $i++;
 
-        while (!empty($s))
-        {
+        while(!empty($s)) {
           // if the character is an opening bracket, push it onto the stack, otherwise pop the stack
-          if ($css[$i] == "{")
-          {
+          if($css[$i] == "{") {
             array_push($s, "{");
-          }
-          elseif ($css[$i] == "}")
-          {
+          } else if($css[$i] == "}") {
             array_pop($s);
           }
 
@@ -113,8 +70,7 @@ class CSS {
     return array($css, $queries);
   }
 
-  public function parseCSS($text)
-  {
+  public function parseCSS($text) {
     $css  = new csstidy();
     $css->settings['compress_colors'] = false;
     $css->parse($text);
@@ -122,41 +78,30 @@ class CSS {
     $rules    = array();
     $position   = 0;
 
-    foreach($css->css as $declarations)
-    {
-      foreach($declarations as $selectors => $properties)
-      {
-        foreach(explode(",", $selectors) as $selector)
-        {
+    foreach($css->css as $declarations) {
+      foreach($declarations as $selectors => $properties) {
+        foreach(explode(",", $selectors) as $selector) {
           $rules[] = array(
             'position'    => $position,
             'specificity'   => self::calculateCSSSpecifity($selector),
             'selector'    => $selector,
             'properties'  => $properties
-            );
+          );
         }
 
         $position += 1;
       }
     }
 
-    usort($rules, function($a, $b){
-      if($a['specificity'] > $b['specificity'])
-      {
+    usort($rules, function($a, $b) {
+      if($a['specificity'] > $b['specificity']) {
         return 1;
-      }
-      else if($a['specificity'] < $b['specificity'])
-      {
+      } else if($a['specificity'] < $b['specificity']) {
         return -1;
-      }
-      else
-      {
-        if($a['position'] > $b['position'])
-        {
+      } else {
+        if($a['position'] > $b['position']) {
           return 1;
-        }
-        else
-        {
+        } else {
           return -1;
         }
       }
@@ -176,8 +121,7 @@ class CSS {
    * @license   BSD License
    */
 
-  public static function calculateCSSSpecifity($selector)
-  {
+  public static function calculateCSSSpecifity($selector) {
       // cleanup selector
     $selector = str_replace(array('>', '+'), array(' > ', ' + '), $selector);
 
@@ -207,16 +151,15 @@ class CSS {
   * Turns a CSS style string (like: "border: 1px solid black; color:red")
   * into an array of properties (like: array("border" => "1px solid black", "color" => "red"))
   */
-  public static function styleToArray($str)
-  {
+  public static function styleToArray($str) {
     $array = array();
 
-    if(trim($str) === '')return $array;
+    if(trim($str) === '') return $array;
 
-    foreach(explode(';', $str) as $kv)
-    {
-      if ($kv === '')
+    foreach(explode(';', $str) as $kv) {
+      if($kv === '') {
         continue;
+      }
 
       $key_value = explode(':', $kv);
       $array[trim($key_value[0])] = trim($key_value[1]);
@@ -229,50 +172,12 @@ class CSS {
   * Reverses what styleToArray does, see above.
   * array("border" => "1px solid black", "color" => "red") yields "border: 1px solid black; color:red"
   */
-  public static function arrayToStyle($array)
-  {
+  public static function arrayToStyle($array) {
     $parts = array();
-    foreach($array as $k => $v)
-    {
+    foreach($array as $k => $v) {
       $parts[] = "$k:$v";
     }
     return implode(';', $parts);
-  }
-
-  /*
-  * Get an absolute URL from an URL ($relative_url, but relative or not actually!)
-  * that is found on the page with url $page_url.
-  * Determine it as a browser would do. For instance if "<a href='/bob/hello.html'>hi</a>"
-  * (here '/bob/hello.html' is the $relative_url)
-  * is found on a page at $page_url := "http://example.com/stuff/index.html"
-  * then the function returns "http://example.com/bob/hello.html"
-  * because that's where you'd go to if you clicked on the link in your browser.
-  * This is used to find where to download the CSS files from when inlining.
-  */
-  public static function absolutify($page_url, $relative_url)
-  {
-    $parsed_url = parse_url($page_url);
-
-    $absolute_url       = '';
-    $parsed_relative_url  = parse_url($relative_url);
-
-    // If $relative_url has a host it is actually absolute, return it.
-    if(isset($parsed_relative_url['host']))
-    {
-      $absolute_url = $relative_url;
-    }
-    // If $relative_url begins with / then it is a path relative to the $page_url's host
-    else if(preg_match('/^\//', $parsed_relative_url['path']))
-    {
-      $absolute_url = $parsed_url['scheme'].'://'.$parsed_url['host'].$parsed_relative_url['path'];
-    }
-    // No leading slash: append the path of $relative_url to the 'folder' path of $page_url
-    else
-    {
-      $absolute_url = $parsed_url['scheme'].'://'.$parsed_url['host'].dirname($parsed_url['path']).'/'.$parsed_relative_url['path'];
-    }
-
-    return $absolute_url;
   }
 
   /*
@@ -283,38 +188,24 @@ class CSS {
   function inlineCSS($url, $contents=null)
   {
     // Download the HTML if it was not provided
-    if($contents === null)
-    {
+    if($contents === null) {
       $html = HtmlDomParser::file_get_html($url, false, null, -1, -1, true, true, DEFAULT_TARGET_CHARSET, false, DEFAULT_BR_TEXT, DEFAULT_SPAN_TEXT);
-    }
-    // Else use the data provided!
-    else
-    {
+    } else {
+      // use the data provided!
       $html = HtmlDomParser::str_get_html($contents, true, true, DEFAULT_TARGET_CHARSET, false, DEFAULT_BR_TEXT, DEFAULT_SPAN_TEXT);
     }
 
-    if(!is_object($html))
-    {
+    if(!is_object($html)) {
       return false;
-    }
-
-    $css_urls = array();
-
-    // Find all stylesheets and determine their absolute URLs to retrieve them
-    foreach($html->find('link[rel="stylesheet"]') as $style)
-    {
-      $css_urls[] = self::absolutify($url, $style->href);
-      $style->outertext = '';
     }
 
     $css_blocks = '';
 
     // Find all <style> blocks and cut styles from them (leaving media queries)
-    foreach($html->find('style') as $style)
-    {
+    foreach($html->find('style') as $style) {
       list($_css_to_parse, $_css_to_keep) = self::splitMediaQueries($style->innertext());
       $css_blocks .= $_css_to_parse;
-      if (!empty($_css_to_keep)) {
+      if(!empty($_css_to_keep)) {
         $style->innertext = $_css_to_keep;
       } else {
         $style->outertext = '';
@@ -322,10 +213,7 @@ class CSS {
     }
 
     $raw_css = '';
-    if (!empty($css_urls)) {
-      $raw_css .= $this->getCSSFromFiles($css_urls);
-    }
-    if (!empty($css_blocks)) {
+    if(!empty($css_blocks)) {
       $raw_css .= $css_blocks;
     }
 
@@ -336,10 +224,8 @@ class CSS {
 
     // We loop over each rule by increasing order of specificity, find the nodes matching the selector
     // and apply the CSS properties
-    foreach ($rules as $rule)
-    {
-      foreach($html->find($rule['selector']) as $node)
-      {
+    foreach ($rules as $rule) {
+      foreach($html->find($rule['selector']) as $node) {
         // I'm leaving this for debug purposes, it has proved useful.
         /*
         if($node->already_styled === 'yes')
@@ -357,11 +243,11 @@ class CSS {
         }//*/
 
         // Unserialize the style array, merge the rule's CSS into it...
-        $nodeStyles = self::styleToArray( $node->style );
-        $style = array_merge( $nodeStyles, $rule[ 'properties' ] );
+        $nodeStyles = self::styleToArray($node->style);
+        $style = array_merge($nodeStyles, $rule['properties']);
 
         // !important node styles should take precedence over other styles
-        $style = array_merge( $style, preg_grep( "/important/i", $nodeStyles ) );
+        $style = array_merge($style, preg_grep("/important/i", $nodeStyles));
 
         // And put the CSS back as a string!
         $node->style = self::arrayToStyle($style);
@@ -378,14 +264,10 @@ class CSS {
     // Now a tricky part: do a second pass with only stuff marked !important
     // because !important properties do not care about specificity, except when fighting
     // against another !important property
-    foreach ($rules as $rule)
-    {
-      foreach($rule['properties'] as $key => $value)
-      {
-        if(strpos($value, '!important') !== false)
-        {
-          foreach($html->find($rule['selector']) as $node)
-          {
+    foreach ($rules as $rule) {
+      foreach($rule['properties'] as $key => $value) {
+        if(strpos($value, '!important') !== false) {
+          foreach($html->find($rule['selector']) as $node) {
             $style = self::styleToArray($node->style);
             $style[$key] = $value;
             $node->style = self::arrayToStyle($style);
