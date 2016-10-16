@@ -56,6 +56,21 @@ class AmazonSESTest extends MailPoetTest {
     expect(preg_match('!^\d{8}$!', $this->mailer->date_without_time))->equals(1);
   }
 
+  function testItChecksForValidRegion() {
+    try {
+      $mailer = new AmazonSES(
+        'random_region',
+        $this->settings['access_key'],
+        $this->settings['secret_key'],
+        $this->sender,
+        $this->reply_to
+      );
+      $this->fail('Unsupported region exception was not thrown');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('Unsupported Amazon SES region.');
+    }
+  }
+
   function testItCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     expect($body['Action'])->equals('SendEmail');
