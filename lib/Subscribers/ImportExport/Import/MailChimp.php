@@ -4,8 +4,14 @@ namespace MailPoet\Subscribers\ImportExport\Import;
 use MailPoet\Util\Helpers;
 
 class MailChimp {
-  function __construct($APIKey, $lists = false) {
-    $this->api_key = $this->getAPIKey($APIKey);
+  public $api_key;
+  public $max_post_size;
+  public $data_center;
+  public $export_url;
+  const API_KEY_REGEX = '/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,3}$/';
+
+  function __construct($api_key, $lists = false) {
+    $this->api_key = $this->getAPIKey($api_key);
     $this->max_post_size = Helpers::getMaxPostSize('bytes');
     $this->data_center = $this->getDataCenter($this->api_key);
     $this->lists_url = 'https://%s.api.mailchimp.com/2.0/lists/list?apikey=%s';
@@ -108,15 +114,14 @@ class MailChimp {
     );
   }
 
-  function getDataCenter($APIKey) {
-    if(!preg_match('/-[a-zA-Z0-9]{3,}/', $APIKey)) return false;
-    // double parantheses: http://phpsadness.com/sad/51
-    $key_parts = explode('-', $APIKey);
-    return end($key_parts);
+  function getDataCenter($api_key) {
+    if(!$api_key) return false;
+    $api_key_parts = explode('-', $api_key);
+    return end($api_key_parts);
   }
 
-  function getAPIKey($APIKey) {
-    return (preg_match('/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{3,}/', $APIKey)) ? $APIKey : false;
+  function getAPIKey($api_key) {
+    return (preg_match(self::API_KEY_REGEX, $api_key)) ? $api_key : false;
   }
 
   function throwException($error) {

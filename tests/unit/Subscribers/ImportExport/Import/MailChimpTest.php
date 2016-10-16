@@ -9,11 +9,22 @@ class MailChimpTest extends MailPoetTest {
     $this->lists = explode(",", getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS'));
   }
 
-  function testItValidatesAPIKey() {
+  function testItCanGetAPIKey() {
     $valid_api_key_format = '12345678901234567890123456789012-ab1';
+    // key must consist of two parts separated by hyphen
+    expect($this->mailchimp->getAPIKey('invalid_api_key_format'))->false();
+    // key must only contain numerals and letters
+    expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-@?1'))->false();
+    // the first part of the key must contain 32 characters,
+    expect($this->mailchimp->getAPIKey('1234567890123456789012345678901-123'))
+      ->false();
+    // the second part must contain 2 or 3 characters
+    expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-1234'))
+      ->false();
+    expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-1'))
+      ->false();
     expect($this->mailchimp->getAPIKey($valid_api_key_format))
       ->equals($valid_api_key_format);
-    expect($this->mailchimp->getAPIKey('invalid_api_key_format'))->false();
   }
 
   function testItCanGetDatacenter() {
