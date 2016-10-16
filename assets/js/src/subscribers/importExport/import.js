@@ -337,9 +337,19 @@ define(
               complete: function (CSV) {
                 for (var rowCount in CSV.data) {
                   var rowData = CSV.data[rowCount].map(function (el) {
-                        return filterXSS(el.trim());
-                      }),
-                      rowColumnCount = rowData.length;
+                    // sanitize data
+                    el = filterXSS(el.trim());
+                    var entityMap = {
+                      "<": "&lt;",
+                      ">": "&gt;",
+                      "/": '&#x2F;'
+                    };
+                    el = String(el).replace(/[&<>"'\/]/g, function (s) {
+                      return entityMap[s];
+                    });
+                    return el;
+                  });
+                  var rowColumnCount = rowData.length;
                   // set the number of row elements based on the first non-empty row
                   if (columnCount === null) {
                     columnCount = rowColumnCount;
