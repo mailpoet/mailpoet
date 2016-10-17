@@ -85,7 +85,7 @@ class LinksTest extends MailPoetTest {
     );
     Links::save(
       $links,
-      $newletter_id = 1,
+      $newsletter_id = 1,
       $queue_id = 1
     );
 
