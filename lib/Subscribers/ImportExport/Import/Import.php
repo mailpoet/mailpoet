@@ -110,8 +110,6 @@ class Import {
   function validateSubscribersFields($subscribers_data, $validation_rules) {
     $invalid_records = array();
     foreach($subscribers_data as $column => &$data) {
-      // sanitize each data field
-      $data = array_map('sanitize_text_field', $data);
       $validation_rule = $validation_rules[$column];
       // if this is a custom column
       if(in_array($column, $this->subscriber_custom_fields)) {
