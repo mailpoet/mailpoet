@@ -20,10 +20,10 @@ class Posts {
       $newsletter->parent_id :
       $newsletter->id;
     foreach($matched_posts_ids as $post_id) {
-      $newletter_post = NewsletterPost::create();
-      $newletter_post->newsletter_id = $newsletter_id;
-      $newletter_post->post_id = $post_id;
-      $newletter_post->save();
+      $newsletter_post = NewsletterPost::create();
+      $newsletter_post->newsletter_id = $newsletter_id;
+      $newsletter_post->post_id = $post_id;
+      $newsletter_post->save();
     }
     return true;
   }

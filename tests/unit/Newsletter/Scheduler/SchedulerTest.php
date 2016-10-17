@@ -311,7 +311,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
     $newsletter_option_field->save();
 
     // daily notification is scheduled at 14:00
-    $newletter = (object)array(
+    $newsletter = (object)array(
       'id' => 1,
       'intervalType' => Scheduler::INTERVAL_DAILY,
       'monthDay' => null,
@@ -319,35 +319,35 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'weekDay' => null,
       'timeOfDay' => 50400 // 14:00
     );
-    Scheduler::processPostNotificationSchedule($newletter);
-    $newletter_option = NewsletterOption::where('newsletter_id', $newletter->id)
+    Scheduler::processPostNotificationSchedule($newsletter);
+    $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
-    expect(Scheduler::getNextRunDate($newletter_option->value))
+    expect(Scheduler::getNextRunDate($newsletter_option->value))
       ->contains('14:00:00');
 
     // weekly notification is scheduled every Tuesday at 14:00
-    $newletter = (object)array(
+    $newsletter = (object)array(
       'id' => 1,
       'intervalType' => Scheduler::INTERVAL_WEEKLY,
       'monthDay' => null,
       'nthWeekDay' => null,
-      'weekDay' => 2, // Tuesday
+      'weekDay' => Carbon::TUESDAY,
       'timeOfDay' => 50400 // 14:00
     );
-    Scheduler::processPostNotificationSchedule($newletter);
+    Scheduler::processPostNotificationSchedule($newsletter);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-    $newletter_option = NewsletterOption::where('newsletter_id', $newletter->id)
+    $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
     $next_run_date = ($current_time->dayOfWeek === Carbon::TUESDAY && $current_time->hour < 14) ?
       $current_time :
       $current_time->next(Carbon::TUESDAY);
-    expect(Scheduler::getNextRunDate($newletter_option->value))
+    expect(Scheduler::getNextRunDate($newsletter_option->value))
       ->equals($next_run_date->format('Y-m-d 14:00:00'));
 
     // monthly notification is scheduled every 20th day at 14:00
-    $newletter = (object)array(
+    $newsletter = (object)array(
       'id' => 1,
       'intervalType' => Scheduler::INTERVAL_MONTHLY,
       'monthDay' => 19, // 20th (count starts from 0)
@@ -355,36 +355,37 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'weekDay' => null,
       'timeOfDay' => 50400 // 14:00
     );
-    Scheduler::processPostNotificationSchedule($newletter);
+    Scheduler::processPostNotificationSchedule($newsletter);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-    $newletter_option = NewsletterOption::where('newsletter_id', $newletter->id)
+    $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
-    expect(Scheduler::getNextRunDate($newletter_option->value))
+    expect(Scheduler::getNextRunDate($newsletter_option->value))
       ->contains('-19 14:00:00');
 
     // monthly notification is scheduled every last Saturday at 14:00
-    $newletter = (object)array(
+    $newsletter = (object)array(
       'id' => 1,
       'intervalType' => Scheduler::INTERVAL_NTHWEEKDAY,
       'monthDay' => null,
       'nthWeekDay' => 'L', // L = last
-      'weekDay' => 6, // Saturday
+      'weekDay' => Carbon::SATURDAY,
       'timeOfDay' => 50400 // 14:00
     );
-    Scheduler::processPostNotificationSchedule($newletter);
+    Scheduler::processPostNotificationSchedule($newsletter);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-    $next_run_date = ($current_time->day < $current_time->lastOfMonth(6)->day) ?
-      $current_time->lastOfMonth(6) :
-      $current_time->addMonth()->lastOfMonth(6);
-    $newletter_option = NewsletterOption::where('newsletter_id', $newletter->id)
+    $next_run_date = (
+      $current_time->day < $current_time->lastOfMonth(Carbon::SATURDAY)->day
+    ) ? $current_time->lastOfMonth(Carbon::SATURDAY)
+      : $current_time->addMonth()->lastOfMonth(Carbon::SATURDAY);
+    $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
-    expect(Scheduler::getNextRunDate($newletter_option->value))
+    expect(Scheduler::getNextRunDate($newsletter_option->value))
       ->equals($next_run_date->format('Y-m-d 14:00:00'));
 
     // notification is scheduled immediately (next minute)
-    $newletter = (object)array(
+    $newsletter = (object)array(
       'id' => 1,
       'intervalType' => Scheduler::INTERVAL_IMMEDIATELY,
       'monthDay' => null,
@@ -392,12 +393,12 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'weekDay' => null,
       'timeOfDay' => null
     );
-    Scheduler::processPostNotificationSchedule($newletter);
+    Scheduler::processPostNotificationSchedule($newsletter);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-    $newletter_option = NewsletterOption::where('newsletter_id', $newletter->id)
+    $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
-    expect(Scheduler::getNextRunDate($newletter_option->value))
+    expect(Scheduler::getNextRunDate($newsletter_option->value))
       ->equals($current_time->addMinute()->format('Y-m-d H:i:00'));
   }
 
