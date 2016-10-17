@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Settings;
 
+use MailPoet\Mailer\Methods\AmazonSES;
+
 class Hosts {
   private static $_smtp = array(
     'AmazonSES' => array(
@@ -12,11 +14,7 @@ class Hosts {
         'access_key',
         'secret_key'
       ),
-      'regions' => array(
-        'US East (N. Virginia)' => 'us-east-1',
-        'US West (Oregon)' => 'us-west-2',
-        'EU (Ireland)' => 'eu-west-1'
-      )
+      'regions' => AmazonSES::SES_REGIONS
     ),
     'SendGrid' => array(
       'name' => 'SendGrid',
