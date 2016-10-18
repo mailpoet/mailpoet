@@ -580,7 +580,8 @@ define(
               }).done(function(response) {
                 mailpoetSegments.push({
                   'id': response.data.id,
-                  'name': response.data.name
+                  'name': response.data.name,
+                  'subscriberCount': 0
                 });
 
                 var selected_values = segmentSelectElement.val();
