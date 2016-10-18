@@ -21,6 +21,7 @@ class Import {
   public $updated_at;
 
   public function __construct($data) {
+    $this->validateData($data);
     $this->subscribers_data = $this->transformSubscribersData(
       $data['subscribers'],
       $data['columns']
@@ -39,6 +40,23 @@ class Import {
     $this->subscribers_count = count(reset($this->subscribers_data));
     $this->created_at = date('Y-m-d H:i:s', (int)$data['timestamp']);
     $this->updated_at = date('Y-m-d H:i:s', (int)$data['timestamp'] + 1);
+  }
+
+  function validateData($data) {
+    $required_data_fields = array(
+      'subscribers',
+      'columns',
+      'segments',
+      'timestamp',
+      'updateSubscribers'
+    );
+    // 1. data should contain all required fields
+    // 2. column names should only contain alphanumeric & underscore characters
+    if(count(array_intersect_key(array_flip($required_data_fields), $data)) !== count($required_data_fields) ||
+       preg_grep('/[^a-zA-Z0-9_]/', array_keys($data['columns']))
+    ) {
+      throw new \Exception(__('Missing or invalid subscriber data.', 'mailpoet'));
+    }
   }
 
   function getSubscriberFieldsValidationRules($subscriber_fields) {
@@ -89,8 +107,8 @@ class Import {
           $this->synchronizeWPUsers($wp_users);
         }
       }
-    } catch(\PDOException $e) {
-      throw new \Exception($e->getMessage());
+    } catch(\Exception $e) {
+      throw new \Exception(__('Unable to save imported subscribers.', 'mailpoet'));
     }
     $import_factory = new ImportExportFactory('import');
     $segments = $import_factory->getSegments();
@@ -364,6 +382,11 @@ class Import {
     $subscribers_data,
     $subscriber_custom_fields
   ) {
+    // check if custom fields exist in the database
+    $subscriber_custom_fields = Helpers::flattenArray(
+      CustomField::whereIn('id', $subscriber_custom_fields)->select('id')->findArray()
+    );
+    if(!$subscriber_custom_fields) return;
     $subscribers = array_map(
       function($column) use ($db_subscribers, $subscribers_data) {
         $count = range(0, count($subscribers_data[$column]) - 1);
