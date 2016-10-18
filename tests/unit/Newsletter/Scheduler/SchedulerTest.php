@@ -1,3 +1,4 @@
+
 <?php
 
 use Carbon\Carbon;
@@ -9,7 +10,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 
 class NewsletterSchedulerTest extends MailPoetTest {
-  function testItSetsConstants() {
+ function testItSetsConstants() {
     expect(Scheduler::SECONDS_IN_HOUR)->notEmpty();
     expect(Scheduler::LAST_WEEKDAY_FORMAT)->notEmpty();
     expect(Scheduler::WORDPRESS_ALL_ROLES)->notEmpty();
@@ -339,8 +340,11 @@ class NewsletterSchedulerTest extends MailPoetTest {
     $newletter_option = NewsletterOption::where('newsletter_id', $newletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
+    $next_run_date = ($current_time->dayOfWeek === Carbon::TUESDAY && $current_time->hour < 14) ?
+      $current_time :
+      $current_time->next(Carbon::TUESDAY);
     expect(Scheduler::getNextRunDate($newletter_option->value))
-      ->equals($current_time->next(2)->format('Y-m-d 14:00:00'));
+      ->equals($next_run_date->format('Y-m-d 14:00:00'));
 
     // monthly notification is scheduled every 20th day at 14:00
     $newletter = (object)array(
@@ -348,7 +352,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'intervalType' => Scheduler::INTERVAL_MONTHLY,
       'monthDay' => 19, // 20th (count starts from 0)
       'nthWeekDay' => null,
-      'weekDay' => null, // Tuesday
+      'weekDay' => null,
       'timeOfDay' => 50400 // 14:00
     );
     Scheduler::processPostNotificationSchedule($newletter);
