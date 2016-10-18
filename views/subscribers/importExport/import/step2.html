@@ -116,11 +116,11 @@
       {{#subscribers}}
       <tr>
         <td>
-          {{show_real_index @index}}
+          {{calculate_index @index}}
         </td>
         {{#.}}
         <td>
-          {{{this}}}
+          {{sanitize_data this}}
         </td>
         {{/.}}
       </tr>

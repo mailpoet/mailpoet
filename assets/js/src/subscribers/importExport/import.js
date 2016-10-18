@@ -7,7 +7,6 @@ define(
       'handlebars',
       'papaparse',
       'asyncqueue',
-      'xss',
       'moment',
       'select2'
     ],
@@ -19,7 +18,6 @@ define(
       Handlebars,
       Papa,
       AsyncQueue,
-      xss,
       Moment
     ) {
       if (!jQuery('#mailpoet_subscribers_import').length) {
@@ -337,9 +335,9 @@ define(
               complete: function (CSV) {
                 for (var rowCount in CSV.data) {
                   var rowData = CSV.data[rowCount].map(function (el) {
-                        return filterXSS(el.trim());
-                      }),
-                      rowColumnCount = rowData.length;
+                    return el.trim();
+                  });
+                  var rowColumnCount = rowData.length;
                   // set the number of row elements based on the first non-empty row
                   if (columnCount === null) {
                     columnCount = rowColumnCount;
@@ -582,7 +580,8 @@ define(
               }).done(function(response) {
                 mailpoetSegments.push({
                   'id': response.data.id,
-                  'name': response.data.name
+                  'name': response.data.name,
+                  'subscriberCount': 0
                 });
 
                 var selected_values = segmentSelectElement.val();
@@ -669,8 +668,15 @@ define(
                 return options.fn(displayedColumns);
               });
 
+          // sanitize unsafe data
+          Handlebars.registerHelper('sanitize_data', function(data) {
+            return (data instanceof Handlebars.SafeString) ?
+              data :
+              new Handlebars.SafeString(Handlebars.Utils.escapeExpression(data));
+          });
+
           // start array index from 1
-          Handlebars.registerHelper('show_real_index', function (index) {
+          Handlebars.registerHelper('calculate_index', function (index) {
             var index = parseInt(index);
             // display filler data (e.g., ellipsis) if we've reached the maximum number of rows and
             // subscribers count is greater than the maximum number of rows we're displaying
@@ -879,7 +885,9 @@ define(
                       jQuery(matchedColumn.element).data('validation-rule', validationRule);
                       break;
                     }
-                    if (validationRule === 'datetime') validationRule = Moment.ISO_8601;
+                    if (validationRule === 'datetime') {
+                      validationRule = Moment.ISO_8601;
+                    }
                   }
                 }
                 jQuery.map(subscribersClone.subscribers, function (data, index) {
@@ -888,18 +896,22 @@ define(
                   var date = Moment(rowData, testedFormat, true);
                   // validate date
                   if (date.isValid()) {
-                    data[matchedColumn.index] +=
-                        '<span class="mailpoet_data_match" title="'
-                        + MailPoet.I18n.t('verifyDateMatch') + '">'
-                        + MailPoet.Date.format(date)
-                        + '</span>';
+                    data[matchedColumn.index] = new Handlebars.SafeString(
+                      Handlebars.Utils.escapeExpression(data[matchedColumn.index])
+                      + '<span class="mailpoet_data_match" title="'
+                      + MailPoet.I18n.t('verifyDateMatch') + '">'
+                      + MailPoet.Date.format(date)
+                      + '</span>'
+                    );
                   }
                   else {
-                    data[matchedColumn.index] +=
-                      '<span class="mailpoet_data_match mailpoet_import_error" title="'
+                    data[matchedColumn.index] = new Handlebars.SafeString(
+                      Handlebars.Utils.escapeExpression(data[matchedColumn.index])
+                      + '<span class="mailpoet_data_match mailpoet_import_error" title="'
                       + MailPoet.I18n.t('noDateFieldMatch') + '">'
-                      + MailPoet.I18n.t('dateMatchError')
-                      + '</span>';
+                      + (new Handlebars.SafeString(MailPoet.I18n.t('dateMatchError')))
+                      + '</span>'
+                    );
                     preventNextStep = true;
                   };
                 });
