@@ -1,4 +1,5 @@
 <?php
+use MailPoet\Router\Router;
 use \MailPoet\Subscription\Url;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\Setting;
@@ -68,7 +69,7 @@ class UrlTest extends MailPoetTest {
     // extract & decode data from url
     $url_params = parse_url($url);
     parse_str($url_params['query'], $params);
-    $data = unserialize(base64_decode($params['data']));
+    $data = Router::decodeRequestData($params['data']);
 
     expect($data['email'])->contains('john@mailpoet.com');
     expect($data['token'])->notEmpty();

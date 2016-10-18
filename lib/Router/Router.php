@@ -46,10 +46,7 @@ class Router {
   }
 
   static function decodeRequestData($data) {
-    $data = base64_decode($data);
-    if(is_serialized($data)) {
-      $data = unserialize($data);
-    }
+    $data = json_decode(base64_decode($data), true);
     if(!is_array($data)) {
       $data = array();
     }
@@ -57,7 +54,7 @@ class Router {
   }
 
   static function encodeRequestData($data) {
-    return rtrim(base64_encode(serialize($data)), '=');
+    return rtrim(base64_encode(json_encode($data)), '=');
   }
 
   static function buildRequest($endpoint, $action, $data) {
