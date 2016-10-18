@@ -66,6 +66,31 @@ class ImportTest extends MailPoetTest {
     expect($this->import->updated_at)->notEmpty();
   }
 
+  function testItChecksForRequiredDataFields() {
+    $data = $this->data;
+    // exception should be thrown when one or more fields do not exist
+    unset($data['timestamp']);
+    try {
+      $this->import->validateData($data);
+      self::fail('Missing or invalid data exception not thrown.');
+    } catch(Exception $e) {
+      expect($e->getMessage())->equals('Missing or invalid subscriber data.');
+    }
+    // exception should not be thrown when all fields exist
+    $this->import->validateData($this->data);
+  }
+
+  function testItValidatesColumnNames() {
+    $data = $this->data;
+    $data['columns']['test) values ((ExtractValue(1,CONCAT(0x5c, (SELECT version())))))%23'] = true;
+    try {
+      $this->import->validateData($data);
+      self::fail('Missing or invalid data exception not thrown.');
+    } catch(Exception $e) {
+      expect($e->getMessage())->equals('Missing or invalid subscriber data.');
+    }
+  }
+
   function testItCanTransformSubscribers() {
     $custom_field = $this->subscriber_custom_fields[0];
     expect($this->import->subscribers_data['first_name'][0])
