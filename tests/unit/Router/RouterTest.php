@@ -14,7 +14,7 @@ class FrontRouterTest extends MailPoetTest {
       Router::NAME => '',
       'endpoint' => 'mock_endpoint',
       'action' => 'test',
-      'data' => base64_encode(serialize(array('data' => 'dummy data')))
+      'data' => base64_encode(json_encode(array('data' => 'dummy data')))
     );
     $this->router = new Router($this->router_data);
   }
@@ -22,7 +22,7 @@ class FrontRouterTest extends MailPoetTest {
   function testItCanGetAPIDataFromGetRequest() {
     $data = array('data' => 'dummy data');
     $url = 'http://example.com/?' . Router::NAME . '&endpoint=view_in_browser&action=view&data='
-      . base64_encode(serialize($data));
+      . base64_encode(json_encode($data));
     parse_str(parse_url($url, PHP_URL_QUERY), $_GET);
     $router = new Router();
     expect($router->api_request)->equals(true);
@@ -100,7 +100,7 @@ class FrontRouterTest extends MailPoetTest {
     $data = array('data' => 'dummy data');
     $result = Router::encodeRequestData($data);
     expect($result)->equals(
-      rtrim(base64_encode(serialize($data)), '=')
+      rtrim(base64_encode(json_encode($data)), '=')
     );
   }
 
@@ -112,14 +112,19 @@ class FrontRouterTest extends MailPoetTest {
 
   function testItCanDecodeRequestData() {
     $data = array('data' => 'dummy data');
-    $encoded_data = rtrim(base64_encode(serialize($data)), '=');
+    $encoded_data = rtrim(base64_encode(json_encode($data)), '=');
     $result = Router::decodeRequestData($encoded_data);
     expect($result)->equals($data);
   }
 
+  function testItCanConvertInvalidRequestDataToArray() {
+    $result = Router::decodeRequestData('some_invalid_data');
+    expect($result)->equals(array());
+  }
+
   function testItCanBuildRequest() {
     $data = array('data' => 'dummy data');
-    $encoded_data = rtrim(base64_encode(serialize($data)), '=');
+    $encoded_data = rtrim(base64_encode(json_encode($data)), '=');
     $result = Router::buildRequest(
       'mock_endpoint',
       'test',

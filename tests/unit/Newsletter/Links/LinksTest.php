@@ -66,10 +66,10 @@ class LinksTest extends MailPoetTest {
     expect($result)
       ->regExp('/<img src="http.*?' . Router::NAME . '&endpoint=track&action=open&data=.*?>/');
 
-    // data was base64encoded, serialized and contains an array of variables
+    // data was properly encoded
     preg_match_all('/data=(?P<data>.*?)"/', $result, $result);
     foreach($result['data'] as $data) {
-      $data = unserialize(base64_decode($data));
+      $data = Router::decodeRequestData($data);
       expect($data['subscriber_id'])->equals($subscriber->id);
       expect($data['queue_id'])->equals($queue->id);
       expect(isset($data['subscriber_token']))->true();
