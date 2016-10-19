@@ -6,6 +6,8 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
+require_once(ABSPATH . 'wp-includes/pluggable.php');
+
 class Daemon {
   public $daemon;
   public $request_data;

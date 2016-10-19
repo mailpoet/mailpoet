@@ -13,6 +13,8 @@ use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
+require_once(ABSPATH . 'wp-includes/pluggable.php');
+
 class Scheduler {
   public $timer;
   const UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT = 5;

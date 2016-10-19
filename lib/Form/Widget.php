@@ -161,7 +161,7 @@ class Widget extends \WP_Widget {
         );
 
         // generate security token
-        $data['token'] = Security::generateToken('subscribers_subscribe');
+        $data['token'] = Security::generateToken();
 
         // render form
         $renderer = new Renderer();

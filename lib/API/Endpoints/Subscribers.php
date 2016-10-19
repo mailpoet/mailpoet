@@ -2,6 +2,7 @@
 namespace MailPoet\API\Endpoints;
 use \MailPoet\API\Endpoint as APIEndpoint;
 use \MailPoet\API\Error as APIError;
+use \MailPoet\API\Access as APIAccess;
 
 use MailPoet\Listing;
 use MailPoet\Models\Subscriber;
@@ -15,6 +16,11 @@ use MailPoet\Models\StatisticsForms;
 if(!defined('ABSPATH')) exit;
 
 class Subscribers extends APIEndpoint {
+
+  public $permissions = array(
+    'subscribe' => APIAccess::ALL
+  );
+
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = Subscriber::findOne($id);

@@ -13,26 +13,25 @@ class API {
   private $_data = array();
 
   function init() {
-    // Admin API (Ajax only)
+     // Admin Security token
+    add_action(
+      'admin_head',
+      array($this, 'setToken')
+    );
+
+    // ajax (logged in users)
     add_action(
       'wp_ajax_mailpoet',
-      array($this, 'setupAdmin')
+      array($this, 'setupAjax')
     );
-
-    // Public API (Ajax)
+    // ajax (logged out users)
     add_action(
       'wp_ajax_nopriv_mailpoet',
-      array($this, 'setupPublic')
+      array($this, 'setupAjax')
     );
   }
 
-  function setupAdmin() {
-    $this->getRequestData();
-    $this->checkPermissions();
-    $this->processRoute();
-  }
-
-  function setupPublic() {
+  function setupAjax() {
     $this->getRequestData();
     $this->checkToken();
     $this->processRoute();
@@ -88,6 +87,18 @@ class API {
   function processRoute() {
     try {
       $endpoint = new $this->_endpoint_class();
+
+      // check the accessibility of the requested endpoint's action
+      // by default, an endpoint's action is considered "private"
+      $permissions = $endpoint->permissions;
+      if(
+        array_key_exists($this->_method, $permissions) === false
+        ||
+        $permissions[$this->_method] !== Access::ALL
+      ) {
+        $this->checkPermissions();
+      }
+
       $response = $endpoint->{$this->_method}($this->_data);
       $response->send();
     } catch(\Exception $e) {
@@ -117,9 +128,7 @@ class API {
   }
 
   function checkToken() {
-    $action = $this->_endpoint.'_'.$this->_method;
-
-    $is_valid_token = wp_verify_nonce($this->_token, $action);
+    $is_valid_token = wp_verify_nonce($this->_token, 'mailpoet_token');
 
     if($is_valid_token === false) {
       $error_response = new ErrorResponse(
@@ -131,5 +140,14 @@ class API {
       );
       $error_response->send();
     }
+  }
+
+  function setToken() {
+    $global = '<script type="text/javascript">';
+    $global .= 'var mailpoet_token = "';
+    $global .=  Security::generateToken();
+    $global .= '";';
+    $global .= '</script>';
+    echo $global;
   }
 }
