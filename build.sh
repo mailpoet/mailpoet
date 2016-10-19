@@ -44,7 +44,7 @@ rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
 rm -rf $plugin_name/vendor/cerdic/css-tidy/testing
 
 # Copy release files.
-cp LICENSE $plugin_name
+cp license.txt $plugin_name
 cp index.php $plugin_name
 cp $plugin_name.php $plugin_name
 cp readme.txt $plugin_name
