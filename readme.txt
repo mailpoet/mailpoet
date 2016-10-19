@@ -1,41 +1,89 @@
-=== MailPoet ===
+=== MailPoet 3 - Beta Version ===
 Contributors: mailpoet
-Donate link: http://mailpoet.com
-Tags: wordpress, plugin
-Requires at least: 4.0
-Tested up to: 4.0
-Stable tag: 1.0
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
-
-MailPoet newsletters.
+Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
+Requires at least: 4.6
+Tested up to: 4.6
+Stable tag: 3.0.0
+Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
 
-Long description.
+Try the new MailPoet! This is a beta version of our completely new email newsletter plugin.(https://wordpress.org/plugins/wysija-newsletters/).
+
+= What's new? =
+
+* New email designer
+* Responsive templates
+* Send with MailPoet's sending service
+* Fast user interface
+* Easier initial configuration
+
+[Try the demo.](http://demo3.mailpoet.com/launch/)
+
+= Check out this 2 minute video. =
+
+[vimeo https://vimeo.com/183339372]
+
+= Use at your own risk! =
+
+Use [the current stable MailPoet](https://wordpress.org/plugins/wysija-newsletters/) instead of this version if you are not a power user.
+
+* This beta version is for testing purposes only!
+* Not RTL compatible
+* We expect bug reports from you!
+* Multisite not supported
+* No migration script from MailPoet 2.X to this version
+* Weekly releases
+
+= Premium version =
+
+Not available yet. Limited stats in free version.
+
+= Translations in your language =
+
+We accept translations in the repository.
 
 == Installation ==
 
-Installation instructions.
+There are 3 ways to install this plugin:
 
-== Screenshots ==
+= 1. The super easy way =
+1. In your Admin, go to menu Plugins > Add
+1. Search for `mailpoet`
+1. Click to install
+1. Activate the plugin
+1. A new menu `mailpoet` will appear in your Admin
 
-Screenshots.
+= 2. The easy way =
+1. Download the plugin (.zip file) on the right column of this page
+1. In your Admin, go to menu Plugins > Add
+1. Select the tab "Upload"
+1. Upload the .zip file you just downloaded
+1. Activate the plugin
+1. A new menu `MailPoet` will appear in your Admin
+
+= 3. The old and reliable way (FTP) =
+1. Upload `mailpoet` folder to the `/wp-content/plugins/` directory
+1. Activate the plugin through the 'Plugins' menu in WordPress
+1. A new menu `MailPoet` will appear in your Admin
 
 == Frequently Asked Questions ==
 
-= Question? =
+= Need help? =
 
-Answer.
+Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can write to us on the forums too.
+
+== Screenshots ==
+
+1. Sample newsletters.
+2. The drag & drop editor.
+3. Subscriber management.
+4. Sending method configuration in Settings.
+5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
 
-= 1.0 =
-* 2020-01-01
-* Initial release
+= 3.0.0 - 2016-09 =
 
-== Upgrade Notice ==
+* Hello world.
 
-= 1.0 =
-* 2020-01-01
-* Initial release
