@@ -63,8 +63,9 @@ class Newsletters extends APIEndpoint {
           ->deleteMany();
 
         foreach($segment_ids as $segment_id) {
+          $id = (is_array($segment_id)) ? (int)$segment_id['id'] : (int)$segment_id;
           $relation = NewsletterSegment::create();
-          $relation->segment_id = $segment_id;
+          $relation->segment_id = $id;
           $relation->newsletter_id = $newsletter->id;
           $relation->save();
         }
