@@ -33,7 +33,18 @@ class API {
 
   function setupAjax() {
     $this->getRequestData();
-    $this->checkToken();
+
+    if($this->checkToken() === false) {
+      $error_response = new ErrorResponse(
+        array(
+          Error::UNAUTHORIZED => __('Invalid request.', 'mailpoet')
+        ),
+        array(),
+        Response::STATUS_UNAUTHORIZED
+      );
+      $error_response->send();
+    }
+
     $this->processRoute();
   }
 
@@ -96,7 +107,19 @@ class API {
         ||
         $permissions[$this->_method] !== Access::ALL
       ) {
-        $this->checkPermissions();
+        if($this->checkPermissions() === false) {
+          $error_response = new ErrorResponse(
+            array(
+              Error::FORBIDDEN => __(
+                'You do not have the required permissions.',
+                'mailpoet'
+              )
+            ),
+            array(),
+            Response::STATUS_FORBIDDEN
+          );
+          $error_response->send();
+        }
       }
 
       $response = $endpoint->{$this->_method}($this->_data);
@@ -110,36 +133,11 @@ class API {
   }
 
   function checkPermissions() {
-    $has_permission = current_user_can('manage_options');
-
-    if($has_permission === false) {
-      $error_response = new ErrorResponse(
-        array(
-          Error::FORBIDDEN => __(
-            'You do not have the required permissions.',
-            'mailpoet'
-          )
-        ),
-        array(),
-        Response::STATUS_FORBIDDEN
-      );
-      $error_response->send();
-    }
+    return current_user_can('manage_options');
   }
 
   function checkToken() {
-    $is_valid_token = wp_verify_nonce($this->_token, 'mailpoet_token');
-
-    if($is_valid_token === false) {
-      $error_response = new ErrorResponse(
-        array(
-          Error::UNAUTHORIZED => __('Invalid request.', 'mailpoet')
-        ),
-        array(),
-        Response::STATUS_UNAUTHORIZED
-      );
-      $error_response->send();
-    }
+    return wp_verify_nonce($this->_token, 'mailpoet_token');
   }
 
   function setToken() {
