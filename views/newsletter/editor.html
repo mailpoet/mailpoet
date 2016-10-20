@@ -1209,7 +1209,7 @@
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
           response.errors.map(function(error) { return error.message; }),
-          { scroll: true }
+          { scroll: true, static: true }
         );
       }
     });
