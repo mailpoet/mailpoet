@@ -40,9 +40,9 @@ class Newsletters extends APIEndpoint {
   }
 
   function save($data = array()) {
-    $segment_ids = array();
+    $segments = array();
     if(isset($data['segments'])) {
-      $segment_ids = $data['segments'];
+      $segments = $data['segments'];
       unset($data['segments']);
     }
 
@@ -58,13 +58,14 @@ class Newsletters extends APIEndpoint {
     if(!empty($errors)) {
       return $this->badRequest($errors);
     } else {
-      if(!empty($segment_ids)) {
+      if(!empty($segments)) {
         NewsletterSegment::where('newsletter_id', $newsletter->id)
           ->deleteMany();
 
-        foreach($segment_ids as $segment_id) {
+        foreach($segments as $segment) {
+          if(!is_array($segment)) continue;
           $relation = NewsletterSegment::create();
-          $relation->segment_id = $segment_id;
+          $relation->segment_id = (int)$segment['id'];
           $relation->newsletter_id = $newsletter->id;
           $relation->save();
         }

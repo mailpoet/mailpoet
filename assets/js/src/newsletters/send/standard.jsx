@@ -348,6 +348,14 @@ define(
         getLabel: function(segment) {
           return segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')';
         },
+        transformChangedValue: function(segment_ids) {
+          var all_segments = this.state.items;
+          return _.map(segment_ids, function(id) {
+            return _.find(all_segments, function(segment) {
+              return segment.id === id;
+            });
+          });
+        },
         validation: {
           'data-parsley-required': true,
           'data-parsley-required-message': MailPoet.I18n.t('noSegmentsSelectedError')

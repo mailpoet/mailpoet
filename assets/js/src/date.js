@@ -71,30 +71,43 @@ define('date',
     convertFormat: function(format) {
       var format_mappings = {
         date: {
-          D: 'ddd',
-          l: 'dddd',
           d: 'DD',
+          D: 'ddd',
           j: 'D',
-          z: 'DDDD',
+          l: 'dddd',
           N: 'E',
-          S: '',
-          M: 'MMM',
+          S: 'o',
+          w: 'e',
+          z: 'DDD',
+          W: 'W',
           F: 'MMMM',
           m: 'MM',
-          n: '',
-          t: '',
-          y: 'YY',
+          M: 'MMM',
+          n: 'M',
+          t: '', // no equivalent
+          L: '', // no equivalent
+          o: 'YYYY',
           Y: 'YYYY',
-          H: 'HH',
-          h: 'hh',
-          g: 'h',
+          y: 'YY',
+          a: 'a',
           A: 'A',
+          B: '', // no equivalent
+          g: 'h',
+          G: 'H',
+          h: 'hh',
+          H: 'HH',
           i: 'mm',
           s: 'ss',
-          T: 'z',
-          O: 'ZZ',
-          w: 'd',
-          W: 'WW'
+          u: 'SSS',
+          e: 'zz', // deprecated since version 1.6.0 of moment.js
+          I: '', // no equivalent
+          O: '', // no equivalent
+          P: '', // no equivalent
+          T: '', // no equivalent
+          Z: '', // no equivalent
+          c: '', // no equivalent
+          r: '', // no equivalent
+          U: 'X'
         },
         strftime: {
           a: 'ddd',
@@ -127,20 +140,29 @@ define('date',
 
       var replacements = format_mappings['date'];
 
-      var outputFormat = '';
+      var convertedFormat = [];
+      var escapeToken = false;
 
-      Object.keys(replacements).forEach(function(key) {
-        if (format.indexOf(key) !== -1) {
-          format = format.replace(key, '%'+key);
+      for (var index in format) {
+        var token = format[index];
+
+        if (escapeToken === true) {
+          convertedFormat.push('['+token+']');
+          escapeToken = false;
+        } else {
+          if (token === '\\') {
+            // Slash escapes the next symbol to be treated as literal
+            escapeToken = true;
+            continue;
+          } else if (replacements[token] !== undefined) {
+            convertedFormat.push(replacements[token]);
+          } else {
+            convertedFormat.push('['+token+']');
+          }
         }
-      });
-      outputFormat = format;
-      Object.keys(replacements).forEach(function(key) {
-        if (outputFormat.indexOf('%'+key) !== -1) {
-          outputFormat = outputFormat.replace('%'+key, replacements[key]);
-        }
-      });
-      return outputFormat;
+      }
+
+      return convertedFormat.join('');
     }
   };
 });

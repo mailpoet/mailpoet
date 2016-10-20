@@ -11,15 +11,16 @@ define([
   // Does not hold newsletter content nor newsletter styles, those are
   // handled by other components.
   Module.NewsletterModel = SuperModel.extend({
-    stale: ['body', 'created_at', 'deleted_at', 'updated_at'],
+    whitelisted: ['id', 'subject', 'preheader'],
     initialize: function(options) {
       this.on('change', function() {
           App.getChannel().trigger('autoSave');
       });
     },
     toJSON: function() {
-      // Remove stale attributes from resulting JSON object
-      return _.omit(SuperModel.prototype.toJSON.call(this), this.stale);
+      // Use only whitelisted properties to ensure properties editor
+      // doesn't control don't change.
+      return _.pick(SuperModel.prototype.toJSON.call(this), this.whitelisted);
     },
   });
 

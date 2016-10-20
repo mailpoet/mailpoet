@@ -122,9 +122,10 @@ function(
         } else {
           value = e.target.value;
         }
+        var transformedValue = this.transformChangedValue(value);
         this.props.onValueChange({
          target: {
-            value: value,
+            value: transformedValue,
             name: this.props.field.name
           }
         });
@@ -147,6 +148,16 @@ function(
         return this.props.field.getValue(item, this.props.item);
       }
       return item.id;
+    },
+    // When it's impossible to represent the desired value in DOM,
+    // this function may be used to transform the placeholder value into
+    // desired value.
+    transformChangedValue: function(value) {
+      if(typeof this.props.field['transformChangedValue'] === 'function') {
+        return this.props.field.transformChangedValue.call(this, value);
+      } else {
+        return value;
+      }
     },
     render: function() {
       const options = this.state.items.map((item, index) => {
