@@ -18,7 +18,8 @@ define([
       });
     },
     toJSON: function() {
-      // Remove stale attributes from resulting JSON object
+      // Use only whitelisted properties to ensure properties editor
+      // doesn't control don't change.
       return _.pick(SuperModel.prototype.toJSON.call(this), this.whitelisted);
     },
   });

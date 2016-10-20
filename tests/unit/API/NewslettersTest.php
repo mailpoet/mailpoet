@@ -82,6 +82,27 @@ class NewslettersTest extends MailPoetTest {
     expect($updated_newsletter->subject)->equals('My Updated Newsletter');
   }
 
+  function testItCanModifySegmentsOfExistingNewsletter() {
+    $segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
+    $fake_segment_id = 1;
+
+    $router = new Newsletters();
+    $newsletter_data = array(
+      'id' => $this->newsletter->id,
+      'subject' => 'My Updated Newsletter',
+      'segments' => array($segment_1->asArray(), $fake_segment_id)
+    );
+
+    $response = $router->save($newsletter_data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    $updated_newsletter =
+      Newsletter::findOne($this->newsletter->id)->withSegments();
+
+    expect(count($updated_newsletter->segments))->equals(1);
+    expect($updated_newsletter->segments[0]['name'])->equals('Segment 1');
+  }
+
   function testItCanSetANewsletterStatus() {
     $router = new Newsletters();
     // set status to sending

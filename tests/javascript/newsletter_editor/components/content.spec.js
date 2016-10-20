@@ -38,7 +38,7 @@ define([
       });
 
       describe('toJSON()', function() {
-        it('will only contain properties modifyable by the editor', function() {
+        it('will only contain properties modifiable by the editor', function() {
           var model = new (ContentComponent.NewsletterModel)({
             id: 19,
             subject: 'some subject',
