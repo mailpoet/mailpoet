@@ -19,7 +19,7 @@ define([
               data2: 'data2Value',
             },
           },
-          someField: 'someValue'
+          subject: 'my test subject'
         });
       });
 
@@ -28,13 +28,32 @@ define([
         global.stubChannel(EditorApplication, {
           trigger: mock,
         });
-        model.set('someField', 'anotherValue');
+        model.set('subject', 'another test subject');
         mock.verify();
       });
 
-      it('does not include styles and content attributes in its JSON', function() {
+      it('does not include styles and content properties in its JSON', function() {
         var json = model.toJSON();
-        expect(json).to.deep.equal({someField: 'someValue'});
+        expect(json).to.deep.equal({subject: 'my test subject'});
+      });
+
+      describe('toJSON()', function() {
+        it('will only contain properties modifyable by the editor', function() {
+          var model = new (ContentComponent.NewsletterModel)({
+            id: 19,
+            subject: 'some subject',
+            preheader: 'some preheader',
+            segments: [1, 2, 3],
+            modified_at: '2000-01-01 12:01:02',
+            someField: 'someValue'
+          });
+
+          var json = model.toJSON();
+          expect(json.id).to.equal(19);
+          expect(json.subject).to.equal('some subject');
+          expect(json.preheader).to.equal('some preheader');
+          expect(json).to.not.include.keys('segments', 'modified_at', 'someField');
+        })
       });
     });
 
