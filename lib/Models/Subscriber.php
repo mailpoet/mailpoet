@@ -383,6 +383,7 @@ class Subscriber extends Model {
         'subscribers.id = relation.subscriber_id',
         'subscribers'
       )
+      ->whereNull('subscribers.deleted_at')
       ->where('subscribers.status', 'subscribed');
     return $subscribers;
   }
