@@ -24,6 +24,7 @@ class API {
       'wp_ajax_mailpoet',
       array($this, 'setupAjax')
     );
+
     // ajax (logged out users)
     add_action(
       'wp_ajax_nopriv_mailpoet',
