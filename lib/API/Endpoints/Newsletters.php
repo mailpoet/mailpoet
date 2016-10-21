@@ -91,9 +91,14 @@ class Newsletters extends APIEndpoint {
         }
       }
 
-      return $this->successResponse(
-        Newsletter::findOne($newsletter->id)->asArray()
-      );
+      $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
+
+      // if this is a post notification, process options and update its schedule
+      if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+        Scheduler::processPostNotificationSchedule($newsletter);
+      }
+
+      return $this->successResponse($newsletter->asArray());
     }
   }
 
