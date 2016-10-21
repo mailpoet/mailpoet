@@ -2,10 +2,14 @@
 use \MailPoet\API\Response as APIResponse;
 use \MailPoet\API\Error as APIError;
 use \MailPoet\API\Endpoints\Newsletters;
+use MailPoet\Config\Populator;
 use \MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterOption;
+use MailPoet\Models\NewsletterOptionField;
 use \MailPoet\Models\NewsletterSegment;
 use \MailPoet\Models\NewsletterTemplate;
 use \MailPoet\Models\Segment;
+use MailPoet\Newsletter\Scheduler\Scheduler;
 
 class NewslettersTest extends MailPoetTest {
   function _before() {
@@ -44,17 +48,26 @@ class NewslettersTest extends MailPoetTest {
   }
 
   function testItCanSaveANewNewsletter() {
+    $newsletter_option_field = NewsletterOptionField::create();
+    $newsletter_option_field->name = 'some_option';
+    $newsletter_option_field->newsletter_type = Newsletter::TYPE_STANDARD;
+    $newsletter_option_field->save();
+
     $valid_data = array(
       'subject' => 'My First Newsletter',
-      'type' => Newsletter::TYPE_STANDARD
+      'type' => Newsletter::TYPE_STANDARD,
+      'options' => array(
+        $newsletter_option_field->name => 'some_option_value',
+      )
     );
 
     $router = new Newsletters();
     $response = $router->save($valid_data);
+    $saved_newsletter = Newsletter::filter('filterWithOptions')->findOne($response->data['id']);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Newsletter::findOne($response->data['id'])->asArray()
-    );
+    expect($response->data)->equals($saved_newsletter->asArray());
+    // newsletter option should be saved
+    expect($saved_newsletter->some_option)->equals('some_option_value');
 
     $invalid_data = array(
       'subject' => 'Missing newsletter type'
@@ -73,13 +86,54 @@ class NewslettersTest extends MailPoetTest {
     );
 
     $response = $router->save($newsletter_data);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Newsletter::findOne($this->newsletter->id)->asArray()
-    );
-
     $updated_newsletter = Newsletter::findOne($this->newsletter->id);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals($updated_newsletter->asArray());
     expect($updated_newsletter->subject)->equals('My Updated Newsletter');
+  }
+
+  function testItCanUpdatePostNotificationScheduleUponSave() {
+    $newsletter_options = array(
+      'intervalType',
+      'timeOfDay',
+      'weekDay',
+      'monthDay',
+      'nthWeekDay',
+      'schedule'
+    );
+    foreach($newsletter_options as $option) {
+      $newsletter_option_field = NewsletterOptionField::create();
+      $newsletter_option_field->name = $option;
+      $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
+      $newsletter_option_field->save();
+    }
+
+    $router = new Newsletters();
+    $newsletter_data = array(
+      'id' => $this->newsletter->id,
+      'type' => Newsletter::TYPE_NOTIFICATION,
+      'subject' => 'Newsletter',
+      'options' => array(
+        'intervalType' => Scheduler::INTERVAL_WEEKLY,
+        'timeOfDay' => '50400',
+        'weekDay' => '1',
+        'monthDay' => '0',
+        'nthWeekDay' => '1',
+        'schedule' => '0 14 * * 1'
+      )
+    );
+    $response = $router->save($newsletter_data);
+    $saved_newsletter = Newsletter::filter('filterWithOptions')
+      ->findOne($response->data['id']);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals($saved_newsletter->asArray());
+
+    // schedule should be recalculated when options change
+    $newsletter_data['options']['intervalType'] = Scheduler::INTERVAL_IMMEDIATELY;
+    $response = $router->save($newsletter_data);
+    $saved_newsletter = Newsletter::filter('filterWithOptions')->findOne($response->data['id']);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($saved_newsletter->schedule)->equals('* * * * *');
   }
 
   function testItCanModifySegmentsOfExistingNewsletter() {
@@ -398,6 +452,7 @@ class NewslettersTest extends MailPoetTest {
   function _after() {
     Newsletter::deleteMany();
     NewsletterSegment::deleteMany();
+    NewsletterOptionField::deleteMany();
     Segment::deleteMany();
   }
 }

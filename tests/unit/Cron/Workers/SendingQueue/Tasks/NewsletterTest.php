@@ -76,6 +76,7 @@ class NewsletterTaskTest extends MailPoetTest {
 
   function testReturnsFalseWhenNewsletterIsANotificationWithoutPosts() {
     $newsletter = $this->newsletter;
+
     $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     // replace post id data tag with something else
     $newsletter->body = str_replace('data-post-id', 'id', $newsletter->body);
@@ -92,17 +93,27 @@ class NewsletterTaskTest extends MailPoetTest {
     expect($newsletter_post->post_id)->equals('10');
   }
 
-  function testItUpdatesStatusToSentOnlyForStandardNewsletters() {
-    // newsletter type is 'standard'
+  function testItUpdatesStatusToSentOnlyForStandardAndPostNotificationNewsletters() {
     $newsletter = $this->newsletter;
-    expect($newsletter->type)->equals(Newsletter::TYPE_STANDARD);
-    expect($newsletter->status)->notEquals(Newsletter::STATUS_SENT);
+
+    // newsletter type is 'standard'
+    $newsletter->type = Newsletter::TYPE_STANDARD;
+    $newsletter->status = 'not_sent';
+    $newsletter->save();
     $this->newsletter_task->markNewsletterAsSent($newsletter);
     $updated_newsletter = Newsletter::findOne($newsletter->id);
     expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENT);
 
-    // newsletter type is NOT 'standard'
-    $newsletter->type = Newsletter::TYPE_NOTIFICATION;
+    // newsletter type is 'notification history'
+    $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $newsletter->status = 'not_sent';
+    $newsletter->save();
+    $this->newsletter_task->markNewsletterAsSent($newsletter);
+    $updated_newsletter = Newsletter::findOne($newsletter->id);
+    expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENT);
+
+    // all other newsletter types
+    $newsletter->type = Newsletter::TYPE_WELCOME;
     $newsletter->status = 'not_sent';
     $newsletter->save();
     $this->newsletter_task->markNewsletterAsSent($newsletter);
