@@ -76,7 +76,7 @@ class NewsletterTaskTest extends MailPoetTest {
 
   function testReturnsFalseWhenNewsletterIsANotificationWithoutPosts() {
     $newsletter = $this->newsletter;
-    $newsletter->type = Newsletter::TYPE_NOTIFICATION;
+    $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     // replace post id data tag with something else
     $newsletter->body = str_replace('data-post-id', 'id', $newsletter->body);
     $newsletter->save();
