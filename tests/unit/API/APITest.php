@@ -13,7 +13,7 @@ class APITest extends MailPoetTest {
     $wp_user_id = wp_create_user('WP User', 'pass', 'wp_user@mailpoet.com');
     if(is_wp_error($wp_user_id)) {
       // user already exists
-      $this->wp_user_id = email_exists('user1@mailpoet.com');
+      $this->wp_user_id = email_exists('wp_user@mailpoet.com');
     } else {
       $this->wp_user_id = $wp_user_id;
     }
