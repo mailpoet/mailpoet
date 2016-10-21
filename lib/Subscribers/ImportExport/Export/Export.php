@@ -8,6 +8,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\Security;
 use MailPoet\Util\XLSXWriter;
 
 class Export {
@@ -240,7 +241,7 @@ class Export {
   function getExportFile($format) {
     return sprintf(
       $this->export_path . '/MailPoet_export_%s.%s',
-      substr(md5(time()), 0, 4),
+      Security::generateRandomString(15),
       $format
     );
   }
