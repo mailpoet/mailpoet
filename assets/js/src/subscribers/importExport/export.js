@@ -95,15 +95,18 @@ define(
          });
       };
 
+     // set confirmed subscribers export option to false
+     exportData.exportConfirmedOption = false;
+     
      renderSegmentsAndFields(subscriberFieldsContainerElement, subscriberFieldsSelect2);
      renderSegmentsAndFields(segmentsContainerElement, segments);
 
-     subscriberFieldsContainerElement.select2('val', [
-       'status',
+     subscriberFieldsContainerElement.val([
        'email',
        'first_name',
-       'last_name'
-     ]);
+       'last_name',
+       'status'
+     ]).trigger("change");
 
      exportConfirmedOptionElement.change(function () {
        var selectedSegments = segmentsContainerElement.val();
