@@ -5,6 +5,8 @@ if(!defined('ABSPATH')) exit;
 
 abstract class Endpoint {
 
+  public $permissions = array();
+
   function successResponse(
     $data = array(), $meta = array(), $status = Response::STATUS_OK
   ) {

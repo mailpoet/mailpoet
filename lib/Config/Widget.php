@@ -69,8 +69,7 @@ class Widget {
           'form' => $form_html,
           'mailpoet_form' => array(
             'ajax_url' => admin_url('admin-ajax.php', 'absolute'),
-            'is_rtl' => $is_rtl,
-            'token' => Security::generateToken()
+            'is_rtl' => $is_rtl
           )
         );
 
@@ -103,8 +102,7 @@ class Widget {
 
     wp_localize_script('mailpoet_public', 'MailPoetForm', array(
       'ajax_url' => admin_url('admin-ajax.php'),
-      'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false),
-      'token' => Security::generateToken()
+      'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false)
     ));
   }
 
