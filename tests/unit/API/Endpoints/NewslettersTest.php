@@ -1,13 +1,9 @@
 <?php
 use \MailPoet\API\Response as APIResponse;
-use \MailPoet\API\Error as APIError;
 use \MailPoet\API\Endpoints\Newsletters;
-use MailPoet\Config\Populator;
 use \MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use \MailPoet\Models\NewsletterSegment;
-use \MailPoet\Models\NewsletterTemplate;
 use \MailPoet\Models\Segment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 
