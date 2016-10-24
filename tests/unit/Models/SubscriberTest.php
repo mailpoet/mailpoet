@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -369,7 +370,7 @@ class SubscriberTest extends MailPoetTest {
       ->equals('non_default_value');
   }
 
-  function testItCanGetOnlySubscribedSubscribersInSegments() {
+  function testItCanGetOnlySubscribedAndNonTrashedSubscribersInSegments() {
     $subscriber_1 = Subscriber::createOrUpdate(array(
       'first_name' => 'Adam',
       'last_name' => 'Smith',
@@ -384,13 +385,20 @@ class SubscriberTest extends MailPoetTest {
       'status' => Subscriber::STATUS_SUBSCRIBED
     ));
 
+    $subscriber_3 = Subscriber::createOrUpdate(array(
+      'first_name' => 'Bob',
+      'last_name' => 'Smith',
+      'email' => 'bob@smith.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'deleted_at' => Carbon::now()
+    ));
+
     $segment = Segment::createOrUpdate(array(
       'name' => 'Only Subscribed Subscribers Segment'
     ));
 
-    //Subscriber::createMultiple($columns, $values);
     $result = SubscriberSegment::subscribeManyToSegments(
-      array($subscriber_1->id, $subscriber_2->id),
+      array($subscriber_1->id, $subscriber_2->id, $subscriber_3->id),
       array($segment->id)
     );
     expect($result)->true();

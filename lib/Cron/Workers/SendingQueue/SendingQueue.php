@@ -47,6 +47,7 @@ class SendingQueue {
         // abort if execution limit is reached
         CronHelper::enforceExecutionLimit($this->timer);
         $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)
+          ->whereNull('deleted_at')
           ->findMany();
         $found_subscribers_ids = array_map(function($subscriber) {
           return $subscriber->id;

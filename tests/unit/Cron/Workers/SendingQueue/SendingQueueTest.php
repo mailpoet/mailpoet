@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\API\Endpoints\Cron;
@@ -296,6 +297,29 @@ class SendingQueueTest extends MailPoetTest {
       ->where('queue_id', $this->queue->id)
       ->findOne();
     expect($statistics)->false();
+  }
+
+  function testItDoesNotSendToTrashedSubscribers() {
+    $sending_queue_worker = $this->sending_queue_worker;
+    $sending_queue_worker->mailer_task = Stub::make(
+      new MailerTask(),
+      array('send' => function($newsletter, $subscriber) { return true; })
+    );
+
+    // newsletter is sent to existing subscriber
+    $sending_queue_worker->process();
+    $updated_queue = SendingQueue::findOne($this->queue->id);
+    expect((int)$updated_queue->count_total)->equals(1);
+
+    // newsletter is not sent to trashed subscriber
+    $this->_after();
+    $this->_before();
+    $subscriber = $this->subscriber;
+    $subscriber->deleted_at = Carbon::now();
+    $subscriber->save();
+    $sending_queue_worker->process();
+    $updated_queue = SendingQueue::findOne($this->queue->id);
+    expect((int)$updated_queue->count_total)->equals(0);
   }
 
   function _after() {
