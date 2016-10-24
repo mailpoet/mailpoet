@@ -15,12 +15,6 @@ class AutomatedLatestContent {
   function __construct($newsletter_id = false, $newer_than_timestamp = false) {
     $this->newsletter_id = $newsletter_id;
     $this->newer_than_timestamp = $newer_than_timestamp;
-
-    $this->_attachSentPostsFilter();
-  }
-
-  function __destruct() {
-    $this->_detachSentPostsFilter();
   }
 
   function filterOutSentPosts($where) {
@@ -72,7 +66,10 @@ class AutomatedLatestContent {
       );
     }
 
-    return get_posts($parameters);
+    $this->_attachSentPostsFilter();
+    $posts = get_posts($parameters);
+    $this->_detachSentPostsFilter();
+    return $posts;
   }
 
   function transformPosts($args, $posts) {

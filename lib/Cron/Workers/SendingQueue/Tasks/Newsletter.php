@@ -8,7 +8,6 @@ use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\Setting;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
-use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -45,7 +44,9 @@ class Newsletter {
     }
     // check if this is a post notification and if it contains posts
     $newsletter_contains_posts = strpos($rendered_newsletter['html'], 'data-post-id');
-    if($newsletter->type === 'notification' && !$newsletter_contains_posts) {
+    if($newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY &&
+       !$newsletter_contains_posts
+    ) {
       return false;
     }
     // extract and save newsletter posts
@@ -91,8 +92,10 @@ class Newsletter {
   }
 
   function markNewsletterAsSent($newsletter) {
-    // if it's a standard newsletter, update its status
-    if($newsletter->type === NewsletterModel::TYPE_STANDARD) {
+    // if it's a standard or notification history newsletter, update its status
+    if($newsletter->type === NewsletterModel::TYPE_STANDARD ||
+       $newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY
+    ) {
       $newsletter->setStatus(NewsletterModel::STATUS_SENT);
     }
   }
