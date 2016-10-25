@@ -59,8 +59,8 @@ class Menu {
 
     $newsletters_page = add_submenu_page(
       $main_page_slug,
-      $this->setPageTitle(__('Newsletters', 'mailpoet')),
-      __('Newsletters', 'mailpoet'),
+      $this->setPageTitle(__('Emails', 'mailpoet')),
+      __('Emails', 'mailpoet'),
       'manage_options',
       $main_page_slug,
       array($this, 'newsletters')
