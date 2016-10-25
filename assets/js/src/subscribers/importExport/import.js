@@ -871,7 +871,7 @@ define(
                     '<span class="mailpoet_data_match mailpoet_import_error" title="'
                     + MailPoet.I18n.t('noDateFieldMatch') + '">'
                     + MailPoet.I18n.t('emptyFirstRowDate')
-                    + '</span>';
+                    + '</span> ';
                   preventNextStep = true;
                 }
                 else {
@@ -901,7 +901,7 @@ define(
                       + '<span class="mailpoet_data_match" title="'
                       + MailPoet.I18n.t('verifyDateMatch') + '">'
                       + MailPoet.Date.format(date)
-                      + '</span>'
+                      + '</span> '
                     );
                   }
                   else {
@@ -910,7 +910,7 @@ define(
                       + '<span class="mailpoet_data_match mailpoet_import_error" title="'
                       + MailPoet.I18n.t('noDateFieldMatch') + '">'
                       + (new Handlebars.SafeString(MailPoet.I18n.t('dateMatchError')))
-                      + '</span>'
+                      + '</span> '
                     );
                     preventNextStep = true;
                   };

@@ -194,7 +194,7 @@
         if(~~($(this).val()) === 1) {
           result = confirm("<%= __('Subscribers will need to activate their subscription via email in order to receive your newsletters. This is highly recommended!') %>");
         } else {
-          result = confirm("<%= __('Unconfirmed subscribers will receive your newsletters from without needing to activate their subscriptions. This is not recommended!') %>");
+          result = confirm("<%= __('New subscribers will be automatically confirmed, without having to confirm their subscription. This is not recommended!') %>");
         }
         // if the user confirmed changing the signup confirmation (yes/no)
         if(result === true) {
