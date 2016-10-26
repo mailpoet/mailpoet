@@ -62,7 +62,7 @@ const _monthDayValues = _.object(
       } else {
         label = MailPoet.I18n.t('nth').replace("%$1d", day + 1);
       }
-      return [day, label];
+      return [day + 1, label];
     }
   )
 );
