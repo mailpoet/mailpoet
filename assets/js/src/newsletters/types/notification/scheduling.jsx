@@ -1,6 +1,5 @@
 import _ from 'underscore'
 import React from 'react'
-import MailPoet from 'mailpoet'
 import Select from 'form/fields/select.jsx'
 import {
   intervalValues,
