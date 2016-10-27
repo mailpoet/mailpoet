@@ -1,29 +1,19 @@
 <?php
 namespace MailPoet\Util\License\Features;
 
-use MailPoet\Config\Renderer;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Util\License\License;
 
 class Subscribers {
-  static $subscribers_limit = 2000;
+  public $license;
+  const SUBSCRIBERS_LIMIT = 2000;
 
-  function check($subscribers_limit = false) {
-    $subscribers_limit = ($subscribers_limit !== false) ?
-      $subscribers_limit :
-      self::$subscribers_limit;
-    if(!License::getLicense() &&
-      SubscriberModel::getTotalSubscribers() > $subscribers_limit
-    ) {
-      $renderer = new Renderer();
-      echo $renderer->init()->render('limit.html', array(
-        'limit' => $subscribers_limit
-      ));
-      return $this->terminateRequest();
-    }
+  function __construct($license = false) {
+    $this->license = ($license) ? $license : License::getLicense();
   }
 
-  function terminateRequest() {
-    exit;
+  function check($subscribers_limit = self::SUBSCRIBERS_LIMIT) {
+    if($this->license) return false;
+    return SubscriberModel::getTotalSubscribers() > $subscribers_limit;
   }
 }

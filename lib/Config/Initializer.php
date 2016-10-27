@@ -107,7 +107,6 @@ class Initializer {
       $this->setupShortcodes();
       $this->setupHooks();
       $this->setupImages();
-      $this->setupLicense();
       $this->setupCronTrigger();
 
       $this->plugin_initialized = true;
@@ -210,10 +209,5 @@ class Initializer {
 
   function handleFailedInitialization($message) {
     return WPNotice::displayError($message);
-  }
-
-  function setupLicense() {
-    $license = new License();
-    $license->init();
   }
 }
