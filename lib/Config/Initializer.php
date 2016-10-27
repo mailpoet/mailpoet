@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
 use MailPoet\API;
+use MailPoet\Util\License\License as License;
 use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
@@ -106,6 +107,7 @@ class Initializer {
       $this->setupShortcodes();
       $this->setupHooks();
       $this->setupImages();
+      $this->setupLicense();
       $this->setupCronTrigger();
 
       $this->plugin_initialized = true;
@@ -116,6 +118,7 @@ class Initializer {
 
   function onInit() {
     if(!$this->plugin_initialized) {
+      define('MAILPOET_INITIALIZED', false);
       return;
     }
 
@@ -126,6 +129,8 @@ class Initializer {
     } catch(\Exception $e) {
       $this->handleFailedInitialization($e);
     }
+
+    define('MAILPOET_INITIALIZED', true);
   }
 
   function setupWidget() {
@@ -205,5 +210,10 @@ class Initializer {
 
   function handleFailedInitialization($message) {
     return WPNotice::displayError($message);
+  }
+
+  function setupLicense() {
+    $license = new License();
+    $license->init();
   }
 }

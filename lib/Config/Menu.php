@@ -14,6 +14,7 @@ use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Listing;
+use MailPoet\Util\License\License as License;
 use MailPoet\WP\DateTime;
 
 if(!defined('ABSPATH')) exit;
@@ -32,16 +33,6 @@ class Menu {
         'setup'
       )
     );
-  }
-
-  function checkSubscribersLimit() {
-    $subscribers_count = Subscriber::getTotalSubscribers();
-    if($subscribers_count > Env::$subscribers_limit) {
-      echo $this->renderer->render('limit.html', array(
-        'limit' => Env::$subscribers_limit
-      ));
-      exit;
-    }
   }
 
   function setup() {
@@ -252,7 +243,7 @@ class Menu {
   }
 
   function settings() {
-    $this->checkSubscribersLimit();
+    do_action(License::CHECK_PERMISSION, 'Subscribers');
 
     $settings = Setting::getAll();
     $flags = $this->_getFlags();
@@ -326,7 +317,7 @@ class Menu {
   }
 
   function segments() {
-    $this->checkSubscribersLimit();
+    do_action(License::CHECK_PERMISSION, 'Subscribers');
 
     $data = array();
     $data['items_per_page'] = $this->getLimitPerPage('segments');
@@ -334,7 +325,7 @@ class Menu {
   }
 
   function forms() {
-    $this->checkSubscribersLimit();
+    do_action(License::CHECK_PERMISSION, 'Subscribers');
 
     $data = array();
 
@@ -345,7 +336,7 @@ class Menu {
   }
 
   function newsletters() {
-    $this->checkSubscribersLimit();
+    do_action(License::CHECK_PERMISSION, 'Subscribers');
 
     global $wp_roles;
 

@@ -27,7 +27,6 @@ class Env {
   static $db_password;
   static $db_charset;
   static $db_timezone_offset;
-  static $subscribers_limit = 2000;
 
   static function init($file, $version) {
     global $wpdb;
@@ -39,11 +38,11 @@ class Env {
     self::$assets_path = self::$path . '/assets';
     self::$assets_url = plugins_url('/assets', $file);
     $wp_upload_dir = wp_upload_dir();
-    self::$temp_path = $wp_upload_dir['basedir'].'/'.self::$plugin_name;
+    self::$temp_path = $wp_upload_dir['basedir'] . '/' . self::$plugin_name;
     if(!is_dir(self::$temp_path)) {
       mkdir(self::$temp_path);
     }
-    self::$temp_url = $wp_upload_dir['baseurl'].'/'.self::$plugin_name;
+    self::$temp_url = $wp_upload_dir['baseurl'] . '/' . self::$plugin_name;
     self::$languages_path = self::$path . '/lang';
     self::$lib_path = self::$path . '/lib';
     self::$plugin_prefix = 'mailpoet_';
