@@ -21,6 +21,5 @@ class License {
       $feature = new $feature();
       $feature->check();
     }
-
   }
 }
