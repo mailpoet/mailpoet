@@ -14,6 +14,7 @@ use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Listing;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\DateTime;
 
 if(!defined('ABSPATH')) exit;
@@ -22,6 +23,8 @@ class Menu {
   function __construct($renderer, $assets_url) {
     $this->renderer = $renderer;
     $this->assets_url = $assets_url;
+    $subscribers_feature = new SubscribersFeature();
+    $this->subscribers_over_limit = $subscribers_feature->check();
   }
 
   function init() {
@@ -32,16 +35,6 @@ class Menu {
         'setup'
       )
     );
-  }
-
-  function checkSubscribersLimit() {
-    $subscribers_count = Subscriber::getTotalSubscribers();
-    if($subscribers_count > Env::$subscribers_limit) {
-      echo $this->renderer->render('limit.html', array(
-        'limit' => Env::$subscribers_limit
-      ));
-      exit;
-    }
   }
 
   function setup() {
@@ -252,7 +245,7 @@ class Menu {
   }
 
   function settings() {
-    $this->checkSubscribersLimit();
+    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
 
     $settings = Setting::getAll();
     $flags = $this->_getFlags();
@@ -326,7 +319,7 @@ class Menu {
   }
 
   function segments() {
-    $this->checkSubscribersLimit();
+    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
 
     $data = array();
     $data['items_per_page'] = $this->getLimitPerPage('segments');
@@ -334,7 +327,7 @@ class Menu {
   }
 
   function forms() {
-    $this->checkSubscribersLimit();
+    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
 
     $data = array();
 
@@ -345,7 +338,7 @@ class Menu {
   }
 
   function newsletters() {
-    $this->checkSubscribersLimit();
+    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
 
     global $wp_roles;
 
@@ -446,5 +439,12 @@ class Menu {
     return (!empty($listing_per_page))
       ? (int)$listing_per_page
       : Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
+  }
+
+  function displaySubscriberLimitExceededTemplate() {
+    echo $this->renderer->render('limit.html', array(
+      'limit' => SubscribersFeature::SUBSCRIBERS_LIMIT
+    ));
+    exit;
   }
 }

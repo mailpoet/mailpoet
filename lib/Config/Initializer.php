@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
 use MailPoet\API;
+use MailPoet\Util\License\License as License;
 use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
@@ -116,6 +117,7 @@ class Initializer {
 
   function onInit() {
     if(!$this->plugin_initialized) {
+      define('MAILPOET_INITIALIZED', false);
       return;
     }
 
@@ -126,6 +128,8 @@ class Initializer {
     } catch(\Exception $e) {
       $this->handleFailedInitialization($e);
     }
+
+    define('MAILPOET_INITIALIZED', true);
   }
 
   function setupWidget() {
