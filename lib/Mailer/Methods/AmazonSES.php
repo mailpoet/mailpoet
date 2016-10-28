@@ -17,7 +17,7 @@ class AmazonSES {
   public $reply_to;
   public $date;
   public $date_without_time;
-  const SES_REGIONS = array(
+  private $available_regions = array(
     'US East (N. Virginia)' => 'us-east-1',
     'US West (Oregon)' => 'us-west-2',
     'EU (Ireland)' => 'eu-west-1'
@@ -26,7 +26,7 @@ class AmazonSES {
   function __construct($region, $access_key, $secret_key, $sender, $reply_to) {
     $this->aws_access_key = $access_key;
     $this->aws_secret_key = $secret_key;
-    $this->aws_region = (in_array($region, self::SES_REGIONS)) ? $region : false;
+    $this->aws_region = (in_array($region, $this->available_regions)) ? $region : false;
     if(!$this->aws_region) {
       throw new \Exception(__('Unsupported Amazon SES region.', 'mailpoet'));
     }
@@ -41,6 +41,7 @@ class AmazonSES {
     $this->date = gmdate('Ymd\THis\Z');
     $this->date_without_time = gmdate('Ymd');
   }
+
 
   function send($newsletter, $subscriber) {
     $result = wp_remote_post(
