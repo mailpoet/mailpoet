@@ -13,7 +13,6 @@
     "tburry/pquery": "*",
     "j4mie/paris": "1.5.4",
     "swiftmailer/swiftmailer": "^5.4",
-    "phpseclib/phpseclib": "*",
     "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
     "soundasleep/html2text": "dev-master"
