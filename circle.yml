@@ -17,7 +17,8 @@ dependencies:
     - sudo a2enmod rewrite
     - sudo service apache2 restart
       # install Phoenix dependencies
-    - composer install
+    - curl -sS https://getcomposer.org/installer | php
+    - ./composer.phar install
     - ./do install
       # Set up Wordpress
       # No password is required for the MySQL user `ubuntu`
