@@ -47,6 +47,8 @@ dependencies:
 ## tests override
 test:
   override:
+    # Run QA scripts
+    - ./do qa
     # Run JS tests
     - mkdir $CIRCLE_TEST_REPORTS/mocha
     - ./do t:j $CIRCLE_TEST_REPORTS/mocha/junit.xml

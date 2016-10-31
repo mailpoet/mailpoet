@@ -15,7 +15,7 @@
   <!-- All parameters in function signature should be used within the function -->
   <!--<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>-->
   <!-- Don't use methods that extend and only call the parent method -->
-  <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
+  <!--<rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>-->
 
   <!-- Disallow usage of BOMs -->
   <rule ref="Generic.Files.ByteOrderMark"/>
