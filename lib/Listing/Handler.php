@@ -20,12 +20,8 @@ class Handler {
     // constrain sort order value to either be "asc" or "desc"
     $sort_order = ($sort_order === 'asc') ? 'asc' : 'desc';
 
-    // check if sort by was specified or default to "id"
-    $sort_by = (!empty($data['sort_by'])) ? $data['sort_by'] : 'id';
-    // constrain sort by value to an alphanumeric value
-    preg_match('/[a-zA-Z0-9_]+/', $sort_by, $matches);
-    $sort_by = (isset($matches[0]) && $matches[0] === $sort_by)
-      ? $sort_by
+    $sort_by = (!empty($data['sort_by']))
+      ? filter_var($data['sort_by'], FILTER_SANITIZE_STRING)
       : 'id';
 
     $this->data = array(
