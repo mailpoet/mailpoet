@@ -6,7 +6,7 @@ use \MailPoet\Config\Initializer;
  * Plugin Name: MailPoet
  * Version: 3.0.0-beta.1
  * Plugin URI: http://www.mailpoet.com
- * Description: MailPoet Newsletters.
+ * Description: Create and send beautiful email newsletters, autoresponders, and post notifications without leaving WordPress. This is a beta version of our brand new plugin!
  * Author: MailPoet
  * Author URI: http://www.mailpoet.com
  * Requires at least: 4.0
