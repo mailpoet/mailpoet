@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.6.1
-Stable tag: 3.0.0-beta.1
+Stable tag: 3.0.0-beta.2
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -83,7 +83,11 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 
 == Changelog ==
 
+= 3.0.0-beta.2 - 2016-10 =
+
+* Fixed compatibility issues with PHP versions earlier than PHP 5.6;
+* Renamed 'Emails' email type to 'Newsletters';
+
 = 3.0.0-beta.1 - 2016-10 =
 
 * Initial public beta release.
-
