@@ -185,10 +185,8 @@ class CSS {
   * If you pass $contents then the original HTML is not downloaded and $contents is used instead.
   * $url is mandatory as it is used to resolve the links to the stylesheets found in the HTML.
   */
-  function inlineCSS($url, $contents=null)
-  {
-   $html = \pQuery::parseStr($contents);
-    // $html = HtmlDomParser::str_get_html($contents, true, true, DEFAULT_TARGET_CHARSET, false, DEFAULT_BR_TEXT, DEFAULT_SPAN_TEXT);
+  function inlineCSS($url, $contents=null) {
+    $html = \pQuery::parseStr($contents);
 
     if(!is_object($html)) {
       return false;
