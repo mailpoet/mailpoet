@@ -20,6 +20,15 @@ class Handler {
     // constrain sort order value to either be "asc" or "desc"
     $sort_order = ($sort_order === 'asc') ? 'asc' : 'desc';
 
+    // sanitize sort by
+    $sort_by = (!empty($data['sort_by']))
+      ? filter_var($data['sort_by'], FILTER_SANITIZE_STRING)
+      : '';
+
+    if(empty($sort_by)) {
+      $sort_by = 'id';
+    }
+
     $this->data = array(
       // extra parameters
       'params' => (isset($data['params']) ? $data['params'] : array()),
@@ -32,7 +41,7 @@ class Handler {
       // searching
       'search' => (isset($data['search']) ? $data['search'] : null),
       // sorting
-      'sort_by' => (!empty($data['sort_by']) ? $data['sort_by'] : 'id'),
+      'sort_by' => $sort_by,
       'sort_order' => $sort_order,
       // grouping
       'group' => (isset($data['group']) ? $data['group'] : null),
