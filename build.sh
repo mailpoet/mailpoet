@@ -34,7 +34,6 @@ find $plugin_name/vendor -type f -regextype posix-egrep -iregex ".*\/(readme|lic
 find $plugin_name/vendor -type d -regextype posix-egrep -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
 
 # Remove unit tests from 3rd party extensions
-rm $plugin_name/vendor/j4mie/idiorm/demo.php
 rm -rf $plugin_name/vendor/twig/twig/test
 rm -rf $plugin_name/vendor/symfony/translation/Tests
 rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
@@ -42,6 +41,10 @@ rm -rf $plugin_name/vendor/soundasleep/html2text/tests
 rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
 rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
 rm -rf $plugin_name/vendor/cerdic/css-tidy/testing
+
+# Remove risky files from 3rd party extensions
+rm -f $plugin_name/vendor/j4mie/idiorm/demo.php
+rm -f $plugin_name/vendor/cerdic/css-tidy/css_optimiser.php
 
 # Copy release files.
 cp license.txt $plugin_name
