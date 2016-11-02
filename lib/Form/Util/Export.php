@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Form\Util;
 use MailPoet\Form\Widget;
+use MailPoet\Config\Env;
 
 class Export {
   static function getAll($form = null) {
@@ -41,39 +42,50 @@ class Export {
       case 'php':
         $output = array(
           '$form_widget = new \MailPoet\Form\Widget();',
-          'echo $form_widget->widget(array(\'form\' => '.(int)$form['id'].', \'form_type\' => \'php\'));'
+          'echo $form_widget->widget(array(\'form\' => '.
+            (int)$form['id'].
+            ', \'form_type\' => \'php\'));'
           );
         return join("\n", $output);
 
       case 'html':
-        // TODO: get locale setting in order to load translations
-        $wp_locale = \get_locale();
-
         $output = array();
 
-        $output[] = '<!-- BEGIN Scripts : you should place them in the header of your theme -->';
+        $output[] = '<!-- '.
+          __(
+            'BEGIN Scripts: you should place them in the header of your theme',
+            'mailpoet'
+          ).
+        ' -->';
 
-                        // jQuery
-        $output[] = '<script type="text/javascript" src="'.includes_url().'js/jquery/jquery.js'.'?mpv='.MAILPOET_VERSION.'"></script>';
+        // CSS
+        $output[] = '<link rel="stylesheet" type="text/css" href="'.
+          Env::$assets_url.'/css/public.css?mp_ver='.MAILPOET_VERSION.
+        '" />';
 
-                        // (JS) form validation
-        $output[] = '<script type="text/javascript" src="'.plugins_url('wysija-newsletters/'.'lib/jquery.validationEngine.js?mpv='.MAILPOET_VERSION).'"></script>';
-        $output[] = '<script type="text/javascript" src="'.plugins_url('wysija-newsletters/'.'lib/jquery.validationEngine-en.js?mpv='.MAILPOET_VERSION).'"></script>';
+        // jQuery
+        $output[] = '<script type="text/javascript" src="'.
+          includes_url().'js/jquery/jquery.js?mp_ver'.MAILPOET_VERSION.
+        '"></script>';
 
-                        // (CSS) form validation styles
-        $output[] = '<link rel="stylesheet" type="text/css" href="'.plugins_url('wysija-newsletters/'.'lib/validationEngine.jquery.css?mpv='.MAILPOET_VERSION).'">';
+        // JS
+        $output[] = '<script type="text/javascript" src="'.
+          Env::$assets_url.'/js/vendor.js?mp_ver='.MAILPOET_VERSION.
+        '"></script>';
+        $output[] = '<script type="text/javascript" src="'.
+          Env::$assets_url.'/js/public.js?mp_ver='.MAILPOET_VERSION.
+        '"></script>';
 
-                        // (JS) form submission
-        $output[] = '<script type="text/javascript" src="'.plugins_url('wysija-newsletters/'.'www/mailpoet_form_subscribe.js?mpv='.MAILPOET_VERSION).'"></script>';
-
-                        // (JS) variables...
+        // (JS) variables...
         $output[] = '<script type="text/javascript">';
-        $output[] = '   var MailPoetData = MailPoetData || {';
+        $output[] = '   var MailPoetForm = MailPoetForm || {';
         $output[] = '       is_rtl: '.((int)is_rtl()).",";
         $output[] = '       ajax_url: "'.admin_url('admin-ajax.php').'"';
         $output[] = '   };';
         $output[] = '</script>';
-        $output[] = '<!--END Scripts-->';
+        $output[] = '<!-- '.
+          __('END Scripts', 'mailpoet').
+        '-->';
 
         $form_widget = new Widget();
         $output[] = $form_widget->widget(array(
