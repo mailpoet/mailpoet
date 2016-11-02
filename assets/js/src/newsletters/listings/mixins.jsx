@@ -61,7 +61,7 @@ const _QueueMixin = {
       );
 
       // calculate percentage done
-      const percentage = Math.round(
+      let percentage = Math.round(
         (newsletter.queue.count_processed * 100) / (newsletter.queue.count_total)
       );
 
@@ -108,15 +108,24 @@ const _QueueMixin = {
         );
       }
 
+      let progress_bar_width = 0;
+
+      if (isNaN(percentage)) {
+        percentage = MailPoet.I18n.t('noSubscribers');
+      } else {
+        progress_bar_width = percentage;
+        percentage += "%";
+      }
+
       return (
         <div>
           <div className={ progressClasses }>
               <span
                 className="mailpoet_progress_bar"
-                style={ { width: percentage + "%"} }
+                style={ { width: progress_bar_width + "%"} }
               ></span>
               <span className="mailpoet_progress_label">
-                { percentage + "%" }
+                { percentage }
               </span>
           </div>
           <p style={{ textAlign:'center' }}>
