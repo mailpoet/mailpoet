@@ -3,14 +3,21 @@
 class RoboFile extends \Robo\Tasks {
 
   function install() {
-    $this->_exec('./composer.phar install');
-    $this->_exec('npm install');
+    return $this->taskExecStack()
+      ->stopOnFail()
+      ->exec('./composer.phar install')
+      ->exec('npm install')
+      ->run();
   }
 
   function update() {
     $this->say(getenv('WP_TEST_URL'));
-    $this->_exec('./composer.phar update');
-    $this->_exec('npm update');
+
+    return $this->taskExecStack()
+      ->stopOnFail()
+      ->exec('./composer.phar update')
+      ->exec('npm update')
+      ->run();
   }
 
   protected function rsearch($folder, $extensions = array()) {
@@ -61,12 +68,14 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function compileAll() {
-    $this->compileJs();
-    $this->compileCss();
+    $collection = $this->collection();
+    $collection->add(array($this, 'compileJs'));
+    $collection->add(array($this, 'compileCss'));
+    return $collection->run();
   }
 
   function compileJs() {
-    $this->_exec('./node_modules/webpack/bin/webpack.js');
+    return $this->_exec('./node_modules/webpack/bin/webpack.js --bail');
   }
 
   function compileCss() {
@@ -78,7 +87,7 @@ class RoboFile extends \Robo\Tasks {
       'assets/css/src/importExport.styl'
     );
 
-    $this->_exec(join(' ', array(
+    return $this->_exec(join(' ', array(
       './node_modules/stylus/bin/stylus',
       '--include ./node_modules',
       '--include-css',
@@ -89,14 +98,14 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function makepot() {
-    $this->_exec('./node_modules/.bin/grunt makepot'.
+    return $this->_exec('./node_modules/.bin/grunt makepot'.
       ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
       ' --base_path '.__DIR__
     );
   }
 
   function pushpot() {
-    $this->_exec('./node_modules/.bin/grunt pushpot'.
+    return $this->_exec('./node_modules/.bin/grunt pushpot'.
       ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
       ' --base_path '.__DIR__
     );
@@ -152,22 +161,26 @@ class RoboFile extends \Robo\Tasks {
   function testDebug() {
     $this->_exec('vendor/bin/codecept build');
     $this->loadEnv();
-    $this->_exec('vendor/bin/codecept run unit --debug');
+    return $this->_exec('vendor/bin/codecept run unit --debug');
   }
 
   function testFailed() {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');
-    $this->_exec('vendor/bin/codecept run -g failed');
+    return $this->_exec('vendor/bin/codecept run -g failed');
   }
 
   function qa() {
-    $this->qaLint();
-    $this->qaCodeSniffer('all');
+    $collection = $this->collection();
+    $collection->add(array($this, 'qaLint'));
+    $collection->add(function() {
+      return $this->qaCodeSniffer('all');
+    });
+    return $collection->run();
   }
 
   function qaLint() {
-    $this->_exec('./tasks/php_lint.sh lib/ tests/ mailpoet.php');
+    return $this->_exec('./tasks/php_lint.sh lib/ tests/ mailpoet.php');
   }
 
   function qaCodeSniffer($severity='errors') {
@@ -176,7 +189,7 @@ class RoboFile extends \Robo\Tasks {
     } else {
       $severityFlag = '-n';
     }
-    $this->_exec(
+    return $this->_exec(
       './vendor/bin/phpcs '.
       '--standard=./tasks/code_sniffer/MailPoet '.
       '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,'.

@@ -83,10 +83,8 @@ class MailChimp {
             }
             if(!isset($header_hash)) {
               $header_hash = md5(implode(',', $header));
-            } else {
-              if(md5(implode(',', $header) !== $header_hash)) {
-                return $this->throwException('headers');
-              }
+            } elseif(md5(implode(',', $header) !== $header_hash)) {
+              return $this->throwException('headers');
             }
           } else {
             $subscribers[] = $obj;

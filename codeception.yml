@@ -27,6 +27,7 @@ coverage:
         include:
             - lib/*
         exclude:
+            - lib/Config/PopulatorData/*
             - lib/Util/Sudzy/*
             - lib/Util/CSS.php
             - lib/Util/Helpers.php
