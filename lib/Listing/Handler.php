@@ -20,9 +20,14 @@ class Handler {
     // constrain sort order value to either be "asc" or "desc"
     $sort_order = ($sort_order === 'asc') ? 'asc' : 'desc';
 
+    // sanitize sort by
     $sort_by = (!empty($data['sort_by']))
       ? filter_var($data['sort_by'], FILTER_SANITIZE_STRING)
-      : 'id';
+      : '';
+
+    if(empty($sort_by)) {
+      $sort_by = 'id';
+    }
 
     $this->data = array(
       // extra parameters
