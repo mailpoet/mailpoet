@@ -185,15 +185,8 @@ class CSS {
   * If you pass $contents then the original HTML is not downloaded and $contents is used instead.
   * $url is mandatory as it is used to resolve the links to the stylesheets found in the HTML.
   */
-  function inlineCSS($url, $contents=null)
-  {
-    // Download the HTML if it was not provided
-    if($contents === null) {
-      $html = HtmlDomParser::file_get_html($url, false, null, -1, -1, true, true, DEFAULT_TARGET_CHARSET, false, DEFAULT_BR_TEXT, DEFAULT_SPAN_TEXT);
-    } else {
-      // use the data provided!
-      $html = HtmlDomParser::str_get_html($contents, true, true, DEFAULT_TARGET_CHARSET, false, DEFAULT_BR_TEXT, DEFAULT_SPAN_TEXT);
-    }
+  function inlineCSS($url, $contents=null) {
+    $html = \pQuery::parseStr($contents);
 
     if(!is_object($html)) {
       return false;
@@ -202,13 +195,13 @@ class CSS {
     $css_blocks = '';
 
     // Find all <style> blocks and cut styles from them (leaving media queries)
-    foreach($html->find('style') as $style) {
-      list($_css_to_parse, $_css_to_keep) = self::splitMediaQueries($style->innertext());
+    foreach($html->query('style') as $style) {
+      list($_css_to_parse, $_css_to_keep) = self::splitMediaQueries($style->getInnerText());
       $css_blocks .= $_css_to_parse;
       if(!empty($_css_to_keep)) {
-        $style->innertext = $_css_to_keep;
+        $style->setInnerText($_css_to_keep);
       } else {
-        $style->outertext = '';
+        $style->setOuterText('');
       }
     }
 
@@ -225,7 +218,7 @@ class CSS {
     // We loop over each rule by increasing order of specificity, find the nodes matching the selector
     // and apply the CSS properties
     foreach ($rules as $rule) {
-      foreach($html->find($rule['selector']) as $node) {
+      foreach($html->query($rule['selector']) as $node) {
         // I'm leaving this for debug purposes, it has proved useful.
         /*
         if($node->already_styled === 'yes')
