@@ -12,10 +12,8 @@
     "backbone.marionette": "2.4.7",
     "backbone.radio": "1.0.5",
     "backbone.supermodel": "1.2.0",
-    "c3": "~0.4.10",
     "classnames": "^2.1.3",
     "codemirror": "^5.8.0",
-    "d3": "~3.5.5",
     "handlebars": "3.0.3",
     "history": "1.13.1",
     "html2canvas": "0.5.0-alpha2",
@@ -26,17 +24,13 @@
     "parsleyjs": "^2.1.2",
     "react": "latest",
     "react-dom": "latest",
-    "react-infinity": "latest",
-    "react-prefixr": "latest",
     "react-router": "latest",
     "react-string-replace": "^0.3.2",
-    "react-waypoint": "latest",
     "select2": "^4.0.0",
     "spectrum-colorpicker": "^1.6.2",
     "tinymce": "4.3.12",
     "underscore": "1.8.3",
-    "velocity-animate": "1.2.3",
-    "xss": "^0.2.10"
+    "velocity-animate": "1.2.3"
   },
   "devDependencies": {
     "expose-loader": "latest",
@@ -55,7 +49,6 @@
     "sinon": "1.14.1",
     "sinon-chai": "2.7.0",
     "stylus": "latest",
-    "swag": "~0.7.0",
     "webpack": "1.11.0"
   }
 }
