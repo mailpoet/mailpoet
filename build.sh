@@ -53,6 +53,9 @@ cp $plugin_name.php $plugin_name
 cp readme.txt $plugin_name
 cp uninstall.php $plugin_name
 
+# Add index files if they don't exist to all folders
+find $plugin_name -type d -exec touch {}/index.php \;
+
 # Zip final release.
 zip -r $plugin_name.zip $plugin_name
 
