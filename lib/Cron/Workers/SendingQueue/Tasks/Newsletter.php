@@ -25,8 +25,7 @@ class Newsletter {
     if(!$newsletter) {
       return false;
     }
-    // if the newsletter was previously rendered, return it
-    // otherwise, process/render it
+    // return the newsletter if it was previously rendered
     if(!is_null($queue->getNewsletterRenderedBody())) {
       return $newsletter;
     }
@@ -34,7 +33,7 @@ class Newsletter {
     if($this->tracking_enabled) {
       // hook to the newsletter post-processing filter and add tracking image
       $this->tracking_image_inserted = OpenTracking::addTrackingImage();
-      // render newsletter and save its
+      // render newsletter
       $rendered_newsletter = $newsletter->render();
       // hash and save all links
       $rendered_newsletter = LinksTask::process($rendered_newsletter, $newsletter, $queue);
