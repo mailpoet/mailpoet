@@ -1185,7 +1185,7 @@
         validateUnsubscribeLinkPresent: true, // TODO: Add validation based on whether Mailpoet MTA is used or not
       },
       urls: {
-        send: '<%= admin_url('admin.php?page=mailpoet-newsletters#/send/' ~ params('id')) %>',
+        send: '<%= admin_url('admin.php?page=mailpoet-newsletters#/send/' ~ (params('id') | number_format)) %>',
         imageMissing: '<%= image_url(
           "newsletter_editor/image-missing.svg"
         ) %>',
@@ -1196,7 +1196,7 @@
       endpoint: 'newsletters',
       action: 'get',
       data: {
-        id: <%= params('id') %>
+        id: "<%= params('id') | number_format %>",
       }
     }).always(function() {
       MailPoet.Modal.loading(false);
