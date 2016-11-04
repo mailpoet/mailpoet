@@ -57,10 +57,18 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
 
 <script type="text/javascript">
   if(window['HS'] !== undefined) {
+    // HelpScout Beacon: Configuration
     HS.beacon.config({
       icon: 'message',
       zIndex: 50000,
-      instructions: '<%= __('Want to give feedback to the MailPoet team? Contact us here. Please provide as much information as possible!') %>',
+      instructions: "<%= __('Want to give feedback to the MailPoet team? Contact us here. Please provide as much information as possible!') %>"
+    });
+
+    // HelpScout Beacon: Custom information
+    HS.beacon.ready(function() {
+      HS.beacon.identify(
+        <%= json_encode(get_helpscout_data()) %>
+      );
     });
   }
 </script>
