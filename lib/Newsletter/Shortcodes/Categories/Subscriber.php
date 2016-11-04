@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Newsletter\Shortcodes\Categories;
+
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Models\SubscriberCustomField;
 
@@ -15,14 +16,14 @@ class Subscriber {
   ) {
     switch($action) {
       case 'firstname':
-        return ($subscriber) ? $subscriber['first_name'] : $default_value;
+        return ($subscriber) ? $subscriber->first_name : $default_value;
       case 'lastname':
-        return ($subscriber) ? $subscriber['last_name'] : $default_value;
+        return ($subscriber) ? $subscriber->last_name : $default_value;
       case 'email':
-        return ($subscriber) ? $subscriber['email'] : false;
+        return ($subscriber) ? $subscriber->email : false;
       case 'displayname':
-        if($subscriber && $subscriber['wp_user_id']) {
-          $wp_user = get_userdata($subscriber['wp_user_id']);
+        if($subscriber && $subscriber->wp_user_id) {
+          $wp_user = get_userdata($subscriber->wp_user_id);
           return $wp_user->user_login;
         }
         return $default_value;
@@ -31,10 +32,10 @@ class Subscriber {
           ->count();
       default:
         if(preg_match('/cf_(\d+)/', $action, $custom_field) &&
-          !empty($subscriber['id'])
+          !empty($subscriber->id)
         ) {
           $custom_field = SubscriberCustomField
-            ::where('subscriber_id', $subscriber['id'])
+            ::where('subscriber_id', $subscriber->id)
             ->where('custom_field_id', $custom_field[1])
             ->findOne();
           return ($custom_field) ? $custom_field->value : false;

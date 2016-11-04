@@ -12,15 +12,9 @@ class Shortcodes {
     $subscriber = false,
     $queue = false
   ) {
-    $this->newsletter = (is_object($newsletter)) ?
-      $newsletter->asArray() :
-      $newsletter;
-    $this->subscriber = (is_object($subscriber)) ?
-      $subscriber->asArray() :
-      $subscriber;
-    $this->queue = (is_object($queue)) ?
-      $queue->asArray() :
-      $queue;
+    $this->newsletter = $newsletter;
+    $this->subscriber = $subscriber;
+    $this->queue = $queue;
   }
 
   function extract($content, $categories = false) {
