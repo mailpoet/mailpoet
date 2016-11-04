@@ -7,13 +7,10 @@ if(!defined('ABSPATH')) exit;
 
 class Beacon {
   static function getData() {
-    $current_theme = wp_get_theme();
-    $mta = Setting::getValue('mta');
-
     global $wpdb;
     $db_version = $wpdb->get_var('SELECT @@VERSION');
-
-    // curent user
+    $mta = Setting::getValue('mta');
+    $current_theme = wp_get_theme();
     $current_user = wp_get_current_user();
 
     return array(
