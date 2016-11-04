@@ -212,7 +212,7 @@ class Populator {
     $rows = $this->$modelMethod();
     $table = $this->prefix . $model;
 
-    foreach ($rows as $row) {
+    foreach($rows as $row) {
       if(!$this->rowExists($table, $row)) {
         $this->insertRow($table, $row);
       }
