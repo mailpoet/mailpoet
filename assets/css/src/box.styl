@@ -1,3 +1,15 @@
+$box-width = 425px
+$box-height = 150px
+$thumbnail-width = $box-height
+$thumbnail-height = $thumbnail-width
+$box-description-space-between-heading-and-paragraph = 5px
+$box-description-height = 110px
+$box-description-text-height = $box-description-height - $box-description-space-between-heading-and-paragraph
+$box-heading-line-height = $box-description-text-height / 4
+$box-heading-font-size = $box-heading-line-height * 5/7
+$box-description-line-height = $box-heading-line-height / 2
+$box-description-font-size = $box-description-line-height
+
 .mailpoet_boxes.mailpoet_boxes_loading
   opacity: 0.2
 
@@ -6,8 +18,8 @@
   position: relative
   padding: 15px
   margin: 15px 25px 0 0
-  width: 425px
-  height: 150px
+  width: $box-width
+  height: $box-height
   border: 1px solid #dedede
   background-color: #fff
 
@@ -18,15 +30,15 @@
   background-position: center
   color: #222
   border: 1px solid #ccc
-  width: 150px
-  height: 150px
+  width: $thumbnail-height
+  height: $thumbnail-width
   margin-right: 15px
   float: left
   overflow: hidden
   position: relative
 
   img
-    min-width: 150px
+    min-width: $thumbnail-width
     height: auto
     width: 110%
     position: relative
@@ -60,20 +72,21 @@
 .mailpoet_boxes .mailpoet_description
   float:left
   width: 245px
-  max-height: calc(115px - 2em)
-  padding-bottom: 2em
+  max-height: $box-description-height
+  padding-bottom: 0
   overflow: hidden
 
   h3
-    margin: 0 0 0.7em 0
+    margin: 0 0 $box-description-space-between-heading-and-paragraph 0
     overflow: hidden
     max-width: 210px
-    line-height: 1.4em
+    line-height: $box-heading-line-height
+    font-size: $box-heading-font-size
 
   p
-    font-size: 13px
-    line-height: 1.5
-    margin: 1em 0
+    font-size: $box-description-font-size
+    line-height: $box-description-line-height
+    margin: 0
 
 .mailpoet_boxes .mailpoet_actions
   position: absolute
