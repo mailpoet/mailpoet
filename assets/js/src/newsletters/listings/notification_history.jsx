@@ -68,7 +68,7 @@ const NewsletterListNotificationHistory = React.createClass({
             <a
               href={ newsletter.preview_url }
               target="_blank"
-            >{ newsletter.subject }</a>
+            >{ newsletter.queue.newsletter_rendered_subject }</a>
           </strong>
           { actions }
         </td>
