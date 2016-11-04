@@ -211,13 +211,12 @@ class Populator {
     $modelMethod = Helpers::underscoreToCamelCase($model);
     $rows = $this->$modelMethod();
     $table = $this->prefix . $model;
-    $_this = $this;
 
-    array_map(function($row) use ($_this, $table) {
-      if(!$_this->rowExists($table, $row)) {
-        $_this->insertRow($table, $row);
+    foreach ($rows as $row) {
+      if(!$this->rowExists($table, $row)) {
+        $this->insertRow($table, $row);
       }
-    }, $rows);
+    }
   }
 
   private function rowExists($table, $columns) {
