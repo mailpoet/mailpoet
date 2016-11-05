@@ -47,6 +47,8 @@ dependencies:
 ## tests override
 test:
   override:
+    # Add default timezone to PHP's configuration (required for PHP >=5.4)
+    - echo "date.timezone = UTC" > /opt/circleci/php/$(phpenv global)/etc/conf.d/date.ini
     # Run QA scripts
     - ./do qa
     # Run JS tests
