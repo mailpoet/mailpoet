@@ -23,12 +23,18 @@
     "vlucas/phpdotenv": "*",
     "umpirsky/twig-gettext-extractor": "1.1.*",
     "raveren/kint": "^1.0",
-    "squizlabs/php_codesniffer": "2.*"
+    "squizlabs/php_codesniffer": "*",
+    "wimg/php-compatibility": "*",
+    "simplyadmire/composer-plugins" : "@dev"
   },
   "autoload": {
     "psr-4": {
       "MailPoet\\": "lib/",
       "Sudzy\\": "lib/Util/Sudzy"
     }
+  },
+  "scripts": {
+    "post-update-cmd": "rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rpd vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility",
+    "post-install-cmd": "rm -rf vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility; cp -rpd vendor/wimg/php-compatibility vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility"
   }
 }
