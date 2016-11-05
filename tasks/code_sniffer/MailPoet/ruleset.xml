@@ -120,4 +120,7 @@
   <!-- Remove space between if/for/while and opening parenthesis -->
   <rule ref="MailPoet.ControlStructures.ControlSignature"/>
 
+  <!-- Run against the PHPCompatibility ruleset -->
+  <rule ref="PHPCompatibility" />
+  <config name="testVersion" value="5.3-7.0"/>
 </ruleset>
