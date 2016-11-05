@@ -8,7 +8,6 @@
   "require": {
     "php": ">=5.3.3",
     "twig/twig": "1.*",
-    "phpmailer/phpmailer": "~5.2",
     "cerdic/css-tidy": "*",
     "tburry/pquery": "*",
     "j4mie/paris": "1.5.4",
