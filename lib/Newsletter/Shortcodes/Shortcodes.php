@@ -59,7 +59,7 @@ class Shortcodes {
           $shortcode_details['action'] :
           false;
         $shortcode_class =
-          self::SHORTCODE_CATEGORY_NAMESPACE . $shortcode_category;
+          Shortcodes::SHORTCODE_CATEGORY_NAMESPACE . $shortcode_category;
         $shortcode_default_value = !empty($shortcode_details['default']) ?
           $shortcode_details['default'] :
           false;

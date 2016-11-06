@@ -11,7 +11,7 @@ class Renderer {
       $this->getOneColumnTemplate($styles, $class) :
       $this->getMultipleColumnsTemplate($styles, $width, $alignment, $class);
     $result = array_map(function($content) use ($template) {
-      $content = self::removePaddingFromLastElement($content);
+      $content = Renderer::removePaddingFromLastElement($content);
       return $template['content_start'] . $content . $template['content_end'];
     }, $columns_data);
     $result = implode('', $result);
