@@ -42,9 +42,10 @@ class Shortcodes {
   }
 
   function process($shortcodes, $content = false) {
+    $_this = $this;
     $processed_shortcodes = array_map(
-      function($shortcode) use ($content) {
-        $shortcode_details = $this->match($shortcode);
+      function($shortcode) use ($content, $_this) {
+        $shortcode_details = $_this->match($shortcode);
         $shortcode_category = !empty($shortcode_details['category']) ?
           ucfirst($shortcode_details['category']) :
           false;
@@ -52,7 +53,7 @@ class Shortcodes {
           $shortcode_details['action'] :
           false;
         $shortcode_class =
-          self::SHORTCODE_CATEGORY_NAMESPACE . $shortcode_category;
+          Shortcodes::SHORTCODE_CATEGORY_NAMESPACE . $shortcode_category;
         $shortcode_default_value = !empty($shortcode_details['default']) ?
           $shortcode_details['default'] :
           false;
@@ -60,9 +61,9 @@ class Shortcodes {
           $custom_shortcode = apply_filters(
             'mailpoet_newsletter_shortcode',
             $shortcode,
-            $this->newsletter,
-            $this->subscriber,
-            $this->queue,
+            $_this->newsletter,
+            $_this->subscriber,
+            $_this->queue,
             $content
           );
           return ($custom_shortcode === $shortcode) ?
@@ -72,9 +73,9 @@ class Shortcodes {
         return $shortcode_class::process(
           $shortcode_action,
           $shortcode_default_value,
-          $this->newsletter,
-          $this->subscriber,
-          $this->queue,
+          $_this->newsletter,
+          $_this->subscriber,
+          $_this->queue,
           $content
         );
       }, $shortcodes);

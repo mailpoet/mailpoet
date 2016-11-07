@@ -59,13 +59,14 @@ class Renderer {
       ? $content['blocks']
       : array();
 
-    $rendered_content = array_map(function($content_block) {
+    $_this = $this;
+    $rendered_content = array_map(function($content_block) use($_this) {
       $column_count = count($content_block['blocks']);
-      $column_data = $this->blocks_renderer->render(
+      $column_data = $_this->blocks_renderer->render(
         $content_block,
         $column_count
       );
-      return $this->columns_renderer->render(
+      return $_this->columns_renderer->render(
         $content_block['styles'],
         $column_count,
         $column_data

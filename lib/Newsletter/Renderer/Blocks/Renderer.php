@@ -38,10 +38,11 @@ class Renderer {
 
   function render($data, $column_count) {
     $block_content = '';
-    array_map(function($block) use (&$block_content, &$column_content, $column_count) {
-      $rendered_block_element = $this->createElementFromBlockType($block, $column_count);
+    $_this = $this;
+    array_map(function($block) use (&$block_content, &$column_content, $column_count, $_this) {
+      $rendered_block_element = $_this->createElementFromBlockType($block, $column_count);
       if(isset($block['blocks'])) {
-        $rendered_block_element = $this->render($block, $column_count);
+        $rendered_block_element = $_this->render($block, $column_count);
       }
       // vertical orientation denotes column container
       if($block['type'] === 'container' && $block['orientation'] === 'vertical') {
