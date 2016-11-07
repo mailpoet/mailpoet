@@ -21,16 +21,15 @@ class I18n extends \Twig_Extension {
     $twig_functions = array();
     // list of WP functions to map
     $functions = array(
-      'localize',
-      '__',
-      '_n',
-      'date',
-      'date_format'
+      'localize' => 'localize',
+      '__' => 'translate',
+      '_n' => 'pluralize',
+      'date' => 'date'
     );
 
-    foreach($functions as $function) {
+    foreach($functions as $twig_function => $function) {
       $twig_functions[] = new \Twig_SimpleFunction(
-        $function,
+        $twig_function,
         array($this, $function),
         array('is_safe' => array('all'))
       );
@@ -52,13 +51,13 @@ class I18n extends \Twig_Extension {
     return join("\n", $output);
   }
 
-  function __() {
+  function translate() {
     $args = func_get_args();
 
     return call_user_func_array('__', $this->setTextDomain($args));
   }
 
-  function _n() {
+  function pluralize() {
     $args = func_get_args();
 
     return call_user_func_array('_n', $this->setTextDomain($args));
