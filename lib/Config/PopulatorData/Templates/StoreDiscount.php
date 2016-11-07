@@ -70,7 +70,7 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p></p>\n<p>Hi&nbsp;[subscriber:firstname | default:reader]</p>\n<p class=\"\"></p>\n<p>Fancy 15% off your next order? Use this coupon&nbsp;on all your favourite products from our store&nbsp;until Wednesday. Just&nbsp;enter the code on the payments page and&nbsp;your discount will applied.</p>", 'mailpoet')
+              "text" => __("<p></p>\n<p>Hi [subscriber:firstname | default:reader]</p>\n<p class=\"\"></p>\n<p>Fancy 15% off your next order? Use this coupon on all your favourite products from our store until Wednesday. Just enter the code on the payments page and your discount will applied.</p>", 'mailpoet')
             ), array(
               "type" => "spacer",
               "styles" => array(
@@ -173,7 +173,7 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<h1 style=\"text-align: center;\"><strong><em>Use your discount on these great&nbsp;products...</em></strong></h1>", 'mailpoet')
+              "text" => __("<h1 style=\"text-align: center;\"><strong><em>Use your discount on these great products...</em></strong></h1>", 'mailpoet')
             ), array(
               "type" => "spacer",
               "styles" => array(

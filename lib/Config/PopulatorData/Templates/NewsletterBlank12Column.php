@@ -52,7 +52,7 @@ class NewsletterBlank12Column {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", 'mailpoet'),
+                    "text" => __("Display problems? <a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"
@@ -116,7 +116,7 @@ class NewsletterBlank12Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>Let's Get Started!</strong></h1>\n<p></p>\n<p>It's time to design your newsletter! In the right sidebar, you'll find 4 menu items that will&nbsp;help you customize your&nbsp;newsletter:</p>\n<ol>\n<li>Content</li>\n<li>Layout</li>\n<li>Styles</li>\n<li>Preview</li>\n</ol>", 'mailpoet')
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Let's Get Started!</strong></h1>\n<p></p>\n<p>It's time to design your newsletter! In the right sidebar, you'll find 4 menu items that will help you customize your newsletter:</p>\n<ol>\n<li>Content</li>\n<li>Layout</li>\n<li>Styles</li>\n<li>Preview</li>\n</ol>", 'mailpoet')
                   ),
                   array(
                     "type" => "divider",
@@ -158,7 +158,7 @@ class NewsletterBlank12Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>In the right sidebar, you can&nbsp;add these layout blocks to your email:</p>\n<ul>\n<li>1 column</li>\n<li>2 columns</li>\n<li>3 columns</li>\n</ul>", 'mailpoet')
+                    "text" => __("<p>In the right sidebar, you can add these layout blocks to your email:</p>\n<ul>\n<li>1 column</li>\n<li>2 columns</li>\n<li>3 columns</li>\n</ul>", 'mailpoet')
                   )
                 )
               ),
@@ -177,7 +177,7 @@ class NewsletterBlank12Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p><span style=\"line-height: 25.6px;\">You can change a layout's background color by clicking on the settings icon on the right edge of the Designer. Simply hover&nbsp;over this area to see the Settings (gear) icon.</span></p>", 'mailpoet')
+                    "text" => __("<p><span style=\"line-height: 25.6px;\">You can change a layout's background color by clicking on the settings icon on the right edge of the Designer. Simply hover over this area to see the Settings (gear) icon.</span></p>", 'mailpoet')
                   )
                 )
               )

@@ -52,7 +52,7 @@ class WelcomeBlank1Column {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", 'mailpoet'),
+                    "text" => __("Display problems? <a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"
@@ -116,7 +116,7 @@ class WelcomeBlank1Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi,&nbsp;new subscriber!</strong></h1>\n<p></p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p></p>\n<p>You recently joined our list and we'd like to give&nbsp;you a warm welcome!</p>\n<p></p>\n<p>Want to get to know us better? Check&nbsp;out&nbsp;some of our most popular&nbsp;articles:&nbsp;</p>\n<ol>\n<li><a href=\"http://www.mailpoet.com/the-importance-of-focus-when-writing/\">The Importance of Focus When Writing</a></li>\n<li><a href=\"http://www.mailpoet.com/write-great-subject-line/\">How to Write a Great Subject Line</a></li>\n<li><a href=\"http://www.mailpoet.com/just-sit-write-advice-motivation-ernest-hemingway/\">Just Sit Down and Write &ndash; Advice on Motivation from Ernest Hemingway</a></li>\n</ol>", 'mailpoet')
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p></p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p></p>\n<p>You recently joined our list and we'd like to give you a warm welcome!</p>\n<p></p>\n<p>Want to get to know us better? Check out some of our most popular articles: </p>\n<ol>\n<li><a href=\"http://www.mailpoet.com/the-importance-of-focus-when-writing/\">The Importance of Focus When Writing</a></li>\n<li><a href=\"http://www.mailpoet.com/write-great-subject-line/\">How to Write a Great Subject Line</a></li>\n<li><a href=\"http://www.mailpoet.com/just-sit-write-advice-motivation-ernest-hemingway/\">Just Sit Down and Write &ndash; Advice on Motivation from Ernest Hemingway</a></li>\n</ol>", 'mailpoet')
                   )
                 )
               )
