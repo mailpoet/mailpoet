@@ -6,6 +6,9 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 class Text {
   static function render($element) {
     $html = $element['text'];
+    // replace &nbsp; with spaces
+    $html = str_replace('&nbsp;', ' ', $html);
+    $html = str_replace('\xc2\xa0', ' ', $html);
     $html = self::convertBlockquotesToTables($html);
     $html = self::convertParagraphsToTables($html);
     $html = self::styleLists($html);
