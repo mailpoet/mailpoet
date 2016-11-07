@@ -75,7 +75,7 @@ class SimpleText {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p style=\"text-align: left;\">Hi&nbsp;[subscriber:firstname | default:subscriber],</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">In MailPoet, you can write emails in plain text,&nbsp;just like in a regular email.&nbsp;This can make your email newsletters&nbsp;more personal and attention-grabbing.</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Is this too&nbsp;simple?&nbsp;You can still style your text with basic&nbsp;formatting,&nbsp;like&nbsp;<strong>bold</strong>&nbsp;or <em>italics.</em></p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Finally, you can also add a call-to-action button between 2 blocks of text, like this:</p>", 'mailpoet')
+                    "text" => __("<p style=\"text-align: left;\">Hi [subscriber:firstname | default:subscriber],</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">In MailPoet, you can write emails in plain text, just like in a regular email. This can make your email newsletters more personal and attention-grabbing.</p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Is this too simple? You can still style your text with basic formatting, like <strong>bold</strong> or <em>italics.</em></p>\n<p style=\"text-align: left;\"></p>\n<p style=\"text-align: left;\">Finally, you can also add a call-to-action button between 2 blocks of text, like this:</p>", 'mailpoet')
                   )
                 )
               )
@@ -131,7 +131,7 @@ class SimpleText {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Thanks for&nbsp;reading. See you soon!</p>\n<p></p>\n<p><strong><em>The MailPoet Team</em></strong></p>", 'mailpoet')
+                    "text" => __("<p>Thanks for reading. See you soon!</p>\n<p></p>\n<p><strong><em>The MailPoet Team</em></strong></p>", 'mailpoet')
                   ),
                   array(
                     "type" => "footer",

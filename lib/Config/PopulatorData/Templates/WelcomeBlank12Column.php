@@ -52,7 +52,7 @@ class WelcomeBlank12Column {
                 "blocks" => array(
                   array(
                     "type" => "header",
-                    "text" => __("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", 'mailpoet'),
+                    "text" => __("Display problems? <a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>", 'mailpoet'),
                     "styles" => array(
                       "block" => array(
                         "backgroundColor" => "transparent"
@@ -116,7 +116,7 @@ class WelcomeBlank12Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p></p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p></p>\n<p>You recently joined our list and we'd like to give&nbsp;you a warm welcome!</p>", 'mailpoet')
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p></p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p></p>\n<p>You recently joined our list and we'd like to give you a warm welcome!</p>", 'mailpoet')
                   ),
                   array(
                     "type" => "divider",
@@ -182,7 +182,7 @@ class WelcomeBlank12Column {
                 "blocks" => array(
                   array(
                     "type" => "text",
-                    "text" => __("<h3>What's&nbsp;Next?</h3>", 'mailpoet')
+                    "text" => __("<h3>What's Next?</h3>", 'mailpoet')
                   ),
                   array(
                     "type" => "text",

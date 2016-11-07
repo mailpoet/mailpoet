@@ -70,7 +70,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "text",
-              "text" => __("<h1 style=\"text-align: center;\">Hi&nbsp;[subscriber:firstname | default:reader]!</h1>\n<p></p>\n<p>Greetings from New Zealand, we're here enjoying the sights and sounds (and bad smells!) of Rotarua. Yesterday we took advantage of the local amenities and visited&nbsp;the hot springs!&nbsp;</p>\n<p>Don't forget to stay up-to-date via twitter!</p>", 'mailpoet')
+              "text" => __("<h1 style=\"text-align: center;\">Hi [subscriber:firstname | default:reader]!</h1>\n<p></p>\n<p>Greetings from New Zealand, we're here enjoying the sights and sounds (and bad smells!) of Rotarua. Yesterday we took advantage of the local amenities and visited the hot springs! </p>\n<p>Don't forget to stay up-to-date via twitter!</p>", 'mailpoet')
             ), array(
               "type" => "social",
               "iconSet" => "circles",
@@ -414,7 +414,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p>Tomorrow we're heading towards Taupo where we'll visit the&nbsp;'Craters of the moon' and go prawn fishing!&nbsp;Hopefully the weather will stay good.</p>\n<p></p>\n<p>Keep on travellin'</p>\n<p>Jane &amp; Steven</p>", 'mailpoet')
+              "text" => __("<p>Tomorrow we're heading towards Taupo where we'll visit the 'Craters of the moon' and go prawn fishing! Hopefully the weather will stay good.</p>\n<p></p>\n<p>Keep on travellin'</p>\n<p>Jane &amp; Steven</p>", 'mailpoet')
             ))
           ))
         ), array(
@@ -446,7 +446,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "header",
-              "text" => ("Display problems?&nbsp;<a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>"),
+              "text" => ("Display problems? <a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>"),
               "styles" => array(
                 "block" => array(
                   "backgroundColor" => "transparent"

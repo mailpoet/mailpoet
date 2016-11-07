@@ -332,7 +332,7 @@ class Restaurant {
               ))
             ), array(
               "type" => "header",
-              "text" => "<p><a href=\"[link:newsletter_view_in_browser_url]\">View&nbsp;this email in your web browser</a></p>",
+              "text" => "<p><a href=\"[link:newsletter_view_in_browser_url]\">View this email in your web browser</a></p>",
               "styles" => array(
                 "block" => array(
                   "backgroundColor" => "transparent"

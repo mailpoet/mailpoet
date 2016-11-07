@@ -88,7 +88,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Hi there&nbsp;[subscriber:firstname | default:coffee drinker]</p>\n<p></p>\n<p>Sit back&nbsp;and enjoy your favorite roast as you read this week's newsletter.&nbsp;</p>", 'mailpoet')
+                    "text" => __("<p>Hi there [subscriber:firstname | default:coffee drinker]</p>\n<p></p>\n<p>Sit back and enjoy your favorite roast as you read this week's newsletter. </p>", 'mailpoet')
                   ),
                   array(
                     "type" => "image",
@@ -106,7 +106,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\">--- Guest Coffee Roaster: <em>Brew Bros. ---</em></h1>\n<p><em></em></p>\n<p>Visit our Center Avenue store to try the latest guest coffee from Brew Bros, a local coffee roaster. This young duo started only two years ago, but have quickly gained&nbsp;popularity through pop-up shops, local events, and collaborations with food trucks.</p>\n<p></p>\n<blockquote>\n<p><span style=\"color: #ff6600;\"><em>Tasting notes: A rich, caramel flavor with subtle hints of molasses. The perfect wake-up morning espresso!</em></span></p>\n</blockquote>", 'mailpoet')
+                    "text" => __("<h1 style=\"text-align: center;\">--- Guest Coffee Roaster: <em>Brew Bros. ---</em></h1>\n<p><em></em></p>\n<p>Visit our Center Avenue store to try the latest guest coffee from Brew Bros, a local coffee roaster. This young duo started only two years ago, but have quickly gained popularity through pop-up shops, local events, and collaborations with food trucks.</p>\n<p></p>\n<blockquote>\n<p><span style=\"color: #ff6600;\"><em>Tasting notes: A rich, caramel flavor with subtle hints of molasses. The perfect wake-up morning espresso!</em></span></p>\n</blockquote>", 'mailpoet')
                   )
                 )
               )
@@ -250,7 +250,7 @@ class FranksRoastHouseTemplate {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Watch out Broad Street, we're coming to you very soon!&nbsp;</p>\n<p></p>\n<p>Keep an eye on your inbox, as we'll have some special offers for our email subscribers plus an exclusive launch party invite!<br /><br /></p>", 'mailpoet')
+                    "text" => __("<p>Watch out Broad Street, we're coming to you very soon! </p>\n<p></p>\n<p>Keep an eye on your inbox, as we'll have some special offers for our email subscribers plus an exclusive launch party invite!<br /><br /></p>", 'mailpoet')
                   ),
                   array(
                     "type" => "text",
