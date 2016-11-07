@@ -2,6 +2,7 @@
 
 use MailPoet\Config\Populator;
 use MailPoet\Models\CustomField;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
@@ -22,11 +23,7 @@ class ShortcodesTest extends MailPoetTest {
     $this->WP_user = $this->_createWPUser();
     $this->WP_post = $this->_createWPPost();
     $this->subscriber = $this->_createSubscriber();
-    $this->newsletter = array(
-      'subject' => 'some subject',
-      'type' => 'notification',
-      'id' => 2
-    );
+    $this->newsletter = $this->_createNewsletter();
     $this->shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $this->subscriber
@@ -72,7 +69,7 @@ class ShortcodesTest extends MailPoetTest {
     $shortcode = array('[some:shortcode]');
     $result = $shortcodes_object->process($shortcode);
     expect($result[0])->false();
-    add_filter('mailpoet_newsletter_shortcode', function (
+    add_filter('mailpoet_newsletter_shortcode', function(
       $shortcode, $newsletter, $subscriber, $queue, $content) {
       if($shortcode === '[some:shortcode]') return 'success';
     }, 10, 5);
@@ -98,7 +95,7 @@ class ShortcodesTest extends MailPoetTest {
       '<a href="#">not post</a>';
     $result =
       $shortcodes_object->process(array('[newsletter:subject]'));
-    expect($result[0])->equals($this->newsletter['subject']);
+    expect($result[0])->equals($this->newsletter->subject);
     $result =
       $shortcodes_object->process(array('[newsletter:total]'), $content);
     expect($result[0])->equals(2);
@@ -106,12 +103,32 @@ class ShortcodesTest extends MailPoetTest {
       $shortcodes_object->process(array('[newsletter:post_title]'));
     $wp_post = get_post($this->WP_post);
     expect($result['0'])->equals($wp_post->post_title);
-    $result =
-      $shortcodes_object->process(array('[newsletter:number]'));
+  }
+
+
+  function itCanProcessPostNotificationNewsletterNumberShortcode() {
+    // create first post notification
+    $post_notification_history = $this->_createNewsletter(
+      $parent_id = $this->newsletter_id,
+      $type = Newsletter::TYPE_NOTIFICATION_HISTORY
+    );
+    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+      $post_notification_history,
+      $this->subscriber
+    );
+    $result = $shortcodes_object->process(array('[newsletter:number]'));
     expect($result['0'])->equals(1);
-    $queue = $this->_createQueue();
-    $result =
-      $shortcodes_object->process(array('[newsletter:number]'));
+
+    // create another post notification
+    $post_notification_history = $this->_createNewsletter(
+      $parent_id = $this->newsletter_id,
+      $type = Newsletter::TYPE_NOTIFICATION_HISTORY
+    );
+    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+      $post_notification_history,
+      $this->subscriber
+    );
+    $result = $shortcodes_object->process(array('[newsletter:number]'));
     expect($result['0'])->equals(2);
   }
 
@@ -228,7 +245,7 @@ class ShortcodesTest extends MailPoetTest {
     $shortcode = '[link:shortcode]';
     $result = $shortcodes_object->process(array($shortcode));
     expect($result[0])->false();
-    add_filter('mailpoet_newsletter_shortcode_link', function (
+    add_filter('mailpoet_newsletter_shortcode_link', function(
       $shortcode, $newsletter, $subscriber, $queue) {
       if($shortcode === '[link:shortcode]') return 'success';
     }, 10, 4);
@@ -271,15 +288,30 @@ class ShortcodesTest extends MailPoetTest {
     return Subscriber::findOne($subscriber->id);
   }
 
+  function _createNewsletter($parent_id = null, $type = Newsletter::TYPE_NOTIFICATION) {
+    $newsletter = Newsletter::create();
+    $newsletter->hydrate(
+      array(
+        'subject' => 'some subject',
+        'type' => $type,
+        'status' => Newsletter::STATUS_SENT,
+        'parent_id' => $parent_id,
+      )
+    );
+    $newsletter->save();
+    return Newsletter::findOne($newsletter->id);
+  }
+
   function _createQueue() {
     $queue = SendingQueue::create();
     $queue->newsletter_id = $this->newsletter['id'];
     $queue->status = 'completed';
     $queue->save();
-    return $queue;
+    return SendingQueue::findOne($queue->id);
   }
 
   function _after() {
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . CustomField::$_table);

@@ -7,11 +7,10 @@ if(!defined('ABSPATH')) exit;
 
 class ShortcodesTaskTest extends MailPoetTest {
   function testItCanReplaceShortcodes() {
-    $queue = $newsletter = array(
+    $queue = $newsletter = (object)array(
       'id' => 1
-
     );
-    $subscriber = array(
+    $subscriber = (object)array(
       'email' => 'test@xample. com',
       'first_name' => 'John',
       'last_name' => 'Doe'

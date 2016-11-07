@@ -1,10 +1,10 @@
 <?php
 namespace MailPoet\Newsletter\Shortcodes\Categories;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
+
+use MailPoet\Models\Newsletter as NewsletterModel;
 
 if(!defined('ABSPATH')) exit;
-require_once( ABSPATH . "wp-includes/pluggable.php" );
+require_once(ABSPATH . "wp-includes/pluggable.php");
 
 class Newsletter {
   static function process($action,
@@ -16,7 +16,7 @@ class Newsletter {
   ) {
     switch($action) {
       case 'subject':
-        return ($newsletter) ? $newsletter['subject'] : false;
+        return ($newsletter) ? $newsletter->subject : false;
 
       case 'total':
         return substr_count($content, 'data-post-id');
@@ -28,10 +28,10 @@ class Newsletter {
         return ($latest_post) ? $latest_post['post_title'] : false;
 
       case 'number':
-        if($newsletter['type'] !== 'notification') return false;
+        if($newsletter->type !== NewsletterModel::TYPE_NOTIFICATION_HISTORY) return false;
         $sent_newsletters =
-          SendingQueue::where('newsletter_id', $newsletter['id'])
-            ->where('status', 'completed')
+          NewsletterModel::where('parent_id', $newsletter->parent_id)
+            ->where('status', NewsletterModel::STATUS_SENT)
             ->count();
         return ++$sent_newsletters;
 
