@@ -107,6 +107,7 @@ class Renderer {
   }
 
   function renderTextVersion($template) {
+    $template = utf8_encode($template);
     return \Html2Text\Html2Text::convert($template);
   }
 
