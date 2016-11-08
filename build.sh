@@ -22,6 +22,7 @@ npm install
 
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
+rm -rf vendor
 ./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
 # Copy release folders.
