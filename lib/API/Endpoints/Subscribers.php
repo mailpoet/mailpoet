@@ -73,7 +73,7 @@ class Subscribers extends APIEndpoint {
 
     if(empty($segment_ids)) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST => __('Please select a list', 'mailpoet')
+        APIError::BAD_REQUEST => __('Please select a list.', 'mailpoet')
       ));
     }
 
