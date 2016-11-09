@@ -4,6 +4,7 @@ use \MailPoet\API\Endpoints\Subscribers;
 use \MailPoet\API\Response as APIResponse;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\Segment;
+use \MailPoet\Models\Setting;
 
 class SubscribersTest extends MailPoetTest {
   function _before() {
@@ -25,6 +26,12 @@ class SubscribersTest extends MailPoetTest {
         $this->segment_1->id,
         $this->segment_2->id
       )
+    ));
+
+    // setup mailer
+    Setting::setValue('sender', array(
+      'address' => 'sender@mailpoet.com',
+      'name' => 'Sender'
     ));
   }
 
@@ -352,6 +359,46 @@ class SubscribersTest extends MailPoetTest {
     ));
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains('has no method');
+  }
+
+  function testItCannotSubscribeWithoutSegments() {
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      'email' => 'toto@mailpoet.com'
+      // no segments specified
+    ));
+
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please select a list.');
+  }
+
+  function testItCanSubscribe() {
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      'email' => 'toto@mailpoet.com',
+      'segments' => array($this->segment_1->id, $this->segment_2->id)
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+  }
+
+  function testItCannotMassSubscribe() {
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      'email' => 'toto@mailpoet.com',
+      'segments' => array($this->segment_1->id, $this->segment_2->id)
+    ));
+
+    try {
+      $response = $router->subscribe(array(
+        'email' => 'tata@mailpoet.com',
+        'segments' => array($this->segment_1->id, $this->segment_2->id)
+      ));
+      $this->fail('It should not be possible to subscribe a second time so soon');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('You need to wait before subscribing again.');
+    }
   }
 
   function _after() {

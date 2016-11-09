@@ -59,6 +59,8 @@ class Pages {
   function confirm() {
     if($this->subscriber !== false) {
       $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+      $this->subscriber->confirmed_ip = $_SERVER['REMOTE_ADDR'];
+      $this->subscriber->setExpr('confirmed_at', 'NOW()');
       $this->subscriber->save();
     }
   }

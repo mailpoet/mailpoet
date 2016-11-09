@@ -14,6 +14,8 @@ class Subscriber extends Model {
   const STATUS_UNSUBSCRIBED = 'unsubscribed';
   const STATUS_UNCONFIRMED = 'unconfirmed';
 
+  const SUBSCRIPTION_LIMIT_COOLDOWN = 60;
+
   function __construct() {
     parent::__construct();
 
@@ -157,6 +159,23 @@ class Subscriber extends Model {
     $signup_confirmation_enabled = (bool)Setting::getValue(
       'signup_confirmation.enabled'
     );
+
+    $subscriber_data['subscribed_ip'] = (isset($_SERVER['REMOTE_ADDR']))
+      ? $_SERVER['REMOTE_ADDR']
+      : null;
+
+    // make sure we don't allow too many subscriptions with the same ip address
+    $subscription_count = Subscriber::where(
+        'subscribed_ip',
+        $subscriber_data['subscribed_ip']
+      )->whereRaw(
+        'TIME_TO_SEC(TIMEDIFF(NOW(), created_at)) < ?',
+        self::SUBSCRIPTION_LIMIT_COOLDOWN
+      )->count();
+
+    if($subscription_count > 0) {
+      throw new \Exception(__('You need to wait before subscribing again.', 'mailpoet'));
+    }
 
     $subscriber = self::findOne($subscriber_data['email']);
 
