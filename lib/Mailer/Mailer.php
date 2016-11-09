@@ -14,8 +14,6 @@ class Mailer {
   const MAILER_CONFIG_SETTING_NAME = 'mta';
   const SENDING_LIMIT_INTERVAL_MULTIPLIER = 60;
   const METHOD_MAILPOET = 'MailPoet';
-  const METHOD_MAILGUN = 'MailGun';
-  const METHOD_ELASTICEMAIL = 'ElasticEmail';
   const METHOD_AMAZONSES = 'AmazonSES';
   const METHOD_SENDGRID = 'SendGrid';
   const METHOD_PHPMAIL = 'PHPMail';
@@ -40,21 +38,6 @@ class Mailer {
           $this->mailer_config['region'],
           $this->mailer_config['access_key'],
           $this->mailer_config['secret_key'],
-          $this->sender,
-          $this->reply_to
-        );
-        break;
-      case self::METHOD_ELASTICEMAIL:
-        $mailer_instance = new $this->mailer_config['class'](
-          $this->mailer_config['api_key'],
-          $this->sender,
-          $this->reply_to
-        );
-        break;
-      case self::METHOD_MAILGUN:
-        $mailer_instance = new $this->mailer_config['class'](
-          $this->mailer_config['domain'],
-          $this->mailer_config['api_key'],
           $this->sender,
           $this->reply_to
         );
