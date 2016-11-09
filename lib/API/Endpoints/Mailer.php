@@ -21,9 +21,11 @@ class Mailer extends APIEndpoint {
     }
 
     if($result['response'] === false) {
-      return $this->errorResponse(array(
-        APIError::BAD_REQUEST => __('The email could not be sent. Please check your settings.', 'mailpoet')
-      ));
+      $error = sprintf(
+        __('The email could not be sent: %s', 'mailpoet'),
+        $result['error']
+      );
+      return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
     } else {
       return $this->successResponse(null);
     }
