@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Mailer\Methods;
 
+use MailPoet\Mailer\Mailer;
+
 if(!defined('ABSPATH')) exit;
 
 class MailPoet {
@@ -21,10 +23,16 @@ class MailPoet {
       $this->url,
       $this->request($message_body)
     );
-    return (
-      !is_wp_error($result) === true &&
-      wp_remote_retrieve_response_code($result) === 201
-    );
+    if(is_wp_error($result)) {
+      return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
+    }
+    if(wp_remote_retrieve_response_code($result) !== 201) {
+      $response = (wp_remote_retrieve_body($result)) ?
+        wp_remote_retrieve_body($result) :
+        wp_remote_retrieve_response_message($result);
+      return Mailer::formatMailerSendErrorResult($response);
+    }
+    return Mailer::formatMailerSendSuccessResult();
   }
 
   function processSubscriber($subscriber) {
@@ -41,7 +49,7 @@ class MailPoet {
   }
 
   function getBody($newsletter, $subscriber) {
-    $composeBody = function ($newsletter, $subscriber) {
+    $composeBody = function($newsletter, $subscriber) {
       $body = array(
         'to' => (array(
           'address' => $subscriber['email'],

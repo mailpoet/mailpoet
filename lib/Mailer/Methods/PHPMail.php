@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Mailer\Methods;
 
+use MailPoet\Mailer\Mailer;
+
 if(!defined('ABSPATH')) exit;
 
 class PHPMail {
@@ -19,9 +21,13 @@ class PHPMail {
       $message = $this->createMessage($newsletter, $subscriber);
       $result = $this->mailer->send($message);
     } catch(\Exception $e) {
-      $result = false;
+      return Mailer::formatMailerSendErrorResult($e->getMessage());
     }
-    return ($result === 1);
+    return ($result === 1) ?
+      Mailer::formatMailerSendSuccessResult() :
+      Mailer::formatMailerSendErrorResult(
+        sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_PHPMAIL)
+      );
   }
 
   function buildMailer() {

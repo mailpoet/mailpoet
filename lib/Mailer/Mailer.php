@@ -154,4 +154,26 @@ class Mailer {
     // bse64_encode non-ASCII string as per RFC 2047 (https://www.ietf.org/rfc/rfc2047.txt)
     return sprintf('=?utf-8?B?%s?=', base64_encode($name));
   }
+
+   static function formatMailerConnectionErrorResult($error_message) {
+    return array(
+      'response' => false,
+      'action'=> 'connect',
+      'error' => $error_message
+    );
+  }
+
+  static function formatMailerSendErrorResult($error_message) {
+    return array(
+      'response' => false,
+      'action'=> 'send',
+      'error' => $error_message
+    );
+  }
+
+  static function formatMailerSendSuccessResult() {
+    return array(
+      'response' => true
+    );
+  }
 }
