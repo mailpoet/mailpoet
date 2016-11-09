@@ -160,18 +160,18 @@ class Subscriber extends Model {
       'signup_confirmation.enabled'
     );
 
-    // set user ip
-    $subscriber_data['ip'] = (isset($_SERVER['REMOTE_ADDR']))
+    $subscriber_data['subscribed_ip'] = (isset($_SERVER['REMOTE_ADDR']))
       ? $_SERVER['REMOTE_ADDR']
       : null;
 
     // make sure we don't allow too many subscriptions with the same ip address
-    $subscription_count = Subscriber::where('ip', $subscriber_data['ip'])
-      ->whereRaw(
+    $subscription_count = Subscriber::where(
+        'subscribed_ip',
+        $subscriber_data['subscribed_ip']
+      )->whereRaw(
         'TIME_TO_SEC(TIMEDIFF(NOW(), created_at)) < ?',
         self::SUBSCRIPTION_LIMIT_COOLDOWN
-      )
-      ->count();
+      )->count();
 
     if($subscription_count > 0) {
       throw new \Exception(__('You need to wait before subscribing again.', 'mailpoet'));
@@ -180,7 +180,6 @@ class Subscriber extends Model {
     $subscriber = self::findOne($subscriber_data['email']);
 
     if($subscriber === false) {
-
       // create new subscriber
       $subscriber = self::createOrUpdate($subscriber_data);
       if($subscriber->getErrors() !== false) {

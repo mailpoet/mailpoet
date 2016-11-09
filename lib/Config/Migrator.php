@@ -134,7 +134,7 @@ class Migrator {
       'last_name tinytext NOT NULL DEFAULT "",',
       'email varchar(150) NOT NULL,',
       'status varchar(12) NOT NULL DEFAULT "' . Subscriber::STATUS_UNCONFIRMED . '",',
-      'ip varchar(32) NULL,',
+      'subscribed_ip varchar(32) NULL,',
       'confirmed_ip varchar(32) NULL,',
       'confirmed_at TIMESTAMP NULL,',
       'created_at TIMESTAMP NULL,',
