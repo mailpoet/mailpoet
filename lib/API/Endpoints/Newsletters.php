@@ -275,10 +275,19 @@ class Newsletters extends APIEndpoint {
           $sender = false,
           $reply_to = false
         );
-        $mailer->send($newsletter, $data['subscriber']);
-        return $this->successResponse(
-          Newsletter::findOne($id)->asArray()
-        );
+        $result = $mailer->send($newsletter, $data['subscriber']);
+
+        if($result['response'] === false) {
+          $error = sprintf(
+            __('The email could not be sent: %s', 'mailpoet'),
+            $result['error']
+          );
+          return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
+        } else {
+          return $this->successResponse(
+            Newsletter::findOne($id)->asArray()
+          );
+        }
       } catch(\Exception $e) {
         return $this->errorResponse(array(
           $e->getCode() => $e->getMessage()
