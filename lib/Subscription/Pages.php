@@ -326,7 +326,12 @@ class Pages {
     $form_html .= '<input type="hidden" name="segments" value="" />';
     $form_html .= '<input type="hidden" name="mailpoet_redirect" '.
       'value="'.Url::getCurrentUrl().'" />';
-    $form_html .= '<input type="hidden" name="email" value="'.$subscriber->email.'" />';
+    $form_html .= '<input type="hidden" name="email" value="'.
+      $subscriber->email.
+    '" />';
+    $form_html .= '<input type="hidden" name="token" value="'.
+      Subscriber::generateToken($subscriber->email).
+    '" />';
 
     $form_html .= '<p class="mailpoet_paragraph">';
     $form_html .= '<label>Email *<br /><strong>'.$subscriber->email.'</strong></label>';
