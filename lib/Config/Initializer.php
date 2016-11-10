@@ -146,8 +146,9 @@ class Initializer {
   }
 
   function setupRenderer() {
-    $renderer = new Renderer();
-    $this->renderer = $renderer->init();
+    $caching = !WP_DEBUG;
+    $debugging = WP_DEBUG;
+    $this->renderer = new Renderer($caching, $debugging);
   }
 
   function setupLocalizer() {

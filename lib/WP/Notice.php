@@ -11,7 +11,7 @@ class Notice {
   private $type;
   private $message;
 
-  protected function __construct($type, $message) {
+  function __construct($type, $message) {
     $this->type = $type;
     $this->message = $message;
   }

@@ -8,19 +8,26 @@ use \MailPoet\Twig;
 if(!defined('ABSPATH')) exit;
 
 class Renderer {
-  function __construct() {
+  protected $cache_path;
+  protected $caching_enabled;
+  protected $debugging_enabled;
+  protected $renderer;
+
+  function __construct($caching_enabled = false, $debugging_enabled = false) {
+    $this->caching_enabled = $caching_enabled;
+    $this->debuggin_enabled = $debugging_enabled;
+    $this->cache_path = Env::$temp_path . '/cache';
+
     $file_system = new TwigFileSystem(Env::$views_path);
     $this->renderer = new TwigEnv(
       $file_system,
       array(
         'cache' => $this->detectCache(),
-        'debug' => WP_DEBUG,
+        'debug' => $this->debugging_enabled,
         'auto_reload' => true
       )
     );
-  }
 
-  function init() {
     $this->setupDebug();
     $this->setupTranslations();
     $this->setupFunctions();
@@ -28,8 +35,6 @@ class Renderer {
     $this->setupHelpscout();
     $this->setupGlobalVariables();
     $this->setupSyntax();
-
-    return $this->renderer;
   }
 
   function setupTranslations() {
@@ -66,16 +71,30 @@ class Renderer {
   }
 
   function detectCache() {
-    $cache_path = Env::$temp_path . '/cache';
-    if(WP_DEBUG === false) {
-      return $cache_path;
-    }
-    return false;
+    return $this->caching_enabled ? $this->cache_path : false;
   }
 
   function setupDebug() {
-    if(WP_DEBUG === true) {
+    if($this->debugging_enabled) {
       $this->renderer->addExtension(new \Twig_Extension_Debug());
     }
+  }
+
+  function render($template, $context = array()) {
+    try {
+      return $this->renderer->render($template, $context);
+    } catch(\RuntimeException $e) {
+      throw new \Exception(sprintf(
+        __('Failed to render template "%s". Please ensure the template cache folder "%s" exists and has write permissions. Terminated with error: "%s"'),
+        $template,
+        $this->cache_path,
+        $e->getMessage()
+      ));
+    }
+  }
+
+
+  function addGlobal($key, $value) {
+    return $this->renderer->addGlobal($key, $value);
   }
 }

@@ -73,7 +73,11 @@ class Widget {
           )
         );
 
-        echo $this->renderer->render('form/iframe.html', $data);
+        try {
+          echo $this->renderer->render('form/iframe.html', $data);
+        } catch(\Exception $e) {
+          echo $e->getMessage();
+        }
       }
       exit();
     }
