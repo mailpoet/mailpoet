@@ -22,7 +22,7 @@ class Manage {
     if(
       isset($subscriber_data['email'])
       &&
-      $token === Subscriber::generateToken($subscriber_data['email'])
+      Subscriber::verifyToken($subscriber_data['email'], $token)
     ) {
       if($subscriber_data['email'] !== Pages::DEMO_EMAIL) {
         $subscriber = Subscriber::createOrUpdate($subscriber_data);
