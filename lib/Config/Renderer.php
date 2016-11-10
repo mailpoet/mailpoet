@@ -15,7 +15,7 @@ class Renderer {
 
   function __construct($caching_enabled = false, $debugging_enabled = false) {
     $this->caching_enabled = $caching_enabled;
-    $this->debuggin_enabled = $debugging_enabled;
+    $this->debugging_enabled = $debugging_enabled;
     $this->cache_path = Env::$temp_path . '/cache';
 
     $file_system = new TwigFileSystem(Env::$views_path);
