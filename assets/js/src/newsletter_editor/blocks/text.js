@@ -25,12 +25,30 @@ define([
     className: "mailpoet_block mailpoet_text_block mailpoet_droppable_block",
     getTemplate: function() { return templates.textBlock; },
     modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'), // Prevent rerendering on model change due to text editor redrawing
+    behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
+      TextEditorBehavior: {
+        toolbar1: "formatselect bold italic forecolor | link unlink",
+        toolbar2: "alignleft aligncenter alignright alignjustify | bullist numlist blockquote | code mailpoet_shortcodes",
+        validElements: "p[class|style],span[class|style],a[href|class|title|target|style],h1[class|style],h2[class|style],h3[class|style],ol[class|style],ul[class|style],li[class|style],strong[class|style],em[class|style],strike,br,blockquote[class|style],table[class|style],tr[class|style],th[class|style],td[class|style]",
+        invalidElements: "script",
+        blockFormats: 'Heading 1=h1;Heading 2=h2;Heading 3=h3;Paragraph=p',
+        plugins: "link code textcolor colorpicker mailpoet_shortcodes",
+        configurationFilter: function(originalSettings) {
+          return _.extend({}, originalSettings, {
+            mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
+            mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle'),
+          });
+        }
+      },
+    }),
     initialize: function(options) {
       base.BlockView.prototype.initialize.apply(this, arguments);
 
       this.renderOptions = _.defaults(options.renderOptions || {}, {
         disableTextEditor: false,
       });
+
+      this.disableTextEditor = this.renderOptions.disableTextEditor;
     },
     onDragSubstituteBy: function() { return Module.TextWidgetView; },
     onRender: function() {
@@ -42,53 +60,18 @@ define([
       });
       this.toolsRegion.show(this.toolsView);
     },
-    onDomRefresh: function() {
-      this.attachTextEditor();
+    onTextEditorChange: function(newContent) {
+      this.model.set('text', newContent);
     },
-    attachTextEditor: function() {
-      var that = this;
-      if (!this.renderOptions.disableTextEditor) {
-        this.$('.mailpoet_content').tinymce({
-          inline: true,
-
-          menubar: false,
-          toolbar1: "formatselect bold italic forecolor | link unlink",
-          toolbar2: "alignleft aligncenter alignright alignjustify | bullist numlist blockquote | code mailpoet_shortcodes",
-
-          //forced_root_block: 'p',
-          valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],h1[class|style],h2[class|style],h3[class|style],ol[class|style],ul[class|style],li[class|style],strong[class|style],em[class|style],strike,br,blockquote[class|style],table[class|style],tr[class|style],th[class|style],td[class|style]",
-          invalid_elements: "script",
-          block_formats: 'Heading 1=h1;Heading 2=h2;Heading 3=h3;Paragraph=p',
-          relative_urls: false,
-          remove_script_host: false,
-
-          plugins: "link code textcolor colorpicker mailpoet_shortcodes",
-
-          setup: function(editor) {
-            editor.on('change', function(e) {
-              that.model.set('text', editor.getContent());
-            });
-
-            editor.on('click', function(e) {
-              editor.focus();
-            });
-
-            editor.on('focus', function(e) {
-              that.disableDragging();
-              that.disableShowingTools();
-            });
-
-            editor.on('blur', function(e) {
-              that.enableDragging();
-              that.enableShowingTools();
-            });
-          },
-
-          mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
-          mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle'),
-        });
-      }
+    onTextEditorFocus: function() {
+      this.disableDragging();
+      this.disableShowingTools();
     },
+    onTextEditorBlur: function() {
+      this.enableDragging();
+      this.enableShowingTools();
+    },
+
     disableDragging: function() {
       this.$('.mailpoet_content').addClass('mailpoet_ignore_drag');
     },
