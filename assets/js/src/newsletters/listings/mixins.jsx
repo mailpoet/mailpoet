@@ -3,6 +3,8 @@ import MailPoet from 'mailpoet'
 import classNames from 'classnames'
 import jQuery from 'jquery'
 
+const mailer_log = window.mailpoet_settings.mta_log;
+
 const _QueueMixin = {
   pauseSending: function(newsletter) {
     MailPoet.Ajax.post({
@@ -47,6 +49,10 @@ const _QueueMixin = {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
+    } else if (mailer_log.status === 'paused') {
+      return (
+        <span>{MailPoet.I18n.t('paused')}</span>
+      )
     } else {
       if (newsletter.queue.status === 'scheduled') {
         return (
@@ -175,5 +181,26 @@ const _StatisticsMixin = {
   }
 }
 
+const _MailerMixin = {
+  resumeSending: function() {
+    MailPoet.Ajax.post({
+      endpoint: 'mailer',
+      action: 'resumeSending'
+    }).done(function() {
+      jQuery('.mailpoet_sending_status.error').remove();
+      MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
+      // TODO: refresh listings to update the newsletter queue status
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(function(error) { return error.message; }),
+          { scroll: true }
+        );
+      }
+    });
+  }
+}
+
 export { _QueueMixin as QueueMixin };
 export { _StatisticsMixin as StatisticsMixin };
+export { _MailerMixin as MailerMixin };
