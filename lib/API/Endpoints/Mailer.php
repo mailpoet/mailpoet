@@ -2,6 +2,7 @@
 namespace MailPoet\API\Endpoints;
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
+use MailPoet\Mailer\MailerLog;
 
 if(!defined('ABSPATH')) exit;
 
@@ -29,5 +30,10 @@ class Mailer extends APIEndpoint {
     } else {
       return $this->successResponse(null);
     }
+  }
+
+  function resumeSending() {
+    MailerLog::resumeSending();
+    return $this->successResponse(null);
   }
 }
