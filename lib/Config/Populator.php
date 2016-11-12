@@ -2,6 +2,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Mailer\MailerLog;
 use \MailPoet\Models\Segment;
 use \MailPoet\Segments\WP;
 use \MailPoet\Models\Setting;
@@ -85,26 +86,26 @@ class Populator {
   private function createDefaultSettings() {
     $current_user = wp_get_current_user();
 
+    // set cron trigger option to default method
     if(!Setting::getValue(CronTrigger::SETTING_NAME)) {
-      // disable task scheduler (cron) be default
       Setting::setValue(CronTrigger::SETTING_NAME, array(
         'method' => CronTrigger::DEFAULT_METHOD
       ));
     }
 
-    // default sender info based on current user
+    // set default sender info based on current user
     $sender = array(
       'name' => $current_user->display_name,
       'address' => $current_user->user_email
     );
 
+    // set default from name & address
     if(!Setting::getValue('sender')) {
-      // default from name & address
       Setting::setValue('sender', $sender);
     }
 
+    // enable signup confirmation by default
     if(!Setting::getValue('signup_confirmation')) {
-      // enable signup confirmation by default
       Setting::setValue('signup_confirmation', array(
         'enabled' => true,
         'from' => array(
@@ -115,9 +116,13 @@ class Populator {
       ));
     }
 
+    // set installation date
     if(!Setting::getValue('installed_at')) {
       Setting::setValue('installed_at', date("Y-m-d H:i:s"));
     }
+
+    // reset mailer log
+    MailerLog::resetMailerLog();
   }
 
   private function createDefaultSegments() {
