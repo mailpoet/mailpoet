@@ -60,9 +60,6 @@ class SendingQueue extends Model {
     if(empty($subscribers['processed'])) {
       $subscribers['processed'] = array();
     }
-    if(empty($subscribers['failed'])) {
-      $subscribers['failed'] = array();
-    }
     return $subscribers;
   }
 
@@ -97,22 +94,6 @@ class SendingQueue extends Model {
     $this->updateCount();
   }
 
-  function updateFailedSubscribers($failed_subscribers) {
-    $subscribers = $this->getSubscribers();
-    $subscribers['failed'] = array_merge(
-      $subscribers['failed'],
-      $failed_subscribers
-    );
-    $subscribers['to_process'] = array_values(
-      array_diff(
-        $subscribers['to_process'],
-        $failed_subscribers
-      )
-    );
-    $this->subscribers = $subscribers;
-    $this->updateCount();
-  }
-
   function updateProcessedSubscribers($processed_subscribers) {
     $subscribers = $this->getSubscribers();
     $subscribers['processed'] = array_merge(
@@ -131,10 +112,8 @@ class SendingQueue extends Model {
 
   function updateCount() {
     $this->subscribers = $this->getSubscribers();
-    $this->count_processed =
-      count($this->subscribers['processed']) + count($this->subscribers['failed']);
+    $this->count_processed = count($this->subscribers['processed']);
     $this->count_to_process = count($this->subscribers['to_process']);
-    $this->count_failed = count($this->subscribers['failed']);
     $this->count_total = $this->count_processed + $this->count_to_process;
     if(!$this->count_to_process) {
       $this->processed_at = current_time('mysql');
