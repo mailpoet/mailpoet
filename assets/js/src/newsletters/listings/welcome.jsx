@@ -4,6 +4,7 @@ import { createHashHistory } from 'history'
 
 import Listing from 'listing/listing.jsx'
 import ListingTabs from 'newsletters/listings/tabs.jsx'
+import ListingNotices from 'newsletters/listings/notices.jsx'
 
 import classNames from 'classnames'
 import jQuery from 'jquery'
@@ -340,6 +341,8 @@ const NewsletterListWelcome = React.createClass({
         <h1 className="title">
           { MailPoet.I18n.t('pageTitle') } <Link className="page-title-action" to="/new">{ MailPoet.I18n.t('new') }</Link>
         </h1>
+
+        <ListingNotices />
 
         <ListingTabs tab="welcome" />
 

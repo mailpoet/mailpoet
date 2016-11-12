@@ -6,6 +6,7 @@ import MailPoet from 'mailpoet'
 
 import Listing from 'listing/listing.jsx'
 import ListingTabs from 'newsletters/listings/tabs.jsx'
+import ListingNotices from 'newsletters/listings/notices.jsx'
 
 import { QueueMixin, StatisticsMixin } from 'newsletters/listings/mixins.jsx'
 
@@ -95,6 +96,8 @@ const NewsletterListNotificationHistory = React.createClass({
         <h1 className="title">
           {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
         </h1>
+
+        <ListingNotices />
 
         <ListingTabs tab="notification" />
 
