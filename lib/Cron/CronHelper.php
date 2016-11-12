@@ -9,9 +9,9 @@ use MailPoet\Util\Security;
 if(!defined('ABSPATH')) exit;
 
 class CronHelper {
-  const DAEMON_EXECUTION_LIMIT = 20;
-  const DAEMON_EXECUTION_TIMEOUT = 35;
-  const DAEMON_REQUEST_TIMEOUT = 2;
+  const DAEMON_EXECUTION_LIMIT = 20; // seconds
+  const DAEMON_EXECUTION_TIMEOUT = 35; // seconds
+  const DAEMON_REQUEST_TIMEOUT = 2; // seconds
   const DAEMON_SETTING = 'cron_daemon';
 
   static function createDaemon($token) {
