@@ -158,16 +158,16 @@ class Mailer {
    static function formatMailerConnectionErrorResult($error_message) {
     return array(
       'response' => false,
-      'action'=> 'connect',
-      'error' => $error_message
+      'operation' => 'connect',
+      'error_message' => $error_message
     );
   }
 
   static function formatMailerSendErrorResult($error_message) {
     return array(
       'response' => false,
-      'action'=> 'send',
-      'error' => $error_message
+      'operation' => 'send',
+      'error_message' => $error_message
     );
   }
 
