@@ -465,6 +465,12 @@ class SubscriberTest extends MailPoetTest {
       'status' => Subscriber::STATUS_UNSUBSCRIBED
     ));
 
+    $subscriber_4 = Subscriber::createOrUpdate(array(
+      'email' => 'subscriber_4@mailpoet.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'deleted_at' => Carbon::now()->toDateTimeString()
+    ));
+
     // counts only subscribed & unconfirmed users
     $total = Subscriber::getTotalSubscribers();
     expect($total)->equals(2);
