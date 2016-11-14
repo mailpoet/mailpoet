@@ -648,7 +648,9 @@ class Subscriber extends Model {
     return self::whereIn('status', array(
       self::STATUS_SUBSCRIBED,
       self::STATUS_UNCONFIRMED
-    ))->count();
+    ))
+    ->whereNull('deleted_at')
+    ->count();
   }
 
   static function bulkTrash($orm) {
