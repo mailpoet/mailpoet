@@ -165,9 +165,12 @@ class Widget extends \WP_Widget {
 
         // render form
         $renderer = new Renderer();
-        $renderer = $renderer->init();
-        $output = $renderer->render('form/widget.html', $data);
-        $output = do_shortcode($output);
+        try {
+          $output = $renderer->render('form/widget.html', $data);
+          $output = do_shortcode($output);
+        } catch(\Exception $e) {
+          $output = $e->getMessage();
+        }
       }
 
       if($form_type === 'widget') {

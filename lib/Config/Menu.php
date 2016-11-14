@@ -16,6 +16,7 @@ use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Listing;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\DateTime;
+use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
 
@@ -215,7 +216,7 @@ class Menu {
       'redirect_url' => $redirect_url,
       'sub_menu' => 'mailpoet-newsletters'
     );
-    echo $this->renderer->render('welcome.html', $data);
+    $this->displayPage('welcome.html', $data);
   }
 
   function update() {
@@ -241,7 +242,7 @@ class Menu {
       'sub_menu' => 'mailpoet-newsletters'
     );
 
-    echo $this->renderer->render('update.html', $data);
+    $this->displayPage('update.html', $data);
   }
 
   function settings() {
@@ -263,7 +264,7 @@ class Menu {
       )
     );
 
-    echo $this->renderer->render('settings.html', $data);
+    $this->displayPage('settings.html', $data);
   }
 
   private function _getFlags() {
@@ -315,7 +316,7 @@ class Menu {
     $data['date_formats'] = Block\Date::getDateFormats();
     $data['month_names'] = Block\Date::getMonthNames();
 
-    echo $this->renderer->render('subscribers/subscribers.html', $data);
+    $this->displayPage('subscribers/subscribers.html', $data);
   }
 
   function segments() {
@@ -323,7 +324,7 @@ class Menu {
 
     $data = array();
     $data['items_per_page'] = $this->getLimitPerPage('segments');
-    echo $this->renderer->render('segments.html', $data);
+    $this->displayPage('segments.html', $data);
   }
 
   function forms() {
@@ -334,7 +335,7 @@ class Menu {
     $data['items_per_page'] = $this->getLimitPerPage('forms');
     $data['segments'] = Segment::findArray();
 
-    echo $this->renderer->render('forms.html', $data);
+    $this->displayPage('forms.html', $data);
   }
 
   function newsletters() {
@@ -364,7 +365,7 @@ class Menu {
     wp_enqueue_script('jquery-ui');
     wp_enqueue_script('jquery-ui-datepicker');
 
-    echo $this->renderer->render('newsletters.html', $data);
+    $this->displayPage('newsletters.html', $data);
   }
 
   function newletterEditor() {
@@ -377,7 +378,7 @@ class Menu {
     wp_enqueue_media();
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
     wp_enqueue_style('editor', includes_url('css/editor.css'));
-    echo $this->renderer->render('newsletter/editor.html', $data);
+    $this->displayPage('newsletter/editor.html', $data);
   }
 
   function import() {
@@ -389,14 +390,14 @@ class Menu {
       'month_names' => Block\Date::getMonthNames(),
       'sub_menu' => 'mailpoet-subscribers'
     ));
-    echo $this->renderer->render('subscribers/importExport/import.html', $data);
+    $this->displayPage('subscribers/importExport/import.html', $data);
   }
 
   function export() {
     $export = new ImportExportFactory('export');
     $data = $export->bootstrap();
     $data['sub_menu'] = 'mailpoet-subscribers';
-    echo $this->renderer->render('subscribers/importExport/export.html', $data);
+    $this->displayPage('subscribers/importExport/export.html', $data);
   }
 
   function formEditor() {
@@ -417,7 +418,7 @@ class Menu {
       'sub_menu' => 'mailpoet-forms'
     );
 
-    echo $this->renderer->render('form/editor.html', $data);
+    $this->displayPage('form/editor.html', $data);
   }
 
   function setPageTitle($title) {
@@ -426,6 +427,13 @@ class Menu {
       __('MailPoet', 'mailpoet'),
       $title
     );
+  }
+
+  function displaySubscriberLimitExceededTemplate() {
+    $this->displayPage('limit.html', array(
+      'limit' => SubscribersFeature::SUBSCRIBERS_LIMIT
+    ));
+    exit;
   }
 
   private function getLimitPerPage($model = null) {
@@ -441,10 +449,12 @@ class Menu {
       : Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
   }
 
-  function displaySubscriberLimitExceededTemplate() {
-    echo $this->renderer->render('limit.html', array(
-      'limit' => SubscribersFeature::SUBSCRIBERS_LIMIT
-    ));
-    exit;
+  private function displayPage($template, $data) {
+    try {
+      echo $this->renderer->render($template, $data);
+    } catch (\Exception $e) {
+      $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
+      $notice->displayWPNotice();
+    }
   }
 }
