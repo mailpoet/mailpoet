@@ -156,6 +156,24 @@ class Subscriber extends Model {
   }
 
   static function subscribe($subscriber_data = array(), $segment_ids = array()) {
+    // filter out keys from the subscriber_data array
+    // that should not be editable when subscribing
+    $reserved_columns = array(
+      'id',
+      'wp_user_id',
+      'status',
+      'subscribed_ip',
+      'confirmed_ip',
+      'confirmed_at',
+      'created_at',
+      'updated_at',
+      'deleted_at'
+    );
+    $subscriber_data = array_diff_key(
+      $subscriber_data,
+      array_flip($reserved_columns)
+    );
+
     $signup_confirmation_enabled = (bool)Setting::getValue(
       'signup_confirmation.enabled'
     );
