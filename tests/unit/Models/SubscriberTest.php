@@ -314,6 +314,42 @@ class SubscriberTest extends MailPoetTest {
     expect($subscriber->deleted_at)->equals(null);
   }
 
+  function testItCannotSubscribeWithReservedColumns() {
+    $segment = Segment::create();
+    $segment->hydrate(array('name' => 'List #1'));
+    $segment->save();
+
+    $subscriber = Subscriber::subscribe(
+      array(
+        'email' => 'donald@mailpoet.com',
+        'first_name' => 'Donald',
+        'last_name' => 'Trump',
+        // the fields below should NOT be taken into account
+        'id' => 1337,
+        'wp_user_id' => 7331,
+        'status' => Subscriber::STATUS_SUBSCRIBED,
+        'created_at' => '1984-03-09 00:00:01',
+        'updated_at' => '1984-03-09 00:00:02',
+        'deleted_at' => '1984-03-09 00:00:03'
+      ),
+      array($segment->id())
+    );
+
+    expect($subscriber->id > 0)->equals(true);
+    expect($subscriber->id)->notEquals(1337);
+    expect($subscriber->segments()->count())->equals(1);
+    expect($subscriber->email)->equals('donald@mailpoet.com');
+    expect($subscriber->first_name)->equals('Donald');
+    expect($subscriber->last_name)->equals('Trump');
+
+    expect($subscriber->wp_user_id)->equals(null);
+    expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+    expect($subscriber->created_at)->notEquals('1984-03-09 00:00:01');
+    expect($subscriber->updated_at)->notEquals('1984-03-09 00:00:02');
+    expect($subscriber->created_at)->equals($subscriber->updated_at);
+    expect($subscriber->deleted_at)->equals(null);
+  }
+
   function testItCanBeUpdatedByEmail() {
     $subscriber_updated = Subscriber::createOrUpdate(array(
       'email' => $this->data['email'],
