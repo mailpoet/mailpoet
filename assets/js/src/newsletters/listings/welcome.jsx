@@ -14,6 +14,9 @@ import _ from 'underscore'
 const mailpoet_roles = window.mailpoet_roles || {};
 const mailpoet_segments = window.mailpoet_segments || {};
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
+const mailpoet_settings = window.mailpoet_settings || {};
+const mailpoet_mailer_log = mailpoet_settings.mta_log || {};
+const mailpoet_mailer_config = mailpoet_settings.mta || {};
 
 const messages = {
   onTrash: (response) => {
@@ -342,7 +345,7 @@ const NewsletterListWelcome = React.createClass({
           { MailPoet.I18n.t('pageTitle') } <Link className="page-title-action" to="/new">{ MailPoet.I18n.t('new') }</Link>
         </h1>
 
-        <ListingNotices />
+        <ListingNotices mailer_log={ mailpoet_mailer_log } mailer_config = { mailpoet_mailer_config } />
 
         <ListingTabs tab="welcome" />
 

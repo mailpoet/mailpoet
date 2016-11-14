@@ -3,8 +3,6 @@ import MailPoet from 'mailpoet'
 import classNames from 'classnames'
 import jQuery from 'jquery'
 
-const mailer_log = window.mailpoet_settings.mta_log;
-
 const _QueueMixin = {
   pauseSending: function(newsletter) {
     MailPoet.Ajax.post({
@@ -44,7 +42,7 @@ const _QueueMixin = {
       }
     });
   },
-  renderQueueStatus: function(newsletter) {
+  renderQueueStatus: function(newsletter, mailer_log) {
     if (!newsletter.queue) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
