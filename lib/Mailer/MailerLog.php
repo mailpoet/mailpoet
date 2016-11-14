@@ -22,7 +22,7 @@ class MailerLog {
 
   static function createMailerLog() {
     $mailer_log = array(
-      'sent' =>null,
+      'sent' => null,
       'started' => time(),
       'status' => null,
       'retry_attempt' => null,
