@@ -175,7 +175,7 @@ const NewsletterListStandard = React.createClass({
           { actions }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('status') }>
-          { this.renderQueueStatus(newsletter, mailer_log) }
+          { this.renderQueueStatus(newsletter, mailpoet_mailer_log) }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
           { segments }
