@@ -42,53 +42,31 @@ define([
     modelEvents: _.extend({
       'change:styles.block.backgroundColor change:styles.text.fontColor change:styles.text.fontFamily change:styles.text.fontSize change:styles.text.textAlign change:styles.link.fontColor change:styles.link.textDecoration': 'render',
     }, _.omit(base.BlockView.prototype.modelEvents, 'change')),
+    behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
+      TextEditorBehavior: {
+        configurationFilter: function(originalSettings) {
+          return _.extend({}, originalSettings, {
+            mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
+            mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle'),
+          });
+        }
+      },
+    }),
     onDragSubstituteBy: function() { return Module.HeaderWidgetView; },
     onRender: function() {
       this.toolsView = new Module.HeaderBlockToolsView({ model: this.model });
       this.toolsRegion.show(this.toolsView);
     },
-    onDomRefresh: function() {
-      this.attachTextEditor();
+    onTextEditorChange: function(newContent) {
+      this.model.set('text', newContent);
     },
-    attachTextEditor: function() {
-      var that = this;
-      this.$('.mailpoet_content').tinymce({
-        inline: true,
-
-        menubar: false,
-        toolbar: "bold italic link unlink forecolor mailpoet_shortcodes",
-
-        valid_elements: "p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br",
-        invalid_elements: "script",
-        block_formats: 'Paragraph=p',
-        relative_urls: false,
-        remove_script_host: false,
-
-        plugins: "link textcolor colorpicker mailpoet_shortcodes",
-
-        setup: function(editor) {
-          editor.on('change', function(e) {
-            that.model.set('text', editor.getContent());
-          });
-
-          editor.on('click', function(e) {
-            editor.focus();
-          });
-
-          editor.on('focus', function(e) {
-            that.disableDragging();
-            that.disableShowingTools();
-          });
-
-          editor.on('blur', function(e) {
-            that.enableDragging();
-            that.enableShowingTools();
-          });
-        },
-
-        mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
-        mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle'),
-      });
+    onTextEditorFocus: function() {
+      this.disableDragging();
+      this.disableShowingTools();
+    },
+    onTextEditorBlur: function() {
+      this.enableDragging();
+      this.enableShowingTools();
     },
     disableDragging: function() {
       this.$('.mailpoet_content').addClass('mailpoet_ignore_drag');
