@@ -4,7 +4,6 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
 use MailPoet\API;
-use MailPoet\Util\License\License as License;
 use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
@@ -111,7 +110,7 @@ class Initializer {
 
       $this->plugin_initialized = true;
     } catch(\Exception $e) {
-      $this->handleFailedInitialization($e);
+      self::handleFailedInitialization($e);
     }
   }
 
@@ -208,7 +207,7 @@ class Initializer {
     add_image_size('mailpoet_newsletter_max', 1320);
   }
 
-  function handleFailedInitialization($message) {
+  static function handleFailedInitialization($message) {
     return WPNotice::displayError($message);
   }
 }

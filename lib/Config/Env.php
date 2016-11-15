@@ -70,7 +70,10 @@ class Env {
 
   static function intializePath($path) {
     if(!is_dir($path)) {
-      mkdir($path);
+      @mkdir($path);
+      if(!is_dir($path)) {
+        throw new \Exception(__("The plugin requires a writeable WordPress uploads folder."));
+      }
       file_put_contents(
         $path . '/index.php',
         str_replace('\n', PHP_EOL, '<?php\n\n// Silence is golden')

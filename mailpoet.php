@@ -1,7 +1,8 @@
 <?php
 if(!defined('ABSPATH')) exit;
 
-use \MailPoet\Config\Initializer;
+use MailPoet\Config\Initializer;
+
 /*
  * Plugin Name: MailPoet
  * Version: 3.0.0-beta.3
@@ -21,11 +22,15 @@ use \MailPoet\Config\Initializer;
  */
 
 require 'vendor/autoload.php';
-
 define('MAILPOET_VERSION', '3.0.0-beta.3');
-
-$initializer = new Initializer(array(
-  'file' => __FILE__,
-  'version' => MAILPOET_VERSION
-));
-$initializer->init();
+try {
+  $initializer = new Initializer(
+    array(
+      'file' => __FILE__,
+      'version' => MAILPOET_VERSION
+    )
+  );
+  $initializer->init();
+} catch(\Exception $e) {
+  Initializer::handleFailedInitialization($e->getMessage());
+}
