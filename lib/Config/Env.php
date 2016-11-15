@@ -72,7 +72,7 @@ class Env {
     if(!is_dir($path)) {
       @mkdir($path);
       if(!is_dir($path)) {
-        throw new \Exception(__("The plugin requires a writeable WordPress uploads folder."));
+        throw new \Exception(__("Failed to create a temporary folder inside the WordPress's uploads folder."));
       }
       file_put_contents(
         $path . '/index.php',

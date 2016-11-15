@@ -18,7 +18,11 @@ class Initializer {
     'file' => '',
     'version' => '1.0.0'
   )) {
-    Env::init($params['file'], $params['version']);
+    try {
+      Env::init($params['file'], $params['version']);
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e->getMessage());
+    }
   }
 
   function init() {
@@ -110,7 +114,7 @@ class Initializer {
 
       $this->plugin_initialized = true;
     } catch(\Exception $e) {
-      self::handleFailedInitialization($e);
+      $this->handleFailedInitialization($e);
     }
   }
 
@@ -207,7 +211,7 @@ class Initializer {
     add_image_size('mailpoet_newsletter_max', 1320);
   }
 
-  static function handleFailedInitialization($message) {
+  function handleFailedInitialization($message) {
     return WPNotice::displayError($message);
   }
 }
