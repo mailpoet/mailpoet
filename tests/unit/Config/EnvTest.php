@@ -54,6 +54,15 @@ class EnvTest extends MailPoetTest {
     expect(Env::$db_charset)->equals($charset);
   }
 
+  function testItCanInitializeTempAndCacheFolders() {
+    // temp and cache folders should exist and contain index.php 
+    expect(is_dir(Env::$temp_path))->true();
+    expect(file_exists(Env::$temp_path . '/index.php'))->true();
+    expect(file_get_contents(Env::$temp_path . '/index.php'))->contains('<?php');
+    expect(is_dir(Env::$cache_path))->true();
+    expect(file_get_contents(Env::$cache_path . '/index.php'))->contains('<?php');
+  }
+
   function testItCanGenerateDbSourceName() {
     $source_name = ((!ENV::$db_socket) ? 'mysql:host=' : 'mysql:unix_socket=') .
       ENV::$db_host . ';port=' . ENV::$db_port . ';dbname=' . DB_NAME;

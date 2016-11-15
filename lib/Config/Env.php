@@ -13,6 +13,7 @@ class Env {
   static $assets_path;
   static $assets_url;
   static $temp_path;
+  static $cache_path;
   static $temp_url;
   static $languages_path;
   static $lib_path;
@@ -38,10 +39,12 @@ class Env {
     self::$assets_path = self::$path . '/assets';
     self::$assets_url = plugins_url('/assets', $file);
     $wp_upload_dir = wp_upload_dir();
-    self::$temp_path = $wp_upload_dir['basedir'] . '/' . self::$plugin_name;
-    if(!is_dir(self::$temp_path)) {
-      mkdir(self::$temp_path);
-    }
+    self::$temp_path = self::intializePath(
+      $wp_upload_dir['basedir'] . '/' . self::$plugin_name
+    );
+    self::$cache_path = self::intializePath(
+      self::$temp_path . '/cache'
+    );
     self::$temp_url = $wp_upload_dir['baseurl'] . '/' . self::$plugin_name;
     self::$languages_path = self::$path . '/lang';
     self::$lib_path = self::$path . '/lib';
@@ -63,6 +66,17 @@ class Env {
     self::$db_charset = $wpdb->get_charset_collate();
     self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port);
     self::$db_timezone_offset = self::getDbTimezoneOffset();
+  }
+
+  static function intializePath($path) {
+    if(!is_dir($path)) {
+      mkdir($path);
+      file_put_contents(
+        $path . '/index.php',
+        str_replace('\n', PHP_EOL, '<?php\n\n// Silence is golden')
+      );
+    }
+    return $path;
   }
 
   private static function dbSourceName($host, $socket, $port) {
