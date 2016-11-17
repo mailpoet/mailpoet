@@ -39,12 +39,8 @@ class Env {
     self::$assets_path = self::$path . '/assets';
     self::$assets_url = plugins_url('/assets', $file);
     $wp_upload_dir = wp_upload_dir();
-    self::$temp_path = self::intializePath(
-      $wp_upload_dir['basedir'] . '/' . self::$plugin_name
-    );
-    self::$cache_path = self::intializePath(
-      self::$temp_path . '/cache'
-    );
+    self::$temp_path = $wp_upload_dir['basedir'] . '/' . self::$plugin_name;
+    self::$cache_path = self::$temp_path . '/cache';
     self::$temp_url = $wp_upload_dir['baseurl'] . '/' . self::$plugin_name;
     self::$languages_path = self::$path . '/lang';
     self::$lib_path = self::$path . '/lib';
@@ -66,20 +62,6 @@ class Env {
     self::$db_charset = $wpdb->get_charset_collate();
     self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port);
     self::$db_timezone_offset = self::getDbTimezoneOffset();
-  }
-
-  static function intializePath($path) {
-    if(!is_dir($path)) {
-      @mkdir($path);
-      if(!is_dir($path)) {
-        throw new \Exception(__("Failed to create a temporary folder inside the WordPress's uploads folder."));
-      }
-      file_put_contents(
-        $path . '/index.php',
-        str_replace('\n', PHP_EOL, '<?php\n\n// Silence is golden')
-      );
-    }
-    return $path;
   }
 
   private static function dbSourceName($host, $socket, $port) {

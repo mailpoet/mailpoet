@@ -18,14 +18,11 @@ class Initializer {
     'file' => '',
     'version' => '1.0.0'
   )) {
-    try {
       Env::init($params['file'], $params['version']);
-    } catch(\Exception $e) {
-      $this->handleFailedInitialization($e->getMessage());
-    }
   }
 
   function init() {
+    $this->checkRequirements();
     $this->setupDB();
 
     register_activation_hook(Env::$file, array($this, 'runMigrator'));
@@ -34,6 +31,11 @@ class Initializer {
     add_action('plugins_loaded', array($this, 'setup'));
     add_action('init', array($this, 'onInit'));
     add_action('widgets_init', array($this, 'setupWidget'));
+  }
+
+  function checkRequirements() {
+    $requrements = new RequirementsChecker();
+    $requrements->check();
   }
 
   function setupDB() {
