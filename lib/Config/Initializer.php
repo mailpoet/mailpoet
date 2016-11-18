@@ -22,7 +22,11 @@ class Initializer {
   }
 
   function init() {
-    $this->checkRequirements();
+    $requiments_check_results = $this->checkRequirements();
+
+    // abort initialization if PDO extension is missing
+    if(!$requiments_check_results[RequirementsChecker::TEST_PDO_EXTENSION]) return;
+
     $this->setupDB();
 
     register_activation_hook(Env::$file, array($this, 'runMigrator'));
@@ -35,7 +39,7 @@ class Initializer {
 
   function checkRequirements() {
     $requrements = new RequirementsChecker();
-    $requrements->check();
+    return $requrements->checkAllRequirements();
   }
 
   function setupDB() {

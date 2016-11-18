@@ -12,6 +12,7 @@ class Env {
   static $views_path;
   static $assets_path;
   static $assets_url;
+  static $util_path;
   static $temp_path;
   static $cache_path;
   static $temp_url;
@@ -38,6 +39,7 @@ class Env {
     self::$views_path = self::$path . '/views';
     self::$assets_path = self::$path . '/assets';
     self::$assets_url = plugins_url('/assets', $file);
+    self::$util_path = self::$path . '/lib/Util';
     $wp_upload_dir = wp_upload_dir();
     self::$temp_path = $wp_upload_dir['basedir'] . '/' . self::$plugin_name;
     self::$cache_path = self::$temp_path . '/cache';
