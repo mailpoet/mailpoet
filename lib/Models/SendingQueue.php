@@ -52,6 +52,13 @@ class SendingQueue extends Model {
     return $this;
   }
 
+  function delete() {
+    if($parent_newsletter = $this->newsletter()->findOne()) {
+      $parent_newsletter->delete();
+    };
+    return parent::delete();
+  }
+
   function getSubscribers() {
     if(!is_serialized($this->subscribers)) {
       return $this->subscribers;
