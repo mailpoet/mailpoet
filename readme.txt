@@ -1,5 +1,5 @@
 === MailPoet 3 - Beta Version ===
-Contributors: mailpoet
+Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.6.1
