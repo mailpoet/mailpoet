@@ -3,6 +3,17 @@ namespace MailPoet\Util;
 
 class Helpers {
   const DIVIDER = '***MailPoet***';
+  const LINK_TAG = 'link';
+
+  static function replaceLinkTags($text, $link, $target = '_blank') {
+    $text = str_replace(
+      '[' . self::LINK_TAG . ']',
+      sprintf('<a href="%s" target="%s">', $link, $target),
+      $text
+    );
+    $text = str_replace('[/' . self::LINK_TAG . ']', '</a>', $text);
+    return $text;
+  }
 
   static function getMaxPostSize($bytes = false) {
     $maxPostSize = ini_get('post_max_size');

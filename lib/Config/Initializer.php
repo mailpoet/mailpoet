@@ -4,7 +4,6 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
 use MailPoet\API;
-use MailPoet\Util\License\License as License;
 use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
@@ -19,10 +18,15 @@ class Initializer {
     'file' => '',
     'version' => '1.0.0'
   )) {
-    Env::init($params['file'], $params['version']);
+      Env::init($params['file'], $params['version']);
   }
 
   function init() {
+    $requiments_check_results = $this->checkRequirements();
+
+    // abort initialization if PDO extension is missing
+    if(!$requiments_check_results[RequirementsChecker::TEST_PDO_EXTENSION]) return;
+
     $this->setupDB();
 
     register_activation_hook(Env::$file, array($this, 'runMigrator'));
@@ -31,6 +35,11 @@ class Initializer {
     add_action('plugins_loaded', array($this, 'setup'));
     add_action('init', array($this, 'onInit'));
     add_action('widgets_init', array($this, 'setupWidget'));
+  }
+
+  function checkRequirements() {
+    $requrements = new RequirementsChecker();
+    return $requrements->checkAllRequirements();
   }
 
   function setupDB() {
