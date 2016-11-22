@@ -110,7 +110,7 @@ class ImportTest extends MailPoetTest {
       array(
         'first_name' => 'Adam',
         'last_name' => 'Smith',
-        'email' => 'adam@smith.com',
+        'email' => 'Adam@Smith.com',
         'wp_user_id' => 1
       ));
     $subscriber->save();

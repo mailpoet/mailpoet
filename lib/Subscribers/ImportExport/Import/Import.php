@@ -184,6 +184,9 @@ class Import {
     }, $existing_records);
     $wp_users = array_filter($wp_users[0]);
     $existing_records = Helpers::flattenArray($existing_records);
+    // convert existing subscribers' emails retrieved from the database to lowercase
+    // to be compared with the import UI data that has lowercase emails
+    $existing_records = array_map('strtolower', $existing_records);
     $new_records = array_keys(
       array_diff(
         $subscribers_data['email'],
@@ -205,15 +208,12 @@ class Import {
           }, $new_records);
         }, $subscribers_data)
       );
-
     $existing_subscribers =
       array_map(function($subscriber) use ($new_records) {
         return array_values( // reindex array
-          array_filter( // remove NULL entries
             array_map(function($index, $data) use ($new_records) {
               if(!in_array($index, $new_records)) return $data;
             }, array_keys($subscriber), $subscriber)
-          )
         );
       }, $subscribers_data);
     return array(
@@ -387,23 +387,22 @@ class Import {
       CustomField::whereIn('id', $subscriber_custom_fields)->select('id')->findArray()
     );
     if(!$subscriber_custom_fields) return;
-    $subscribers = array_map(
-      function($column) use ($db_subscribers, $subscribers_data) {
-        $count = range(0, count($subscribers_data[$column]) - 1);
-        return array_map(
-          function($index, $value)
-          use ($db_subscribers, $subscribers_data, $column) {
-            $subscriber_id = array_search(
-              $subscribers_data['email'][$index],
-              $db_subscribers
-            );
-            return array(
-              $column,
-              $subscriber_id,
-              $value
-            );
-          }, $count, $subscribers_data[$column]);
-      }, $subscriber_custom_fields);
+    $subscribers = array_map(function($column) use ($db_subscribers, $subscribers_data) {
+      $count = range(0, count($subscribers_data[$column]) - 1);
+      return array_filter( // remove null values
+        array_map(function($index, $value) use ($db_subscribers, $subscribers_data, $column) {
+          $subscriber_id = array_search(
+            $subscribers_data['email'][$index],
+            $db_subscribers
+          );
+          // if subscriber does not not exist, return a null value
+          return ($subscriber_id) ?
+            array($column, $subscriber_id, $value) :
+            null;
+        }, $count, $subscribers_data[$column])
+      );
+    }, $subscriber_custom_fields);
+    $subscribers[0] = array_filter($subscribers[0]);
     foreach(array_chunk($subscribers[0], 200) as $data) {
       if($action === 'create') {
         SubscriberCustomField::createMultiple(
