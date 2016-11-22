@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use Codeception\Util\Fixtures;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -480,6 +481,23 @@ class SubscriberTest extends MailPoetTest {
 
     $subscriber = Subscriber::findOne($wp_subscriber->id);
     expect($subscriber)->notEquals(false);
+  }
+
+  function testItCanDeleteCustomFieldRelations() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    foreach(range(1, 5) as $custom_field) {
+      $subscriber_custom_field = SubscriberCustomField::create();
+      $subscriber_custom_field->custom_field_id = $custom_field;
+      $subscriber_custom_field->subscriber_id = ($custom_field !== 5) ?
+        $subscriber->id :
+        100; // create one record with a nonexistent subscriber id
+      $subscriber_custom_field->save();
+    }
+    expect(SubscriberCustomField::findMany())->count(5);
+    $subscriber->delete();
+    expect(SubscriberCustomField::findMany())->count(1);
   }
 
   function testItCanGetTheTotalNumberOfSubscribers() {

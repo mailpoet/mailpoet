@@ -51,7 +51,8 @@ class Subscriber extends Model {
     } else {
       // delete all relations to segments
       SubscriberSegment::deleteSubscriptions($this);
-
+      // delete all relations to custom fields
+      SubscriberCustomField::deleteSubscriberRelations($this);
       return parent::delete();
     }
   }

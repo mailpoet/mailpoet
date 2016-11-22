@@ -86,4 +86,14 @@ class SubscriberCustomField extends Model {
       Helpers::flattenArray($values)
     );
   }
+
+  static function deleteSubscriberRelations($subscriber) {
+    if($subscriber === false) return false;
+    $relations = self::where('subscriber_id', $subscriber->id);
+    return $relations->deleteMany();
+  }
+
+  static function subscribed($orm) {
+    return $orm->where('status', Subscriber::STATUS_SUBSCRIBED);
+  }
 }
