@@ -44,6 +44,12 @@ class Subscriber extends Model {
     ->where(MP_SUBSCRIBER_SEGMENT_TABLE.'.status', self::STATUS_SUBSCRIBED);
   }
 
+  function save() {
+    // convert email to lowercase format
+    $this->email = strtolower($this->email);
+    return parent::save();
+  }
+
   function delete() {
     // WP Users cannot be deleted
     if($this->isWPUser()) {
