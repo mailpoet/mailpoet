@@ -20,7 +20,7 @@ class SchedulerTest extends MailPoetTest {
     expect(Scheduler::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT)->equals(5);
   }
 
-  function testItConstructs() {
+ function testItConstructs() {
     $scheduler = new Scheduler();
     expect($scheduler->timer)->greaterOrEquals(5);
     $timer = microtime(true) - 2;
@@ -67,28 +67,38 @@ class SchedulerTest extends MailPoetTest {
     expect($notification_history)->notEmpty();
   }
 
-  function testItCanDeleteQueueOrChangeItsNextRunDate() {
-    $WP_user = $this->_createOrUpdateWPUser('editor');
+  function testItCanDeleteQueueWhenDeliveryIsSetToImmediately() {
     $newsletter = $this->_createNewsletter();
-    $newsletter_option_field = $this->_createNewsletterOptionField('intervalType', Newsletter::TYPE_WELCOME);
+    $newsletter_option_field =
+      $this->_createNewsletterOptionField('intervalType', Newsletter::TYPE_WELCOME);
     $newsletter_option = $this->_createNewsletterOption($newsletter_option_field->id, $newsletter->id, 'immediately');
     $newsletter = Newsletter::filter('filterWithOptions')
       ->findOne($newsletter->id);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler();
 
-    // queue should be deleted when interval type is set to "immediately"
+    // queue and associated newsletter should be deleted when interval type is set to "immediately"
     expect(SendingQueue::findMany())->notEmpty();
     $scheduler->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
-    expect(count(SendingQueue::findMany()))->equals(0);
+    expect(SendingQueue::findMany())->count(0);
+    }
+
+  function testItCanRescheduleQueueDeliveryTime() {
+    $newsletter = $this->_createNewsletter();
+    $newsletter_option_field =
+      $this->_createNewsletterOptionField('intervalType', Newsletter::TYPE_WELCOME);
+    $newsletter_option = $this->_createNewsletterOption($newsletter_option_field->id, $newsletter->id, 'daily');
+    $newsletter = Newsletter::filter('filterWithOptions')
+      ->findOne($newsletter->id);
+    $queue = $this->_createQueue($newsletter->id);
+    $scheduler = new Scheduler();
 
     // queue's next run date should change when interval type is set to anything
     // other than "immediately"
     $queue = $this->_createQueue($newsletter->id);
     $newsletter_option->value = 'daily';
     $newsletter_option->save();
-    $newsletter = Newsletter::filter('filterWithOptions')
-      ->findOne($newsletter->id);
+    $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
     expect($queue->scheduled_at)->null();
     $newsletter->schedule = '0 5 * * *'; // set it to daily at 5
     $scheduler->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
@@ -116,7 +126,7 @@ class SchedulerTest extends MailPoetTest {
     // return false and delete queue when subscriber is not a WP user
     $result = $scheduler->verifyWPSubscriber($subscriber->id, $newsletter, $queue);
     expect($result)->false();
-    expect(count(SendingQueue::findMany()))->equals(0);
+    expect(SendingQueue::findMany())->count(0);
   }
 
   function testItFailsWPSubscriberVerificationWhenSubscriberRoleDoesNotMatch() {
@@ -193,7 +203,7 @@ class SchedulerTest extends MailPoetTest {
     $scheduler = new Scheduler();
     $result = $scheduler->processWelcomeNewsletter($newsletter, $queue);
     expect($result)->false();
-    expect(count(SendingQueue::findMany()))->equals(0);
+    expect(SendingQueue::findMany())->count(0);
   }
 
   function testItDoesNotProcessWelcomeNewsletterWhenWPUserCannotBeVerified() {
@@ -264,7 +274,7 @@ class SchedulerTest extends MailPoetTest {
     $result = $scheduler->verifyMailpoetSubscriber(null, $newsletter, $queue);
     expect($result)->false();
     // delete queue when subscriber can't be found
-    expect(count(SendingQueue::findMany()))->equals(0);
+    expect(SendingQueue::findMany())->count(0);
   }
 
   function testItFailsMailpoetSubscriberVerificationWhenSubscriberIsNotInSegment() {
@@ -282,7 +292,7 @@ class SchedulerTest extends MailPoetTest {
     $result = $scheduler->verifyMailpoetSubscriber($subscriber->id, $newsletter, $queue);
     expect($result)->false();
     // delete queue when subscriber is not in segment specified for the newsletter
-    expect(count(SendingQueue::findMany()))->equals(0);
+    expect(SendingQueue::findMany())->count(0);
   }
 
   function testItReschedulesQueueDeliveryWhenMailpoetSubscriberHasNotConfirmedSubscription() {
@@ -426,7 +436,7 @@ class SchedulerTest extends MailPoetTest {
     $queue->save();
     $scheduler = new Scheduler();
     $scheduler->process();
-    expect(count(SendingQueue::findMany()))->equals(0);
+    expect(SendingQueue::findMany())->count(0);
   }
 
   function testItDeletesQueueDuringProcessingWhenNewsletterIsSoftDeleted() {
@@ -438,7 +448,7 @@ class SchedulerTest extends MailPoetTest {
     $queue->save();
     $scheduler = new Scheduler();
     $scheduler->process();
-    expect(count(SendingQueue::findMany()))->equals(0);
+    expect(SendingQueue::findMany())->count(0);
   }
 
   function testItProcessesWelcomeNewsletters() {
