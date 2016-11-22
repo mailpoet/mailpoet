@@ -74,15 +74,19 @@ class NewsletterTaskTest extends MailPoetTest {
       ->notContains('[mailpoet_open_data]');
   }
 
-  function testReturnsFalseWhenNewsletterIsANotificationWithoutPosts() {
+  function testItReturnsFalseAndDeletesNewsletterWhenPostNotificationContainsNoPostsn() {
     $newsletter = $this->newsletter;
 
     $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     // replace post id data tag with something else
     $newsletter->body = str_replace('data-post-id', 'id', $newsletter->body);
     $newsletter->save();
+    // returned result is false
     $result = $this->newsletter_task->getAndPreProcess($this->queue);
     expect($result)->false();
+    // newsletter is deleted
+    $newsletter = Newsletter::findOne($newsletter->id);
+    expect($newsletter)->false();
   }
 
   function testItSavesNewsletterPosts() {

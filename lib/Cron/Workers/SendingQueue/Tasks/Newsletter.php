@@ -46,6 +46,8 @@ class Newsletter {
     if($newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY &&
        !$newsletter_contains_posts
     ) {
+      // delete notification history record since it will never be sent
+      $newsletter->delete();
       return false;
     }
     // extract and save newsletter posts
