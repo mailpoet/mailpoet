@@ -92,8 +92,4 @@ class SubscriberCustomField extends Model {
     $relations = self::where('subscriber_id', $subscriber->id);
     return $relations->deleteMany();
   }
-
-  static function subscribed($orm) {
-    return $orm->where('status', Subscriber::STATUS_SUBSCRIBED);
-  }
 }
