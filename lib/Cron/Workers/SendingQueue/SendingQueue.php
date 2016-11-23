@@ -27,8 +27,6 @@ class SendingQueue {
 
   function process() {
     foreach(self::getRunningQueues() as $queue) {
-      // abort if sending limit is reached
-      MailerLog::enforceSendingLimit();
       // get and pre-process newsletter (render, replace shortcodes/links, etc.)
       $newsletter = $this->newsletter_task->getAndPreProcess($queue);
       if(!$newsletter) {
@@ -72,6 +70,8 @@ class SendingQueue {
         if($queue->status === SendingQueueModel::STATUS_COMPLETED) {
           $this->newsletter_task->markNewsletterAsSent($newsletter);
         }
+        // abort if sending limit is reached
+        MailerLog::enforceSendingLimit();
       }
     }
   }
@@ -118,6 +118,8 @@ class SendingQueue {
         $prepared_subscribers_ids = array();
         $statistics = array();
       }
+      // abort if sending limit is reached
+      MailerLog::enforceSendingLimit();
     }
     if($processing_method === 'bulk') {
       $queue = $this->sendNewsletters(
