@@ -40,7 +40,7 @@ class Renderer {
     $rendered_styles = $this->renderStyles($styles);
 
     $template = $this->injectContentIntoTemplate($this->template, array(
-      $newsletter['subject'],
+      htmlspecialchars($newsletter['subject']),
       $rendered_styles,
       $newsletter['preheader'],
       $rendered_body
@@ -109,7 +109,7 @@ class Renderer {
 
   function renderTextVersion($template) {
     $template = utf8_encode($template);
-    return \Html2Text\Html2Text::convert($template);
+    return @\Html2Text\Html2Text::convert($template);
   }
 
   function postProcessTemplate($template) {
