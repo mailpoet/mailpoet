@@ -74,7 +74,7 @@ class AmazonSES {
   }
 
   function request($newsletter, $subscriber) {
-    $body = $this->getBody($newsletter, $subscriber);
+    $body = array_map('urlencode', $this->getBody($newsletter, $subscriber));
     return array(
       'timeout' => 10,
       'httpversion' => '1.1',
