@@ -398,7 +398,14 @@
               <% endif %>"
             >
               <% for region, server in hosts.smtp.AmazonSES.regions %>
-                <option value="<%= server %>"><%= region %></option>
+                <option
+                  value="<%= server %>"
+                  <% if(settings.mta.region == server) %>
+                    selected="selected"
+                  <% endif %>
+                >
+                  <%= region %>
+                </option>
               <% endfor %>
             </select>
           </td>
