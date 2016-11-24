@@ -134,14 +134,14 @@ class ExportTest extends MailPoetTest {
     expect(
       preg_match(
         '|' .
-        Env::$temp_path . '/MailPoet_export_[a-f0-9]{15}.' .
+        preg_quote(Env::$temp_path, '|') . '/MailPoet_export_[a-f0-9]{15}.' .
         $this->export->export_format_option .
         '|', $this->export->export_file)
     )->equals(1);
     expect(
       preg_match(
         '|' .
-        Env::$temp_url . '/' .
+        preg_quote(Env::$temp_url, '|') . '/' .
         basename($this->export->export_file) .
         '|'
         , $this->export->export_file_URL)
