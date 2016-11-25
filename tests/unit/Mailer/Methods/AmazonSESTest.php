@@ -92,6 +92,7 @@ class AmazonSESTest extends MailPoetTest {
   function testItCanCreateRequest() {
     $request = $this->mailer->request($this->newsletter, $this->subscriber);
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    $body = array_map('urlencode', $body);
     expect($request['timeout'])->equals(10);
     expect($request['httpversion'])->equals('1.1');
     expect($request['method'])->equals('POST');
