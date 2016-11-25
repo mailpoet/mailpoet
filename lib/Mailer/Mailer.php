@@ -118,10 +118,13 @@ class Mailer {
       $sender = Setting::getValue('sender', array());
       if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured', 'mailpoet'));
     }
-    return array(
-      'from_name' => $sender['name'],
-      'from_email' => $sender['address'],
-      'from_name_email' => sprintf('%s <%s>', $sender['name'], $sender['address'])
+    return array_map(
+      'utf8_encode',
+      array(
+        'from_name' => $sender['name'],
+        'from_email' => $sender['address'],
+        'from_name_email' => sprintf('%s <%s>', $sender['name'], $sender['address'])
+      )
     );
   }
 
@@ -138,10 +141,13 @@ class Mailer {
     if(empty($reply_to['address'])) {
       $reply_to['address'] = $this->sender['from_email'];
     }
-    return array(
-      'reply_to_name' => $reply_to['name'],
-      'reply_to_email' => $reply_to['address'],
-      'reply_to_name_email' => sprintf('%s <%s>', $reply_to['name'], $reply_to['address'])
+    return array_map(
+      'utf8_encode',
+      array(
+        'reply_to_name' => $reply_to['name'],
+        'reply_to_email' => $reply_to['address'],
+        'reply_to_name_email' => sprintf('%s <%s>', $reply_to['name'], $reply_to['address'])
+      )
     );
   }
 
@@ -154,6 +160,6 @@ class Mailer {
     if(!$first_name && !$last_name) return $subscriber['email'];
     $subscriber = sprintf('%s %s <%s>', $first_name, $last_name, $subscriber['email']);
     $subscriber = trim(preg_replace('!\s\s+!', ' ', $subscriber));
-    return $subscriber;
+    return utf8_encode($subscriber);
   }
 }
