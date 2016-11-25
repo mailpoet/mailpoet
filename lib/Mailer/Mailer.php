@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Mailer;
+
 use MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
@@ -118,13 +119,11 @@ class Mailer {
       $sender = Setting::getValue('sender', array());
       if(empty($sender['address'])) throw new \Exception(__('Sender name and email are not configured', 'mailpoet'));
     }
-    return array_map(
-      'utf8_encode',
-      array(
-        'from_name' => $sender['name'],
-        'from_email' => $sender['address'],
-        'from_name_email' => sprintf('%s <%s>', $sender['name'], $sender['address'])
-      )
+    $from_name = $this->encodeAddressNamePart($sender['name']);
+    return array(
+      'from_name' => $from_name,
+      'from_email' => $sender['address'],
+      'from_name_email' => sprintf('%s <%s>', $from_name, $sender['address'])
     );
   }
 
@@ -141,13 +140,11 @@ class Mailer {
     if(empty($reply_to['address'])) {
       $reply_to['address'] = $this->sender['from_email'];
     }
-    return array_map(
-      'utf8_encode',
-      array(
-        'reply_to_name' => $reply_to['name'],
-        'reply_to_email' => $reply_to['address'],
-        'reply_to_name_email' => sprintf('%s <%s>', $reply_to['name'], $reply_to['address'])
-      )
+    $reply_to_name = $this->encodeAddressNamePart($reply_to['name']);
+    return array(
+      'reply_to_name' => $reply_to_name,
+      'reply_to_email' => $reply_to['address'],
+      'reply_to_name_email' => sprintf('%s <%s>', $reply_to_name, $reply_to['address'])
     );
   }
 
@@ -158,8 +155,20 @@ class Mailer {
     $first_name = (isset($subscriber['first_name'])) ? $subscriber['first_name'] : '';
     $last_name = (isset($subscriber['last_name'])) ? $subscriber['last_name'] : '';
     if(!$first_name && !$last_name) return $subscriber['email'];
-    $subscriber = sprintf('%s %s <%s>', $first_name, $last_name, $subscriber['email']);
-    $subscriber = trim(preg_replace('!\s\s+!', ' ', $subscriber));
-    return utf8_encode($subscriber);
+    $full_name = sprintf('%s %s', $first_name, $last_name);
+    $full_name = trim(preg_replace('!\s\s+!', ' ', $full_name));
+    $full_name = $this->encodeAddressNamePart($full_name);
+    $subscriber = sprintf(
+      '%s <%s>',
+      $full_name,
+      $subscriber['email']
+    );
+    return $subscriber;
+  }
+
+  function encodeAddressNamePart($name) {
+    if(mb_detect_encoding($name) === 'ASCII') return $name;
+    // bse64_encode non-ASCII string as per RFC 2047 (https://www.ietf.org/rfc/rfc2047.txt)
+    return sprintf('=?utf-8?B?%s?=', base64_encode($name));
   }
 }

@@ -150,6 +150,25 @@ class MailerTest extends MailPoetTest {
     )->equals('First Last <test@email.com>');
   }
 
+  function testItCanConvertNonASCIIEmailAddressString() {
+    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
+    expect($mailer->sender['from_name'])->equals($this->sender['name']);
+    expect($mailer->reply_to['reply_to_name'])->equals($this->reply_to['name']);
+    $sender = array(
+      'name' => 'Sender Außergewöhnlichen тест системы',
+      'address' => 'staff@mailinator.com'
+    );
+    $reply_to = array(
+      'name' => 'Reply-To Außergewöhnlichen тест системы',
+      'address' => 'staff@mailinator.com'
+    );
+    $mailer = new Mailer($this->mailer, $sender, $reply_to);
+    expect($mailer->sender['from_name'])
+      ->equals(sprintf('=?utf-8?B?%s?=', base64_encode($sender['name'])));
+    expect($mailer->reply_to['reply_to_name'])
+      ->equals(sprintf('=?utf-8?B?%s?=', base64_encode($reply_to['name'])));
+  }
+
   function testItCanSend() {
     if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
