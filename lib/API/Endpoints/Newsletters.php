@@ -346,7 +346,9 @@ class Newsletters extends APIEndpoint {
     return $this->successResponse($data, array(
       'count' => $listing_data['count'],
       'filters' => $listing_data['filters'],
-      'groups' => $listing_data['groups']
+      'groups' => $listing_data['groups'],
+      'mta_log' => Setting::getValue('mta_log'),
+      'mta_method' => Setting::getValue('mta.method')
     ));
   }
 

@@ -27,7 +27,7 @@ const App = React.createClass({
 const container = document.getElementById('newsletters_container');
 
 if(container) {
-  ReactDOM.render((
+  const mailpoet_listing = ReactDOM.render((
     <Router history={ history }>
       <Route path="/" component={ App }>
         <IndexRedirect to="standard" />
@@ -49,4 +49,6 @@ if(container) {
       </Route>
     </Router>
   ), container);
+
+  window.mailpoet_listing = mailpoet_listing;
 }

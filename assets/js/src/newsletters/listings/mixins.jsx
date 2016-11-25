@@ -1,7 +1,9 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import MailPoet from 'mailpoet'
 import classNames from 'classnames'
 import jQuery from 'jquery'
+import ListingNotices from 'newsletters/listings/notices.jsx'
 
 const _QueueMixin = {
   pauseSending: function(newsletter) {
@@ -180,22 +182,23 @@ const _StatisticsMixin = {
 }
 
 const _MailerMixin = {
-  resumeSending: function() {
-    MailPoet.Ajax.post({
-      endpoint: 'mailer',
-      action: 'resumeSending'
-    }).done(function() {
-      jQuery('.mailpoet_sending_status.error').remove();
-      MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
-      // TODO: refresh listings to update the newsletter queue status
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map(function(error) { return error.message; }),
-          { scroll: true }
-        );
-      }
-    });
+  checkMailerStatus: function(state) {
+    if (state.meta.mta_log.error) {
+      MailPoet.Notice.error(
+        '',
+        { static: true, id: 'mailpoet_mailer_error' }
+      );
+
+      ReactDOM.render((
+        <ListingNotices
+          mta_log={ state.meta.mta_log }
+          mta_method={ state.meta.mta_method }
+        />
+      ), jQuery('[data-id="mailpoet_mailer_error"]')[0]);
+
+    } else {
+      MailPoet.Notice.hide('mailpoet_mailer_error');
+    }
   }
 }
 

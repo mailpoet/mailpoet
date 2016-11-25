@@ -6,14 +6,15 @@ import MailPoet from 'mailpoet'
 
 import Listing from 'listing/listing.jsx'
 import ListingTabs from 'newsletters/listings/tabs.jsx'
-import ListingNotices from 'newsletters/listings/notices.jsx'
 
-import { QueueMixin, StatisticsMixin } from 'newsletters/listings/mixins.jsx'
+import {
+  QueueMixin,
+  StatisticsMixin,
+  MailerMixin
+} from 'newsletters/listings/mixins.jsx'
 
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
 const mailpoet_settings = window.mailpoet_settings || {};
-const mailpoet_mailer_log = mailpoet_settings.mta_log || {};
-const mailpoet_mailer_config = mailpoet_settings.mta || {};
 
 const messages = {
   onTrash: (response) => {
@@ -151,8 +152,8 @@ const newsletter_actions = [
 ];
 
 const NewsletterListStandard = React.createClass({
-  mixins: [QueueMixin, StatisticsMixin],
-  renderItem: function(newsletter, actions) {
+  mixins: [ QueueMixin, StatisticsMixin, MailerMixin ],
+  renderItem: function(newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -175,7 +176,7 @@ const NewsletterListStandard = React.createClass({
           { actions }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('status') }>
-          { this.renderQueueStatus(newsletter, mailpoet_mailer_log) }
+          { this.renderQueueStatus(newsletter, meta.mta_log) }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
           { segments }
@@ -198,8 +199,6 @@ const NewsletterListStandard = React.createClass({
           {MailPoet.I18n.t('pageTitle')} <Link className="page-title-action" to="/new">{MailPoet.I18n.t('new')}</Link>
         </h1>
 
-        <ListingNotices mailer_log={ mailpoet_mailer_log } mailer_config = { mailpoet_mailer_config } />
-
         <ListingTabs tab="standard" />
 
         <Listing
@@ -217,6 +216,7 @@ const NewsletterListStandard = React.createClass({
           auto_refresh={ true }
           sort_by="updated_at"
           sort_order="desc"
+          afterGetItems={ this.checkMailerStatus }
         />
       </div>
     );

@@ -298,7 +298,8 @@ const Listing = React.createClass({
       filters: {},
       filter: {},
       selected_ids: [],
-      selection: false
+      selection: false,
+      meta: {}
     };
   },
   getParam: function(param) {
@@ -463,15 +464,21 @@ const Listing = React.createClass({
           items: response.data || [],
           filters: response.meta.filters || {},
           groups: response.meta.groups || [],
-          count: response.meta.count || 0
+          count: response.meta.count || 0,
+          meta: _.omit(response.meta, ['filters', 'groups', 'count'])
         }, () => {
           // if viewing an empty trash
           if (this.state.group === 'trash' && response.meta.count === 0) {
             // redirect to default group
             this.handleGroup('all');
           }
+
+          // trigger afterGetItems callback if specified
+          if (this.props.afterGetItems !== undefined) {
+            this.props.afterGetItems(this.state);
+          }
         });
-      }).fail(function(response) {
+      }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
             response.errors.map(function(error) { return error.message; }),
@@ -711,7 +718,7 @@ const Listing = React.createClass({
     }.bind(this));
   },
   handleRenderItem: function(item, actions) {
-    const render = this.props.onRenderItem(item, actions);
+    const render = this.props.onRenderItem(item, actions, this.state.meta);
     return render.props.children;
   },
   handleRefreshItems: function() {
