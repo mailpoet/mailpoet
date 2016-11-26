@@ -72,8 +72,8 @@ class SendingQueue {
         if($queue->status === SendingQueueModel::STATUS_COMPLETED) {
           $this->newsletter_task->markNewsletterAsSent($newsletter);
         }
-        // abort if sending limit is reached
-        MailerLog::enforceSendingLimit();
+        // abort if sending limit has been reached
+        MailerLog::enforceExecutionRequirements();
       }
     }
   }
@@ -120,8 +120,8 @@ class SendingQueue {
         $prepared_subscribers_ids = array();
         $statistics = array();
       }
-      // abort if sending limit is reached
-      MailerLog::enforceSendingLimit();
+      // abort if sending limit has been reached
+      MailerLog::enforceExecutionRequirements();
     }
     if($processing_method === 'bulk') {
       $queue = $this->sendNewsletters(
@@ -159,7 +159,7 @@ class SendingQueue {
     $this->mailer_task->updateSentCount();
     // abort if sending limit has been reached
     if($queue->count_to_process) {
-      MailerLog::enforceSendingLimit();
+      MailerLog::enforceExecutionRequirements();
     }
     return $queue;
   }
