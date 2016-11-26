@@ -176,7 +176,7 @@ const _StatisticsMixin = {
 
 const _MailerMixin = {
   checkMailerStatus: function(state) {
-    if (state.meta.mta_log.error) {
+    if (state.meta.mta_log.error && state.meta.mta_log.status === 'paused') {
       MailPoet.Notice.error(
         '',
         { static: true, id: 'mailpoet_mailer_error' }
