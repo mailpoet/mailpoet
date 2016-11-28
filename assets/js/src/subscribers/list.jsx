@@ -255,6 +255,10 @@ const SubscriberList = React.createClass({
       case 'unsubscribed':
         status = MailPoet.I18n.t('unsubscribed');
       break;
+      
+      case 'bounced':
+        status = MailPoet.I18n.t('bounced');
+      break;
     }
 
     let segments = false;

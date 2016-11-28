@@ -114,15 +114,29 @@ class SubscriberTest extends MailPoetTest {
     foreach($subscribers as $subscriber) {
       expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
     }
+
+    $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $this->subscriber->save();
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_SUBSCRIBED)
       ->findMany();
     foreach($subscribers as $subscriber) {
       expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
     }
+
+    $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+    $this->subscriber->save();
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_UNSUBSCRIBED)
       ->findMany();
     foreach($subscribers as $subscriber) {
       expect($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    }
+
+    $this->subscriber->status = Subscriber::STATUS_BOUNCED;
+    $this->subscriber->save();
+    $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_BOUNCED)
+      ->findMany();
+    foreach($subscribers as $subscriber) {
+      expect($subscriber->status)->equals(Subscriber::STATUS_BOUNCED);
     }
   }
 
@@ -505,6 +519,11 @@ class SubscriberTest extends MailPoetTest {
       'email' => 'subscriber_4@mailpoet.com',
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'deleted_at' => Carbon::now()->toDateTimeString()
+    ));
+
+    $subscriber_5 = Subscriber::createOrUpdate(array(
+      'email' => 'subscriber_5@mailpoet.com',
+      'status' => Subscriber::STATUS_BOUNCED
     ));
 
     // counts only subscribed & unconfirmed users

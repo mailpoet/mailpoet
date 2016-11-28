@@ -153,7 +153,12 @@ class ShortcodesTest extends MailPoetTest {
     $this->subscriber->save();
     $result =
       $shortcodes_object->process(array('[subscriber:count]'));
-    expect($result[0])->equals(--$subscriber_count);
+    expect($result[0])->equals($subscriber_count - 1);
+    $this->subscriber->status = 'bounced';
+    $this->subscriber->save();
+    $result =
+      $shortcodes_object->process(array('[subscriber:count]'));
+    expect($result[0])->equals($subscriber_count - 1);
   }
 
   function testItCanProcessSubscriberCustomFieldShortcodes() {

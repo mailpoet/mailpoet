@@ -186,7 +186,12 @@ class ImportTest extends MailPoetTest {
         'unsubscribed',
         -1,
         '-1',
-        'false'
+        'false',
+        #bounced
+        'bounced',
+        #unexpected
+        'qwerty',
+        null
       ),
     );
     list($subscribers_data, $subsciber_fields) =
@@ -205,7 +210,10 @@ class ImportTest extends MailPoetTest {
           'unsubscribed',
           'unsubscribed',
           'unsubscribed',
-          'unsubscribed'
+          'unsubscribed',
+          'bounced',
+          'subscribed',
+          'subscribed'
         )
       )
     );

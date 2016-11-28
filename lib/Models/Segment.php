@@ -87,6 +87,10 @@ class Segment extends Model {
         'SUM(CASE subscribers.status WHEN "' . Subscriber::STATUS_UNCONFIRMED . '" THEN 1 ELSE 0 END)',
         Subscriber::STATUS_UNCONFIRMED
       )
+      ->select_expr(
+        'SUM(CASE subscribers.status WHEN "' . Subscriber::STATUS_BOUNCED . '" THEN 1 ELSE 0 END)',
+        Subscriber::STATUS_BOUNCED
+      )
       ->findOne()
       ->asArray();
 
