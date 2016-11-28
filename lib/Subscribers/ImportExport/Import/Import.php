@@ -210,10 +210,12 @@ class Import {
       );
     $existing_subscribers =
       array_map(function($subscriber) use ($new_records) {
-        return array_values( // reindex array
+        return array_filter(
+          array_values( // reindex array
             array_map(function($index, $data) use ($new_records) {
               if(!in_array($index, $new_records)) return $data;
             }, array_keys($subscriber), $subscriber)
+          )
         );
       }, $subscribers_data);
     return array(
@@ -359,7 +361,7 @@ class Import {
       $query->where('created_at', $this->created_at);
     $result = Helpers::arrayColumn(
       $query->findArray(),
-      'email', 'id'
+      'id'
     );
     if($subscriber_custom_fields) {
       $this->createOrUpdateCustomFields(
@@ -378,37 +380,36 @@ class Import {
 
   function createOrUpdateCustomFields(
     $action,
-    $db_subscribers,
+    $db_subscribers_ids,
     $subscribers_data,
-    $subscriber_custom_fields
+    $subscriber_custom_fields_ids
   ) {
     // check if custom fields exist in the database
-    $subscriber_custom_fields = Helpers::flattenArray(
-      CustomField::whereIn('id', $subscriber_custom_fields)->select('id')->findArray()
+    $subscriber_custom_fields_ids = Helpers::flattenArray(
+      CustomField::whereIn('id', $subscriber_custom_fields_ids)
+        ->select('id')
+        ->findArray()
     );
-    if(!$subscriber_custom_fields) return;
-    $subscribers = array_map(function($column) use ($db_subscribers, $subscribers_data) {
-      $count = range(0, count($subscribers_data[$column]) - 1);
-      return array_filter( // remove null values
-        array_map(function($index, $value) use ($db_subscribers, $subscribers_data, $column) {
-          $subscriber_id = array_search(
-            $subscribers_data['email'][$index],
-            $db_subscribers
-          );
-          // if subscriber does not not exist, return a null value
-          return ($subscriber_id) ?
-            array($column, $subscriber_id, $value) :
-            null;
-        }, $count, $subscribers_data[$column])
-      );
-    }, $subscriber_custom_fields);
-    $subscribers[0] = array_filter($subscribers[0]);
-    foreach(array_chunk($subscribers[0], 200) as $data) {
-      if($action === 'create') {
-        SubscriberCustomField::createMultiple(
-          $data
+    if(!$subscriber_custom_fields_ids) return;
+    $subscriber_custom_fields_data = array();
+    foreach($subscribers_data as $field_id => $subscriber_data) {
+      // exclude non-custom fields
+      if(!is_int($field_id)) continue;
+      $subscriber_index = 0;
+      foreach($subscriber_data as $value) {
+        // assemble an array: custom_field_id, subscriber_id, value
+        $subscriber_custom_fields_data[] = array(
+          (int)$field_id,
+          (int)$db_subscribers_ids[$subscriber_index],
+          $value
         );
+        $subscriber_index++;
       }
+    }
+    foreach(array_chunk($subscriber_custom_fields_data, 200) as $data) {
+      SubscriberCustomField::createMultiple(
+        $data
+      );
       if($action === 'update') {
         SubscriberCustomField::updateMultiple(
           $data

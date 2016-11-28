@@ -52,7 +52,6 @@ class SubscriberCustomField extends Model {
   }
 
   static function createMultiple($values) {
-    $values = array_map('array_values', $values);
     return self::rawExecute(
       'INSERT IGNORE INTO `' . self::$_table . '` ' .
       '(custom_field_id, subscriber_id, value) ' .
@@ -67,8 +66,6 @@ class SubscriberCustomField extends Model {
   }
 
   static function updateMultiple($values) {
-    self::createMultiple($values);
-    $values = array_map('array_values', $values);
     self::rawExecute(
       'UPDATE `' . self::$_table . '` ' .
       'SET value = ' .

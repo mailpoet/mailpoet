@@ -5,36 +5,44 @@ class SubscriberCustomFieldTest extends MailPoetTest {
   function __construct() {
     $this->data = array(
       array(
-        'custom_field_id' => 10,
-        'subscriber_id' => 12,
-        'value' => 'Test 1'
+        10, // custom_field_id
+        12, // subscriber_id
+        'Test 1' // value
       ),
       array(
-        'custom_field_id' => 10,
-        'subscriber_id' => 13,
-        'value' => 'Test 2'
+        10, // custom_field_id
+        13, // subscriber_id
+        'Test 2' // value
       )
     );
   }
 
   function testItCanBeCreated() {
     $subscriberCustomField = SubscriberCustomField::create();
-    $subscriberCustomField->hydrate($this->data[0]);
+    $subscriberCustomField->custom_field_id = $this->data[0][0];
+    $subscriberCustomField->subscriber_id = $this->data[0][1];
+    $subscriberCustomField->value = $this->data[0][2];
     $subscriberCustomField->save();
-    expect($subscriberCustomField->id() > 0)->true();
+    expect($subscriberCustomField->id())->greaterOrEquals(1);
     expect($subscriberCustomField->getErrors())->false();
   }
 
-  function testItCanCreateOrUpdateMultipleRecords() {
+  function testItCanCreateMultipleRecords() {
     SubscriberCustomField::createMultiple($this->data);
     $records = SubscriberCustomField::findArray();
     expect(count($records))->equals(2);
-    expect($records[1]['value'])->equals($this->data[1]['value']);
-    $updatedData = $this->data;
-    $updatedData[0]['value'] = 'updated';
-    SubscriberCustomField::updateMultiple($updatedData);
+    expect($records[0]['value'])->equals('Test 1');
+    expect($records[1]['value'])->equals('Test 2');
+  }
+
+  function testItCanUpdateMultipleRecords() {
+    SubscriberCustomField::createMultiple($this->data);
+    $updated_data = $this->data;
+    $updated_data[0][2] = 'Updated';
+    SubscriberCustomField::updateMultiple($updated_data);
     $records = SubscriberCustomField::findArray();
-    expect($records[0]['value'])->equals($updatedData[0]['value']);
+    expect($records[0]['value'])->equals('Updated');
+    expect($records[1]['value'])->equals('Test 2');
   }
 
   function _after() {
