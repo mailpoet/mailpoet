@@ -4,6 +4,7 @@ namespace MailPoet\API\Endpoints;
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
 use MailPoet\Listing;
+use MailPoet\Models\Setting;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\NewsletterSegment;
