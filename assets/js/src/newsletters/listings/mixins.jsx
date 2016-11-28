@@ -222,6 +222,7 @@ const _MailerMixin = {
     }).done(function() {
       MailPoet.Notice.hide('mailpoet_mailer_error');
       MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
+      window.mailpoet_listing.forceUpdate();
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
