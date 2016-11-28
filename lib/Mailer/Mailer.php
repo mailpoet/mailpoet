@@ -151,11 +151,11 @@ class Mailer {
 
   function encodeAddressNamePart($name) {
     if(mb_detect_encoding($name) === 'ASCII') return $name;
-    // bse64_encode non-ASCII string as per RFC 2047 (https://www.ietf.org/rfc/rfc2047.txt)
+    // encode non-ASCII string as per RFC 2047 (https://www.ietf.org/rfc/rfc2047.txt)
     return sprintf('=?utf-8?B?%s?=', base64_encode($name));
   }
 
-   static function formatMailerConnectionErrorResult($error_message) {
+  static function formatMailerConnectionErrorResult($error_message) {
     return array(
       'response' => false,
       'operation' => 'connect',

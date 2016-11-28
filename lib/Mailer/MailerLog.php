@@ -89,7 +89,18 @@ class MailerLog {
 
   static function incrementSentCount() {
     $mailer_log = self::getMailerLog();
+    // clear previous retry count, errors, etc.
+    if($mailer_log['error']) {
+      $mailer_log = self::clearSendingErrorLog($mailer_log);
+    }
     (int)$mailer_log['sent']++;
+    return self::updateMailerLog($mailer_log);
+  }
+
+  static function clearSendingErrorLog($mailer_log) {
+    $mailer_log['retry_attempt'] = null;
+    $mailer_log['retry_at'] = null;
+    $mailer_log['error'] = null;
     return self::updateMailerLog($mailer_log);
   }
 

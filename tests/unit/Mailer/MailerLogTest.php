@@ -51,7 +51,8 @@ class MailerLogTest extends MailPoetTest {
   function testItIncrementsSentCount() {
     $mailer_log = array(
       'sent' => 1,
-      'started' => time()
+      'started' => time(),
+      'error' => null
     );
     Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
     MailerLog::incrementSentCount();
@@ -201,6 +202,19 @@ class MailerLogTest extends MailPoetTest {
     }
     $mailer_log = MailerLog::getMailerLog();
     expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);
+  }
+
+  function testItClearsSendingErrorLog() {
+    $mailer_log = MailerLog::createMailerLog();
+    $mailer_log['retry_attempt'] = 1;
+    $mailer_log['retry_at'] = 1;
+    $mailer_log['error'] = 1;
+    $mailer_log['status'] = 'status';
+    $mailer_log = MailerLog::clearSendingErrorLog($mailer_log);
+    expect($mailer_log['retry_attempt'])->null();
+    expect($mailer_log['retry_at'])->null();
+    expect($mailer_log['error'])->null();
+    expect($mailer_log['status'])->equals('status');
   }
 
   function testItEnforcesPuasedStatus() {
