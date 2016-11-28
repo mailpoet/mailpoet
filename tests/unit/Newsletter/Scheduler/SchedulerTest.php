@@ -54,6 +54,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
     expect($queue->newsletter_id)->equals($newsletter->id);
     expect($queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
     expect($queue->scheduled_at)->equals(Scheduler::getNextRunDate('* 5 * * *'));
+    expect($queue->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
     Scheduler::createPostNotificationQueue($newsletter);
@@ -73,6 +74,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
       ->findOne();
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     expect($queue->id)->greaterOrEquals(1);
+    expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addHours(2)->format('Y-m-d H:i'));
     $this->_after();
@@ -84,6 +86,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
     $queue = SendingQueue::where('newsletter_id', 1)
       ->findOne();
     expect($queue->id)->greaterOrEquals(1);
+    expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addDays(2)->format('Y-m-d H:i'));
     $this->_after();
@@ -95,6 +98,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
     $queue = SendingQueue::where('newsletter_id', 1)
       ->findOne();
     expect($queue->id)->greaterOrEquals(1);
+    expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->addWeeks(2)->format('Y-m-d H:i'));
     $this->_after();
@@ -106,6 +110,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
     $queue = SendingQueue::where('newsletter_id', 1)
       ->findOne();
     expect($queue->id)->greaterOrEquals(1);
+    expect($queue->priority)->equals(SendingQueue::PRIORITY_HIGH);
     expect(Carbon::parse($queue->scheduled_at)->format('Y-m-d H:i'))
       ->equals($current_time->format('Y-m-d H:i'));
   }
@@ -221,8 +226,8 @@ class NewsletterSchedulerTest extends MailPoetTest {
     );
     Scheduler::scheduleWPUserWelcomeNotification(
       $subscriber_id = 10,
-      $wp_user = (object)array('roles' => array('editor')),
-      $old_user_data = (object)array('roles' => array('editor'))
+      $wp_user = array('roles' => array('editor')),
+      $old_user_data = array('roles' => array('editor'))
     );
 
     // queue is not created
@@ -245,7 +250,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
     );
     Scheduler::scheduleWPUserWelcomeNotification(
       $subscriber_id = 10,
-      $wp_user = (object)array('roles' => array('administrator'))
+      $wp_user = array('roles' => array('administrator'))
     );
 
     // queue is not created
@@ -268,7 +273,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
     );
     Scheduler::scheduleWPUserWelcomeNotification(
       $subscriber_id = 10,
-      $wp_user = (object)array('roles' => array('administrator'))
+      $wp_user = array('roles' => array('administrator'))
     );
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
 
@@ -293,7 +298,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
     );
     Scheduler::scheduleWPUserWelcomeNotification(
       $subscriber_id = 10,
-      $wp_user = (object)array('roles' => array('administrator'))
+      $wp_user = array('roles' => array('administrator'))
     );
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
 

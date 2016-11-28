@@ -53,10 +53,10 @@ class Scheduler {
     if(empty($newsletters)) return false;
     foreach($newsletters as $newsletter) {
       if($newsletter->event === 'user') {
-        if($old_user_data) {
+        if(!empty($old_user_data['roles'])) {
           // do not schedule welcome newsletter if roles have not changed
-          $old_role = (array)$old_user_data->roles;
-          $new_role = (array)$wp_user->roles;
+          $old_role = $old_user_data['roles'];
+          $new_role = $wp_user['roles'];
           if($newsletter->role === self::WORDPRESS_ALL_ROLES ||
             !array_diff($old_role, $new_role)
           ) {
@@ -64,7 +64,7 @@ class Scheduler {
           }
         }
         if($newsletter->role === self::WORDPRESS_ALL_ROLES ||
-          in_array($newsletter->role, (array)$wp_user->roles)
+          in_array($newsletter->role, $wp_user['roles'])
         ) {
           self::createWelcomeNotificationQueue($newsletter, $subscriber_id);
         }
@@ -99,6 +99,7 @@ class Scheduler {
         $scheduled_at = $current_time;
     }
     $queue->status = SendingQueue::STATUS_SCHEDULED;
+    $queue->priority = SendingQueue::PRIORITY_HIGH;
     $queue->scheduled_at = $scheduled_at;
     return $queue->save();
   }
