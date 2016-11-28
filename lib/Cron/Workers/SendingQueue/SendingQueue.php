@@ -161,7 +161,7 @@ class SendingQueue {
   }
 
   static function getRunningQueues() {
-    return SendingQueueModel::orderByDesc('priority')
+    return SendingQueueModel::orderByAsc('priority')
       ->whereNull('deleted_at')
       ->whereNull('status')
       ->findMany();
