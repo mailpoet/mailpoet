@@ -18,8 +18,8 @@ class MailChimpTest extends MailPoetTest {
     // the first part of the key must contain 32 characters,
     expect($this->mailchimp->getAPIKey('1234567890123456789012345678901-123'))
       ->false();
-    // the second part must contain 2 or 3 characters
-    expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-1234'))
+    // the second part must contain 2-4 characters
+    expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-12345'))
       ->false();
     expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-1'))
       ->false();

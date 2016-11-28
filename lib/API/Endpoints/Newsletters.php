@@ -1,12 +1,10 @@
 <?php
 namespace MailPoet\API\Endpoints;
+
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
-
 use MailPoet\Listing;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterOptionField;
@@ -15,7 +13,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
-use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 

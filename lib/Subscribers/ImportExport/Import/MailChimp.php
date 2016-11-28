@@ -8,7 +8,7 @@ class MailChimp {
   public $max_post_size;
   public $data_center;
   public $export_url;
-  const API_KEY_REGEX = '/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,3}$/';
+  const API_KEY_REGEX = '/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,4}$/';
 
   function __construct($api_key, $lists = false) {
     $this->api_key = $this->getAPIKey($api_key);

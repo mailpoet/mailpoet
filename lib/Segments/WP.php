@@ -1,9 +1,14 @@
 <?php
 namespace MailPoet\Segments;
-use \MailPoet\Models\Subscriber;
-use \MailPoet\Models\Segment;
-use \MailPoet\Models\SubscriberSegment;
+
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\Segment;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+
+if(!defined('ABSPATH')) exit;
+
+require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class WP {
   static function synchronizeUser($wp_user_id, $old_wp_user_data = false) {

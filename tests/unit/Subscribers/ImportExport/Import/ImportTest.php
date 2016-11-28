@@ -110,7 +110,7 @@ class ImportTest extends MailPoetTest {
       array(
         'first_name' => 'Adam',
         'last_name' => 'Smith',
-        'email' => 'adam@smith.com',
+        'email' => 'Adam@Smith.com',
         'wp_user_id' => 1
       ));
     $subscriber->save();
@@ -279,18 +279,18 @@ class ImportTest extends MailPoetTest {
       $this->subscriber_fields,
       false
     );
-    $db_subscribers = Helpers::arrayColumn(
+    $db_subscribers_ids = Helpers::arrayColumn(
       Subscriber::selectMany(
         array(
           'id',
           'email'
         ))
         ->findArray(),
-      'email', 'id'
+      'id'
     );
     $this->import->createOrUpdateCustomFields(
       'create',
-      $db_subscribers,
+      $db_subscribers_ids,
       $subscribers_data,
       $this->subscriber_custom_fields
     );
@@ -301,7 +301,7 @@ class ImportTest extends MailPoetTest {
     $subscribers_data[$custom_field][1] = 'Rio';
     $this->import->createOrUpdateCustomFields(
       'update',
-      $db_subscribers,
+      $db_subscribers_ids,
       $subscribers_data,
       $this->subscriber_custom_fields
     );
