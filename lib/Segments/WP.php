@@ -74,7 +74,7 @@ class WP {
             Scheduler::scheduleWPUserWelcomeNotification(
               $subscriber->id,
               (array)$wp_user,
-              $old_wp_user_data
+              (array)$old_wp_user_data
             );
           }
         }

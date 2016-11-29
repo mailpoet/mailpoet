@@ -8,6 +8,9 @@ class SendingQueue extends Model {
   const STATUS_COMPLETED = 'completed';
   const STATUS_SCHEDULED = 'scheduled';
   const STATUS_PAUSED = 'paused';
+  const PRIORITY_HIGH = 1;
+  const PRIORITY_MEDIUM = 5;
+  const PRIORITY_LOW = 10;
 
   function newsletter() {
     return $this->has_one(__NAMESPACE__ . '\Newsletter', 'id', 'newsletter_id');
@@ -45,6 +48,10 @@ class SendingQueue extends Model {
     }
     if(!is_serialized($this->newsletter_rendered_body)) {
       $this->set('newsletter_rendered_body', serialize($this->newsletter_rendered_body));
+    }
+    // set the default priority to medium
+    if(!$this->priority) {
+      $this->priority = self::PRIORITY_MEDIUM;
     }
     parent::save();
     $this->subscribers = $this->getSubscribers();
