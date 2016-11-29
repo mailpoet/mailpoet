@@ -55,7 +55,7 @@ class CronHelper {
     );
     $url = str_replace(home_url(), self::getSiteUrl(), $url);
     $args = array(
-      'blocking' => false,
+      'blocking' => true,
       'sslverify' => false,
       'timeout' => $timeout,
       'user-agent' => 'MailPoet (www.mailpoet.com) Cron'
