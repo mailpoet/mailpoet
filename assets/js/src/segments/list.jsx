@@ -29,6 +29,10 @@ var columns = [
     label: MailPoet.I18n.t('unsubscribed')
   },
   {
+    name: 'bounced',
+    label: MailPoet.I18n.t('bounced')
+  },
+  {
     name: 'created_at',
     label: MailPoet.I18n.t('createdOn'),
     sortable: true
@@ -192,6 +196,7 @@ const SegmentList = React.createClass({
     const subscribed = ~~(segment.subscribers_count.subscribed || 0);
     const unconfirmed = ~~(segment.subscribers_count.unconfirmed || 0);
     const unsubscribed = ~~(segment.subscribers_count.unsubscribed || 0);
+    const bounced = ~~(segment.subscribers_count.bounced || 0);
 
     let segment_name;
 
@@ -228,6 +233,9 @@ const SegmentList = React.createClass({
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('unsubscribed') }>
           <abbr>{ unsubscribed.toLocaleString() }</abbr>
+        </td>
+        <td className="column-date" data-colname={ MailPoet.I18n.t('bounced') }>
+          <abbr>{ bounced.toLocaleString() }</abbr>
         </td>
         <td className="column-date" data-colname={ MailPoet.I18n.t('createdOn') }>
           <abbr>{ MailPoet.Date.format(segment.created_at) }</abbr>

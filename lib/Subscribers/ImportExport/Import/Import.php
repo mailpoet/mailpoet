@@ -304,17 +304,23 @@ class Import {
         -1,
         '-1',
         'false'
+      ),
+      'bounced' => array(
+        'bounced'
       )
     );
     $subscribers_data['status'] = array_map(function($state) use ($statuses) {
-      if(in_array(strtolower($state), $statuses['subscribed'])) {
+      if(in_array(strtolower($state), $statuses['subscribed'], true)) {
         return 'subscribed';
       }
-      if(in_array(strtolower($state), $statuses['unsubscribed'])) {
+      if(in_array(strtolower($state), $statuses['unsubscribed'], true)) {
         return 'unsubscribed';
       }
-      if(in_array(strtolower($state), $statuses['unconfirmed'])) {
+      if(in_array(strtolower($state), $statuses['unconfirmed'], true)) {
         return 'unconfirmed';
+      }
+      if(in_array(strtolower($state), $statuses['bounced'], true)) {
+        return 'bounced';
       }
       return 'subscribed'; // make "subscribed" a default status
     }, $subscribers_data['status']);

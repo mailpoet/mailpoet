@@ -290,6 +290,14 @@ class Pages {
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_UNSUBSCRIBED
               )
+            ),
+            array(
+              'value' => array(
+                Subscriber::STATUS_BOUNCED => __('Bounced', 'mailpoet')
+              ),
+              'is_checked' => (
+                $subscriber->status === Subscriber::STATUS_BOUNCED
+              )
             )
           )
         )

@@ -13,6 +13,7 @@ class Subscriber extends Model {
   const STATUS_SUBSCRIBED = 'subscribed';
   const STATUS_UNSUBSCRIBED = 'unsubscribed';
   const STATUS_UNCONFIRMED = 'unconfirmed';
+  const STATUS_BOUNCED = 'bounced';
 
   const SUBSCRIPTION_LIMIT_COOLDOWN = 60;
 
@@ -341,6 +342,11 @@ class Subscriber extends Model {
         'name' => self::STATUS_UNSUBSCRIBED,
         'label' => __('Unsubscribed', 'mailpoet'),
         'count' => self::filter(self::STATUS_UNSUBSCRIBED)->count()
+      ),
+      array(
+        'name' => self::STATUS_BOUNCED,
+        'label' => __('Bounced', 'mailpoet'),
+        'count' => self::filter(self::STATUS_BOUNCED)->count()
       ),
       array(
         'name' => 'trash',
@@ -725,6 +731,12 @@ class Subscriber extends Model {
     return $orm
       ->whereNull('deleted_at')
       ->where('status', self::STATUS_UNCONFIRMED);
+  }
+
+  static function bounced($orm) {
+    return $orm
+      ->whereNull('deleted_at')
+      ->where('status', self::STATUS_BOUNCED);
   }
 
   static function withoutSegments($orm) {

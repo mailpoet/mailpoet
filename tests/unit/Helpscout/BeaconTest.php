@@ -5,7 +5,7 @@ use \MailPoet\Models\Subscriber;
 
 class BeaconTest extends MailPoetTest {
   function _before() {
-    // create 3 users (1 confirmed, 1 subscribed, 1 unsubscribed)
+    // create 4 users (1 confirmed, 1 subscribed, 1 unsubscribed, 1 bounced)
     Subscriber::createOrUpdate(array(
       'email' => 'user1@mailpoet.com',
       'status' => Subscriber::STATUS_SUBSCRIBED
@@ -17,6 +17,10 @@ class BeaconTest extends MailPoetTest {
     Subscriber::createOrUpdate(array(
       'email' => 'user3@mailpoet.com',
       'status' => Subscriber::STATUS_UNSUBSCRIBED
+    ));
+    Subscriber::createOrUpdate(array(
+      'email' => 'user4@mailpoet.com',
+      'status' => Subscriber::STATUS_BOUNCED
     ));
 
     $this->beacon_data = Beacon::getData();
