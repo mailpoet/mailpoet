@@ -23,6 +23,18 @@
 
   <div id="mailpoet-changelog" clas="feature-section one-col">
     <h2><%= __("List of Changes") %></h2>
+    <h3>3.0.0-beta.6 - 2016-11-29</h3>
+    <ul>
+      <li>Added: "bounced" status has been added to subscribers;</li>
+      <li>Improved: execution time enforced between individual send operations. Avoids duplicate sending on really slow servers;</li>
+      <li>Improved: Welcome emails are given higher priority for sending;</li>
+      <li>Fixed: Welcome emails are not scheduled for WP users;</li>
+      <li>Fixed: Unicode characters in FROM/REPLY-TO/TO fields are not rendered;</li>
+      <li>Fixed: sending HTML emails with Amazon SES works again. Kudos Alex for reporting;</li>
+      <li>Fixed: import fails when subscriber already exists in the database but the email is in different case format. Thx Ellen for telling us;</li>
+      <li>Fixed: ampersand char ("&") inside the subject line won't throw errors in browser preview. Thanks Michel for reporting.</li>
+    </ul>
+    <br>
     <h3>3.0.0-beta.5 - 2016-11-22</h3>
     <ul>
       <li>Fixed ALC block in newsletter editor to not show tools of content blocks;</li>
@@ -34,16 +46,6 @@
       <li>Fixed "MailPoet Page" custom post type to not display an entry on admin menu;</li>
       <li>Fixed language strings in subscriber import;</li>
       <li>Added "Get back to MailPoet" button on plugin update page.</li>
-    </ul>
-    <br>
-    <h3>3.0.0-beta.4 - 2016-11-15</h3>
-    <ul>
-      <li>Updated HelpScout beacon to provide support articles;</li>
-      <li>Fixed handling of URLs containing shortcodes in newsletter editor;</li>
-      <li>Security fixes;</li>
-      <li>Fixed subscriber count to not count trashed subscribers;</li>
-      <li>Fixed template renderer to gracefully display an error when template caching issues arise;</li>
-      <li>Added security measures to prevent mass subscriptions.</li>
     </ul>
     <br>
   </div>

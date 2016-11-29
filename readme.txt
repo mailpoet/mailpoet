@@ -3,12 +3,12 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.6.1
-Stable tag: 3.0.0-beta.5
+Stable tag: 3.0.0-beta.6
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
 
-Try the new MailPoet! This is a beta version of our completely new email newsletter plugin.(https://wordpress.org/plugins/wysija-newsletters/).
+Try the new MailPoet! This is a beta version of our completely new email newsletter plugin.
 
 = What's new? =
 
@@ -82,6 +82,16 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 3.0.0-beta.6 - 2016-11-29 =
+* Added: "bounced" status has been added to subscribers;
+* Improved: execution time enforced between individual send operations. Avoids duplicate sending on really slow servers;
+* Improved: Welcome emails are given higher priority for sending;
+* Fixed: Welcome emails are not scheduled for WP users;
+* Fixed: Unicode characters in FROM/REPLY-TO/TO fields are not rendered;
+* Fixed: sending HTML emails with Amazon SES works again. Kudos Alex for reporting;
+* Fixed: import fails when subscriber already exists in the database but the email is in different case format. Thx Ellen for telling us;
+* Fixed: ampersand char ("&") inside the subject line won't throw errors in browser preview. Thanks Michel for reporting.
 
 = 3.0.0-beta.5 - 2016-11 =
 * Fixed ALC block in newsletter editor to not show tools of content blocks;
