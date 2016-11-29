@@ -5,6 +5,8 @@ import { createHashHistory } from 'history'
 import Listing from 'listing/listing.jsx'
 import ListingTabs from 'newsletters/listings/tabs.jsx'
 
+import { MailerMixin } from 'newsletters/listings/mixins.jsx'
+
 import classNames from 'classnames'
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
@@ -13,6 +15,7 @@ import _ from 'underscore'
 const mailpoet_roles = window.mailpoet_roles || {};
 const mailpoet_segments = window.mailpoet_segments || {};
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
+const mailpoet_settings = window.mailpoet_settings || {};
 
 const messages = {
   onTrash: (response) => {
@@ -151,6 +154,7 @@ const newsletter_actions = [
 ];
 
 const NewsletterListWelcome = React.createClass({
+  mixins: [ MailerMixin ],
   updateStatus: function(e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -358,6 +362,7 @@ const NewsletterListWelcome = React.createClass({
           auto_refresh={ true }
           sort_by="updated_at"
           sort_order="desc"
+          afterGetItems={ this.checkMailerStatus }
         />
       </div>
     );

@@ -7,9 +7,14 @@ import MailPoet from 'mailpoet'
 import Listing from 'listing/listing.jsx'
 import ListingTabs from 'newsletters/listings/tabs.jsx'
 
-import { QueueMixin, StatisticsMixin } from 'newsletters/listings/mixins.jsx'
+import {
+  QueueMixin,
+  StatisticsMixin,
+  MailerMixin
+} from 'newsletters/listings/mixins.jsx'
 
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
+const mailpoet_settings = window.mailpoet_settings || {};
 
 const columns = [
   {
@@ -49,7 +54,7 @@ const newsletter_actions = [
 ];
 
 const NewsletterListNotificationHistory = React.createClass({
-  mixins: [QueueMixin, StatisticsMixin],
+  mixins: [ QueueMixin, StatisticsMixin, MailerMixin ],
   renderItem: function(newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
@@ -60,6 +65,8 @@ const NewsletterListNotificationHistory = React.createClass({
     const segments = newsletter.segments.map(function(segment) {
       return segment.name
     }).join(', ');
+
+    const mailer_log = window.mailpoet_settings.mta_log || {};
 
     return (
       <div>
@@ -73,7 +80,7 @@ const NewsletterListNotificationHistory = React.createClass({
           { actions }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('status') }>
-          { this.renderQueueStatus(newsletter) }
+          { this.renderQueueStatus(newsletter, mailpoet_mailer_log) }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
           { segments }
@@ -116,6 +123,7 @@ const NewsletterListNotificationHistory = React.createClass({
           auto_refresh={ true }
           sort_by="updated_at"
           sort_order="desc"
+          afterGetItems={ this.checkMailerStatus }
         />
       </div>
     );

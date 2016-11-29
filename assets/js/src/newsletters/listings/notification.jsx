@@ -5,6 +5,8 @@ import { createHashHistory } from 'history'
 import Listing from 'listing/listing.jsx'
 import ListingTabs from 'newsletters/listings/tabs.jsx'
 
+import { MailerMixin } from 'newsletters/listings/mixins.jsx'
+
 import classNames from 'classnames'
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
@@ -15,6 +17,8 @@ import {
   monthDayValues,
   nthWeekDayValues
 } from 'newsletters/scheduling/common.jsx'
+
+const mailpoet_settings = window.mailpoet_settings || {};
 
 const messages = {
   onTrash: (response) => {
@@ -153,6 +157,7 @@ const newsletter_actions = [
 ];
 
 const NewsletterListNotification = React.createClass({
+  mixins: [ MailerMixin ],
   updateStatus: function(e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -328,6 +333,7 @@ const NewsletterListNotification = React.createClass({
           auto_refresh={ true }
           sort_by="updated_at"
           sort_order="desc"
+          afterGetItems={ this.checkMailerStatus }
         />
       </div>
     );

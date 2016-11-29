@@ -85,6 +85,7 @@
     'sentToXSubscribers': __('Sent to %$1d subscribers'),
     'resume': __('Resume'),
     'pause': __('Pause'),
+    'paused': __('Paused'),
     'new': __('Add New'),
 
     'templateFileMalformedError': __('This template file appears to be damaged. Please try another one.'),
@@ -232,6 +233,12 @@
 
     'backToPostNotifications': __('Back to Post notifications'),
     'sentOn': __('Sent on'),
-    'noSubscribers': __('No subscribers!')
+    'noSubscribers': __('No subscribers!'),
+
+    'mailerSendErrorNotice': __("We've detected an issue with the %$1s sending method that prevents us from delivering the remaining emails: %$2s"),
+    'mailerConnectionErrorNotice': __("We've detected a connection issue that prevents us from delivering the remaining emails: %$1s"),
+    'mailerResumeSendingNotice': __('As a result, all sending has been paused. Please resolve the issue before continuing.'),
+    'mailerResumeSendingButton': __('Resume sending'),
+    'mailerSendingResumedNotice': __("Sending has been resumed.")
   }) %>
 <% endblock %>

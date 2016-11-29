@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import MailPoet from 'mailpoet'
 import classNames from 'classnames'
 import jQuery from 'jquery'
@@ -42,11 +43,15 @@ const _QueueMixin = {
       }
     });
   },
-  renderQueueStatus: function(newsletter) {
+  renderQueueStatus: function(newsletter, mailer_log) {
     if (!newsletter.queue) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
+    } else if (mailer_log.status === 'paused') {
+      return (
+        <span>{MailPoet.I18n.t('paused')}</span>
+      )
     } else {
       if (newsletter.queue.status === 'scheduled') {
         return (
@@ -72,14 +77,8 @@ const _QueueMixin = {
           <span>
             {
               MailPoet.I18n.t('newsletterQueueCompleted')
-              .replace(
-                "%$1d",
-                newsletter.queue.count_processed - newsletter.queue.count_failed
-              )
-              .replace(
-                "%$2d",
-                newsletter.queue.count_total
-              )
+              .replace("%$1d",newsletter.queue.count_processed)
+              .replace("%$2d", newsletter.queue.count_total)
             }
           </span>
         );
@@ -175,5 +174,66 @@ const _StatisticsMixin = {
   }
 }
 
+const _MailerMixin = {
+  checkMailerStatus: function(state) {
+    if (state.meta.mta_log.error && state.meta.mta_log.status === 'paused') {
+      MailPoet.Notice.error(
+        '',
+        { static: true, id: 'mailpoet_mailer_error' }
+      );
+
+      ReactDOM.render(
+        this.getMailerError(state),
+        jQuery('[data-id="mailpoet_mailer_error"]')[0]
+      );
+    } else {
+      MailPoet.Notice.hide('mailpoet_mailer_error');
+    }
+  },
+  getMailerError(state) {
+    let mailer_error_notice;
+    if (state.meta.mta_log.error.operation === 'send') {
+      mailer_error_notice =
+        MailPoet.I18n.t('mailerSendErrorNotice')
+          .replace('%$1s', state.meta.mta_method)
+          .replace('%$2s', state.meta.mta_log.error.error_message);
+    } else {
+      mailer_error_notice =
+        MailPoet.I18n.t('mailerConnectionErrorNotice')
+          .replace('%$1s', state.meta.mta_log.error.error_message);
+    }
+    return (
+      <div>
+        <p>{ mailer_error_notice }</p>
+        <p>{ MailPoet.I18n.t('mailerResumeSendingNotice') }</p>
+        <p>
+          <a href="javascript:;"
+             className="button"
+             onClick={ this.resumeMailerSending }
+          >{ MailPoet.I18n.t('mailerResumeSendingButton') }</a>
+        </p>
+      </div>
+    );
+  },
+  resumeMailerSending() {
+    MailPoet.Ajax.post({
+      endpoint: 'mailer',
+      action: 'resumeSending'
+    }).done(function() {
+      MailPoet.Notice.hide('mailpoet_mailer_error');
+      MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
+      window.mailpoet_listing.forceUpdate();
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map(function(error) { return error.message; }),
+          { scroll: true }
+        );
+      }
+    });
+  }
+}
+
 export { _QueueMixin as QueueMixin };
 export { _StatisticsMixin as StatisticsMixin };
+export { _MailerMixin as MailerMixin };

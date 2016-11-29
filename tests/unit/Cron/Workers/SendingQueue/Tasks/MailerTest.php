@@ -51,8 +51,7 @@ class MailerTaskTest extends MailPoetTest {
 
   function testItGetsMailerLog() {
     $mailer_log = $this->mailer_task->getMailerLog();
-    expect(isset($mailer_log['sent']))->true();
-    expect(isset($mailer_log['started']))->true();
+    expect(is_array($mailer_log))->true();
   }
 
   function testItUpdatesMailerLogSentCount() {

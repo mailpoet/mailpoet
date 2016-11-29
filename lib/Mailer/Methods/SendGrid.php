@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Mailer\Methods;
 
+use MailPoet\Mailer\Mailer;
+
 if(!defined('ABSPATH')) exit;
 
 class SendGrid {
@@ -20,13 +22,17 @@ class SendGrid {
       $this->url,
       $this->request($newsletter, $subscriber)
     );
-    $result_body = json_decode($result['body'], true);
-    return (
-      !is_wp_error($result) === true &&
-      !preg_match('!invalid!', $result['body']) === true &&
-      !isset($result_body['errors']) === true &&
-      wp_remote_retrieve_response_code($result) === 200
-    );
+    if(is_wp_error($result)) {
+      return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
+    }
+    if(wp_remote_retrieve_response_code($result) !== 200) {
+      $response = json_decode($result['body'], true);
+      $response = (!empty($response['errors'])) ?
+        $response['errors'] :
+        sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SENDGRID);
+      return Mailer::formatMailerSendErrorResult($response);
+    }
+    return Mailer::formatMailerSendSuccessResult();
   }
 
   function getBody($newsletter, $subscriber) {

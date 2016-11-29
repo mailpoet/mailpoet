@@ -37,8 +37,7 @@ class SendingQueueTest extends MailPoetTest {
     $this->queue->subscribers = serialize(
       array(
         'to_process' => array($this->subscriber->id),
-        'processed' => array(),
-        'failed' => array()
+        'processed' => array()
       )
     );
     $this->queue->count_total = 1;
@@ -118,18 +117,16 @@ class SendingQueueTest extends MailPoetTest {
     $updated_queue = SendingQueue::findOne($this->queue->id);
     expect($updated_queue->status)->equals(SendingQueue::STATUS_COMPLETED);
 
-    // queue subscriber processed/failed/to process count is updated
+    // queue subscriber processed/to process count is updated
     $updated_queue->subscribers = $updated_queue->getSubscribers();
     expect($updated_queue->subscribers)->equals(
       array(
         'to_process' => array(),
-        'failed' => array(),
         'processed' => array($this->subscriber->id)
       )
     );
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
-    expect($updated_queue->count_failed)->equals(0);
     expect($updated_queue->count_to_process)->equals(0);
 
     // statistics entry should be created
@@ -166,18 +163,16 @@ class SendingQueueTest extends MailPoetTest {
     $updated_queue = SendingQueue::findOne($this->queue->id);
     expect($updated_queue->status)->equals(SendingQueue::STATUS_COMPLETED);
 
-    // queue subscriber processed/failed/to process count is updated
+    // queue subscriber processed/to process count is updated
     $updated_queue->subscribers = $updated_queue->getSubscribers();
     expect($updated_queue->subscribers)->equals(
       array(
         'to_process' => array(),
-        'failed' => array(),
         'processed' => array($this->subscriber->id)
       )
     );
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
-    expect($updated_queue->count_failed)->equals(0);
     expect($updated_queue->count_to_process)->equals(0);
 
     // statistics entry should be created
@@ -196,8 +191,7 @@ class SendingQueueTest extends MailPoetTest {
           $this->subscriber->id(),
           123
         ),
-        'processed' => array(),
-        'failed' => array()
+        'processed' => array()
       )
     );
     $queue->count_total = 2;
@@ -210,18 +204,16 @@ class SendingQueueTest extends MailPoetTest {
     $sending_queue_worker->process();
 
     $updated_queue = SendingQueue::findOne($queue->id);
-    // queue subscriber processed/failed/to process count is updated
+    // queue subscriber processed/to process count is updated
     $updated_queue->subscribers = $updated_queue->getSubscribers();
     expect($updated_queue->subscribers)->equals(
       array(
         'to_process' => array(),
-        'failed' => array(),
         'processed' => array($this->subscriber->id)
       )
     );
     expect($updated_queue->count_total)->equals(1);
     expect($updated_queue->count_processed)->equals(1);
-    expect($updated_queue->count_failed)->equals(0);
     expect($updated_queue->count_to_process)->equals(0);
 
     // statistics entry should be created only for 1 subscriber
@@ -237,8 +229,7 @@ class SendingQueueTest extends MailPoetTest {
           123,
           456
         ),
-        'processed' => array(),
-        'failed' => array()
+        'processed' => array()
       )
     );
     $queue->count_total = 2;
@@ -251,52 +242,17 @@ class SendingQueueTest extends MailPoetTest {
     $sending_queue_worker->process();
 
     $updated_queue = SendingQueue::findOne($queue->id);
-    // queue subscriber processed/failed/to process count is updated
+    // queue subscriber processed/to process count is updated
     $updated_queue->subscribers = $updated_queue->getSubscribers();
     expect($updated_queue->subscribers)->equals(
       array(
         'to_process' => array(),
-        'failed' => array(),
         'processed' => array()
       )
     );
     expect($updated_queue->count_total)->equals(0);
     expect($updated_queue->count_processed)->equals(0);
-    expect($updated_queue->count_failed)->equals(0);
     expect($updated_queue->count_to_process)->equals(0);
-  }
-
-  function testItUpdatesFailedListWhenSendingFailed() {
-    $sending_queue_worker = new SendingQueueWorker(
-      $timer = false,
-      Stub::make(
-        new MailerTask(),
-        array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return false; }))
-      )
-    );
-    $sending_queue_worker->process();
-
-    // queue subscriber processed/failed/to process count is updated
-    $updated_queue = SendingQueue::findOne($this->queue->id);
-    $updated_queue->subscribers = $updated_queue->getSubscribers();
-    expect($updated_queue->subscribers)->equals(
-      array(
-        'to_process' => array(),
-        'failed' => array($this->subscriber->id),
-        'processed' => array()
-      )
-    );
-    expect($updated_queue->count_total)->equals(1);
-    expect($updated_queue->count_processed)->equals(1);
-    expect($updated_queue->count_failed)->equals(1);
-    expect($updated_queue->count_to_process)->equals(0);
-
-    // statistics entry should not be created
-    $statistics = StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)
-      ->where('subscriber_id', $this->subscriber->id)
-      ->where('queue_id', $this->queue->id)
-      ->findOne();
-    expect($statistics)->false();
   }
 
   function testItDoesNotSendToTrashedSubscribers() {

@@ -21,8 +21,10 @@ class SendingQueue {
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
     $this->newsletter_task = ($newsletter_task) ? $newsletter_task : new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
-    // abort if execution or sending limit are reached
+    // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
+    // abort if mailing is paused or sending limit has been reached
+    MailerLog::enforceExecutionRequirements();
   }
 
   function process() {
@@ -70,8 +72,8 @@ class SendingQueue {
         if($queue->status === SendingQueueModel::STATUS_COMPLETED) {
           $this->newsletter_task->markNewsletterAsSent($newsletter);
         }
-        // abort if sending limit is reached
-        MailerLog::enforceSendingLimit();
+        // abort if sending limit has been reached
+        MailerLog::enforceExecutionRequirements();
       }
     }
   }
@@ -118,8 +120,8 @@ class SendingQueue {
         $prepared_subscribers_ids = array();
         $statistics = array();
       }
-      // abort if sending limit is reached
-      MailerLog::enforceSendingLimit();
+      // abort if sending limit has been reached
+      MailerLog::enforceExecutionRequirements();
     }
     if($processing_method === 'bulk') {
       $queue = $this->sendNewsletters(
@@ -142,20 +144,22 @@ class SendingQueue {
       $prepared_newsletters,
       $prepared_subscribers
     );
-    if(!$send_result) {
-      // update failed/to process list
-      $queue->updateFailedSubscribers($prepared_subscribers_ids);
-    } else {
-      // update processed/to process list
-      $queue->updateProcessedSubscribers($prepared_subscribers_ids);
-      // log statistics
-      StatisticsNewslettersModel::createMultiple($statistics);
-      // update the sent count
-      $this->mailer_task->updateSentCount();
-      // enforce sending limit if there are still subscribers left to process
-      if($queue->count_to_process) {
-        MailerLog::enforceSendingLimit();
-      }
+    // log error message and schedule retry/pause sending
+    if($send_result['response'] === false) {
+      MailerLog::processSendingError(
+        $send_result['operation'],
+        $send_result['error_message']
+      );
+    }
+    // update processed/to process list
+    $queue->updateProcessedSubscribers($prepared_subscribers_ids);
+    // log statistics
+    StatisticsNewslettersModel::createMultiple($statistics);
+    // update the sent count
+    $this->mailer_task->updateSentCount();
+    // abort if sending limit has been reached
+    if($queue->count_to_process) {
+      MailerLog::enforceExecutionRequirements();
     }
     return $queue;
   }

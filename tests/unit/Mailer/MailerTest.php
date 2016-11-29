@@ -12,15 +12,6 @@ class MailerTest extends MailPoetTest {
         'secret_key' => 'abcdefghijk',
       ),
       array(
-        'method' => 'ElasticEmail',
-        'api_key' => 'abcdefghijk'
-      ),
-      array(
-        'method' => 'MailGun',
-        'domain' => 'example.com',
-        'api_key' => 'abcdefghijk'
-      ),
-      array(
         'method' => 'MailPoet',
         'mailpoet_api_key' => 'abcdefghijk'
       ),

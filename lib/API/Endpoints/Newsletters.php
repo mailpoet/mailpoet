@@ -4,6 +4,7 @@ namespace MailPoet\API\Endpoints;
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
 use MailPoet\Listing;
+use MailPoet\Models\Setting;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterTemplate;
 use MailPoet\Models\NewsletterSegment;
@@ -275,10 +276,19 @@ class Newsletters extends APIEndpoint {
           $sender = false,
           $reply_to = false
         );
-        $mailer->send($newsletter, $data['subscriber']);
-        return $this->successResponse(
-          Newsletter::findOne($id)->asArray()
-        );
+        $result = $mailer->send($newsletter, $data['subscriber']);
+
+        if($result['response'] === false) {
+          $error = sprintf(
+            __('The email could not be sent: %s', 'mailpoet'),
+            $result['error']
+          );
+          return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
+        } else {
+          return $this->successResponse(
+            Newsletter::findOne($id)->asArray()
+          );
+        }
       } catch(\Exception $e) {
         return $this->errorResponse(array(
           $e->getCode() => $e->getMessage()
@@ -337,7 +347,9 @@ class Newsletters extends APIEndpoint {
     return $this->successResponse($data, array(
       'count' => $listing_data['count'],
       'filters' => $listing_data['filters'],
-      'groups' => $listing_data['groups']
+      'groups' => $listing_data['groups'],
+      'mta_log' => Setting::getValue('mta_log'),
+      'mta_method' => Setting::getValue('mta.method')
     ));
   }
 

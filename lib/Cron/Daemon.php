@@ -10,7 +10,7 @@ class Daemon {
   public $daemon;
   public $request_data;
   public $timer;
-  const REQUEST_TIMEOUT = 5;
+  const REQUEST_TIMEOUT = 5; // seconds
 
   function __construct($request_data = false) {
     $this->request_data = $request_data;

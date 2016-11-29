@@ -2,6 +2,7 @@
 namespace MailPoet\API\Endpoints;
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
+use MailPoet\Mailer\MailerLog;
 
 if(!defined('ABSPATH')) exit;
 
@@ -20,12 +21,19 @@ class Mailer extends APIEndpoint {
       ));
     }
 
-    if($result === false) {
-      return $this->errorResponse(array(
-        APIError::BAD_REQUEST => __("The email could not be sent. Please check your settings.", 'mailpoet')
-      ));
+    if($result['response'] === false) {
+      $error = sprintf(
+        __('The email could not be sent: %s', 'mailpoet'),
+        $result['error']
+      );
+      return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
     } else {
       return $this->successResponse(null);
     }
+  }
+
+  function resumeSending() {
+    MailerLog::resumeSending();
+    return $this->successResponse(null);
   }
 }

@@ -51,7 +51,8 @@ class MailerLogTest extends MailPoetTest {
   function testItIncrementsSentCount() {
     $mailer_log = array(
       'sent' => 1,
-      'started' => time()
+      'started' => time(),
+      'error' => null
     );
     Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
     MailerLog::incrementSentCount();
@@ -107,26 +108,123 @@ class MailerLogTest extends MailPoetTest {
     expect($updated_mailer_log['sent'])->equals(0);
   }
 
-  function testItCanEnforceSendingLimit() {
+  function testItResumesSending() {
+    // set status to "paused"
+    $mailer_log = array('status' => MailerLog::STATUS_PAUSED);
+    MailerLog::updateMailerLog($mailer_log);
+    $mailer_log = MailerLog::getMailerLog();
+    expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);
+    // status is reset when sending is resumed
+    MailerLog::resumeSending();
+    $mailer_log = MailerLog::getMailerLog();
+    expect($mailer_log['status'])->null();
+  }
+
+  function testItPausesSending() {
+    $mailer_log = array(
+      'status' => null,
+      'retry_attempt' => MailerLog::RETRY_ATTEMPTS_LIMIT,
+      'retry_at' => time() + 20
+    );
+    // status is set to PAUSED, retry attempt and retry at time are cleared
+    MailerLog::pauseSending($mailer_log);
+    $mailer_log = MailerLog::getMailerLog();
+    expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);
+    expect($mailer_log['retry_attempt'])->null();
+    expect($mailer_log['retry_at'])->null();
+  }
+
+  function itProcessesSendingError() {
+    // retry-related mailer values should be null
+    $mailer_log = MailerLog::getMailerLog();
+    expect($mailer_log['retry_attempt'])->null();
+    expect($mailer_log['retry_at'])->null();
+    expect($mailer_log['error'])->null();
+    // retry attempt should be incremented, error logged, retry attempt scheduled
+    MailerLog::processSendingError($operation = 'send', $error = 'email rejected');
+    $mailer_log = MailerLog::getMailerLog();
+    expect($mailer_log['retry_attempt'])->equals(1);
+    expect($mailer_log['retry_at'])->greaterThan(time());
+    expect($mailer_log['error'])->equals(
+      array(
+        'operation' => 'send',
+        'error_message' => 'email rejected'
+      )
+    );
+  }
+
+  function testItEnforcesSendingLimit() {
     $mailer_config = array(
       'frequency' => array(
         'emails' => 2,
         'interval' => 1
       )
     );
-    $mailer_log = array(
-      'sent' => 2,
-      'started' => time()
-    );
+    $mailer_log = MailerLog::createMailerLog();
+    $mailer_log['sent'] = 2;
+    $mailer_log['started'] = time();
     Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
     Setting::setValue(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
 
     // exception is thrown when sending limit is reached
     try {
-      MailerLog::enforceSendingLimit();
+      MailerLog::enforceExecutionRequirements();
       self::fail('Sending frequency exception was not thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('Sending frequency limit has been reached.');
+    }
+  }
+
+  function testItEnforcesRetryAtTime() {
+    $mailer_log = MailerLog::createMailerLog();
+    $mailer_log['retry_at'] = time() + 10;
+    // exception is thrown when current time is sooner than 120 seconds
+    try {
+      MailerLog::enforceExecutionRequirements($mailer_log);
+      self::fail('Sending waiting to be retried exception was not thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('Sending is waiting to be retried.');
+    }
+  }
+
+  function testItEnforcesRetryAttempts() {
+    $mailer_log = MailerLog::createMailerLog();
+    $mailer_log['retry_attempt'] = 2;
+    // allow less than 3 attempts
+    expect(MailerLog::enforceExecutionRequirements($mailer_log))->null();
+    // pase sending and throw exception when more than 3 attempts
+    $mailer_log['retry_attempt'] = MailerLog::RETRY_ATTEMPTS_LIMIT;
+    try {
+      MailerLog::enforceExecutionRequirements($mailer_log);
+      self::fail('Sending paused exception was not thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('Sending has been paused.');
+    }
+    $mailer_log = MailerLog::getMailerLog();
+    expect($mailer_log['status'])->equals(MailerLog::STATUS_PAUSED);
+  }
+
+  function testItClearsSendingErrorLog() {
+    $mailer_log = MailerLog::createMailerLog();
+    $mailer_log['retry_attempt'] = 1;
+    $mailer_log['retry_at'] = 1;
+    $mailer_log['error'] = 1;
+    $mailer_log['status'] = 'status';
+    $mailer_log = MailerLog::clearSendingErrorLog($mailer_log);
+    expect($mailer_log['retry_attempt'])->null();
+    expect($mailer_log['retry_at'])->null();
+    expect($mailer_log['error'])->null();
+    expect($mailer_log['status'])->equals('status');
+  }
+
+  function testItEnforcesPuasedStatus() {
+    $mailer_log = MailerLog::createMailerLog();
+    $mailer_log['status'] = MailerLog::STATUS_PAUSED;
+    try {
+      MailerLog::enforceExecutionRequirements($mailer_log);
+      self::fail('Sending paused exception was not thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('Sending has been paused.');
     }
   }
 
