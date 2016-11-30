@@ -163,6 +163,7 @@ class MailerTest extends MailPoetTest {
   function testItCanSend() {
     if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
-    expect($mailer->send($this->newsletter, $this->subscriber))->true();
+    $result = $mailer->send($this->newsletter, $this->subscriber);
+    expect($result['response'])->true();
   }
 }
