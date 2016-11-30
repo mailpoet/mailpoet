@@ -385,6 +385,18 @@ class ImportTest extends MailPoetTest {
     $this->import->updated_at = date('Y-m-d H:i:s', $timestamp + 1);
     $result = $this->import->process();
     expect($result['created'])->equals(1);
+    $db_subscribers = Helpers::arrayColumn(
+      Subscriber::select('id')
+        ->findArray(),
+      'id'
+    );
+    // subscribers must be added to segments
+    foreach($db_subscribers as $db_subscriber) {
+      $subscriber_segment = SubscriberSegment::where('subscriber_id', $db_subscriber)
+        ->where('segment_id', $this->data['segments'][0])
+        ->findOne();
+      expect($subscriber_segment)->notEmpty();
+    }
   }
 
   function _after() {
