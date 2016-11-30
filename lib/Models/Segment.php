@@ -174,31 +174,7 @@ class Segment extends Model {
   }
 
   static function getSegmentsForImport() {
-    $query = self::selectMany(array(self::$_table.'.id', self::$_table.'.name'))
-      ->selectExpr(
-        self::$_table.'.*, ' .
-        'COUNT(IF('.
-          MP_SUBSCRIBER_SEGMENT_TABLE.'.status="'.Subscriber::STATUS_SUBSCRIBED.'"'
-          .' AND '.
-          MP_SUBSCRIBERS_TABLE.'.deleted_at IS NULL'
-          .', 1, NULL)) `subscribers`'
-      )
-      ->leftOuterJoin(
-        MP_SUBSCRIBER_SEGMENT_TABLE,
-        array(self::$_table.'.id', '=', MP_SUBSCRIBER_SEGMENT_TABLE.'.segment_id'))
-      ->leftOuterJoin(
-        MP_SUBSCRIBERS_TABLE,
-        array(MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id', '=', MP_SUBSCRIBERS_TABLE.'.id'))
-      ->groupBy(self::$_table.'.id')
-      ->groupBy(self::$_table.'.name')
-      ->orderByAsc(self::$_table.'.name')
-      ->whereNull(self::$_table.'.deleted_at');
-
-    if(!empty($type)) {
-      $query->where(self::$_table.'.type', $type);
-    }
-
-    return $query->findArray();
+    return self::getSegmentsWithSubscriberCount($type = false);
   }
 
   static function getSegmentsForExport($withConfirmedSubscribers = false) {
