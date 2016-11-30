@@ -69,7 +69,7 @@ class SendGridTest extends MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result)->false();
+    expect($result['response'])->false();
   }
 
   function testItCanSend() {
@@ -78,6 +78,6 @@ class SendGridTest extends MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result)->true();
+    expect($result['response'])->true();
   }
 }

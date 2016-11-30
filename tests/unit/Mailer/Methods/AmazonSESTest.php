@@ -178,7 +178,7 @@ class AmazonSESTest extends MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result)->false();
+    expect($result['response'])->false();
   }
 
   function testItCanSend() {
@@ -187,6 +187,6 @@ class AmazonSESTest extends MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result)->true();
+    expect($result['response'])->true();
   }
 }

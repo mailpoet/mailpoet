@@ -96,7 +96,7 @@ class SMTPTest extends MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result)->false();
+    expect($result['response'])->false();
   }
 
   function testItCanSend() {
@@ -105,6 +105,6 @@ class SMTPTest extends MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result)->true();
+    expect($result['response'])->true();
   }
 }
