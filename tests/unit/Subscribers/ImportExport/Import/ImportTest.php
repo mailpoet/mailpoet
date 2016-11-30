@@ -318,7 +318,6 @@ class ImportTest extends MailPoetTest {
       ->equals($subscribers_data[$custom_field][1]);
   }
 
-
   function testItCanAddSubscribersToSegments() {
     $subscribers_data = $this->subscribers_data;
     $this->import->createOrUpdateSubscribers(
@@ -336,9 +335,17 @@ class ImportTest extends MailPoetTest {
       $db_subscribers,
       array($this->segment_1->id, $this->segment_2->id)
     );
-    $subscribers_segments = SubscriberSegment::findArray();
     // 2 subscribers * 2 segments
-    expect(count($subscribers_segments))->equals(4);
+    foreach($db_subscribers as $db_subscriber) {
+      $subscriber_segment_1 = SubscriberSegment::where('subscriber_id', $db_subscriber)
+        ->where('segment_id', $this->segment_1->id)
+        ->findOne();
+      expect($subscriber_segment_1)->notEmpty();
+      $subscriber_segment_2 = SubscriberSegment::where('subscriber_id', $db_subscriber)
+        ->where('segment_id', $this->segment_2->id)
+        ->findOne();
+      expect($subscriber_segment_2)->notEmpty();
+    }
   }
 
   function testItCanDeleteExistingTrashedSubscribers() {
@@ -378,6 +385,18 @@ class ImportTest extends MailPoetTest {
     $this->import->updated_at = date('Y-m-d H:i:s', $timestamp + 1);
     $result = $this->import->process();
     expect($result['created'])->equals(1);
+    $db_subscribers = Helpers::arrayColumn(
+      Subscriber::select('id')
+        ->findArray(),
+      'id'
+    );
+    // subscribers must be added to segments
+    foreach($db_subscribers as $db_subscriber) {
+      $subscriber_segment = SubscriberSegment::where('subscriber_id', $db_subscriber)
+        ->where('segment_id', $this->data['segments'][0])
+        ->findOne();
+      expect($subscriber_segment)->notEmpty();
+    }
   }
 
   function _after() {

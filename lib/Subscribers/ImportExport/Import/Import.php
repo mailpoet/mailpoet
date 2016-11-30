@@ -378,7 +378,7 @@ class Import {
       );
     }
     $this->addSubscribersToSegments(
-      array_keys($result),
+      $result,
       $this->segments
     );
     return $result;
