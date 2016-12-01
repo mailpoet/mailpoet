@@ -5,7 +5,6 @@ use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\API\Endpoints\Cron;
 use MailPoet\Config\Populator;
-use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
@@ -56,25 +55,96 @@ class SendingQueueTest extends MailPoetTest {
     expect($sending_queue_worker->timer)->equals($timer);
   }
 
-  function testItEnforcesExecutionLimitBeforeStart() {
-    $timer = microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT;
+  function testItEnforcesExecutionLimitsBeforeQueueProcessing() {
+    $sending_queue_worker = Stub::make(
+      new SendingQueueWorker(),
+      array(
+        'processQueue' => Stub::never(),
+        'enforceSendingAndExecutionLimits' => Stub::exactly(1, function() {
+          throw new \Exception();
+        })
+      ), $this);
+    $sending_queue_worker->__construct();
     try {
-      $sending_queue_worker = new SendingQueueWorker($timer);
-      self::fail('Maximum execution time limit exception was not thrown.');
+      $sending_queue_worker->process();
+      self::fail('Execution limits function was not called.');
     } catch(\Exception $e) {
-      expect($e->getMessage())->equals('Maximum execution time has been reached.');
     }
   }
 
-  function testItEnforcesExecutionLimitDuringProcessing() {
-    try {
-      $sending_queue_worker = $this->sending_queue_worker;
-      $sending_queue_worker->timer = microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT;
-      $sending_queue_worker->process();
-      self::fail('Maximum execution time limit exception was not thrown.');
-    } catch(\Exception $e) {
-      expect($e->getMessage())->equals('Maximum execution time has been reached.');
-    }
+  function testItEnforcesExecutionLimitsAfterSendingWhenQueueStatusIsNotSetToComplete() {
+    $sending_queue_worker = Stub::make(
+      new SendingQueueWorker(),
+      array(
+        'enforceSendingAndExecutionLimits' => Stub::exactly(1, function() { })
+      ), $this);
+    $sending_queue_worker->__construct(
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        array(
+          'send' => function() { }
+        )
+      )
+    );
+    $sending_queue_worker->sendNewsletters(
+      $this->queue,
+      $prepared_subscribers = array(),
+      $prepared_newsletters = false,
+      $prepared_subscribers = false,
+      $statistics[] = array(
+        'newsletter_id' => 1,
+        'subscriber_id' => 1,
+        'queue_id' => $this->queue->id
+      )
+    );
+  }
+
+  function testItDoesNotEnforceExecutionLimitsAfterSendingWhenQueueStatusIsSetToComplete() {
+    // when sending is done and there are no more subscribers to process, continue
+    // without enforcing execution limits. this allows the newsletter to be marked as sent
+    // in the process() method and after that execution limits will be enforced
+    $queue = $this->queue;
+    $queue->status = SendingQueue::STATUS_COMPLETED;
+    $sending_queue_worker = Stub::make(
+      new SendingQueueWorker(),
+      array(
+        'enforceSendingAndExecutionLimits' => Stub::never()
+      ), $this);
+    $sending_queue_worker->__construct(
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        array(
+          'send' => function() { }
+        )
+      )
+    );
+    $sending_queue_worker->sendNewsletters(
+      $queue,
+      $prepared_subscribers = array(),
+      $prepared_newsletters = array(),
+      $prepared_subscribers = array(),
+      $statistics[] = array(
+        'newsletter_id' => 1,
+        'subscriber_id' => 1,
+        'queue_id' => $queue->id
+      )
+    );
+  }
+
+  function testItEnforcesExecutionLimitsAfterQueueProcessing() {
+    $sending_queue_worker = Stub::make(
+      new SendingQueueWorker(),
+      array(
+        'processQueue' => function() {
+          // this function returns a queue object
+          return (object)array('status' => null);
+        },
+        'enforceSendingAndExecutionLimits' => Stub::exactly(2, function() { })
+      ), $this);
+    $sending_queue_worker->__construct();
+    $sending_queue_worker->process();
   }
 
   function testItDeletesQueueWhenNewsletterIsNotFound() {
@@ -85,6 +155,21 @@ class SendingQueueTest extends MailPoetTest {
     // delete newsletter
     Newsletter::findOne($this->newsletter->id)
       ->delete();
+
+    // queue no longer exists
+    $this->sending_queue_worker->process();
+    $queue = SendingQueue::findOne($this->queue->id);
+    expect($queue)->false(false);
+  }
+
+  function testItDeletesQueueWhenNewsletterIsTrashed() {
+    // queue exists
+    $queue = SendingQueue::findOne($this->queue->id);
+    expect($queue)->notEquals(false);
+
+    // trash newsletter
+    Newsletter::findOne($this->newsletter->id)
+      ->trash();
 
     // queue no longer exists
     $this->sending_queue_worker->process();

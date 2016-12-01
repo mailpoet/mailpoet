@@ -21,7 +21,7 @@ class Newsletter {
   }
 
   function getAndPreProcess($queue) {
-    $newsletter = $queue->newsletter()->findOne();
+    $newsletter = $queue->newsletter()->whereNull('deleted_at')->findOne();
     if(!$newsletter) {
       return false;
     }
