@@ -22,7 +22,7 @@ class ImportExportFactoryTest extends MailPoetTest {
       'first_name' => 'Mike',
       'last_name' => 'Smith',
       'status' => Subscriber::STATUS_SUBSCRIBED,
-      'email' => 'mike@maipoet.com'
+      'email' => 'mike@mailpoet.com'
     ));
 
     $association = SubscriberSegment::create();
@@ -50,27 +50,27 @@ class ImportExportFactoryTest extends MailPoetTest {
     expect($segments[0]['name'])->equals('Confirmed Segment');
     expect($segments[0]['subscriberCount'])->equals(1);
     expect($segments[1]['name'])->equals('Unconfirmed Segment');
-    expect($segments[1]['subscriberCount'])->equals(1);
+    expect($segments[1]['subscriberCount'])->equals(0);
   }
 
   function testItCanGetPublicSegmentsForImport() {
     $segments = $this->importFactory->getSegments();
     expect($segments[0]['subscriberCount'])->equals(1);
-    expect($segments[1]['subscriberCount'])->equals(1);
+    expect($segments[1]['subscriberCount'])->equals(0);
 
     $subscriber = Subscriber::where(
-      'email', 'john@mailpoet.com'
+      'email', 'mike@mailpoet.com'
     )->findOne();
     expect($subscriber->deleted_at)->null();
     $subscriber->trash();
 
     $subscriber = Subscriber::where(
-      'email', 'john@mailpoet.com'
+      'email', 'mike@mailpoet.com'
     )->whereNull('deleted_at')->findOne();
     expect($subscriber)->false();
 
     $segments = $this->importFactory->getSegments();
-    expect($segments[0]['subscriberCount'])->equals(1);
+    expect($segments[0]['subscriberCount'])->equals(0);
     expect($segments[1]['subscriberCount'])->equals(0);
   }
 
