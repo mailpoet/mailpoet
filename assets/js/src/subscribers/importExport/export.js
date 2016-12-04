@@ -10,7 +10,8 @@ define(
   _,
   jQuery,
   MailPoet,
-  Handlebars
+  Handlebars,
+  select2
  ) {
    if (!jQuery("#mailpoet_subscribers_export").length) {
      return;
@@ -97,7 +98,7 @@ define(
 
      // set confirmed subscribers export option to false
      exportData.exportConfirmedOption = false;
-     
+
      renderSegmentsAndFields(subscriberFieldsContainerElement, subscriberFieldsSelect2);
      renderSegmentsAndFields(segmentsContainerElement, segments);
 
