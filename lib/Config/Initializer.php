@@ -29,8 +29,11 @@ class Initializer {
 
     $this->setupDB();
 
-    register_activation_hook(Env::$file, array($this, 'runMigrator'));
-    register_activation_hook(Env::$file, array($this, 'runPopulator'));
+    // activation function
+    register_activation_hook(
+      Env::$file,
+      array('MailPoet\Config\Activator', 'activate')
+    );
 
     add_action('plugins_loaded', array($this, 'setup'));
     add_action('init', array($this, 'onInit'));
@@ -96,18 +99,9 @@ class Initializer {
     define('MP_STATISTICS_FORMS_TABLE', $statistics_forms);
   }
 
-  function runMigrator() {
-    $migrator = new Migrator();
-    $migrator->up();
-  }
-
-  function runPopulator() {
-    $populator = new Populator();
-    $populator->up();
-  }
-
   function setup() {
     try {
+      $this->maybeDbUpdate();
       $this->setupRenderer();
       $this->setupLocalizer();
       $this->setupMenu();
@@ -139,6 +133,15 @@ class Initializer {
     }
 
     define('MAILPOET_INITIALIZED', true);
+  }
+
+  function maybeDbUpdate() {
+    $current_db_version = get_option('mailpoet_db_version', false);
+
+    // if current db version and plugin version differ
+    if(version_compare($current_db_version, Env::$version) !== 0) {
+      Activator::activate();
+    }
   }
 
   function setupWidget() {
