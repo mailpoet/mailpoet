@@ -8,10 +8,10 @@ use MailPoet\Subscription\Url as SubscriptionUrl;
 
 class Link {
   static function process($action,
-    $default_value = false,
+    $default_value,
     $newsletter,
     $subscriber,
-    $queue = false
+    $queue
   ) {
     switch($action) {
       case 'subscription_unsubscribe':
