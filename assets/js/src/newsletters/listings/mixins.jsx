@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import ReactStringReplace from 'react-string-replace'
 import MailPoet from 'mailpoet'
 import classNames from 'classnames'
 import jQuery from 'jquery'
@@ -48,7 +49,7 @@ const _QueueMixin = {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
-    } else if (mailer_log.status === 'paused') {
+    } else if (mailer_log.status === 'paused' && newsletter.queue.status !== 'completed') {
       return (
         <span>{MailPoet.I18n.t('paused')}</span>
       )
@@ -192,6 +193,13 @@ const _MailerMixin = {
   },
   getMailerError(state) {
     let mailer_error_notice;
+    let mailer_check_settings_notice = ReactStringReplace(
+      MailPoet.I18n.t('mailerCheckSettingsNotice'),
+      /\[link\](.*?)\[\/link\]/g,
+      (match, i) => (
+        <a href={`?page=mailpoet-settings#mta`}>{ match }</a>
+      )
+    );
     if (state.meta.mta_log.error.operation === 'send') {
       mailer_error_notice =
         MailPoet.I18n.t('mailerSendErrorNotice')
@@ -205,7 +213,7 @@ const _MailerMixin = {
     return (
       <div>
         <p>{ mailer_error_notice }</p>
-        <p>{ MailPoet.I18n.t('mailerResumeSendingNotice') }</p>
+        <p>{ mailer_check_settings_notice }</p>
         <p>
           <a href="javascript:;"
              className="button"
@@ -233,6 +241,9 @@ const _MailerMixin = {
     });
   }
 }
+
+
+
 
 export { _QueueMixin as QueueMixin };
 export { _StatisticsMixin as StatisticsMixin };
