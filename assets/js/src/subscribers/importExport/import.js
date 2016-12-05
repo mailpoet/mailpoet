@@ -18,7 +18,8 @@ define(
       Handlebars,
       Papa,
       AsyncQueue,
-      Moment
+      Moment,
+      select2
     ) {
       if (!jQuery('#mailpoet_subscribers_import').length) {
         return;
