@@ -29,7 +29,7 @@ class PostTransformer {
       $structure = $this->appendFeaturedImage(
         $post,
         $this->args['displayType'],
-        $this->args['imageFullWidth'] === 'true',
+        filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN),
         $structure
       );
     } else {
@@ -37,7 +37,7 @@ class PostTransformer {
         $structure = $this->appendFeaturedImage(
           $post,
           $this->args['displayType'],
-          $this->args['imageFullWidth'] === 'true',
+          filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN),
           $structure
         );
       }
@@ -155,7 +155,7 @@ class PostTransformer {
   private function getPostTitle($post) {
     $title = $post->post_title;
 
-    if($this->args['titleIsLink'] === 'true') {
+    if(filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
       $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
     }
 
