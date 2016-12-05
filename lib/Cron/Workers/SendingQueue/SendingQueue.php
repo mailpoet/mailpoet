@@ -21,13 +21,10 @@ class SendingQueue {
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
     $this->newsletter_task = ($newsletter_task) ? $newsletter_task : new NewsletterTask();
     $this->timer = ($timer) ? $timer : microtime(true);
-    // abort if execution limit is reached
-    CronHelper::enforceExecutionLimit($this->timer);
-    // abort if mailing is paused or sending limit has been reached
-    MailerLog::enforceExecutionRequirements();
   }
 
   function process() {
+    $this->enforceSendingAndExecutionLimits();
     foreach(self::getRunningQueues() as $queue) {
       // get and pre-process newsletter (render, replace shortcodes/links, etc.)
       $newsletter = $this->newsletter_task->getAndPreProcess($queue);
@@ -44,8 +41,6 @@ class SendingQueue {
         self::BATCH_SIZE
       );
       foreach($subscriber_batches as $subscribers_to_process_ids) {
-        // abort if execution limit is reached
-        CronHelper::enforceExecutionLimit($this->timer);
         $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)
           ->whereNull('deleted_at')
           ->findMany();
@@ -72,8 +67,7 @@ class SendingQueue {
         if($queue->status === SendingQueueModel::STATUS_COMPLETED) {
           $this->newsletter_task->markNewsletterAsSent($newsletter);
         }
-        // abort if sending limit has been reached
-        MailerLog::enforceExecutionRequirements();
+        $this->enforceSendingAndExecutionLimits();
       }
     }
   }
@@ -120,8 +114,6 @@ class SendingQueue {
         $prepared_subscribers_ids = array();
         $statistics = array();
       }
-      // abort if sending limit has been reached
-      MailerLog::enforceExecutionRequirements();
     }
     if($processing_method === 'bulk') {
       $queue = $this->sendNewsletters(
@@ -157,11 +149,18 @@ class SendingQueue {
     StatisticsNewslettersModel::createMultiple($statistics);
     // update the sent count
     $this->mailer_task->updateSentCount();
-    // abort if sending limit has been reached
-    if($queue->count_to_process) {
-      MailerLog::enforceExecutionRequirements();
+    // enforce execution limits if queue is still being processed
+    if($queue->status !== SendingQueueModel::STATUS_COMPLETED) {
+      $this->enforceSendingAndExecutionLimits();
     }
     return $queue;
+  }
+
+  function enforceSendingAndExecutionLimits() {
+    // abort if execution limit is reached
+    CronHelper::enforceExecutionLimit($this->timer);
+    // abort if sending limit has been reached
+    MailerLog::enforceExecutionRequirements();
   }
 
   static function getRunningQueues() {
