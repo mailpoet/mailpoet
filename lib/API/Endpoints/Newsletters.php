@@ -258,7 +258,7 @@ class Newsletters extends APIEndpoint {
       $body = implode($divider, $data_for_shortcodes);
 
       $subscriber = Subscriber::getCurrentWPUser();
-      $subscriber = ($subscriber) ? $subscriber->asArray() : false;
+      $subscriber = ($subscriber) ? $subscriber : false;
 
       $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
         $newsletter,

@@ -11,9 +11,10 @@ class Subscriber {
   static function process(
     $action,
     $default_value,
-    $newsletter = false,
+    $newsletter,
     $subscriber
   ) {
+    if($subscriber !== false && !is_object($subscriber)) return false;
     switch($action) {
       case 'firstname':
         return ($subscriber) ? $subscriber->first_name : $default_value;

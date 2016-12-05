@@ -132,6 +132,30 @@ class ShortcodesTest extends MailPoetTest {
     expect($result['0'])->equals(2);
   }
 
+  function testSubscriberShortcodesRequireSubscriberObjectOrFalseValue() {
+    // when subscriber is empty, default value is returned
+    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+      $this->newsletter,
+      $subscriber = false
+    );
+    $result = $shortcodes_object->process(array('[subscriber:firstname | default:test]'));
+    expect($result[0])->equals('test');
+    // when subscriber is an object, proper value is return
+    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+      $this->newsletter,
+      $this->subscriber
+    );
+    $result = $shortcodes_object->process(array('[subscriber:firstname | default:test]'));
+    expect($result[0])->equals($this->subscriber->first_name);
+    // when subscriber is not empty and not an object, false is returned
+    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+      $this->newsletter,
+      $subscriber = array()
+    );
+    $result = $shortcodes_object->process(array('[subscriber:firstname | default:test]'));
+    expect($result[0])->false();
+  }
+
   function testItCanProcessSubscriberShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $result =

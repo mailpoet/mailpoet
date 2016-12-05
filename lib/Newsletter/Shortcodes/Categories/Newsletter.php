@@ -8,10 +8,10 @@ require_once(ABSPATH . "wp-includes/pluggable.php");
 
 class Newsletter {
   static function process($action,
-    $default_value = false,
+    $default_value,
     $newsletter,
     $subscriber,
-    $queue = false,
+    $queue,
     $content
   ) {
     switch($action) {
