@@ -14,6 +14,7 @@ class Subscriber {
     $newsletter = false,
     $subscriber
   ) {
+    if($subscriber !== false && !is_object($subscriber)) return false;
     switch($action) {
       case 'firstname':
         return ($subscriber) ? $subscriber->first_name : $default_value;
