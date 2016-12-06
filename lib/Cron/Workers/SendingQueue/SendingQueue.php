@@ -164,6 +164,7 @@ class SendingQueue {
     return SendingQueueModel::orderByAsc('priority')
       ->whereNull('deleted_at')
       ->whereNull('status')
+      ->whereNull('type')
       ->findMany();
   }
 }
