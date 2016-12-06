@@ -55,7 +55,7 @@ const newsletter_actions = [
 
 const NewsletterListNotificationHistory = React.createClass({
   mixins: [ QueueMixin, StatisticsMixin, MailerMixin ],
-  renderItem: function(newsletter, actions) {
+  renderItem: function(newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -80,7 +80,7 @@ const NewsletterListNotificationHistory = React.createClass({
           { actions }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('status') }>
-          { this.renderQueueStatus(newsletter, mailpoet_mailer_log) }
+          { this.renderQueueStatus(newsletter, meta.mta_log) }
         </td>
         <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
           { segments }
