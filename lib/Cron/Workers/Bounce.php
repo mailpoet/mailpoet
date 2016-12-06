@@ -90,7 +90,7 @@ class Bounce {
       ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'id');
 
-    if (empty($subscribers)) {
+    if(empty($subscribers)) {
       $queue->delete();
       return false;
     }
@@ -123,7 +123,7 @@ class Bounce {
       self::BATCH_SIZE
     );
 
-    foreach ($subscriber_batches as $subscribers_to_process_ids) {
+    foreach($subscriber_batches as $subscribers_to_process_ids) {
       // abort if execution limit is reached
       CronHelper::enforceExecutionLimit($this->timer);
 
@@ -143,11 +143,11 @@ class Bounce {
 
   function processEmails(array $subscriber_emails) {
     $checked_emails = $this->api->check($subscriber_emails);
-    $this->processApiResponse((array) $checked_emails);
+    $this->processApiResponse((array)$checked_emails);
   }
 
   function processApiResponse(array $checked_emails) {
-    foreach ($checked_emails as $email) {
+    foreach($checked_emails as $email) {
       if(!isset($email['address'], $email['bounce'])) {
         continue;
       }
@@ -187,7 +187,7 @@ class Bounce {
   static function getAllDueQueues() {
     $scheduled_queues = self::getScheduledQueues();
     $running_queues = self::getRunningQueues();
-    return array_merge((array) $scheduled_queues, (array) $running_queues);
+    return array_merge((array)$scheduled_queues, (array)$running_queues);
   }
 
   static function getFutureQueues() {
