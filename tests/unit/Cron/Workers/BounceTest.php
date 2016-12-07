@@ -12,6 +12,8 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Util\Helpers;
 
+require_once('BounceTestMockAPI.php');
+
 class BounceTest extends MailPoetTest {
   function _before() {
     $this->emails = array(
@@ -29,21 +31,9 @@ class BounceTest extends MailPoetTest {
 
     $this->bounce = new Bounce(microtime(true));
 
-    $api = Stub::make(new API('key'), array(
-      'check' => function (array $emails) {
-        return array_map(
-          function ($email) {
-            return array(
-              'address' => $email,
-              'bounce' => preg_match('/(hard|soft)/', $email, $m) ? $m[1] : null,
-            );
-          },
-          $emails
-        );
-      }
-    ), $this);
+    $api =
 
-    $this->bounce->api = $api;
+    $this->bounce->api = new MailPoet\Cron\Workers\Bounce\MockAPI('key');
   }
 
   function testItConstructs() {
