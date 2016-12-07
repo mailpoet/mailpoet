@@ -195,6 +195,7 @@ class BounceTest extends MailPoetTest {
     $queue->type = 'bounce';
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->newsletter_id = 0;
     $queue->save();
     return $queue;
   }
@@ -204,6 +205,7 @@ class BounceTest extends MailPoetTest {
     $queue->type = 'bounce';
     $queue->status = null;
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->newsletter_id = 0;
     $queue->save();
     return $queue;
   }

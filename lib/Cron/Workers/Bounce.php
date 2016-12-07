@@ -76,6 +76,7 @@ class Bounce {
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->priority = SendingQueue::PRIORITY_LOW;
     $queue->scheduled_at = self::getNextRunDate();
+    $queue->newsletter_id = 0;
     $queue->save();
     return $queue;
   }
