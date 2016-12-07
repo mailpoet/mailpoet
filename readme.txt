@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.6.1
-Stable tag: 3.0.0-beta.6
+Stable tag: 3.0.0-beta.7.1
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -82,6 +82,16 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 3.0.0-beta.7.1 - 2016-12-06 =
+* Improved: allow user to restart sending after sending method failure;
+* Fixed: subscribers are not added to lists after import;
+* Fixed: sending should stop when newsletter is trashed;
+* Fixed: update database schema after an update which fixes an SQL error;
+* Fixed: status of sent newsletters is showing "paused" instead of "sent";
+* Fixed: dividers in Automatic Latest Posts posts are not displayed. Thx Gregor!;
+* Fixed: shortcodes (ie, first name) are not rendered when sending a preview;
+* Fixed: count of confirmed subscribers only in step 2 of import is erroneous.
 
 = 3.0.0-beta.6 - 2016-11-29 =
 * Added: "bounced" status has been added to subscribers;
