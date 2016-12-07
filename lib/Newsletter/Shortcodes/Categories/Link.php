@@ -7,11 +7,14 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
 class Link {
-  static function process($action,
+  static function process(
+    $action,
     $default_value,
     $newsletter,
     $subscriber,
-    $queue
+    $queue,
+    $content,
+    $wp_user_preview
   ) {
     switch($action) {
       case 'subscription_unsubscribe':
@@ -19,7 +22,8 @@ class Link {
         $url = self::processUrl(
           $action,
           esc_attr(SubscriptionUrl::getUnsubscribeUrl($subscriber)),
-          $queue
+          $queue,
+          $wp_user_preview
         );
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
@@ -31,14 +35,16 @@ class Link {
         return self::processUrl(
           $action,
           SubscriptionUrl::getUnsubscribeUrl($subscriber),
-          $queue
+          $queue,
+          $wp_user_preview
         );
 
       case 'subscription_manage':
         $url = self::processUrl(
           $action = 'subscription_manage_url',
           esc_attr(SubscriptionUrl::getManageUrl($subscriber)),
-          $queue
+          $queue,
+          $wp_user_preview
         );
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
@@ -50,13 +56,14 @@ class Link {
         return self::processUrl(
           $action,
           SubscriptionUrl::getManageUrl($subscriber),
-          $queue
+          $queue,
+          $wp_user_preview
         );
 
       case 'newsletter_view_in_browser':
         $action = 'newsletter_view_in_browser_url';
         $url = esc_attr(NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue));
-        $url = self::processUrl($action, $url, $queue);
+        $url = self::processUrl($action, $url, $queue, $wp_user_preview);
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
           $url,
@@ -65,7 +72,7 @@ class Link {
 
       case 'newsletter_view_in_browser_url':
         $url = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
-        return self::processUrl($action, $url, $queue);
+        return self::processUrl($action, $url, $queue, $wp_user_preview);
 
       default:
         $shortcode = self::getShortcode($action);
@@ -74,15 +81,17 @@ class Link {
           $shortcode,
           $newsletter,
           $subscriber,
-          $queue
+          $queue,
+          $wp_user_preview
         );
         return ($url !== $shortcode) ?
-          self::processUrl($action, $url, $queue) :
+          self::processUrl($action, $url, $queue, $wp_user_preview) :
           false;
     }
   }
 
-  static function processUrl($action, $url, $queue) {
+  static function processUrl($action, $url, $queue, $wp_user_preview = false) {
+    if($wp_user_preview) return '#';
     return ($queue !== false && (boolean)Setting::getValue('tracking.enabled')) ?
       self::getShortcode($action) :
       $url;

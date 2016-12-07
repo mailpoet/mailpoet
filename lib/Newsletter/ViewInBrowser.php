@@ -27,8 +27,8 @@ class ViewInBrowser {
     $shortcodes = new Shortcodes(
       $newsletter,
       $subscriber,
-      $queue
-
+      $queue,
+      $wp_user_preview
     );
     $rendered_newsletter = $shortcodes->replace($newsletter_body['html']);
     if($queue && (boolean)Setting::getValue('tracking.enabled')) {

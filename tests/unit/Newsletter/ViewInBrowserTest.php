@@ -85,13 +85,6 @@ class ViewInBrowserTest extends MailPoetTest {
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_without_tracking;
     $queue->subscribers = array('processed' => array($subscriber->id));
     $this->queue = $queue->save();
-    // build browser preview data
-    $this->browser_preview_data = (object)array(
-      'queue' => $this->queue,
-      'subscriber' => $this->subscriber,
-      'newsletter' => $this->newsletter,
-      'preview' => false
-    );
   }
 
   function testItRendersNewsletter() {
@@ -99,7 +92,7 @@ class ViewInBrowserTest extends MailPoetTest {
       $this->newsletter,
       $this->subscriber,
       $queue = false,
-      $preview = true
+      $preview = false
     );
     expect($rendered_body)->regExp('/Rendered newsletter/');
   }
@@ -109,7 +102,7 @@ class ViewInBrowserTest extends MailPoetTest {
       $this->newsletter,
       $this->subscriber,
       $this->queue,
-      $preview = true
+      $preview = false
     );
     expect($rendered_body)->regExp('/Newsletter from queue/');
   }
@@ -120,7 +113,7 @@ class ViewInBrowserTest extends MailPoetTest {
       $this->newsletter,
       $this->subscriber,
       $this->queue,
-      $preview = true
+      $preview = false
     );
     expect($rendered_body)->contains('Hello, First');
     expect($rendered_body)->contains(Router::NAME . '&endpoint=view_in_browser');
@@ -134,7 +127,7 @@ class ViewInBrowserTest extends MailPoetTest {
       $this->newsletter,
       $this->subscriber,
       $queue,
-      $preview = true
+      $preview = false
     );
     expect($rendered_body)->contains(Router::NAME . '&endpoint=track');
   }

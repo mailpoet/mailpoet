@@ -3,7 +3,6 @@ namespace MailPoet\Config;
 use \MailPoet\Models\Newsletter;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\SubscriberSegment;
-use \MailPoet\Subscription;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 
 class Shortcodes {
@@ -113,12 +112,16 @@ class Shortcodes {
   }
 
   function renderArchiveSubject($newsletter) {
-    $preview_url = NewsletterUrl::getViewInBrowserUrl($newsletter);
+    $preview_url = NewsletterUrl::getViewInBrowserUrl(
+      $newsletter,
+      $subscriber = false,
+      $queue = false,
+      $wp_user_preview = true
+    );
 
     return '<a href="'.esc_attr($preview_url).'" target="_blank" title="'
       .esc_attr(__('Preview in a new tab', 'mailpoet')).'">'
       .esc_attr($newsletter->subject).
     '</a>';
   }
-
 }

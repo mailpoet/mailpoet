@@ -269,6 +269,30 @@ class ShortcodesTest extends MailPoetTest {
     }
   }
 
+  function testItReturnsHashInsteadofLinksWhenInPreviewIsEnabled() {
+    $shortcodes_object = $this->shortcodes_object;
+    $shortcodes_object->wp_user_preview = true;
+    $shortcodes = array(
+      '[link:subscription_unsubscribe_url]',
+      '[link:subscription_manage_url]',
+      '[link:newsletter_view_in_browser_url]',
+    );
+    $result = $shortcodes_object->process($shortcodes);
+    // hash is returned
+    foreach($result as $index => $transformed_shortcode) {
+      expect($transformed_shortcode)->equals('#');
+    }
+    $shortcodes = array(
+      '[link:subscription_unsubscribe]',
+      '[link:subscription_manage]',
+      '[link:newsletter_view_in_browser]',
+    );
+    $result = $shortcodes_object->process($shortcodes);
+    foreach($result as $index => $transformed_shortcode) {
+      expect($transformed_shortcode)->regExp('/href="#"/');
+    }
+  }
+
   function testItCanProcessCustomLinkShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $shortcode = '[link:shortcode]';
