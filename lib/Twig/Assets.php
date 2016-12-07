@@ -47,8 +47,13 @@ class Assets
     $output = array();
 
     foreach($stylesheets as $stylesheet) {
-      $output[] = '<link rel="stylesheet" type="text/css"'.
-                  ' href="'.$this->_globals['assets_url'].'/css/'.$stylesheet.'">';
+      $url = $this->appendVersionToUrl(
+        $this->_globals['assets_url'] . '/css/' . $stylesheet
+      );
+      $output[] = sprintf(
+        '<link rel="stylesheet" type="text/css" href="%s">',
+        $url
+      );
     }
 
     return join("\n", $output);
@@ -59,15 +64,25 @@ class Assets
     $output = array();
 
     foreach($scripts as $script) {
-      $output[] = '<script type="text/javascript"'.
-                  ' src="'.$this->_globals['assets_url'].'/js/'.$script.'">'.
-                  '</script>';
+      $url = $this->appendVersionToUrl(
+        $this->_globals['assets_url'] . '/js/' . $script
+      );
+      $output[] = sprintf(
+        '<script type="text/javascript" src="%s"></script>',
+        $url
+      );
     }
 
     return join("\n", $output);
   }
 
   public function generateImageUrl($path) {
-    return $this->_globals['assets_url'].'/img/'.$path;
+    return $this->appendVersionToUrl(
+      $this->_globals['assets_url'] . '/img/' . $path
+    );
+  }
+
+  public function appendVersionToUrl($url) {
+    return add_query_arg('mailpoet_version', $this->_globals['version'], $url);
   }
 }
