@@ -11,6 +11,8 @@ dependencies:
       # install PHP dependencies for WordPress
     - sudo apt-get update
     - sudo apt-get --assume-yes install php5-mysql
+      # Add a fake sendmail mailer
+    - cp ./.circle_ci/mailpoet_php.ini /opt/circleci/php/$(phpenv global)/etc/conf.d/
       # configure Apache
     - sudo cp ./.circle_ci/apache/mailpoet.loc.conf /etc/apache2/sites-available
     - sudo a2ensite mailpoet.loc
