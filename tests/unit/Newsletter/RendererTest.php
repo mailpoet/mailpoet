@@ -212,6 +212,13 @@ class NewsletterRendererTest extends MailPoetTest {
     expect(
       !empty($DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
       ))->true();
+    // blockquote should contain heading elements but not paragraphs
+    expect(
+      $DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
+    )->contains('<h2');
+    expect(
+      $DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
+    )->notContains('<p');
     // ul/ol/li should have mailpoet_paragraph class added & styles applied
     expect(
       !empty(
