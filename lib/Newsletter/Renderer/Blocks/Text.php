@@ -27,16 +27,19 @@ class Text {
     $DOM_parser = new \pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $blockquotes = $DOM->query('blockquote');
-    if(!$blockquotes->count()) return $html;
     foreach($blockquotes as $blockquote) {
       $contents = array();
-      $paragraphs = $blockquote->query('p', 0);
+      $paragraphs = $blockquote->query('p, h1, h2, h3, h4', 0);
       foreach($paragraphs as $index => $paragraph) {
-        $contents[] = $paragraph->html();
-        if($index + 1 < $paragraphs->count()) $contents[] = '<br />';
-        $paragraph->remove();
+        if(preg_match('/h\d/', $paragraph->getTag())) {
+          $contents[] = $paragraph->getOuterText();
+        } else {
+          $contents[] = $paragraph->html();
+        }
+          if($index + 1 < $paragraphs->count()) $contents[] = '<br />';
+          $paragraph->remove();
       }
-      $paragraph->remove();
+      if(empty($contents)) continue;
       $blockquote->setTag('table');
       $blockquote->addClass('mailpoet_blockquote');
       $blockquote->width = '100%';
@@ -49,7 +52,7 @@ class Text {
             <td width="2" bgcolor="#565656"></td>
             <td width="10"></td>
             <td valign="top">
-              <table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
                 <tr>
                   <td class="mailpoet_blockquote">
                   ' . implode('', $contents) . '
