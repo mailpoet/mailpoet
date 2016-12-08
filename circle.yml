@@ -66,3 +66,6 @@ test:
     - cp tests/_output/report.xml $CIRCLE_TEST_REPORTS/codeception/report.xml
       # Uncomment to copy PHP coverage report
     #- cp tests/_output/coverage.xml $CIRCLE_TEST_REPORTS/codeception/coverage.xml
+      # Store any email output, sent via sendmail during tests
+    - mkdir $CIRCLE_TEST_REPORTS/fake-mailer
+    - cp /tmp/mailpoet-* $CIRCLE_TEST_REPORTS/fake-mailer
