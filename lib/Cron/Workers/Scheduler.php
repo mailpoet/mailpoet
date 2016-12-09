@@ -187,6 +187,7 @@ class Scheduler {
   static function getScheduledQueues() {
     return SendingQueue::where('status', 'scheduled')
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
+      ->whereNull('type')
       ->findMany();
   }
 }

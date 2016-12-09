@@ -2,6 +2,7 @@
 namespace MailPoet\Cron;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
+use MailPoet\Cron\Workers\Bounce as BounceWorker;
 
 if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
@@ -43,6 +44,7 @@ class Daemon {
     try {
       $this->executeScheduleWorker();
       $this->executeQueueWorker();
+      $this->executeBounceWorker();
     } catch(\Exception $e) {
       // continue processing, no need to handle errors
     }
@@ -72,6 +74,11 @@ class Daemon {
   function executeQueueWorker() {
     $queue = new SendingQueueWorker($this->timer);
     return $queue->process();
+  }
+
+  function executeBounceWorker() {
+    $bounce = new BounceWorker($this->timer);
+    return $bounce->process();
   }
 
   function callSelf() {
