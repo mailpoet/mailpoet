@@ -121,7 +121,7 @@ class RequirementsChecker {
         return $this->processError($error);
       }
 
-      $pattern = '#' . preg_quote(Env::$path) . '#';
+      $pattern = '#' . preg_quote(Env::$path) . '[\\\/]#';
       $is_loaded_by_plugin = preg_match($pattern, $dependency_path);
       if(!$is_loaded_by_plugin) {
         $error = sprintf(
