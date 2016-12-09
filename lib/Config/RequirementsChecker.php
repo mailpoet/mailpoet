@@ -115,8 +115,7 @@ class RequirementsChecker {
       if(!$dependency_path) {
         $error = sprintf(
           __('A MailPoet dependency (%s) does not appear to be loaded correctly, thus MailPoet will not work correctly. Please reinstall the plugin.', 'mailpoet'),
-          $dependency,
-          $reflector->getFileName()
+          $dependency
         );
 
         return $this->processError($error);
