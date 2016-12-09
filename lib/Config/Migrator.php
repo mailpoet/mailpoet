@@ -177,6 +177,7 @@ class Migrator {
   function newsletters() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'hash varchar(150) NULL DEFAULT NULL,',
       'parent_id mediumint(9) NULL,',
       'subject varchar(250) NOT NULL DEFAULT "",',
       'type varchar(20) NOT NULL DEFAULT "standard",',

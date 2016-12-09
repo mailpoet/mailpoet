@@ -11,7 +11,6 @@ class Newsletter extends Model {
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
   const TYPE_NOTIFICATION_HISTORY = 'notification_history';
-
   // standard newsletters
   const STATUS_DRAFT = 'draft';
   const STATUS_SCHEDULED = 'scheduled';
@@ -19,6 +18,7 @@ class Newsletter extends Model {
   const STATUS_SENT = 'sent';
   // automatic newsletters status
   const STATUS_ACTIVE = 'active';
+  const NEWSLETTER_HASH_LENGTH = 6;
 
   function __construct() {
     parent::__construct();
@@ -36,6 +36,12 @@ class Newsletter extends Model {
       is_array($this->body)
       ? json_encode($this->body)
       : $this->body
+    );
+
+    $this->set('hash',
+      ($this->hash)
+      ? $this->hash
+      : self::generateHash($this->id)
     );
     return parent::save();
   }
@@ -646,5 +652,17 @@ class Newsletter extends Model {
       ->whereIn('newsletter_segments.segment_id', $segment_ids);
     }
     return $orm->findMany();
+  }
+
+  static function getByHash($hash) {
+    return parent::where('hash', $hash)
+      ->findOne();
+  }
+
+  static function generateHash($id = null) {
+    if(!is_null($id)) {
+      return substr(md5(AUTH_KEY . $id), 0, self::NEWSLETTER_HASH_LENGTH);
+    }
+    return false;
   }
 }
