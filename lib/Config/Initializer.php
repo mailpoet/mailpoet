@@ -51,9 +51,12 @@ class Initializer {
     \ORM::configure('password', Env::$db_password);
     \ORM::configure('logging', WP_DEBUG);
     \ORM::configure('driver_options', array(
-      \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
       \PDO::MYSQL_ATTR_INIT_COMMAND =>
-        'SET TIME_ZONE = "' . Env::$db_timezone_offset. '"'
+        'SET NAMES utf8',
+      \PDO::MYSQL_ATTR_INIT_COMMAND =>
+        'SET TIME_ZONE = "' . Env::$db_timezone_offset. '"',
+      \PDO::MYSQL_ATTR_INIT_COMMAND =>
+        'SET sql_mode=(SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY",""))'
     ));
 
     $settings = Env::$db_prefix . 'settings';
