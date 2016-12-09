@@ -25,7 +25,8 @@ class Initializer {
     $requiments_check_results = $this->checkRequirements();
 
     // abort initialization if PDO extension is missing
-    if(!$requiments_check_results[RequirementsChecker::TEST_PDO_EXTENSION]) return;
+    if(!$requiments_check_results[RequirementsChecker::TEST_PDO_EXTENSION] ||
+      !$requirements_check_results[RequirementsChecker::TEST_VENDOR_SOURCE]) return;
 
     $this->setupDB();
 
