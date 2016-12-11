@@ -70,10 +70,13 @@ class SendingQueue extends Model {
     return $subscribers;
   }
 
-  function getNewsletterRenderedBody() {
-    return (!is_serialized($this->newsletter_rendered_body)) ?
+  function getNewsletterRenderedBody($type = false) {
+    $rendered_newsletter = (!is_serialized($this->newsletter_rendered_body)) ?
       $this->newsletter_rendered_body :
       unserialize($this->newsletter_rendered_body);
+    return ($type && !empty($rendered_newsletter[$type])) ?
+      $rendered_newsletter[$type] :
+      $rendered_newsletter;
   }
 
   function isSubscriberProcessed($subscriber_id) {
