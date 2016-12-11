@@ -6,6 +6,7 @@ use MailPoet\Router\Router;
 use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
+use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 
 class Links {
@@ -101,24 +102,19 @@ class Links {
     $preview = false
   ) {
     // match data tags
-    $regex = sprintf(
-      '/((%s|%s)(?:-\w+)?)/',
-      preg_quote(self::DATA_TAG_CLICK),
-      preg_quote(self::DATA_TAG_OPEN)
-    );
     $subscriber = Subscriber::findOne($subscriber_id);
-    preg_match_all($regex, $content, $matches);
+    preg_match_all(self::getLinkRegex(), $content, $matches);
     foreach($matches[1] as $index => $match) {
       $hash = null;
       if(preg_match('/-/', $match)) {
         list(, $hash) = explode('-', $match);
       }
-      $data = array(
-        'subscriber_id' => $subscriber->id,
-        'subscriber_token' => Subscriber::generateToken($subscriber->email),
-        'queue_id' => $queue_id,
-        'link_hash' => $hash,
-        'preview' => $preview
+      $data = self::createUrlDataObject(
+        $subscriber->id,
+        $subscriber->email,
+        $queue_id,
+        $hash,
+        $preview
       );
       $router_action = ($matches[2][$index] === self::DATA_TAG_CLICK) ?
         TrackEndpoint::ACTION_CLICK :
@@ -143,5 +139,55 @@ class Links {
       $newsletter_link->url = $link['url'];
       $newsletter_link->save();
     }
+  }
+
+  static function convertHashedLinksToShortcodesAndUrls($content, $convert_all = false) {
+    preg_match_all(self::getLinkRegex(), $content, $links);
+    $links = array_unique(Helpers::flattenArray($links));
+    foreach($links as $link) {
+      $link_hash = explode('-', $link);
+      if(!isset($link_hash[1])) continue;
+      $newsletter_link = NewsletterLink::getByHash($link_hash[1]);
+      // convert either only link shortcodes or all hashes links if "convert all"
+      // option is specified
+      if($newsletter_link &&
+        (preg_match('/\[link:/', $newsletter_link->url) || $convert_all)
+      ){
+        $content = str_replace($link, $newsletter_link->url, $content);
+      }
+    }
+    return $content;
+  }
+
+  static function getLinkRegex() {
+    return sprintf(
+      '/((%s|%s)(?:-\w+)?)/',
+      preg_quote(self::DATA_TAG_CLICK),
+      preg_quote(self::DATA_TAG_OPEN)
+    );
+  }
+
+  static function createUrlDataObject(
+    $subscriber_id, $subscriber_email, $queue_id, $link_hash, $preview
+  ) {
+    return array(
+      $subscriber_id,
+      Subscriber::generateToken($subscriber_email),
+      $queue_id,
+      $link_hash,
+      $preview
+    );
+  }
+
+  static function transformUrlDataObject($data) {
+    reset($data);
+    if(!is_int(key($data))) return $data;
+    $transformed_data = array();
+    $transformed_data['subscriber_id'] = (!empty($data[0])) ? $data[0] : false;
+    $transformed_data['subscriber_token'] = (!empty($data[1])) ? $data[1] : false;
+    $transformed_data['queue_id'] = (!empty($data[2])) ? $data[2] : false;
+    $transformed_data['link_hash'] = (!empty($data[3])) ? $data[3] : false;
+    $transformed_data['preview'] = (!empty($data[4])) ? $data[4] : false;
+    return $transformed_data;
   }
 }

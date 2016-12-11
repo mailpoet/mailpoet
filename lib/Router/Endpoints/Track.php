@@ -5,6 +5,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Links\Links;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 
@@ -35,10 +36,10 @@ class Track {
   }
 
   function _processTrackData($data) {
-    $data = (object)$data;
+    $data = (object)Links::transformUrlDataObject($data);
     if(empty($data->queue_id) ||
-      empty($data->subscriber_id) ||
-      empty($data->subscriber_token)
+       empty($data->subscriber_id) ||
+       empty($data->subscriber_token)
     ) {
       return false;
     }
