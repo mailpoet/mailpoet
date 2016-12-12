@@ -244,7 +244,7 @@ class Menu {
     );
 
     $readme_file = Env::$path . '/readme.txt';
-    if(file_exists($readme_file)) {
+    if(is_readable($readme_file)) {
       $changelog = Readme::parseChangelog(file_get_contents($readme_file), 2);
       if($changelog) {
         $data['changelog'] = $changelog;
