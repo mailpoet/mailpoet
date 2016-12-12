@@ -22,10 +22,11 @@ class Initializer {
   }
 
   function init() {
-    $requiments_check_results = $this->checkRequirements();
+    $requirements_check_results = $this->checkRequirements();
 
     // abort initialization if PDO extension is missing
-    if(!$requiments_check_results[RequirementsChecker::TEST_PDO_EXTENSION]) return;
+    if(!$requirements_check_results[RequirementsChecker::TEST_PDO_EXTENSION] ||
+      !$requirements_check_results[RequirementsChecker::TEST_VENDOR_SOURCE]) return;
 
     $this->setupDB();
 

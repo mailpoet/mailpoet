@@ -1,6 +1,5 @@
 <?php
 namespace MailPoet\Util;
-use \Sunra\PhpSimple\HtmlDomParser;
 use csstidy;
 
 /*
