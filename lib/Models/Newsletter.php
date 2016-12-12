@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -27,6 +28,10 @@ class Newsletter extends Model {
     ));
   }
 
+  function queue() {
+    return $this->has_one(__NAMESPACE__ . '\SendingQueue', 'newsletter_id', 'id');
+  }
+
   function save() {
     if(is_string($this->deleted_at) && strlen(trim($this->deleted_at)) === 0) {
       $this->set_expr('deleted_at', 'NULL');
@@ -41,7 +46,7 @@ class Newsletter extends Model {
     $this->set('hash',
       ($this->hash)
       ? $this->hash
-      : self::generateHash($this->id)
+      : self::generateHash()
     );
     return parent::save();
   }
@@ -79,6 +84,9 @@ class Newsletter extends Model {
 
     // reset status
     $duplicate->set('status', self::STATUS_DRAFT);
+
+    // reset hash
+    $duplicate->set('hash', null);
 
     $duplicate->save();
 
@@ -135,6 +143,9 @@ class Newsletter extends Model {
     $notification_history->set_expr('created_at', 'NOW()');
     $notification_history->set_expr('updated_at', 'NOW()');
     $notification_history->set_expr('deleted_at', 'NULL');
+
+    // reset hash
+    $notification_history->set('hash', null);
 
     $notification_history->save();
 
@@ -640,6 +651,7 @@ class Newsletter extends Model {
         'queues'
       )
       ->where('queues.status', SendingQueue::STATUS_COMPLETED)
+      ->whereNull('newsletters.deleted_at')
       ->select('queues.processed_at')
       ->orderByDesc('queues.processed_at');
 
@@ -659,10 +671,11 @@ class Newsletter extends Model {
       ->findOne();
   }
 
-  static function generateHash($id = null) {
-    if(!is_null($id)) {
-      return substr(md5(AUTH_KEY . $id), 0, self::NEWSLETTER_HASH_LENGTH);
-    }
-    return false;
+  static function generateHash() {
+    return substr(
+      md5(AUTH_KEY . Security::generateRandomString(15)),
+      0,
+      self::NEWSLETTER_HASH_LENGTH
+    );
   }
 }
