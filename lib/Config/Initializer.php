@@ -131,6 +131,7 @@ class Initializer {
       $this->setupAPI();
       $this->setupRouter();
       $this->setupPages();
+      do_action('mailpoet_initialized', MAILPOET_VERSION);
     } catch(\Exception $e) {
       $this->handleFailedInitialization($e);
     }
