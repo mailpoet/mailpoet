@@ -23,30 +23,19 @@
 
   <div id="mailpoet-changelog" clas="feature-section one-col">
     <h2><%= __("List of Changes") %></h2>
-    <h3>3.0.0-beta.7.1 - 2016-12-06</h3>
-    <ul>
-      <li>Improved: allow user to restart sending after sending method failure;</li>
-      <li>Fixed: subscribers are not added to lists after import;</li>
-      <li>Fixed: sending should stop when newsletter is trashed;</li>
-      <li>Fixed: update database schema after an update which fixes an SQL error;</li>
-      <li>Fixed: status of sent newsletters is showing "paused" instead of "sent";</li>
-      <li>Fixed: dividers in Automatic Latest Posts posts are not displayed. Thx Gregor!;</li>
-      <li>Fixed: shortcodes (ie, first name) are not rendered when sending a preview;</li>
-      <li>Fixed: count of confirmed subscribers only in step 2 of import is erroneous.</li>
-    </ul>
-    <br>
-    <h3>3.0.0-beta.6 - 2016-11-29</h3>
-    <ul>
-      <li>Added: "bounced" status has been added to subscribers;</li>
-      <li>Improved: execution time enforced between individual send operations. Avoids duplicate sending on really slow servers;</li>
-      <li>Improved: Welcome emails are given higher priority for sending;</li>
-      <li>Fixed: Welcome emails are not scheduled for WP users;</li>
-      <li>Fixed: Unicode characters in FROM/REPLY-TO/TO fields are not rendered;</li>
-      <li>Fixed: sending HTML emails with Amazon SES works again. Kudos Alex for reporting;</li>
-      <li>Fixed: import fails when subscriber already exists in the database but the email is in different case format. Thx Ellen for telling us;</li>
-      <li>Fixed: ampersand char ("&") inside the subject line won't throw errors in browser preview. Thanks Michel for reporting.</li>
-    </ul>
-    <br>
+    <% if changelog %>
+      <% for item in changelog %>
+        <h3><%= item.version %></h3>
+        <ul>
+          <% for change in item.changes %>
+            <li><%= change %></li>
+          <% endfor %>
+        </ul>
+        <br>
+      <% endfor %>
+    <% else %>
+      <p style="text-align: center"><%= __("See readme.txt for a changelog.") %></p>
+    <% endif %>
   </div>
 
   <hr>

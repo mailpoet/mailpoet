@@ -17,6 +17,7 @@ use MailPoet\Listing;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Notice as WPNotice;
+use MailPoet\WP\Readme;
 
 if(!defined('ABSPATH')) exit;
 
@@ -241,6 +242,14 @@ class Menu {
       'redirect_url' => $redirect_url,
       'sub_menu' => 'mailpoet-newsletters'
     );
+
+    $readme_file = Env::$path . '/readme.txt';
+    if(is_readable($readme_file)) {
+      $changelog = Readme::parseChangelog(file_get_contents($readme_file), 2);
+      if($changelog) {
+        $data['changelog'] = $changelog;
+      }
+    }
 
     $this->displayPage('update.html', $data);
   }
