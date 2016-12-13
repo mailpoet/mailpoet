@@ -21,7 +21,7 @@ class Link {
         $action = 'subscription_unsubscribe_url';
         $url = self::processUrl(
           $action,
-          esc_attr(SubscriptionUrl::getUnsubscribeUrl($subscriber)),
+          SubscriptionUrl::getUnsubscribeUrl($subscriber),
           $queue,
           $wp_user_preview
         );
@@ -42,7 +42,7 @@ class Link {
       case 'subscription_manage':
         $url = self::processUrl(
           $action = 'subscription_manage_url',
-          esc_attr(SubscriptionUrl::getManageUrl($subscriber)),
+          SubscriptionUrl::getManageUrl($subscriber),
           $queue,
           $wp_user_preview
         );
@@ -62,7 +62,13 @@ class Link {
 
       case 'newsletter_view_in_browser':
         $action = 'newsletter_view_in_browser_url';
-        $url = esc_attr(NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue));
+        $url = NewsletterUrl::getViewInBrowserUrl(
+          $type = null,
+          $newsletter,
+          $subscriber,
+          $queue,
+          $wp_user_preview
+        );
         $url = self::processUrl($action, $url, $queue, $wp_user_preview);
         return sprintf(
           '<a target="_blank" href="%s">%s</a>',
@@ -71,7 +77,13 @@ class Link {
         );
 
       case 'newsletter_view_in_browser_url':
-        $url = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
+        $url = NewsletterUrl::getViewInBrowserUrl(
+          $type = null,
+          $newsletter,
+          $subscriber,
+          $queue,
+          $wp_user_preview
+        );
         return self::processUrl($action, $url, $queue, $wp_user_preview);
 
       default:
@@ -113,7 +125,12 @@ class Link {
         $url = SubscriptionUrl::getManageUrl($subscriber);
         break;
       case 'newsletter_view_in_browser_url':
-        $url = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
+        $url = NewsletterUrl::getViewInBrowserUrl(
+          $type = null,
+          $newsletter,
+          $subscriber,
+          $queue
+        );
         break;
       default:
         $shortcode = self::getShortcode($shortcode_action);

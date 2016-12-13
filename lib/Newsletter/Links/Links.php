@@ -151,8 +151,8 @@ class Links {
       // convert either only link shortcodes or all hashes links if "convert all"
       // option is specified
       if($newsletter_link &&
-        (preg_match('/\[link:/', $newsletter_link->url) || $convert_all)
-      ){
+         (preg_match('/\[link:/', $newsletter_link->url) || $convert_all)
+      ) {
         $content = str_replace($link, $newsletter_link->url, $content);
       }
     }

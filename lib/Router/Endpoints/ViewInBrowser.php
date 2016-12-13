@@ -4,6 +4,7 @@ namespace MailPoet\Router\Endpoints;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
 
 if(!defined('ABSPATH')) exit;
@@ -24,37 +25,42 @@ class ViewInBrowser {
   }
 
   function _processBrowserPreviewData($data) {
-    $data = (object)$data;
-    if(empty($data->subscriber_id) ||
-      empty($data->subscriber_token) ||
-      empty($data->newsletter_id)
-    ) {
+    $data = (object)NewsletterUrl::transformUrlDataObject($data);
+    return ($this->_validateBrowserPreviewData($data)) ?
+      $data :
       $this->_abort();
-    } else {
-      $data->newsletter = Newsletter::findOne($data->newsletter_id);
-      $data->subscriber = Subscriber::findOne($data->subscriber_id);
-      $data->queue = ($data->queue_id) ?
-        SendingQueue::findOne($data->queue_id) :
-        false;
-      return ($this->_validateBrowserPreviewData($data)) ?
-        $data :
-        $this->_abort();
-    }
   }
 
   function _validateBrowserPreviewData($data) {
-    if(!$data || !$data->subscriber || !$data->newsletter) return false;
-    $subscriber_token_match =
-      Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token);
-    if(!$subscriber_token_match) return false;
-    // return if this is a WP user previewing the newsletter
-    if($data->subscriber->isWPUser() && $data->preview) {
-      return $data;
+    // either newsletter ID or hash must be defined, and newsletter must exist
+    if(empty($data->newsletter_id) && empty($data->newsletter_hash)) return false;
+    $data->newsletter = (!empty($data->newsletter_id)) ?
+      Newsletter::findOne($data->newsletter_id) :
+      Newsletter::getByHash($data->newsletter_hash);
+    if(!$data->newsletter) return false;
+
+    // queue is optional; if defined, get it
+    $data->queue = (!empty($data->queue_id)) ?
+      SendingQueue::findOne($data->queue_id) :
+      SendingQueue::where('newsletter_id', $data->newsletter->id)->findOne();
+
+    // subscriber is optional; if exists, token must validate
+    $data->subscriber = (!empty($data->subscriber_id)) ?
+      Subscriber::findOne($data->subscriber_id) :
+      false;
+    if($data->subscriber) {
+      if(empty($data->subscriber_token) ||
+         !Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token)
+      ) return false;
     }
-    // if queue exists, check if the newsletter was sent to the subscriber
-    if($data->queue && !$data->queue->isSubscriberProcessed($data->subscriber->id)) {
-      $data = false;
-    }
+    // if queue and subscriber exist and newsletter is not being previewed,
+    // subscriber must have received the newsletter
+    if(empty($data->preview) &&
+       $data->queue &&
+       $data->subscriber &&
+       !$data->queue->isSubscriberProcessed($data->subscriber->id)
+    ) return false;
+
     return $data;
   }
 
