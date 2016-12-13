@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.6.1
-Stable tag: 3.0.0-beta.7.1
+Stable tag: 3.0.0-beta.8
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -82,6 +82,13 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 3.0.0-beta.8 - 2016-12-13 =
+* Added: MailPoet's sending service can now sync hard bounced addresses with the plugin to keep your lists tidy and clean;
+* Improved: gracefully catch vendor library conflicts with other plugins. Thx Vikas;
+* Improved: force browsers to load the intended JS and CSS assets by adding a parameter, ie style.css?ver=x.y.z;
+* Fixed: render non paragraph elements inside a block quote. Thx Remco!;
+* Fixed a query that's gone awry in Mysql version 5.6. Dank je Pim!
 
 = 3.0.0-beta.7.1 - 2016-12-06 =
 * Improved: allow user to restart sending after sending method failure;
