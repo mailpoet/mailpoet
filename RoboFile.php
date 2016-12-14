@@ -199,8 +199,93 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
+  function publish() {
+    $this->loadWP();
+
+    $svn_dir = ".mp_svn";
+    $plugin_data = get_plugin_data('mailpoet.php');
+    $plugin_version = $plugin_data['Version'];
+    $plugin_dist_name = sanitize_title($plugin_data['Name']);
+    $plugin_dist_file = $plugin_dist_name . '.zip';
+
+    $this->say('Publishing version: ' . $plugin_version);
+
+    // Sanity checks
+    if(!is_readable($plugin_dist_file)) {
+      $this->say("Failed to access " . $plugin_dist_file);
+      return;
+    } elseif(!file_exists($svn_dir . "/.svn/")) {
+      $this->say("$svn_dir/.svn/ dir not found, is it a SVN repository?");
+      return;
+    } elseif(file_exists($svn_dir . "/tags/" . $plugin_version)) {
+      $this->say("A SVN tag already exists: " . $plugin_version);
+      return;
+    }
+
+    $collection = $this->collection();
+
+    // Clean up tmp dirs if the previous run was halted
+    if(file_exists("$svn_dir/trunk_new") || file_exists("$svn_dir/trunk_old")) {
+      $this->taskFileSystemStack()
+        ->stopOnFail()
+        ->remove(array("$svn_dir/trunk_new", "$svn_dir/trunk_old"))
+        ->addToCollection($collection);
+    }
+
+    // Extract the distributable zip to tmp trunk dir
+    $this->taskExtract($plugin_dist_file)
+      ->to("$svn_dir/trunk_new")
+      ->preserveTopDirectory(false)
+      ->addToCollection($collection);
+
+    // Rename current trunk
+    if(file_exists("$svn_dir/trunk")) {
+      $this->taskFileSystemStack()
+        ->rename("$svn_dir/trunk", "$svn_dir/trunk_old")
+        ->addToCollection($collection);
+    }
+
+    // Replace old trunk with a new one
+    $this->taskFileSystemStack()
+      ->stopOnFail()
+      ->rename("$svn_dir/trunk_new", "$svn_dir/trunk")
+      ->remove("$svn_dir/trunk_old")
+      ->addToCollection($collection);
+
+    // Mac OS X compatibility issue
+    $xargsFlag = (stripos(PHP_OS, 'Darwin') !== false) ? '' : '-r';
+
+    $this->taskExecStack()
+      ->stopOnFail()
+      // Set SVN repo as working directory
+      ->dir($svn_dir)
+      // Remove files from SVN repo that have already been removed locally
+      ->exec("svn st | grep ^! | awk '{print \" --force \"$2}' | xargs " . $xargsFlag . " svn rm")
+      // Recursively add files to SVN that haven't been added yet
+      ->exec("svn add --force * --auto-props --parents --depth infinity -q")
+      // Tag the release
+      ->exec("svn cp trunk tags/$plugin_version")
+      ->addToCollection($collection);
+
+    $result = $collection->run();
+
+    if($result->wasSuccessful()) {
+      $release_cmd = "svn ci -m \"Release $plugin_version\"";
+      $this->yell(
+        "Go to '$svn_dir' and run '$release_cmd' to publish the release"
+      );
+    }
+
+    return $result;
+  }
+
   protected function loadEnv() {
     $dotenv = new Dotenv\Dotenv(__DIR__);
     $dotenv->load();
+  }
+
+  protected function loadWP() {
+    $this->loadEnv();
+    require_once(getenv('WP_TEST_PATH') . '/wp-load.php');
   }
 }

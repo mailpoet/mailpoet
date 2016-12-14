@@ -128,3 +128,18 @@ _n()
 - Handlebars.
 
 You can use Twig i18n functions in Handlebars, just load your template from a Twig view.
+
+# Publish
+
+Before you run a publishing command, you need to:
+1. Set up a local copy of MailPoet SVN repository in `.mp_svn` directory. Sample command: `svn co https://plugins.svn.wordpress.org/mailpoet/ .mp_svn`. The repo should be up-to-date.
+2. Have all your features merged in Git `master`, your `mailpoet.php` and `readme.txt` tagged with a new version.
+3. Run `./build.sh` to produce a `mailpoet.zip` distributable archive.
+
+Everything's ready? Then run `./do publish`.
+If the job goes fine, you'll get a message like this:
+```
+Go to '.mp_svn' and run 'svn ci -m "Release 3.0.0-beta.9"' to publish the
+release
+```
+It's quite literal: you can review the changes to be pushed and if you're satisfied, run the suggested command to finish the release publishing process.
