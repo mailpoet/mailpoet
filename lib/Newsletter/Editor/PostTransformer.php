@@ -169,6 +169,6 @@ class PostTransformer {
 
     $alignment = (in_array($this->args['titleAlignment'], array('left', 'right', 'center'))) ? $this->args['titleAlignment'] : 'left';
 
-    return '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . '">' . $title . '</' . $tag . '>';
+    return '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
   }
 }

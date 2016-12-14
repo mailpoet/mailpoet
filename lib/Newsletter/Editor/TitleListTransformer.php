@@ -29,6 +29,6 @@ class TitleListTransformer {
       $title = '<a href="' . get_permalink($post->ID) . '">' . $title . '</a>';
     }
 
-    return '<li style="text-align: ' . $alignment . '">' . $title . '</li>';
+    return '<li style="text-align: ' . $alignment . ';">' . $title . '</li>';
   }
 }
