@@ -16,7 +16,7 @@ class API {
       $this->url,
       $this->request($emails)
     );
-    if(wp_remote_retrieve_response_code($result) === 201) {
+    if(wp_remote_retrieve_response_code($result) === 200) {
       return json_decode(wp_remote_retrieve_body($result), true);
     }
     return false;
