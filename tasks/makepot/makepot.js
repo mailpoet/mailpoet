@@ -23,6 +23,7 @@ module.exports = function (grunt) {
                         cwd: '.', // base path where to look for translatable strings
                         domainPath: 'lang', // where to save the .pot
                         exclude: [
+                            '\.mp_svn/.*',
                             'assets/.*',
                             'lang/.*',
                             'node_modules/.*',
