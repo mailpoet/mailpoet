@@ -10,8 +10,8 @@ use MailPoet\Config\Initializer;
  * Description: Create and send beautiful email newsletters, autoresponders, and post notifications without leaving WordPress. This is a beta version of our brand new plugin!
  * Author: MailPoet
  * Author URI: http://www.mailpoet.com
- * Requires at least: 4.0
- * Tested up to: 4.6.1
+ * Requires at least: 4.6
+ * Tested up to: 4.7
  *
  * Text Domain: mailpoet
  * Domain Path: /lang/
