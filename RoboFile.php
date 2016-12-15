@@ -199,7 +199,11 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
-  function publish() {
+  function svnCheckout() {
+    return $this->_exec('svn co https://plugins.svn.wordpress.org/mailpoet/ .mp_svn');
+  }
+
+  function svnPublish($opts = ['force' => false]) {
     $this->loadWP();
 
     $svn_dir = ".mp_svn";
@@ -270,10 +274,26 @@ class RoboFile extends \Robo\Tasks {
     $result = $collection->run();
 
     if($result->wasSuccessful()) {
+      // Run or suggest release command depending on a flag
       $release_cmd = "svn ci -m \"Release $plugin_version\"";
-      $this->yell(
-        "Go to '$svn_dir' and run '$release_cmd' to publish the release"
-      );
+      if(!empty($opts['force'])) {
+        $svn_login = getenv('WP_SVN_USERNAME');
+        $svn_password = getenv('WP_SVN_PASSWORD');
+        if ($svn_login && $svn_password) {
+          $release_cmd .= " --username $svn_login --password $svn_password";
+        } else {
+          $release_cmd .= ' --force-interactive';
+        }
+        $result = $this->taskExecStack()
+          ->stopOnFail()
+          ->dir($svn_dir)
+          ->exec($release_cmd)
+          ->run();
+      } else {
+        $this->yell(
+          "Go to '$svn_dir' and run '$release_cmd' to publish the release"
+        );
+      }
     }
 
     return $result;
