@@ -99,15 +99,8 @@ class RoboFile extends \Robo\Tasks {
 
   function makepot() {
     return $this->_exec('./node_modules/.bin/grunt makepot'.
-      ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
-      ' --base_path '.__DIR__
-    );
-  }
-
-  function pushpot() {
-    return $this->_exec('./node_modules/.bin/grunt pushpot'.
-      ' --gruntfile '.__DIR__.'/tasks/makepot/makepot.js'.
-      ' --base_path '.__DIR__
+      ' --gruntfile='.__DIR__.'/tasks/makepot/makepot.js'.
+      ' --base_path='.__DIR__
     );
   }
 

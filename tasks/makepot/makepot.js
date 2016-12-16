@@ -23,10 +23,14 @@ module.exports = function (grunt) {
                         cwd: '.', // base path where to look for translatable strings
                         domainPath: 'lang', // where to save the .pot
                         exclude: [
-                            'build/.*',
+                            '\.mp_svn/.*',
+                            'assets/.*',
+                            'lang/.*',
+                            'node_modules/.*',
+                            'plugin_repository/.*',
+                            'tasks/.*',
                             'tests/.*',
-                            'vendor/.*',
-                            'tasks/.*'
+                            'vendor/.*'
                         ],
                         mainFile: 'index.php', // Main project file.
                         potFilename: 'mailpoet.pot', // Name of the POT file.
