@@ -96,7 +96,6 @@ class ViewInBrowserTest extends MailPoetTest {
     $newsletter_link_2->newsletter_id = $this->newsletter->id;
     $newsletter_link_2->queue_id = $this->queue->id;
     $this->newsletter_link_2 = $newsletter_link_2->save();
-
   }
 
   function testItRendersNewsletter() {

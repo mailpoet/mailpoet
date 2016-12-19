@@ -22,7 +22,7 @@ class ViewInBrowser {
   }
 
   function renderNewsletter($newsletter, $subscriber, $queue, $wp_user_preview) {
-    if($queue && $queue->newsletter_rendered_body) {
+    if($queue && $queue->getNewsletterRenderedBody()) {
       $newsletter_body = $queue->getNewsletterRenderedBody('html');
       // rendered newsletter body has shortcodes converted to links; we need to
       // isolate "view in browser", "unsubscribe" and "manage subscription" links
