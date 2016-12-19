@@ -9,7 +9,6 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 
 class SubscriberTest extends MailPoetTest {
-
   function _before() {
     $this->data = array(
       'first_name' => 'John',
@@ -553,6 +552,23 @@ class SubscriberTest extends MailPoetTest {
 
     $total = Subscriber::getTotalSubscribers();
     expect($total)->equals(1);
+  }
+
+  function testItGeneratesSubscriberToken() {
+    $token = Subscriber::generateToken($this->data['email']);
+    expect(strlen($token))->equals(Subscriber::SUBSCRIBER_TOKEN_LENGTH);
+  }
+
+  function testItVerifiesSubscriberToken() {
+    $token = Subscriber::generateToken($this->data['email']);
+    expect(Subscriber::verifyToken($this->data['email'], $token))->true();
+    expect(Subscriber::verifyToken('fake@email.com', $token))->false();
+  }
+
+  function testVerifiedTokensOfDifferentLengths() {
+    $token = md5(AUTH_KEY . $this->data['email']);
+    expect(strlen($token))->notEquals(Subscriber::SUBSCRIBER_TOKEN_LENGTH);
+    expect(Subscriber::verifyToken($this->data['email'], $token))->true();
   }
 
   function _after() {

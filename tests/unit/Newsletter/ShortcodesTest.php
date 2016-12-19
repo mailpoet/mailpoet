@@ -94,13 +94,13 @@ class ShortcodesTest extends MailPoetTest {
       '<a data-post-id="10" href="#">another post</a>' .
       '<a href="#">not post</a>';
     $result =
-      $shortcodes_object->process(array('[newsletter:subject]'));
+      $shortcodes_object->process(array('[newsletter:subject]'), $content);
     expect($result[0])->equals($this->newsletter->subject);
     $result =
       $shortcodes_object->process(array('[newsletter:total]'), $content);
     expect($result[0])->equals(2);
     $result =
-      $shortcodes_object->process(array('[newsletter:post_title]'));
+      $shortcodes_object->process(array('[newsletter:post_title]'), $content);
     $wp_post = get_post($this->WP_post);
     expect($result['0'])->equals($wp_post->post_title);
   }

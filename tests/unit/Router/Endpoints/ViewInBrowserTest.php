@@ -37,17 +37,13 @@ class ViewInBrowserRouterTest extends MailPoetTest {
 
   function testItAbortsWhenBrowserPreviewDataIsMissing() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Stub::exactly(3, function() { })
+      '_abort' => Stub::exactly(2, function () { })
     ), $this);
     // newsletter ID is required
     $data = $this->browser_preview_data;
     unset($data['newsletter_id']);
     $view_in_browser->_processBrowserPreviewData($data);
-    // subscriber ID is required
-    $data = $this->browser_preview_data;
-    unset($data['subscriber_id']);
-    $view_in_browser->_processBrowserPreviewData($data);
-    // subscriber token is required
+    // subscriber token is required if subscriber is provided
     $data = $this->browser_preview_data;
     unset($data['subscriber_token']);
     $view_in_browser->_processBrowserPreviewData($data);
@@ -55,50 +51,51 @@ class ViewInBrowserRouterTest extends MailPoetTest {
 
   function testItAbortsWhenBrowserPreviewDataIsInvalid() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Stub::exactly(3, function() { })
+      '_abort' => Stub::exactly(3, function () { })
     ), $this);
     // newsletter ID is invalid
     $data = $this->browser_preview_data;
     $data['newsletter_id'] = 99;
     $view_in_browser->_processBrowserPreviewData($data);
-    // subscriber ID is invalid
+    // subscriber token is invalid
     $data = $this->browser_preview_data;
-    $data['subscriber_id'] = 99;
+    $data['subscriber_token'] = false;
     $view_in_browser->_processBrowserPreviewData($data);
     // subscriber token is invalid
     $data = $this->browser_preview_data;
     $data['subscriber_token'] = 'invalid';
     $view_in_browser->_processBrowserPreviewData($data);
+    // subscriber has not received the newsletter
   }
 
   function testItFailsValidationWhenSubscriberTokenDoesNotMatch() {
-    $data = (object)array_merge(
+    $subscriber = $this->subscriber;
+    $subscriber->email = 'random@email.com';
+    $subscriber->save();
+    $data = (object) array_merge(
       $this->browser_preview_data,
       array(
         'queue' => $this->queue,
-        'subscriber' => $this->subscriber,
+        'subscriber' => $subscriber,
         'newsletter' => $this->newsletter
       )
     );
-    $data->subscriber->email = 'random@email.com';
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
 
   function testItFailsValidationWhenSubscriberIsNotOnProcessedList() {
-    $data = (object)array_merge(
-      $this->browser_preview_data,
-      array(
-        'queue' => $this->queue,
-        'subscriber' => $this->subscriber,
-        'newsletter' => $this->newsletter
-      )
-    );
-    $data->subscriber->id = 99;
-    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
+    $data = (object) $this->browser_preview_data;
+    $result = $this->view_in_browser->_validateBrowserPreviewData($data);
+    expect($result)->notEmpty();
+    $queue = $this->queue;
+    $queue->subscribers = array('processed' => array());
+    $queue->save();
+    $result = $this->view_in_browser->_validateBrowserPreviewData($data);
+    expect($result)->false();
   }
 
   function testItDoesNotRequireWpUsersToBeOnProcessedListWhenPreviewIsEnabled() {
-    $data = (object)array_merge(
+    $data = (object) array_merge(
       $this->browser_preview_data,
       array(
         'queue' => $this->queue,
@@ -120,7 +117,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
 
   function testItReturnsViewActionResult() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_displayNewsletter' => Stub::exactly(1, function() { })
+      '_displayNewsletter' => Stub::exactly(1, function () { })
     ), $this);
     $view_in_browser->data = $view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
     $view_in_browser->view();
