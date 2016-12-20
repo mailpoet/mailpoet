@@ -80,12 +80,13 @@ class Env {
     return implode('', $source_name);
   }
 
-  private static function getDbTimezoneOffset() {
-    $mins = get_option('gmt_offset') * 60;
+  static function getDbTimezoneOffset($offset = false) {
+    $offset = ($offset) ? $offset : get_option('gmt_offset');
+    $mins = $offset * 60;
     $sgn = ($mins < 0 ? -1 : 1);
     $mins = abs($mins);
     $hrs = floor($mins / 60);
     $mins -= $hrs * 60;
-    return sprintf('%+d:%02d', $hrs * $sgn, $mins);
+    return sprintf('%+03d:%02d', $hrs * $sgn, $mins);
   }
 }
