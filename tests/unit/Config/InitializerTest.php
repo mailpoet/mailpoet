@@ -1,62 +1,24 @@
 <?php
+
 use MailPoet\Config\Env;
 
-class EnvTest extends MailPoetTest {
-  function _before() {
-    Env::init('file', '1.0.0');
-  }
-
-  function testItCanReturnPluginPrefix() {
-    expect(Env::$plugin_prefix)->equals('mailpoet_');
-  }
-
-  function testItCanReturnDbPrefix() {
-    global $wpdb;
-    $db_prefix = $wpdb->prefix . 'mailpoet_';
-    expect(Env::$db_prefix)->equals($db_prefix);
-  }
-
-  function testItCanReturnDbHost() {
-    if(preg_match('/(?=:\d+$)/', DB_HOST)) {
-      expect(Env::$db_host)->equals(explode(':', DB_HOST)[0]);
-    } else expect(Env::$db_host)->equals(DB_HOST);
-  }
-
-  function testItCanReturnDbPort() {
-    if(preg_match('/(?=:\d+$)/', DB_HOST)) {
-      expect(Env::$db_port)->equals(explode(':', DB_HOST)[1]);
-    } else expect(Env::$db_port)->equals(3306);
-  }
-
-  function testItCanReturnSocket() {
-    if(!preg_match('/(?=:\d+$)/', DB_HOST)
-      && preg_match('/:/', DB_HOST)
-    ) {
-      expect(Env::$db_socket)->true();
-    } else expect(Env::$db_socket)->false();
-  }
-
-  function testItCanReturnDbName() {
-    expect(Env::$db_name)->equals(DB_NAME);
-  }
-
-  function testItCanReturnDbUser() {
-    expect(Env::$db_username)->equals(DB_USER);
-  }
-
-  function testItCanReturnDbPassword() {
-    expect(Env::$db_password)->equals(DB_PASSWORD);
-  }
-
-  function testItCanReturnDbCharset() {
-    global $wpdb;
-    $charset = $wpdb->get_charset_collate();
-    expect(Env::$db_charset)->equals($charset);
-  }
-
-  function testItCanGenerateDbSourceName() {
-    $source_name = ((!ENV::$db_socket) ? 'mysql:host=' : 'mysql:unix_socket=') .
-      ENV::$db_host . ';port=' . ENV::$db_port . ';dbname=' . DB_NAME;
-    expect(Env::$db_source_name)->equals($source_name);
+class InitializerTest extends MailPoetTest {
+  function testItSetsDBDriverOptions() {
+    $result = ORM::for_table("")
+      ->raw_query('SELECT ' .
+                  '@@sql_mode as sql_mode, ' .
+                  '@@session.time_zone as time_zone, ' .
+                  '@@session.character_set_client as client_character, ' .
+                  '@@session.character_set_results as results_character, ' .
+                  '@@session.character_set_connection as connection_character')
+      ->findOne();
+    // disable ONLY_FULL_GROUP_BY
+    expect($result->sql_mode)->notContains('ONLY_FULL_GROUP_BY');
+    // time zone should be set based on WP's time zone
+    expect($result->time_zone)->equals(Env::$db_timezone_offset);
+    // character set should be set to utf8
+    expect($result->client_character)->equals('utf8');
+    expect($result->results_character)->equals('utf8');
+    expect($result->connection_character)->equals('utf8');
   }
 }
