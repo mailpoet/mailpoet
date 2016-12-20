@@ -59,10 +59,4 @@ class EnvTest extends MailPoetTest {
       ENV::$db_host . ';port=' . ENV::$db_port . ';dbname=' . DB_NAME;
     expect(Env::$db_source_name)->equals($source_name);
   }
-
-  function testItCanGetDbTimezoneOffset() {
-    expect(Env::getDbTimezoneOffset('+1.5'))->equals("+01:30");
-    expect(Env::getDbTimezoneOffset('+11'))->equals("+11:00");
-    expect(Env::getDbTimezoneOffset('-5.5'))->equals("-05:30");
-  }
 }
