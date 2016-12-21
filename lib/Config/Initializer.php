@@ -53,8 +53,7 @@ class Initializer {
     \ORM::configure('logging', WP_DEBUG);
     \ORM::configure('driver_options', array(
       \PDO::MYSQL_ATTR_INIT_COMMAND =>
-        'SET NAMES utf8, ' .
-        'TIME_ZONE = "' . Env::$db_timezone_offset . '", ' .
+        'SET TIME_ZONE = "' . Env::$db_timezone_offset . '", ' .
         'sql_mode=(SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY",""))'
     ));
 
