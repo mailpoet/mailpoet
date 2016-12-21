@@ -297,6 +297,10 @@ class Pages {
               ),
               'is_checked' => (
                 $subscriber->status === Subscriber::STATUS_BOUNCED
+              ),
+              'is_disabled' => true,
+              'is_hidden' => (
+                $subscriber->status !== Subscriber::STATUS_BOUNCED
               )
             )
           )
