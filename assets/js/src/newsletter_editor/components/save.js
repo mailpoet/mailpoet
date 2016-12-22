@@ -40,7 +40,7 @@ define([
     App.getChannel().trigger('beforeEditorSave', json);
 
     // save newsletter
-    CommunicationComponent.saveNewsletter(json).done(function(response) {
+    return CommunicationComponent.saveNewsletter(json).done(function(response) {
       if(response.success !== undefined && response.success === true) {
         // TODO: Handle translations
         //MailPoet.Notice.success("<?php _e('Newsletter has been saved.'); ?>");
@@ -64,6 +64,14 @@ define([
       // TODO: Handle saving errors
       App.getChannel().trigger('afterEditorSave', {}, response);
     });
+  };
+
+  // For getting a promise after triggering save event
+  Module.saveAndProvidePromise = function(saveResult) {
+    var promise = Module.save();
+    if (saveResult !== undefined) {
+      saveResult.promise = promise;
+    }
   };
 
   Module.getThumbnail = function(element, options) {
@@ -335,12 +343,12 @@ define([
   };
 
   App.on('before:start', function(options) {
-    App.save = Module.save;
+    App.save = Module.saveAndProvidePromise;
     App.getChannel().on('autoSave', Module.autoSave);
 
     window.onbeforeunload = Module.beforeExitWithUnsavedChanges;
 
-    App.getChannel().on('save', function() { App.save(); });
+    App.getChannel().on('save', function(saveResult) { App.save(saveResult); });
   });
 
   App.on('start', function(options) {

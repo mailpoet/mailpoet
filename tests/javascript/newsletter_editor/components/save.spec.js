@@ -90,6 +90,16 @@ define([
 
         mock.verify();
       });
+
+      it('provides a promise if a result container is passed to save event', function() {
+        var spy = sinon.spy(module, 'save'),
+          saveResult = {promise: null};
+        module.saveAndProvidePromise(saveResult);
+        spy.restore();
+        expect(spy.calledOnce).to.be.true;
+        expect(saveResult.promise).to.be.an('object');
+        expect(saveResult.promise.then).to.be.a('function');
+      });
     });
 
     describe('view', function() {
