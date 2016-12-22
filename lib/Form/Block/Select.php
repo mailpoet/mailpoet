@@ -29,11 +29,17 @@ class Select extends Base {
     );
 
     foreach($options as $option) {
+      if(!empty($option['is_hidden'])) {
+        continue;
+      }
+
       $is_selected = (
         (isset($option['is_checked']) && $option['is_checked'])
         ||
         (self::getFieldValue($block) === $option['value'])
-      ) ? 'selected="selected"' : '';
+      ) ? ' selected="selected"' : '';
+
+      $is_disabled = (!empty($option['is_disabled'])) ? ' disabled="disabled"' : '';
 
       if(is_array($option['value'])) {
         $value = key($option['value']);
@@ -43,7 +49,7 @@ class Select extends Base {
         $label = $option['value'];
       }
 
-      $html .= '<option value="'.$value.'" '.$is_selected.'>';
+      $html .= '<option value="'.$value.'"' . $is_selected . $is_disabled . '>';
       $html .= esc_attr($label);
       $html .= '</option>';
     }
