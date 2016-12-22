@@ -249,7 +249,9 @@ class RoboFile extends \Robo\Tasks {
       ->remove("$svn_dir/trunk_old")
       ->addToCollection($collection);
 
-    // Mac OS X compatibility issue
+    // Windows compatibility
+    $awkCmd = '{print " --force \""$2"\""}';
+    // Mac OS X compatibility
     $xargsFlag = (stripos(PHP_OS, 'Darwin') !== false) ? '' : '-r';
 
     $this->taskExecStack()
@@ -257,7 +259,7 @@ class RoboFile extends \Robo\Tasks {
       // Set SVN repo as working directory
       ->dir($svn_dir)
       // Remove files from SVN repo that have already been removed locally
-      ->exec("svn st | grep ^! | awk '{print \" --force \"$2}' | xargs " . $xargsFlag . " svn rm")
+      ->exec("svn st | grep ^! | awk '$awkCmd' | xargs $xargsFlag svn rm")
       // Recursively add files to SVN that haven't been added yet
       ->exec("svn add --force * --auto-props --parents --depth infinity -q")
       // Tag the release
