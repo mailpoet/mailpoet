@@ -197,12 +197,12 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function svnPublish($opts = ['force' => false]) {
-    $this->loadWP();
+    $this->loadWPFunctions();
 
     $svn_dir = ".mp_svn";
-    $plugin_data = get_plugin_data('mailpoet.php');
+    $plugin_data = get_plugin_data('mailpoet.php', false, false);
     $plugin_version = $plugin_data['Version'];
-    $plugin_dist_name = sanitize_title($plugin_data['Name']);
+    $plugin_dist_name = sanitize_title_with_dashes($plugin_data['Name']);
     $plugin_dist_file = $plugin_dist_name . '.zip';
 
     $this->say('Publishing version: ' . $plugin_version);
@@ -297,8 +297,13 @@ class RoboFile extends \Robo\Tasks {
     $dotenv->load();
   }
 
-  protected function loadWP() {
+  protected function loadWPFunctions() {
     $this->loadEnv();
-    require_once(getenv('WP_TEST_PATH') . '/wp-load.php');
+    define('ABSPATH', getenv('WP_TEST_PATH') . '/');
+    define('WPINC', 'wp-includes');
+    require_once(ABSPATH . WPINC . '/functions.php');
+    require_once(ABSPATH . WPINC . '/formatting.php');
+    require_once(ABSPATH . WPINC . '/plugin.php');
+    require_once(ABSPATH . 'wp-admin/includes/plugin.php');
   }
 }
