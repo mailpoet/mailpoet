@@ -8,11 +8,15 @@ if(!defined('ABSPATH')) exit;
 class PHPMail {
   public $sender;
   public $reply_to;
+  public $return_path;
   public $mailer;
 
-  function __construct($sender, $reply_to) {
+  function __construct($sender, $reply_to, $return_path) {
     $this->sender = $sender;
     $this->reply_to = $reply_to;
+    $this->return_path = ($return_path) ?
+      $return_path :
+      $this->sender['from_email'];
     $this->mailer = $this->buildMailer();
   }
 
@@ -44,6 +48,7 @@ class PHPMail {
       ->setReplyTo(array(
           $this->reply_to['reply_to_email'] =>  $this->reply_to['reply_to_name']
         ))
+      ->setReturnPath($this->return_path)
       ->setSubject($newsletter['subject']);
     if(!empty($newsletter['body']['html'])) {
       $message = $message->setBody($newsletter['body']['html'], 'text/html');

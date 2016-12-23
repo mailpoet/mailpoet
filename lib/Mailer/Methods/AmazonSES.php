@@ -17,6 +17,7 @@ class AmazonSES {
   public $url;
   public $sender;
   public $reply_to;
+  public $return_path;
   public $date;
   public $date_without_time;
   private $available_regions = array(
@@ -25,7 +26,7 @@ class AmazonSES {
     'EU (Ireland)' => 'eu-west-1'
   );
 
-  function __construct($region, $access_key, $secret_key, $sender, $reply_to) {
+  function __construct($region, $access_key, $secret_key, $sender, $reply_to, $return_path) {
     $this->aws_access_key = $access_key;
     $this->aws_secret_key = $secret_key;
     $this->aws_region = (in_array($region, $this->available_regions)) ? $region : false;
@@ -40,10 +41,12 @@ class AmazonSES {
     $this->url = 'https://' . $this->aws_endpoint;
     $this->sender = $sender;
     $this->reply_to = $reply_to;
+    $this->return_path = ($return_path) ?
+      $return_path :
+      $this->sender['from_email'];
     $this->date = gmdate('Ymd\THis\Z');
     $this->date_without_time = gmdate('Ymd');
   }
-
 
   function send($newsletter, $subscriber) {
     $result = wp_remote_post(
@@ -71,7 +74,7 @@ class AmazonSES {
       'Source' => $this->sender['from_name_email'],
       'ReplyToAddresses.member.1' => $this->reply_to['reply_to_name_email'],
       'Message.Subject.Data' => $newsletter['subject'],
-      'ReturnPath' => $this->sender['from_name_email'],
+      'ReturnPath' => $this->return_path
     );
     if(!empty($newsletter['body']['html'])) {
       $body['Message.Body.Html.Data'] = $newsletter['body']['html'];

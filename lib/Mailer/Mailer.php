@@ -10,6 +10,7 @@ class Mailer {
   public $mailer_config;
   public $sender;
   public $reply_to;
+  public $return_path;
   public $mailer_instance;
   const MAILER_CONFIG_SETTING_NAME = 'mta';
   const SENDING_LIMIT_INTERVAL_MULTIPLIER = 60;
@@ -19,10 +20,11 @@ class Mailer {
   const METHOD_PHPMAIL = 'PHPMail';
   const METHOD_SMTP = 'SMTP';
 
-  function __construct($mailer = false, $sender = false, $reply_to = false) {
+  function __construct($mailer = false, $sender = false, $reply_to = false, $return_path = false) {
     $this->mailer_config = self::getMailerConfig($mailer);
     $this->sender = $this->getSenderNameAndAddress($sender);
     $this->reply_to = $this->getReplyToNameAndAddress($reply_to);
+    $this->return_path = $this->getReturnPathAddress($return_path);
     $this->mailer_instance = $this->buildMailer();
   }
 
@@ -39,7 +41,8 @@ class Mailer {
           $this->mailer_config['access_key'],
           $this->mailer_config['secret_key'],
           $this->sender,
-          $this->reply_to
+          $this->reply_to,
+          $this->return_path
         );
         break;
       case self::METHOD_MAILPOET:
@@ -59,7 +62,8 @@ class Mailer {
       case self::METHOD_PHPMAIL:
         $mailer_instance = new $this->mailer_config['class'](
           $this->sender,
-          $this->reply_to
+          $this->reply_to,
+          $this->return_path
         );
         break;
       case self::METHOD_SMTP:
@@ -71,7 +75,8 @@ class Mailer {
           $this->mailer_config['password'],
           $this->mailer_config['encryption'],
           $this->sender,
-          $this->reply_to
+          $this->reply_to,
+          $this->return_path
         );
         break;
       default:
@@ -112,7 +117,7 @@ class Mailer {
 
   function getReplyToNameAndAddress($reply_to = array()) {
     if(!$reply_to) {
-      $reply_to = Setting::getValue('reply_to', null);
+      $reply_to = Setting::getValue('reply_to');
       $reply_to['name'] = (!empty($reply_to['name'])) ?
         $reply_to['name'] :
         $this->sender['from_name'];
@@ -129,6 +134,12 @@ class Mailer {
       'reply_to_email' => $reply_to['address'],
       'reply_to_name_email' => sprintf('%s <%s>', $reply_to_name, $reply_to['address'])
     );
+  }
+
+  function getReturnPathAddress($return_path) {
+    return ($return_path) ?
+      $return_path :
+      Setting::getValue('bounce.address');
   }
 
   function formatSubscriberNameAndEmailAddress($subscriber) {
