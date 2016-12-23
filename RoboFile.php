@@ -197,12 +197,12 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function svnPublish($opts = ['force' => false]) {
-    $this->loadWP();
+    $this->loadWPFunctions();
 
     $svn_dir = ".mp_svn";
-    $plugin_data = get_plugin_data('mailpoet.php');
+    $plugin_data = get_plugin_data('mailpoet.php', false, false);
     $plugin_version = $plugin_data['Version'];
-    $plugin_dist_name = sanitize_title($plugin_data['Name']);
+    $plugin_dist_name = sanitize_title_with_dashes($plugin_data['Name']);
     $plugin_dist_file = $plugin_dist_name . '.zip';
 
     $this->say('Publishing version: ' . $plugin_version);
@@ -249,7 +249,9 @@ class RoboFile extends \Robo\Tasks {
       ->remove("$svn_dir/trunk_old")
       ->addToCollection($collection);
 
-    // Mac OS X compatibility issue
+    // Windows compatibility
+    $awkCmd = '{print " --force \""$2"\""}';
+    // Mac OS X compatibility
     $xargsFlag = (stripos(PHP_OS, 'Darwin') !== false) ? '' : '-r';
 
     $this->taskExecStack()
@@ -257,7 +259,7 @@ class RoboFile extends \Robo\Tasks {
       // Set SVN repo as working directory
       ->dir($svn_dir)
       // Remove files from SVN repo that have already been removed locally
-      ->exec("svn st | grep ^! | awk '{print \" --force \"$2}' | xargs " . $xargsFlag . " svn rm")
+      ->exec("svn st | grep ^! | awk '$awkCmd' | xargs $xargsFlag svn rm")
       // Recursively add files to SVN that haven't been added yet
       ->exec("svn add --force * --auto-props --parents --depth infinity -q")
       // Tag the release
@@ -297,8 +299,13 @@ class RoboFile extends \Robo\Tasks {
     $dotenv->load();
   }
 
-  protected function loadWP() {
+  protected function loadWPFunctions() {
     $this->loadEnv();
-    require_once(getenv('WP_TEST_PATH') . '/wp-load.php');
+    define('ABSPATH', getenv('WP_TEST_PATH') . '/');
+    define('WPINC', 'wp-includes');
+    require_once(ABSPATH . WPINC . '/functions.php');
+    require_once(ABSPATH . WPINC . '/formatting.php');
+    require_once(ABSPATH . WPINC . '/plugin.php');
+    require_once(ABSPATH . 'wp-admin/includes/plugin.php');
   }
 }
