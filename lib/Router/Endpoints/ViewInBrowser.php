@@ -39,11 +39,6 @@ class ViewInBrowser {
       Newsletter::getByHash($data->newsletter_hash);
     if(!$data->newsletter) return false;
 
-    // queue is optional; if defined, get it
-    $data->queue = (!empty($data->queue_id)) ?
-      SendingQueue::findOne($data->queue_id) :
-      SendingQueue::where('newsletter_id', $data->newsletter->id)->findOne();
-
     // subscriber is optional; if exists, token must validate
     $data->subscriber = (!empty($data->subscriber_id)) ?
       Subscriber::findOne($data->subscriber_id) :
@@ -53,6 +48,15 @@ class ViewInBrowser {
          !Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token)
       ) return false;
     }
+
+    // if newsletter ID is defined then subscriber must exist
+    if($data->newsletter_id && !$data->subscriber) return false;
+
+    // queue is optional; if defined, get it
+    $data->queue = (!empty($data->queue_id)) ?
+      SendingQueue::findOne($data->queue_id) :
+      SendingQueue::where('newsletter_id', $data->newsletter->id)->findOne();
+
     // if queue and subscriber exist and newsletter is not being previewed,
     // subscriber must have received the newsletter
     if(empty($data->preview) &&

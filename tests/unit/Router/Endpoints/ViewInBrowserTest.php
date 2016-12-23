@@ -37,7 +37,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
 
   function testItAbortsWhenBrowserPreviewDataIsMissing() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Stub::exactly(2, function () { })
+      '_abort' => Stub::exactly(2, function() { })
     ), $this);
     // newsletter ID is required
     $data = $this->browser_preview_data;
@@ -51,7 +51,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
 
   function testItAbortsWhenBrowserPreviewDataIsInvalid() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Stub::exactly(3, function () { })
+      '_abort' => Stub::exactly(3, function() { })
     ), $this);
     // newsletter ID is invalid
     $data = $this->browser_preview_data;
@@ -72,7 +72,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     $subscriber = $this->subscriber;
     $subscriber->email = 'random@email.com';
     $subscriber->save();
-    $data = (object) array_merge(
+    $data = (object)array_merge(
       $this->browser_preview_data,
       array(
         'queue' => $this->queue,
@@ -83,8 +83,14 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
 
+  function testItFailsValidationWhenNewsletterIdIsProvidedButSubscriberDoesNotExist() {
+    $data = (object)$this->browser_preview_data;
+    $data->subscriber_id = false;
+    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
+  }
+
   function testItFailsValidationWhenSubscriberIsNotOnProcessedList() {
-    $data = (object) $this->browser_preview_data;
+    $data = (object)$this->browser_preview_data;
     $result = $this->view_in_browser->_validateBrowserPreviewData($data);
     expect($result)->notEmpty();
     $queue = $this->queue;
@@ -95,7 +101,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
   }
 
   function testItDoesNotRequireWpUsersToBeOnProcessedListWhenPreviewIsEnabled() {
-    $data = (object) array_merge(
+    $data = (object)array_merge(
       $this->browser_preview_data,
       array(
         'queue' => $this->queue,
@@ -117,7 +123,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
 
   function testItReturnsViewActionResult() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_displayNewsletter' => Stub::exactly(1, function () { })
+      '_displayNewsletter' => Stub::exactly(1, function() { })
     ), $this);
     $view_in_browser->data = $view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
     $view_in_browser->view();
