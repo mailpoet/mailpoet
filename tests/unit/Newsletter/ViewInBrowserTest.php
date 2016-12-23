@@ -5,6 +5,7 @@ use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\ViewInBrowser;
 use MailPoet\Router\Router;
 
@@ -62,7 +63,7 @@ class ViewInBrowserTest extends MailPoetTest {
       'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="[link:newsletter_view_in_browser_url]">Unsubscribe</a> or visit <a href="http://google.com">Google</a></p>'
     );
     $this->queue_rendered_newsletter_with_tracking = array(
-      'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="[mailpoet_click_data]-90e56">Unsubscribe</a> or visit <a href="[mailpoet_click_data]-i1893">Google</a></p>'
+      'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="' . Links::DATA_TAG_CLICK . '-90e56">Unsubscribe</a> or visit <a href="' . Links::DATA_TAG_CLICK . '-i1893">Google</a><img alt="" class="" src="' . Links::DATA_TAG_OPEN . '"></p>'
     );
   }
 
@@ -157,7 +158,6 @@ class ViewInBrowserTest extends MailPoetTest {
     expect($rendered_body)->contains('<a href="http://google.com">');
   }
 
-
   function testReplacesLinkShortcodesWithUrlHashWhenPreviewIsEnabledAndNewsletterWasSent() {
     $queue = $this->queue;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
@@ -170,6 +170,20 @@ class ViewInBrowserTest extends MailPoetTest {
     // link shortcodes should be replaced with a hash (#)
     expect($rendered_body)->notContains('[mailpoet_click_data]');
     expect($rendered_body)->contains('<a href="#">');
+  }
+
+  function testRemovesOpenTrackingTagWhenPreviewIsEnabledAndNewsletterWasSent() {
+    $queue = $this->queue;
+    $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
+    $rendered_body = ViewInBrowser::renderNewsletter(
+      $this->newsletter,
+      $this->subscriber,
+      $queue,
+      $preview = true
+    );
+    // open tracking data tag should be removed
+    expect($rendered_body)->notContains('[mailpoet_open_data]');
+    expect($rendered_body)->contains('<img alt="" class="" src="">');
   }
 
   function _after() {

@@ -33,6 +33,8 @@ class ViewInBrowser {
           $newsletter_body,
           $convert_all = true
         );
+        // remove open tracking link
+        $newsletter_body = str_replace(Links::DATA_TAG_OPEN, '', $newsletter_body);
       }
     } else {
       $renderer = new Renderer($newsletter, $wp_user_preview);
