@@ -29,6 +29,7 @@ class SMTPTest extends MailPoetTest {
       'reply_to_email' => 'reply-to@mailpoet.com',
       'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
     );
+    $this->return_path = 'bounce@mailpoet.com';
     $this->mailer = new SMTP(
       $this->settings['host'],
       $this->settings['port'],
@@ -37,7 +38,8 @@ class SMTPTest extends MailPoetTest {
       $this->settings['password'],
       $this->settings['encryption'],
       $this->sender,
-      $this->reply_to
+      $this->reply_to,
+      $this->return_path
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -61,6 +63,21 @@ class SMTPTest extends MailPoetTest {
       ->equals($this->settings['password']);
     expect($mailer->getTransport()->getEncryption())
       ->equals($this->settings['encryption']);
+  }
+
+  function testWhenReturnPathIsNullItIsSetToSenderEmail() {
+    $mailer = new SMTP(
+      $this->settings['host'],
+      $this->settings['port'],
+      $this->settings['authentication'],
+      $this->settings['login'],
+      $this->settings['password'],
+      $this->settings['encryption'],
+      $this->sender,
+      $this->reply_to,
+      $return_path = false
+    );
+    expect($mailer->return_path)->equals($this->sender['from_email']);
   }
 
   function testItCanCreateMessage() {

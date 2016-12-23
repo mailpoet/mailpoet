@@ -26,12 +26,14 @@ class AmazonSESTest extends MailPoetTest {
       'reply_to_email' => 'reply-to@mailpoet.com',
       'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
     );
+    $this->return_path = 'bounce@mailpoet.com';
     $this->mailer = new AmazonSES(
       $this->settings['region'],
       $this->settings['access_key'],
       $this->settings['secret_key'],
       $this->sender,
-      $this->reply_to
+      $this->reply_to,
+      $this->return_path
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -56,6 +58,18 @@ class AmazonSESTest extends MailPoetTest {
     expect(preg_match('!^\d{8}$!', $this->mailer->date_without_time))->equals(1);
   }
 
+  function testWhenReturnPathIsNullItIsSetToSenderEmail() {
+    $mailer = new AmazonSES(
+      $this->settings['region'],
+      $this->settings['access_key'],
+      $this->settings['secret_key'],
+      $this->sender,
+      $this->reply_to,
+      $return_path = false
+    );
+    expect($mailer->return_path)->equals($this->sender['from_email']);
+  }
+
   function testItChecksForValidRegion() {
     try {
       $mailer = new AmazonSES(
@@ -63,7 +77,8 @@ class AmazonSESTest extends MailPoetTest {
         $this->settings['access_key'],
         $this->settings['secret_key'],
         $this->sender,
-        $this->reply_to
+        $this->reply_to,
+        $this->return_path
       );
       $this->fail('Unsupported region exception was not thrown');
     } catch(\Exception $e) {
@@ -86,7 +101,7 @@ class AmazonSESTest extends MailPoetTest {
       ->equals($this->newsletter['body']['html']);
     expect($body['Message.Body.Text.Data'])
       ->equals($this->newsletter['body']['text']);
-    expect($body['ReturnPath'])->equals($this->sender['from_name_email']);
+    expect($body['ReturnPath'])->equals($this->return_path);
   }
 
   function testItCanCreateRequest() {

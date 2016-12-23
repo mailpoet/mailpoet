@@ -14,9 +14,11 @@ class PHPMailTest extends MailPoetTest {
       'reply_to_email' => 'reply-to@mailpoet.com',
       'reply_to_name_email' => 'Reply To <reply-to@mailpoet.com>'
     );
+    $this->return_path = 'bounce@mailpoet.com';
     $this->mailer = new PHPMail(
       $this->sender,
-      $this->reply_to
+      $this->reply_to,
+      $this->return_path
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = array(
@@ -31,6 +33,15 @@ class PHPMailTest extends MailPoetTest {
   function testItCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
     expect($mailer->getTransport() instanceof \Swift_MailTransport)->true();
+  }
+
+  function testWhenReturnPathIsNullItIsSetToSenderEmail() {
+    $mailer = new PHPMail(
+      $this->sender,
+      $this->reply_to,
+      $return_path = false
+    );
+    expect($mailer->return_path)->equals($this->sender['from_email']);
   }
 
   function testItCanCreateMessage() {

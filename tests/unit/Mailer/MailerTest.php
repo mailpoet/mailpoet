@@ -40,6 +40,7 @@ class MailerTest extends MailPoetTest {
       'name' => 'Reply To',
       'address' => 'staff@mailinator.com'
     );
+    $this->return_path = 'bounce@test.com';
     $this->mailer = array(
       'method' => 'MailPoet',
       'mailpoet_api_key' => getenv('WP_TEST_MAILER_MAILPOET_API') ?
@@ -59,7 +60,6 @@ class MailerTest extends MailPoetTest {
   function testItRequiresMailerMethod() {
     // reset mta settings so that we have no default mailer
     Setting::setValue('mta', null);
-
     try {
       $mailer = new Mailer();
       $this->fail('Mailer did not throw an exception');
@@ -78,11 +78,12 @@ class MailerTest extends MailPoetTest {
   }
 
   function testItCanConstruct() {
-    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
+    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to, $this->return_path);
     expect($mailer->sender['from_name'])->equals($this->sender['name']);
     expect($mailer->sender['from_email'])->equals($this->sender['address']);
     expect($mailer->reply_to['reply_to_name'])->equals($this->reply_to['name']);
     expect($mailer->reply_to['reply_to_email'])->equals($this->reply_to['address']);
+    expect($mailer->return_path)->equals($this->return_path);
   }
 
   function testItCanBuildKnownMailerInstances() {
@@ -103,12 +104,20 @@ class MailerTest extends MailPoetTest {
     }
   }
 
-
   function testItSetsReplyToAddressWhenOnlyNameIsAvailable() {
     $reply_to = array('name' => 'test');
     $mailer = new Mailer($this->mailer, $this->sender, $reply_to);
     $reply_to = $mailer->getReplyToNameAndAddress();
     expect($reply_to['reply_to_email'])->equals($this->sender['address']);
+  }
+
+  function testItGetsReturnPathAddress() {
+    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
+    $return_path = $mailer->getReturnPathAddress('bounce@test.com');
+    expect($return_path)->equals('bounce@test.com');
+    Setting::setValue('bounce', array('address' => 'settngs_bounce@test.com'));
+    $return_path = $mailer->getReturnPathAddress($return_path = false);
+    expect($return_path)->equals('settngs_bounce@test.com');
   }
 
   function testItCanTransformSubscriber() {
