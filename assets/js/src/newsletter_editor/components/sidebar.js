@@ -301,19 +301,25 @@ define([
       // send test email
       MailPoet.Modal.loading(true);
 
-      CommunicationComponent.previewNewsletter(data).always(function() {
-        MailPoet.Modal.loading(false);
-      }).done(function(response) {
-        MailPoet.Notice.success(
-          MailPoet.I18n.t('newsletterPreviewSent'),
-          { scroll: true });
-      }).fail(function(response) {
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map(function(error) { return error.message; }),
-            { scroll: true, static: true }
-          );
-        }
+      // save before sending
+      var saveResult = {promise: null};
+      App.getChannel().trigger('save', saveResult);
+
+      saveResult.promise.always(function() {
+        CommunicationComponent.previewNewsletter(data).always(function() {
+          MailPoet.Modal.loading(false);
+        }).done(function(response) {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('newsletterPreviewSent'),
+            { scroll: true });
+        }).fail(function(response) {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { scroll: true, static: true }
+            );
+          }
+        });
       });
     },
   });
