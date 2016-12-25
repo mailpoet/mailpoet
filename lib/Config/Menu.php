@@ -45,7 +45,7 @@ class Menu {
     add_menu_page(
       'MailPoet',
       'MailPoet',
-      'manage_options',
+      Env::$required_permission,
       $main_page_slug,
       null,
       $this->assets_url . '/img/menu_icon.png',
@@ -56,7 +56,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle(__('Emails', 'mailpoet')),
       __('Emails', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       $main_page_slug,
       array($this, 'newsletters')
     );
@@ -76,7 +76,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle(__('Forms', 'mailpoet')),
       __('Forms', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       'mailpoet-forms',
       array($this, 'forms')
     );
@@ -95,7 +95,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle(__('Subscribers', 'mailpoet')),
       __('Subscribers', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       'mailpoet-subscribers',
       array($this, 'subscribers')
     );
@@ -114,7 +114,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle(__('Lists', 'mailpoet')),
       __('Lists', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       'mailpoet-segments',
       array($this, 'segments')
     );
@@ -134,7 +134,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle( __('Settings', 'mailpoet')),
       __('Settings', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       'mailpoet-settings',
       array($this, 'settings')
     );
@@ -142,7 +142,7 @@ class Menu {
       'admin.php?page=mailpoet-subscribers',
       $this->setPageTitle( __('Import', 'mailpoet')),
       __('Import', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       'mailpoet-import',
       array($this, 'import')
     );
@@ -151,7 +151,7 @@ class Menu {
       true,
       $this->setPageTitle(__('Export', 'mailpoet')),
       __('Export', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       'mailpoet-export',
       array($this, 'export')
     );
@@ -160,7 +160,7 @@ class Menu {
       true,
       $this->setPageTitle(__('Welcome', 'mailpoet')),
       __('Welcome', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       'mailpoet-welcome',
       array($this, 'welcome')
     );
@@ -169,7 +169,7 @@ class Menu {
       true,
       $this->setPageTitle(__('Update', 'mailpoet')),
       __('Update', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       'mailpoet-update',
       array($this, 'update')
     );
@@ -178,7 +178,7 @@ class Menu {
       true,
       $this->setPageTitle(__('Form Editor', 'mailpoet')),
       __('Form Editor', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       'mailpoet-form-editor',
       array($this, 'formEditor')
     );
@@ -187,7 +187,7 @@ class Menu {
       true,
       $this->setPageTitle(__('Newsletter', 'mailpoet')),
       __('Newsletter Editor', 'mailpoet'),
-      'manage_options',
+      Env::$required_permission,
       'mailpoet-newsletter-editor',
       array($this, 'newletterEditor')
     );

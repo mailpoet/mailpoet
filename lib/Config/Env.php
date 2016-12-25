@@ -29,6 +29,7 @@ class Env {
   static $db_password;
   static $db_charset;
   static $db_timezone_offset;
+  static $required_permission = 'manage_options';
 
   static function init($file, $version) {
     global $wpdb;

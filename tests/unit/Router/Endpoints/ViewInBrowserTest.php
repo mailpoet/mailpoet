@@ -89,6 +89,13 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
 
+  function testItFailsValidationWhenPreviewIsEnabledButNewsletterHashNotProvided() {
+    $data = (object)$this->browser_preview_data;
+    $data->newsletter_hash = false;
+    $data->preview = true;
+    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
+  }
+
   function testItFailsValidationWhenSubscriberIsNotOnProcessedList() {
     $data = (object)$this->browser_preview_data;
     $result = $this->view_in_browser->_validateBrowserPreviewData($data);
@@ -100,7 +107,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     expect($result)->false();
   }
 
-  function testItDoesNotRequireWpUsersToBeOnProcessedListWhenPreviewIsEnabled() {
+  function testItDoesNotRequireWpAdministratorToBeOnProcessedListWhenPreviewIsEnabled() {
     $data = (object)array_merge(
       $this->browser_preview_data,
       array(
@@ -109,8 +116,16 @@ class ViewInBrowserRouterTest extends MailPoetTest {
         'newsletter' => $this->newsletter
       )
     );
-    $data->subscriber->wp_user_id = 99;
     $data->preview = true;
+    // when WP user is not logged, false should be returned
+    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
+    // when WP user is logged in but does not have 'manage options' permission, false should be returned
+    wp_set_current_user(1);
+    $wp_user = wp_get_current_user();
+    $wp_user->remove_role('administrator');
+    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
+    // when WP user is logged and has 'manage options' permission, data should be returned
+    $wp_user->add_role('administrator');
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->equals($data);
   }
 
@@ -133,5 +148,8 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    // reset WP user role
+    $wp_user = wp_get_current_user();
+    $wp_user->add_role('administrator');
   }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Router\Endpoints;
 
+use MailPoet\Config\Env;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
@@ -8,6 +9,8 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Newsletter\ViewInBrowser as NewsletterViewInBrowser;
 
 if(!defined('ABSPATH')) exit;
+
+require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class ViewInBrowser {
   const ENDPOINT = 'view_in_browser';
@@ -57,10 +60,16 @@ class ViewInBrowser {
       SendingQueue::findOne($data->queue_id) :
       SendingQueue::where('newsletter_id', $data->newsletter->id)->findOne();
 
-    // if queue and subscriber exist and newsletter is not being previewed,
-    // subscriber must have received the newsletter
-    if(empty($data->preview) &&
-       $data->queue &&
+    // allow users with 'manage_options' permission to preview any newsletter
+    if(!empty($data->preview) && current_user_can(Env::$required_permission)
+    ) return $data;
+
+    // allow others to preview newsletters only when newsletter hash is defined
+    if(!empty($data->preview) && empty($data->newsletter_hash)
+    ) return false;
+
+    // if queue and subscriber exist, subscriber must have received the newsletter
+    if($data->queue &&
        $data->subscriber &&
        !$data->queue->isSubscriberProcessed($data->subscriber->id)
     ) return false;
