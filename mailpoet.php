@@ -5,7 +5,7 @@ use MailPoet\Config\Initializer;
 
 /*
  * Plugin Name: MailPoet
- * Version: 3.0.0-beta.9
+ * Version: 3.0.0-beta.10
  * Plugin URI: http://www.mailpoet.com
  * Description: Create and send beautiful email newsletters, autoresponders, and post notifications without leaving WordPress. This is a beta version of our brand new plugin!
  * Author: MailPoet
@@ -24,7 +24,7 @@ use MailPoet\Config\Initializer;
 $mailpoet_loader = dirname(__FILE__) . '/vendor/autoload.php';
 if(file_exists($mailpoet_loader)) {
   require $mailpoet_loader;
-  define('MAILPOET_VERSION', '3.0.0-beta.9');
+  define('MAILPOET_VERSION', '3.0.0-beta.10');
   $initializer = new Initializer(
     array(
       'file' => __FILE__,
