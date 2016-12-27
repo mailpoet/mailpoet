@@ -182,8 +182,39 @@ class Newsletter extends Model {
     );
   }
 
-  function withSegments() {
+  function withSegments($inclDeleted = false) {
     $this->segments = $this->segments()->findArray();
+    if($inclDeleted) {
+      $this->withDeletedSegments();
+    }
+    return $this;
+  }
+
+  // Intermediary table only
+  function segmentLinks() {
+    return $this->has_many(
+      __NAMESPACE__.'\NewsletterSegment',
+      'newsletter_id',
+      'id'
+    );
+  }
+
+  function withDeletedSegments() {
+    if(!empty($this->segments)) {
+      $segmentIds = Helpers::arrayColumn($this->segments, 'id');
+      $links = $this->segmentLinks()
+        ->whereNotIn('segment_id', $segmentIds)->findArray();
+      $deletedSegments = array();
+
+      foreach($links as $link) {
+        $deletedSegments[] = array(
+          'id' => $link['segment_id'],
+          'name' => __('Deleted list', 'mailpoet')
+        );
+      }
+      $this->segments = array_merge($this->segments, $deletedSegments);
+    }
+
     return $this;
   }
 
