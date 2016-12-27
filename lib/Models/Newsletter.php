@@ -182,9 +182,9 @@ class Newsletter extends Model {
     );
   }
 
-  function withSegments($inclDeleted = false) {
+  function withSegments($incl_deleted = false) {
     $this->segments = $this->segments()->findArray();
-    if($inclDeleted) {
+    if($incl_deleted) {
       $this->withDeletedSegments();
     }
     return $this;
@@ -201,18 +201,18 @@ class Newsletter extends Model {
 
   function withDeletedSegments() {
     if(!empty($this->segments)) {
-      $segmentIds = Helpers::arrayColumn($this->segments, 'id');
+      $segment_ids = Helpers::arrayColumn($this->segments, 'id');
       $links = $this->segmentLinks()
-        ->whereNotIn('segment_id', $segmentIds)->findArray();
-      $deletedSegments = array();
+        ->whereNotIn('segment_id', $segment_ids)->findArray();
+      $deleted_segments = array();
 
       foreach($links as $link) {
-        $deletedSegments[] = array(
+        $deleted_segments[] = array(
           'id' => $link['segment_id'],
           'name' => __('Deleted list', 'mailpoet')
         );
       }
-      $this->segments = array_merge($this->segments, $deletedSegments);
+      $this->segments = array_merge($this->segments, $deleted_segments);
     }
 
     return $this;
