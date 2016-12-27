@@ -106,6 +106,17 @@ class NewsletterTest extends MailPoetTest {
     expect($newsletter_segments[1]['name'])->equals('Segment 2');
   }
 
+  function testItCanHaveDeletedSegments() {
+    $this->segment_2->delete();
+    $this->newsletter->withSegments(true);
+    $newsletter_segments = $this->newsletter->segments;
+    expect($newsletter_segments)->count(2);
+    expect($newsletter_segments[0]['id'])->equals($this->segment_1->id);
+    expect($newsletter_segments[0]['name'])->equals('Segment 1');
+    expect($newsletter_segments[1]['id'])->equals($this->segment_2->id);
+    expect($newsletter_segments[1]['name'])->contains('Deleted');
+  }
+
   function testItCanHaveStatistics() {
     $newsletter = $this->newsletter;
     $sending_queue = SendingQueue::create();

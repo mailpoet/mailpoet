@@ -312,7 +312,7 @@ class Newsletters extends APIEndpoint {
 
       if($newsletter->type === Newsletter::TYPE_STANDARD) {
         $newsletter
-          ->withSegments()
+          ->withSegments(true)
           ->withSendingQueue()
           ->withStatistics();
       } else if($newsletter->type === Newsletter::TYPE_WELCOME) {
@@ -323,11 +323,11 @@ class Newsletters extends APIEndpoint {
       } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $newsletter
           ->withOptions()
-          ->withSegments()
+          ->withSegments(true)
           ->withChildrenCount();
       } else if($newsletter->type === Newsletter::TYPE_NOTIFICATION_HISTORY) {
         $newsletter
-          ->withSegments()
+          ->withSegments(true)
           ->withSendingQueue()
           ->withStatistics();
       }
