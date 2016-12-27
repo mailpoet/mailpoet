@@ -14,8 +14,8 @@ class Subscriber extends Model {
   const STATUS_UNSUBSCRIBED = 'unsubscribed';
   const STATUS_UNCONFIRMED = 'unconfirmed';
   const STATUS_BOUNCED = 'bounced';
-
   const SUBSCRIPTION_LIMIT_COOLDOWN = 60;
+  const SUBSCRIBER_TOKEN_LENGTH = 6;
 
   function __construct() {
     parent::__construct();
@@ -154,13 +154,17 @@ class Subscriber extends Model {
 
   static function generateToken($email = null) {
     if($email !== null) {
-      return md5(AUTH_KEY.$email);
+      return substr(md5(AUTH_KEY . $email), 0, self::SUBSCRIBER_TOKEN_LENGTH);
     }
     return false;
   }
 
   static function verifyToken($email, $token) {
-    return call_user_func('hash_equals', self::generateToken($email), $token);
+    return call_user_func(
+      'hash_equals',
+      self::generateToken($email),
+      substr($token, 0, self::SUBSCRIBER_TOKEN_LENGTH)
+    );
   }
 
   static function subscribe($subscriber_data = array(), $segment_ids = array()) {

@@ -220,7 +220,9 @@ class Newsletters extends APIEndpoint {
       $newsletter->save();
       $subscriber = Subscriber::getCurrentWPUser();
       $preview_url = NewsletterUrl::getViewInBrowserUrl(
-        $data, $subscriber, $queue = false, $preview = true
+        NewsletterUrl::TYPE_LISTING_EDITOR,
+        $newsletter,
+        $subscriber
       );
 
       return $this->successResponse(
@@ -339,7 +341,11 @@ class Newsletters extends APIEndpoint {
       // get preview url
       $subscriber = Subscriber::getCurrentWPUser();
       $newsletter->preview_url = NewsletterUrl::getViewInBrowserUrl(
-        $newsletter, $subscriber, $queue, $preview = true);
+        NewsletterUrl::TYPE_LISTING_EDITOR,
+        $newsletter,
+        $subscriber,
+        $queue
+      );
 
       $data[] = $newsletter->asArray();
     }

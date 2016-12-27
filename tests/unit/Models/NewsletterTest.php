@@ -245,6 +245,118 @@ class NewsletterTest extends MailPoetTest {
     expect($newsletter->Event)->equals($association->value);
   }
 
+  function testItGetsArchiveNewslettersForSegments() {
+    // clear the DB
+    $this->_after();
+
+    $types = array(
+      Newsletter::TYPE_STANDARD,
+      Newsletter::TYPE_NOTIFICATION_HISTORY
+    );
+    $newsletters = array();
+    $sending_queues[] = array();
+    for($i = 0; $i < count($types); $i++) {
+      $newsletters[$i] = Newsletter::createOrUpdate(
+        array(
+          'subject' => 'My Standard Newsletter',
+          'preheader' => 'Pre Header',
+          'type' => $types[$i]
+        )
+      );
+      $sending_queues[$i] = SendingQueue::create();
+      $sending_queues[$i]->newsletter_id = $newsletters[$i]->id;
+      $sending_queues[$i]->status = SendingQueue::STATUS_COMPLETED;
+      $sending_queues[$i]->save();
+    }
+    // set segment association for the last newsletter
+    $newsletter_segment = NewsletterSegment::create();
+    $newsletter_segment->newsletter_id = end($newsletters[1])->id;
+    $newsletter_segment->segment_id = 123;
+    $newsletter_segment->save();
+
+    expect(Newsletter::findMany())->count(2);
+
+    // return archives in segment 123
+    $results = Newsletter::getArchives(array(123));
+    expect($results)->count(1);
+    expect($results[0]->id)->equals($newsletters[1]->id);
+    expect($results[0]->type)->equals(Newsletter::TYPE_NOTIFICATION_HISTORY);
+  }
+
+  function testItGetsAllArchiveNewsletters() {
+    // clear the DB
+    $this->_after();
+
+    $types = array(
+      Newsletter::TYPE_STANDARD,
+      Newsletter::TYPE_STANDARD, // should be returned
+      Newsletter::TYPE_WELCOME,
+      Newsletter::TYPE_NOTIFICATION,
+      Newsletter::TYPE_NOTIFICATION_HISTORY, // should be returned
+      Newsletter::TYPE_NOTIFICATION_HISTORY
+    );
+    $newsletters = array();
+    $sending_queues[] = array();
+    for($i = 0; $i < count($types); $i++) {
+      $newsletters[$i] = Newsletter::createOrUpdate(
+        array(
+          'subject' => 'My Standard Newsletter',
+          'preheader' => 'Pre Header',
+          'type' => $types[$i]
+        )
+      );
+      $sending_queues[$i] = SendingQueue::create();
+      $sending_queues[$i]->newsletter_id = $newsletters[$i]->id;
+      $sending_queues[$i]->status = SendingQueue::STATUS_COMPLETED;
+      $sending_queues[$i]->save();
+    }
+    // set teh sending queue status of the first newsletter to null
+    $sending_queues[0]->status = null;
+    $sending_queues[0]->save();
+
+    // trash the last newsletter
+    end($newsletters)->trash();
+
+    expect(Newsletter::findMany())->count(6);
+
+    // archives return only:
+    // 1. STANDARD and NOTIFICATION HISTORY newsletters
+    // 2. active newsletters (i.e., not trashed)
+    // 3. with sending queue records that are COMPLETED
+    $results = Newsletter::getArchives();
+    expect($results)->count(2);
+    expect($results[0]->id)->equals($newsletters[1]->id);
+    expect($results[0]->type)->equals(Newsletter::TYPE_STANDARD);
+    expect($results[1]->id)->equals($newsletters[4]->id);
+    expect($results[1]->type)->equals(Newsletter::TYPE_NOTIFICATION_HISTORY);
+  }
+
+  function testItGeneratesHashOnNewsletterSave() {
+    expect(strlen($this->newsletter->hash))
+      ->equals(Newsletter::NEWSLETTER_HASH_LENGTH);
+  }
+
+  function testItRegeneratesHashOnNewsletterDuplication() {
+    $duplicate_newsletter = $this->newsletter->duplicate();
+    expect($duplicate_newsletter->hash)->notEquals($this->newsletter->hash);
+    expect(strlen($duplicate_newsletter->hash))
+      ->equals(Newsletter::NEWSLETTER_HASH_LENGTH);
+  }
+
+  function testItRegeneratesHashOnNotificationHistoryCreation() {
+    $notification_history = $this->newsletter->createNotificationHistory();
+    expect($notification_history->hash)->notEquals($this->newsletter->hash);
+    expect(strlen($notification_history->hash))
+      ->equals(Newsletter::NEWSLETTER_HASH_LENGTH);
+  }
+
+  function testItGetsQueueFromNewsletter() {
+    $queue = SendingQueue::create();
+    $queue->newsletter_id = $this->newsletter->id;
+    $queue->save();
+    expect($this->newsletter->queue()->findOne()->id)->equals($queue->id);
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);

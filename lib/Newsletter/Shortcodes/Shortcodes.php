@@ -5,16 +5,19 @@ class Shortcodes {
   public $newsletter;
   public $subscriber;
   public $queue;
+  public $wp_user_preview;
   const SHORTCODE_CATEGORY_NAMESPACE = 'MailPoet\Newsletter\Shortcodes\Categories\\';
 
   function __construct(
     $newsletter = false,
     $subscriber = false,
-    $queue = false
+    $queue = false,
+    $wp_user_preview = false
   ) {
     $this->newsletter = $newsletter;
     $this->subscriber = $subscriber;
     $this->queue = $queue;
+    $this->wp_user_preview = $wp_user_preview;
   }
 
   function extract($content, $categories = false) {
@@ -64,7 +67,8 @@ class Shortcodes {
             $_this->newsletter,
             $_this->subscriber,
             $_this->queue,
-            $content
+            $content,
+            $_this->wp_user_preview
           );
           return ($custom_shortcode === $shortcode) ?
             false :
@@ -76,7 +80,8 @@ class Shortcodes {
           $_this->newsletter,
           $_this->subscriber,
           $_this->queue,
-          $content
+          $content,
+          $_this->wp_user_preview
         );
       }, $shortcodes);
     return $processed_shortcodes;

@@ -11,7 +11,7 @@ class Renderer {
   public $newsletter;
   public $preview;
   const NEWSLETTER_TEMPLATE = 'Template.html';
-  const POST_PROCESS_FILTER = 'mailpoet_rendering_post_process';
+  const FILTER_POST_PROCESS = 'mailpoet_rendering_post_process';
 
   function __construct($newsletter, $preview = false) {
     // TODO: remove ternary condition, refactor to use model objects
@@ -24,7 +24,7 @@ class Renderer {
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
   }
 
-  function render() {
+  function render($type = false) {
     $newsletter = $this->newsletter;
     $body = (is_array($newsletter['body']))
       ? $newsletter['body']
@@ -48,10 +48,14 @@ class Renderer {
     $template = $this->inlineCSSStyles($template);
     $template = $this->postProcessTemplate($template);
 
-    return array(
+    $rendered_newsletter = array(
       'html' => $template,
       'text' => $this->renderTextVersion($template)
     );
+
+    return ($type && !empty($rendered_newsletter[$type])) ?
+      $rendered_newsletter[$type] :
+      $rendered_newsletter;
   }
 
   function renderBody($content) {
@@ -124,7 +128,7 @@ class Renderer {
       str_replace('&', '&amp;', $template->html())
     );
     $template = apply_filters(
-      self::POST_PROCESS_FILTER,
+      self::FILTER_POST_PROCESS,
       $DOM->__toString()
     );
     return $template;

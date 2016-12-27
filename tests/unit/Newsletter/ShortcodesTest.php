@@ -94,13 +94,13 @@ class ShortcodesTest extends MailPoetTest {
       '<a data-post-id="10" href="#">another post</a>' .
       '<a href="#">not post</a>';
     $result =
-      $shortcodes_object->process(array('[newsletter:subject]'));
+      $shortcodes_object->process(array('[newsletter:subject]'), $content);
     expect($result[0])->equals($this->newsletter->subject);
     $result =
       $shortcodes_object->process(array('[newsletter:total]'), $content);
     expect($result[0])->equals(2);
     $result =
-      $shortcodes_object->process(array('[newsletter:post_title]'));
+      $shortcodes_object->process(array('[newsletter:post_title]'), $content);
     $wp_post = get_post($this->WP_post);
     expect($result['0'])->equals($wp_post->post_title);
   }
@@ -266,6 +266,30 @@ class ShortcodesTest extends MailPoetTest {
       // [link:subscription_unsubscribe_url]
       expect($transformed_shortcode)
         ->regExp('/' . preg_quote($expected_transformed_shortcodes[$index]) . '/');
+    }
+  }
+
+  function testItReturnsHashInsteadofLinksWhenInPreviewIsEnabled() {
+    $shortcodes_object = $this->shortcodes_object;
+    $shortcodes_object->wp_user_preview = true;
+    $shortcodes = array(
+      '[link:subscription_unsubscribe_url]',
+      '[link:subscription_manage_url]',
+      '[link:newsletter_view_in_browser_url]',
+    );
+    $result = $shortcodes_object->process($shortcodes);
+    // hash is returned
+    foreach($result as $index => $transformed_shortcode) {
+      expect($transformed_shortcode)->equals('#');
+    }
+    $shortcodes = array(
+      '[link:subscription_unsubscribe]',
+      '[link:subscription_manage]',
+      '[link:newsletter_view_in_browser]',
+    );
+    $result = $shortcodes_object->process($shortcodes);
+    foreach($result as $index => $transformed_shortcode) {
+      expect($transformed_shortcode)->regExp('/href="#"/');
     }
   }
 

@@ -3,7 +3,6 @@ namespace MailPoet\Config;
 use \MailPoet\Models\Newsletter;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\SubscriberSegment;
-use \MailPoet\Subscription;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 
 class Shortcodes {
@@ -33,7 +32,7 @@ class Shortcodes {
     ), 2);
     add_filter('mailpoet_archive_subject', array(
       $this, 'renderArchiveSubject'
-    ), 2);
+    ), 2, 3);
   }
 
   function formWidget($params = array()) {
@@ -78,6 +77,8 @@ class Shortcodes {
 
     $newsletters = Newsletter::getArchives($segment_ids);
 
+    $subscriber = Subscriber::getCurrentWPUser();
+
     if(empty($newsletters)) {
       return apply_filters(
         'mailpoet_archive_no_newsletters',
@@ -91,12 +92,13 @@ class Shortcodes {
 
       $html .= '<ul class="mailpoet_archive">';
       foreach($newsletters as $newsletter) {
+        $queue = $newsletter->queue()->findOne();
         $html .= '<li>'.
           '<span class="mailpoet_archive_date">'.
             apply_filters('mailpoet_archive_date', $newsletter).
           '</span>
           <span class="mailpoet_archive_subject">'.
-            apply_filters('mailpoet_archive_subject', $newsletter).
+            apply_filters('mailpoet_archive_subject', $newsletter, $subscriber, $queue).
           '</span>
         </li>';
       }
@@ -112,13 +114,16 @@ class Shortcodes {
     );
   }
 
-  function renderArchiveSubject($newsletter) {
-    $preview_url = NewsletterUrl::getViewInBrowserUrl($newsletter);
-
+  function renderArchiveSubject($newsletter, $subscriber, $queue) {
+    $preview_url = NewsletterUrl::getViewInBrowserUrl(
+      NewsletterUrl::TYPE_ARCHIVE,
+      $newsletter,
+      $subscriber,
+      $queue
+    );
     return '<a href="'.esc_attr($preview_url).'" target="_blank" title="'
       .esc_attr(__('Preview in a new tab', 'mailpoet')).'">'
       .esc_attr($newsletter->subject).
     '</a>';
   }
-
 }

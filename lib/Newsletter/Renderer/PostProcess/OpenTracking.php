@@ -21,7 +21,7 @@ class OpenTracking {
   }
 
   static function addTrackingImage() {
-    add_filter(Renderer::POST_PROCESS_FILTER, function ($template) {
+    add_filter(Renderer::FILTER_POST_PROCESS, function ($template) {
       return OpenTracking::process($template);
     });
     return true;

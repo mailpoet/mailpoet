@@ -2,6 +2,7 @@
 namespace MailPoet\Models;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -11,7 +12,6 @@ class Newsletter extends Model {
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
   const TYPE_NOTIFICATION_HISTORY = 'notification_history';
-
   // standard newsletters
   const STATUS_DRAFT = 'draft';
   const STATUS_SCHEDULED = 'scheduled';
@@ -19,12 +19,17 @@ class Newsletter extends Model {
   const STATUS_SENT = 'sent';
   // automatic newsletters status
   const STATUS_ACTIVE = 'active';
+  const NEWSLETTER_HASH_LENGTH = 6;
 
   function __construct() {
     parent::__construct();
     $this->addValidations('type', array(
       'required' => __('Please specify a type', 'mailpoet')
     ));
+  }
+
+  function queue() {
+    return $this->has_one(__NAMESPACE__ . '\SendingQueue', 'newsletter_id', 'id');
   }
 
   function save() {
@@ -36,6 +41,12 @@ class Newsletter extends Model {
       is_array($this->body)
       ? json_encode($this->body)
       : $this->body
+    );
+
+    $this->set('hash',
+      ($this->hash)
+      ? $this->hash
+      : self::generateHash()
     );
     return parent::save();
   }
@@ -73,6 +84,9 @@ class Newsletter extends Model {
 
     // reset status
     $duplicate->set('status', self::STATUS_DRAFT);
+
+    // reset hash
+    $duplicate->set('hash', null);
 
     $duplicate->save();
 
@@ -129,6 +143,9 @@ class Newsletter extends Model {
     $notification_history->set_expr('created_at', 'NOW()');
     $notification_history->set_expr('updated_at', 'NOW()');
     $notification_history->set_expr('deleted_at', 'NULL');
+
+    // reset hash
+    $notification_history->set('hash', null);
 
     $notification_history->save();
 
@@ -634,6 +651,7 @@ class Newsletter extends Model {
         'queues'
       )
       ->where('queues.status', SendingQueue::STATUS_COMPLETED)
+      ->whereNull('newsletters.deleted_at')
       ->select('queues.processed_at')
       ->orderByDesc('queues.processed_at');
 
@@ -646,5 +664,18 @@ class Newsletter extends Model {
       ->whereIn('newsletter_segments.segment_id', $segment_ids);
     }
     return $orm->findMany();
+  }
+
+  static function getByHash($hash) {
+    return parent::where('hash', $hash)
+      ->findOne();
+  }
+
+  static function generateHash() {
+    return substr(
+      md5(AUTH_KEY . Security::generateRandomString(15)),
+      0,
+      self::NEWSLETTER_HASH_LENGTH
+    );
   }
 }
