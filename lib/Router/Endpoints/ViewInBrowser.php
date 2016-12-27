@@ -37,9 +37,9 @@ class ViewInBrowser {
   function _validateBrowserPreviewData($data) {
     // either newsletter ID or hash must be defined, and newsletter must exist
     if(empty($data->newsletter_id) && empty($data->newsletter_hash)) return false;
-    $data->newsletter = (!empty($data->newsletter_id)) ?
-      Newsletter::findOne($data->newsletter_id) :
-      Newsletter::getByHash($data->newsletter_hash);
+    $data->newsletter = (!empty($data->newsletter_hash)) ?
+      Newsletter::getByHash($data->newsletter_hash) :
+      Newsletter::findOne($data->newsletter_id);
     if(!$data->newsletter) return false;
 
     // subscriber is optional; if exists, token must validate

@@ -89,6 +89,20 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
   }
 
+  function testItValidatesThatNewsletterExistsByCheckingHashFirst() {
+    $newsletter_1 = $this->newsletter;
+    $newsletter_2 = Newsletter::create();
+    $newsletter_2->type = 'type';
+    $newsletter_2 = $newsletter_2->save();
+    $data = (object)$this->browser_preview_data;
+    $data->newsletter_hash = $newsletter_2->hash;
+    $result = $this->view_in_browser->_validateBrowserPreviewData($data);
+    expect($result->newsletter->id)->equals($newsletter_2->id);
+    $data->newsletter_hash = false;
+    $result = $this->view_in_browser->_validateBrowserPreviewData($data);
+    expect($result->newsletter->id)->equals($newsletter_1->id);
+  }
+
   function testItFailsValidationWhenPreviewIsEnabledButNewsletterHashNotProvided() {
     $data = (object)$this->browser_preview_data;
     $data->newsletter_hash = false;
