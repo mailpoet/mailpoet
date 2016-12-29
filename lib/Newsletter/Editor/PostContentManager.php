@@ -6,6 +6,7 @@ if(!defined('ABSPATH')) exit;
 class PostContentManager {
 
   const MAX_EXCERPT_LENGTH = 60;
+  const WP_POST_CLASS = 'mailpoet_wp_post';
 
   function getContent($post, $displayType) {
     if($displayType === 'titleOnly') {
@@ -42,7 +43,7 @@ class PostContentManager {
       '<h2>', '<h3>', '<a>', '<ul>', '<ol>', '<li>', '<br>'
     );
     $content = strip_tags($content, implode('', $tags_not_being_stripped));
-    $content = wpautop($content);
+    $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS .'"', wpautop($content));
 
     return $content;
   }

@@ -72,9 +72,7 @@ class StructureTransformer {
       } else {
         return array(
           'type' => 'text',
-          'text' => ($item->getNextSibling()) ?
-            preg_replace('/\n/', "<p>&nbsp;</p>", $item->toString()) :
-            $item->toString()
+          'text' => $item->toString()
         );
       }
 

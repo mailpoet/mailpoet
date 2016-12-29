@@ -34,7 +34,7 @@ $block-text-line-height = $text-line-height
   position: relative
   line-height: $block-text-line-height
 
-  p, h1, h2, h3, h4, h5, h6
+  h1, h2, h3, h4, h5, h6
     line-height: $block-text-line-height
     padding: 0
     margin: 0
@@ -44,9 +44,15 @@ $block-text-line-height = $text-line-height
   h1, h2, h3, h4, h5, h6
     margin-bottom: 0.3em
 
-  p
+  p:not(.mailpoet_wp_post)
     margin-top: 0
     margin-bottom: 0
+    padding: 0
+    margin: 0
+
+  p
+    line-height: $block-text-line-height
+    font-style: normal
     font-weight: normal
 
   ul
