@@ -1,4 +1,6 @@
 <?php
+use Codeception\Util\Fixtures;
+use Codeception\Util\Stub;
 use \MailPoet\API\Response as APIResponse;
 use \MailPoet\API\Endpoints\Newsletters;
 use \MailPoet\Models\Newsletter;
@@ -11,11 +13,13 @@ class NewslettersTest extends MailPoetTest {
   function _before() {
     $this->newsletter = Newsletter::createOrUpdate(array(
       'subject' => 'My Standard Newsletter',
-      'type' => Newsletter::TYPE_STANDARD
+      'body' => Fixtures::get('newsletter_subject_template'),
+      'type' => Newsletter::TYPE_STANDARD,
     ));
 
     $this->post_notification = Newsletter::createOrUpdate(array(
       'subject' => 'My Post Notification',
+      'body' => Fixtures::get('newsletter_subject_template'),
       'type' => Newsletter::TYPE_NOTIFICATION
     ));
   }
@@ -443,6 +447,27 @@ class NewslettersTest extends MailPoetTest {
     ));
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(0);
+  }
+
+  function testItCanSendAPreview() {
+    $subscriber = 'test@subscriber.com';
+    $data = array(
+      'subscriber' => $subscriber,
+      'id' => $this->newsletter->id,
+      'mailer' => Stub::makeEmpty(
+        '\MailPoet\Mailer\Mailer',
+        array(
+          'send' => function($newsletter, $subscriber) {
+            expect(is_array($newsletter))->true();
+            expect($subscriber)->equals($subscriber);
+            return array('response' => true);
+          }
+        )
+      )
+    );
+    $router = new Newsletters();
+    $response = $router->sendPreview($data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
   function _after() {
