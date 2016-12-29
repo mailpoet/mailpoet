@@ -57,11 +57,21 @@ class Pages {
   }
 
   function confirm() {
-    if($this->subscriber !== false) {
-      $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-      $this->subscriber->confirmed_ip = $_SERVER['REMOTE_ADDR'];
-      $this->subscriber->setExpr('confirmed_at', 'NOW()');
-      $this->subscriber->save();
+    if($this->subscriber === false) {
+      return false;
+    }
+
+    $subscriber_data = $this->subscriber->getUnconfirmedData();
+
+    $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $this->subscriber->confirmed_ip = $_SERVER['REMOTE_ADDR'];
+    $this->subscriber->setExpr('confirmed_at', 'NOW()');
+    $this->subscriber->unconfirmed_data = null;
+    $this->subscriber->save();
+
+    // update subscriber from stored data after confirmation
+    if(!empty($subscriber_data)) {
+      Subscriber::createOrUpdate($subscriber_data);
     }
   }
 
