@@ -20,7 +20,7 @@ Fixtures::add(
                "blocks": [
                  {
                    "type": "text",
-                   "text": "<a data-post-id=\"10\" href=\"http://example.com\">Link</a>Hello [subscriber:firstname]"
+                   "text": "<a data-post-id=\"10\" href=\"http://example.com\">Link</a>Hello [subscriber:firstname | default:test]"
                  }
                ]
              }

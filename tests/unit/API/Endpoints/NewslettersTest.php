@@ -13,13 +13,13 @@ class NewslettersTest extends MailPoetTest {
   function _before() {
     $this->newsletter = Newsletter::createOrUpdate(array(
       'subject' => 'My Standard Newsletter',
-      'body' => Fixtures::get('newsletter_subject_template'),
+      'body' => Fixtures::get('newsletter_body_template'),
       'type' => Newsletter::TYPE_STANDARD,
     ));
 
     $this->post_notification = Newsletter::createOrUpdate(array(
       'subject' => 'My Post Notification',
-      'body' => Fixtures::get('newsletter_subject_template'),
+      'body' => Fixtures::get('newsletter_body_template'),
       'type' => Newsletter::TYPE_NOTIFICATION
     ));
   }
@@ -459,6 +459,7 @@ class NewslettersTest extends MailPoetTest {
         array(
           'send' => function($newsletter, $subscriber) {
             expect(is_array($newsletter))->true();
+            expect($newsletter['body']['text'])->contains('Hello test');
             expect($subscriber)->equals($subscriber);
             return array('response' => true);
           }
