@@ -72,7 +72,7 @@ class StructureTransformer {
       } else {
         return array(
           'type' => 'text',
-          'text' => $item->toString(),
+          'text' => $item->toString()
         );
       }
 

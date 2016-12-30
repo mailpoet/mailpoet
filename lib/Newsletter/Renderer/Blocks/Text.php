@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Newsletter\Editor\PostContentManager;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Text {
@@ -111,9 +112,16 @@ class Text {
         '<br /><br />' :
         '';
       // if this element is followed by a list, add single line break
-      $line_breaks = ($next_element && preg_match('/<li>/i', $next_element->text())) ?
+      $line_breaks = ($next_element && preg_match('/<li/i', $next_element->getOuterText())) ?
         '<br />' :
         $line_breaks;
+      if($paragraph->hasClass(PostContentManager::WP_POST_CLASS)) {
+        $paragraph->removeClass(PostContentManager::WP_POST_CLASS);
+        // if this element is followed by a paragraph, add double line breaks
+        $line_breaks = ($next_element && preg_match('/<p/i', $next_element->getOuterText())) ?
+          '<br /><br />' :
+          $line_breaks;
+      }
       $paragraph->html('
         <tr>
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . $style . '">
