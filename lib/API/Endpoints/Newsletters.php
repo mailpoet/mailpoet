@@ -247,13 +247,11 @@ class Newsletters extends APIEndpoint {
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet')
       ));
     } else {
-      $newsletter = $newsletter->asArray();
-
       $renderer = new Renderer($newsletter, $preview = true);
       $rendered_newsletter = $renderer->render();
       $divider = '***MailPoet***';
       $data_for_shortcodes = array_merge(
-        array($newsletter['subject']),
+        array($newsletter->subject),
         $rendered_newsletter
       );
 
@@ -266,19 +264,22 @@ class Newsletters extends APIEndpoint {
         $newsletter,
         $subscriber
       );
+
       list(
-        $newsletter['subject'],
-        $newsletter['body']['html'],
-        $newsletter['body']['text']
+        $rendered_newsletter['subject'],
+        $rendered_newsletter['body']['html'],
+        $rendered_newsletter['body']['text']
       ) = explode($divider, $shortcodes->replace($body));
 
       try {
-        $mailer = new \MailPoet\Mailer\Mailer(
-          $mailer = false,
-          $sender = false,
-          $reply_to = false
+        $mailer = (!empty($data['mailer'])) ?
+          $data['mailer'] :
+          new \MailPoet\Mailer\Mailer(
+            $mailer = false,
+            $sender = false,
+            $reply_to = false
         );
-        $result = $mailer->send($newsletter, $data['subscriber']);
+        $result = $mailer->send($rendered_newsletter, $data['subscriber']);
 
         if($result['response'] === false) {
           $error = sprintf(
