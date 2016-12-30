@@ -463,9 +463,19 @@ class SubscriberTest extends MailPoetTest {
     expect($subscriber->unconfirmed_data)->equals(json_encode($data2));
 
     // Unconfirmed data should be wiped after any direct update
-    // during confirmation, manual admin editing, import etc.
+    // during confirmation, manual admin editing
     $subscriber = Subscriber::createOrUpdate($data2);
-
+    expect($subscriber->unconfirmed_data)->isEmpty();
+    // during import
+    $subscriber->unconfirmed_data = json_encode($data2);
+    $subscriber->save();
+    expect($subscriber->isDirty('unconfirmed_data'))->false();
+    expect($subscriber->unconfirmed_data)->notEmpty();
+    Subscriber::updateMultiple(
+      array_keys($data2),
+      array(array_values($data2))
+    );
+    $subscriber = Subscriber::where('email', $data2['email'])->findOne();
     expect($subscriber->unconfirmed_data)->isEmpty();
 
     Setting::setValue('signup_confirmation.enabled', $original_setting_value);

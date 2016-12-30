@@ -838,6 +838,7 @@ class Subscriber extends Model {
       'UPDATE `' . self::$_table . '` ' .
       'SET ' . implode(', ', $sql('statement')) . ' '.
       (($updated_at) ? ', updated_at = "' . $updated_at . '" ' : '') .
+      ', unconfirmed_data = NULL ' .
         'WHERE email IN ' .
         '(' . rtrim(str_repeat('?,', count($subscribers)), ',') . ')',
       array_merge(
