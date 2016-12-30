@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
@@ -362,6 +363,122 @@ class SubscriberTest extends MailPoetTest {
     expect($subscriber->updated_at)->notEquals('1984-03-09 00:00:02');
     expect($subscriber->created_at)->equals($subscriber->updated_at);
     expect($subscriber->deleted_at)->equals(null);
+  }
+
+  function testItOverwritesSubscriberDataWhenConfirmationIsDisabled() {
+    $original_setting_value = Setting::getValue('signup_confirmation.enabled');
+    Setting::setValue('signup_confirmation.enabled', false);
+
+    $segment = Segment::create();
+    $segment->hydrate(array('name' => 'List #1'));
+    $segment->save();
+
+    $segment2 = Segment::create();
+    $segment2->hydrate(array('name' => 'List #2'));
+    $segment2->save();
+
+    $data = array(
+      'email' => 'some@example.com',
+      'first_name' => 'Some',
+      'last_name' => 'Example',
+    );
+
+    $subscriber = Subscriber::subscribe(
+      $data,
+      array($segment->id())
+    );
+
+    expect($subscriber->id() > 0)->equals(true);
+    expect($subscriber->segments()->count())->equals(1);
+    expect($subscriber->email)->equals($data['email']);
+    expect($subscriber->first_name)->equals($data['first_name']);
+    expect($subscriber->last_name)->equals($data['last_name']);
+
+    $data2 = $data;
+    $data2['first_name'] = 'Aaa';
+    $data2['last_name'] = 'Bbb';
+
+    $subscriber = Subscriber::subscribe(
+      $data2,
+      array($segment->id(), $segment2->id())
+    );
+
+    expect($subscriber->id() > 0)->equals(true);
+    expect($subscriber->segments()->count())->equals(2);
+    expect($subscriber->email)->equals($data2['email']);
+    expect($subscriber->first_name)->equals($data2['first_name']);
+    expect($subscriber->last_name)->equals($data2['last_name']);
+
+    Setting::setValue('signup_confirmation.enabled', $original_setting_value);
+  }
+
+  function testItStoresUnconfirmedSubscriberDataWhenConfirmationIsEnabled() {
+    $original_setting_value = Setting::getValue('signup_confirmation.enabled');
+    Setting::setValue('signup_confirmation.enabled', true);
+
+    $segment = Segment::create();
+    $segment->hydrate(array('name' => 'List #1'));
+    $segment->save();
+
+    $segment2 = Segment::create();
+    $segment2->hydrate(array('name' => 'List #2'));
+    $segment2->save();
+
+    $data = array(
+      'email' => 'some@example.com',
+      'first_name' => 'Some',
+      'last_name' => 'Example',
+    );
+
+    $subscriber = Subscriber::subscribe(
+      $data,
+      array($segment->id())
+    );
+
+    expect($subscriber->id() > 0)->equals(true);
+    expect($subscriber->segments()->count())->equals(1);
+    expect($subscriber->email)->equals($data['email']);
+    expect($subscriber->first_name)->equals($data['first_name']);
+    expect($subscriber->last_name)->equals($data['last_name']);
+
+    expect($subscriber->unconfirmed_data)->isEmpty();
+
+    $data2 = $data;
+    $data2['first_name'] = 'Aaa';
+    $data2['last_name'] = 'Bbb';
+
+    $subscriber = Subscriber::subscribe(
+      $data2,
+      array($segment->id(), $segment2->id())
+    );
+
+    expect($subscriber->id() > 0)->equals(true);
+    expect($subscriber->segments()->count())->equals(2);
+    // fields should be left intact
+    expect($subscriber->email)->equals($data['email']);
+    expect($subscriber->first_name)->equals($data['first_name']);
+    expect($subscriber->last_name)->equals($data['last_name']);
+
+    expect($subscriber->unconfirmed_data)->notEmpty();
+    expect($subscriber->unconfirmed_data)->equals(json_encode($data2));
+
+    // Unconfirmed data should be wiped after any direct update
+    // during confirmation, manual admin editing
+    $subscriber = Subscriber::createOrUpdate($data2);
+    expect($subscriber->unconfirmed_data)->isEmpty();
+    // during import
+    $subscriber->unconfirmed_data = json_encode($data2);
+    $subscriber->save();
+    expect($subscriber->isDirty('unconfirmed_data'))->false();
+    expect($subscriber->unconfirmed_data)->notEmpty();
+    Subscriber::updateMultiple(
+      array_keys($data2),
+      array(array_values($data2))
+    );
+    $subscriber = Subscriber::where('email', $data2['email'])->findOne();
+    expect($subscriber->unconfirmed_data)->isEmpty();
+
+    Setting::setValue('signup_confirmation.enabled', $original_setting_value);
   }
 
   function testItCanBeUpdatedByEmail() {

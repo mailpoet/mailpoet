@@ -140,6 +140,7 @@ class Migrator {
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',
+      'unconfirmed_data longtext,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email)'
     );

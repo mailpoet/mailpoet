@@ -170,21 +170,7 @@ class Subscriber extends Model {
   static function subscribe($subscriber_data = array(), $segment_ids = array()) {
     // filter out keys from the subscriber_data array
     // that should not be editable when subscribing
-    $reserved_columns = array(
-      'id',
-      'wp_user_id',
-      'status',
-      'subscribed_ip',
-      'confirmed_ip',
-      'confirmed_at',
-      'created_at',
-      'updated_at',
-      'deleted_at'
-    );
-    $subscriber_data = array_diff_key(
-      $subscriber_data,
-      array_flip($reserved_columns)
-    );
+    $subscriber_data = self::filterOutReservedColumns($subscriber_data);
 
     $signup_confirmation_enabled = (bool)Setting::getValue(
       'signup_confirmation.enabled'
@@ -209,14 +195,17 @@ class Subscriber extends Model {
 
     $subscriber = self::findOne($subscriber_data['email']);
 
-    if($subscriber === false) {
-      // create new subscriber
+    if($subscriber === false || !$signup_confirmation_enabled) {
+      // create new subscriber or update if no confirmation is required
       $subscriber = self::createOrUpdate($subscriber_data);
       if($subscriber->getErrors() !== false) {
         return $subscriber;
       }
 
       $subscriber = self::findOne($subscriber->id);
+    } else {
+      // store subscriber data to be updated after confirmation
+      $subscriber->setUnconfirmedData($subscriber_data);
     }
 
     // restore trashed subscriber
@@ -248,6 +237,26 @@ class Subscriber extends Model {
     }
 
     return $subscriber;
+  }
+
+  static function filterOutReservedColumns(array $subscriber_data) {
+    $reserved_columns = array(
+      'id',
+      'wp_user_id',
+      'status',
+      'subscribed_ip',
+      'confirmed_ip',
+      'confirmed_at',
+      'created_at',
+      'updated_at',
+      'deleted_at',
+      'unconfirmed_data'
+    );
+    $subscriber_data = array_diff_key(
+      $subscriber_data,
+      array_flip($reserved_columns)
+    );
+    return $subscriber_data;
   }
 
   static function search($orm, $search = '') {
@@ -485,6 +494,9 @@ class Subscriber extends Model {
       }
     }
 
+    // wipe any unconfirmed data at this point
+    $data['unconfirmed_data'] = null;
+
     $old_status = false;
     $new_status = false;
 
@@ -585,6 +597,20 @@ class Subscriber extends Model {
       'custom_field_id' => $custom_field_id,
       'value' => $value
     ));
+  }
+
+  function setUnconfirmedData(array $subscriber_data) {
+    $subscriber_data = self::filterOutReservedColumns($subscriber_data);
+    $this->unconfirmed_data = json_encode($subscriber_data);
+  }
+
+  function getUnconfirmedData() {
+    if(!empty($this->unconfirmed_data)) {
+      $subscriber_data = json_decode($this->unconfirmed_data, true);
+      $subscriber_data = self::filterOutReservedColumns((array)$subscriber_data);
+      return $subscriber_data;
+    }
+    return null;
   }
 
   static function bulkAddToList($orm, $data = array()) {
@@ -812,6 +838,7 @@ class Subscriber extends Model {
       'UPDATE `' . self::$_table . '` ' .
       'SET ' . implode(', ', $sql('statement')) . ' '.
       (($updated_at) ? ', updated_at = "' . $updated_at . '" ' : '') .
+      ', unconfirmed_data = NULL ' .
         'WHERE email IN ' .
         '(' . rtrim(str_repeat('?,', count($subscribers)), ',') . ')',
       array_merge(
