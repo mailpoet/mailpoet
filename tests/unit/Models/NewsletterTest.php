@@ -8,6 +8,8 @@ use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\StatisticsOpens;
+use MailPoet\Models\StatisticsClicks;
+use MailPoet\Models\StatisticsUnsubscribes;
 
 class NewsletterTest extends MailPoetTest {
   function _before() {
@@ -135,11 +137,25 @@ class NewsletterTest extends MailPoetTest {
     $opens->queue_id = $sending_queue->id;
     $opens->save();
 
+    $clicks = StatisticsClicks::create();
+    $clicks->subscriber_id = $subscriber->id;
+    $clicks->newsletter_id = $this->newsletter->id;
+    $clicks->queue_id = $sending_queue->id;
+    $clicks->link_id = 0;
+    $clicks->count = 0;
+    $clicks->save();
+
+    $unsubscribes = StatisticsUnsubscribes::create();
+    $unsubscribes->subscriber_id = $subscriber->id;
+    $unsubscribes->newsletter_id = $this->newsletter->id;
+    $unsubscribes->queue_id = $sending_queue->id;
+    $unsubscribes->save();
+
     $newsletter->queue = $newsletter->getQueue()->asArray();
     $statistics = $newsletter->getStatistics( $sending_queue->id);
-    expect($statistics->opened)->equals(1);
-    expect($statistics->clicked)->equals(0);
-    expect($statistics->unsubscribed)->equals(0);
+    expect($statistics['opened'])->equals(1);
+    expect($statistics['clicked'])->equals(1);
+    expect($statistics['unsubscribed'])->equals(1);
   }
 
   function testItCanCreateOrUpdate() {
@@ -376,5 +392,7 @@ class NewsletterTest extends MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
   }
 }
