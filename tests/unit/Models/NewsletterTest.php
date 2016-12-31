@@ -137,19 +137,19 @@ class NewsletterTest extends MailPoetTest {
     $opens->queue_id = $sending_queue->id;
     $opens->save();
 
-    $opens = StatisticsClicks::create();
-    $opens->subscriber_id = $subscriber->id;
-    $opens->newsletter_id = $this->newsletter->id;
-    $opens->queue_id = $sending_queue->id;
-    $opens->link_id = 0;
-    $opens->count = 0;
-    $opens->save();
+    $clicks = StatisticsClicks::create();
+    $clicks->subscriber_id = $subscriber->id;
+    $clicks->newsletter_id = $this->newsletter->id;
+    $clicks->queue_id = $sending_queue->id;
+    $clicks->link_id = 0;
+    $clicks->count = 0;
+    $clicks->save();
 
-    $opens = StatisticsUnsubscribes::create();
-    $opens->subscriber_id = $subscriber->id;
-    $opens->newsletter_id = $this->newsletter->id;
-    $opens->queue_id = $sending_queue->id;
-    $opens->save();
+    $unsubscribes = StatisticsUnsubscribes::create();
+    $unsubscribes->subscriber_id = $subscriber->id;
+    $unsubscribes->newsletter_id = $this->newsletter->id;
+    $unsubscribes->queue_id = $sending_queue->id;
+    $unsubscribes->save();
 
     $newsletter->queue = $newsletter->getQueue()->asArray();
     $statistics = $newsletter->getStatistics( $sending_queue->id);
