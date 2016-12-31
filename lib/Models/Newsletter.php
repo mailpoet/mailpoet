@@ -249,14 +249,23 @@ class Newsletter extends Model {
     )->select_expr(MP_NEWSLETTER_OPTION_TABLE.'.value');
   }
 
-  function getQueue() {
-    return SendingQueue::where('newsletter_id', $this->id)
+  function getQueue($columns = '*') {
+    return SendingQueue::select($columns)
+      ->where('newsletter_id', $this->id)
       ->orderByDesc('updated_at')
       ->findOne();
   }
 
   function withSendingQueue() {
-    $queue = $this->getQueue();
+    $queue = $this->getQueue(array(
+      'id',
+      'newsletter_id',
+      'newsletter_rendered_subject',
+      'status',
+      'count_processed',
+      'count_total',
+      'scheduled_at'
+    ));
     if($queue === false) {
       $this->queue = false;
     } else {
@@ -285,11 +294,7 @@ class Newsletter extends Model {
 
   function withStatistics() {
     $statistics = $this->getStatistics();
-    if($statistics === false) {
-      $this->statistics = false;
-    } else {
-      $this->statistics = $statistics->asArray();
-    }
+    $this->statistics = $statistics;
     return $this;
   }
 
@@ -299,42 +304,42 @@ class Newsletter extends Model {
   }
 
   function getStatistics() {
-    $statistics_query = SendingQueue::tableAlias('queues')
-      ->selectExpr(
-        'COUNT(DISTINCT(clicks.subscriber_id)) as clicked, ' .
-        'COUNT(DISTINCT(opens.subscriber_id)) as opened, ' .
-        'COUNT(DISTINCT(unsubscribes.subscriber_id)) as unsubscribed '
-      )
-      ->leftOuterJoin(
-        MP_STATISTICS_CLICKS_TABLE,
-        'queues.id = clicks.queue_id',
-        'clicks'
-      )
-      ->leftOuterJoin(
-        MP_STATISTICS_OPENS_TABLE,
-        'queues.id = opens.queue_id',
-        'opens'
-      )
-      ->leftOuterJoin(
-        MP_STATISTICS_UNSUBSCRIBES_TABLE,
-        'queues.id = unsubscribes.queue_id',
-        'unsubscribes'
-      );
-
     if($this->type === self::TYPE_WELCOME) {
-      return $statistics_query
-        ->where('queues.newsletter_id', $this->id)
-        ->where('queues.status', SendingQueue::STATUS_COMPLETED)
-        ->findOne();
+      $where = '`queue_id` IN (SELECT `id` FROM ' . MP_SENDING_QUEUES_TABLE . '
+                WHERE `newsletter_id` = ? AND `status` = ?)';
+      $where_params = array($this->id, SendingQueue::STATUS_COMPLETED);
     } else {
       if($this->queue === false) {
         return false;
       } else {
-        return $statistics_query
-          ->where('queues.id', $this->queue['id'])
-          ->findOne();
+        $where = '`queue_id` = ?';
+        $where_params = array($this->queue['id']);
       }
     }
+
+    $clicks = StatisticsClicks::selectExpr(
+        'COUNT(DISTINCT subscriber_id) as cnt'
+      )
+      ->whereRaw($where, $where_params)
+      ->findOne();
+
+    $opens = StatisticsOpens::selectExpr(
+        'COUNT(DISTINCT subscriber_id) as cnt'
+      )
+      ->whereRaw($where, $where_params)
+      ->findOne();
+
+    $unsubscribes = StatisticsUnsubscribes::selectExpr(
+        'COUNT(DISTINCT subscriber_id) as cnt'
+      )
+      ->whereRaw($where, $where_params)
+      ->findOne();
+
+    return array(
+      'clicked' => !empty($clicks->cnt) ? $clicks->cnt : 0,
+      'opened' => !empty($opens->cnt) ? $opens->cnt : 0,
+      'unsubscribed' => !empty($unsubscribes->cnt) ? $unsubscribes->cnt : 0
+    );
   }
 
   static function search($orm, $search = '') {
