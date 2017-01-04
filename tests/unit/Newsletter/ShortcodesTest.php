@@ -81,7 +81,7 @@ class ShortcodesTest extends MailPoetTest {
     $date = new \DateTime('now');
     expect(Date::process('d'))->equals($date->format('d'));
     expect(Date::process('dordinal'))->equals($date->format('dS'));
-    expect(Date::process('dtext'))->equals($date->format('D'));
+    expect(Date::process('dtext'))->equals($date->format('l'));
     expect(Date::process('m'))->equals($date->format('m'));
     expect(Date::process('mtext'))->equals($date->format('F'));
     expect(Date::process('y'))->equals($date->format('Y'));

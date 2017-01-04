@@ -7,7 +7,7 @@ class Date {
     $actions = array(
       'd' => $date->format('d'),
       'dordinal' => $date->format('dS'),
-      'dtext' => $date->format('D'),
+      'dtext' => $date->format('l'),
       'm' => $date->format('m'),
       'mtext' => $date->format('F'),
       'y' => $date->format('Y')
