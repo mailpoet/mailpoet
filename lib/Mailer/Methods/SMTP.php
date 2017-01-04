@@ -66,6 +66,7 @@ class SMTP {
       ->setFrom(array(
           $this->sender['from_email'] => $this->sender['from_name']
         ))
+      ->setSender($this->sender['from_email'])
       ->setReplyTo(array(
           $this->reply_to['reply_to_email'] =>  $this->reply_to['reply_to_name']
         ))
