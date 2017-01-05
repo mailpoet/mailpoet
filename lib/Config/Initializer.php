@@ -39,6 +39,7 @@ class Initializer {
     add_action('plugins_loaded', array($this, 'setup'));
     add_action('init', array($this, 'onInit'));
     add_action('widgets_init', array($this, 'setupWidget'));
+    add_action('wp_loaded', array($this, 'setupHooks'));
   }
 
   function checkRequirements() {
@@ -109,7 +110,6 @@ class Initializer {
       $this->setupAnalytics();
       $this->setupChangelog();
       $this->setupShortcodes();
-      $this->setupHooks();
       $this->setupImages();
       $this->setupCronTrigger();
 
