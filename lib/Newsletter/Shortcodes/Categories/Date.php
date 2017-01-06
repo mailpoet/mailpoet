@@ -2,9 +2,9 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 class Date {
-  static function process($action) {
+  static function process($format) {
     $date = new \DateTime('now');
-    $actions = array(
+    $available_formats = array(
       'd' => $date->format('d'),
       'dordinal' => $date->format('dS'),
       'dtext' => $date->format('l'),
@@ -12,6 +12,11 @@ class Date {
       'mtext' => $date->format('F'),
       'y' => $date->format('Y')
     );
-    return (isset($actions[$action])) ? $actions[$action] : false;
+    if(!empty($available_formats[$format])) {
+      return $available_formats[$format];
+    }
+    return (preg_match('/^custom_(.*?)$/', $format, $custom_format)) ?
+      $date->format($custom_format[1]) :
+      false;
   }
 }

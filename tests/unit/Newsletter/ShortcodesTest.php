@@ -85,6 +85,8 @@ class ShortcodesTest extends MailPoetTest {
     expect(Date::process('m'))->equals($date->format('m'));
     expect(Date::process('mtext'))->equals($date->format('F'));
     expect(Date::process('y'))->equals($date->format('Y'));
+    // allow custom date formats (http://php.net/manual/en/function.date.php)
+    expect(Date::process('custom_U'))->equals($date->format('U'));
   }
 
   function testItCanProcessNewsletterShortcodes() {
