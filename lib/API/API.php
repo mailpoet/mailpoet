@@ -12,6 +12,8 @@ class API {
   private $_endpoint_class;
   private $_data = array();
 
+  const TOKEN_NAME = 'mailpoet_token';
+
   function init() {
      // Admin Security token
     add_action(
@@ -138,13 +140,13 @@ class API {
   }
 
   function checkToken() {
-    return wp_verify_nonce($this->_token, 'mailpoet_token');
+    return wp_verify_nonce($this->_token, self::TOKEN_NAME);
   }
 
   function setToken() {
     $global = '<script type="text/javascript">';
-    $global .= 'var mailpoet_token = "';
-    $global .=  Security::generateToken();
+    $global .= 'var ' . self::TOKEN_NAME. ' = "';
+    $global .=  Security::generateToken('API');
     $global .= '";';
     $global .= '</script>';
     echo $global;

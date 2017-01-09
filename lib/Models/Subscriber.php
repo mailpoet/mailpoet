@@ -1,9 +1,11 @@
 <?php
 namespace MailPoet\Models;
+use MailPoet\Config\Env;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Util\Helpers;
 use MailPoet\Subscription;
+use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -153,10 +155,9 @@ class Subscriber extends Model {
   }
 
   static function generateToken($email = null) {
-    if($email !== null) {
-      return substr(md5(AUTH_KEY . $email), 0, self::SUBSCRIBER_TOKEN_LENGTH);
-    }
-    return false;
+    return ($email !== null) ?
+      Security::generateToken('subscriber', self::SUBSCRIBER_TOKEN_LENGTH, $email) :
+      false;
   }
 
   static function verifyToken($email, $token) {

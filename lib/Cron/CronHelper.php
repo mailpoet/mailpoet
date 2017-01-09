@@ -43,7 +43,7 @@ class CronHelper {
   }
 
   static function createToken() {
-    return Security::generateRandomString();
+    return Security::generateRandomString(5);
   }
 
   static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
