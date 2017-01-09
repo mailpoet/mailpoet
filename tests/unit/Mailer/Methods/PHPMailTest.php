@@ -50,6 +50,8 @@ class PHPMailTest extends MailPoetTest {
       ->equals(array('mailpoet-phoenix-test@mailinator.com' => 'Recipient'));
     expect($message->getFrom())
       ->equals(array($this->sender['from_email'] => $this->sender['from_name']));
+    expect($message->getSender())
+      ->equals(array($this->sender['from_email'] => null));
     expect($message->getReplyTo())
       ->equals(array($this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name']));
     expect($message->getSubject())
