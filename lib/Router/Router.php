@@ -57,14 +57,15 @@ class Router {
     return rtrim(base64_encode(json_encode($data)), '=');
   }
 
-  static function buildRequest($endpoint, $action, $data) {
-    $data = self::encodeRequestData($data);
+  static function buildRequest($endpoint, $action, $data = false) {
     $params = array(
       self::NAME => '',
       'endpoint' => $endpoint,
       'action' => $action,
-      'data' => $data
     );
+    if($data) {
+      $params['data'] = self::encodeRequestData($data);
+    }
     return add_query_arg($params, home_url());
   }
 

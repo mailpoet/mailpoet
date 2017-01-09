@@ -13,7 +13,7 @@ class CronHelperTest extends MailPoetTest {
     expect(CronHelper::DAEMON_SETTING)->equals('cron_daemon');
   }
 
-  function testItCanCreateDaemon() {
+  function testItCreatesDaemon() {
     $token = 'create_token';
     $time = time();
     CronHelper::createDaemon($token);
@@ -26,7 +26,7 @@ class CronHelperTest extends MailPoetTest {
     );
   }
 
-  function testItCanRestartDaemon() {
+  function testItRestartsDaemon() {
     $token = 'restart_token';
     $time = time();
     CronHelper::restartDaemon($token);
@@ -39,7 +39,7 @@ class CronHelperTest extends MailPoetTest {
     );
   }
 
-  function testItLoadDaemon() {
+  function testItLoadsDaemon() {
     $daemon = array(
       'token' => 'some_token',
       'updated_at' => '12345678'
@@ -51,7 +51,7 @@ class CronHelperTest extends MailPoetTest {
     expect(CronHelper::getDaemon())->equals($daemon);
   }
 
-  function testItCanSaveDaemon() {
+  function testItSavesDaemon() {
     // when saving daemon, 'updated_at' value should change
     $daemon = array(
       'token' => 'some_token',
@@ -67,7 +67,7 @@ class CronHelperTest extends MailPoetTest {
     expect(CronHelper::getDaemon())->equals($daemon);
   }
 
-  function testItCanCreateRandomToken() {
+  function testItCreatesRandomToken() {
     // random token is a string of 5 characters
     $token1 =  CronHelper::createToken();
     $token2 =  CronHelper::createToken();
@@ -76,7 +76,7 @@ class CronHelperTest extends MailPoetTest {
     expect(strlen($token1))->equals(5);
   }
 
-  function testItCanGetSiteUrl() {
+  function testItGetsSiteUrl() {
     // 1. do nothing when the url does not contain port
     $site_url = 'http://example.com';
     expect(CronHelper::getSiteUrl($site_url))->equals($site_url);
@@ -100,7 +100,7 @@ class CronHelperTest extends MailPoetTest {
     }
   }
 
-  function testItCanEnforceExecutionLimit() {
+  function testItEnforcesExecutionLimit() {
     $time = microtime(true);
     expect(CronHelper::enforceExecutionLimit($time))->null();
     try {
@@ -109,6 +109,11 @@ class CronHelperTest extends MailPoetTest {
     } catch(Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
     }
+  }
+
+  function testItPingsDaemon() {
+    if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
+    expect(CronHelper::pingDaemon())->true();
   }
 
   function _after() {

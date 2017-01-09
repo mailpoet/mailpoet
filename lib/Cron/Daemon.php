@@ -20,6 +20,10 @@ class Daemon {
     $this->timer = microtime(true);
   }
 
+  function ping() {
+    $this->terminateRequest('pong');
+  }
+
   function run() {
     ignore_user_abort(true);
     if(!$this->request_data) {
@@ -91,7 +95,7 @@ class Daemon {
     exit;
   }
 
-  function terminateRequest() {
-    exit;
+  function terminateRequest($message = false) {
+    die($message);
   }
 }
