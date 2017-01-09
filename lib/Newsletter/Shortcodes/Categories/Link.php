@@ -9,7 +9,8 @@ use MailPoet\Subscription\Url as SubscriptionUrl;
 class Link {
   static function process(
     $action,
-    $default_value,
+    $action_argument,
+    $action_argument_value,
     $newsletter,
     $subscriber,
     $queue,

@@ -10,11 +10,15 @@ require_once(ABSPATH . 'wp-includes/pluggable.php');
 class Subscriber {
   static function process(
     $action,
-    $default_value,
+    $action_argument,
+    $action_argument_value,
     $newsletter,
     $subscriber
   ) {
     if($subscriber !== false && !is_object($subscriber)) return false;
+    $default_value = ($action_argument === 'default') ?
+      $action_argument_value :
+      '';
     switch($action) {
       case 'firstname':
         return ($subscriber) ? $subscriber->first_name : $default_value;

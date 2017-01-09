@@ -2,16 +2,25 @@
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 class Date {
-  static function process($action) {
+  static function process(
+    $action,
+    $action_argument = false,
+    $action_argument_value = false
+  ) {
     $date = new \DateTime('now');
-    $actions = array(
+    $action_formats = array(
       'd' => $date->format('d'),
       'dordinal' => $date->format('dS'),
-      'dtext' => $date->format('D'),
+      'dtext' => $date->format('l'),
       'm' => $date->format('m'),
       'mtext' => $date->format('F'),
       'y' => $date->format('Y')
     );
-    return (isset($actions[$action])) ? $actions[$action] : false;
+    if(!empty($action_formats[$action])) {
+      return $action_formats[$action];
+    }
+    return ($action === 'custom' && $action_argument === 'format') ?
+      $date->format($action_argument_value) :
+      false;
   }
 }
