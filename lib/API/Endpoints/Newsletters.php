@@ -284,7 +284,7 @@ class Newsletters extends APIEndpoint {
         if($result['response'] === false) {
           $error = sprintf(
             __('The email could not be sent: %s', 'mailpoet'),
-            $result['error']
+            $result['error_message']
           );
           return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
         } else {
