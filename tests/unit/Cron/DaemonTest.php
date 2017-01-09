@@ -195,6 +195,15 @@ class DaemonTest extends MailPoetTest {
     expect(ignore_user_abort())->equals(1);
   }
 
+  function testItRespondsToPingRequest() {
+    $daemon = Stub::make(new Daemon(true), array(
+      'terminateRequest' => Stub::exactly(1, function($message) {
+        expect($message)->equals('pong');
+      })
+    ), $this);
+    $daemon->ping();
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }

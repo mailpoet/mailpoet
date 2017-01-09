@@ -2,7 +2,7 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Models\Setting;
-use MailPoet\Router\Endpoints\Queue as QueueEndpoint;
+use MailPoet\Router\Endpoints\CronDaemon as CronDaemonEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Util\Security;
 
@@ -46,11 +46,27 @@ class CronHelper {
     return Security::generateRandomString();
   }
 
+  static function pingDaemon() {
+    $url = Router::buildRequest(
+      CronDaemonEndpoint::ENDPOINT,
+      CronDaemonEndpoint::ACTION_PING_RESPONSE
+    );
+    $url = str_replace(home_url(), self::getSiteUrl(), $url);
+    $args = array(
+      'blocking' => true,
+      'sslverify' => false,
+      'timeout' => self::DAEMON_REQUEST_TIMEOUT,
+      'user-agent' => 'MailPoet (www.mailpoet.com) Cron'
+    );
+    $result = wp_remote_get($url, $args);
+    return wp_remote_retrieve_body($result) === 'pong';
+  }
+
   static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
     $data = array('token' => $token);
     $url = Router::buildRequest(
-      QueueEndpoint::ENDPOINT,
-      QueueEndpoint::ACTION_RUN,
+      CronDaemonEndpoint::ENDPOINT,
+      CronDaemonEndpoint::ACTION_RUN,
       $data
     );
     $url = str_replace(home_url(), self::getSiteUrl(), $url);
