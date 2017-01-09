@@ -169,10 +169,13 @@ class Hooks {
   }
 
   function setupPostNotifications() {
-    add_filter(
-      'publish_post',
-      '\MailPoet\Newsletter\Scheduler\Scheduler::schedulePostNotification',
-      10, 1
-    );
+    $post_types = get_post_types();
+    foreach($post_types as $post_type) {
+      add_filter(
+        'publish_' . $post_type,
+        '\MailPoet\Newsletter\Scheduler\Scheduler::schedulePostNotification',
+        10, 1
+      );
+    }
   }
 }
