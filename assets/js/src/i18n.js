@@ -1,10 +1,8 @@
 define('i18n',
   [
-    'mailpoet',
-    'underscore',
+    'mailpoet'
   ], function(
-    MailPoet,
-    _
+    MailPoet
 ) {
   'use strict';
 

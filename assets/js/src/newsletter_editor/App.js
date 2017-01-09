@@ -1,12 +1,11 @@
 define([
     'backbone',
     'backbone.marionette',
-    'backbone.supermodel',
     'jquery',
     'underscore',
     'handlebars',
     'handlebars_helpers'
-  ], function(Backbone, Marionette, SuperModel, jQuery, _, Handlebars) {
+  ], function(Backbone, Marionette, jQuery, _, Handlebars) {
 
   var app = new Marionette.Application(), AppView;
 
