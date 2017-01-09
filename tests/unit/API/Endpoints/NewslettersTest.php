@@ -11,17 +11,19 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 
 class NewslettersTest extends MailPoetTest {
   function _before() {
-    $this->newsletter = Newsletter::createOrUpdate(array(
-                                                     'subject' => 'My Standard Newsletter',
-                                                     'body' => Fixtures::get('newsletter_body_template'),
-                                                     'type' => Newsletter::TYPE_STANDARD,
-                                                   ));
+    $this->newsletter = Newsletter::createOrUpdate(
+      array(
+        'subject' => 'My Standard Newsletter',
+        'body' => Fixtures::get('newsletter_body_template'),
+        'type' => Newsletter::TYPE_STANDARD,
+      ));
 
-    $this->post_notification = Newsletter::createOrUpdate(array(
-                                                            'subject' => 'My Post Notification',
-                                                            'body' => Fixtures::get('newsletter_body_template'),
-                                                            'type' => Newsletter::TYPE_NOTIFICATION
-                                                          ));
+    $this->post_notification = Newsletter::createOrUpdate(
+      array(
+        'subject' => 'My Post Notification',
+        'body' => Fixtures::get('newsletter_body_template'),
+        'type' => Newsletter::TYPE_NOTIFICATION
+      ));
   }
 
   function testItCanGetANewsletter() {
@@ -166,33 +168,41 @@ class NewslettersTest extends MailPoetTest {
   function testItCanSetANewsletterStatus() {
     $router = new Newsletters();
     // set status to sending
-    $response = $router->setStatus(array(
-                                     'id' => $this->newsletter->id,
-                                     'status' => Newsletter::STATUS_SENDING
-                                   ));
+    $response = $router->setStatus
+    (array(
+       'id' => $this->newsletter->id,
+       'status' => Newsletter::STATUS_SENDING
+     )
+    );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['status'])->equals(Newsletter::STATUS_SENDING);
 
     // set status to draft
-    $response = $router->setStatus(array(
-                                     'id' => $this->newsletter->id,
-                                     'status' => Newsletter::STATUS_DRAFT
-                                   ));
+    $response = $router->setStatus(
+      array(
+        'id' => $this->newsletter->id,
+        'status' => Newsletter::STATUS_DRAFT
+      )
+    );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['status'])->equals(Newsletter::STATUS_DRAFT);
 
     // no status specified throws an error
-    $response = $router->setStatus(array(
-                                     'id' => $this->newsletter->id,
-                                   ));
+    $response = $router->setStatus(
+      array(
+        'id' => $this->newsletter->id,
+      )
+    );
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])
       ->equals('You need to specify a status.');
 
     // invalid newsletter id throws an error
-    $response = $router->setStatus(array(
-                                     'status' => Newsletter::STATUS_DRAFT
-                                   ));
+    $response = $router->setStatus(
+      array(
+        'status' => Newsletter::STATUS_DRAFT
+      )
+    );
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])
       ->equals('This newsletter does not exist.');
@@ -280,24 +290,30 @@ class NewslettersTest extends MailPoetTest {
     $segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
 
     $newsletter_segment = NewsletterSegment::create();
-    $newsletter_segment->hydrate(array(
-                                   'newsletter_id' => $this->newsletter->id,
-                                   'segment_id' => $segment_1->id
-                                 ));
+    $newsletter_segment->hydrate(
+      array(
+        'newsletter_id' => $this->newsletter->id,
+        'segment_id' => $segment_1->id
+      )
+    );
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
-    $newsletter_segment->hydrate(array(
-                                   'newsletter_id' => $this->newsletter->id,
-                                   'segment_id' => $segment_2->id
-                                 ));
+    $newsletter_segment->hydrate(
+      array(
+        'newsletter_id' => $this->newsletter->id,
+        'segment_id' => $segment_2->id
+      )
+    );
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
-    $newsletter_segment->hydrate(array(
-                                   'newsletter_id' => $this->post_notification->id,
-                                   'segment_id' => $segment_2->id
-                                 ));
+    $newsletter_segment->hydrate(
+      array(
+        'newsletter_id' => $this->post_notification->id,
+        'segment_id' => $segment_2->id
+      )
+    );
     $newsletter_segment->save();
 
     $router = new Newsletters();
@@ -333,35 +349,43 @@ class NewslettersTest extends MailPoetTest {
 
     // link standard newsletter to the 2 segments
     $newsletter_segment = NewsletterSegment::create();
-    $newsletter_segment->hydrate(array(
-                                   'newsletter_id' => $this->newsletter->id,
-                                   'segment_id' => $segment_1->id
-                                 ));
+    $newsletter_segment->hydrate(
+      array(
+        'newsletter_id' => $this->newsletter->id,
+        'segment_id' => $segment_1->id
+      )
+    );
     $newsletter_segment->save();
 
     $newsletter_segment = NewsletterSegment::create();
-    $newsletter_segment->hydrate(array(
-                                   'newsletter_id' => $this->newsletter->id,
-                                   'segment_id' => $segment_2->id
-                                 ));
+    $newsletter_segment->hydrate
+    (array(
+       'newsletter_id' => $this->newsletter->id,
+       'segment_id' => $segment_2->id
+     )
+    );
     $newsletter_segment->save();
 
     // link post notification to the 2nd segment
     $newsletter_segment = NewsletterSegment::create();
-    $newsletter_segment->hydrate(array(
-                                   'newsletter_id' => $this->post_notification->id,
-                                   'segment_id' => $segment_2->id
-                                 ));
+    $newsletter_segment->hydrate(
+      array(
+        'newsletter_id' => $this->post_notification->id,
+        'segment_id' => $segment_2->id
+      )
+    );
     $newsletter_segment->save();
 
     $router = new Newsletters();
 
     // filter by 1st segment
-    $response = $router->listing(array(
-                                   'filter' => array(
-                                     'segment' => $segment_1->id
-                                   )
-                                 ));
+    $response = $router->listing(
+      array(
+        'filter' => array(
+          'segment' => $segment_1->id
+        )
+      )
+    );
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
@@ -370,11 +394,13 @@ class NewslettersTest extends MailPoetTest {
     expect($response->data[0]['subject'])->equals($this->newsletter->subject);
 
     // filter by 2nd segment
-    $response = $router->listing(array(
-                                   'filter' => array(
-                                     'segment' => $segment_2->id
-                                   )
-                                 ));
+    $response = $router->listing(
+      array(
+        'filter' => array(
+          'segment' => $segment_2->id
+        )
+      )
+    );
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
@@ -385,11 +411,13 @@ class NewslettersTest extends MailPoetTest {
   function testItCanLimitListing() {
     $router = new Newsletters();
     // get 1st page (limit items per page to 1)
-    $response = $router->listing(array(
-                                   'limit' => 1,
-                                   'sort_by' => 'subject',
-                                   'sort_order' => 'asc'
-                                 ));
+    $response = $router->listing(
+      array(
+        'limit' => 1,
+        'sort_by' => 'subject',
+        'sort_order' => 'asc'
+      )
+    );
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
@@ -400,12 +428,14 @@ class NewslettersTest extends MailPoetTest {
     );
 
     // get 1st page (limit items per page to 1)
-    $response = $router->listing(array(
-                                   'limit' => 1,
-                                   'offset' => 1,
-                                   'sort_by' => 'subject',
-                                   'sort_order' => 'asc'
-                                 ));
+    $response = $router->listing(
+      array(
+        'limit' => 1,
+        'offset' => 1,
+        'sort_by' => 'subject',
+        'sort_order' => 'asc'
+      )
+    );
 
     expect($response->meta['count'])->equals(2);
     expect($response->data)->count(1);
@@ -421,12 +451,14 @@ class NewslettersTest extends MailPoetTest {
     );
 
     $router = new Newsletters();
-    $response = $router->bulkAction(array(
-                                      'listing' => array(
-                                        'selection' => $selection_ids
-                                      ),
-                                      'action' => 'delete'
-                                    ));
+    $response = $router->bulkAction(
+      array(
+        'listing' => array(
+          'selection' => $selection_ids
+        ),
+        'action' => 'delete'
+      )
+    );
 
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(count($selection_ids));
@@ -434,25 +466,31 @@ class NewslettersTest extends MailPoetTest {
 
   function testItCanBulkDeleteNewsletters() {
     $router = new Newsletters();
-    $response = $router->bulkAction(array(
-                                      'action' => 'trash',
-                                      'listing' => array('group' => 'all')
-                                    ));
+    $response = $router->bulkAction(
+      array(
+        'action' => 'trash',
+        'listing' => array('group' => 'all')
+      )
+    );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(2);
 
     $router = new Newsletters();
-    $response = $router->bulkAction(array(
-                                      'action' => 'delete',
-                                      'listing' => array('group' => 'trash')
-                                    ));
+    $response = $router->bulkAction(
+      array(
+        'action' => 'delete',
+        'listing' => array('group' => 'trash')
+      )
+    );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(2);
 
-    $response = $router->bulkAction(array(
-                                      'action' => 'delete',
-                                      'listing' => array('group' => 'trash')
-                                    ));
+    $response = $router->bulkAction(
+      array(
+        'action' => 'delete',
+        'listing' => array('group' => 'trash')
+      )
+    );
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(0);
   }
