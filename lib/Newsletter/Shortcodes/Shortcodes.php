@@ -37,7 +37,7 @@ class Shortcodes {
 
   function match($shortcode) {
     preg_match(
-      '/\[(?P<category>\w+)?:(?P<action>\w+)(?:.*?\|.*?default:(?P<default>.*?))?\]/',
+      '/\[(?P<category>\w+)?:(?P<action>\w+)(?:.*?\|.*?(?P<argument>\w+):(?P<argument_value>.*?))?\]/',
       $shortcode,
       $match
     );
@@ -57,8 +57,11 @@ class Shortcodes {
           false;
         $shortcode_class =
           Shortcodes::SHORTCODE_CATEGORY_NAMESPACE . $shortcode_category;
-        $shortcode_default_value = !empty($shortcode_details['default']) ?
-          $shortcode_details['default'] :
+        $shortcode_argument = !empty($shortcode_details['argument']) ?
+          $shortcode_details['argument'] :
+          false;
+        $shortcode_argument_value = !empty($shortcode_details['argument_value']) ?
+          $shortcode_details['argument_value'] :
           false;
         if(!class_exists($shortcode_class)) {
           $custom_shortcode = apply_filters(
@@ -76,7 +79,8 @@ class Shortcodes {
         }
         return $shortcode_class::process(
           $shortcode_action,
-          $shortcode_default_value,
+          $shortcode_argument,
+          $shortcode_argument_value,
           $_this->newsletter,
           $_this->subscriber,
           $_this->queue,
