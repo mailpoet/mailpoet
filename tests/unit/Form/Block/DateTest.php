@@ -28,8 +28,9 @@ class DateTest extends MailPoetTest {
   }
 
   function testItCanConvertMonthToDatetime() {
+    $current_year = date('Y');
     expect(Date::convertDateToDatetime('05', 'MM'))
-      ->equals('2016-05-01 00:00:00');
+      ->equals(sprintf('%s-05-01 00:00:00', $current_year));
   }
 
   function testItCanConvertYearToDatetime() {

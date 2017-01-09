@@ -7,6 +7,8 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
 class SubscribersFeaturesTest extends MailPoetTest {
   function testChecksIfSubscribersWithinLimitWhenPremiumLicenseDoesNotExist() {
+    // if premium unlocker plugin is enabled, skip this check
+    if(defined('MAILPOET_PREMIUM_LICENSE')) return;
     $subscribers_feature = new SubscribersFeature();
     expect($subscribers_feature->check(0))->false();
     $subscriber = Subscriber::create();
