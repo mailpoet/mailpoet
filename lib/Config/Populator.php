@@ -8,6 +8,7 @@ use \MailPoet\Segments\WP;
 use \MailPoet\Models\Setting;
 use \MailPoet\Settings\Pages;
 use \MailPoet\Util\Helpers;
+use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 
@@ -120,6 +121,9 @@ class Populator {
     if(!Setting::getValue('installed_at')) {
       Setting::setValue('installed_at', date("Y-m-d H:i:s"));
     }
+
+    // generate and save a security key
+    Security::getOrCreateSecurityKey();
 
     // reset mailer log
     MailerLog::resetMailerLog();
