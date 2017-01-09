@@ -316,7 +316,7 @@ class Migrator {
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'KEY  (queue_id)',
+      'KEY queue_id (queue_id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -329,7 +329,7 @@ class Migrator {
       'queue_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'KEY  (queue_id)',
+      'KEY queue_id (queue_id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
@@ -342,7 +342,7 @@ class Migrator {
       'queue_id mediumint(9) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'KEY  (queue_id)',
+      'KEY queue_id (queue_id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
