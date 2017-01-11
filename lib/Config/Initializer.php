@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
 use MailPoet\API;
+use MailPoet\Util\ConflictResolver;
 use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
@@ -112,6 +113,7 @@ class Initializer {
       $this->setupShortcodes();
       $this->setupImages();
       $this->setupCronTrigger();
+      $this->setupConflictResolver();
 
       $this->plugin_initialized = true;
     } catch(\Exception $e) {
@@ -220,6 +222,11 @@ class Initializer {
 
   function setupImages() {
     add_image_size('mailpoet_newsletter_max', 1320);
+  }
+
+  function setupConflictResolver() {
+    $conflict_resolver = new ConflictResolver();
+    $conflict_resolver->init();
   }
 
   function handleFailedInitialization($message) {

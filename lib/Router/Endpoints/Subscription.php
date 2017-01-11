@@ -18,7 +18,6 @@ class Subscription {
   public $data;
 
   function __construct($data) {
-    unset($_GET['action']);
     $this->data = $data;
   }
 
