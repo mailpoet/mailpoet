@@ -2,22 +2,30 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Config\ServicesChecker;
+use MailPoet\Services\Bridge;
 
 if(!defined('ABSPATH')) exit;
 
 class MailPoet {
-  public $url = 'https://bridge.mailpoet.com/api/messages';
+  public $url = 'https://bridge.mailpoet.com/api/v0/messages';
   public $api_key;
   public $sender;
   public $reply_to;
+  public $services_checker;
 
   function __construct($api_key, $sender, $reply_to) {
     $this->api_key = $api_key;
     $this->sender = $sender;
     $this->reply_to = $reply_to;
+    $this->services_checker = new ServicesChecker(false);
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
+    if(!$this->services_checker->checkMailPoetAPIKeyValid()) {
+      $response = __('MailPoet API key is invalid!', 'mailpoet');
+      return Mailer::formatMailerSendErrorResult($response);
+    }
     $message_body = $this->getBody($newsletter, $subscriber);
     $result = wp_remote_post(
       $this->url,
@@ -26,7 +34,11 @@ class MailPoet {
     if(is_wp_error($result)) {
       return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
     }
-    if(wp_remote_retrieve_response_code($result) !== 201) {
+    $response_code = wp_remote_retrieve_response_code($result);
+    if($response_code !== 201) {
+      if($response_code === 401) {
+        Bridge::invalidateKey();
+      }
       $response = (wp_remote_retrieve_body($result)) ?
         wp_remote_retrieve_body($result) :
         wp_remote_retrieve_response_message($result);

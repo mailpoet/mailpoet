@@ -11,16 +11,12 @@ use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
-class Bounce {
-  const TASK_TYPE = 'bounce';
-  const BATCH_SIZE = 100;
-
-  const BOUNCED_HARD = 'hard';
-  const BOUNCED_SOFT = 'soft';
-  const NOT_BOUNCED = null;
+class SendingServiceKeyCheck {
+  const TASK_TYPE = 'sskeycheck';
+  const UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT = 60;
 
   public $timer;
-  public $api;
+  public $bridge;
 
   function __construct($timer = false) {
     $this->timer = ($timer) ? $timer : microtime(true);
@@ -29,9 +25,9 @@ class Bounce {
   }
 
   function initApi() {
-    if(!$this->api) {
+    if(!$this->bridge) {
       $mailer_config = Mailer::getMailerConfig();
-      $this->api = new Bounce\API($mailer_config['mailpoet_api_key']);
+      $this->bridge = new Bridge($mailer_config['mailpoet_api_key']);
     }
   }
 
@@ -46,21 +42,21 @@ class Bounce {
     $running_queues = self::getRunningQueues();
 
     if(!$scheduled_queues && !$running_queues) {
-      self::scheduleBounceSync();
+      self::schedule();
       return false;
     }
 
     foreach($scheduled_queues as $i => $queue) {
-      $this->prepareBounceQueue($queue);
+      $this->prepareQueue($queue);
     }
     foreach($running_queues as $i => $queue) {
-      $this->processBounceQueue($queue);
+      $this->processQueue($queue);
     }
 
     return true;
   }
 
-  static function scheduleBounceSync() {
+  static function schedule() {
     $already_scheduled = SendingQueue::where('type', self::TASK_TYPE)
       ->whereNull('deleted_at')
       ->where('status', SendingQueue::STATUS_SCHEDULED)
@@ -78,28 +74,7 @@ class Bounce {
     return $queue;
   }
 
-  function prepareBounceQueue(SendingQueue $queue) {
-    $subscribers = Subscriber::select('id')
-      ->whereNull('deleted_at')
-      ->whereIn('status', array(
-        Subscriber::STATUS_SUBSCRIBED,
-        Subscriber::STATUS_UNCONFIRMED
-      ))
-      ->findArray();
-    $subscribers = Helpers::arrayColumn($subscribers, 'id');
-
-    if(empty($subscribers)) {
-      $queue->delete();
-      return false;
-    }
-
-    // update current queue
-    $queue->subscribers = serialize(
-      array(
-        'to_process' => $subscribers
-      )
-    );
-    $queue->count_total = $queue->count_to_process = count($subscribers);
+  function prepareQueue(SendingQueue $queue) {
     $queue->status = null;
     $queue->save();
 
@@ -109,52 +84,27 @@ class Bounce {
     return true;
   }
 
-  function processBounceQueue(SendingQueue $queue) {
-    $queue->subscribers = $queue->getSubscribers();
-    if(empty($queue->subscribers['to_process'])) {
-      $queue->delete();
+  function processQueue(SendingQueue $queue) {
+    // abort if execution limit is reached
+    CronHelper::enforceExecutionLimit($this->timer);
+
+    $result = $this->bridge->checkKey();
+
+    if(empty($result['code']) || $result['code'] == 503) {
+      // reschedule the check
+      $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+      $queue->scheduled_at = $scheduled_at->addMinutes(
+        self::UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT
+      );
+      $queue->save();
       return false;
     }
 
-    $subscriber_batches = array_chunk(
-      $queue->subscribers['to_process'],
-      self::BATCH_SIZE
-    );
-
-    foreach($subscriber_batches as $subscribers_to_process_ids) {
-      // abort if execution limit is reached
-      CronHelper::enforceExecutionLimit($this->timer);
-
-      $subscriber_emails = Subscriber::select('email')
-        ->whereIn('id', $subscribers_to_process_ids)
-        ->whereNull('deleted_at')
-        ->findArray();
-      $subscriber_emails = Helpers::arrayColumn($subscriber_emails, 'email');
-
-      $this->processEmails($subscriber_emails);
-
-      $queue->updateProcessedSubscribers($subscribers_to_process_ids);
-    }
+    $queue->processed_at = current_time('mysql');
+    $queue->status = SendingQueue::STATUS_COMPLETED;
+    $queue->save();
 
     return true;
-  }
-
-  function processEmails(array $subscriber_emails) {
-    $checked_emails = $this->api->check($subscriber_emails);
-    $this->processApiResponse((array)$checked_emails);
-  }
-
-  function processApiResponse(array $checked_emails) {
-    foreach($checked_emails as $email) {
-      if(!isset($email['address'], $email['bounce'])) {
-        continue;
-      }
-      if($email['bounce'] === self::BOUNCED_HARD) {
-        $subscriber = Subscriber::findOne($email['address']);
-        $subscriber->status = Subscriber::STATUS_BOUNCED;
-        $subscriber->save();
-      }
-    }
   }
 
   static function getNextRunDate() {

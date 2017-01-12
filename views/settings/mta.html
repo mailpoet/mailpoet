@@ -150,6 +150,10 @@
               name="mta[mailpoet_api_key]"
               value="<%=- settings.mta.mailpoet_api_key -%>"
             />
+            <a
+              id="mailpoet_api_key_verify"
+              class="button-secondary"
+            ><%= __('Verify') %></a>
           </td>
         </tr>
       </tbody>
@@ -687,7 +691,7 @@
         if(settings.sender.address.length === 0) {
           // validation
           return MailPoet.Notice.error(
-            'The email could not be sent. Make sure the option "Email notifications" has a FROM email address in the Basics tab.',
+            '<%= __('The email could not be sent. Make sure the option "Email notifications" has a FROM email address in the Basics tab.') %>',
             { scroll: true, static: true }
           );
         }
@@ -715,6 +719,43 @@
         }).done(function(response) {
           MailPoet.Notice.success(
             "<%= __('The email has been sent! Check your inbox.') %>",
+            { scroll: true }
+          );
+        }).fail(function(response) {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { scroll: true }
+            );
+          }
+        });
+      });
+
+      // verifying api key
+      $('#mailpoet_api_key_verify').on('click', function() {
+        // get api key
+        var key = $('#mailpoet_api_key').val();
+
+        if(key.length === 0) {
+          // validation
+          return MailPoet.Notice.error(
+            '<%= __('Please specify an API key before validating it.') %>',
+            { scroll: true, static: true }
+          );
+        }
+
+        MailPoet.Modal.loading(true);
+        MailPoet.Ajax.post({
+          endpoint: 'services',
+          action: 'verifyMailPoetKey',
+          data: {
+            key: key
+          }
+        }).always(function() {
+          MailPoet.Modal.loading(false);
+        }).done(function(response) {
+          MailPoet.Notice.success(
+            "<%= __('Your MailPoet API key is valid!') %>",
             { scroll: true }
           );
         }).fail(function(response) {
