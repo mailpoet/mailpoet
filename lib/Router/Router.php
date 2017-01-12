@@ -37,7 +37,7 @@ class Router {
     if(!method_exists($endpoint, $this->action) || !in_array($this->action, $endpoint->allowed_actions)) {
       return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action.', 'mailpoet'));
     }
-    do_action('mailpoet_conflict_url_query_parameters');
+    do_action('mailpoet_conflict_resolver_router_url_query_parameters');
     return call_user_func(
       array(
         $endpoint,

@@ -8,9 +8,9 @@ class ConflictResolver {
   );
 
   function init() {
-    add_action('mailpoet_conflict_url_query_parameters', array($this, 'resolveRouterUrlQueryParametersConflict'));
-    add_action('mailpoet_conflict_styles', array($this, 'resolveStylesConflict'));
-    add_action('mailpoet_conflict_scripts', array($this, 'resolveScriptsConflict'));
+    add_action('mailpoet_conflict_resolver_router_url_query_parameters', array($this, 'resolveRouterUrlQueryParametersConflict'));
+    add_action('mailpoet_conflict_resolver_styles', array($this, 'resolveStylesConflict'));
+    add_action('mailpoet_conflict_resolver_scripts', array($this, 'resolveScriptsConflict'));
   }
 
   function resolveRouterUrlQueryParametersConflict() {

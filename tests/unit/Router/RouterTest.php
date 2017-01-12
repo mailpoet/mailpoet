@@ -99,7 +99,7 @@ class FrontRouterTest extends MailPoetTest {
   function testItExecutesUrlParameterConflictResolverAction() {
     $data = array('data' => 'dummy data');
     $result = $this->router->init();
-    expect((boolean) did_action('mailpoet_conflict_url_query_parameters'))->true();
+    expect((boolean) did_action('mailpoet_conflict_resolver_router_url_query_parameters'))->true();
   }
 
   function testItCanEncodeRequestData() {
