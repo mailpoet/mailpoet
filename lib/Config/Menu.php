@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Listing;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
@@ -13,7 +14,6 @@ use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
-use MailPoet\Listing;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Notice as WPNotice;
@@ -40,7 +40,7 @@ class Menu {
   }
 
   function setup() {
-    if(!empty($_REQUEST['page']) && preg_match('/mailpoet-/i', $_REQUEST['page'])) {
+    if(self::isOnMailPoetAdminPage()) {
       do_action('mailpoet_conflict_resolver_styles');
       do_action('mailpoet_conflict_resolver_scripts');
     }
@@ -63,11 +63,14 @@ class Menu {
       __('Emails', 'mailpoet'),
       Env::$required_permission,
       $main_page_slug,
-      array($this, 'newsletters')
+      array(
+        $this,
+        'newsletters'
+      )
     );
 
     // add limit per page to screen options
-    add_action('load-'.$newsletters_page, function() {
+    add_action('load-' . $newsletters_page, function() {
       add_screen_option('per_page', array(
         'label' => _x(
           'Number of newsletters per page',
@@ -83,10 +86,13 @@ class Menu {
       __('Forms', 'mailpoet'),
       Env::$required_permission,
       'mailpoet-forms',
-      array($this, 'forms')
+      array(
+        $this,
+        'forms'
+      )
     );
     // add limit per page to screen options
-    add_action('load-'.$forms_page, function() {
+    add_action('load-' . $forms_page, function() {
       add_screen_option('per_page', array(
         'label' => _x(
           'Number of forms per page',
@@ -102,10 +108,13 @@ class Menu {
       __('Subscribers', 'mailpoet'),
       Env::$required_permission,
       'mailpoet-subscribers',
-      array($this, 'subscribers')
+      array(
+        $this,
+        'subscribers'
+      )
     );
     // add limit per page to screen options
-    add_action('load-'.$subscribers_page, function() {
+    add_action('load-' . $subscribers_page, function() {
       add_screen_option('per_page', array(
         'label' => _x(
           'Number of subscribers per page',
@@ -121,11 +130,14 @@ class Menu {
       __('Lists', 'mailpoet'),
       Env::$required_permission,
       'mailpoet-segments',
-      array($this, 'segments')
+      array(
+        $this,
+        'segments'
+      )
     );
 
     // add limit per page to screen options
-    add_action('load-'.$segments_page, function() {
+    add_action('load-' . $segments_page, function() {
       add_screen_option('per_page', array(
         'label' => _x(
           'Number of segments per page',
@@ -137,19 +149,25 @@ class Menu {
 
     add_submenu_page(
       $main_page_slug,
-      $this->setPageTitle( __('Settings', 'mailpoet')),
+      $this->setPageTitle(__('Settings', 'mailpoet')),
       __('Settings', 'mailpoet'),
       Env::$required_permission,
       'mailpoet-settings',
-      array($this, 'settings')
+      array(
+        $this,
+        'settings'
+      )
     );
     add_submenu_page(
       'admin.php?page=mailpoet-subscribers',
-      $this->setPageTitle( __('Import', 'mailpoet')),
+      $this->setPageTitle(__('Import', 'mailpoet')),
       __('Import', 'mailpoet'),
       Env::$required_permission,
       'mailpoet-import',
-      array($this, 'import')
+      array(
+        $this,
+        'import'
+      )
     );
 
     add_submenu_page(
@@ -158,7 +176,10 @@ class Menu {
       __('Export', 'mailpoet'),
       Env::$required_permission,
       'mailpoet-export',
-      array($this, 'export')
+      array(
+        $this,
+        'export'
+      )
     );
 
     add_submenu_page(
@@ -167,7 +188,10 @@ class Menu {
       __('Welcome', 'mailpoet'),
       Env::$required_permission,
       'mailpoet-welcome',
-      array($this, 'welcome')
+      array(
+        $this,
+        'welcome'
+      )
     );
 
     add_submenu_page(
@@ -176,7 +200,10 @@ class Menu {
       __('Update', 'mailpoet'),
       Env::$required_permission,
       'mailpoet-update',
-      array($this, 'update')
+      array(
+        $this,
+        'update'
+      )
     );
 
     add_submenu_page(
@@ -185,7 +212,10 @@ class Menu {
       __('Form Editor', 'mailpoet'),
       Env::$required_permission,
       'mailpoet-form-editor',
-      array($this, 'formEditor')
+      array(
+        $this,
+        'formEditor'
+      )
     );
 
     add_submenu_page(
@@ -194,7 +224,10 @@ class Menu {
       __('Newsletter Editor', 'mailpoet'),
       Env::$required_permission,
       'mailpoet-newsletter-editor',
-      array($this, 'newletterEditor')
+      array(
+        $this,
+        'newletterEditor'
+      )
     );
   }
 
@@ -260,7 +293,7 @@ class Menu {
   }
 
   function settings() {
-    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
+    if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
 
     $settings = Setting::getAll();
     $flags = $this->_getFlags();
@@ -334,7 +367,7 @@ class Menu {
   }
 
   function segments() {
-    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
+    if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
 
     $data = array();
     $data['items_per_page'] = $this->getLimitPerPage('segments');
@@ -342,7 +375,7 @@ class Menu {
   }
 
   function forms() {
-    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
+    if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
 
     $data = array();
 
@@ -353,7 +386,7 @@ class Menu {
   }
 
   function newsletters() {
-    if ($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
+    if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
 
     global $wp_roles;
 
@@ -456,7 +489,7 @@ class Menu {
     }
 
     $listing_per_page = get_user_meta(
-      get_current_user_id(), 'mailpoet_'.$model.'_per_page', true
+      get_current_user_id(), 'mailpoet_' . $model . '_per_page', true
     );
     return (!empty($listing_per_page))
       ? (int)$listing_per_page
@@ -466,9 +499,13 @@ class Menu {
   private function displayPage($template, $data) {
     try {
       echo $this->renderer->render($template, $data);
-    } catch (\Exception $e) {
+    } catch(\Exception $e) {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
       $notice->displayWPNotice();
     }
+  }
+
+  static function isOnMailPoetAdminPage() {
+    return (!empty($_REQUEST['page']) && stripos($_REQUEST['page'], 'mailpoet-') !== false);
   }
 }
