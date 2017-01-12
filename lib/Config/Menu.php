@@ -40,6 +40,11 @@ class Menu {
   }
 
   function setup() {
+    if(!empty($_REQUEST['page']) && preg_match('/mailpoet-/i', $_REQUEST['page'])) {
+      do_action('mailpoet_conflict_styles');
+      do_action('mailpoet_conflict_scripts');
+    }
+
     $main_page_slug = 'mailpoet-newsletters';
 
     add_menu_page(
