@@ -1,11 +1,11 @@
 <?php
 namespace MailPoet\Form\Util;
 
-class Styles {
-  private $_stylesheet = null;
-  private $_styles = array();
+use Sabberworm\CSS\Parser as CSSParser;
 
-  static $defaults =<<<EOL
+class Styles {
+  public $styles;
+  static $default_styles = <<<EOL
 /* form */
 .mailpoet_form {
 
@@ -49,130 +49,25 @@ class Styles {
 EOL;
 
   function __construct($stylesheet = null) {
-    // store raw styles
-    $this->setStylesheet($stylesheet);
-
-    // extract rules/properties
-    $this->parseStyles();
-
-    return $this;
+    $this->stylesheet = $stylesheet;
   }
 
   function render($prefix = '') {
-    $styles = $this->getStyles();
-    if(!empty($styles)) {
-      $output = array();
-
-      // add prefix on each selector
-      foreach($styles as $style) {
-        // check if selector is an array
-        if(is_array($style['selector'])) {
-          $selector = join(",\n", array_map(function($value) use ($prefix) {
-            return $prefix.' '.$value;
-          }, $style['selector']));
-        } else {
-          $selector = $prefix.' '.$style['selector'];
-        }
-
-        // format selector
-        $output[] = $selector . ' {';
-
-        // format rules
-        if(!empty($style['rules'])) {
-          $rules = join("\n", array_map(function($rule) {
-            return "\t".$rule['property'] . ': ' . $rule['value'].';';
-          }, $style['rules']));
-
-          $output[] = $rules;
-        }
-
-        $output[] = '}';
-      }
-
-      return join("\n", $output);
+    if(!$this->stylesheet) return;
+    $styles = new CSSParser($this->stylesheet);
+    $styles = $styles->parse();
+    $formatted_styles = array();
+    foreach($styles->getAllDeclarationBlocks() as $style_declaration) {
+      $selectors = array_map(function($selector) use ($prefix) {
+        return sprintf('%s %s', $prefix, $selector->__toString());
+      }, $style_declaration->getSelectors());
+      $selectors = implode(', ', $selectors);
+      $rules = array_map(function($rule) {
+        return $rule->__toString();
+      }, $style_declaration->getRules());
+      $rules = sprintf('{ %s }', implode(' ', $rules));
+      $formatted_styles[] = sprintf('%s %s', $selectors, $rules);
     }
-  }
-
-  private function setStylesheet($stylesheet) {
-    $this->_stylesheet = $this->stripComments($stylesheet);
-    return $this;
-  }
-
-  private function stripComments($stylesheet) {
-    // remove comments
-    return preg_replace('!/\*.*?\*/!s', '', $stylesheet);
-  }
-
-  private function getStylesheet() {
-    return $this->_stylesheet;
-  }
-
-  private function setStyles($styles) {
-    $this->_styles = $styles;
-    return $this;
-  }
-
-  private function getStyles() {
-    return $this->_styles;
-  }
-
-  private function parseStyles() {
-    if($this->getStylesheet() !== null) {
-      // extract selectors and rules
-      preg_match_all( '/(?ims)([a-z0-9\s\.\:#_\-@,]+)\{([^\}]*)\}/',
-        $this->getStylesheet(),
-        $matches
-      );
-      $selectors = $matches[1];
-      $rules = $matches[2];
-
-      // extracted styles
-      $styles = array();
-
-      // loop through each selector
-      foreach($selectors as $index => $selector) {
-        // trim selector
-        $selector = trim($selector);
-        // get selector rules
-        $selector_rules = array_filter(array_map(function($value) {
-          if(strlen(trim($value)) > 0) {
-            // split property / value
-            $pair = explode(':', trim($value));
-            if(isset($pair[0]) && isset($pair[1])) {
-              return array(
-                'property' => $pair[0],
-                'value' => $pair[1]
-              );
-            }
-          }
-        }, explode(';', trim($rules[$index]))));
-
-        // check if we have multiple selectors
-        if(strpos($selector, ',') !== false) {
-          $selectors_array = array_filter(array_map(function($value) {
-            return trim($value);
-          }, explode(',', $selector)));
-
-          // multiple selectors
-          $styles[$index] = array(
-            'selector' => $selectors_array,
-            'rules' => $selector_rules
-          );
-        } else {
-          // it's a single selector
-          $styles[$index] = array(
-            'selector' => $selector,
-            'rules' => $selector_rules
-          );
-        }
-      }
-
-      $this->setStyles($styles);
-    }
-  }
-
-  function __toString() {
-    $this->stripComments();
-    return $this->render();
+    return implode(PHP_EOL, $formatted_styles);
   }
 }
