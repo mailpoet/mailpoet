@@ -2,15 +2,50 @@
 namespace MailPoet\Util;
 
 class ConflictResolver {
-  public $conflicting_assets = array(
-    'select2',
-    'select-2',
+  public $allowed_assets = array(
+    'styles' => array(
+      // WP default
+      'admin-bar',
+      'colors',
+      'ie',
+      'wp-auth-check',
+      // third-party
+      'query-monitor'
+    ),
+    'scripts' => array(
+      // WP default
+      'common',
+      'admin-bar',
+      'utils',
+      'svg-painter',
+      'wp-auth-check',
+      // third-party
+      'query-monitor'
+    )
   );
 
   function init() {
-    add_action('mailpoet_conflict_resolver_router_url_query_parameters', array($this, 'resolveRouterUrlQueryParametersConflict'));
-    add_action('mailpoet_conflict_resolver_styles', array($this, 'resolveStylesConflict'));
-    add_action('mailpoet_conflict_resolver_scripts', array($this, 'resolveScriptsConflict'));
+    add_action(
+      'mailpoet_conflict_resolver_router_url_query_parameters',
+      array(
+        $this,
+        'resolveRouterUrlQueryParametersConflict'
+      )
+    );
+    add_action(
+      'mailpoet_conflict_resolver_styles',
+      array(
+        $this,
+        'resolveStylesConflict'
+      )
+    );
+    add_action(
+      'mailpoet_conflict_resolver_scripts',
+      array(
+        $this,
+        'resolveScriptsConflict'
+      )
+    );
   }
 
   function resolveRouterUrlQueryParametersConflict() {
@@ -19,12 +54,12 @@ class ConflictResolver {
   }
 
   function resolveStylesConflict() {
-    // unload styles that interfere with plugin pages
+    // unload all styles except from the list of allowed
     $dequeue_styles = function() {
       global $wp_styles;
-      foreach($wp_styles->registered as $name => $details) {
-        if(preg_match('/' . implode('|', $this->conflicting_assets) . '/i', $details->src)) {
-          wp_dequeue_style($name);
+      foreach($wp_styles->queue as $wp_style) {
+        if(!in_array($wp_style, $this->allowed_assets['styles'])) {
+          wp_dequeue_style($wp_style);
         }
       }
     };
@@ -35,12 +70,12 @@ class ConflictResolver {
   }
 
   function resolveScriptsConflict() {
-    // unload scripts that interfere with plugin pages
+    // unload all scripts except from the list of allowed
     $dequeue_scripts = function() {
       global $wp_scripts;
-      foreach($wp_scripts->registered as $name => $details) {
-        if(preg_match('/' . implode('|', $this->conflicting_assets) . '/i', $details->src)) {
-          wp_dequeue_script($name);
+      foreach($wp_scripts->queue as $wp_script) {
+        if(!in_array($wp_script, $this->allowed_assets['scripts'])) {
+          wp_dequeue_script($wp_script);
         }
       }
     };

@@ -22,11 +22,13 @@ class ConflictResolverTest extends MailPoetTest {
     expect(empty($_GET['test']))->false();
   }
 
-  function testItUnloadsConflictingStyles() {
+  function testItUnloadsAllStylesFromLocationsNotOnPermittedList() {
     expect(!empty($this->wp_filter['mailpoet_conflict_resolver_styles']))->true();
-    wp_enqueue_style('select2', 'select2.css');
-    wp_enqueue_style('select-2', 'select-2.css');
-    wp_enqueue_style('test', 'test.css');
+    // grab a random permitted style
+    $permitted_style_name = $this->conflict_resolver->allowed_assets['styles'][array_rand($this->conflict_resolver->allowed_assets['styles'], 1)];
+    // enqueue styles
+    wp_enqueue_style('select2', 'select2');
+    wp_enqueue_style($permitted_style_name, 'permitted_style.css');
     $this->conflict_resolver->resolveStylesConflict();
     do_action('wp_print_styles');
     do_action('admin_print_styles');
@@ -34,25 +36,27 @@ class ConflictResolverTest extends MailPoetTest {
     do_action('admin_footer');
     global $wp_styles;
     $queued_styles = array_flip($wp_styles->queue);
-    // it should unset all select* styles
+    // it should dequeue all styles except those found on the permitted list
     expect(empty($queued_styles['select2']))->true();
-    expect(empty($queued_styles['select-2']))->true();
-    expect(empty($queued_styles['test']))->false();
+    expect(empty($queued_styles[$permitted_style_name]))->false();
   }
 
-  function testItUnloadsConflictingScripts() {
+  function testItUnloadsAllScriptsFromLocationsNotOnPermittedList() {
     expect(!empty($this->wp_filter['mailpoet_conflict_resolver_scripts']))->true();
-    wp_enqueue_script('select2', 'select2.js');
-    wp_enqueue_script('select-2', 'select-2.js', null, null, $in_footer = true);
-    wp_enqueue_script('test', 'test.js');
+    // grab a random permitted script
+    $permitted_script_name = $this->conflict_resolver->allowed_assets['scripts'][array_rand($this->conflict_resolver->allowed_assets['scripts'], 1)];
+    // enqueue scripts
+    wp_enqueue_script('select2', 'select2');
+    wp_enqueue_script('random_script_in_footer', 'http://example.com/random-script.js', null, null, $in_footer = true);
+    wp_enqueue_script($permitted_script_name, 'permitted_script.js');
     $this->conflict_resolver->resolveScriptsConflict();
     do_action('wp_print_scripts');
     do_action('admin_print_footer_scripts');
     global $wp_scripts;
     $queued_scripts = array_flip($wp_scripts->queue);
-    // it should unset all select* scripts
+    // it should dequeue all scripts except those found on the permitted list
     expect(empty($queued_scripts['select2']))->true();
-    expect(empty($queued_scripts['select-2']))->true();
-    expect(empty($queued_scripts['test']))->false();
+    expect(empty($queued_scripts['random_script_in_footer']))->true();
+    expect(empty($queued_scripts[$permitted_script_name]))->false();
   }
 }
