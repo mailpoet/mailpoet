@@ -35,7 +35,7 @@ class Renderer {
     && strlen(trim($form['styles'])) > 0) {
       return strip_tags($form['styles']);
     } else {
-      return Util\Styles::$defaults;
+      return Util\Styles::$default_styles;
     }
   }
 

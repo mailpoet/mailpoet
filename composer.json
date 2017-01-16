@@ -14,7 +14,8 @@
     "swiftmailer/swiftmailer": "^5.4",
     "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
-    "soundasleep/html2text": "dev-master"
+    "soundasleep/html2text": "dev-master",
+    "sabberworm/php-css-parser": "^8.1"
   },
   "require-dev": {
     "codeception/codeception": "*",
