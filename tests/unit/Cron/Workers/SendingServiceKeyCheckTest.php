@@ -2,15 +2,12 @@
 
 use Carbon\Carbon;
 use Codeception\Util\Stub;
-use MailPoet\API\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingServiceKeyCheck as SSKeyCheck;
-use MailPoet\Cron\Workers\SendingServiceKeyCheck\API;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
-use MailPoet\Util\Helpers;
 
 class SendingServiceKeyCheckTest extends MailPoetTest {
   function _before() {
