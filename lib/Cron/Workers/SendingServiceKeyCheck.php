@@ -5,9 +5,7 @@ use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
-use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
@@ -26,8 +24,7 @@ class SendingServiceKeyCheck {
 
   function initApi() {
     if(!$this->bridge) {
-      $mailer_config = Mailer::getMailerConfig();
-      $this->bridge = new Bridge($mailer_config['mailpoet_api_key']);
+      $this->bridge = new Bridge();
     }
   }
 
@@ -88,7 +85,12 @@ class SendingServiceKeyCheck {
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
 
-    $result = $this->bridge->checkKey();
+    try {
+      $mailer_config = Mailer::getMailerConfig();
+      $result = $this->bridge->checkKey($mailer_config['mailpoet_api_key']);
+    } catch (\Exception $e) {
+      $result = array('code' => 503);
+    }
 
     if(empty($result['code']) || $result['code'] == 503) {
       // reschedule the check

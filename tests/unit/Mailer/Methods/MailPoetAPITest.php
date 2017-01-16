@@ -1,6 +1,8 @@
 <?php
 
+use Codeception\Util\Stub;
 use MailPoet\Mailer\Methods\MailPoet;
+use MailPoet\Config\ServicesChecker;
 
 class MailPoetAPITest extends MailPoetTest {
   function _before() {
@@ -101,6 +103,21 @@ class MailPoetAPITest extends MailPoetTest {
   function testItCanDoBasicAuth() {
     expect($this->mailer->auth())
       ->equals('Basic ' . base64_encode('api:' . $this->settings['api_key']));
+  }
+
+  function testItWillNotSendIfApiKeyIsMarkedInvalid() {
+    if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
+    $this->mailer->api_key = 'someapi';
+    $this->mailer->services_checker = Stub::make(
+      new ServicesChecker(),
+      array('checkMailPoetAPIKeyValid' => false),
+      $this
+    );
+    $result = $this->mailer->send(
+      $this->newsletter,
+      $this->subscriber
+    );
+    expect($result['response'])->false();
   }
 
   function testItCannotSendWithoutProperApiKey() {

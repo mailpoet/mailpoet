@@ -22,7 +22,7 @@ class MailPoet {
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
-    if(!$this->services_checker->checkMailPoetAPIKeyValid()) {
+    if($this->services_checker->checkMailPoetAPIKeyValid() === false) {
       $response = __('MailPoet API key is invalid!', 'mailpoet');
       return Mailer::formatMailerSendErrorResult($response);
     }

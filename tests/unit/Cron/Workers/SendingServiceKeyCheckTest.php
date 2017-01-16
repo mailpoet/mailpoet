@@ -1,18 +1,18 @@
 <?php
 
 use Carbon\Carbon;
+use Codeception\Util\Stub;
+use MailPoet\API\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\Workers\Bounce;
-use MailPoet\Cron\Workers\Bounce\API;
+use MailPoet\Cron\Workers\SendingServiceKeyCheck as SSKeyCheck;
+use MailPoet\Cron\Workers\SendingServiceKeyCheck\API;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
-use MailPoet\Models\Subscriber;
+use MailPoet\Services\Bridge;
 use MailPoet\Util\Helpers;
 
-require_once('BounceTestMockAPI.php');
-
-class BounceTest extends MailPoetTest {
+class SendingServiceKeyCheckTest extends MailPoetTest {
   function _before() {
     $this->emails = array(
       'soft_bounce@example.com',
@@ -20,63 +20,50 @@ class BounceTest extends MailPoetTest {
       'good_address@example.com'
     );
 
-    foreach ($this->emails as $email) {
-        Subscriber::createOrUpdate(array(
-          'status' => Subscriber::STATUS_SUBSCRIBED,
-          'email' => $email
-        ));
-    }
-
-    $this->bounce = new Bounce(microtime(true));
-
-    $this->bounce->api = new MailPoet\Cron\Workers\Bounce\MockAPI('key');
+    $this->sskeycheck = new SSKeyCheck(microtime(true));
   }
 
   function testItConstructs() {
-    expect($this->bounce->timer)->notEmpty();
-  }
-
-  function testItDefinesConstants() {
-    expect(Bounce::BATCH_SIZE)->equals(100);
+    expect($this->sskeycheck->timer)->notEmpty();
   }
 
   function testItThrowsExceptionWhenExecutionLimitIsReached() {
     try {
-      $bounce = new Bounce(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT);
+      $sskeycheck = new SSKeyCheck(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT);
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
     }
   }
 
-  function testItSchedulesBounceSync() {
-    expect(SendingQueue::where('type', 'bounce')->findMany())->isEmpty();
-    Bounce::scheduleBounceSync();
-    expect(SendingQueue::where('type', 'bounce')->findMany())->notEmpty();
+  function testItSchedulesSendingServiceKeyCheck() {
+    expect(SendingQueue::where('type', SSKeyCheck::TASK_TYPE)->findMany())->isEmpty();
+    SSKeyCheck::schedule();
+    expect(SendingQueue::where('type', SSKeyCheck::TASK_TYPE)->findMany())->notEmpty();
   }
 
-  function testItDoesNotScheduleBounceSyncTwice() {
-    expect(count(SendingQueue::where('type', 'bounce')->findMany()))->equals(0);
-    Bounce::scheduleBounceSync();
-    expect(count(SendingQueue::where('type', 'bounce')->findMany()))->equals(1);
-    Bounce::scheduleBounceSync();
-    expect(count(SendingQueue::where('type', 'bounce')->findMany()))->equals(1);
+  function testItDoesNotScheduleSendingServiceKeyCheckTwice() {
+    expect(count(SendingQueue::where('type', SSKeyCheck::TASK_TYPE)->findMany()))->equals(0);
+    SSKeyCheck::schedule();
+    expect(count(SendingQueue::where('type', SSKeyCheck::TASK_TYPE)->findMany()))->equals(1);
+    SSKeyCheck::schedule();
+    expect(count(SendingQueue::where('type', SSKeyCheck::TASK_TYPE)->findMany()))->equals(1);
   }
 
   function testItCanGetScheduledQueues() {
-    expect(Bounce::getScheduledQueues())->isEmpty();
+    expect(SSKeyCheck::getScheduledQueues())->isEmpty();
     $this->createScheduledQueue();
-    expect(Bounce::getScheduledQueues())->notEmpty();
+    expect(SSKeyCheck::getScheduledQueues())->notEmpty();
   }
 
   function testItCanGetRunningQueues() {
-    expect(Bounce::getRunningQueues())->isEmpty();
+    expect(SSKeyCheck::getRunningQueues())->isEmpty();
     $this->createRunningQueue();
-    expect(Bounce::getRunningQueues())->notEmpty();
+    expect(SSKeyCheck::getRunningQueues())->notEmpty();
   }
 
   function testItCanGetAllDueQueues() {
-    expect(Bounce::getAllDueQueues())->isEmpty();
+    expect(SSKeyCheck::getAllDueQueues())->isEmpty();
 
     // scheduled for now
     $this->createScheduledQueue();
@@ -94,65 +81,83 @@ class BounceTest extends MailPoetTest {
     $queue->status = SendingQueue::STATUS_COMPLETED;
     $queue->save();
 
-    expect(count(Bounce::getAllDueQueues()))->equals(2);
+    expect(count(SSKeyCheck::getAllDueQueues()))->equals(2);
   }
 
   function testItCanGetFutureQueues() {
-    expect(Bounce::getFutureQueues())->isEmpty();
+    expect(SSKeyCheck::getFutureQueues())->isEmpty();
     $queue = $this->createScheduledQueue();
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->addDays(7);
     $queue->save();
-    expect(count(Bounce::getFutureQueues()))->notEmpty();
+    expect(count(SSKeyCheck::getFutureQueues()))->notEmpty();
   }
 
   function testItFailsToProcessWithoutMailPoetMethodSetUp() {
-    expect($this->bounce->process())->false();
+    expect($this->sskeycheck->process())->false();
   }
 
   function testItFailsToProcessWithoutQueues() {
     $this->setMailPoetSendingMethod();
-    expect($this->bounce->process())->false();
+    expect($this->sskeycheck->process())->false();
   }
 
   function testItProcesses() {
     $this->setMailPoetSendingMethod();
     $this->createScheduledQueue();
     $this->createRunningQueue();
-    expect($this->bounce->process())->true();
+    expect($this->sskeycheck->process())->true();
   }
 
-  function testItPreparesBounceQueue() {
+  function testItPreparesSendingServiceKeyCheckQueue() {
     $queue = $this->createScheduledQueue();
-    expect(empty($queue->subscribers['to_process']))->true();
-    $this->bounce->prepareBounceQueue($queue);
+    $this->sskeycheck->prepareQueue($queue);
     expect($queue->status)->null();
-    expect(!empty($queue->subscribers['to_process']))->true();
   }
 
-  function testItProcessesBounceQueue() {
+  function testItProcessesSSKeyCheckQueue() {
+    $this->sskeycheck->bridge = Stub::make(
+      new Bridge,
+      array('checkKey' => array('code' => Bridge::MAILPOET_KEY_VALID)),
+      $this
+    );
+    $this->setMailPoetSendingMethod();
     $queue = $this->createRunningQueue();
-    $this->bounce->prepareBounceQueue($queue);
-    expect(!empty($queue->subscribers['to_process']))->true();
-    $this->bounce->processBounceQueue($queue);
-    expect(!empty($queue->subscribers['processed']))->true();
+    $this->sskeycheck->prepareQueue($queue);
+    $this->sskeycheck->processQueue($queue);
+    expect($queue->status)->equals(SendingQueue::STATUS_COMPLETED);
   }
 
-  function testItSetsSubscriberStatusAsBounced() {
-    $emails = Subscriber::select('email')->findArray();
-    $emails = Helpers::arrayColumn($emails, 'email');
+  function testItReschedulesCheckOnException() {
+    $this->sskeycheck->bridge = Stub::make(
+      new Bridge,
+      array('checkKey' => function () { throw new \Exception(); }),
+      $this
+    );
+    $this->setMailPoetSendingMethod();
+    $queue = $this->createRunningQueue();
+    $scheduled_at = $queue->scheduled_at;
+    $this->sskeycheck->prepareQueue($queue);
+    $this->sskeycheck->processQueue($queue);
+    expect($scheduled_at < $queue->scheduled_at)->true();
+  }
 
-    $this->bounce->processEmails($emails);
-
-    $subscribers = Subscriber::findMany();
-
-    expect($subscribers[0]->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($subscribers[1]->status)->equals(Subscriber::STATUS_BOUNCED);
-    expect($subscribers[2]->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  function testItReschedulesCheckOnError() {
+    $this->sskeycheck->bridge = Stub::make(
+      new Bridge,
+      array('checkKey' => array('code' => 503)),
+      $this
+    );
+    $this->setMailPoetSendingMethod();
+    $queue = $this->createRunningQueue();
+    $scheduled_at = $queue->scheduled_at;
+    $this->sskeycheck->prepareQueue($queue);
+    $this->sskeycheck->processQueue($queue);
+    expect($scheduled_at < $queue->scheduled_at)->true();
   }
 
   function testItCalculatesNextRunDateWithinNextWeekBoundaries() {
     $current_date = Carbon::createFromTimestamp(current_time('timestamp'));
-    $next_run_date = Bounce::getNextRunDate();
+    $next_run_date = SSKeyCheck::getNextRunDate();
     $difference = $next_run_date->diffInDays($current_date);
     // Subtract days left in the current week
     $difference -= (Carbon::DAYS_PER_WEEK - $current_date->format('N'));
@@ -172,7 +177,7 @@ class BounceTest extends MailPoetTest {
 
   private function createScheduledQueue() {
     $queue = SendingQueue::create();
-    $queue->type = 'bounce';
+    $queue->type = SSKeyCheck::TASK_TYPE;
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->newsletter_id = 0;
@@ -182,7 +187,7 @@ class BounceTest extends MailPoetTest {
 
   private function createRunningQueue() {
     $queue = SendingQueue::create();
-    $queue->type = 'bounce';
+    $queue->type = SSKeyCheck::TASK_TYPE;
     $queue->status = null;
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->newsletter_id = 0;
@@ -193,6 +198,5 @@ class BounceTest extends MailPoetTest {
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Setting::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 }

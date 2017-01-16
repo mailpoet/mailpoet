@@ -27,12 +27,7 @@ class Menu {
     $this->assets_url = $assets_url;
     $subscribers_feature = new SubscribersFeature();
     $this->subscribers_over_limit = $subscribers_feature->check();
-    if(self::isOnMailPoetAdminPage()) {
-      $show_notices = isset($_REQUEST['page'])
-        && stripos($_REQUEST['page'], 'mailpoet-newsletters') === false;
-      $checker = new ServicesChecker();
-      $this->mp_api_key_valid = $checker->checkMailPoetAPIKeyValid($show_notices);
-    }
+    $this->checkMailPoetAPIKey();
   }
 
   function init() {
@@ -514,6 +509,15 @@ class Menu {
       }
     }
     return (stripos($screen_id, 'mailpoet-') !== false);
+  }
+
+  function checkMailPoetAPIKey(ServicesChecker $checker = null) {
+    if(self::isOnMailPoetAdminPage()) {
+      $show_notices = isset($_REQUEST['page'])
+        && stripos($_REQUEST['page'], 'mailpoet-newsletters') === false;
+      $checker = $checker ?: new ServicesChecker();
+      $this->mp_api_key_valid = $checker->checkMailPoetAPIKeyValid($show_notices);
+    }
   }
 
   private function getLimitPerPage($model = null) {

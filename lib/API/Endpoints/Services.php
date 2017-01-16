@@ -9,18 +9,23 @@ use MailPoet\Services\Bridge;
 if(!defined('ABSPATH')) exit;
 
 class Services extends APIEndpoint {
+  public $bridge;
+
+  function __construct() {
+    $this->bridge = new Bridge();
+  }
+
   function verifyMailPoetKey($data = array()) {
     $key = isset($data['key']) ? trim($data['key']) : null;
 
     if(!$key) {
       return $this->badRequest(array(
-        APIError::BAD_REQUEST  => __('You need to specify a key.', 'mailpoet')
+        APIError::BAD_REQUEST  => __('Please specify a key.', 'mailpoet')
       ));
     }
 
     try {
-      $bridge = new Bridge($key);
-      $result = $bridge->checkKey();
+      $result = $this->bridge->checkKey($key);
     } catch(\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()

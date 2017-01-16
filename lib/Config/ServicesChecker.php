@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
@@ -16,7 +15,7 @@ class ServicesChecker {
       return null;
     }
 
-    $state = Setting::getValue('mta.mailpoet_api_key_state');
+    $state = Setting::getValue(Bridge::API_KEY_STATE_SETTING_NAME);
     if(empty($state['code']) || $state['code'] == Bridge::MAILPOET_KEY_VALID) {
       return true;
     }
@@ -30,7 +29,9 @@ class ServicesChecker {
         WPNotice::displayError($error);
       }
       return false;
-    } elseif($state['code'] == Bridge::MAILPOET_KEY_EXPIRING) {
+    } elseif($state['code'] == Bridge::MAILPOET_KEY_EXPIRING
+      && !empty($state['data']['expire_at'])
+    ) {
       $date = date('Y-m-d', strtotime($state['data']['expire_at']));
       $error = Helpers::replaceLinkTags(
         __('Your newsletters are awesome! Don\'t forget to [link]upgrade your MailPoet email plan[/link] by %s to keep sending them to your subscribers.', 'mailpoet'),
