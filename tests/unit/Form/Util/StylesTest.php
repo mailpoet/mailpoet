@@ -19,10 +19,8 @@ class StylesTest extends MailPoetTest {
     // 2. each selector should be refixed
     // 3. multiple spaces, missing semicolons should be fixed
     // 4. each style should be on a separate line
-    $expected_result = <<<EOL
-mailpoet input[name=first_name], mailpoet input.some_class, mailpoet .some_class { color: red; background: blue; }
-mailpoet .another_style { font-size: 20px; }
-EOL;
+    $expected_result = "mailpoet input[name=first_name], mailpoet input.some_class, mailpoet .some_class { color: red; background: blue; }" . PHP_EOL
+    . "mailpoet .another_style { font-size: 20px; }";
     expect($extracted_and_prefixed_styles)->equals($expected_result);
   }
 }
