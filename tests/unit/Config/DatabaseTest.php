@@ -28,11 +28,13 @@ class DatabaseTestTest extends MailPoetTest {
   }
 
   function testItSelectivelyUpdatesDriverTimeoutOption() {
+    $database = $this->database;
+    $database->setupDriverOptions();
     $current_setting = ORM::for_table("")
       ->raw_query('SELECT @@session.wait_timeout as wait_timeout')
       ->findOne();
-    expect($current_setting)->notEquals(99999);
-    $database = $this->database;
+    expect($current_setting->wait_timeout)->greaterThan($database->driver_option_wait_timeout);
+    $this->_before();
     $database->driver_option_wait_timeout = 99999;
     $database->setupDriverOptions();
     $current_setting = ORM::for_table("")
