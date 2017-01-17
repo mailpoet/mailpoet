@@ -7,6 +7,10 @@ class ConflictResolverTest extends MailPoetTest {
 
   function __construct() {
     $this->conflict_resolver = new ConflictResolver();
+    $this->conflict_resolver->allowed_assets = array(
+      'scripts' => array('abc', 'xyz'),
+      'styles' => array('abc', 'xyz'),
+    );
     $this->conflict_resolver->init();
     global $wp_filter;
     $this->wp_filter = $wp_filter;
