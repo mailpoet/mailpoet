@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 3.0.0-beta.12
+Stable tag: 3.0.0-beta.13
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -83,12 +83,19 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 
 == Changelog ==
 
+= 3.0.0-beta.13 - 2017-01-17 =
+* Improved: style/script conflicts on MailPoet pages are now resolved by unloading non-default assets. Thx Michel for reporting one such case!;
+* Fixed: MySQL wait_timeout of less than 20 seconds results in errors when sending. Thx Tim!;
+* Fixed: unsubscribe URL doesn't work when BuddyPress is enabled;
+* Fixed: some form styles aren't saved. Thanks Pete!;
+* Fixed: typo in subscription management shortcode instructions. Thx Tim once more!
+
 = 3.0.0-beta.12 - 2017-01-10 =
 * Improved: faster load times of Emails page with large database;
 * Improved: sender header is now set for SMTP/PHPMail method to work with MS Exchange. Thx Karsten!;
 * Improved: better asset conflict management with other plugins;
 * Fixed: newly published custom post types are now sent. Thx Jim!;
-* Fixed: post notifications now send when ALC block is configured to display titles only. Thx Pete;
+* Fixed: post notifications now sent when ALC block is configured to display titles only. Thx Pete;
 * Fixed: shortcode "date:dtext" displays full name (e.g., Sunday) instead of abbreviated (e.g., Sun);
 * Fixed: hide mailer error on send previews. Thx Karsten again!;
 * Fixed: various minor issues.
