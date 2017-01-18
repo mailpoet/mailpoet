@@ -490,8 +490,8 @@ class Subscriber extends Model {
       'first_name' => '',
       'last_name' => ''
     );
-    foreach ($not_null_fields as $field => $value) {
-      if (!isset($data[$field])) {
+    foreach($not_null_fields as $field => $value) {
+      if(!isset($data[$field])) {
         $data[$field] = $value;
       }
     }
