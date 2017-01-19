@@ -2,23 +2,19 @@
 namespace MailPoet\Util;
 
 class ConflictResolver {
-  public $allowed_assets = array(
+  public $permitted_assets_locations = array(
     'styles' => array(
       // WP default
-      'admin-bar',
-      'colors',
-      'ie',
-      'wp-auth-check',
+      '^/wp-admin',
+      '^/wp-includes',
       // third-party
       'query-monitor'
     ),
     'scripts' => array(
       // WP default
-      'common',
-      'admin-bar',
-      'utils',
-      'svg-painter',
-      'wp-auth-check',
+      '^/wp-admin',
+      '^/wp-includes',
+      'googleapis.com/ajax/libs',
       // third-party
       'query-monitor'
     )
@@ -57,16 +53,19 @@ class ConflictResolver {
     // unload all styles except from the list of allowed
     $dequeue_styles = function() {
       global $wp_styles;
+      if(empty($wp_styles->queue)) return;
       foreach($wp_styles->queue as $wp_style) {
-        if(!in_array($wp_style, $this->allowed_assets['styles'])) {
+        if(empty($wp_styles->registered[$wp_style])) continue;
+        $registered_style = $wp_styles->registered[$wp_style];
+        if(!preg_match('!' . implode('|', $this->permitted_assets_locations['styles']) . '!i', $registered_style->src)) {
           wp_dequeue_style($wp_style);
         }
       }
     };
-    add_action('wp_print_styles', $dequeue_styles);
-    add_action('admin_print_styles', $dequeue_styles);
-    add_action('admin_print_footer_scripts', $dequeue_styles);
-    add_action('admin_footer', $dequeue_styles);
+    add_action('wp_print_styles', $dequeue_styles, PHP_INT_MAX);
+    add_action('admin_print_styles', $dequeue_styles, PHP_INT_MAX);
+    add_action('admin_print_footer_scripts', $dequeue_styles, PHP_INT_MAX);
+    add_action('admin_footer', $dequeue_styles, PHP_INT_MAX);
   }
 
   function resolveScriptsConflict() {
@@ -74,12 +73,14 @@ class ConflictResolver {
     $dequeue_scripts = function() {
       global $wp_scripts;
       foreach($wp_scripts->queue as $wp_script) {
-        if(!in_array($wp_script, $this->allowed_assets['scripts'])) {
+        if(empty($wp_scripts->registered[$wp_script])) continue;
+        $registered_script = $wp_scripts->registered[$wp_script];
+        if(!preg_match('!' . implode('|', $this->permitted_assets_locations['scripts']) . '!i', $registered_script->src)) {
           wp_dequeue_script($wp_script);
         }
       }
     };
-    add_action('wp_print_scripts', $dequeue_scripts);
-    add_action('admin_print_footer_scripts', $dequeue_scripts);
+    add_action('wp_print_scripts', $dequeue_scripts, PHP_INT_MAX);
+    add_action('admin_print_footer_scripts', $dequeue_scripts, PHP_INT_MAX);
   }
 }
