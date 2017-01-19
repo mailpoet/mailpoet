@@ -50,11 +50,13 @@ rm -rf $plugin_name/vendor/soundasleep/html2text/tests
 rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
 rm -rf $plugin_name/vendor/swiftmailer/swiftmailer/tests
 rm -rf $plugin_name/vendor/cerdic/css-tidy/testing
+rm -rf $plugin_name/vendor/sabberworm/php-css-parser/tests
 
 # Remove risky files from 3rd party extensions
 echo '[BUILD] Removing risky and demo files from vendor libraries'
 rm -f $plugin_name/vendor/j4mie/idiorm/demo.php
 rm -f $plugin_name/vendor/cerdic/css-tidy/css_optimiser.php
+rm -f $plugin_name/assets/js/lib/tinymce/package.json
 
 # Copy release files.
 echo '[BUILD] Copying release files'
