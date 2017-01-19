@@ -141,6 +141,53 @@ class SubscriberTest extends MailPoetTest {
     }
   }
 
+  function testItHasSegmentFilter() {
+    // remove all subscribers
+    Subscriber::deleteMany();
+
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+
+    $segment = Segment::createOrUpdate(array(
+      'name' => 'Test segment'
+    ));
+
+    // not yet subscribed
+    $subscribers = Subscriber::filter('filterBy', array('segment' => 'none'))
+      ->findMany();
+    expect($subscribers)->count(1);
+    $subscribers = Subscriber::filter('filterBy', array('segment' => $segment->id))
+      ->findMany();
+    expect($subscribers)->count(0);
+
+    // subscribed to a segment
+    SubscriberSegment::subscribeToSegments(
+      $subscriber,
+      array($segment->id)
+    );
+
+    $subscribers = Subscriber::filter('filterBy', array('segment' => 'none'))
+      ->findMany();
+    expect($subscribers)->count(0);
+    $subscribers = Subscriber::filter('filterBy', array('segment' => $segment->id))
+      ->findMany();
+    expect($subscribers)->count(1);
+
+    // unsubscribed
+    SubscriberSegment::unsubscribeFromSegments(
+      $subscriber,
+      array($segment->id)
+    );
+
+    $subscribers = Subscriber::filter('filterBy', array('segment' => 'none'))
+      ->findMany();
+    expect($subscribers)->count(1);
+    $subscribers = Subscriber::filter('filterBy', array('segment' => $segment->id))
+      ->findMany();
+    expect($subscribers)->count(0);
+  }
+
   function testItCanHaveSegment() {
     $segment = Segment::createOrUpdate(array(
       'name' => 'some name'
