@@ -485,6 +485,17 @@ class Subscriber extends Model {
       unset($data['segments']);
     }
 
+    // fields that must exist
+    $not_null_fields = array(
+      'first_name' => '',
+      'last_name' => ''
+    );
+    foreach($not_null_fields as $field => $value) {
+      if(!isset($data[$field])) {
+        $data[$field] = $value;
+      }
+    }
+
     // custom fields
     $custom_fields = array();
     foreach($data as $key => $value) {
