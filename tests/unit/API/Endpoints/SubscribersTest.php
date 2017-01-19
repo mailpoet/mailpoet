@@ -116,6 +116,20 @@ class SubscribersTest extends MailPoetTest {
     expect($response->data['first_name'])->equals('Super Jane');
   }
 
+  function testItCanRemoveListsFromAnExistingSubscriber() {
+    $router = new Subscribers();
+    $subscriber_data = $this->subscriber_2->asArray();
+    unset($subscriber_data['created_at']);
+    unset($subscriber_data['segments']);
+
+    $response = $router->save($subscriber_data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      Subscriber::findOne($this->subscriber_2->id)->asArray()
+    );
+    expect($this->subscriber_2->segments()->findArray())->count(0);
+  }
+
   function testItCanRestoreASubscriber() {
     $this->subscriber_1->trash();
 

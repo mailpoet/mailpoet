@@ -107,6 +107,9 @@ class Subscribers extends APIEndpoint {
   }
 
   function save($data = array()) {
+    if(empty($data['segments'])) {
+      $data['segments'] = array();
+    }
     $subscriber = Subscriber::createOrUpdate($data);
     $errors = $subscriber->getErrors();
 

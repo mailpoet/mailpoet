@@ -54,6 +54,15 @@ class SubscriberSegment extends Model {
     return true;
   }
 
+  static function resubscribeToAllSegments($subscriber) {
+    if($subscriber === false) return false;
+    // (re)subscribe to all segments linked to the subscriber
+    return self::where('subscriber_id', $subscriber->id)
+      ->findResultSet()
+      ->set('status', Subscriber::STATUS_SUBSCRIBED)
+      ->save();
+  }
+
   static function subscribeToSegments($subscriber, $segment_ids = array()) {
     if($subscriber === false) return false;
     if(!empty($segment_ids)) {
@@ -68,12 +77,6 @@ class SubscriberSegment extends Model {
         }
       }
       return true;
-    } else {
-      // (re)subscribe to all segments linked to the subscriber
-      return self::where('subscriber_id', $subscriber->id)
-        ->findResultSet()
-        ->set('status', Subscriber::STATUS_SUBSCRIBED)
-        ->save();
     }
   }
 

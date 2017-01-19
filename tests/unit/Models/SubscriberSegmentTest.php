@@ -103,6 +103,28 @@ class SubscriberSegmentTest extends MailPoetTest {
     expect($subscriptions_count)->equals(2);
   }
 
+  function testItCanResubscribeToAllSegments() {
+    $result = SubscriberSegment::subscribeToSegments($this->subscriber, array(
+        $this->segment_1->id,
+        $this->segment_2->id
+    ));
+    expect($result)->true();
+
+    $subscribed_segments = $this->subscriber->segments()->findArray();
+    expect($subscribed_segments)->count(2);
+
+    $result = SubscriberSegment::unsubscribeFromSegments($this->subscriber);
+    expect($result)->true();
+
+    $subscribed_segments = $this->subscriber->segments()->findArray();
+    expect($subscribed_segments)->count(0);
+
+    SubscriberSegment::resubscribeToAllSegments($this->subscriber);
+
+    $subscribed_segments = $this->subscriber->segments()->findArray();
+    expect($subscribed_segments)->count(2);
+  }
+
   function testItCanDeleteSubscriptions() {
     SubscriberSegment::createOrUpdate(array(
       'subscriber_id' => $this->subscriber->id,
