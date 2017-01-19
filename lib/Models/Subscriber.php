@@ -779,7 +779,11 @@ class Subscriber extends Model {
           MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id'
         )
       )
-      ->whereNull(MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id');
+      ->whereRaw(
+        MP_SUBSCRIBER_SEGMENT_TABLE . '.status != ? ' .
+        ' OR ' . MP_SUBSCRIBER_SEGMENT_TABLE . '.subscriber_id IS NULL ',
+        self::STATUS_SUBSCRIBED
+      );
   }
 
   static function createMultiple($columns, $values) {
