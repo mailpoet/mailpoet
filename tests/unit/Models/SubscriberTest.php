@@ -152,6 +152,9 @@ class SubscriberTest extends MailPoetTest {
     $segment = Segment::createOrUpdate(array(
       'name' => 'Test segment'
     ));
+    $segment_2 = Segment::createOrUpdate(array(
+      'name' => 'Test segment 2'
+    ));
 
     // not yet subscribed
     $subscribers = Subscriber::filter('filterBy', array('segment' => 'none'))
@@ -164,7 +167,7 @@ class SubscriberTest extends MailPoetTest {
     // subscribed to a segment
     SubscriberSegment::subscribeToSegments(
       $subscriber,
-      array($segment->id)
+      array($segment->id, $segment_2->id)
     );
 
     $subscribers = Subscriber::filter('filterBy', array('segment' => 'none'))
@@ -177,7 +180,7 @@ class SubscriberTest extends MailPoetTest {
     // unsubscribed
     SubscriberSegment::unsubscribeFromSegments(
       $subscriber,
-      array($segment->id)
+      array($segment->id, $segment_2->id)
     );
 
     $subscribers = Subscriber::filter('filterBy', array('segment' => 'none'))
