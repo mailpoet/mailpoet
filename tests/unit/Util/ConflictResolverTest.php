@@ -28,7 +28,7 @@ class ConflictResolverTest extends MailPoetTest {
     $permitted_asset_location = $this->conflict_resolver->permitted_assets_locations['styles'][array_rand($this->conflict_resolver->permitted_assets_locations['styles'], 1)];
     // enqueue styles
     wp_enqueue_style('select2', '/wp-content/some/offending/plugin/select2.css');
-    wp_enqueue_style('permitted_style', $permitted_asset_location);
+    wp_enqueue_style('permitted_style', trim($permitted_asset_location, '^'));
     $this->conflict_resolver->resolveStylesConflict();
     do_action('wp_print_styles');
     do_action('admin_print_styles');
@@ -48,7 +48,7 @@ class ConflictResolverTest extends MailPoetTest {
     // enqueue scripts
     wp_enqueue_script('select2', '/wp-content/some/offending/plugin/select2.js');
     wp_enqueue_script('some_random_script', 'http://example.com/some_script.js', null, null, $in_footer = true); // test inside footer
-    wp_enqueue_script('permitted_script', $permitted_asset_location);
+    wp_enqueue_script('permitted_script', trim($permitted_asset_location, '^'));
     $this->conflict_resolver->resolveScriptsConflict();
     do_action('wp_print_scripts');
     do_action('admin_print_footer_scripts');

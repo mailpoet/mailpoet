@@ -5,15 +5,15 @@ class ConflictResolver {
   public $permitted_assets_locations = array(
     'styles' => array(
       // WP default
-      'wp-admin',
-      'wp-includes',
+      '^/wp-admin',
+      '^/wp-includes',
       // third-party
       'query-monitor'
     ),
     'scripts' => array(
       // WP default
-      'wp-admin',
-      'wp-includes',
+      '^/wp-admin',
+      '^/wp-includes',
       'googleapis.com/ajax/libs',
       // third-party
       'query-monitor'
