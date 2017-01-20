@@ -161,7 +161,7 @@ class Widget extends \WP_Widget {
         );
 
         // generate security token
-        $data['token'] = Security::generateToken();
+        $data['token'] = Security::generateToken('API');
 
         // render form
         $renderer = new Renderer();

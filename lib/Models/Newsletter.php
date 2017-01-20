@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Models;
+use MailPoet\Config\Env;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
@@ -46,7 +47,7 @@ class Newsletter extends Model {
     $this->set('hash',
       ($this->hash)
       ? $this->hash
-      : self::generateHash()
+      : Security::generateToken('newsletter', self::NEWSLETTER_HASH_LENGTH)
     );
     return parent::save();
   }
@@ -705,13 +706,5 @@ class Newsletter extends Model {
   static function getByHash($hash) {
     return parent::where('hash', $hash)
       ->findOne();
-  }
-
-  static function generateHash() {
-    return substr(
-      md5(AUTH_KEY . Security::generateRandomString(15)),
-      0,
-      self::NEWSLETTER_HASH_LENGTH
-    );
   }
 }

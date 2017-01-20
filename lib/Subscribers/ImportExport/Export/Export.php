@@ -241,7 +241,7 @@ class Export {
   function getExportFile($format) {
     return sprintf(
       $this->export_path . '/MailPoet_export_%s.%s',
-      Security::generateRandomString(15),
+      Security::generateRandomString(),
       $format
     );
   }
