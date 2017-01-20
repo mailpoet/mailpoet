@@ -280,7 +280,9 @@ class Subscriber extends Model {
       'value' => ''
     );
 
-    $subscribers_without_segment = self::filter('withoutSegments')->count();
+    $subscribers_without_segment = self::filter('withoutSegments')
+      ->whereNull('deleted_at')
+      ->count();
     $subscribers_without_segment_label = sprintf(
       __('Subscribers without a list (%s)', 'mailpoet'),
       number_format($subscribers_without_segment)
@@ -782,13 +784,18 @@ class Subscriber extends Model {
 
   static function withoutSegments($orm) {
     return $orm->select(MP_SUBSCRIBERS_TABLE.'.*')
-      ->leftOuterJoin(
-        MP_SUBSCRIBER_SEGMENT_TABLE,
+      ->rawJoin(
+        'LEFT OUTER JOIN (
+          SELECT `subscriber_id`
+          FROM '.MP_SUBSCRIBER_SEGMENT_TABLE.'
+          WHERE `status` = "'.self::STATUS_SUBSCRIBED.'"
+        )',
         array(
           MP_SUBSCRIBERS_TABLE.'.id',
           '=',
           MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id'
-        )
+        ),
+        MP_SUBSCRIBER_SEGMENT_TABLE
       )
       ->whereNull(MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id');
   }
