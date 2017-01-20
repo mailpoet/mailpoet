@@ -340,11 +340,10 @@ class Newsletters extends APIEndpoint {
       }
 
       // get preview url
-      $subscriber = Subscriber::getCurrentWPUser();
       $newsletter->preview_url = NewsletterUrl::getViewInBrowserUrl(
         NewsletterUrl::TYPE_LISTING_EDITOR,
         $newsletter,
-        $subscriber,
+        $subscriber = null,
         $queue
       );
 
