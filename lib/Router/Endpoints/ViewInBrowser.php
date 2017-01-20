@@ -50,10 +50,14 @@ class ViewInBrowser {
       if(empty($data->subscriber_token) ||
          !Subscriber::verifyToken($data->subscriber->email, $data->subscriber_token)
       ) return false;
+    } else if(!$data->subscriber && !empty($data->preview)) {
+      // if this is a preview and subscriber does not exist,
+      // attemp to set subscriber to the current logged-in WP user
+      $data->subscriber = Subscriber::getCurrentWPUser();
     }
 
-    // if newsletter ID is defined then subscriber must exist
-    if($data->newsletter_id && !$data->subscriber) return false;
+    // if newsletter hash is not provided but newsletter ID is defined then subscriber must exist
+    if(empty($data->newsletter_hash) && $data->newsletter_id && !$data->subscriber) return false;
 
     // queue is optional; if defined, get it
     $data->queue = (!empty($data->queue_id)) ?
