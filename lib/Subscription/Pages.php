@@ -87,7 +87,7 @@ class Pages {
     global $post;
 
     if($this->isPreview() === false && $this->subscriber === false) {
-      return __("Hmmm... we don't have a record of you", 'mailpoet');
+      return __("Hmmm... we don't have a record of you.", 'mailpoet');
     }
 
     if(
@@ -189,7 +189,7 @@ class Pages {
 
   private function getUnsubscribeTitle() {
     if($this->isPreview() || $this->subscriber !== false) {
-      return __("You are now unsubscribed", 'mailpoet');
+      return __("You are now unsubscribed.", 'mailpoet');
     }
   }
 

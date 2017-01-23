@@ -7,7 +7,7 @@ abstract class Base {
 
     if($block['id'] === 'email') {
       $rules['required'] = true;
-      $rules['error-message'] = __('Please specify a valid email address', 'mailpoet');
+      $rules['error-message'] = __('Please specify a valid email address.', 'mailpoet');
     }
 
     if($block['id'] === 'segments') {

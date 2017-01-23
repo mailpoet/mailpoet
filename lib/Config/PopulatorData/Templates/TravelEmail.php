@@ -446,7 +446,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "header",
-              "text" => ("Display problems? <a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser</a>"),
+              "text" => ("Display problems? <a href=\"[link:newsletter_view_in_browser_url]\">Open this email in your web browser.</a>"),
               "styles" => array(
                 "block" => array(
                   "backgroundColor" => "transparent"

@@ -38,7 +38,7 @@ class API {
     if($this->checkToken() === false) {
       $error_response = new ErrorResponse(
         array(
-          Error::UNAUTHORIZED => __('Invalid request.', 'mailpoet')
+          Error::UNAUTHORIZED => __('Invalid request', 'mailpoet')
         ),
         array(),
         Response::STATUS_UNAUTHORIZED
@@ -64,7 +64,7 @@ class API {
       // throw exception bad request
       $error_response = new ErrorResponse(
         array(
-          Error::BAD_REQUEST => __('Invalid request.', 'mailpoet')
+          Error::BAD_REQUEST => __('Invalid request', 'mailpoet')
         ),
         array(),
         Response::STATUS_BAD_REQUEST

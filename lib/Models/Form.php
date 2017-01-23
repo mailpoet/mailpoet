@@ -10,7 +10,7 @@ class Form extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('Please specify a name', 'mailpoet')
+      'required' => __('Please specify a name.', 'mailpoet')
     ));
   }
 

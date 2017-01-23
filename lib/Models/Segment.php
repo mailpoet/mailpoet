@@ -10,7 +10,7 @@ class Segment extends Model {
     parent::__construct();
 
     $this->addValidations('name', array(
-      'required' => __('Please specify a name', 'mailpoet')
+      'required' => __('Please specify a name.', 'mailpoet')
     ));
   }
 
@@ -106,7 +106,7 @@ class Segment extends Model {
       $wp_segment->hydrate(array(
         'name' => __('WordPress Users', 'mailpoet'),
         'description' =>
-          __('This lists containts all of your WordPress users', 'mailpoet'),
+          __('This list contains all of your WordPress users.', 'mailpoet'),
         'type' => 'wp_users'
       ));
       $wp_segment->save();

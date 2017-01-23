@@ -50,7 +50,7 @@ class Export {
         throw new \Exception(__("Couldn't save export file on the server", 'mailpoet'));
       }
       if(!extension_loaded('zip')) {
-        throw new \Exception(__('Export requires a ZIP extension to be installed on the host', 'mailpoet'));
+        throw new \Exception(__('Export requires a ZIP extension to be installed on the host.', 'mailpoet'));
       }
       $processed_subscribers = call_user_func(
         array(
