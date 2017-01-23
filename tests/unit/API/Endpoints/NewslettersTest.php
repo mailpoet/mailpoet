@@ -8,6 +8,8 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Url;
+use MailPoet\Router\Router;
 
 class NewslettersTest extends MailPoetTest {
   function _before() {
@@ -29,7 +31,7 @@ class NewslettersTest extends MailPoetTest {
   function testItCanGetANewsletter() {
     $router = new Newsletters();
 
-    $response = $router->get(/* missing id */);
+    $response = $router->get(); // missing id
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])
       ->equals('This newsletter does not exist.');
@@ -517,7 +519,7 @@ class NewslettersTest extends MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
-  function testItReturnsMaillerErrorWhenSendingFailed() {
+  function testItReturnsMailerErrorWhenSendingFailed() {
     $subscriber = 'test@subscriber.com';
     $data = array(
       'subscriber' => $subscriber,
@@ -540,6 +542,18 @@ class NewslettersTest extends MailPoetTest {
     $router = new Newsletters();
     $response = $router->sendPreview($data);
     expect($response->errors[0]['message'])->equals('The email could not be sent: failed');
+  }
+
+  function testItGeneratesPreviewLinksWithNewsletterHashAndNoSubscriberData() {
+    $router = new Newsletters();
+    $response = $router->listing();
+    $preview_link = $response->data[0]['preview_url'];
+    parse_str(parse_url($preview_link, PHP_URL_QUERY), $preview_link_data);
+    $preview_link_data = Url::transformUrlDataObject(Router::decodeRequestData($preview_link_data['data']));
+    expect($preview_link_data['newsletter_hash'])->notEmpty();
+    expect($preview_link_data['subscriber_id'])->false();
+    expect($preview_link_data['subscriber_token'])->false();
+    expect((boolean)$preview_link_data['preview'])->true();
   }
 
   function _after() {

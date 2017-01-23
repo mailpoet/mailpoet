@@ -143,6 +143,21 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->equals($data);
   }
 
+  function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
+    $data = (object)array_merge(
+      $this->browser_preview_data,
+      array(
+        'queue' => $this->queue,
+        'subscriber' => null,
+        'newsletter' => $this->newsletter
+      )
+    );
+    $data->preview = true;
+    wp_set_current_user(1);
+    $result = $this->view_in_browser->_validateBrowserPreviewData($data);
+    expect($result->subscriber->id)->equals(1);
+  }
+
   function testItProcessesBrowserPreviewData() {
     $processed_data = $this->view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
     expect($processed_data->queue->id)->equals($this->queue->id);

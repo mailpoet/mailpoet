@@ -27,8 +27,7 @@ class Url {
         $preview = true;
         break;
       case self::TYPE_LISTING_EDITOR:
-        // enable preview and hide newsletter hash when displaying from editor or listings
-        $newsletter->hash = null;
+        // enable preview when displaying from editor or listings
         $preview = true;
         break;
       default:

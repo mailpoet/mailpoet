@@ -593,6 +593,7 @@ class Newsletter extends Model {
     return self::select(array(
         'id',
         'subject',
+        'hash',
         'type',
         'status',
         'updated_at',
