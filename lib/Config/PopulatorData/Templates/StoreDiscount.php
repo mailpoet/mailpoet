@@ -70,7 +70,7 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p></p>\n<p>Hi [subscriber:firstname | default:reader]</p>\n<p class=\"\"></p>\n<p>Fancy 15% off your next order? Use this coupon on all your favourite products from our store until Wednesday. Just enter the code on the payments page and your discount will applied.</p>", 'mailpoet')
+              "text" => __("<p></p>\n<p>Hi [subscriber:firstname | default:reader]</p>\n<p class=\"\"></p>\n<p>Fancy 15% off your next order? Use this coupon on any product in our store. Expires Wednesday! To apply the discount, enter the code on the payments page.</p>", 'mailpoet')
             ), array(
               "type" => "spacer",
               "styles" => array(
@@ -110,7 +110,7 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<h1 style=\"text-align: center;\"><em><strong>Get 15% discount off your next order</strong></em></h1>", 'mailpoet')
+              "text" => __("<h1 style=\"text-align: center;\"><em><strong>Get a 15% off your next order</strong></em></h1>", 'mailpoet')
             ), array(
               "type" => "text",
               "text" => __("<h2 style=\"text-align: center;\"><strong>USE CODE: WELOVEMAILPOET</strong></h2>", 'mailpoet')
@@ -204,7 +204,7 @@ class StoreDiscount {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/red-icycle.jpg",
-              "alt" => __("red-icycle", 'mailpoet'),
+              "alt" => __("red-bicycle", 'mailpoet'),
               "fullWidth" => false,
               "width" => "558px",
               "height" => "399px",

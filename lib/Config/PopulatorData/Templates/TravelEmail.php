@@ -70,7 +70,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "text",
-              "text" => __("<h1 style=\"text-align: center;\">Hi [subscriber:firstname | default:reader]!</h1>\n<p></p>\n<p>Greetings from New Zealand, we're here enjoying the sights and sounds (and bad smells!) of Rotarua. Yesterday we took advantage of the local amenities and visited the hot springs! </p>\n<p>Don't forget to stay up-to-date via twitter!</p>", 'mailpoet')
+              "text" => __("<h1 style=\"text-align: center;\">Hi [subscriber:firstname | default:reader]!</h1>\n<p></p>\n<p>Greetings from New Zealand! We're here enjoying the sights, sounds, and smells of Rotarua! Yesterday, we visited the local hot springs, and today, we're going swimming.</p>\n<p>Don't forget to stay updated with Twitter!</p>", 'mailpoet')
             ), array(
               "type" => "social",
               "iconSet" => "circles",
@@ -324,7 +324,7 @@ class TravelEmail {
               "type" => "image",
               "link" => "",
               "src" => $this->template_image_url . "/glow-worms.jpg",
-              "alt" => __("Glow worms, Waitomo Caves", 'mailpoet'),
+              "alt" => __("Glowworms, Waitomo Caves", 'mailpoet'),
               "fullWidth" => true,
               "width" => "640px",
               "height" => "428px",
@@ -335,7 +335,7 @@ class TravelEmail {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p><em><a href=\"http://www.waitomo.com/Waitomo-Glowworm-Caves/Pages/default.aspx\"><strong>Waitomo Glow Worm Caves</strong></a></em></p>", 'mailpoet')
+              "text" => __("<p><em><a href=\"http://www.waitomo.com/Waitomo-Glowworm-Caves/Pages/default.aspx\"><strong>Waitomo GlowWorm Caves</strong></a></em></p>", 'mailpoet')
             ))
           ), array(
             "type" => "container",
