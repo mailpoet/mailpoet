@@ -8,7 +8,6 @@ use MailPoet\WP\Notice as WPNotice;
 if(!defined('ABSPATH')) exit;
 
 class RequirementsChecker {
-  const TEST_PHP_VERSION = 'PHPVersion';
   const TEST_FOLDER_PERMISSIONS = 'TempAndCacheFolderCreation';
   const TEST_PDO_EXTENSION = 'PDOExtension';
   const TEST_MBSTRING_EXTENSION = 'MbstringExtension';
@@ -44,7 +43,6 @@ class RequirementsChecker {
   function checkAllRequirements() {
     $available_tests = array(
       self::TEST_PDO_EXTENSION,
-      self::TEST_PHP_VERSION,
       self::TEST_FOLDER_PERMISSIONS,
       self::TEST_MBSTRING_EXTENSION,
       self::TEST_VENDOR_SOURCE
@@ -54,17 +52,6 @@ class RequirementsChecker {
       $results[$test] = call_user_func(array($this, 'check' .  $test));
     }
     return $results;
-  }
-
-  function checkPHPVersion() {
-    if(version_compare(phpversion(), '5.3.0', '<')) {
-      $error = Helpers::replaceLinkTags(
-        __('This plugin requires PHP version 5.3 or newer. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
-        '//docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_version'
-      );
-      return $this->processError($error);
-    }
-    return true;
   }
 
   function checkTempAndCacheFolderCreation() {
