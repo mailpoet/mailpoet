@@ -9,14 +9,16 @@ if(!defined('ABSPATH')) exit;
 class Bridge {
   const API_KEY_STATE_SETTING_NAME = 'mta.mailpoet_api_key_state';
 
-  const MAILPOET_KEY_VALID = 200;
-  const MAILPOET_KEY_INVALID = 401;
-  const MAILPOET_KEY_EXPIRING = 402;
+  const MAILPOET_KEY_VALID = 'valid';
+  const MAILPOET_KEY_INVALID = 'invalid';
+  const MAILPOET_KEY_EXPIRING = 'expiring';
+
+  const MAILPOET_KEY_CHECK_ERROR = 'check_error';
+
+  const CHECK_ERROR_UNAVAILABLE = 503;
+  const CHECK_ERROR_UNKNOWN = 'unknown';
 
   public $api;
-
-  function __construct() {
-  }
 
   static function isMPSendingServiceEnabled() {
     try {
@@ -30,7 +32,7 @@ class Bridge {
 
   function initApi($api_key) {
     if($this->api) {
-      $this->api->api_key = $api_key;
+      $this->api->setKey($api_key);
     } else {
       $this->api = new Bridge\API($api_key);
     }
@@ -43,20 +45,41 @@ class Bridge {
   }
 
   function processResult(array $result) {
-    if(empty($result['code'])) {
-      return false;
-    }
-    Setting::setValue(
-      self::API_KEY_STATE_SETTING_NAME,
-      array(
-        'code' => (int)$result['code'],
-        'data' => !empty($result['data']) ? $result['data'] : null,
-      )
+    $state_map = array(
+      200 => self::MAILPOET_KEY_VALID,
+      401 => self::MAILPOET_KEY_INVALID,
+      402 => self::MAILPOET_KEY_EXPIRING
     );
-    return $result;
+
+    $update_settings = false;
+
+    if(!empty($result['code']) && isset($state_map[$result['code']])) {
+      $key_state = $state_map[$result['code']];
+      $update_settings = true;
+    } else {
+      $key_state = self::MAILPOET_KEY_CHECK_ERROR;
+    }
+
+    $state = array(
+      'state' => $key_state,
+      'data' => !empty($result['data']) ? $result['data'] : null,
+      'code' => !empty($result['code']) ? $result['code'] : self::CHECK_ERROR_UNKNOWN
+    );
+
+    if($update_settings) {
+      Setting::setValue(
+        self::API_KEY_STATE_SETTING_NAME,
+        $state
+      );
+    }
+
+    return $state;
   }
 
   static function invalidateKey() {
-    Setting::setValue(self::API_KEY_STATE_SETTING_NAME, array('code' => 401));
+    Setting::setValue(
+      self::API_KEY_STATE_SETTING_NAME,
+      array('state' => self::MAILPOET_KEY_INVALID)
+    );
   }
 }

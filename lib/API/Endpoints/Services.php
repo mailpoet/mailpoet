@@ -32,13 +32,13 @@ class Services extends APIEndpoint {
       ));
     }
 
-    $code = !empty($result['code']) ? (int)$result['code'] : null;
+    $state = !empty($result['state']) ? $result['state'] : null;
 
-    if($code == Bridge::MAILPOET_KEY_VALID) {
+    if($state == Bridge::MAILPOET_KEY_VALID) {
       return $this->successResponse(null);
     }
 
-    switch($code) {
+    switch($state) {
       case Bridge::MAILPOET_KEY_INVALID:
         $error = __('Your MailPoet key is invalid!', 'mailpoet');
         break;
@@ -50,6 +50,7 @@ class Services extends APIEndpoint {
         );
         break;
       default:
+        $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
         $error = sprintf(
           __('Error validating API key, please try again later (code: %s)', 'mailpoet'),
           $code

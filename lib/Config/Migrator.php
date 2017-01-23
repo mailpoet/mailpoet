@@ -106,7 +106,7 @@ class Migrator {
   function sendingQueues() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'type varchar(12) NULL DEFAULT NULL,',
+      'type varchar(90) NULL DEFAULT NULL,',
       'newsletter_id mediumint(9) NOT NULL,',
       'newsletter_rendered_body longtext,',
       'newsletter_rendered_subject varchar(250) NULL DEFAULT NULL,',

@@ -20,7 +20,7 @@ class ServicesTest extends MailPoetTest {
   function testItRespondsWithSuccessIfKeyIsValid() {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
-      array('checkKey' => array('code' => Bridge::MAILPOET_KEY_VALID)),
+      array('checkKey' => array('state' => Bridge::MAILPOET_KEY_VALID)),
       $this
     );
     $response = $this->services_endpoint->verifyMailPoetKey($this->data);
@@ -30,7 +30,7 @@ class ServicesTest extends MailPoetTest {
   function testItRespondsWithErrorIfKeyIsInvalid() {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
-      array('checkKey' => array('code' => Bridge::MAILPOET_KEY_INVALID)),
+      array('checkKey' => array('state' => Bridge::MAILPOET_KEY_INVALID)),
       $this
     );
     $response = $this->services_endpoint->verifyMailPoetKey($this->data);
@@ -42,7 +42,7 @@ class ServicesTest extends MailPoetTest {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array('checkKey' => array(
-        'code' => Bridge::MAILPOET_KEY_EXPIRING,
+        'state' => Bridge::MAILPOET_KEY_EXPIRING,
         'data' => array('expire_at' => $date->format('c'))
       )),
       $this
@@ -55,11 +55,11 @@ class ServicesTest extends MailPoetTest {
   function testItRespondsWithErrorIfServiceIsUnavailable() {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
-      array('checkKey' => array('code' => 503)),
+      array('checkKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE)),
       $this
     );
     $response = $this->services_endpoint->verifyMailPoetKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains('503');
+    expect($response->errors[0]['message'])->contains((string)Bridge::CHECK_ERROR_UNAVAILABLE);
   }
 }

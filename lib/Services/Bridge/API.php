@@ -8,7 +8,7 @@ class API {
   public $api_key;
 
   function __construct($api_key) {
-    $this->api_key = $api_key;
+    $this->setKey($api_key);
   }
 
   function checkKey() {
@@ -17,6 +17,10 @@ class API {
       $this->request(array('site' => home_url()))
     );
     return $this->processResponse($result);
+  }
+
+  function setKey($api_key) {
+    $this->api_key = $api_key;
   }
 
   private function processResponse($result) {

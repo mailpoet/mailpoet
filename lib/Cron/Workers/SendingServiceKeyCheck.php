@@ -10,7 +10,7 @@ use MailPoet\Services\Bridge;
 if(!defined('ABSPATH')) exit;
 
 class SendingServiceKeyCheck {
-  const TASK_TYPE = 'sskeycheck';
+  const TASK_TYPE = 'sending_service_key_check';
   const UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT = 60;
 
   public $timer;
@@ -89,10 +89,10 @@ class SendingServiceKeyCheck {
       $mailer_config = Mailer::getMailerConfig();
       $result = $this->bridge->checkKey($mailer_config['mailpoet_api_key']);
     } catch (\Exception $e) {
-      $result = array('code' => 503);
+      $result = false;
     }
 
-    if(empty($result['code']) || $result['code'] == 503) {
+    if(empty($result['code']) || $result['code'] == Bridge::CHECK_ERROR_UNAVAILABLE) {
       // reschedule the check
       $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
       $queue->scheduled_at = $scheduled_at->addMinutes(

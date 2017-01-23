@@ -3,7 +3,7 @@
 use Carbon\Carbon;
 use Codeception\Util\Stub;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\Workers\SendingServiceKeyCheck as SSKeyCheck;
+use MailPoet\Cron\Workers\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
@@ -17,7 +17,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
       'good_address@example.com'
     );
 
-    $this->sskeycheck = new SSKeyCheck(microtime(true));
+    $this->sskeycheck = new SendingServiceKeyCheck(microtime(true));
   }
 
   function testItConstructs() {
@@ -26,7 +26,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
 
   function testItThrowsExceptionWhenExecutionLimitIsReached() {
     try {
-      $sskeycheck = new SSKeyCheck(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT);
+      $sskeycheck = new SendingServiceKeyCheck(microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT);
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
@@ -34,33 +34,33 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
   }
 
   function testItSchedulesSendingServiceKeyCheck() {
-    expect(SendingQueue::where('type', SSKeyCheck::TASK_TYPE)->findMany())->isEmpty();
-    SSKeyCheck::schedule();
-    expect(SendingQueue::where('type', SSKeyCheck::TASK_TYPE)->findMany())->notEmpty();
+    expect(SendingQueue::where('type', SendingServiceKeyCheck::TASK_TYPE)->findMany())->isEmpty();
+    SendingServiceKeyCheck::schedule();
+    expect(SendingQueue::where('type', SendingServiceKeyCheck::TASK_TYPE)->findMany())->notEmpty();
   }
 
   function testItDoesNotScheduleSendingServiceKeyCheckTwice() {
-    expect(count(SendingQueue::where('type', SSKeyCheck::TASK_TYPE)->findMany()))->equals(0);
-    SSKeyCheck::schedule();
-    expect(count(SendingQueue::where('type', SSKeyCheck::TASK_TYPE)->findMany()))->equals(1);
-    SSKeyCheck::schedule();
-    expect(count(SendingQueue::where('type', SSKeyCheck::TASK_TYPE)->findMany()))->equals(1);
+    expect(count(SendingQueue::where('type', SendingServiceKeyCheck::TASK_TYPE)->findMany()))->equals(0);
+    SendingServiceKeyCheck::schedule();
+    expect(count(SendingQueue::where('type', SendingServiceKeyCheck::TASK_TYPE)->findMany()))->equals(1);
+    SendingServiceKeyCheck::schedule();
+    expect(count(SendingQueue::where('type', SendingServiceKeyCheck::TASK_TYPE)->findMany()))->equals(1);
   }
 
   function testItCanGetScheduledQueues() {
-    expect(SSKeyCheck::getScheduledQueues())->isEmpty();
+    expect(SendingServiceKeyCheck::getScheduledQueues())->isEmpty();
     $this->createScheduledQueue();
-    expect(SSKeyCheck::getScheduledQueues())->notEmpty();
+    expect(SendingServiceKeyCheck::getScheduledQueues())->notEmpty();
   }
 
   function testItCanGetRunningQueues() {
-    expect(SSKeyCheck::getRunningQueues())->isEmpty();
+    expect(SendingServiceKeyCheck::getRunningQueues())->isEmpty();
     $this->createRunningQueue();
-    expect(SSKeyCheck::getRunningQueues())->notEmpty();
+    expect(SendingServiceKeyCheck::getRunningQueues())->notEmpty();
   }
 
   function testItCanGetAllDueQueues() {
-    expect(SSKeyCheck::getAllDueQueues())->isEmpty();
+    expect(SendingServiceKeyCheck::getAllDueQueues())->isEmpty();
 
     // scheduled for now
     $this->createScheduledQueue();
@@ -78,15 +78,15 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
     $queue->status = SendingQueue::STATUS_COMPLETED;
     $queue->save();
 
-    expect(count(SSKeyCheck::getAllDueQueues()))->equals(2);
+    expect(count(SendingServiceKeyCheck::getAllDueQueues()))->equals(2);
   }
 
   function testItCanGetFutureQueues() {
-    expect(SSKeyCheck::getFutureQueues())->isEmpty();
+    expect(SendingServiceKeyCheck::getFutureQueues())->isEmpty();
     $queue = $this->createScheduledQueue();
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'))->addDays(7);
     $queue->save();
-    expect(count(SSKeyCheck::getFutureQueues()))->notEmpty();
+    expect(count(SendingServiceKeyCheck::getFutureQueues()))->notEmpty();
   }
 
   function testItFailsToProcessWithoutMailPoetMethodSetUp() {
@@ -111,7 +111,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
     expect($queue->status)->null();
   }
 
-  function testItProcessesSSKeyCheckQueue() {
+  function testItProcessesSendingServiceKeyCheckQueue() {
     $this->sskeycheck->bridge = Stub::make(
       new Bridge,
       array('checkKey' => array('code' => Bridge::MAILPOET_KEY_VALID)),
@@ -141,7 +141,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
   function testItReschedulesCheckOnError() {
     $this->sskeycheck->bridge = Stub::make(
       new Bridge,
-      array('checkKey' => array('code' => 503)),
+      array('checkKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE)),
       $this
     );
     $this->setMailPoetSendingMethod();
@@ -154,7 +154,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
 
   function testItCalculatesNextRunDateWithinNextWeekBoundaries() {
     $current_date = Carbon::createFromTimestamp(current_time('timestamp'));
-    $next_run_date = SSKeyCheck::getNextRunDate();
+    $next_run_date = SendingServiceKeyCheck::getNextRunDate();
     $difference = $next_run_date->diffInDays($current_date);
     // Subtract days left in the current week
     $difference -= (Carbon::DAYS_PER_WEEK - $current_date->format('N'));
@@ -174,7 +174,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
 
   private function createScheduledQueue() {
     $queue = SendingQueue::create();
-    $queue->type = SSKeyCheck::TASK_TYPE;
+    $queue->type = SendingServiceKeyCheck::TASK_TYPE;
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->newsletter_id = 0;
@@ -184,7 +184,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
 
   private function createRunningQueue() {
     $queue = SendingQueue::create();
-    $queue->type = SSKeyCheck::TASK_TYPE;
+    $queue->type = SendingServiceKeyCheck::TASK_TYPE;
     $queue->status = null;
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->newsletter_id = 0;

@@ -40,30 +40,34 @@ class BridgeTest extends MailPoetTest {
   function testItChecksValidKey() {
     $result = $this->bridge->checkKey($this->valid_key);
     expect($result)->notEmpty();
-    expect($result['code'])->equals(Bridge::MAILPOET_KEY_VALID);
+    expect($result['state'])->equals(Bridge::MAILPOET_KEY_VALID);
 
     $result = $this->bridge->checkKey($this->invalid_key);
     expect($result)->notEmpty();
-    expect($result['code'])->equals(Bridge::MAILPOET_KEY_INVALID);
+    expect($result['state'])->equals(Bridge::MAILPOET_KEY_INVALID);
 
     $result = $this->bridge->checkKey($this->expiring_key);
     expect($result)->notEmpty();
-    expect($result['code'])->equals(Bridge::MAILPOET_KEY_EXPIRING);
+    expect($result['state'])->equals(Bridge::MAILPOET_KEY_EXPIRING);
     expect($result['data']['expire_at'])->notEmpty();
   }
 
-  function testItReturnsFalseOnEmptyAPIResponseCode() {
+  function testItReturnsErrorStateOnEmptyAPIResponseCode() {
     $api = Stub::make(new API(null), array('checkKey' => array()), $this);
     $this->bridge->api = $api;
     $result = $this->bridge->checkKey($this->valid_key);
-    expect($result)->false();
+    expect($result)->notEmpty();
+    expect($result['state'])->equals(Bridge::MAILPOET_KEY_CHECK_ERROR);
   }
 
   function testItInvalidatesKey() {
-    Setting::setValue(Bridge::API_KEY_STATE_SETTING_NAME, array('code' => 200));
+    Setting::setValue(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      array('state' => Bridge::MAILPOET_KEY_VALID)
+    );
     Bridge::invalidateKey();
     $value = Setting::getValue(Bridge::API_KEY_STATE_SETTING_NAME);
-    expect($value)->equals(array('code' => 401));
+    expect($value)->equals(array('state' => Bridge::MAILPOET_KEY_INVALID));
   }
 
   private function setMailPoetSendingMethod() {

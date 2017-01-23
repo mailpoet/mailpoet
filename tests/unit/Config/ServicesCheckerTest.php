@@ -16,14 +16,14 @@ class ServicesCheckerTest extends MailPoetTest {
     $this->setMailPoetSendingMethod();
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array('code' => Bridge::MAILPOET_KEY_VALID)
+      array('state' => Bridge::MAILPOET_KEY_VALID)
     );
     $result = ServicesChecker::checkMailPoetAPIKeyValid();
     expect($result)->true();
 
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array('code' => Bridge::MAILPOET_KEY_INVALID)
+      array('state' => Bridge::MAILPOET_KEY_INVALID)
     );
     $result = ServicesChecker::checkMailPoetAPIKeyValid();
     expect($result)->false();
@@ -31,17 +31,18 @@ class ServicesCheckerTest extends MailPoetTest {
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array(
-        'code' => Bridge::MAILPOET_KEY_EXPIRING,
+        'state' => Bridge::MAILPOET_KEY_EXPIRING,
         'data' => array('expire_at' => date('c'))
       )
     );
     $result = ServicesChecker::checkMailPoetAPIKeyValid();
     expect($result)->true();
 
+    // unexpected state should be treated as valid
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array(
-        'code' => 503
+        'state' => 'unexpected'
       )
     );
     $result = ServicesChecker::checkMailPoetAPIKeyValid();

@@ -9,7 +9,7 @@ class MockAPI {
   public $api_key;
 
   function __construct($api_key) {
-    $this->api_key = $api_key;
+    $this->setKey($api_key);
   }
 
   function checkKey() {
@@ -17,6 +17,10 @@ class MockAPI {
     $regex = '/^(401|402|503)/';
     $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;
     return $this->processResponse($code);
+  }
+
+  function setKey($api_key) {
+    $this->api_key = $api_key;
   }
 
   private function processResponse($code) {
