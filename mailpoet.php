@@ -24,8 +24,8 @@ $mailpoet_plugin = array(
   'version' => '3.0.0-beta.14',
   'filename' => __FILE__,
   'path' => dirname(__FILE__),
-  'loader' => dirname(__FILE__) . '/vendor/autoload.php',
-  'initializer' => dirname(__FILE__) . '/lib/Config/Initializer.php'
+  'autoloader' => dirname(__FILE__) . '/vendor/autoload.php',
+  'initializer' => dirname(__FILE__) . '/mailpoet_initializer.php'
 );
 
 // Check for the minimum PHP version
@@ -50,7 +50,7 @@ if(version_compare(phpversion(), '5.3.0', '<')) {
 }
 
 // Check for core dependencies
-if(!file_exists($mailpoet_plugin['loader']) && !file_exists($mailpoet_plugin['initializer'])) {
+if(!file_exists($mailpoet_plugin['autoloader']) && !file_exists($mailpoet_plugin['initializer'])) {
   add_action('admin_notices', function() {
     $notice = __('MailPoet cannot start because it is missing core files. Please reinstall the plugin.', 'mailpoet');
     printf('<div class="error"><p>%1$s</p></div>', $notice);
@@ -59,7 +59,4 @@ if(!file_exists($mailpoet_plugin['loader']) && !file_exists($mailpoet_plugin['in
 }
 
 // Initialize the plugin
-define('MAILPOET_VERSION', $mailpoet_plugin['version']);
-define('MAILPOET_FILENAME', $mailpoet_plugin['filename']);
-define('MAILPOET_PATH', $mailpoet_plugin['path']);
 require_once($mailpoet_plugin['initializer']);

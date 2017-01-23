@@ -10,15 +10,6 @@ use MailPoet\WP\Notice as WPNotice;
 if(!defined('ABSPATH')) exit;
 
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-require_once(MAILPOET_PATH . '/vendor/autoload.php');
-
-$initializer = new Initializer(
-  array(
-    'file' => MAILPOET_FILENAME,
-    'version' => MAILPOET_VERSION
-  )
-);
-$initializer->init();
 
 class Initializer {
 
