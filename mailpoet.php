@@ -4,7 +4,7 @@ if(!defined('ABSPATH')) exit;
 
 /*
  * Plugin Name: MailPoet
- * Version: 3.0.0-beta.14
+ * Version: 3.0.0-beta.15
  * Plugin URI: http://www.mailpoet.com
  * Description: Create and send beautiful email newsletters, autoresponders, and post notifications without leaving WordPress. This is a beta version of our brand new plugin!
  * Author: MailPoet
@@ -21,7 +21,7 @@ if(!defined('ABSPATH')) exit;
  */
 
 $mailpoet_plugin = array(
-  'version' => '3.0.0-beta.14',
+  'version' => '3.0.0-beta.15',
   'filename' => __FILE__,
   'path' => dirname(__FILE__),
   'autoloader' => dirname(__FILE__) . '/vendor/autoload.php',
@@ -35,7 +35,7 @@ function mailpoet_deactivate_plugin() {
   }
 }
 
-// Check for the minimum PHP version
+// Check for minimum supported PHP version
 if(version_compare(phpversion(), '5.3.0', '<')) {
   add_action('admin_notices', 'mailpoet_php_version_notice');
   // deactivate the plugin
@@ -43,7 +43,7 @@ if(version_compare(phpversion(), '5.3.0', '<')) {
   return;
 }
 
-// display PHP version error notice
+// Display PHP version error notice
 function mailpoet_php_version_notice() {
   $notice = str_replace(
     '[link]',
@@ -54,7 +54,7 @@ function mailpoet_php_version_notice() {
   printf('<div class="error"><p>%1$s</p></div>', $notice);
 }
 
-// Check for core dependencies
+// Check for presence of core dependencies
 if(!file_exists($mailpoet_plugin['autoloader']) || !file_exists($mailpoet_plugin['initializer'])) {
   add_action('admin_notices', 'mailpoet_core_dependency_notice');
   // deactivate the plugin
@@ -62,11 +62,11 @@ if(!file_exists($mailpoet_plugin['autoloader']) || !file_exists($mailpoet_plugin
   return;
 }
 
-// display core dependency error notice
+// Display missing core dependencies error notice
 function mailpoet_core_dependency_notice() {
   $notice = __('MailPoet cannot start because it is missing core files. Please reinstall the plugin.', 'mailpoet');
   printf('<div class="error"><p>%1$s</p></div>', $notice);
 }
 
-// Initialize the plugin
+// Initialize plugin
 require_once($mailpoet_plugin['initializer']);
