@@ -3,7 +3,6 @@
 use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\Bounce;
-use MailPoet\Cron\Workers\Bounce\API;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;

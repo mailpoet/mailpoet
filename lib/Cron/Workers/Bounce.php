@@ -7,6 +7,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
+use MailPoet\Services\Bridge\API;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -31,7 +32,7 @@ class Bounce {
   function initApi() {
     if(!$this->api) {
       $mailer_config = Mailer::getMailerConfig();
-      $this->api = new Bounce\API($mailer_config['mailpoet_api_key']);
+      $this->api = new API($mailer_config['mailpoet_api_key']);
     }
   }
 
@@ -140,7 +141,7 @@ class Bounce {
   }
 
   function processEmails(array $subscriber_emails) {
-    $checked_emails = $this->api->check($subscriber_emails);
+    $checked_emails = $this->api->checkBounces($subscriber_emails);
     $this->processApiResponse((array)$checked_emails);
   }
 

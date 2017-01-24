@@ -3,6 +3,7 @@
 use Codeception\Util\Stub;
 use MailPoet\Mailer\Methods\MailPoet;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Services\Bridge\API;
 
 class MailPoetAPITest extends MailPoetTest {
   function _before() {
@@ -68,17 +69,6 @@ class MailPoetAPITest extends MailPoetTest {
     expect($body[0]['text'])->equals($this->newsletter['body']['text']);
   }
 
-  function testItCanCreateRequest() {
-    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
-    $request = $this->mailer->request($body);
-    expect($request['timeout'])->equals(10);
-    expect($request['httpversion'])->equals('1.0');
-    expect($request['method'])->equals('POST');
-    expect($request['headers']['Content-Type'])->equals('application/json');
-    expect($request['headers']['Authorization'])->equals($this->mailer->auth());
-    expect($request['body'])->equals(json_encode($body));
-  }
-
   function testItCanProcessSubscriber() {
     expect($this->mailer->processSubscriber('test@test.com'))
       ->equals(
@@ -100,11 +90,6 @@ class MailPoetAPITest extends MailPoetTest {
         ));
   }
 
-  function testItCanDoBasicAuth() {
-    expect($this->mailer->auth())
-      ->equals('Basic ' . base64_encode('api:' . $this->settings['api_key']));
-  }
-
   function testItWillNotSendIfApiKeyIsMarkedInvalid() {
     if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $this->mailer->api_key = 'someapi';
@@ -122,7 +107,7 @@ class MailPoetAPITest extends MailPoetTest {
 
   function testItCannotSendWithoutProperApiKey() {
     if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
-    $this->mailer->api_key = 'someapi';
+    $this->mailer->api->setKey('someapi');
     $result = $this->mailer->send(
       $this->newsletter,
       $this->subscriber
