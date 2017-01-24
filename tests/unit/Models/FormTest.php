@@ -92,6 +92,26 @@ class FormTest extends MailPoetTest {
     expect($form->name)->equals('Updated Form');
   }
 
+  function testItCanProvideAFieldList() {
+    $form = Form::createOrUpdate(array(
+      'name' => 'My Form',
+      'body' => array(
+        array(
+          'type' => 'text',
+          'id' => 'email',
+        ),
+        array(
+          'type' => 'text',
+          'id' => 2,
+        ),
+        array(
+          'type' => 'submit',
+          'id' => 'submit',
+        )
+      )
+    ));
+    expect($form->getFieldList())->equals(array('email', 'cf_2'));
+  }
 
   function _after() {
     Form::deleteMany();

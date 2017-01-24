@@ -1,7 +1,9 @@
 <?php
 
+use Codeception\Util\Fixtures;
 use \MailPoet\API\Endpoints\Subscribers;
 use \MailPoet\API\Response as APIResponse;
+use \MailPoet\Models\Form;
 use \MailPoet\Models\Subscriber;
 use \MailPoet\Models\Segment;
 use \MailPoet\Models\Setting;
@@ -26,6 +28,11 @@ class SubscribersTest extends MailPoetTest {
         $this->segment_1->id,
         $this->segment_2->id
       )
+    ));
+
+    $this->form = Form::createOrUpdate(array(
+      'name' => 'My Form',
+      'body' => Fixtures::get('form_body_template')
     ));
 
     // setup mailer
@@ -375,10 +382,22 @@ class SubscribersTest extends MailPoetTest {
     expect($response->errors[0]['message'])->contains('has no method');
   }
 
-  function testItCannotSubscribeWithoutSegments() {
+  function testItCannotSubscribeWithoutFormID() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
       'email' => 'toto@mailpoet.com'
+      // no form ID specified
+    ));
+
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please specify a valid form ID.');
+  }
+
+  function testItCannotSubscribeWithoutSegments() {
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      'email' => 'toto@mailpoet.com',
+      'form_id' => $this->form->id
       // no segments specified
     ));
 
@@ -390,9 +409,30 @@ class SubscribersTest extends MailPoetTest {
     $router = new Subscribers();
     $response = $router->subscribe(array(
       'email' => 'toto@mailpoet.com',
+      'form_id' => $this->form->id,
       'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
     expect($response->status)->equals(APIResponse::STATUS_OK);
+  }
+
+  function testItCanFilterOutNonFormFieldsWhenSubscribing() {
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      'email' => 'toto@mailpoet.com',
+      'form_id' => $this->form->id,
+      'segments' => array($this->segment_1->id, $this->segment_2->id),
+      // exists in table and in the form
+      'first_name' => 'aaa',
+      // exists in table, but not in the form
+      'last_name' => 'bbb',
+      // doesn't exist
+      'bogus' => 'hahaha'
+    ));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    $subscriber = Subscriber::findOne($response->data['id']);
+    expect($subscriber->first_name)->equals('aaa');
+    expect($subscriber->last_name)->isEmpty();
+    expect(isset($subscriber->bogus))->false();
   }
 
   function testItCannotMassSubscribe() {
@@ -401,12 +441,14 @@ class SubscribersTest extends MailPoetTest {
     $router = new Subscribers();
     $response = $router->subscribe(array(
       'email' => 'toto@mailpoet.com',
+      'form_id' => $this->form->id,
       'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
 
     try {
       $response = $router->subscribe(array(
         'email' => 'tata@mailpoet.com',
+        'form_id' => $this->form->id,
         'segments' => array($this->segment_1->id, $this->segment_2->id)
       ));
       $this->fail('It should not be possible to subscribe a second time so soon');

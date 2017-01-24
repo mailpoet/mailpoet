@@ -39,6 +39,32 @@ class Form extends Model {
     return parent::save();
   }
 
+  function getFieldList() {
+    $form = $this->asArray();
+    if(empty($form['body'])) {
+      return false;
+    }
+
+    $skipped_types = array('html', 'divider', 'submit');
+    $fields = array();
+
+    foreach((array)$form['body'] as $field) {
+      if(empty($field['id'])
+        || empty($field['type'])
+        || in_array($field['type'], $skipped_types)
+      ) {
+        continue;
+      }
+      if($field['id'] > 0) {
+        $fields[] = 'cf_' . $field['id'];
+      } else {
+        $fields[] = $field['id'];
+      }
+    }
+
+    return $fields ?: false;
+  }
+
   static function search($orm, $search = '') {
     return $orm->whereLike('name', '%'.$search.'%');
   }
