@@ -1,8 +1,8 @@
 <?php
 namespace MailPoet\Subscription;
-use \MailPoet\API\Endpoints\Subscribers;
-use \MailPoet\API\Response as APIResponse;
-use \MailPoet\Util\Url;
+use MailPoet\API\Endpoints\Subscribers;
+use MailPoet\API\Response as APIResponse;
+use MailPoet\Util\Url;
 
 class Form {
   static function onSubmit() {

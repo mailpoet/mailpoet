@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config;
-use \MailPoet\Analytics\Reporter;
-use \MailPoet\Models\Setting;
+use MailPoet\Analytics\Reporter;
+use MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
 

@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Subscription;
-use \MailPoet\Models\Subscriber;
-use \MailPoet\Util\Url;
+use MailPoet\Models\Subscriber;
+use MailPoet\Util\Url;
 
 class Manage {
 

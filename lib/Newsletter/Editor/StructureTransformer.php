@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Editor;
 
-use \pQuery;
+use pQuery;
 
 if(!defined('ABSPATH')) exit;
 

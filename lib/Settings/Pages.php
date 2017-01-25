@@ -1,6 +1,6 @@
 <?php
 namespace MailPoet\Settings;
-use \MailPoet\Subscription;
+use MailPoet\Subscription;
 
 class Pages {
   function __construct() {

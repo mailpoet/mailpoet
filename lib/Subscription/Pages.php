@@ -1,15 +1,15 @@
 <?php
 namespace MailPoet\Subscription;
 
-use \MailPoet\Models\Subscriber;
-use \MailPoet\Models\SubscriberSegment;
-use \MailPoet\Models\CustomField;
-use \MailPoet\Models\Setting;
-use \MailPoet\Models\Segment;
-use \MailPoet\Util\Url;
-use \MailPoet\Subscription;
-use \MailPoet\Form\Renderer as FormRenderer;
-use \MailPoet\Form\Block\Date as FormBlockDate;
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
+use MailPoet\Models\CustomField;
+use MailPoet\Models\Setting;
+use MailPoet\Models\Segment;
+use MailPoet\Util\Url;
+use MailPoet\Subscription;
+use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Form\Block\Date as FormBlockDate;
 
 class Pages {
   const DEMO_EMAIL = 'demo@mailpoet.com';

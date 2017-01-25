@@ -1,6 +1,6 @@
 <?php
 namespace MailPoet\Config;
-use \MailPoet\Models\Setting;
+use MailPoet\Models\Setting;
 
 class Hooks {
   function __construct() {

@@ -1,11 +1,11 @@
 <?php
 namespace MailPoet\API\Endpoints;
-use \MailPoet\API\Endpoint as APIEndpoint;
-use \MailPoet\API\Error as APIError;
+use MailPoet\API\Endpoint as APIEndpoint;
+use MailPoet\API\Error as APIError;
 
-use \MailPoet\Models\Segment;
-use \MailPoet\Listing;
-use \MailPoet\Segments\WP;
+use MailPoet\Models\Segment;
+use MailPoet\Listing;
+use MailPoet\Segments\WP;
 
 if(!defined('ABSPATH')) exit;
 

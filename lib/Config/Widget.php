@@ -1,6 +1,6 @@
 <?php
 namespace MailPoet\Config;
-use \MailPoet\Models\Form;
+use MailPoet\Models\Form;
 
 if(!defined('ABSPATH')) exit;
 

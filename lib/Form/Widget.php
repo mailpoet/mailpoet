@@ -1,9 +1,9 @@
 <?php
 namespace MailPoet\Form;
-use \MailPoet\Config\Renderer;
-use \MailPoet\Models\Form;
-use \MailPoet\Form\Renderer as FormRenderer;
-use \MailPoet\Util\Security;
+use MailPoet\Config\Renderer;
+use MailPoet\Models\Form;
+use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
 

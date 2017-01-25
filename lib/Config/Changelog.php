@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Config;
-use \MailPoet\Models\Setting;
-use \MailPoet\Util\Url;
+use MailPoet\Models\Setting;
+use MailPoet\Util\Url;
 
 class Changelog {
   function __construct() {
