@@ -44,7 +44,7 @@ class Services extends APIEndpoint {
         break;
       case Bridge::MAILPOET_KEY_EXPIRING:
         $error = sprintf(
-          __('Your MailPoet key is expiring on %s!', 'mailpoet'),
+          __('Your MailPoet key expires on %s!', 'mailpoet'),
           Carbon::createFromTimestamp(strtotime($result['data']['expire_at']))
             ->format('Y-m-d')
         );
