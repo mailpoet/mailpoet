@@ -67,11 +67,11 @@ class Form extends Model {
 
   function filterSegments(array $segment_ids = array()) {
     $form = $this->asArray();
-    if (empty($form['settings']['segments'])) {
+    if(empty($form['settings']['segments'])) {
       return array();
     }
 
-    if (!empty($form['settings']['segments_selected_by'])
+    if(!empty($form['settings']['segments_selected_by'])
       && $form['settings']['segments_selected_by'] == 'user'
     ) {
       $segment_ids = array_intersect($segment_ids, $form['settings']['segments']);

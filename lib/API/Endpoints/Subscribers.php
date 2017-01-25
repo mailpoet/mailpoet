@@ -102,7 +102,7 @@ class Subscribers extends APIEndpoint {
 
         $form = $form->asArray();
 
-        if (!empty($form['settings']['on_success'])) {
+        if(!empty($form['settings']['on_success'])) {
           if($form['settings']['on_success'] === 'page') {
             // redirect to a page on a success, pass the page url in the meta
             $meta['redirect_url'] = get_permalink($form['settings']['success_page']);
