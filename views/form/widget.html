@@ -18,11 +18,6 @@
       <input type="hidden" name="endpoint" value="subscribers" />
       <input type="hidden" name="method" value="subscribe" />
 
-      <% if not(form.settings.segments_selected_by == 'user') %>
-        <% for segment in form.settings.segments %>
-        <input type="hidden" name="segments[]" value="<%= segment %>" />
-        <% endfor %>
-      <% endif %>
       <%= html | raw %>
       <div class="mailpoet_message">
         <p
