@@ -1,7 +1,5 @@
 <?php
 namespace MailPoet\Config;
-use MailPoet\Cron\Workers\Scheduler;
-use MailPoet\Cron\Workers\SendingQueue;
 use \MailPoet\Models\Setting;
 
 class Hooks {

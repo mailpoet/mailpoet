@@ -2,11 +2,7 @@
 namespace MailPoet\Form;
 use \MailPoet\Config\Renderer;
 use \MailPoet\Models\Form;
-use \MailPoet\Models\Segment;
-use \MailPoet\Models\Setting;
-use \MailPoet\Models\Subscriber;
 use \MailPoet\Form\Renderer as FormRenderer;
-use \MailPoet\Form\Util;
 use \MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;

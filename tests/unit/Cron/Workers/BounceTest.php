@@ -1,8 +1,6 @@
 <?php
 
 use Carbon\Carbon;
-use Codeception\Util\Stub;
-use MailPoet\API\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\Bounce\API;

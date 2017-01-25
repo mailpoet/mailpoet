@@ -3,7 +3,6 @@
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
-use MailPoet\API\Endpoints\Cron;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;

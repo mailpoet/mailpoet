@@ -2,7 +2,6 @@
 
 use Carbon\Carbon;
 use Codeception\Util\Stub;
-use MailPoet\API\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\Scheduler;
 use MailPoet\Models\Newsletter;

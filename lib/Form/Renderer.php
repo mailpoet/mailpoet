@@ -1,7 +1,5 @@
 <?php
 namespace MailPoet\Form;
-use MailPoet\Form\Block;
-use MailPoet\Form\Util;
 
 if(!defined('ABSPATH')) exit;
 

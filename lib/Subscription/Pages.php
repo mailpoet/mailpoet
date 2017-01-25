@@ -6,7 +6,6 @@ use \MailPoet\Models\SubscriberSegment;
 use \MailPoet\Models\CustomField;
 use \MailPoet\Models\Setting;
 use \MailPoet\Models\Segment;
-use \MailPoet\Util\Helpers;
 use \MailPoet\Util\Url;
 use \MailPoet\Subscription;
 use \MailPoet\Form\Renderer as FormRenderer;

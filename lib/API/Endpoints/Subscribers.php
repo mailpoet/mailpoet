@@ -6,10 +6,6 @@ use \MailPoet\API\Access as APIAccess;
 
 use MailPoet\Listing;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
-use MailPoet\Models\SubscriberCustomField;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
 

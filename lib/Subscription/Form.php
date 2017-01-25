@@ -2,9 +2,6 @@
 namespace MailPoet\Subscription;
 use \MailPoet\API\Endpoints\Subscribers;
 use \MailPoet\API\Response as APIResponse;
-use \MailPoet\Models\Subscriber;
-use \MailPoet\Models\StatisticsForms;
-use \MailPoet\Models\Form as FormModel;
 use \MailPoet\Util\Url;
 
 class Form {

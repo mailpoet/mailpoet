@@ -1,7 +1,6 @@
 <?php
 
 use Codeception\Util\Stub;
-use MailPoet\API\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Daemon;
 use MailPoet\Models\Setting;

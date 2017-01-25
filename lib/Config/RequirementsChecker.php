@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Config\Env;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Notice as WPNotice;
 

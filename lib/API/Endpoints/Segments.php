@@ -4,8 +4,6 @@ use \MailPoet\API\Endpoint as APIEndpoint;
 use \MailPoet\API\Error as APIError;
 
 use \MailPoet\Models\Segment;
-use \MailPoet\Models\SubscriberSegment;
-use \MailPoet\Models\SegmentFilter;
 use \MailPoet\Listing;
 use \MailPoet\Segments\WP;
 
