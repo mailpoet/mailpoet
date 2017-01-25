@@ -75,6 +75,7 @@ class Subscribers extends APIEndpoint {
       ? (array)$data['segments']
       : array()
     );
+    $segment_ids = $form->filterSegments($segment_ids);
     unset($data['segments']);
 
     if(empty($segment_ids)) {
@@ -101,11 +102,13 @@ class Subscribers extends APIEndpoint {
 
         $form = $form->asArray();
 
-        if($form['settings']['on_success'] === 'page') {
-          // redirect to a page on a success, pass the page url in the meta
-          $meta['redirect_url'] = get_permalink($form['settings']['success_page']);
-        } else if($form['settings']['on_success'] === 'url') {
-          $meta['redirect_url'] = $form['settings']['success_url'];
+        if (!empty($form['settings']['on_success'])) {
+          if($form['settings']['on_success'] === 'page') {
+            // redirect to a page on a success, pass the page url in the meta
+            $meta['redirect_url'] = get_permalink($form['settings']['success_page']);
+          } else if($form['settings']['on_success'] === 'url') {
+            $meta['redirect_url'] = $form['settings']['success_url'];
+          }
         }
       }
 

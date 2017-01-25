@@ -32,7 +32,14 @@ class SubscribersTest extends MailPoetTest {
 
     $this->form = Form::createOrUpdate(array(
       'name' => 'My Form',
-      'body' => Fixtures::get('form_body_template')
+      'body' => Fixtures::get('form_body_template'),
+      'settings' => array(
+        'segments_selected_by' => 'user',
+        'segments' => array(
+          $this->segment_1->id,
+          $this->segment_2->id
+        )
+      )
     ));
 
     // setup mailer
@@ -393,7 +400,7 @@ class SubscribersTest extends MailPoetTest {
     expect($response->errors[0]['message'])->equals('Please specify a valid form ID.');
   }
 
-  function testItCannotSubscribeWithoutSegments() {
+  function testItCannotSubscribeWithoutSegmentsIfTheyAreSelectedByUser() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
       'email' => 'toto@mailpoet.com',
@@ -415,6 +422,45 @@ class SubscribersTest extends MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
+  function testItCanSubscribeWithoutSegmentsIfTheyAreSelectedByAdmin() {
+    $form = $this->form->asArray();
+    $form['settings']['segments_selected_by'] = 'admin';
+    $this->form->settings = $form['settings'];
+    $this->form->save();
+
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      'email' => 'toto@mailpoet.com',
+      'form_id' => $this->form->id
+      // no segments specified
+    ));
+
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    $subscriber = Subscriber::findOne($response->data['id']);
+    $subscriber_segments = $subscriber->segments()->findArray();
+    expect($subscriber_segments)->count(2);
+    expect($subscriber_segments[0]['id'])->equals($form['settings']['segments'][0]);
+    expect($subscriber_segments[1]['id'])->equals($form['settings']['segments'][1]);
+  }
+
+  function testItCannotSubscribeIfFormHasNoSegmentsDefined() {
+    $form = $this->form->asArray();
+    $form['settings']['segments_selected_by'] = 'admin';
+    unset($form['settings']['segments']);
+    $this->form->settings = $form['settings'];
+    $this->form->save();
+
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      'email' => 'toto@mailpoet.com',
+      'form_id' => $this->form->id,
+      'segments' => array($this->segment_1->id, $this->segment_2->id)
+    ));
+
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please select a list.');
+  }
+
   function testItCanFilterOutNonFormFieldsWhenSubscribing() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
@@ -429,10 +475,9 @@ class SubscribersTest extends MailPoetTest {
       'bogus' => 'hahaha'
     ));
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    $subscriber = Subscriber::findOne($response->data['id']);
-    expect($subscriber->first_name)->equals('aaa');
-    expect($subscriber->last_name)->isEmpty();
-    expect(isset($subscriber->bogus))->false();
+    expect($response->data['first_name'])->equals('aaa');
+    expect($response->data['last_name'])->isEmpty();
+    expect(isset($response->data['bogus']))->false();
   }
 
   function testItCannotMassSubscribe() {
