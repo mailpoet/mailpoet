@@ -1,7 +1,7 @@
 <?php
 
 use MailPoet\Form\Block\Select;
-use \MailPoet\Models\Subscriber;
+use MailPoet\Models\Subscriber;
 
 class SelectTest extends MailPoetTest {
   function _before() {

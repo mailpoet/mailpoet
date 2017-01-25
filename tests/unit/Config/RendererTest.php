@@ -1,6 +1,6 @@
 <?php
 use Codeception\Util\Stub;
-use \MailPoet\Config\Renderer;
+use MailPoet\Config\Renderer;
 
 class RendererTest extends MailPoetTest {
   function _before() {

@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\API\API;
+use MailPoet\API\API;
 
 // required to be able to use wp_delete_user()
 require_once(ABSPATH.'wp-admin/includes/user.php');

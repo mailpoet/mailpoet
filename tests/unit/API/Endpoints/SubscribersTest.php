@@ -1,12 +1,12 @@
 <?php
 
 use Codeception\Util\Fixtures;
-use \MailPoet\API\Endpoints\Subscribers;
-use \MailPoet\API\Response as APIResponse;
-use \MailPoet\Models\Form;
-use \MailPoet\Models\Subscriber;
-use \MailPoet\Models\Segment;
-use \MailPoet\Models\Setting;
+use MailPoet\API\Endpoints\Subscribers;
+use MailPoet\API\Response as APIResponse;
+use MailPoet\Models\Form;
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\Segment;
+use MailPoet\Models\Setting;
 
 class SubscribersTest extends MailPoetTest {
   function _before() {

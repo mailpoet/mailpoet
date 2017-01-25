@@ -1,8 +1,8 @@
 <?php
-use \MailPoet\API\Response as APIResponse;
-use \MailPoet\API\Error as APIError;
-use \MailPoet\API\Endpoints\Settings;
-use \MailPoet\Models\Setting;
+use MailPoet\API\Response as APIResponse;
+use MailPoet\API\Error as APIError;
+use MailPoet\API\Endpoints\Settings;
+use MailPoet\Models\Setting;
 
 class SettingsTest extends MailPoetTest {
   function _before() {

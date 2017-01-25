@@ -1,7 +1,7 @@
 <?php
-use \MailPoet\API\Endpoints\Segments;
-use \MailPoet\API\Response as APIResponse;
-use \MailPoet\Models\Segment;
+use MailPoet\API\Endpoints\Segments;
+use MailPoet\API\Response as APIResponse;
+use MailPoet\Models\Segment;
 
 class SegmentsTest extends MailPoetTest {
   function _before() {

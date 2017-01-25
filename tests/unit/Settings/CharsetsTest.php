@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\Settings\Charsets;
+use MailPoet\Settings\Charsets;
 
 class CharsetsTest extends MailPoetTest {
   function testItReturnsAListOfCharsets() {
