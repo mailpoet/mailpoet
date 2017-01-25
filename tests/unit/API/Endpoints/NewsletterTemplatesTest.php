@@ -1,8 +1,7 @@
 <?php
-use \MailPoet\API\Response as APIResponse;
-use \MailPoet\API\Error as APIError;
-use \MailPoet\API\Endpoints\NewsletterTemplates;
-use \MailPoet\Models\NewsletterTemplate;
+use MailPoet\API\Response as APIResponse;
+use MailPoet\API\Endpoints\NewsletterTemplates;
+use MailPoet\Models\NewsletterTemplate;
 
 class NewsletterTemplatesTest extends MailPoetTest {
   function _before() {

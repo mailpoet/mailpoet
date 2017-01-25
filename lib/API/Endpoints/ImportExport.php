@@ -1,10 +1,8 @@
 <?php
 namespace MailPoet\API\Endpoints;
-use \MailPoet\API\Endpoint as APIEndpoint;
-use \MailPoet\API\Error as APIError;
+use MailPoet\API\Endpoint as APIEndpoint;
 
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
-use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 
 if(!defined('ABSPATH')) exit;

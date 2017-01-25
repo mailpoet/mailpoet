@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\Util\Url;
+use MailPoet\Util\Url;
 
 class UtilUrlTest extends MailPoetTest {
   function testItCanReturnCurrentUrl() {

@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\Settings\Hosts;
+use MailPoet\Settings\Hosts;
 
 class HostsTest extends MailPoetTest {
   function testItReturnsAListOfWebHosts() {

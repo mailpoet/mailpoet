@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Subscription;
-use \MailPoet\Models\Setting;
-use \MailPoet\Models\Subscriber;
+use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
 
 class Comment {
   const SPAM = 'spam';

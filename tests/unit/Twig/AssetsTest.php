@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\Twig\Assets;
+use MailPoet\Twig\Assets;
 
 class AssetsTest extends MailPoetTest {
   function _before() {

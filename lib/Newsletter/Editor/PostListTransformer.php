@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Editor;
 
-use \MailPoet\Newsletter\Editor\PostTransformer;
+use MailPoet\Newsletter\Editor\PostTransformer;
 
 if(!defined('ABSPATH')) exit;
 

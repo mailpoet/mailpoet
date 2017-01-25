@@ -5,11 +5,7 @@ use MailPoet\API\Error as APIError;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Util\Helpers;

@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\API\Endpoints;
-use \MailPoet\API\Endpoint as APIEndpoint;
-use \MailPoet\API\Error as APIError;
+use MailPoet\API\Endpoint as APIEndpoint;
+use MailPoet\API\Error as APIError;
 
 use MailPoet\Models\NewsletterTemplate;
 

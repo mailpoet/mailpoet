@@ -3,11 +3,11 @@ namespace MailPoet\API\Endpoints;
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
 
-use \MailPoet\Models\Form;
-use \MailPoet\Models\StatisticsForms;
-use \MailPoet\Form\Renderer as FormRenderer;
-use \MailPoet\Listing;
-use \MailPoet\Form\Util;
+use MailPoet\Models\Form;
+use MailPoet\Models\StatisticsForms;
+use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Listing;
+use MailPoet\Form\Util;
 
 if(!defined('ABSPATH')) exit;
 

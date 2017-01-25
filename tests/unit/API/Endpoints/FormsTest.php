@@ -1,8 +1,8 @@
 <?php
-use \MailPoet\API\Endpoints\Forms;
-use \MailPoet\API\Response as APIResponse;
-use \MailPoet\Models\Form;
-use \MailPoet\Models\Segment;
+use MailPoet\API\Endpoints\Forms;
+use MailPoet\API\Response as APIResponse;
+use MailPoet\Models\Form;
+use MailPoet\Models\Segment;
 
 class FormsTest extends MailPoetTest {
   function _before() {

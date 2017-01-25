@@ -1,7 +1,7 @@
 <?php
-use \MailPoet\Helpscout\Beacon;
-use \MailPoet\Models\Setting;
-use \MailPoet\Models\Subscriber;
+use MailPoet\Helpscout\Beacon;
+use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
 
 class BeaconTest extends MailPoetTest {
   function _before() {

@@ -1,9 +1,9 @@
 <?php
 use MailPoet\Router\Router;
-use \MailPoet\Subscription\Url;
-use \MailPoet\Models\Subscriber;
-use \MailPoet\Models\Setting;
-use \MailPoet\Config\Populator;
+use MailPoet\Subscription\Url;
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\Setting;
+use MailPoet\Config\Populator;
 
 class UrlTest extends MailPoetTest {
   function _before() {

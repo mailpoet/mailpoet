@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\API\Endpoints;
-use \MailPoet\API\Endpoint as APIEndpoint;
-use \MailPoet\Config\Activator;
+use MailPoet\API\Endpoint as APIEndpoint;
+use MailPoet\Config\Activator;
 
 if(!defined('ABSPATH')) exit;
 

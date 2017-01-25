@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\Config\Migrator;
+use MailPoet\Config\Migrator;
 
 class MigratorTest extends MailPoetTest {
   function _before() {

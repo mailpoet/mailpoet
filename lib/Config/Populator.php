@@ -3,11 +3,11 @@ namespace MailPoet\Config;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Mailer\MailerLog;
-use \MailPoet\Models\Segment;
-use \MailPoet\Segments\WP;
-use \MailPoet\Models\Setting;
-use \MailPoet\Settings\Pages;
-use \MailPoet\Util\Helpers;
+use MailPoet\Models\Segment;
+use MailPoet\Segments\WP;
+use MailPoet\Models\Setting;
+use MailPoet\Settings\Pages;
+use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 

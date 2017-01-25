@@ -1,8 +1,8 @@
 <?php
 
-use \MailPoet\API\Endpoints\CustomFields;
-use \MailPoet\API\Response as APIResponse;
-use \MailPoet\Models\CustomField;
+use MailPoet\API\Endpoints\CustomFields;
+use MailPoet\API\Response as APIResponse;
+use MailPoet\Models\CustomField;
 
 class CustomFieldsTest extends MailPoetTest {
   private $custom_fields = array(

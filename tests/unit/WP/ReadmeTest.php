@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\WP\Readme;
+use MailPoet\WP\Readme;
 
 class ReadmeTest extends MailPoetTest {
   function _before() {

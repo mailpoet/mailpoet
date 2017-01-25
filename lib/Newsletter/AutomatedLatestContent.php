@@ -2,7 +2,6 @@
 namespace MailPoet\Newsletter;
 
 use MailPoet\Newsletter\Editor\Transformer;
-use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 

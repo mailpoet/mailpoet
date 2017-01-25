@@ -1,8 +1,8 @@
 <?php
 namespace MailPoet\Newsletter\Editor;
 
-use \MailPoet\Newsletter\Editor\TitleListTransformer;
-use \MailPoet\Newsletter\Editor\PostListTransformer;
+use MailPoet\Newsletter\Editor\TitleListTransformer;
+use MailPoet\Newsletter\Editor\PostListTransformer;
 
 if(!defined('ABSPATH')) exit;
 

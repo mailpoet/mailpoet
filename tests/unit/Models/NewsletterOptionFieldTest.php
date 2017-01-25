@@ -3,7 +3,6 @@
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Config\Populator;
 
 class NewsletterOptionFieldTest extends MailPoetTest {
   function _before() {

@@ -1,6 +1,6 @@
 <?php
-use \Helper\WordPress as WordPressHelper;
-use \MailPoet\WP\DateTime;
+use Helper\WordPress as WordPressHelper;
+use MailPoet\WP\DateTime;
 
 class DateTimeTest extends MailPoetTest {
   function _before() {

@@ -1,7 +1,7 @@
 <?php
-use \MailPoet\API\Response as APIResponse;
-use \MailPoet\API\Endpoints\Setup;
-use \MailPoet\Models\Setting;
+use MailPoet\API\Response as APIResponse;
+use MailPoet\API\Endpoints\Setup;
+use MailPoet\Models\Setting;
 
 class SetupTest extends MailPoetTest {
   function _before() {

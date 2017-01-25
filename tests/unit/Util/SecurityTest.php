@@ -1,5 +1,5 @@
 <?php
-use \MailPoet\Util\Security;
+use MailPoet\Util\Security;
 
 class SecurityTest extends MailPoetTest {
 

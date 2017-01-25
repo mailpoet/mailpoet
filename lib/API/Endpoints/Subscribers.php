@@ -1,15 +1,11 @@
 <?php
 namespace MailPoet\API\Endpoints;
-use \MailPoet\API\Endpoint as APIEndpoint;
-use \MailPoet\API\Error as APIError;
-use \MailPoet\API\Access as APIAccess;
+use MailPoet\API\Endpoint as APIEndpoint;
+use MailPoet\API\Error as APIError;
+use MailPoet\API\Access as APIAccess;
 
 use MailPoet\Listing;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
-use MailPoet\Models\SubscriberCustomField;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Setting;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
 
@@ -65,6 +61,12 @@ class Subscribers extends APIEndpoint {
     $form = Form::findOne($form_id);
     unset($data['form_id']);
 
+    if(!$form) {
+      return $this->badRequest(array(
+        APIError::BAD_REQUEST => __('Please specify a valid form ID.', 'mailpoet')
+      ));
+    }
+
     $segment_ids = (!empty($data['segments'])
       ? (array)$data['segments']
       : array()
@@ -76,6 +78,10 @@ class Subscribers extends APIEndpoint {
         APIError::BAD_REQUEST => __('Please select a list.', 'mailpoet')
       ));
     }
+
+    // only accept fields defined in the form
+    $form_fields = $form->getFieldList();
+    $data = array_intersect_key($data, array_flip($form_fields));
 
     $subscriber = Subscriber::subscribe($data, $segment_ids);
     $errors = $subscriber->getErrors();

@@ -1,9 +1,9 @@
 <?php
 namespace MailPoet\Config;
-use \Twig_Loader_Filesystem as TwigFileSystem;
-use \Twig_Environment as TwigEnv;
-use \Twig_Lexer as TwigLexer;
-use \MailPoet\Twig;
+use Twig_Loader_Filesystem as TwigFileSystem;
+use Twig_Environment as TwigEnv;
+use Twig_Lexer as TwigLexer;
+use MailPoet\Twig;
 
 if(!defined('ABSPATH')) exit;
 
