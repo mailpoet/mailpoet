@@ -1,7 +1,6 @@
 <?php
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
-use MailPoet\Subscription\Url as SubscriptionUrl;
 
 class MailerTest extends MailPoetTest {
   function _before() {

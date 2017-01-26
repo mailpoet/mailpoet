@@ -2,7 +2,6 @@
 namespace MailPoet\Mailer;
 
 use MailPoet\Models\Setting;
-use MailPoet\Subscription\Url as SubscriptionUrl;
 
 if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
