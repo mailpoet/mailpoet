@@ -48,8 +48,8 @@ class ServicesTest extends MailPoetTest {
       $this
     );
     $response = $this->services_endpoint->verifyMailPoetKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains($date->format('Y-m-d'));
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data['message'])->contains($date->format('Y-m-d'));
   }
 
   function testItRespondsWithErrorIfServiceIsUnavailable() {
