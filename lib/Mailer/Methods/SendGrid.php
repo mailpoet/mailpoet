@@ -17,10 +17,10 @@ class SendGrid {
     $this->reply_to = $reply_to;
   }
 
-  function send($newsletter, $subscriber) {
+  function send($newsletter, $subscriber, $extra_params = array()) {
     $result = wp_remote_post(
       $this->url,
-      $this->request($newsletter, $subscriber)
+      $this->request($newsletter, $subscriber, $extra_params)
     );
     if(is_wp_error($result)) {
       return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
@@ -35,7 +35,7 @@ class SendGrid {
     return Mailer::formatMailerSendSuccessResult();
   }
 
-  function getBody($newsletter, $subscriber) {
+  function getBody($newsletter, $subscriber, $extra_params = array()) {
     $body = array(
       'to' => $subscriber,
       'from' => $this->sender['from_email'],
@@ -43,6 +43,13 @@ class SendGrid {
       'replyto' => $this->reply_to['reply_to_email'],
       'subject' => $newsletter['subject']
     );
+    $headers = array();
+    if(!empty($extra_params['unsubscribe_url'])) {
+      $headers['List-Unsubscribe'] = '<' . $extra_params['unsubscribe_url'] . '>';
+    }
+    if($headers) {
+      $body['headers'] = json_encode($headers);
+    }
     if(!empty($newsletter['body']['html'])) {
       $body['html'] = $newsletter['body']['html'];
     }
@@ -56,8 +63,8 @@ class SendGrid {
     return 'Bearer ' . $this->api_key;
   }
 
-  function request($newsletter, $subscriber) {
-    $body = $this->getBody($newsletter, $subscriber);
+  function request($newsletter, $subscriber, $extra_params = array()) {
+    $body = $this->getBody($newsletter, $subscriber, $extra_params);
     return array(
       'timeout' => 10,
       'httpversion' => '1.1',

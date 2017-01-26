@@ -2,6 +2,7 @@
 namespace MailPoet\Mailer;
 
 use MailPoet\Models\Setting;
+use MailPoet\Subscription\Url as SubscriptionUrl;
 
 if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
@@ -29,8 +30,9 @@ class Mailer {
   }
 
   function send($newsletter, $subscriber) {
+    $extra_params = $this->getExtraParams($newsletter, $subscriber);
     $subscriber = $this->formatSubscriberNameAndEmailAddress($subscriber);
-    return $this->mailer_instance->send($newsletter, $subscriber);
+    return $this->mailer_instance->send($newsletter, $subscriber, $extra_params);
   }
 
   function buildMailer() {
@@ -164,6 +166,12 @@ class Mailer {
     if(mb_detect_encoding($name) === 'ASCII') return $name;
     // encode non-ASCII string as per RFC 2047 (https://www.ietf.org/rfc/rfc2047.txt)
     return sprintf('=?utf-8?B?%s?=', base64_encode($name));
+  }
+
+  function getExtraParams($newsletter, $subscriber) {
+    $extra_params = array();
+    $extra_params['unsubscribe_url'] = SubscriptionUrl::getUnsubscribeUrl($subscriber);
+    return $extra_params;
   }
 
   static function formatMailerConnectionErrorResult($error_message) {

@@ -1,6 +1,7 @@
 <?php
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
+use MailPoet\Subscription\Url as SubscriptionUrl;
 
 class MailerTest extends MailPoetTest {
   function _before() {
@@ -174,5 +175,12 @@ class MailerTest extends MailPoetTest {
     $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
     $result = $mailer->send($this->newsletter, $this->subscriber);
     expect($result['response'])->true();
+  }
+
+  function testItCanGetExtraParams() {
+    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
+    $extra_params = $mailer->getExtraParams($this->newsletter, $this->subscriber);
+    expect($extra_params['unsubscribe_url'])
+      ->equals(SubscriptionUrl::getUnsubscribeUrl($this->subscriber));
   }
 }

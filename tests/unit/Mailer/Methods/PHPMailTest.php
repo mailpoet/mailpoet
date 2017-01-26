@@ -28,6 +28,9 @@ class PHPMailTest extends MailPoetTest {
         'text' => 'TEXT body'
       )
     );
+    $this->extra_params = array(
+      'unsubscribe_url' => 'http://www.mailpoet.com'
+    );
   }
 
   function testItCanBuildMailer() {
@@ -45,7 +48,8 @@ class PHPMailTest extends MailPoetTest {
   }
 
   function testItCanCreateMessage() {
-    $message = $this->mailer->createMessage($this->newsletter, $this->subscriber);
+    $message = $this->mailer
+      ->createMessage($this->newsletter, $this->subscriber, $this->extra_params);
     expect($message->getTo())
       ->equals(array('mailpoet-phoenix-test@mailinator.com' => 'Recipient'));
     expect($message->getFrom())
@@ -60,6 +64,8 @@ class PHPMailTest extends MailPoetTest {
       ->equals($this->newsletter['body']['html']);
     expect($message->getChildren()[0]->getContentType())
       ->equals('text/plain');
+    expect($message->getHeaders()->get('List-Unsubscribe')->getValue())
+      ->equals('<' . $this->extra_params['unsubscribe_url'] . '>');
   }
 
   function testItCanProcessSubscriber() {

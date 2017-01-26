@@ -20,9 +20,9 @@ class PHPMail {
     $this->mailer = $this->buildMailer();
   }
 
-  function send($newsletter, $subscriber) {
+  function send($newsletter, $subscriber, $extra_params = array()) {
     try {
-      $message = $this->createMessage($newsletter, $subscriber);
+      $message = $this->createMessage($newsletter, $subscriber, $extra_params);
       $result = $this->mailer->send($message);
     } catch(\Exception $e) {
       return Mailer::formatMailerSendErrorResult($e->getMessage());
@@ -39,7 +39,7 @@ class PHPMail {
     return \Swift_Mailer::newInstance($transport);
   }
 
-  function createMessage($newsletter, $subscriber) {
+  function createMessage($newsletter, $subscriber, $extra_params = array()) {
     $message = \Swift_Message::newInstance()
       ->setTo($this->processSubscriber($subscriber))
       ->setFrom(array(
@@ -51,6 +51,10 @@ class PHPMail {
         ))
       ->setReturnPath($this->return_path)
       ->setSubject($newsletter['subject']);
+    if(!empty($extra_params['unsubscribe_url'])) {
+      $headers = $message->getHeaders();
+      $headers->addTextHeader('List-Unsubscribe', '<' . $extra_params['unsubscribe_url'] . '>');
+    }
     if(!empty($newsletter['body']['html'])) {
       $message = $message->setBody($newsletter['body']['html'], 'text/html');
     }
