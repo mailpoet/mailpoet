@@ -28,9 +28,9 @@ class Mailer {
     $this->mailer_instance = $this->buildMailer();
   }
 
-  function send($newsletter, $subscriber) {
+  function send($newsletter, $subscriber, $extra_params = array()) {
     $subscriber = $this->formatSubscriberNameAndEmailAddress($subscriber);
-    return $this->mailer_instance->send($newsletter, $subscriber);
+    return $this->mailer_instance->send($newsletter, $subscriber, $extra_params);
   }
 
   function buildMailer() {

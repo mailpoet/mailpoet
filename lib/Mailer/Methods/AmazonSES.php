@@ -18,6 +18,7 @@ class AmazonSES {
   public $sender;
   public $reply_to;
   public $return_path;
+  public $message;
   public $date;
   public $date_without_time;
   private $available_regions = array(
@@ -48,10 +49,10 @@ class AmazonSES {
     $this->date_without_time = gmdate('Ymd');
   }
 
-  function send($newsletter, $subscriber) {
+  function send($newsletter, $subscriber, $extra_params = array()) {
     $result = wp_remote_post(
       $this->url,
-      $this->request($newsletter, $subscriber)
+      $this->request($newsletter, $subscriber, $extra_params)
     );
     if(is_wp_error($result)) {
       return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
@@ -66,27 +67,61 @@ class AmazonSES {
     return Mailer::formatMailerSendSuccessResult();
   }
 
-  function getBody($newsletter, $subscriber) {
+  function getBody($newsletter, $subscriber, $extra_params = array()) {
+    $this->message = $this->createMessage($newsletter, $subscriber, $extra_params);
     $body = array(
-      'Action' => 'SendEmail',
+      'Action' => 'SendRawEmail',
       'Version' => '2010-12-01',
-      'Destination.ToAddresses.member.1' => $subscriber,
       'Source' => $this->sender['from_name_email'],
-      'ReplyToAddresses.member.1' => $this->reply_to['reply_to_name_email'],
-      'Message.Subject.Data' => $newsletter['subject'],
-      'ReturnPath' => $this->return_path
+      'RawMessage.Data' => $this->encodeMessage($this->message)
     );
-    if(!empty($newsletter['body']['html'])) {
-      $body['Message.Body.Html.Data'] = $newsletter['body']['html'];
-    }
-    if(!empty($newsletter['body']['text'])) {
-      $body['Message.Body.Text.Data'] = $newsletter['body']['text'];
-    }
     return $body;
   }
 
-  function request($newsletter, $subscriber) {
-    $body = array_map('urlencode', $this->getBody($newsletter, $subscriber));
+  function createMessage($newsletter, $subscriber, $extra_params = array()) {
+    $message = \Swift_Message::newInstance()
+      ->setTo($this->processSubscriber($subscriber))
+      ->setFrom(array(
+          $this->sender['from_email'] => $this->sender['from_name']
+        ))
+      ->setSender($this->sender['from_email'])
+      ->setReplyTo(array(
+          $this->reply_to['reply_to_email'] =>  $this->reply_to['reply_to_name']
+        ))
+      ->setReturnPath($this->return_path)
+      ->setSubject($newsletter['subject']);
+    if(!empty($extra_params['unsubscribe_url'])) {
+      $headers = $message->getHeaders();
+      $headers->addTextHeader('List-Unsubscribe', '<' . $extra_params['unsubscribe_url'] . '>');
+    }
+    if(!empty($newsletter['body']['html'])) {
+      $message = $message->setBody($newsletter['body']['html'], 'text/html');
+    }
+    if(!empty($newsletter['body']['text'])) {
+      $message = $message->addPart($newsletter['body']['text'], 'text/plain');
+    }
+    return $message;
+  }
+
+  function encodeMessage(\Swift_Message $message) {
+    return base64_encode($message->toString());
+  }
+
+  function processSubscriber($subscriber) {
+    preg_match('!(?P<name>.*?)\s<(?P<email>.*?)>!', $subscriber, $subscriber_data);
+    if(!isset($subscriber_data['email'])) {
+      $subscriber_data = array(
+        'email' => $subscriber,
+      );
+    }
+    return array(
+      $subscriber_data['email'] =>
+        (isset($subscriber_data['name'])) ? $subscriber_data['name'] : ''
+    );
+  }
+
+  function request($newsletter, $subscriber, $extra_params = array()) {
+    $body = array_map('urlencode', $this->getBody($newsletter, $subscriber, $extra_params));
     return array(
       'timeout' => 10,
       'httpversion' => '1.1',

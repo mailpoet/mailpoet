@@ -33,15 +33,21 @@ class SendGridTest extends MailPoetTest {
         'text' => 'TEXT body'
       )
     );
+    $this->extra_params = array(
+      'unsubscribe_url' => 'http://www.mailpoet.com'
+    );
   }
 
   function testItCanGenerateBody() {
-    $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->extra_params);
     expect($body['to'])->contains($this->subscriber);
     expect($body['from'])->equals($this->sender['from_email']);
     expect($body['fromname'])->equals($this->sender['from_name']);
     expect($body['replyto'])->equals($this->reply_to['reply_to_email']);
     expect($body['subject'])->equals($this->newsletter['subject']);
+    $headers = json_decode($body['headers'], true);
+    expect($headers['List-Unsubscribe'])
+      ->equals('<' . $this->extra_params['unsubscribe_url'] . '>');
     expect($body['html'])->equals($this->newsletter['body']['html']);
     expect($body['text'])->equals($this->newsletter['body']['text']);
   }

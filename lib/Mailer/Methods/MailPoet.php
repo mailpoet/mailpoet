@@ -17,7 +17,7 @@ class MailPoet {
     $this->reply_to = $reply_to;
   }
 
-  function send($newsletter, $subscriber) {
+  function send($newsletter, $subscriber, $extra_params = array()) {
     $message_body = $this->getBody($newsletter, $subscriber);
     $result = wp_remote_post(
       $this->url,

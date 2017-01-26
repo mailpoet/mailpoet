@@ -43,6 +43,9 @@ class AmazonSESTest extends MailPoetTest {
         'text' => 'TEXT body'
       )
     );
+    $this->extra_params = array(
+      'unsubscribe_url' => 'http://www.mailpoet.com'
+    );
   }
 
   function testItsConstructorWorks() {
@@ -88,25 +91,41 @@ class AmazonSESTest extends MailPoetTest {
 
   function testItCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
-    expect($body['Action'])->equals('SendEmail');
+    expect($body['Action'])->equals('SendRawEmail');
     expect($body['Version'])->equals('2010-12-01');
     expect($body['Source'])->equals($this->sender['from_name_email']);
-    expect($body['ReplyToAddresses.member.1'])
-      ->equals($this->reply_to['reply_to_name_email']);
-    expect($body['Destination.ToAddresses.member.1'])
-      ->contains($this->subscriber);
-    expect($body['Message.Subject.Data'])
+    expect($body['RawMessage.Data'])
+      ->equals($this->mailer->encodeMessage($this->mailer->message));
+  }
+
+  function testItCanCreateMessage() {
+    $message = $this->mailer
+      ->createMessage($this->newsletter, $this->subscriber, $this->extra_params);
+    expect($message->getTo())
+      ->equals(array('mailpoet-phoenix-test@mailinator.com' => 'Recipient'));
+    expect($message->getFrom())
+      ->equals(array($this->sender['from_email'] => $this->sender['from_name']));
+    expect($message->getSender())
+      ->equals(array($this->sender['from_email'] => null));
+    expect($message->getReplyTo())
+      ->equals(array($this->reply_to['reply_to_email'] => $this->reply_to['reply_to_name']));
+    expect($message->getSubject())
       ->equals($this->newsletter['subject']);
-    expect($body['Message.Body.Html.Data'])
+    expect($message->getBody())
       ->equals($this->newsletter['body']['html']);
-    expect($body['Message.Body.Text.Data'])
-      ->equals($this->newsletter['body']['text']);
-    expect($body['ReturnPath'])->equals($this->return_path);
+    expect($message->getChildren()[0]->getContentType())
+      ->equals('text/plain');
+    expect($message->getHeaders()->get('List-Unsubscribe')->getValue())
+      ->equals('<' . $this->extra_params['unsubscribe_url'] . '>');
   }
 
   function testItCanCreateRequest() {
     $request = $this->mailer->request($this->newsletter, $this->subscriber);
+    // preserve the original message
+    $raw_message = $this->mailer->encodeMessage($this->mailer->message);
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
+    // substitute the message to synchronize hashes
+    $body['RawMessage.Data'] = $raw_message;
     $body = array_map('urlencode', $body);
     expect($request['timeout'])->equals(10);
     expect($request['httpversion'])->equals('1.1');
