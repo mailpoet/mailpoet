@@ -37,7 +37,7 @@ class Services extends APIEndpoint {
     $success_message = null;
     if($state == Bridge::MAILPOET_KEY_VALID) {
       $success_message = __('Your MailPoet API key is valid!', 'mailpoet');
-    } elseif ($state == Bridge::MAILPOET_KEY_EXPIRING) {
+    } elseif($state == Bridge::MAILPOET_KEY_EXPIRING) {
       $success_message = sprintf(
         __('Your MailPoet key expires on %s!', 'mailpoet'),
         Carbon::createFromTimestamp(strtotime($result['data']['expire_at']))
@@ -45,7 +45,7 @@ class Services extends APIEndpoint {
       );
     }
 
-    if ($success_message) {
+    if($success_message) {
       return $this->successResponse(array('message' => $success_message));
     }
 
