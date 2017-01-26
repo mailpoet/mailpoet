@@ -158,7 +158,26 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     expect($result->subscriber->id)->equals(1);
   }
 
-  function testItProcessesBrowserPreviewData() {
+  function testItGetsOrFindsQueueWhenItIsNotAWelcomeEmail() {
+    $data = (object)$this->browser_preview_data;
+    // queue will be found when not defined
+    $data->queue_id = null;
+    $result = $this->view_in_browser->_validateBrowserPreviewData($data);
+    expect($result->queue->id)->equals($this->queue->id);
+    // queue will be found when defined
+    $data->queue_id = $this->queue->id;
+    $result = $this->view_in_browser->_validateBrowserPreviewData($data);
+    expect($result->queue->id)->equals($this->queue->id);
+    // queue will not be found when it is a welcome email
+    $newsletter = $this->newsletter;
+    $newsletter->type = Newsletter::TYPE_WELCOME;
+    $newsletter->save();
+    $data->queue_id = null;
+    $result = $this->view_in_browser->_validateBrowserPreviewData($data);
+    expect($result->queue)->false();
+  }
+
+ function testItProcessesBrowserPreviewData() {
     $processed_data = $this->view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
     expect($processed_data->queue->id)->equals($this->queue->id);
     expect($processed_data->subscriber->id)->equals($this->subscriber->id);

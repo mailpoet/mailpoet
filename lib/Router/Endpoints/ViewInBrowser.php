@@ -52,17 +52,22 @@ class ViewInBrowser {
       ) return false;
     } else if(!$data->subscriber && !empty($data->preview)) {
       // if this is a preview and subscriber does not exist,
-      // attemp to set subscriber to the current logged-in WP user
+      // attempt to set subscriber to the current logged-in WP user
       $data->subscriber = Subscriber::getCurrentWPUser();
     }
 
     // if newsletter hash is not provided but newsletter ID is defined then subscriber must exist
     if(empty($data->newsletter_hash) && $data->newsletter_id && !$data->subscriber) return false;
 
-    // queue is optional; if defined, get it
-    $data->queue = (!empty($data->queue_id)) ?
-      SendingQueue::findOne($data->queue_id) :
-      SendingQueue::where('newsletter_id', $data->newsletter->id)->findOne();
+    // queue is optional; try to find it if it's not defined and this is not a welcome email
+    if($data->newsletter->type !== Newsletter::TYPE_WELCOME) {
+      $data->queue = (!empty($data->queue_id)) ?
+        SendingQueue::findOne($data->queue_id) :
+        SendingQueue::where('newsletter_id', $data->newsletter->id)
+          ->findOne();
+    } else {
+      $data->queue = false;
+    }
 
     // allow users with 'manage_options' permission to preview any newsletter
     if(!empty($data->preview) && current_user_can(Env::$required_permission)
