@@ -176,11 +176,4 @@ class MailerTest extends MailPoetTest {
     $result = $mailer->send($this->newsletter, $this->subscriber);
     expect($result['response'])->true();
   }
-
-  function testItCanGetExtraParams() {
-    $mailer = new Mailer($this->mailer, $this->sender, $this->reply_to);
-    $extra_params = $mailer->getExtraParams($this->newsletter, $this->subscriber);
-    expect($extra_params['unsubscribe_url'])
-      ->equals(SubscriptionUrl::getUnsubscribeUrl($this->subscriber));
-  }
 }

@@ -29,8 +29,7 @@ class Mailer {
     $this->mailer_instance = $this->buildMailer();
   }
 
-  function send($newsletter, $subscriber) {
-    $extra_params = $this->getExtraParams($newsletter, $subscriber);
+  function send($newsletter, $subscriber, $extra_params = array()) {
     $subscriber = $this->formatSubscriberNameAndEmailAddress($subscriber);
     return $this->mailer_instance->send($newsletter, $subscriber, $extra_params);
   }
@@ -166,12 +165,6 @@ class Mailer {
     if(mb_detect_encoding($name) === 'ASCII') return $name;
     // encode non-ASCII string as per RFC 2047 (https://www.ietf.org/rfc/rfc2047.txt)
     return sprintf('=?utf-8?B?%s?=', base64_encode($name));
-  }
-
-  function getExtraParams($newsletter, $subscriber) {
-    $extra_params = array();
-    $extra_params['unsubscribe_url'] = SubscriptionUrl::getUnsubscribeUrl($subscriber);
-    return $extra_params;
   }
 
   static function formatMailerConnectionErrorResult($error_message) {
