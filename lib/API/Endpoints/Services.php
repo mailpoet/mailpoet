@@ -34,20 +34,24 @@ class Services extends APIEndpoint {
 
     $state = !empty($result['state']) ? $result['state'] : null;
 
+    $success_message = null;
     if($state == Bridge::MAILPOET_KEY_VALID) {
-      return $this->successResponse(null);
+      $success_message = __('Your MailPoet API key is valid!', 'mailpoet');
+    } elseif ($state == Bridge::MAILPOET_KEY_EXPIRING) {
+      $success_message = sprintf(
+        __('Your MailPoet key expires on %s!', 'mailpoet'),
+        Carbon::createFromTimestamp(strtotime($result['data']['expire_at']))
+          ->format('Y-m-d')
+      );
+    }
+
+    if ($success_message) {
+      return $this->successResponse(array('message' => $success_message));
     }
 
     switch($state) {
       case Bridge::MAILPOET_KEY_INVALID:
         $error = __('Your MailPoet key is invalid!', 'mailpoet');
-        break;
-      case Bridge::MAILPOET_KEY_EXPIRING:
-        $error = sprintf(
-          __('Your MailPoet key expires on %s!', 'mailpoet'),
-          Carbon::createFromTimestamp(strtotime($result['data']['expire_at']))
-            ->format('Y-m-d')
-        );
         break;
       default:
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;

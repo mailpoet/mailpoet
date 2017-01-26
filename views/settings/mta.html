@@ -754,8 +754,10 @@
         }).always(function() {
           MailPoet.Modal.loading(false);
         }).done(function(response) {
+          // Hide all error notices
+          $('.notice-error:contains("MailPoet")').hide();
           MailPoet.Notice.success(
-            "<%= __('Your MailPoet API key is valid!') %>",
+            response.data.message,
             { scroll: true }
           );
         }).fail(function(response) {
