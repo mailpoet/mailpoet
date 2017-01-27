@@ -541,8 +541,4 @@ class Menu {
       $notice->displayWPNotice();
     }
   }
-
-  static function isOnMailPoetAdminPage() {
-    return (!empty($_REQUEST['page']) && stripos($_REQUEST['page'], 'mailpoet-') !== false);
-  }
 }
