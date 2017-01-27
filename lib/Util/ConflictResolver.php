@@ -2,7 +2,7 @@
 namespace MailPoet\Util;
 
 class ConflictResolver {
-  public $permitted_assets_locations = array(
+  static $permitted_assets_locations = array(
     'styles' => array(
       // WP default
       '^/wp-admin',
@@ -57,7 +57,7 @@ class ConflictResolver {
       foreach($wp_styles->queue as $wp_style) {
         if(empty($wp_styles->registered[$wp_style])) continue;
         $registered_style = $wp_styles->registered[$wp_style];
-        if(!preg_match('!' . implode('|', $this->permitted_assets_locations['styles']) . '!i', $registered_style->src)) {
+        if(!preg_match('!' . implode('|', ConflictResolver::$permitted_assets_locations['styles']) . '!i', $registered_style->src)) {
           wp_dequeue_style($wp_style);
         }
       }
@@ -75,7 +75,7 @@ class ConflictResolver {
       foreach($wp_scripts->queue as $wp_script) {
         if(empty($wp_scripts->registered[$wp_script])) continue;
         $registered_script = $wp_scripts->registered[$wp_script];
-        if(!preg_match('!' . implode('|', $this->permitted_assets_locations['scripts']) . '!i', $registered_script->src)) {
+        if(!preg_match('!' . implode('|', ConflictResolver::$permitted_assets_locations['scripts']) . '!i', $registered_script->src)) {
           wp_dequeue_script($wp_script);
         }
       }
