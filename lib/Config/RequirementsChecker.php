@@ -62,7 +62,7 @@ class RequirementsChecker {
     if(!is_dir($paths['cache_path']) && !wp_mkdir_p($paths['cache_path'])) {
       $error = Helpers::replaceLinkTags(
         __('This plugin requires write permissions inside the /wp-content/uploads folder. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
-        '//docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#folder_permissions'
+        '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#folder_permissions'
       );
       return $this->processError($error);
     }
@@ -82,7 +82,7 @@ class RequirementsChecker {
     if(extension_loaded('pdo') && extension_loaded('pdo_mysql')) return true;
     $error = Helpers::replaceLinkTags(
       __('This plugin requires PDO_MYSQL PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
-      '//docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension'
+      '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension'
     );
     return $this->processError($error);
   }
