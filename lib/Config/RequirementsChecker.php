@@ -14,25 +14,26 @@ class RequirementsChecker {
 
   public $display_error_notice;
   public $vendor_classes = array(
-      '\ORM',
-      '\Model',
-      '\Twig_Environment',
-      '\Twig_Loader_Filesystem',
-      '\Twig_Lexer',
-      '\Twig_Extension',
-      '\Twig_Extension_GlobalsInterface',
-      '\Twig_SimpleFunction',
-      '\Swift_Mailer',
-      '\Swift_SmtpTransport',
-      '\Swift_Message',
-      '\Carbon\Carbon',
-      '\Sudzy\ValidModel',
-      '\Sudzy\ValidationException',
-      '\Sudzy\Engine',
-      '\pQuery',
-      '\Cron\CronExpression',
-      '\Html2Text\Html2Text',
-      '\csstidy'
+    '\ORM',
+    '\Model',
+    '\Twig_Environment',
+    '\Twig_Loader_Filesystem',
+    '\Twig_Lexer',
+    '\Twig_Extension',
+    '\Twig_Extension_GlobalsInterface',
+    '\Twig_SimpleFunction',
+    '\Swift_Mailer',
+    '\Swift_SmtpTransport',
+    '\Swift_Message',
+    '\Carbon\Carbon',
+    '\Sudzy\ValidModel',
+    '\Sudzy\ValidationException',
+    '\Sudzy\Engine',
+    '\pQuery',
+    '\Cron\CronExpression',
+    '\Html2Text\Html2Text',
+    '\csstidy',
+    '\Sabberworm\CSS\Parser'
   );
 
   function __construct($display_error_notice = true) {
