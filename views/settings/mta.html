@@ -251,7 +251,7 @@
               <p>
                 <%= __('<strong>Warning!</strong> Sending more than the recommended amount of emails? You may break the terms of your web host or provider!') %>'
                 <br />
-                <%= __('Please ask your host for the maximum number of emails you are allowed to send per day') %>
+                <%= __('Please ask your host for the maximum number of emails you are allowed to send per day.') %>
               </p>
             </div>
           </td>
@@ -349,7 +349,7 @@
               <%= __('SMTP Hostname') %>
             </label>
             <p class="description">
-              <%= __('e.g.:smtp.mydomain.com') %>
+              <%= __('e.g.: smtp.mydomain.com') %>
             </p>
           </th>
           <td>
@@ -460,7 +460,7 @@
               <%= __('Domain') %>
             </label>
             <p class="description">
-              <%= __('e.g.:smtp.mydomain.com') %>
+              <%= __('e.g.: smtp.mydomain.com') %>
             </p>
           </th>
           <td>
@@ -557,7 +557,7 @@
               <%= __('Authentication') %>
             </label>
             <p class="description">
-              <%= __('Leave this option set to Yes. Only a tiny portion of SMTP services prefer Authentication to be turned off') %>
+              <%= __('Leave this option set to Yes. Only a tiny portion of SMTP services prefer Authentication to be turned off.') %>
             </p>
           </th>
           <td>
@@ -599,12 +599,12 @@
             <%= __('SPF Signature (Highly recommended!)') %>
           </label>
           <p class="description">
-            <%= __("Improves your delivery rate by verifying that you're allowed to send emails from your domain") %>
+            <%= __("This improves your delivery rate by verifying that you're allowed to send emails from your domain.") %>
           </p>
         </th>
         <td>
           <p>
-            <%= __("SPF is set up in your DNS. Read your host's support documentation for more information") %>
+            <%= __("SPF is set up in your DNS. Read your host's support documentation for more information.") %>
           </p>
         </td>
       </tr>
@@ -764,7 +764,7 @@
             && $('#mailpoet_api_key').val().trim().length === 0
           ) {
             MailPoet.Notice.error(
-              "<%= __('You need to specify a MailPoet account key') %>"
+              "<%= __('You need to specify a MailPoet account key.') %>"
             );
             return false;
           }

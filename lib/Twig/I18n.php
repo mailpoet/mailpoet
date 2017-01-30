@@ -24,6 +24,7 @@ class I18n extends \Twig_Extension {
       'localize' => 'localize',
       '__' => 'translate',
       '_n' => 'pluralize',
+      '_x' => 'translateWithContext',
       'date' => 'date'
     );
 
@@ -61,6 +62,12 @@ class I18n extends \Twig_Extension {
     $args = func_get_args();
 
     return call_user_func_array('_n', $this->setTextDomain($args));
+  }
+
+  function translateWithContext() {
+    $args = func_get_args();
+
+    return call_user_func_array('_x', $this->setTextDomain($args));
   }
 
   function date() {

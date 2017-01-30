@@ -1,10 +1,10 @@
 <table class="form-table">
   <tbody>
-    <!-- enable signup confirmation -->
+    <!-- enable sign-up confirmation -->
     <tr>
       <th scope="row">
         <label>
-          <%= __('Enable signup confirmation') %>
+          <%= __('Enable sign-up confirmation') %>
         </label>
         <p class="description">
           <%= __("If you enable this option, your subscribers will first receive a confirmation email after they subscribe. Once they confirm their subscription (via this email), they will be marked as 'confirmed' and will begin to receive your email newsletters.") %>
@@ -16,7 +16,7 @@
           id="mailpoet_signup_confirmation_notice"
           <% if (settings.mta_group != "mailpoet") %>style="display:none;"<% endif %>
         >
-          <%=- __('Signup confirmation is mandatory when using the MailPoet Sending Service.') -%>
+          <%=- __('Sign-up confirmation is mandatory when using the MailPoet Sending Service.') -%>
         </p>
         <p
           id="mailpoet_signup_confirmation_input"
@@ -52,7 +52,7 @@
 </table>
 <table id="mailpoet_signup_options" class="form-table">
   <tbody>
-    <!-- signup confirmation: from name & email -->
+    <!-- sign-up confirmation: from name & email -->
     <tr>
       <th scope="row">
         <label for="settings[signup_confirmation_from_name]">
@@ -78,7 +78,7 @@
         </p>
       </td>
     </tr>
-    <!-- signup confirmation: reply_to name & email -->
+    <!-- sign-up confirmation: reply_to name & email -->
     <tr>
       <th scope="row">
         <label for="settings[signup_confirmation_reply_name]">
@@ -144,14 +144,14 @@
           <% endif %></textarea>
       </td>
     </tr>
-    <!-- signup confirmation: confirmation page -->
+    <!-- sign-up confirmation: confirmation page -->
     <tr>
       <th scope="row">
         <label>
           <%= __('Confirmation page') %>
         </label>
         <p class="description">
-          <%= __('When subscribers click on the activation link, they will be redirected to this page') %>
+          <%= __('When subscribers click on the activation link, they will be redirected to this page.') %>
         </p>
       </th>
       <td>
@@ -196,7 +196,7 @@
         } else {
           result = confirm("<%= __('New subscribers will be automatically confirmed, without having to confirm their subscription. This is not recommended!') %>");
         }
-        // if the user confirmed changing the signup confirmation (yes/no)
+        // if the user confirmed changing the sign-up confirmation (yes/no)
         if(result === true) {
           // toggle signup options depending on the currently selected value
           toggleSignupOptions();

@@ -82,7 +82,7 @@ const ListingItem = React.createClass({
                   null,
                   this.props.item.id
                 ) }>
-                {MailPoet.I18n.t('trash')}
+                {MailPoet.I18n.t('moveToTrash')}
               </a>
             </span>
           );

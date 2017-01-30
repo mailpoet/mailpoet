@@ -24,7 +24,7 @@ class Newsletter extends Model {
   function __construct() {
     parent::__construct();
     $this->addValidations('type', array(
-      'required' => __('Please specify a type', 'mailpoet')
+      'required' => __('Please specify a type.', 'mailpoet')
     ));
   }
 

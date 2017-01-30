@@ -16,7 +16,7 @@ class SettingTest extends MailPoetTest {
     $errors = $invalid_setting->getErrors();
 
     expect($errors)->notEmpty();
-    expect($errors[0])->equals('Please specify a name');
+    expect($errors[0])->equals('Please specify a name.');
   }
 
   function testItHasDefaultSettings() {

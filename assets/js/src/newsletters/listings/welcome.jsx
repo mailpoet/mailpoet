@@ -95,7 +95,7 @@ const columns = [
 const bulk_actions = [
   {
     name: 'trash',
-    label: MailPoet.I18n.t('trash'),
+    label: MailPoet.I18n.t('moveToTrash'),
     onSuccess: messages.onTrash
   }
 ];

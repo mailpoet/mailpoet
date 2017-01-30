@@ -27,7 +27,7 @@ abstract class Endpoint {
   function badRequest($errors = array(), $meta = array()) {
     if(empty($errors)) {
       $errors = array(
-        Error::BAD_REQUEST => __('Invalid request parameters.', 'mailpoet')
+        Error::BAD_REQUEST => __('Invalid request parameters', 'mailpoet')
       );
     }
     return new ErrorResponse($errors, $meta, Response::STATUS_BAD_REQUEST);

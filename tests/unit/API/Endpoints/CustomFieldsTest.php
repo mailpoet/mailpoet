@@ -97,18 +97,18 @@ class CustomFieldsTest extends MailPoetTest {
     // missing type
     $response = $router->save(array('name' => 'New custom field'));
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a type');
+    expect($response->errors[0]['message'])->equals('Please specify a type.');
 
     // missing name
     $response = $router->save(array('type' => 'text'));
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a name');
+    expect($response->errors[0]['message'])->equals('Please specify a name.');
 
     // missing data
     $response = $router->save();
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a name');
-    expect($response->errors[1]['message'])->equals('Please specify a type');
+    expect($response->errors[0]['message'])->equals('Please specify a name.');
+    expect($response->errors[1]['message'])->equals('Please specify a type.');
   }
 
   function testItCanGetACustomField() {

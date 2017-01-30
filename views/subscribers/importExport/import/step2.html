@@ -5,7 +5,7 @@
 
   <script id="subscribers_data_parse_results_template" type="text/x-handlebars-template">
     <div class="error">
-      <p>{{{notice}}} <a class="mailpoet_subscribers_data_parse_results_details_show" href="javascript:;"><%= __('Show more details.') %></a><p>
+      <p>{{{notice}}} <a class="mailpoet_subscribers_data_parse_results_details_show" href="javascript:;"><%= __('Show more details') %></a><p>
       <div class="mailpoet_subscribers_data_parse_results_details mailpoet_hidden">
         <hr>
         {{#if duplicate}}
@@ -38,7 +38,7 @@
           </label>
         </th>
         <td>
-          <select id="mailpoet_segments_select" data-placeholder="<%= __('Select') %>" multiple="multiple"></select>
+          <select id="mailpoet_segments_select" data-placeholder="<%= _x('Select', 'Verb') %>" multiple="multiple"></select>
           <a href="javascript:;" class="mailpoet_create_segment"><%= __('Create a new list') %></a>
         </td>
       </tr>
