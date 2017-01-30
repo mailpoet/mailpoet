@@ -380,7 +380,8 @@ class NewsletterSchedulerTest extends MailPoetTest {
     Scheduler::processPostNotificationSchedule($newsletter);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     $next_run_date = (
-      $current_time->day < $current_time->lastOfMonth(Carbon::SATURDAY)->day
+      $current_time->day < $current_time->lastOfMonth(Carbon::SATURDAY)->day &&
+      $current_time->hour < '14'
     ) ? $current_time->lastOfMonth(Carbon::SATURDAY)
       : $current_time->addMonth()->lastOfMonth(Carbon::SATURDAY);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)

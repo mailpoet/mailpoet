@@ -47,7 +47,7 @@ if(version_compare(phpversion(), '5.3.0', '<')) {
 function mailpoet_php_version_notice() {
   $notice = str_replace(
     '[link]',
-    '<a href="//docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_version" target="_blank">',
+    '<a href="//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_version" target="_blank">',
     __('MailPoet plugin requires PHP version 5.3 or newer. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet')
   );
   $notice = str_replace('[/link]', '</a>', $notice);
