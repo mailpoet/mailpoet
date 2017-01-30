@@ -61,7 +61,7 @@ class FrontRouterTest extends MailPoetTest {
     expect($result)->equals(
       array(
         404,
-        'Invalid router endpoint.'
+        'Invalid router endpoint'
       )
     );
   }

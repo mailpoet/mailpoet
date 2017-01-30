@@ -80,7 +80,7 @@ class NewslettersTest extends MailPoetTest {
 
     $response = $router->save($invalid_data);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a type');
+    expect($response->errors[0]['message'])->equals('Please specify a type.');
   }
 
   function testItCanSaveAnExistingNewsletter() {
@@ -284,7 +284,7 @@ class NewslettersTest extends MailPoetTest {
 
     $response = $router->create();
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a type');
+    expect($response->errors[0]['message'])->equals('Please specify a type.');
   }
 
   function testItCanGetListingData() {

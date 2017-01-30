@@ -52,7 +52,7 @@ class SegmentsTest extends MailPoetTest {
     $router = new Segments();
     $response = $router->save(/* missing data */);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a name');
+    expect($response->errors[0]['message'])->equals('Please specify a name.');
 
     $response = $router->save($segment_data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
