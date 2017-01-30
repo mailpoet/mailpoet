@@ -754,8 +754,8 @@
         }).always(function() {
           MailPoet.Modal.loading(false);
         }).done(function(response) {
-          // Hide all error notices
-          $('.notice-error:contains("MailPoet")').hide();
+          // Hide server error notices
+          $('.mailpoet_notice_server').hide();
           MailPoet.Notice.success(
             response.data.message,
             { scroll: true }
@@ -868,6 +868,14 @@
         var method = getMethodFromGroup(group);
 
         $('#mta_method').val(method);
+
+        if(group === 'mailpoet') {
+          // Verify key on saving
+          $('#mailpoet_api_key_verify').trigger('click');
+        } else {
+          // Hide server error notices
+          $('.mailpoet_notice_server').hide();
+        }
       }
 
       function getMethodFromGroup(group) {
