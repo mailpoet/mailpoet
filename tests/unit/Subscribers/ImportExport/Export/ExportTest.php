@@ -228,7 +228,7 @@ class ExportTest extends MailPoetTest {
       $this->fail('Export did not throw an exception');
     } catch(\Exception $e) {
       expect($e->getMessage())
-        ->equals("Couldn't save export file on the server");
+        ->equals("The export file could not be saved on the server.");
     }
   }
 
