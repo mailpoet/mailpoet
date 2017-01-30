@@ -302,6 +302,7 @@ class Menu {
       'settings' => $settings,
       'segments' => Segment::getSegmentsWithSubscriberCount(),
       'cron_trigger' => CronTrigger::getAvailableMethods(),
+      'total_subscribers' => Subscriber::getTotalSubscribers(),
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),

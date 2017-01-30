@@ -54,16 +54,29 @@
       />
     </h3>
 
-    <p class="mailpoet_description">
-      <strong><%= __('Currently in Closed Beta') %></strong>
+    <p
+      class="mailpoet_description<% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden<% endif %>"
+      id="mailpoet_sending_method_active_text"
+    >
+      <strong><%= __("You're now sending with MailPoet!") %></strong>
       <br />
-      <%= __('[link]Sign up to our newsletter[/link] to get our latest news on our sending service plus other useful tips and tricks.')
-        | replace({
-            '[link]': '<a href="http://www.mailpoet.com/subscribe/" target="_blank">',
-            '[/link]': '</a>'
-        })
-        | raw
-      %>
+      <%= __("Great, you're all set up. Your emails will now be sent quickly and reliably!") %>
+    </p>
+
+    <p
+      class="mailpoet_description<% if(settings.mta_group == 'mailpoet') %> mailpoet_hidden<% endif %>"
+      id="mailpoet_sending_method_inactive_text"
+    >
+      <strong><%= __("Solve all of your sending problems!") %></strong>
+      <br />
+      <%= __("Tired of your newsletters being marked as spam? We're here to help. We offer affordable email packages with speeds up to 50 times faster than the competition. You'll never end up in spam again.") %>
+      <br/>
+      <br/>
+      <a
+        href="https://account.mailpoet.com?s=<%= total_subscribers %>"
+        class="button button-primary"
+        target="_blank"
+      ><%= __('View Email Plans') %></a>
     </p>
 
     <div class="mailpoet_status">
@@ -105,9 +118,9 @@
     <h3><%= __('Third-party') %></h3>
 
     <p class="mailpoet_description">
-      <strong><%= __('Currently the best solution') %></strong>
+      <strong><%= __('For SMTP, SendGrid or Amazon SES') %></strong>
       <br />
-      <%= __('Send with an external email provider. This is usually not free.') %>
+      <%= __('We only recommend using a third-party service if you are a technical user. Tread carefully.') %>
       <a
         href="http://docs.mailpoet.com/article/154-why-use-an-email-service-provider"
         target="_blank"
@@ -825,6 +838,12 @@
         var method = getMethodFromGroup(group);
 
         $('#mta_method').val(method);
+
+        // set MailPoet method description
+        $('#mailpoet_sending_method_active_text')
+          .toggleClass('mailpoet_hidden', group !== 'mailpoet');
+        $('#mailpoet_sending_method_inactive_text')
+          .toggleClass('mailpoet_hidden', group === 'mailpoet');
       }
 
       function getMethodFromGroup(group) {
