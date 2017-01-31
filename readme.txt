@@ -2,8 +2,8 @@
 Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
 Requires at least: 4.6
-Tested up to: 4.7.1
-Stable tag: 3.0.0-beta.15
+Tested up to: 4.7.2
+Stable tag: 3.0.0-beta.16
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -82,6 +82,15 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 3.0.0-beta.16 - 2017-01-31 =
+- Improved: added "List-Unsubscribe" email header to increase the acceptance rate of emails. Thanks Galfom!¬
+- Improved: Updated language strings for better translation support;
+- Fixed: subscription forms now allow to subscribe only to specified lists. Thanks Paul!¬
+- Fixed: subscription forms now ignore any extra fields added not via the Form editor. Thx again Paul!¬
+- Fixed: previewing sent welcome emails now display latest email version. Thanks Tim!¬
+- Fixed: plugin no longer triggers a PHP error during initialization on hosts using PHP 5.3;¬
+- Fixed: plugin warns about missing required PDO_MYSQL extension.¬
 
 = 3.0.0-beta.15 - 2017-01-24 =
 * Fixed: plugin no longer throws a fatal exception error on (prehistoric :)) hosts running PHP <5.3. Thanks Otto & jtm12!;
