@@ -92,7 +92,7 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 - Fixed: plugin warns about missing required PDO_MYSQL extension.
 
 = 3.0.0-beta.15 - 2017-01-24 =
-* Fixed: plugin no longer throws a fatal exception error on (prehistoric :)) hosts running PHP <5.3. Thanks Otto & jtm12!;
+* Fixed: plugin no longer throws a fatal exception error on (prehistoric :)) hosts running older versions than PHP 5.3. Thanks Otto & jtm12!;
 * Fixed: users who are not subscribed to any list can be filtered in the admin panel;
 * Fixed: newsletter preview links can now be shared with non WP users.
 
