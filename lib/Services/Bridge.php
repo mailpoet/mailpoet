@@ -42,9 +42,7 @@ class Bridge {
   function checkKey($api_key) {
     $this->initApi($api_key);
     $result = $this->api->checkKey();
-    $result = $this->processResult($result);
-    $this->updateSubscriberCount($result);
-    return $result;
+    return $this->processResult($result);
   }
 
   function processResult(array $result) {

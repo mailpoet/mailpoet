@@ -88,6 +88,7 @@ class SendingServiceKeyCheck {
     try {
       $mailer_config = Mailer::getMailerConfig();
       $result = $this->bridge->checkKey($mailer_config['mailpoet_api_key']);
+      $this->bridge->updateSubscriberCount($result);
     } catch (\Exception $e) {
       $result = false;
     }

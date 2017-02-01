@@ -26,7 +26,8 @@ class Settings extends APIEndpoint {
           && Bridge::isMPSendingServiceEnabled()
       ) {
         $bridge = new Bridge();
-        $bridge->checkKey($settings['mta']['mailpoet_api_key']);
+        $result = $bridge->checkKey($settings['mta']['mailpoet_api_key']);
+        $bridge->updateSubscriberCount($result);
       }
       return $this->successResponse(Setting::getAll());
     }

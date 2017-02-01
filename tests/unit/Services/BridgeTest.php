@@ -60,6 +60,21 @@ class BridgeTest extends MailPoetTest {
     expect($result['state'])->equals(Bridge::MAILPOET_KEY_CHECK_ERROR);
   }
 
+  function testItUpdatesSubscriberCount() {
+    // it performs update if the key is valid or expiring
+    $result = array();
+    $result['state'] = Bridge::MAILPOET_KEY_VALID;
+    $updated = $this->bridge->updateSubscriberCount($result);
+    expect($updated)->true();
+    $result['state'] = Bridge::MAILPOET_KEY_EXPIRING;
+    $updated = $this->bridge->updateSubscriberCount($result);
+    expect($updated)->true();
+    // it does not perform update if the key is invalid
+    $result['state'] = Bridge::MAILPOET_KEY_INVALID;
+    $updated = $this->bridge->updateSubscriberCount($result);
+    expect($updated)->null();
+  }
+
   function testItInvalidatesKey() {
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,

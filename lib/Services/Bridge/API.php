@@ -10,6 +10,8 @@ class API {
 
   const RESPONSE_CODE_KEY_INVALID = 401;
 
+  const RESPONSE_CODE_STATS_SAVED = 204;
+
   private $api_key;
 
   public $url_me = 'https://bridge.mailpoet.com/api/v0/me';
@@ -22,9 +24,9 @@ class API {
   }
 
   function checkKey() {
-    $result = wp_remote_post(
+    $result = $this->request(
       $this->url_me,
-      $this->request(array('site' => home_url()))
+      array('site' => home_url())
     );
 
     $code = wp_remote_retrieve_response_code($result);
@@ -45,9 +47,9 @@ class API {
   }
 
   function sendMessages($message_body) {
-    $result = wp_remote_post(
+    $result = $this->request(
       $this->url_messages,
-      $this->request($message_body)
+      $message_body
     );
     if(is_wp_error($result)) {
       return array(
@@ -70,9 +72,9 @@ class API {
   }
 
   function checkBounces(array $emails) {
-    $result = wp_remote_post(
+    $result = $this->request(
       $this->url_bounces,
-      $this->request($emails)
+      $emails
     );
     if(wp_remote_retrieve_response_code($result) === 200) {
       return json_decode(wp_remote_retrieve_body($result), true);
@@ -81,14 +83,12 @@ class API {
   }
 
   function updateSubscriberCount($count) {
-    $result = wp_remote_post(
+    $result = $this->request(
       $this->url_stats,
-      $this->request(array('subscriber_count' => (int)$count), 'PUT')
+      array('subscriber_count' => (int)$count),
+      'PUT'
     );
-    if(wp_remote_retrieve_response_code($result) === 204) {
-      return true;
-    }
-    return false;
+    return wp_remote_retrieve_response_code($result) === self::RESPONSE_CODE_STATS_SAVED;
   }
 
   function setKey($api_key) {
@@ -103,8 +103,8 @@ class API {
     return 'Basic ' . base64_encode('api:' . $this->api_key);
   }
 
-  private function request($body, $method = 'POST') {
-    return array(
+  private function request($url, $body, $method = 'POST') {
+    $params = array(
       'timeout' => 10,
       'httpversion' => '1.0',
       'method' => $method,
@@ -114,5 +114,6 @@ class API {
       ),
       'body' => json_encode($body)
     );
+    return wp_remote_post($url, $params);
   }
 }
