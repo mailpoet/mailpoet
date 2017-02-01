@@ -29,8 +29,6 @@ class BounceTest extends MailPoetTest {
 
     $this->bounce = new Bounce(microtime(true));
 
-    $api =
-
     $this->bounce->api = new MailPoet\Cron\Workers\Bounce\MockAPI('key');
   }
 
@@ -40,12 +38,6 @@ class BounceTest extends MailPoetTest {
 
   function testItDefinesConstants() {
     expect(Bounce::BATCH_SIZE)->equals(100);
-  }
-
-  function testItChecksIfCurrentSendingMethodIsMailpoet() {
-    expect(Bounce::checkBounceSyncAvailable())->false();
-    $this->setMailPoetSendingMethod();
-    expect(Bounce::checkBounceSyncAvailable())->true();
   }
 
   function testItThrowsExceptionWhenExecutionLimitIsReached() {
