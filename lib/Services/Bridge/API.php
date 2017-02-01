@@ -15,6 +15,7 @@ class API {
   public $url_me = 'https://bridge.mailpoet.com/api/v0/me';
   public $url_messages = 'https://bridge.mailpoet.com/api/v0/messages';
   public $url_bounces = 'https://bridge.mailpoet.com/api/v0/bounces/search';
+  public $url_stats = 'https://bridge.mailpoet.com/api/v0/stats';
 
   function __construct($api_key) {
     $this->setKey($api_key);
@@ -70,11 +71,22 @@ class API {
 
   function checkBounces(array $emails) {
     $result = wp_remote_post(
-      $this->url,
+      $this->url_bounces,
       $this->request($emails)
     );
     if(wp_remote_retrieve_response_code($result) === 200) {
       return json_decode(wp_remote_retrieve_body($result), true);
+    }
+    return false;
+  }
+
+  function updateSubscriberCount($count) {
+    $result = wp_remote_post(
+      $this->url_stats,
+      $this->request(array('subscriber_count' => (int)$count), 'PUT')
+    );
+    if(wp_remote_retrieve_response_code($result) === 204) {
+      return true;
     }
     return false;
   }
@@ -91,11 +103,11 @@ class API {
     return 'Basic ' . base64_encode('api:' . $this->api_key);
   }
 
-  private function request($body) {
+  private function request($body, $method = 'POST') {
     return array(
       'timeout' => 10,
       'httpversion' => '1.0',
-      'method' => 'POST',
+      'method' => $method,
       'headers' => array(
         'Content-Type' => 'application/json',
         'Authorization' => $this->auth()

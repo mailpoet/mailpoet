@@ -3,6 +3,7 @@ namespace MailPoet\Services;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
 
 if(!defined('ABSPATH')) exit;
 
@@ -41,7 +42,9 @@ class Bridge {
   function checkKey($api_key) {
     $this->initApi($api_key);
     $result = $this->api->checkKey();
-    return $this->processResult($result);
+    $result = $this->processResult($result);
+    $this->updateSubscriberCount($result);
+    return $result;
   }
 
   function processResult(array $result) {
@@ -74,6 +77,16 @@ class Bridge {
     }
 
     return $state;
+  }
+
+  function updateSubscriberCount($result) {
+    if(!empty($result['state'])
+      && ($result['state'] === self::MAILPOET_KEY_VALID
+      || $result['state'] === self::MAILPOET_KEY_EXPIRING)
+    ) {
+      return $this->api->updateSubscriberCount(Subscriber::getTotalSubscribers());
+    }
+    return null;
   }
 
   static function invalidateKey() {
