@@ -52,8 +52,8 @@ class NewsletterOptionFieldTest extends MailPoetTest {
     $errors = $result->getErrors();
 
     expect(is_array($errors))->true();
-    expect($errors[0])->equals('Please specify a name');
-    expect($errors[1])->equals('Please specify a newsletter type');
+    expect($errors[0])->equals('Please specify a name.');
+    expect($errors[1])->equals('Please specify a newsletter type.');
   }
 
   function testItHasACreatedAtOnCreation() {

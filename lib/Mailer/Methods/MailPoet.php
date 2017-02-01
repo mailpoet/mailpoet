@@ -2,37 +2,46 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\Config\ServicesChecker;
+use MailPoet\Services\Bridge;
+use MailPoet\Services\Bridge\API;
 
 if(!defined('ABSPATH')) exit;
 
 class MailPoet {
-  public $url = 'https://bridge.mailpoet.com/api/messages';
-  public $api_key;
+  public $api;
   public $sender;
   public $reply_to;
+  public $services_checker;
 
   function __construct($api_key, $sender, $reply_to) {
-    $this->api_key = $api_key;
+    $this->api = new API($api_key);
     $this->sender = $sender;
     $this->reply_to = $reply_to;
+    $this->services_checker = new ServicesChecker(false);
   }
 
   function send($newsletter, $subscriber, $extra_params = array()) {
-    $message_body = $this->getBody($newsletter, $subscriber);
-    $result = wp_remote_post(
-      $this->url,
-      $this->request($message_body)
-    );
-    if(is_wp_error($result)) {
-      return Mailer::formatMailerConnectionErrorResult($result->get_error_message());
-    }
-    if(wp_remote_retrieve_response_code($result) !== 201) {
-      $response = (wp_remote_retrieve_body($result)) ?
-        wp_remote_retrieve_body($result) :
-        wp_remote_retrieve_response_message($result);
+    if($this->services_checker->checkMailPoetAPIKeyValid() === false) {
+      $response = __('MailPoet API key is invalid!', 'mailpoet');
       return Mailer::formatMailerSendErrorResult($response);
     }
-    return Mailer::formatMailerSendSuccessResult();
+
+    $message_body = $this->getBody($newsletter, $subscriber);
+    $result = $this->api->sendMessages($message_body);
+
+    switch($result['status']) {
+      case API::SENDING_STATUS_CONNECTION_ERROR:
+        return Mailer::formatMailerConnectionErrorResult($result['message']);
+      case API::SENDING_STATUS_SEND_ERROR:
+        if(!empty($result['code']) && $result['code'] === API::RESPONSE_CODE_KEY_INVALID) {
+          Bridge::invalidateKey();
+        }
+        return Mailer::formatMailerSendErrorResult($result['message']);
+      case API::SENDING_STATUS_OK:
+      default:
+        return Mailer::formatMailerSendSuccessResult();
+    }
   }
 
   function processSubscriber($subscriber) {
@@ -85,22 +94,5 @@ class MailPoet {
       $body[] = $composeBody($newsletter, $this->processSubscriber($subscriber));
     }
     return $body;
-  }
-
-  function auth() {
-    return 'Basic ' . base64_encode('api:' . $this->api_key);
-  }
-
-  function request($body) {
-    return array(
-      'timeout' => 10,
-      'httpversion' => '1.0',
-      'method' => 'POST',
-      'headers' => array(
-        'Content-Type' => 'application/json',
-        'Authorization' => $this->auth()
-      ),
-      'body' => json_encode($body)
-    );
   }
 }

@@ -43,7 +43,7 @@ class Notice {
   }
 
   function displayWPNotice() {
-    $class = sprintf('notice notice-%s', $this->type);
+    $class = sprintf('notice notice-%s mailpoet_notice_server', $this->type);
     $message = nl2br($this->message);
 
     printf('<div class="%1$s"><p>%2$s</p></div>', $class, $message);

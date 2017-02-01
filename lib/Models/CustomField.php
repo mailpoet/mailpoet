@@ -11,10 +11,10 @@ class CustomField extends Model {
   function __construct() {
     parent::__construct();
     $this->addValidations('name', array(
-      'required' => __('Please specify a name', 'mailpoet')
+      'required' => __('Please specify a name.', 'mailpoet')
     ));
     $this->addValidations('type', array(
-      'required' => __('Please specify a type', 'mailpoet')
+      'required' => __('Please specify a type.', 'mailpoet')
     ));
   }
 

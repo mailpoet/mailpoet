@@ -163,6 +163,10 @@
               name="mta[mailpoet_api_key]"
               value="<%=- settings.mta.mailpoet_api_key -%>"
             />
+            <a
+              id="mailpoet_api_key_verify"
+              class="button-secondary"
+            ><%= __('Verify') %></a>
           </td>
         </tr>
       </tbody>
@@ -264,7 +268,7 @@
               <p>
                 <%= __('<strong>Warning!</strong> Sending more than the recommended amount of emails? You may break the terms of your web host or provider!') %>'
                 <br />
-                <%= __('Please ask your host for the maximum number of emails you are allowed to send per day') %>
+                <%= __('Please ask your host for the maximum number of emails you are allowed to send per day.') %>
               </p>
             </div>
           </td>
@@ -362,7 +366,7 @@
               <%= __('SMTP Hostname') %>
             </label>
             <p class="description">
-              <%= __('e.g.:smtp.mydomain.com') %>
+              <%= __('e.g.: smtp.mydomain.com') %>
             </p>
           </th>
           <td>
@@ -473,7 +477,7 @@
               <%= __('Domain') %>
             </label>
             <p class="description">
-              <%= __('e.g.:smtp.mydomain.com') %>
+              <%= __('e.g.: smtp.mydomain.com') %>
             </p>
           </th>
           <td>
@@ -570,7 +574,7 @@
               <%= __('Authentication') %>
             </label>
             <p class="description">
-              <%= __('Leave this option set to Yes. Only a tiny portion of SMTP services prefer Authentication to be turned off') %>
+              <%= __('Leave this option set to Yes. Only a tiny portion of SMTP services prefer Authentication to be turned off.') %>
             </p>
           </th>
           <td>
@@ -612,12 +616,12 @@
             <%= __('SPF Signature (Highly recommended!)') %>
           </label>
           <p class="description">
-            <%= __("Improves your delivery rate by verifying that you're allowed to send emails from your domain") %>
+            <%= __("This improves your delivery rate by verifying that you're allowed to send emails from your domain.") %>
           </p>
         </th>
         <td>
           <p>
-            <%= __("SPF is set up in your DNS. Read your host's support documentation for more information") %>
+            <%= __("SPF is set up in your DNS. Read your host's support documentation for more information.") %>
           </p>
         </td>
       </tr>
@@ -700,7 +704,7 @@
         if(settings.sender.address.length === 0) {
           // validation
           return MailPoet.Notice.error(
-            'The email could not be sent. Make sure the option "Email notifications" has a FROM email address in the Basics tab.',
+            '<%= __('The email could not be sent. Make sure the option "Email notifications" has a FROM email address in the Basics tab.') %>',
             { scroll: true, static: true }
           );
         }
@@ -728,6 +732,45 @@
         }).done(function(response) {
           MailPoet.Notice.success(
             "<%= __('The email has been sent! Check your inbox.') %>",
+            { scroll: true }
+          );
+        }).fail(function(response) {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { scroll: true }
+            );
+          }
+        });
+      });
+
+      // verifying api key
+      $('#mailpoet_api_key_verify').on('click', function() {
+        // get api key
+        var key = $('#mailpoet_api_key').val();
+
+        if(key.length === 0) {
+          // validation
+          return MailPoet.Notice.error(
+            '<%= __('Please specify an API key before validating it.') %>',
+            { scroll: true, static: true }
+          );
+        }
+
+        MailPoet.Modal.loading(true);
+        MailPoet.Ajax.post({
+          endpoint: 'services',
+          action: 'verifyMailPoetKey',
+          data: {
+            key: key
+          }
+        }).always(function() {
+          MailPoet.Modal.loading(false);
+        }).done(function(response) {
+          // Hide server error notices
+          $('.mailpoet_notice_server').hide();
+          MailPoet.Notice.success(
+            response.data.message,
             { scroll: true }
           );
         }).fail(function(response) {
@@ -777,7 +820,7 @@
             && $('#mailpoet_api_key').val().trim().length === 0
           ) {
             MailPoet.Notice.error(
-              "<%= __('You need to specify a MailPoet account key') %>"
+              "<%= __('You need to specify a MailPoet account key.') %>"
             );
             return false;
           }
@@ -844,6 +887,14 @@
           .toggleClass('mailpoet_hidden', group !== 'mailpoet');
         $('#mailpoet_sending_method_inactive_text')
           .toggleClass('mailpoet_hidden', group === 'mailpoet');
+
+        if(group === 'mailpoet') {
+          // Verify key on saving
+          $('#mailpoet_api_key_verify').trigger('click');
+        } else {
+          // Hide server error notices
+          $('.mailpoet_notice_server').hide();
+        }
       }
 
       function getMethodFromGroup(group) {

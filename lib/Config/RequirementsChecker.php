@@ -81,7 +81,7 @@ class RequirementsChecker {
   function checkPDOExtension() {
     if(extension_loaded('pdo') && extension_loaded('pdo_mysql')) return true;
     $error = Helpers::replaceLinkTags(
-      __('This plugin requires PDO_MYSQL PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+      __('This plugin requires the PDO_MYSQL PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension'
     );
     return $this->processError($error);

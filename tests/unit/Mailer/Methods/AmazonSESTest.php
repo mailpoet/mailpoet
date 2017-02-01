@@ -85,7 +85,7 @@ class AmazonSESTest extends MailPoetTest {
       );
       $this->fail('Unsupported region exception was not thrown');
     } catch(\Exception $e) {
-      expect($e->getMessage())->equals('Unsupported Amazon SES region.');
+      expect($e->getMessage())->equals('Unsupported Amazon SES region');
     }
   }
 

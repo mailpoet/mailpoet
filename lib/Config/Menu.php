@@ -27,6 +27,7 @@ class Menu {
     $this->assets_url = $assets_url;
     $subscribers_feature = new SubscribersFeature();
     $this->subscribers_over_limit = $subscribers_feature->check();
+    $this->checkMailPoetAPIKey();
   }
 
   function init() {
@@ -388,6 +389,9 @@ class Menu {
 
   function newsletters() {
     if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
+    if(isset($this->mp_api_key_valid) && $this->mp_api_key_valid === false) {
+      return $this->displayMailPoetAPIKeyInvalidTemplate();
+    }
 
     global $wp_roles;
 
@@ -484,6 +488,39 @@ class Menu {
     exit;
   }
 
+  function displayMailPoetAPIKeyInvalidTemplate() {
+    $this->displayPage('invalidkey.html', array(
+      'subscriber_count' => Subscriber::getTotalSubscribers()
+    ));
+    exit;
+  }
+
+  static function isOnMailPoetAdminPage(array $exclude = null, $screen_id = null) {
+    if(is_null($screen_id)) {
+      if(empty($_REQUEST['page'])) {
+        return false;
+      }
+      $screen_id = $_REQUEST['page'];
+    }
+    if(!empty($exclude)) {
+      foreach($exclude as $slug) {
+        if(stripos($screen_id, $slug) !== false) {
+          return false;
+        }
+      }
+    }
+    return (stripos($screen_id, 'mailpoet-') !== false);
+  }
+
+  function checkMailPoetAPIKey(ServicesChecker $checker = null) {
+    if(self::isOnMailPoetAdminPage()) {
+      $show_notices = isset($_REQUEST['page'])
+        && stripos($_REQUEST['page'], 'mailpoet-newsletters') === false;
+      $checker = $checker ?: new ServicesChecker();
+      $this->mp_api_key_valid = $checker->checkMailPoetAPIKeyValid($show_notices);
+    }
+  }
+
   private function getLimitPerPage($model = null) {
     if($model === null) {
       return Listing\Handler::DEFAULT_LIMIT_PER_PAGE;
@@ -504,9 +541,5 @@ class Menu {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
       $notice->displayWPNotice();
     }
-  }
-
-  static function isOnMailPoetAdminPage() {
-    return (!empty($_REQUEST['page']) && stripos($_REQUEST['page'], 'mailpoet-') !== false);
   }
 }

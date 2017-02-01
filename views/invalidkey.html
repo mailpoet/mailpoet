@@ -1,0 +1,16 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+
+<div class="wrap about-wrap">
+  <h1><%= __("All sending is currently paused!") %></h1>
+
+  <p class="about-text">
+    <%= __("Your key to send with MailPoet is invalid.") %>
+  </p>
+
+  <p>
+      <a class="button button-primary" target="_blank" href="https://account.mailpoet.com?s=<%= subscriber_count %>"><%= __('Visit MailPoet.com to purchase a key') %></a>
+    </p>
+</div>
+<% endblock %>

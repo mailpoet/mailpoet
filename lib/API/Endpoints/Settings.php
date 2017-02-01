@@ -3,6 +3,7 @@ namespace MailPoet\API\Endpoints;
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
 use MailPoet\Models\Setting;
+use MailPoet\Services\Bridge;
 
 if(!defined('ABSPATH')) exit;
 
@@ -20,6 +21,12 @@ class Settings extends APIEndpoint {
     } else {
       foreach($settings as $name => $value) {
         Setting::setValue($name, $value);
+      }
+      if(!empty($settings['mta']['mailpoet_api_key'])
+          && Bridge::isMPSendingServiceEnabled()
+      ) {
+        $bridge = new Bridge();
+        $bridge->checkKey($settings['mta']['mailpoet_api_key']);
       }
       return $this->successResponse(Setting::getAll());
     }

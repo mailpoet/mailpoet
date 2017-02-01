@@ -6,15 +6,19 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Services\Bridge;
+use MailPoet\Services\Bridge\API;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class Bounce {
+  const TASK_TYPE = 'bounce';
+  const BATCH_SIZE = 100;
+
   const BOUNCED_HARD = 'hard';
   const BOUNCED_SOFT = 'soft';
   const NOT_BOUNCED = null;
-  const BATCH_SIZE = 100;
 
   public $timer;
   public $api;
@@ -25,21 +29,15 @@ class Bounce {
     CronHelper::enforceExecutionLimit($this->timer);
   }
 
-  static function checkBounceSyncAvailable() {
-    $mailer_config = Mailer::getMailerConfig();
-    return !empty($mailer_config['method'])
-      && $mailer_config['method'] === Mailer::METHOD_MAILPOET;
-  }
-
   function initApi() {
     if(!$this->api) {
       $mailer_config = Mailer::getMailerConfig();
-      $this->api = new Bounce\API($mailer_config['mailpoet_api_key']);
+      $this->api = new API($mailer_config['mailpoet_api_key']);
     }
   }
 
   function process() {
-    if(!self::checkBounceSyncAvailable()) {
+    if(!Bridge::isMPSendingServiceEnabled()) {
       return false;
     }
 
@@ -64,7 +62,7 @@ class Bounce {
   }
 
   static function scheduleBounceSync() {
-    $already_scheduled = SendingQueue::where('type', 'bounce')
+    $already_scheduled = SendingQueue::where('type', self::TASK_TYPE)
       ->whereNull('deleted_at')
       ->where('status', SendingQueue::STATUS_SCHEDULED)
       ->findMany();
@@ -72,7 +70,7 @@ class Bounce {
       return false;
     }
     $queue = SendingQueue::create();
-    $queue->type = 'bounce';
+    $queue->type = self::TASK_TYPE;
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->priority = SendingQueue::PRIORITY_LOW;
     $queue->scheduled_at = self::getNextRunDate();
@@ -143,7 +141,7 @@ class Bounce {
   }
 
   function processEmails(array $subscriber_emails) {
-    $checked_emails = $this->api->check($subscriber_emails);
+    $checked_emails = $this->api->checkBounces($subscriber_emails);
     $this->processApiResponse((array)$checked_emails);
   }
 
@@ -170,7 +168,7 @@ class Bounce {
 
   static function getScheduledQueues($future = false) {
     $dateWhere = ($future) ? 'whereGt' : 'whereLte';
-    return SendingQueue::where('type', 'bounce')
+    return SendingQueue::where('type', self::TASK_TYPE)
       ->$dateWhere('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
       ->whereNull('deleted_at')
       ->where('status', SendingQueue::STATUS_SCHEDULED)
@@ -178,7 +176,7 @@ class Bounce {
   }
 
   static function getRunningQueues() {
-    return SendingQueue::where('type', 'bounce')
+    return SendingQueue::where('type', self::TASK_TYPE)
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
       ->whereNull('deleted_at')
       ->whereNull('status')

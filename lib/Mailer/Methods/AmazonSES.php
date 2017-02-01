@@ -32,7 +32,7 @@ class AmazonSES {
     $this->aws_secret_key = $secret_key;
     $this->aws_region = (in_array($region, $this->available_regions)) ? $region : false;
     if(!$this->aws_region) {
-      throw new \Exception(__('Unsupported Amazon SES region.', 'mailpoet'));
+      throw new \Exception(__('Unsupported Amazon SES region', 'mailpoet'));
     }
     $this->aws_endpoint = sprintf('email.%s.amazonaws.com', $this->aws_region);
     $this->aws_signing_algorithm = 'AWS4-HMAC-SHA256';
