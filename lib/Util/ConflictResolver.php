@@ -8,7 +8,8 @@ class ConflictResolver {
       '^/wp-admin',
       '^/wp-includes',
       // third-party
-      'query-monitor'
+      'query-monitor',
+      'wpt-tx-updater-network'
     ),
     'scripts' => array(
       // WP default
@@ -16,7 +17,8 @@ class ConflictResolver {
       '^/wp-includes',
       'googleapis.com/ajax/libs',
       // third-party
-      'query-monitor'
+      'query-monitor',
+      'wpt-tx-updater-network'
     )
   );
 
