@@ -19,6 +19,10 @@ class MockAPI {
     return $this->processResponse($code);
   }
 
+  function updateSubscriberCount($count) {
+    return true;
+  }
+
   function setKey($api_key) {
     $this->api_key = $api_key;
   }
