@@ -1,9 +1,9 @@
 === MailPoet 3 - Beta Version ===
 Contributors: mailpoet, wysija
-Tags: newsletter, email, welcome email, post notification, autoresponder, mailchimp, signup, smtp
+Tags: newsletter, email, welcome email, post notification, autoresponder, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.7.2
-Stable tag: 3.0.0-beta.16
+Stable tag: 3.0.0-beta.17
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -83,13 +83,16 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 
 == Changelog ==
 
+= 3.0.0-beta.17 - 2017-02-01 =
+* Added: send in style with MailPoet's own sending service. Visit your MailPoet Settings > Send with... tab.
+
 = 3.0.0-beta.16 - 2017-01-31 =
-- Improved: Updated language strings for better translation support;
-- Fixed: subscription forms now allow to subscribe only to specified lists. Thanks Paul!
-- Fixed: subscription forms now ignore any extra fields added not via the Form editor. Thx again Paul!
-- Fixed: previewing sent welcome emails now display latest email version. Thanks Tim!
-- Fixed: plugin no longer triggers a PHP error during initialization on hosts using PHP 5.3;
-- Fixed: plugin warns about missing required PDO_MYSQL extension.
+* Improved: Updated language strings for better translation support;
+* Fixed: subscription forms now allow to subscribe only to specified lists. Thanks Paul!
+* Fixed: subscription forms now ignore any extra fields added not via the Form editor. Thx again Paul!
+* Fixed: previewing sent welcome emails now displays latest email version. Thanks Tim!
+* Fixed: plugin no longer triggers a PHP error during initialization on hosts using PHP 5.3;
+* Fixed: plugin warns about missing required PDO_MYSQL extension.
 
 = 3.0.0-beta.15 - 2017-01-24 =
 * Fixed: plugin no longer throws a fatal exception error on (prehistoric :)) hosts running older versions than PHP 5.3. Thanks Otto & jtm12!;
