@@ -76,21 +76,26 @@ class Segment extends Model {
         'subscribers'
       )
       ->select_expr(
-        'SUM(CASE subscribers.status WHEN "' . Subscriber::STATUS_SUBSCRIBED . '" THEN 1 ELSE 0 END)',
+        'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_SUBSCRIBED . '"
+        AND relation.status = "' . Subscriber::STATUS_SUBSCRIBED . '" THEN 1 ELSE 0 END)',
         Subscriber::STATUS_SUBSCRIBED
       )
       ->select_expr(
-        'SUM(CASE subscribers.status WHEN "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
+        'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_UNSUBSCRIBED . '"
+        OR relation.status = "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
         Subscriber::STATUS_UNSUBSCRIBED
       )
       ->select_expr(
-        'SUM(CASE subscribers.status WHEN "' . Subscriber::STATUS_UNCONFIRMED . '" THEN 1 ELSE 0 END)',
+        'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_UNCONFIRMED . '"
+        AND relation.status != "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
         Subscriber::STATUS_UNCONFIRMED
       )
       ->select_expr(
-        'SUM(CASE subscribers.status WHEN "' . Subscriber::STATUS_BOUNCED . '" THEN 1 ELSE 0 END)',
+        'SUM(CASE WHEN subscribers.status = "' . Subscriber::STATUS_BOUNCED . '"
+        AND relation.status != "' . Subscriber::STATUS_UNSUBSCRIBED . '" THEN 1 ELSE 0 END)',
         Subscriber::STATUS_BOUNCED
       )
+      ->whereNull('subscribers.deleted_at')
       ->findOne()
       ->asArray();
 
