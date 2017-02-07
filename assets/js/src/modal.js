@@ -59,6 +59,9 @@ define('modal', ['mailpoet', 'jquery'],
         // display overlay
         overlay: false,
 
+        // focus upon displaying
+        focus: false,
+
         // highlighted elements
         highlight: null,
 
@@ -71,7 +74,7 @@ define('modal', ['mailpoet', 'jquery'],
       options: {},
       templates: {
         overlay: '<div id="mailpoet_modal_overlay" style="display:none;"></div>',
-        popup: '<div id="mailpoet_popup">'+
+        popup: '<div id="mailpoet_popup" tabindex="-1">'+
         '<div class="mailpoet_popup_wrapper">'+
         '<a href="javascript:;" id="mailpoet_modal_close"></a>'+
         '<div id="mailpoet_popup_title"><h2></h2></div>'+
@@ -388,6 +391,10 @@ define('modal', ['mailpoet', 'jquery'],
             }
           }
 
+          if(this.options.focus) {
+            jQuery('#mailpoet_'+this.options.type).focus();
+          }
+
           // set popup as opened
           this.opened = true;
 
@@ -437,6 +444,8 @@ define('modal', ['mailpoet', 'jquery'],
           options.type = 'popup';
           // set overlay state
           options.overlay = options.overlay || true;
+          // set focus state
+          options.focus = options.focus || true;
           // initialize modal
           this.init(options);
           // open modal
