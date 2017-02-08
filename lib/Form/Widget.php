@@ -79,9 +79,9 @@ class Widget extends \WP_Widget {
           endpoint: 'forms',
           action: 'create'
         }).done(function(response) {
-          if(response.result && response.form_id) {
+          if(response.data && response.data.id) {
             window.location =
-              "<?php echo $form_edit_url; ?>" + response.form_id;
+              "<?php echo $form_edit_url; ?>" + response.data.id;
           }
         });
         return false;
