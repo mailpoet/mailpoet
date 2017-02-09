@@ -173,15 +173,20 @@ define(
         var data = this.state.item;
         this.setState({ loading: true });
 
-        // Ensure that body is  JSON encoded
-        if (!_.isUndefined(data.body)) {
-          data.body = JSON.stringify(data.body);
-        }
+        // Store only properties that can be changed on this page
+        const IGNORED_NEWSLETTER_PROPERTIES = [
+            'preheader', 'body', 'created_at', 'deleted_at', 'hash',
+            'status', 'updated_at', 'type'
+        ];
+        const newsletterData = _.omit(
+            data,
+            IGNORED_NEWSLETTER_PROPERTIES
+        );
 
         return MailPoet.Ajax.post({
           endpoint: 'newsletters',
           action: 'save',
-          data: data,
+          data: newsletterData,
         }).always(() => {
           this.setState({ loading: false });
         });

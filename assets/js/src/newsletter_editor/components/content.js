@@ -1,8 +1,9 @@
 define([
     'newsletter_editor/App',
     'backbone.supermodel',
-    'underscore'
-  ], function(App, SuperModel, _) {
+    'underscore',
+    'mailpoet'
+  ], function(App, SuperModel, _, MailPoet) {
   "use strict";
 
   var Module = {};
@@ -81,7 +82,13 @@ define([
 
   App.on('start', function(options) {
     var body = options.newsletter.body;
-    App._contentContainer = new (App.getBlockTypeModel('container'))(body.content, {parse: true});
+    var content = (_.has(body, 'content')) ? body.content : {};
+
+    if (!_.has(options.newsletter, 'body') || !_.isObject(options.newsletter.body)) {
+      MailPoet.Notice.error(MailPoet.I18n.t('newsletterBodyIsCorrupted'));
+    }
+
+    App._contentContainer = new (App.getBlockTypeModel('container'))(content, {parse: true});
     App._contentContainerView = new (App.getBlockTypeView('container'))({
       model: App._contentContainer,
       renderOptions: { depth: 0 },
