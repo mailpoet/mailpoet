@@ -20,7 +20,8 @@
   "require-dev": {
     "codeception/codeception": "*",
     "codeception/verify": "*",
-    "codegyre/robo": "*",
+    "consolidation/robo": "*",
+    "henrikbjorn/lurker": "^1.2",
     "vlucas/phpdotenv": "*",
     "umpirsky/twig-gettext-extractor": "1.1.*",
     "raveren/kint": "^1.0",
