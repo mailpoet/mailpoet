@@ -27,8 +27,8 @@ class SendGrid {
     }
     if(wp_remote_retrieve_response_code($result) !== 200) {
       $response = json_decode($result['body'], true);
-      $response = (!empty($response['errors'])) ?
-        $response['errors'] :
+      $response = (!empty($response['errors'][0])) ?
+        $response['errors'][0] :
         sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SENDGRID);
       return Mailer::formatMailerSendErrorResult($response);
     }
