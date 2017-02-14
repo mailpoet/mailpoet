@@ -28,6 +28,9 @@ define('modal', ['mailpoet', 'jquery'],
       opened: false,
       locked: false,
 
+      // previously focused element
+      prevFocus: null,
+
       // sub panels
       subpanels: [],
 
@@ -372,6 +375,9 @@ define('modal', ['mailpoet', 'jquery'],
           // set modal dimensions
           this.setDimensions();
 
+          // remember the previously focused element
+          this.prevFocus = jQuery(':focus');
+
           // add a flag on the body so that we can prevent scrolling
           jQuery('body').addClass('mailpoet_modal_opened');
 
@@ -599,6 +605,11 @@ define('modal', ['mailpoet', 'jquery'],
 
           // destroy modal element
           this.destroy();
+
+          // restore the previously focused element
+          if(this.prevFocus !== undefined){
+            this.prevFocus.focus();
+          }
 
           // reset options
           this.options = {
