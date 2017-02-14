@@ -18,10 +18,10 @@ class DomNode extends \pQuery\DomNode {
   var $childClass = 'MailPoet\Util\pQuery\DomNode';
 
   function getInnerText() {
-    return html_entity_decode($this->toString(true, true, 1), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    return html_entity_decode($this->toString(true, true, 1), ENT_QUOTES, 'UTF-8');
   }
 
   function getOuterText() {
-    return html_entity_decode($this->toString(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    return html_entity_decode($this->toString(), ENT_QUOTES, 'UTF-8');
   }
 }
