@@ -26,6 +26,18 @@ class SegmentTest extends MailPoetTest {
         'last_name' => 'Smith',
         'status' => Subscriber::STATUS_SUBSCRIBED,
         'email' => 'mike@maipoet.com'
+      ),
+      array(
+        'first_name' => 'Dave',
+        'last_name' => 'Brown',
+        'status' => Subscriber::STATUS_UNCONFIRMED,
+        'email' => 'dave@maipoet.com'
+      ),
+      array(
+        'first_name' => 'Bob',
+        'last_name' => 'Jones',
+        'status' => Subscriber::STATUS_BOUNCED,
+        'email' => 'bob@maipoet.com'
       )
     );
     $this->newsletters_data = array(
@@ -138,7 +150,7 @@ class SegmentTest extends MailPoetTest {
     $subscribers = $segment->subscribers()
       ->findArray();
 
-    expect(count($subscribers))->equals(2);
+    expect(count($subscribers))->equals(4);
   }
 
   function testItCanHaveManyNewsletters() {
@@ -156,6 +168,54 @@ class SegmentTest extends MailPoetTest {
       ->findArray();
 
     expect(count($newsletters))->equals(2);
+  }
+
+  function testItCanHaveSubscriberCount() {
+    // normal subscribers
+    foreach($this->subscribers_data as $subscriber_data) {
+      $subscriber = Subscriber::create();
+      $subscriber->hydrate($subscriber_data);
+      $subscriber->save();
+      $association = SubscriberSegment::create();
+      $association->subscriber_id = $subscriber->id;
+      $association->segment_id = $this->segment->id;
+      $association->status = Subscriber::STATUS_SUBSCRIBED;
+      $association->save();
+    }
+
+    $this->segment->withSubscribersCount();
+    $subscribers_count = $this->segment->subscribers_count;
+    expect($subscribers_count[Subscriber::STATUS_SUBSCRIBED])->equals(1);
+    expect($subscribers_count[Subscriber::STATUS_UNSUBSCRIBED])->equals(1);
+    expect($subscribers_count[Subscriber::STATUS_UNCONFIRMED])->equals(1);
+    expect($subscribers_count[Subscriber::STATUS_BOUNCED])->equals(1);
+
+    // unsubscribed from this particular segment
+    foreach($this->subscribers_data as $subscriber_data) {
+      $subscriber = Subscriber::findOne($subscriber_data['email']);
+      SubscriberSegment::unsubscribeFromSegments($subscriber, array($this->segment->id));
+    }
+
+    $this->segment->withSubscribersCount();
+    $subscribers_count = $this->segment->subscribers_count;
+    expect($subscribers_count[Subscriber::STATUS_SUBSCRIBED])->equals(0);
+    expect($subscribers_count[Subscriber::STATUS_UNSUBSCRIBED])->equals(4);
+    expect($subscribers_count[Subscriber::STATUS_UNCONFIRMED])->equals(0);
+    expect($subscribers_count[Subscriber::STATUS_BOUNCED])->equals(0);
+
+    // trashed subscribers
+    foreach($this->subscribers_data as $subscriber_data) {
+      $subscriber = Subscriber::findOne($subscriber_data['email']);
+      SubscriberSegment::resubscribeToAllSegments($subscriber);
+      $subscriber->trash();
+    }
+
+    $this->segment->withSubscribersCount();
+    $subscribers_count = $this->segment->subscribers_count;
+    expect($subscribers_count[Subscriber::STATUS_SUBSCRIBED])->equals(0);
+    expect($subscribers_count[Subscriber::STATUS_UNSUBSCRIBED])->equals(0);
+    expect($subscribers_count[Subscriber::STATUS_UNCONFIRMED])->equals(0);
+    expect($subscribers_count[Subscriber::STATUS_BOUNCED])->equals(0);
   }
 
   function testItCanGetSegmentsWithSubscriberCount() {
