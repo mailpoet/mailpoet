@@ -68,9 +68,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function compileAll() {
-    $collection = $this->collection();
-    $collection->add(array($this, 'compileJs'));
-    $collection->add(array($this, 'compileCss'));
+    $collection = $this->collectionBuilder();
+    $collection->addCode(array($this, 'compileJs'));
+    $collection->addCode(array($this, 'compileCss'));
     return $collection->run();
   }
 
@@ -164,9 +164,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function qa() {
-    $collection = $this->collection();
-    $collection->add(array($this, 'qaLint'));
-    $collection->add(function() {
+    $collection = $this->collectionBuilder();
+    $collection->addCode(array($this, 'qaLint'));
+    $collection->addCode(function() {
       return $this->qaCodeSniffer('all');
     });
     return $collection->run();
@@ -219,42 +219,38 @@ class RoboFile extends \Robo\Tasks {
       return;
     }
 
-    $collection = $this->collection();
+    $collection = $this->collectionBuilder();
 
     // Clean up tmp dirs if the previous run was halted
     if(file_exists("$svn_dir/trunk_new") || file_exists("$svn_dir/trunk_old")) {
-      $this->taskFileSystemStack()
+      $collection->taskFileSystemStack()
         ->stopOnFail()
-        ->remove(array("$svn_dir/trunk_new", "$svn_dir/trunk_old"))
-        ->addToCollection($collection);
+        ->remove(array("$svn_dir/trunk_new", "$svn_dir/trunk_old"));
     }
 
     // Extract the distributable zip to tmp trunk dir
-    $this->taskExtract($plugin_dist_file)
+    $collection->taskExtract($plugin_dist_file)
       ->to("$svn_dir/trunk_new")
-      ->preserveTopDirectory(false)
-      ->addToCollection($collection);
+      ->preserveTopDirectory(false);
 
     // Rename current trunk
     if(file_exists("$svn_dir/trunk")) {
-      $this->taskFileSystemStack()
-        ->rename("$svn_dir/trunk", "$svn_dir/trunk_old")
-        ->addToCollection($collection);
+      $collection->taskFileSystemStack()
+        ->rename("$svn_dir/trunk", "$svn_dir/trunk_old");
     }
 
     // Replace old trunk with a new one
-    $this->taskFileSystemStack()
+    $collection->taskFileSystemStack()
       ->stopOnFail()
       ->rename("$svn_dir/trunk_new", "$svn_dir/trunk")
-      ->remove("$svn_dir/trunk_old")
-      ->addToCollection($collection);
+      ->remove("$svn_dir/trunk_old");
 
     // Windows compatibility
     $awkCmd = '{print " --force \""$2"\""}';
     // Mac OS X compatibility
     $xargsFlag = (stripos(PHP_OS, 'Darwin') !== false) ? '' : '-r';
 
-    $this->taskExecStack()
+    $collection->taskExecStack()
       ->stopOnFail()
       // Set SVN repo as working directory
       ->dir($svn_dir)
@@ -263,8 +259,7 @@ class RoboFile extends \Robo\Tasks {
       // Recursively add files to SVN that haven't been added yet
       ->exec("svn add --force * --auto-props --parents --depth infinity -q")
       // Tag the release
-      ->exec("svn cp trunk tags/$plugin_version")
-      ->addToCollection($collection);
+      ->exec("svn cp trunk tags/$plugin_version");
 
     $result = $collection->run();
 
