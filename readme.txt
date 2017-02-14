@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.7.2
-Stable tag: 3.0.0-beta.17
+Stable tag: 3.0.0-beta.18
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -82,6 +82,13 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 3.0.0-beta.18 - 2017-02-14 =
+* Fixed: subscriber stats for lists are accurately calculated;
+* Fixed: 'Create a new form' link in the MailPoet Form widget now leads to the Form editor;
+* Fixed: category names are shown for Automated latest content widget posts on WP 4.7. Thanks Christopher!;
+* Fixed: SendGrid error messages are properly displayed. Thanks Larry!;
+* Fixed: non-Latin-1 characters are now rendered on some hosts running PHP 5.3. Thanks Andreas!
 
 = 3.0.0-beta.17 - 2017-02-01 =
 * Added: send in style with MailPoet's own sending service. Visit your MailPoet Settings > Send with... tab.
