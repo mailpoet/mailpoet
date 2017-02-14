@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Renderer\StylesHelper;
+use MailPoet\Util\pQuery\pQuery;
 
 class Header {
   static function render($element) {
@@ -10,7 +11,7 @@ class Header {
     $line_height = sprintf(
       '%spx', StylesHelper::$line_height_multiplier * (int)$element['styles']['text']['fontSize']
     );
-    $DOM_parser = new \pQuery();
+    $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($element['text']);
     if(isset($element['styles']['link'])) {
       $links = $DOM->query('a');

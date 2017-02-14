@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Newsletter\Renderer;
 
+use MailPoet\Util\pQuery\pQuery;
+
 if(!defined('ABSPATH')) exit;
 
 class Renderer {
@@ -19,7 +21,7 @@ class Renderer {
     $this->preview = $preview;
     $this->blocks_renderer = new Blocks\Renderer($this->newsletter, $this->preview);
     $this->columns_renderer = new Columns\Renderer();
-    $this->DOM_parser = new \pQuery();
+    $this->DOM_parser = new pQuery();
     $this->CSS_inliner = new \MailPoet\Util\CSS();
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
   }

@@ -3,6 +3,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Editor\PostContentManager;
 use MailPoet\Newsletter\Renderer\StylesHelper;
+use MailPoet\Util\pQuery\pQuery;
 
 class Text {
   static function render($element) {
@@ -25,7 +26,7 @@ class Text {
   }
 
   static function convertBlockquotesToTables($html) {
-    $DOM_parser = new \pQuery();
+    $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $blockquotes = $DOM->query('blockquote');
     foreach($blockquotes as $blockquote) {
@@ -70,7 +71,7 @@ class Text {
   }
 
   static function convertParagraphsToTables($html) {
-    $DOM_parser = new \pQuery();
+    $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $paragraphs = $DOM->query('p');
     if(!$paragraphs->count()) return $html;
@@ -134,7 +135,7 @@ class Text {
   }
 
   static function styleLists($html) {
-    $DOM_parser = new \pQuery();
+    $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $lists = $DOM->query('ol, ul, li');
     if(!$lists->count()) return $html;
@@ -153,7 +154,7 @@ class Text {
   }
 
   static function styleHeadings($html) {
-    $DOM_parser = new \pQuery();
+    $DOM_parser = new pQuery();
     $DOM = $DOM_parser->parseStr($html);
     $headings = $DOM->query('h1, h2, h3, h4');
     if(!$headings->count()) return $html;

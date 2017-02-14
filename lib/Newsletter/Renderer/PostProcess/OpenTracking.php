@@ -3,10 +3,11 @@ namespace MailPoet\Newsletter\Renderer\PostProcess;
 
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Util\pQuery\pQuery;
 
 class OpenTracking {
   static function process($template) {
-    $DOM = new \pQuery();
+    $DOM = new pQuery();
     $DOM = $DOM->parseStr($template);
     $template = $DOM->query('body');
     // url is a temporary data tag that will be further replaced with
