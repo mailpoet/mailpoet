@@ -75,7 +75,8 @@ class Menu {
       add_screen_option('per_page', array(
         'label' => _x(
           'Number of newsletters per page',
-          'newsletters per page (screen options)'
+          'newsletters per page (screen options)',
+          'mailpoet'
         ),
         'option' => 'mailpoet_newsletters_per_page'
       ));
@@ -97,7 +98,8 @@ class Menu {
       add_screen_option('per_page', array(
         'label' => _x(
           'Number of forms per page',
-          'forms per page (screen options)'
+          'forms per page (screen options)',
+          'mailpoet'
         ),
         'option' => 'mailpoet_forms_per_page'
       ));
@@ -119,7 +121,8 @@ class Menu {
       add_screen_option('per_page', array(
         'label' => _x(
           'Number of subscribers per page',
-          'subscribers per page (screen options)'
+          'subscribers per page (screen options)',
+          'mailpoet'
         ),
         'option' => 'mailpoet_subscribers_per_page'
       ));
@@ -142,7 +145,8 @@ class Menu {
       add_screen_option('per_page', array(
         'label' => _x(
           'Number of segments per page',
-          'segments per page (screen options)'
+          'segments per page (screen options)',
+          'mailpoet'
         ),
         'option' => 'mailpoet_segments_per_page'
       ));
