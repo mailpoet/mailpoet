@@ -76,9 +76,8 @@ class Scheduler {
     }, $segments);
 
     // ensure that subscribers are in segments
-    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
-      ->findArray();
-    $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
+    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)->findArray();
+    $subscribers = Helpers::arrayColumn($subscribers, 'id');
     $subscribers = array_unique($subscribers);
 
     if(empty($subscribers)) {
@@ -107,9 +106,8 @@ class Scheduler {
     $segment_ids = array_map(function($segment) {
       return $segment['id'];
     }, $segments);
-    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
-      ->findArray();
-    $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
+    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)->findArray();
+    $subscribers = Helpers::arrayColumn($subscribers, 'id');
     $subscribers = array_unique($subscribers);
 
     // update current queue
