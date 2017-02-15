@@ -450,7 +450,8 @@ class Subscriber extends Model {
       )
       ->select('subscribers.id')
       ->whereNull('subscribers.deleted_at')
-      ->where('subscribers.status', 'subscribed');
+      ->where('subscribers.status', 'subscribed')
+      ->distinct();
     return $subscribers;
   }
 

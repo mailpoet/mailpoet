@@ -73,8 +73,7 @@ class SendingQueue extends APIEndpoint {
         return $segment['id'];
       }, $segments);
       $subscribers = Subscriber::getSubscribedInSegments($segment_ids)->findArray();
-      $subscribers = Helpers::arrayColumn($subscribers, 'id');
-      $subscribers = array_unique($subscribers);
+      $subscribers = Helpers::flattenArray($subscribers);
       if(!count($subscribers)) {
         return $this->errorResponse(array(
           APIError::UNKNOWN => __('There are no subscribers in that list!', 'mailpoet')
