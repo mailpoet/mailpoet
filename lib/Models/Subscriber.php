@@ -730,7 +730,7 @@ class Subscriber extends Model {
   static function bulkTrash($orm) {
     $count = parent::bulkAction($orm, function($subscriber_ids) {
       self::rawExecute(join(' ', array(
-          'UPDATE `'.self::$_table.'`',
+          'UPDATE `' . Subscriber::$_table . '`',
           'SET `deleted_at` = NOW()',
           'WHERE `id` IN ('.
             rtrim(str_repeat('?,', count($subscriber_ids)), ',')

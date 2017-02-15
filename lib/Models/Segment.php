@@ -233,7 +233,7 @@ class Segment extends Model {
   static function bulkTrash($orm) {
     $count = parent::bulkAction($orm, function($ids) {
       parent::rawExecute(join(' ', array(
-        'UPDATE `'.self::$_table.'`',
+        'UPDATE `' . Segment::$_table . '`',
         'SET `deleted_at` = NOW()',
         'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')',
         'AND `type` = "default"'
