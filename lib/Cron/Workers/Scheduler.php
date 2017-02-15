@@ -76,10 +76,8 @@ class Scheduler {
     }, $segments);
 
     // ensure that subscribers are in segments
-    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
-      ->findArray();
-    $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
-    $subscribers = array_unique($subscribers);
+    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)->findArray();
+    $subscribers = Helpers::flattenArray($subscribers);
 
     if(empty($subscribers)) {
       return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
@@ -107,11 +105,8 @@ class Scheduler {
     $segment_ids = array_map(function($segment) {
       return $segment['id'];
     }, $segments);
-    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
-      ->findArray();
-    $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
-    $subscribers = array_unique($subscribers);
-
+    $subscribers = Subscriber::getSubscribedInSegments($segment_ids)->findArray();
+    $subscribers = Helpers::flattenArray($subscribers);
     // update current queue
     $queue->subscribers = serialize(
       array(

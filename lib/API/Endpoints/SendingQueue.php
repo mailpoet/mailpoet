@@ -48,7 +48,6 @@ class SendingQueue extends APIEndpoint {
         APIError::NOT_FOUND => __('This newsletter is already being sent.', 'mailpoet')
       ));
     }
-
     $queue = SendingQueueModel::where('newsletter_id', $newsletter->id)
       ->where('status', SendingQueueModel::STATUS_SCHEDULED)
       ->findOne();
@@ -73,10 +72,8 @@ class SendingQueue extends APIEndpoint {
       $segment_ids = array_map(function($segment) {
         return $segment['id'];
       }, $segments);
-      $subscribers = Subscriber::getSubscribedInSegments($segment_ids)
-        ->findArray();
-      $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
-      $subscribers = array_unique($subscribers);
+      $subscribers = Subscriber::getSubscribedInSegments($segment_ids)->findArray();
+      $subscribers = Helpers::flattenArray($subscribers);
       if(!count($subscribers)) {
         return $this->errorResponse(array(
           APIError::UNKNOWN => __('There are no subscribers in that list!', 'mailpoet')
