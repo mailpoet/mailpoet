@@ -748,7 +748,8 @@ class Subscriber extends Model {
     $count = parent::bulkAction($orm, function($subscriber_ids) {
       // delete all subscriber/segment relationships
       SubscriberSegment::deleteManySubscriptions($subscriber_ids);
-
+      // delete all subscriber/custom field relationships
+      SubscriberCustomField::deleteManySubscriberRelations($subscriber_ids);
       // delete subscribers (except WP Users)
       Subscriber::whereIn('id', $subscriber_ids)
         ->whereNull('wp_user_id')

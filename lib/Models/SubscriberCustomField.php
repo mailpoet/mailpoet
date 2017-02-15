@@ -89,4 +89,10 @@ class SubscriberCustomField extends Model {
     $relations = self::where('subscriber_id', $subscriber->id);
     return $relations->deleteMany();
   }
+
+  static function deleteManySubscriberRelations(array $subscriber_ids) {
+    if(empty($subscriber_ids)) return false;
+    $relations = self::whereIn('subscriber_id', $subscriber_ids);
+    return $relations->deleteMany();
+  }
 }

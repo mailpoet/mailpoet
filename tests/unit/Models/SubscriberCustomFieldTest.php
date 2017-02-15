@@ -5,14 +5,20 @@ class SubscriberCustomFieldTest extends MailPoetTest {
   function __construct() {
     $this->data = array(
       array(
-        10, // custom_field_id
-        12, // subscriber_id
-        'Test 1' // value
+        10,
+        // custom_field_id
+        12,
+        // subscriber_id
+        'Test 1'
+        // value
       ),
       array(
-        10, // custom_field_id
-        13, // subscriber_id
-        'Test 2' // value
+        10,
+        // custom_field_id
+        13,
+        // subscriber_id
+        'Test 2'
+        // value
       )
     );
   }
@@ -43,6 +49,26 @@ class SubscriberCustomFieldTest extends MailPoetTest {
     $records = SubscriberCustomField::findArray();
     expect($records[0]['value'])->equals('Updated');
     expect($records[1]['value'])->equals('Test 2');
+  }
+
+  function testItCanDeleteManySubscriberRelations() {
+    SubscriberCustomField::createMultiple($this->data);
+    SubscriberCustomField::deleteManySubscriberRelations(
+      array(
+        $this->data[0][1],
+        $this->data[1][1]
+      )
+    );
+    $records = SubscriberCustomField::findArray();
+    expect($records)->isEmpty();
+  }
+
+  function testItCanDeleteSubscriberRelations() {
+    SubscriberCustomField::createMultiple($this->data);
+    $subscriber = (object)array('id' => $this->data[0][1]);
+    SubscriberCustomField::deleteSubscriberRelations($subscriber);
+    $records = SubscriberCustomField::findArray();
+    expect($records)->count(1);
   }
 
   function _after() {
