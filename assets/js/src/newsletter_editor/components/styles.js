@@ -69,11 +69,11 @@ define([
     // Expose style methods to global application
     App.getGlobalStyles = Module.getGlobalStyles;
     App.setGlobalStyles = Module.setGlobalStyles;
-
     App.getAvailableStyles = Module.getAvailableStyles;
 
     var body = options.newsletter.body;
-    this.setGlobalStyles(body.globalStyles);
+    var globalStyles = (_.has(body, 'globalStyles')) ? body.globalStyles : {};
+    this.setGlobalStyles(globalStyles);
   });
 
   App.on('start', function(options) {
