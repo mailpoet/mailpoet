@@ -85,7 +85,10 @@ define([
     var content = (_.has(body, 'content')) ? body.content : {};
 
     if (!_.has(options.newsletter, 'body') || !_.isObject(options.newsletter.body)) {
-      MailPoet.Notice.error(MailPoet.I18n.t('newsletterBodyIsCorrupted'));
+      MailPoet.Notice.error(
+        MailPoet.I18n.t('newsletterBodyIsCorrupted'),
+        { static: true }
+      );
     }
 
     App._contentContainer = new (App.getBlockTypeModel('container'))(content, {parse: true});
