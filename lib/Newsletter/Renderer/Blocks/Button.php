@@ -19,7 +19,7 @@ class Button {
                     style="height:' . $element['styles']['block']['lineHeight'] . ';
                            width:' . $element['styles']['block']['width'] . ';
                            v-text-anchor:middle;"
-                    arcsize="' . round($element['styles']['block']['borderRadius'] / $element['styles']['block']['lineHeight'] * 100) . '%"
+                    arcsize="' . round((int)$element['styles']['block']['borderRadius'] / (int)$element['styles']['block']['lineHeight'] * 100) . '%"
                     strokeweight="' . $element['styles']['block']['borderWidth'] . '"
                     strokecolor="' . $element['styles']['block']['borderColor'] . '"
                     fillcolor="' . $element['styles']['block']['backgroundColor'] . '">
