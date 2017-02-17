@@ -1,5 +1,6 @@
 <?php
 
+use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\SMTP;
 
 class SMTPTest extends MailPoetTest {
@@ -122,6 +123,36 @@ class SMTPTest extends MailPoetTest {
       $this->subscriber
     );
     expect($result['response'])->false();
+  }
+
+  function testItCanProcessExceptionMessage() {
+    $message = 'Connection could not be established with host localhost [Connection refused #111]' . PHP_EOL
+      . 'Log data:' . PHP_EOL
+      . '++ Starting Swift_SmtpTransport' . PHP_EOL
+      . '!! Connection could not be established with host localhost [Connection refused #111] (code: 0)';
+    expect($this->mailer->processExceptionMessage($message))
+      ->equals('Connection could not be established with host localhost [Connection refused #111]');
+  }
+
+  function testItCanProcessLogMessageWhenOneExists() {
+    $message = '++ Swift_SmtpTransport started' . PHP_EOL
+      . '>> MAIL FROM:<moi@mrcasual.com>' . PHP_EOL
+      . '<< 250 OK' . PHP_EOL
+      . '>> RCPT TO:<test2@ietsdoenofferte.nl>' . PHP_EOL
+      . '<< 550 No such recipient here' . PHP_EOL
+      . '!! Expected response code 250/251/252 but got code "550", with message "550 No such recipient here' . PHP_EOL
+      . '" (code: 550)' . PHP_EOL
+      . '>> RSET' . PHP_EOL
+      . '<< 250 Reset OK' . PHP_EOL;
+    expect($this->mailer->processLogMessage('test@example.com', $message))
+      ->equals('Expected response code 250/251/252 but got code "550", with message "550 No such recipient here" (code: 550) Unprocessed subscriber: test@example.com');
+    expect($this->mailer->processLogMessage('test@example.com', $message))
+      ->equals('Expected response code 250/251/252 but got code "550", with message "550 No such recipient here" (code: 550) Unprocessed subscriber: test@example.com');
+  }
+
+  function testItReturnsGenericMessageWhenLogMessageDoesNotExist() {
+    expect($this->mailer->processLogMessage('test@example.com'))
+      ->equals(Mailer::METHOD_SMTP . ' has returned an unknown error. Unprocessed subscriber: test@example.com');
   }
 
   function testItCanSend() {
