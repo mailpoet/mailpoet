@@ -245,6 +245,22 @@ class RoboFile extends \Robo\Tasks {
       ->rename("$svn_dir/trunk_new", "$svn_dir/trunk")
       ->remove("$svn_dir/trunk_old");
 
+    // Add new repository assets
+    $collection->taskFileSystemStack()
+      ->mirror('./plugin_repository/assets', "$svn_dir/assets_new");
+
+    // Rename current assets folder
+    if(file_exists("$svn_dir/assets")) {
+      $collection->taskFileSystemStack()
+        ->rename("$svn_dir/assets", "$svn_dir/assets_old");
+    }
+
+    // Replace old assets with new ones
+    $collection->taskFileSystemStack()
+      ->stopOnFail()
+      ->rename("$svn_dir/assets_new", "$svn_dir/assets")
+      ->remove("$svn_dir/assets_old");
+
     // Windows compatibility
     $awkCmd = '{print " --force \""$2"\""}';
     // Mac OS X compatibility
