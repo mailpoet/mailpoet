@@ -732,10 +732,48 @@ class SubscriberTest extends MailPoetTest {
     expect(Subscriber::verifyToken('fake@email.com', $token))->false();
   }
 
-  function testVerifiedTokensOfDifferentLengths() {
+  function testItVerifiesTokensOfDifferentLengths() {
     $token = md5(AUTH_KEY . $this->data['email']);
     expect(strlen($token))->notEquals(Subscriber::SUBSCRIBER_TOKEN_LENGTH);
     expect(Subscriber::verifyToken($this->data['email'], $token))->true();
+  }
+
+  function testItBulkDeletesSubscribers() {
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'test'
+      )
+    );
+    $custom_field = CustomField::createOrUpdate(
+      array(
+        'name' => 'name',
+        'type' => 'type',
+        'params' => array(
+          'label' => 'label'
+        ),
+      )
+    );
+    $subscriber_custom_field = SubscriberCustomField::createOrUpdate(
+      array(
+        'subscriber_id' => $this->subscriber->id,
+        'custom_field_id' => $custom_field->id,
+        'value' => 'test',
+      )
+    );
+    expect(SubscriberCustomField::findMany())->count(1);
+    $subscriber_segment = SubscriberSegment::createOrUpdate(
+      array(
+        'subscriber_id' => $this->subscriber->id,
+        'segment_id' => 1
+      )
+    );
+    expect(SubscriberSegment::findMany())->count(1);
+
+    // associated segments and custom fields should be deleted
+    Subscriber::filter('bulkDelete');
+    expect(SubscriberCustomField::findArray())->isEmpty();
+    expect(SubscriberSegment::findArray())->isEmpty();
+    expect(Subscriber::findArray())->isEmpty();
   }
 
   function _after() {
