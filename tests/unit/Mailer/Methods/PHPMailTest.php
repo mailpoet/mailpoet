@@ -77,7 +77,7 @@ class PHPMailTest extends MailPoetTest {
       ->equals(array('test@test.com' => 'First Last'));
   }
 
-  function testItCanSend() {return;
+  function testItCanSend() {
     if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(
       $this->newsletter,
