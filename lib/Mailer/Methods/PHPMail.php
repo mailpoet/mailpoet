@@ -31,7 +31,7 @@ class PHPMail {
       Mailer::formatMailerSendSuccessResult();
     } else {
       $result = sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_PHPMAIL);
-      $result .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+      $result .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), htmlspecialchars($subscriber));
       return Mailer::formatMailerSendErrorResult($result);
     }
   }
