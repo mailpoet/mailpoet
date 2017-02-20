@@ -28,6 +28,9 @@ define('modal', ['mailpoet', 'jquery'],
       opened: false,
       locked: false,
 
+      // previously focused element
+      prevFocus: null,
+
       // sub panels
       subpanels: [],
 
@@ -59,6 +62,9 @@ define('modal', ['mailpoet', 'jquery'],
         // display overlay
         overlay: false,
 
+        // focus upon displaying
+        focus: true,
+
         // highlighted elements
         highlight: null,
 
@@ -71,7 +77,7 @@ define('modal', ['mailpoet', 'jquery'],
       options: {},
       templates: {
         overlay: '<div id="mailpoet_modal_overlay" style="display:none;"></div>',
-        popup: '<div id="mailpoet_popup">'+
+        popup: '<div id="mailpoet_popup" tabindex="-1">'+
         '<div class="mailpoet_popup_wrapper">'+
         '<a href="javascript:;" id="mailpoet_modal_close"></a>'+
         '<div id="mailpoet_popup_title"><h2></h2></div>'+
@@ -85,11 +91,11 @@ define('modal', ['mailpoet', 'jquery'],
         '</div>',
         panel: '<div id="mailpoet_panel">'+
         '<a href="javascript:;" id="mailpoet_modal_close"></a>'+
-        '<div class="mailpoet_panel_wrapper">'+
+        '<div class="mailpoet_panel_wrapper" tabindex="-1">'+
         '<div class="mailpoet_panel_body clearfix"></div>'+
         '</div>'+
         '</div>',
-        subpanel: '<div class="mailpoet_panel_wrapper">'+
+        subpanel: '<div class="mailpoet_panel_wrapper" tabindex="-1">'+
         '<div class="mailpoet_panel_body clearfix"></div>'+
         '</div>'
       },
@@ -251,6 +257,11 @@ define('modal', ['mailpoet', 'jquery'],
             // add sub panel content
             jQuery('.mailpoet_'+this.options.type+'_body').last()
               .html(this.subpanels[(this.subpanels.length - 1)].element);
+
+            // focus on sub panel
+            if(this.options.focus) {
+              this.focus();
+            }
           } else if (this.options.element) {
             jQuery('.mailpoet_'+this.options.type+'_body').empty();
             jQuery('.mailpoet_'+this.options.type+'_body')
@@ -369,6 +380,9 @@ define('modal', ['mailpoet', 'jquery'],
           // set modal dimensions
           this.setDimensions();
 
+          // remember the previously focused element
+          this.prevFocus = jQuery(':focus');
+
           // add a flag on the body so that we can prevent scrolling
           jQuery('body').addClass('mailpoet_modal_opened');
 
@@ -388,6 +402,10 @@ define('modal', ['mailpoet', 'jquery'],
             }
           }
 
+          if(this.options.focus) {
+            this.focus();
+          }
+
           // set popup as opened
           this.opened = true;
 
@@ -396,6 +414,16 @@ define('modal', ['mailpoet', 'jquery'],
             this.options.onInit(this);
           }
 
+          return this;
+        },
+        focus: function() {
+          if(this.options.type == 'popup') {
+            jQuery('#mailpoet_'+this.options.type).focus();
+          } else {
+            // panel and subpanel
+            jQuery('#mailpoet_'+this.options.type+' .mailpoet_panel_wrapper')
+              .filter(':visible').focus();
+          }
           return this;
         },
         highlightOn: function(element) {
@@ -579,6 +607,11 @@ define('modal', ['mailpoet', 'jquery'],
             // remove last subpanels
             this.subpanels.pop();
 
+            // focus on previous panel
+            if(this.options.focus) {
+              this.focus();
+            }
+
             return this;
           }
 
@@ -590,6 +623,11 @@ define('modal', ['mailpoet', 'jquery'],
 
           // destroy modal element
           this.destroy();
+
+          // restore the previously focused element
+          if(this.prevFocus !== undefined){
+            this.prevFocus.focus();
+          }
 
           // reset options
           this.options = {
