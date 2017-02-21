@@ -169,7 +169,7 @@ define([
     },
     beforeSave: function() {
       // TODO: Add a loading animation instead
-      this.$('.mailpoet_autosaved_at').text('Saving...');
+      this.$('.mailpoet_autosaved_at').text(MailPoet.I18n.t('saving'));
     },
     afterSave: function(json, response) {
       this.validateNewsletter(json);

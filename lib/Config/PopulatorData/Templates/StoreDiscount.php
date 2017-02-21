@@ -320,7 +320,7 @@ class StoreDiscount {
               )
             ), array(
               "type" => "text",
-              "text" => __("<p><em>Terms and Conditions:</em></p>\n<ul>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Must be used by midnight EST December 15 2016.</span></li>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Discount does not include shipping.</span></li>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Cannot be used in conjunction with any other offer.</span></li>\n</ul>", 'mailpoet')
+              "text" => __("<p><em>Terms and Conditions:</em></p>\n<ul>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Must be used by midnight EST December 15 2036.</span></li>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Discount does not include shipping.</span></li>\n<li><span style=\"line-height: 1.6em; background-color: inherit;\">Cannot be used in conjunction with any other offer.</span></li>\n</ul>", 'mailpoet')
             ), array(
               "type" => "social",
               "iconSet" => "grey",

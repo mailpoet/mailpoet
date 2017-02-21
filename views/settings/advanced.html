@@ -31,7 +31,7 @@
           <%= __('Select what will activate your newsletter queue.') %>
           <a href="http://docs.mailpoet.com/article/129-what-is-the-newsletter-task-scheduler"
              target="_blank"
-          ><%= __('Read more.') %></a>
+          ><%= _x('Read more.', 'support article link label') %></a>
         </p>
       </th>
       <td>
@@ -114,7 +114,7 @@
           <a
             href="http://docs.mailpoet.com/article/130-sharing-your-data-with-us"
             target="_blank"
-          ><%= __('Read more.') %></a>
+          ><%= _x('Read more.', 'support article link label') %></a>
         </p>
       </th>
       <td>
@@ -168,7 +168,7 @@
     $(function() {
       $('#mailpoet_reinstall').on('click', function() {
         if(confirm(
-          "<%= __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.)') %>"
+          "<%= __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.).') %>"
         )) {
           MailPoet.Modal.loading(true);
           MailPoet.Ajax.post({
