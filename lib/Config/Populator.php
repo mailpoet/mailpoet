@@ -145,7 +145,7 @@ class Populator {
   }
 
   private function newsletterOptionFields() {
-    return array(
+    $option_fields = array(
       array(
         'name' => 'isScheduled',
         'newsletter_type' => 'standard',
@@ -200,6 +200,14 @@ class Populator {
         'newsletter_type' => 'notification',
       )
     );
+
+    return array(
+      'rows' => $option_fields,
+      'identification_columns' => array(
+        'name',
+        'newsletter_type'
+      )
+    );
   }
 
   private function newsletterTemplates() {
@@ -209,17 +217,40 @@ class Populator {
       $template = new $template(Env::$assets_url);
       $templates[] = $template->get();
     }
-    return $templates;
+    return array(
+      'rows' => $templates,
+      'identification_columns' => array(
+        'name'
+      ),
+      'remove_duplicates' => true
+    );
   }
 
   private function populate($model) {
     $modelMethod = Helpers::underscoreToCamelCase($model);
-    $rows = $this->$modelMethod();
     $table = $this->prefix . $model;
+    $data_descriptor = $this->$modelMethod();
+    $rows = $data_descriptor['rows'];
+    $identification_columns = array_fill_keys(
+      $data_descriptor['identification_columns'],
+      ''
+    );
+    $remove_duplicates =
+      isset($data_descriptor['remove_duplicates']) && $data_descriptor['remove_duplicates'];
 
     foreach($rows as $row) {
-      if(!$this->rowExists($table, $row)) {
+      $existence_comparison_fields = array_intersect_key(
+        $row,
+        $identification_columns
+      );
+
+      if(!$this->rowExists($table, $existence_comparison_fields)) {
         $this->insertRow($table, $row);
+      } else {
+        if($remove_duplicates) {
+          $this->removeDuplicates($table, $row, $existence_comparison_fields);
+        }
+        $this->updateRow($table, $row, $existence_comparison_fields);
       }
     }
   }
@@ -243,6 +274,38 @@ class Populator {
     return $wpdb->insert(
       $table,
       $row
+    );
+  }
+
+  private function updateRow($table, $row, $where) {
+    global $wpdb;
+
+    return $wpdb->update(
+      $table,
+      $row,
+      $where
+    );
+  }
+
+  private function removeDuplicates($table, $row, $where) {
+    global $wpdb;
+
+    $conditions = array('1=1');
+    $values = array();
+    foreach($where as $field => $value) {
+      $conditions[] = "`t1`.`$field` = `t2`.`$field`";
+      $conditions[] = "`t1`.`$field` = %s";
+      $values[] = $value;
+    }
+
+    $conditions = implode(' AND ', $conditions);
+
+    $sql = "DELETE FROM `$table` WHERE $conditions";
+    return $wpdb->query(
+      $wpdb->prepare(
+        "DELETE t1 FROM $table t1, $table t2 WHERE t1.id < t2.id AND $conditions",
+        $values
+      )
     );
   }
 }
