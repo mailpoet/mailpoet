@@ -27,11 +27,13 @@ class PHPMail {
     } catch(\Exception $e) {
       return Mailer::formatMailerSendErrorResult($e->getMessage());
     }
-    return ($result === 1) ?
-      Mailer::formatMailerSendSuccessResult() :
-      Mailer::formatMailerSendErrorResult(
-        sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_PHPMAIL)
-      );
+    if($result === 1) {
+      return Mailer::formatMailerSendSuccessResult();
+    } else {
+      $result = sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_PHPMAIL);
+      $result .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+      return Mailer::formatMailerSendErrorResult($result);
+    }
   }
 
   function buildMailer() {
