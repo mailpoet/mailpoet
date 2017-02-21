@@ -16,7 +16,7 @@ class StoreDiscount {
     return array(
       'name' => __("Store Discount", 'mailpoet'),
       'description' => __("Store discount email with coupon and shopping suggestions", 'mailpoet'),
-      'readonly' => 0,
+      'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
     );

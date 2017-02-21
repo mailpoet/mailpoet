@@ -16,7 +16,7 @@ class TravelEmail {
     return array(
       'name' => __("Travel email", 'mailpoet'),
       'description' => __("A little postcard from your trip", 'mailpoet'),
-      'readonly' => 0,
+      'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
     );

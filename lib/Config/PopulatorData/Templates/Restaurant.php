@@ -16,7 +16,7 @@ class Restaurant {
     return array(
       'name' => __("Restaurant", 'mailpoet'),
       'description' => __("What's fresh on the menu?", 'mailpoet'),
-      'readonly' => 0,
+      'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
     );

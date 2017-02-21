@@ -15,7 +15,7 @@ class FranksRoastHouseTemplate {
     return array(
       'name' => __("Frank's Roast House", 'mailpoet'),
       'description' => __("Think of this as your sandbox. Play around with this example newsletter to see what MailPoet can do for you.", 'mailpoet'),
-      'readonly' => 0,
+      'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
     );
