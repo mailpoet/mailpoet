@@ -715,4 +715,23 @@ class Newsletter extends Model {
       self::NEWSLETTER_HASH_LENGTH
     );
   }
+
+  function restore() {
+    if($this->status == self::STATUS_SENDING) {
+      $this->set('status', self::STATUS_DRAFT);
+      $this->save();
+    }
+    return parent::restore();
+  }
+
+  static function bulkRestore($orm) {
+    parent::bulkAction($orm, function($ids) {
+      Newsletter::whereIn('id', $ids)
+        ->where('status', Newsletter::STATUS_SENDING)
+        ->findResultSet()
+        ->set('status', Newsletter::STATUS_DRAFT)
+        ->save();
+    });
+    return parent::bulkRestore($orm);
+  }
 }

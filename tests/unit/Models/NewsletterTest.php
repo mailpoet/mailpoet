@@ -16,7 +16,7 @@ class NewsletterTest extends MailPoetTest {
     $this->newsletter = Newsletter::createOrUpdate(array(
       'subject' => 'My Standard Newsletter',
       'preheader' => 'Pre Header',
-      'type' => 'standard'
+      'type' => Newsletter::TYPE_STANDARD
     ));
 
     $this->segment_1 = Segment::createOrUpdate(array(
@@ -162,7 +162,7 @@ class NewsletterTest extends MailPoetTest {
     $is_created = Newsletter::createOrUpdate(
       array(
         'subject' => 'new newsletter',
-        'type' => 'standard',
+        'type' => Newsletter::TYPE_STANDARD,
         'body' => 'body'
       ));
     expect($is_created->id() > 0)->true();
@@ -246,7 +246,7 @@ class NewsletterTest extends MailPoetTest {
     Newsletter::createOrUpdate(
       array(
         'subject' => 'search for "pineapple"',
-        'type' => 'standard',
+        'type' => Newsletter::TYPE_STANDARD,
         'body' => 'body'
       ));
     $newsletter = Newsletter::filter('search', 'pineapple')
@@ -382,6 +382,50 @@ class NewsletterTest extends MailPoetTest {
     $queue->newsletter_id = $this->newsletter->id;
     $queue->save();
     expect($this->newsletter->queue()->findOne()->id)->equals($queue->id);
+  }
+
+  function testItCanBeRestored() {
+    $this->newsletter->status = Newsletter::STATUS_SENT;
+    $this->newsletter->trash();
+    expect($this->newsletter->deleted_at)->notNull();
+    $this->newsletter->restore();
+    expect($this->newsletter->deleted_at)->equals('NULL');
+    expect($this->newsletter->status)->equals(Newsletter::STATUS_SENT);
+
+    // if the restored newsletter was trashed while in sending,
+    // its status should be set to 'draft' to be able to send it again
+    $this->newsletter->status = Newsletter::STATUS_SENDING;
+    $this->newsletter->trash();
+    $this->newsletter->restore();
+    expect($this->newsletter->status)->equals(Newsletter::STATUS_DRAFT);
+  }
+
+  function testItCanBulkRestoreNewsletters() {
+    $statuses = array(
+      Newsletter::STATUS_DRAFT,
+      Newsletter::STATUS_SENT,
+      Newsletter::STATUS_SENDING
+    );
+
+    $newsletters = array();
+    for($i = 0; $i < count($statuses); $i++) {
+      $newsletters[$i] = Newsletter::createOrUpdate(
+        array(
+          'subject' => 'Test',
+          'preheader' => 'Some text',
+          'type' => Newsletter::TYPE_STANDARD,
+          'status' => $statuses[$i]
+        )
+      );
+    }
+
+    Newsletter::filter('bulkTrash');
+    expect(Newsletter::whereNull('deleted_at')->findArray())->isEmpty();
+    expect(Newsletter::where('status', Newsletter::STATUS_SENDING)->findArray())->count(1);
+
+    Newsletter::filter('bulkRestore');
+    expect(Newsletter::whereNotNull('deleted_at')->findArray())->isEmpty();
+    expect(Newsletter::where('status', Newsletter::STATUS_SENDING)->findArray())->count(0);
   }
 
   function _after() {
