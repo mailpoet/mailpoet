@@ -136,6 +136,9 @@ abstract class ValidModel extends \Model {
     } else {
       $this->validateAndSet($key, $value);
     }
+    // we should return $this to not break Idiorm's fluent interface:
+    // $model->set('property', 'foo')->save();
+    return $this;
   }
 
 
