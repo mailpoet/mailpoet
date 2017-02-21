@@ -717,7 +717,7 @@ class Newsletter extends Model {
   }
 
   function restore() {
-    if ($this->status == self::STATUS_SENDING) {
+    if($this->status == self::STATUS_SENDING) {
       $this->set('status', self::STATUS_DRAFT);
       $this->save();
     }
