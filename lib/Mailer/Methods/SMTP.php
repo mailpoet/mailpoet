@@ -116,7 +116,7 @@ class SMTP {
     } else {
       $message = sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SMTP);
     }
-    $message .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), htmlspecialchars($subscriber));
+    $message .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
     return $message;
   }
 
