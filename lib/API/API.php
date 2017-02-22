@@ -9,8 +9,13 @@ class API {
   private $_method;
   private $_token;
 
+  private $_endpoint_namespaces = array();
   private $_endpoint_class;
   private $_data = array();
+
+  function __construct() {
+    $this->addEndpointNamespace(__NAMESPACE__ . "\\Endpoints");
+  }
 
   function init() {
      // Admin Security token
@@ -33,6 +38,8 @@ class API {
   }
 
   function setupAjax() {
+    do_action('mailpoet_api_setup', array($this));
+
     $this->getRequestData();
 
     if($this->checkToken() === false) {
@@ -71,9 +78,12 @@ class API {
       );
       $error_response->send();
     } else {
-      $this->_endpoint_class = (
-        __NAMESPACE__."\\Endpoints\\".ucfirst($this->_endpoint)
-      );
+      foreach($this->_endpoint_namespaces as $namespace) {
+        $class_name = $namespace . "\\" . ucfirst($this->_endpoint);
+        if(class_exists($class_name)) {
+          $this->_endpoint_class = $class_name;
+        }
+      }
 
       $this->_data = isset($_POST['data'])
         ? stripslashes_deep($_POST['data'])
@@ -148,5 +158,9 @@ class API {
     $global .= '";';
     $global .= '</script>';
     echo $global;
+  }
+
+  function addEndpointNamespace($namespace) {
+    $this->_endpoint_namespaces[] = $namespace;
   }
 }
