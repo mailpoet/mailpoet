@@ -75,18 +75,15 @@ class Newsletters extends APIEndpoint {
           $newsletter->type
         )->findMany();
 
-        if(count($option_fields)) {
-          
-          foreach($option_fields as $option_field) {
-            if(isset($options[$option_field->name])) {
-              $newsletter_option = NewsletterOption::createOrUpdate(
-                array(
-                  'newsletter_id' => $newsletter->id,
-                  'option_field_id' => $option_field->id,
-                  'value' => $options[$option_field->name]
-                )
-              );
-            }
+        foreach($option_fields as $option_field) {
+          if(isset($options[$option_field->name])) {
+            $newsletter_option = NewsletterOption::createOrUpdate(
+              array(
+                'newsletter_id' => $newsletter->id,
+                'option_field_id' => $option_field->id,
+                'value' => $options[$option_field->name]
+              )
+            );
           }
         }
       }
