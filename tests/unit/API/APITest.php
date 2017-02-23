@@ -1,8 +1,11 @@
 <?php
+use Codeception\Util\Stub;
 use MailPoet\API\API;
+use MailPoet\API\SuccessResponse;
 
 // required to be able to use wp_delete_user()
 require_once(ABSPATH.'wp-admin/includes/user.php');
+require_once('APITestNamespacedEndpointStub.php');
 
 class APITest extends MailPoetTest {
   function _before() {
@@ -30,6 +33,52 @@ class APITest extends MailPoetTest {
 
     // administrator should have permission
     expect($this->api->checkPermissions())->true();
+  }
+
+  function testItCallsAPISetupAction() {
+    $called = false;
+    add_action(
+      'mailpoet_api_setup',
+      function ($api) use (&$called) {
+        $called = true;
+        expect($api instanceof API)->true();
+      }
+    );
+    $api = Stub::makeEmptyExcept(
+      $this->api,
+      'setupAjax',
+      array(
+        'processRoute' => Stub::makeEmpty(new SuccessResponse)
+      )
+    );
+    $api->setupAjax();
+    expect($called)->true();
+  }
+
+  function testItCanAddEndpointNamespaces() {
+    expect($this->api->getEndpointNamespaces())->count(1);
+
+    $namespace = "MailPoet\\Dummy\\Name\\Space";
+    $this->api->addEndpointNamespace($namespace);
+    $namespaces = $this->api->getEndpointNamespaces();
+
+    expect($namespaces)->count(2);
+    expect($namespaces[1])->equals($namespace);
+  }
+
+  function testItCanCallAddedEndpoints() {
+    $namespace = "MailPoet\\Some\\Name\\Space\\Endpoints";
+    $this->api->addEndpointNamespace($namespace);
+
+    $data = array(
+      'endpoint' => 'namespaced_endpoint_stub',
+      'method' => 'test',
+      'data' => array('test' => 'data')
+    );
+    $this->api->getRequestData($data);
+    $response = $this->api->processRoute();
+
+    expect($response->getData()['data'])->equals($data['data']);
   }
 
   function _after() {

@@ -1,5 +1,7 @@
 <?php
 namespace MailPoet\API;
+
+use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 
 if(!defined('ABSPATH')) exit;
@@ -9,8 +11,13 @@ class API {
   private $_method;
   private $_token;
 
+  private $_endpoint_namespaces = array();
   private $_endpoint_class;
   private $_data = array();
+
+  function __construct() {
+    $this->addEndpointNamespace(__NAMESPACE__ . "\\Endpoints");
+  }
 
   function init() {
      // Admin Security token
@@ -33,7 +40,9 @@ class API {
   }
 
   function setupAjax() {
-    $this->getRequestData();
+    do_action('mailpoet_api_setup', array($this));
+
+    $this->getRequestData($_POST);
 
     if($this->checkToken() === false) {
       $error_response = new ErrorResponse(
@@ -46,18 +55,19 @@ class API {
       $error_response->send();
     }
 
-    $this->processRoute();
+    $response = $this->processRoute();
+    $response->send();
   }
 
-  function getRequestData() {
-    $this->_endpoint = isset($_POST['endpoint'])
-      ? trim($_POST['endpoint'])
+  function getRequestData($data) {
+    $this->_endpoint = isset($data['endpoint'])
+      ? Helpers::underscoreToCamelCase(trim($data['endpoint']))
       : null;
-    $this->_method = isset($_POST['method'])
-      ? trim($_POST['method'])
+    $this->_method = isset($data['method'])
+      ? Helpers::underscoreToCamelCase(trim($data['method']))
       : null;
-    $this->_token = isset($_POST['token'])
-      ? trim($_POST['token'])
+    $this->_token = isset($data['token'])
+      ? trim($data['token'])
       : null;
 
     if(!$this->_endpoint || !$this->_method) {
@@ -71,12 +81,15 @@ class API {
       );
       $error_response->send();
     } else {
-      $this->_endpoint_class = (
-        __NAMESPACE__."\\Endpoints\\".ucfirst($this->_endpoint)
-      );
+      foreach($this->_endpoint_namespaces as $namespace) {
+        $class_name = $namespace . "\\" . ucfirst($this->_endpoint);
+        if(class_exists($class_name)) {
+          $this->_endpoint_class = $class_name;
+        }
+      }
 
-      $this->_data = isset($_POST['data'])
-        ? stripslashes_deep($_POST['data'])
+      $this->_data = isset($data['data'])
+        ? stripslashes_deep($data['data'])
         : array();
 
       // remove reserved keywords from data
@@ -98,6 +111,10 @@ class API {
 
   function processRoute() {
     try {
+      if(empty($this->_endpoint_class)) {
+        throw new \Exception('Invalid endpoint');
+      }
+
       $endpoint = new $this->_endpoint_class();
 
       // check the accessibility of the requested endpoint's action
@@ -119,17 +136,17 @@ class API {
             array(),
             Response::STATUS_FORBIDDEN
           );
-          $error_response->send();
+          return $error_response;
         }
       }
 
       $response = $endpoint->{$this->_method}($this->_data);
-      $response->send();
+      return $response;
     } catch(\Exception $e) {
       $error_response = new ErrorResponse(
         array($e->getCode() => $e->getMessage())
       );
-      $error_response->send();
+      return $error_response;
     }
   }
 
@@ -148,5 +165,13 @@ class API {
     $global .= '";';
     $global .= '</script>';
     echo $global;
+  }
+
+  function addEndpointNamespace($namespace) {
+    $this->_endpoint_namespaces[] = $namespace;
+  }
+
+  function getEndpointNamespaces() {
+    return $this->_endpoint_namespaces;
   }
 }

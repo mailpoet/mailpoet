@@ -65,6 +65,11 @@ class Functions extends \Twig_Extension {
         'wp_datetime_format',
         array($this, 'getWPDateTimeFormat'),
         array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
+        'do_action',
+        'do_action',
+        array('is_safe' => array('all'))
       )
     );
   }
