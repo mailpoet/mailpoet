@@ -70,21 +70,22 @@ class Newsletters extends APIEndpoint {
       }
 
       if(!empty($options)) {
-        NewsletterOption::where('newsletter_id', $newsletter->id)
-          ->deleteMany();
-
         $option_fields = NewsletterOptionField::where(
           'newsletter_type',
-          $data['type']
-        )->findArray();
+          $newsletter->type
+        )->findMany();
+
+        if (!count($option_fields)) return;
 
         foreach($option_fields as $option_field) {
-          if(isset($options[$option_field['name']])) {
-            $relation = NewsletterOption::create();
-            $relation->newsletter_id = $newsletter->id;
-            $relation->option_field_id = $option_field['id'];
-            $relation->value = $options[$option_field['name']];
-            $relation->save();
+          if(isset($options[$option_field->name])) {
+            $newsletter_option = NewsletterOption::createOrUpdate(
+              array(
+                'newsletter_id' => $newsletter->id,
+                'option_field_id' => $option_field->id,
+                'value' => $options[$option_field->name]
+              )
+            );
           }
         }
       }
