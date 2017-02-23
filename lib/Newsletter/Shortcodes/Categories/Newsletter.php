@@ -51,7 +51,7 @@ class Newsletter {
         'order' => 'DESC'
       )
     );
-    return (count($posts)) ?
+    return (!empty($posts->posts[0])) ?
       $posts->posts[0]->to_array() :
       false;
   }
