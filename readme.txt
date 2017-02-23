@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.7.2
-Stable tag: 3.0.0-beta.19
+Stable tag: 3.0.0-beta.20
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -82,6 +82,10 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 3.0.0-beta.20 - 2017-02-23 =
+* Fixed: scheduling options are properly saved when creating a new or re-saving an existing email. Thx Oskar!;
+* Fixed: sending is not interrupted when a post included in the email is trashed. Thanks Bernhard!
 
 = 3.0.0-beta.19 - 2017-02-21 =
 * Improved: import uses stricter email validation rules. Kudos Oskar;
