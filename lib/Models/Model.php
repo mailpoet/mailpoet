@@ -78,7 +78,7 @@ class Model extends \Sudzy\ValidModel {
   static function bulkTrash($orm) {
     $model = get_called_class();
     $count = self::bulkAction($orm, function($ids) use($model) {
-      self::rawExecute(join(' ', array(
+      $model::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
           'SET `deleted_at` = NOW()',
           'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'
@@ -106,7 +106,7 @@ class Model extends \Sudzy\ValidModel {
   static function bulkRestore($orm) {
     $model = get_called_class();
     $count = self::bulkAction($orm, function($ids) use($model) {
-      self::rawExecute(join(' ', array(
+      $model::rawExecute(join(' ', array(
           'UPDATE `'.$model::$_table.'`',
           'SET `deleted_at` = NULL',
           'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'
