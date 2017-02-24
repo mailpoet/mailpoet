@@ -170,7 +170,7 @@ class Mailer {
     return array(
       'response' => false,
       'operation' => 'connect',
-      'error_message' => htmlspecialchars($error_message)
+      'error_message' => $error_message
     );
   }
 
@@ -178,7 +178,7 @@ class Mailer {
     return array(
       'response' => false,
       'operation' => 'send',
-      'error_message' => htmlspecialchars($error_message)
+      'error_message' => $error_message
     );
   }
 

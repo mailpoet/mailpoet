@@ -733,7 +733,7 @@
         }).fail(function(response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
+              response.errors.map(function(error) { return _.escape(error.message); }),
               { scroll: true }
             );
           }
