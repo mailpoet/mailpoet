@@ -37,7 +37,9 @@ class MailPoet {
         if(!empty($result['code']) && $result['code'] === API::RESPONSE_CODE_KEY_INVALID) {
           Bridge::invalidateKey();
         }
-        $result['message'] .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+        if(empty($extra_params['test_email'])) {
+          $result['message'] .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+        }
         return Mailer::formatMailerSendErrorResult($result['message']);
       case API::SENDING_STATUS_OK:
       default:

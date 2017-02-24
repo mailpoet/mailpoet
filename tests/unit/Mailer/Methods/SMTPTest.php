@@ -144,9 +144,9 @@ class SMTPTest extends MailPoetTest {
       . '" (code: 550)' . PHP_EOL
       . '>> RSET' . PHP_EOL
       . '<< 250 Reset OK' . PHP_EOL;
-    expect($this->mailer->processLogMessage('test@example.com', $message))
+    expect($this->mailer->processLogMessage('test@example.com', $extra_params = array(), $message))
       ->equals('Expected response code 250/251/252 but got code "550", with message "550 No such recipient here" (code: 550) Unprocessed subscriber: test@example.com');
-    expect($this->mailer->processLogMessage('test@example.com', $message))
+    expect($this->mailer->processLogMessage('test@example.com', $extra_params = array(), $message))
       ->equals('Expected response code 250/251/252 but got code "550", with message "550 No such recipient here" (code: 550) Unprocessed subscriber: test@example.com');
   }
 

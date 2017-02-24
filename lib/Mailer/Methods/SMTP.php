@@ -48,7 +48,7 @@ class SMTP {
     }
     return ($result === 1) ?
       Mailer::formatMailerSendSuccessResult() :
-      Mailer::formatMailerSendErrorResult($this->processLogMessage($subscriber));
+      Mailer::formatMailerSendErrorResult($this->processLogMessage($subscriber, $extra_params));
   }
 
   function buildMailer() {
@@ -105,7 +105,7 @@ class SMTP {
     );
   }
 
-  function processLogMessage($subscriber, $log = false) {
+  function processLogMessage($subscriber, $extra_params = array(), $log = false) {
     $log = ($log) ? $log : $this->mailer_logger->dump();
     // extract error message from log
     preg_match('/!! (.*?)>>/ism', $log, $message);
@@ -116,7 +116,9 @@ class SMTP {
     } else {
       $message = sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SMTP);
     }
-    $message .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+    if(empty($extra_params['test_email'])) {
+      $message .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+    }
     return $message;
   }
 
