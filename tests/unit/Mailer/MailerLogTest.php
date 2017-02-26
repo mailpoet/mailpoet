@@ -86,6 +86,13 @@ class MailerLogTest extends MailPoetTest {
     expect(MailerLog::isSendingLimitReached())->true();
   }
 
+  function testitChecksWhenSendingIsPaused() {
+    $mailer_log = array('status' => MailerLog::STATUS_PAUSED);
+    expect(MailerLog::isSendingPaused($mailer_log))->true();
+    $mailer_log = array('status' => false);
+    expect(MailerLog::isSendingPaused($mailer_log))->false();
+  }
+
   function testItResetsMailerAfterSendingLimitWaitPeriodIsOver() {
     $mailer_config = array(
       'frequency' => array(
@@ -217,7 +224,7 @@ class MailerLogTest extends MailPoetTest {
     expect($mailer_log['status'])->equals('status');
   }
 
-  function testItEnforcesPuasedStatus() {
+  function testItEnforcesPausedStatus() {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['status'] = MailerLog::STATUS_PAUSED;
     try {

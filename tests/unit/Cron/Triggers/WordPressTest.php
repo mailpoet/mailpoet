@@ -48,6 +48,14 @@ class WordPressCronTriggerTest extends MailPoetTest {
     expect(WordPress::checkExecutionRequirements())->false();
   }
 
+  function testItRequiresSendingNotToBePausedToExecute() {
+    $this->_addQueue($status = null);
+    $this->_addMTAConfigAndLog($sent = null);
+    expect(WordPress::checkExecutionRequirements())->true();
+    $this->_addMTAConfigAndLog($sent = 0, $status = MailerLog::STATUS_PAUSED);
+    expect(WordPress::checkExecutionRequirements())->false();
+  }
+
   function testItCanDeleteRunningDaemon() {
     Setting::setValue(CronHelper::DAEMON_SETTING, true);
     expect(Setting::getValue(CronHelper::DAEMON_SETTING))->notNull();
@@ -71,7 +79,7 @@ class WordPressCronTriggerTest extends MailPoetTest {
     expect(Setting::getValue(CronHelper::DAEMON_SETTING))->null();
   }
 
-  function _addMTAConfigAndLog($sent) {
+  function _addMTAConfigAndLog($sent, $status = null) {
     $mta_config = array(
       'frequency' => array(
         'emails' => 1,
@@ -84,7 +92,8 @@ class WordPressCronTriggerTest extends MailPoetTest {
     );
     $mta_log = array(
       'sent' => $sent,
-      'started' => time()
+      'started' => time(),
+      'status' => $status
     );
     Setting::setValue(
       MailerLog::SETTING_NAME,
