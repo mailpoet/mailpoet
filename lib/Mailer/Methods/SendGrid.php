@@ -30,7 +30,9 @@ class SendGrid {
       $response = (!empty($response['errors'][0])) ?
         $response['errors'][0] :
         sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_SENDGRID);
-      $response .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+      if(empty($extra_params['test_email'])) {
+        $response .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+      }
       return Mailer::formatMailerSendErrorResult($response);
     }
     return Mailer::formatMailerSendSuccessResult();

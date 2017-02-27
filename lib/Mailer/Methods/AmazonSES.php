@@ -62,7 +62,9 @@ class AmazonSES {
       $response = ($response) ?
         $response->Error->Message->__toString() :
         sprintf(__('%s has returned an unknown error.', 'mailpoet'), Mailer::METHOD_AMAZONSES);
-      $response .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+      if(empty($extra_params['test_email'])) {
+        $response .= sprintf(' %s: %s', __('Unprocessed subscriber', 'mailpoet'), $subscriber);
+      }
       return Mailer::formatMailerSendErrorResult($response);
     }
     return Mailer::formatMailerSendSuccessResult();
