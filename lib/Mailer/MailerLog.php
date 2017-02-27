@@ -47,7 +47,7 @@ class MailerLog {
     if($mailer_log['retry_attempt'] === self::RETRY_ATTEMPTS_LIMIT) {
       $mailer_log = self::pauseSending($mailer_log);
     }
-    if($mailer_log['status'] === self::STATUS_PAUSED) {
+    if(self::isSendingPaused($mailer_log)) {
       throw new \Exception(__('Sending has been paused.', 'mailpoet'));
     }
     if(!is_null($mailer_log['retry_at'])) {
@@ -116,5 +116,10 @@ class MailerLog {
       self::resetMailerLog();
     }
     return false;
+  }
+
+  static function isSendingPaused($mailer_log = false) {
+    $mailer_log = self::getMailerLog($mailer_log);
+    return $mailer_log['status'] === self::STATUS_PAUSED;
   }
 }

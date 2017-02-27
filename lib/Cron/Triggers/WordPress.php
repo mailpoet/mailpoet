@@ -23,6 +23,7 @@ class WordPress {
     $scheduled_queues = SchedulerWorker::getScheduledQueues();
     $running_queues = SendingQueueWorker::getRunningQueues();
     $sending_limit_reached = MailerLog::isSendingLimitReached();
+    $sending_is_paused = MailerLog::isSendingPaused();
     // sending service
     $mp_sending_enabled = Bridge::isMPSendingServiceEnabled();
     // bounce sync
@@ -32,7 +33,7 @@ class WordPress {
     $sskeycheck_due_queues = SendingServiceKeyCheckWorker::getAllDueQueues();
     $sskeycheck_future_queues = SendingServiceKeyCheckWorker::getFutureQueues();
     // check requirements for each worker
-    $sending_queue_active = (($scheduled_queues || $running_queues) && !$sending_limit_reached);
+    $sending_queue_active = (($scheduled_queues || $running_queues) && !$sending_limit_reached && !$sending_is_paused);
     $bounce_sync_active = ($mp_sending_enabled && ($bounce_due_queues || !$bounce_future_queues));
     $sending_service_key_check_active = ($mp_sending_enabled && ($sskeycheck_due_queues || !$sskeycheck_future_queues));
 
