@@ -89,11 +89,11 @@ class MailPoet {
       for($record = 0; $record < count($newsletter); $record++) {
         $body[] = $composeBody(
           $newsletter[$record],
-          $_this->processSubscriber($subscriber[$record])
+          $this->processSubscriber($subscriber[$record])
         );
       }
     } else {
-      $body[] = $composeBody($newsletter, $_this->processSubscriber($subscriber));
+      $body[] = $composeBody($newsletter, $this->processSubscriber($subscriber));
     }
     return $body;
   }
