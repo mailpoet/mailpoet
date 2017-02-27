@@ -1024,7 +1024,7 @@ WysijaForm.Widget = Class.create(WysijaForm.Block, {
   },
   editSettings: function() {
     MailPoet.Modal.popup({
-      title: 'Edit field settings', // TODO: translate!
+      title: MailPoet.I18n.t('editFieldSettings'),
       template: jQuery('#form_template_field_settings').html(),
       data: this.getData(),
       onSuccess: function() {
