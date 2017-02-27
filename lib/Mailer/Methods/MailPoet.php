@@ -59,19 +59,20 @@ class MailPoet {
   }
 
   function getBody($newsletter, $subscriber) {
-    $composeBody = function($newsletter, $subscriber) {
+    $_this = $this;
+    $composeBody = function($newsletter, $subscriber) use($_this) {
       $body = array(
         'to' => (array(
           'address' => $subscriber['email'],
           'name' => $subscriber['name']
         )),
         'from' => (array(
-          'address' => $this->sender['from_email'],
-          'name' => $this->sender['from_name']
+          'address' => $_this->sender['from_email'],
+          'name' => $_this->sender['from_name']
         )),
         'reply_to' => (array(
-          'address' => $this->reply_to['reply_to_email'],
-          'name' => $this->reply_to['reply_to_name']
+          'address' => $_this->reply_to['reply_to_email'],
+          'name' => $_this->reply_to['reply_to_name']
         )),
         'subject' => $newsletter['subject']
       );
@@ -88,11 +89,11 @@ class MailPoet {
       for($record = 0; $record < count($newsletter); $record++) {
         $body[] = $composeBody(
           $newsletter[$record],
-          $this->processSubscriber($subscriber[$record])
+          $_this->processSubscriber($subscriber[$record])
         );
       }
     } else {
-      $body[] = $composeBody($newsletter, $this->processSubscriber($subscriber));
+      $body[] = $composeBody($newsletter, $_this->processSubscriber($subscriber));
     }
     return $body;
   }
