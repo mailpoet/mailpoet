@@ -158,6 +158,9 @@ define([
    */
   Module.SidebarStylesView = Marionette.LayoutView.extend({
     getTemplate: function() { return templates.sidebarStyles; },
+    behaviors: {
+      ColorPickerBehavior: {},
+    },
     events: function() {
       return {
         "change #mailpoet_text_font_color": _.partial(this.changeColorField, 'text.fontColor'),
@@ -204,15 +207,6 @@ define([
     },
     initialize: function(options) {
       this.availableStyles = options.availableStyles;
-    },
-    onRender: function() {
-      this.$('.mailpoet_color').spectrum({
-        clickoutFiresChange: true,
-        showInput: true,
-        showInitial: true,
-        preferredFormat: "hex6",
-        allowEmpty: true,
-      });
     },
     changeField: function(field, event) {
       this.model.set(field, jQuery(event.target).val());
