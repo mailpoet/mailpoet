@@ -164,11 +164,16 @@ define([
           { 'one-page': (this.props.count <= this.props.limit) }
         );
 
+        var numberOfItemsLabel;
+        if (this.props.count == 1) {
+          numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsSingular');
+        } else {
+          numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsMultiple')
+            .replace('%$1d', this.props.count.toLocaleString());
+        }
         return (
           <div className={ classes }>
-            <span className="displaying-num">{
-              MailPoet.I18n.t('numberOfItems').replace('%$1d', this.props.count.toLocaleString())
-            }</span>
+            <span className="displaying-num">{ numberOfItemsLabel }</span>
             { pagination }
           </div>
         );

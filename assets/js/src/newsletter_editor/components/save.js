@@ -46,9 +46,8 @@ define([
         //MailPoet.Notice.success("<?php _e('Newsletter has been saved.'); ?>");
       } else if(response.error !== undefined) {
         if(response.error.length === 0) {
-          // TODO: Handle translations
           MailPoet.Notice.error(
-            "An unknown error occurred, please check your settings.",
+            MailPoet.I18n.t('templateSaveFailed'),
             {
               scroll: true,
             }
@@ -330,8 +329,7 @@ define([
 
   Module.beforeExitWithUnsavedChanges = function(e) {
     if (saveTimeout) {
-      // TODO: Translate this message
-      var message = "There are unsaved changes which will be lost if you leave this page.";
+      var message = MailPoet.I18n.t('unsavedChangesWillBeLost');
       e = e || window.event;
 
       if (e) {

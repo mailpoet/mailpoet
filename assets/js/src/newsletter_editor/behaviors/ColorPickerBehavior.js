@@ -6,8 +6,9 @@
 define([
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup',
+    'mailpoet',
     'spectrum'
-  ], function(Marionette, BehaviorsLookup, Spectrum) {
+  ], function(Marionette, BehaviorsLookup, MailPoet, Spectrum) {
 
   BehaviorsLookup.ColorPickerBehavior = Marionette.Behavior.extend({
     onRender: function() {
@@ -17,6 +18,8 @@ define([
         showInitial: true,
         preferredFormat: "hex6",
         allowEmpty: true,
+        chooseText: MailPoet.I18n.t('selectColor'),
+        cancelText: MailPoet.I18n.t('cancelColorSelection')
       });
     },
   });
