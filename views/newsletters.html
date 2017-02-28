@@ -244,3 +244,7 @@
     'mailerSendingResumedNotice': __('Sending has been resumed.')
 }) %>
 <% endblock %>
+
+<% block before_admin_javascript %>
+  <%= do_action('mailpoet_newsletters_3rd_step_form') %>
+<% endblock %>

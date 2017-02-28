@@ -26,6 +26,7 @@ baseConfig = {
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'interact$': 'interact.js/interact.js',
       'spectrum$': 'spectrum-colorpicker/spectrum.js',
+      'wp-js-hooks': 'WP-JS-Hooks/src/event-manager.js',
       'blob$': 'blob/Blob.js',
       'filesaver$': 'filesaver/FileSaver.js',
       'papaparse': 'papaparse/papaparse.min.js',
@@ -58,6 +59,10 @@ baseConfig = {
       {
         include: require.resolve('underscore'),
         loader: 'expose-loader?_',
+      },
+      {
+        test: /wp-js-hooks/i,
+        loader: 'exports-loader?window.wp.hooks',
       },
       {
         include: /Blob.js$/,
@@ -93,7 +98,8 @@ config.push(_.extend({}, baseConfig, {
   entry: {
     vendor: [
       'handlebars',
-      'handlebars_helpers'
+      'handlebars_helpers',
+      'wp-js-hooks'
     ],
     mailpoet: [
       'mailpoet',

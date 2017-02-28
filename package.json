@@ -8,6 +8,7 @@
     "filesaver": "eligrey/FileSaver.js.git"
   },
   "dependencies": {
+    "WP-JS-Hooks": "github:carldanley/WP-JS-Hooks",
     "backbone": "1.3.3",
     "backbone.marionette": "2.4.7",
     "backbone.radio": "1.0.5",

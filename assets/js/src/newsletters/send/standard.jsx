@@ -4,6 +4,7 @@ define(
     'jquery',
     'underscore',
     'mailpoet',
+    'wp-js-hooks',
     'form/fields/checkbox.jsx',
     'form/fields/select.jsx',
     'form/fields/text.jsx',
@@ -13,6 +14,7 @@ define(
     jQuery,
     _,
     MailPoet,
+    Hooks,
     Checkbox,
     Select,
     Text
@@ -410,6 +412,8 @@ define(
         component: StandardScheduling,
       }
     ];
+
+    Hooks.doAction('mailpoet_newsletter_3rd_step_fields', fields);
 
     return {
       getFields: function(newsletter) {

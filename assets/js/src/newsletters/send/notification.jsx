@@ -1,11 +1,13 @@
 define(
   [
     'mailpoet',
+    'wp-js-hooks',
     'newsletters/types/notification/scheduling.jsx',
     'underscore'
   ],
   function(
     MailPoet,
+    Hooks,
     Scheduling,
     _
   ) {
@@ -100,6 +102,8 @@ define(
         ]
       }
     ];
+
+    Hooks.doAction('mailpoet_newsletter_3rd_step_fields', fields);
 
     return {
       getFields: function(newsletter) {
