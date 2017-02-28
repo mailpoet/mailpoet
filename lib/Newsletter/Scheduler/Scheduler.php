@@ -106,6 +106,7 @@ class Scheduler {
 
   static function createPostNotificationQueue($newsletter) {
     $next_run_date = self::getNextRunDate($newsletter->schedule);
+    if(!$next_run_date) return;
     // do not schedule duplicate queues for the same time
     $existing_queue = SendingQueue::where('newsletter_id', $newsletter->id)
       ->where('scheduled_at', $next_run_date)
@@ -159,9 +160,14 @@ class Scheduler {
   }
 
   static function getNextRunDate($schedule) {
-    $schedule = \Cron\CronExpression::factory($schedule);
-    return $schedule->getNextRunDate(Carbon::createFromTimestamp(current_time('timestamp')))
-      ->format('Y-m-d H:i:s');
+    try {
+      $schedule = \Cron\CronExpression::factory($schedule);
+      $next_run_date = $schedule->getNextRunDate(Carbon::createFromTimestamp(current_time('timestamp')))
+        ->format('Y-m-d H:i:s');
+    } catch(\Exception $e) {
+      $next_run_date = false;
+    }
+    return $next_run_date;
   }
 
   static function getNewsletters($type) {

@@ -164,8 +164,13 @@ class Scheduler {
   function deleteQueueOrUpdateNextRunDate($queue, $newsletter) {
     if($newsletter->intervalType === NewsletterScheduler::INTERVAL_IMMEDIATELY) {
       $queue->delete();
+      return;
     } else {
       $next_run_date = NewsletterScheduler::getNextRunDate($newsletter->schedule);
+      if(!$next_run_date) {
+        $queue->delete();
+        return;
+      }
       $queue->scheduled_at = $next_run_date;
       $queue->save();
     }

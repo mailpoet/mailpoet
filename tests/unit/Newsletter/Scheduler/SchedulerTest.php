@@ -37,6 +37,8 @@ class NewsletterSchedulerTest extends MailPoetTest {
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     expect(Scheduler::getNextRunDate('* * * * *'))
       ->equals($current_time->addMinute()->format('Y-m-d H:i:00'));
+    // when invalid CRON expression is used, false response is returned
+    expect(Scheduler::getNextRunDate('invalid CRON expression'))->false();
   }
 
   function testItFormatsDatetimeString() {
