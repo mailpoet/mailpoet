@@ -73,7 +73,7 @@ define(
       }
     ];
 
-    Hooks.doAction('mailpoet_newsletter_3rd_step_fields', fields);
+    Hooks.doAction('mailpoet_newsletters_3rd_step_fields', fields);
 
     return {
       getFields: function(newsletter) {
