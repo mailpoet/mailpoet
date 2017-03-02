@@ -717,11 +717,7 @@
                 text: "<%= __('Yup, it works! You can start blasting away emails to the moon.') %>"
               }
             },
-            subscriber: {
-              first_name: "<%= current_user.display_name %>",
-              last_name: "",
-              email: recipient
-            }
+            subscriber: recipient
           }
         }).always(function() {
           MailPoet.Modal.loading(false);
