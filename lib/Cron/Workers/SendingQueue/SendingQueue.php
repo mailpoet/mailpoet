@@ -8,6 +8,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Models\Subscriber;
 
 if(!defined('ABSPATH')) exit;
 
@@ -42,6 +43,7 @@ class SendingQueue {
       );
       foreach($subscriber_batches as $subscribers_to_process_ids) {
         $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)
+          ->where('status', Subscriber::STATUS_SUBSCRIBED)
           ->whereNull('deleted_at')
           ->findMany();
         $found_subscribers_ids = array_map(function($subscriber) {
