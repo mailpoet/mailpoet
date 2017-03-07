@@ -157,6 +157,7 @@ class Scheduler {
     }
     $relation->value = $schedule;
     $relation->save();
+    return $relation->value;
   }
 
   static function getNextRunDate($schedule) {

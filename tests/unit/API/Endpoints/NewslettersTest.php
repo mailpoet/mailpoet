@@ -1,4 +1,5 @@
 <?php
+use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\API\Endpoints\Newsletters;
@@ -7,6 +8,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\Segment;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
@@ -140,6 +142,61 @@ class NewslettersTest extends MailPoetTest {
       ->findOne($response->data['id']);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($saved_newsletter->schedule)->equals('* * * * *');
+  }
+
+  function testItCanReschedulePreviouslyScheduledSendingQueueJobs() {
+    // create newsletter options
+    $newsletter_options = array(
+      'intervalType',
+      'timeOfDay',
+      'weekDay',
+      'monthDay',
+      'nthWeekDay',
+      'schedule'
+    );
+    foreach($newsletter_options as $option) {
+      $newsletter_option_field = NewsletterOptionField::create();
+      $newsletter_option_field->name = $option;
+      $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
+      $newsletter_option_field->save();
+    }
+
+    // create sending queues
+    $current_time = Carbon::now();
+    $sending_queue_1 = SendingQueue::create();
+    $sending_queue_1->newsletter_id = 1;
+    $sending_queue_1->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_queue_1->scheduled_at = $current_time;
+    $sending_queue_1->save();
+
+    $sending_queue_2 = SendingQueue::create();
+    $sending_queue_2->newsletter_id = 1;
+    $sending_queue_2->save();
+
+    // save newsletter via router
+    $router = new Newsletters();
+    $newsletter_data = array(
+      'id' => 1,
+      'type' => Newsletter::TYPE_NOTIFICATION,
+      'subject' => 'Newsletter',
+      'options' => array(
+        // weekly on Monday @ 7am
+        'intervalType' => Scheduler::INTERVAL_WEEKLY,
+        'timeOfDay' => '25200',
+        'weekDay' => '1',
+        'monthDay' => '0',
+        'nthWeekDay' => '1',
+        'schedule' => '0 7 * * 1'
+      )
+    );
+    $newsletter = $router->save($newsletter_data);
+    $sending_queue_1 = SendingQueue::findOne($sending_queue_1->id);
+    $sending_queue_2 = SendingQueue::findOne($sending_queue_2->id);
+    expect($sending_queue_1->scheduled_at)->notEquals($current_time);
+    expect($sending_queue_1->scheduled_at)->equals(
+      Scheduler::getNextRunDate($newsletter->data['schedule'])
+    );
+    expect($sending_queue_2->scheduled_at)->null();
   }
 
   function testItCanModifySegmentsOfExistingNewsletter() {
@@ -557,9 +614,10 @@ class NewslettersTest extends MailPoetTest {
   }
 
   function _after() {
-    Newsletter::deleteMany();
-    NewsletterSegment::deleteMany();
-    NewsletterOptionField::deleteMany();
-    Segment::deleteMany();
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }
