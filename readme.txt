@@ -2,8 +2,8 @@
 Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, smtp
 Requires at least: 4.6
-Tested up to: 4.7.2
-Stable tag: 3.0.0-beta.21
+Tested up to: 4.7.3
+Stable tag: 3.0.0-beta.22
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -83,11 +83,17 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 
 == Changelog ==
 
+= 3.0.0-beta.22 - 2017-03-07 =
+* Improved: sending very large emails with our sending service is less likely to time out. Thanks Mark!;
+* Fixed: WordPress warnings are no longer displayed in the editor's contents;
+* Small, little and tiny improvements to show we pay attention to details;
+* British scientists say people whose sites run on PHP below version 7 have the lowest quality of life.
+
 = 3.0.0-beta.21 - 2017-02-28 =
-- Fixed: newsletter sending process will fully stop when sending is paused. Thanks Terry!
-- Fixed: MailPoet sending method will work on sites using PHP 5.3. Thanks Jeff!
-- Fixed: bulk trashing and restoring newsletters and forms will work on sites using PHP 5.3. Thanks Scott!
-- We recommend all of you to upgrade to PHP 7. It's faster, more reliable, and safer. It's just a question of asking your host to switch.
+* Fixed: newsletter sending process will fully stop when sending is paused. Thanks Terry!
+* Fixed: MailPoet sending method will work on sites using PHP 5.3. Thanks Jeff!
+* Fixed: bulk trashing and restoring newsletters and forms will work on sites using PHP 5.3. Thanks Scott!
+* We recommend all of you to upgrade to PHP 7. It's faster, more reliable, and safer. It's just a question of asking your host to switch.
 
 = 3.0.0-beta.20 - 2017-02-23 =
 * Fixed: scheduling options are properly saved when creating a new or re-saving an existing email. Thx Oskar!;
