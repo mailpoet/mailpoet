@@ -15,7 +15,7 @@ class SendingQueue {
   public $mailer_task;
   public $newsletter_task;
   public $timer;
-  const BATCH_SIZE = 50;
+  const BATCH_SIZE = 20;
 
   function __construct($timer = false, $mailer_task = false, $newsletter_task = false) {
     $this->mailer_task = ($mailer_task) ? $mailer_task : new MailerTask();
