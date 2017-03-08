@@ -36,11 +36,21 @@ class Newsletter {
       $this->tracking_image_inserted = OpenTracking::addTrackingImage();
       // render newsletter
       $rendered_newsletter = $newsletter->render();
+      $rendered_newsletter = apply_filters(
+        'mailpoet_sending_newsletter_render_after',
+        $rendered_newsletter,
+        $newsletter
+      );
       // hash and save all links
       $rendered_newsletter = LinksTask::process($rendered_newsletter, $newsletter, $queue);
     } else {
       // render newsletter
       $rendered_newsletter = $newsletter->render();
+      $rendered_newsletter = apply_filters(
+        'mailpoet_sending_newsletter_render_after',
+        $rendered_newsletter,
+        $newsletter
+      );
     }
     // check if this is a post notification and if it contains posts
     $newsletter_contains_posts = strpos($rendered_newsletter['html'], 'data-post-id');

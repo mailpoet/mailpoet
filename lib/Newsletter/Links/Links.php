@@ -14,6 +14,9 @@ class Links {
   const DATA_TAG_OPEN = '[mailpoet_open_data]';
   const HASH_LENGTH = 5;
 
+  const LINK_TYPE_SHORTCODE = 'shortcode';
+  const LINK_TYPE_LINK = 'link';
+
   static function extract($content) {
     $extracted_links = array();
     // adopted from WP's wp_extract_urls() function &  modified to work on hrefs
@@ -39,6 +42,7 @@ class Links {
     if($shortcodes) {
       $extracted_links = array_map(function($shortcode) {
         return array(
+          'type' => self::LINK_TYPE_SHORTCODE,
           'html' => $shortcode,
           'link' => $shortcode
         );
@@ -50,6 +54,7 @@ class Links {
     if($matched_urls_count) {
       for($index = 0; $index < $matched_urls_count; $index++) {
         $extracted_links[] = array(
+          'type' => self::LINK_TYPE_LINK,
           'html' => $matched_urls[0][$index],
           'link' => $matched_urls[2][$index]
         );

@@ -15,6 +15,7 @@ class LinksTest extends MailPoetTest {
 
     expect($result[0])->equals(
       array(
+        'type' => Links::LINK_TYPE_LINK,
         'html' => 'href="http://link1.com"',
         'link' => 'http://link1.com'
       )
@@ -27,6 +28,7 @@ class LinksTest extends MailPoetTest {
 
     expect($result[0])->equals(
       array(
+        'type' => Links::LINK_TYPE_SHORTCODE,
         'html' => '[link:some_link_shortcode]',
         'link' => '[link:some_link_shortcode]'
       )
@@ -139,7 +141,7 @@ class LinksTest extends MailPoetTest {
     $newsletter_link->url = '[link:newsletter_view_in_browser_url]';
     $newsletter_link = $newsletter_link->save();
     $content = '
-      <a href="[mailpoet_click_data]-90e56">View in browser</a> 
+      <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
     $result = Links::convertHashedLinksToShortcodesAndUrls($content);
     expect($result)->contains($newsletter_link->url);
@@ -161,7 +163,7 @@ class LinksTest extends MailPoetTest {
     $newsletter_link_2->url = 'http://google.com';
     $newsletter_link_2 = $newsletter_link_2->save();
     $content = '
-      <a href="[mailpoet_click_data]-90e56">View in browser</a> 
+      <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
     $result = Links::convertHashedLinksToShortcodesAndUrls($content, $convert_all = true);
     expect($result)->contains($newsletter_link_1->url);

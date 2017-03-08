@@ -29,12 +29,12 @@ class Newsletters extends APIEndpoint {
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet')
       ));
     } else {
-      return $this->successResponse(
-        $newsletter
+      $newsletter = $newsletter
         ->withSegments()
         ->withOptions()
-        ->asArray()
-      );
+        ->asArray();
+      $newsletter = apply_filters('mailpoet_api_newsletters_get_after', $newsletter);
+      return $this->successResponse($newsletter);
     }
   }
 
@@ -50,6 +50,8 @@ class Newsletters extends APIEndpoint {
       $options = $data['options'];
       unset($data['options']);
     }
+
+    $data = apply_filters('mailpoet_api_newsletters_save_before', $data);
 
     $newsletter = Newsletter::createOrUpdate($data);
     $errors = $newsletter->getErrors();
@@ -92,6 +94,8 @@ class Newsletters extends APIEndpoint {
         // reload newsletter with updated options
         $newsletter = Newsletter::filter('filterWithOptions')
           ->findOne($newsletter->id);
+
+        do_action('mailpoet_api_newsletters_save_after', $newsletter);
 
         // if this is a post notification, process newsletter options and update its schedule
         if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
@@ -204,6 +208,7 @@ class Newsletters extends APIEndpoint {
       if(!empty($errors)) {
         return $this->errorResponse($errors);
       } else {
+        do_action('mailpoet_api_newsletters_duplicate_after', $newsletter, $duplicate);
         return $this->successResponse(
           Newsletter::findOne($duplicate->id)->asArray(),
           array('count' => 1)
