@@ -868,4 +868,18 @@ class Subscriber extends Model {
       )
     );
   }
+
+  static function findSubscribersInSegments(array $subscribers_ids, array $segments_ids) {
+    return self::getSubscribedInSegments($segments_ids)
+      ->whereIn('subscribers.id', $subscribers_ids)
+      ->select('subscribers.*');
+  }
+
+  static function extractSubscribersIds(array $subscribers) {
+    return array_filter(
+      array_map(function($subscriber) {
+        return (!empty($subscriber->id)) ? $subscriber->id : false;
+      }, $subscribers)
+    );
+  }
 }

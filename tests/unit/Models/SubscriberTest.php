@@ -776,6 +776,98 @@ class SubscriberTest extends MailPoetTest {
     expect(Subscriber::findArray())->isEmpty();
   }
 
+  function testItCanFindSubscribersInSegments() {
+    // create 3 subscribers, segments and subscriber-segment relations
+    $prepare_data = function() {
+      $this->_after();
+      for($i = 1; $i <= 3; $i++) {
+        $subscriber[$i] = Subscriber::create();
+        $subscriber[$i]->status = Subscriber::STATUS_SUBSCRIBED;
+        $subscriber[$i]->email = $i . '@test.com';
+        $subscriber[$i]->first_name = 'first ' + $i;
+        $subscriber[$i]->last_name = 'last ' + $i;
+        $subscriber[$i]->save();
+        $segment[$i] = Segment::create();
+        $segment[$i]->name = 'segment ' + $i;
+        $segment[$i]->save();
+        $subscriber_segment[$i] = SubscriberSegment::create();
+        $subscriber_segment[$i]->subscriber_id = $subscriber[$i]->id;
+        $subscriber_segment[$i]->segment_id = $segment[$i]->id;
+        $subscriber_segment[$i]->save();
+      }
+      return array(
+        $subscriber,
+        $segment,
+        $subscriber_segment
+      );
+    };
+
+    // it should not find deleted and nonexistent subscribers
+    list($subscriber, $segment,) = $prepare_data();
+    $subscriber[1]->deleted_at = date("Y-m-d H:i:s");
+    $subscriber[1]->save();
+    $subscriber[2]->delete();
+    $subscribers = Subscriber::findSubscribersInSegments(
+      array(
+        $subscriber[1]->id,
+        $subscriber[2]->id,
+        $subscriber[3]->id
+      ),
+      array(
+        $segment[1]->id,
+        $segment[2]->id,
+        $segment[3]->id
+      )
+    )->findMany();
+    expect(Subscriber::extractSubscribersIds($subscribers))->equals(
+      array($subscriber[3]->id)
+    );
+
+    // it should not find subscribers with global unsubscribe status
+    list($subscriber, $segment,) = $prepare_data();
+    $subscriber[2]->status = Subscriber::STATUS_UNSUBSCRIBED;
+    $subscriber[2]->save();
+    $subscribers = Subscriber::findSubscribersInSegments(
+      array(
+        $subscriber[1]->id,
+        $subscriber[2]->id,
+        $subscriber[3]->id
+      ),
+      array(
+        $segment[1]->id,
+        $segment[2]->id,
+        $segment[3]->id
+      )
+    )->findMany();
+    expect(Subscriber::extractSubscribersIds($subscribers))->equals(
+      array(
+        $subscriber[1]->id,
+        $subscriber[3]->id
+      )
+    );
+
+    // it should not find subscribers unsubscribed from segment or when segment doesn't exist
+    list($subscriber, $segment, $subscriber_segment) = $prepare_data();
+    $subscriber_segment[3]->status = Subscriber::STATUS_UNSUBSCRIBED;
+    $subscriber_segment[3]->save();
+    $subscriber_segment[2]->delete();
+    $subscribers = Subscriber::findSubscribersInSegments(
+      array(
+        $subscriber[1]->id,
+        $subscriber[2]->id,
+        $subscriber[3]->id
+      ),
+      array(
+        $segment[1]->id,
+        $segment[2]->id,
+        $segment[3]->id
+      )
+    )->findMany();
+    expect(Subscriber::extractSubscribersIds($subscribers))->equals(
+      array($subscriber[1]->id)
+    );
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);

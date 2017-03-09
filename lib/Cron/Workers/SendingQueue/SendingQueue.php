@@ -6,9 +6,8 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
-use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
-use MailPoet\Models\Subscriber;
+use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 
 if(!defined('ABSPATH')) exit;
 
@@ -35,6 +34,8 @@ class SendingQueue {
       }
       // configure mailer
       $this->mailer_task->configureMailer($newsletter);
+      // get newsletter segments
+      $newsletter_segments_ids = $this->newsletter_task->getSegments($newsletter);
       // get subscribers
       $queue->subscribers = $queue->getSubscribers();
       $subscriber_batches = array_chunk(
@@ -42,13 +43,10 @@ class SendingQueue {
         self::BATCH_SIZE
       );
       foreach($subscriber_batches as $subscribers_to_process_ids) {
-        $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)
-          ->where('status', Subscriber::STATUS_SUBSCRIBED)
-          ->whereNull('deleted_at')
-          ->findMany();
-        $found_subscribers_ids = array_map(function($subscriber) {
-          return $subscriber->id;
-        }, $found_subscribers);
+        $found_subscribers = SubscriberModel::findSubscribersInSegments(
+          $subscribers_to_process_ids, $newsletter_segments_ids
+        )->findMany();
+        $found_subscribers_ids = SubscriberModel::extractSubscribersIds($found_subscribers);
         // if some subscribers weren't found, remove them from the processing list
         if(count($found_subscribers_ids) !== count($subscribers_to_process_ids)) {
           $subscibers_to_remove = array_diff(
