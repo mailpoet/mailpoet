@@ -17,6 +17,12 @@ class Links {
   const LINK_TYPE_SHORTCODE = 'shortcode';
   const LINK_TYPE_LINK = 'link';
 
+  static function process($content) {
+    $extracted_links = self::extract($content);
+    $processed_links = self::hash($extracted_links);
+    return self::replace($content, $extracted_links, $processed_links);
+  }
+
   static function extract($content) {
     $extracted_links = array();
     // adopted from WP's wp_extract_urls() function &  modified to work on hrefs
@@ -63,41 +69,60 @@ class Links {
     return array_unique($extracted_links, SORT_REGULAR);
   }
 
-  static function process($content) {
-    $extracted_links = self::extract($content);
+  static function hash($extracted_links) {
     $processed_links = array();
     foreach($extracted_links as $extracted_link) {
       $hash = Security::generateRandomString(self::HASH_LENGTH);
-      $processed_links[] = array(
+      // Use a hashed key to map between extracted and processed links
+      // regardless of their sequential position (useful for link skips etc.)
+      $key = self::getKey($extracted_link['link']);
+      $processed_links[$key] = array(
         'hash' => $hash,
-        'url' => $extracted_link['link']
+        'url' => $extracted_link['link'],
+        // replace link with a temporary data tag + hash
+        // it will be further replaced with the proper track API URL during sending
+        'processed_link' => self::DATA_TAG_CLICK . '-' . $hash
       );
-      // replace link with a temporary data tag + hash
-      // it will be further replaced with the proper track API URL during sending
-      $tracked_link = self::DATA_TAG_CLICK . '-' . $hash;
+    }
+    return $processed_links;
+  }
+
+  static function replace($content, $extracted_links, $processed_links) {
+    foreach($extracted_links as $key => $extracted_link) {
+      $key = self::getKey($extracted_link['link']);
+      if(!isset($processed_links[$key]['processed_link'])) {
+        // Skip this link
+        continue;
+      }
+      $processed_link = $processed_links[$key]['processed_link'];
       // first, replace URL in the extracted HTML source with encoded link
-      $tracked_link_html_source = str_replace(
-        $extracted_link['link'], $tracked_link,
+      $processed_link_html_source = str_replace(
+        $extracted_link['link'], $processed_link,
         $extracted_link['html']
       );
-      // second, replace original extracted HTML source with tracked URL source
+      // second, replace original extracted HTML source with processed URL source
       $content = str_replace(
-        $extracted_link['html'], $tracked_link_html_source, $content
+        $extracted_link['html'], $processed_link_html_source, $content
       );
-      // third, replace text version URL with tracked link: [description](url)
+      // third, replace text version URL with processed link: [description](url)
       // regex is used to avoid replacing description URLs that are wrapped in round brackets
-      // i.e., <a href="http://google.com">(http://google.com)</a> => [(http://google.com)](http://tracked_link)
+      // i.e., <a href="http://google.com">(http://google.com)</a> => [(http://google.com)](http://processed_link)
       $regex_escaped_extracted_link = preg_quote($extracted_link['link'], '/');
       $content = preg_replace(
         '/\[(.*?)\](\(' . $regex_escaped_extracted_link . '\))/',
-        '[$1](' . $tracked_link . ')',
+        '[$1](' . $processed_link . ')',
         $content
       );
+      unset($processed_links[$key]['processed_link']);
     }
     return array(
       $content,
-      $processed_links
+      array_values($processed_links)
     );
+  }
+
+  static function getKey($value) {
+    return md5($value);
   }
 
   static function replaceSubscriberData(
