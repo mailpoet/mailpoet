@@ -4,6 +4,7 @@ namespace MailPoet\API\Endpoints;
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
 use MailPoet\Listing;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterTemplate;
@@ -75,6 +76,7 @@ class Newsletters extends APIEndpoint {
           $newsletter->type
         )->findMany();
 
+        // update newsletter options
         foreach($option_fields as $option_field) {
           if(isset($options[$option_field->name])) {
             $newsletter_option = NewsletterOption::createOrUpdate(
@@ -86,13 +88,23 @@ class Newsletters extends APIEndpoint {
             );
           }
         }
-      }
 
-      $newsletter = Newsletter::filter('filterWithOptions')->findOne($newsletter->id);
+        // reload newsletter with updated options
+        $newsletter = Newsletter::filter('filterWithOptions')
+          ->findOne($newsletter->id);
 
-      // if this is a post notification, process options and update its schedule
-      if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
-        Scheduler::processPostNotificationSchedule($newsletter);
+        // if this is a post notification, process newsletter options and update its schedule
+        if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+          // generate the new schedule from options and get the new "next run" date
+          $newsletter->schedule = Scheduler::processPostNotificationSchedule($newsletter);
+          $next_run_date = Scheduler::getNextRunDate($newsletter->schedule);
+          // find previously scheduled jobs and reschedule them using the new "next run" date
+          SendingQueue::where('newsletter_id', $newsletter->id)
+            ->where('status', SendingQueue::STATUS_SCHEDULED)
+            ->findResultSet()
+            ->set('scheduled_at', $next_run_date)
+            ->save();
+        }
       }
 
       return $this->successResponse($newsletter->asArray());
