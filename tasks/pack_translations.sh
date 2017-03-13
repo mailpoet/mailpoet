@@ -10,7 +10,7 @@ if [ ! -f ~/.transifexrc ]; then
 fi
 
 echo "Getting translations from Transifex..."
-tx pull -a
+tx pull -a -f
 
 echo "Generating MO files..."
 for file in `find ./lang/ -name "*.po"` ; do
