@@ -41,7 +41,8 @@ Not available yet. Limited stats in free version.
 
 = Translations in your language =
 
-We accept translations in the repository.
+We accept translations for this plugin, please submit your translations on our Transifex project (https://www.transifex.com/wysija/mp3/).
+Please note that any translations submitted via "Translating WordPress" system (https://translate.wordpress.org/projects/wp-plugins/mailpoet) will not work.
 
 == Installation ==
 
