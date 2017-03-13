@@ -104,6 +104,12 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
+  function packtranslations() {
+    // Define WP_TRANSIFEX_API_TOKEN env. variable
+    $this->loadEnv();
+    return $this->_exec('./tasks/pack_translations.sh');
+  }
+
   function testUnit($opts=['file' => null, 'xml' => false]) {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build');

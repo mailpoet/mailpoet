@@ -129,6 +129,19 @@ _n()
 
 You can use Twig i18n functions in Handlebars, just load your template from a Twig view.
 
+# Build
+
+To build a plugin , run `./build.sh`.
+
+Some build process steps are described below (their dependencies etc.).
+
+## packtranslations step
+
+This step imports translations from Transifex and generates MO files. It requires:
+* `tx` client: https://docs.transifex.com/client/installing-the-client
+* `msgfmt` command (from Gettext package)
+Finally , a `WP_TRANSIFEX_API_TOKEN` environment variable should be initialized with a valid key.
+
 # Publish
 
 Before you run a publishing command, you need to:
