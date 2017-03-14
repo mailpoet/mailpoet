@@ -5,6 +5,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
 use MailPoet\Models\Newsletter as NewsletterModel;
+use MailPoet\Models\NewsletterSegment as NewsletterSegmentModel;
 use MailPoet\Models\Setting;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
@@ -99,5 +100,12 @@ class Newsletter {
     ) {
       $newsletter->setStatus(NewsletterModel::STATUS_SENT);
     }
+  }
+
+  function getSegments($newsletter) {
+    $segments = NewsletterSegmentModel::where('newsletter_id', $newsletter->id)
+      ->select('segment_id')
+      ->findArray();
+    return Helpers::flattenArray($segments);
   }
 }

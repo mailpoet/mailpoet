@@ -4,6 +4,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterPost;
+use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Router;
@@ -152,6 +153,18 @@ class NewsletterTaskTest extends MailPoetTest {
       ->notContains(Router::NAME . '&endpoint=track&action=click&data=');
     expect($result['body']['text'])
       ->notContains(Router::NAME . '&endpoint=track&action=click&data=');
+  }
+
+  function testItGetsSegments() {
+    for($i = 1; $i<=3; $i++) {
+      $newsletter_segment = NewsletterSegment::create();
+      $newsletter_segment->newsletter_id = $this->newsletter->id;
+      $newsletter_segment->segment_id = $i;
+      $newsletter_segment->save();
+    }
+    expect($this->newsletter_task->getSegments($this->newsletter))->equals(
+      array(1,2,3)
+    );
   }
 
   function _after() {

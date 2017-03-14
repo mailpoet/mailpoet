@@ -10,9 +10,12 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterPost;
+use MailPoet\Models\NewsletterSegment;
+use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 
 class SendingQueueTest extends MailPoetTest {
   function _before() {
@@ -24,12 +27,24 @@ class SendingQueueTest extends MailPoetTest {
     $this->subscriber->email = 'john@doe.com';
     $this->subscriber->first_name = 'John';
     $this->subscriber->last_name = 'Doe';
+    $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $this->subscriber->save();
+    $this->segment = Segment::create();
+    $this->segment->name = 'segment';
+    $this->segment->save();
+    $this->subscriber_segment = SubscriberSegment::create();
+    $this->subscriber_segment->subscriber_id = $this->subscriber->id;
+    $this->subscriber_segment->segment_id = $this->segment->id;
+    $this->subscriber_segment->save();
     $this->newsletter = Newsletter::create();
     $this->newsletter->type = Newsletter::TYPE_STANDARD;
     $this->newsletter->subject = Fixtures::get('newsletter_subject_template');
     $this->newsletter->body = Fixtures::get('newsletter_body_template');
     $this->newsletter->save();
+    $this->newsletter_segment = NewsletterSegment::create();
+    $this->newsletter_segment->newsletter_id = $this->newsletter->id;
+    $this->newsletter_segment->segment_id = $this->segment->id;
+    $this->newsletter_segment->save();
     $this->queue = SendingQueue::create();
     $this->queue->newsletter_id = $this->newsletter->id;
     $this->queue->subscribers = serialize(
@@ -362,12 +377,51 @@ class SendingQueueTest extends MailPoetTest {
     expect((int)$updated_queue->count_total)->equals(0);
   }
 
+  function testItDoesNotSendToGloballyUnsubscribedSubscribers() {
+    $sending_queue_worker = $this->sending_queue_worker;
+    $sending_queue_worker->mailer_task = Stub::make(
+      new MailerTask(),
+      array('send' => function($newsletter, $subscriber) { return true; })
+    );
+
+    // newsletter is not sent to globally unsubscribed subscriber
+    $this->_after();
+    $this->_before();
+    $subscriber = $this->subscriber;
+    $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
+    $subscriber->save();
+    $sending_queue_worker->process();
+    $updated_queue = SendingQueue::findOne($this->queue->id);
+    expect((int)$updated_queue->count_total)->equals(0);
+  }
+
+  function testItDoesNotSendToSubscribersUnsubscribedFromSegments() {
+    $sending_queue_worker = $this->sending_queue_worker;
+    $sending_queue_worker->mailer_task = Stub::make(
+      new MailerTask(),
+      array('send' => function($newsletter, $subscriber) { return true; })
+    );
+
+    // newsletter is not sent to subscriber unsubscribed from segment
+    $this->_after();
+    $this->_before();
+    $subscriber_segment = $this->subscriber_segment;
+    $subscriber_segment->status = Subscriber::STATUS_UNSUBSCRIBED;
+    $subscriber_segment->save();
+    $sending_queue_worker->process();
+    $updated_queue = SendingQueue::findOne($this->queue->id);
+    expect((int)$updated_queue->count_total)->equals(0);
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . StatisticsNewsletters::$_table);
   }
 }
