@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.7.3
-Stable tag: 3.0.0-beta.23
+Stable tag: 3.0.0-beta.23.1
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -84,7 +84,7 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 
 == Changelog ==
 
-= 3.0.0-beta.23 - 2017-03-14 =
+= 3.0.0-beta.23.1 - 2017-03-14 =
 * Improved: added plugin translations to Dutch, English (UK), French, German, Italian, Portuguese (Brazil), Portuguese (Portugal), Russian and Spanish languages. Thank you translators!
 * Fixed: unsubscribed subscriber will no longer receive newsletters (woops!). Thanks, Oskar;
 * Fixed: previously scheduled send tasks are rescheduled when post notifications' scheduling options change. Thanks, Karen and Eric!
