@@ -784,11 +784,11 @@ class SubscriberTest extends MailPoetTest {
         $subscriber[$i] = Subscriber::create();
         $subscriber[$i]->status = Subscriber::STATUS_SUBSCRIBED;
         $subscriber[$i]->email = $i . '@test.com';
-        $subscriber[$i]->first_name = 'first ' + $i;
-        $subscriber[$i]->last_name = 'last ' + $i;
+        $subscriber[$i]->first_name = 'first ' . $i;
+        $subscriber[$i]->last_name = 'last ' . $i;
         $subscriber[$i]->save();
         $segment[$i] = Segment::create();
-        $segment[$i]->name = 'segment ' + $i;
+        $segment[$i]->name = 'segment ' . $i;
         $segment[$i]->save();
         $subscriber_segment[$i] = SubscriberSegment::create();
         $subscriber_segment[$i]->subscriber_id = $subscriber[$i]->id;
