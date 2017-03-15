@@ -43,10 +43,19 @@ class SendingQueue {
         self::BATCH_SIZE
       );
       foreach($subscriber_batches as $subscribers_to_process_ids) {
-        $found_subscribers = SubscriberModel::findSubscribersInSegments(
-          $subscribers_to_process_ids, $newsletter_segments_ids
-        )->findMany();
-        $found_subscribers_ids = SubscriberModel::extractSubscribersIds($found_subscribers);
+        if(!empty($newsletter_segments_ids[0])) {
+          // Check that subscribers are in segments
+          $found_subscribers = SubscriberModel::findSubscribersInSegments(
+            $subscribers_to_process_ids, $newsletter_segments_ids
+          )->findMany();
+          $found_subscribers_ids = SubscriberModel::extractSubscribersIds($found_subscribers);
+        } else {
+          // No segments = Welcome emails
+          $found_subscribers = SubscriberModel::whereIn('id', $subscribers_to_process_ids)
+            ->whereNull('deleted_at')
+            ->findMany();
+          $found_subscribers_ids = SubscriberModel::extractSubscribersIds($found_subscribers);
+        }
         // if some subscribers weren't found, remove them from the processing list
         if(count($found_subscribers_ids) !== count($subscribers_to_process_ids)) {
           $subscibers_to_remove = array_diff(
