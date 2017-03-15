@@ -43,7 +43,7 @@ class SendingQueue {
         self::BATCH_SIZE
       );
       foreach($subscriber_batches as $subscribers_to_process_ids) {
-        if (!empty($newsletter_segments_ids[0])) {
+        if(!empty($newsletter_segments_ids[0])) {
           // Check that subscribers are in segments
           $found_subscribers = SubscriberModel::findSubscribersInSegments(
             $subscribers_to_process_ids, $newsletter_segments_ids
