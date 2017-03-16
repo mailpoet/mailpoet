@@ -144,12 +144,16 @@ Finally , a `WP_TRANSIFEX_API_TOKEN` environment variable should be initialized 
 
 # Publish
 
-Before you run a publishing command, you need to:
+The `publish` command currently does the following:
+* Pushes translations POT file to Transifex;
+* Publishes the release in SVN.
+
+Before you run it, you need to:
 1. Ensure there is an up-to-date local copy of MailPoet SVN repository in `.mp_svn` directory by running `./do svn:checkout`.
 2. Have all your features merged in Git `master`, your `mailpoet.php` and `readme.txt` tagged with a new version.
 3. Run `./build.sh` to produce a `mailpoet.zip` distributable archive.
 
-Everything's ready? Then run `./do svn:publish`.
+Everything's ready? Then run `./do publish`.
 If the job goes fine, you'll get a message like this:
 ```
 Go to '.mp_svn' and run 'svn ci -m "Release 3.0.0-beta.9"' to publish the
@@ -157,4 +161,4 @@ release
 ```
 It's quite literal: you can review the changes to be pushed and if you're satisfied, run the suggested command to finish the release publishing process.
 
-If you're confident, execute `./do svn:publish --force` and your release will be published to the remote SVN repository without manual intervention (automatically). For easier authentication you might want to set `WP_SVN_USERNAME` and `WP_SVN_PASSWORD` environment variables.
+If you're confident, execute `./do publish --force` and your release will be published to the remote SVN repository without manual intervention (automatically). For easier authentication you might want to set `WP_SVN_USERNAME` and `WP_SVN_PASSWORD` environment variables.
