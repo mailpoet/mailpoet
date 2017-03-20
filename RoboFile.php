@@ -104,10 +104,24 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
+  function pushpot() {
+    return $this->collectionBuilder()
+      ->addCode(array($this, 'txinit'))
+      ->taskExec('tx push -s')
+      ->run();
+  }
+
   function packtranslations() {
+    return $this->collectionBuilder()
+      ->addCode(array($this, 'txinit'))
+      ->taskExec('./tasks/pack_translations.sh')
+      ->run();
+  }
+
+  function txinit() {
     // Define WP_TRANSIFEX_API_TOKEN env. variable
     $this->loadEnv();
-    return $this->_exec('./tasks/pack_translations.sh');
+    return $this->_exec('./tasks/transifex_init.sh');
   }
 
   function testUnit($opts=['file' => null, 'xml' => false]) {
@@ -309,6 +323,15 @@ class RoboFile extends \Robo\Tasks {
     }
 
     return $result;
+  }
+
+  public function publish($opts = ['force' => false]) {
+    return $this->collectionBuilder()
+      ->addCode(array($this, 'pushpot'))
+      ->addCode(function () use ($opts) {
+        return $this->svnPublish($opts);
+      })
+      ->run();
   }
 
   protected function loadEnv() {
