@@ -95,8 +95,6 @@ class Newsletters extends APIEndpoint {
         $newsletter = Newsletter::filter('filterWithOptions')
           ->findOne($newsletter->id);
 
-        do_action('mailpoet_api_newsletters_save_after', $newsletter);
-
         // if this is a post notification, process newsletter options and update its schedule
         if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
           // generate the new schedule from options and get the new "next run" date
@@ -110,6 +108,8 @@ class Newsletters extends APIEndpoint {
             ->save();
         }
       }
+
+      do_action('mailpoet_api_newsletters_save_after', $newsletter);
 
       return $this->successResponse($newsletter->asArray());
     }
