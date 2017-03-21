@@ -10,6 +10,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Hooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -36,7 +37,7 @@ class Newsletter {
       $this->tracking_image_inserted = OpenTracking::addTrackingImage();
       // render newsletter
       $rendered_newsletter = $newsletter->render();
-      $rendered_newsletter = apply_filters(
+      $rendered_newsletter = Hooks::applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $rendered_newsletter,
         $newsletter
@@ -46,7 +47,7 @@ class Newsletter {
     } else {
       // render newsletter
       $rendered_newsletter = $newsletter->render();
-      $rendered_newsletter = apply_filters(
+      $rendered_newsletter = Hooks::applyFilters(
         'mailpoet_sending_newsletter_render_after',
         $rendered_newsletter,
         $newsletter

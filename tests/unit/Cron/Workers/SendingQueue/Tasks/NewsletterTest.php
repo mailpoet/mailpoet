@@ -1,5 +1,6 @@
 <?php
 use Codeception\Util\Fixtures;
+use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
@@ -47,6 +48,7 @@ class NewsletterTaskTest extends MailPoetTest {
   }
 
   function testItHashesLinksAndInsertsTrackingImageWhenTrackingIsEnabled() {
+    WPHooksHelper::interceptApplyFilters();
     $newsletter_task = $this->newsletter_task;
     $newsletter_task->tracking_enabled = true;
     $newsletter_task->getAndPreProcess($this->queue);
@@ -58,9 +60,15 @@ class NewsletterTaskTest extends MailPoetTest {
       ->contains('[mailpoet_click_data]-' . $link->hash);
     expect($rendered_newsletter['html'])
       ->contains('[mailpoet_open_data]');
+
+    $hook_name = 'mailpoet_sending_newsletter_render_after';
+    expect(WPHooksHelper::isFilterApplied($hook_name))->true();
+    expect(WPHooksHelper::getFilterApplied($hook_name)[0])->internalType('array');
+    expect(WPHooksHelper::getFilterApplied($hook_name)[1] instanceof Newsletter)->true();
   }
 
   function testItDoesNotHashLinksAndInsertTrackingCodeWhenTrackingIsDisabled() {
+    WPHooksHelper::interceptApplyFilters();
     $newsletter_task = $this->newsletter_task;
     $newsletter_task->tracking_enabled = false;
     $newsletter_task->getAndPreProcess($this->queue);
@@ -73,6 +81,11 @@ class NewsletterTaskTest extends MailPoetTest {
       ->notContains('[mailpoet_click_data]');
     expect($rendered_newsletter['html'])
       ->notContains('[mailpoet_open_data]');
+
+    $hook_name = 'mailpoet_sending_newsletter_render_after';
+    expect(WPHooksHelper::isFilterApplied($hook_name))->true();
+    expect(WPHooksHelper::getFilterApplied($hook_name)[0])->internalType('array');
+    expect(WPHooksHelper::getFilterApplied($hook_name)[1] instanceof Newsletter)->true();
   }
 
   function testItReturnsFalseAndDeletesNewsletterWhenPostNotificationContainsNoPostsn() {
@@ -168,6 +181,7 @@ class NewsletterTaskTest extends MailPoetTest {
   }
 
   function _after() {
+    WPHooksHelper::releaseAllHooks();
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);

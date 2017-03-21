@@ -49,6 +49,31 @@ class LinksTest extends MailPoetTest {
     expect($updated_content)->notContains('link');
   }
 
+  function testItDoesNotReplaceUnprocessedLinks() {
+    $template = '<a href="http://link1.com">some site</a> [link:some_link_shortcode]';
+    $extracted_links = Links::extract($template);
+
+    $processed_links = array(
+      'http://link1.com' => array(
+        'url' => 'http://link1.com',
+        'processed_link' => 'replace by this'
+      )
+    );
+
+    list($updated_content, $replaced_links) =
+      Links::replace($template, $extracted_links, $processed_links);
+
+    // 1 links was replaced
+    expect(count($replaced_links))->equals(1);
+    // links in returned content were replaced with hashes
+    expect($updated_content)
+      ->contains('replace by this');
+    expect($updated_content)
+      ->contains('[link:some_link_shortcode]');
+    expect($updated_content)->notContains('http://link1.com');
+  }
+
+
   function testItCreatesAndTransformsUrlDataObject() {
     $subscriber_email = 'test@example.com';
     $data = array(
