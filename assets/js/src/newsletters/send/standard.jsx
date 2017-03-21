@@ -413,7 +413,7 @@ define(
       }
     ];
 
-    Hooks.doAction('mailpoet_newsletters_3rd_step_fields', fields);
+    fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
     return {
       getFields: function(newsletter) {

@@ -73,9 +73,9 @@ class Links {
     $processed_links = array();
     foreach($extracted_links as $extracted_link) {
       $hash = Security::generateRandomString(self::HASH_LENGTH);
-      // Use a hashed key to map between extracted and processed links
+      // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
-      $key = self::getKey($extracted_link['link']);
+      $key = $extracted_link['link'];
       $processed_links[$key] = array(
         'hash' => $hash,
         'url' => $extracted_link['link'],
@@ -89,9 +89,8 @@ class Links {
 
   static function replace($content, $extracted_links, $processed_links) {
     foreach($extracted_links as $key => $extracted_link) {
-      $key = self::getKey($extracted_link['link']);
-      if(!isset($processed_links[$key]['processed_link'])) {
-        // Skip this link
+      $key = $extracted_link['link'];
+      if(!($hasReplacement = isset($processed_links[$key]['processed_link']))) {
         continue;
       }
       $processed_link = $processed_links[$key]['processed_link'];
@@ -113,16 +112,13 @@ class Links {
         '[$1](' . $processed_link . ')',
         $content
       );
+      // Clean up data used to generate a new link
       unset($processed_links[$key]['processed_link']);
     }
     return array(
       $content,
       array_values($processed_links)
     );
-  }
-
-  static function getKey($value) {
-    return md5($value);
   }
 
   static function replaceSubscriberData(
