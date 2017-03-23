@@ -2,6 +2,7 @@
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
+use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\Endpoints\Newsletters;
 use MailPoet\API\Response as APIResponse;
 use MailPoet\Models\Newsletter;
@@ -43,6 +44,8 @@ class NewslettersTest extends MailPoetTest {
     expect($response->errors[0]['message'])
       ->equals('This newsletter does not exist.');
 
+    WPHooksHelper::interceptApplyFilters();
+
     $response = $router->get(array('id' => $this->newsletter->id));
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -51,6 +54,9 @@ class NewslettersTest extends MailPoetTest {
         ->withOptions()
         ->asArray()
     );
+    $hook_name = 'mailpoet_api_newsletters_get_after';
+    expect(WPHooksHelper::isFilterApplied($hook_name))->true();
+    expect(WPHooksHelper::getFilterApplied($hook_name)[0])->internalType('array');
   }
 
   function testItCanSaveANewNewsletter() {
@@ -67,6 +73,9 @@ class NewslettersTest extends MailPoetTest {
       )
     );
 
+    WPHooksHelper::interceptApplyFilters();
+    WPHooksHelper::interceptDoAction();
+
     $router = new Newsletters();
     $response = $router->save($valid_data);
     $saved_newsletter = Newsletter::filter('filterWithOptions')
@@ -75,6 +84,14 @@ class NewslettersTest extends MailPoetTest {
     expect($response->data)->equals($saved_newsletter->asArray());
     // newsletter option should be saved
     expect($saved_newsletter->some_option)->equals('some_option_value');
+
+    $hook_name = 'mailpoet_api_newsletters_save_before';
+    expect(WPHooksHelper::isFilterApplied($hook_name))->true();
+    expect(WPHooksHelper::getFilterApplied($hook_name)[0])->internalType('array');
+    $hook_name = 'mailpoet_api_newsletters_save_after';
+    expect(WPHooksHelper::isActionDone($hook_name))->true();
+    expect(WPHooksHelper::getActionDone($hook_name)[0] instanceof Newsletter)->true();
+
 
     $invalid_data = array(
       'subject' => 'Missing newsletter type'
@@ -305,6 +322,8 @@ class NewslettersTest extends MailPoetTest {
   }
 
   function testItCanDuplicateANewsletter() {
+    WPHooksHelper::interceptDoAction();
+
     $router = new Newsletters();
     $response = $router->duplicate(array('id' => $this->newsletter->id));
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -314,6 +333,10 @@ class NewslettersTest extends MailPoetTest {
         ->asArray()
     );
     expect($response->meta['count'])->equals(1);
+
+    $hook_name = 'mailpoet_api_newsletters_duplicate_after';
+    expect(WPHooksHelper::isActionDone($hook_name))->true();
+    expect(WPHooksHelper::getActionDone($hook_name)[0] instanceof Newsletter)->true();
 
     $response = $router->duplicate(array('id' => $this->post_notification->id));
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -614,6 +637,7 @@ class NewslettersTest extends MailPoetTest {
   }
 
   function _after() {
+    WPHooksHelper::releaseAllHooks();
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);

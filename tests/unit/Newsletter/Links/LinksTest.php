@@ -15,6 +15,7 @@ class LinksTest extends MailPoetTest {
 
     expect($result[0])->equals(
       array(
+        'type' => Links::LINK_TYPE_LINK,
         'html' => 'href="http://link1.com"',
         'link' => 'http://link1.com'
       )
@@ -27,6 +28,7 @@ class LinksTest extends MailPoetTest {
 
     expect($result[0])->equals(
       array(
+        'type' => Links::LINK_TYPE_SHORTCODE,
         'html' => '[link:some_link_shortcode]',
         'link' => '[link:some_link_shortcode]'
       )
@@ -46,6 +48,31 @@ class LinksTest extends MailPoetTest {
       ->contains(Links::DATA_TAG_CLICK . '-' . $hashed_links[1]['hash']);
     expect($updated_content)->notContains('link');
   }
+
+  function testItDoesNotReplaceUnprocessedLinks() {
+    $template = '<a href="http://link1.com">some site</a> [link:some_link_shortcode]';
+    $extracted_links = Links::extract($template);
+
+    $processed_links = array(
+      'http://link1.com' => array(
+        'url' => 'http://link1.com',
+        'processed_link' => 'replace by this'
+      )
+    );
+
+    list($updated_content, $replaced_links) =
+      Links::replace($template, $extracted_links, $processed_links);
+
+    expect($extracted_links)->count(2);
+    expect($replaced_links)->count(1);
+    // links in returned content were replaced with hashes
+    expect($updated_content)
+      ->contains('replace by this');
+    expect($updated_content)
+      ->contains('[link:some_link_shortcode]');
+    expect($updated_content)->notContains('http://link1.com');
+  }
+
 
   function testItCreatesAndTransformsUrlDataObject() {
     $subscriber_email = 'test@example.com';
@@ -139,7 +166,7 @@ class LinksTest extends MailPoetTest {
     $newsletter_link->url = '[link:newsletter_view_in_browser_url]';
     $newsletter_link = $newsletter_link->save();
     $content = '
-      <a href="[mailpoet_click_data]-90e56">View in browser</a> 
+      <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
     $result = Links::convertHashedLinksToShortcodesAndUrls($content);
     expect($result)->contains($newsletter_link->url);
@@ -161,7 +188,7 @@ class LinksTest extends MailPoetTest {
     $newsletter_link_2->url = 'http://google.com';
     $newsletter_link_2 = $newsletter_link_2->save();
     $content = '
-      <a href="[mailpoet_click_data]-90e56">View in browser</a> 
+      <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
     $result = Links::convertHashedLinksToShortcodesAndUrls($content, $convert_all = true);
     expect($result)->contains($newsletter_link_1->url);

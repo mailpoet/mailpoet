@@ -15,6 +15,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\WP\Hooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -29,12 +30,12 @@ class Newsletters extends APIEndpoint {
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet')
       ));
     } else {
-      return $this->successResponse(
-        $newsletter
+      $newsletter = $newsletter
         ->withSegments()
         ->withOptions()
-        ->asArray()
-      );
+        ->asArray();
+      $newsletter = Hooks::applyFilters('mailpoet_api_newsletters_get_after', $newsletter);
+      return $this->successResponse($newsletter);
     }
   }
 
@@ -50,6 +51,8 @@ class Newsletters extends APIEndpoint {
       $options = $data['options'];
       unset($data['options']);
     }
+
+    $data = Hooks::applyFilters('mailpoet_api_newsletters_save_before', $data);
 
     $newsletter = Newsletter::createOrUpdate($data);
     $errors = $newsletter->getErrors();
@@ -106,6 +109,8 @@ class Newsletters extends APIEndpoint {
             ->save();
         }
       }
+
+      Hooks::doAction('mailpoet_api_newsletters_save_after', $newsletter);
 
       return $this->successResponse($newsletter->asArray());
     }
@@ -204,6 +209,7 @@ class Newsletters extends APIEndpoint {
       if(!empty($errors)) {
         return $this->errorResponse($errors);
       } else {
+        Hooks::doAction('mailpoet_api_newsletters_duplicate_after', $newsletter, $duplicate);
         return $this->successResponse(
           Newsletter::findOne($duplicate->id)->asArray(),
           array('count' => 1)

@@ -51,6 +51,14 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
 
 <% block translations %><% endblock %>
 
+<% block after_translations %><% endblock %>
+
+<%= javascript(
+  'admin_vendor.js'
+)%>
+
+<%= do_action('mailpoet_scripts_admin_before') %>
+
 <%= javascript(
   'admin.js'
 )%>

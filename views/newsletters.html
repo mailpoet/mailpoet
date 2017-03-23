@@ -242,5 +242,9 @@
     'mailerCheckSettingsNotice': __('Check your [link]sending method settings[/link].'),
     'mailerResumeSendingButton': __('Resume sending'),
     'mailerSendingResumedNotice': __('Sending has been resumed.')
-}) %>
+  }) %>
+<% endblock %>
+
+<% block after_translations %>
+  <%= do_action('mailpoet_newsletters_translations_after') %>
 <% endblock %>

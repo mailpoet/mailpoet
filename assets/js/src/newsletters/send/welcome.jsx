@@ -1,10 +1,12 @@
 define(
   [
     'mailpoet',
+    'wp-js-hooks',
     'newsletters/types/welcome/scheduling.jsx'
   ],
   function(
     MailPoet,
+    Hooks,
     Scheduling
   ) {
 
@@ -71,6 +73,8 @@ define(
       }
     ];
 
+    fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
+
     return {
       getFields: function(newsletter) {
         return fields;
@@ -83,4 +87,3 @@ define(
     };
   }
 );
-

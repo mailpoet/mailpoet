@@ -2,7 +2,8 @@ var webpack = require('webpack'),
     _ = require('underscore'),
     path = require('path'),
     baseConfig = {},
-    config = [];
+    config = [],
+    globalPrefix = 'MailPoetLib';
 
 baseConfig = {
   context: __dirname,
@@ -26,6 +27,7 @@ baseConfig = {
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'interact$': 'interact.js/interact.js',
       'spectrum$': 'spectrum-colorpicker/spectrum.js',
+      'wp-js-hooks': 'WP-JS-Hooks/src/event-manager.js',
       'blob$': 'blob/Blob.js',
       'filesaver$': 'filesaver/FileSaver.js',
       'papaparse': 'papaparse/papaparse.min.js',
@@ -58,6 +60,18 @@ baseConfig = {
       {
         include: require.resolve('underscore'),
         loader: 'expose-loader?_',
+      },
+      {
+        include: require.resolve('react'),
+        loader: 'expose-loader?' + globalPrefix + '.React',
+      },
+       {
+        include: require.resolve('react-string-replace'),
+        loader: 'expose-loader?' + globalPrefix + '.ReactStringReplace',
+      },
+      {
+        test: /wp-js-hooks/i,
+        loader: 'expose-loader?' + globalPrefix + '.Hooks!exports-loader?wp.hooks',
       },
       {
         include: /Blob.js$/,
@@ -93,7 +107,8 @@ config.push(_.extend({}, baseConfig, {
   entry: {
     vendor: [
       'handlebars',
-      'handlebars_helpers'
+      'handlebars_helpers',
+      'wp-js-hooks'
     ],
     mailpoet: [
       'mailpoet',
@@ -104,6 +119,12 @@ config.push(_.extend({}, baseConfig, {
       'notice',
       'jquery.serialize_object',
       'parsleyjs'
+    ],
+    admin_vendor: [
+      'react',
+      'react-dom',
+      'react-router',
+      'react-string-replace'
     ],
     admin: [
       'subscribers/subscribers.jsx',
@@ -166,6 +187,7 @@ config.push(_.extend({}, baseConfig, {
     ]
   },
   plugins: [
+    new webpack.optimize.CommonsChunkPlugin('admin_vendor', 'admin_vendor.js', ['admin_vendor', 'admin']),
     new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js')
   ],
   externals: {

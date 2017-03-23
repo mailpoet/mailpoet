@@ -3,6 +3,7 @@ namespace MailPoet\API;
 
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
+use MailPoet\WP\Hooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -40,7 +41,7 @@ class API {
   }
 
   function setupAjax() {
-    do_action('mailpoet_api_setup', array($this));
+    Hooks::doAction('mailpoet_api_setup', array($this));
 
     $this->getRequestData($_POST);
 
