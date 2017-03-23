@@ -1,7 +1,9 @@
 <?php
 namespace MailPoet\API\Endpoints;
+
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\Config\Activator;
+use MailPoet\WP\Hooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -11,6 +13,7 @@ class Setup extends APIEndpoint {
       $activator = new Activator();
       $activator->deactivate();
       $activator->activate();
+      Hooks::doAction('mailpoet_setup_reset');
       return $this->successResponse();
     } catch(\Exception $e) {
       return $this->errorResponse(array(

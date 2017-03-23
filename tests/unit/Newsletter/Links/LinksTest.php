@@ -63,8 +63,8 @@ class LinksTest extends MailPoetTest {
     list($updated_content, $replaced_links) =
       Links::replace($template, $extracted_links, $processed_links);
 
-    // 1 links was replaced
-    expect(count($replaced_links))->equals(1);
+    expect($extracted_links)->count(2);
+    expect($replaced_links)->count(1);
     // links in returned content were replaced with hashes
     expect($updated_content)
       ->contains('replace by this');
