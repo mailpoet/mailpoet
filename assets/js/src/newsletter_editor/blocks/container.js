@@ -74,13 +74,37 @@ define([
     },
   });
 
-  Module.ContainerBlockView = Marionette.CompositeView.extend({
-    regionClass: Marionette.Region,
+  Module.ContainerBlocksView = Marionette.CollectionView.extend({
+    className: 'mailpoet_container',
+    childView: function(model) {
+      return App.getBlockTypeView(model.get('type'));
+    },
+    childViewOptions: function() {
+      var newRenderOptions = _.clone(this.renderOptions);
+      if (newRenderOptions.depth !== undefined) {
+        newRenderOptions.depth += 1;
+      }
+      return {
+        renderOptions: newRenderOptions
+      };
+    },
+    emptyView: Module.ContainerBlockEmptyView,
+    emptyViewOptions: function() { return { renderOptions: this.renderOptions }; },
+    initialize: function(options) {
+      this.renderOptions = options.renderOptions;
+    }
+  });
+
+  Module.ContainerBlockView = Marionette.View.extend({
+    regions: {
+      blocks: {
+        el: '> .mailpoet_container',
+        replaceElement: true
+      },
+      toolsRegion: '> .mailpoet_tools',
+    },
     className: 'mailpoet_block mailpoet_container_block mailpoet_droppable_block mailpoet_droppable_layout_block',
     getTemplate: function() { return templates.containerBlock; },
-    childViewContainer: '> .mailpoet_container',
-    getEmptyView: function() { return Module.ContainerBlockEmptyView; },
-    emptyViewOptions: function() { return { renderOptions: this.renderOptions }; },
     modelEvents: {
       'change': 'render',
       'delete': 'deleteBlock',
@@ -89,9 +113,6 @@ define([
       "mouseenter": "showTools",
       "mouseleave": "hideTools",
       "click .mailpoet_newsletter_layer_selector": "toggleEditingLayer",
-    },
-    regions: {
-      toolsRegion: '> .mailpoet_tools',
     },
     ui: {
       tools: '> .mailpoet_tools'
@@ -137,39 +158,18 @@ define([
       return Module.OneColumnContainerWidgetView;
 
     },
-    constructor: function() {
-      // Set the block collection to be handled by this view as well
-      arguments[0].collection = arguments[0].model.get('blocks');
-      Marionette.CompositeView.apply(this, arguments);
-      this.$el.addClass('mailpoet_editor_view_' + this.cid);
-    },
     initialize: function(options) {
       this.renderOptions = _.defaults(options.renderOptions || {}, {});
-      this.on('dom:refresh', this.showBlock, this);
-      this._isFirstRender = true;
     },
-    // Determines which view type should be used for a child
-    getChildView: function(model) {
-      // TODO: If type does not have a type registered, use a generic one
-      return App.getBlockTypeView(model.get('type'));
-    },
-    childViewOptions: function() {
-      var newRenderOptions = _.clone(this.renderOptions);
-      if (newRenderOptions.depth !== undefined) {
-        newRenderOptions.depth += 1;
-      }
-      return {
-        renderOptions: newRenderOptions
-      };
-    },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         viewCid: this.cid,
       };
     },
     onRender: function() {
-      this._rebuildRegions();
+      this.$el.addClass('mailpoet_editor_view_' + this.cid);
+
       this.toolsView = new Module.ContainerBlockToolsView({
         model: this.model,
         tools: {
@@ -179,10 +179,15 @@ define([
           layerSelector: false,
         },
       });
-      this.toolsRegion.show(this.toolsView);
-    },
-    onBeforeDestroy: function() {
-      this.regionManager.destroy();
+      this.showChildView('toolsRegion', this.toolsView);
+      this.showChildView('blocks', new Module.ContainerBlocksView({
+        collection: this.model.get('blocks'),
+        renderOptions: this.renderOptions
+      }));
+
+      // TODO: Look for a better way to do this than here
+      // Sets child container orientation HTML class here, as child CollectionView won't have access to model and will overwrite existing region element instead
+      this.$('> .mailpoet_container').attr('class', 'mailpoet_container mailpoet_container_' + this.model.get('orientation'));
     },
     showTools: function() {
       if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
@@ -222,33 +227,10 @@ define([
       }
       event.stopPropagation();
     },
-    _buildRegions: function(regions) {
-      var that = this;
-
-      var defaults = {
-        regionClass: this.getOption('regionClass'),
-        parentEl: function() { return that.$el; }
-      };
-
-      return this.regionManager.addRegions(regions, defaults);
-    },
-    _rebuildRegions: function() {
-      if (this.regionManager === undefined) {
-        this.regionManager = new Marionette.RegionManager();
-      }
-      this.regionManager.destroy();
-      _.extend(this, this._buildRegions(this.regions));
-    },
     getDropFunc: function() {
       return function() {
         return this.model.clone();
       }.bind(this);
-    },
-    showBlock: function() {
-      if (this._isFirstRender) {
-        this.transitionIn();
-        this._isFirstRender = false;
-      }
     },
     deleteBlock: function() {
       this.transitionOut().done(function() {
@@ -286,12 +268,12 @@ define([
     },
   });
 
-  Module.ContainerBlockEmptyView = Marionette.ItemView.extend({
+  Module.ContainerBlockEmptyView = Marionette.View.extend({
     getTemplate: function() { return templates.containerEmpty; },
     initialize: function(options) {
       this.renderOptions = _.defaults(options.renderOptions || {}, {});
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         isRoot: this.renderOptions.depth === 0,
         emptyContainerMessage: this.renderOptions.emptyContainerMessage || '',
@@ -322,12 +304,12 @@ define([
       });
     },
     onRender: function() {
-      this.columnsSettingsRegion.show(this._columnsSettingsView);
+      this.showChildView('columnsSettingsRegion', this._columnsSettingsView);
     },
   });
 
   Module.ContainerBlockColumnsSettingsView = Marionette.CollectionView.extend({
-    getChildView: function() { return Module.ContainerBlockColumnSettingsView; },
+    childView: function() { return Module.ContainerBlockColumnSettingsView; },
     childViewOptions: function(model, index) {
       return {
         columnIndex: index,
@@ -335,12 +317,12 @@ define([
     },
   });
 
-  Module.ContainerBlockColumnSettingsView = Marionette.ItemView.extend({
+  Module.ContainerBlockColumnSettingsView = Marionette.View.extend({
     getTemplate: function() { return templates.containerBlockColumnSettings; },
     initialize: function(options) {
       this.columnNumber = (options.columnIndex || 0) + 1;
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         columnNumber: this.columnNumber,

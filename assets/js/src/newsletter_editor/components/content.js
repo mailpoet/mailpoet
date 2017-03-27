@@ -80,7 +80,7 @@ define([
     Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['body']));
   });
 
-  App.on('start', function(options) {
+  App.on('start', function(App, options) {
     var body = options.newsletter.body;
     var content = (_.has(body, 'content')) ? body.content : {};
 
@@ -97,7 +97,7 @@ define([
       renderOptions: { depth: 0 },
     });
 
-    App._appView.contentRegion.show(App._contentContainerView);
+    App._appView.showChildView('contentRegion', App._contentContainerView);
   });
 
 

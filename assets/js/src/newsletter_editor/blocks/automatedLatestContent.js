@@ -151,8 +151,8 @@ define([
           emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
         };
       this.toolsView = new Module.AutomatedLatestContentBlockToolsView({ model: this.model });
-      this.toolsRegion.show(this.toolsView);
-      this.postsRegion.show(new ContainerView({ model: this.model.get('_container'), renderOptions: renderOptions }));
+      this.showChildView('toolsRegion', this.toolsView);
+      this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_container'), renderOptions: renderOptions }));
     },
   });
 
@@ -189,7 +189,7 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
       };

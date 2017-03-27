@@ -24,7 +24,7 @@ define([
     return Module._config;
   };
 
-  App.on('before:start', function(options) {
+  App.on('before:start', function(App, options) {
     // Expose config methods globally
     App.getConfig = Module.getConfig;
     App.setConfig = Module.setConfig;

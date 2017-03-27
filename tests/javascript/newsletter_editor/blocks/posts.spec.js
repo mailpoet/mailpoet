@@ -27,6 +27,7 @@ define([
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
+        EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
         model = new (PostsBlock.PostsBlockModel)();
       });
 

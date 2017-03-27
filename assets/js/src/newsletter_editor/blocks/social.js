@@ -17,6 +17,7 @@ define([
       base = BaseBlock,
       SocialBlockSettingsIconSelectorView,
       SocialBlockSettingsIconView,
+      SocialBlockSettingsIconCollectionView,
       SocialBlockSettingsStylesView;
 
   Module.SocialIconModel = SuperModel.extend({
@@ -82,13 +83,13 @@ define([
     },
   });
 
-  var SocialIconView = Marionette.ItemView.extend({
+  var SocialIconView = Marionette.View.extend({
     tagName: 'span',
     getTemplate: function() { return templates.socialIconBlock; },
     modelEvents: {
       'change': 'render',
     },
-    templateHelpers: function() {
+    templateContext: function() {
       var allIconSets = App.getAvailableStyles().get('socialIconSets');
       return {
         model: this.model.toJSON(),
@@ -98,11 +99,13 @@ define([
     },
   });
 
-  Module.SocialBlockView = Marionette.CompositeView.extend({
-    regionClass: Marionette.Region,
+  Module.SocialIconCollectionView = Marionette.CollectionView.extend({
+    childView: SocialIconView,
+  });
+
+  Module.SocialBlockView = Marionette.View.extend({
     className: 'mailpoet_block mailpoet_social_block mailpoet_droppable_block',
     getTemplate: function() { return templates.socialBlock; },
-    childViewContainer: '.mailpoet_social',
     modelEvents: {
       'change': 'render',
       'delete': 'deleteBlock',
@@ -113,6 +116,7 @@ define([
     },
     regions: {
       toolsRegion: '> .mailpoet_tools',
+      icons: '.mailpoet_social'
     },
     ui: {
       tools: '> .mailpoet_tools'
@@ -144,32 +148,35 @@ define([
       ShowSettingsBehavior: {},
     },
     onDragSubstituteBy: function() { return Module.SocialWidgetView; },
-    constructor: function() {
-      // Set the block collection to be handled by this view as well
-      arguments[0].collection = arguments[0].model.get('icons');
-      Marionette.CompositeView.apply(this, arguments);
-    },
+    //constructor: function() {
+      //// Set the block collection to be handled by this view as well
+      //arguments[0].collection = arguments[0].model.get('icons');
+      //Marionette.CompositeView.apply(this, arguments);
+    //},
     initialize: function() {
       this.on('showSettings', this.showSettings, this);
-      this.on('dom:refresh', this.showBlock, this);
-      this._isFirstRender = true;
+      //this.on('dom:refresh', this.showBlock, this);
+      //this._isFirstRender = true;
     },
     // Determines which view type should be used for a child
-    childView: SocialIconView,
-    templateHelpers: function() {
+    //childView: SocialIconView,
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         viewCid: this.cid,
       };
     },
     onRender: function() {
-      this._rebuildRegions();
+      //this._rebuildRegions();
       this.toolsView = new Module.SocialBlockToolsView({ model: this.model });
-      this.toolsRegion.show(this.toolsView);
+      this.showChildView('toolsRegion', this.toolsView);
+      this.showChildView('icons', new Module.SocialIconCollectionView({
+        collection: this.model.get('icons')
+      }))
     },
-    onBeforeDestroy: function() {
-      this.regionManager.destroy();
-    },
+    //onBeforeDestroy: function() {
+      //this.regionManager.destroy();
+    //},
     showTools: function(_event) {
       this.$(this.ui.tools).addClass('mailpoet_display_tools');
       _event.stopPropagation();
@@ -186,29 +193,29 @@ define([
         return this.model.clone();
       }.bind(this);
     },
-    _buildRegions: function(regions) {
-      var that = this;
+    //_buildRegions: function(regions) {
+      //var that = this;
 
-      var defaults = {
-        regionClass: this.getOption('regionClass'),
-        parentEl: function() { return that.$el; }
-      };
+      //var defaults = {
+        //regionClass: this.getOption('regionClass'),
+        //parentEl: function() { return that.$el; }
+      //};
 
-      return this.regionManager.addRegions(regions, defaults);
-    },
-    _rebuildRegions: function() {
-      if (this.regionManager === undefined) {
-        this.regionManager = new Marionette.RegionManager();
-      }
-      this.regionManager.destroy();
-      _.extend(this, this._buildRegions(this.regions));
-    },
-    showBlock: function() {
-      if (this._isFirstRender) {
-        this.transitionIn();
-        this._isFirstRender = false;
-      }
-    },
+      //return this.regionManager.addRegions(regions, defaults);
+    //},
+    //_rebuildRegions: function() {
+      //if (this.regionManager === undefined) {
+        //this.regionManager = new Marionette.RegionManager();
+      //}
+      //this.regionManager.destroy();
+      //_.extend(this, this._buildRegions(this.regions));
+    //},
+    //showBlock: function() {
+      //if (this._isFirstRender) {
+        //this.transitionIn();
+        //this._isFirstRender = false;
+      //}
+    //},
     deleteBlock: function() {
       this.transitionOut().done(function() {
         this.model.destroy();
@@ -268,13 +275,13 @@ define([
       this._stylesView = new SocialBlockSettingsStylesView({ model: this.model });
     },
     onRender: function() {
-      this.iconRegion.show(this._iconSelectorView);
-      this.stylesRegion.show(this._stylesView);
+      this.showChildView('iconRegion', this._iconSelectorView);
+      this.showChildView('stylesRegion', this._stylesView);
     }
   });
 
   // Single icon settings view, used by the selector view
-  SocialBlockSettingsIconView = Marionette.ItemView.extend({
+  SocialBlockSettingsIconView = Marionette.View.extend({
     getTemplate: function() { return templates.socialSettingsIcon; },
     events: function() {
       return {
@@ -294,7 +301,7 @@ define([
         this.$('.mailpoet_social_icon_image').attr('alt', this.model.get('text'));
       },
     },
-    templateHelpers: function() {
+    templateContext: function() {
       var icons = App.getConfig().get('socialIcons'),
         // Construct icon type list of format [{iconType: 'type', title: 'Title'}, ...]
         availableIconTypes = _.map(_.keys(icons.attributes), function(key) { return { iconType: key, title: icons.get(key).get('title') }; }),
@@ -321,11 +328,18 @@ define([
     },
   });
 
-  // Select icons section container view
-  SocialBlockSettingsIconSelectorView = Marionette.CompositeView.extend({
-    getTemplate: function() { return templates.socialSettingsIconSelector; },
+  SocialBlockSettingsIconCollectionView = Marionette.CollectionView.extend({
     childView: SocialBlockSettingsIconView,
-    childViewContainer: '#mailpoet_social_icon_selector_contents',
+  });
+
+  // Select icons section container view
+  SocialBlockSettingsIconSelectorView = Marionette.View.extend({
+    getTemplate: function() { return templates.socialSettingsIconSelector; },
+    regions: {
+      'icons': '#mailpoet_social_icon_selector_contents'
+    },
+    //childView: SocialBlockSettingsIconView,
+    //childViewContainer: '#mailpoet_social_icon_selector_contents',
     events: {
       'click .mailpoet_add_social_icon': 'addSocialIcon',
     },
@@ -337,18 +351,24 @@ define([
         items: '#mailpoet_social_icon_selector_contents > div',
       },
     },
-    constructor: function() {
-      // Set the icon collection to be handled by this view as well
-      arguments[0].collection = arguments[0].model.get('icons');
-      Marionette.CompositeView.apply(this, arguments);
-    },
+    //constructor: function() {
+      //// Set the icon collection to be handled by this view as well
+      //arguments[0].collection = arguments[0].model.get('icons');
+      //Marionette.CompositeView.apply(this, arguments);
+    //},
     addSocialIcon: function() {
       // Add a social icon with default values
-      this.collection.add({});
+      this.model.get('icons').add({});
+    },
+    onRender: function() {
+      this.showChildView('icons', new SocialBlockSettingsIconCollectionView({
+        collection: this.model.get('icons')
+      }));
     }
+
   });
 
-  SocialBlockSettingsStylesView = Marionette.ItemView.extend({
+  SocialBlockSettingsStylesView = Marionette.View.extend({
     getTemplate: function() { return templates.socialSettingsStyles; },
     modelEvents: {
       'change': 'render',
@@ -359,7 +379,7 @@ define([
     initialize: function() {
       this.listenTo(this.model.get('icons'), 'add remove change', this.render);
     },
-    templateHelpers: function() {
+    templateContext: function() {
       var allIconSets = App.getAvailableStyles().get('socialIconSets');
       return {
         activeSet: this.model.get('iconSet'),

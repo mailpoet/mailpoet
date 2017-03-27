@@ -36,17 +36,17 @@ define([
     className: "mailpoet_block mailpoet_image_block mailpoet_droppable_block",
     getTemplate: function() { return templates.imageBlock; },
     onDragSubstituteBy: function() { return Module.ImageWidgetView; },
-    templateHelpers: function() {
+    templateContext: function() {
       return _.extend({
         imageMissingSrc: App.getConfig().get('urls.imageMissing'),
-      }, base.BlockView.prototype.templateHelpers.apply(this));
+      }, base.BlockView.prototype.templateContext.apply(this));
     },
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
       ShowSettingsBehavior: {},
     }),
     onRender: function() {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
-      this.toolsRegion.show(this.toolsView);
+      this.showChildView('toolsRegion', this.toolsView);
 
       if (this.model.get('fullWidth')) {
         this.$el.addClass('mailpoet_full_image');

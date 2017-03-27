@@ -10,9 +10,9 @@ define([
 
   var Module = {};
 
-  Module.HeadingView = Marionette.ItemView.extend({
+  Module.HeadingView = Marionette.View.extend({
     getTemplate: function() { return templates.heading; },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
       };
@@ -28,8 +28,8 @@ define([
     },
   });
 
-  App.on('start', function(options) {
-    App._appView.headingRegion.show(new Module.HeadingView({ model: App.getNewsletter() }));
+  App.on('start', function(App, options) {
+    App._appView.showChildView('headingRegion', new Module.HeadingView({ model: App.getNewsletter() }));
   });
 
   return Module;

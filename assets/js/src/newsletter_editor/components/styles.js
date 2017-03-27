@@ -46,11 +46,14 @@ define([
     },
   });
 
-  Module.StylesView = Marionette.ItemView.extend({
+  Module.StylesView = Marionette.View.extend({
     getTemplate: function() { return templates.styles; },
     modelEvents: {
       'change': 'render',
     },
+    serializeData: function() {
+      return this.model.toJSON();
+    }
   });
 
   Module._globalStyles = new SuperModel();
@@ -65,7 +68,7 @@ define([
     return App.getConfig().get('availableStyles');
   };
 
-  App.on('before:start', function(options) {
+  App.on('before:start', function(App, options) {
     // Expose style methods to global application
     App.getGlobalStyles = Module.getGlobalStyles;
     App.setGlobalStyles = Module.setGlobalStyles;
@@ -76,9 +79,9 @@ define([
     this.setGlobalStyles(globalStyles);
   });
 
-  App.on('start', function(options) {
+  App.on('start', function(App, options) {
     var stylesView = new Module.StylesView({ model: App.getGlobalStyles() });
-    App._appView.stylesRegion.show(stylesView);
+    App._appView.showChildView('stylesRegion', stylesView);
   });
 
   return Module;

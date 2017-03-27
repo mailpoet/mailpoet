@@ -56,7 +56,7 @@ define([
     },
     onRender: function() {
       this.toolsView = new Module.ButtonBlockToolsView({ model: this.model });
-      this.toolsRegion.show(this.toolsView);
+      this.showChildView('toolsRegion', this.toolsView);
     },
   });
 
@@ -98,7 +98,7 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         availableStyles: App.getAvailableStyles().toJSON(),

@@ -8,6 +8,9 @@ define([
       var model;
       beforeEach(function () {
         global.stubChannel(EditorApplication);
+        global.stubConfig(EditorApplication, {
+          blockDefaults: {},
+        });
         model = new (FooterBlock.FooterBlockModel)();
       });
 

@@ -17,7 +17,7 @@ define([
   "use strict";
 
   var Module = {},
-      AugmentedView = Marionette.LayoutView.extend({});
+      AugmentedView = Marionette.View.extend({});
 
   Module.BlockModel = SuperModel.extend({
     stale: [], // Attributes to be removed upon saving
@@ -82,7 +82,7 @@ define([
       },
       HighlightEditingBehavior: {},
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         viewCid: this.cid,
@@ -94,8 +94,8 @@ define([
     },
     initialize: function() {
       this.on('showSettings', this.showSettings, this);
-      this.on('dom:refresh', this.showBlock, this);
-      this._isFirstRender = true;
+      //this.on('dom:refresh', this.showBlock, this);
+      //this._isFirstRender = true;
     },
     showTools: function(_event) {
       if (!this.showingToolsDisabled) {
@@ -125,12 +125,12 @@ define([
         return this.model.clone();
       }.bind(this);
     },
-    showBlock: function() {
-      if (this._isFirstRender) {
-        this.transitionIn();
-        this._isFirstRender = false;
-      }
-    },
+    //showBlock: function() {
+      //if (this._isFirstRender) {
+        //this.transitionIn();
+        //this._isFirstRender = false;
+      //}
+    //},
     deleteBlock: function() {
       this.transitionOut().then(function() {
         this.model.destroy();
@@ -193,7 +193,7 @@ define([
       this.on('hideTools', this.hideDeletionConfirmation, this);
       this.on('showSettings', this.changeSettings);
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         viewCid: this.cid,
@@ -217,7 +217,7 @@ define([
     },
   });
 
-  Module.BlockSettingsView = Marionette.LayoutView.extend({
+  Module.BlockSettingsView = Marionette.View.extend({
     className: 'mailpoet_editor_settings',
     behaviors: {
       ColorPickerBehavior: {},
@@ -271,7 +271,7 @@ define([
     },
   });
 
-  Module.WidgetView = Marionette.ItemView.extend({
+  Module.WidgetView = Marionette.View.extend({
     className: 'mailpoet_widget mailpoet_droppable_block mailpoet_droppable_widget',
     behaviors: {
       DraggableBehavior: {

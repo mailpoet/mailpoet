@@ -55,7 +55,7 @@ define([
     onDragSubstituteBy: function() { return Module.HeaderWidgetView; },
     onRender: function() {
       this.toolsView = new Module.HeaderBlockToolsView({ model: this.model });
-      this.toolsRegion.show(this.toolsView);
+      this.showChildView('toolsRegion', this.toolsView);
     },
     onTextEditorChange: function(newContent) {
       this.model.set('text', newContent);
@@ -96,7 +96,7 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         availableStyles: App.getAvailableStyles().toJSON(),

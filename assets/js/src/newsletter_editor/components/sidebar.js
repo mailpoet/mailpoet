@@ -52,7 +52,7 @@ define([
   Module.registerLayoutWidget = function(widget) { return Module._layoutWidgets.add(widget); };
   Module.getLayoutWidgets = function() { return Module._layoutWidgets; };
 
-  var SidebarView = Marionette.LayoutView.extend({
+  var SidebarView = Marionette.View.extend({
     getTemplate: function() { return templates.sidebar; },
     regions: {
       contentRegion: '.mailpoet_content_region',
@@ -96,17 +96,17 @@ define([
         .on('scroll', this.updateHorizontalScroll.bind(this));
     },
     onRender: function() {
-      this.contentRegion.show(new Module.SidebarWidgetsView({
-        collection: App.getWidgets(),
-      }));
-      this.layoutRegion.show(new Module.SidebarLayoutWidgetsView({
-        collection: App.getLayoutWidgets(),
-      }));
-      this.stylesRegion.show(new Module.SidebarStylesView({
+      this.showChildView('contentRegion', new Module.SidebarWidgetsView(
+        App.getWidgets()
+      ));
+      this.showChildView('layoutRegion', new Module.SidebarLayoutWidgetsView(
+        App.getLayoutWidgets()
+      ));
+      this.showChildView('stylesRegion', new Module.SidebarStylesView({
         model: App.getGlobalStyles(),
         availableStyles: App.getAvailableStyles(),
       }));
-      this.previewRegion.show(new Module.SidebarPreviewView());
+      this.showChildView('previewRegion', new Module.SidebarPreviewView());
     },
     updateHorizontalScroll: function() {
       // Fixes the sidebar so that on narrower screens the horizontal
@@ -137,14 +137,30 @@ define([
   });
 
   /**
+   * Draggable widget collection view
+   */
+  Module.SidebarWidgetsCollectionView = Marionette.CollectionView.extend({
+    childView: function(item) { return item.get('widgetView'); }
+  });
+
+  /**
    * Responsible for rendering draggable content widgets
    */
-  Module.SidebarWidgetsView = Marionette.CompositeView.extend({
+  Module.SidebarWidgetsView = Marionette.View.extend({
     getTemplate: function() { return templates.sidebarContent; },
-    getChildView: function(model) {
-      return model.get('widgetView');
+    regions: {
+      widgets: '.mailpoet_region_content'
     },
-    childViewContainer: '.mailpoet_region_content',
+
+    initialize: function(widgets) {
+      this.widgets = widgets;
+    },
+
+    onRender: function() {
+      this.showChildView('widgets', new Module.SidebarWidgetsCollectionView({
+        collection: this.widgets
+      }));
+    }
   });
 
   /**
@@ -153,10 +169,11 @@ define([
   Module.SidebarLayoutWidgetsView = Module.SidebarWidgetsView.extend({
     getTemplate: function() { return templates.sidebarLayout; },
   });
+
   /**
    * Responsible for managing global styles
    */
-  Module.SidebarStylesView = Marionette.LayoutView.extend({
+  Module.SidebarStylesView = Marionette.View.extend({
     getTemplate: function() { return templates.sidebarStyles; },
     behaviors: {
       ColorPickerBehavior: {},
@@ -199,7 +216,7 @@ define([
         "change #mailpoet_background_color": _.partial(this.changeColorField, 'body.backgroundColor'),
       };
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         availableStyles: this.availableStyles.toJSON(),
@@ -220,7 +237,7 @@ define([
     },
   });
 
-  Module.SidebarPreviewView = Marionette.LayoutView.extend({
+  Module.SidebarPreviewView = Marionette.View.extend({
     getTemplate: function() { return templates.sidebarPreview; },
     events: {
       'click .mailpoet_show_preview': 'showPreview',
@@ -318,14 +335,14 @@ define([
     },
   });
 
-  Module.NewsletterPreviewView = Marionette.ItemView.extend({
+  Module.NewsletterPreviewView = Marionette.View.extend({
     getTemplate: function() { return templates.newsletterPreview; },
     initialize: function(options) {
       this.previewUrl = options.previewUrl;
       this.width = App.getConfig().get('newsletterPreview.width');
       this.height = App.getConfig().get('newsletterPreview.height')
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         previewUrl: this.previewUrl,
         width: this.width,
@@ -334,18 +351,18 @@ define([
     }
   });
 
-  App.on('before:start', function(options) {
+  App.on('before:start', function(App, options) {
     App.registerWidget = Module.registerWidget;
     App.getWidgets = Module.getWidgets;
     App.registerLayoutWidget = Module.registerLayoutWidget;
     App.getLayoutWidgets = Module.getLayoutWidgets;
   });
 
-  App.on('start', function(options) {
+  App.on('start', function(App, options) {
     var stylesModel = App.getGlobalStyles(),
       sidebarView = new SidebarView();
 
-    App._appView.sidebarRegion.show(sidebarView);
+    App._appView.showChildView('sidebarRegion', sidebarView);
   });
 
   return Module;

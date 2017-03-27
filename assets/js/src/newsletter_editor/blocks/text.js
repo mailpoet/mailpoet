@@ -58,7 +58,7 @@ define([
           settings: false,
         },
       });
-      this.toolsRegion.show(this.toolsView);
+      this.showChildView('toolsRegion', this.toolsView);
     },
     onTextEditorChange: function(newContent) {
       this.model.set('text', newContent);

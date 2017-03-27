@@ -166,8 +166,8 @@ define([
       this.model.reply('blockView', this.notifyAboutSelf, this);
     },
     onRender: function() {
-      if (!this.toolsRegion.hasView()) {
-        this.toolsRegion.show(this.toolsView);
+      if (!this.getRegion('toolsRegion').hasView()) {
+        this.showChildView('toolsRegion', this.toolsView);
       }
       this.trigger('showSettings');
 
@@ -177,7 +177,7 @@ define([
           disableDragAndDrop: true,
           emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
         };
-      this.postsRegion.show(new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
+      this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
     },
     notifyAboutSelf: function() {
       return this;
@@ -202,7 +202,7 @@ define([
       'click .mailpoet_settings_posts_show_post_selection': 'switchToPostSelection',
       'click .mailpoet_settings_posts_insert_selected': 'insertPosts',
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
       };
@@ -372,18 +372,18 @@ define([
     },
   });
 
-  var EmptyPostSelectionSettingsView = Marionette.ItemView.extend({
+  var EmptyPostSelectionSettingsView = Marionette.View.extend({
     getTemplate: function() { return templates.emptyPostPostsBlockSettings; },
   });
 
-  var SinglePostSelectionSettingsView = Marionette.ItemView.extend({
+  var SinglePostSelectionSettingsView = Marionette.View.extend({
     getTemplate: function() { return templates.singlePostPostsBlockSettings; },
     events: function() {
       return {
         'change .mailpoet_select_post_checkbox': 'postSelectionChange',
       };
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         index: this._index,
@@ -428,7 +428,7 @@ define([
         "change .mailpoet_posts_sort_by": _.partial(this.changeField, "sortBy"),
       };
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
       };

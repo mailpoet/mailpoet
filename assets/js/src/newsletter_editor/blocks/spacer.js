@@ -50,7 +50,7 @@ define([
     },
     onRender: function() {
       this.toolsView = new Module.SpacerBlockToolsView({ model: this.model });
-      this.toolsRegion.show(this.toolsView);
+      this.showChildView('toolsRegion', this.toolsView);
     },
     changeHeight: function() {
       this.$('.mailpoet_spacer').css('height', this.model.get('styles.block.height'));
