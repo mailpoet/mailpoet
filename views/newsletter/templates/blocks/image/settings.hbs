@@ -33,9 +33,9 @@
 </div>
 <hr />
 <div class="mailpoet_form_field">
-    <input type="button" name="select-another-image" class="button button-secondary mailpoet_button_full mailpoet_field_image_select_another_image" value="<%= __('Select another image') %>" />
+    <input type="button" name="select-another-image" class="button button-secondary mailpoet_button_full mailpoet_field_image_select_another_image" value="<%= __('Select another image') | escape('html_attr') %>" />
 </div>
 
 <div class="mailpoet_form_field">
-    <input type="button" class="button button-primary mailpoet_done_editing" value="<%= __('Done') %>" />
+    <input type="button" class="button button-primary mailpoet_done_editing" value="<%= __('Done') | escape('html_attr') %>" />
 </div>
