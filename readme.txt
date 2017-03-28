@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.7.3
-Stable tag: 3.0.0-beta.23.2
+Stable tag: 3.0.0-beta.24
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -83,6 +83,13 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 3.0.0-beta.24 - 2017-03-28 =
+* Improved: clarified UI language in Settings and Import. Thanks Lloyd, @rtomo and @perthmetro;
+* Added: hooks and filters for premium features. Thx Alex;
+* Premium: Google Analytics tracking is now enabled. Get in touch with us if you're a premium user!
+* Fixed: multilingual translations are no longer breaking the UI. Thanks Marco;
+* Fixed: tracking image inside newsletters is now transparent and does not produce a false positive result during VaultPress's security scan. Thanks Raw-B.
 
 = 3.0.0-beta.23.2 - 2017-03-14 =
 * Improved: added plugin translations to Dutch, English (UK), French, German, Italian, Portuguese (Brazil), Portuguese (Portugal), Russian and Spanish languages. Thank you translators!
