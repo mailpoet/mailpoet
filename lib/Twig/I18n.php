@@ -46,7 +46,7 @@ class I18n extends \Twig_Extension {
     $output[] = '<script type="text/javascript">';
     foreach($translations as $key => $translation) {
       $output[] =
-        'MailPoet.I18n.add("'.$key.'", "'. addslashes($translation) . '");';
+        'MailPoet.I18n.add("'.$key.'", "'. str_replace('"', '\"', $translation) . '");';
     }
     $output[] = '</script>';
     return join("\n", $output);
@@ -55,19 +55,19 @@ class I18n extends \Twig_Extension {
   function translate() {
     $args = func_get_args();
 
-    return addslashes(call_user_func_array('__', $this->setTextDomain($args)));
+    return call_user_func_array('__', $this->setTextDomain($args));
   }
 
   function pluralize() {
     $args = func_get_args();
 
-    return addslashes(call_user_func_array('_n', $this->setTextDomain($args)));
+    return call_user_func_array('_n', $this->setTextDomain($args));
   }
 
   function translateWithContext() {
     $args = func_get_args();
 
-    return addslashes(call_user_func_array('_x', $this->setTextDomain($args)));
+    return call_user_func_array('_x', $this->setTextDomain($args));
   }
 
   function date() {
