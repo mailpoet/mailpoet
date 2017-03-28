@@ -901,52 +901,52 @@
       socialIcons: {
         'facebook': {
           title: 'Facebook',
-          linkFieldName: '<%= __('Link') %>',
+          linkFieldName: '<%= __('Link') | escape('js') %>',
           defaultLink: 'http://www.facebook.com',
         },
         'twitter': {
           title: 'Twitter',
-          linkFieldName: '<%= __('Link') %>',
+          linkFieldName: '<%= __('Link') | escape('js') %>',
           defaultLink: 'http://www.twitter.com',
         },
         'google-plus': {
           title: 'Google Plus',
-          linkFieldName: '<%= __('Link') %>',
+          linkFieldName: '<%= __('Link') | escape('js') %>',
           defaultLink: 'http://plus.google.com',
         },
         'youtube': {
           title: 'Youtube',
-          linkFieldName: '<%= __('Link') %>',
+          linkFieldName: '<%= __('Link') | escape('js') %>',
           defaultLink: 'http://www.youtube.com',
         },
         'website': {
-          title: '<%= __('Website') %>',
-          linkFieldName: '<%= __('Link') %>',
+          title: '<%= __('Website') | escape('js') %>',
+          linkFieldName: '<%= __('Link') | escape('js') %>',
           defaultLink: '',
         },
         'email': {
-          title: '<%= __('Email') %>',
-          linkFieldName: '<%= __('Email') %>',
+          title: '<%= __('Email') | escape('js') %>',
+          linkFieldName: '<%= __('Email') | escape('js') %>',
           defaultLink: '',
         },
         'instagram': {
           title: 'Instagram',
-          linkFieldName: '<%= __('Link') %>',
+          linkFieldName: '<%= __('Link') | escape('js') %>',
           defaultLink: 'http://instagram.com',
         },
         'pinterest': {
           title: 'Pinterest',
-          linkFieldName: '<%= __('Link') %>',
+          linkFieldName: '<%= __('Link') | escape('js') %>',
           defaultLink: 'http://www.pinterest.com',
         },
         'linkedin': {
           title: 'LinkedIn',
-          linkFieldName: '<%= __('Link') %>',
+          linkFieldName: '<%= __('Link') | escape('js') %>',
           defaultLink: 'http://www.linkedin.com',
         },
         'custom': {
-          title: '<%= __('Custom') %>',
-          linkFieldName: '<%= __('Link') %>',
+          title: '<%= __('Custom') | escape('js') %>',
+          linkFieldName: '<%= __('Link') | escape('js') %>',
           defaultLink: '',
         },
       },
@@ -962,13 +962,13 @@
           imageFullWidth: false, // true|false
           featuredImagePosition: 'belowTitle', // 'belowTitle'|'aboveTitle'|'none',
           showAuthor: 'no', // 'no'|'aboveText'|'belowText'
-          authorPrecededBy: '<%= __('Author:') %>',
+          authorPrecededBy: '<%= __('Author:') | escape('js') %>',
           showCategories: 'no', // 'no'|'aboveText'|'belowText'
-          categoriesPrecededBy: '<%= __('Categories:') %>',
+          categoriesPrecededBy: '<%= __('Categories:') | escape('js') %>',
           readMoreType: 'button', // 'link'|'button'
           readMoreText: 'Read more', // 'link'|'button'
           readMoreButton: {
-            text: '<%= __('Read more') %>',
+            text: '<%= __('Read more') | escape('js') %>',
             url: '[postLink]',
             styles: {
               block: {
@@ -1004,7 +1004,7 @@
           backgroundColorAlternate: '#eeeeee',
         },
         button: {
-          text: '<%= __('Button') %>',
+          text: '<%= __('Button') | escape('js') %>',
           url: '',
           styles: {
             block: {
@@ -1062,7 +1062,7 @@
         image: {
           link: '',
           src: '',
-          alt: '<%= __('An image of...') %>',
+          alt: '<%= __('An image of...') | escape('js') %>',
           fullWidth: false,
           width: '281px',
           height: '190px',
@@ -1084,13 +1084,13 @@
           imageFullWidth: false, // true|false
           featuredImagePosition: 'belowTitle', // 'belowTitle'|'aboveTitle'|'none',
           showAuthor: 'no', // 'no'|'aboveText'|'belowText'
-          authorPrecededBy: '<%= __('Author:') %>',
+          authorPrecededBy: '<%= __('Author:') | escape('js') %>',
           showCategories: 'no', // 'no'|'aboveText'|'belowText'
-          categoriesPrecededBy: '<%= __('Categories:') %>',
+          categoriesPrecededBy: '<%= __('Categories:') | escape('js') %>',
           readMoreType: 'link', // 'link'|'button'
           readMoreText: 'Read more', // 'link'|'button'
           readMoreButton: {
-            text: '<%= __('Read more') %>',
+            text: '<%= __('Read more') | escape('js') %>',
             url: '[postLink]',
             styles: {
               block: {
@@ -1137,7 +1137,7 @@
             ) %>',
             height: '32px',
             width: '32px',
-            text: '<%= __('Facebook') %>',
+            text: '<%= __('Facebook') | escape('js') %>',
           },
           {
             type: 'socialIcon',
@@ -1148,7 +1148,7 @@
             ) %>',
             height: '32px',
             width: '32px',
-            text: '<%= __('Twitter') %>',
+            text: '<%= __('Twitter') | escape('js') %>',
           },
           ],
         },
@@ -1161,10 +1161,10 @@
           },
         },
         text: {
-          text: '<%= __('Edit this to insert text.') %>',
+          text: '<%= __('Edit this to insert text.') | escape('js') %>',
         },
         header: {
-          text: '<%= __('Display problems?') %>&nbsp;' +
+          text: '<%= __('Display problems?') | escape('js') %>&nbsp;' +
             '<a href="[link:newsletter_view_in_browser_url]"><%= __('Open this email in your web browser.') %></a>',
           styles: {
             block: {

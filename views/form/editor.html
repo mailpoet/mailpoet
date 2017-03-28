@@ -411,7 +411,7 @@
               }
             }).done(function(response) {
               MailPoet.Notice.success(
-                "<%= __('The form name was successfully updated!') %>"
+                "<%= __('The form name was successfully updated!') | escape('js') %>"
               );
             }).fail(function(response) {
               if (response.errors.length > 0) {
@@ -504,9 +504,9 @@
                 var message = null;
 
                 if(response.meta.is_widget === true) {
-                  message = "<%= __('Saved! The changes are now active in your widget.') %>";
+                  message = "<%= __('Saved! The changes are now active in your widget.') | escape('js') %>";
                 } else {
-                  message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw %>";
+                  message = "<%= __('Saved! Add this form to %1$sa widget%2$s.') | format("<a href='widgets.php' target='_blank'>", '</a>') | raw | escape('js') %>";
                 }
 
                 if(message !== null) {
@@ -635,7 +635,7 @@
 
               mailpoet_form_fields();
               MailPoet.Notice.success(
-                "<%= __('Removed custom field “"+name+"“') %>"
+                "<%= __('Removed custom field “"+name+"“') | escape('js') %>"
               );
             });
           }

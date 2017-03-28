@@ -700,7 +700,7 @@
         if(settings.sender.address.length === 0) {
           // validation
           return MailPoet.Notice.error(
-            '<%= __('The email could not be sent. Make sure the option "Email notifications" has a FROM email address in the Basics tab.') %>',
+            '<%= __('The email could not be sent. Make sure the option "Email notifications" has a FROM email address in the Basics tab.') | escape('js') %>',
             { scroll: true, static: true }
           );
         }
@@ -723,7 +723,7 @@
           MailPoet.Modal.loading(false);
         }).done(function(response) {
           MailPoet.Notice.success(
-            "<%= __('The email has been sent! Check your inbox.') %>",
+            "<%= __('The email has been sent! Check your inbox.') | escape('js') %>",
             { scroll: true }
           );
         }).fail(function(response) {
@@ -744,7 +744,7 @@
         if(key.length === 0) {
           // validation
           return MailPoet.Notice.error(
-            '<%= __('Please specify an API key before validating it.') %>',
+            '<%= __('Please specify an API key before validating it.') | escape('js') %>',
             { scroll: true, static: true }
           );
         }
@@ -804,7 +804,7 @@
         // set sending method
         if(group === undefined) {
           MailPoet.Notice.error(
-            "<%= __('You have selected an invalid sending method.') %>"
+            "<%= __('You have selected an invalid sending method.') | escape('js') %>"
           );
         } else {
           if(
@@ -812,7 +812,7 @@
             && $('#mailpoet_api_key').val().trim().length === 0
           ) {
             MailPoet.Notice.error(
-              "<%= __('You need to specify a MailPoet account key.') %>"
+              "<%= __('You need to specify a MailPoet account key.') | escape('js') %>"
             );
             return false;
           }

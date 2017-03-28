@@ -81,7 +81,7 @@
             MailPoet.Modal.loading(false);
           }).done(function(response) {
             MailPoet.Notice.success(
-              "<%= __('Settings saved') %>",
+              "<%= __('Settings saved') | escape('js') %>",
               { scroll: true }
             );
           }).fail(function(response) {
