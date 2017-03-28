@@ -30,7 +30,7 @@ class Opens {
     if(!$display_image) return;
     // return 1x1 pixel transparent gif image
     header('Content-Type: image/gif');
-    echo "\x47\x49\x46\x38\x37\x61\x1\x0\x1\x0\x80\x0\x0\xfc\x6a\x6c\x0\x0\x0\x2c\x0\x0\x0\x0\x1\x0\x1\x0\x0\x2\x2\x44\x1\x0\x3b";
+    echo base64_decode('R0lGODlhAQABAJAAAP8AAAAAACH5BAUQAAAALAAAAAABAAEAAAICBAEAOw==');
     exit;
   }
 }

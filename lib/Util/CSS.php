@@ -160,8 +160,8 @@ class CSS {
         continue;
       }
 
-      $key_value = explode(':', $kv);
-      $array[trim($key_value[0])] = trim($key_value[1]);
+      list($selector, $rule) = explode(':', $kv, 2);
+      $array[trim($selector)] = trim($rule);
     }
 
     return $array;
