@@ -787,20 +787,13 @@ class Subscriber extends Model {
 
   static function withoutSegments($orm) {
     return $orm->select(MP_SUBSCRIBERS_TABLE.'.*')
-      ->rawJoin(
-        'LEFT OUTER JOIN (
-          SELECT `subscriber_id`
-          FROM '.MP_SUBSCRIBER_SEGMENT_TABLE.'
-          WHERE `status` = "'.self::STATUS_SUBSCRIBED.'"
-        )',
-        array(
-          MP_SUBSCRIBERS_TABLE.'.id',
-          '=',
-          MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id'
-        ),
-        MP_SUBSCRIBER_SEGMENT_TABLE
-      )
-      ->whereNull(MP_SUBSCRIBER_SEGMENT_TABLE.'.subscriber_id');
+      ->whereRaw(
+        MP_SUBSCRIBERS_TABLE . '.id NOT IN (
+        SELECT `subscriber_id`
+        FROM '.MP_SUBSCRIBER_SEGMENT_TABLE.'
+        WHERE `status` = "'.self::STATUS_SUBSCRIBED.'"
+        )'
+      );
   }
 
   static function createMultiple($columns, $values) {
