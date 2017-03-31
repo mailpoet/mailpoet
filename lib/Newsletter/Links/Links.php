@@ -48,7 +48,7 @@ class Links {
     if($shortcodes) {
       $extracted_links = array_map(function($shortcode) {
         return array(
-          'type' => self::LINK_TYPE_SHORTCODE,
+          'type' => Links::LINK_TYPE_SHORTCODE,
           'html' => $shortcode,
           'link' => $shortcode
         );
