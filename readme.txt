@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, smtp
 Requires at least: 4.6
 Tested up to: 4.7.3
-Stable tag: 3.0.0-beta.24
+Stable tag: 3.0.0-beta.25
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -83,6 +83,11 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 5. Importing subscribers with a CSV or from MailChimp.
 
 == Changelog ==
+
+= 3.0.0-beta.25 - 2017-04-04 =
+* Improved: subscriber listings with large number of subscribers (tens of thousands) now load much faster on MySQL 5.5 and lower. Thanks Moulouk!;
+* Fixed: updating sending frequency no longer breaks limit enforcement. Thx Vincent!;
+* Fixed: sending works again on hosts running (very old) PHP version 5.3. WordPress recommends PHP 7 or newer. Ask your host how to upgrade. Thanks Emmanuel.
 
 = 3.0.0-beta.24 - 2017-03-28 =
 * Improved: clarified UI language in Settings and Import. Thanks Lloyd, @rtomo and @perthmetro;
