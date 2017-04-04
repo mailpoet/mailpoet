@@ -182,6 +182,49 @@ class MailerLogTest extends MailPoetTest {
     }
   }
 
+  function testItEnsuresSendingLimitIsEnforcedAfterFrequencyIsLowered() {
+    $mailer_log = MailerLog::createMailerLog();
+    $mailer_log['sent'] = 10;
+    $mailer_log['started'] = time();
+    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
+    $mailer_config = array(
+      'frequency' => array(
+        'emails' => 2, // frequency is less than the sent count
+        'interval' => 1
+      )
+    );
+    Setting::setValue(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
+
+    // exception is thrown when sending limit is reached
+    try {
+      MailerLog::enforceExecutionRequirements();
+      self::fail('Sending frequency exception was not thrown.');
+    } catch(\Exception $e) {
+      expect($e->getMessage())->equals('Sending frequency limit has been reached.');
+    }
+  }
+
+  function testItEnsuresSendingLimitIsNotEnforcedAfterFrequencyIsIncreased() {
+    $mailer_log = MailerLog::createMailerLog();
+    $mailer_log['sent'] = 10;
+    $mailer_log['started'] = time();
+    Setting::setValue(MailerLog::SETTING_NAME, $mailer_log);
+    $mailer_config = array(
+      'frequency' => array(
+        'emails' => 20, // frequency is greater than the sent count
+        'interval' => 1
+      )
+    );
+    Setting::setValue(Mailer::MAILER_CONFIG_SETTING_NAME, $mailer_config);
+
+    // sending limit exception should not be thrown
+    try {
+      MailerLog::enforceExecutionRequirements();
+    } catch(\Exception $e) {
+      self::fail('Sending frequency exception was thrown.');
+    }
+  }
+
   function testItEnforcesRetryAtTime() {
     $mailer_log = MailerLog::createMailerLog();
     $mailer_log['retry_at'] = time() + 10;
