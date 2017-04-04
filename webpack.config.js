@@ -65,13 +65,21 @@ baseConfig = {
         include: require.resolve('react'),
         loader: 'expose-loader?' + globalPrefix + '.React',
       },
-       {
+      {
+        include: require.resolve('react-router'),
+        loader: 'expose-loader?' + globalPrefix + '.ReactRouter',
+      },
+      {
         include: require.resolve('react-string-replace'),
         loader: 'expose-loader?' + globalPrefix + '.ReactStringReplace',
       },
       {
         test: /wp-js-hooks/i,
         loader: 'expose-loader?' + globalPrefix + '.Hooks!exports-loader?wp.hooks',
+      },
+      {
+        test: /listing.jsx/i,
+        loader: 'expose-loader?' + globalPrefix + '.Listing!babel-loader',
       },
       {
         include: /Blob.js$/,
@@ -124,7 +132,8 @@ config.push(_.extend({}, baseConfig, {
       'react',
       'react-dom',
       'react-router',
-      'react-string-replace'
+      'react-string-replace',
+      'listing/listing.jsx'
     ],
     admin: [
       'subscribers/subscribers.jsx',

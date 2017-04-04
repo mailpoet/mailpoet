@@ -209,8 +209,8 @@ const ListingItems = React.createClass({
               className="colspanchange">
               {
                 (this.props.loading === true)
-                ? MailPoet.I18n.t('loadingItems')
-                : MailPoet.I18n.t('noItemsFound')
+                ? (this.props.messages.onLoadingItems || MailPoet.I18n.t('loadingItems'))
+                : (this.props.messages.onNoItemsFound || MailPoet.I18n.t('noItemsFound'))
               }
             </td>
           </tr>
@@ -793,6 +793,12 @@ const Listing = React.createClass({
       groups = false;
     }
 
+    // messages
+    let messages = {};
+    if (this.props.messages !== undefined) {
+      messages = this.props.messages;
+    }
+
     return (
       <div>
         { groups }
@@ -846,6 +852,7 @@ const Listing = React.createClass({
             count={ this.state.count }
             limit={ this.state.limit }
             item_actions={ item_actions }
+            messages={ messages }
             items={ items } />
 
           <tfoot>

@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Router, Route, IndexRedirect, Link, useRouterHistory } from 'react-router'
 import { createHashHistory } from 'history'
+import Hooks from 'wp-js-hooks'
 
 import NewsletterTypes from 'newsletters/types.jsx'
 import NewsletterTemplates from 'newsletters/templates.jsx'
@@ -27,6 +28,9 @@ const App = React.createClass({
 const container = document.getElementById('newsletters_container');
 
 if(container) {
+  let extra_routes = [];
+  extra_routes = Hooks.applyFilters('mailpoet_newsletters_before_router', extra_routes);
+
   const mailpoet_listing = ReactDOM.render((
     <Router history={ history }>
       <Route path="/" component={ App }>
@@ -46,6 +50,8 @@ if(container) {
         <Route name="template" path="template/:id" component={ NewsletterTemplates } />
         {/* Sending options */}
         <Route path="send/:id" component={ NewsletterSend } />
+        {/* Extra routes */}
+        { extra_routes.map(rt => <Route key={rt.path} path={rt.path} component={rt.component} />) }
       </Route>
     </Router>
   ), container);

@@ -11,6 +11,7 @@ import classNames from 'classnames'
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
 import _ from 'underscore'
+import Hooks from 'wp-js-hooks'
 
 const mailpoet_roles = window.mailpoet_roles || {};
 const mailpoet_segments = window.mailpoet_segments || {};
@@ -281,24 +282,37 @@ const NewsletterListWelcome = React.createClass({
       return;
     }
 
+    let params = {};
+    params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
+
     if (newsletter.total_sent > 0 && newsletter.statistics) {
       const total_sent = ~~(newsletter.total_sent);
 
-      const percentage_clicked = Math.round(
-        (~~(newsletter.statistics.clicked) * 100) / total_sent
-      );
-      const percentage_opened = Math.round(
-        (~~(newsletter.statistics.opened) * 100) / total_sent
-      );
-      const percentage_unsubscribed = Math.round(
-        (~~(newsletter.statistics.unsubscribed) * 100) / total_sent
-      );
+      let percentage_clicked = (newsletter.statistics.clicked * 100) / total_sent;
+      let percentage_opened = (newsletter.statistics.opened * 100) / total_sent;
+      let percentage_unsubscribed = (newsletter.statistics.unsubscribed * 100) / total_sent;
 
-      return (
+      // format to 1 decimal place
+      percentage_clicked = percentage_clicked.toFixed(1);
+      percentage_opened = percentage_opened.toFixed(1);
+      percentage_unsubscribed = percentage_unsubscribed.toFixed(1);
+
+      const content = (
         <span>
           { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
         </span>
       );
+
+      if (params.link) {
+        return (
+          <Link
+            key={ `stats-${newsletter.id}` }
+            to={ params.link }
+          >{ content }</Link>
+        );
+      }
+
+      return content;
     } else {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>

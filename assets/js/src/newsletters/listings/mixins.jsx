@@ -1,9 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import ReactStringReplace from 'react-string-replace'
+import { Link } from 'react-router'
 import MailPoet from 'mailpoet'
 import classNames from 'classnames'
 import jQuery from 'jquery'
+import Hooks from 'wp-js-hooks'
 
 const _QueueMixin = {
   pauseSending: function(newsletter) {
@@ -146,6 +148,9 @@ const _StatisticsMixin = {
       && newsletter.queue
       && newsletter.queue.status !== 'scheduled'
     ) {
+      let params = {};
+      params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
+
       const total_sent = ~~(newsletter.queue.count_processed);
 
       let percentage_clicked = 0;
@@ -153,22 +158,32 @@ const _StatisticsMixin = {
       let percentage_unsubscribed = 0;
 
       if (total_sent > 0) {
-        percentage_clicked = Math.round(
-          (~~(newsletter.statistics.clicked) * 100) / total_sent
-        );
-        percentage_opened = Math.round(
-          (~~(newsletter.statistics.opened) * 100) / total_sent
-        );
-        percentage_unsubscribed = Math.round(
-          (~~(newsletter.statistics.unsubscribed) * 100) / total_sent
-        );
+        percentage_clicked = (newsletter.statistics.clicked * 100) / total_sent;
+        percentage_opened = (newsletter.statistics.opened * 100) / total_sent;
+        percentage_unsubscribed = (newsletter.statistics.unsubscribed * 100) / total_sent;
       }
 
-      return (
+      // format to 1 decimal place
+      percentage_clicked = percentage_clicked.toFixed(1);
+      percentage_opened = percentage_opened.toFixed(1);
+      percentage_unsubscribed = percentage_unsubscribed.toFixed(1);
+
+      const content = (
         <span>
           { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
         </span>
       );
+
+      if (total_sent > 0 && params.link) {
+        return (
+          <Link
+            key={ `stats-${newsletter.id}` }
+            to={ params.link }
+          >{ content }</Link>
+        );
+      }
+
+      return content;
     } else {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
