@@ -89,6 +89,8 @@ class MailerLog {
 
   static function incrementSentCount() {
     $mailer_log = self::getMailerLog();
+    // do not increment count if sending limit is reached
+    if(self::isSendingLimitReached($mailer_log)) return;
     // clear previous retry count, errors, etc.
     if($mailer_log['error']) {
       $mailer_log = self::clearSendingErrorLog($mailer_log);
@@ -110,9 +112,9 @@ class MailerLog {
     if($mailer_config['method'] === Mailer::METHOD_MAILPOET) return false;
     $mailer_log = self::getMailerLog($mailer_log);
     $elapsed_time = time() - (int)$mailer_log['started'];
-    if($mailer_log['sent'] === $mailer_config['frequency_limit']) {
+    if($mailer_log['sent'] >= $mailer_config['frequency_limit']) {
       if($elapsed_time <= $mailer_config['frequency_interval']) return true;
-      // reset mailer log if enough time has passed since the limit was reached
+      // reset mailer log as enough time has passed since the limit was reached
       self::resetMailerLog();
     }
     return false;
