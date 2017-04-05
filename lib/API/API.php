@@ -64,9 +64,13 @@ class API {
     $this->_endpoint = isset($data['endpoint'])
       ? Helpers::underscoreToCamelCase(trim($data['endpoint']))
       : null;
-    $this->_method = isset($data['method'])
-      ? Helpers::underscoreToCamelCase(trim($data['method']))
+
+    // JS part of /wp-admin/customize.php does not like a 'method' field in a form widget
+    $method_param_name = isset($data['mailpoet_method']) ? 'mailpoet_method' : 'method';
+    $this->_method = isset($data[$method_param_name])
+      ? Helpers::underscoreToCamelCase(trim($data[$method_param_name]))
       : null;
+
     $this->_token = isset($data['token'])
       ? trim($data['token'])
       : null;
@@ -100,6 +104,7 @@ class API {
           'token',
           'endpoint',
           'method',
+          'mailpoet_method', // alias of 'method'
           'mailpoet_redirect'
         );
         $this->_data = array_diff_key(
