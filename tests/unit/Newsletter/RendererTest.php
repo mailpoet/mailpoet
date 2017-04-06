@@ -235,6 +235,14 @@ class NewsletterRendererTest extends MailPoetTest {
     // headings should be styled
     expect($DOM('tr > td.mailpoet_text > h1', 0)->attr('style'))
       ->contains('padding:0;font-style:normal;font-weight:normal;');
+
+    // trailing line breaks should be cut off, but not inside an element
+    $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][8];
+    $DOM = $this->DOM_parser->parseStr(Text::render($template));
+    expect(count($DOM('tr > td > br', 0)))
+      ->equals(0);
+    expect($DOM('tr > td > h3', 0)->html())
+      ->contains('<a');
   }
 
   function testItRendersDivider() {

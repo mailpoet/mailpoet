@@ -207,6 +207,10 @@
                     "textAlign": "center"
                   }
                 }
+              },
+              {
+                "type": "text",
+                "text": "<p>Test trailing line breaks removal</p>\n<h3>Test line breaks <br/> in headings <a href=\"http://www.example.org\">haha</a></h3><br /><br><br/>"
               }
             ]
           }
