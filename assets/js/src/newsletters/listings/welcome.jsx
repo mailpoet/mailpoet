@@ -293,9 +293,9 @@ const NewsletterListWelcome = React.createClass({
       let percentage_unsubscribed = (newsletter.statistics.unsubscribed * 100) / total_sent;
 
       // format to 1 decimal place
-      percentage_clicked = percentage_clicked.toFixed(1);
-      percentage_opened = percentage_opened.toFixed(1);
-      percentage_unsubscribed = percentage_unsubscribed.toFixed(1);
+      percentage_clicked = MailPoet.Num.toLocaleFixed(percentage_clicked, 1);
+      percentage_opened = MailPoet.Num.toLocaleFixed(percentage_opened, 1);
+      percentage_unsubscribed = MailPoet.Num.toLocaleFixed(percentage_unsubscribed, 1);
 
       const content = (
         <span>

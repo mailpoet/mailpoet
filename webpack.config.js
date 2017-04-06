@@ -125,6 +125,7 @@ config.push(_.extend({}, baseConfig, {
       'i18n',
       'modal',
       'notice',
+      'num',
       'jquery.serialize_object',
       'parsleyjs'
     ],
