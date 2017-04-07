@@ -166,7 +166,7 @@ class Text {
   }
 
   static function removeLastLineBreak($html) {
-    return preg_replace('/(^)?(<br.*?\/?>)+$/i', '', $html);
+    return preg_replace('/(^)?(<br[^>]*?\/?>)+$/i', '', $html);
   }
 
   static function insertLineBreak($element) {
