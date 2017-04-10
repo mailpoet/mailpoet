@@ -11,7 +11,7 @@ class WPPostsTest extends MailPoetTest {
       'hide_empty' => true
     );
 
-    WordPressHelper::interceptFunction('bloginfo', function($key) {
+    WordPressHelper::interceptFunction('get_bloginfo', function($key) {
       return '4.6.0';
     });
 
@@ -33,7 +33,7 @@ class WPPostsTest extends MailPoetTest {
       'hide_empty' => true
     );
 
-    WordPressHelper::interceptFunction('bloginfo', function($key) {
+    WordPressHelper::interceptFunction('get_bloginfo', function($key) {
       return '4.4.0';
     });
 

@@ -40,7 +40,7 @@ function get_terms($key) {
   return override(__FUNCTION__, func_get_args());
 }
 
-function bloginfo($key) {
+function get_bloginfo($key) {
   return override(__FUNCTION__, func_get_args());
 }
 
