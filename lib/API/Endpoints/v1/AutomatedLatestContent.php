@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\API\Endpoints;
+namespace MailPoet\API\Endpoints\v1;
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\WP\Posts as WPPosts;
 

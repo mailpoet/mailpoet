@@ -8,6 +8,7 @@ use MailPoet\WP\Hooks;
 if(!defined('ABSPATH')) exit;
 
 class API {
+  private $_api_version;
   private $_endpoint;
   private $_method;
   private $_token;
@@ -16,15 +17,17 @@ class API {
   private $_endpoint_class;
   private $_data = array();
 
+  const CURRENT_VERSION = 1;
+
   function __construct() {
     $this->addEndpointNamespace(__NAMESPACE__ . "\\Endpoints");
   }
 
   function init() {
-     // Admin Security token
+     // admin security token and API version
     add_action(
       'admin_head',
-      array($this, 'setToken')
+      array($this, 'setTokenAndAPIVersion')
     );
 
     // ajax (logged in users)
@@ -61,6 +64,13 @@ class API {
   }
 
   function getRequestData($data) {
+    $this->_api_version = sprintf(
+      'v%s',
+      isset($data['api_version'])
+        ? $data['api_version']
+        : self::CURRENT_VERSION
+    );
+
     $this->_endpoint = isset($data['endpoint'])
       ? Helpers::underscoreToCamelCase(trim($data['endpoint']))
       : null;
@@ -87,7 +97,7 @@ class API {
       $error_response->send();
     } else {
       foreach($this->_endpoint_namespaces as $namespace) {
-        $class_name = $namespace . "\\" . ucfirst($this->_endpoint);
+        $class_name = $namespace . "\\" . $this->_api_version . "\\" . ucfirst($this->_endpoint);
         if(class_exists($class_name)) {
           $this->_endpoint_class = $class_name;
         }
@@ -164,13 +174,16 @@ class API {
     return wp_verify_nonce($this->_token, 'mailpoet_token');
   }
 
-  function setToken() {
+  function setTokenAndAPIVersion() {
     $global = '<script type="text/javascript">';
-    $global .= 'var mailpoet_token = "';
-    $global .=  Security::generateToken();
-    $global .= '";';
+    $global .= 'var mailpoet_token = "%s";';
+    $global .= 'var mailpoet_api_version = %s;';
     $global .= '</script>';
-    echo $global;
+    echo sprintf(
+      $global,
+      Security::generateToken(),
+      self::CURRENT_VERSION
+    );
   }
 
   function addEndpointNamespace($namespace) {
@@ -179,5 +192,13 @@ class API {
 
   function getEndpointNamespaces() {
     return $this->_endpoint_namespaces;
+  }
+
+  function getRequestedEndpointClass() {
+    return $this->_endpoint_class;
+  }
+
+  function getRequestedAPIVersion() {
+    return $this->_api_version;
   }
 }

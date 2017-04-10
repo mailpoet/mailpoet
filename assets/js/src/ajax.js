@@ -5,6 +5,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
       options: {},
       defaults: {
         url: null,
+        api_version: null,
         endpoint: null,
         action: null,
         token: null,
@@ -26,10 +27,16 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
         if(this.options.token === null) {
           this.options.token = window.mailpoet_token;
         }
+
+        // set default API version
+        if(this.options.api_version === null) {
+          this.options.api_version = window.mailpoet_api_version;
+        }
       },
       getParams: function() {
         return {
           action: 'mailpoet',
+          api_version: this.options.api_version,
           token: this.options.token,
           endpoint: this.options.endpoint,
           method: this.options.action,

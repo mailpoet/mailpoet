@@ -1,7 +1,7 @@
 <?php
 
 use Codeception\Util\Fixtures;
-use MailPoet\API\Endpoints\Subscribers;
+use MailPoet\API\Endpoints\v1\Subscribers;
 use MailPoet\API\Response as APIResponse;
 use MailPoet\Models\Form;
 use MailPoet\Models\Subscriber;

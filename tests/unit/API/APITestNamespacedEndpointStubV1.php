@@ -1,6 +1,6 @@
 <?php
 
-namespace MailPoet\Some\Name\Space\Endpoints;
+namespace MailPoet\API\Endpoints\v1;
 
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Access as APIAccess;
