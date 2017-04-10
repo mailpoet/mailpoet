@@ -543,7 +543,7 @@ define(
                       MailPoet.Notice.error(MailPoet.I18n.t('segmentSelectionRequired'), {
                         static: true,
                         scroll: true,
-                        id: 'segmentSelection',
+                        id: 'notice_segmentSelection',
                         hideClose: true
                       });
                     }
