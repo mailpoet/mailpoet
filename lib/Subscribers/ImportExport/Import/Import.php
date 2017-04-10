@@ -77,8 +77,7 @@ class Import {
     return $validation_rules;
   }
 
-  function process($a = false) {
-    $this->a = $a;
+  function process() {
     $subscribers_fields = $this->subscribers_fields;
     $subscribers_custom_fields = $this->subscribers_custom_fields;
     $subscribers_data = $this->validateSubscribersData(

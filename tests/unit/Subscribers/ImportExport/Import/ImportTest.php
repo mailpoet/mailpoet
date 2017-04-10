@@ -432,7 +432,7 @@ class ImportTest extends MailPoetTest {
     $timestamp = time() + 1;
     $this->import->created_at = $this->import->required_subscribers_fields['created_at'] = date('Y-m-d H:i:s', $timestamp);
     $this->import->updated_at = date('Y-m-d H:i:s', $timestamp + 1);
-    $result = $this->import->process('boo');
+    $result = $this->import->process();
     expect($result['created'])->equals(1);
     $db_subscribers = Helpers::arrayColumn(
       Subscriber::select('id')->findArray(),
