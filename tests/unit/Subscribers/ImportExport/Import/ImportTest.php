@@ -113,12 +113,287 @@ class ImportTest extends MailPoetTest {
         'wp_user_id' => 1
       ));
     $subscriber->save();
-    list($existing_subscribers, $new_subscribers, $wp_users, ) = $this->import->splitSubscribers(
+    list($existing_subscribers, $new_subscribers, $wp_users, ) = $this->import->splitSubscribersData(
       $this->subscribers_data, $this->subscribers_fields
     );
     expect($existing_subscribers['email'][0])->equals($this->subscribers_data['email'][0]);
     expect($new_subscribers['email'][0])->equals($this->subscribers_data['email'][1]);
     expect($wp_users[0])->equals($subscriber->wp_user_id);
+  }
+
+  function testItAddsMissingRequiredFieldsToSubscribersObject() {
+    $data = array(
+      'subscribers' => array(
+        array(
+          'adam@smith.com'
+        ),
+        array(
+          'mary@jane.com'
+        )
+      ),
+      'columns' => array(
+        'email' => array('index' => 0)
+      ),
+      'segments' => array(1),
+      'timestamp' => time(),
+      'updateSubscribers' => true
+    );
+    $import = new Import($data);
+    $subscribers_data = array(
+      'data' => $import->subscribers_data,
+      'fields' => $import->subscribers_fields
+    );
+    $result = $import->addMissingRequiredFields(
+      $subscribers_data
+    );
+    // "created_at", "status", "first_name" and "last_name" fields are added and populated with default values
+    expect(in_array('status', $result['fields']))->true();
+    expect(count($result['data']['status']))->equals($import->subscribers_count);
+    expect($result['data']['status'][0])->equals($import->required_subscribers_fields['status']);
+    expect(in_array('first_name', $result['fields']))->true();
+    expect(count($result['data']['first_name']))->equals($import->subscribers_count);
+    expect($result['data']['first_name'][0])->equals($import->required_subscribers_fields['first_name']);
+    expect(in_array('last_name', $result['fields']))->true();
+    expect(count($result['data']['last_name']))->equals($import->subscribers_count);
+    expect($result['data']['last_name'][0])->equals($import->required_subscribers_fields['last_name']);
+    expect(in_array('created_at', $result['fields']))->true();
+    expect(count($result['data']['created_at']))->equals($import->subscribers_count);
+    expect($result['data']['created_at'][0])->equals($import->created_at);
+  }
+
+  function testItGetsSubscriberFields() {
+    $data = array(
+      'one',
+      'two',
+      39
+    );
+    $fields = $this->import->getSubscribersFields($data);
+    expect($fields)->equals(
+      array(
+        'one',
+        'two'
+      ));
+  }
+
+  function testItGetsCustomSubscribersFields() {
+    $data = array(
+      'one',
+      'two',
+      39
+    );
+    $fields = $this->import->getCustomSubscribersFields($data);
+    expect($fields)->equals(array(39));
+  }
+
+  function testItFiltersSubscribersStatus() {
+    $subscribers_data = array(
+      'fields' => array('status'),
+      'data' => array(
+        'status' => array(
+          #subscribed
+          'subscribed',
+          'confirmed',
+          1,
+          '1',
+          'true',
+          #unconfirmed
+          'unconfirmed',
+          0,
+          "0",
+          #unsubscribed
+          'unsubscribed',
+          -1,
+          '-1',
+          'false',
+          #bounced
+          'bounced',
+          #unexpected
+          'qwerty',
+          null
+        ),
+      )
+    );
+    $result = $this->import->filterSubscribersStatus($subscribers_data);
+    expect($result['data'])->equals(
+      array(
+        'status' => array(
+          'subscribed',
+          'subscribed',
+          'subscribed',
+          'subscribed',
+          'subscribed',
+          'unconfirmed',
+          'unconfirmed',
+          'unconfirmed',
+          'unsubscribed',
+          'unsubscribed',
+          'unsubscribed',
+          'unsubscribed',
+          'bounced',
+          'subscribed',
+          'subscribed'
+        )
+      )
+    );
+  }
+
+  function testItAddsOrUpdatesSubscribers() {
+    $subscribers_data = array(
+      'data' => $this->subscribers_data,
+      'fields' => $this->subscribers_fields
+    );
+    $this->import->createOrUpdateSubscribers(
+      'create',
+      $subscribers_data
+    );
+    $subscribers = Subscriber::findArray();
+    expect(count($subscribers))->equals(2);
+    expect($subscribers[0]['email'])
+      ->equals($subscribers_data['data']['email'][0]);
+    $subscribers_data['data']['first_name'][1] = 'MaryJane';
+    $this->import->createOrUpdateSubscribers(
+      'update',
+      $subscribers_data,
+      $custom_fields = false
+    );
+    $subscribers = Subscriber::findArray();
+    expect($subscribers[1]['first_name'])
+      ->equals($subscribers_data['data']['first_name'][1]);
+  }
+
+  function testItDeletesTrashedSubscribers() {
+    $subscribers_data = array(
+      'data' => $this->subscribers_data,
+      'fields' => $this->subscribers_fields
+    );
+    $subscribers_data['data']['deleted_at'] = array(
+      null,
+      date('Y-m-d H:i:s')
+    );
+    $subscribers_data['fields'][] = 'deleted_at';
+    $this->import->createOrUpdateSubscribers(
+      'create',
+      $subscribers_data
+    );
+    $db_subscribers = Helpers::arrayColumn(
+      Subscriber::select('id')
+        ->findArray(),
+      'id'
+    );
+    expect(count($db_subscribers))->equals(2);
+    $this->import->addSubscribersToSegments(
+      $db_subscribers,
+      array($this->segment_1->id, $this->segment_2->id)
+    );
+    $subscribers_segments = SubscriberSegment::findArray();
+    expect(count($subscribers_segments))->equals(4);
+    $this->import->deleteExistingTrashedSubscribers(
+      $subscribers_data['data']
+    );
+    $subscribers_segments = SubscriberSegment::findArray();
+    $db_subscribers = Subscriber::findArray();
+    expect(count($subscribers_segments))->equals(2);
+    expect(count($db_subscribers))->equals(1);
+  }
+
+  function testItCreatesOrUpdatesCustomFields() {
+    $subscribers_data = array(
+      'data' => $this->subscribers_data,
+      'fields' => $this->subscribers_fields
+    );
+    $custom_field = $this->subscribers_custom_fields[0];
+    $this->import->createOrUpdateSubscribers(
+      'create',
+      $subscribers_data,
+      $this->subscribers_fields
+    );
+    $db_subscribers_ids = Helpers::arrayColumn(
+      Subscriber::selectMany(
+        array(
+          'id',
+          'email'
+        ))
+        ->findArray(),
+      'id'
+    );
+    $this->import->createOrUpdateCustomFields(
+      'create',
+      $db_subscribers_ids,
+      $subscribers_data,
+      $this->subscribers_custom_fields
+    );
+    $subscribers_custom_fields = SubscriberCustomField::findArray();
+    expect(count($subscribers_custom_fields))->equals(2);
+    expect($subscribers_custom_fields[0]['value'])
+      ->equals($subscribers_data['data'][$custom_field][0]);
+    $subscribers_data[$custom_field][1] = 'Rio';
+    $this->import->createOrUpdateCustomFields(
+      'update',
+      $db_subscribers_ids,
+      $subscribers_data,
+      $this->subscribers_custom_fields
+    );
+    $subscribers_custom_fields = SubscriberCustomField::findArray();
+    expect($subscribers_custom_fields[1]['value'])
+      ->equals($subscribers_data['data'][$custom_field][1]);
+  }
+
+  function testItAddsSubscribersToSegments() {
+    $subscribers_data = array(
+      'data' => $this->subscribers_data,
+      'fields' => $this->subscribers_fields
+    );
+    $this->import->createOrUpdateSubscribers(
+      'create',
+      $subscribers_data,
+      $this->subscribers_fields
+    );
+    $db_subscribers = Helpers::arrayColumn(
+      Subscriber::select('id')
+        ->findArray(),
+      'id'
+    );
+    $this->import->addSubscribersToSegments(
+      $db_subscribers,
+      array($this->segment_1->id, $this->segment_2->id)
+    );
+    // 2 subscribers * 2 segments
+    foreach($db_subscribers as $db_subscriber) {
+      $subscriber_segment_1 = SubscriberSegment::where('subscriber_id', $db_subscriber)
+        ->where('segment_id', $this->segment_1->id)
+        ->findOne();
+      expect($subscriber_segment_1)->notEmpty();
+      $subscriber_segment_2 = SubscriberSegment::where('subscriber_id', $db_subscriber)
+        ->where('segment_id', $this->segment_2->id)
+        ->findOne();
+      expect($subscriber_segment_2)->notEmpty();
+    }
+  }
+
+  function testItDeletesExistingTrashedSubscribers() {
+    $subscribers_data = array(
+      'data' => $this->subscribers_data,
+      'fields' => $this->subscribers_fields
+    );
+    $subscribers_data['fields'][] = 'deleted_at';
+    $subscribers_data['data']['deleted_at'] = array(
+      null,
+      date('Y-m-d H:i:s')
+    );
+    $this->import->createOrUpdateSubscribers(
+      'create',
+      $subscribers_data
+    );
+  }
+
+  function testItUpdatesSubscribers() {
+    $result = $this->import->process();
+    expect($result['updated'])->equals(0);
+    $result = $this->import->process();
+    expect($result['updated'])->equals(2);
+    $this->import->update_subscribers = false;
+    $result = $this->import->process();
+    expect($result['updated'])->equals(0);
   }
 
   function testItDoesNotUpdateExistingSubscribersStatusWhenStatusColumnIsNotPresent() {
@@ -156,272 +431,6 @@ class ImportTest extends MailPoetTest {
     expect($updated_subscriber->status)->equals('unsubscribed');
   }
 
-  function testItExtendsSubscribersDataAndFieldsWhenRequiredFieldsAreMissing() {
-    $data = array(
-      'subscribers' => array(
-        array(
-          'adam@smith.com'
-        ),
-        array(
-          'mary@jane.com'
-        )
-      ),
-      'columns' => array(
-        'email' => array('index' => 0)
-      ),
-      'segments' => array(1),
-      'timestamp' => time(),
-      'updateSubscribers' => true
-    );
-    $import = new Import($data);
-    list($subscribers_data, $subscribers_fields) = $import->extendSubscribersDataAndFields(
-      $import->subscribers_data,
-      $import->subscribers_fields
-    );
-    // "created_at", "status", "first_name" and "last_name" fields are added and populated
-    expect(in_array('status', $subscribers_fields))->true();
-    expect(count($subscribers_data['status']))->equals($import->subscribers_count);
-    expect($subscribers_data['status'][0])->equals($import->required_subscribers_fields['status']);
-    expect(in_array('first_name', $subscribers_fields))->true();
-    expect(count($subscribers_data['first_name']))->equals($import->subscribers_count);
-    expect($subscribers_data['first_name'][0])->equals($import->required_subscribers_fields['first_name']);
-    expect(in_array('last_name', $subscribers_fields))->true();
-    expect(count($subscribers_data['last_name']))->equals($import->subscribers_count);
-    expect($subscribers_data['last_name'][0])->equals($import->required_subscribers_fields['last_name']);
-    expect(in_array('created_at', $subscribers_fields))->true();
-    expect(count($subscribers_data['created_at']))->equals($import->subscribers_count);
-    expect($subscribers_data['created_at'][0])->equals($import->created_at);
-  }
-
-  function testItGetsSubscriberFields() {
-    $data = array(
-      'one',
-      'two',
-      39
-    );
-    $fields = $this->import->getSubscribersFields($data);
-    expect($fields)->equals(
-      array(
-        'one',
-        'two'
-      ));
-  }
-
-  function testItGetsCustomSubscribersFields() {
-    $data = array(
-      'one',
-      'two',
-      39
-    );
-    $fields = $this->import->getCustomSubscribersFields($data);
-    expect($fields)->equals(array(39));
-  }
-
-  function testItFiltersSubscribersStatus() {
-    $subscribers_fields = array('status');
-    $subscribers_data = array(
-      'status' => array(
-        #subscribed
-        'subscribed',
-        'confirmed',
-        1,
-        '1',
-        'true',
-        #unconfirmed
-        'unconfirmed',
-        0,
-        "0",
-        #unsubscribed
-        'unsubscribed',
-        -1,
-        '-1',
-        'false',
-        #bounced
-        'bounced',
-        #unexpected
-        'qwerty',
-        null
-      ),
-    );
-    list($subscribers_data, $subscibers_fields) =
-      $this->import->filterSubscribersStatus($subscribers_data, $subscribers_fields);
-    expect($subscribers_data)->equals(
-      array(
-        'status' => array(
-          'subscribed',
-          'subscribed',
-          'subscribed',
-          'subscribed',
-          'subscribed',
-          'unconfirmed',
-          'unconfirmed',
-          'unconfirmed',
-          'unsubscribed',
-          'unsubscribed',
-          'unsubscribed',
-          'unsubscribed',
-          'bounced',
-          'subscribed',
-          'subscribed'
-        )
-      )
-    );
-  }
-
-  function testItAddsOrUpdatesSubscribers() {
-    $subscribers_data = $this->subscribers_data;
-    $this->import->createOrUpdateSubscribers(
-      'create',
-      $subscribers_data,
-      $this->subscribers_fields,
-      false
-    );
-    $subscribers = Subscriber::findArray();
-    expect(count($subscribers))->equals(2);
-    expect($subscribers[0]['email'])
-      ->equals($subscribers_data['email'][0]);
-    $data['first_name'][1] = 'MaryJane';
-    $this->import->createOrUpdateSubscribers(
-      'update',
-      $subscribers_data,
-      $this->subscribers_fields,
-      false
-    );
-    $subscribers = Subscriber::findArray();
-    expect($subscribers[1]['first_name'])
-      ->equals($subscribers_data['first_name'][1]);
-  }
-
-  function testItDeletesTrashedSubscribers() {
-    $subscribers_data = $this->subscribers_data;
-    $subscribers_fields = $this->subscribers_fields;
-    $subscribers_data['deleted_at'] = array(
-      null,
-      date('Y-m-d H:i:s')
-    );
-    $subscribers_fields[] = 'deleted_at';
-    $this->import->createOrUpdateSubscribers(
-      'create',
-      $subscribers_data,
-      $subscribers_fields,
-      false
-    );
-    $db_subscribers = Helpers::arrayColumn(
-      Subscriber::select('id')
-        ->findArray(),
-      'id'
-    );
-    expect(count($db_subscribers))->equals(2);
-    $this->import->addSubscribersToSegments(
-      $db_subscribers,
-      array($this->segment_1->id, $this->segment_2->id)
-    );
-    $subscribers_segments = SubscriberSegment::findArray();
-    expect(count($subscribers_segments))->equals(4);
-    $this->import->deleteExistingTrashedSubscribers(
-      $subscribers_data
-    );
-    $subscribers_segments = SubscriberSegment::findArray();
-    $db_subscribers = Subscriber::findArray();
-    expect(count($subscribers_segments))->equals(2);
-    expect(count($db_subscribers))->equals(1);
-  }
-
-  function testItCreatesOrUpdatesCustomFields() {
-    $subscribers_data = $this->subscribers_data;
-    $custom_field = $this->subscribers_custom_fields[0];
-    $this->import->createOrUpdateSubscribers(
-      'create',
-      $subscribers_data,
-      $this->subscribers_fields,
-      false
-    );
-    $db_subscribers_ids = Helpers::arrayColumn(
-      Subscriber::selectMany(
-        array(
-          'id',
-          'email'
-        ))
-        ->findArray(),
-      'id'
-    );
-    $this->import->createOrUpdateCustomFields(
-      'create',
-      $db_subscribers_ids,
-      $subscribers_data,
-      $this->subscribers_custom_fields
-    );
-    $subscribers_custom_fields = SubscriberCustomField::findArray();
-    expect(count($subscribers_custom_fields))->equals(2);
-    expect($subscribers_custom_fields[0]['value'])
-      ->equals($subscribers_data[$custom_field][0]);
-    $subscribers_data[$custom_field][1] = 'Rio';
-    $this->import->createOrUpdateCustomFields(
-      'update',
-      $db_subscribers_ids,
-      $subscribers_data,
-      $this->subscribers_custom_fields
-    );
-    $subscribers_custom_fields = SubscriberCustomField::findArray();
-    expect($subscribers_custom_fields[1]['value'])
-      ->equals($subscribers_data[$custom_field][1]);
-  }
-
-  function testItAddsSubscribersToSegments() {
-    $subscribers_data = $this->subscribers_data;
-    $this->import->createOrUpdateSubscribers(
-      'create',
-      $subscribers_data,
-      $this->subscribers_fields,
-      false
-    );
-    $db_subscribers = Helpers::arrayColumn(
-      Subscriber::select('id')
-        ->findArray(),
-      'id'
-    );
-    $this->import->addSubscribersToSegments(
-      $db_subscribers,
-      array($this->segment_1->id, $this->segment_2->id)
-    );
-    // 2 subscribers * 2 segments
-    foreach($db_subscribers as $db_subscriber) {
-      $subscriber_segment_1 = SubscriberSegment::where('subscriber_id', $db_subscriber)
-        ->where('segment_id', $this->segment_1->id)
-        ->findOne();
-      expect($subscriber_segment_1)->notEmpty();
-      $subscriber_segment_2 = SubscriberSegment::where('subscriber_id', $db_subscriber)
-        ->where('segment_id', $this->segment_2->id)
-        ->findOne();
-      expect($subscriber_segment_2)->notEmpty();
-    }
-  }
-
-  function testItDeletesExistingTrashedSubscribers() {
-    $subscribers_data = $this->subscribers_data;
-    $subscribers_fields = $this->subscribers_fields;
-    $subscribers_fields[] = 'deleted_at';
-    $subscribers_data['deleted_at'] = array(
-      null,
-      date('Y-m-d H:i:s')
-    );
-    $this->import->createOrUpdateSubscribers(
-      'create',
-      $subscribers_data,
-      $subscribers_fields,
-      false
-    );
-  }
-
-  function testItUpdatesSubscribers() {
-    $result = $this->import->process();
-    expect($result['updated'])->equals(0);
-    $result = $this->import->process();
-    expect($result['updated'])->equals(2);
-    $this->import->update_subscribers = false;
-    $result = $this->import->process();
-    expect($result['updated'])->equals(0);
-  }
 
   function testItRunsImport() {
     $result = $this->import->process();
