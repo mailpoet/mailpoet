@@ -817,6 +817,8 @@ class Subscriber extends Model {
       'email',
       'created_at'
     );
+    // check if there is anything to update after excluding ignored columns
+    if(!array_diff($columns, $ignore_columns_on_update)) return;
     $subscribers = array_map('array_values', $subscribers);
     $email_position = array_search('email', $columns);
     $sql =
