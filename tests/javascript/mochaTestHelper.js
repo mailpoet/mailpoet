@@ -68,6 +68,26 @@ global.stubAvailableStyles = function (EditorApplication, styles) {
   EditorApplication.getAvailableStyles = sinon.stub().returns(new Backbone.SuperModel(styles));
 };
 
+global.stubImage = function(defaultWidth, defaultHeight) {
+  global.Image = function() {
+    this.onload = function() {};
+    this.naturalWidth = defaultWidth;
+    this.naturalHeight = defaultHeight;
+    this.address = '';
+
+    Object.defineProperty(this, 'src', {
+      "get": function() {
+        return this.address;
+      },
+      "set": function(src) {
+        this.address = src;
+        this.onload();
+      },
+    });
+  };
+}
+
+
 testHelpers.loadTemplate('blocks/base/toolsGeneric.hbs', window, {id: 'newsletter_editor_template_tools_generic'});
 
 testHelpers.loadTemplate('blocks/automatedLatestContent/block.hbs', window, {id: 'newsletter_editor_template_automated_latest_content_block'});

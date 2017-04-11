@@ -65,7 +65,7 @@ define([
     events: function() {
       return {
         "input .mailpoet_field_image_link": _.partial(this.changeField, "link"),
-        "input .mailpoet_field_image_address": _.partial(this.changeField, "src"),
+        "input .mailpoet_field_image_address": 'changeAddress',
         "input .mailpoet_field_image_alt_text": _.partial(this.changeField, "alt"),
         "change .mailpoet_field_image_full_width": _.partial(this.changeBoolCheckboxField, "fullWidth"),
         "change .mailpoet_field_image_alignment": _.partial(this.changeField, "styles.block.textAlign"),
@@ -326,6 +326,20 @@ define([
       });
 
       this._mediaManager.open();
+    },
+    changeAddress: function(event) {
+      var src = jQuery(event.target).val();
+      var image = new Image();
+
+      image.onload = function() {
+        this.model.set({
+          src: src,
+          width: image.naturalWidth + 'px',
+          height: image.naturalHeight + 'px'
+        });
+      }.bind(this);
+
+      image.src = src;
     },
     onBeforeDestroy: function() {
       base.BlockSettingsView.prototype.onBeforeDestroy.apply(this, arguments);
