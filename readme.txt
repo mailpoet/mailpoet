@@ -85,8 +85,8 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 == Changelog ==
 
 = 3.0.0-beta.26 - 2017-04-11 =
-- Fixed: Interactive widget customizer is now working with MailPoet form widgets. Thanks Peter and Charis!
-- Fixed: Multi-line headings are now properly displayed in emails. Thanks Karen!
+* Fixed: Interactive widget customizer is now working with MailPoet form widgets. Thanks Peter and Charis!
+* Fixed: Multi-line headings are now properly displayed in emails. Thanks Karen!
 
 = 3.0.0-beta.25 - 2017-04-04 =
 * Improved: subscriber listings with large number of subscribers (tens of thousands) now load much faster on MySQL 5.5 and lower. Thanks Moulouk!;
