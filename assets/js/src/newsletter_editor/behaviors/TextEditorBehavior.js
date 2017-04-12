@@ -60,6 +60,9 @@ define([
 
           editor.on('click', function(e) {
             editor.focus();
+            editor.selection.setRng(
+                tinymce.dom.RangeUtils.getCaretRangeFromPoint(e.clientX, e.clientY, editor.getDoc())
+            );
           });
 
           editor.on('focus', function(e) {
