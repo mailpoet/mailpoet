@@ -74,12 +74,7 @@ class SubscriberCustomField extends Model {
         'WHEN custom_field_id = ? AND subscriber_id = ? THEN ? ',
         count($values)
       ) .
-      'END) ' .
-      'WHERE subscriber_id IN (' .
-      implode(', ', Helpers::arrayColumn($values, 1)) .
-      ') AND custom_field_id IN (' .
-      implode(', ', array_unique(Helpers::arrayColumn($values, 0)))
-      . ') ',
+      'ELSE value END) ',
       Helpers::flattenArray($values)
     );
   }

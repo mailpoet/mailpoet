@@ -12,7 +12,7 @@ use MailPoet\Util\Helpers;
 
 class Import {
   public $subscribers_data;
-  public $segments;
+  public $segments_ids;
   public $update_subscribers;
   public $subscribers_fields;
   public $subscribers_custom_fields;
@@ -28,7 +28,7 @@ class Import {
       $data['subscribers'],
       $data['columns']
     );
-    $this->segments = $data['segments'];
+    $this->segments_ids = $data['segments'];
     $this->update_subscribers = $data['updateSubscribers'];
     $this->subscribers_fields = $this->getSubscribersFields(
       array_keys($data['columns'])
@@ -133,8 +133,9 @@ class Import {
     $segments = $import_factory->getSegments();
     $welcome_notifications_in_segments =
       ($created_subscribers || $updated_subscribers) ?
-        Newsletter::getWelcomeNotificationsForSegments($this->segments) :
+        Newsletter::getWelcomeNotificationsForSegments($this->segments_ids) :
         false;
+
     return array(
       'created' => count($created_subscribers),
       'updated' => count($updated_subscribers),
@@ -353,35 +354,33 @@ class Import {
         );
       }
     }
-    $query = Subscriber::selectMany(array(
-      'id',
-      'email'
-    ));
-    $query = ($action === 'update') ?
-      $query->where('updated_at', $this->updated_at) :
-      $query->where('created_at', $this->created_at);
-    $result = Helpers::arrayColumn(
-      $query->findArray(),
-      'id'
-    );
+    $created_or_updated_subscribers = array();
+    foreach(array_chunk($subscribers_data['data']['email'], self::DB_QUERY_CHUNK_SIZE) as $data) {
+      $created_or_updated_subscribers = array_merge(
+        $created_or_updated_subscribers,
+        Subscriber::selectMany(array('id', 'email'))->whereIn('email', $data)->findArray()
+      );
+    }
+    if(empty($created_or_updated_subscribers)) return null;
+    $created_or_updated_subscribers_ids = Helpers::arrayColumn($created_or_updated_subscribers, 'id');
     if($subscribers_custom_fields) {
       $this->createOrUpdateCustomFields(
-        ($action === 'create') ? 'create' : 'update',
-        $result,
+        $action,
+        $created_or_updated_subscribers,
         $subscribers_data,
         $subscribers_custom_fields
       );
     }
     $this->addSubscribersToSegments(
-      $result,
-      $this->segments
+      $created_or_updated_subscribers_ids,
+      $this->segments_ids
     );
-    return $result;
+    return $created_or_updated_subscribers;
   }
 
   function createOrUpdateCustomFields(
     $action,
-    $db_subscribers_ids,
+    $created_or_updated_subscribers,
     $subscribers_data,
     $subscribers_custom_fields_ids
   ) {
@@ -392,28 +391,27 @@ class Import {
         ->findArray()
     );
     if(!$subscribers_custom_fields_ids) return;
-    $subscriber_custom_fields_data = array();
-    foreach($subscribers_data['data'] as $field_id => $subscriber_data) {
-      // exclude non-custom fields
-      if(!is_int($field_id)) continue;
-      $subscriber_index = 0;
-      foreach($subscriber_data as $value) {
-        // assemble an array: custom_field_id, subscriber_id, value
-        $subscriber_custom_fields_data[] = array(
-          (int)$field_id,
-          (int)$db_subscribers_ids[$subscriber_index],
-          $value
+    // assemble a two-dimensional array: [[custom_field_id, subscriber_id, value], [custom_field_id, subscriber_id, value], ...]
+    $subscribers_custom_fields_data = array();
+    foreach($created_or_updated_subscribers as $subscriber) {
+      $subscriber_index = array_search($subscriber['email'], $subscribers_data['data']['email']);
+      foreach($subscribers_data['data'] as $field => $values) {
+        // exclude non-custom fields
+        if(!is_int($field)) continue;
+        $subscribers_custom_fields_data[] = array(
+          (int)$field,
+          $subscriber['id'],
+          $values[$subscriber_index],
         );
-        $subscriber_index++;
       }
     }
-    foreach(array_chunk($subscriber_custom_fields_data, self::DB_QUERY_CHUNK_SIZE) as $data) {
+    foreach(array_chunk($subscribers_custom_fields_data, self::DB_QUERY_CHUNK_SIZE) as $subscribers_custom_fields_data_chunk) {
       SubscriberCustomField::createMultiple(
-        $data
+        $subscribers_custom_fields_data_chunk
       );
       if($action === 'update') {
         SubscriberCustomField::updateMultiple(
-          $data
+          $subscribers_custom_fields_data_chunk
         );
       }
     }
@@ -423,10 +421,10 @@ class Import {
     return array_walk($wp_users, '\MailPoet\Segments\WP::synchronizeUser');
   }
 
-  function addSubscribersToSegments($subscriber_ids, $segment_ids) {
-    foreach(array_chunk($subscriber_ids, self::DB_QUERY_CHUNK_SIZE) as $subscriber_ids_chunk) {
+  function addSubscribersToSegments($subscribers_ids, $segments_ids) {
+    foreach(array_chunk($subscribers_ids, self::DB_QUERY_CHUNK_SIZE) as $subscriber_ids_chunk) {
       SubscriberSegment::subscribeManyToSegments(
-        $subscriber_ids_chunk, $segment_ids
+        $subscriber_ids_chunk, $segments_ids
       );
     }
   }
