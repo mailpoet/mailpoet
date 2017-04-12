@@ -135,7 +135,6 @@ class Import {
       ($created_subscribers || $updated_subscribers) ?
         Newsletter::getWelcomeNotificationsForSegments($this->segments) :
         false;
-
     return array(
       'created' => count($created_subscribers),
       'updated' => count($updated_subscribers),
@@ -183,8 +182,12 @@ class Import {
   }
 
   function splitSubscribersData($subscribers_data) {
+    // $subscribers_data is an two-dimensional associative array
+    // of all subscribers being imported: [field => [value1, value2], field => [value1, value2], ...]
     $temp_existing_subscribers = array();
     foreach(array_chunk($subscribers_data['email'], self::DB_QUERY_CHUNK_SIZE) as $subscribers_emails) {
+      // create a two-dimensional indexed array of all existing subscribers
+      // with just wp_user_id and email fields: [[wp_user_id, email], [wp_user_id, email], ...]
       $temp_existing_subscribers = array_merge(
         $temp_existing_subscribers,
         Subscriber::select('wp_user_id')
@@ -196,30 +199,30 @@ class Import {
     }
     if(!$temp_existing_subscribers) {
       return array(
-        $existing_subscribers = false,
-        $new_subscribers = $subscribers_data,
-        $wp_users = false
+        false, // existing subscribers
+        $subscribers_data, // new subscribers
+        false // WP users
       );
     }
+    // extract WP users ids into a simple indexed array: [wp_user_id_1, wp_user_id_2, ...]
     $wp_users = array_filter(Helpers::arrayColumn($temp_existing_subscribers, 'wp_user_id'));
-    $temp_new_subscribers = array_keys(
-      array_diff(
-        $subscribers_data['email'],
-        Helpers::arrayColumn($temp_existing_subscribers, 'email')
-      )
-    );
-    if(!$temp_new_subscribers) {
-      return array(
-        $existing_subscribers = $subscribers_data,
-        $new_subscribers = false,
-        $wp_users = $wp_users
-      );
+    // create a new two-dimensional associative array with existing subscribers ($existing_subscribers)
+    // and reduce $subscribers_data to only new subscribers by removing existing subscribers
+    $existing_subscribers = array();
+    foreach($temp_existing_subscribers as $temp_existing_subscriber) {
+      $existing_subscriber_key = array_search($temp_existing_subscriber['email'], $subscribers_data['email']);
+      foreach($subscribers_data as $field => &$value) {
+        $existing_subscribers[$field][] = $value[$existing_subscriber_key];
+        unset($value[$existing_subscriber_key]);
+      }
     }
-    $existing_subscribers = $new_subscribers = array();
-    foreach($subscribers_data as $field => $values) {
-      $existing_subscribers[$field] = array_diff_key($values, array_flip($temp_new_subscribers));
-      $new_subscribers[$field] = array_values(array_intersect_key($values, array_flip($temp_new_subscribers)));
-    }
+    $new_subscribers = $subscribers_data;
+    // reindex array after unsetting elements
+    array_walk($new_subscribers, function(&$values) {
+      sort($values);
+    });
+    // remove empty values
+    $new_subscribers = array_filter($new_subscribers);
     return array(
       $existing_subscribers,
       $new_subscribers,
