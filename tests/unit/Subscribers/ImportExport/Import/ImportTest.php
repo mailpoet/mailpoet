@@ -58,7 +58,7 @@ class ImportTest extends MailPoetTest {
 
   function testItConstructs() {
     expect(is_array($this->import->subscribers_data))->true();
-    expect($this->import->segments)->equals($this->data['segments']);
+    expect($this->import->segments_ids)->equals($this->data['segments']);
     expect(is_array($this->import->subscribers_fields))->true();
     expect(is_array($this->import->subscribers_custom_fields))->true();
     expect($this->import->subscribers_count)->equals(2);
@@ -307,18 +307,10 @@ class ImportTest extends MailPoetTest {
       $subscribers_data,
       $this->subscribers_fields
     );
-    $db_subscribers_ids = Helpers::arrayColumn(
-      Subscriber::selectMany(
-        array(
-          'id',
-          'email'
-        ))
-        ->findArray(),
-      'id'
-    );
+    $db_subscribers = Subscriber::selectMany(array('id','email'))->findArray();
     $this->import->createOrUpdateCustomFields(
       'create',
-      $db_subscribers_ids,
+      $db_subscribers,
       $subscribers_data,
       $this->subscribers_custom_fields
     );
@@ -329,7 +321,7 @@ class ImportTest extends MailPoetTest {
     $subscribers_data[$custom_field][1] = 'Rio';
     $this->import->createOrUpdateCustomFields(
       'update',
-      $db_subscribers_ids,
+      $db_subscribers,
       $subscribers_data,
       $this->subscribers_custom_fields
     );
