@@ -32,7 +32,7 @@ define([
         validElements: "p[class|style],span[class|style],a[href|class|title|target|style],h1[class|style],h2[class|style],h3[class|style],ol[class|style],ul[class|style],li[class|style],strong[class|style],em[class|style],strike,br,blockquote[class|style],table[class|style],tr[class|style],th[class|style],td[class|style]",
         invalidElements: "script",
         blockFormats: 'Heading 1=h1;Heading 2=h2;Heading 3=h3;Paragraph=p',
-        plugins: "link code textcolor colorpicker mailpoet_shortcodes",
+        plugins: "link code textcolor colorpicker mailpoet_shortcodes paste",
         configurationFilter: function(originalSettings) {
           return _.extend({}, originalSettings, {
             mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
