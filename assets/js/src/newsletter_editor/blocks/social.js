@@ -329,6 +329,12 @@ define([
   });
 
   SocialBlockSettingsIconCollectionView = Marionette.CollectionView.extend({
+    behaviors: {
+      SortableBehavior: {
+        items: '> div',
+      },
+    },
+    childViewContainer: '#mailpoet_social_icon_selector_contents',
     childView: SocialBlockSettingsIconView,
   });
 
@@ -338,24 +344,12 @@ define([
     regions: {
       'icons': '#mailpoet_social_icon_selector_contents'
     },
-    //childView: SocialBlockSettingsIconView,
-    //childViewContainer: '#mailpoet_social_icon_selector_contents',
     events: {
       'click .mailpoet_add_social_icon': 'addSocialIcon',
     },
     modelEvents: {
       'change:iconSet': 'render',
     },
-    behaviors: {
-      SortableBehavior: {
-        items: '#mailpoet_social_icon_selector_contents > div',
-      },
-    },
-    //constructor: function() {
-      //// Set the icon collection to be handled by this view as well
-      //arguments[0].collection = arguments[0].model.get('icons');
-      //Marionette.CompositeView.apply(this, arguments);
-    //},
     addSocialIcon: function() {
       // Add a social icon with default values
       this.model.get('icons').add({});
