@@ -1,3 +1,59 @@
+$excellent-badge-color = #2993ab
+$good-badge-color = #f0b849
+$bad-badge-color = #d54e21
+$grey-stat-color = #707070
+
 #newsletters_container
   h2.nav-tab-wrapper
     margin-bottom: 1rem
+
+.mailpoet_stats_text
+  font-size: 14px
+  font-weight: 600;
+
+.mailpoet_stat
+
+  &_excellent
+    color: $excellent-badge-color
+
+  &_good
+    color: $good-badge-color
+
+  &_bad
+    color: $bad-badge-color
+
+  &_grey
+    color: $grey-stat-color
+
+  &_big
+    font-size: 23px
+    font-weight: 600
+    line-height: normal
+
+  &_spaced
+    margin-bottom: 1rem
+
+  &_tplspaced
+    margin-bottom: 3rem
+
+  &_hidden
+    display: none
+
+.mailpoet_badge
+  padding: 4px 6px 3px 6px
+  color: #FFFFFF
+  margin-right: 4px
+  text-transform: uppercase
+  font-size: 0.5625rem
+  font-weight: 500
+  border-radius: 3px
+  letter-spacing: 1px
+
+  &_excellent
+    background: $excellent-badge-color
+
+  &_good
+    background: $good-badge-color
+
+  &_bad
+    background: $bad-badge-color

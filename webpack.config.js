@@ -82,6 +82,10 @@ baseConfig = {
         loader: 'expose-loader?' + globalPrefix + '.Listing!babel-loader',
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/badges/stats.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.StatsBadge!babel-loader',
+      },
+      {
         include: /Blob.js$/,
         loader: 'exports-loader?window.Blob',
       },
@@ -134,7 +138,8 @@ config.push(_.extend({}, baseConfig, {
       'react-dom',
       'react-router',
       'react-string-replace',
-      'listing/listing.jsx'
+      'listing/listing.jsx',
+      'newsletters/badges/stats.jsx'
     ],
     admin: [
       'subscribers/subscribers.jsx',

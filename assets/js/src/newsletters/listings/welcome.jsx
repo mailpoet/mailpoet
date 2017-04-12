@@ -5,7 +5,7 @@ import { createHashHistory } from 'history'
 import Listing from 'listing/listing.jsx'
 import ListingTabs from 'newsletters/listings/tabs.jsx'
 
-import { MailerMixin } from 'newsletters/listings/mixins.jsx'
+import { StatisticsMixin, MailerMixin } from 'newsletters/listings/mixins.jsx'
 
 import classNames from 'classnames'
 import jQuery from 'jquery'
@@ -156,7 +156,7 @@ const newsletter_actions = [
 ];
 
 const NewsletterListWelcome = React.createClass({
-  mixins: [ MailerMixin ],
+  mixins: [ StatisticsMixin, MailerMixin ],
   updateStatus: function(e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -277,48 +277,6 @@ const NewsletterListWelcome = React.createClass({
       </span>
     );
   },
-  renderStatistics: function(newsletter) {
-    if (mailpoet_tracking_enabled === false) {
-      return;
-    }
-
-    let params = {};
-    params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
-
-    if (newsletter.total_sent > 0 && newsletter.statistics) {
-      const total_sent = ~~(newsletter.total_sent);
-
-      let percentage_clicked = (newsletter.statistics.clicked * 100) / total_sent;
-      let percentage_opened = (newsletter.statistics.opened * 100) / total_sent;
-      let percentage_unsubscribed = (newsletter.statistics.unsubscribed * 100) / total_sent;
-
-      // format to 1 decimal place
-      percentage_clicked = MailPoet.Num.toLocaleFixed(percentage_clicked, 1);
-      percentage_opened = MailPoet.Num.toLocaleFixed(percentage_opened, 1);
-      percentage_unsubscribed = MailPoet.Num.toLocaleFixed(percentage_unsubscribed, 1);
-
-      const content = (
-        <span>
-          { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
-        </span>
-      );
-
-      if (params.link) {
-        return (
-          <Link
-            key={ `stats-${newsletter.id}` }
-            to={ params.link }
-          >{ content }</Link>
-        );
-      }
-
-      return content;
-    } else {
-      return (
-        <span>{MailPoet.I18n.t('notSentYet')}</span>
-      );
-    }
-  },
   renderItem: function(newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
@@ -345,7 +303,10 @@ const NewsletterListWelcome = React.createClass({
         </td>
         { (mailpoet_tracking_enabled === true) ? (
           <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
-            { this.renderStatistics(newsletter) }
+            { this.renderStatistics(
+              newsletter,
+              newsletter.total_sent > 0 && newsletter.statistics
+            ) }
           </td>
         ) : null }
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>

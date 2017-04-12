@@ -6,6 +6,7 @@ import MailPoet from 'mailpoet'
 import classNames from 'classnames'
 import jQuery from 'jquery'
 import Hooks from 'wp-js-hooks'
+import StatsBadge from 'newsletters/badges/stats.jsx'
 
 const _QueueMixin = {
   pauseSending: function(newsletter) {
@@ -142,53 +143,90 @@ const _QueueMixin = {
 };
 
 const _StatisticsMixin = {
-  renderStatistics: function(newsletter) {
-    if (
-      newsletter.statistics
-      && newsletter.queue
-      && newsletter.queue.status !== 'scheduled'
-    ) {
-      let params = {};
-      params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
-
-      const total_sent = ~~(newsletter.queue.count_processed);
-
-      let percentage_clicked = 0;
-      let percentage_opened = 0;
-      let percentage_unsubscribed = 0;
-
-      if (total_sent > 0) {
-        percentage_clicked = (newsletter.statistics.clicked * 100) / total_sent;
-        percentage_opened = (newsletter.statistics.opened * 100) / total_sent;
-        percentage_unsubscribed = (newsletter.statistics.unsubscribed * 100) / total_sent;
-      }
-
-      // format to 1 decimal place
-      percentage_clicked = MailPoet.Num.toLocaleFixed(percentage_clicked, 1);
-      percentage_opened = MailPoet.Num.toLocaleFixed(percentage_opened, 1);
-      percentage_unsubscribed = MailPoet.Num.toLocaleFixed(percentage_unsubscribed, 1);
-
-      const content = (
-        <span>
-          { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
-        </span>
-      );
-
-      if (total_sent > 0 && params.link) {
-        return (
-          <Link
-            key={ `stats-${newsletter.id}` }
-            to={ params.link }
-          >{ content }</Link>
-        );
-      }
-
-      return content;
-    } else {
+  renderStatistics: function(newsletter, sentCondition) {
+    if (sentCondition === undefined) {
+      // condition for standard and post notification listings
+      sentCondition = newsletter.statistics
+        && newsletter.queue
+        && newsletter.queue.status !== 'scheduled'
+    }
+    if (!sentCondition) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
     }
+
+    let params = {};
+    params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
+
+    // welcome emails provide explicit total_sent value
+    const total_sent = ~~(newsletter.total_sent || newsletter.queue.count_processed);
+
+    let percentage_clicked = 0;
+    let percentage_opened = 0;
+    let percentage_unsubscribed = 0;
+
+    if (total_sent > 0) {
+      percentage_clicked = (newsletter.statistics.clicked * 100) / total_sent;
+      percentage_opened = (newsletter.statistics.opened * 100) / total_sent;
+      percentage_unsubscribed = (newsletter.statistics.unsubscribed * 100) / total_sent;
+    }
+
+    // format to 1 decimal place
+    const percentage_clicked_display = MailPoet.Num.toLocaleFixed(percentage_clicked, 1);
+    const percentage_opened_display = MailPoet.Num.toLocaleFixed(percentage_opened, 1);
+    const percentage_unsubscribed_display = MailPoet.Num.toLocaleFixed(percentage_unsubscribed, 1);
+
+    let content;
+    if (total_sent >= 20 && newsletter.statistics.opened >= 5) {
+      // display stats with badges
+      content = (
+        <div className="mailpoet_stats_text">
+          <div>
+            <span>{ percentage_opened_display }% </span>
+            <StatsBadge
+              stat="opened"
+              rate={percentage_opened}
+              tooltipId={`opened-${newsletter.id}`}
+            />
+          </div>
+          <div>
+            <span>{ percentage_clicked_display }% </span>
+            <StatsBadge
+              stat="clicked"
+              rate={percentage_clicked}
+              tooltipId={`clicked-${newsletter.id}`}
+            />
+          </div>
+          <div>
+            <span className="mailpoet_stat_hidden">{ percentage_unsubscribed_display }%</span>
+          </div>
+        </div>
+      );
+    } else {
+      // display simple stats
+      content = (
+        <span className="mailpoet_stats_text">
+          { percentage_opened_display }%,
+          { " " }
+          { percentage_clicked_display }%
+          <span className="mailpoet_stat_hidden">
+            , { percentage_unsubscribed_display }%
+          </span>
+        </span>
+      );
+    }
+
+    if (total_sent > 0 && params.link) {
+      return (
+        <Link
+          key={ `stats-${newsletter.id}` }
+          to={ params.link }
+        >{ content }</Link>
+      );
+    }
+
+    return content;
   }
 }
 
