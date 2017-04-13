@@ -209,9 +209,9 @@ class Import {
     $wp_users = array_filter(Helpers::arrayColumn($temp_existing_subscribers, 'wp_user_id'));
     // create a new two-dimensional associative array with existing subscribers ($existing_subscribers)
     // and reduce $subscribers_data to only new subscribers by removing existing subscribers
-    $existing_subscribers = array();
+    $subscribers_emails = array_flip($subscribers_data['email']);
     foreach($temp_existing_subscribers as $temp_existing_subscriber) {
-      $existing_subscriber_key = array_search($temp_existing_subscriber['email'], $subscribers_data['email']);
+      $existing_subscriber_key = $subscribers_emails[$temp_existing_subscriber['email']];
       foreach($subscribers_data as $field => &$value) {
         $existing_subscribers[$field][] = $value[$existing_subscriber_key];
         unset($value[$existing_subscriber_key]);
@@ -393,14 +393,15 @@ class Import {
     if(!$subscribers_custom_fields_ids) return;
     // assemble a two-dimensional array: [[custom_field_id, subscriber_id, value], [custom_field_id, subscriber_id, value], ...]
     $subscribers_custom_fields_data = array();
-    foreach($created_or_updated_subscribers as $subscriber) {
-      $subscriber_index = array_search($subscriber['email'], $subscribers_data['data']['email']);
+    $subscribers_emails = array_flip($subscribers_data['data']['email']);
+    foreach($created_or_updated_subscribers as $created_or_updated_subscriber) {
+      $subscriber_index = $subscribers_emails[$created_or_updated_subscriber['email']];
       foreach($subscribers_data['data'] as $field => $values) {
         // exclude non-custom fields
         if(!is_int($field)) continue;
         $subscribers_custom_fields_data[] = array(
           (int)$field,
-          $subscriber['id'],
+          $created_or_updated_subscriber['id'],
           $values[$subscriber_index],
         );
       }
