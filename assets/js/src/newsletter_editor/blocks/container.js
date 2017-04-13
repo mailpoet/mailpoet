@@ -88,7 +88,7 @@ define([
         renderOptions: newRenderOptions
       };
     },
-    emptyView: Module.ContainerBlockEmptyView,
+    emptyView: function() { return Module.ContainerBlockEmptyView; },
     emptyViewOptions: function() { return { renderOptions: this.renderOptions }; },
     initialize: function(options) {
       this.renderOptions = options.renderOptions;
