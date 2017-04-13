@@ -1,8 +1,8 @@
 <?php
 
 use MailPoet\Models\CustomField;
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
+use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\Import\Import;
@@ -104,23 +104,37 @@ class ImportTest extends MailPoetTest {
   }
 
   function testItSplitsSubscribers() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate(
+    $subscribers_data = $this->subscribers_data;
+    $subscribers_data_existing = array(
       array(
-        'first_name' => 'Adam',
-        'last_name' => 'Smith',
-        'email' => 'Adam@Smith.com',
-        'wp_user_id' => 1
-      ));
-    $subscriber->save();
-    list($existing_subscribers, $new_subscribers, $wp_users, ) = $this->import->splitSubscribersData(
-      $this->subscribers_data
+        'first_name' => 'Johnny',
+        'last_name' => 'Walker',
+        'email' => 'johnny@WaLker.com',
+        'wp_user_id' => 13579
+      ),  array(
+        'first_name' => 'Steve',
+        'last_name' => 'Sorrow',
+        'email' => 'sTeve.sorrow@exaMple.com'
+      ),
     );
-    expect($existing_subscribers['email'][0])->equals($this->subscribers_data['email'][0]);
-    foreach($new_subscribers as $field=>$value) {
-      expect($value[0])->equals($this->subscribers_data[$field][1]);
+    foreach($subscribers_data_existing as $i=>$existing_subscriber) {
+      $subscriber = Subscriber::create();
+      $subscriber->hydrate($existing_subscriber);
+      $subscriber->save();
+      $subscribers_data['first_name'][] = $existing_subscriber['first_name'];
+      $subscribers_data['last_name'][] = $existing_subscriber['last_name'];
+      $subscribers_data['email'][] = strtolower($existing_subscriber['email']); // import emails are always lowercase
+      $subscribers_data[1][] = 'custom_field_' . $i;
     }
-    expect($wp_users[0])->equals($subscriber->wp_user_id);
+    list($existing_subscribers, $new_subscribers, $wp_users, ) = $this->import->splitSubscribersData(
+      $subscribers_data
+    );
+    expect($existing_subscribers['email'][0])->equals($subscribers_data['email'][2]);
+    expect($existing_subscribers['email'][1])->equals($subscribers_data['email'][3]);
+    foreach($new_subscribers as $field=>$value) {
+      expect($value[0])->equals($subscribers_data[$field][0]);
+    }
+    expect($wp_users)->equals(array($subscribers_data_existing[0]['wp_user_id']));
   }
 
   function testItAddsMissingRequiredFieldsToSubscribersObject() {
