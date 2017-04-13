@@ -148,18 +148,9 @@ define([
       ShowSettingsBehavior: {},
     },
     onDragSubstituteBy: function() { return Module.SocialWidgetView; },
-    //constructor: function() {
-      //// Set the block collection to be handled by this view as well
-      //arguments[0].collection = arguments[0].model.get('icons');
-      //Marionette.CompositeView.apply(this, arguments);
-    //},
     initialize: function() {
       this.on('showSettings', this.showSettings, this);
-      //this.on('dom:refresh', this.showBlock, this);
-      //this._isFirstRender = true;
     },
-    // Determines which view type should be used for a child
-    //childView: SocialIconView,
     templateContext: function() {
       return {
         model: this.model.toJSON(),
@@ -167,16 +158,12 @@ define([
       };
     },
     onRender: function() {
-      //this._rebuildRegions();
       this.toolsView = new Module.SocialBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
       this.showChildView('icons', new Module.SocialIconCollectionView({
         collection: this.model.get('icons')
       }))
     },
-    //onBeforeDestroy: function() {
-      //this.regionManager.destroy();
-    //},
     showTools: function(_event) {
       this.$(this.ui.tools).addClass('mailpoet_display_tools');
       _event.stopPropagation();
@@ -193,29 +180,6 @@ define([
         return this.model.clone();
       }.bind(this);
     },
-    //_buildRegions: function(regions) {
-      //var that = this;
-
-      //var defaults = {
-        //regionClass: this.getOption('regionClass'),
-        //parentEl: function() { return that.$el; }
-      //};
-
-      //return this.regionManager.addRegions(regions, defaults);
-    //},
-    //_rebuildRegions: function() {
-      //if (this.regionManager === undefined) {
-        //this.regionManager = new Marionette.RegionManager();
-      //}
-      //this.regionManager.destroy();
-      //_.extend(this, this._buildRegions(this.regions));
-    //},
-    //showBlock: function() {
-      //if (this._isFirstRender) {
-        //this.transitionIn();
-        //this._isFirstRender = false;
-      //}
-    //},
     deleteBlock: function() {
       this.transitionOut().done(function() {
         this.model.destroy();

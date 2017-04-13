@@ -261,9 +261,9 @@ define([
 
   var PostSelectionSettingsView = Marionette.CompositeView.extend({
     getTemplate: function() { return templates.postSelectionPostsBlockSettings; },
-    getChildView: function() { return SinglePostSelectionSettingsView; },
+    childView: function() { return SinglePostSelectionSettingsView; },
     childViewContainer: '.mailpoet_post_selection_container',
-    getEmptyView: function() { return EmptyPostSelectionSettingsView; },
+    emptyView: function() { return EmptyPostSelectionSettingsView; },
     childViewOptions: function() {
       return {
         blockModel: this.model,
