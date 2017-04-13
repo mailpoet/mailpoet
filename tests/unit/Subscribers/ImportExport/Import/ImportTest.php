@@ -117,7 +117,9 @@ class ImportTest extends MailPoetTest {
       $this->subscribers_data
     );
     expect($existing_subscribers['email'][0])->equals($this->subscribers_data['email'][0]);
-    expect($new_subscribers['email'][0])->equals($this->subscribers_data['email'][1]);
+    foreach($new_subscribers as $field=>$value) {
+      expect($value[0])->equals($this->subscribers_data[$field][1]);
+    }
     expect($wp_users[0])->equals($subscriber->wp_user_id);
   }
 
