@@ -633,12 +633,12 @@ define(
                     columnId = 'email';
                   } else if (subscribers.header) {
                     var headerName = subscribers.header[i],
-                        header_name_match = mailpoetColumns.map(function (el) {
-                          return el.id;
+                        headerNameMatch = mailpoetColumns.map(function (el) {
+                          return el.name;
                         }).indexOf(headerName);
                     // set column type using header
-                    if (header_name_match !== -1) {
-                      columnId = headerName;
+                    if (headerNameMatch !== -1) {
+                      columnId = mailpoetColumns[headerNameMatch].id;
                     }// set column type using header name
                     else if (headerName) {
                       if (/first|first name|given name/i.test(headerName)) {
@@ -648,11 +648,6 @@ define(
                       } else if (/status/i.test(headerName)) {
                         columnId = 'status';
                       }
-                      /*else if (/subscribed|subscription/i.test(headerName)) {
-                       columnId = 'confirmed_at';
-                       } else if (/ip/i.test(headerName)) {
-                       columnId = 'confirmed_ip';
-                       }*/
                     }
                   }
                   // make sure the column id has not been previously selected
