@@ -19,7 +19,7 @@ class Text extends Base {
 
     $html .= '<input type="'.$type.'" class="mailpoet_text" ';
 
-    $html .= 'name="'.static::getFieldName($block).'" ';
+    $html .= 'name="data['.static::getFieldName($block).']" ';
 
     $html .= 'title="'.static::getFieldLabel($block).'" ';
 

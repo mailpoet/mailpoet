@@ -13,8 +13,9 @@
       class="mailpoet_form mailpoet_form_<%= form_type %>"
       novalidate
     >
-      <input type="hidden" name="form_id" value="<%= form.id %>" />
+      <input type="hidden" name="data[form_id]" value="<%= form.id %>" />
       <input type="hidden" name="token" value="<%= token %>" />
+      <input type="hidden" name="api_version" value="<%= api_version %>" />
       <input type="hidden" name="endpoint" value="subscribers" />
       <input type="hidden" name="mailpoet_method" value="subscribe" />
 

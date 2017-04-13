@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Form;
+use MailPoet\API\API;
 use MailPoet\Config\Renderer;
 use MailPoet\Models\Form;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -158,6 +159,9 @@ class Widget extends \WP_Widget {
 
         // generate security token
         $data['token'] = Security::generateToken();
+
+        // add API version
+        $data['api_version'] = API::CURRENT_VERSION;
 
         // render form
         $renderer = new Renderer();
