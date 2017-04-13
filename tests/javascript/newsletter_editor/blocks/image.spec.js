@@ -155,12 +155,17 @@ define([
 
     describe('block settings view', function () {
       var model, view;
+      var newWidth = 123;
+      var newHeight = 456;
+      var newLink = 'http://example.org/someNewLink';
+      var newSrc = 'http://example.org/someNewImage.png';
 
       before(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication, {
           blockDefaults: {},
         });
+        global.stubImage(newWidth, newHeight);
         model = new (ImageBlock.ImageBlockModel)();
         view = new (ImageBlock.ImageBlockSettingsView)({model: model});
       });
@@ -171,15 +176,23 @@ define([
 
       describe('once rendered', function () {
         it('updates the model when link changes', function () {
-          var newValue = 'http://example.org/someNewLink';
-          view.$('.mailpoet_field_image_link').val(newValue).trigger('input');
-          expect(model.get('link')).to.equal(newValue);
+          view.$('.mailpoet_field_image_link').val(newLink).trigger('input');
+          expect(model.get('link')).to.equal(newLink);
         });
 
         it('updates the model when src changes', function () {
-          var newValue = 'http://example.org/someNewImage.png';
-          view.$('.mailpoet_field_image_address').val(newValue).trigger('input');
-          expect(model.get('src')).to.equal(newValue);
+          view.$('.mailpoet_field_image_address').val(newSrc).trigger('input');
+          expect(model.get('src')).to.equal(newSrc);
+        });
+
+        it('updates the width when src changes', function () {
+          view.$('.mailpoet_field_image_address').val(newSrc).trigger('input');
+          expect(model.get('width')).to.equal(newWidth + 'px');
+        });
+
+        it('updates the height when src changes', function () {
+          view.$('.mailpoet_field_image_address').val(newSrc).trigger('input');
+          expect(model.get('height')).to.equal(newHeight + 'px');
         });
 
         it('updates the model when alt changes', function () {
