@@ -93,7 +93,7 @@ class Import {
       'fields' => $this->subscribers_fields
     );
     list($existing_subscribers['data'], $new_subscribers['data'], $wp_users) =
-      $this->splitSubscribersData($subscribers_data, $this->subscribers_fields);
+      $this->splitSubscribersData($subscribers_data);
     $subscribers_data = null;
 
     // create or update subscribers
@@ -219,9 +219,7 @@ class Import {
     }
     $new_subscribers = $subscribers_data;
     // reindex array after unsetting elements
-    array_walk($new_subscribers, function(&$values) {
-      sort($values);
-    });
+    $new_subscribers = array_map('array_values', $new_subscribers);
     // remove empty values
     $new_subscribers = array_filter($new_subscribers);
     return array(

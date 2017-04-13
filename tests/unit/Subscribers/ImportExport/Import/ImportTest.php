@@ -114,7 +114,7 @@ class ImportTest extends MailPoetTest {
       ));
     $subscriber->save();
     list($existing_subscribers, $new_subscribers, $wp_users, ) = $this->import->splitSubscribersData(
-      $this->subscribers_data, $this->subscribers_fields
+      $this->subscribers_data
     );
     expect($existing_subscribers['email'][0])->equals($this->subscribers_data['email'][0]);
     expect($new_subscribers['email'][0])->equals($this->subscribers_data['email'][1]);
