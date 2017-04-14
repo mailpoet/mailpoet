@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Config;
 
+use MailPoet\Config\MP2Migrator;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -270,13 +271,25 @@ class Menu {
       $redirect_url = admin_url('admin.php?page=mailpoet-newsletters');
     }
 
-    $data = array(
-      'settings' => Setting::getAll(),
-      'current_user' => wp_get_current_user(),
-      'redirect_url' => $redirect_url,
-      'sub_menu' => 'mailpoet-newsletters'
-    );
-    $this->displayPage('welcome.html', $data);
+    $mp2Migrator = new MP2Migrator();
+    if ($mp2Migrator->proposeMigration()) {
+      $mp2Migrator->init();
+      $data = array(
+        'log_file_url' => $mp2Migrator->log_file_url,
+        'progress_url' => $mp2Migrator->progressbar->url,
+      );
+      $this->displayPage('mp2migration.html', $data);
+      
+    } else {
+
+      $data = array(
+        'settings' => Setting::getAll(),
+        'current_user' => wp_get_current_user(),
+        'redirect_url' => $redirect_url,
+        'sub_menu' => 'mailpoet-newsletters'
+      );
+      $this->displayPage('welcome.html', $data);
+    }
   }
 
   function update() {
