@@ -149,7 +149,8 @@ config.push(_.extend({}, baseConfig, {
       'settings/tabs.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
-      'helpscout'
+      'helpscout',
+      'mp2migrator.js'
     ],
     form_editor: [
       'form_editor/form_editor.js',

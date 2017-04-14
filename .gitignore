@@ -19,3 +19,4 @@ assets/js/*.js
 .vagrant
 lang
 .mp_svn
+/nbproject/

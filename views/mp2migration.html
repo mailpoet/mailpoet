@@ -1,0 +1,58 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+
+<div class="wrap about-wrap">
+  <h1><%= __('Welcome to MailPoet') %> <%= settings.version %></h1>
+
+  <p class="about-text"><strong>This new version is quite an upgrade.</strong> Since this new version is completely new, we first need to update your database before we begin.</p>
+
+  <div style="position: absolute; top: .2em; right: 0;"><img style="border: 0 !important;" src="<%= image_url('welcome_template/mailpoet-logo.png') %>" alt="<%= __('MailPoet Logo') %>" /></div>
+
+  <h3>What will be kept in MailPoet 3</h3>
+  <ul>
+  <li><strong>Subscribers and lists <img draggable="false" class="emoji" alt="✔" src="https://s.w.org/images/core/emoji/2.2.1/svg/2714.svg"></strong></li>
+  <li>Settings (soon!)</li>
+  <li>Forms (soon!)</li>
+  <li>Newsletters (soon!)</li>
+  <li>Archive of sent newsletters (soon!)</li>
+  <li>Statistics (soon!)</li>
+  </ul>
+
+  <div style="position: absolute; top: .2em; right: 0;"></div>
+  <hr />
+
+  <div class="feature-section one-col">
+    <br />
+    <p style="/* text-align: center */">
+      <input type="submit" name="import" id="import" class="button button-primary" value="Start upgrade"  />
+      <input type="submit" name="stop-import" id="stop-import" class="button button-secondary" value="Pause" style="display: none"/>
+      <small> <a href="?page=mailpoet-welcome&nomigrate=1">No thanks, I'll skip and start from scratch.</a></small>
+    </p>
+
+    <div id="progressbar" class="mailpoet_progress mailpoet_progress_complete">
+      <div id="progresslabel" class="mailpoet_progress_label">0%</div>
+    </div>
+    <br /><br />
+
+    <small><strong>Log...</strong></small>
+    <div id="logger"></div>  
+
+  </div>
+</div>
+
+<script type="text/javascript">
+  var objectPlugin = {
+    log_file_url: '<%= log_file_url %>',
+    progress_url: '<%= progress_url %>'
+  };
+</script>
+<% endblock %>
+
+<% block translations %>
+  <%= localize({
+    'import_complete' : __( 'IMPORT COMPLETE'),
+    'importing' : __( 'Importing…'),
+    'import_stopped_by_user' : __( 'IMPORT STOPPED BY USER'),
+  }) %>
+<% endblock %>
