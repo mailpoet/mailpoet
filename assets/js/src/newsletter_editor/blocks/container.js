@@ -95,29 +95,22 @@ define([
     }
   });
 
-  Module.ContainerBlockView = Marionette.View.extend({
-    regions: {
+  Module.ContainerBlockView = base.BlockView.extend({
+    regions: _.extend({}, base.BlockView.prototype.regions, {
       blocks: {
         el: '> .mailpoet_container',
         replaceElement: true
       },
-      toolsRegion: '> .mailpoet_tools',
-    },
+    }),
     className: 'mailpoet_block mailpoet_container_block mailpoet_droppable_block mailpoet_droppable_layout_block',
     getTemplate: function() { return templates.containerBlock; },
-    modelEvents: {
-      'change': 'render',
-      'delete': 'deleteBlock',
-    },
-    events: {
-      "mouseenter": "showTools",
-      "mouseleave": "hideTools",
+    events: _.extend({}, base.BlockView.prototype.events, {
       "click .mailpoet_newsletter_layer_selector": "toggleEditingLayer",
-    },
+    }),
     ui: {
       tools: '> .mailpoet_tools'
     },
-    behaviors: {
+    behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
       ContainerDropZoneBehavior: {},
       DraggableBehavior: {
         cloneOriginal: true,
@@ -146,8 +139,7 @@ define([
           return view.renderOptions.depth === 1;
         },
       },
-      HighlightEditingBehavior: {}
-    },
+    }),
     onDragSubstituteBy: function() {
       // For two and three column layouts display their respective widgets,
       // otherwise always default to one column layout widget
@@ -159,17 +151,11 @@ define([
 
     },
     initialize: function(options) {
+      base.BlockView.prototype.initialize.apply(this, arguments);
+
       this.renderOptions = _.defaults(options.renderOptions || {}, {});
     },
-    templateContext: function() {
-      return {
-        model: this.model.toJSON(),
-        viewCid: this.cid,
-      };
-    },
     onRender: function() {
-      this.$el.addClass('mailpoet_editor_view_' + this.cid);
-
       this.toolsView = new Module.ContainerBlockToolsView({
         model: this.model,
         tools: {
@@ -226,45 +212,6 @@ define([
         enableContainerLayer();
       }
       event.stopPropagation();
-    },
-    getDropFunc: function() {
-      return function() {
-        return this.model.clone();
-      }.bind(this);
-    },
-    deleteBlock: function() {
-      this.transitionOut().done(function() {
-        this.model.destroy();
-      }.bind(this));
-    },
-    transitionIn: function() {
-      return this._transition('slideDown', 'fadeIn', 'easeIn');
-    },
-    transitionOut: function() {
-      return this._transition('slideUp', 'fadeOut', 'easeOut');
-    },
-    _transition: function(slideDirection, fadeDirection, easing) {
-      var promise = jQuery.Deferred();
-
-      this.$el.velocity(
-        slideDirection,
-        {
-          duration: 250,
-          easing: easing,
-          complete: function() {
-            promise.resolve();
-          }.bind(this),
-        }
-      ).velocity(
-        fadeDirection,
-        {
-          duration: 250,
-          easing: easing,
-          queue: false, // Do not enqueue, trigger animation in parallel
-        }
-      );
-
-      return promise;
     },
   });
 
