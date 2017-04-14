@@ -94,8 +94,8 @@ define([
     },
     initialize: function() {
       this.on('showSettings', this.showSettings, this);
-      //this.on('dom:refresh', this.showBlock, this);
-      //this._isFirstRender = true;
+      this.on('dom:refresh', this.showBlock, this);
+      this._isFirstRender = true;
     },
     showTools: function(_event) {
       if (!this.showingToolsDisabled) {
@@ -125,12 +125,12 @@ define([
         return this.model.clone();
       }.bind(this);
     },
-    //showBlock: function() {
-      //if (this._isFirstRender) {
-        //this.transitionIn();
-        //this._isFirstRender = false;
-      //}
-    //},
+    showBlock: function() {
+      if (this._isFirstRender) {
+        this.transitionIn();
+        this._isFirstRender = false;
+      }
+    },
     deleteBlock: function() {
       this.transitionOut().then(function() {
         this.model.destroy();

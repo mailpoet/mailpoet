@@ -133,7 +133,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('button', {
       blockModel: Module.ButtonBlockModel,
       blockView: Module.ButtonBlockView,

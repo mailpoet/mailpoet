@@ -387,7 +387,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('container', {
       blockModel: Module.ContainerBlockModel,
       blockView: Module.ContainerBlockView,

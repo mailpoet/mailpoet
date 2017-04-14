@@ -67,7 +67,7 @@ define([
     return _.filter(blocks, predicate);
   };
 
-  App.on('before:start', function(options) {
+  App.on('before:start', function(App, options) {
     // Expose block methods globally
     App.registerBlockType = Module.registerBlockType;
     App.getBlockTypeModel = Module.getBlockTypeModel;

@@ -520,7 +520,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('posts', {
       blockModel: Module.PostsBlockModel,
       blockView: Module.PostsBlockView,

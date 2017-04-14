@@ -377,7 +377,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('automatedLatestContent', {
       blockModel: Module.AutomatedLatestContentBlockModel,
       blockView: Module.AutomatedLatestContentBlockView,
@@ -390,7 +390,7 @@ define([
     });
   });
 
-  App.on('start', function() {
+  App.on('start', function(App, options) {
     App._ALCSupervisor = new Module.ALCSupervisor();
     App._ALCSupervisor.refresh();
   });

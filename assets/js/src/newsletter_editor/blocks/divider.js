@@ -140,7 +140,7 @@ define([
       }
     },
   });
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('divider', {
       blockModel: Module.DividerBlockModel,
       blockView: Module.DividerBlockView,

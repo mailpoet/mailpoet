@@ -365,7 +365,7 @@ define([
   });
   Module.ImageWidgetView = ImageWidgetView;
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('image', {
       blockModel: Module.ImageBlockModel,
       blockView: Module.ImageBlockView,

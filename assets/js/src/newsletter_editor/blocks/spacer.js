@@ -87,7 +87,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('spacer', {
       blockModel: Module.SpacerBlockModel,
       blockView: Module.SpacerBlockView,

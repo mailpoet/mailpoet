@@ -116,7 +116,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('footer', {
       blockModel: Module.FooterBlockModel,
       blockView: Module.FooterBlockView,

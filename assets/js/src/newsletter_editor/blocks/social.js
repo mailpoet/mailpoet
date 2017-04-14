@@ -389,7 +389,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('social', {
       blockModel: Module.SocialBlockModel,
       blockView: Module.SocialBlockView,
