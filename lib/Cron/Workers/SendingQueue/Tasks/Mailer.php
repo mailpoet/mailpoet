@@ -3,6 +3,7 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Mailer\Mailer as MailerFactory;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Subscription\Url;
 
 if(!defined('ABSPATH')) exit;
 
@@ -54,10 +55,11 @@ class Mailer {
     return $this->mailer->formatSubscriberNameAndEmailAddress($subscriber);
   }
 
-  function send($prepared_newsletters, $prepared_subscribers) {
+  function send($prepared_newsletters, $prepared_subscribers, $extra_params = array()) {
     return $this->mailer->mailer_instance->send(
       $prepared_newsletters,
-      $prepared_subscribers
+      $prepared_subscribers,
+      $extra_params
     );
   }
 }
