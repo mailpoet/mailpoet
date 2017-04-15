@@ -35,7 +35,7 @@ class MP2MigratorAPI extends APIEndpoint {
    */
   public function stopImport($data) {
     try {
-      $process = $this->MP2Migrator->stop_import();
+      $process = $this->MP2Migrator->stopImport();
       return $this->successResponse($process);
     } catch(\Exception $e) {
       return $this->errorResponse(array(
