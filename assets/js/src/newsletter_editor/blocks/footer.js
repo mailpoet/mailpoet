@@ -68,12 +68,6 @@ define([
       this.enableDragging();
       this.enableShowingTools();
     },
-    disableDragging: function() {
-      this.$('.mailpoet_content').addClass('mailpoet_ignore_drag');
-    },
-    enableDragging: function() {
-      this.$('.mailpoet_content').removeClass('mailpoet_ignore_drag');
-    },
   });
 
   Module.FooterBlockToolsView = base.BlockToolsView.extend({
@@ -97,10 +91,9 @@ define([
       };
     },
     templateContext: function() {
-      return {
-        model: this.model.toJSON(),
+      return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         availableStyles: App.getAvailableStyles().toJSON(),
-      };
+      });
     },
   });
 

@@ -125,6 +125,12 @@ define([
         return this.model.clone();
       }.bind(this);
     },
+    disableDragging: function() {
+      this.$el.addClass('mailpoet_ignore_drag');
+    },
+    enableDragging: function() {
+      this.$el.removeClass('mailpoet_ignore_drag');
+    },
     showBlock: function() {
       if (this._isFirstRender) {
         this.transitionIn();
@@ -239,6 +245,11 @@ define([
       } else {
         MailPoet.Modal.panel(panelParams);
       }
+    },
+    templateContext: function() {
+      return {
+        model: this.model.toJSON()
+      };
     },
     close: function(event) {
       this.destroy();

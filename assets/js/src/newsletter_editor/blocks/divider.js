@@ -105,11 +105,10 @@ define([
       };
     },
     templateContext: function() {
-      return {
-        model: this.model.toJSON(),
+      return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         availableStyles: App.getAvailableStyles().toJSON(),
         renderOptions: this.renderOptions,
-      };
+      });
     },
     changeStyle: function(event) {
       var style = jQuery(event.currentTarget).data('style');

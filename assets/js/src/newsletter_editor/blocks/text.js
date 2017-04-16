@@ -71,13 +71,6 @@ define([
       this.enableDragging();
       this.enableShowingTools();
     },
-
-    disableDragging: function() {
-      this.$('.mailpoet_content').addClass('mailpoet_ignore_drag');
-    },
-    enableDragging: function() {
-      this.$('.mailpoet_content').removeClass('mailpoet_ignore_drag');
-    },
   });
 
   Module.TextBlockToolsView = base.BlockToolsView.extend({

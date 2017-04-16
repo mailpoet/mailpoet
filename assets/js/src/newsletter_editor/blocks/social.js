@@ -103,116 +103,25 @@ define([
     childView: SocialIconView,
   });
 
-  Module.SocialBlockView = Marionette.View.extend({
+  Module.SocialBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_social_block mailpoet_droppable_block',
     getTemplate: function() { return templates.socialBlock; },
-    modelEvents: {
-      'change': 'render',
-      'delete': 'deleteBlock',
-    },
-    events: {
-      "mouseover": "showTools",
-      "mouseout": "hideTools",
-    },
-    regions: {
-      toolsRegion: '> .mailpoet_tools',
+    regions: _.extend({}, base.BlockView.prototype.regions, {
       icons: '.mailpoet_social'
-    },
+    }),
     ui: {
       tools: '> .mailpoet_tools'
     },
-    behaviors: {
-      DraggableBehavior: {
-        cloneOriginal: true,
-        hideOriginal: true,
-        onDrop: function(options) {
-          // After a clone of model has been dropped, cleanup
-          // and destroy self
-          options.dragBehavior.view.model.destroy();
-        },
-        onDragSubstituteBy: function(behavior) {
-          var WidgetView, node;
-          // When block is being dragged, display the widget icon instead.
-          // This will create an instance of block's widget view and
-          // use it's rendered DOM element instead of the content block
-          if (_.isFunction(behavior.view.onDragSubstituteBy)) {
-            WidgetView = new (behavior.view.onDragSubstituteBy())();
-            WidgetView.render();
-            node = WidgetView.$el.get(0).cloneNode(true);
-            WidgetView.destroy();
-            return node;
-          }
-        },
-      },
-      HighlightEditingBehavior: {},
+    behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
       ShowSettingsBehavior: {},
-    },
+    }),
     onDragSubstituteBy: function() { return Module.SocialWidgetView; },
-    initialize: function() {
-      this.on('showSettings', this.showSettings, this);
-    },
-    templateContext: function() {
-      return {
-        model: this.model.toJSON(),
-        viewCid: this.cid,
-      };
-    },
     onRender: function() {
       this.toolsView = new Module.SocialBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
       this.showChildView('icons', new Module.SocialIconCollectionView({
         collection: this.model.get('icons')
       }))
-    },
-    showTools: function(_event) {
-      this.$(this.ui.tools).addClass('mailpoet_display_tools');
-      _event.stopPropagation();
-    },
-    hideTools: function(_event) {
-      this.$(this.ui.tools).removeClass('mailpoet_display_tools');
-      _event.stopPropagation();
-    },
-    showSettings: function(options) {
-      this.toolsView.triggerMethod('showSettings', options);
-    },
-    getDropFunc: function() {
-      return function() {
-        return this.model.clone();
-      }.bind(this);
-    },
-    deleteBlock: function() {
-      this.transitionOut().done(function() {
-        this.model.destroy();
-      }.bind(this));
-    },
-    transitionIn: function() {
-      return this._transition('slideDown', 'fadeIn', 'easeIn');
-    },
-    transitionOut: function() {
-      return this._transition('slideUp', 'fadeOut', 'easeOut');
-    },
-    _transition: function(slideDirection, fadeDirection, easing) {
-      var promise = jQuery.Deferred();
-
-      this.$el.velocity(
-        slideDirection,
-        {
-          duration: 250,
-          easing: easing,
-          complete: function() {
-            promise.resolve();
-          }.bind(this),
-        }
-      ).velocity(
-        fadeDirection,
-        {
-          duration: 250,
-          easing: easing,
-          queue: false, // Do not enqueue, trigger animation in parallel
-        }
-      );
-
-      return promise;
     },
   });
 
@@ -270,12 +179,11 @@ define([
         // Construct icon type list of format [{iconType: 'type', title: 'Title'}, ...]
         availableIconTypes = _.map(_.keys(icons.attributes), function(key) { return { iconType: key, title: icons.get(key).get('title') }; }),
         allIconSets = App.getAvailableStyles().get('socialIconSets');
-      return {
-        model: this.model.toJSON(),
+      return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         iconTypes: availableIconTypes,
         currentType: icons.get(this.model.get('iconType')).toJSON(),
         allIconSets: allIconSets.toJSON(),
-      };
+      });
     },
     deleteIcon: function() {
       this.model.destroy();

@@ -189,11 +189,6 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    templateContext: function() {
-      return {
-        model: this.model.toJSON(),
-      };
-    },
     onRender: function() {
       var that = this;
 

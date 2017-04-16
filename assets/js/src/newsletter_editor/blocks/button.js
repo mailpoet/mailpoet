@@ -99,11 +99,10 @@ define([
       };
     },
     templateContext: function() {
-      return {
-        model: this.model.toJSON(),
+      return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         availableStyles: App.getAvailableStyles().toJSON(),
         renderOptions: this.renderOptions,
-      };
+      });
     },
     applyToAll: function() {
       App.getChannel().trigger('replaceAllButtonStyles', _.pick(this.model.toJSON(), 'styles', 'type'));
