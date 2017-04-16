@@ -79,18 +79,16 @@ class AutomatedLatestContent {
   function constructTaxonomiesQuery($args) {
     $taxonomies_query = array();
     if(isset($args['terms']) && is_array($args['terms'])) {
-      // Add filtering by tags and categories
-      $tags = array();
-      $categories = array();
+      $taxonomies = array();
+      // Categorize terms based on their taxonomies
       foreach($args['terms'] as $term) {
-        if($term['taxonomy'] === 'category') {
-          $categories[] = $term['id'];
-        } else if($term['taxonomy'] === 'post_tag') $tags[] = $term['id'];
+        $taxonomy = $term['taxonomy'];
+        if(!isset($taxonomies[$taxonomy])) {
+          $taxonomies[$taxonomy] = array();
+        }
+        $taxonomies[$taxonomy][] = $term['id'];
       }
-      $taxonomies = array(
-        'post_tag' => $tags,
-        'category' => $categories
-      );
+
       foreach($taxonomies as $taxonomy => $terms) {
         if(!empty($terms)) {
           $tax = array(
@@ -108,7 +106,6 @@ class AutomatedLatestContent {
         // use 'OR', because we want posts that have any of the included
         // tags/categories
         $taxonomies_query['relation'] = ($args['inclusionType'] === 'exclude') ? 'AND' : 'OR';
-        return $taxonomies_query;
       }
     }
     return $taxonomies_query;

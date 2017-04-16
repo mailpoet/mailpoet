@@ -36,6 +36,14 @@ function override($func, $args) {
   return call_user_func_array('\\' . $func, $args);
 }
 
+function get_terms($key) {
+  return override(__FUNCTION__, func_get_args());
+}
+
+function get_bloginfo($key) {
+  return override(__FUNCTION__, func_get_args());
+}
+
 function get_option($key) {
   return override(__FUNCTION__, func_get_args());
 }

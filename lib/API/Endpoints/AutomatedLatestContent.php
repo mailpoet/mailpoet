@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\API\Endpoints;
 use MailPoet\API\Endpoint as APIEndpoint;
+use MailPoet\WP\Posts as WPPosts;
 
 if(!defined('ABSPATH')) exit;
 
@@ -31,9 +32,9 @@ class AutomatedLatestContent extends APIEndpoint {
     $page = (isset($data['page'])) ? (int)$data['page'] : 1;
 
     return $this->successResponse(
-      get_terms(
-        $taxonomies,
+      WPPosts::getTerms(
         array(
+          'taxonomy' => $taxonomies,
           'hide_empty' => false,
           'search' => $search,
           'number' => $limit,
