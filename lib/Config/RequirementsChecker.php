@@ -65,7 +65,7 @@ class RequirementsChecker {
     );
     if(!is_dir($paths['cache_path']) && !wp_mkdir_p($paths['cache_path'])) {
       $error = Helpers::replaceLinkTags(
-        __('This plugin requires write permissions inside the /wp-content/uploads folder. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+        __('MailPoet requires write permissions inside the /wp-content/uploads folder. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
         '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#folder_permissions'
       );
       return $this->processError($error);
@@ -85,7 +85,7 @@ class RequirementsChecker {
   function checkPDOExtension() {
     if(extension_loaded('pdo') && extension_loaded('pdo_mysql')) return true;
     $error = Helpers::replaceLinkTags(
-      __('This plugin requires the PDO_MYSQL PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+      __('MailPoet requires a PDO_MYSQL PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension'
     );
     return $this->processError($error);
@@ -101,7 +101,7 @@ class RequirementsChecker {
   function checkXmlExtension() {
     if(extension_loaded('xml')) return true;
     $error = Helpers::replaceLinkTags(
-      __('This plugin requires the XML extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+      __('MailPoet requires an XML PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension'
     );
     return $this->processError($error);
@@ -110,7 +110,7 @@ class RequirementsChecker {
   function checkZipExtension() {
     if(extension_loaded('zip')) return true;
     $error = Helpers::replaceLinkTags(
-      __('This plugin requires the ZIP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+      __('MailPoet requires a ZIP PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension'
     );
     return $this->processError($error);
