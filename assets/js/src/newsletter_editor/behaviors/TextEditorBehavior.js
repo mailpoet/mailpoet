@@ -60,10 +60,17 @@ define([
 
           editor.on('click', function(e) {
             editor.focus();
+            if (that._isActivationClick) {
+              editor.selection.setRng(
+                  tinymce.dom.RangeUtils.getCaretRangeFromPoint(e.clientX, e.clientY, editor.getDoc())
+              );
+              that._isActivationClick = false;
+            }
           });
 
           editor.on('focus', function(e) {
             that.view.triggerMethod('text:editor:focus');
+              that._isActivationClick = true;
           });
 
           editor.on('blur', function(e) {
