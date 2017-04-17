@@ -10,6 +10,8 @@ class RequirementsChecker {
   const TEST_FOLDER_PERMISSIONS = 'TempAndCacheFolderCreation';
   const TEST_PDO_EXTENSION = 'PDOExtension';
   const TEST_MBSTRING_EXTENSION = 'MbstringExtension';
+  const TEST_XML_EXTENSION = 'XmlExtension';
+  const TEST_ZIP_EXTENSION = 'ZipExtension';
   const TEST_VENDOR_SOURCE = 'VendorSource';
 
   public $display_error_notice;
@@ -45,6 +47,8 @@ class RequirementsChecker {
       self::TEST_PDO_EXTENSION,
       self::TEST_FOLDER_PERMISSIONS,
       self::TEST_MBSTRING_EXTENSION,
+      self::TEST_XML_EXTENSION,
+      self::TEST_ZIP_EXTENSION,
       self::TEST_VENDOR_SOURCE
     );
     $results = array();
@@ -92,6 +96,24 @@ class RequirementsChecker {
       require_once Env::$util_path .'/Polyfills.php';
     }
     return true;
+  }
+
+  function checkXmlExtension() {
+    if(extension_loaded('xml')) return true;
+    $error = Helpers::replaceLinkTags(
+      __('This plugin requires the XML extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+      '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension'
+    );
+    return $this->processError($error);
+  }
+
+  function checkZipExtension() {
+    if(extension_loaded('zip')) return true;
+    $error = Helpers::replaceLinkTags(
+      __('This plugin requires the ZIP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
+      '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension'
+    );
+    return $this->processError($error);
   }
 
   function checkVendorSource() {
