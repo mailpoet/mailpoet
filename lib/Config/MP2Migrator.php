@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Util\ProgressBar;
+use MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
 
@@ -25,7 +26,7 @@ class MP2Migrator {
    * @return boolean
    */
   public function isMigrationNeeded() {
-    if(get_option('mailpoet_migration_complete')) {
+    if(Setting::getValue('mailpoet_migration_complete')) {
       return false;
     } else {
       return $this->tableExists('wysija_campaign'); // Check if the MailPoet 2 tables exist
@@ -37,7 +38,7 @@ class MP2Migrator {
    * 
    */
   public function skipImport() {
-    update_option('mailpoet_migration_complete', true);
+    Setting::setValue('mailpoet_migration_complete', true);
   }
 
   /**
@@ -96,7 +97,7 @@ class MP2Migrator {
     ob_start();
     $this->emptyLog();
     $this->log(sprintf("=== START IMPORT %s ===", date('Y-m-d H:i:s')));
-    update_option('mailpoet_stopImport', false, false); // Reset the stop import action
+    Setting::setValue('mailpoet_stopImport', false); // Reset the stop import action
     
     $this->displayDataToMigrate();
     
@@ -130,7 +131,7 @@ class MP2Migrator {
    * 
    */
   public function stopImport() {
-    update_option('mailpoet_stopImport', true);
+    Setting::setValue('mailpoet_stopImport', true);
     $this->log(__('IMPORT STOPPED BY USER', Env::$plugin_name));
   }
 
@@ -140,7 +141,7 @@ class MP2Migrator {
    * @return boolean Import must stop or not
    */
   private function importStopped() {
-    return get_option('mailpoet_stopImport');
+    return Setting::getValue('mailpoet_stopImport');
   }
 
   /**
