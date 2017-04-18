@@ -197,7 +197,7 @@ const _StatisticsMixin = {
       show_kb_link = false;
     }
 
-    const improveStatsKBLink = 'http://beta.docs.mailpoet.com/article/190-whats-a-good-email-open-rate';
+    const improveStatsKBLink = 'http://beta.docs.mailpoet.com/article/191-how-to-improve-my-open-and-click-rates';
 
     let content;
     if (total_sent >= 20
