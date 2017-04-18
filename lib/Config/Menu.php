@@ -256,7 +256,7 @@ class Menu {
     }
 
     $mp2Migrator = new MP2Migrator();
-    if($mp2Migrator->proposeMigration()) {
+    if($mp2Migrator->isMigrationNeeded()) {
       $mp2Migrator->init();
       $data = array(
         'log_file_url' => $mp2Migrator->log_file_url,

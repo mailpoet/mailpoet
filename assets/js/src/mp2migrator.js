@@ -103,7 +103,7 @@
 
       // Run the import
       MailPoet.Ajax.post({
-        endpoint: 'MP2MigratorAPI',
+        endpoint: 'MP2Migrator',
         action: 'import',
         data: {
         }
@@ -118,10 +118,10 @@
       }).fail(function (response) {
         if(response.errors.length > 0) {
           MailPoet.Notice.error(
-                  response.errors.map(function (error) {
-                    return error.message;
-                  }),
-                  {scroll: true}
+            response.errors.map(function (error) {
+              return error.message;
+            }),
+            {scroll: true}
           );
         }
       });
@@ -138,7 +138,7 @@
     },
     
     /**
-     * Stop import
+     * Stop the import
      *
      * @returns {Boolean}
      */
@@ -146,7 +146,7 @@
       $('#stop-import').attr('disabled', 'disabled');
       // Stop the import
       MailPoet.Ajax.post({
-        endpoint: 'MP2MigratorAPI',
+        endpoint: 'MP2Migrator',
         action: 'stopImport',
         data: {
         }
@@ -156,6 +156,23 @@
         that.update_display(); // Get the latest information after the import was stopped
       });
       that.stop_logger();
+      return false;
+    },
+
+    /**
+     * Skip the import
+     *
+     * @returns {Boolean}
+     */
+    skip_import: function () {
+      MailPoet.Ajax.post({
+        endpoint: 'MP2Migrator',
+        action: 'skipImport',
+        data: {
+        }
+      }).done(function () {
+        window.location.reload();
+      });
       return false;
     }
 
@@ -174,6 +191,9 @@
 
     // Stop import button
     $('#stop-import').click(that.stop_import);
+
+    // Skip import link
+    $('#skip-import').click(that.skip_import);
   });
 
 })(jQuery);

@@ -149,8 +149,7 @@ config.push(_.extend({}, baseConfig, {
       'settings/tabs.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
-      'helpscout',
-      'mp2migrator.js'
+      'helpscout'
     ],
     form_editor: [
       'form_editor/form_editor.js',
@@ -222,6 +221,19 @@ config.push(_.extend({}, baseConfig, {
       'iframe',
       'jquery.serialize_object',
       'public.js'
+    ]
+  },
+  externals: {
+    'jquery': 'jQuery'
+  }
+}));
+
+// mp2migrator
+config.push(_.extend({}, baseConfig, {
+  name: 'mp2migrator',
+  entry: {
+    mp2migrator: [
+      'mp2migrator.js'
     ]
   },
   externals: {
