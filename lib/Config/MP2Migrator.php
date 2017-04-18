@@ -13,28 +13,31 @@ class MP2Migrator {
   public $progressbar;
 
   public function __construct() {
-    $log_filename = Env::$plugin_name . '-mp2migration.log';
-    $upload_dir = wp_upload_dir();
-    $this->log_file = $upload_dir['basedir'] . '/' . $log_filename;
-    $this->log_file_url = $upload_dir['baseurl'] . '/' . $log_filename;
+    $log_filename = 'mp2migration.log';
+    $this->log_file = Env::$temp_path . '/' . $log_filename;
+    $this->log_file_url = Env::$temp_url . '/' . $log_filename;
     $this->progressbar = new ProgressBar('mp2migration');
   }
 
   /**
-   * Test if the migration is proposed
+   * Test if the migration is needed
    * 
    * @return boolean
    */
-  public function proposeMigration() {
-    if(isset($_REQUEST['nomigrate'])) {
-      // Store the user's choice if he doesn't want to migrate from MP2
-      update_option('mailpoet_migration_complete', true);
-    }
+  public function isMigrationNeeded() {
     if(get_option('mailpoet_migration_complete')) {
       return false;
     } else {
       return $this->tableExists('wysija_campaign'); // Check if the MailPoet 2 tables exist
     }
+  }
+
+  /**
+   * Store the "Skip import" choice
+   * 
+   */
+  public function skipImport() {
+    update_option('mailpoet_migration_complete', true);
   }
 
   /**
@@ -71,7 +74,8 @@ class MP2Migrator {
    *
    */
   private function enqueueScripts() {
-    wp_enqueue_script('jquery-ui-progressbar');
+    wp_register_script('mp2migrator', Env::$assets_url . '/js/mp2migrator.js', array('jquery-ui-progressbar'));
+    wp_enqueue_script('mp2migrator');
   }
 
   /**
@@ -89,8 +93,13 @@ class MP2Migrator {
    * @return boolean Result
    */
   public function import() {
-    $this->log('START IMPORT');
+    ob_start();
+    $this->emptyLog();
+    $this->log(sprintf("=== START IMPORT %s ===", date('Y-m-d H:i:s')));
     update_option('mailpoet_stopImport', false, false); // Reset the stop import action
+    
+    $this->displayDataToMigrate();
+    
     // TODO to remove, for testing only
     $this->progressbar->setTotalCount(0);
     $this->progressbar->setTotalCount(10);
@@ -102,16 +111,27 @@ class MP2Migrator {
       }
     }
 
-    $this->log('END IMPORT');
+    $this->log(sprintf("=== END IMPORT %s ===", date('Y-m-d H:i:s')));
+    $result = ob_get_contents();
+    ob_clean();
+    return $result;
   }
 
+  /**
+   * Empty the log file
+   * 
+   */
+  private function emptyLog() {
+    file_put_contents($this->log_file, '');
+  }
+  
   /**
    * Stop the import
    * 
    */
   public function stopImport() {
     update_option('mailpoet_stopImport', true);
-    $this->log('IMPORT STOPPED BY USER');
+    $this->log(__('IMPORT STOPPED BY USER', Env::$plugin_name));
   }
 
   /**
@@ -123,4 +143,67 @@ class MP2Migrator {
     return get_option('mailpoet_stopImport');
   }
 
+  /**
+   * Display the number of data to migrate
+   * 
+   */
+  private function displayDataToMigrate() {
+    $data = $this->getDataToMigrate();
+    $this->log($data);
+  }
+  
+  /**
+   * Get the data to migrate
+   * 
+   * @return string Data to migrate
+   */
+  private function getDataToMigrate() {
+    $result = '';
+    $totalCount = 0;
+    
+    $this->progressbar->setTotalCount(0);
+    
+    $result .= __('MailPoet 2 data found:', Env::$plugin_name) . "\n";
+    
+    // Users
+    $usersCount = $this->rowsCount('wysija_user');
+    $totalCount += $usersCount;
+    $result .= sprintf(_n('%d subscriber', '%d subscribers', $usersCount, Env::$plugin_name), $usersCount) . "\n";
+    
+    // User Lists
+    $usersListsCount = $this->rowsCount('wysija_user_list');
+    $totalCount += $usersListsCount;
+    $result .= sprintf(_n('%d subscribers list', '%d subscribers lists', $usersListsCount, Env::$plugin_name), $usersListsCount) . "\n";
+    
+    // Emails
+    $emailsCount = $this->rowsCount('wysija_email');
+    $totalCount += $emailsCount;
+    $result .= sprintf(_n('%d newsletter', '%d newsletters', $emailsCount, Env::$plugin_name), $emailsCount) . "\n";
+    
+    // Forms
+    $formsCount = $this->rowsCount('wysija_form');
+    $totalCount += $formsCount;
+    $result .= sprintf(_n('%d form', '%d forms', $formsCount, Env::$plugin_name), $formsCount) . "\n";
+    
+    $this->progressbar->setTotalCount($totalCount);
+    
+    return $result;
+  }
+  
+  /**
+   * Count the number of rows in a table
+   * 
+   * @param string $table Table
+   * @return int Number of rows found
+   */
+  private function rowsCount($table) {
+    global $wpdb;
+
+    $table = $wpdb->prefix . $table;
+    $sql = "SELECT COUNT(*) FROM `$table`";
+    $count = $wpdb->get_var($sql);
+    
+    return $count;
+  }
+  
 }
