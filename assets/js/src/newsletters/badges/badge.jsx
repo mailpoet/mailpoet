@@ -10,7 +10,7 @@ class Badge extends React.Component {
       this.props.size ? `mailpoet_badge_size_${this.props.size}` : ''
     );
 
-    const tooltip = this.props.tooltip.replace(/\n/g, '<br />') || false;
+    const tooltip = this.props.tooltip ? this.props.tooltip.replace(/\n/g, '<br />') : false;
     // tooltip ID must be unique, defaults to tooltip text
     const tooltipId = this.props.tooltipId || tooltip;
 

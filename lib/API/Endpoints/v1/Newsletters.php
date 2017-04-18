@@ -372,7 +372,8 @@ class Newsletters extends APIEndpoint {
       'filters' => $listing_data['filters'],
       'groups' => $listing_data['groups'],
       'mta_log' => Setting::getValue('mta_log'),
-      'mta_method' => Setting::getValue('mta.method')
+      'mta_method' => Setting::getValue('mta.method'),
+      'current_time' => current_time('mysql')
     ));
   }
 

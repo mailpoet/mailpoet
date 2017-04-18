@@ -4,6 +4,7 @@ import ReactStringReplace from 'react-string-replace'
 import { Link } from 'react-router'
 import MailPoet from 'mailpoet'
 import classNames from 'classnames'
+import moment from 'moment'
 import jQuery from 'jquery'
 import Hooks from 'wp-js-hooks'
 import StatsBadge from 'newsletters/badges/stats.jsx'
@@ -143,14 +144,14 @@ const _QueueMixin = {
 };
 
 const _StatisticsMixin = {
-  renderStatistics: function(newsletter, sentCondition) {
-    if (sentCondition === undefined) {
+  renderStatistics: function(newsletter, sent_condition, current_time) {
+    if (sent_condition === undefined) {
       // condition for standard and post notification listings
-      sentCondition = newsletter.statistics
+      sent_condition = newsletter.statistics
         && newsletter.queue
         && newsletter.queue.status !== 'scheduled'
     }
-    if (!sentCondition) {
+    if (!sent_condition) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
@@ -177,8 +178,19 @@ const _StatisticsMixin = {
     const percentage_opened_display = MailPoet.Num.toLocaleFixed(percentage_opened, 1);
     const percentage_unsubscribed_display = MailPoet.Num.toLocaleFixed(percentage_unsubscribed, 1);
 
+    // green box for newsletters that were just sent
+    const show_stats_timeout = 6; // in hours
+    const newsletter_date = newsletter.queue.scheduled_at || newsletter.queue.created_at;
+    const sent_hours_ago = moment(current_time).diff(moment(newsletter_date), 'hours');
+    const too_early_for_stats = sent_hours_ago < show_stats_timeout;
+
+    const improveStatsKBLink = 'http://beta.docs.mailpoet.com/article/190-whats-a-good-email-open-rate';
+
     let content;
-    if (total_sent >= 20 && newsletter.statistics.opened >= 5) {
+    if (total_sent >= 20
+      && newsletter.statistics.opened >= 5
+      && !too_early_for_stats
+    ) {
       // display stats with badges
       content = (
         <div className="mailpoet_stats_text">
@@ -206,27 +218,65 @@ const _StatisticsMixin = {
     } else {
       // display simple stats
       content = (
-        <span className="mailpoet_stats_text">
-          { percentage_opened_display }%,
-          { " " }
-          { percentage_clicked_display }%
-          <span className="mailpoet_stat_hidden">
-            , { percentage_unsubscribed_display }%
+        <div>
+          <span className="mailpoet_stats_text">
+            { percentage_opened_display }%,
+            { " " }
+            { percentage_clicked_display }%
+            <span className="mailpoet_stat_hidden">
+              , { percentage_unsubscribed_display }%
+            </span>
           </span>
-        </span>
+          { too_early_for_stats && (
+            <div className="mailpoet_badge mailpoet_badge_green">
+              {MailPoet.I18n.t('checkBackInHours')
+                  .replace('%$1d', show_stats_timeout - sent_hours_ago)}
+            </div>
+          ) }
+        </div>
       );
     }
 
-    if (total_sent > 0 && params.link) {
+    let after_content;
+    if (percentage_opened < 5
+      && sent_hours_ago >= 24
+      && total_sent >= 10
+    ) {
+      // help link for bad open rate
+      after_content = (
+        <div>
+          <a
+            href={improveStatsKBLink}
+            target="_blank"
+            className="mailpoet_stat_link_small"
+          >
+            {MailPoet.I18n.t('improveThisLinkText')}
+          </a>
+        </div>
+      )
+    }
+
+    if (total_sent > 0 && !too_early_for_stats && params.link) {
+      // wrap content in a link
       return (
-        <Link
-          key={ `stats-${newsletter.id}` }
-          to={ params.link }
-        >{ content }</Link>
+        <div>
+          <Link
+            key={ `stats-${newsletter.id}` }
+            to={ params.link }
+          >
+            {content}
+          </Link>
+          {after_content}
+        </div>
       );
     }
 
-    return content;
+    return (
+      <div>
+        {content}
+        {after_content}
+      </div>
+    );
   }
 }
 
