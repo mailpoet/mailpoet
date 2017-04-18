@@ -178,11 +178,24 @@ const _StatisticsMixin = {
     const percentage_opened_display = MailPoet.Num.toLocaleFixed(percentage_opened, 1);
     const percentage_unsubscribed_display = MailPoet.Num.toLocaleFixed(percentage_unsubscribed, 1);
 
-    // green box for newsletters that were just sent
-    const show_stats_timeout = 6; // in hours
-    const newsletter_date = newsletter.queue.scheduled_at || newsletter.queue.created_at;
-    const sent_hours_ago = moment(current_time).diff(moment(newsletter_date), 'hours');
-    const too_early_for_stats = sent_hours_ago < show_stats_timeout;
+    let show_stats_timeout,
+      newsletter_date,
+      sent_hours_ago,
+      too_early_for_stats,
+      show_kb_link;
+    if (current_time !== undefined) {
+      // standard emails and post notifications:
+      // display green box for newsletters that were just sent
+      show_stats_timeout = 6; // in hours
+      newsletter_date = newsletter.queue.scheduled_at || newsletter.queue.created_at;
+      sent_hours_ago = moment(current_time).diff(moment(newsletter_date), 'hours');
+      too_early_for_stats = sent_hours_ago < show_stats_timeout;
+      show_kb_link = true;
+    } else {
+      // welcome emails: no green box and KB link
+      too_early_for_stats = false;
+      show_kb_link = false;
+    }
 
     const improveStatsKBLink = 'http://beta.docs.mailpoet.com/article/190-whats-a-good-email-open-rate';
 
@@ -238,7 +251,8 @@ const _StatisticsMixin = {
     }
 
     let after_content;
-    if (percentage_opened < 5
+    if (show_kb_link
+      && percentage_opened < 5
       && sent_hours_ago >= 24
       && total_sent >= 10
     ) {
@@ -253,7 +267,7 @@ const _StatisticsMixin = {
             {MailPoet.I18n.t('improveThisLinkText')}
           </a>
         </div>
-      )
+      );
     }
 
     if (total_sent > 0 && !too_early_for_stats && params.link) {
