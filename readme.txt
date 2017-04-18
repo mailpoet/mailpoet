@@ -1,24 +1,23 @@
 === MailPoet 3 - Beta Version ===
 Contributors: mailpoet, wysija
-Tags: newsletter, email, welcome email, post notification, autoresponder, signup, smtp
+Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.7.3
-Stable tag: 3.0.0-beta.26
+Stable tag: 3.0.0-beta.27
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
 
-Try the new MailPoet! This is a beta version of our completely new email newsletter plugin.
+Try the new MailPoet! This is a beta version of our completely new email newsletter plugin. [Or test the demo.](http://demo3.mailpoet.com/launch/)
 
 = What's new? =
 
 * New email designer
 * Responsive templates
-* Send with MailPoet's sending service
+* Send with MailPoet's Sending Service
 * Fast user interface
 * Easier initial configuration
-
-[Try the demo.](http://demo3.mailpoet.com/launch/)
+* Weekly releases since November 2016
 
 = Check out this 2 minute video. =
 
@@ -26,67 +25,83 @@ Try the new MailPoet! This is a beta version of our completely new email newslet
 
 = Use at your own risk! =
 
-Use [the current stable MailPoet](https://wordpress.org/plugins/wysija-newsletters/) instead of this version if you are not a power user.
+Use [the current stable MailPoet](https://wordpress.org/plugins/wysija-newsletters/) instead of this beta version if you are not a power user.
 
-* This beta version is for testing purposes only!
-* Not RTL compatible
-* We expect bug reports from you!
-* Multisite not supported
-* No migration script from MailPoet 2.X to this version
-* Weekly releases
+* Report bugs!
+* Not RTL optimized, but it works
+* Multisite works but is not officially supported
+* Migration script from MailPoet 2.X to this version coming soon.
 
 = Premium version =
 
 Not available yet. Limited stats in free version.
 
-= Translations in your language =
+= Translations =
 
-We accept translations for this plugin, please submit your translations on our Transifex project (https://www.transifex.com/wysija/mp3/).
-Please note that any translations submitted via "Translating WordPress" system (https://translate.wordpress.org/projects/wp-plugins/mailpoet) will not work.
+* French
+* Italian
+* Spanish
+* Dutch
+* Portuguese (BR and PT)
+* British
+* Russian
+
+We welcome translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" web site will not work!
 
 == Installation ==
 
 There are 3 ways to install this plugin:
 
 = 1. The super easy way =
-1. In your Admin, go to menu Plugins > Add
-1. Search for `mailpoet`
-1. Click to install
+1. In your WordPress dashboard, navigate to Plugins > Add New
+1. Search for `MailPoet`
+1. Click on "install now" under "MailPoet 3 – Beta Version"
 1. Activate the plugin
-1. A new menu `mailpoet` will appear in your Admin
+1. A new `MailPoet` menu will appear in your WordPress dashboard
 
 = 2. The easy way =
-1. Download the plugin (.zip file) on the right column of this page
-1. In your Admin, go to menu Plugins > Add
-1. Select the tab "Upload"
-1. Upload the .zip file you just downloaded
+1. Download the plugin (.zip file) by using the blue "download" button underneath the plugin banner at the top
+1. In your WordPress dashboard, navigate to Plugins > Add New
+1. Click on "Upload Plugin"
+1. Upload the .zip file
 1. Activate the plugin
-1. A new menu `MailPoet` will appear in your Admin
+1. A new `MailPoet` menu will appear in your WordPress dashboard
 
-= 3. The old and reliable way (FTP) =
-1. Upload `mailpoet` folder to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. A new menu `MailPoet` will appear in your Admin
+= 3. The old-fashioned and reliable way (FTP) =
+1. Download the plugin (.zip file) by using the blue "download" button underneath the plugin banner at the top
+1. Extract the archive and then upload, via FTP, the `mailpoet` folder to the `<WP install folder>/wp-content/plugins/` folder on your host
+1. Activate the plugin
+1. A new `MailPoet` menu will appear in your WordPress dashboard
 
 == Frequently Asked Questions ==
 
 = Need help? =
 
-Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can write to us on the forums too.
+Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You can write to us on the forums too.
 
 == Screenshots ==
 
-1. Sample newsletters.
-2. The drag & drop editor.
-3. Subscriber management.
-4. Sending method configuration in Settings.
-5. Importing subscribers with a CSV or from MailChimp.
+1. Sample newsletters
+2. The drag-and-drop email designer
+3. Subscriber management
+4. Sending method configuration in Settings
+5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
 
+= 3.0.0-beta.27 - 2017-04-18 =
+* Improved: a warning notice is displayed when the required XML and ZIP PHP extensions are missing;
+* Improved: when clicking on a text block inside the email designer, the text cursor is positioned where the click took place;
+* Fixed: images remotely added inside the email designer are no longer scaled down to 281px. Thanks Marcelo;
+* Fixed: re-importing existing users no longer resets their subscription status. Thanks Marco;
+* Fixed: import doesn't fail on certain MySQL setups when subscribers' first and/or last name data is missing;
+* Fixed: custom field data no longer get swapped between subscribers during import. Thanks Eric;
+* Fixed: automatic latest content block now properly applies tag/category filters to all post types. Thanks JP;
+* Fixed: various minor issues.
+
 = 3.0.0-beta.26 - 2017-04-11 =
-* Fixed: Interactive widget customizer is now working with MailPoet form widgets. Thanks Peter and Charis!
-* Fixed: Multi-line headings are now properly displayed in emails. Thanks Karen!
+* Fixed: interactive widget customizer is now working with MailPoet form widgets. Thanks Peter and Charis!
+* Fixed: multi-line headings are now properly displayed in emails. Thanks Karen!
 
 = 3.0.0-beta.25 - 2017-04-04 =
 * Improved: subscriber listings with large number of subscribers (tens of thousands) now load much faster on MySQL 5.5 and lower. Thanks Moulouk!;
@@ -102,7 +117,7 @@ Our [support site](https://docs.mailpoet.com/) has plenty of articles. You can w
 
 = 3.0.0-beta.23.2 - 2017-03-14 =
 * Improved: added plugin translations to Dutch, English (UK), French, German, Italian, Portuguese (Brazil), Portuguese (Portugal), Russian and Spanish languages. Thank you translators!
-* Fixed: unsubscribed subscriber will no longer receive newsletters (woops!). Thanks, Oskar;
+* Fixed: unsubscribed subscriber will no longer receive newsletters (whoops!). Thanks, Oskar;
 * Fixed: previously scheduled send tasks are rescheduled when post notifications' scheduling options change. Thanks, Karen and Eric!
 * Fixed: Amazon SES sending method now works regardless of custom "arg_separator" set in PHP's configuration. Thanks Lukas!
 
