@@ -2,6 +2,7 @@
 namespace MailPoet\Cron\Workers\SendingQueue;
 
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Mailer\MailerLog;
@@ -10,7 +11,6 @@ use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
-use MailPoet\Newsletter\Links\Links;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Subscription\Url;
@@ -123,7 +123,7 @@ class SendingQueue {
           $prepared_newsletters[0],
           $prepared_subscribers[0],
           $statistics,
-          $this->getExtraParams($queue, $prepared_subscribers_ids)
+          array('unsubscribe_url' => Links::getUnsubscribeUrl($queue, $prepared_subscribers_ids[0]))
         );
         $prepared_newsletters = array();
         $prepared_subscribers = array();
@@ -178,33 +178,6 @@ class SendingQueue {
     CronHelper::enforceExecutionLimit($this->timer);
     // abort if sending limit has been reached
     MailerLog::enforceExecutionRequirements();
-  }
-
-  protected function getExtraParams($queue, $prepared_subscribers_ids) {
-    $subscriber_id = $prepared_subscribers_ids[0];
-    $subscriber = SubscriberModel::where('id', $subscriber_id)->findOne();
-    
-    if((boolean)Setting::getValue('tracking.enabled')) {
-      $link_hash = NewsletterLink::where('queue_id', $queue->id)
-        ->where('url', '[link:subscription_unsubscribe_url]')
-        ->findOne()
-        ->hash;
-      $data = Links::createUrlDataObject(
-        $subscriber_id, 
-        $subscriber->email,
-        $queue->id, 
-        $link_hash, 
-        false
-      );
-      $url = Router::buildRequest(
-        Track::ENDPOINT,
-        Track::ACTION_CLICK,
-        $data
-      );
-    } else {
-      $url = Url::getUnsubscribeUrl($subscriber);
-    }
-    return array('unsubscribe_url' => $url);
   }
 
   static function getRunningQueues() {

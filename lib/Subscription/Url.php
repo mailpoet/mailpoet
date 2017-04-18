@@ -33,9 +33,6 @@ class Url {
       if(is_object($subscriber)) {
         $subscriber = $subscriber->asArray();
       }
-      if(is_string($subscriber)) {
-        $subscriber = array('email' => $subscriber);
-      }
 
       $data = array(
         'token' => Subscriber::generateToken($subscriber['email']),
