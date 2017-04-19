@@ -142,13 +142,13 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
       // set class name
       switch (this.options.type) {
         case 'success':
-          this.element.addClass('updated');
+          this.element.addClass('notice notice-success');
         break;
         case 'system':
-          this.element.addClass('update-nag');
+          this.element.addClass('notice notice-warning');
         break;
         case 'error':
-          this.element.addClass('error');
+          this.element.addClass('notice notice-error');
         break;
       }
 
@@ -188,7 +188,7 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         // single id
         jQuery('[data-id="' + all + '"]').trigger('close');
       } else {
-        jQuery('.mailpoet_notice.updated:not([id]), .mailpoet_notice.error:not([id])')
+        jQuery('.mailpoet_notice.notice-success:not([id]), .mailpoet_notice.notice-error:not([id])')
           .trigger('close');
       }
     },
