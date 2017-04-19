@@ -102,22 +102,11 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         'setMessage', this.options.message
       );
     },
-    isHTML: function(str) {
-      var a = document.createElement('div');
-      a.innerHTML = str;
-      for (var c = a.childNodes, i = c.length; i--;) {
-        if (c[i].nodeType == 1) return true;
-      }
-      return false;
-    },
     setMessage: function(message) {
       message = this.formatMessage(message);
 
-      // if it's not an html message
       // let's sugar coat the message with a fancy <p>
-      if (this.isHTML(message) === false) {
-          message = '<p>'+message+'</p>';
-      }
+      message = '<p>'+message+'</p>';
       // set message
       return this.element.html(message);
     },
