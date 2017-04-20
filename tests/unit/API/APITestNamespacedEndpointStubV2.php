@@ -13,6 +13,6 @@ class NamespacedEndpointStub extends APIEndpoint {
   );
 
   function testVersion() {
-    return $this->successResponse('version_test_succeeded');
+    return $this->successResponse('v2');
   }
 }

@@ -22,6 +22,7 @@ define(
       componentDidMount: function() {
         // No options for this type, create a newsletter upon mounting
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',
           action: 'create',
           data: {

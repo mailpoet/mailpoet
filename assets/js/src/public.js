@@ -40,8 +40,8 @@ function(
             // ajax request
             MailPoet.Ajax.post({
               url: MailPoetForm.ajax_url,
-              api_version: form_data.api_version,
               token: form_data.token,
+              api_version: form_data.api_version,
               endpoint: 'subscribers',
               action: 'subscribe',
               data: form_data.data

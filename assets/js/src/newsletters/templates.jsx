@@ -27,6 +27,7 @@ define(
         MailPoet.Modal.loading(true);
 
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'newsletterTemplates',
           action: 'save',
           data: template
@@ -97,6 +98,7 @@ define(
         MailPoet.Modal.loading(true);
 
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'newsletterTemplates',
           action: 'getAll',
         }).always(() => {
@@ -130,6 +132,7 @@ define(
         }
 
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',
           action: 'save',
           data: {
@@ -158,6 +161,7 @@ define(
           )
         ) {
           MailPoet.Ajax.post({
+            api_version: window.mailpoet_api_version,
             endpoint: 'newsletterTemplates',
             action: 'delete',
             data: {

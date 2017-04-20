@@ -74,6 +74,7 @@
           MailPoet.Modal.loading(true);
 
           MailPoet.Ajax.post({
+            api_version: window.mailpoet_api_version,
             endpoint: 'settings',
             action: 'set',
             data: settings_data

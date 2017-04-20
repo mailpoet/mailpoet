@@ -74,6 +74,7 @@
 
         // save custom field
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'customFields',
           action: 'save',
           data: data

@@ -37,8 +37,9 @@ define(
         tip: MailPoet.I18n.t('segmentsTip'),
         type: 'selection',
         placeholder: MailPoet.I18n.t('selectSegmentPlaceholder'),
-        id: "mailpoet_segments",
-        endpoint: "segments",
+        id: 'mailpoet_segments',
+        api_version: window.mailpoet_api_version,
+        endpoint: 'segments',
         multiple: true,
         filter: function(segment) {
           return !!(!segment.deleted_at);

@@ -109,6 +109,7 @@ define([
       });
 
       return MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
         endpoint: 'newsletterTemplates',
         action: 'save',
         data: data

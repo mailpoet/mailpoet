@@ -275,6 +275,7 @@
         var template = Handlebars.compile($('#form_template_fields').html());
 
         return MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'customFields',
           action: 'getAll',
         }).done(function(response) {
@@ -403,6 +404,7 @@
           // save change if necessary
           if(new_value !== '' && current_value !== new_value) {
             MailPoet.Ajax.post({
+              api_version: window.mailpoet_api_version,
               endpoint: 'forms',
               action: 'save',
               data:  {
@@ -453,6 +455,7 @@
 
         function mailpoet_form_preview() {
           MailPoet.Ajax.post({
+            api_version: window.mailpoet_api_version,
             endpoint: 'forms',
             action: 'previewEditor',
             data: WysijaForm.save()
@@ -496,6 +499,7 @@
           } else {
             // save form
             MailPoet.Ajax.post({
+              api_version: window.mailpoet_api_version,
               endpoint: 'forms',
               action: 'saveEditor',
               data: form
@@ -550,6 +554,7 @@
         function mailpoet_form_export() {
           var template = Handlebars.compile($('#form_template_exports').html());
           MailPoet.Ajax.post({
+            api_version: window.mailpoet_api_version,
             endpoint: 'forms',
             action: 'exportsEditor',
             data: {
@@ -590,6 +595,7 @@
           var id = $(this).data('id');
 
           MailPoet.Ajax.post({
+            api_version: window.mailpoet_api_version,
             endpoint: 'customFields',
             action: 'get',
             data: {
@@ -621,6 +627,7 @@
             "<%= __('This field will be deleted for all your subscribers. Are you sure?') %>"
           )) {
             MailPoet.Ajax.post({
+              api_version: window.mailpoet_api_version,
               endpoint: 'customFields',
               action: 'delete',
               data: {

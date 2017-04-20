@@ -64,6 +64,7 @@ define(
         this.setState({ loading: true });
 
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: this.props.endpoint,
           action: 'get',
           data: {
@@ -112,6 +113,7 @@ define(
         }
 
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: this.props.endpoint,
           action: 'save',
           data: item

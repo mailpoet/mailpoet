@@ -126,6 +126,7 @@ const newsletter_actions = [
     label: MailPoet.I18n.t('duplicate'),
     onClick: function(newsletter, refresh) {
       return MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
         endpoint: 'newsletters',
         action: 'duplicate',
         data: {
@@ -161,6 +162,7 @@ const NewsletterListWelcome = React.createClass({
     e.persist();
 
     MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
       action: 'setStatus',
       data: {

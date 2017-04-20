@@ -97,6 +97,7 @@ const item_actions = [
     label: MailPoet.I18n.t('duplicate'),
     onClick: function(item, refresh) {
       return MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
         endpoint: 'forms',
         action: 'duplicate',
         data: {
@@ -125,6 +126,7 @@ const item_actions = [
 const FormList = React.createClass({
   createForm() {
     MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: 'forms',
       action: 'create'
     }).done((response) => {

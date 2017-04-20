@@ -445,6 +445,7 @@ const Listing = React.createClass({
       this.clearSelection();
 
       MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
         endpoint: this.props.endpoint,
         action: 'listing',
         data: {
@@ -495,6 +496,7 @@ const Listing = React.createClass({
     });
 
     MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: this.props.endpoint,
       action: 'restore',
       data: {
@@ -522,6 +524,7 @@ const Listing = React.createClass({
     });
 
     MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: this.props.endpoint,
       action: 'trash',
       data: {
@@ -549,6 +552,7 @@ const Listing = React.createClass({
     });
 
     MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: this.props.endpoint,
       action: 'delete',
       data: {
@@ -611,6 +615,7 @@ const Listing = React.createClass({
     }
 
     return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: this.props.endpoint,
       action: 'bulkAction',
       data: data

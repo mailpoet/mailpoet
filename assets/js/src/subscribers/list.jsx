@@ -91,6 +91,7 @@ const bulk_actions = [
     onSelect: function() {
       let field = {
         id: 'move_to_segment',
+        api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         filter: function(segment) {
           return !!(
@@ -122,6 +123,7 @@ const bulk_actions = [
     onSelect: function() {
       let field = {
         id: 'add_to_segment',
+        api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         filter: function(segment) {
           return !!(
@@ -153,6 +155,7 @@ const bulk_actions = [
     onSelect: function() {
       let field = {
         id: 'remove_from_segment',
+        api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         filter: function(segment) {
           return !!(
@@ -255,7 +258,7 @@ const SubscriberList = React.createClass({
       case 'unsubscribed':
         status = MailPoet.I18n.t('unsubscribed');
       break;
-      
+
       case 'bounced':
         status = MailPoet.I18n.t('bounced');
       break;
