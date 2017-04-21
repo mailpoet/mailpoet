@@ -16,7 +16,6 @@ class API {
   private $_request_endpoint_class;
   private $_request_data = array();
   private $_endpoint_namespaces = array();
-  private $_ajax_request = false;
   private $_available_api_versions = array(
       'v1'
   );
@@ -24,12 +23,10 @@ class API {
   const ENDPOINTS_LOCATION = 'Endpoints';
 
   function __construct() {
-    foreach($this->_available_api_versions as $version) {
+    foreach($this->_available_api_versions as $available_api_version) {
       $this->addEndpointNamespace(
-        array(
-          'name' => sprintf('%s\%s', __NAMESPACE__, self::ENDPOINTS_LOCATION),
-          'version' => $version
-        )
+        sprintf('%s\%s', __NAMESPACE__, self::ENDPOINTS_LOCATION),
+        $available_api_version
       );
     }
   }
@@ -55,21 +52,20 @@ class API {
   }
 
   function setupAjax() {
-    $this->_ajax_request = true;
     Hooks::doAction('mailpoet_api_setup', array($this));
-    $this->getRequestData($_POST);
+    $this->setRequestData($_POST);
 
     if($this->checkToken() === false) {
       $error_message = __('Invalid API request.', 'mailpoet');
       $error_response = $this->createErrorResponse(Error::UNAUTHORIZED, $error_message, Response::STATUS_UNAUTHORIZED);
-      return $error_response;
+      return $error_response->send();
     }
 
     $response = $this->processRoute();
     $response->send();
   }
 
-  function getRequestData($data) {
+  function setRequestData($data) {
     $this->_request_api_version = !empty($data['api_version']) ? $data['api_version']: false;
 
     $this->_request_endpoint = isset($data['endpoint'])
@@ -90,13 +86,12 @@ class API {
       $error_message = __('Invalid API request.', 'mailpoet');
       $error_response = $this->createErrorResponse(Error::BAD_REQUEST, $error_message, Response::STATUS_BAD_REQUEST);
       return $error_response;
-    } else {
-      foreach($this->_endpoint_namespaces as $namespace) {
-        if($namespace['version'] !== $this->_request_api_version) continue;
+    } else if(!empty($this->_endpoint_namespaces[$this->_request_api_version])) {
+      foreach($this->_endpoint_namespaces[$this->_request_api_version] as $namespace) {
         $endpoint_class = sprintf(
           '%s\%s\%s',
-          $namespace['name'],
-          $namespace['version'],
+          $namespace,
+          $this->_request_api_version,
           ucfirst($this->_request_endpoint)
         );
         if(class_exists($endpoint_class)) {
@@ -176,11 +171,9 @@ class API {
     );
   }
 
-  function addEndpointNamespace(array $namespace) {
-    if(empty($namespace['version'])) {
-      throw new \Exception(__('Namespace version is required.', 'mailpoet'));
-    }
-    $this->_endpoint_namespaces[] = $namespace;
+  function addEndpointNamespace($namespace, $version) {
+    if(!empty($this->_endpoint_namespaces[$version][$namespace])) return;
+    $this->_endpoint_namespaces[$version][] = $namespace;
   }
 
   function getEndpointNamespaces() {
@@ -203,6 +196,6 @@ class API {
       array(),
       $response_status
     );
-    return ($this->_ajax_request === true) ? $error_response->send() : $error_response;
+    return $error_response;
   }
 }

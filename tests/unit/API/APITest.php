@@ -65,24 +65,11 @@ class APITest extends MailPoetTest {
       'name' => 'MailPoet\\Dummy\\Name\\Space',
       'version' => 'v2'
     );
-    $this->api->addEndpointNamespace($namespace);
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $namespaces = $this->api->getEndpointNamespaces();
 
     expect($namespaces)->count(2);
-    expect($namespaces[1])->equals($namespace);
-  }
-
-  function testItRequiresNamespaceVersionToBeSpecified() {
-    $namespace = array(
-      'name' => 'MailPoet\\Dummy\\Name\\Space'
-    );
-
-    try {
-      $this->api->addEndpointNamespace($namespace);
-      $this->fail('Exception was not thrown');
-    } catch(Exception $e) {
-      expect($e->getMessage())->equals('Namespace version is required.');
-    }
+    expect($namespaces[$namespace['version']][0])->equals($namespace['name']);
   }
 
   function testItReturns400ErrorWhenAPIVersionIsNotSpecified() {
@@ -91,7 +78,7 @@ class APITest extends MailPoetTest {
       'method' => 'test'
     );
 
-    $response = $this->api->getRequestData($data);
+    $response = $this->api->setRequestData($data);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
@@ -100,14 +87,14 @@ class APITest extends MailPoetTest {
       'name' => 'MailPoet\API\Endpoints',
       'version' => 'v2'
     );
-    $this->api->addEndpointNamespace($namespace);
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
     $data = array(
       'endpoint' => 'namespaced_endpoint_stub',
       'api_version' => 'v2',
       'method' => 'test'
     );
-    $this->api->getRequestData($data);
+    $this->api->setRequestData($data);
 
     expect($this->api->getRequestedAPIVersion())->equals('v2');
     expect($this->api->getRequestedEndpointClass())->equals(
@@ -120,7 +107,7 @@ class APITest extends MailPoetTest {
       'name' => 'MailPoet\API\Endpoints',
       'version' => 'v1'
     );
-    $this->api->addEndpointNamespace($namespace);
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
     $data = array(
       'endpoint' => 'namespaced_endpoint_stub',
@@ -128,7 +115,7 @@ class APITest extends MailPoetTest {
       'api_version' => 'v1',
       'data' => array('test' => 'data')
     );
-    $this->api->getRequestData($data);
+    $this->api->setRequestData($data);
     $response = $this->api->processRoute();
 
     expect($response->getData()['data'])->equals($data['data']);
@@ -139,14 +126,14 @@ class APITest extends MailPoetTest {
       'name' => 'MailPoet\API\Endpoints',
       'version' => 'v2'
     );
-    $this->api->addEndpointNamespace($namespace);
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
     $data = array(
       'endpoint' => 'namespaced_endpoint_stub',
       'api_version' => 'v2',
       'method' => 'testVersion'
     );
-    $this->api->getRequestData($data);
+    $this->api->setRequestData($data);
     $response = $this->api->processRoute();
 
     expect($response->getData()['data'])->equals($data['api_version']);

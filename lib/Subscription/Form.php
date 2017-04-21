@@ -9,14 +9,16 @@ use MailPoet\Util\Url;
 class Form {
   static function onSubmit() {
     $api = new API();
-    $api->getRequestData($_REQUEST);
-    $form_id = (!empty($_REQUEST['data']['form_id'])) ? $_REQUEST['data']['form_id']: false;
+    $api->setRequestData($_REQUEST);
+    $form_id = (!empty($_REQUEST['data']['form_id'])) ? (int)$_REQUEST['data']['form_id'] : false;
     $response = $api->processRoute();
     if($response->status !== APIResponse::STATUS_OK) {
-      Url::redirectBack(array(
-        'mailpoet_error' => ($form_id) ? $form_id : true,
-        'mailpoet_success' => null
-      ));
+      Url::redirectBack(
+        array(
+          'mailpoet_error' => ($form_id) ? $form_id : true,
+          'mailpoet_success' => null
+        )
+      );
     } else {
       (isset($response->meta['redirect_url'])) ?
         Url::redirectTo($response->meta['redirect_url']) :
