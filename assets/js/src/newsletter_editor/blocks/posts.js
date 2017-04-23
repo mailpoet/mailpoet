@@ -259,15 +259,23 @@ define([
     },
   });
 
-  var PostSelectionSettingsView = Marionette.CompositeView.extend({
-    getTemplate: function() { return templates.postSelectionPostsBlockSettings; },
+  var PostsSelectionCollectionView = Marionette.CollectionView.extend({
     childView: function() { return SinglePostSelectionSettingsView; },
-    childViewContainer: '.mailpoet_post_selection_container',
     emptyView: function() { return EmptyPostSelectionSettingsView; },
     childViewOptions: function() {
       return {
-        blockModel: this.model,
+        blockModel: this.blockModel,
       };
+    },
+    initialize: function(options) {
+      this.blockModel = options.blockModel;
+    },
+  });
+
+  var PostSelectionSettingsView = Marionette.View.extend({
+    getTemplate: function() { return templates.postSelectionPostsBlockSettings; },
+    regions: {
+      posts: '.mailpoet_post_selection_container',
     },
     events: function() {
       return {
@@ -276,20 +284,18 @@ define([
         'input .mailpoet_posts_search_term': _.partial(this.changeField, 'search'),
       };
     },
-    constructor: function() {
-      // Set the block collection to be handled by this view as well
-      arguments[0].collection = arguments[0].model.get('_availablePosts');
-      Marionette.CompositeView.apply(this, arguments);
-    },
     onRender: function() {
       // Dynamically update available post types
       CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
+      var postsView = new PostsSelectionCollectionView({
+        collection: this.model.get('_availablePosts'),
+        blockModel: this.model
+      });
+
+      this.showChildView('posts', postsView);
     },
     onAttach: function() {
       var that = this;
-
-      // Dynamically update available post types
-      //CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
 
       this.$('.mailpoet_posts_categories_and_tags').select2({
         multiple: true,
