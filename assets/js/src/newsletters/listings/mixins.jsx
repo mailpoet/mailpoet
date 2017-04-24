@@ -144,14 +144,14 @@ const _QueueMixin = {
 };
 
 const _StatisticsMixin = {
-  renderStatistics: function(newsletter, sent_condition, current_time) {
-    if (sent_condition === undefined) {
+  renderStatistics: function(newsletter, is_sent, current_time) {
+    if (is_sent === undefined) {
       // condition for standard and post notification listings
-      sent_condition = newsletter.statistics
+      is_sent = newsletter.statistics
         && newsletter.queue
         && newsletter.queue.status !== 'scheduled'
     }
-    if (!sent_condition) {
+    if (!is_sent) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
@@ -199,9 +199,13 @@ const _StatisticsMixin = {
 
     const improveStatsKBLink = 'http://beta.docs.mailpoet.com/article/191-how-to-improve-my-open-and-click-rates';
 
+    // thresholds to display badges
+    const min_newsletters_sent = 20;
+    const min_newsletter_opens = 5;
+
     let content;
-    if (total_sent >= 20
-      && newsletter.statistics.opened >= 5
+    if (total_sent >= min_newsletters_sent
+      && newsletter.statistics.opened >= min_newsletter_opens
       && !too_early_for_stats
     ) {
       // display stats with badges
@@ -250,11 +254,16 @@ const _StatisticsMixin = {
       );
     }
 
+    // thresholds to display bad open rate help
+    const max_percentage_opened = 5;
+    const min_sent_hours_ago = 24;
+    const min_total_sent = 10;
+
     let after_content;
     if (show_kb_link
-      && percentage_opened < 5
-      && sent_hours_ago >= 24
-      && total_sent >= 10
+      && percentage_opened < max_percentage_opened
+      && sent_hours_ago >= min_sent_hours_ago
+      && total_sent >= min_total_sent
     ) {
       // help link for bad open rate
       after_content = (
