@@ -13,9 +13,14 @@ use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Links\Links;
+use MailPoet\Router\Endpoints\Track;
+use MailPoet\Router\Router;
+use MailPoet\Subscription\Url;
 
 class SendingQueueTest extends MailPoetTest {
   function _before() {
@@ -55,7 +60,32 @@ class SendingQueueTest extends MailPoetTest {
     );
     $this->queue->count_total = 1;
     $this->queue->save();
+    $this->newsletter_link = NewsletterLink::create();
+    $this->newsletter_link->newsletter_id = $this->newsletter->id;
+    $this->newsletter_link->queue_id = $this->queue->id;
+    $this->newsletter_link->url = '[link:subscription_unsubscribe_url]';
+    $this->newsletter_link->hash = 'abcde';
+    $this->newsletter_link->save();
     $this->sending_queue_worker = new SendingQueueWorker();
+  }
+
+  private function getDirectUnsubscribeURL() {
+    return Url::getUnsubscribeUrl($this->subscriber);
+  }
+
+  private function getTrackedUnsubscribeURL() {
+    $data = Links::createUrlDataObject(
+      $this->subscriber->id, 
+      $this->subscriber->email,
+      $this->queue->id, 
+      $this->newsletter_link->hash,
+      false
+    );
+    return Router::buildRequest(
+      Track::ENDPOINT,
+      Track::ACTION_CLICK,
+      $data
+    );
   }
 
   function testItConstructs() {
@@ -191,13 +221,51 @@ class SendingQueueTest extends MailPoetTest {
     expect($queue)->false(false);
   }
 
+  function testItPassesExtraParametersToMailerWhenTrackingIsDisabled() {
+    Setting::setValue('tracking.enabled', false);
+    $directUnsubscribeURL = $this->getDirectUnsubscribeURL();
+    $sending_queue_worker = new SendingQueueWorker(
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        array(
+          'send' => Stub::exactly(1, function($newsletter, $subscriber, $extra_params) use($directUnsubscribeURL) {
+            expect(isset($extra_params['unsubscribe_url']))->true();
+            expect($extra_params['unsubscribe_url'])->equals($directUnsubscribeURL);
+            return true;
+          })
+        )
+      )
+    );
+    $sending_queue_worker->process();
+  }
+  
+  function testItPassesExtraParametersToMailerWhenTrackingIsEnabled() {
+    Setting::setValue('tracking.enabled', true);
+    $trackedUnsubscribeURL = $this->getTrackedUnsubscribeURL();
+    $sending_queue_worker = new SendingQueueWorker(
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        array(
+          'send' => Stub::exactly(1, function($newsletter, $subscriber, $extra_params) use($trackedUnsubscribeURL) {
+            expect(isset($extra_params['unsubscribe_url']))->true();
+            expect($extra_params['unsubscribe_url'])->equals($trackedUnsubscribeURL);
+            return true;
+          })
+        )
+      )
+    );
+    $sending_queue_worker->process();
+  }
+
   function testItCanProcessSubscribersOneByOne() {
     $sending_queue_worker = new SendingQueueWorker(
       $timer = false,
       Stub::make(
         new MailerTask(),
         array(
-          'send' => Stub::exactly(1, function($newsletter, $subscriber) {
+          'send' => Stub::exactly(1, function($newsletter, $subscriber, $extra_params) {
             // newsletter body should not be empty
             expect(!empty($newsletter['body']['html']))->true();
             expect(!empty($newsletter['body']['text']))->true();

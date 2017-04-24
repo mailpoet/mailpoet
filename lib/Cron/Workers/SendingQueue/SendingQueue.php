@@ -2,12 +2,18 @@
 namespace MailPoet\Cron\Workers\SendingQueue;
 
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
-use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
+use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Router\Endpoints\Track;
+use MailPoet\Router\Router;
+use MailPoet\Subscription\Url;
 
 if(!defined('ABSPATH')) exit;
 
@@ -116,7 +122,8 @@ class SendingQueue {
           $prepared_subscribers_ids,
           $prepared_newsletters[0],
           $prepared_subscribers[0],
-          $statistics
+          $statistics,
+          array('unsubscribe_url' => Links::getUnsubscribeUrl($queue, $prepared_subscribers_ids[0]))
         );
         $prepared_newsletters = array();
         $prepared_subscribers = array();
@@ -138,12 +145,13 @@ class SendingQueue {
 
   function sendNewsletters(
     $queue, $prepared_subscribers_ids, $prepared_newsletters,
-    $prepared_subscribers, $statistics
+    $prepared_subscribers, $statistics, $extra_params = array()
   ) {
     // send newsletter
     $send_result = $this->mailer_task->send(
       $prepared_newsletters,
-      $prepared_subscribers
+      $prepared_subscribers,
+      $extra_params
     );
     // log error message and schedule retry/pause sending
     if($send_result['response'] === false) {
