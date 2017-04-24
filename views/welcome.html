@@ -39,15 +39,15 @@
   <hr>
 
   <div class="feature-section two-col">
-    <h2><%= __('Help Us Improve MailPoet') %></h2>
+    <h2><%= __('Want to Make MailPoet Even Better?') %></h2>
     <div class="col">
-      <h3><%= __('We Need Your Feedback') %></h3>
-      <p><%= __('As a beta tester, you have a very important job: to tell us what you think of this new version. If you love it or absolutely hate it, tell us! Any and all feedback is useful.') %></p>
-      <p><%= __('To get in touch with us, simply click on this blue circle')%> <img width="30" style="margin:0" src="<%= image_url('welcome_template/beacon.png') %>" alt="Beacon" /> <%= __('in the bottom right corner of your screen. This button is visible on all MailPoet pages on your WordPress dashboard.') %></p>
+      <h3><%= __('We Need Your Feedback!') %></h3>
+      <p><%= __('As a beta tester, you have a very important job: to tell us what you think about this new version. If you love it, tell us! If you hate it, let us know! Any and all feedback is useful.') %></p>
+      <p><%= __('To get in touch with us, simply click on the blue circle in the bottom right corner of your screen. This button is visible on all MailPoet pages on your WordPress dashboard.') %> <img width="30" style="margin:0" src="<%= image_url('welcome_template/beacon.png') %>" alt="Beacon" /></p>
     </div>
     <div class="col">
-      <h3><%= __('Share Your Data With Us') %></h3>
-      <p><%= __("By sharing your data <i>anonymously</i> with us, you can help us understand how people use MailPoet and what sort of features they like and don't like.") %> <a href="http://docs.mailpoet.com/article/36-share-your-data" target="_blank"><%= __('Find out more') %> &rarr;</a>
+      <h3><%= __('Sharing is Caring') %></h3>
+      <p><%= __("By sharing your data <i>anonymously</i> with us, you can help us understand <i>how people use MailPoet</i> and <i>what sort of features they like and don't like</i>.") %> <a href="http://docs.mailpoet.com/article/36-share-your-data" target="_blank"><%= __('Find out more') %> &rarr;</a>
       <br><br>
       <label>
         <input type="checkbox" id="mailpoet_analytics_enabled" value="1"
@@ -60,13 +60,22 @@
 
   <hr>
 
-  <div class="feature-section one-col">
-    <h2><%= __("Subscribe To Our Newsletter") %></h2>
-    <p><%= __("About once a month, we send out a pretty cool newsletter ourselves.") %></p>
-    <p><%= __("Sign up to get: Tips and tricks, special offers and important plugin updates!") %></p>
-    <p>
-    <iframe width="380" scrolling="no" frameborder="0" src="http://www.mailpoet.com/?wysija-page=1&controller=subscribers&action=wysija_outter&wysija_form=5&external_site=1&wysijap=subscriptions-3" class="iframe-wysija" vspace="0" tabindex="0" style="border-style: none; display:block; visibility: visible; background-color: #f1f1f1!important;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="<%= __("Subscribe To Our Newsletter") %>"></iframe>
-    </p>
+  <div class="feature-section two-col">
+    <div class="col">
+      <h3><%= __("Subscribe To Our Newsletter") %></h3>
+      <p><%= __("About once a month, we send out a pretty cool newsletter ourselves.") %></p>
+      <p><%= __("Sign up to get a curated selection of awesome links, tips and tricks for using MailPoet, special offers, and important plugin updates!") %></p>
+      <p>
+      <iframe width="380" scrolling="no" frameborder="0" src="http://www.mailpoet.com/?wysija-page=1&controller=subscribers&action=wysija_outter&wysija_form=5&external_site=1&wysijap=subscriptions-3" class="iframe-wysija" vspace="0" tabindex="0" style="border-style: none; display:block; visibility: visible; background-color: #f1f1f1!important;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="<%= __("Subscribe To Our Newsletter") %>"></iframe>
+      </p>
+    </div>
+    <div class="col">
+      <h3><%= __("Learn the Ropes") %></h3>
+      <p><%= __("New to MailPoet? Check out our brand new email course. Over the span of 3 weeks, we'll teach you how to create and send your first MailPoet email newsletter. Sign up below!") %></p>
+      <p>
+      <iframe width="100%" height="100%" scrolling="no" frameborder="0" src="http://newsletters.mailpoet.com?mailpoet_form_iframe=4" class="mailpoet_form_iframe" vspace="0" tabindex="0" onload="if(window['MailPoet']) MailPoet.Iframe.autoSize(this);" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true"></iframe>
+      </p>
+    </div>
   </div>
 
   <hr>
