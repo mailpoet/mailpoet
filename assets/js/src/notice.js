@@ -102,22 +102,11 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         'setMessage', this.options.message
       );
     },
-    isHTML: function(str) {
-      var a = document.createElement('div');
-      a.innerHTML = str;
-      for (var c = a.childNodes, i = c.length; i--;) {
-        if (c[i].nodeType == 1) return true;
-      }
-      return false;
-    },
     setMessage: function(message) {
       message = this.formatMessage(message);
 
-      // if it's not an html message
       // let's sugar coat the message with a fancy <p>
-      if (this.isHTML(message) === false) {
-          message = '<p>'+message+'</p>';
-      }
+      message = '<p>'+message+'</p>';
       // set message
       return this.element.html(message);
     },
@@ -153,13 +142,13 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
       // set class name
       switch (this.options.type) {
         case 'success':
-          this.element.addClass('updated');
+          this.element.addClass('notice notice-success');
         break;
         case 'system':
-          this.element.addClass('update-nag');
+          this.element.addClass('notice notice-warning');
         break;
         case 'error':
-          this.element.addClass('error');
+          this.element.addClass('notice notice-error');
         break;
       }
 
@@ -199,7 +188,7 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         // single id
         jQuery('[data-id="' + all + '"]').trigger('close');
       } else {
-        jQuery('.mailpoet_notice.updated:not([id]), .mailpoet_notice.error:not([id])')
+        jQuery('.mailpoet_notice.notice-success:not([id]), .mailpoet_notice.notice-error:not([id])')
           .trigger('close');
       }
     },
