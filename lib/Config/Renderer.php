@@ -31,6 +31,7 @@ class Renderer {
     $this->setupDebug();
     $this->setupTranslations();
     $this->setupFunctions();
+    $this->setupFilters();
     $this->setupHandlebars();
     $this->setupHelpscout();
     $this->setupGlobalVariables();
@@ -43,6 +44,10 @@ class Renderer {
 
   function setupFunctions() {
     $this->renderer->addExtension(new Twig\Functions());
+  }
+
+  function setupFilters() {
+    $this->renderer->addExtension(new Twig\Filters());
   }
 
   function setupHandlebars() {
