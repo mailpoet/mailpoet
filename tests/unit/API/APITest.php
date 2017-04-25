@@ -84,7 +84,7 @@ class APITest extends MailPoetTest {
 
   function testItAcceptsAndProcessesAPIVersion() {
     $namespace = array(
-      'name' => 'MailPoet\API\Endpoints',
+      'name' => 'MailPoet\API\Endpoints\v2',
       'version' => 'v2'
     );
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
@@ -104,7 +104,7 @@ class APITest extends MailPoetTest {
 
   function testItCallsAddedEndpoints() {
     $namespace = array(
-      'name' => 'MailPoet\API\Endpoints',
+      'name' => 'MailPoet\API\Endpoints\v1',
       'version' => 'v1'
     );
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
@@ -123,7 +123,7 @@ class APITest extends MailPoetTest {
 
   function testItCallsAddedEndpointsForSpecificAPIVersion() {
     $namespace = array(
-      'name' => 'MailPoet\API\Endpoints',
+      'name' => 'MailPoet\API\Endpoints\v2',
       'version' => 'v2'
     );
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);

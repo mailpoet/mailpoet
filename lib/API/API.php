@@ -25,7 +25,7 @@ class API {
   function __construct() {
     foreach($this->_available_api_versions as $available_api_version) {
       $this->addEndpointNamespace(
-        sprintf('%s\%s', __NAMESPACE__, self::ENDPOINTS_LOCATION),
+        sprintf('%s\%s\%s', __NAMESPACE__, self::ENDPOINTS_LOCATION, $available_api_version),
         $available_api_version
       );
     }
@@ -89,9 +89,8 @@ class API {
     } else if(!empty($this->_endpoint_namespaces[$this->_request_api_version])) {
       foreach($this->_endpoint_namespaces[$this->_request_api_version] as $namespace) {
         $endpoint_class = sprintf(
-          '%s\%s\%s',
+          '%s\%s',
           $namespace,
-          $this->_request_api_version,
           ucfirst($this->_request_endpoint)
         );
         if(class_exists($endpoint_class)) {
