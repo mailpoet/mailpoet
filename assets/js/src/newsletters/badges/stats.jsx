@@ -1,6 +1,5 @@
 import MailPoet from 'mailpoet'
 import React from 'react'
-import classNames from 'classnames'
 
 import Badge from './badge.jsx'
 
@@ -90,14 +89,9 @@ class StatsBadge extends React.Component {
     );
 
     if (this.props.headline) {
-      const headlineClasses = classNames(
-        `mailpoet_stat_${badgeType}`,
-        this.props.size ? `mailpoet_badge_size_${this.props.size}` : ''
-      );
-
       return (
         <div>
-          <span className={headlineClasses}>
+          <span className={`mailpoet_stat_${badgeType}`}>
             {this.props.headline}
           </span> {content}
         </div>

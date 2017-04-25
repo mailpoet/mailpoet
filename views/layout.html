@@ -31,6 +31,9 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
 <%= stylesheet(
   'admin.css'
 )%>
+
+<%= do_action('mailpoet_styles_admin_after') %>
+
 <!-- rtl specific stylesheet -->
 <% if is_rtl %>
   <%= stylesheet('rtl.css') %>

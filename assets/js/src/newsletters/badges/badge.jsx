@@ -6,8 +6,7 @@ class Badge extends React.Component {
   render() {
     const badgeClasses = classNames(
       'mailpoet_badge',
-      this.props.type ? `mailpoet_badge_${this.props.type}` : '',
-      this.props.size ? `mailpoet_badge_size_${this.props.size}` : ''
+      this.props.type ? `mailpoet_badge_${this.props.type}` : ''
     );
 
     const tooltip = this.props.tooltip ? this.props.tooltip.replace(/\n/g, '<br />') : false;
