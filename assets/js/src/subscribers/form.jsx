@@ -60,7 +60,8 @@ define(
         label: MailPoet.I18n.t('lists'),
         type: 'selection',
         placeholder: MailPoet.I18n.t('selectList'),
-        endpoint: "segments",
+        api_version: window.mailpoet_api_version,
+        endpoint: 'segments',
         multiple: true,
         selected: function(subscriber) {
           if (Array.isArray(subscriber.subscriptions) === false) {

@@ -1,7 +1,7 @@
 <?php
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\Response as APIResponse;
-use MailPoet\API\Endpoints\Setup;
+use MailPoet\API\Endpoints\v1\Setup;
 use MailPoet\Models\Setting;
 
 class SetupTest extends MailPoetTest {

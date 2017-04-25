@@ -707,6 +707,7 @@
 
         MailPoet.Modal.loading(true);
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'mailer',
           action: 'send',
           data: {
@@ -751,6 +752,7 @@
 
         MailPoet.Modal.loading(true);
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'services',
           action: 'verifyMailPoetKey',
           data: {

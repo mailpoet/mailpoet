@@ -138,6 +138,7 @@ define(
        }
        MailPoet.Modal.loading(true);
        MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'ImportExport',
           action: 'processExport',
           data: JSON.stringify({

@@ -8,6 +8,7 @@ import jQuery from 'jquery'
 const _QueueMixin = {
   pauseSending: function(newsletter) {
     MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
       action: 'pause',
       data: {
@@ -27,6 +28,7 @@ const _QueueMixin = {
   },
   resumeSending: function(newsletter) {
     MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
       action: 'resume',
       data: {
@@ -225,6 +227,7 @@ const _MailerMixin = {
   },
   resumeMailerSending() {
     MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: 'mailer',
       action: 'resumeSending'
     }).done(function() {

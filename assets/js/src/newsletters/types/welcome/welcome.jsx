@@ -52,6 +52,7 @@ define(
       },
       handleNext: function() {
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',
           action: 'create',
           data: _.extend({}, this.state, {

@@ -1,7 +1,7 @@
 <?php
 
 use Codeception\Util\Stub;
-use MailPoet\API\Endpoints\Services;
+use MailPoet\API\Endpoints\v1\Services;
 use MailPoet\API\Response as APIResponse;
 use MailPoet\Services\Bridge;
 

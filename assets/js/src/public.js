@@ -31,7 +31,7 @@ function(
         });
 
         form.parsley().on('form:submit', function(parsley) {
-          var data = form.serializeObject() || {};
+          var form_data = form.serializeObject() || {};
           // check if we're on the same domain
           if(isSameDomain(MailPoetForm.ajax_url) === false) {
             // non ajax post request
@@ -40,10 +40,11 @@ function(
             // ajax request
             MailPoet.Ajax.post({
               url: MailPoetForm.ajax_url,
-              token: data.token,
+              token: form_data.token,
+              api_version: form_data.api_version,
               endpoint: 'subscribers',
               action: 'subscribe',
-              data: data
+              data: form_data.data
             }).fail(function(response) {
               form.find('.mailpoet_validate_error').html(
                 response.errors.map(function(error) {

@@ -1,11 +1,14 @@
 <?php
+
 use Codeception\Util\Stub;
 use MailPoet\API\API;
 use MailPoet\API\SuccessResponse;
+use MailPoet\API\Response as APIResponse;
 
 // required to be able to use wp_delete_user()
 require_once(ABSPATH.'wp-admin/includes/user.php');
-require_once('APITestNamespacedEndpointStub.php');
+require_once('APITestNamespacedEndpointStubV1.php');
+require_once('APITestNamespacedEndpointStubV2.php');
 
 class APITest extends MailPoetTest {
   function _before() {
@@ -58,27 +61,82 @@ class APITest extends MailPoetTest {
   function testItCanAddEndpointNamespaces() {
     expect($this->api->getEndpointNamespaces())->count(1);
 
-    $namespace = "MailPoet\\Dummy\\Name\\Space";
-    $this->api->addEndpointNamespace($namespace);
+    $namespace = array(
+      'name' => 'MailPoet\\Dummy\\Name\\Space',
+      'version' => 'v2'
+    );
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $namespaces = $this->api->getEndpointNamespaces();
 
     expect($namespaces)->count(2);
-    expect($namespaces[1])->equals($namespace);
+    expect($namespaces[$namespace['version']][0])->equals($namespace['name']);
   }
 
-  function testItCanCallAddedEndpoints() {
-    $namespace = "MailPoet\\Some\\Name\\Space\\Endpoints";
-    $this->api->addEndpointNamespace($namespace);
+  function testItReturns400ErrorWhenAPIVersionIsNotSpecified() {
+    $data = array(
+      'endpoint' => 'namespaced_endpoint_stub',
+      'method' => 'test'
+    );
+
+    $response = $this->api->setRequestData($data);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+  }
+
+  function testItAcceptsAndProcessesAPIVersion() {
+    $namespace = array(
+      'name' => 'MailPoet\API\Endpoints\v2',
+      'version' => 'v2'
+    );
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
+
+    $data = array(
+      'endpoint' => 'namespaced_endpoint_stub',
+      'api_version' => 'v2',
+      'method' => 'test'
+    );
+    $this->api->setRequestData($data);
+
+    expect($this->api->getRequestedAPIVersion())->equals('v2');
+    expect($this->api->getRequestedEndpointClass())->equals(
+      'MailPoet\API\Endpoints\v2\NamespacedEndpointStub'
+    );
+  }
+
+  function testItCallsAddedEndpoints() {
+    $namespace = array(
+      'name' => 'MailPoet\API\Endpoints\v1',
+      'version' => 'v1'
+    );
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
     $data = array(
       'endpoint' => 'namespaced_endpoint_stub',
       'method' => 'test',
+      'api_version' => 'v1',
       'data' => array('test' => 'data')
     );
-    $this->api->getRequestData($data);
+    $this->api->setRequestData($data);
     $response = $this->api->processRoute();
 
     expect($response->getData()['data'])->equals($data['data']);
+  }
+
+  function testItCallsAddedEndpointsForSpecificAPIVersion() {
+    $namespace = array(
+      'name' => 'MailPoet\API\Endpoints\v2',
+      'version' => 'v2'
+    );
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
+
+    $data = array(
+      'endpoint' => 'namespaced_endpoint_stub',
+      'api_version' => 'v2',
+      'method' => 'testVersion'
+    );
+    $this->api->setRequestData($data);
+    $response = $this->api->processRoute();
+
+    expect($response->getData()['data'])->equals($data['api_version']);
   }
 
   function _after() {

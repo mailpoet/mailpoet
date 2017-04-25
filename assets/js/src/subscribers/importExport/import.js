@@ -190,6 +190,7 @@ define(
           mailChimpKeyVerifyButtonElement.click(function () {
             MailPoet.Modal.loading(true);
             MailPoet.Ajax.post({
+              api_version: window.mailpoet_api_version,
               endpoint: 'importExport',
               action: 'getMailChimpLists',
               data: {
@@ -225,6 +226,7 @@ define(
             }
             MailPoet.Modal.loading(true);
             MailPoet.Ajax.post({
+              api_version: window.mailpoet_api_version,
               endpoint: 'importExport',
               action: 'getMailChimpSubscribers',
               data: {
@@ -572,6 +574,7 @@ define(
               var segmentDescription = jQuery('#new_segment_description').val().trim();
 
               MailPoet.Ajax.post({
+                api_version: window.mailpoet_api_version,
                 endpoint: 'ImportExport',
                 action: 'addSegment',
                 data: {
@@ -729,6 +732,7 @@ define(
 
                     // save custom field
                     MailPoet.Ajax.post({
+                      api_version: window.mailpoet_api_version,
                       endpoint: 'customFields',
                       action: 'save',
                       data: data
@@ -990,6 +994,7 @@ define(
               queue.add(function(queue) {
                 queue.pause();
                 MailPoet.Ajax.post({
+                  api_version: window.mailpoet_api_version,
                   endpoint: 'ImportExport',
                   action: 'processImport',
                   data: JSON.stringify({

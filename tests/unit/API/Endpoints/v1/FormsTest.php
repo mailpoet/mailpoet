@@ -1,5 +1,5 @@
 <?php
-use MailPoet\API\Endpoints\Forms;
+use MailPoet\API\Endpoints\v1\Forms;
 use MailPoet\API\Response as APIResponse;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;

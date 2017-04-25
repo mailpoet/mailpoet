@@ -9,6 +9,7 @@ define([
 
   Module._query = function(args) {
     return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: 'automatedLatestContent',
       action: args.action,
       data: args.options || {}
@@ -81,6 +82,7 @@ define([
 
   Module.saveNewsletter = function(options) {
     return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
       action: 'save',
       data: options || {}
@@ -89,6 +91,7 @@ define([
 
   Module.previewNewsletter = function(options) {
     return MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
       action: 'sendPreview',
       data: options || {}

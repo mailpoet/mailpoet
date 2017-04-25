@@ -112,6 +112,7 @@ const item_actions = [
     label: MailPoet.I18n.t('duplicate'),
     onClick: (item, refresh) => {
       return MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         action: 'duplicate',
         data: {
@@ -153,6 +154,7 @@ const item_actions = [
     onClick: function(item, refresh) {
       MailPoet.Modal.loading(true);
       MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         action: 'synchronize'
       }).done(function(response) {

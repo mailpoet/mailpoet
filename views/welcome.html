@@ -118,6 +118,7 @@ jQuery(function($) {
       $("#mailpoet_analytics_enabled").on("click", function() {
         var is_enabled = $(this).is(":checked") ? true : "";
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: "settings",
           action: "set",
           data: {

@@ -64,6 +64,7 @@ define(
         this.setState({ loading: true });
 
         MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',
           action: 'get',
           data: {
@@ -97,6 +98,7 @@ define(
               case 'notification':
               case 'welcome':
                 return MailPoet.Ajax.post({
+                  api_version: window.mailpoet_api_version,
                   endpoint: 'newsletters',
                   action: 'setStatus',
                   data: {
@@ -120,6 +122,7 @@ define(
                 }).fail(this._showError);
               default:
                 return MailPoet.Ajax.post({
+                  api_version: window.mailpoet_api_version,
                   endpoint: 'sendingQueue',
                   action: 'add',
                   data: {
@@ -184,6 +187,7 @@ define(
         );
 
         return MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',
           action: 'save',
           data: newsletterData,
