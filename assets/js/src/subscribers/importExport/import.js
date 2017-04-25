@@ -1000,8 +1000,8 @@ define(
                     updateSubscribers: (jQuery(':radio[name="subscriber_update_option"]:checked').val() === 'yes') ? true : false
                   })
                 }).done(function(response) {
-                  importResults.created = response.data.created;
-                  importResults.updated = response.data.updated;
+                  importResults.created += response.data.created;
+                  importResults.updated += response.data.updated;
                   importResults.segments = response.data.segments;
                   importResults.added_to_segment_with_welcome_notification = response.data.added_to_segment_with_welcome_notification;
                   queue.run();
