@@ -300,7 +300,7 @@ class MP2Migrator {
       'name' => $list_data['name'],
       'type' => $list_data['is_enabled']? 'default': 'wp_users',
       'description' => $list_data['description'],
-      'created_at' => Helpers::mysql_date($list_data['created_at']),
+      'created_at' => Helpers::mysqlDate($list_data['created_at']),
     ));
     Setting::setValue('last_imported_list_id', $list_data['list_id']);
     return $segment;
@@ -320,7 +320,7 @@ class MP2Migrator {
  
     foreach($custom_fields as $custom_field) {
       $result = $this->importCustomField($custom_field);
-      if (!empty($result)) {
+      if(!empty($result)) {
         $imported_custom_fields_count++;
       }
     }
@@ -446,7 +446,7 @@ class MP2Migrator {
       if(is_array($users)) {
         foreach($users as $user) {
           $subscriber = $this->importSubscriber($user);
-          if (!empty($subscriber)) {
+          if(!empty($subscriber)) {
             $imported_subscribers_count++;
             $this->importSubscriberSegments($subscriber, $user['user_id']);
             $this->importSubscriberCustomFields($subscriber, $user);
@@ -498,10 +498,10 @@ class MP2Migrator {
       'first_name' => $user_data['firstname'],
       'last_name' => $user_data['lastname'],
       'status' => $this->mapUserStatus($user_data['status']),
-      'created_at' => Helpers::mysql_date($user_data['created_at']),
+      'created_at' => Helpers::mysqlDate($user_data['created_at']),
       'subscribed_ip' => !empty($user_data['ip'])? $user_data['ip'] : null,
       'confirmed_ip' => !empty($user_data['confirmed_ip'])? $user_data['confirmed_ip'] : null,
-      'confirmed_at' => !empty($user_data['confirmed_at'])? Helpers::mysql_date($user_data['confirmed_at']) : null,
+      'confirmed_at' => !empty($user_data['confirmed_at'])? Helpers::mysqlDate($user_data['confirmed_at']) : null,
     ));
     Setting::setValue('last_imported_user_id', $user_data['user_id']);
     return $subscriber;
@@ -515,10 +515,17 @@ class MP2Migrator {
    */
   private function mapUserStatus($mp2_user_status) {
     switch($mp2_user_status) {
-      case 0: $status = 'unconfirmed'; break;
-      case 1: $status = 'subscribed'; break;
-      case -1: $status = 'unsubscribed'; break;
-      default: $status = 'unconfirmed';
+      case 0:
+        $status = 'unconfirmed';
+        break;
+      case 1:
+        $status = 'subscribed';
+        break;
+      case -1:
+        $status = 'unsubscribed';
+        break;
+      default:
+        $status = 'unconfirmed';
     }
     return $status;
   }
@@ -570,8 +577,8 @@ class MP2Migrator {
       'subscriber_id' => $subscriber_id,
       'segment_id' => $user_list['list_id'],
       'status' => empty($user_list['unsub_date'])? 'subscribed' : 'unsubscribed',
-      'created_at' => Helpers::mysql_date($user_list['sub_date']),
-      'updated_at' => !empty($user_list['unsub_date'])? Helpers::mysql_date($user_list['unsub_date']) : null,
+      'created_at' => Helpers::mysqlDate($user_list['sub_date']),
+      'updated_at' => !empty($user_list['unsub_date'])? Helpers::mysqlDate($user_list['unsub_date']) : null,
     );
     $subscriberSegment = new SubscriberSegment();
     $subscriberSegment->createOrUpdate($data);
@@ -622,7 +629,7 @@ class MP2Migrator {
    */
   private function importSubscriberCustomField($subscriber_id, $custom_field, $custom_field_value) {
     if($custom_field['type'] == 'date') {
-      $value = Helpers::mysql_date($custom_field_value); // Convert the date field
+      $value = Helpers::mysqlDate($custom_field_value); // Convert the date field
     } else {
       $value = $custom_field_value;
     }
