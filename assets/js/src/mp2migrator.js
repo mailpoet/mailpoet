@@ -103,6 +103,7 @@
 
       // Run the import
       MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
         endpoint: 'MP2Migrator',
         action: 'import',
         data: {
@@ -146,6 +147,7 @@
       $('#stop-import').attr('disabled', 'disabled');
       // Stop the import
       MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
         endpoint: 'MP2Migrator',
         action: 'stopImport',
         data: {
@@ -166,6 +168,7 @@
      */
     skip_import: function () {
       MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
         endpoint: 'MP2Migrator',
         action: 'skipImport',
         data: {
