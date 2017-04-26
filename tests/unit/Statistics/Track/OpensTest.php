@@ -3,7 +3,6 @@
 use Codeception\Util\Stub;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\Opens;
@@ -90,6 +89,5 @@ class OpensTest extends MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
   }
 }

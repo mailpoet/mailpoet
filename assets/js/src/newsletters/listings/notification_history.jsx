@@ -87,7 +87,7 @@ const NewsletterListNotificationHistory = React.createClass({
         </td>
         { (mailpoet_tracking_enabled === true) ? (
           <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
-            { this.renderStatistics(newsletter) }
+            { this.renderStatistics(newsletter, undefined, meta.current_time) }
           </td>
         ) : null }
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>

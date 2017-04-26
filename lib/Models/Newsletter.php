@@ -264,7 +264,8 @@ class Newsletter extends Model {
       'status',
       'count_processed',
       'count_total',
-      'scheduled_at'
+      'scheduled_at',
+      'created_at'
     ));
     if($queue === false) {
       $this->queue = false;

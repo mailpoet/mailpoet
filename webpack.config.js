@@ -65,13 +65,25 @@ baseConfig = {
         include: require.resolve('react'),
         loader: 'expose-loader?' + globalPrefix + '.React',
       },
-       {
+      {
+        include: require.resolve('react-router'),
+        loader: 'expose-loader?' + globalPrefix + '.ReactRouter',
+      },
+      {
         include: require.resolve('react-string-replace'),
         loader: 'expose-loader?' + globalPrefix + '.ReactStringReplace',
       },
       {
         test: /wp-js-hooks/i,
         loader: 'expose-loader?' + globalPrefix + '.Hooks!exports-loader?wp.hooks',
+      },
+      {
+        test: /listing.jsx/i,
+        loader: 'expose-loader?' + globalPrefix + '.Listing!babel-loader',
+      },
+      {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/badges/stats.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.StatsBadge!babel-loader',
       },
       {
         include: /Blob.js$/,
@@ -117,6 +129,7 @@ config.push(_.extend({}, baseConfig, {
       'i18n',
       'modal',
       'notice',
+      'num',
       'jquery.serialize_object',
       'parsleyjs'
     ],
@@ -124,7 +137,9 @@ config.push(_.extend({}, baseConfig, {
       'react',
       'react-dom',
       'react-router',
-      'react-string-replace'
+      'react-string-replace',
+      'listing/listing.jsx',
+      'newsletters/badges/stats.jsx'
     ],
     admin: [
       'subscribers/subscribers.jsx',

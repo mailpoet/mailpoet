@@ -1,9 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import ReactStringReplace from 'react-string-replace'
+import { Link } from 'react-router'
 import MailPoet from 'mailpoet'
 import classNames from 'classnames'
+import moment from 'moment'
 import jQuery from 'jquery'
+import Hooks from 'wp-js-hooks'
+import StatsBadge from 'newsletters/badges/stats.jsx'
 
 const _QueueMixin = {
   pauseSending: function(newsletter) {
@@ -140,40 +144,162 @@ const _QueueMixin = {
 };
 
 const _StatisticsMixin = {
-  renderStatistics: function(newsletter) {
-    if (
-      newsletter.statistics
-      && newsletter.queue
-      && newsletter.queue.status !== 'scheduled'
-    ) {
-      const total_sent = ~~(newsletter.queue.count_processed);
-
-      let percentage_clicked = 0;
-      let percentage_opened = 0;
-      let percentage_unsubscribed = 0;
-
-      if (total_sent > 0) {
-        percentage_clicked = Math.round(
-          (~~(newsletter.statistics.clicked) * 100) / total_sent
-        );
-        percentage_opened = Math.round(
-          (~~(newsletter.statistics.opened) * 100) / total_sent
-        );
-        percentage_unsubscribed = Math.round(
-          (~~(newsletter.statistics.unsubscribed) * 100) / total_sent
-        );
-      }
-
-      return (
-        <span>
-          { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
-        </span>
-      );
-    } else {
+  renderStatistics: function(newsletter, is_sent, current_time) {
+    if (is_sent === undefined) {
+      // condition for standard and post notification listings
+      is_sent = newsletter.statistics
+        && newsletter.queue
+        && newsletter.queue.status !== 'scheduled'
+    }
+    if (!is_sent) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );
     }
+
+    let params = {};
+    params = Hooks.applyFilters('mailpoet_newsletters_listing_stats_before', params, newsletter);
+
+    // welcome emails provide explicit total_sent value
+    const total_sent = ~~(newsletter.total_sent || newsletter.queue.count_processed);
+
+    let percentage_clicked = 0;
+    let percentage_opened = 0;
+    let percentage_unsubscribed = 0;
+
+    if (total_sent > 0) {
+      percentage_clicked = (newsletter.statistics.clicked * 100) / total_sent;
+      percentage_opened = (newsletter.statistics.opened * 100) / total_sent;
+      percentage_unsubscribed = (newsletter.statistics.unsubscribed * 100) / total_sent;
+    }
+
+    // format to 1 decimal place
+    const percentage_clicked_display = MailPoet.Num.toLocaleFixed(percentage_clicked, 1);
+    const percentage_opened_display = MailPoet.Num.toLocaleFixed(percentage_opened, 1);
+    const percentage_unsubscribed_display = MailPoet.Num.toLocaleFixed(percentage_unsubscribed, 1);
+
+    let show_stats_timeout,
+      newsletter_date,
+      sent_hours_ago,
+      too_early_for_stats,
+      show_kb_link;
+    if (current_time !== undefined) {
+      // standard emails and post notifications:
+      // display green box for newsletters that were just sent
+      show_stats_timeout = 6; // in hours
+      newsletter_date = newsletter.queue.scheduled_at || newsletter.queue.created_at;
+      sent_hours_ago = moment(current_time).diff(moment(newsletter_date), 'hours');
+      too_early_for_stats = sent_hours_ago < show_stats_timeout;
+      show_kb_link = true;
+    } else {
+      // welcome emails: no green box and KB link
+      too_early_for_stats = false;
+      show_kb_link = false;
+    }
+
+    const improveStatsKBLink = 'http://beta.docs.mailpoet.com/article/191-how-to-improve-my-open-and-click-rates';
+
+    // thresholds to display badges
+    const min_newsletters_sent = 20;
+    const min_newsletter_opens = 5;
+
+    let content;
+    if (total_sent >= min_newsletters_sent
+      && newsletter.statistics.opened >= min_newsletter_opens
+      && !too_early_for_stats
+    ) {
+      // display stats with badges
+      content = (
+        <div className="mailpoet_stats_text">
+          <div>
+            <span>{ percentage_opened_display }% </span>
+            <StatsBadge
+              stat="opened"
+              rate={percentage_opened}
+              tooltipId={`opened-${newsletter.id}`}
+            />
+          </div>
+          <div>
+            <span>{ percentage_clicked_display }% </span>
+            <StatsBadge
+              stat="clicked"
+              rate={percentage_clicked}
+              tooltipId={`clicked-${newsletter.id}`}
+            />
+          </div>
+          <div>
+            <span className="mailpoet_stat_hidden">{ percentage_unsubscribed_display }%</span>
+          </div>
+        </div>
+      );
+    } else {
+      // display simple stats
+      content = (
+        <div>
+          <span className="mailpoet_stats_text">
+            { percentage_opened_display }%,
+            { " " }
+            { percentage_clicked_display }%
+            <span className="mailpoet_stat_hidden">
+              , { percentage_unsubscribed_display }%
+            </span>
+          </span>
+          { too_early_for_stats && (
+            <div className="mailpoet_badge mailpoet_badge_green">
+              {MailPoet.I18n.t('checkBackInHours')
+                  .replace('%$1d', show_stats_timeout - sent_hours_ago)}
+            </div>
+          ) }
+        </div>
+      );
+    }
+
+    // thresholds to display bad open rate help
+    const max_percentage_opened = 5;
+    const min_sent_hours_ago = 24;
+    const min_total_sent = 10;
+
+    let after_content;
+    if (show_kb_link
+      && percentage_opened < max_percentage_opened
+      && sent_hours_ago >= min_sent_hours_ago
+      && total_sent >= min_total_sent
+    ) {
+      // help link for bad open rate
+      after_content = (
+        <div>
+          <a
+            href={improveStatsKBLink}
+            target="_blank"
+            className="mailpoet_stat_link_small"
+          >
+            {MailPoet.I18n.t('improveThisLinkText')}
+          </a>
+        </div>
+      );
+    }
+
+    if (total_sent > 0 && !too_early_for_stats && params.link) {
+      // wrap content in a link
+      return (
+        <div>
+          <Link
+            key={ `stats-${newsletter.id}` }
+            to={ params.link }
+          >
+            {content}
+          </Link>
+          {after_content}
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        {content}
+        {after_content}
+      </div>
+    );
   }
 }
 

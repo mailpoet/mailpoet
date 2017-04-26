@@ -5,12 +5,13 @@ import { createHashHistory } from 'history'
 import Listing from 'listing/listing.jsx'
 import ListingTabs from 'newsletters/listings/tabs.jsx'
 
-import { MailerMixin } from 'newsletters/listings/mixins.jsx'
+import { StatisticsMixin, MailerMixin } from 'newsletters/listings/mixins.jsx'
 
 import classNames from 'classnames'
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
 import _ from 'underscore'
+import Hooks from 'wp-js-hooks'
 
 const mailpoet_roles = window.mailpoet_roles || {};
 const mailpoet_segments = window.mailpoet_segments || {};
@@ -155,7 +156,7 @@ const newsletter_actions = [
 ];
 
 const NewsletterListWelcome = React.createClass({
-  mixins: [ MailerMixin ],
+  mixins: [ StatisticsMixin, MailerMixin ],
   updateStatus: function(e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -276,35 +277,6 @@ const NewsletterListWelcome = React.createClass({
       </span>
     );
   },
-  renderStatistics: function(newsletter) {
-    if (mailpoet_tracking_enabled === false) {
-      return;
-    }
-
-    if (newsletter.total_sent > 0 && newsletter.statistics) {
-      const total_sent = ~~(newsletter.total_sent);
-
-      const percentage_clicked = Math.round(
-        (~~(newsletter.statistics.clicked) * 100) / total_sent
-      );
-      const percentage_opened = Math.round(
-        (~~(newsletter.statistics.opened) * 100) / total_sent
-      );
-      const percentage_unsubscribed = Math.round(
-        (~~(newsletter.statistics.unsubscribed) * 100) / total_sent
-      );
-
-      return (
-        <span>
-          { percentage_opened }%, { percentage_clicked }%, { percentage_unsubscribed }%
-        </span>
-      );
-    } else {
-      return (
-        <span>{MailPoet.I18n.t('notSentYet')}</span>
-      );
-    }
-  },
   renderItem: function(newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
@@ -331,7 +303,10 @@ const NewsletterListWelcome = React.createClass({
         </td>
         { (mailpoet_tracking_enabled === true) ? (
           <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
-            { this.renderStatistics(newsletter) }
+            { this.renderStatistics(
+              newsletter,
+              newsletter.total_sent > 0 && newsletter.statistics
+            ) }
           </td>
         ) : null }
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
