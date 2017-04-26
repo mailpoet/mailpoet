@@ -10,83 +10,95 @@ class ShortcodesHelper {
       __('Subscriber', 'mailpoet') => array(
         array(
           'text' => __('First Name', 'mailpoet'),
-          'shortcode' => 'subscriber:firstname | default:reader',
+          'shortcode' => '[subscriber:firstname | default:reader]',
         ),
         array(
           'text' => __('Last Name', 'mailpoet'),
-          'shortcode' => 'subscriber:lastname | default:reader',
+          'shortcode' => '[subscriber:lastname | default:reader]',
         ),
         array(
           'text' => __('Email Address', 'mailpoet'),
-          'shortcode' => 'subscriber:email',
+          'shortcode' => '[subscriber:email]',
         ),
         array(
           'text' => __('WordPress User Display Name', 'mailpoet'),
-          'shortcode' => 'subscriber:displayname | default:member',
+          'shortcode' => '[subscriber:displayname | default:member]',
         ),
         array(
           'text' => __('Total Number of Subscribers', 'mailpoet'),
-          'shortcode' => 'subscriber:count',
+          'shortcode' => '[subscriber:count]',
         )
       ),
       __('Newsletter', 'mailpoet') => array(
         array(
           'text' => __('Newsletter Subject', 'mailpoet'),
-          'shortcode' => 'newsletter:subject',
+          'shortcode' => '[newsletter:subject]',
         )
       ),
       __('Post Notifications', 'mailpoet') => array(
         array(
           'text' => __('Total Number of Posts or Pages', 'mailpoet'),
-          'shortcode' => 'newsletter:total',
+          'shortcode' => '[newsletter:total]',
         ),
         array(
           'text' => __('Most Recent Post Title', 'mailpoet'),
-          'shortcode' => 'newsletter:post_title',
+          'shortcode' => '[newsletter:post_title]',
         ),
         array(
           'text' => __('Issue Number', 'mailpoet'),
-          'shortcode' => 'newsletter:number',
+          'shortcode' => '[newsletter:number]',
         )
       ),
       __('Date', 'mailpoet') => array(
         array(
           'text' => __('Current day of the month number', 'mailpoet'),
-          'shortcode' => 'date:d',
+          'shortcode' => '[date:d]',
         ),
         array(
           'text' => __('Current day of the month in ordinal form, i.e. 2nd, 3rd, 4th, etc.', 'mailpoet'),
-          'shortcode' => 'date:dordinal',
+          'shortcode' => '[date:dordinal]',
         ),
         array(
           'text' => __('Full name of current day', 'mailpoet'),
-          'shortcode' => 'date:dtext',
+          'shortcode' => '[date:dtext]',
         ),
         array(
           'text' => __('Current month number', 'mailpoet'),
-          'shortcode' => 'date:m',
+          'shortcode' => '[date:m]',
         ),
         array(
           'text' => __('Full name of current month', 'mailpoet'),
-          'shortcode' => 'date:mtext',
+          'shortcode' => '[date:mtext]',
         ),
         array(
           'text' => __('Year', 'mailpoet'),
-          'shortcode' => 'date:y',
+          'shortcode' => '[date:y]',
         )
       ),
       __('Links', 'mailpoet') => array(
         array(
           'text' => __('Unsubscribe link', 'mailpoet'),
-          'shortcode' => 'link:subscription_unsubscribe',
+          'shortcode' => sprintf(
+            '<a target="_blank" href="%s">%s',
+            '[link:subscription_unsubscribe_url]',
+            __('Unsubscribe', 'mailpoet')
+          )
         ),
         array(
           'text' => __('Edit subscription page link', 'mailpoet'),
-          'shortcode' => 'link:subscription_manage',
+          'shortcode' => sprintf(
+            '<a target="_blank" href="%s">%s',
+            '[link:subscription_manage_url]',
+            __('Manage subscription', 'mailpoet')
+          )
         ),
         array(
           'text' => __('View in browser link', 'mailpoet'),
-          'shortcode' => 'link:newsletter_view_in_browser',
+          'shortcode' => sprintf(
+            '<a target="_blank" href="%s">%s',
+            '[link:newsletter_view_in_browser_url]',
+            __('View in your browser', 'mailpoet')
+          )
         )
       )
     );
