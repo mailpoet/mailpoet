@@ -2,6 +2,7 @@
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\SMTP;
+use MailPoet\WP\Hooks;
 
 class SMTPTest extends MailPoetTest {
   function _before() {
@@ -153,6 +154,34 @@ class SMTPTest extends MailPoetTest {
   function testItReturnsGenericMessageWhenLogMessageDoesNotExist() {
     expect($this->mailer->processLogMessage('test@example.com'))
       ->equals(Mailer::METHOD_SMTP . ' has returned an unknown error. Unprocessed subscriber: test@example.com');
+  }
+
+  function testItAppliesTransportFilter() {
+    $mailer = $this->mailer->buildMailer();
+    expect($mailer->getTransport()->getStreamOptions())->isEmpty();
+    Hooks::addFilter(
+      'mailpoet_mailer_smtp_transport_agent',
+      function($transport) {
+        $transport->setStreamOptions(
+          array(
+            'ssl' => array(
+              'verify_peer' => false,
+              'verify_peer_name' => false
+            )
+          )
+        );
+        return $transport;
+      }
+    );
+    $mailer = $this->mailer->buildMailer();
+    expect($mailer->getTransport()->getStreamOptions())->equals(
+      array(
+        'ssl' => array(
+          'verify_peer' => false,
+          'verify_peer_name' => false
+        )
+      )
+    );
   }
 
   function testItCanSend() {
