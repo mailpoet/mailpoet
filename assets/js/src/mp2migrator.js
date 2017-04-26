@@ -74,7 +74,7 @@
         dataType: 'json'
       }).always(function (result) {
         // Move the progress bar
-        var progress = Number(result.current) / Number(result.total) * 100;
+        var progress = Math.round(Number(result.current) / Number(result.total) * 100);
         $('#progressbar').progressbar('option', 'value', progress);
         $('#progresslabel').html(progress + '%');
         if(that.is_logging) {

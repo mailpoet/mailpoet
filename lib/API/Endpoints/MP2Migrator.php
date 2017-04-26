@@ -18,7 +18,7 @@ class MP2Migrator extends APIEndpoint {
    */
   public function import($data) {
     try {
-      $process = $this->MP2Migrator->import(json_decode($data, true));
+      $process = $this->MP2Migrator->import($data);
       return $this->successResponse($process);
     } catch(\Exception $e) {
       return $this->errorResponse(array(

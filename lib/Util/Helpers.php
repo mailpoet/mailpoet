@@ -136,4 +136,15 @@ class Helpers {
   static function splitObject($object = array()) {
     return explode(self::DIVIDER, $object);
   }
+  
+  /**
+   * Convert a timestamp to a Mysql datetime
+   * 
+   * @param int $timestamp Timestamp
+   * @return string Datetime
+   */
+  static function mysql_date($timestamp) {
+    return date('Y-m-d H:i:s', $timestamp);
+  }
+  
 }
