@@ -143,7 +143,7 @@ class Helpers {
    * @param int $timestamp Timestamp
    * @return string Datetime
    */
-  static function mysql_date($timestamp) {
+  static function mysqlDate($timestamp) {
     return date('Y-m-d H:i:s', $timestamp);
   }
   
