@@ -176,8 +176,10 @@ class Newsletter extends Model {
   }
 
   function delete() {
-    // delete all relations to segments
-    NewsletterSegment::where('newsletter_id', $this->id)->deleteMany();
+    // delete segment associations
+    $this->segmentLinks()->deleteMany();
+    // delete queue association
+    $this->queue()->findOne()->delete();
 
     return parent::delete();
   }

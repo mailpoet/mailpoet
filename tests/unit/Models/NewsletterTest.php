@@ -34,6 +34,10 @@ class NewsletterTest extends MailPoetTest {
     $association->newsletter_id = $this->newsletter->id;
     $association->segment_id = $this->segment_2->id;
     $association->save();
+
+    $this->sending_queue = SendingQueue::create();
+    $this->sending_queue->newsletter_id = $this->newsletter->id;
+    $this->sending_queue->save();
   }
 
   function testItCanBeCreated() {
@@ -91,12 +95,8 @@ class NewsletterTest extends MailPoetTest {
 
   function testItCanBeQueued() {
     $queue = $this->newsletter->getQueue();
-    expect($queue)->false();
-    $sending_queue = SendingQueue::create();
-    $sending_queue->newsletter_id = $this->newsletter->id;
-    $sending_queue->save();
-    $queue = $this->newsletter->getQueue();
     expect($queue->id() > 0)->true();
+    expect($queue->newsletter_id)->equals($this->newsletter->id);
   }
 
   function testItCanHaveSegments() {
@@ -121,9 +121,7 @@ class NewsletterTest extends MailPoetTest {
 
   function testItCanHaveStatistics() {
     $newsletter = $this->newsletter;
-    $sending_queue = SendingQueue::create();
-    $sending_queue->newsletter_id = $this->newsletter->id;
-    $sending_queue->save();
+    $sending_queue = $this->sending_queue;
 
     $subscriber = Subscriber::createOrUpdate(array(
       'email' => 'john.doe@mailpoet.com',
@@ -378,10 +376,7 @@ class NewsletterTest extends MailPoetTest {
   }
 
   function testItGetsQueueFromNewsletter() {
-    $queue = SendingQueue::create();
-    $queue->newsletter_id = $this->newsletter->id;
-    $queue->save();
-    expect($this->newsletter->queue()->findOne()->id)->equals($queue->id);
+    expect($this->newsletter->queue()->findOne()->id)->equals($this->sending_queue->id);
   }
 
   function testItCanBeRestored() {
@@ -426,6 +421,22 @@ class NewsletterTest extends MailPoetTest {
     Newsletter::filter('bulkRestore');
     expect(Newsletter::whereNotNull('deleted_at')->findArray())->isEmpty();
     expect(Newsletter::where('status', Newsletter::STATUS_SENDING)->findArray())->count(0);
+  }
+
+  function testItDeletesSegmentAndQueueAssociationsWhenNewsletterIsDeleted() {
+    // make sure relations exist
+    $newsletter = $this->newsletter;
+    $sending_queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
+    expect($sending_queue)->notEmpty();
+    $newsletter_segments = NewsletterSegment::where('newsletter_id', $newsletter->id)->findArray();
+    expect($newsletter_segments)->count(2);
+
+    // delete newsletter and check that relations no longer exist
+    $newsletter->delete();
+    $sending_queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
+    expect($sending_queue)->isEmpty();
+    $newsletter_segments = NewsletterSegment::where('newsletter_id', $newsletter->id)->findArray();
+    expect($newsletter_segments)->isEmpty();
   }
 
   function _after() {
