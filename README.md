@@ -46,9 +46,19 @@ $ ./do compile:all
 $ ./do test:unit
 ```
 
+- JS tests (using Mocha):
+```sh
+$ ./do test:javascript
+```
+
 - Debug tests:
 ```sh
 $ ./do test:debug
+```
+
+- Code linters and quality checkers:
+```sh
+$ ./do qa
 ```
 
 # CSS
@@ -109,6 +119,7 @@ Once javascript is compiled with `./do compile:javascript`, your module will be 
 ```php
 __()
 _n()
+_x()
 ```
 
 ```html
