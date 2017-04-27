@@ -727,6 +727,9 @@ class Newsletter extends Model {
   }
 
   function restore() {
+    // restore trashed queue association
+    $this->queue()->findOne()->restore();
+
     if($this->status == self::STATUS_SENDING) {
       $this->set('status', self::STATUS_DRAFT);
       $this->save();

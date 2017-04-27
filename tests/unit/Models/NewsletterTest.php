@@ -451,6 +451,19 @@ class NewsletterTest extends MailPoetTest {
     expect($sending_queue->deleted_at)->notNull();
   }
 
+  function testItRestoresTrashedQueueAssociationWhenNewsletterIsRestored() {
+    // trash newsletter and check that relation is trashed
+    $newsletter = $this->newsletter;
+    $newsletter->trash();
+    $sending_queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
+    expect($sending_queue->deleted_at)->notNull();
+
+    // restore newsletter and check that relation is restores
+    $newsletter->restore();
+    $sending_queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
+    expect($sending_queue->deleted_at)->null();
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
