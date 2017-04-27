@@ -15,7 +15,7 @@
 <div class="mailpoet_form_field">
     <div class="mailpoet_form_field_select_option">
         <select class="mailpoet_select mailpoet_automated_latest_content_categories_and_tags" multiple="multiple">
-          {{#each terms}}
+          {{#each model.terms}}
             <option value="{{ id }}" selected="selected">{{ text }}</option>
           {{/each}}
         </select>

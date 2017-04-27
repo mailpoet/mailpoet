@@ -151,8 +151,8 @@ define([
           emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
         };
       this.toolsView = new Module.AutomatedLatestContentBlockToolsView({ model: this.model });
-      this.toolsRegion.show(this.toolsView);
-      this.postsRegion.show(new ContainerView({ model: this.model.get('_container'), renderOptions: renderOptions }));
+      this.showChildView('toolsRegion', this.toolsView);
+      this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_container'), renderOptions: renderOptions }));
     },
   });
 
@@ -187,11 +187,6 @@ define([
         "input .mailpoet_automated_latest_content_read_more_text": _.partial(this.changeField, "readMoreText"),
         "change .mailpoet_automated_latest_content_sort_by": _.partial(this.changeField, "sortBy"),
         "click .mailpoet_done_editing": "close",
-      };
-    },
-    templateHelpers: function() {
-      return {
-        model: this.model.toJSON(),
       };
     },
     onRender: function() {
@@ -377,7 +372,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('automatedLatestContent', {
       blockModel: Module.AutomatedLatestContentBlockModel,
       blockView: Module.AutomatedLatestContentBlockView,
@@ -390,7 +385,7 @@ define([
     });
   });
 
-  App.on('start', function() {
+  App.on('start', function(App, options) {
     App._ALCSupervisor = new Module.ALCSupervisor();
     App._ALCSupervisor.refresh();
   });

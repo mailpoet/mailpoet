@@ -134,6 +134,7 @@ define([
 
     describe('settings view', function () {
       global.stubChannel(EditorApplication);
+      global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
         dividers: ['solid', 'inset'],
       });

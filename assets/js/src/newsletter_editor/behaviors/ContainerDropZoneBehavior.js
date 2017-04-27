@@ -71,6 +71,7 @@ define([
             markerWidth = '',
             markerHeight = '',
             containerOffset = element.offset(),
+            viewCollection = that.getCollection(),
             marker, targetModel, targetView, targetElement,
             topOffset, leftOffset, isLastBlockInsertion,
             $targetBlock, margin;
@@ -80,19 +81,19 @@ define([
           element.find('.mailpoet_drop_marker').remove();
 
           // Allow empty collections to handle their own drop marking
-          if (view.model.get('blocks').isEmpty()) return;
+          if (viewCollection.isEmpty()) return;
 
-          if (view.collection.length === 0) {
+          if (viewCollection.length === 0) {
             targetElement = element.find(view.childViewContainer);
             topOffset = targetElement.offset().top - element.offset().top;
             leftOffset = targetElement.offset().left - element.offset().left;
             markerWidth = targetElement.width();
             markerHeight = targetElement.height();
           } else {
-            isLastBlockInsertion = view.collection.length === dropPosition.index;
-            targetModel = isLastBlockInsertion ? view.collection.at(dropPosition.index - 1) : view.collection.at(dropPosition.index);
+            isLastBlockInsertion = that.getCollection().length === dropPosition.index;
+            targetModel = isLastBlockInsertion ? viewCollection.at(dropPosition.index - 1) : viewCollection.at(dropPosition.index);
 
-            targetView = view.children.findByModel(targetModel);
+            targetView = that.getChildren().findByModel(targetModel);
             targetElement = targetView.$el;
 
             topOffset = targetElement.offset().top - containerOffset.top;
@@ -135,10 +136,10 @@ define([
           if (dropPosition.index === 0) {
             marker.addClass('mailpoet_drop_marker_first');
           }
-          if (view.collection.length - 1 === dropPosition.index) {
+          if (viewCollection.length - 1 === dropPosition.index) {
             marker.addClass('mailpoet_drop_marker_last');
           }
-          if (dropPosition.index > 0 && view.collection.length - 1 > dropPosition.index) {
+          if (dropPosition.index > 0 && viewCollection.length - 1 > dropPosition.index) {
             marker.addClass('mailpoet_drop_marker_middle');
           }
           marker.addClass('mailpoet_drop_marker_' + dropPosition.position);
@@ -147,9 +148,9 @@ define([
           // compensated for to position marker right in the middle of two
           // blocks
           if (dropPosition.position === 'before') {
-            $targetBlock = view.children.findByModel(view.collection.at(dropPosition.index-1)).$el;
+            $targetBlock = that.getChildren().findByModel(viewCollection.at(dropPosition.index-1)).$el;
           } else {
-            $targetBlock = view.children.findByModel(view.collection.at(dropPosition.index)).$el;
+            $targetBlock = that.getChildren().findByModel(viewCollection.at(dropPosition.index)).$el;
           }
           margin = $targetBlock.outerHeight(true) - $targetBlock.outerHeight();
 
@@ -182,6 +183,7 @@ define([
               view.model.get('blocks').length
             ),
             droppableModel = event.draggable.getDropModel(),
+            viewCollection = that.getCollection(),
             droppedView, droppedModel, index, tempCollection, tempCollection2;
 
           if (dropPosition === undefined) return;
@@ -196,22 +198,22 @@ define([
                   orientation: 'vertical',
               });
               tempCollection.get('blocks').add(droppableModel);
-              view.collection.add(tempCollection, {at: index});
+              viewCollection.add(tempCollection, {at: index});
             } else {
-              view.collection.add(droppableModel, {at: index});
+              viewCollection.add(droppableModel, {at: index});
             }
 
-            droppedView = view.children.findByModel(droppableModel);
+            droppedView = that.getChildren().findByModel(droppableModel);
           } else {
             // Special insertion by replacing target block with collection
             // and inserting dropModel into that
-            var tempModel = view.collection.at(dropPosition.index);
+            var tempModel = viewCollection.at(dropPosition.index);
 
             tempCollection = new (EditorApplication.getBlockTypeModel('container'))({
                 orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical',
             });
 
-            view.collection.remove(tempModel);
+            viewCollection.remove(tempModel);
 
             if (tempCollection.get('orientation') === 'horizontal') {
               if (dropPosition.position === 'before') {
@@ -242,10 +244,10 @@ define([
                 tempCollection.get('blocks').add(droppableModel);
               }
             }
-            view.collection.add(tempCollection, {at: dropPosition.index});
+            viewCollection.add(tempCollection, {at: dropPosition.index});
 
             // Call post add actions
-            droppedView = view.children.findByModel(tempCollection).children.findByModel(droppableModel);
+            droppedView = that.getChildren().findByModel(tempCollection).children.findByModel(droppableModel);
           }
 
           // Call post add actions
@@ -290,7 +292,7 @@ define([
 
       unsafe = !!unsafe;
 
-      if (this.view.collection.length === 0) {
+      if (this.getCollection().length === 0) {
         return {
           insertionType: 'normal',
           index: 0,
@@ -327,7 +329,7 @@ define([
         index = indexAndPosition.index;
       }
 
-      if (!unsafe && orientation === 'vertical' && insertionType === 'special' && this.view.collection.at(index).get('orientation') === 'horizontal') {
+      if (!unsafe && orientation === 'vertical' && insertionType === 'special' && this.getCollection().at(index).get('orientation') === 'horizontal') {
         // Prevent placing horizontal container in another horizontal container,
         // which would allow breaking the column limit.
         // Switch that to normal insertion
@@ -356,7 +358,7 @@ define([
 
       var index = this._computeCellIndex(eventX, eventY),
         // TODO: Handle case when there are no children, container is empty
-        targetView = this.view.children.findByModel(this.view.collection.at(index)),
+        targetView = this.getChildren().findByModel(this.getCollection().at(index)),
         orientation = this.view.model.get('orientation'),
         element = targetView.$el,
         eventOffset, closeOffset, elementDimension;
@@ -391,7 +393,7 @@ define([
     _computeCellIndex: function(eventX, eventY) {
       var orientation = this.view.model.get('orientation'),
         eventOffset = (orientation === 'vertical') ? eventY : eventX,
-        resultView = this.view.children.find(function(view) {
+        resultView = this.getChildren().find(function(view) {
           var element = view.$el,
             closeOffset, farOffset;
 
@@ -414,15 +416,24 @@ define([
     _canAcceptNormalInsertion: function() {
       var orientation = this.view.model.get('orientation'),
         depth = this.view.renderOptions.depth,
-        childCount = this.view.children.length;
+        childCount = this.getChildren().length;
       // Note that depth is zero indexed. Root container has depth=0
       return orientation === 'vertical' || (orientation === 'horizontal' && depth === 1 && childCount < this.options.columnLimit);
     },
     _canAcceptSpecialInsertion: function() {
       var orientation = this.view.model.get('orientation'),
         depth = this.view.renderOptions.depth,
-        childCount = this.view.children.length;
+        childCount = this.getChildren().length;
       return depth === 0 || (depth === 1 && orientation === 'horizontal' && childCount <= this.options.columnLimit);
     },
+    getCollectionView: function() {
+      return this.view.getChildView('blocks');
+    },
+    getChildren: function() {
+      return this.getCollectionView().children;
+    },
+    getCollection: function() {
+      return this.getCollectionView().collection;
+    }
   });
 });

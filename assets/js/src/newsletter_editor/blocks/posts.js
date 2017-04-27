@@ -166,8 +166,8 @@ define([
       this.model.reply('blockView', this.notifyAboutSelf, this);
     },
     onRender: function() {
-      if (!this.toolsRegion.hasView()) {
-        this.toolsRegion.show(this.toolsView);
+      if (!this.getRegion('toolsRegion').hasView()) {
+        this.showChildView('toolsRegion', this.toolsView);
       }
       this.trigger('showSettings');
 
@@ -177,7 +177,7 @@ define([
           disableDragAndDrop: true,
           emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
         };
-      this.postsRegion.show(new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
+      this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
     },
     notifyAboutSelf: function() {
       return this;
@@ -202,7 +202,7 @@ define([
       'click .mailpoet_settings_posts_show_post_selection': 'switchToPostSelection',
       'click .mailpoet_settings_posts_insert_selected': 'insertPosts',
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
       };
@@ -259,15 +259,23 @@ define([
     },
   });
 
-  var PostSelectionSettingsView = Marionette.CompositeView.extend({
-    getTemplate: function() { return templates.postSelectionPostsBlockSettings; },
-    getChildView: function() { return SinglePostSelectionSettingsView; },
-    childViewContainer: '.mailpoet_post_selection_container',
-    getEmptyView: function() { return EmptyPostSelectionSettingsView; },
+  var PostsSelectionCollectionView = Marionette.CollectionView.extend({
+    childView: function() { return SinglePostSelectionSettingsView; },
+    emptyView: function() { return EmptyPostSelectionSettingsView; },
     childViewOptions: function() {
       return {
-        blockModel: this.model,
+        blockModel: this.blockModel,
       };
+    },
+    initialize: function(options) {
+      this.blockModel = options.blockModel;
+    },
+  });
+
+  var PostSelectionSettingsView = Marionette.View.extend({
+    getTemplate: function() { return templates.postSelectionPostsBlockSettings; },
+    regions: {
+      posts: '.mailpoet_post_selection_container',
     },
     events: function() {
       return {
@@ -276,20 +284,18 @@ define([
         'input .mailpoet_posts_search_term': _.partial(this.changeField, 'search'),
       };
     },
-    constructor: function() {
-      // Set the block collection to be handled by this view as well
-      arguments[0].collection = arguments[0].model.get('_availablePosts');
-      Marionette.CompositeView.apply(this, arguments);
-    },
     onRender: function() {
       // Dynamically update available post types
       CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
+      var postsView = new PostsSelectionCollectionView({
+        collection: this.model.get('_availablePosts'),
+        blockModel: this.model
+      });
+
+      this.showChildView('posts', postsView);
     },
     onAttach: function() {
       var that = this;
-
-      // Dynamically update available post types
-      //CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
 
       this.$('.mailpoet_posts_categories_and_tags').select2({
         multiple: true,
@@ -372,18 +378,18 @@ define([
     },
   });
 
-  var EmptyPostSelectionSettingsView = Marionette.ItemView.extend({
+  var EmptyPostSelectionSettingsView = Marionette.View.extend({
     getTemplate: function() { return templates.emptyPostPostsBlockSettings; },
   });
 
-  var SinglePostSelectionSettingsView = Marionette.ItemView.extend({
+  var SinglePostSelectionSettingsView = Marionette.View.extend({
     getTemplate: function() { return templates.singlePostPostsBlockSettings; },
     events: function() {
       return {
         'change .mailpoet_select_post_checkbox': 'postSelectionChange',
       };
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         index: this._index,
@@ -428,7 +434,7 @@ define([
         "change .mailpoet_posts_sort_by": _.partial(this.changeField, "sortBy"),
       };
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
       };
@@ -520,7 +526,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('posts', {
       blockModel: Module.PostsBlockModel,
       blockView: Module.PostsBlockView,

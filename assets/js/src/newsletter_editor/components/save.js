@@ -143,7 +143,7 @@ define([
     });
   };
 
-  Module.SaveView = Marionette.LayoutView.extend({
+  Module.SaveView = Marionette.View.extend({
     getTemplate: function() { return templates.save; },
     events: {
       'click .mailpoet_save_button': 'save',
@@ -341,7 +341,7 @@ define([
     }
   };
 
-  App.on('before:start', function(options) {
+  App.on('before:start', function(App, options) {
     App.save = Module.saveAndProvidePromise;
     App.getChannel().on('autoSave', Module.autoSave);
 
@@ -350,9 +350,9 @@ define([
     App.getChannel().on('save', function(saveResult) { App.save(saveResult); });
   });
 
-  App.on('start', function(options) {
+  App.on('start', function(App, options) {
     var saveView = new Module.SaveView();
-    App._appView.bottomRegion.show(saveView);
+    App._appView.showChildView('bottomRegion', saveView);
   });
 
   return Module;

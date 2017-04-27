@@ -74,29 +74,43 @@ define([
     },
   });
 
-  Module.ContainerBlockView = Marionette.CompositeView.extend({
-    regionClass: Marionette.Region,
+  Module.ContainerBlocksView = Marionette.CollectionView.extend({
+    className: 'mailpoet_container',
+    childView: function(model) {
+      return App.getBlockTypeView(model.get('type'));
+    },
+    childViewOptions: function() {
+      var newRenderOptions = _.clone(this.renderOptions);
+      if (newRenderOptions.depth !== undefined) {
+        newRenderOptions.depth += 1;
+      }
+      return {
+        renderOptions: newRenderOptions
+      };
+    },
+    emptyView: function() { return Module.ContainerBlockEmptyView; },
+    emptyViewOptions: function() { return { renderOptions: this.renderOptions }; },
+    initialize: function(options) {
+      this.renderOptions = options.renderOptions;
+    }
+  });
+
+  Module.ContainerBlockView = base.BlockView.extend({
+    regions: _.extend({}, base.BlockView.prototype.regions, {
+      blocks: {
+        el: '> .mailpoet_container',
+        replaceElement: true
+      },
+    }),
     className: 'mailpoet_block mailpoet_container_block mailpoet_droppable_block mailpoet_droppable_layout_block',
     getTemplate: function() { return templates.containerBlock; },
-    childViewContainer: '> .mailpoet_container',
-    getEmptyView: function() { return Module.ContainerBlockEmptyView; },
-    emptyViewOptions: function() { return { renderOptions: this.renderOptions }; },
-    modelEvents: {
-      'change': 'render',
-      'delete': 'deleteBlock',
-    },
-    events: {
-      "mouseenter": "showTools",
-      "mouseleave": "hideTools",
+    events: _.extend({}, base.BlockView.prototype.events, {
       "click .mailpoet_newsletter_layer_selector": "toggleEditingLayer",
-    },
-    regions: {
-      toolsRegion: '> .mailpoet_tools',
-    },
+    }),
     ui: {
       tools: '> .mailpoet_tools'
     },
-    behaviors: {
+    behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
       ContainerDropZoneBehavior: {},
       DraggableBehavior: {
         cloneOriginal: true,
@@ -125,8 +139,7 @@ define([
           return view.renderOptions.depth === 1;
         },
       },
-      HighlightEditingBehavior: {}
-    },
+    }),
     onDragSubstituteBy: function() {
       // For two and three column layouts display their respective widgets,
       // otherwise always default to one column layout widget
@@ -137,39 +150,12 @@ define([
       return Module.OneColumnContainerWidgetView;
 
     },
-    constructor: function() {
-      // Set the block collection to be handled by this view as well
-      arguments[0].collection = arguments[0].model.get('blocks');
-      Marionette.CompositeView.apply(this, arguments);
-      this.$el.addClass('mailpoet_editor_view_' + this.cid);
-    },
     initialize: function(options) {
+      base.BlockView.prototype.initialize.apply(this, arguments);
+
       this.renderOptions = _.defaults(options.renderOptions || {}, {});
-      this.on('dom:refresh', this.showBlock, this);
-      this._isFirstRender = true;
-    },
-    // Determines which view type should be used for a child
-    getChildView: function(model) {
-      // TODO: If type does not have a type registered, use a generic one
-      return App.getBlockTypeView(model.get('type'));
-    },
-    childViewOptions: function() {
-      var newRenderOptions = _.clone(this.renderOptions);
-      if (newRenderOptions.depth !== undefined) {
-        newRenderOptions.depth += 1;
-      }
-      return {
-        renderOptions: newRenderOptions
-      };
-    },
-    templateHelpers: function() {
-      return {
-        model: this.model.toJSON(),
-        viewCid: this.cid,
-      };
     },
     onRender: function() {
-      this._rebuildRegions();
       this.toolsView = new Module.ContainerBlockToolsView({
         model: this.model,
         tools: {
@@ -179,10 +165,15 @@ define([
           layerSelector: false,
         },
       });
-      this.toolsRegion.show(this.toolsView);
-    },
-    onBeforeDestroy: function() {
-      this.regionManager.destroy();
+      this.showChildView('toolsRegion', this.toolsView);
+      this.showChildView('blocks', new Module.ContainerBlocksView({
+        collection: this.model.get('blocks'),
+        renderOptions: this.renderOptions
+      }));
+
+      // TODO: Look for a better way to do this than here
+      // Sets child container orientation HTML class here, as child CollectionView won't have access to model and will overwrite existing region element instead
+      this.$('> .mailpoet_container').attr('class', 'mailpoet_container mailpoet_container_' + this.model.get('orientation'));
     },
     showTools: function() {
       if (this.renderOptions.depth === 1 && !this.$el.hasClass('mailpoet_container_layer_active')) {
@@ -222,76 +213,14 @@ define([
       }
       event.stopPropagation();
     },
-    _buildRegions: function(regions) {
-      var that = this;
-
-      var defaults = {
-        regionClass: this.getOption('regionClass'),
-        parentEl: function() { return that.$el; }
-      };
-
-      return this.regionManager.addRegions(regions, defaults);
-    },
-    _rebuildRegions: function() {
-      if (this.regionManager === undefined) {
-        this.regionManager = new Marionette.RegionManager();
-      }
-      this.regionManager.destroy();
-      _.extend(this, this._buildRegions(this.regions));
-    },
-    getDropFunc: function() {
-      return function() {
-        return this.model.clone();
-      }.bind(this);
-    },
-    showBlock: function() {
-      if (this._isFirstRender) {
-        this.transitionIn();
-        this._isFirstRender = false;
-      }
-    },
-    deleteBlock: function() {
-      this.transitionOut().done(function() {
-        this.model.destroy();
-      }.bind(this));
-    },
-    transitionIn: function() {
-      return this._transition('slideDown', 'fadeIn', 'easeIn');
-    },
-    transitionOut: function() {
-      return this._transition('slideUp', 'fadeOut', 'easeOut');
-    },
-    _transition: function(slideDirection, fadeDirection, easing) {
-      var promise = jQuery.Deferred();
-
-      this.$el.velocity(
-        slideDirection,
-        {
-          duration: 250,
-          easing: easing,
-          complete: function() {
-            promise.resolve();
-          }.bind(this),
-        }
-      ).velocity(
-        fadeDirection,
-        {
-          duration: 250,
-          easing: easing,
-          queue: false, // Do not enqueue, trigger animation in parallel
-        }
-      );
-
-      return promise;
-    },
   });
 
-  Module.ContainerBlockEmptyView = Marionette.ItemView.extend({
+  Module.ContainerBlockEmptyView = Marionette.View.extend({
     getTemplate: function() { return templates.containerEmpty; },
     initialize: function(options) {
       this.renderOptions = _.defaults(options.renderOptions || {}, {});
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         isRoot: this.renderOptions.depth === 0,
         emptyContainerMessage: this.renderOptions.emptyContainerMessage || '',
@@ -322,12 +251,12 @@ define([
       });
     },
     onRender: function() {
-      this.columnsSettingsRegion.show(this._columnsSettingsView);
+      this.showChildView('columnsSettingsRegion', this._columnsSettingsView);
     },
   });
 
   Module.ContainerBlockColumnsSettingsView = Marionette.CollectionView.extend({
-    getChildView: function() { return Module.ContainerBlockColumnSettingsView; },
+    childView: function() { return Module.ContainerBlockColumnSettingsView; },
     childViewOptions: function(model, index) {
       return {
         columnIndex: index,
@@ -335,12 +264,12 @@ define([
     },
   });
 
-  Module.ContainerBlockColumnSettingsView = Marionette.ItemView.extend({
+  Module.ContainerBlockColumnSettingsView = Marionette.View.extend({
     getTemplate: function() { return templates.containerBlockColumnSettings; },
     initialize: function(options) {
       this.columnNumber = (options.columnIndex || 0) + 1;
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         columnNumber: this.columnNumber,
@@ -405,7 +334,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('container', {
       blockModel: Module.ContainerBlockModel,
       blockView: Module.ContainerBlockView,

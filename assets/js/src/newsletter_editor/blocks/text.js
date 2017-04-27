@@ -58,7 +58,7 @@ define([
           settings: false,
         },
       });
-      this.toolsRegion.show(this.toolsView);
+      this.showChildView('toolsRegion', this.toolsView);
     },
     onTextEditorChange: function(newContent) {
       this.model.set('text', newContent);
@@ -70,13 +70,6 @@ define([
     onTextEditorBlur: function() {
       this.enableDragging();
       this.enableShowingTools();
-    },
-
-    disableDragging: function() {
-      this.$('.mailpoet_content').addClass('mailpoet_ignore_drag');
-    },
-    enableDragging: function() {
-      this.$('.mailpoet_content').removeClass('mailpoet_ignore_drag');
     },
   });
 
@@ -100,7 +93,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('text', {
       blockModel: Module.TextBlockModel,
       blockView: Module.TextBlockView,

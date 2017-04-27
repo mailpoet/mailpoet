@@ -59,14 +59,14 @@ define([
       this.listenTo(this.model, 'change:src change:styles.block.backgroundColor change:styles.block.borderStyle change:styles.block.borderWidth change:styles.block.borderColor applyToAll', this.render);
       this.listenTo(this.model, 'change:styles.block.padding', this.changePadding);
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return _.extend({
         totalHeight: parseInt(this.model.get('styles.block.padding'), 10)*2 + parseInt(this.model.get('styles.block.borderWidth')) + 'px',
-      }, base.BlockView.prototype.templateHelpers.apply(this));
+      }, base.BlockView.prototype.templateContext.apply(this));
     },
     onRender: function() {
       this.toolsView = new Module.DividerBlockToolsView({ model: this.model });
-      this.toolsRegion.show(this.toolsView);
+      this.showChildView('toolsRegion', this.toolsView);
     },
     onBeforeDestroy: function() {
       App.getChannel().off('replaceAllDividers', this._replaceDividerHandler);
@@ -104,12 +104,11 @@ define([
         'change:styles.block.borderColor': 'repaintDividerStyleOptions',
       };
     },
-    templateHelpers: function() {
-      return {
-        model: this.model.toJSON(),
+    templateContext: function() {
+      return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         availableStyles: App.getAvailableStyles().toJSON(),
         renderOptions: this.renderOptions,
-      };
+      });
     },
     changeStyle: function(event) {
       var style = jQuery(event.currentTarget).data('style');
@@ -140,7 +139,7 @@ define([
       }
     },
   });
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('divider', {
       blockModel: Module.DividerBlockModel,
       blockView: Module.DividerBlockView,

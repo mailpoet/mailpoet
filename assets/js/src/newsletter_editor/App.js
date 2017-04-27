@@ -1,21 +1,14 @@
 define([
     'backbone',
     'backbone.marionette',
+    'backbone.radio',
     'jquery',
     'underscore',
     'handlebars',
     'handlebars_helpers'
-  ], function(Backbone, Marionette, jQuery, _, Handlebars) {
+  ], function(Backbone, Marionette, Radio, jQuery, _, Handlebars) {
 
-  var app = new Marionette.Application(), AppView;
-
-  // Decoupled communication between application components
-  app.getChannel = function(channel) {
-    if (channel === undefined) return app.channel;
-    return Radio.channel(channel);
-  };
-
-  AppView = Marionette.LayoutView.extend({
+  var AppView = Marionette.View.extend({
     el: '#mailpoet_editor',
     regions: {
       stylesRegion: '#mailpoet_editor_styles',
@@ -26,10 +19,23 @@ define([
     },
   });
 
-  app.on('start', function(options) {
-    app._appView = new AppView();
+  var EditorApplication = Marionette.Application.extend({
+    region: '#mailpoet_editor',
+
+    onStart: function() {
+      this._appView = new AppView();
+      this.showView(this._appView);
+    },
+
+    getChannel: function(channel) {
+      if (channel === undefined) channel = 'global';
+      return Radio.channel(channel);
+    }
   });
 
+  var app = new EditorApplication();
   window.EditorApplication = app;
+
   return app;
+
 });

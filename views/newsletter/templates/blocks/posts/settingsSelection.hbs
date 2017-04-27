@@ -15,7 +15,7 @@
         </select></div>
     <div class="mailpoet_post_selection_filter_row">
         <select class="mailpoet_select mailpoet_posts_categories_and_tags" multiple="multiple">
-          {{#each terms}}
+          {{#each model.terms}}
             <option value="{{ id }}" selected="selected">{{ text }}</option>
           {{/each}}
         </select>

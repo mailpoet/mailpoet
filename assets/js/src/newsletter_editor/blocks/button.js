@@ -56,7 +56,7 @@ define([
     },
     onRender: function() {
       this.toolsView = new Module.ButtonBlockToolsView({ model: this.model });
-      this.toolsRegion.show(this.toolsView);
+      this.showChildView('toolsRegion', this.toolsView);
     },
   });
 
@@ -98,12 +98,11 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    templateHelpers: function() {
-      return {
-        model: this.model.toJSON(),
+    templateContext: function() {
+      return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         availableStyles: App.getAvailableStyles().toJSON(),
         renderOptions: this.renderOptions,
-      };
+      });
     },
     applyToAll: function() {
       App.getChannel().trigger('replaceAllButtonStyles', _.pick(this.model.toJSON(), 'styles', 'type'));
@@ -133,7 +132,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('button', {
       blockModel: Module.ButtonBlockModel,
       blockView: Module.ButtonBlockView,

@@ -17,7 +17,7 @@ define([
   "use strict";
 
   var Module = {},
-      AugmentedView = Marionette.LayoutView.extend({});
+      AugmentedView = Marionette.View.extend({});
 
   Module.BlockModel = SuperModel.extend({
     stale: [], // Attributes to be removed upon saving
@@ -82,7 +82,7 @@ define([
       },
       HighlightEditingBehavior: {},
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         viewCid: this.cid,
@@ -124,6 +124,12 @@ define([
       return function() {
         return this.model.clone();
       }.bind(this);
+    },
+    disableDragging: function() {
+      this.$el.addClass('mailpoet_ignore_drag');
+    },
+    enableDragging: function() {
+      this.$el.removeClass('mailpoet_ignore_drag');
     },
     showBlock: function() {
       if (this._isFirstRender) {
@@ -193,7 +199,7 @@ define([
       this.on('hideTools', this.hideDeletionConfirmation, this);
       this.on('showSettings', this.changeSettings);
     },
-    templateHelpers: function() {
+    templateContext: function() {
       return {
         model: this.model.toJSON(),
         viewCid: this.cid,
@@ -217,7 +223,7 @@ define([
     },
   });
 
-  Module.BlockSettingsView = Marionette.LayoutView.extend({
+  Module.BlockSettingsView = Marionette.View.extend({
     className: 'mailpoet_editor_settings',
     behaviors: {
       ColorPickerBehavior: {},
@@ -239,6 +245,11 @@ define([
       } else {
         MailPoet.Modal.panel(panelParams);
       }
+    },
+    templateContext: function() {
+      return {
+        model: this.model.toJSON()
+      };
     },
     close: function(event) {
       this.destroy();
@@ -271,7 +282,7 @@ define([
     },
   });
 
-  Module.WidgetView = Marionette.ItemView.extend({
+  Module.WidgetView = Marionette.View.extend({
     className: 'mailpoet_widget mailpoet_droppable_block mailpoet_droppable_widget',
     behaviors: {
       DraggableBehavior: {

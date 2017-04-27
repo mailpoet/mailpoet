@@ -55,7 +55,7 @@ define([
     onDragSubstituteBy: function() { return Module.HeaderWidgetView; },
     onRender: function() {
       this.toolsView = new Module.HeaderBlockToolsView({ model: this.model });
-      this.toolsRegion.show(this.toolsView);
+      this.showChildView('toolsRegion', this.toolsView);
     },
     onTextEditorChange: function(newContent) {
       this.model.set('text', newContent);
@@ -67,12 +67,6 @@ define([
     onTextEditorBlur: function() {
       this.enableDragging();
       this.enableShowingTools();
-    },
-    disableDragging: function() {
-      this.$('.mailpoet_content').addClass('mailpoet_ignore_drag');
-    },
-    enableDragging: function() {
-      this.$('.mailpoet_content').removeClass('mailpoet_ignore_drag');
     },
   });
 
@@ -96,11 +90,10 @@ define([
         "click .mailpoet_done_editing": "close",
       };
     },
-    templateHelpers: function() {
-      return {
-        model: this.model.toJSON(),
+    templateContext: function() {
+      return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         availableStyles: App.getAvailableStyles().toJSON(),
-      };
+      });
     },
   });
 
@@ -116,7 +109,7 @@ define([
     },
   });
 
-  App.on('before:start', function() {
+  App.on('before:start', function(App, options) {
     App.registerBlockType('header', {
       blockModel: Module.HeaderBlockModel,
       blockView: Module.HeaderBlockView,

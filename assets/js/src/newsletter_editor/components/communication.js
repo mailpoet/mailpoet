@@ -98,7 +98,7 @@ define([
     });
   };
 
-  App.on('start', function(options) {
+  App.on('start', function(App, options) {
     // Prefetch post types
     Module.getPostTypes();
   });
