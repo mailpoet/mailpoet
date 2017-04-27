@@ -175,6 +175,13 @@ class Newsletter extends Model {
     return $model;
   }
 
+  function trash() {
+    // trash queue association
+    $this->queue()->findOne()->trash();
+
+    return parent::trash();
+  }
+
   function delete() {
     // delete segment associations
     $this->segmentLinks()->deleteMany();
