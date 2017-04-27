@@ -18,20 +18,6 @@ class Link {
     $wp_user_preview
   ) {
     switch($action) {
-      case 'subscription_unsubscribe':
-        $action = 'subscription_unsubscribe_url';
-        $url = self::processUrl(
-          $action,
-          SubscriptionUrl::getUnsubscribeUrl($subscriber),
-          $queue,
-          $wp_user_preview
-        );
-        return sprintf(
-          '<a target="_blank" href="%s">%s</a>',
-          $url,
-          __('Unsubscribe', 'mailpoet')
-        );
-
       case 'subscription_unsubscribe_url':
         return self::processUrl(
           $action,
@@ -40,41 +26,12 @@ class Link {
           $wp_user_preview
         );
 
-      case 'subscription_manage':
-        $url = self::processUrl(
-          $action = 'subscription_manage_url',
-          SubscriptionUrl::getManageUrl($subscriber),
-          $queue,
-          $wp_user_preview
-        );
-        return sprintf(
-          '<a target="_blank" href="%s">%s</a>',
-          $url,
-          __('Manage subscription', 'mailpoet')
-        );
-
       case 'subscription_manage_url':
         return self::processUrl(
           $action,
           SubscriptionUrl::getManageUrl($subscriber),
           $queue,
           $wp_user_preview
-        );
-
-      case 'newsletter_view_in_browser':
-        $action = 'newsletter_view_in_browser_url';
-        $url = NewsletterUrl::getViewInBrowserUrl(
-          $type = null,
-          $newsletter,
-          $subscriber,
-          $queue,
-          $wp_user_preview
-        );
-        $url = self::processUrl($action, $url, $queue, $wp_user_preview);
-        return sprintf(
-          '<a target="_blank" href="%s">%s</a>',
-          $url,
-          __('View in your browser', 'mailpoet')
         );
 
       case 'newsletter_view_in_browser_url':
@@ -88,7 +45,7 @@ class Link {
         return self::processUrl($action, $url, $queue, $wp_user_preview);
 
       default:
-        $shortcode = self::getShortcode($action);
+        $shortcode = self::getFullShortcode($action);
         $url = apply_filters(
           'mailpoet_newsletter_shortcode_link',
           $shortcode,
@@ -106,7 +63,7 @@ class Link {
   static function processUrl($action, $url, $queue, $wp_user_preview = false) {
     if($wp_user_preview) return '#';
     return ($queue !== false && (boolean)Setting::getValue('tracking.enabled')) ?
-      self::getShortcode($action) :
+      self::getFullShortcode($action) :
       $url;
   }
 
@@ -134,7 +91,7 @@ class Link {
         );
         break;
       default:
-        $shortcode = self::getShortcode($shortcode_action);
+        $shortcode = self::getFullShortcode($shortcode_action);
         $url = apply_filters(
           'mailpoet_newsletter_shortcode_link',
           $shortcode,
@@ -149,7 +106,7 @@ class Link {
     return $url;
   }
 
-  private static function getShortcode($action) {
+  private static function getFullShortcode($action) {
     return sprintf('[link:%s]', $action);
   }
 }

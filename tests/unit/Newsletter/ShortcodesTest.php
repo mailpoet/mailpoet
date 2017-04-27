@@ -213,23 +213,12 @@ class ShortcodesTest extends MailPoetTest {
   function testItCanProcessLinkShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $result =
-      $shortcodes_object->process(array('[link:subscription_unsubscribe]'));
-    expect($result['0'])->regExp('/^<a.*?\/a>$/');
-    expect($result['0'])->regExp('/action=unsubscribe/');
-    $result =
       $shortcodes_object->process(array('[link:subscription_unsubscribe_url]'));
     expect($result['0'])->regExp('/^http.*?action=unsubscribe/');
-    $result =
-      $shortcodes_object->process(array('[link:subscription_manage]'));
-    expect($result['0'])->regExp('/^<a.*?\/a>$/');
-    expect($result['0'])->regExp('/action=manage/');
     $result =
       $shortcodes_object->process(array('[link:subscription_manage_url]'));
     expect($result['0'])->regExp('/^http.*?action=manage/');
     $result =
-      $shortcodes_object->process(array('[link:newsletter_view_in_browser]'));
-    expect($result['0'])->regExp('/^<a.*?\/a>$/');
-    expect($result['0'])->regExp('/endpoint=view_in_browser/');
     $result =
       $shortcodes_object->process(array('[link:newsletter_view_in_browser_url]'));
     expect($result['0'])->regExp('/^http.*?endpoint=view_in_browser/');
@@ -243,19 +232,13 @@ class ShortcodesTest extends MailPoetTest {
     expect($result['0'])->regExp('/^http.*?action=unsubscribe/');
     Setting::setValue('tracking.enabled', true);
     $initial_shortcodes = array(
-      '[link:subscription_unsubscribe]',
       '[link:subscription_unsubscribe_url]',
-      '[link:subscription_manage]',
       '[link:subscription_manage_url]',
-      '[link:newsletter_view_in_browser]',
       '[link:newsletter_view_in_browser_url]'
     );
     $expected_transformed_shortcodes = array(
       '[link:subscription_unsubscribe_url]',
-      '[link:subscription_unsubscribe_url]',
       '[link:subscription_manage_url]',
-      '[link:subscription_manage_url]',
-      '[link:newsletter_view_in_browser_url]',
       '[link:newsletter_view_in_browser_url]'
     );
     // tracking function only works during sending, so queue object must not be false
@@ -272,7 +255,7 @@ class ShortcodesTest extends MailPoetTest {
     }
   }
 
-  function testItReturnsHashInsteadofLinksWhenInPreviewIsEnabled() {
+  function testItReturnsHashInsteadofLinksWhenPreviewIsEnabled() {
     $shortcodes_object = $this->shortcodes_object;
     $shortcodes_object->wp_user_preview = true;
     $shortcodes = array(
@@ -284,15 +267,6 @@ class ShortcodesTest extends MailPoetTest {
     // hash is returned
     foreach($result as $index => $transformed_shortcode) {
       expect($transformed_shortcode)->equals('#');
-    }
-    $shortcodes = array(
-      '[link:subscription_unsubscribe]',
-      '[link:subscription_manage]',
-      '[link:newsletter_view_in_browser]',
-    );
-    $result = $shortcodes_object->process($shortcodes);
-    foreach($result as $index => $transformed_shortcode) {
-      expect($transformed_shortcode)->regExp('/href="#"/');
     }
   }
 

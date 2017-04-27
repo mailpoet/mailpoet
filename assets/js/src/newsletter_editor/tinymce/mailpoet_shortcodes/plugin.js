@@ -11,13 +11,13 @@
 /*jshint unused:false */
 /*global tinymce:true */
 tinymce.PluginManager.add('mailpoet_shortcodes', function(editor, url) {
-  var appendLabelAndClose = function(text) {
-      editor.insertContent('[' + text + ']');
+  var appendLabelAndClose = function(shortcode) {
+      editor.insertContent(shortcode);
       editor.windowManager.close();
     },
-    generateOnClickFunc = function(id) {
+    generateOnClickFunc = function(shortcode) {
       return function() {
-        appendLabelAndClose(id);
+        appendLabelAndClose(shortcode);
       };
     };
 
