@@ -2,6 +2,7 @@
 namespace MailPoet\Mailer\Methods;
 
 use MailPoet\Mailer\Mailer;
+use MailPoet\WP\Hooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -60,6 +61,7 @@ class SMTP {
         ->setUsername($this->login)
         ->setPassword($this->password);
     }
+    $transport = Hooks::applyFilters('mailpoet_mailer_smtp_transport_agent', $transport);
     return \Swift_Mailer::newInstance($transport);
   }
 
