@@ -79,7 +79,7 @@ class ShortcodesHelper {
         array(
           'text' => __('Unsubscribe link', 'mailpoet'),
           'shortcode' => sprintf(
-            '<a target="_blank" href="%s">%s',
+            '<a target="_blank" href="%s">%s</a>',
             '[link:subscription_unsubscribe_url]',
             __('Unsubscribe', 'mailpoet')
           )
@@ -87,7 +87,7 @@ class ShortcodesHelper {
         array(
           'text' => __('Edit subscription page link', 'mailpoet'),
           'shortcode' => sprintf(
-            '<a target="_blank" href="%s">%s',
+            '<a target="_blank" href="%s">%s</a>',
             '[link:subscription_manage_url]',
             __('Manage subscription', 'mailpoet')
           )
@@ -95,7 +95,7 @@ class ShortcodesHelper {
         array(
           'text' => __('View in browser link', 'mailpoet'),
           'shortcode' => sprintf(
-            '<a target="_blank" href="%s">%s',
+            '<a target="_blank" href="%s">%s</a>',
             '[link:newsletter_view_in_browser_url]',
             __('View in your browser', 'mailpoet')
           )
