@@ -29,7 +29,41 @@ class Newsletter extends Model {
   }
 
   function queue() {
-    return $this->has_one(__NAMESPACE__ . '\SendingQueue', 'newsletter_id', 'id');
+    return $this->hasOne(__NAMESPACE__ . '\SendingQueue', 'newsletter_id', 'id');
+  }
+
+  function children() {
+    return $this->hasMany(
+      __NAMESPACE__.'\Newsletter',
+      'parent_id',
+      'id'
+    );
+  }
+
+  function segments() {
+    return $this->hasManyThrough(
+      __NAMESPACE__.'\Segment',
+      __NAMESPACE__.'\NewsletterSegment',
+      'newsletter_id',
+      'segment_id'
+    );
+  }
+
+  function segmentRelations() {
+    return $this->hasMany(
+      __NAMESPACE__.'\NewsletterSegment',
+      'newsletter_id',
+      'id'
+    );
+  }
+
+  function options() {
+    return $this->hasManyThrough(
+      __NAMESPACE__.'\NewsletterOptionField',
+      __NAMESPACE__.'\NewsletterOption',
+      'newsletter_id',
+      'option_field_id'
+    )->select_expr(MP_NEWSLETTER_OPTION_TABLE.'.value');
   }
 
   function save() {
@@ -49,6 +83,91 @@ class Newsletter extends Model {
       : self::generateHash()
     );
     return parent::save();
+  }
+
+  function trash() {
+    // trash queue association
+    if($queue = $this->queue()->findOne()) {
+      $queue->trash();
+    }
+
+    return parent::trash();
+  }
+
+  static function bulkTrash($orm) {
+    // bulk trash queue associations
+    parent::bulkAction($orm, function($ids) {
+      SendingQueue::rawExecute(join(' ', array(
+        'UPDATE `' . SendingQueue::$_table . '`',
+        'SET `deleted_at` = NOW()',
+        'WHERE `newsletter_id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')'
+      )),
+                               $ids
+      );
+    });
+
+    return parent::bulkTrash($orm);
+  }
+
+  function delete() {
+    // delete segment associations
+    $this->segmentRelations()->deleteMany();
+    // delete queue association
+    if($queue = $this->queue()->findOne()) {
+      $queue->delete();
+    }
+
+    return parent::delete();
+  }
+
+  static function bulkDelete($orm) {
+    // bulk delete segment associations
+    parent::bulkAction($orm, function($ids) {
+      NewsletterSegment::whereIn('newsletter_id', $ids)
+        ->deleteMany();
+    });
+
+    // bulk delete queue associations
+    parent::bulkAction($orm, function($ids) {
+      SendingQueue::whereIn('newsletter_id', $ids)
+        ->deleteMany();
+    });
+
+    return parent::bulkDelete($orm);
+  }
+
+  function restore() {
+    // restore trashed queue association
+    if($queue = $this->queue()->findOne()) {
+      $queue->restore();
+    }
+
+    if($this->status == self::STATUS_SENDING) {
+      $this->set('status', self::STATUS_DRAFT);
+      $this->save();
+    }
+    return parent::restore();
+  }
+
+  static function bulkRestore($orm) {
+    // bulk restore trashed queue associations
+    parent::bulkAction($orm, function($ids) {
+      SendingQueue::whereIn('newsletter_id', $ids)
+        ->whereNotNull('deleted_at')
+        ->findResultSet()
+        ->set('deleted_at', null)
+        ->save();
+    });
+
+    parent::bulkAction($orm, function($ids) {
+      Newsletter::whereIn('id', $ids)
+        ->where('status', Newsletter::STATUS_SENDING)
+        ->findResultSet()
+        ->set('status', Newsletter::STATUS_DRAFT)
+        ->save();
+    });
+
+    return parent::bulkRestore($orm);
   }
 
   function setStatus($status = null) {
@@ -175,43 +294,6 @@ class Newsletter extends Model {
     return $model;
   }
 
-  function trash() {
-    // trash queue association
-    if($queue = $this->queue()->findOne()) {
-      $queue->trash();
-    }
-
-    return parent::trash();
-  }
-
-  function delete() {
-    // delete segment associations
-    $this->segmentLinks()->deleteMany();
-    // delete queue association
-    if($queue = $this->queue()->findOne()) {
-      $queue->delete();
-    }
-
-    return parent::delete();
-  }
-
-  function children() {
-    return $this->has_many(
-      __NAMESPACE__.'\Newsletter',
-      'parent_id',
-      'id'
-    );
-  }
-
-  function segments() {
-    return $this->has_many_through(
-      __NAMESPACE__.'\Segment',
-      __NAMESPACE__.'\NewsletterSegment',
-      'newsletter_id',
-      'segment_id'
-    );
-  }
-
   function withSegments($incl_deleted = false) {
     $this->segments = $this->segments()->findArray();
     if($incl_deleted) {
@@ -220,19 +302,10 @@ class Newsletter extends Model {
     return $this;
   }
 
-  // Intermediary table only
-  function segmentLinks() {
-    return $this->has_many(
-      __NAMESPACE__.'\NewsletterSegment',
-      'newsletter_id',
-      'id'
-    );
-  }
-
   function withDeletedSegments() {
     if(!empty($this->segments)) {
       $segment_ids = Helpers::arrayColumn($this->segments, 'id');
-      $links = $this->segmentLinks()
+      $links = $this->segmentRelations()
         ->whereNotIn('segment_id', $segment_ids)->findArray();
       $deleted_segments = array();
 
@@ -251,15 +324,6 @@ class Newsletter extends Model {
   function withChildrenCount() {
     $this->children_count = $this->children()->count();
     return $this;
-  }
-
-  function options() {
-    return $this->has_many_through(
-      __NAMESPACE__.'\NewsletterOptionField',
-      __NAMESPACE__.'\NewsletterOption',
-      'newsletter_id',
-      'option_field_id'
-    )->select_expr(MP_NEWSLETTER_OPTION_TABLE.'.value');
   }
 
   function getQueue($columns = '*') {
@@ -728,70 +792,5 @@ class Newsletter extends Model {
       0,
       self::NEWSLETTER_HASH_LENGTH
     );
-  }
-
-  function restore() {
-    // restore trashed queue association
-    if($queue = $this->queue()->findOne()) {
-      $queue->restore();
-    }
-
-    if($this->status == self::STATUS_SENDING) {
-      $this->set('status', self::STATUS_DRAFT);
-      $this->save();
-    }
-    return parent::restore();
-  }
-
-  static function bulkTrash($orm) {
-    // bulk trash queue associations
-    parent::bulkAction($orm, function($ids) {
-      SendingQueue::rawExecute(join(' ', array(
-        'UPDATE `' . SendingQueue::$_table . '`',
-        'SET `deleted_at` = NOW()',
-        'WHERE `newsletter_id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')'
-      )),
-      $ids
-      );
-    });
-
-    return parent::bulkTrash($orm);
-  }
-
-  static function bulkRestore($orm) {
-    // bulk restore trashed queue associations
-    parent::bulkAction($orm, function($ids) {
-      SendingQueue::whereIn('newsletter_id', $ids)
-        ->whereNotNull('deleted_at')
-        ->findResultSet()
-        ->set('deleted_at', null)
-        ->save();
-    });
-
-    parent::bulkAction($orm, function($ids) {
-      Newsletter::whereIn('id', $ids)
-        ->where('status', Newsletter::STATUS_SENDING)
-        ->findResultSet()
-        ->set('status', Newsletter::STATUS_DRAFT)
-        ->save();
-    });
-
-    return parent::bulkRestore($orm);
-  }
-
-  static function bulkDelete($orm) {
-    // bulk delete segment associations
-    parent::bulkAction($orm, function($ids) {
-      NewsletterSegment::whereIn('newsletter_id', $ids)
-        ->deleteMany();
-    });
-
-    // bulk delete queue associations
-    parent::bulkAction($orm, function($ids) {
-      SendingQueue::whereIn('newsletter_id', $ids)
-        ->deleteMany();
-    });
-
-    return parent::bulkDelete($orm);
   }
 }
