@@ -76,7 +76,6 @@ class MP2Migrator {
    */
   public function init() {
     $this->enqueueScripts();
-    $this->log('INIT');
   }
 
   /**
@@ -191,45 +190,28 @@ class MP2Migrator {
     $result .= __('MailPoet 2 data found:', Env::$plugin_name) . "\n";
     
     // User Lists
-    $usersListsCount = $this->rowsCount('wysija_list');
+    $usersListsCount = Helpers::rowsCount('wysija_list');
     $totalCount += $usersListsCount;
     $result .= sprintf(_n('%d subscribers list', '%d subscribers lists', $usersListsCount, Env::$plugin_name), $usersListsCount) . "\n";
     
     // Users
-    $usersCount = $this->rowsCount('wysija_user');
+    $usersCount = Helpers::rowsCount('wysija_user');
     $totalCount += $usersCount;
     $result .= sprintf(_n('%d subscriber', '%d subscribers', $usersCount, Env::$plugin_name), $usersCount) . "\n";
     
     // Emails
-    $emailsCount = $this->rowsCount('wysija_email');
+    $emailsCount = Helpers::rowsCount('wysija_email');
     $totalCount += $emailsCount;
     $result .= sprintf(_n('%d newsletter', '%d newsletters', $emailsCount, Env::$plugin_name), $emailsCount) . "\n";
     
     // Forms
-    $formsCount = $this->rowsCount('wysija_form');
+    $formsCount = Helpers::rowsCount('wysija_form');
     $totalCount += $formsCount;
     $result .= sprintf(_n('%d form', '%d forms', $formsCount, Env::$plugin_name), $formsCount) . "\n";
     
     $this->progressbar->setTotalCount($totalCount);
     
     return $result;
-  }
-  
-  /**
-   * Count the number of rows in a table
-   * 
-   * @global object $wpdb
-   * @param string $table Table
-   * @return int Number of rows found
-   */
-  private function rowsCount($table) {
-    global $wpdb;
-
-    $table = $wpdb->prefix . $table;
-    $sql = "SELECT COUNT(*) FROM `$table`";
-    $count = $wpdb->get_var($sql);
-    
-    return $count;
   }
   
   /**
@@ -504,6 +486,15 @@ class MP2Migrator {
       'confirmed_at' => !empty($user_data['confirmed_at'])? Helpers::mysqlDate($user_data['confirmed_at']) : null,
     ));
     Setting::setValue('last_imported_user_id', $user_data['user_id']);
+    if(!empty($subscriber)) {
+      $mapping = new ImportedDataMapping();
+      $mapping->create(array(
+        'old_id' => $user_data['user_id'],
+        'type' => 'subscribers',
+        'new_id' => $subscriber->id,
+        'created_at' => Helpers::mysqlDate(time()),
+      ));
+    }
     return $subscriber;
   }
   
@@ -649,7 +640,7 @@ class MP2Migrator {
    * @param string $model Model (segment,...)
    * @return array Mapping
    */
-  private function getImportedMapping($model) {
+  public function getImportedMapping($model) {
     $mappings = array();
     $mapping_relations = ImportedDataMapping::where('type', $model)->findArray();
     foreach($mapping_relations as $relation) {
