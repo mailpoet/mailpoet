@@ -522,6 +522,37 @@ class NewsletterTest extends MailPoetTest {
     }
   }
 
+  function testItBulkDeletesSegmentAndQueueAssociationsWhenNewslettersAreBulkDeleted() {
+    // delete default records
+    $this->_after();
+
+    // create multiple newsletters, sending queues and newsletter segments
+    for($i = 1; $i <= 5; $i++) {
+      $newsletter = Newsletter::createOrUpdate(
+        array(
+          'subject' => 'test',
+          'type' => Newsletter::TYPE_STANDARD
+        )
+      );
+      $sending_queue = SendingQueue::create();
+      $sending_queue->newsletter_id = $newsletter->id;
+      $sending_queue->save();
+      $newsletter_segment = NewsletterSegment::create();
+      $newsletter_segment->newsletter_id = $newsletter->id;
+      $newsletter_segment->segment_id = 1;
+      $newsletter_segment->save();
+    }
+    expect(Newsletter::findArray())->count(5);
+    expect(SendingQueue::findArray())->count(5);
+    expect(NewsletterSegment::findArray())->count(5);
+
+    // bulk delete newsletters and check that relations are deleted
+    Newsletter::bulkDelete(ORM::forTable(Newsletter::$_table));
+    expect(Newsletter::findArray())->count(0);
+    expect(SendingQueue::findArray())->count(0);
+    expect(NewsletterSegment::findArray())->count(0);
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);

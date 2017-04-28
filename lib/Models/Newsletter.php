@@ -772,4 +772,20 @@ class Newsletter extends Model {
 
     return parent::bulkRestore($orm);
   }
+
+  static function bulkDelete($orm) {
+    // bulk delete segment associations
+    parent::bulkAction($orm, function($ids) {
+      NewsletterSegment::whereIn('newsletter_id', $ids)
+        ->deleteMany();
+    });
+
+    // bulk delete queue associations
+    parent::bulkAction($orm, function($ids) {
+      SendingQueue::whereIn('newsletter_id', $ids)
+        ->deleteMany();
+    });
+
+    return parent::bulkDelete($orm);
+  }
 }
