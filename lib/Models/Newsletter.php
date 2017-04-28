@@ -177,7 +177,9 @@ class Newsletter extends Model {
 
   function trash() {
     // trash queue association
-    $this->queue()->findOne()->trash();
+    if($queue = $this->queue()->findOne()) {
+      $queue->trash();
+    }
 
     return parent::trash();
   }
@@ -186,7 +188,9 @@ class Newsletter extends Model {
     // delete segment associations
     $this->segmentLinks()->deleteMany();
     // delete queue association
-    $this->queue()->findOne()->delete();
+    if($queue = $this->queue()->findOne()) {
+      $queue->delete();
+    }
 
     return parent::delete();
   }
@@ -728,7 +732,9 @@ class Newsletter extends Model {
 
   function restore() {
     // restore trashed queue association
-    $this->queue()->findOne()->restore();
+    if($queue = $this->queue()->findOne()) {
+      $queue->restore();
+    }
 
     if($this->status == self::STATUS_SENDING) {
       $this->set('status', self::STATUS_DRAFT);
