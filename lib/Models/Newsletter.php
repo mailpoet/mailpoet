@@ -737,6 +737,21 @@ class Newsletter extends Model {
     return parent::restore();
   }
 
+  static function bulkTrash($orm) {
+    // bulk trash queue associations
+    parent::bulkAction($orm, function($ids) {
+      SendingQueue::rawExecute(join(' ', array(
+        'UPDATE `' . SendingQueue::$_table . '`',
+        'SET `deleted_at` = NOW()',
+        'WHERE `newsletter_id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')'
+      )),
+      $ids
+      );
+    });
+
+    return parent::bulkTrash($orm);
+  }
+
   static function bulkRestore($orm) {
     parent::bulkAction($orm, function($ids) {
       Newsletter::whereIn('id', $ids)
