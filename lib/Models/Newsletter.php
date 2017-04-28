@@ -753,6 +753,15 @@ class Newsletter extends Model {
   }
 
   static function bulkRestore($orm) {
+    // bulk restore trashed queue associations
+    parent::bulkAction($orm, function($ids) {
+      SendingQueue::whereIn('newsletter_id', $ids)
+        ->whereNotNull('deleted_at')
+        ->findResultSet()
+        ->set('deleted_at', null)
+        ->save();
+    });
+
     parent::bulkAction($orm, function($ids) {
       Newsletter::whereIn('id', $ids)
         ->where('status', Newsletter::STATUS_SENDING)
@@ -760,6 +769,7 @@ class Newsletter extends Model {
         ->set('status', Newsletter::STATUS_DRAFT)
         ->save();
     });
+
     return parent::bulkRestore($orm);
   }
 }
