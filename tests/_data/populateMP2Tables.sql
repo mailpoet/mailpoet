@@ -7,6 +7,7 @@
 -- Version du serveur :  5.5.42
 -- Version de PHP :  7.0.0
 
+SET NAMES utf8;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
