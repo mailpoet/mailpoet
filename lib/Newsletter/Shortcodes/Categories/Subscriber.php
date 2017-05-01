@@ -21,9 +21,9 @@ class Subscriber {
       '';
     switch($action) {
       case 'firstname':
-        return ($subscriber) ? $subscriber->first_name : $default_value;
+        return (!empty($subscriber->first_name)) ? $subscriber->first_name : $default_value;
       case 'lastname':
-        return ($subscriber) ? $subscriber->last_name : $default_value;
+        return (!empty($subscriber->last_name)) ? $subscriber->last_name : $default_value;
       case 'email':
         return ($subscriber) ? $subscriber->email : false;
       case 'displayname':

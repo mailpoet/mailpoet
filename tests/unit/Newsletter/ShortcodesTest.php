@@ -143,7 +143,7 @@ class ShortcodesTest extends MailPoetTest {
     );
     $result = $shortcodes_object->process(array('[subscriber:firstname | default:test]'));
     expect($result[0])->equals('test');
-    // when subscriber is an object, proper value is return
+    // when subscriber is an object, proper value is returned
     $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $this->subscriber
@@ -157,6 +157,21 @@ class ShortcodesTest extends MailPoetTest {
     );
     $result = $shortcodes_object->process(array('[subscriber:firstname | default:test]'));
     expect($result[0])->false();
+  }
+
+  function testSubscriberFirstAndLastNameShortcodesReturnDefaultValueWhenDataIsEmpty() {
+    // when subscriber exists but first or last names are empty, default value is returned
+    $subscriber = $this->subscriber;
+    $subscriber->first_name = '';
+    $subscriber->last_name = '';
+    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+      $this->newsletter,
+      $subscriber
+    );
+    $result = $shortcodes_object->process(array('[subscriber:firstname | default:test]'));
+    expect($result[0])->equals('test');
+    $result = $shortcodes_object->process(array('[subscriber:lastname | default:test]'));
+    expect($result[0])->equals('test');
   }
 
   function testItCanProcessSubscriberShortcodes() {
