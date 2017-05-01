@@ -159,7 +159,7 @@ class ShortcodesTest extends MailPoetTest {
     expect($result[0])->false();
   }
 
-  function testSubscriberFirstAndLastNameShortcodesReturnDefaultValueWhenDataIsEpty() {
+  function testSubscriberFirstAndLastNameShortcodesReturnDefaultValueWhenDataIsEmpty() {
     // when subscriber exists but first or last names are empty, default value is returned
     $subscriber = $this->subscriber;
     $subscriber->first_name = '';
