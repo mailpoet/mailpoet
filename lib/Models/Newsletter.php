@@ -102,7 +102,7 @@ class Newsletter extends Model {
         'SET `deleted_at` = NOW()',
         'WHERE `newsletter_id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')'
       )),
-                               $ids
+      $ids
       );
     });
 
