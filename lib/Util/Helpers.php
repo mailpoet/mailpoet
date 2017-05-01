@@ -177,7 +177,7 @@ class Helpers {
   static public function loadSQL($filename) {
     $db = \ORM::getDb();
     $full_filename = Env::$path . '/tests/_data/' . $filename . '.sql';
-    $sql = utf8_decode(file_get_contents($full_filename));
+    $sql = file_get_contents($full_filename);
     $db->exec($sql);
   }
   
