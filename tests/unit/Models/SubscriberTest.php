@@ -141,7 +141,30 @@ class SubscriberTest extends MailPoetTest {
     }
   }
 
-  function testItHasSegmentFilter() {
+  function testItProvidesSegmentFilter() {
+    $segment = Segment::createOrUpdate(array(
+      'name' => 'Test segment'
+    ));
+    $segment_2 = Segment::createOrUpdate(array(
+      'name' => 'Test segment 2'
+    ));
+
+    SubscriberSegment::subscribeToSegments(
+      $this->subscriber,
+      array($segment->id, $segment_2->id)
+    );
+
+    // all, none + segments
+    $filters = Subscriber::filters();
+    expect($filters['segment'])->count(4);
+
+    // does not include trashed segments
+    $segment->trash();
+    $filters = Subscriber::filters();
+    expect($filters['segment'])->count(3);
+  }
+
+  function testItAppliesSegmentFilter() {
     // remove all subscribers
     Subscriber::deleteMany();
 
@@ -189,6 +212,18 @@ class SubscriberTest extends MailPoetTest {
     $subscribers = Subscriber::filter('filterBy', array('segment' => $segment->id))
       ->findMany();
     expect($subscribers)->count(0);
+
+    // subscribed to trashed segments
+    SubscriberSegment::subscribeToSegments(
+      $subscriber,
+      array($segment->id, $segment_2->id)
+    );
+    $segment->trash();
+    $segment_2->trash();
+
+    $subscribers = Subscriber::filter('filterBy', array('segment' => 'none'))
+      ->findMany();
+    expect($subscribers)->count(1);
   }
 
   function testItCanHaveSegment() {

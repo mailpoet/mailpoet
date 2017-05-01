@@ -273,7 +273,9 @@ class Subscriber extends Model {
   static function filters($data = array()) {
     $group = (!empty($data['group'])) ? $data['group'] : 'all';
 
-    $segments = Segment::orderByAsc('name')->findMany();
+    $segments = Segment::orderByAsc('name')
+      ->whereNull('deleted_at')
+      ->findMany();
     $segment_list = array();
     $segment_list[] = array(
       'label' => __('All Lists', 'mailpoet'),
@@ -789,9 +791,11 @@ class Subscriber extends Model {
     return $orm->select(MP_SUBSCRIBERS_TABLE.'.*')
       ->whereRaw(
         MP_SUBSCRIBERS_TABLE . '.id NOT IN (
-        SELECT `subscriber_id`
-        FROM '.MP_SUBSCRIBER_SEGMENT_TABLE.'
-        WHERE `status` = "'.self::STATUS_SUBSCRIBED.'"
+          SELECT `subscriber_id`
+          FROM '.MP_SUBSCRIBER_SEGMENT_TABLE.'
+          WHERE `status` = "'.self::STATUS_SUBSCRIBED.'" AND `segment_id` IN (
+            SELECT `id` FROM '.MP_SEGMENTS_TABLE.' WHERE `deleted_at` IS NULL
+          )
         )'
       );
   }
