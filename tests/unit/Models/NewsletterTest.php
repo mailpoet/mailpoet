@@ -424,17 +424,23 @@ class NewsletterTest extends MailPoetTest {
   }
 
   function testItDeletesSegmentAndQueueAssociationsWhenNewsletterIsDeleted() {
-    // make sure relations exist
     $newsletter = $this->newsletter;
-    $sending_queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
-    expect($sending_queue)->notEmpty();
+
+    // create multiple sending queues
+    for($i = 1; $i <= 5; $i++) {
+      $sending_queue = SendingQueue::create();
+      $sending_queue->newsletter_id = $newsletter->id;
+      $sending_queue->save();
+    }
+
+    // make sure relations exist
+    expect(SendingQueue::where('newsletter_id', $newsletter->id)->findArray())->count(6);
     $newsletter_segments = NewsletterSegment::where('newsletter_id', $newsletter->id)->findArray();
     expect($newsletter_segments)->count(2);
 
     // delete newsletter and check that relations no longer exist
     $newsletter->delete();
-    $sending_queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
-    expect($sending_queue)->isEmpty();
+    expect(SendingQueue::where('newsletter_id', $newsletter->id)->findArray())->isEmpty();
     $newsletter_segments = NewsletterSegment::where('newsletter_id', $newsletter->id)->findArray();
     expect($newsletter_segments)->isEmpty();
   }

@@ -114,7 +114,7 @@ class Newsletter extends Model {
   function delete() {
     // delete segment associations
     $this->segmentRelations()->deleteMany();
-    // delete queue association
+    // delete queue associations
     $this->queue()->deleteMany();
 
     return parent::delete();
@@ -137,7 +137,7 @@ class Newsletter extends Model {
   }
 
   function restore() {
-    // trash queue associations
+    // restore trashed queue associations
     SendingQueue::rawExecute(
       'UPDATE `' . SendingQueue::$_table . '` ' .
       'SET `deleted_at` = null ' .
