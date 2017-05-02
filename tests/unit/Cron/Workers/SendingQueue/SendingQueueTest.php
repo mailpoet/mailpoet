@@ -75,9 +75,9 @@ class SendingQueueTest extends MailPoetTest {
 
   private function getTrackedUnsubscribeURL() {
     $data = Links::createUrlDataObject(
-      $this->subscriber->id, 
+      $this->subscriber->id,
       $this->subscriber->email,
-      $this->queue->id, 
+      $this->queue->id,
       $this->newsletter_link->hash,
       false
     );
@@ -206,21 +206,6 @@ class SendingQueueTest extends MailPoetTest {
     expect($queue)->false(false);
   }
 
-  function testItDeletesQueueWhenNewsletterIsTrashed() {
-    // queue exists
-    $queue = SendingQueue::findOne($this->queue->id);
-    expect($queue)->notEquals(false);
-
-    // trash newsletter
-    Newsletter::findOne($this->newsletter->id)
-      ->trash();
-
-    // queue no longer exists
-    $this->sending_queue_worker->process();
-    $queue = SendingQueue::findOne($this->queue->id);
-    expect($queue)->false(false);
-  }
-
   function testItPassesExtraParametersToMailerWhenTrackingIsDisabled() {
     Setting::setValue('tracking.enabled', false);
     $directUnsubscribeURL = $this->getDirectUnsubscribeURL();
@@ -239,7 +224,7 @@ class SendingQueueTest extends MailPoetTest {
     );
     $sending_queue_worker->process();
   }
-  
+
   function testItPassesExtraParametersToMailerWhenTrackingIsEnabled() {
     Setting::setValue('tracking.enabled', true);
     $trackedUnsubscribeURL = $this->getTrackedUnsubscribeURL();
