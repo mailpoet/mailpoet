@@ -439,29 +439,41 @@ class NewsletterTest extends MailPoetTest {
     expect($newsletter_segments)->isEmpty();
   }
 
-  function testItTrashesQueueAssociationWhenNewsletterIsTrashed() {
-    // make sure relation exists
-    $newsletter = $this->newsletter;
-    $sending_queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
-    expect($sending_queue->deleted_at)->null();
+  function testItTrashesQueueAssociationsWhenNewsletterIsTrashed() {
+    // delete default records
+    $this->_after();
 
-    // trash newsletter and check that relation is trashed
+    // create multiple sending queues
+    $newsletter = $this->newsletter;
+    for($i = 1; $i <= 5; $i++) {
+      $sending_queue = SendingQueue::create();
+      $sending_queue->newsletter_id = $newsletter->id;
+      $sending_queue->save();
+    }
+    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(5);
+
+    // trash newsletter and check that relations are trashed
     $newsletter->trash();
-    $sending_queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
-    expect($sending_queue->deleted_at)->notNull();
+    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(5);
   }
 
-  function testItRestoresTrashedQueueAssociationWhenNewsletterIsRestored() {
-    // trash newsletter and check that relation is trashed
-    $newsletter = $this->newsletter;
-    $newsletter->trash();
-    $sending_queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
-    expect($sending_queue->deleted_at)->notNull();
+  function testItRestoresTrashedQueueAssociationsWhenNewsletterIsRestored() {
+    // delete default records
+    $this->_after();
 
-    // restore newsletter and check that relation is restores
+    // create multiple sending queues
+    $newsletter = $this->newsletter;
+    for($i = 1; $i <= 5; $i++) {
+      $sending_queue = SendingQueue::create();
+      $sending_queue->newsletter_id = $newsletter->id;
+      $sending_queue->deleted_at = date('Y-m-d H:i:s');
+      $sending_queue->save();
+    }
+    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(5);
+
+    // restore newsletter and check that relations are restored
     $newsletter->restore();
-    $sending_queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
-    expect($sending_queue->deleted_at)->null();
+    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(5);
   }
 
   function testItTrashesAllQueueAssociationsWhenNewslettersAreBulkTrashed() {
@@ -480,16 +492,13 @@ class NewsletterTest extends MailPoetTest {
       $sending_queue->newsletter_id = $newsletter->id;
       $sending_queue->save();
     }
-    expect(Newsletter::findArray())->count(5);
-    expect(SendingQueue::findArray())->count(5);
+    expect(Newsletter::whereNull('deleted_at')->findArray())->count(5);
+    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(5);
 
     // bulk trash newsletters and check that relations are trashed
     Newsletter::bulkTrash(ORM::forTable(Newsletter::$_table));
-    $newsletters = Newsletter::findMany();
-    foreach($newsletters as $newsletter) {
-      expect($newsletter->deleted_at)->notNull();
-      expect($newsletter->queue()->findOne()->deleted_at)->notNull();
-    }
+    expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(5);
+    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(5);
   }
 
   function testItBulkRestoresTrashedQueueAssociationsWhenNewslettersAreBulkRestored() {
@@ -510,16 +519,14 @@ class NewsletterTest extends MailPoetTest {
       $sending_queue->deleted_at = date('Y-m-d H:i:s');
       $sending_queue->save();
     }
-    expect(Newsletter::findArray())->count(5);
-    expect(SendingQueue::findArray())->count(5);
+    expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(5);
+    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(5);
 
     // bulk restore newsletters and check that relations are restored
     Newsletter::bulkRestore(ORM::forTable(Newsletter::$_table));
-    $newsletters = Newsletter::findMany();
-    foreach($newsletters as $newsletter) {
-      expect($newsletter->deleted_at)->null();
-      expect($newsletter->queue()->findOne()->deleted_at)->null();
-    }
+    expect(Newsletter::whereNull('deleted_at')->findArray())->count(5);
+    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(5);
+
   }
 
   function testItBulkDeletesSegmentAndQueueAssociationsWhenNewslettersAreBulkDeleted() {

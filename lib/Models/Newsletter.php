@@ -86,10 +86,12 @@ class Newsletter extends Model {
   }
 
   function trash() {
-    // trash queue association
-    if($queue = $this->queue()->findOne()) {
-      $queue->trash();
-    }
+    // trash queue associations
+    SendingQueue::rawExecute(
+      'UPDATE `' . SendingQueue::$_table . '` ' .
+      'SET `deleted_at` = NOW() ' .
+      'WHERE `newsletter_id` = ' . $this->id
+    );
 
     return parent::trash();
   }
@@ -113,9 +115,7 @@ class Newsletter extends Model {
     // delete segment associations
     $this->segmentRelations()->deleteMany();
     // delete queue association
-    if($queue = $this->queue()->findOne()) {
-      $queue->delete();
-    }
+    $this->queue()->deleteMany();
 
     return parent::delete();
   }
@@ -137,10 +137,12 @@ class Newsletter extends Model {
   }
 
   function restore() {
-    // restore trashed queue association
-    if($queue = $this->queue()->findOne()) {
-      $queue->restore();
-    }
+    // trash queue associations
+    SendingQueue::rawExecute(
+      'UPDATE `' . SendingQueue::$_table . '` ' .
+      'SET `deleted_at` = null ' .
+      'WHERE `newsletter_id` = ' . $this->id
+    );
 
     if($this->status == self::STATUS_SENDING) {
       $this->set('status', self::STATUS_DRAFT);
