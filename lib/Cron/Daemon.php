@@ -3,6 +3,7 @@ namespace MailPoet\Cron;
 use MailPoet\Cron\Workers\Scheduler as SchedulerWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
+use MailPoet\Cron\Workers\PremiumKeyCheck as PremiumKeyCheckWorker;
 use MailPoet\Cron\Workers\SendingServiceKeyCheck as SendingServiceKeyCheckWorker;
 
 if(!defined('ABSPATH')) exit;
@@ -50,6 +51,7 @@ class Daemon {
       $this->executeScheduleWorker();
       $this->executeQueueWorker();
       $this->executeSendingServiceKeyCheckWorker();
+      $this->executePremiumKeyCheckWorker();
       $this->executeBounceWorker();
     } catch(\Exception $e) {
       // continue processing, no need to handle errors
@@ -84,6 +86,11 @@ class Daemon {
 
   function executeSendingServiceKeyCheckWorker() {
     $worker = new SendingServiceKeyCheckWorker($this->timer);
+    return $worker->process();
+  }
+
+  function executePremiumKeyCheckWorker() {
+    $worker = new PremiumKeyCheckWorker($this->timer);
     return $worker->process();
   }
 
