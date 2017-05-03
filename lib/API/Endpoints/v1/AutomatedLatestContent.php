@@ -28,7 +28,7 @@ class AutomatedLatestContent extends APIEndpoint {
   function getTerms($data = array()) {
     $taxonomies = (isset($data['taxonomies'])) ? $data['taxonomies'] : array();
     $search = (isset($data['search'])) ? $data['search'] : '';
-    $limit = (isset($data['limit'])) ? (int)$data['limit'] : 10;
+    $limit = (isset($data['limit'])) ? (int)$data['limit'] : 0;
     $page = (isset($data['page'])) ? (int)$data['page'] : 1;
 
     return $this->successResponse(
