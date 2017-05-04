@@ -30,7 +30,7 @@
             style="display: none;"
           <% endif %>
         >
-          ✔ <%= __('Your license key has been successfully validated.') %>
+          <%= __('Your license key has been successfully validated.') %>
         </div>
         <div
           class="mailpoet_premium_key_invalid mailpoet_error"
@@ -38,10 +38,11 @@
             style="display: none;"
           <% endif %>
         >
-          ✗ <%= __('Your license key is invalid.') %>
+          <%= __('Your license key is invalid.') %>
         </div>
         <br/>
         <div
+          class="mailpoet_premium_download"
           <% if premium_plugin_active or not(premium_key_valid) %>
             style="display: none;"
           <% endif %>
@@ -73,12 +74,14 @@
         if(key.length === 0) {
           // validation
           return MailPoet.Notice.error(
-            '<%= __('Please specify a Premium key before validating it.') | escape('js') %>',
+            '<%= __('Please specify a license key before validating it.') | escape('js') %>',
             { scroll: true }
           );
         }
 
         $('.mailpoet_premium_key_valid, .mailpoet_premium_key_invalid').hide();
+        $('.mailpoet_premium_download').hide();
+
         MailPoet.Modal.loading(true);
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
@@ -92,16 +95,15 @@
         }).done(function(response) {
           // Hide server error notices
           $('.mailpoet_notice_server').hide();
-          MailPoet.Notice.success(
-            response.data.message,
-            { scroll: true }
-          );
+          $('.mailpoet_premium_key_valid').text(response.data.message);
           $('.mailpoet_premium_key_valid').show();
+          if (!response.meta.premium_plugin_active) {
+            $('.mailpoet_premium_download').show();
+          }
         }).fail(function(response) {
           if (response.errors.length > 0) {
-            MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
-              { scroll: true }
+            $('.mailpoet_premium_key_invalid').text(
+              response.errors.map(function(error) { return error.message; }).join(' ')
             );
             $('.mailpoet_premium_key_invalid').show();
           }

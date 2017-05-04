@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
 use MailPoet\Services\Bridge;
+use MailPoet\Util\License\License;
 
 if(!defined('ABSPATH')) exit;
 
@@ -86,30 +87,34 @@ class Services extends APIEndpoint {
 
     $success_message = null;
     if($state == Bridge::PREMIUM_KEY_VALID) {
-      $success_message = __('Your Premium API key is valid!', 'mailpoet');
+      $success_message = __('Your license key has been successfully validated.', 'mailpoet');
     } elseif($state == Bridge::PREMIUM_KEY_EXPIRING) {
       $success_message = sprintf(
-        __('Your Premium key expires on %s!', 'mailpoet'),
+        __('Your license key expires on %s.', 'mailpoet'),
         Carbon::createFromTimestamp(strtotime($result['data']['expire_at']))
           ->format('Y-m-d')
       );
     }
 
     if($success_message) {
-      return $this->successResponse(array('message' => $success_message));
+      $premium_plugin_active = License::getLicense();
+      return $this->successResponse(
+        array('message' => $success_message),
+        array('premium_plugin_active' => $premium_plugin_active)
+      );
     }
 
     switch($state) {
       case Bridge::PREMIUM_KEY_INVALID:
-        $error = __('Your Premium key is invalid!', 'mailpoet');
+        $error = __('Your license key is invalid.', 'mailpoet');
         break;
       case Bridge::PREMIUM_KEY_USED:
-        $error = __('Your Premium key is already used on another site!', 'mailpoet');
+        $error = __('Your license key is already used on another site.', 'mailpoet');
         break;
       default:
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
         $error = sprintf(
-          __('Error validating Premium key, please try again later (code: %s)', 'mailpoet'),
+          __('Error validating license key, please try again later (code: %s)', 'mailpoet'),
           $code
         );
         break;

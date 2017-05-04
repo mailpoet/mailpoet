@@ -68,6 +68,9 @@
           if ($('.mailpoet_mta_setup_save').is(':visible')) {
             $('.mailpoet_mta_setup_save').trigger('click');
           }
+          if ($('#mailpoet_premium_key').val().length > 0) {
+            $('#mailpoet_premium_key_verify').trigger('click');
+          }
           saveSettings();
           return false;
         });

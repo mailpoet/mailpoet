@@ -51,6 +51,15 @@
       .button-secondary
         margin 0 -6px -4px 0
 
+  // premium key
+  .mailpoet_premium_key
+    &_valid
+      &::before
+        content '✔ '
+    &_invalid
+      &::before
+        content: '✗ '
+
   // responsive
   @media screen and (max-width: 782px)
     .form-table th
