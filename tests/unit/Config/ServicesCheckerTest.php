@@ -8,7 +8,7 @@ use MailPoet\Services\Bridge;
 class ServicesCheckerTest extends MailPoetTest {
   function testItDoesNotCheckMSSKeyIfMPSendingServiceIsDisabled() {
     $this->disableMailPoetSendingMethod();
-    $result = ServicesChecker::checkMailPoetAPIKeyValid();
+    $result = ServicesChecker::isMailPoetAPIKeyValid();
     expect($result)->null();
   }
 
@@ -18,14 +18,14 @@ class ServicesCheckerTest extends MailPoetTest {
       Bridge::API_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::MAILPOET_KEY_VALID)
     );
-    $result = ServicesChecker::checkMailPoetAPIKeyValid();
+    $result = ServicesChecker::isMailPoetAPIKeyValid();
     expect($result)->true();
 
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::MAILPOET_KEY_INVALID)
     );
-    $result = ServicesChecker::checkMailPoetAPIKeyValid();
+    $result = ServicesChecker::isMailPoetAPIKeyValid();
     expect($result)->false();
 
     Setting::setValue(
@@ -35,7 +35,7 @@ class ServicesCheckerTest extends MailPoetTest {
         'data' => array('expire_at' => date('c'))
       )
     );
-    $result = ServicesChecker::checkMailPoetAPIKeyValid();
+    $result = ServicesChecker::isMailPoetAPIKeyValid();
     expect($result)->true();
 
     // unexpected state should be treated as valid
@@ -45,7 +45,7 @@ class ServicesCheckerTest extends MailPoetTest {
         'state' => 'unexpected'
       )
     );
-    $result = ServicesChecker::checkMailPoetAPIKeyValid();
+    $result = ServicesChecker::isMailPoetAPIKeyValid();
     expect($result)->true();
   }
 

@@ -95,7 +95,7 @@ class MailPoetAPITest extends MailPoetTest {
     $this->mailer->api_key = 'someapi';
     $this->mailer->services_checker = Stub::make(
       new ServicesChecker(),
-      array('checkMailPoetAPIKeyValid' => false),
+      array('isMailPoetAPIKeyValid' => false),
       $this
     );
     $result = $this->mailer->send(

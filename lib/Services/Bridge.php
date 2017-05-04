@@ -54,13 +54,13 @@ class Bridge {
     }
   }
 
-  function checkKey($api_key) {
+  function checkAPIKey($api_key) {
     $this->initApi($api_key);
-    $result = $this->api->checkKey();
-    return $this->processResult($result);
+    $result = $this->api->checkAPIKey();
+    return $this->processAPIKeyCheckResult($result);
   }
 
-  function processResult(array $result) {
+  private function processAPIKeyCheckResult(array $result) {
     $state_map = array(
       200 => self::MAILPOET_KEY_VALID,
       401 => self::MAILPOET_KEY_INVALID,
@@ -98,7 +98,7 @@ class Bridge {
     return $this->processPremiumKeyCheckResult($result);
   }
 
-  function processPremiumKeyCheckResult(array $result) {
+  private function processPremiumKeyCheckResult(array $result) {
     $state_map = array(
       200 => self::PREMIUM_KEY_VALID,
       401 => self::PREMIUM_KEY_INVALID,
@@ -157,7 +157,7 @@ class Bridge {
     $api_key_set = !empty($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
     $premium_key_set = !empty($settings['premium']['premium_key']);
     if($api_key_set && self::isMPSendingServiceEnabled()) {
-      $result = $this->checkKey($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
+      $result = $this->checkAPIKey($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
       $this->updateSubscriberCount($result);
     }
     if($premium_key_set) {

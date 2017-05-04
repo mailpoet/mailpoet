@@ -47,24 +47,24 @@ class BridgeTest extends MailPoetTest {
   }
 
   function testItChecksMSSKey() {
-    $result = $this->bridge->checkKey($this->valid_key);
+    $result = $this->bridge->checkAPIKey($this->valid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::MAILPOET_KEY_VALID);
 
-    $result = $this->bridge->checkKey($this->invalid_key);
+    $result = $this->bridge->checkAPIKey($this->invalid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::MAILPOET_KEY_INVALID);
 
-    $result = $this->bridge->checkKey($this->expiring_key);
+    $result = $this->bridge->checkAPIKey($this->expiring_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::MAILPOET_KEY_EXPIRING);
     expect($result['data']['expire_at'])->notEmpty();
   }
 
   function testItReturnsErrorStateOnEmptyAPIResponseCodeDuringMSSCheck() {
-    $api = Stub::make(new API(null), array('checkKey' => array()), $this);
+    $api = Stub::make(new API(null), array('checkAPIKey' => array()), $this);
     $this->bridge->api = $api;
-    $result = $this->bridge->checkKey($this->valid_key);
+    $result = $this->bridge->checkAPIKey($this->valid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::MAILPOET_KEY_CHECK_ERROR);
   }
@@ -125,7 +125,7 @@ class BridgeTest extends MailPoetTest {
     $api = Stub::make(
       new API(null),
       array(
-        'checkKey' => Stub::once(function() { return array(); }),
+        'checkAPIKey' => Stub::once(function() { return array(); }),
         'checkPremiumKey' => Stub::once(function() { return array(); })
       ),
       $this

@@ -20,7 +20,7 @@ class ServicesTest extends MailPoetTest {
   function testItRespondsWithSuccessIfMSSKeyIsValid() {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
-      array('checkKey' => array('state' => Bridge::MAILPOET_KEY_VALID)),
+      array('checkAPIKey' => array('state' => Bridge::MAILPOET_KEY_VALID)),
       $this
     );
     $response = $this->services_endpoint->verifyMailPoetKey($this->data);
@@ -30,7 +30,7 @@ class ServicesTest extends MailPoetTest {
   function testItRespondsWithErrorIfMSSKeyIsInvalid() {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
-      array('checkKey' => array('state' => Bridge::MAILPOET_KEY_INVALID)),
+      array('checkAPIKey' => array('state' => Bridge::MAILPOET_KEY_INVALID)),
       $this
     );
     $response = $this->services_endpoint->verifyMailPoetKey($this->data);
@@ -41,7 +41,7 @@ class ServicesTest extends MailPoetTest {
     $date = new DateTime;
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
-      array('checkKey' => array(
+      array('checkAPIKey' => array(
         'state' => Bridge::MAILPOET_KEY_EXPIRING,
         'data' => array('expire_at' => $date->format('c'))
       )),
@@ -55,7 +55,7 @@ class ServicesTest extends MailPoetTest {
   function testItRespondsWithErrorIfServiceIsUnavailableDuringMSSCheck() {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
-      array('checkKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE)),
+      array('checkAPIKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE)),
       $this
     );
     $response = $this->services_endpoint->verifyMailPoetKey($this->data);
@@ -66,7 +66,7 @@ class ServicesTest extends MailPoetTest {
   function testItRespondsWithErrorIfMSSCheckThrowsAnException() {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
-      array('checkKey' => function() { throw new \Exception('test'); }),
+      array('checkAPIKey' => function() { throw new \Exception('test'); }),
       $this
     );
     $response = $this->services_endpoint->verifyMailPoetKey($this->data);

@@ -12,11 +12,11 @@ class MockAPI {
     $this->setKey($api_key);
   }
 
-  function checkKey() {
+  function checkAPIKey() {
     // if a key begins with these codes, return them
     $regex = '/^(401|402|503)/';
     $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;
-    return $this->processResponse($code);
+    return $this->processAPICheckResponse($code);
   }
 
   function checkPremiumKey() {
@@ -34,7 +34,7 @@ class MockAPI {
     $this->api_key = $api_key;
   }
 
-  private function processResponse($code) {
+  private function processAPICheckResponse($code) {
     switch($code) {
       case 200:
         $body = array('subscriber_limit' => 10000);

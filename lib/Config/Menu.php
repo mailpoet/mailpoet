@@ -525,7 +525,7 @@ class Menu {
       $show_notices = isset($_REQUEST['page'])
         && stripos($_REQUEST['page'], 'mailpoet-newsletters') === false;
       $checker = $checker ?: new ServicesChecker();
-      $this->mp_api_key_valid = $checker->checkMailPoetAPIKeyValid($show_notices);
+      $this->mp_api_key_valid = $checker->isMailPoetAPIKeyValid($show_notices);
     }
   }
 

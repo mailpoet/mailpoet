@@ -42,7 +42,7 @@ class MenuTest extends MailPoetTest {
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
       new ServicesChecker(),
-      array('checkMailPoetAPIKeyValid' => true),
+      array('isMailPoetAPIKeyValid' => true),
       $this
     );
     $menu->checkMailPoetAPIKey($checker);
@@ -50,7 +50,7 @@ class MenuTest extends MailPoetTest {
 
     $checker = Stub::make(
       new ServicesChecker(),
-      array('checkMailPoetAPIKeyValid' => false),
+      array('isMailPoetAPIKeyValid' => false),
       $this
     );
     $menu->checkMailPoetAPIKey($checker);

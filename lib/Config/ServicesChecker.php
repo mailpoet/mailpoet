@@ -11,7 +11,7 @@ use MailPoet\WP\Notice as WPNotice;
 if(!defined('ABSPATH')) exit;
 
 class ServicesChecker {
-  function checkMailPoetAPIKeyValid($display_error_notice = true) {
+  function isMailPoetAPIKeyValid($display_error_notice = true) {
     if(!Bridge::isMPSendingServiceEnabled()) {
       return null;
     }
