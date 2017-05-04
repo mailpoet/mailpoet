@@ -21,7 +21,7 @@ class MockAPI {
 
   function checkPremiumKey() {
     // if a key begins with these codes, return them
-    $regex = '/^(401|402|503)/';
+    $regex = '/^(expiring|401|402|503)/';
     $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;
     return $this->processPremiumResponse($code);
   }
@@ -57,12 +57,15 @@ class MockAPI {
 
   private function processPremiumResponse($code) {
     switch($code) {
-      case 200:
+      case 'expiring':
+        // a special case of a valid key
+        $code = 200;
         $body = array(
           'expire_at' => Carbon::createFromTimestamp(current_time('timestamp'))
             ->addMonth()->format('c')
         );
         break;
+      case 200:
       case 401:
       case 402:
       default:

@@ -9,6 +9,8 @@ if(!defined('ABSPATH')) exit;
 
 class Bridge {
   const API_KEY_STATE_SETTING_NAME = 'mta.mailpoet_api_key_state';
+
+  const PREMIUM_KEY_SETTING_NAME = 'premium.premium_key';
   const PREMIUM_KEY_STATE_SETTING_NAME = 'premium.premium_key_state';
 
   const MAILPOET_KEY_VALID = 'valid';
@@ -40,7 +42,7 @@ class Bridge {
   }
 
   static function isPremiumKeySpecified() {
-    $key = Setting::getValue(self::PREMIUM_KEY_STATE_SETTING_NAME);
+    $key = Setting::getValue(self::PREMIUM_KEY_SETTING_NAME);
     return !empty($key);
   }
 
@@ -106,7 +108,7 @@ class Bridge {
     $update_settings = false;
 
     if(!empty($result['code']) && isset($state_map[$result['code']])) {
-      if($result['code'] == self::PREMIUM_KEY_VALID
+      if($state_map[$result['code']] == self::PREMIUM_KEY_VALID
         && !empty($result['data']['expire_at'])
       ) {
         $key_state = self::PREMIUM_KEY_EXPIRING;

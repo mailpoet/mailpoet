@@ -55,7 +55,10 @@ class ServicesChecker {
 
     $premium_plugin_active = License::getLicense();
     $result = Setting::getValue(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
-    if(empty($result['state']) || $result['state'] == Bridge::PREMIUM_KEY_VALID) {
+    if(empty($result['state'])) {
+      return false;
+    }
+    if($result['state'] == Bridge::PREMIUM_KEY_VALID) {
       return true;
     }
 

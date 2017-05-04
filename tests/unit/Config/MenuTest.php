@@ -56,4 +56,27 @@ class MenuTest extends MailPoetTest {
     $menu->checkMailPoetAPIKey($checker);
     expect($menu->mp_api_key_valid)->false();
   }
+
+  function testItChecksPremiumKey() {
+    $renderer = Stub::make(new Renderer());
+    $assets_url = '';
+    $menu = new Menu($renderer, $assets_url);
+
+    $_REQUEST['page'] = 'mailpoet-newsletters';
+    $checker = Stub::make(
+      new ServicesChecker(),
+      array('isPremiumKeyValid' => true),
+      $this
+    );
+    $menu->checkPremiumKey($checker);
+    expect($menu->premium_key_valid)->true();
+
+    $checker = Stub::make(
+      new ServicesChecker(),
+      array('isPremiumKeyValid' => false),
+      $this
+    );
+    $menu->checkPremiumKey($checker);
+    expect($menu->premium_key_valid)->false();
+  }
 }
