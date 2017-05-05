@@ -26,7 +26,7 @@ class Services extends APIEndpoint {
     }
 
     try {
-      $result = $this->bridge->checkAPIKey($key);
+      $result = $this->bridge->checkMSSKey($key);
     } catch(\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()

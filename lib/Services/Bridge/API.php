@@ -24,7 +24,7 @@ class API {
     $this->setKey($api_key);
   }
 
-  function checkAPIKey() {
+  function checkMSSKey() {
     $result = $this->request(
       $this->url_me,
       array('site' => home_url())

@@ -12,7 +12,7 @@ class MockAPI {
     $this->setKey($api_key);
   }
 
-  function checkAPIKey() {
+  function checkMSSKey() {
     // if a key begins with these codes, return them
     $regex = '/^(401|402|503)/';
     $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;

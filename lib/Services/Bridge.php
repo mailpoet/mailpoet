@@ -54,9 +54,9 @@ class Bridge {
     }
   }
 
-  function checkAPIKey($api_key) {
+  function checkMSSKey($api_key) {
     $this->initApi($api_key);
-    $result = $this->api->checkAPIKey();
+    $result = $this->api->checkMSSKey();
     return $this->processAPIKeyCheckResult($result);
   }
 
@@ -157,7 +157,7 @@ class Bridge {
     $api_key_set = !empty($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
     $premium_key_set = !empty($settings['premium']['premium_key']);
     if($api_key_set && self::isMPSendingServiceEnabled()) {
-      $result = $this->checkAPIKey($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
+      $result = $this->checkMSSKey($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
       $this->updateSubscriberCount($result);
     }
     if($premium_key_set) {

@@ -95,7 +95,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
   function testItProcesses() {
     $this->sskeycheck->bridge = Stub::make(
       new Bridge,
-      array('checkAPIKey' => array('code' => Bridge::MAILPOET_KEY_VALID)),
+      array('checkMSSKey' => array('code' => Bridge::MAILPOET_KEY_VALID)),
       $this
     );
     $this->setMailPoetSendingMethod();
@@ -113,7 +113,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
   function testItProcessesSendingServiceKeyCheckQueue() {
     $this->sskeycheck->bridge = Stub::make(
       new Bridge,
-      array('checkAPIKey' => array('code' => Bridge::MAILPOET_KEY_VALID)),
+      array('checkMSSKey' => array('code' => Bridge::MAILPOET_KEY_VALID)),
       $this
     );
     $this->setMailPoetSendingMethod();
@@ -126,7 +126,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
   function testItReschedulesCheckOnException() {
     $this->sskeycheck->bridge = Stub::make(
       new Bridge,
-      array('checkAPIKey' => function () { throw new \Exception(); }),
+      array('checkMSSKey' => function () { throw new \Exception(); }),
       $this
     );
     $this->setMailPoetSendingMethod();
@@ -140,7 +140,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
   function testItReschedulesCheckOnError() {
     $this->sskeycheck->bridge = Stub::make(
       new Bridge,
-      array('checkAPIKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE)),
+      array('checkMSSKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE)),
       $this
     );
     $this->setMailPoetSendingMethod();
