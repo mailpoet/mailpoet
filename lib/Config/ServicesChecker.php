@@ -49,23 +49,20 @@ class ServicesChecker {
   }
 
   function isPremiumKeyValid($display_error_notice = true) {
-    if(!Bridge::isPremiumKeySpecified()) {
-      return null;
-    }
-
+    $premium_key_specified = Bridge::isPremiumKeySpecified();
     $premium_plugin_active = License::getLicense();
     $premium_key = Setting::getValue(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
-    if(empty($premium_key['state'])) {
-      return false;
-    }
-    if($premium_key['state'] == Bridge::PREMIUM_KEY_VALID) {
-      return true;
+
+    if (!$premium_plugin_active) {
+      $display_error_notice = false;
     }
 
-    if($premium_key['state'] == Bridge::PREMIUM_KEY_INVALID
-      || $premium_key['state'] == Bridge::PREMIUM_KEY_ALREADY_USED
+    if(!$premium_key_specified
+      || empty($premium_key['state'])
+      || $premium_key['state'] === Bridge::PREMIUM_KEY_INVALID
+      || $premium_key['state'] === Bridge::PREMIUM_KEY_ALREADY_USED
     ) {
-      if($premium_plugin_active && $display_error_notice) {
+      if($display_error_notice) {
         $error = Helpers::replaceLinkTags(
           __('Warning! Your License Key is either invalid or expired. [link]Renew your License now[/link] to enjoy automatic updates and Premium support.', 'mailpoet'),
           'https://account.mailpoet.com'
@@ -73,10 +70,10 @@ class ServicesChecker {
         WPNotice::displayError($error);
       }
       return false;
-    } elseif($premium_key['state'] == Bridge::PREMIUM_KEY_EXPIRING
+    } elseif($premium_key['state'] === Bridge::PREMIUM_KEY_EXPIRING
       && !empty($premium_key['data']['expire_at'])
     ) {
-      if($premium_plugin_active && $display_error_notice) {
+      if($display_error_notice) {
         $date = date('Y-m-d', strtotime($premium_key['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
           __('Your License Key is expiring! Don\'t forget to [link]renew your license[/link] by %s to keep enjoying automatic updates and Premium support.', 'mailpoet'),
@@ -85,6 +82,8 @@ class ServicesChecker {
         $error = sprintf($error, $date);
         WPNotice::displayWarning($error);
       }
+      return true;
+    } elseif($premium_key['state'] === Bridge::PREMIUM_KEY_VALID) {
       return true;
     }
 
