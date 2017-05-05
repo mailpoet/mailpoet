@@ -91,11 +91,11 @@
 
           if(data.id) {
             MailPoet.Notice.success(
-              "<%= __('Updated custom field “"+data.name+"“') | escape('js') %>"
+              "<%= __('Updated custom field %$1s') | escape('js') %>".replace('%$1s', '"' + data.name + '"')
             );
           } else {
             MailPoet.Notice.success(
-              "<%= __('Added custom field “"+data.name+"“') | escape('js') %>"
+              "<%= __('Added custom field %$1s') | escape('js') %>".replace('%$1s', '"' + data.name + '"')
             );
           }
         }).fail(function(response) {

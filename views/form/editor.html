@@ -640,7 +640,7 @@
 
               mailpoet_form_fields();
               MailPoet.Notice.success(
-                "<%= __('Removed custom field “"+name+"“') | escape('js') %>"
+                "<%= __('Removed custom field %$1s') | escape('js') %>".replace('%$1s', '"' + name + '"')
               );
             });
           }
