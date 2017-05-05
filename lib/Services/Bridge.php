@@ -22,7 +22,7 @@ class Bridge {
   const PREMIUM_KEY_VALID = 'valid';
   const PREMIUM_KEY_INVALID = 'invalid';
   const PREMIUM_KEY_EXPIRING = 'expiring';
-  const PREMIUM_KEY_USED = 'used';
+  const PREMIUM_KEY_ALREADY_USED = 'already_used';
 
   const PREMIUM_KEY_CHECK_ERROR = 'check_error';
 
@@ -102,7 +102,7 @@ class Bridge {
     $state_map = array(
       200 => self::PREMIUM_KEY_VALID,
       401 => self::PREMIUM_KEY_INVALID,
-      402 => self::PREMIUM_KEY_USED
+      402 => self::PREMIUM_KEY_ALREADY_USED
     );
 
     $update_settings = false;

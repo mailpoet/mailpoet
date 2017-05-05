@@ -108,7 +108,7 @@ class Services extends APIEndpoint {
       case Bridge::PREMIUM_KEY_INVALID:
         $error = __('Your license key is invalid.', 'mailpoet');
         break;
-      case Bridge::PREMIUM_KEY_USED:
+      case Bridge::PREMIUM_KEY_ALREADY_USED:
         $error = __('Your license key is already used on another site.', 'mailpoet');
         break;
       default:

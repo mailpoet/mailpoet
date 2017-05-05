@@ -103,7 +103,7 @@ class ServicesTest extends MailPoetTest {
   function testItRespondsWithErrorIfPremiumKeyIsUsed() {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
-      array('checkPremiumKey' => array('state' => Bridge::PREMIUM_KEY_USED)),
+      array('checkPremiumKey' => array('state' => Bridge::PREMIUM_KEY_ALREADY_USED)),
       $this
     );
     $response = $this->services_endpoint->verifyPremiumKey($this->data);

@@ -80,7 +80,7 @@ class BridgeTest extends MailPoetTest {
 
     $result = $this->bridge->checkPremiumKey($this->used_premium_key);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::PREMIUM_KEY_USED);
+    expect($result['state'])->equals(Bridge::PREMIUM_KEY_ALREADY_USED);
 
     $result = $this->bridge->checkPremiumKey($this->expiring_premium_key);
     expect($result)->notEmpty();

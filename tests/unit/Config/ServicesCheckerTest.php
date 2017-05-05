@@ -73,7 +73,7 @@ class ServicesCheckerTest extends MailPoetTest {
 
     Setting::setValue(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::PREMIUM_KEY_USED)
+      array('state' => Bridge::PREMIUM_KEY_ALREADY_USED)
     );
     $result = ServicesChecker::isPremiumKeyValid();
     expect($result)->false();
