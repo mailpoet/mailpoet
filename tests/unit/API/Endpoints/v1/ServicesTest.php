@@ -49,7 +49,8 @@ class ServicesTest extends MailPoetTest {
     );
     $response = $this->services_endpoint->verifyMailPoetKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['message'])->contains($date->format('Y-m-d'));
+    expect($response->data['message'])
+      ->contains($date->format($this->services_endpoint->date_time->getDateFormat()));
   }
 
   function testItRespondsWithErrorIfServiceIsUnavailableDuringMSSCheck() {
@@ -122,7 +123,8 @@ class ServicesTest extends MailPoetTest {
     );
     $response = $this->services_endpoint->verifyPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['message'])->contains($date->format('Y-m-d'));
+    expect($response->data['message'])
+      ->contains($date->format($this->services_endpoint->date_time->getDateFormat()));
   }
 
   function testItRespondsWithErrorIfServiceIsUnavailableDuringPremiumCheck() {

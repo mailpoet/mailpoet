@@ -6,14 +6,17 @@ use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
+use MailPoet\WP\DateTime;
 
 if(!defined('ABSPATH')) exit;
 
 class Services extends APIEndpoint {
   public $bridge;
+  public $date_time;
 
   function __construct() {
     $this->bridge = new Bridge();
+    $this->date_time = new DateTime();
   }
 
   function verifyMailPoetKey($data = array()) {
@@ -42,7 +45,7 @@ class Services extends APIEndpoint {
       $success_message = sprintf(
         __('Your MailPoet key expires on %s!', 'mailpoet'),
         Carbon::createFromTimestamp(strtotime($result['data']['expire_at']))
-          ->format('Y-m-d')
+          ->format($this->date_time->getDateFormat())
       );
     }
 
@@ -92,7 +95,7 @@ class Services extends APIEndpoint {
       $success_message = sprintf(
         __('Your license key expires on %s.', 'mailpoet'),
         Carbon::createFromTimestamp(strtotime($result['data']['expire_at']))
-          ->format('Y-m-d')
+          ->format($this->date_time->getDateFormat())
       );
     }
 

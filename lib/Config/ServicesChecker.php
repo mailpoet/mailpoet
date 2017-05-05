@@ -6,6 +6,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\License\License;
+use MailPoet\WP\DateTime;
 use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
@@ -34,7 +35,8 @@ class ServicesChecker {
       && !empty($mss_key['data']['expire_at'])
     ) {
       if($display_error_notice) {
-        $date = date('Y-m-d', strtotime($mss_key['data']['expire_at']));
+        $date_time = new DateTime();
+        $date = date($date_time->getDateFormat(), strtotime($mss_key['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
           __('Your newsletters are awesome! Don\'t forget to [link]upgrade your MailPoet email plan[/link] by %s to keep sending them to your subscribers.', 'mailpoet'),
           'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers()
@@ -74,7 +76,8 @@ class ServicesChecker {
       && !empty($premium_key['data']['expire_at'])
     ) {
       if($display_error_notice) {
-        $date = date('Y-m-d', strtotime($premium_key['data']['expire_at']));
+        $date_time = new DateTime();
+        $date = date($date_time->getDateFormat(), strtotime($premium_key['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
           __('Your License Key is expiring! Don\'t forget to [link]renew your license[/link] by %s to keep enjoying automatic updates and Premium support.', 'mailpoet'),
           'https://account.mailpoet.com'
