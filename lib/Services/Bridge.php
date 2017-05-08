@@ -76,20 +76,12 @@ class Bridge {
       $key_state = self::MAILPOET_KEY_CHECK_ERROR;
     }
 
-    $state = array(
-      'state' => $key_state,
-      'data' => !empty($result['data']) ? $result['data'] : null,
-      'code' => !empty($result['code']) ? $result['code'] : self::CHECK_ERROR_UNKNOWN
+    return $this->buildKeyState(
+      $key_state,
+      $result,
+      self::API_KEY_STATE_SETTING_NAME,
+      $update_settings
     );
-
-    if($update_settings) {
-      Setting::setValue(
-        self::API_KEY_STATE_SETTING_NAME,
-        $state
-      );
-    }
-
-    return $state;
   }
 
   function checkPremiumKey($key) {
@@ -120,6 +112,15 @@ class Bridge {
       $key_state = self::PREMIUM_KEY_CHECK_ERROR;
     }
 
+    return $this->buildKeyState(
+      $key_state,
+      $result,
+      self::PREMIUM_KEY_STATE_SETTING_NAME,
+      $update_settings
+    );
+  }
+
+  private function buildKeyState($key_state, $result, $setting_name, $update_settings = false) {
     $state = array(
       'state' => $key_state,
       'data' => !empty($result['data']) ? $result['data'] : null,
@@ -128,7 +129,7 @@ class Bridge {
 
     if($update_settings) {
       Setting::setValue(
-        self::PREMIUM_KEY_STATE_SETTING_NAME,
+        $setting_name,
         $state
       );
     }
