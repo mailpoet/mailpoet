@@ -4,36 +4,37 @@ namespace MailPoet\Cron\Workers;
 use Carbon\Carbon;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Setting;
-use MailPoet\Services\Bridge;
 
 if(!defined('ABSPATH')) exit;
 
-class PremiumKeyCheck {
-  const TASK_TYPE = 'premium_key_check';
-  const UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT = 60;
-
+abstract class SimpleWorker {
   public $timer;
-  public $bridge;
 
   function __construct($timer = false) {
+    if(!defined('static::TASK_TYPE')) {
+      throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
+    }
     $this->timer = ($timer) ? $timer : microtime(true);
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
   }
 
-  function initApi() {
-    if(!$this->bridge) {
-      $this->bridge = new Bridge();
+  function init() {
+    if(is_callable(array($this, 'initApi'))) {
+      $this->initApi();
     }
   }
 
+  function checkProcessingRequirements() {
+    return true;
+  }
+
   function process() {
-    if(!Bridge::isPremiumKeySpecified()) {
+    if(!$this->checkProcessingRequirements()) {
       return false;
     }
 
-    $this->initApi();
+    $this->init();
 
     $scheduled_queues = self::getScheduledQueues();
     $running_queues = self::getRunningQueues();
@@ -54,7 +55,7 @@ class PremiumKeyCheck {
   }
 
   static function schedule() {
-    $already_scheduled = SendingQueue::where('type', self::TASK_TYPE)
+    $already_scheduled = SendingQueue::where('type', static::TASK_TYPE)
       ->whereNull('deleted_at')
       ->where('status', SendingQueue::STATUS_SCHEDULED)
       ->findMany();
@@ -62,7 +63,7 @@ class PremiumKeyCheck {
       return false;
     }
     $queue = SendingQueue::create();
-    $queue->type = self::TASK_TYPE;
+    $queue->type = static::TASK_TYPE;
     $queue->status = SendingQueue::STATUS_SCHEDULED;
     $queue->priority = SendingQueue::PRIORITY_LOW;
     $queue->scheduled_at = self::getNextRunDate();
@@ -85,28 +86,28 @@ class PremiumKeyCheck {
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
 
-    try {
-      $premium_key = Setting::getValue(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
-      $result = $this->bridge->checkPremiumKey($premium_key);
-    } catch (\Exception $e) {
-      $result = false;
+    if($this->processQueueLogic($queue)) {
+      $this->complete($queue);
+      return true;
     }
 
-    if(empty($result['code']) || $result['code'] == Bridge::CHECK_ERROR_UNAVAILABLE) {
-      // reschedule the check
-      $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
-      $queue->scheduled_at = $scheduled_at->addMinutes(
-        self::UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT
-      );
-      $queue->save();
-      return false;
-    }
+    return false;
+  }
 
+  function processQueueLogic(SendingQueue $queue) {
+    return true;
+  }
+
+  function complete(SendingQueue $queue) {
     $queue->processed_at = current_time('mysql');
     $queue->status = SendingQueue::STATUS_COMPLETED;
     $queue->save();
+  }
 
-    return true;
+  function reschedule(SendingQueue $queue, $timeout) {
+    $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->scheduled_at = $scheduled_at->addMinutes($timeout);
+    $queue->save();
   }
 
   static function getNextRunDate() {
@@ -119,7 +120,7 @@ class PremiumKeyCheck {
 
   static function getScheduledQueues($future = false) {
     $dateWhere = ($future) ? 'whereGt' : 'whereLte';
-    return SendingQueue::where('type', self::TASK_TYPE)
+    return SendingQueue::where('type', static::TASK_TYPE)
       ->$dateWhere('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
       ->whereNull('deleted_at')
       ->where('status', SendingQueue::STATUS_SCHEDULED)
@@ -127,7 +128,7 @@ class PremiumKeyCheck {
   }
 
   static function getRunningQueues() {
-    return SendingQueue::where('type', self::TASK_TYPE)
+    return SendingQueue::where('type', static::TASK_TYPE)
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
       ->whereNull('deleted_at')
       ->whereNull('status')
