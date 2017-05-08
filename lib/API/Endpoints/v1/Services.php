@@ -19,7 +19,7 @@ class Services extends APIEndpoint {
     $this->date_time = new DateTime();
   }
 
-  function verifyMailPoetKey($data = array()) {
+  function checkMSSKey($data = array()) {
     $key = isset($data['key']) ? trim($data['key']) : null;
 
     if(!$key) {
@@ -69,7 +69,7 @@ class Services extends APIEndpoint {
     return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
   }
 
-  function verifyPremiumKey($data = array()) {
+  function checkPremiumKey($data = array()) {
     $key = isset($data['key']) ? trim($data['key']) : null;
 
     if(!$key) {

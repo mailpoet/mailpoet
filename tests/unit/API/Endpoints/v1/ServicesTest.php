@@ -12,7 +12,7 @@ class ServicesTest extends MailPoetTest {
   }
 
   function testItRespondsWithErrorIfNoMSSKeyIsGiven() {
-    $response = $this->services_endpoint->verifyMailPoetKey(array('key' => ''));
+    $response = $this->services_endpoint->checkMSSKey(array('key' => ''));
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])->equals('Please specify a key.');
   }
@@ -23,7 +23,7 @@ class ServicesTest extends MailPoetTest {
       array('checkMSSKey' => array('state' => Bridge::MAILPOET_KEY_VALID)),
       $this
     );
-    $response = $this->services_endpoint->verifyMailPoetKey($this->data);
+    $response = $this->services_endpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
@@ -33,7 +33,7 @@ class ServicesTest extends MailPoetTest {
       array('checkMSSKey' => array('state' => Bridge::MAILPOET_KEY_INVALID)),
       $this
     );
-    $response = $this->services_endpoint->verifyMailPoetKey($this->data);
+    $response = $this->services_endpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
@@ -47,7 +47,7 @@ class ServicesTest extends MailPoetTest {
       )),
       $this
     );
-    $response = $this->services_endpoint->verifyMailPoetKey($this->data);
+    $response = $this->services_endpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])
       ->contains($date->format($this->services_endpoint->date_time->getDateFormat()));
@@ -59,7 +59,7 @@ class ServicesTest extends MailPoetTest {
       array('checkMSSKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE)),
       $this
     );
-    $response = $this->services_endpoint->verifyMailPoetKey($this->data);
+    $response = $this->services_endpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains((string)Bridge::CHECK_ERROR_UNAVAILABLE);
   }
@@ -70,13 +70,13 @@ class ServicesTest extends MailPoetTest {
       array('checkMSSKey' => function() { throw new \Exception('test'); }),
       $this
     );
-    $response = $this->services_endpoint->verifyMailPoetKey($this->data);
+    $response = $this->services_endpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('test');
   }
 
   function testItRespondsWithErrorIfNoPremiumKeyIsGiven() {
-    $response = $this->services_endpoint->verifyPremiumKey(array('key' => ''));
+    $response = $this->services_endpoint->checkPremiumKey(array('key' => ''));
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])->equals('Please specify a key.');
   }
@@ -87,7 +87,7 @@ class ServicesTest extends MailPoetTest {
       array('checkPremiumKey' => array('state' => Bridge::PREMIUM_KEY_VALID)),
       $this
     );
-    $response = $this->services_endpoint->verifyPremiumKey($this->data);
+    $response = $this->services_endpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
@@ -97,7 +97,7 @@ class ServicesTest extends MailPoetTest {
       array('checkPremiumKey' => array('state' => Bridge::PREMIUM_KEY_INVALID)),
       $this
     );
-    $response = $this->services_endpoint->verifyPremiumKey($this->data);
+    $response = $this->services_endpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
@@ -107,7 +107,7 @@ class ServicesTest extends MailPoetTest {
       array('checkPremiumKey' => array('state' => Bridge::PREMIUM_KEY_ALREADY_USED)),
       $this
     );
-    $response = $this->services_endpoint->verifyPremiumKey($this->data);
+    $response = $this->services_endpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
@@ -121,7 +121,7 @@ class ServicesTest extends MailPoetTest {
       )),
       $this
     );
-    $response = $this->services_endpoint->verifyPremiumKey($this->data);
+    $response = $this->services_endpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])
       ->contains($date->format($this->services_endpoint->date_time->getDateFormat()));
@@ -133,7 +133,7 @@ class ServicesTest extends MailPoetTest {
       array('checkPremiumKey' => array('code' => Bridge::CHECK_ERROR_UNAVAILABLE)),
       $this
     );
-    $response = $this->services_endpoint->verifyPremiumKey($this->data);
+    $response = $this->services_endpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->contains((string)Bridge::CHECK_ERROR_UNAVAILABLE);
   }
@@ -144,7 +144,7 @@ class ServicesTest extends MailPoetTest {
       array('checkPremiumKey' => function() { throw new \Exception('test'); }),
       $this
     );
-    $response = $this->services_endpoint->verifyPremiumKey($this->data);
+    $response = $this->services_endpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('test');
   }
