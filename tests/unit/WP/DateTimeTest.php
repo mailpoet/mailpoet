@@ -42,7 +42,15 @@ class DateTimeTest extends MailPoetTest {
   function testFormatTime() {
     $timestamp = 1234567;
     $format = "H:i:s";
+    expect($this->date_time->formatTime($timestamp))->equals(date($this->date_time->getTimeFormat(), $timestamp));
     expect($this->date_time->formatTime($timestamp, $format))->equals(date($format, $timestamp));
+  }
+
+  function testFormatDate() {
+    $timestamp = 1234567;
+    $format = "Y-m-d";
+    expect($this->date_time->formatDate($timestamp))->equals(date($this->date_time->getDateFormat(), $timestamp));
+    expect($this->date_time->formatDate($timestamp, $format))->equals(date($format, $timestamp));
   }
 
   function testTimeInterval() {

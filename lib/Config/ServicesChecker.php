@@ -36,7 +36,7 @@ class ServicesChecker {
     ) {
       if($display_error_notice) {
         $date_time = new DateTime();
-        $date = date($date_time->getDateFormat(), strtotime($mss_key['data']['expire_at']));
+        $date = $date_time->formatDate(strtotime($mss_key['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
           __('Your newsletters are awesome! Don\'t forget to [link]upgrade your MailPoet email plan[/link] by %s to keep sending them to your subscribers.', 'mailpoet'),
           'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers()
@@ -77,7 +77,7 @@ class ServicesChecker {
     ) {
       if($display_error_notice) {
         $date_time = new DateTime();
-        $date = date($date_time->getDateFormat(), strtotime($premium_key['data']['expire_at']));
+        $date = $date_time->formatDate(strtotime($premium_key['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
           __('Your License Key is expiring! Don\'t forget to [link]renew your license[/link] by %s to keep enjoying automatic updates and Premium support.', 'mailpoet'),
           'https://account.mailpoet.com'

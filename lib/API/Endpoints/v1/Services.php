@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\API\Endpoints\v1;
 
-use Carbon\Carbon;
 use MailPoet\API\Endpoint as APIEndpoint;
 use MailPoet\API\Error as APIError;
 use MailPoet\Services\Bridge;
@@ -44,8 +43,7 @@ class Services extends APIEndpoint {
     } elseif($state == Bridge::MAILPOET_KEY_EXPIRING) {
       $success_message = sprintf(
         __('Your MailPoet key expires on %s!', 'mailpoet'),
-        Carbon::createFromTimestamp(strtotime($result['data']['expire_at']))
-          ->format($this->date_time->getDateFormat())
+        $this->date_time->formatDate(strtotime($result['data']['expire_at']))
       );
     }
 
@@ -94,8 +92,7 @@ class Services extends APIEndpoint {
     } elseif($state == Bridge::PREMIUM_KEY_EXPIRING) {
       $success_message = sprintf(
         __('Your license key expires on %s.', 'mailpoet'),
-        Carbon::createFromTimestamp(strtotime($result['data']['expire_at']))
-          ->format($this->date_time->getDateFormat())
+        $this->date_time->formatDate(strtotime($result['data']['expire_at']))
       );
     }
 

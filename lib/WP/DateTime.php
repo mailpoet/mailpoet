@@ -38,6 +38,12 @@ class DateTime {
     return date($format, $timestamp);
   }
 
+  function formatDate($timestamp, $format=false) {
+    if (empty($format)) $format = $this->getDateFormat();
+
+    return date($format, $timestamp);
+  }
+
   /**
    * Generates a list of time strings within an interval,
    * formatted and mapped from DEFAULT_TIME_FORMAT to WordPress time strings.
