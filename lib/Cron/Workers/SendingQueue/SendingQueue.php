@@ -6,14 +6,10 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
-use MailPoet\Models\Setting;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Router\Endpoints\Track;
-use MailPoet\Router\Router;
-use MailPoet\Subscription\Url;
 
 if(!defined('ABSPATH')) exit;
 

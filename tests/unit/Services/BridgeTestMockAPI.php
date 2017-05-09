@@ -12,11 +12,18 @@ class MockAPI {
     $this->setKey($api_key);
   }
 
-  function checkKey() {
-    // if key begins with these codes, return them
+  function checkMSSKey() {
+    // if a key begins with these codes, return them
     $regex = '/^(401|402|503)/';
     $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;
-    return $this->processResponse($code);
+    return $this->processAPICheckResponse($code);
+  }
+
+  function checkPremiumKey() {
+    // if a key begins with these codes, return them
+    $regex = '/^(expiring|401|402|503)/';
+    $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;
+    return $this->processPremiumResponse($code);
   }
 
   function updateSubscriberCount($count) {
@@ -27,7 +34,7 @@ class MockAPI {
     $this->api_key = $api_key;
   }
 
-  private function processResponse($code) {
+  private function processAPICheckResponse($code) {
     switch($code) {
       case 200:
         $body = array('subscriber_limit' => 10000);
@@ -40,6 +47,27 @@ class MockAPI {
         );
         break;
       case 401:
+      default:
+        $body = null;
+        break;
+    }
+
+    return array('code' => $code, 'data' => $body);
+  }
+
+  private function processPremiumResponse($code) {
+    switch($code) {
+      case 'expiring':
+        // a special case of a valid key
+        $code = 200;
+        $body = array(
+          'expire_at' => Carbon::createFromTimestamp(current_time('timestamp'))
+            ->addMonth()->format('c')
+        );
+        break;
+      case 200:
+      case 401:
+      case 402:
       default:
         $body = null;
         break;

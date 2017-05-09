@@ -1,0 +1,114 @@
+<table class="form-table">
+  <tbody>
+    <!-- premium key -->
+    <tr>
+      <th scope="row">
+        <label for="mailpoet_premium_key">
+          <%= __('Premium License Key') %>
+        </label>
+        <p class="description">
+          <%= __('This key is used for automatic upgrades of your Premium features and access to support.') %>
+        </p>
+      </th>
+      <td>
+        <div>
+          <input
+            type="text"
+            class="regular-text"
+            id="mailpoet_premium_key"
+            name="premium[premium_key]"
+            value="<%=- settings.premium.premium_key -%>"
+          />
+          <a
+            id="mailpoet_premium_key_verify"
+            class="button-secondary"
+          ><%= __('Verify') %></a>
+        </div>
+        <div
+          class="mailpoet_premium_key_valid mailpoet_success"
+          <% if not(settings.premium.premium_key) or not(premium_key_valid) %>
+            style="display: none;"
+          <% endif %>
+        >
+          <%= __('Your license key has been successfully validated.') %>
+        </div>
+        <div
+          class="mailpoet_premium_key_invalid mailpoet_error"
+          <% if not(settings.premium.premium_key) or premium_key_valid %>
+            style="display: none;"
+          <% endif %>
+        >
+          <%= __('Your license key is invalid.') %>
+        </div>
+        <br/>
+        <div
+          class="mailpoet_premium_download"
+          <% if premium_plugin_active or not(premium_key_valid) %>
+            style="display: none;"
+          <% endif %>
+        >
+          <a class="button-primary" href="#"><%= __('Download Premium now.') %></a>
+          <span>
+            <%= __("[link]Read guide[/link] on how to install Premium.")
+              |replace({
+                '[link]': '<a target="_blank" href="http://beta.docs.mailpoet.com/article/194-instructions-to-install-the-premium-plugin">',
+                '[/link]': '</a>'
+                })
+              |raw
+            %>
+           </span>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<script type="text/javascript">
+  jQuery(function($) {
+    $(function() {
+      // verifying premium key
+      $('#mailpoet_premium_key_verify').on('click', function() {
+        // get premium key
+        var key = $('#mailpoet_premium_key').val();
+
+        if(key.length === 0) {
+          // validation
+          return MailPoet.Notice.error(
+            '<%= __('Please specify a license key before validating it.') | escape('js') %>',
+            { scroll: true }
+          );
+        }
+
+        $('.mailpoet_premium_key_valid, .mailpoet_premium_key_invalid').hide();
+        $('.mailpoet_premium_download').hide();
+
+        MailPoet.Modal.loading(true);
+        MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'services',
+          action: 'checkPremiumKey',
+          data: {
+            key: key
+          }
+        }).always(function() {
+          MailPoet.Modal.loading(false);
+        }).done(function(response) {
+          // Hide server error notices
+          $('.mailpoet_notice_server').hide();
+          $('.mailpoet_premium_key_valid').text(response.data.message);
+          $('.mailpoet_premium_key_valid').show();
+          if (!response.meta.premium_plugin_active) {
+            $('.mailpoet_premium_download').show();
+          }
+        }).fail(function(response) {
+          if (response.errors.length > 0) {
+            $('.mailpoet_premium_key_invalid').text(
+              response.errors.map(function(error) { return error.message; }).join(' ')
+            );
+            $('.mailpoet_premium_key_invalid').show();
+          }
+        });
+      });
+    });
+  });
+</script>

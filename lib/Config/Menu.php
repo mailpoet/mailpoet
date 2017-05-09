@@ -15,6 +15,7 @@ use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\Util\License\License;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Notice as WPNotice;
 use MailPoet\WP\Readme;
@@ -28,6 +29,7 @@ class Menu {
     $subscribers_feature = new SubscribersFeature();
     $this->subscribers_over_limit = $subscribers_feature->check();
     $this->checkMailPoetAPIKey();
+    $this->checkPremiumKey();
   }
 
   function init() {
@@ -308,6 +310,8 @@ class Menu {
       'segments' => Segment::getSegmentsWithSubscriberCount(),
       'cron_trigger' => CronTrigger::getAvailableMethods(),
       'total_subscribers' => Subscriber::getTotalSubscribers(),
+      'premium_plugin_active' => License::getLicense(),
+      'premium_key_valid' => isset($this->premium_key_valid) ? $this->premium_key_valid : null,
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),
@@ -521,7 +525,16 @@ class Menu {
       $show_notices = isset($_REQUEST['page'])
         && stripos($_REQUEST['page'], 'mailpoet-newsletters') === false;
       $checker = $checker ?: new ServicesChecker();
-      $this->mp_api_key_valid = $checker->checkMailPoetAPIKeyValid($show_notices);
+      $this->mp_api_key_valid = $checker->isMailPoetAPIKeyValid($show_notices);
+    }
+  }
+
+  function checkPremiumKey(ServicesChecker $checker = null) {
+    if(self::isOnMailPoetAdminPage()) {
+      $show_notices = isset($_REQUEST['page'])
+        && stripos($_REQUEST['page'], 'mailpoet-newsletters') === false;
+      $checker = $checker ?: new ServicesChecker();
+      $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
     }
   }
 

@@ -3,7 +3,6 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Mailer\Mailer as MailerFactory;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Subscription\Url;
 
 if(!defined('ABSPATH')) exit;
 

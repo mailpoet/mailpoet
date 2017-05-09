@@ -15,6 +15,7 @@ class API {
   private $api_key;
 
   public $url_me = 'https://bridge.mailpoet.com/api/v0/me';
+  public $url_premium = 'https://bridge.mailpoet.com/api/v0/premium';
   public $url_messages = 'https://bridge.mailpoet.com/api/v0/messages';
   public $url_bounces = 'https://bridge.mailpoet.com/api/v0/bounces/search';
   public $url_stats = 'https://bridge.mailpoet.com/api/v0/stats';
@@ -23,7 +24,7 @@ class API {
     $this->setKey($api_key);
   }
 
-  function checkKey() {
+  function checkMSSKey() {
     $result = $this->request(
       $this->url_me,
       array('site' => home_url())
@@ -45,6 +46,28 @@ class API {
 
     return array('code' => $code, 'data' => $body);
   }
+
+  function checkPremiumKey() {
+    $result = $this->request(
+      $this->url_premium,
+      array('site' => home_url())
+    );
+
+    $code = wp_remote_retrieve_response_code($result);
+    switch($code) {
+      case 200:
+        if($body = wp_remote_retrieve_body($result)) {
+          $body = json_decode($body, true);
+        }
+        break;
+      default:
+        $body = null;
+        break;
+    }
+
+    return array('code' => $code, 'data' => $body);
+  }
+
 
   function sendMessages($message_body) {
     $result = $this->request(
