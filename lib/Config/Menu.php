@@ -271,12 +271,12 @@ class Menu {
       $redirect_url = admin_url('admin.php?page=mailpoet-newsletters');
     }
 
-    $mp2Migrator = new MP2Migrator();
-    if($mp2Migrator->isMigrationNeeded()) {
-      $mp2Migrator->init();
+    $mp2_migrator = new MP2Migrator();
+    if($mp2_migrator->isMigrationNeeded()) {
+      $mp2_migrator->init();
       $data = array(
-        'log_file_url' => $mp2Migrator->log_file_url,
-        'progress_url' => $mp2Migrator->progressbar->url,
+        'log_file_url' => $mp2_migrator->log_file_url,
+        'progress_url' => $mp2_migrator->progressbar->url,
       );
       $this->displayPage('mp2migration.html', $data);
       
