@@ -149,7 +149,7 @@ class SimpleWorkerTest extends MailPoetTest {
     $worker = Stub::construct(
       $this->worker,
       array(),
-      array('processQueueLogic' => false),
+      array('processQueueStrategy' => false),
       $this
     );
     $result = $worker->processQueue($queue);

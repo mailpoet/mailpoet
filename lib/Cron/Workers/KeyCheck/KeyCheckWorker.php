@@ -19,7 +19,7 @@ abstract class KeyCheckWorker extends SimpleWorker {
     }
   }
 
-  function processQueueLogic(SendingQueue $queue) {
+  function processQueueStrategy(SendingQueue $queue) {
     try {
       $result = $this->checkKey();
     } catch (\Exception $e) {

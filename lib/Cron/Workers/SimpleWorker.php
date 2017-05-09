@@ -82,7 +82,7 @@ abstract class SimpleWorker {
     // abort if execution limit is reached
     CronHelper::enforceExecutionLimit($this->timer);
 
-    if($this->processQueueLogic($queue)) {
+    if($this->processQueueStrategy($queue)) {
       $this->complete($queue);
       return true;
     }
@@ -90,7 +90,7 @@ abstract class SimpleWorker {
     return false;
   }
 
-  function processQueueLogic(SendingQueue $queue) {
+  function processQueueStrategy(SendingQueue $queue) {
     return true;
   }
 

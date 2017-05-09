@@ -21,7 +21,7 @@ class KeyCheckWorkerTest extends MailPoetTest {
 
   function testItReturnsTrueOnSuccessfulKeyCheck() {
     $queue = $this->createRunningQueue();
-    $result = $this->worker->processQueueLogic($queue);
+    $result = $this->worker->processQueueStrategy($queue);
     expect($result)->true();
   }
 
@@ -35,7 +35,7 @@ class KeyCheckWorkerTest extends MailPoetTest {
       $this
     );
     $queue = $this->createRunningQueue();
-    $result = $worker->processQueueLogic($queue);
+    $result = $worker->processQueueStrategy($queue);
     expect($result)->false();
   }
 
@@ -49,7 +49,7 @@ class KeyCheckWorkerTest extends MailPoetTest {
       $this
     );
     $queue = $this->createRunningQueue();
-    $result = $worker->processQueueLogic($queue);
+    $result = $worker->processQueueStrategy($queue);
     expect($result)->false();
   }
 
