@@ -116,10 +116,10 @@ class SimpleWorkerTest extends MailPoetTest {
     expect($worker->process())->false();
   }
 
-  function testItCanInitAPIBeforeProcessing() {
+  function testItCanInitBeforeProcessing() {
     $worker = Stub::make(
       $this->worker,
-      array('initApi' => Stub::once()),
+      array('init' => Stub::once()),
       $this
     );
     $worker->process();

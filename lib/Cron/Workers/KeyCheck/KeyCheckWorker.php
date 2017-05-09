@@ -13,7 +13,7 @@ abstract class KeyCheckWorker extends SimpleWorker {
 
   public $bridge;
 
-  function initApi() {
+  function init() {
     if(!$this->bridge) {
       $this->bridge = new Bridge();
     }

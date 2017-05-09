@@ -38,7 +38,7 @@ class BounceTest extends MailPoetTest {
   function testItCanInitializeBridgeAPI() {
     $this->setMailPoetSendingMethod();
     $worker = new Bounce(microtime(true));
-    $worker->initApi();
+    $worker->init();
     expect($worker->api instanceof API)->true();
   }
 

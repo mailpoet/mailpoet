@@ -15,7 +15,7 @@ class KeyCheckWorkerTest extends MailPoetTest {
   }
 
   function testItCanInitializeBridgeAPI() {
-    $this->worker->initApi();
+    $this->worker->init();
     expect($this->worker->bridge instanceof Bridge)->true();
   }
 

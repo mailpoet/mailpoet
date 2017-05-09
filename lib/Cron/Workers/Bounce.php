@@ -21,7 +21,7 @@ class Bounce extends SimpleWorker {
 
   public $api;
 
-  function initApi() {
+  function init() {
     if(!$this->api) {
       $mailer_config = Mailer::getMailerConfig();
       $this->api = new API($mailer_config['mailpoet_api_key']);

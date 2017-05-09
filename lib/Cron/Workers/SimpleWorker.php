@@ -19,12 +19,6 @@ abstract class SimpleWorker {
     CronHelper::enforceExecutionLimit($this->timer);
   }
 
-  function init() {
-    if(is_callable(array($this, 'initApi'))) {
-      $this->initApi();
-    }
-  }
-
   function checkProcessingRequirements() {
     return true;
   }
@@ -34,7 +28,9 @@ abstract class SimpleWorker {
       return false;
     }
 
-    $this->init();
+    if(is_callable(array($this, 'init'))) {
+      $this->init();
+    }
 
     $scheduled_queues = self::getScheduledQueues();
     $running_queues = self::getRunningQueues();
