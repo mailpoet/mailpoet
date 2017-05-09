@@ -2,8 +2,8 @@
 Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
-Tested up to: 4.7.3
-Stable tag: 3.0.0-beta.29
+Tested up to: 4.7.4
+Stable tag: 3.0.0-beta.30
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -88,6 +88,10 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-beta.30 - 2017-05-09 =
+* Fixed: list buttons (ordered/unordered) were added back to the newsletter designer's WYSIWYG editor;
+* Fixed: form editor properly displays custom field names when notifying of a completed action (add/update/delete).
 
 = 3.0.0-beta.29 - 2017-05-02 =
 * Improved: added a filter allowing to change SMTP configuration. Thanks Luc!
