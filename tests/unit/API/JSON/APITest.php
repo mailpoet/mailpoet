@@ -10,7 +10,7 @@ require_once(ABSPATH.'wp-admin/includes/user.php');
 require_once('APITestNamespacedEndpointStubV1.php');
 require_once('APITestNamespacedEndpointStubV2.php');
 
-class APITest extends MailPoetTest {
+class JSONAPITest extends MailPoetTest {
   function _before() {
     // create WP user
     $this->wp_user_id = null;
