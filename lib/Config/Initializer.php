@@ -98,7 +98,7 @@ class Initializer {
     }
 
     try {
-      $this->setupAPI();
+      $this->setupJSONAPI();
       $this->setupRouter();
       $this->setupPages();
     } catch(\Exception $e) {
@@ -171,8 +171,8 @@ class Initializer {
     $hooks->init();
   }
 
-  function setupAPI() {
-    $api = new API\API();
+  function setupJSONAPI() {
+    $api = new API\JSON\API();
     $api->init();
   }
 

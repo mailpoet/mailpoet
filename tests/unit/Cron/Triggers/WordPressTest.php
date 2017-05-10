@@ -1,7 +1,7 @@
 <?php
 
 use Carbon\Carbon;
-use MailPoet\API\Endpoints\Cron;
+use MailPoet\API\JSON\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Mailer\Mailer;
