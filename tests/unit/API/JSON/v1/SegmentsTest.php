@@ -1,5 +1,5 @@
 <?php
-use MailPoet\API\JSON\Endpoints\v1\Segments;
+use MailPoet\API\JSON\v1\Segments;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Models\Segment;
 

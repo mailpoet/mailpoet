@@ -1,6 +1,6 @@
 <?php
 
-use MailPoet\API\JSON\Endpoints\v1\CustomFields;
+use MailPoet\API\JSON\v1\CustomFields;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Models\CustomField;
 

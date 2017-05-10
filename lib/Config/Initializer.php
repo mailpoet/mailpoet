@@ -172,8 +172,7 @@ class Initializer {
   }
 
   function setupJSONAPI() {
-    $api = new API\JSON\API();
-    $api->init();
+    API\API::JSON()->init();
   }
 
   function setupRouter() {

@@ -1,5 +1,5 @@
 <?php
-namespace MailPoet\API\JSON\Endpoints\v1;
+namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Mailer\MailerLog;

@@ -1,6 +1,6 @@
 <?php
 use MailPoet\API\JSON\Response as APIResponse;
-use MailPoet\API\JSON\Endpoints\v1\NewsletterTemplates;
+use MailPoet\API\JSON\v1\NewsletterTemplates;
 use MailPoet\Models\NewsletterTemplate;
 
 class NewsletterTemplatesTest extends MailPoetTest {

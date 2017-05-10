@@ -1,6 +1,6 @@
 <?php
 
-use MailPoet\API\JSON\Endpoints\v1\Mailer;
+use MailPoet\API\JSON\v1\Mailer;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Mailer\MailerLog;
 

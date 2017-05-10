@@ -3,7 +3,7 @@ use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
-use MailPoet\API\JSON\Endpoints\v1\Newsletters;
+use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOptionField;

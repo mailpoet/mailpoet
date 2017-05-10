@@ -1,7 +1,7 @@
 <?php
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\Error as APIError;
-use MailPoet\API\JSON\Endpoints\v1\Settings;
+use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Models\Setting;
 
 class SettingsTest extends MailPoetTest {

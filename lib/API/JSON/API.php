@@ -20,12 +20,11 @@ class API {
       'v1'
   );
   const CURRENT_VERSION = 'v1';
-  const ENDPOINTS_LOCATION = 'Endpoints';
 
   function __construct() {
     foreach($this->_available_api_versions as $available_api_version) {
       $this->addEndpointNamespace(
-        sprintf('%s\%s\%s', __NAMESPACE__, self::ENDPOINTS_LOCATION, $available_api_version),
+        sprintf('%s\%s', __NAMESPACE__, $available_api_version),
         $available_api_version
       );
     }
