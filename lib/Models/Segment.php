@@ -5,6 +5,8 @@ if(!defined('ABSPATH')) exit;
 
 class Segment extends Model {
   static $_table = MP_SEGMENTS_TABLE;
+  const TYPE_WP_USERS = 'wp_users';
+  const TYPE_DEFAULT = 'default';
 
   function __construct() {
     parent::__construct();
@@ -103,7 +105,7 @@ class Segment extends Model {
   }
 
   static function getWPSegment() {
-    $wp_segment = self::where('type', 'wp_users')->findOne();
+    $wp_segment = self::where('type', self::TYPE_WP_USERS)->findOne();
 
     if($wp_segment === false) {
       // create the wp users segment
@@ -148,7 +150,7 @@ class Segment extends Model {
     return $orm;
   }
 
-  static function getSegmentsWithSubscriberCount($type = 'default') {
+  static function getSegmentsWithSubscriberCount($type = self::TYPE_DEFAULT) {
     $query = self::selectMany(array(self::$_table.'.id', self::$_table.'.name'))
       ->selectExpr(
         self::$_table.'.*, ' .
@@ -227,7 +229,7 @@ class Segment extends Model {
   }
 
   static function getPublic() {
-    return self::getPublished()->where('type', 'default')->orderByAsc('name');
+    return self::getPublished()->where('type', self::TYPE_DEFAULT)->orderByAsc('name');
   }
 
   static function bulkTrash($orm) {
@@ -236,7 +238,7 @@ class Segment extends Model {
         'UPDATE `' . Segment::$_table . '`',
         'SET `deleted_at` = NOW()',
         'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')',
-        'AND `type` = "default"'
+        'AND `type` = "' . Segment::TYPE_DEFAULT . '"'
       )), $ids);
     });
 
@@ -247,7 +249,7 @@ class Segment extends Model {
     $count = parent::bulkAction($orm, function($ids) {
       // delete segments (only default)
       Segment::whereIn('id', $ids)
-        ->where('type', 'default')
+        ->where('type', Segment::TYPE_DEFAULT)
         ->deleteMany();
     });
 
