@@ -70,4 +70,8 @@ class API {
 
     return SubscriberSegment::subscribeToSegments($subscriber, $found_segments_ids);
   }
+
+  function getLists() {
+    return Segment::whereNotEqual('type', Segment::TYPE_WP_USERS)->findArray();
+  }
 }
