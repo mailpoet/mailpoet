@@ -77,23 +77,33 @@ class BridgeTest extends MailPoetTest {
     expect($this->getMSSKey())->notEquals($this->valid_key);
   }
 
-  function testItChecksPremiumKey() {
+  function testItChecksValidPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->valid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_VALID);
+    expect($this->getPremiumKey())->equals($this->valid_key);
+  }
 
+  function testItChecksInvalidPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->invalid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_INVALID);
+    expect($this->getPremiumKey())->equals($this->invalid_key);
+  }
 
+  function testItChecksAlreadyUsedPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->used_premium_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_ALREADY_USED);
+    expect($this->getPremiumKey())->equals($this->used_premium_key);
+  }
 
+  function testItChecksExpiringPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->expiring_premium_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_EXPIRING);
     expect($result['data']['expire_at'])->notEmpty();
+    expect($this->getPremiumKey())->equals($this->expiring_premium_key);
   }
 
   function testItReturnsErrorStateOnEmptyAPIResponseCodeDuringPremiumCheck() {
@@ -102,6 +112,7 @@ class BridgeTest extends MailPoetTest {
     $result = $this->bridge->checkPremiumKey($this->valid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_CHECK_ERROR);
+    expect($this->getPremiumKey())->notEquals($this->valid_key);
   }
 
   function testItUpdatesSubscriberCount() {
@@ -167,6 +178,10 @@ class BridgeTest extends MailPoetTest {
       Bridge::PREMIUM_KEY_SETTING_NAME,
       '123457890abcdef'
     );
+  }
+
+  private function getPremiumKey() {
+    return Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME);
   }
 
   function _after() {

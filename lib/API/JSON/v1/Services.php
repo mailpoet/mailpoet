@@ -3,6 +3,7 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\Config\Installer;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use MailPoet\WP\DateTime;
@@ -97,10 +98,9 @@ class Services extends APIEndpoint {
     }
 
     if($success_message) {
-      $premium_plugin_active = License::getLicense();
       return $this->successResponse(
         array('message' => $success_message),
-        array('premium_plugin_active' => $premium_plugin_active)
+        Installer::getPremiumStatus()
       );
     }
 

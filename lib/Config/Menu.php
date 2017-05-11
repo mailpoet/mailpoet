@@ -350,6 +350,8 @@ class Menu {
       )
     );
 
+    $data = array_merge($data, Installer::getPremiumStatus());
+
     $this->displayPage('settings.html', $data);
   }
 
