@@ -20,7 +20,7 @@ class Date extends Base {
   private static function renderDateSelect($block = array()) {
     $html = '';
 
-    $field_name = static::getFieldName($block);
+    $field_name = 'data[' . static::getFieldName($block) . ']';
 
     $date_formats = static::getDateFormats();
 
