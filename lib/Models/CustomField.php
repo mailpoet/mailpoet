@@ -7,6 +7,12 @@ if(!defined('ABSPATH')) exit;
 
 class CustomField extends Model {
   public static $_table = MP_CUSTOM_FIELDS_TABLE;
+  const TYPE_DATE = 'date';
+  const TYPE_TEXT = 'text';
+  const TYPE_TEXTAREA = 'textarea';
+  const TYPE_RADIO = 'radio';
+  const TYPE_CHECKBOX = 'checkbox';
+  const TYPE_SELECT = 'select';
 
   function __construct() {
     parent::__construct();
@@ -43,7 +49,7 @@ class CustomField extends Model {
 
   function formatValue($value = null) {
     // format custom field data depending on type
-    if(is_array($value) && $this->type === 'date' ) {
+    if(is_array($value) && $this->type === self::TYPE_DATE) {
       $custom_field_data = $this->asArray();
       $date_format = $custom_field_data['params']['date_format'];
       $date_type = (isset($custom_field_data['params']['date_type'])
