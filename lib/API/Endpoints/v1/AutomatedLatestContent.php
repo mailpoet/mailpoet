@@ -28,7 +28,7 @@ class AutomatedLatestContent extends APIEndpoint {
   function getTerms($data = array()) {
     $taxonomies = (isset($data['taxonomies'])) ? $data['taxonomies'] : array();
     $search = (isset($data['search'])) ? $data['search'] : '';
-    $limit = (isset($data['limit'])) ? (int)$data['limit'] : 0;
+    $limit = (isset($data['limit'])) ? (int)$data['limit'] : 50;
     $page = (isset($data['page'])) ? (int)$data['page'] : 1;
 
     return $this->successResponse(
@@ -38,7 +38,9 @@ class AutomatedLatestContent extends APIEndpoint {
           'hide_empty' => false,
           'search' => $search,
           'number' => $limit,
-          'offset' => $limit * ($page - 1)
+          'offset' => $limit * ($page - 1),
+          'orderby' => 'name',
+          'order' => 'ASC'
         )
       )
     );
