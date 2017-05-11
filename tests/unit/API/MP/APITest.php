@@ -132,6 +132,36 @@ class MPAPITest extends MailPoetTest {
     expect($subscriber_segment)->notEmpty();
   }
 
+  function testItGetsSegments() {
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $result = API::MP(self::VERSION)->getLists();
+    expect($result)->count(1);
+    expect($result[0]['id'])->equals($segment->id);
+  }
+
+  function testItExcludesWPUsersSegmentWhenGettingSegments() {
+    $default_segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $wp_segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_WP_USERS
+      )
+    );
+    $result = API::MP(self::VERSION)->getLists();
+    expect($result)->count(1);
+    expect($result[0]['id'])->equals($default_segment->id);
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
