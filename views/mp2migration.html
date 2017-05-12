@@ -3,11 +3,9 @@
 <% block content %>
 
 <div class="wrap about-wrap">
-  <h1><%= __('Welcome to MailPoet') %> <%= settings.version %></h1>
+  <h1><%= __('Welcome to MailPoet version 3!') %> <%= settings.version %></h1>
 
   <p class="about-text"><strong><%= __('This new version is quite an upgrade.') %></strong> <%= __('Since this new version is completely new, we first need to update your database before we begin.') %></p>
-
-  <div style="position: absolute; top: .2em; right: 0;"><img style="border: 0 !important;" src="<%= image_url('welcome_template/mailpoet-logo.png') %>" alt="<%= __('MailPoet Logo') %>" /></div>
 
   <h3><%= __('What will be kept in MailPoet 3') %></h3>
   <ul>
@@ -22,7 +20,7 @@
   <div style="position: absolute; top: .2em; right: 0;"></div>
   <hr />
 
-  <div class="feature-section one-col">
+  <div>
     <br />
     <p style="/* text-align: center */">
       <input type="submit" name="import" id="import" class="button button-primary" value="<%= __('Start upgrade') %>"  />
@@ -31,7 +29,7 @@
     </p>
 
     <div id="progressbar" class="mailpoet_progress mailpoet_progress_complete">
-      <div id="progresslabel" class="mailpoet_progress_label">0%</div>
+      <span id="progresslabel" class="mailpoet_progress_label">0%</span>
     </div>
     <br /><br />
 
