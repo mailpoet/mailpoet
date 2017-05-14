@@ -10,6 +10,7 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsUnsubscribes;
+use MailPoet\Util\Security;
 
 class NewsletterTest extends MailPoetTest {
   function _before() {
@@ -358,21 +359,21 @@ class NewsletterTest extends MailPoetTest {
 
   function testItGeneratesHashOnNewsletterSave() {
     expect(strlen($this->newsletter->hash))
-      ->equals(Newsletter::NEWSLETTER_HASH_LENGTH);
+      ->equals(Security::HASH_LENGTH);
   }
 
   function testItRegeneratesHashOnNewsletterDuplication() {
     $duplicate_newsletter = $this->newsletter->duplicate();
     expect($duplicate_newsletter->hash)->notEquals($this->newsletter->hash);
     expect(strlen($duplicate_newsletter->hash))
-      ->equals(Newsletter::NEWSLETTER_HASH_LENGTH);
+      ->equals(Security::HASH_LENGTH);
   }
 
   function testItRegeneratesHashOnNotificationHistoryCreation() {
     $notification_history = $this->newsletter->createNotificationHistory();
     expect($notification_history->hash)->notEquals($this->newsletter->hash);
     expect(strlen($notification_history->hash))
-      ->equals(Newsletter::NEWSLETTER_HASH_LENGTH);
+      ->equals(Security::HASH_LENGTH);
   }
 
   function testItGetsQueueFromNewsletter() {

@@ -12,7 +12,6 @@ use MailPoet\Util\Security;
 class Links {
   const DATA_TAG_CLICK = '[mailpoet_click_data]';
   const DATA_TAG_OPEN = '[mailpoet_open_data]';
-  const HASH_LENGTH = 5;
 
   const LINK_TYPE_SHORTCODE = 'shortcode';
   const LINK_TYPE_LINK = 'link';
@@ -72,7 +71,7 @@ class Links {
   static function hash($extracted_links) {
     $processed_links = array();
     foreach($extracted_links as $extracted_link) {
-      $hash = Security::generateRandomString(self::HASH_LENGTH);
+      $hash = Security::generateRandomString();
       // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
       $key = $extracted_link['link'];
