@@ -5,6 +5,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Scheduler\Scheduler;
 
 if(!defined('ABSPATH')) exit;
 
@@ -73,5 +74,55 @@ class API {
 
   function getLists() {
     return Segment::whereNotEqual('type', Segment::TYPE_WP_USERS)->findArray();
+  }
+
+  function addSubscriber(array $subscriber, $segments = array(), $options = array()) {
+    // throw exception when subscriber email is missing
+    if(empty($subscriber['email'])) {
+      throw new \Exception(
+        __('Subscriber email address is required.', 'mailpoet')
+      );
+    }
+
+    // throw exception when subscriber already exists
+    if(Subscriber::findOne($subscriber['email'])) {
+      throw new \Exception(
+        __('This subscriber already exists.', 'mailpoet')
+      );
+    }
+
+    // separate data into default and custom fields
+    list($default_fields, $custom_fields) = CustomField::extractCustomFieldsFromFromObject($subscriber);
+    // if some required default fields are missing, set their values
+    $default_fields = Subscriber::setRequiredFieldsDefaultValues($default_fields);
+
+    // add subscriber
+    $new_subscriber = Subscriber::create();
+    $new_subscriber->hydrate($default_fields);
+    $new_subscriber->save();
+    if($new_subscriber->getErrors() !== false) {
+      throw new \Exception(
+        __(sprintf('Failed to add subscriber: %s', strtolower(implode(', ', $new_subscriber->getErrors()))), 'mailpoet')
+      );
+    }
+    if(!empty($custom_fields)) {
+      $new_subscriber->saveCustomFields($custom_fields);
+    }
+
+    // subscribe to segments and optionally: 1) send confirmation email, 2) schedule welcome email(s)
+    if(!empty($segments)) {
+      $this->subscribeToLists($new_subscriber->id, $segments);
+
+      // send confirmation email
+      if(!empty($options['send_confirmation_email']) && $new_subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
+        $this->sendConfirmationEmail($new_subscriber);
+      }
+
+      // schedule welcome email(s)
+      if(!empty($options['schedule_welcome_email'])) {
+        Scheduler::scheduleSubscriberWelcomeNotification($new_subscriber->id, $segments);
+      }
+    }
+    return $new_subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
 }
