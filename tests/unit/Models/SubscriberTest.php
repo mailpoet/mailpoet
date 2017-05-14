@@ -903,6 +903,16 @@ class SubscriberTest extends MailPoetTest {
     );
   }
 
+  function testItSetsDefaultValuesForRequiredFields() {
+    // MySQL running in strict mode requires a value to be set for certain fields
+    expect(Subscriber::setRequiredFieldsDefaultValues(array()))->equals(
+      array(
+        'first_name' => '',
+        'last_name' => ''
+      )
+    );
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);

@@ -491,27 +491,11 @@ class Subscriber extends Model {
       unset($data['segments']);
     }
 
-    if($subscriber === false) {
-      // fields that must exist
-      $not_null_fields = array(
-        'first_name' => '',
-        'last_name' => ''
-      );
-      foreach($not_null_fields as $field => $value) {
-        if(!isset($data[$field])) {
-          $data[$field] = $value;
-        }
-      }
-    }
+    // set required fields' default values
+    $data = self::setRequiredFieldsDefaultValues($data);
 
-    // custom fields
-    $custom_fields = array();
-    foreach($data as $key => $value) {
-      if(strpos($key, 'cf_') === 0) {
-        $custom_fields[(int)substr($key, 3)] = $value;
-        unset($data[$key]);
-      }
-    }
+    // get custom fields
+    list($data, $custom_fields) = CustomField::extractCustomFieldsFromFromObject($data);
 
     // wipe any unconfirmed data at this point
     $data['unconfirmed_data'] = null;
@@ -883,5 +867,18 @@ class Subscriber extends Model {
         return (!empty($subscriber->id)) ? $subscriber->id : false;
       }, $subscribers)
     );
+  }
+
+  static function setRequiredFieldsDefaultValues($data) {
+    $required_field_default_values = array(
+      'first_name' => '',
+      'last_name' => ''
+    );
+    foreach($required_field_default_values as $field => $value) {
+      if(!isset($data[$field])) {
+        $data[$field] = $value;
+      }
+    }
+    return $data;
   }
 }
