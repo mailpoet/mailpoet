@@ -166,13 +166,15 @@ class Links {
     }
   }
 
-  static function convertHashedLinksToShortcodesAndUrls($content, $convert_all = false) {
+  static function convertHashedLinksToShortcodesAndUrls($content, $queue_id, $convert_all = false) {
     preg_match_all(self::getLinkRegex(), $content, $links);
     $links = array_unique(Helpers::flattenArray($links));
     foreach($links as $link) {
       $link_hash = explode('-', $link);
       if(!isset($link_hash[1])) continue;
-      $newsletter_link = NewsletterLink::getByHash($link_hash[1]);
+      $newsletter_link = NewsletterLink::where('hash', $link_hash[1])
+        ->where('queue_id', $queue_id)
+        ->findOne();
       // convert either only link shortcodes or all hashes links if "convert all"
       // option is specified
       if($newsletter_link &&
