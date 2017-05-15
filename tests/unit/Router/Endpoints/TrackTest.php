@@ -122,14 +122,18 @@ class TrackTest extends MailPoetTest {
   }
 
   function testItGetsProperHashWhenDuplicateHashesExist() {
-    // create another queue
+    // create another newsletter and queue
+    $newsletter = Newsletter::create();
+    $newsletter->type = 'type';
+    $newsletter = $newsletter->save();
     $queue = SendingQueue::create();
     $queue->id = 123;
-    $queue->newsletter_id = $this->newsletter->id;
+    $queue->newsletter_id = $newsletter->id;
     $queue->subscribers = array('processed' => array($this->subscriber->id));
     $queue->save();
     $track_data = $this->track_data;
     $track_data['queue_id'] = $queue->id;
+    $track_data['newsletter_id'] = $newsletter->id;
     // create another link with the same hash but different queue ID
     $link = NewsletterLink::create();
     $link->hash = $this->link->hash;
