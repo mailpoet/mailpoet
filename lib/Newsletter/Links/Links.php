@@ -71,7 +71,7 @@ class Links {
   static function hash($extracted_links) {
     $processed_links = array();
     foreach($extracted_links as $extracted_link) {
-      $hash = Security::generateRandomString();
+      $hash = Security::generateHash();
       // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
       $key = $extracted_link['link'];
