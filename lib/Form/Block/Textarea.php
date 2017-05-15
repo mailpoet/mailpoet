@@ -15,7 +15,7 @@ class Textarea extends Base {
 
     $html .= '<textarea class="mailpoet_textarea" rows="'.$lines.'" ';
 
-    $html .= 'name="'.static::getFieldName($block).'"';
+    $html .= 'name="data['.static::getFieldName($block).']"';
 
     $html .= static::renderInputPlaceholder($block);
 

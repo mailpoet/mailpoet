@@ -9,19 +9,12 @@ class Manage {
     $action = (isset($_POST['action']) ? $_POST['action'] : null);
     $token = (isset($_POST['token']) ? $_POST['token'] : null);
 
-    if($action !== 'mailpoet_subscription_update') {
+    if($action !== 'mailpoet_subscription_update' || empty($_POST['data'])) {
       Url::redirectBack();
     }
+    $subscriber_data = $_POST['data'];
 
-    $reserved_keywords = array('action', 'token', 'mailpoet_redirect');
-    $subscriber_data = array_diff_key(
-      $_POST,
-      array_flip($reserved_keywords)
-    );
-
-    if(
-      isset($subscriber_data['email'])
-      &&
+    if(!empty($subscriber_data['email']) &&
       Subscriber::verifyToken($subscriber_data['email'], $token)
     ) {
       if($subscriber_data['email'] !== Pages::DEMO_EMAIL) {
@@ -30,7 +23,7 @@ class Manage {
       }
     }
 
-    // TBD: success/error messages (not present in MP2)
+    // TODO: success/error messages (not present in MP2)
     Url::redirectBack();
   }
 }

@@ -344,10 +344,10 @@ class Pages {
       'novalidate>';
     $form_html .= '<input type="hidden" name="action"'.
       ' value="mailpoet_subscription_update" />';
-    $form_html .= '<input type="hidden" name="segments" value="" />';
+    $form_html .= '<input type="hidden" name="data[segments]" value="" />';
     $form_html .= '<input type="hidden" name="mailpoet_redirect" '.
       'value="'.Url::getCurrentUrl().'" />';
-    $form_html .= '<input type="hidden" name="email" value="'.
+    $form_html .= '<input type="hidden" name="data[email]" value="'.
       $subscriber->email.
     '" />';
     $form_html .= '<input type="hidden" name="token" value="'.

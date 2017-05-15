@@ -8,7 +8,7 @@ class Segment extends Base {
   static function render($block) {
     $html = '';
 
-    $field_name = static::getFieldName($block);
+    $field_name = 'data[' . static::getFieldName($block) . ']';
     $field_validation = static::getInputValidation($block);
 
     $html .= '<p class="mailpoet_paragraph">';
