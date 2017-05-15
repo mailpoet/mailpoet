@@ -5,7 +5,7 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class Security {
-  const HASH_LENGTH = 6;
+  const HASH_LENGTH = 12;
 
   static function generateToken($action = 'mailpoet_token') {
     return wp_create_nonce($action);
@@ -23,7 +23,7 @@ class Security {
   static function generateHash($length = false) {
     $length = ($length) ? $length : self::HASH_LENGTH;
     return substr(
-      md5(AUTH_KEY . self::generateRandomString(15)),
+      md5(AUTH_KEY . self::generateRandomString(64)),
       0,
       $length
     );
