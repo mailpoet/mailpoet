@@ -134,6 +134,21 @@ class Newsletters extends APIEndpoint {
       ));
     }
 
+    // pause/unpause scheduled queue jobs depending on the new status
+    if($status === Newsletter::STATUS_DRAFT) {
+      SendingQueue::where('newsletter_id', $newsletter->id)
+        ->where('status', SendingQueue::STATUS_SCHEDULED)
+        ->findResultSet()
+        ->set('status', SendingQueue::STATUS_PAUSED)
+        ->save();
+    } else if($status === Newsletter::STATUS_ACTIVE) {
+      SendingQueue::where('newsletter_id', $newsletter->id)
+        ->where('status', SendingQueue::STATUS_PAUSED)
+        ->findResultSet()
+        ->set('status', SendingQueue::STATUS_SCHEDULED)
+        ->save();
+    }
+
     $newsletter->setStatus($status);
     $errors = $newsletter->getErrors();
 

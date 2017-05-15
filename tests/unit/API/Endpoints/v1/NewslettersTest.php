@@ -636,6 +636,40 @@ class NewslettersTest extends MailPoetTest {
     expect((boolean)$preview_link_data['preview'])->true();
   }
 
+  function testItPausesScheduledSendingQueuesWhenNewsletterIsDeactivated() {
+    $sending_queue = SendingQueue::create();
+    $sending_queue->newsletter_id = $this->newsletter->id;
+    $sending_queue->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_queue->save();
+    $router = new Newsletters();
+    // set status to inactive
+    $response = $router->setStatus(
+      array(
+       'id' => $this->newsletter->id,
+       'status' => Newsletter::STATUS_DRAFT
+     )
+    );
+    $updated_sending_queue = SendingQueue::findOne($sending_queue->id);
+    expect($updated_sending_queue->status)->equals(SendingQueue::STATUS_PAUSED);
+  }
+
+  function testItScheduledPausedSendingQueuesWhenNewsletterIsReactivated() {
+    $sending_queue = SendingQueue::create();
+    $sending_queue->newsletter_id = $this->newsletter->id;
+    $sending_queue->status = SendingQueue::STATUS_PAUSED;
+    $sending_queue->save();
+    $router = new Newsletters();
+    // set status to inactive
+    $response = $router->setStatus(
+      array(
+        'id' => $this->newsletter->id,
+        'status' => Newsletter::STATUS_ACTIVE
+      )
+    );
+    $updated_sending_queue = SendingQueue::findOne($sending_queue->id);
+    expect($updated_sending_queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
+  }
+
   function _after() {
     WPHooksHelper::releaseAllHooks();
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
