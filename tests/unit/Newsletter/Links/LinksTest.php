@@ -159,38 +159,40 @@ class LinksTest extends MailPoetTest {
 
   function testItCanConvertOnlyHashedLinkShortcodes() {
     // create newsletter link association
+    $queue_id = 1;
     $newsletter_link = NewsletterLink::create();
     $newsletter_link->newsletter_id = 1;
-    $newsletter_link->queue_id = 1;
+    $newsletter_link->queue_id = $queue_id;
     $newsletter_link->hash = '90e56';
     $newsletter_link->url = '[link:newsletter_view_in_browser_url]';
     $newsletter_link = $newsletter_link->save();
     $content = '
       <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
-    $result = Links::convertHashedLinksToShortcodesAndUrls($content);
+    $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queue_id);
     expect($result)->contains($newsletter_link->url);
     expect($result)->contains('[mailpoet_click_data]-123');
   }
 
   function testItCanConvertAllHashedLinksToUrls() {
     // create newsletter link associations
+    $queue_id = 1;
     $newsletter_link_1 = NewsletterLink::create();
     $newsletter_link_1->newsletter_id = 1;
-    $newsletter_link_1->queue_id = 1;
+    $newsletter_link_1->queue_id = $queue_id;
     $newsletter_link_1->hash = '90e56';
     $newsletter_link_1->url = '[link:newsletter_view_in_browser_url]';
     $newsletter_link_1 = $newsletter_link_1->save();
     $newsletter_link_2 = NewsletterLink::create();
     $newsletter_link_2->newsletter_id = 1;
-    $newsletter_link_2->queue_id = 1;
+    $newsletter_link_2->queue_id = $queue_id;
     $newsletter_link_2->hash = '123';
     $newsletter_link_2->url = 'http://google.com';
     $newsletter_link_2 = $newsletter_link_2->save();
     $content = '
       <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
-    $result = Links::convertHashedLinksToShortcodesAndUrls($content, $convert_all = true);
+    $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queue_id, $convert_all = true);
     expect($result)->contains($newsletter_link_1->url);
     expect($result)->contains($newsletter_link_2->url);
   }

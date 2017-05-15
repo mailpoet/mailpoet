@@ -29,4 +29,15 @@ class SecurityTest extends MailPoetTest {
     expect(ctype_alnum($short_hash))->true();
     expect(ctype_alnum($long_hash))->true();
   }
+
+  function testItGeneratesRandomHash() {
+    $hash_1 = Security::generateHash();
+    $hash_2 = Security::generateHash();
+    expect($hash_1)->notEquals($hash_2);
+    expect(strlen($hash_1))->equals(Security::HASH_LENGTH);
+  }
+
+  function testItGeneratesRandomHashWithCustomLength() {
+    expect(strlen(Security::generateHash(10)))->equals(10);
+  }
 }

@@ -121,6 +121,35 @@ class TrackTest extends MailPoetTest {
     expect($processed_data->link->id)->equals($this->link->id);
   }
 
+  function testItGetsProperHashWhenDuplicateHashesExist() {
+    // create another newsletter and queue
+    $newsletter = Newsletter::create();
+    $newsletter->type = 'type';
+    $newsletter = $newsletter->save();
+    $queue = SendingQueue::create();
+    $queue->id = 123;
+    $queue->newsletter_id = $newsletter->id;
+    $queue->subscribers = array('processed' => array($this->subscriber->id));
+    $queue->save();
+    $track_data = $this->track_data;
+    $track_data['queue_id'] = $queue->id;
+    $track_data['newsletter_id'] = $newsletter->id;
+    // create another link with the same hash but different queue ID
+    $link = NewsletterLink::create();
+    $link->hash = $this->link->hash;
+    $link->url = $this->link->url;
+    $link->newsletter_id = $track_data['newsletter_id'];
+    $link->queue_id = $track_data['queue_id'];
+    $link = $link->save();
+    // assert that 2 links with identical hash exist
+    $newsletter_link = NewsletterLink::where('hash', $link->hash)->findMany();
+    expect($newsletter_link)->count(2);
+
+    // assert that the fetched link ID belong to the newly created link
+    $processed_data = $this->track->_processTrackData($track_data);
+    expect($processed_data->link->id)->equals($link->id);
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);

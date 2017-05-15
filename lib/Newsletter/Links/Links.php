@@ -12,7 +12,6 @@ use MailPoet\Util\Security;
 class Links {
   const DATA_TAG_CLICK = '[mailpoet_click_data]';
   const DATA_TAG_OPEN = '[mailpoet_open_data]';
-  const HASH_LENGTH = 5;
 
   const LINK_TYPE_SHORTCODE = 'shortcode';
   const LINK_TYPE_LINK = 'link';
@@ -72,7 +71,7 @@ class Links {
   static function hash($extracted_links) {
     $processed_links = array();
     foreach($extracted_links as $extracted_link) {
-      $hash = Security::generateRandomString(self::HASH_LENGTH);
+      $hash = Security::generateHash();
       // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
       $key = $extracted_link['link'];
@@ -167,13 +166,15 @@ class Links {
     }
   }
 
-  static function convertHashedLinksToShortcodesAndUrls($content, $convert_all = false) {
+  static function convertHashedLinksToShortcodesAndUrls($content, $queue_id, $convert_all = false) {
     preg_match_all(self::getLinkRegex(), $content, $links);
     $links = array_unique(Helpers::flattenArray($links));
     foreach($links as $link) {
       $link_hash = explode('-', $link);
       if(!isset($link_hash[1])) continue;
-      $newsletter_link = NewsletterLink::getByHash($link_hash[1]);
+      $newsletter_link = NewsletterLink::where('hash', $link_hash[1])
+        ->where('queue_id', $queue_id)
+        ->findOne();
       // convert either only link shortcodes or all hashes links if "convert all"
       // option is specified
       if($newsletter_link &&

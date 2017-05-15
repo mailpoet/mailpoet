@@ -49,7 +49,9 @@ class Track {
       Newsletter::findOne($data->queue->newsletter_id) :
       false;
     if(!empty($data->link_hash)) {
-      $data->link = NewsletterLink::getByHash($data->link_hash);
+      $data->link = NewsletterLink::where('hash', $data->link_hash)
+        ->where('queue_id', $data->queue_id)
+        ->findOne();
     }
     return $this->_validateTrackData($data);
   }

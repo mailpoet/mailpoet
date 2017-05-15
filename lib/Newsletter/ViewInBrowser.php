@@ -31,6 +31,7 @@ class ViewInBrowser {
       if($wp_user_preview && preg_match(Links::getLinkRegex(), $newsletter_body)) {
         $newsletter_body = Links::convertHashedLinksToShortcodesAndUrls(
           $newsletter_body,
+          $queue_id = $queue->id,
           $convert_all = true
         );
         // remove open tracking link

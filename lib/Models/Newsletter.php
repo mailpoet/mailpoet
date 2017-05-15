@@ -19,7 +19,6 @@ class Newsletter extends Model {
   const STATUS_SENT = 'sent';
   // automatic newsletters status
   const STATUS_ACTIVE = 'active';
-  const NEWSLETTER_HASH_LENGTH = 6;
 
   function __construct() {
     parent::__construct();
@@ -80,7 +79,7 @@ class Newsletter extends Model {
     $this->set('hash',
       ($this->hash)
       ? $this->hash
-      : self::generateHash()
+      : Security::generateHash()
     );
     return parent::save();
   }
@@ -786,13 +785,5 @@ class Newsletter extends Model {
   static function getByHash($hash) {
     return parent::where('hash', $hash)
       ->findOne();
-  }
-
-  static function generateHash() {
-    return substr(
-      md5(AUTH_KEY . Security::generateRandomString(15)),
-      0,
-      self::NEWSLETTER_HASH_LENGTH
-    );
   }
 }
