@@ -97,7 +97,7 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 * Improved: added plugin translation to Persian (Iran) language. Thanks Ali Reza Karami!;
 * Fixed: submission of subscription forms with list selection or non-text custom fields works again. Thanks Stefan!;
 * Fixed: subscription management form works fine again;
-* Fixed: invalid license key warnings are temporary hidden if a key is empty;
+* Fixed: invalid license key warnings are temporarily hidden if a key is empty;
 * Fixed: newsletter link hashes are much less likely to collide. Thanks Sherrie!
 
 = 3.0.0-beta.30 - 2017-05-09 =
