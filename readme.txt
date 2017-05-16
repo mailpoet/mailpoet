@@ -95,7 +95,7 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 * Improved: automated latest content/post search boxes in the editor now return up to 50 results;
 * Improved: sending progress bar got a new look;
 * Improved: added plugin translation to Persian (Iran) language. Thanks Ali Reza Karami!;
-* Fixed: submission of subscription forms with list selection or non-text custom fields works again;
+* Fixed: submission of subscription forms with list selection or non-text custom fields works again. Thanks Stefan!;
 * Fixed: subscription management form works fine again;
 * Fixed: invalid license key warnings are temporary hidden if a key is empty;
 * Fixed: newsletter link hashes are much less likely to collide. Thanks Sherrie!
