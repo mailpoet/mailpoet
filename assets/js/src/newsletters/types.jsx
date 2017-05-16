@@ -2,12 +2,14 @@ define(
   [
     'react',
     'mailpoet',
+    'wp-js-hooks',
     'react-router',
     'newsletters/breadcrumb.jsx'
   ],
   function(
     React,
     MailPoet,
+    Hooks,
     Router,
     Breadcrumb
   ) {
@@ -41,6 +43,47 @@ define(
         });
       },
       render: function() {
+        var types = [
+          {
+            'id': 'standard',
+            'title': MailPoet.I18n.t('regularNewsletterTypeTitle'),
+            'description': MailPoet.I18n.t('regularNewsletterTypeDescription'),
+            'action': function() {
+              return (
+                <a className="button button-primary" onClick={ this.createNewsletter.bind(null, 'standard') }>
+                  {MailPoet.I18n.t('create')}
+                </a>
+              )
+            }.bind(this)()
+          },
+          {
+            'id': 'welcome',
+            'title': MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
+            'description': MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
+            'action': function() {
+              return (
+                <div>
+                  Premium feature text (TBD)
+                </div>
+              )
+            }()
+          },
+          {
+            'id': 'notification',
+            'title': MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
+            'description': MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
+            'action': function() {
+              return (
+                <a className="button button-primary" onClick={ this.createNewsletter.bind(null, 'standard') }>
+                  {MailPoet.I18n.t('setUp')}
+                </a>
+              )
+            }.bind(this)()
+          }
+        ];
+
+        types = Hooks.applyFilters('mailpoet_newsletters_types', types);
+
         return (
           <div>
             <h1>{MailPoet.I18n.t('pickCampaignType')}</h1>
@@ -48,65 +91,24 @@ define(
             <Breadcrumb step="type" />
 
             <ul className="mailpoet_boxes clearfix">
-              <li data-type="standard">
-                <div className="mailpoet_thumbnail"></div>
+              {types.map(function(type, index) {
+                return (
+                  <li key={index} data-type={type.id}>
+                    <div>
+                      <div className="mailpoet_thumbnail"></div>
 
-                <div className="mailpoet_description">
-                  <h3>{MailPoet.I18n.t('regularNewsletterTypeTitle')}</h3>
-                  <p>
-                    {MailPoet.I18n.t('regularNewsletterTypeDescription')}
-                  </p>
-                </div>
+                      <div className="mailpoet_description">
+                        <h3>{type.title}</h3>
+                        <p>{type.description}</p>
+                      </div>
 
-                <div className="mailpoet_actions">
-                  <a
-                    className="button button-primary"
-                    onClick={ this.createNewsletter.bind(null, 'standard') }
-                  >
-                    {MailPoet.I18n.t('create')}
-                  </a>
-                </div>
-              </li>
-
-              <li data-type="welcome">
-                <div className="mailpoet_thumbnail"></div>
-
-                <div className="mailpoet_description">
-                  <h3>{MailPoet.I18n.t('welcomeNewsletterTypeTitle')}</h3>
-                  <p>
-                    {MailPoet.I18n.t('welcomeNewsletterTypeDescription')}
-                  </p>
-                </div>
-
-                <div className="mailpoet_actions">
-                  <a
-                    className="button button-primary"
-                    onClick={ this.setupNewsletter.bind(null, 'welcome') }
-                  >
-                    {MailPoet.I18n.t('setUp')}
-                  </a>
-                </div>
-              </li>
-
-              <li data-type="notification">
-                <div className="mailpoet_thumbnail"></div>
-
-                <div className="mailpoet_description">
-                  <h3>{MailPoet.I18n.t('postNotificationNewsletterTypeTitle')}</h3>
-                  <p>
-                    {MailPoet.I18n.t('postNotificationsNewsletterTypeDescription')}
-                  </p>
-                </div>
-
-                <div className="mailpoet_actions">
-                  <a
-                    className="button button-primary"
-                    onClick={ this.setupNewsletter.bind(null, 'notification') }
-                  >
-                    {MailPoet.I18n.t('setUp')}
-                  </a>
-                </div>
-              </li>
+                      <div className="mailpoet_actions">
+                        {type.action}
+                      </div>
+                    </div>
+                  </li>
+                )
+              }, this)}
             </ul>
           </div>
         );
