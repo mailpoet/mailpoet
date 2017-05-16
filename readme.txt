@@ -39,12 +39,14 @@ Not available yet. Limited stats in free version.
 = Translations =
 
 * French
+* German
 * Italian
 * Spanish
 * Dutch
 * Portuguese (BR and PT)
 * British
 * Russian
+* Persian (IR)
 
 We welcome translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" web site will not work!
 
@@ -92,6 +94,7 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 = 3.0.0-beta.31 - 2017-05-16 =
 * Improved: automated latest content/post search boxes in the editor now return up to 50 results;
 * Improved: sending progress bar got a new look;
+* Improved: added plugin translation to Persian (Iran) language. Thanks Ali Reza Karami!;
 * Fixed: submission of subscription forms with list selection or non-text custom fields works again;
 * Fixed: subscription management form works fine again;
 * Fixed: invalid license key warnings are temporary hidden if a key is empty;
