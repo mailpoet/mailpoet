@@ -77,7 +77,7 @@ class MPAPITest extends MailPoetTest {
       )
     );
     try {
-      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array(1));
+      API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
       $this->fail('WP Users segment exception should have been thrown.');
     } catch(\Exception $e) {
       expect($e->getMessage())->equals("Can't subscribe to a WordPress Users list with ID {$segment->id}.");
