@@ -51,7 +51,7 @@ class API {
     // throw exception when none of the segments exist
     $found_segments = Segment::whereIn('id', $segments_ids)->findMany();
     if(!$found_segments) {
-      throw new \Exception(__('These lists do not exists.', 'mailpoet'));
+      throw new \Exception(__('These lists do not exist.', 'mailpoet'));
     }
 
     // throw exception when trying to subscribe to a WP Users segment
@@ -77,6 +77,9 @@ class API {
   }
 
   function addSubscriber(array $subscriber, $segments = array(), $options = array()) {
+    $send_confirmation_email = (isset($options['send_confirmation_email']) && $options['send_confirmation_email'] === false) ? false : true;
+    $schedule_welcome_email = (isset($options['schedule_welcome_email']) && $options['schedule_welcome_email'] === false) ? false : true;
+
     // throw exception when subscriber email is missing
     if(empty($subscriber['email'])) {
       throw new \Exception(
@@ -114,12 +117,12 @@ class API {
       $this->subscribeToLists($new_subscriber->id, $segments);
 
       // send confirmation email
-      if(!empty($options['send_confirmation_email']) && $new_subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
+      if($send_confirmation_email && $new_subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
         $this->sendConfirmationEmail($new_subscriber);
       }
 
       // schedule welcome email(s)
-      if(!empty($options['schedule_welcome_email'])) {
+      if($schedule_welcome_email) {
         Scheduler::scheduleSubscriberWelcomeNotification($new_subscriber->id, $segments);
       }
     }

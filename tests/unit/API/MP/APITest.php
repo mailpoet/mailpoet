@@ -62,7 +62,7 @@ class MPAPITest extends MailPoetTest {
       API::MP(self::VERSION)->subscribeToLists($subscriber->id, array(1,2,3));
       $this->fail('Missing segments exception should have been thrown.');
     } catch(\Exception $e) {
-      expect($e->getMessage())->equals('These lists do not exists.');
+      expect($e->getMessage())->equals('These lists do not exist.');
     }
   }
 
@@ -237,7 +237,7 @@ class MPAPITest extends MailPoetTest {
     expect($result['subscriptions'][0]['id'])->equals($segment->id);
   }
 
-  function testItSendsConfirmationEmailAfterAddingSubscriber() {
+  function testItSendsConfirmationEmailByDefaultAfterAddingSubscriber() {
     $segment = Segment::createOrUpdate(
       array(
         'name' => 'Default',
@@ -247,7 +247,49 @@ class MPAPITest extends MailPoetTest {
     $subscriber = array(
       'email' => 'test@example.com'
     );
-    $options = array('schedule_welcome_email' => true);
+    // create newsletter with associated options to send welcome email one day after subscription to segment
+    $newsletter = Newsletter::create();
+    $newsletter->type = Newsletter::TYPE_WELCOME;
+    $newsletter->status = Newsletter::STATUS_ACTIVE;
+    $newsletter->save();
+    $newsletter_options = array(
+      'event' => 'segment',
+      'segment' => $segment->id,
+      'afterTimeType' => 'days',
+      'afterTimeNumber' => 1
+    );
+    foreach($newsletter_options as $option => $value) {
+      $newsletter_option_field = NewsletterOptionField::create();
+      $newsletter_option_field->name = $option;
+      $newsletter_option_field->newsletter_type = $newsletter->type;
+      $newsletter_option_field->save();
+      expect($newsletter_option_field->getErrors())->false();
+
+      $newsletter_option = NewsletterOption::create();
+      $newsletter_option->option_field_id = $newsletter_option_field->id;
+      $newsletter_option->newsletter_id = $newsletter->id;
+      $newsletter_option->value = $value;
+      $newsletter_option->save();
+      expect($newsletter_option->getErrors())->false();
+    }
+
+    expect(SendingQueue::findArray())->count(0);
+    API::MP(self::VERSION)->addSubscriber($subscriber, array($segment->id));
+    expect(SendingQueue::findArray())->count(1);
+  }
+
+  function testItDoesNotSendConfirmationEmailAfterAddingSubscriberWhenOptionIsSet() {
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $subscriber = array(
+      'email' => 'test@example.com'
+    );
+    $options = array('schedule_welcome_email' => false);
+
     // create newsletter with associated options to send welcome email one day after subscription to segment
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_WELCOME;
@@ -276,7 +318,7 @@ class MPAPITest extends MailPoetTest {
 
     expect(SendingQueue::findArray())->count(0);
     API::MP(self::VERSION)->addSubscriber($subscriber, array($segment->id), $options);
-    expect(SendingQueue::findArray())->count(1);
+    expect(SendingQueue::findArray())->count(0);
   }
 
   function _after() {
