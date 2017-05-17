@@ -32,6 +32,7 @@ class Database {
     $driver_options = array(
       'TIME_ZONE = "' . Env::$db_timezone_offset . '"',
       'sql_mode=(SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY",""))',
+      'NAMES ' . Env::$db_charset . ' COLLATE ' . ENV::$db_collation,
     );
     $current_options = ORM::for_table("")
       ->raw_query('SELECT @@session.wait_timeout as wait_timeout')

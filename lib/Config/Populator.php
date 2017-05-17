@@ -42,7 +42,7 @@ class Populator {
   }
 
   function up() {
-    global $wpdb;
+    $this->convertExistingDataToUTF8();
 
     array_map(array($this, 'populate'), $this->models);
 
@@ -308,4 +308,60 @@ class Populator {
       )
     );
   }
+
+  /*
+   * MailPoet versions 3.0.0-beta.31 and older used the default MySQL connection
+   * character set, which usually defaults to latin1, but stored UTF-8 data.
+   * This method converts existing incorrectly stored data that uses the
+   * default character set, into a new character set that is used by WordPress.
+   */
+  public function convertExistingDataToUTF8() {
+    global $wpdb;
+
+    if(!version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.31', '<=')) {
+      // Data conversion should only be performed only once, when migrating from
+      // older version
+      return;
+    }
+
+    $source_charset = $wpdb->get_var('SELECT @@GLOBAL.character_set_connection');
+    $destination_charset = $wpdb->get_var('SELECT @@SESSION.character_set_connection');
+
+    if($source_charset === $destination_charset) return;
+
+    $tables = array(
+      'segments' => array('name', 'type', 'description'),
+      'settings' => array('name', 'value'),
+      'custom_fields' => array('name', 'type', 'params'),
+      'sending_queues' => array('type', 'newsletter_rendered_body', 'newsletter_rendered_subject', 'subscribers', 'status'),
+      'subscribers' => array('first_name', 'last_name', 'email', 'status', 'subscribed_ip', 'confirmed_ip', 'unconfirmed_data'),
+      'subscriber_segment' => array('status'),
+      'subscriber_custom_field' => array('value'),
+      'newsletters' => array('hash', 'subject', 'type', 'sender_address', 'sender_name', 'status', 'reply_to_address', 'reply_to_name', 'preheader', 'body'),
+      'newsletter_templates' => array('name', 'description', 'body', 'thumbnail'),
+      'newsletter_option_fields' => array('name', 'newsletter_type'),
+      'newsletter_option' => array('value'),
+      'newsletter_links' => array('url', 'hash'),
+      'forms' => array('name', 'body', 'settings', 'styles'),
+    );
+
+    foreach($tables as $table => $columns) {
+      $query = "UPDATE `%s` SET %s";
+      $columns_query = array();
+      foreach($columns as $column) {
+        $columns_query[] = sprintf(
+          '`%1$s` = convert(cast(convert(`%1$s` using `%2$s`) as binary) using %3$s)',
+          $column,
+          $source_charset,
+          $destination_charset
+        );
+      }
+      $wpdb->query(sprintf(
+        $query,
+        $this->prefix . $table,
+        implode(', ', $columns_query)
+      ));
+    }
+  }
+
 }

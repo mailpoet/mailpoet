@@ -28,6 +28,8 @@ class Env {
   static $db_username;
   static $db_password;
   static $db_charset;
+  static $db_collation;
+  static $db_charset_collate;
   static $db_timezone_offset;
   static $required_permission = 'manage_options';
 
@@ -62,7 +64,9 @@ class Env {
     self::$db_name = DB_NAME;
     self::$db_username = DB_USER;
     self::$db_password = DB_PASSWORD;
-    self::$db_charset = $wpdb->get_charset_collate();
+    self::$db_charset = $wpdb->charset;
+    self::$db_collation = $wpdb->collate;
+    self::$db_charset_collate = $wpdb->get_charset_collate();
     self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port);
     self::$db_timezone_offset = self::getDbTimezoneOffset();
   }

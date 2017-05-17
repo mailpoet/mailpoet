@@ -12,7 +12,7 @@ require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 class Migrator {
   function __construct() {
     $this->prefix = Env::$db_prefix;
-    $this->charset = Env::$db_charset;
+    $this->charset_collate = Env::$db_charset_collate;
     $this->models = array(
       'segments',
       'settings',
@@ -369,7 +369,7 @@ class Migrator {
     $sql = array();
     $sql[] = "CREATE TABLE " . $table . " (";
     $sql = array_merge($sql, $attributes);
-    $sql[] = ") " . $this->charset . ";";
+    $sql[] = ") " . $this->charset_collate . ";";
 
     return implode("\n", $sql);
   }
