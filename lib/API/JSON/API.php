@@ -94,6 +94,7 @@ class API {
         );
         if(class_exists($endpoint_class)) {
           $this->_request_endpoint_class = $endpoint_class;
+          break;
         }
       }
       $this->_request_data = isset($data['data'])
