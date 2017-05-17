@@ -247,7 +247,8 @@ config.push(_.extend({}, baseConfig, {
     ]
   },
   externals: {
-    'jquery': 'jQuery'
+    'jquery': 'jQuery',
+    'mailpoet': 'MailPoet'
   }
 }));
 

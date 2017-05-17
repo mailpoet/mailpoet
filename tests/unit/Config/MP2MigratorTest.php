@@ -1,8 +1,13 @@
 <?php
 use MailPoet\Config\MP2Migrator;
 use MailPoet\Models\Setting;
-use MailPoet\Util\Helpers;
+use MailPoet\Models\CustomField;
 use MailPoet\Models\ImportedDataMapping;
+use MailPoet\Models\Segment;
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberCustomField;
+use MailPoet\Models\SubscriberSegment;
+use Helper\Database;
 
 class MP2MigratorTest extends MailPoetTest {
   
@@ -18,11 +23,11 @@ class MP2MigratorTest extends MailPoetTest {
    * 
    */
   public function testIsMigrationNeeded() {
-    Helpers::loadSQL('dropMP2Tables');
+    Database::loadSQL('dropMP2Tables');
     $result = $this->MP2Migrator->isMigrationNeeded();
     expect($result)->false();
     
-    Helpers::loadSQL('createMP2Tables');
+    Database::loadSQL('createMP2Tables');
     $result = $this->MP2Migrator->isMigrationNeeded();
     expect($result)->true();
   }
@@ -40,20 +45,19 @@ class MP2MigratorTest extends MailPoetTest {
    * 
    */
   public function testEraseMP3Data() {
+    global $wpdb;
+    
     $this->invokeMethod($this->MP2Migrator, 'eraseMP3Data');
     
     // Check if the subscribers number is equal to the WordPress users number
-    $MPSubscribersCount = Helpers::rowsCount(MP_SUBSCRIBERS_TABLE, false);
-    $WPUsersCount = Helpers::rowsCount('users');
-    expect($MPSubscribersCount)->equals($WPUsersCount);
+    $WPUsersCount = \ORM::for_table($wpdb->prefix . 'users')->count();
+    expect(Subscriber::count())->equals($WPUsersCount);
     
     // Check if the custom fields number is 0
-    $MPCustomFieldsCount = Helpers::rowsCount(MP_CUSTOM_FIELDS_TABLE, false);
-    expect($MPCustomFieldsCount)->equals(0);
+    expect(CustomField::count())->equals(0);
     
     // Check if the subscribers custom fields number is 0
-    $MPSubscribersCustomFieldCount = Helpers::rowsCount(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE, false);
-    expect($MPSubscribersCustomFieldCount)->equals(0);
+    expect(SubscriberCustomField::count())->equals(0);
   }
   
   /**
@@ -88,7 +92,7 @@ class MP2MigratorTest extends MailPoetTest {
    * 
    */
   private function initImport() {
-    Helpers::loadSQL('createMP2Tables');
+    Database::loadSQL('createMP2Tables');
     $this->invokeMethod($this->MP2Migrator, 'eraseMP3Data');
   }
   
@@ -97,7 +101,7 @@ class MP2MigratorTest extends MailPoetTest {
    * 
    */
   private function loadMP2Fixtures() {
-    Helpers::loadSQL('populateMP2Tables');
+    Database::loadSQL('populateMP2Tables');
   }
   
   /**
@@ -112,8 +116,7 @@ class MP2MigratorTest extends MailPoetTest {
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
-    $segmentsCount = Helpers::rowsCount(MP_SEGMENTS_TABLE, false);
-    expect($segmentsCount)->equals(3);
+    expect(Segment::count())->equals(3);
     
     // Check a segment data
     $this->initImport();
@@ -149,8 +152,7 @@ class MP2MigratorTest extends MailPoetTest {
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importCustomFields');
-    $customFieldsCount = Helpers::rowsCount(MP_CUSTOM_FIELDS_TABLE, false);
-    expect($customFieldsCount)->equals(10);
+    expect(CustomField::count())->equals(10);
     
     // Check a custom field data
     $this->initImport();
@@ -193,8 +195,7 @@ class MP2MigratorTest extends MailPoetTest {
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
-    $subscribersCount = Helpers::rowsCount(MP_SUBSCRIBERS_TABLE, false);
-    expect($subscribersCount)->equals(4);
+    expect(Subscriber::count())->equals(4);
     
     // Check a subscriber data
     $this->initImport();
@@ -239,8 +240,7 @@ class MP2MigratorTest extends MailPoetTest {
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
-    $subscribersCount = Helpers::rowsCount(MP_SUBSCRIBER_SEGMENT_TABLE, false);
-    expect($subscribersCount)->equals(7);
+    expect(SubscriberSegment::count())->equals(7);
     
     // Check a subscriber segment data
     
@@ -298,8 +298,7 @@ class MP2MigratorTest extends MailPoetTest {
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importCustomFields');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
-    $subscribersCount = Helpers::rowsCount(MP_SUBSCRIBER_CUSTOM_FIELD_TABLE, false);
-    expect($subscribersCount)->equals(40);
+    expect(SubscriberCustomField::count())->equals(40);
     
     // Check a subscriber custom field data
     

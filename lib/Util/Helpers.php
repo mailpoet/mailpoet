@@ -1,6 +1,5 @@
 <?php
 namespace MailPoet\Util;
-use MailPoet\Config\Env;
 
 class Helpers {
   const DIVIDER = '***MailPoet***';
@@ -136,49 +135,6 @@ class Helpers {
 
   static function splitObject($object = array()) {
     return explode(self::DIVIDER, $object);
-  }
-  
-  /**
-   * Convert a timestamp to a Mysql datetime
-   * 
-   * @param int $timestamp Timestamp
-   * @return string Datetime
-   */
-  static public function mysqlDate($timestamp) {
-    return date('Y-m-d H:i:s', $timestamp);
-  }
-  
-
-  /**
-   * Count the number of rows in a table
-   * 
-   * @global object $wpdb
-   * @param string $table Table
-   * @param bool $withoutPrefix Table name without DB prefix
-   * @return int Number of rows found
-   */
-  static public function rowsCount($table, $withoutPrefix=true) {
-    global $wpdb;
-
-    if($withoutPrefix) {
-      $table = $wpdb->prefix . $table;
-    }
-    $sql = "SELECT COUNT(*) FROM `$table`";
-    $count = $wpdb->get_var($sql);
-    
-    return $count;
-  }
-  
-  /**
-   * Load a SQL file
-   * 
-   * @param string $filename Filename without extension
-   */
-  static public function loadSQL($filename) {
-    $db = \ORM::getDb();
-    $full_filename = Env::$path . '/tests/_data/' . $filename . '.sql';
-    $sql = file_get_contents($full_filename);
-    $db->exec($sql);
   }
   
 }

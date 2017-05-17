@@ -38,13 +38,18 @@
 
   </div>
 </div>
+<% endblock %>
 
-<script type="text/javascript">
-  var objectPlugin = {
-    log_file_url: '<%= log_file_url %>',
-    progress_url: '<%= progress_url %>'
-  };
-</script>
+<% block after_javascript %>
+  <%= javascript(
+    'mp2migrator.js'
+  )%>
+  <script type="text/javascript">
+    var mailpoet_mp2_migrator = {
+      log_file_url: '<%= log_file_url %>',
+      progress_url: '<%= progress_url %>'
+    };
+  </script>
 <% endblock %>
 
 <% block translations %>

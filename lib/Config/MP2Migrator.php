@@ -11,22 +11,50 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\ImportedDataMapping;
 use MailPoet\Config\Activator;
-use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class MP2Migrator {
 
+  const IMPORT_TIMEOUT_IN_SECONDS = 7200; // Timeout = 2 hours
+  const CHUNK_SIZE = 10; // To import the data by batch
+  
   private $log_file;
   public $log_file_url;
   public $progressbar;
-  private $chunks_size = 10; // To import the data by batch
 
   public function __construct() {
+    $this->defineMP2Tables();
     $log_filename = 'mp2migration.log';
     $this->log_file = Env::$temp_path . '/' . $log_filename;
     $this->log_file_url = Env::$temp_url . '/' . $log_filename;
     $this->progressbar = new ProgressBar('mp2migration');
+  }
+  
+  private function defineMP2Tables() {
+    global $wpdb;
+    
+    if(!defined('MP2_CAMPAIGN_TABLE')) {
+      define('MP2_CAMPAIGN_TABLE', $wpdb->prefix . 'wysija_campaign');
+    }
+    if(!defined('MP2_CUSTOM_FIELD_TABLE')) {
+      define('MP2_CUSTOM_FIELD_TABLE', $wpdb->prefix . 'wysija_custom_field');
+    }
+    if(!defined('MP2_EMAIL_TABLE')) {
+      define('MP2_EMAIL_TABLE', $wpdb->prefix . 'wysija_email');
+    }
+    if(!defined('MP2_FORM_TABLE')) {
+      define('MP2_FORM_TABLE', $wpdb->prefix . 'wysija_form');
+    }
+    if(!defined('MP2_LIST_TABLE')) {
+      define('MP2_LIST_TABLE', $wpdb->prefix . 'wysija_list');
+    }
+    if(!defined('MP2_USER_TABLE')) {
+      define('MP2_USER_TABLE', $wpdb->prefix . 'wysija_user');
+    }
+    if(!defined('MP2_USER_LIST_TABLE')) {
+      define('MP2_USER_LIST_TABLE', $wpdb->prefix . 'wysija_user_list');
+    }
   }
 
   /**
@@ -38,7 +66,7 @@ class MP2Migrator {
     if(Setting::getValue('mailpoet_migration_complete')) {
       return false;
     } else {
-      return $this->tableExists('wysija_campaign'); // Check if the MailPoet 2 tables exist
+      return $this->tableExists(MP2_CAMPAIGN_TABLE); // Check if the MailPoet 2 tables exist
     }
   }
 
@@ -60,7 +88,7 @@ class MP2Migrator {
     global $wpdb;
 
     try {
-      $sql = "SHOW TABLES LIKE '{$wpdb->prefix}{$table}'";
+      $sql = "SHOW TABLES LIKE '{$table}'";
       $result = $wpdb->query($sql);
       return !empty($result);
     } catch (Exception $e) {
@@ -83,8 +111,7 @@ class MP2Migrator {
    *
    */
   private function enqueueScripts() {
-    wp_register_script('mp2migrator', Env::$assets_url . '/js/mp2migrator.js', array('jquery-ui-progressbar'));
-    wp_enqueue_script('mp2migrator');
+    wp_enqueue_script('jquery-ui-progressbar');
   }
 
   /**
@@ -99,13 +126,14 @@ class MP2Migrator {
   /**
    * Import the data from MailPoet 2
    * 
-   * @return boolean Result
+   * @return string Result
    */
   public function import() {
-    set_time_limit(7200); // Timeout = 2 hours
+    set_time_limit(IMPORT_TIMEOUT_IN_SECONDS);
     ob_start();
     $this->emptyLog();
-    $this->log(sprintf("=== START IMPORT %s ===", date('Y-m-d H:i:s')));
+    $datetime = new \MailPoet\WP\DateTime();
+    $this->log(sprintf('=== ' . __('START IMPORT', 'mailpoet') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     Setting::setValue('import_stopped', false); // Reset the stop import action
     $this->eraseMP3Data();
     
@@ -115,7 +143,7 @@ class MP2Migrator {
     $this->importCustomFields();
     $this->importSubscribers();
     
-    $this->log(sprintf("=== END IMPORT %s ===", date('Y-m-d H:i:s')));
+    $this->log(sprintf('=== ' . __('END IMPORT', 'mailpoet') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     $result = ob_get_contents();
     ob_clean();
     return $result;
@@ -137,7 +165,7 @@ class MP2Migrator {
     Activator::deactivate();
     Activator::activate();
     $this->resetMigrationCounters();
-    $this->log(__("MailPoet data erased", Env::$plugin_name));
+    $this->log(__("MailPoet data erased", 'mailpoet'));
   }
   
   /**
@@ -155,7 +183,7 @@ class MP2Migrator {
    */
   public function stopImport() {
     Setting::setValue('import_stopped', true);
-    $this->log(__('IMPORT STOPPED BY USER', Env::$plugin_name));
+    $this->log(__('IMPORT STOPPED BY USER', 'mailpoet'));
   }
 
   /**
@@ -183,33 +211,36 @@ class MP2Migrator {
    */
   private function getDataToMigrate() {
     $result = '';
-    $totalCount = 0;
+    $total_count = 0;
     
     $this->progressbar->setTotalCount(0);
     
-    $result .= __('MailPoet 2 data found:', Env::$plugin_name) . "\n";
+    $result .= __('MailPoet 2 data found:', 'mailpoet') . "\n";
     
     // User Lists
-    $usersListsCount = Helpers::rowsCount('wysija_list');
-    $totalCount += $usersListsCount;
-    $result .= sprintf(_n('%d subscribers list', '%d subscribers lists', $usersListsCount, Env::$plugin_name), $usersListsCount) . "\n";
+    $users_lists_count = \ORM::for_table(MP2_LIST_TABLE)->count();
+    $total_count += $users_lists_count;
+    $result .= sprintf(_n('%d subscribers list', '%d subscribers lists', $users_lists_count, 'mailpoet'), $users_lists_count) . "\n";
     
     // Users
-    $usersCount = Helpers::rowsCount('wysija_user');
-    $totalCount += $usersCount;
-    $result .= sprintf(_n('%d subscriber', '%d subscribers', $usersCount, Env::$plugin_name), $usersCount) . "\n";
+    $users_count = \ORM::for_table(MP2_USER_TABLE)->count();
+    $total_count += $users_count;
+    $result .= sprintf(_n('%d subscriber', '%d subscribers', $users_count, 'mailpoet'), $users_count) . "\n";
     
+    // TODO to reactivate during the next phases
+    /*
     // Emails
-    $emailsCount = Helpers::rowsCount('wysija_email');
-    $totalCount += $emailsCount;
-    $result .= sprintf(_n('%d newsletter', '%d newsletters', $emailsCount, Env::$plugin_name), $emailsCount) . "\n";
-    
+    $emails_count = \ORM::for_table(MP2_EMAIL_TABLE)->count();
+    $total_count += $emails_count;
+    $result .= sprintf(_n('%d newsletter', '%d newsletters', $emails_count, 'mailpoet'), $emails_count) . "\n";
+
     // Forms
-    $formsCount = Helpers::rowsCount('wysija_form');
-    $totalCount += $formsCount;
-    $result .= sprintf(_n('%d form', '%d forms', $formsCount, Env::$plugin_name), $formsCount) . "\n";
+    $forms_count = \ORM::for_table(MP2_FORM_TABLE)->count();
+    $total_count += $forms_count;
+    $result .= sprintf(_n('%d form', '%d forms', $forms_count, 'mailpoet'), $forms_count) . "\n";
+    */
     
-    $this->progressbar->setTotalCount($totalCount);
+    $this->progressbar->setTotalCount($total_count);
     
     return $result;
   }
@@ -223,12 +254,12 @@ class MP2Migrator {
     if($this->importStopped()) {
       return;
     }
-    $this->log(__("Importing segments...", Env::$plugin_name));
+    $this->log(__("Importing segments...", 'mailpoet'));
     do {
       if($this->importStopped()) {
         break;
       }
-      $lists = $this->getLists($this->chunks_size);
+      $lists = $this->getLists(self::CHUNK_SIZE);
       $lists_count = count($lists);
 
       if(is_array($lists)) {
@@ -242,7 +273,7 @@ class MP2Migrator {
       $this->progressbar->incrementCurrentCount($lists_count);
     } while(($lists != null) && ($lists_count > 0));
     
-    $this->log(sprintf(_n("%d segment imported", "%d segments imported", $imported_segments_count, Env::$plugin_name), $imported_segments_count));
+    $this->log(sprintf(_n("%d segment imported", "%d segments imported", $imported_segments_count, 'mailpoet'), $imported_segments_count));
   }
   
   /**
@@ -257,7 +288,7 @@ class MP2Migrator {
     $lists = array();
 
     $last_id = Setting::getValue('last_imported_list_id', 0);
-    $table = $wpdb->prefix . 'wysija_list';
+    $table = MP2_LIST_TABLE;
     $sql = "
       SELECT l.list_id, l.name, l.description, l.is_enabled, l.created_at
       FROM `$table` l
@@ -277,12 +308,13 @@ class MP2Migrator {
    * @return Segment
    */
   private function importSegment($list_data) {
+    $datetime = new \MailPoet\WP\DateTime();
     $segment = Segment::createOrUpdate(array(
       'id' => $list_data['list_id'],
       'name' => $list_data['name'],
-      'type' => $list_data['is_enabled']? 'default': 'wp_users',
+      'type' => $list_data['is_enabled'] ? 'default' : 'wp_users',
       'description' => $list_data['description'],
-      'created_at' => Helpers::mysqlDate($list_data['created_at']),
+      'created_at' => $datetime->formatTime($list_data['created_at'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
     ));
     Setting::setValue('last_imported_list_id', $list_data['list_id']);
     return $segment;
@@ -297,7 +329,7 @@ class MP2Migrator {
     if($this->importStopped()) {
       return;
     }
-    $this->log(__("Importing custom fields...", Env::$plugin_name));
+    $this->log(__("Importing custom fields...", 'mailpoet'));
     $custom_fields = $this->getCustomFields();
  
     foreach($custom_fields as $custom_field) {
@@ -307,7 +339,7 @@ class MP2Migrator {
       }
     }
     
-    $this->log(sprintf(_n("%d custom field imported", "%d custom fields imported", $imported_custom_fields_count, Env::$plugin_name), $imported_custom_fields_count));
+    $this->log(sprintf(_n("%d custom field imported", "%d custom fields imported", $imported_custom_fields_count, 'mailpoet'), $imported_custom_fields_count));
   }
   
   /**
@@ -320,7 +352,7 @@ class MP2Migrator {
     global $wpdb;
     $custom_fields = array();
 
-    $table = $wpdb->prefix . 'wysija_custom_field';
+    $table = MP2_CUSTOM_FIELD_TABLE;
     $sql = "
       SELECT cf.id, cf.name, cf.type, cf.required, cf.settings
       FROM `$table` cf
@@ -343,25 +375,25 @@ class MP2Migrator {
       'type' => $this->mapCustomFieldType($custom_field['type']),
       'params' => $this->mapCustomFieldParams($custom_field),
     );
-    $customField = new CustomField();
-    $customField->createOrUpdate($data);
-    return $customField;
+    $custom_field = new CustomField();
+    $custom_field->createOrUpdate($data);
+    return $custom_field;
   }
   
   /**
    * Map the MailPoet 2 custom field type with the MailPoet custom field type
    * 
-   * @param string $MP2type MP2 custom field type
+   * @param string $mp2_type MP2 custom field type
    * @return string MP3 custom field type
    */
-  private function mapCustomFieldType($MP2type) {
+  private function mapCustomFieldType($mp2_type) {
     $type = '';
-    switch($MP2type) {
+    switch($mp2_type) {
       case 'input':
         $type = 'text';
         break;
       default:
-        $type = $MP2type;
+        $type = $mp2_type;
     }
     return $type;
   }
@@ -388,12 +420,12 @@ class MP2Migrator {
   /**
    * Map the validate value
    * 
-   * @param string $MP2value MP2 value
+   * @param string $mp2_value MP2 value
    * @return string MP3 value
    */
-  private function mapCustomFieldValidateValue($MP2value) {
+  private function mapCustomFieldValidateValue($mp2_value) {
     $value = '';
-    switch($MP2value) {
+    switch($mp2_value) {
       case 'onlyLetterSp':
       case 'onlyLetterNumber':
         $value = 'alphanum';
@@ -417,12 +449,12 @@ class MP2Migrator {
     if($this->importStopped()) {
       return;
     }
-    $this->log(__("Importing subscribers...", Env::$plugin_name));
+    $this->log(__("Importing subscribers...", 'mailpoet'));
     do {
       if($this->importStopped()) {
         break;
       }
-      $users = $this->getUsers($this->chunks_size);
+      $users = $this->getUsers(self::CHUNK_SIZE);
       $users_count = count($users);
 
       if(is_array($users)) {
@@ -438,7 +470,7 @@ class MP2Migrator {
       $this->progressbar->incrementCurrentCount($users_count);
     } while(($users != null) && ($users_count > 0));
     
-    $this->log(sprintf(_n("%d subscriber imported", "%d subscribers imported", $imported_subscribers_count, Env::$plugin_name), $imported_subscribers_count));
+    $this->log(sprintf(_n("%d subscriber imported", "%d subscribers imported", $imported_subscribers_count, 'mailpoet'), $imported_subscribers_count));
   }
   
   /**
@@ -453,7 +485,7 @@ class MP2Migrator {
     $users = array();
 
     $last_id = Setting::getValue('last_imported_user_id', 0);
-    $table = $wpdb->prefix . 'wysija_user';
+    $table = MP2_USER_TABLE;
     $sql = "
       SELECT u.*
       FROM `$table` u
@@ -473,17 +505,18 @@ class MP2Migrator {
    * @return Subscriber
    */
   private function importSubscriber($user_data) {
+    $datetime = new \MailPoet\WP\DateTime();
     $subscriber = Subscriber::createOrUpdate(array(
       'id' => $user_data['user_id'],
-      'wp_user_id' => !empty($user_data['wpuser_id'])? $user_data['wpuser_id'] : null,
+      'wp_user_id' => !empty($user_data['wpuser_id']) ? $user_data['wpuser_id'] : null,
       'email' => $user_data['email'],
       'first_name' => $user_data['firstname'],
       'last_name' => $user_data['lastname'],
       'status' => $this->mapUserStatus($user_data['status']),
-      'created_at' => Helpers::mysqlDate($user_data['created_at']),
-      'subscribed_ip' => !empty($user_data['ip'])? $user_data['ip'] : null,
-      'confirmed_ip' => !empty($user_data['confirmed_ip'])? $user_data['confirmed_ip'] : null,
-      'confirmed_at' => !empty($user_data['confirmed_at'])? Helpers::mysqlDate($user_data['confirmed_at']) : null,
+      'created_at' => $datetime->formatTime($user_data['created_at'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
+      'subscribed_ip' => !empty($user_data['ip']) ? $user_data['ip'] : null,
+      'confirmed_ip' => !empty($user_data['confirmed_ip']) ? $user_data['confirmed_ip'] : null,
+      'confirmed_at' => !empty($user_data['confirmed_at']) ? $datetime->formatTime($user_data['confirmed_at'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT) : null,
     ));
     Setting::setValue('last_imported_user_id', $user_data['user_id']);
     if(!empty($subscriber)) {
@@ -492,7 +525,7 @@ class MP2Migrator {
         'old_id' => $user_data['user_id'],
         'type' => 'subscribers',
         'new_id' => $subscriber->id,
-        'created_at' => Helpers::mysqlDate(time()),
+        'created_at' => $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
       ));
     }
     return $subscriber;
@@ -545,7 +578,7 @@ class MP2Migrator {
     global $wpdb;
     $user_lists = array();
 
-    $table = $wpdb->prefix . 'wysija_user_list';
+    $table = MP2_USER_LIST_TABLE;
     $sql = "
       SELECT ul.list_id, ul.sub_date, ul.unsub_date
       FROM `$table` ul
@@ -564,16 +597,17 @@ class MP2Migrator {
    * @return SubscriberSegment
    */
   private function importSubscriberSegment($subscriber_id, $user_list) {
+    $datetime = new \MailPoet\WP\DateTime();
     $data = array(
       'subscriber_id' => $subscriber_id,
       'segment_id' => $user_list['list_id'],
-      'status' => empty($user_list['unsub_date'])? 'subscribed' : 'unsubscribed',
-      'created_at' => Helpers::mysqlDate($user_list['sub_date']),
-      'updated_at' => !empty($user_list['unsub_date'])? Helpers::mysqlDate($user_list['unsub_date']) : null,
+      'status' => empty($user_list['unsub_date']) ? 'subscribed' : 'unsubscribed',
+      'created_at' => $datetime->formatTime($user_list['sub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
+      'updated_at' => !empty($user_list['unsub_date']) ? $datetime->formatTime($user_list['unsub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT) : null,
     );
-    $subscriberSegment = new SubscriberSegment();
-    $subscriberSegment->createOrUpdate($data);
-    return $subscriberSegment;
+    $subscriber_segment = new SubscriberSegment();
+    $subscriber_segment->createOrUpdate($data);
+    return $subscriber_segment;
   }
   
   /**
@@ -620,18 +654,19 @@ class MP2Migrator {
    */
   private function importSubscriberCustomField($subscriber_id, $custom_field, $custom_field_value) {
     if($custom_field['type'] == 'date') {
-      $value = Helpers::mysqlDate($custom_field_value); // Convert the date field
+      $datetime = new \MailPoet\WP\DateTime();
+      $value = $datetime->formatTime($custom_field_value, \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT); // Convert the date field
     } else {
       $value = $custom_field_value;
     }
     $data = array(
       'subscriber_id' => $subscriber_id,
       'custom_field_id' => $custom_field['id'],
-      'value' => isset($value)? $value : '',
+      'value' => isset($value) ? $value : '',
     );
-    $subscriberCustomField = new SubscriberCustomField();
-    $subscriberCustomField->createOrUpdate($data);
-    return $subscriberCustomField;
+    $subscriber_custom_field = new SubscriberCustomField();
+    $subscriber_custom_field->createOrUpdate($data);
+    return $subscriber_custom_field;
   }
   
   /**

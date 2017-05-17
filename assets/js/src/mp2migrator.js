@@ -1,48 +1,34 @@
-(function ($) {
+define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
   'use strict';
+  MailPoet.MP2Migrator = {
 
-  var that;
-
-  var mailpoet_import = {
     fatal_error: '',
     is_logging: false,
-    
-    /**
-     * Start the logger
-     */
-    start_logger: function () {
-      that.is_logging = true;
-      clearTimeout(that.display_logs_timeout);
-      clearTimeout(that.update_progressbar_timeout);
-      clearTimeout(that.update_wordpress_info_timeout);
-      that.update_display();
+
+    startLogger: function () {
+      MailPoet.MP2Migrator.is_logging = true;
+      clearTimeout(MailPoet.MP2Migrator.displayLogs_timeout);
+      clearTimeout(MailPoet.MP2Migrator.updateProgressbar_timeout);
+      clearTimeout(MailPoet.MP2Migrator.update_wordpress_info_timeout);
+      MailPoet.MP2Migrator.updateDisplay();
     },
-    
-    /**
-     * Stop the logger
-     */
-    stop_logger: function () {
-      that.is_logging = false;
+
+    stopLogger: function () {
+      MailPoet.MP2Migrator.is_logging = false;
     },
-    
-    /**
-     * Update the display
-     */
-    update_display: function () {
-      that.display_logs();
-      that.update_progressbar();
+
+    updateDisplay: function () {
+      MailPoet.MP2Migrator.displayLogs();
+      MailPoet.MP2Migrator.updateProgressbar();
     },
-    
-    /**
-     * Display the logs
-     */
-    display_logs: function () {
-      $.ajax({
-        url: objectPlugin.log_file_url,
+
+    displayLogs: function () {
+      jQuery.ajax({
+        url: mailpoet_mp2_migrator.log_file_url,
         cache: false
       }).done(function (result) {
-        $('#action_message').html(''); // Clear the action message
-        $("#logger").html('');
+        jQuery('#action_message').html(''); // Clear the action message
+        jQuery("#logger").html('');
         result.split("\n").forEach(function (row) {
           if(row.substr(0, 7) === '[ERROR]' || row.substr(0, 9) === '[WARNING]' || row === 'IMPORT STOPPED BY USER') {
             row = '<span class="error_msg">' + row + '</span>'; // Mark the errors in red
@@ -50,56 +36,48 @@
           // Test if the import is complete
           else if(row === 'IMPORT COMPLETE') {
             row = '<span class="complete_msg">' + row + '</span>'; // Mark the complete message in green
-            $('#action_message').html(MailPoet.I18n.t('import_complete'))
+            jQuery('#action_message').html(MailPoet.I18n.t('import_complete'))
                     .removeClass('failure').addClass('success');
           }
-          $("#logger").append(row + "<br />\n");
+          jQuery("#logger").append(row + "<br />\n");
 
         });
-        $("#logger").append('<span class="error_msg">' + that.fatal_error + '</span>' + "<br />\n");
+        jQuery("#logger").append('<span class="error_msg">' + MailPoet.MP2Migrator.fatal_error + '</span>' + "<br />\n");
       }).always(function () {
-        if(that.is_logging) {
-          that.display_logs_timeout = setTimeout(that.display_logs, 1000);
+        if(MailPoet.MP2Migrator.is_logging) {
+          MailPoet.MP2Migrator.displayLogs_timeout = setTimeout(MailPoet.MP2Migrator.displayLogs, 1000);
         }
       });
     },
-    
-    /**
-     * Update the progressbar
-     */
-    update_progressbar: function () {
-      $.ajax({
-        url: objectPlugin.progress_url,
+
+    updateProgressbar: function () {
+      jQuery.ajax({
+        url: mailpoet_mp2_migrator.progress_url,
         cache: false,
         dataType: 'json'
       }).always(function (result) {
         // Move the progress bar
         var progress = Math.round(Number(result.current) / Number(result.total) * 100);
-        $('#progressbar').progressbar('option', 'value', progress);
-        $('#progresslabel').html(progress + '%');
-        if(that.is_logging) {
-          that.update_progressbar_timeout = setTimeout(that.update_progressbar, 1000);
+        jQuery('#progressbar').progressbar('option', 'value', progress);
+        jQuery('#progresslabel').html(progress + '%');
+        if(MailPoet.MP2Migrator.is_logging) {
+          MailPoet.MP2Migrator.updateProgressbar_timeout = setTimeout(MailPoet.MP2Migrator.updateProgressbar, 1000);
         }
       });
     },
-    
-    /**
-     * Start the import
-     *
-     * @returns {Boolean}
-     */
-    start_import: function () {
-      that.fatal_error = '';
+
+    startImport: function () {
+      MailPoet.MP2Migrator.fatal_error = '';
       // Start displaying the logs
-      that.start_logger();
+      MailPoet.MP2Migrator.startLogger();
 
       // Disable the import button
-      that.import_button_label = $('#import').val();
-      $('#import').val(MailPoet.I18n.t('importing')).attr('disabled', 'disabled');
+      MailPoet.MP2Migrator.import_button_label = jQuery('#import').val();
+      jQuery('#import').val(MailPoet.I18n.t('importing')).attr('disabled', 'disabled');
       // Show the stop button
-      $('#stop-import').show();
+      jQuery('#stop-import').show();
       // Clear the action message
-      $('#action_message').html('');
+      jQuery('#action_message').html('');
 
       // Run the import
       MailPoet.Ajax.post({
@@ -109,12 +87,12 @@
         data: {
         }
       }).always(function () {
-        that.stop_logger();
-        that.update_display(); // Get the latest information after the import was stopped
-        that.reactivate_import_button();
+        MailPoet.MP2Migrator.stopLogger();
+        MailPoet.MP2Migrator.updateDisplay(); // Get the latest information after the import was stopped
+        MailPoet.MP2Migrator.reactivateImportButton();
       }).done(function (response) {
         if(response) {
-          that.fatal_error = response.data;
+          MailPoet.MP2Migrator.fatal_error = response.data;
         }
       }).fail(function (response) {
         if(response.errors.length > 0) {
@@ -128,23 +106,14 @@
       });
       return false;
     },
-    
-    /**
-     * Reactivate the import button
-     *
-     */
-    reactivate_import_button: function () {
-      $('#import').val(that.import_button_label).removeAttr('disabled');
-      $('#stop-import').hide();
+
+    reactivateImportButton: function () {
+      jQuery('#import').val(MailPoet.MP2Migrator.import_button_label).removeAttr('disabled');
+      jQuery('#stop-import').hide();
     },
-    
-    /**
-     * Stop the import
-     *
-     * @returns {Boolean}
-     */
-    stop_import: function () {
-      $('#stop-import').attr('disabled', 'disabled');
+
+    stopImport: function () {
+      jQuery('#stop-import').attr('disabled', 'disabled');
       // Stop the import
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
@@ -153,20 +122,15 @@
         data: {
         }
       }).always(function () {
-        $('#stop-import').removeAttr('disabled'); // Enable the button
-        that.reactivate_import_button();
-        that.update_display(); // Get the latest information after the import was stopped
+        jQuery('#stop-import').removeAttr('disabled'); // Enable the button
+        MailPoet.MP2Migrator.reactivateImportButton();
+        MailPoet.MP2Migrator.updateDisplay(); // Get the latest information after the import was stopped
       });
-      that.stop_logger();
+      MailPoet.MP2Migrator.stopLogger();
       return false;
     },
 
-    /**
-     * Skip the import
-     *
-     * @returns {Boolean}
-     */
-    skip_import: function () {
+    skipImport: function () {
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'MP2Migrator',
@@ -180,23 +144,27 @@
     }
 
   };
-
+  
   /**
    * Actions to run when the DOM is ready
    */
-  $(function () {
-    that = mailpoet_import;
-
-    $('#progressbar').progressbar({value: 0});
+  jQuery(function () {
+    jQuery('#progressbar').progressbar({value: 0});
 
     // Import button
-    $('#import').click(that.start_import);
-
+    jQuery('#import').click(function() {
+      MailPoet.MP2Migrator.startImport();
+    });
+      
     // Stop import button
-    $('#stop-import').click(that.stop_import);
+    jQuery('#stop-import').click(function() {
+      MailPoet.MP2Migrator.stopImport();
+    });
 
     // Skip import link
-    $('#skip-import').click(that.skip_import);
+    jQuery('#skip-import').click(function() {
+      MailPoet.MP2Migrator.skipImport();
+    });
   });
 
-})(jQuery);
+});
