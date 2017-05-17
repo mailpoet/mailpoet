@@ -8,7 +8,7 @@ class CustomFieldTest extends MailPoetTest {
   function _before() {
     $this->data = array(
       'name' => 'City',
-      'type' => 'text',
+      'type' => CustomField::TYPE_TEXT,
       'params' => array(
         'label' => 'What is your city?'
       )

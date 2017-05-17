@@ -1,6 +1,6 @@
 <?php
 namespace MailPoet\Form;
-use MailPoet\API\API;
+use MailPoet\API\JSON\API;
 use MailPoet\Config\Renderer;
 use MailPoet\Models\Form;
 use MailPoet\Form\Renderer as FormRenderer;

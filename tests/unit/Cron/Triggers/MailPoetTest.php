@@ -1,6 +1,6 @@
 <?php
 
-use MailPoet\API\Endpoints\Cron;
+use MailPoet\API\JSON\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Triggers\MailPoet;
 use MailPoet\Models\Setting;
