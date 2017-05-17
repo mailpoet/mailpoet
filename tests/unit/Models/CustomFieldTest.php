@@ -131,30 +131,6 @@ class CustomFieldTest extends MailPoetTest {
     expect($subscriber->value)->equals($association->value);
   }
 
-  function testItExtractsCustomFieldsFromObject() {
-    $data = array(
-      'email' => 'test@example.com',
-      'cf_1' => 'Paris',
-      'first_name' => 'John',
-      'cf_2' => 'France',
-      'last_name' => 'Doe'
-    );
-    list($data, $custom_values) = CustomField::extractCustomFieldsFromFromObject($data);
-    expect($data)->equals(
-      array(
-        'email' => 'test@example.com',
-        'first_name' => 'John',
-        'last_name' => 'Doe'
-      )
-    );
-    expect($custom_values)->equals(
-      array(
-        '1' => 'Paris',
-        '2' => 'France'
-      )
-    );
-  }
-
   function _after() {
     CustomField::deleteMany();
     Subscriber::deleteMany();

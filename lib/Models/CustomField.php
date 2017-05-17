@@ -148,15 +148,4 @@ class CustomField extends Model {
 
     return $custom_field->save();
   }
-
-  static function extractCustomFieldsFromFromObject($data) {
-    $custom_fields = array();
-    foreach($data as $key => $value) {
-      if(strpos($key, 'cf_') === 0) {
-        $custom_fields[(int)substr($key, 3)] = $value;
-        unset($data[$key]);
-      }
-    }
-    return array($data, $custom_fields);
-  }
 }

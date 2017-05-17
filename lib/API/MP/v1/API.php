@@ -95,7 +95,7 @@ class API {
     }
 
     // separate data into default and custom fields
-    list($default_fields, $custom_fields) = CustomField::extractCustomFieldsFromFromObject($subscriber);
+    list($default_fields, $custom_fields) = Subscriber::extractCustomFieldsFromFromObject($subscriber);
     // if some required default fields are missing, set their values
     $default_fields = Subscriber::setRequiredFieldsDefaultValues($default_fields);
 

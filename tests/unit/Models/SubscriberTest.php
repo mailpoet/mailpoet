@@ -913,6 +913,30 @@ class SubscriberTest extends MailPoetTest {
     );
   }
 
+  function testItExtractsCustomFieldsFromObject() {
+    $data = array(
+      'email' => 'test@example.com',
+      'cf_1' => 'Paris',
+      'first_name' => 'John',
+      'cf_2' => 'France',
+      'last_name' => 'Doe'
+    );
+    list($data, $custom_values) = Subscriber::extractCustomFieldsFromFromObject($data);
+    expect($data)->equals(
+      array(
+        'email' => 'test@example.com',
+        'first_name' => 'John',
+        'last_name' => 'Doe'
+      )
+    );
+    expect($custom_values)->equals(
+      array(
+        '1' => 'Paris',
+        '2' => 'France'
+      )
+    );
+  }
+
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);

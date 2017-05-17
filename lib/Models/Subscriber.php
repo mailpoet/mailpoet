@@ -491,11 +491,10 @@ class Subscriber extends Model {
       unset($data['segments']);
     }
 
-    // set required fields' default values
     $data = self::setRequiredFieldsDefaultValues($data);
 
     // get custom fields
-    list($data, $custom_fields) = CustomField::extractCustomFieldsFromFromObject($data);
+    list($data, $custom_fields) = self::extractCustomFieldsFromFromObject($data);
 
     // wipe any unconfirmed data at this point
     $data['unconfirmed_data'] = null;
@@ -880,5 +879,16 @@ class Subscriber extends Model {
       }
     }
     return $data;
+  }
+
+  static function extractCustomFieldsFromFromObject($data) {
+    $custom_fields = array();
+    foreach($data as $key => $value) {
+      if(strpos($key, 'cf_') === 0) {
+        $custom_fields[(int)substr($key, 3)] = $value;
+        unset($data[$key]);
+      }
+    }
+    return array($data, $custom_fields);
   }
 }
