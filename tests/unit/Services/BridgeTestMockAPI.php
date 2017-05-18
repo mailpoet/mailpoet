@@ -34,6 +34,10 @@ class MockAPI {
     $this->api_key = $api_key;
   }
 
+  function getKey() {
+    return $this->api_key;
+  }
+
   private function processAPICheckResponse($code) {
     switch($code) {
       case 200:

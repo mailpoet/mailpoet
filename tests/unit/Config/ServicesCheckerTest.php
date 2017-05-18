@@ -11,10 +11,10 @@ class ServicesCheckerTest extends MailPoetTest {
     $this->fillPremiumKey();
   }
 
-  function testItDoesNotCheckMSSKeyIfMPSendingServiceIsDisabled() {
+  function testItChecksMSSKeyIfMPSendingServiceIsDisabled() {
     $this->disableMailPoetSendingMethod();
     $result = ServicesChecker::isMailPoetAPIKeyValid();
-    expect($result)->null();
+    expect($result)->true();
   }
 
   function testItReturnsTrueIfMSSKeyIsValid() {

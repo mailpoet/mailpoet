@@ -39,10 +39,10 @@ class Services extends APIEndpoint {
 
     $success_message = null;
     if($state == Bridge::MAILPOET_KEY_VALID) {
-      $success_message = __('Your MailPoet API key is valid!', 'mailpoet');
+      $success_message = __('Your MailPoet Sending Service key has been successfully validated.', 'mailpoet');
     } elseif($state == Bridge::MAILPOET_KEY_EXPIRING) {
       $success_message = sprintf(
-        __('Your MailPoet key expires on %s!', 'mailpoet'),
+        __('Your MailPoet Sending Service key expires on %s!', 'mailpoet'),
         $this->date_time->formatDate(strtotime($result['data']['expire_at']))
       );
     }
@@ -53,12 +53,12 @@ class Services extends APIEndpoint {
 
     switch($state) {
       case Bridge::MAILPOET_KEY_INVALID:
-        $error = __('Your MailPoet key is invalid!', 'mailpoet');
+        $error = __('Your MailPoet Sending Service key is invalid.', 'mailpoet');
         break;
       default:
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
         $error = sprintf(
-          __('Error validating API key, please try again later (code: %s)', 'mailpoet'),
+          __('Error validating MailPoet Sending Service key, please try again later (code: %s)', 'mailpoet'),
           $code
         );
         break;
@@ -88,10 +88,10 @@ class Services extends APIEndpoint {
 
     $success_message = null;
     if($state == Bridge::PREMIUM_KEY_VALID) {
-      $success_message = __('Your license key has been successfully validated.', 'mailpoet');
+      $success_message = __('Your Premium key has been successfully validated.', 'mailpoet');
     } elseif($state == Bridge::PREMIUM_KEY_EXPIRING) {
       $success_message = sprintf(
-        __('Your license key expires on %s.', 'mailpoet'),
+        __('Your Premium key expires on %s.', 'mailpoet'),
         $this->date_time->formatDate(strtotime($result['data']['expire_at']))
       );
     }
@@ -106,15 +106,15 @@ class Services extends APIEndpoint {
 
     switch($state) {
       case Bridge::PREMIUM_KEY_INVALID:
-        $error = __('Your license key is invalid.', 'mailpoet');
+        $error = __('Your Premium key is invalid.', 'mailpoet');
         break;
       case Bridge::PREMIUM_KEY_ALREADY_USED:
-        $error = __('Your license key is already used on another site.', 'mailpoet');
+        $error = __('Your Premium key is already used on another site.', 'mailpoet');
         break;
       default:
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
         $error = sprintf(
-          __('Error validating license key, please try again later (code: %s)', 'mailpoet'),
+          __('Error validating Premium key, please try again later (code: %s)', 'mailpoet'),
           $code
         );
         break;

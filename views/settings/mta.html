@@ -39,6 +39,14 @@
   value="<%= settings.mta.frequency.interval %>"
 />
 
+<!-- mta: mailpoet sending service key -->
+<input
+  type="hidden"
+  id="mailpoet_api_key"
+  name="mta[mailpoet_api_key]"
+  value="<%=- settings.mta.mailpoet_api_key -%>"
+/>
+
 <!-- smtp: available sending methods -->
 <ul class="mailpoet_sending_methods clearfix">
   <li
@@ -69,14 +77,13 @@
     >
       <strong><%= __("Solve all of your sending problems!") %></strong>
       <br />
-      <%= __("We offer affordable email packages with speeds up to 50 times faster than the competition.") %>
+      <%= __("Let MailPoet send your emails and get the Premium features for as little as 10 dollars or euros per month.") %>
       <br/>
       <br/>
       <a
-        href="https://account.mailpoet.com?s=<%= total_subscribers %>&utm_source=plugin&utm_campaign=purchase&utm_medium=settings"
+        href="<%= admin_url('admin.php?page=mailpoet-premium') %>"
         class="button button-primary"
-        target="_blank"
-      ><%= __('View Email Plans') %></a>
+      ><%= __('Find out more') %></a>
     </p>
 
     <div class="mailpoet_status">
@@ -84,9 +91,10 @@
     </div>
 
     <div class="mailpoet_actions">
-      <a
-        class="button-secondary"
-        href="#mta/mailpoet"><%= __('Configure') %></a>
+      <button
+        class="mailpoet_sending_service_activate button-secondary"
+        <% if(settings.mta_group == 'mailpoet' or not(mss_key_valid)) %> disabled="disabled"<% endif %>
+      ><%= __('Activate') %></button>
     </div>
   </li>
   <li
@@ -135,40 +143,17 @@
   </li>
 </ul>
 
-<div id="mailpoet_sending_method_setup">
-  <!-- Sending Method: MailPoet -->
-  <div
-    class="mailpoet_sending_method"
-    data-group="mailpoet"
-    style="display:none;"
-  >
-    <h3><%= __('Already have a key?') %></h3>
-    <table class="form-table">
-      <tbody>
-        <tr>
-          <th scope="row">
-            <label for="mailpoet_api_key">
-              <%= __('Your key') %>
-            </label>
-          </th>
-          <td>
-            <input
-              type="text"
-              class="regular-text"
-              id="mailpoet_api_key"
-              name="mta[mailpoet_api_key]"
-              value="<%=- settings.mta.mailpoet_api_key -%>"
-            />
-            <a
-              id="mailpoet_api_key_verify"
-              class="button-secondary"
-            ><%= __('Verify') %></a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<p class="mailpoet_sending_methods_help">
+  <%= __("Need help to pick? [link]Check out the comparison table of sending methods[/link].")
+    |replace({
+      '[link]': '<a target="_blank" href="http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods">',
+      '[/link]': '</a>'
+      })
+    |raw
+  %>
+</p>
 
+<div id="mailpoet_sending_method_setup">
   <!-- Sending Method: Website -->
   <div
     class="mailpoet_sending_method"
@@ -737,46 +722,6 @@
         });
       });
 
-      // verifying api key
-      $('#mailpoet_api_key_verify').on('click', function() {
-        // get api key
-        var key = $('#mailpoet_api_key').val();
-
-        if(key.length === 0) {
-          // validation
-          return MailPoet.Notice.error(
-            '<%= __('Please specify an API key before validating it.') | escape('js') %>',
-            { scroll: true, static: true }
-          );
-        }
-
-        MailPoet.Modal.loading(true);
-        MailPoet.Ajax.post({
-          api_version: window.mailpoet_api_version,
-          endpoint: 'services',
-          action: 'checkMSSKey',
-          data: {
-            key: key
-          }
-        }).always(function() {
-          MailPoet.Modal.loading(false);
-        }).done(function(response) {
-          // Hide server error notices
-          $('.mailpoet_notice_server').hide();
-          MailPoet.Notice.success(
-            response.data.message,
-            { scroll: true }
-          );
-        }).fail(function(response) {
-          if (response.errors.length > 0) {
-            MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
-              { scroll: true }
-            );
-          }
-        });
-      });
-
       // sending frequency update based on selected provider
       $('#mailpoet_smtp_provider').on('change keyup', setProviderForm);
       $('#mailpoet_web_host').on('change keyup', renderHostSendingFrequency);
@@ -797,10 +742,18 @@
       });
 
       // save configuration of a sending method
+      $('.mailpoet_sending_service_activate').on('click', function(e) {
+        e.preventDefault();
+        saveSendingMethodConfiguration('mailpoet');
+      });
       $('.mailpoet_mta_setup_save').on('click', function() {
         // get selected method
-        var group = $('.mailpoet_sending_method:visible').data('group'),
-          emails = $('#'+group+'_frequency_emails').val(),
+        var group = $('.mailpoet_sending_method:visible').data('group');
+        saveSendingMethodConfiguration(group);
+      });
+
+      function saveSendingMethodConfiguration(group) {
+        var emails = $('#'+group+'_frequency_emails').val(),
           interval = $('#'+group+'_frequency_interval').val();
 
         // set sending method
@@ -809,16 +762,6 @@
             "<%= __('You have selected an invalid sending method.') | escape('js') %>"
           );
         } else {
-          if(
-            group === 'mailpoet'
-            && $('#mailpoet_api_key').val().trim().length === 0
-          ) {
-            MailPoet.Notice.error(
-              "<%= __('You need to specify a MailPoet account key.') | escape('js') %>"
-            );
-            return false;
-          }
-
           // set new sending method active
           setSendingMethodGroup(group);
 
@@ -835,7 +778,7 @@
           // save settings
           $('.mailpoet_settings_submit > input').trigger('click');
         }
-      });
+      }
 
       function setSignupConfirmation(group) {
         if (group === 'mailpoet') {
@@ -882,13 +825,10 @@
         $('#mailpoet_sending_method_inactive_text')
           .toggleClass('mailpoet_hidden', group === 'mailpoet');
 
-        if(group === 'mailpoet') {
-          // Verify key on saving
-          $('#mailpoet_api_key_verify').trigger('click');
-        } else {
-          // Hide server error notices
-          $('.mailpoet_notice_server').hide();
-        }
+        // Hide server error notices
+        $('.mailpoet_notice_server').hide();
+
+        updateMailPoetMethodButton();
       }
 
       function getMethodFromGroup(group) {
@@ -1078,6 +1018,15 @@
       }
     });
   });
+
+  // enable/disable MSS method activate button
+  function updateMailPoetMethodButton() {
+    var $ = jQuery;
+    var group = $('.mailpoet_sending_methods .mailpoet_active').data('group');
+    var key_invalid = $('.mailpoet_mss_key_valid').hasClass('mailpoet_hidden');
+    $('.mailpoet_sending_service_activate').prop('disabled', group === 'mailpoet' || key_invalid);
+  }
+
 </script>
 
 <%= partial(
