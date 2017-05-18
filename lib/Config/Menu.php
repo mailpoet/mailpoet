@@ -312,6 +312,7 @@ class Menu {
       'total_subscribers' => Subscriber::getTotalSubscribers(),
       'premium_plugin_active' => License::getLicense(),
       'premium_key_valid' => isset($this->premium_key_valid) ? $this->premium_key_valid : null,
+      'mss_key_valid' => isset($this->mp_api_key_valid) ? $this->mp_api_key_valid : null,
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),
