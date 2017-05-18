@@ -77,7 +77,7 @@ class Database {
       $statistics_opens = Env::$db_prefix . 'statistics_opens';
       $statistics_unsubscribes = Env::$db_prefix . 'statistics_unsubscribes';
       $statistics_forms = Env::$db_prefix . 'statistics_forms';
-      $imported_data_mapping = Env::$db_prefix . 'imported_data_mapping';
+      $mapping_to_external_entities = Env::$db_prefix . 'mapping_to_external_entities';
 
       define('MP_SETTINGS_TABLE', $settings);
       define('MP_SEGMENTS_TABLE', $segments);
@@ -99,7 +99,7 @@ class Database {
       define('MP_STATISTICS_OPENS_TABLE', $statistics_opens);
       define('MP_STATISTICS_UNSUBSCRIBES_TABLE', $statistics_unsubscribes);
       define('MP_STATISTICS_FORMS_TABLE', $statistics_forms);
-      define('MP_IMPORTED_DATA_MAPPING_TABLE', $imported_data_mapping);
+      define('MP_MAPPING_TO_EXTERNAL_ENTITIES_TABLE', $mapping_to_external_entities);
     }
   }
 }

@@ -34,7 +34,7 @@ class Migrator {
       'statistics_opens',
       'statistics_unsubscribes',
       'statistics_forms',
-      'imported_data_mapping'
+      'mapping_to_external_entities'
     );
   }
 
@@ -364,7 +364,7 @@ class Migrator {
     return $this->sqlify(__FUNCTION__, $attributes);
   }
 
-  function importedDataMapping() {
+  function mappingToExternalEntities() {
     $attributes = array(
       'old_id mediumint(9) NOT NULL,',
       'type varchar(50) NOT NULL,',

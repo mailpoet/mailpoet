@@ -9,7 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\SubscriberCustomField;
-use MailPoet\Models\ImportedDataMapping;
+use MailPoet\Models\MappingToExternalEntities;
 use MailPoet\Config\Activator;
 
 if(!defined('ABSPATH')) exit;
@@ -520,7 +520,7 @@ class MP2Migrator {
     ));
     Setting::setValue('last_imported_user_id', $user_data['user_id']);
     if(!empty($subscriber)) {
-      $mapping = new ImportedDataMapping();
+      $mapping = new MappingToExternalEntities();
       $mapping->create(array(
         'old_id' => $user_data['user_id'],
         'type' => 'subscribers',
@@ -677,7 +677,7 @@ class MP2Migrator {
    */
   public function getImportedMapping($model) {
     $mappings = array();
-    $mapping_relations = ImportedDataMapping::where('type', $model)->findArray();
+    $mapping_relations = MappingToExternalEntities::where('type', $model)->findArray();
     foreach($mapping_relations as $relation) {
       $mappings[$relation['old_id']] = $relation['new_id'];
     }

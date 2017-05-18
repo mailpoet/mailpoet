@@ -2,7 +2,7 @@
 use MailPoet\Config\MP2Migrator;
 use MailPoet\Models\Setting;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\ImportedDataMapping;
+use MailPoet\Models\MappingToExternalEntities;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
@@ -347,7 +347,7 @@ class MP2MigratorTest extends MailPoetTest {
    */
   public function testGetImportedMapping() {
     $this->initImport();
-    $mapping = new ImportedDataMapping();
+    $mapping = new MappingToExternalEntities();
     $old_id = 999;
     $new_id = 500;
     $type = 'testMapping';
