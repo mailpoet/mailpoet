@@ -14,7 +14,7 @@ if(!defined('ABSPATH')) exit;
 class ServicesChecker {
   function isMailPoetAPIKeyValid($display_error_notice = true) {
     if(!Bridge::isMPSendingServiceEnabled()) {
-      return null;
+      $display_error_notice = false;
     }
 
     $mss_key = Setting::getValue(Bridge::API_KEY_STATE_SETTING_NAME);
