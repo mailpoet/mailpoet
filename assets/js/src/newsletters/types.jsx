@@ -63,7 +63,9 @@ define(
             'action': function() {
               return (
                 <div>
-                  Premium feature text (TBD)
+                  <a href="?page=mailpoet-settings#premium" target="_blank">
+                    {MailPoet.I18n.t('getPremiumVersion')}
+                  </a>
                 </div>
               )
             }()
@@ -74,7 +76,7 @@ define(
             'description': MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
             'action': function() {
               return (
-                <a className="button button-primary" onClick={ this.createNewsletter.bind(null, 'standard') }>
+                <a className="button button-primary" onClick={ this.setupNewsletter.bind(null, 'notification') }>
                   {MailPoet.I18n.t('setUp')}
                 </a>
               )
@@ -82,7 +84,7 @@ define(
           }
         ];
 
-        types = Hooks.applyFilters('mailpoet_newsletters_types', types);
+        types = Hooks.applyFilters('mailpoet_newsletters_types', types, this);
 
         return (
           <div>
