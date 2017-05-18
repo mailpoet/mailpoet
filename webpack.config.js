@@ -86,20 +86,12 @@ baseConfig = {
         loader: 'expose-loader?' + globalPrefix + '.StatsBadge!babel-loader',
       },
       {
-        include: path.resolve(__dirname, 'assets/js/src/form/fields/select.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.FormFieldSelect!babel-loader',
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/form/fields/text.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.FormFieldText!babel-loader',
-      },
-      {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/scheduling/common.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.Common!babel-loader',
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/types/welcome/scheduling.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.NewsletterWelcomeNotificationScheduling!babel-loader',
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/breadcrumb.jsx'),
-        loader: 'expose-loader?' + globalPrefix + '.Breadcrumb!babel-loader',
+        loader: 'expose-loader?' + globalPrefix + '.NewsletterCreationBreadcrumb!babel-loader',
       },
       {
         include: /Blob.js$/,
@@ -157,9 +149,7 @@ config.push(_.extend({}, baseConfig, {
       'listing/listing.jsx',
       'newsletters/badges/stats.jsx',
       'newsletters/breadcrumb.jsx',
-      'form/fields/select.jsx',
-      'form/fields/text.jsx',
-      'newsletters/scheduling/common.jsx'
+      'newsletters/types/welcome/scheduling.jsx'
     ],
     admin: [
       'subscribers/subscribers.jsx',
