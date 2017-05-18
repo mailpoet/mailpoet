@@ -11,10 +11,22 @@ class ServicesCheckerTest extends MailPoetTest {
     $this->fillPremiumKey();
   }
 
-  function testItChecksMSSKeyIfMPSendingServiceIsDisabled() {
+  function testItDoesNotCheckMSSKeyIfMPSendingServiceIsDisabled() {
     $this->disableMailPoetSendingMethod();
     $result = ServicesChecker::isMailPoetAPIKeyValid();
-    expect($result)->true();
+    expect($result)->null();
+  }
+
+  function testItForciblyChecksMSSKeyIfMPSendingServiceIsDisabled() {
+    $this->disableMailPoetSendingMethod();
+    $result = ServicesChecker::isMailPoetAPIKeyValid(false, true);
+    expect($result)->false();
+  }
+
+  function testItReturnsFalseIfMSSKeyIsNotSpecified() {
+    Setting::setValue(Bridge::API_KEY_SETTING_NAME, '');
+    $result = ServicesChecker::isMailPoetAPIKeyValid();
+    expect($result)->false();
   }
 
   function testItReturnsTrueIfMSSKeyIsValid() {
@@ -47,7 +59,7 @@ class ServicesCheckerTest extends MailPoetTest {
     expect($result)->true();
   }
 
-  function testItReturnsTrueIfMSSKeyStateIsUnexpected() {
+  function testItReturnsFalseIfMSSKeyStateIsUnexpected() {
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array(
@@ -55,7 +67,18 @@ class ServicesCheckerTest extends MailPoetTest {
       )
     );
     $result = ServicesChecker::isMailPoetAPIKeyValid();
-    expect($result)->true();
+    expect($result)->false();
+  }
+
+  function testItReturnsFalseIfMSSKeyStateIsEmpty() {
+    Setting::setValue(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      array(
+        'state' => ''
+      )
+    );
+    $result = ServicesChecker::isMailPoetAPIKeyValid();
+    expect($result)->false();
   }
 
   function testItReturnsFalseIfPremiumKeyIsNotSpecified() {
