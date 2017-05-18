@@ -42,6 +42,11 @@ class Bridge {
     }
   }
 
+  static function isMSSKeySpecified() {
+    $key = Setting::getValue(self::API_KEY_SETTING_NAME);
+    return !empty($key);
+  }
+
   static function isPremiumKeySpecified() {
     $key = Setting::getValue(self::PREMIUM_KEY_SETTING_NAME);
     return !empty($key);
