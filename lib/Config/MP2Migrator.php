@@ -202,7 +202,7 @@ class MP2Migrator {
    * 
    */
   private function displayDataToMigrate() {
-    $data = $this->getDataToMigrate();
+    $data = $this->getDataToMigrateAndResetProgressBar();
     $this->log($data);
   }
   
@@ -211,7 +211,7 @@ class MP2Migrator {
    * 
    * @return string Data to migrate
    */
-  private function getDataToMigrate() {
+  private function getDataToMigrateAndResetProgressBar() {
     $result = '';
     $total_count = 0;
     
