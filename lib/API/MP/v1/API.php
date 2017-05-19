@@ -42,7 +42,7 @@ class API {
   }
 
   function subscribeToLists($subscriber_id, array $segments_ids) {
-    $subscriber = Subscriber::findOne((int)$subscriber_id);
+    $subscriber = Subscriber::findOne($subscriber_id);
     // throw exception when subscriber does not exist
     if(!$subscriber) {
       throw new \Exception(__('This subscriber does not exist.', 'mailpoet'));
@@ -69,7 +69,8 @@ class API {
       throw new \Exception(__(sprintf('Lists with ID %s do not exist.', implode(', ', $missing_ids)), 'mailpoet'));
     }
 
-    return SubscriberSegment::subscribeToSegments($subscriber, $found_segments_ids);
+    SubscriberSegment::subscribeToSegments($subscriber, $found_segments_ids);
+    return $subscriber->withCustomFields()->withSubscriptions()->asArray();
   }
 
   function getLists() {
