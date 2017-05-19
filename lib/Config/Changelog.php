@@ -36,7 +36,13 @@ class Changelog {
 
     if($version === null) {
       // new install
-      $redirect_url = admin_url('admin.php?page=mailpoet-welcome');
+      $mp2_migrator = new MP2Migrator();
+      if($mp2_migrator->isMigrationNeeded()) {
+        // Migration from MP2
+        $redirect_url = admin_url('admin.php?page=mailpoet-migration');
+      } else {
+        $redirect_url = admin_url('admin.php?page=mailpoet-welcome');
+      }
     } else if($version !== Env::$version) {
       // update
       $redirect_url = admin_url('admin.php?page=mailpoet-update');

@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Config;
 
-use MailPoet\Config\MP2Migrator;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -218,6 +217,18 @@ class Menu {
 
     add_submenu_page(
       true,
+      $this->setPageTitle(__('Migration', 'mailpoet')),
+      '',
+      Env::$required_permission,
+      'mailpoet-migration',
+      array(
+        $this,
+        'migration'
+      )
+    );
+
+    add_submenu_page(
+      true,
       $this->setPageTitle(__('Update', 'mailpoet')),
       __('Update', 'mailpoet'),
       Env::$required_permission,
@@ -271,25 +282,23 @@ class Menu {
       $redirect_url = admin_url('admin.php?page=mailpoet-newsletters');
     }
 
-    $mp2_migrator = new MP2Migrator();
-    if($mp2_migrator->isMigrationNeeded()) {
-      $mp2_migrator->init();
-      $data = array(
-        'log_file_url' => $mp2_migrator->log_file_url,
-        'progress_url' => $mp2_migrator->progressbar->url,
-      );
-      $this->displayPage('mp2migration.html', $data);
-      
-    } else {
+    $data = array(
+      'settings' => Setting::getAll(),
+      'current_user' => wp_get_current_user(),
+      'redirect_url' => $redirect_url,
+      'sub_menu' => 'mailpoet-newsletters'
+    );
+    $this->displayPage('welcome.html', $data);
+  }
 
-      $data = array(
-        'settings' => Setting::getAll(),
-        'current_user' => wp_get_current_user(),
-        'redirect_url' => $redirect_url,
-        'sub_menu' => 'mailpoet-newsletters'
-      );
-      $this->displayPage('welcome.html', $data);
-    }
+  function migration() {
+    $mp2_migrator = new MP2Migrator();
+    $mp2_migrator->init();
+    $data = array(
+      'log_file_url' => $mp2_migrator->log_file_url,
+      'progress_url' => $mp2_migrator->progressbar->url,
+    );
+    $this->displayPage('mp2migration.html', $data);
   }
 
   function update() {

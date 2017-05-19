@@ -143,6 +143,8 @@ class MP2Migrator {
     $this->importCustomFields();
     $this->importSubscribers();
     
+    Setting::setValue('mailpoet_migration_complete', true);
+    
     $this->log(sprintf('=== ' . __('END IMPORT', 'mailpoet') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     $result = ob_get_contents();
     ob_clean();
