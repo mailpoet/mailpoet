@@ -18,7 +18,7 @@ class MP2Migrator {
 
   const IMPORT_TIMEOUT_IN_SECONDS = 7200; // Timeout = 2 hours
   const CHUNK_SIZE = 10; // To import the data by batch
-  
+
   private $log_file;
   public $log_file_url;
   public $progressbar;
@@ -30,10 +30,10 @@ class MP2Migrator {
     $this->log_file_url = Env::$temp_url . '/' . $log_filename;
     $this->progressbar = new ProgressBar('mp2migration');
   }
-  
+
   private function defineMP2Tables() {
     global $wpdb;
-    
+
     if(!defined('MP2_CAMPAIGN_TABLE')) {
       define('MP2_CAMPAIGN_TABLE', $wpdb->prefix . 'wysija_campaign');
     }
@@ -59,7 +59,7 @@ class MP2Migrator {
 
   /**
    * Test if the migration is needed
-   * 
+   *
    * @return boolean
    */
   public function isMigrationNeeded() {
@@ -72,7 +72,7 @@ class MP2Migrator {
 
   /**
    * Store the "Skip import" choice
-   * 
+   *
    */
   public function skipImport() {
     Setting::setValue('mailpoet_migration_complete', true);
@@ -100,7 +100,7 @@ class MP2Migrator {
 
   /**
    * Initialize the migration page
-   * 
+   *
    */
   public function init() {
     $this->enqueueScripts();
@@ -116,7 +116,7 @@ class MP2Migrator {
 
   /**
    * Write a message in the log file
-   * 
+   *
    * @param string $message
    */
   private function log($message) {
@@ -125,7 +125,7 @@ class MP2Migrator {
 
   /**
    * Import the data from MailPoet 2
-   * 
+   *
    * @return string Result
    */
   public function import() {
@@ -136,15 +136,15 @@ class MP2Migrator {
     $this->log(sprintf('=== ' . __('START IMPORT', 'mailpoet') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     Setting::setValue('import_stopped', false); // Reset the stop import action
     $this->eraseMP3Data();
-    
+
     $this->displayDataToMigrate();
-    
+
     $this->importSegments();
     $this->importCustomFields();
     $this->importSubscribers();
-    
+
     Setting::setValue('mailpoet_migration_complete', true);
-    
+
     $this->log(sprintf('=== ' . __('END IMPORT', 'mailpoet') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     $result = ob_get_contents();
     ob_clean();
@@ -153,35 +153,48 @@ class MP2Migrator {
 
   /**
    * Empty the log file
-   * 
+   *
    */
   private function emptyLog() {
     file_put_contents($this->log_file, '');
   }
-  
+
   /**
    * Erase all the MailPoet 3 data
-   * 
+   *
    */
   private function eraseMP3Data() {
     Activator::deactivate();
     Activator::activate();
+
+    $this->deleteSegments();
     $this->resetMigrationCounters();
     $this->log(__("MailPoet data erased", 'mailpoet'));
   }
-  
+
   /**
    * Reset the migration counters
-   * 
+   *
    */
   private function resetMigrationCounters() {
     Setting::setValue('last_imported_user_id', 0);
     Setting::setValue('last_imported_list_id', 0);
   }
-  
+
+  /**
+   * Delete the existing segments except the wp_users segment
+   *
+   */
+  private function deleteSegments() {
+    global $wpdb;
+
+    $table = MP_SEGMENTS_TABLE;
+    $wpdb->query("DELETE FROM {$table} WHERE type != 'wp_users'");
+  }
+
   /**
    * Stop the import
-   * 
+   *
    */
   public function stopImport() {
     Setting::setValue('import_stopped', true);
@@ -190,7 +203,7 @@ class MP2Migrator {
 
   /**
    * Test if the import must stop
-   * 
+   *
    * @return boolean Import must stop or not
    */
   private function importStopped() {
@@ -199,36 +212,36 @@ class MP2Migrator {
 
   /**
    * Display the number of data to migrate
-   * 
+   *
    */
   private function displayDataToMigrate() {
     $data = $this->getDataToMigrateAndResetProgressBar();
     $this->log($data);
   }
-  
+
   /**
    * Get the data to migrate
-   * 
+   *
    * @return string Data to migrate
    */
   private function getDataToMigrateAndResetProgressBar() {
     $result = '';
     $total_count = 0;
-    
+
     $this->progressbar->setTotalCount(0);
-    
+
     $result .= __('MailPoet 2 data found:', 'mailpoet') . "\n";
-    
+
     // User Lists
     $users_lists_count = \ORM::for_table(MP2_LIST_TABLE)->count();
     $total_count += $users_lists_count;
     $result .= sprintf(_n('%d subscribers list', '%d subscribers lists', $users_lists_count, 'mailpoet'), $users_lists_count) . "\n";
-    
+
     // Users
     $users_count = \ORM::for_table(MP2_USER_TABLE)->count();
     $total_count += $users_count;
     $result .= sprintf(_n('%d subscriber', '%d subscribers', $users_count, 'mailpoet'), $users_count) . "\n";
-    
+
     // TODO to reactivate during the next phases
     /*
     // Emails
@@ -241,15 +254,15 @@ class MP2Migrator {
     $total_count += $forms_count;
     $result .= sprintf(_n('%d form', '%d forms', $forms_count, 'mailpoet'), $forms_count) . "\n";
     */
-    
+
     $this->progressbar->setTotalCount($total_count);
-    
+
     return $result;
   }
-  
+
   /**
    * Import the subscribers segments
-   * 
+   *
    */
   private function importSegments() {
     $imported_segments_count = 0;
@@ -274,13 +287,13 @@ class MP2Migrator {
       }
       $this->progressbar->incrementCurrentCount($lists_count);
     } while(($lists != null) && ($lists_count > 0));
-    
+
     $this->log(sprintf(_n("%d segment imported", "%d segments imported", $imported_segments_count, 'mailpoet'), $imported_segments_count));
   }
-  
+
   /**
    * Get the Mailpoet 2 users lists
-   * 
+   *
    * @global object $wpdb
    * @param int $limit Number of users max
    * @return array Users Lists
@@ -299,13 +312,13 @@ class MP2Migrator {
       LIMIT $limit
       ";
     $lists = $wpdb->get_results($sql, ARRAY_A);
-    
+
     return $lists;
   }
-  
+
   /**
    * Import a segment
-   * 
+   *
    * @param array $list_data List data
    * @return Segment
    */
@@ -321,10 +334,10 @@ class MP2Migrator {
     Setting::setValue('last_imported_list_id', $list_data['list_id']);
     return $segment;
   }
-  
+
   /**
    * Import the custom fields
-   * 
+   *
    */
   private function importCustomFields() {
     $imported_custom_fields_count = 0;
@@ -333,20 +346,20 @@ class MP2Migrator {
     }
     $this->log(__("Importing custom fields...", 'mailpoet'));
     $custom_fields = $this->getCustomFields();
- 
+
     foreach($custom_fields as $custom_field) {
       $result = $this->importCustomField($custom_field);
       if(!empty($result)) {
         $imported_custom_fields_count++;
       }
     }
-    
+
     $this->log(sprintf(_n("%d custom field imported", "%d custom fields imported", $imported_custom_fields_count, 'mailpoet'), $imported_custom_fields_count));
   }
-  
+
   /**
    * Get the Mailpoet 2 custom fields
-   * 
+   *
    * @global object $wpdb
    * @return array Custom fields
    */
@@ -360,13 +373,13 @@ class MP2Migrator {
       FROM `$table` cf
       ";
     $custom_fields = $wpdb->get_results($sql, ARRAY_A);
-    
+
     return $custom_fields;
   }
-  
+
   /**
    * Import a custom field
-   * 
+   *
    * @param array $custom_field MP2 custom field
    * @return CustomField
    */
@@ -381,10 +394,10 @@ class MP2Migrator {
     $custom_field->createOrUpdate($data);
     return $custom_field;
   }
-  
+
   /**
    * Map the MailPoet 2 custom field type with the MailPoet custom field type
-   * 
+   *
    * @param string $mp2_type MP2 custom field type
    * @return string MP3 custom field type
    */
@@ -399,10 +412,10 @@ class MP2Migrator {
     }
     return $type;
   }
-  
+
   /**
    * Map the MailPoet 2 custom field settings with the MailPoet custom field params
-   * 
+   *
    * @param array $custom_field MP2 custom field
    * @return string serialized MP3 custom field params
    */
@@ -418,10 +431,10 @@ class MP2Migrator {
     }
     return $params;
   }
-  
+
   /**
    * Map the validate value
-   * 
+   *
    * @param string $mp2_value MP2 value
    * @return string MP3 value
    */
@@ -441,10 +454,10 @@ class MP2Migrator {
     }
     return $value;
   }
-  
+
   /**
    * Import the subscribers
-   * 
+   *
    */
   private function importSubscribers() {
     $imported_subscribers_count = 0;
@@ -471,13 +484,13 @@ class MP2Migrator {
       }
       $this->progressbar->incrementCurrentCount($users_count);
     } while(($users != null) && ($users_count > 0));
-    
+
     $this->log(sprintf(_n("%d subscriber imported", "%d subscribers imported", $imported_subscribers_count, 'mailpoet'), $imported_subscribers_count));
   }
-  
+
   /**
    * Get the Mailpoet 2 users
-   * 
+   *
    * @global object $wpdb
    * @param int $limit Number of users max
    * @return array Users
@@ -496,13 +509,13 @@ class MP2Migrator {
       LIMIT $limit
       ";
     $users = $wpdb->get_results($sql, ARRAY_A);
-    
+
     return $users;
   }
-  
+
   /**
    * Import a subscriber
-   * 
+   *
    * @param array $user_data User data
    * @return Subscriber
    */
@@ -532,33 +545,31 @@ class MP2Migrator {
     }
     return $subscriber;
   }
-  
+
   /**
    * Map the MailPoet 2 user status with MailPoet 3
-   * 
+   *
    * @param int $mp2_user_status MP2 user status
    * @return string MP3 user status
    */
   private function mapUserStatus($mp2_user_status) {
     switch($mp2_user_status) {
-      case 0:
-        $status = 'unconfirmed';
-        break;
       case 1:
         $status = 'subscribed';
         break;
       case -1:
         $status = 'unsubscribed';
         break;
+      case 0:
       default:
         $status = 'unconfirmed';
     }
     return $status;
   }
-  
+
   /**
    * Import the segments for a subscriber
-   * 
+   *
    * @param Subscriber $subscriber MP3 subscriber
    * @param int $user_id MP2 user ID
    */
@@ -568,10 +579,10 @@ class MP2Migrator {
       $this->importSubscriberSegment($subscriber->id, $user_list);
     }
   }
-  
+
   /**
    * Get the lists for a user
-   * 
+   *
    * @global object $wpdb
    * @param int $user_id User ID
    * @return array Users Lists
@@ -587,13 +598,13 @@ class MP2Migrator {
       WHERE ul.user_id = '$user_id'
       ";
     $user_lists = $wpdb->get_results($sql, ARRAY_A);
-    
+
     return $user_lists;
   }
-  
+
   /**
    * Import a subscriber segment
-   * 
+   *
    * @param int $subscriber_id
    * @param array $user_list
    * @return SubscriberSegment
@@ -611,10 +622,10 @@ class MP2Migrator {
     $subscriber_segment->createOrUpdate($data);
     return $subscriber_segment;
   }
-  
+
   /**
    * Import the custom fields values for a subscriber
-   * 
+   *
    * @param Subscriber $subscriber MP3 subscriber
    * @param array $user MP2 user
    */
@@ -627,13 +638,13 @@ class MP2Migrator {
       }
     }
   }
-  
+
   /**
    * Get the imported custom fields
-   * 
+   *
    * @global object $wpdb
    * @return array Imported custom fields
-   * 
+   *
    */
   private function getImportedCustomFields() {
     global $wpdb;
@@ -645,10 +656,10 @@ class MP2Migrator {
     $custom_fields = $wpdb->get_results($sql, ARRAY_A);
     return $custom_fields;
   }
-  
+
   /**
    * Import a subscriber custom field
-   * 
+   *
    * @param int $subscriber_id Subscriber ID
    * @param int $custom_field Custom field
    * @param string $custom_field_value Custom field value
@@ -670,10 +681,10 @@ class MP2Migrator {
     $subscriber_custom_field->createOrUpdate($data);
     return $subscriber_custom_field;
   }
-  
+
   /**
    * Get the mapping between the MP2 and the imported MP3 IDs
-   * 
+   *
    * @param string $model Model (segment,...)
    * @return array Mapping
    */
@@ -685,5 +696,5 @@ class MP2Migrator {
     }
     return $mappings;
   }
-  
+
 }
