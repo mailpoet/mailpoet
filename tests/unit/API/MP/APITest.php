@@ -133,6 +133,22 @@ class MPAPITest extends MailPoetTest {
     expect($result['subscriptions'][0]['id'])->equals($segment->id);
   }
 
+  function testItSubscribesSubscriberWithEmailIdentifier() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $result = API::MP(self::VERSION)->subscribeToList($subscriber->email, $segment->id);
+    expect($result['id'])->equals($subscriber->id);
+    expect($result['subscriptions'])->notEmpty();
+    expect($result['subscriptions'][0]['id'])->equals($segment->id);
+  }
+
   function testItGetsSegments() {
     $segment = Segment::createOrUpdate(
       array(
