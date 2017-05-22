@@ -113,11 +113,8 @@ class MPAPITest extends MailPoetTest {
       )
     );
     $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
-    expect($result)->true();
-    $subscriber_segment = SubscriberSegment::where('subscriber_id', $subscriber->id)
-      ->where('segment_id', $segment->id)
-      ->findOne();
-    expect($subscriber_segment)->notEmpty();
+    expect($result['id'])->equals($subscriber->id);
+    expect($result['subscriptions'][0]['id'])->equals($segment->id);
   }
 
   function testItSubscribesSubscriberToSingleList() {
@@ -131,11 +128,25 @@ class MPAPITest extends MailPoetTest {
       )
     );
     $result = API::MP(self::VERSION)->subscribeToList($subscriber->id, $segment->id);
-    expect($result)->true();
-    $subscriber_segment = SubscriberSegment::where('subscriber_id', $subscriber->id)
-      ->where('segment_id', $segment->id)
-      ->findOne();
-    expect($subscriber_segment)->notEmpty();
+    expect($result['id'])->equals($subscriber->id);
+    expect($result['subscriptions'])->notEmpty();
+    expect($result['subscriptions'][0]['id'])->equals($segment->id);
+  }
+
+  function testItSubscribesSubscriberWithEmailIdentifier() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(Fixtures::get('subscriber_template'));
+    $subscriber->save();
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Default',
+        'type' => Segment::TYPE_DEFAULT
+      )
+    );
+    $result = API::MP(self::VERSION)->subscribeToList($subscriber->email, $segment->id);
+    expect($result['id'])->equals($subscriber->id);
+    expect($result['subscriptions'])->notEmpty();
+    expect($result['subscriptions'][0]['id'])->equals($segment->id);
   }
 
   function testItGetsSegments() {
