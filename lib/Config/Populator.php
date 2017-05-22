@@ -328,6 +328,8 @@ class Populator {
     $destination_charset = $wpdb->get_var('SELECT @@SESSION.character_set_connection');
 
     if($source_charset === $destination_charset) return;
+    // UTF8 is a superset of UTF8MB4, thus a conversion is not necessary
+    if(substr($source_charset, 0, 4) === 'utf8' && $destination_charset === 'utf8mb4') return;
 
     $tables = array(
       'segments' => array('name', 'type', 'description'),
