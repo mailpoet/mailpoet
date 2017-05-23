@@ -63,7 +63,7 @@ define(
             'action': function() {
               return (
                 <div>
-                  <a href="?page=mailpoet-settings#premium" target="_blank">
+                  <a href="?page=mailpoet-premium" target="_blank">
                     {MailPoet.I18n.t('getPremiumVersion')}
                   </a>
                 </div>
