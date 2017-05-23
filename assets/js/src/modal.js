@@ -18,11 +18,6 @@ define('modal', ['mailpoet', 'jquery'],
 
       // loading mode
       MailPoet.Modal.loading(bool);
-
-      // loading mode for parallel requests:
-      // if called N times to show loading modal,
-      // should be called N times to hide loading modal
-      MailPoet.Modal.parallelLoading(bool);
     ***************************************************************************/
 
     MailPoet.Modal = {
@@ -32,9 +27,6 @@ define('modal', ['mailpoet', 'jquery'],
       initialized: false,
       opened: false,
       locked: false,
-
-      // used by parallel loading mode
-      requestsCount: 0,
 
       // previously focused element
       prevFocus: null,
@@ -521,27 +513,6 @@ define('modal', ['mailpoet', 'jquery'],
             this.showLoading();
           } else {
             this.hideLoading();
-          }
-
-          return this;
-        },
-        parallelLoading: function(toggle) {
-          // make sure the overlay is initialized and that it's visible
-          this.initOverlay(true);
-
-          // handle loading for parallel requests
-          if(toggle === true) {
-            if(this.requestsCount == 0) {
-              this.showLoading();
-            }
-            this.requestsCount++;
-          } else {
-            if(this.requestsCount <= 1) {
-              this.hideLoading();
-              this.requestsCount = 0;
-            } else {
-              this.requestsCount--;
-            }
           }
 
           return this;
