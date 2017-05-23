@@ -6,4 +6,4 @@ source_file = lang/mailpoet.pot
 file_filter = lang/mailpoet-<lang>.po
 source_lang = en_US
 type = PO
-minimum_perc = 100
+minimum_perc = 75

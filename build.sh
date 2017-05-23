@@ -35,6 +35,7 @@ cp -Rf vendor $plugin_name
 cp -Rf views $plugin_name
 rm -Rf $plugin_name/assets/css/src
 rm -Rf $plugin_name/assets/js/src
+rm -Rf $plugin_name/lang/*.po
 
 # Remove extra files (docs, examples,...) from 3rd party extensions
 echo '[BUILD] Removing obsolete files from vendor libraries'
