@@ -86,6 +86,14 @@ baseConfig = {
         loader: 'expose-loader?' + globalPrefix + '.StatsBadge!babel-loader',
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/types/welcome/scheduling.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.NewsletterWelcomeNotificationScheduling!babel-loader',
+      },
+      {
+        include: path.resolve(__dirname, 'assets/js/src/newsletters/breadcrumb.jsx'),
+        loader: 'expose-loader?' + globalPrefix + '.NewsletterCreationBreadcrumb!babel-loader',
+      },
+      {
         include: /Blob.js$/,
         loader: 'exports-loader?window.Blob',
       },
@@ -139,7 +147,9 @@ config.push(_.extend({}, baseConfig, {
       'react-router',
       'react-string-replace',
       'listing/listing.jsx',
-      'newsletters/badges/stats.jsx'
+      'newsletters/badges/stats.jsx',
+      'newsletters/breadcrumb.jsx',
+      'newsletters/types/welcome/scheduling.jsx'
     ],
     admin: [
       'subscribers/subscribers.jsx',
