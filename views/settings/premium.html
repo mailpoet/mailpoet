@@ -83,24 +83,30 @@
           );
         }
 
-        verifyMailPoetPremiumKey(key);
-        verifyMailPoetSendingServiceKey(key);
+        MailPoet.Modal.loading(true);
+
+        var promise1 = verifyMailPoetPremiumKey(key);
+        var promise2 = verifyMailPoetSendingServiceKey(key);
+
+        // wait until both requests are completed before hiding the loading modal
+        promise1.always(function() {
+          promise2.always(function() {
+            MailPoet.Modal.loading(false);
+          });
+        });
       });
 
       function verifyMailPoetPremiumKey(key) {
         $('.mailpoet_premium_key_valid, .mailpoet_premium_key_invalid').addClass('mailpoet_hidden');
         $('.mailpoet_premium_download').hide();
 
-        MailPoet.Modal.parallelLoading(true);
-        MailPoet.Ajax.post({
+        return MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'services',
           action: 'checkPremiumKey',
           data: {
             key: key
           }
-        }).always(function() {
-          MailPoet.Modal.parallelLoading(false);
         }).done(function(response) {
           // Hide server error notices
           $('.mailpoet_notice_server').hide();
@@ -122,16 +128,13 @@
       function verifyMailPoetSendingServiceKey(key) {
         $('.mailpoet_mss_key_valid, .mailpoet_mss_key_invalid').addClass('mailpoet_hidden');
 
-        MailPoet.Modal.parallelLoading(true);
-        MailPoet.Ajax.post({
+        return MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'services',
           action: 'checkMSSKey',
           data: {
             key: key
           }
-        }).always(function() {
-          MailPoet.Modal.parallelLoading(false);
         }).done(function(response) {
           // Hide server error notices
           $('.mailpoet_notice_server').hide();
