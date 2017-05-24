@@ -1,6 +1,6 @@
 <?php
-namespace MailPoet\API\Endpoints\v1;
-use MailPoet\API\Endpoint as APIEndpoint;
+namespace MailPoet\API\JSON\v1;
+use MailPoet\API\JSON\Endpoint as APIEndpoint;
 
 if(!defined('ABSPATH')) exit;
 
