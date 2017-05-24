@@ -21,7 +21,7 @@ if(!defined('ABSPATH')) exit;
  */
 
 $mailpoet_plugin = array(
-  'version' => '3.0.0-beta.32',
+  'version' => '3.0.0-beta.33',
   'filename' => __FILE__,
   'path' => dirname(__FILE__),
   'autoloader' => dirname(__FILE__) . '/vendor/autoload.php',

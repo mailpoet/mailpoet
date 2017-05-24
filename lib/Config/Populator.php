@@ -310,7 +310,7 @@ class Populator {
   }
 
   /*
-   * MailPoet versions 3.0.0-beta.31 and older used the default MySQL connection
+   * MailPoet versions 3.0.0-beta.32 and older used the default MySQL connection
    * character set, which usually defaults to latin1, but stored UTF-8 data.
    * This method converts existing incorrectly stored data that uses the
    * default character set, into a new character set that is used by WordPress.
@@ -318,7 +318,7 @@ class Populator {
   public function convertExistingDataToUTF8() {
     global $wpdb;
 
-    if(!version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.31', '<=')) {
+    if(!version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.32', '<=')) {
       // Data conversion should only be performed only once, when migrating from
       // older version
       return;
