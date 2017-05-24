@@ -29,11 +29,11 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
       }).done(function (result) {
         jQuery("#logger").html('');
         result.split("\n").forEach(function (row) {
-          if(row.substr(0, 7) === '[ERROR]' || row.substr(0, 9) === '[WARNING]' || row === 'IMPORT STOPPED BY USER') {
+          if(row.substr(0, 7) === '[ERROR]' || row.substr(0, 9) === '[WARNING]' || row === MailPoet.I18n.t('import_stopped_by_user')) {
             row = '<span class="error_msg">' + row + '</span>'; // Mark the errors in red
           }
           // Test if the import is complete
-          else if(row === 'IMPORT COMPLETE') {
+          else if(row === MailPoet.I18n.t('import_complete')) {
             jQuery('#import-actions').hide();
             jQuery('#upgrade-completed').show();
           }
