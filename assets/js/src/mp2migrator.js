@@ -27,7 +27,6 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         url: mailpoet_mp2_migrator.log_file_url,
         cache: false
       }).done(function (result) {
-        jQuery('#action_message').html(''); // Clear the action message
         jQuery("#logger").html('');
         result.split("\n").forEach(function (row) {
           if(row.substr(0, 7) === '[ERROR]' || row.substr(0, 9) === '[WARNING]' || row === 'IMPORT STOPPED BY USER') {
@@ -35,9 +34,8 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           }
           // Test if the import is complete
           else if(row === 'IMPORT COMPLETE') {
-            row = '<span class="complete_msg">' + row + '</span>'; // Mark the complete message in green
-            jQuery('#action_message').html(MailPoet.I18n.t('import_complete'))
-                    .removeClass('failure').addClass('success');
+            jQuery('#import-actions').hide();
+            jQuery('#upgrade-completed').show();
           }
           jQuery("#logger").append(row + "<br />\n");
 
@@ -76,8 +74,6 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
       jQuery('#import').val(MailPoet.I18n.t('importing')).attr('disabled', 'disabled');
       // Show the stop button
       jQuery('#stop-import').show();
-      // Clear the action message
-      jQuery('#action_message').html('');
 
       // Run the import
       MailPoet.Ajax.post({
@@ -141,6 +137,11 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         window.location.reload();
       });
       return false;
+    },
+
+    gotoWelcomePage: function () {
+      window.location.href = 'admin.php?page=mailpoet-welcome';
+      return false;
     }
 
   };
@@ -164,6 +165,11 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
     // Skip import link
     jQuery('#skip-import').click(function() {
       MailPoet.MP2Migrator.skipImport();
+    });
+
+    // Go to welcome page
+    jQuery('#goto-welcome').click(function() {
+      MailPoet.MP2Migrator.gotoWelcomePage();
     });
   });
 

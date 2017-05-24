@@ -22,21 +22,29 @@
 
   <div>
     <br />
-    <p style="/* text-align: center */">
+    <div id="import-actions">
       <input type="submit" name="import" id="import" class="button button-primary" value="<%= __('Start upgrade') %>"  />
       <input type="submit" name="stop-import" id="stop-import" class="button button-secondary" value="<%= __('Pause') %>" style="display: none"/>
       <small> <a id="skip-import" href="#"><%= __("No thanks, I'll skip and start from scratch.") %></a></small>
-    </p>
+      <br />
+      <br />
+    </div>
 
     <div id="progressbar" class="mailpoet_progress mailpoet_progress_complete">
       <span id="progresslabel" class="mailpoet_progress_label">0%</span>
     </div>
-    <br /><br />
 
+    <div id="upgrade-completed" style="display: none">
+      <h3><%= __('Upgrade completed!') %></h3>
+      <input type="button" name="goto-welcome" id="goto-welcome" class="button button-primary" value="<%= __('Go to MailPoet') %>"  />
+    </div>
+
+    <br />
     <small><strong><%= __('Log...') %></strong></small>
     <div id="logger"></div>  
 
   </div>
+  
 </div>
 <% endblock %>
 
