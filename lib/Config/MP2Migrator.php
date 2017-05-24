@@ -135,7 +135,11 @@ class MP2Migrator {
     $datetime = new \MailPoet\WP\DateTime();
     $this->log(sprintf('=== ' . __('START IMPORT', 'mailpoet') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     Setting::setValue('import_stopped', false); // Reset the stop import action
-    $this->eraseMP3Data();
+
+    if(!Setting::getValue('mailpoet_migration_started', false)) {
+      $this->eraseMP3Data();
+      Setting::setValue('mailpoet_migration_started', true);
+    }
 
     $this->displayDataToMigrate();
 
