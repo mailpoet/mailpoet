@@ -347,12 +347,18 @@ class Populator {
       'forms' => array('name', 'body', 'settings', 'styles'),
     );
 
+
     foreach($tables as $table => $columns) {
-      $query = "UPDATE `%s` SET %s";
+      $query = "UPDATE `%s` SET %s WHERE %s";
       $columns_query = array();
+      $where_query = array();
       foreach($columns as $column) {
         $columns_query[] = sprintf(
-          '`%1$s` = convert(cast(convert(`%1$s` using `%2$s`) as binary) using %3$s)',
+          '`%1$s` = @%1$s',
+          $column
+        );
+        $where_query[] = sprintf(
+          'char_length(%1$s) = length(@%1$s := convert(binary convert(%1$s using %2$s) using %3$s))',
           $column,
           $source_charset,
           $destination_charset
@@ -361,7 +367,8 @@ class Populator {
       $wpdb->query(sprintf(
         $query,
         $this->prefix . $table,
-        implode(', ', $columns_query)
+        implode(', ', $columns_query),
+        implode(' AND ', $where_query)
       ));
     }
   }
