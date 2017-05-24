@@ -42,7 +42,7 @@ class Populator {
   }
 
   function up() {
-    global $wpdb;
+    $this->convertExistingDataToUTF8();
 
     array_map(array($this, 'populate'), $this->models);
 
@@ -308,4 +308,69 @@ class Populator {
       )
     );
   }
+
+  /*
+   * MailPoet versions 3.0.0-beta.32 and older used the default MySQL connection
+   * character set, which usually defaults to latin1, but stored UTF-8 data.
+   * This method converts existing incorrectly stored data that uses the
+   * default character set, into a new character set that is used by WordPress.
+   */
+  public function convertExistingDataToUTF8() {
+    global $wpdb;
+
+    if(!version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.32', '<=')) {
+      // Data conversion should only be performed only once, when migrating from
+      // older version
+      return;
+    }
+
+    $source_charset = $wpdb->get_var('SELECT @@GLOBAL.character_set_connection');
+    $destination_charset = $wpdb->get_var('SELECT @@SESSION.character_set_connection');
+
+    if($source_charset === $destination_charset) return;
+    // UTF8MB4 is a superset of UTF8, thus a conversion is not necessary
+    if(substr($source_charset, 0, 4) === 'utf8' && $destination_charset === 'utf8mb4') return;
+
+    $tables = array(
+      'segments' => array('name', 'type', 'description'),
+      'settings' => array('name', 'value'),
+      'custom_fields' => array('name', 'type', 'params'),
+      'sending_queues' => array('type', 'newsletter_rendered_body', 'newsletter_rendered_subject', 'subscribers', 'status'),
+      'subscribers' => array('first_name', 'last_name', 'email', 'status', 'subscribed_ip', 'confirmed_ip', 'unconfirmed_data'),
+      'subscriber_segment' => array('status'),
+      'subscriber_custom_field' => array('value'),
+      'newsletters' => array('hash', 'subject', 'type', 'sender_address', 'sender_name', 'status', 'reply_to_address', 'reply_to_name', 'preheader', 'body'),
+      'newsletter_templates' => array('name', 'description', 'body', 'thumbnail'),
+      'newsletter_option_fields' => array('name', 'newsletter_type'),
+      'newsletter_option' => array('value'),
+      'newsletter_links' => array('url', 'hash'),
+      'forms' => array('name', 'body', 'settings', 'styles'),
+    );
+
+
+    foreach($tables as $table => $columns) {
+      $query = "UPDATE `%s` SET %s WHERE %s";
+      $columns_query = array();
+      $where_query = array();
+      foreach($columns as $column) {
+        $columns_query[] = sprintf(
+          '`%1$s` = @%1$s',
+          $column
+        );
+        $where_query[] = sprintf(
+          'char_length(%1$s) = length(@%1$s := convert(binary convert(%1$s using %2$s) using %3$s))',
+          $column,
+          $source_charset,
+          $destination_charset
+        );
+      }
+      $wpdb->query(sprintf(
+        $query,
+        $this->prefix . $table,
+        implode(', ', $columns_query),
+        implode(' AND ', $where_query)
+      ));
+    }
+  }
+
 }

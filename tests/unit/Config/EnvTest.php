@@ -50,8 +50,20 @@ class EnvTest extends MailPoetTest {
 
   function testItCanReturnDbCharset() {
     global $wpdb;
-    $charset = $wpdb->get_charset_collate();
+    $charset = $wpdb->charset;
     expect(Env::$db_charset)->equals($charset);
+  }
+
+  function testItCanReturnDbCollation() {
+    global $wpdb;
+    $collation = $wpdb->collate;
+    expect(Env::$db_collation)->equals($collation);
+  }
+
+  function testItCanReturnDbCharsetCollate() {
+    global $wpdb;
+    $charset_collate = $wpdb->get_charset_collate();
+    expect(Env::$db_charset_collate)->equals($charset_collate);
   }
 
   function testItCanGenerateDbSourceName() {
