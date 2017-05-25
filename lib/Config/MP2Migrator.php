@@ -129,7 +129,7 @@ class MP2Migrator {
    * @return string Result
    */
   public function import() {
-    set_time_limit(IMPORT_TIMEOUT_IN_SECONDS);
+    set_time_limit(self::IMPORT_TIMEOUT_IN_SECONDS);
     ob_start();
     $this->emptyLog();
     $datetime = new \MailPoet\WP\DateTime();
