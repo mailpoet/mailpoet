@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Helpscout;
+use MailPoet\Cron\CronHelper;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
 
@@ -20,6 +21,8 @@ class Beacon {
       'MailPoet version' => MAILPOET_VERSION,
       'WordPress version' => get_bloginfo('version'),
       'Database version' => $db_version,
+      'Web server' => $_SERVER["SERVER_SOFTWARE"],
+      'Server OS' => (function_exists('php_uname')) ? php_uname() : 'N/A',
       'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,
       'WP_MAX_MEMORY_LIMIT' => WP_MAX_MEMORY_LIMIT,
       'WP_DEBUG' => WP_DEBUG,
@@ -38,6 +41,7 @@ class Beacon {
         $mta['frequency']['interval']
       ),
       'Task Scheduler method' => Setting::getValue('cron_trigger.method'),
+      'Cron ping response' => CronHelper::pingDaemon(),
       'Default FROM address' => Setting::getValue('sender.address'),
       'Default Reply-To address' => Setting::getValue('reply_to.address'),
       'Bounce Email Address' => Setting::getValue('bounce.address'),
