@@ -7,6 +7,7 @@ use MailPoet\Services\Bridge;
 
 class PremiumKeyCheckTest extends MailPoetTest {
   function _before() {
+    $this->premium_key = '123457890abcdef';
     $this->worker = new PremiumKeyCheck(microtime(true));
   }
 
@@ -23,6 +24,9 @@ class PremiumKeyCheckTest extends MailPoetTest {
       array('checkPremiumKey' => $response),
       $this
     );
+    $this->worker->bridge->expects($this->once())
+      ->method('checkPremiumKey')
+      ->with($this->equalTo($this->premium_key));
     $this->fillPremiumKey();
     expect($this->worker->checkKey())->equals($response);
   }
@@ -30,7 +34,7 @@ class PremiumKeyCheckTest extends MailPoetTest {
   private function fillPremiumKey() {
     Setting::setValue(
       Bridge::PREMIUM_KEY_SETTING_NAME,
-      '123457890abcdef'
+      $this->premium_key
     );
   }
 
