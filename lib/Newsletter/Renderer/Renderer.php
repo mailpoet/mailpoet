@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Newsletter\Renderer;
 
+use MailPoet\Config\Env;
+use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\pQuery;
 
 if(!defined('ABSPATH')) exit;
@@ -24,6 +26,7 @@ class Renderer {
     $this->DOM_parser = new pQuery();
     $this->CSS_inliner = new \MailPoet\Util\CSS();
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
+    $this->premium_license = License::getLicense();
   }
 
   function render($type = false) {
@@ -37,6 +40,10 @@ class Renderer {
     $styles = (array_key_exists('globalStyles', $body))
       ? $body['globalStyles']
       : array();
+
+    if(!$this->premium_license) {
+      $content = $this->addMailpoetLogoContentBlock($content, $styles);
+    }
 
     $rendered_body = $this->renderBody($content);
     $rendered_styles = $this->renderStyles($styles);
@@ -134,5 +141,45 @@ class Renderer {
       $DOM->__toString()
     );
     return $template;
+  }
+
+  function addMailpoetLogoContentBlock($content, $styles) {
+    if(empty($content['blocks'])) return $content;
+    $content['blocks'][] = array(
+      'type' => 'container',
+      'orientation' => 'horizontal',
+      'styles' => array(
+        'block' => array(
+          'backgroundColor' => (!empty($styles['body']['backgroundColor'])) ?
+            $styles['body']['backgroundColor'] :
+            'transparent'
+        )
+      ),
+      'blocks' => array(
+        array(
+          'type' => 'container',
+          'orientation' => 'vertical',
+          'styles' => array(
+          ),
+          'blocks' => array(
+            array(
+              'type' => 'image',
+              'link' => 'http://www.mailpoet.com',
+              'src' => Env::$assets_url . '/img/mailpoet_logo_newsletter.png',
+              'fullWidth' => false,
+              'alt' => 'MailPoet',
+              'width' => '108px',
+              'height' => '65px',
+              'styles' => array(
+                'block' => array(
+                  'textAlign' => 'center'
+                )
+              )
+            )
+          )
+        )
+      )
+    );
+    return $content;
   }
 }

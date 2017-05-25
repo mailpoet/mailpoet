@@ -24,6 +24,7 @@ class NewsletterRendererTest extends MailPoetTest {
       'status' => 'active'
     );
     $this->renderer = new Renderer($this->newsletter);
+    $this->renderer->premium_license = true;
     $this->column_renderer = new ColumnRenderer();
     $this->DOM_parser = new \pQuery();
   }
@@ -371,6 +372,17 @@ class NewsletterRendererTest extends MailPoetTest {
     $preheader = trim($DOM('td.mailpoet_preheader')->text());
     expect($preheader)->equals($this->newsletter['preheader']);
   }
+
+  function testItDoesNotAddMailpoetLogoWhenPremiumIsActive() {
+    $template = $this->renderer->render();
+    expect($template['html'])->notContains('mailpoet_logo_newsletter.png');
+  }
+
+  function testItAddsMailpoetLogoWhenPremiumIsNotActive() {
+    $this->renderer->premium_license = false;
+    $template = $this->renderer->render();
+    expect($template['html'])->contains('mailpoet_logo_newsletter.png');
+}
 
   function testItPostProcessesTemplate() {
     $template = $this->renderer->render();
