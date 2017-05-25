@@ -12,17 +12,18 @@ use MailPoet\WP\Notice as WPNotice;
 if(!defined('ABSPATH')) exit;
 
 class ServicesChecker {
-  function isMailPoetAPIKeyValid($display_error_notice = true) {
-    if(!Bridge::isMPSendingServiceEnabled()) {
+  function isMailPoetAPIKeyValid($display_error_notice = true, $force_check = false) {
+    if(!$force_check && !Bridge::isMPSendingServiceEnabled()) {
       return null;
     }
 
+    $mss_key_specified = Bridge::isMSSKeySpecified();
     $mss_key = Setting::getValue(Bridge::API_KEY_STATE_SETTING_NAME);
-    if(empty($mss_key['state']) || $mss_key['state'] == Bridge::MAILPOET_KEY_VALID) {
-      return true;
-    }
 
-    if($mss_key['state'] == Bridge::MAILPOET_KEY_INVALID) {
+    if(!$mss_key_specified
+      || empty($mss_key['state'])
+      || $mss_key['state'] == Bridge::MAILPOET_KEY_INVALID
+    ) {
       if($display_error_notice) {
         $error = Helpers::replaceLinkTags(
           __('All sending is currently paused! Your key to send with MailPoet is invalid. [link]Visit MailPoet.com to purchase a key[/link]', 'mailpoet'),
@@ -45,9 +46,11 @@ class ServicesChecker {
         WPNotice::displayWarning($error);
       }
       return true;
+    } elseif($mss_key['state'] == Bridge::MAILPOET_KEY_VALID) {
+      return true;
     }
 
-    return true;
+    return false;
   }
 
   function isPremiumKeyValid($display_error_notice = true) {

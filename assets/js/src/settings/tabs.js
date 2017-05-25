@@ -15,6 +15,7 @@ define(
 
     MailPoet.Router = new (Backbone.Router.extend({
       routes: {
+        '': 'sendingMethodGroup', // the default tab is currently mta, needs its own method
         'mta(/:group)': 'sendingMethodGroup',
         '(:tab)': 'tabs',
       },
@@ -32,7 +33,7 @@ define(
 
         if(group === null) {
           // show sending methods
-          jQuery('.mailpoet_sending_methods').fadeIn();
+          jQuery('.mailpoet_sending_methods, .mailpoet_sending_methods_help').fadeIn();
         } else {
           // toggle SPF (hidden if the sending method is MailPoet)
           jQuery('#mailpoet_mta_spf')[
@@ -42,7 +43,7 @@ define(
           ]();
 
           // hide sending methods
-          jQuery('.mailpoet_sending_methods').hide();
+          jQuery('.mailpoet_sending_methods, .mailpoet_sending_methods_help').hide();
 
           // display selected sending method's settings
           jQuery('.mailpoet_sending_method[data-group="'+ group +'"]').show();
@@ -51,7 +52,7 @@ define(
       },
       tabs: function(tab, section) {
         // set default tab
-        tab = tab || 'basics';
+        tab = tab || 'mta';
 
         // reset all active tabs
         jQuery('.nav-tab-wrapper a').removeClass('nav-tab-active');

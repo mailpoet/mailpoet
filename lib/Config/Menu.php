@@ -305,13 +305,18 @@ class Menu {
     $settings = Setting::getAll();
     $flags = $this->_getFlags();
 
+    // force MSS key check even if the method isn't active
+    $checker = new ServicesChecker();
+    $mp_api_key_valid = $checker->isMailPoetAPIKeyValid(false, true);
+
     $data = array(
       'settings' => $settings,
       'segments' => Segment::getSegmentsWithSubscriberCount(),
       'cron_trigger' => CronTrigger::getAvailableMethods(),
       'total_subscribers' => Subscriber::getTotalSubscribers(),
       'premium_plugin_active' => License::getLicense(),
-      'premium_key_valid' => isset($this->premium_key_valid) ? $this->premium_key_valid : null,
+      'premium_key_valid' => !empty($this->premium_key_valid),
+      'mss_key_valid' => !empty($mp_api_key_valid),
       'pages' => Pages::getAll(),
       'flags' => $flags,
       'current_user' => wp_get_current_user(),
