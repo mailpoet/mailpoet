@@ -55,7 +55,10 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         dataType: 'json'
       }).always(function (result) {
         // Move the progress bar
-        var progress = Math.round(Number(result.current) / Number(result.total) * 100);
+        var progress = 100;
+        if(Number(result.total) !== 0) {
+          progress = Math.round(Number(result.current) / Number(result.total) * 100);
+        }
         jQuery('#progressbar').progressbar('option', 'value', progress);
         jQuery('#progresslabel').html(progress + '%');
         if(MailPoet.MP2Migrator.is_logging) {
