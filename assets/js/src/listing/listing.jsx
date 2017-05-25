@@ -198,6 +198,17 @@ const ListingItem = React.createClass({
 const ListingItems = React.createClass({
   render: function() {
     if (this.props.items.length === 0) {
+      let message;
+      if (this.props.loading === true) {
+        message = (this.props.messages.onLoadingItems
+          && this.props.messages.onLoadingItems(this.props.group))
+          || MailPoet.I18n.t('loadingItems');
+      } else {
+        message = (this.props.messages.onNoItemsFound
+          && this.props.messages.onNoItemsFound(this.props.group))
+          || MailPoet.I18n.t('noItemsFound');
+      }
+
       return (
         <tbody>
           <tr className="no-items">
@@ -207,11 +218,7 @@ const ListingItems = React.createClass({
                 + (this.props.is_selectable ? 1 : 0)
               }
               className="colspanchange">
-              {
-                (this.props.loading === true)
-                ? (this.props.messages.onLoadingItems || MailPoet.I18n.t('loadingItems'))
-                : (this.props.messages.onNoItemsFound || MailPoet.I18n.t('noItemsFound'))
-              }
+              {message}
             </td>
           </tr>
         </tbody>

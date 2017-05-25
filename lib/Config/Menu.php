@@ -378,6 +378,8 @@ class Menu {
     $data['date_formats'] = Block\Date::getDateFormats();
     $data['month_names'] = Block\Date::getMonthNames();
 
+    $data['premium_plugin_active'] = License::getLicense();
+
     $this->displayPage('subscribers/subscribers.html', $data);
   }
 
