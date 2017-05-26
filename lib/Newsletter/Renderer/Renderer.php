@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
+use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\pQuery;
 
@@ -26,7 +27,9 @@ class Renderer {
     $this->DOM_parser = new pQuery();
     $this->CSS_inliner = new \MailPoet\Util\CSS();
     $this->template = file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE);
-    $this->premium_license = License::getLicense();
+    $this->premium_activated = License::getLicense();
+    $bridge = new Bridge();
+    $this->mss_activated = $bridge->isMPSendingServiceEnabled();
   }
 
   function render($type = false) {
@@ -41,7 +44,7 @@ class Renderer {
       ? $body['globalStyles']
       : array();
 
-    if(!$this->premium_license) {
+    if(!$this->premium_activated && !$this->mss_activated && !$this->preview) {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
 
