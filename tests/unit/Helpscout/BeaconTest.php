@@ -110,7 +110,9 @@ class BeaconTest extends MailPoetTest {
   }
 
   function testItReturnsWebserverInformation() {
-    expect($this->beacon_data['Web server'])->equals($_SERVER["SERVER_SOFTWARE"]);
+    expect($this->beacon_data['Web server'])->equals(
+      (!empty($_SERVER["SERVER_SOFTWARE"])) ? $_SERVER["SERVER_SOFTWARE"] : 'N/A'
+    );
   }
 
   function testItReturnsServerOSInformation() {
@@ -118,6 +120,6 @@ class BeaconTest extends MailPoetTest {
   }
 
   function testItReturnsCronPingResponse() {
-    expect($this->beacon_data['Cron ping response'])->true();
+    expect($this->beacon_data['Cron ping URL'])->contains('&action=ping');
   }
 }
