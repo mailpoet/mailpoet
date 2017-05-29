@@ -2,7 +2,7 @@
   <%= before_widget | raw %>
 
   <% if(title) %>
-    <h2 class="widget-title"><%= title | raw %></h2>
+    <%= before_title | raw %><%= title | raw %><%= after_title | raw %>
   <% endif %>
 
   <div id="<%= form_id %>" class="mailpoet_form mailpoet_form_<%= form_type %>">
