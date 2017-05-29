@@ -63,7 +63,7 @@
         <tr>
           <td>
             <a
-              href="http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods"
+              href="http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods?utm_source=plugin&utm_medium=premium&utm_campaign=compare"
               target="_blank"
             >
               <%= __("View full comparison table") %>
@@ -77,7 +77,7 @@
     </table>
     <p><%= __("Spammers are ineligible to use the MailPoet Sending Service. We reserve the right to cancel any sending plan if we detect more than 5% hard bounces. [link]Customers are required to clean their lists before joining MailPoet[/link].")
       |replace({
-      '[link]': '<a target="_blank" href="http://beta.docs.mailpoet.com/article/127-checklist-before-importing-subscribers">',
+      '[link]': '<a target="_blank" href="http://beta.docs.mailpoet.com/article/127-checklist-before-importing-subscribers?utm_source=plugin&utm_medium=premium&utm_campaign=clean-lists">',
       '[/link]': '</a>'
       })
       |raw
@@ -108,7 +108,7 @@
     <p style="text-align: center">
       <a
         target="_blank"
-        href="https://account.mailpoet.com?s=<%= subscriber_count %>"
+        href="https://account.mailpoet.com?s=<%= subscriber_count %>&utm_source=plugin&utm_medium=premium&utm_campaign=purchase"
         class="button button-primary"
         style="font-size: 1.5em; padding: 10px 18px; height: 46px;"
       ><%= __("Purchase Now") %></a>
@@ -117,7 +117,7 @@
     <div style="width: 65%; margin: 0 auto;">
       <p style="text-align: center"><%= __("Don't need to use our sending service? Not a problem; we understand. You can also [link]buy the Premium[/link] features separately. Prices start at $100 per year for 1 website, $249 for 4 sites and $499 for an unlimited number of sites.")
         |replace({
-        '[link]': '<a target="_blank" href="https://account.mailpoet.com">',
+        '[link]': '<a target="_blank" href="https://account.mailpoet.com?utm_source=plugin&utm_medium=premium&utm_campaign=buy-premium">',
         '[/link]': '</a>'
         })
         |raw
