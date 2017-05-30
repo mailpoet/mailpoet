@@ -228,6 +228,19 @@ config.push(_.extend({}, baseConfig, {
   }
 }));
 
+// mp2migrator
+config.push(_.extend({}, baseConfig, {
+  name: 'mp2migrator',
+  entry: {
+    mp2migrator: [
+      'mp2migrator.js'
+    ]
+  },
+  externals: {
+    'jquery': 'jQuery'
+  }
+}));
+
 // Test
 config.push(_.extend({}, baseConfig, {
   name: 'test',
