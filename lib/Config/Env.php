@@ -67,11 +67,11 @@ class Env {
     self::$db_charset = $wpdb->charset;
     self::$db_collation = $wpdb->collate;
     self::$db_charset_collate = $wpdb->get_charset_collate();
-    self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port);
+    self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port, self::$db_charset);
     self::$db_timezone_offset = self::getDbTimezoneOffset();
   }
 
-  private static function dbSourceName($host, $socket, $port) {
+  private static function dbSourceName($host, $socket, $port, $charset) {
     $source_name = array(
       (!$socket) ? 'mysql:host=' : 'mysql:unix_socket=',
       $host,
@@ -82,6 +82,9 @@ class Env {
       'dbname=',
       DB_NAME
     );
+    if(!empty($charset)) {
+      $source_name[] = ';charset=' . $charset;
+    }
     return implode('', $source_name);
   }
 
