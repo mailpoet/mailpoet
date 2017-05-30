@@ -6,7 +6,9 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Segment;
-use MailPoet\Util\Url;
+use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Util\Helpers;
+use MailPoet\Util\Url as UrlHelper;
 use MailPoet\Subscription;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Block\Date as FormBlockDate;
@@ -63,14 +65,25 @@ class Pages {
     $subscriber_data = $this->subscriber->getUnconfirmedData();
 
     $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $this->subscriber->confirmed_ip = $_SERVER['REMOTE_ADDR'];
+    $this->subscriber->confirmed_ip = (!empty($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : null;
     $this->subscriber->setExpr('confirmed_at', 'NOW()');
     $this->subscriber->unconfirmed_data = null;
     $this->subscriber->save();
 
-    // update subscriber from stored data after confirmation
-    if(!empty($subscriber_data)) {
-      Subscriber::createOrUpdate($subscriber_data);
+    if($this->subscriber->getErrors() === false) {
+      // send welcome notification
+      $subsciber_segments = $this->subscriber->segments()->findArray();
+      if($subsciber_segments) {
+        Scheduler::scheduleSubscriberWelcomeNotification(
+          $this->subscriber->id,
+          Helpers::arrayColumn($subsciber_segments, 'id')
+        );
+      }
+
+      // update subscriber from stored data after confirmation
+      if(!empty($subscriber_data)) {
+        Subscriber::createOrUpdate($subscriber_data);
+      }
     }
   }
 
@@ -346,7 +359,7 @@ class Pages {
       ' value="mailpoet_subscription_update" />';
     $form_html .= '<input type="hidden" name="data[segments]" value="" />';
     $form_html .= '<input type="hidden" name="mailpoet_redirect" '.
-      'value="'.Url::getCurrentUrl().'" />';
+      'value="'.UrlHelper::getCurrentUrl().'" />';
     $form_html .= '<input type="hidden" name="data[email]" value="'.
       $subscriber->email.
     '" />';
@@ -404,7 +417,7 @@ class Pages {
       : __('Manage your subscription', 'mailpoet')
     );
 
-    return '<a href="'.Subscription\Url::getManageUrl(
+    return '<a href="'.Subscription\UrlHelper::getManageUrl(
       $this->subscriber
     ).'">'.$text.'</a>';
   }

@@ -3,7 +3,11 @@
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\Models\CustomField;
+use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterOption;
+use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\Segment;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
@@ -412,6 +416,100 @@ class SubscriberTest extends MailPoetTest {
     // signup confirmation is enabled by default
     expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
     expect($subscriber->deleted_at)->equals(null);
+  }
+
+  function testItSchedulesWelcomeNotificationUponSubscriptionWhenSubscriptionConfirmationIsDisabled() {
+    // create segment
+    $segment = Segment::create();
+    $segment->hydrate(array('name' => 'List #1'));
+    $segment->save();
+    expect($segment->getErrors())->false();
+
+    // create welcome notification newsletter and relevant scheduling options
+    $newsletter = Newsletter::create();
+    $newsletter->type = Newsletter::TYPE_WELCOME;
+    $newsletter->status = Newsletter::STATUS_ACTIVE;
+    $newsletter->save();
+    expect($newsletter->getErrors())->false();
+
+    $newsletter_options = array(
+      'event' => 'segment',
+      'segment' => $segment->id,
+      'afterTimeType' => 'days',
+      'afterTimeNumber' => 1
+    );
+    foreach($newsletter_options as $option => $value) {
+      $newsletter_option_field = NewsletterOptionField::create();
+      $newsletter_option_field->name = $option;
+      $newsletter_option_field->newsletter_type = $newsletter->type;
+      $newsletter_option_field->save();
+      expect($newsletter_option_field->getErrors())->false();
+
+      $newsletter_option = NewsletterOption::create();
+      $newsletter_option->option_field_id = $newsletter_option_field->id;
+      $newsletter_option->newsletter_id = $newsletter->id;
+      $newsletter_option->value = $value;
+      $newsletter_option->save();
+      expect($newsletter_option->getErrors())->false();
+    }
+
+    $signup_confirmation_enabled = (bool)Setting::setValue(
+      'signup_confirmation.enabled', false
+    );
+    $subscriber = Subscriber::subscribe($this->data, array($segment->id()));
+    expect($subscriber->id() > 0)->equals(true);
+    expect($subscriber->segments()->count())->equals(1);
+    $scheduled_notification = SendingQueue::where('newsletter_id', $newsletter->id)
+      ->where('status', SendingQueue::STATUS_SCHEDULED)
+      ->findOne();
+    expect($scheduled_notification)->notEmpty();
+  }
+
+  function testItDoesNotScheduleWelcomeNotificationUponSubscriptionWhenSubscriptionConfirmationIsEnabled() {
+    // create segment
+    $segment = Segment::create();
+    $segment->hydrate(array('name' => 'List #1'));
+    $segment->save();
+    expect($segment->getErrors())->false();
+
+    // create welcome notification newsletter and relevant scheduling options
+    $newsletter = Newsletter::create();
+    $newsletter->type = Newsletter::TYPE_WELCOME;
+    $newsletter->status = Newsletter::STATUS_ACTIVE;
+    $newsletter->save();
+    expect($newsletter->getErrors())->false();
+
+    $newsletter_options = array(
+      'event' => 'segment',
+      'segment' => $segment->id,
+      'afterTimeType' => 'days',
+      'afterTimeNumber' => 1
+    );
+    foreach($newsletter_options as $option => $value) {
+      $newsletter_option_field = NewsletterOptionField::create();
+      $newsletter_option_field->name = $option;
+      $newsletter_option_field->newsletter_type = $newsletter->type;
+      $newsletter_option_field->save();
+      expect($newsletter_option_field->getErrors())->false();
+
+      $newsletter_option = NewsletterOption::create();
+      $newsletter_option->option_field_id = $newsletter_option_field->id;
+      $newsletter_option->newsletter_id = $newsletter->id;
+      $newsletter_option->value = $value;
+      $newsletter_option->save();
+      expect($newsletter_option->getErrors())->false();
+    }
+
+    $signup_confirmation_enabled = (bool)Setting::setValue(
+      'signup_confirmation.enabled', true
+    );
+    $subscriber = Subscriber::subscribe($this->data, array($segment->id()));
+    expect($subscriber->id() > 0)->equals(true);
+    expect($subscriber->segments()->count())->equals(1);
+    $scheduled_notification = SendingQueue::where('newsletter_id', $newsletter->id)
+      ->where('status', SendingQueue::STATUS_SCHEDULED)
+      ->findOne();
+    expect($scheduled_notification)->notEmpty();
   }
 
   function testItCannotSubscribeWithReservedColumns() {
@@ -943,5 +1041,9 @@ class SubscriberTest extends MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
     ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }
