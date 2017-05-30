@@ -108,4 +108,18 @@ class BeaconTest extends MailPoetTest {
     // unsubscribed users are not taken into account
     expect($this->beacon_data['Total number of subscribers'])->equals(2);
   }
+
+  function testItReturnsWebserverInformation() {
+    expect($this->beacon_data['Web server'])->equals(
+      (!empty($_SERVER["SERVER_SOFTWARE"])) ? $_SERVER["SERVER_SOFTWARE"] : 'N/A'
+    );
+  }
+
+  function testItReturnsServerOSInformation() {
+    expect($this->beacon_data['Server OS'])->equals(php_uname());
+  }
+
+  function testItReturnsCronPingResponse() {
+    expect($this->beacon_data['Cron ping URL'])->contains('&action=ping');
+  }
 }
