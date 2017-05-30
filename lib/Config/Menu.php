@@ -165,6 +165,20 @@ class Menu {
         'settings'
       )
     );
+
+    // Only show this page in menu if the Premium plugin is not activated
+    add_submenu_page(
+      License::getLicense() ? true : $main_page_slug,
+      $this->setPageTitle(__('Premium', 'mailpoet')),
+      __('Premium', 'mailpoet'),
+      Env::$required_permission,
+      'mailpoet-premium',
+      array(
+        $this,
+        'premium'
+      )
+    );
+
     add_submenu_page(
       'admin.php?page=mailpoet-subscribers',
       $this->setPageTitle(__('Import', 'mailpoet')),
@@ -298,6 +312,16 @@ class Menu {
 
     $this->displayPage('update.html', $data);
   }
+
+  function premium() {
+    $data = array(
+      'subscriber_count' => Subscriber::getTotalSubscribers(),
+      'sub_menu' => 'mailpoet-newsletters'
+    );
+
+    $this->displayPage('premium.html', $data);
+  }
+
 
   function settings() {
     if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
