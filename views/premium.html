@@ -12,7 +12,11 @@
   <div class="feature-section one-col">
     <h2><%= __("Insightful Statistics") %></h2>
     <p class="lead-description"><%= __("Which links get the most clicks? Which subscribers opened your emails? With MailPoet's stats program, it's easy to find out. Need even more details? Integrating with Google Analytics is as easy as 1-2-3.") %></p>
-    <img src="//ps.w.org/mailpoet/assets/premium/premium-page-animated-stats.gif">
+    <% set video_url = '//ps.w.org/mailpoet/assets/premium/premium-page-animated-stats.mp4' %>
+    <video autoplay loop width="100%">
+      <source type="video/mp4" src="<%= video_url %>" />
+      <a href="<%= video_url %>"><%= video_url %></a>
+    </video>
   </div>
 
   <hr>
@@ -89,12 +93,20 @@
   <div class="feature-section two-col">
     <div class="col">
       <h3><%= __("Welcome to My Newsletter!") %></h3>
-      <img src="//ps.w.org/mailpoet/assets/premium/premium-page-animated-welcome-emails.gif">
+      <% set video_url = '//ps.w.org/mailpoet/assets/premium/premium-page-animated-welcome-emails.mp4' %>
+      <video autoplay loop width="100%">
+        <source type="video/mp4" src="<%= video_url %>" />
+        <a href="<%= video_url %>"><%= video_url %></a>
+      </video>
       <p><%= __("Want to send autoresponders and welcome emails to your subscribers? In MailPoet, it’s easy as 1-2-3. Create welcome emails, educational courses, and other automatic email newsletters.") %></p>
     </div>
     <div class="col">
       <h3><%= __("We’re Here to Help!") %></h3>
-      <img src="//ps.w.org/mailpoet/assets/premium/premium-page-animated-support.gif">
+      <% set video_url = '//ps.w.org/mailpoet/assets/premium/premium-page-animated-support.mp4' %>
+      <video autoplay loop width="100%">
+        <source type="video/mp4" src="<%= video_url %>" />
+        <a href="<%= video_url %>"><%= video_url %></a>
+      </video>
       <p><%= __("We pride ourselves on giving nearly round-the-clock support. Our remote team spans several continents, hemispheres, and time-zones! If you’ve got a problem, we will help you fix it!") %></p>
     </div>
   </div>
