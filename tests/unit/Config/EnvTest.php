@@ -68,7 +68,8 @@ class EnvTest extends MailPoetTest {
 
   function testItCanGenerateDbSourceName() {
     $source_name = ((!ENV::$db_socket) ? 'mysql:host=' : 'mysql:unix_socket=') .
-      ENV::$db_host . ';port=' . ENV::$db_port . ';dbname=' . DB_NAME;
+      ENV::$db_host . ';port=' . ENV::$db_port . ';dbname=' . DB_NAME .
+      (!empty(ENV::$db_charset) ? ';charset=' . ENV::$db_charset : '');
     expect(Env::$db_source_name)->equals($source_name);
   }
 
