@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.7.5
-Stable tag: 3.0.0-beta.32
+Stable tag: 3.0.0-beta.33
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -90,6 +90,13 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-beta.33 - 2017-05-30 =
+* Updated: minimum required PHP version was increased from 5.3 to 5.3.3. Don't be stuck in the last decade. Ask your host to upgrade you to PHP 7;
+* Improved: we now bundle multilingual translations that are 75% or more complete (a decrease from the previous 100% threshold);
+* Fixed: âccéntèd characters are properly saved and displayed on all hosts. WARNING: non-English language users are advised to back up their data before upgrading and contact us if something goes wrong;
+* Fixed: when subscription confirmation is enabled, welcome notifications will only get scheduled when one's subscription is confirmed;
+* Fixed: subscription widget's title is styled in accordance with the active theme's configuration.
 
 = 3.0.0-beta.32 - 2017-05-23 =
 * Added: API methods for 3rd party plugins to add subscribers to MailPoet. Which plugins should we connect to?
