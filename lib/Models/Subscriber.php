@@ -230,10 +230,12 @@ class Subscriber extends Model {
       $subscriber->sendConfirmationEmail();
 
       // welcome email
-      Scheduler::scheduleSubscriberWelcomeNotification(
-        $subscriber->id,
-        $segment_ids
-      );
+      if($subscriber->status === self::STATUS_SUBSCRIBED) {
+        Scheduler::scheduleSubscriberWelcomeNotification(
+          $subscriber->id,
+          $segment_ids
+        );
+      }
     }
 
     return $subscriber;
