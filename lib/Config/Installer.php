@@ -1,6 +1,9 @@
 <?php
 namespace MailPoet\Config;
 
+use MailPoet\Models\Setting;
+use MailPoet\Services\Bridge;
+use MailPoet\Services\Release\API;
 use MailPoet\Util\License\License;
 
 if(!defined('ABSPATH')) exit;
@@ -96,21 +99,18 @@ class Installer {
   }
 
   function retrievePluginInformation() {
-    $obj = new \stdClass();
-    $obj->slug = $this->slug;
-    $obj->plugin_name = 'MailPoet Premium';
-    $obj->new_version = '3.0.0-alpha.0.0.3.1';
-    $obj->requires = '4.6';
-    $obj->tested = '4.7.4';
-    $obj->downloaded = 12540;
-    $obj->last_updated = date('Y-m-d');
-    $obj->sections = array(
-      'description' => 'The new version of the Premium plugin',
-      'another_section' => 'This is another section',
-      'changelog' => 'Some new features'
-    );
-    $obj->download_link = home_url() . '/wp-content/uploads/mailpoet-premium.zip';
-    $obj->package = $obj->download_link;
-    return $obj;
+    $key = Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME);
+    $api = new API($key);
+    $info = $api->getPluginInformation($this->slug);
+    $info = $this->formatInformation($info);
+    return $info;
+  }
+
+  private function formatInformation($info) {
+    // cast sections object to array for WP to understand
+    if(isset($info->sections)) {
+      $info->sections = (array)$info->sections;
+    }
+    return $info;
   }
 }
