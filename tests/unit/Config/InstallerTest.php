@@ -27,7 +27,33 @@ class InstallerTest extends MailPoetTest {
   function testItGetsPluginInfo() {
     $args = new \StdClass;
     $args->slug = $this->slug;
-    $result = $this->installer->getPluginInfo(false, 'plugin_information', $args);
+    $installer = Stub::construct(
+      $this->installer,
+      array(
+        $this->slug
+      ),
+      array(
+        'retrievePluginInformation' => function () {
+          $obj = new \stdClass();
+          $obj->slug = $this->slug;
+          $obj->plugin_name = 'MailPoet Premium';
+          $obj->new_version = '3.0.0-alpha.0.0.3.1';
+          $obj->requires = '4.6';
+          $obj->tested = '4.7.4';
+          $obj->downloaded = 12540;
+          $obj->last_updated = date('Y-m-d');
+          $obj->sections = array(
+            'description' => 'The new version of the Premium plugin',
+            'another_section' => 'This is another section',
+            'changelog' => 'Some new features'
+          );
+          $obj->download_link = home_url() . '/wp-content/uploads/mailpoet-premium.zip';
+          $obj->package = $obj->download_link;
+          return $obj;
+        }
+      )
+    );
+    $result = $installer->getPluginInfo(false, 'plugin_information', $args);
     expect($result->slug)->equals($this->slug);
     expect($result->new_version)->notEmpty();
     expect($result->download_link)->notEmpty();
