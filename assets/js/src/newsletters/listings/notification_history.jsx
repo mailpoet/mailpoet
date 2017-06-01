@@ -55,6 +55,11 @@ const newsletter_actions = [
 
 const NewsletterListNotificationHistory = React.createClass({
   mixins: [ QueueMixin, StatisticsMixin, MailerMixin ],
+  renderSentDate: function(newsletter) {
+    return (newsletter.queue.status === 'completed')
+      ? ( <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr> )
+      : MailPoet.I18n.t('notSentYet')
+  },
   renderItem: function(newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
@@ -91,7 +96,7 @@ const NewsletterListNotificationHistory = React.createClass({
           </td>
         ) : null }
         <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
-          <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
+          { this.renderSentDate(newsletter) }
         </td>
       </div>
     );
