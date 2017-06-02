@@ -18,10 +18,10 @@ class Installer {
   }
 
   function init() {
-    add_filter('plugins_api', array($this, 'getPluginInfo'), 10, 3);
+    add_filter('plugins_api', array($this, 'getPluginInformation'), 10, 3);
   }
 
-  function getPluginInfo($data, $action = '', $args = null) {
+  function getPluginInformation($data, $action = '', $args = null) {
     if($action === 'plugin_information'
       && isset($args->slug)
       && $args->slug === $this->slug
@@ -37,8 +37,8 @@ class Installer {
 
     $premium_plugin_active = License::getLicense();
     $premium_plugin_installed = $premium_plugin_active || self::isPluginInstalled($slug);
-    $premium_install_url = $premium_plugin_installed ? '' : self::getPluginInstallUrl($slug);
-    $premium_activate_url = $premium_plugin_active ? '' : self::getPluginActivateUrl($slug);
+    $premium_install_url = $premium_plugin_installed ? '' : self::getPluginInstallationUrl($slug);
+    $premium_activate_url = $premium_plugin_active ? '' : self::getPluginActivationUrl($slug);
 
     return compact(
       'premium_plugin_active',
@@ -53,7 +53,7 @@ class Installer {
     return !empty($installed_plugin);
   }
 
-  static function getPluginInstallUrl($slug) {
+  static function getPluginInstallationUrl($slug) {
     $install_url = add_query_arg(
       array(
         'action'   => 'install-plugin',
@@ -65,7 +65,7 @@ class Installer {
     return $install_url;
   }
 
-  static function getPluginActivateUrl($slug) {
+  static function getPluginActivationUrl($slug) {
     $plugin_file = self::getPluginFile($slug);
     if(empty($plugin_file)) {
       return false;
