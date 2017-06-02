@@ -43,6 +43,7 @@ class SendingQueueTest extends MailPoetTest {
     $this->subscriber_segment->save();
     $this->newsletter = Newsletter::create();
     $this->newsletter->type = Newsletter::TYPE_STANDARD;
+    $this->newsletter->status = Newsletter::STATUS_ACTIVE;
     $this->newsletter->subject = Fixtures::get('newsletter_subject_template');
     $this->newsletter->body = Fixtures::get('newsletter_body_template');
     $this->newsletter->save();

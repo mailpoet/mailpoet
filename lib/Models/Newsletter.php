@@ -39,6 +39,14 @@ class Newsletter extends Model {
     );
   }
 
+  function parent() {
+    return $this->hasOne(
+      __NAMESPACE__.'\Newsletter',
+      'id',
+      'parent_id'
+    );
+  }
+
   function segments() {
     return $this->hasManyThrough(
       __NAMESPACE__.'\Segment',

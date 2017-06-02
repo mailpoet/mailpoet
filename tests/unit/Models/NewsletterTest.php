@@ -109,6 +109,18 @@ class NewsletterTest extends MailPoetTest {
     expect($newsletter_segments[1]['name'])->equals('Segment 2');
   }
 
+  function itCanHaveParentNewsletter() {
+    $parent_newsletter = Newsletter::create();
+    $parent_newsletter->type = Newsletter::TYPE_STANDARD;
+    $parent_newsletter->save();
+    $newsletter = $this->newsletter;
+    $newsletter->parent_id = $parent_newsletter->id;
+    $newsletter->save();
+    $parent = $newsletter->parent()-findOne();
+    expect($parent)->isInstanceOf('MailPoet\Models\Newsletter');
+    expect($parent->id)->equals($parent_newsletter->id);
+  }
+
   function testItCanHaveDeletedSegments() {
     $this->segment_2->delete();
     $this->newsletter->withSegments(true);
