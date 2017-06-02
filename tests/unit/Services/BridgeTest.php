@@ -60,7 +60,7 @@ class BridgeTest extends MailPoetTest {
     expect($this->getMSSKey())->equals($this->invalid_key);
   }
 
-  function testItChecksExpiingMSSKey() {
+  function testItChecksExpiringMSSKey() {
     $result = $this->bridge->checkMSSKey($this->expiring_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::MAILPOET_KEY_EXPIRING);

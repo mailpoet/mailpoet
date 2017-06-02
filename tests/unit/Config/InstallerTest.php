@@ -17,14 +17,14 @@ class InstallerTest extends MailPoetTest {
     $installer = Stub::make(
       $this->installer,
       array(
-        'getPluginInfo' => Stub::once()
+        'getPluginInformation' => Stub::once()
       )
     );
     $installer->init();
     apply_filters('plugins_api', null, null, null);
   }
 
-  function testItGetsPluginInfo() {
+  function testItGetsPluginInformation() {
     $args = new \StdClass;
     $args->slug = $this->slug;
     $installer = Stub::construct(
@@ -53,21 +53,21 @@ class InstallerTest extends MailPoetTest {
         }
       )
     );
-    $result = $installer->getPluginInfo(false, 'plugin_information', $args);
+    $result = $installer->getPluginInformation(false, 'plugin_information', $args);
     expect($result->slug)->equals($this->slug);
     expect($result->new_version)->notEmpty();
     expect($result->download_link)->notEmpty();
     expect($result->package)->notEmpty();
   }
 
-  function testItIgnoresNonMatchingRequestsWhenGettingPluginInfo() {
+  function testItIgnoresNonMatchingRequestsWhenGettingPluginInformation() {
     $data = new \StdClass;
     $data->some_property = '123';
-    $result = $this->installer->getPluginInfo($data, 'some_action', null);
+    $result = $this->installer->getPluginInformation($data, 'some_action', null);
     expect($result)->equals($data);
     $args = new \StdClass;
     $args->slug = 'different-slug';
-    $result = $this->installer->getPluginInfo($data, 'plugin_information', $args);
+    $result = $this->installer->getPluginInformation($data, 'plugin_information', $args);
     expect($result)->equals($data);
   }
 
@@ -85,12 +85,12 @@ class InstallerTest extends MailPoetTest {
   }
 
   function testItGetsPluginInstallUrl() {
-    expect(Installer::getPluginInstallUrl(Env::$plugin_name))
+    expect(Installer::getPluginInstallationUrl(Env::$plugin_name))
       ->startsWith(home_url() . '/wp-admin/update.php?action=install-plugin&plugin=mailpoet&_wpnonce=');
   }
 
   function testItGetsPluginActivateUrl() {
-    expect(Installer::getPluginActivateUrl(Env::$plugin_name))
+    expect(Installer::getPluginActivationUrl(Env::$plugin_name))
       ->startsWith(home_url() . '/wp-admin/plugins.php?action=activate&plugin=mailpoet/mailpoet.php&_wpnonce=');
   }
 }
