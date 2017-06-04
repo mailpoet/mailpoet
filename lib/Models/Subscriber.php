@@ -22,7 +22,7 @@ class Subscriber extends Model {
 
     $this->addValidations('email', array(
       'required' => __('Please enter your email address', 'mailpoet'),
-      'isEmail' => __('Your email address is invalid!', 'mailpoet')
+      'validEmail' => __('Your email address is invalid!', 'mailpoet')
     ));
   }
 
