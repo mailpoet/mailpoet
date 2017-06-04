@@ -16,10 +16,14 @@ class Import {
   public $update_subscribers;
   public $subscribers_fields;
   public $subscribers_custom_fields;
+  public $subscribers_fields_validation_rules;
   public $subscribers_count;
   public $created_at;
   public $updated_at;
   public $required_subscribers_fields;
+  private $default_subscribers_data_validation_rules = array(
+    'email' => 'email'
+  );
   const DB_QUERY_CHUNK_SIZE = 100;
 
   public function __construct($data) {
@@ -36,9 +40,10 @@ class Import {
     $this->subscribers_custom_fields = $this->getCustomSubscribersFields(
       array_keys($data['columns'])
     );
-    $this->subscribers_fields_validation_rules = $this->getSubscriberDataValidationRules(
-      $data['columns']
+    $this->default_subscribers_fields_validation_rules = array(
+      'email' => 'email'
     );
+    $this->subscribers_fields_validation_rules = $this->getSubscriberDataValidationRules($data['columns']);
     $this->subscribers_count = count(reset($this->subscribers_data));
     $this->created_at = date('Y-m-d H:i:s', (int)$data['timestamp']);
     $this->updated_at = date('Y-m-d H:i:s', (int)$data['timestamp'] + 1);
@@ -74,7 +79,7 @@ class Import {
         $field['validation_rule'] :
         false;
     }
-    return $validation_rules;
+    return array_replace($validation_rules, $this->default_subscribers_data_validation_rules);
   }
 
   function process() {
@@ -83,7 +88,9 @@ class Import {
       $this->subscribers_data,
       $this->subscribers_fields_validation_rules
     );
-
+    if(!$subscribers_data) {
+      throw new \Exception(__('No valid subscribers were founds.', 'mailpoet'));
+    }
     // permanently trash deleted subscribers
     $this->deleteExistingTrashedSubscribers($subscribers_data);
 
@@ -149,6 +156,16 @@ class Import {
     $invalid_records = array();
     foreach($subscribers_data as $column => &$data) {
       $validation_rule = $validation_rules[$column];
+      if($validation_rule === 'email') {
+        $data = array_map(
+          function($index, $email) use(&$invalid_records) {
+            if(!is_email($email)) {
+              $invalid_records[] = $index;
+            }
+            return $email;
+          }, array_keys($data), $data
+        );
+      }
       // if this is a custom column
       if(in_array($column, $this->subscribers_custom_fields)) {
         $custom_field = CustomField::findOne($column);
@@ -162,7 +179,8 @@ class Import {
                 $invalid_records[] = $index;
               }
               return $date;
-            }, array_keys($data), $data);
+            }, array_keys($data), $data
+          );
         }
       }
     }
@@ -172,6 +190,7 @@ class Import {
         $data = array_values($data);
       }
     }
+    if(empty($subscribers_data['email'])) return false;
     return $subscribers_data;
   }
 

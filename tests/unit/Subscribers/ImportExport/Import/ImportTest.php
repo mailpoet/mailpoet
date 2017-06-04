@@ -91,6 +91,55 @@ class ImportTest extends MailPoetTest {
     }
   }
 
+  function testItValidatesSubscribersEmail() {
+    $validation_rules = array('email' => 'email');
+
+    // invalid email is removed from data object
+    $data['email'] = array(
+      'àdam@smîth.com',
+      'jane@doe.com'
+    );
+    $result = $this->import->validateSubscribersData($data, $validation_rules);
+    expect($result['email'])->count(1);
+    expect($result['email'][0])->equals('jane@doe.com');
+
+    // valid email passes validation
+    $data['email'] = array(
+      'adam@smith.com',
+      'jane@doe.com'
+    );
+    $result = $this->import->validateSubscribersData($data, $validation_rules);
+    expect($result)->equals($data);
+  }
+
+  function testItThrowsErrorWhenNoValidSubscribersAreFoundDuringImport() {
+    $data = array(
+      'subscribers' => array(
+        array(
+          'Adam',
+          'Smith',
+          'àdam@smîth.com',
+          'France'
+        )
+      ),
+      'columns' => array(
+        'first_name' => array('index' => 0),
+        'last_name' => array('index' => 1),
+        'email' => array('index' => 2)
+      ),
+      'segments' => array(),
+      'timestamp' => time(),
+      'updateSubscribers' => true
+    );
+    $import = new Import($data);
+    try {
+      $import->process();
+      self::fail('No valid subscribers found exception not thrown.');
+    } catch(Exception $e) {
+      expect($e->getMessage())->equals('No valid subscribers were founds.');
+    }
+  }
+
   function testItTransformsSubscribers() {
     $custom_field = $this->subscribers_custom_fields[0];
     expect($this->import->subscribers_data['first_name'][0])
@@ -438,7 +487,6 @@ class ImportTest extends MailPoetTest {
     $updated_subscriber = Subscriber::where('email', $existing_subscriber->email)->findOne();
     expect($updated_subscriber->status)->equals('unsubscribed');
   }
-
 
   function testItRunsImport() {
     $result = $this->import->process();
