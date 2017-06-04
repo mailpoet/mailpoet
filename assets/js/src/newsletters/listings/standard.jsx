@@ -3,6 +3,7 @@ import { Router, Link } from 'react-router'
 import classNames from 'classnames'
 import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
+import Hooks from 'wp-js-hooks'
 
 import Listing from 'listing/listing.jsx'
 import ListingTabs from 'newsletters/listings/tabs.jsx'
@@ -98,7 +99,7 @@ const bulk_actions = [
   }
 ];
 
-const newsletter_actions = [
+let newsletter_actions = [
   {
     name: 'view',
     link: function(newsletter) {
@@ -151,6 +152,8 @@ const newsletter_actions = [
     name: 'trash'
   }
 ];
+
+newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_actions', newsletter_actions);
 
 const NewsletterListStandard = React.createClass({
   mixins: [ QueueMixin, StatisticsMixin, MailerMixin ],

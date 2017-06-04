@@ -279,7 +279,7 @@ const _StatisticsMixin = {
       );
     }
 
-    if (total_sent > 0 && !too_early_for_stats && params.link) {
+    if (total_sent > 0 && params.link) {
       // wrap content in a link
       return (
         <div>
