@@ -178,6 +178,7 @@ class SendingQueue {
 
   static function getRunningQueues() {
     return SendingQueueModel::orderByAsc('priority')
+      ->orderByAsc('created_at')
       ->whereNull('deleted_at')
       ->whereNull('status')
       ->whereNull('type')
