@@ -323,6 +323,10 @@ define(
                     // is the email in 'mailto:email' format?
                     email = test[1].trim();
                   }
+                  // test for valid characters using WP's rule (https://core.trac.wordpress.org/browser/tags/4.7.3/src/wp-includes/formatting.php#L2902)
+                  if (!/^[a-zA-Z0-9!#$%&\'*+\/=?^_`{|}~\.-@]+$/.test(email) ) {
+                    return false;
+                  }
                   return email;
                 };
 

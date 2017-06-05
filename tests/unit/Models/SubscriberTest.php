@@ -55,15 +55,6 @@ class SubscriberTest extends MailPoetTest {
   }
 
   function testItShouldSetErrors() {
-    // model validation
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate(array(
-      'email' => 'invalid_email'
-    ));
-    $subscriber->save();
-    $errors = $subscriber->getErrors();
-    expect($errors)->contains("Your email address is invalid!");
-
     // pdo error
     $subscriber = Subscriber::create();
     $subscriber->hydrate(array(
@@ -73,6 +64,27 @@ class SubscriberTest extends MailPoetTest {
     $subscriber->save();
     $errors = $subscriber->getErrors();
     expect($errors[0])->contains("Unknown column 'invalid_column' in 'field list'");
+  }
+
+  function testItValidatesEmailAndSetsErrors() {
+    // email is required
+    $subscriber = Subscriber::create();
+    $subscriber->save();
+    $errors = $subscriber->getErrors();
+    expect($errors)->contains("Please enter your email address");
+
+    // email address should be valid
+    $subscriber = Subscriber::create();
+    $subscriber->email = 'invalid_email';
+    $subscriber->save();
+    $errors = $subscriber->getErrors();
+    expect($errors)->contains("Your email address is invalid!");
+
+    $subscriber = Subscriber::create();
+    $subscriber->email = 'tést@éxample.com';
+    $subscriber->save();
+    $errors = $subscriber->getErrors();
+    expect($errors)->contains("Your email address is invalid!");
   }
 
   function emailMustBeUnique() {
