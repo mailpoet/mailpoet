@@ -75,6 +75,7 @@ class Initializer {
     try {
       $this->maybeDbUpdate();
       $this->setupRenderer();
+      $this->setupInstaller();
       $this->setupLocalizer();
       $this->setupMenu();
       $this->setupAnalytics();
@@ -134,6 +135,13 @@ class Initializer {
     $caching = !WP_DEBUG;
     $debugging = WP_DEBUG;
     $this->renderer = new Renderer($caching, $debugging);
+  }
+
+  function setupInstaller() {
+    $installer = new Installer(
+      Installer::PREMIUM_PLUGIN_SLUG
+    );
+    $installer->init();
   }
 
   function setupLocalizer() {

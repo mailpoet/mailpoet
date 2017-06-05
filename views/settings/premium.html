@@ -47,11 +47,15 @@
         <br/>
         <div
           class="mailpoet_premium_download"
-          <% if premium_plugin_active or not(premium_key_valid) %>
+          <% if premium_plugin_installed or not(premium_key_valid) %>
             style="display: none;"
           <% endif %>
         >
-          <a class="button-primary" href="#"><%= __('Download Premium now.') %></a>
+          <a
+            class="mailpoet_premium_install_link button-primary"
+            href="<%= premium_install_url | default('#') %>"
+          ><%= __('Install Premium now.') %>
+          </a>
           <span>
             <%= __("[link]Read guide[/link] on how to install Premium.")
               |replace({
@@ -61,6 +65,18 @@
               |raw
             %>
            </span>
+        </div>
+        <div
+          class="mailpoet_premium_activate"
+          <% if not(premium_plugin_installed) or premium_plugin_active or not(premium_key_valid) %>
+            style="display: none;"
+          <% endif %>
+        >
+          <span><%= __('You need to activate the MailPoet Premium plugin.') %></span>
+          <a
+            class="mailpoet_premium_activate_link button-primary"
+            href="<%= premium_activate_url | default('#') %>"
+          ><%= __('Activate Premium.') %></a>
         </div>
       </td>
     </tr>
@@ -98,7 +114,7 @@
 
       function verifyMailPoetPremiumKey(key) {
         $('.mailpoet_premium_key_valid, .mailpoet_premium_key_invalid').addClass('mailpoet_hidden');
-        $('.mailpoet_premium_download').hide();
+        $('.mailpoet_premium_download, .mailpoet_premium_activate').hide();
 
         return MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
@@ -112,8 +128,14 @@
           $('.mailpoet_notice_server').hide();
           $('.mailpoet_premium_key_valid').text(response.data.message);
           $('.mailpoet_premium_key_valid').removeClass('mailpoet_hidden');
-          if (!response.meta.premium_plugin_active) {
+          if (!response.meta.premium_plugin_installed) {
+            $('.mailpoet_premium_install_link')
+              .attr('href', response.meta.premium_install_url || '#');
             $('.mailpoet_premium_download').show();
+          } else if (!response.meta.premium_plugin_active) {
+            $('.mailpoet_premium_activate_link')
+              .attr('href', response.meta.premium_activate_url || '#');
+            $('.mailpoet_premium_activate').show();
           }
         }).fail(function(response) {
           if (response.errors.length > 0) {
