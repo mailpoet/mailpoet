@@ -40,9 +40,6 @@ class Import {
     $this->subscribers_custom_fields = $this->getCustomSubscribersFields(
       array_keys($data['columns'])
     );
-    $this->default_subscribers_fields_validation_rules = array(
-      'email' => 'email'
-    );
     $this->subscribers_fields_validation_rules = $this->getSubscriberDataValidationRules($data['columns']);
     $this->subscribers_count = count(reset($this->subscribers_data));
     $this->created_at = date('Y-m-d H:i:s', (int)$data['timestamp']);
@@ -89,7 +86,7 @@ class Import {
       $this->subscribers_fields_validation_rules
     );
     if(!$subscribers_data) {
-      throw new \Exception(__('No valid subscribers were founds.', 'mailpoet'));
+      throw new \Exception(__('No valid subscribers were found.', 'mailpoet'));
     }
     // permanently trash deleted subscribers
     $this->deleteExistingTrashedSubscribers($subscribers_data);

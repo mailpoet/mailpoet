@@ -136,7 +136,7 @@ class ImportTest extends MailPoetTest {
       $import->process();
       self::fail('No valid subscribers found exception not thrown.');
     } catch(Exception $e) {
-      expect($e->getMessage())->equals('No valid subscribers were founds.');
+      expect($e->getMessage())->equals('No valid subscribers were found.');
     }
   }
 
