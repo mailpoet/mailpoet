@@ -9,7 +9,6 @@ use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Url as UrlHelper;
-use MailPoet\Subscription;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Block\Date as FormBlockDate;
 
@@ -417,7 +416,7 @@ class Pages {
       : __('Manage your subscription', 'mailpoet')
     );
 
-    return '<a href="'.Subscription\UrlHelper::getManageUrl(
+    return '<a href="'.Url::getManageUrl(
       $this->subscriber
     ).'">'.$text.'</a>';
   }
