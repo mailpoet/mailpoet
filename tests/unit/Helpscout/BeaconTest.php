@@ -31,7 +31,7 @@ class BeaconTest extends MailPoetTest {
   }
 
   function testItReturnsMailpoetVersion() {
-    expect($this->beacon_data['MailPoet version'])->equals(MAILPOET_VERSION);
+    expect($this->beacon_data['MailPoet Free version'])->equals(MAILPOET_VERSION);
   }
 
   function testItReturnsWordpressVersion() {
@@ -121,5 +121,11 @@ class BeaconTest extends MailPoetTest {
 
   function testItReturnsCronPingResponse() {
     expect($this->beacon_data['Cron ping URL'])->contains('&action=ping');
+  }
+
+  function testItReturnsPremiumVersion() {
+    expect($this->beacon_data['MailPoet Premium version'])->equals(
+      (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A'
+    );
   }
 }
