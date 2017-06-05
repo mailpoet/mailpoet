@@ -459,6 +459,39 @@ class NewsletterTest extends MailPoetTest {
     expect($newsletter_segments)->isEmpty();
   }
 
+  function testItDeletesChildrenSegmentAndQueueAssociationsWhenParentNewsletterIsDeleted() {
+    $parent_newsletter = $this->newsletter;
+    // create multiple children (post notification history) newsletters and sending queues
+    for($i = 1; $i <= 5; $i++) {
+      $newsletter = Newsletter::createOrUpdate(
+        array(
+          'subject' => 'test',
+          'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
+          'parent_id' => $parent_newsletter->id
+        )
+      );
+      $sending_queue = SendingQueue::create();
+      $sending_queue->newsletter_id = $newsletter->id;
+      $sending_queue->save();
+      $newsletter_segment = NewsletterSegment::create();
+      $newsletter_segment->newsletter_id = $newsletter->id;
+      $newsletter_segment->segment_id = 1;
+      $newsletter_segment->save();
+    }
+
+    // make sure relations exist
+    // 1 parent newsletter/queues, 2 parent segments and 5 children queues/newsletters/segments
+    expect(Newsletter::findArray())->count(6);
+    expect(SendingQueue::findArray())->count(6);
+    expect(NewsletterSegment::findArray())->count(7);
+
+    // delete parent newsletter and check that relations no longer exist
+    $parent_newsletter->delete();
+    expect(Newsletter::findArray())->count(0);
+    expect(SendingQueue::findArray())->count(0);
+    expect(NewsletterSegment::findArray())->count(0);
+  }
+
   function testItTrashesQueueAssociationsWhenNewsletterIsTrashed() {
     // create multiple sending queues
     $newsletter = $this->newsletter;
@@ -472,6 +505,32 @@ class NewsletterTest extends MailPoetTest {
     // trash newsletter and check that relations are trashed
     $newsletter->trash();
     // 5 queues + 1 created in _before() method
+    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
+  }
+
+  function testItTrashesChildrenQueueAssociationsWhenParentNewsletterIsTrashed() {
+    $parent_newsletter = $this->newsletter;
+    // create multiple children (post notification history) newsletters and sending queues
+    for($i = 1; $i <= 5; $i++) {
+      $newsletter = Newsletter::createOrUpdate(
+        array(
+          'subject' => 'test',
+          'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
+          'parent_id' => $parent_newsletter->id
+        )
+      );
+      $sending_queue = SendingQueue::create();
+      $sending_queue->newsletter_id = $newsletter->id;
+      $sending_queue->save();
+    }
+    // 1 parent and 5 children queues/newsletters
+    expect(Newsletter::whereNull('deleted_at')->findArray())->count(6);
+    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
+
+    // trash parent newsletter and check that relations are trashed
+    $parent_newsletter->trash();
+    // 1 parent and 5 children queues/newsletters
+    expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(6);
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
   }
 
@@ -489,6 +548,41 @@ class NewsletterTest extends MailPoetTest {
     // restore newsletter and check that relations are restored
     $newsletter->restore();
     // 5 queues + 1 created in _before() method
+    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
+  }
+
+  function testItRestoresTrashedChildrenQueueAssociationsWhenParentNewsletterIsRestored() {
+    // delete parent newsletter and sending queue
+    $parent_newsletter = $this->newsletter;
+    $parent_newsletter->deleted_at = date('Y-m-d H:i:s');
+    $parent_newsletter->save();
+    $parent_sending_queue = $this->sending_queue;
+    $parent_sending_queue->deleted_at = date('Y-m-d H:i:s');
+    $parent_sending_queue->save();
+
+    // create multiple children (post notification history) newsletters and sending queues
+    for($i = 1; $i <= 5; $i++) {
+      $newsletter = Newsletter::createOrUpdate(
+        array(
+          'subject' => 'test',
+          'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
+          'parent_id' => $parent_newsletter->id,
+          'deleted_at' => date('Y-m-d H:i:s')
+        )
+      );
+      $sending_queue = SendingQueue::create();
+      $sending_queue->newsletter_id = $newsletter->id;
+      $sending_queue->deleted_at = date('Y-m-d H:i:s');
+      $sending_queue->save();
+    }
+    // 1 parent and 5 children queues/newsletters
+    expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(6);
+    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
+
+    // restore parent newsletter and check that relations are restored
+    $parent_newsletter->restore();
+    // 1 parent and 5 children queues/newsletters
+    expect(Newsletter::whereNull('deleted_at')->findArray())->count(6);
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
   }
 
@@ -510,6 +604,30 @@ class NewsletterTest extends MailPoetTest {
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
 
     // bulk trash newsletters and check that relations are trashed
+    Newsletter::bulkTrash(ORM::forTable(Newsletter::$_table));
+    expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(6);
+    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
+  }
+
+  function testItTrashesAllChildrenQueueAssociationsWhenParentNewslettersAreBulkTrashed() {
+    // create multiple children (post notification history) newsletters and sending queues
+    for($i = 1; $i <= 5; $i++) {
+      $newsletter = Newsletter::createOrUpdate(
+        array(
+          'subject' => 'test',
+          'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
+          'parent_id' => $this->newsletter->id,
+        )
+      );
+      $sending_queue = SendingQueue::create();
+      $sending_queue->newsletter_id = $newsletter->id;
+      $sending_queue->save();
+    }
+    // 5 queues/newsletters + 1 of each created in _before() method
+    expect(Newsletter::whereNull('deleted_at')->findArray())->count(6);
+    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
+
+    // bulk trash parent newsletters and check that relations are trashed
     Newsletter::bulkTrash(ORM::forTable(Newsletter::$_table));
     expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(6);
     expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
@@ -540,6 +658,32 @@ class NewsletterTest extends MailPoetTest {
     expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
   }
 
+  function testItBulkRestoresTrashedChildrenQueueAssociationsWhenParentNewslettersAreBulkRestored() {
+    // create multiple children (post notification history) newsletters and sending queues
+    for($i = 1; $i <= 5; $i++) {
+      $newsletter = Newsletter::createOrUpdate(
+        array(
+          'subject' => 'test',
+          'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
+          'parent_id' => $this->newsletter->id,
+          'deleted_at' => date('Y-m-d H:i:s')
+        )
+      );
+      $sending_queue = SendingQueue::create();
+      $sending_queue->newsletter_id = $newsletter->id;
+      $sending_queue->deleted_at = date('Y-m-d H:i:s');
+      $sending_queue->save();
+    }
+    expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(5);
+    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(5);
+
+    // bulk restore parent newsletters and check that relations are restored
+    Newsletter::bulkRestore(ORM::forTable(Newsletter::$_table));
+    // 1 parent and 5 queues/newsletters
+    expect(Newsletter::whereNull('deleted_at')->findArray())->count(6);
+    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
+  }
+
   function testItBulkDeletesSegmentAndQueueAssociationsWhenNewslettersAreBulkDeleted() {
     // create multiple newsletters, sending queues and newsletter segments
     for($i = 1; $i <= 5; $i++) {
@@ -562,6 +706,37 @@ class NewsletterTest extends MailPoetTest {
     expect(SendingQueue::findArray())->count(6);
     // 5 segment associations + 2 created in _before() method
     expect(NewsletterSegment::findArray())->count(7);
+
+    // bulk delete newsletters and check that relations are deleted
+    Newsletter::bulkDelete(ORM::forTable(Newsletter::$_table));
+    expect(Newsletter::findArray())->count(0);
+    expect(SendingQueue::findArray())->count(0);
+    expect(NewsletterSegment::findArray())->count(0);
+  }
+
+  function testItBulkDeletesChildrenSegmentAndQueueAssociationsWhenParentNewslettersAreBulkDeleted() {
+    $this->_after();
+    // create multiple children (post notification history) newsletters, sending queues and newsletter segments
+    for($i = 1; $i <= 5; $i++) {
+      $newsletter = Newsletter::createOrUpdate(
+        array(
+          'subject' => 'test',
+          'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
+          'parent_id' => $this->newsletter->id
+        )
+      );
+      $sending_queue = SendingQueue::create();
+      $sending_queue->newsletter_id = $newsletter->id;
+      $sending_queue->save();
+      $newsletter_segment = NewsletterSegment::create();
+      $newsletter_segment->newsletter_id = $newsletter->id;
+      $newsletter_segment->segment_id = 1;
+      $newsletter_segment->save();
+    }
+    // 5 queues/newsletters/segment associations
+    expect(Newsletter::findArray())->count(5);
+    expect(SendingQueue::findArray())->count(5);
+    expect(NewsletterSegment::findArray())->count(5);
 
     // bulk delete newsletters and check that relations are deleted
     Newsletter::bulkDelete(ORM::forTable(Newsletter::$_table));
