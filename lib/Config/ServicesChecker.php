@@ -58,7 +58,7 @@ class ServicesChecker {
     $premium_plugin_active = License::getLicense();
     $premium_key = Setting::getValue(Bridge::PREMIUM_KEY_STATE_SETTING_NAME);
 
-    if(!$premium_plugin_active || !$premium_key_specified) {
+    if(!$premium_plugin_active) {
       $display_error_notice = false;
     }
 
