@@ -31,6 +31,8 @@ class Scheduler {
         ->findOne($queue->newsletter_id);
       if(!$newsletter || $newsletter->deleted_at !== null) {
         $queue->delete();
+      } elseif($newsletter->status !== 'active') {
+        continue;
       } elseif($newsletter->type === 'welcome') {
         $this->processWelcomeNewsletter($newsletter, $queue);
       } elseif($newsletter->type === 'notification') {

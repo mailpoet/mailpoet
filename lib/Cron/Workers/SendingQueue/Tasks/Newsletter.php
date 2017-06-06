@@ -22,11 +22,31 @@ class Newsletter {
     $this->tracking_enabled = (boolean)Setting::getValue('tracking.enabled');
   }
 
-  function getAndPreProcess($queue) {
-    $newsletter = $queue->newsletter()->whereNull('deleted_at')->findOne();
-    if(!$newsletter) {
-      return false;
+  function getNewsletterFromQueue($queue) {
+    // get existing active or sending newsletter
+    $newsletter = $queue->newsletter()
+      ->whereNull('deleted_at')
+      ->whereAnyIs(array(
+        array('status' => NewsletterModel::STATUS_ACTIVE),
+        array('status' => NewsletterModel::STATUS_SENDING)
+      ))
+      ->findOne();
+    if(!$newsletter) return false;
+    // if this is a notification history, get existing active or sending parent newsletter
+    if($newsletter->type == NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
+      $parent_newsletter = $newsletter->parent()
+        ->whereNull('deleted_at')
+        ->whereAnyIs(array(
+          array('status' => NewsletterModel::STATUS_ACTIVE),
+          array('status' => NewsletterModel::STATUS_SENDING)
+        ))
+        ->findOne();
+      if(!$parent_newsletter) return false;
     }
+    return $newsletter;
+  }
+
+  function preProcessNewsletter($newsletter, $queue) {
     // return the newsletter if it was previously rendered
     if(!is_null($queue->getNewsletterRenderedBody())) {
       return $newsletter;
@@ -113,7 +133,7 @@ class Newsletter {
     }
   }
 
-  function getSegments($newsletter) {
+  function getNewsletterSegments($newsletter) {
     $segments = NewsletterSegmentModel::where('newsletter_id', $newsletter->id)
       ->select('segment_id')
       ->findArray();

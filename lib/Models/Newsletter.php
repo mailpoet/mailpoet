@@ -39,6 +39,14 @@ class Newsletter extends Model {
     );
   }
 
+  function parent() {
+    return $this->hasOne(
+      __NAMESPACE__.'\Newsletter',
+      'id',
+      'parent_id'
+    );
+  }
+
   function segments() {
     return $this->hasManyThrough(
       __NAMESPACE__.'\Segment',
@@ -86,62 +94,111 @@ class Newsletter extends Model {
 
   function trash() {
     // trash queue associations
-    SendingQueue::rawExecute(
-      'UPDATE `' . SendingQueue::$_table . '` ' .
-      'SET `deleted_at` = NOW() ' .
-      'WHERE `newsletter_id` = ' . $this->id
-    );
+    $children = $this->children()->select('id')->findArray();
+    if($children) {
+      $this->children()->rawExecute(
+        'UPDATE `' . self::$_table . '` ' .
+        'SET `deleted_at` = NOW() ' .
+        'WHERE `parent_id` = ' . $this->id
+      );
+      SendingQueue::rawExecute(
+        'UPDATE `' . SendingQueue::$_table . '` ' .
+        'SET `deleted_at` = NOW() ' .
+        'WHERE `newsletter_id` IN (' . join(',', array_merge(Helpers::flattenArray($children), array($this->id))) . ')'
+      );
+    } else {
+      SendingQueue::rawExecute(
+        'UPDATE `' . SendingQueue::$_table . '` ' .
+        'SET `deleted_at` = NOW() ' .
+        'WHERE `newsletter_id` = ' . $this->id
+      );
+    }
 
     return parent::trash();
   }
 
   static function bulkTrash($orm) {
-    // bulk trash queue associations
+    // bulk trash queue and notification history associations
     parent::bulkAction($orm, function($ids) {
-      SendingQueue::rawExecute(join(' ', array(
-        'UPDATE `' . SendingQueue::$_table . '`',
-        'SET `deleted_at` = NOW()',
-        'WHERE `newsletter_id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')'
-      )),
-      $ids
-      );
+      $children = Newsletter::whereIn('parent_id', $ids)->select('id')->findArray();
+      if($children) {
+        Newsletter::rawExecute(
+          'UPDATE `' . Newsletter::$_table . '` ' .
+          'SET `deleted_at` = NOW() ' .
+          'WHERE `parent_id` IN (' . join(',', Helpers::flattenArray($ids)) . ')'
+        );
+        SendingQueue::rawExecute(
+          'UPDATE `' . SendingQueue::$_table . '` ' .
+          'SET `deleted_at` = NOW() ' .
+          'WHERE `newsletter_id` IN (' . join(',', array_merge(Helpers::flattenArray($children), $ids)) . ')'
+        );
+      } else {
+        SendingQueue::rawExecute(
+          'UPDATE `' . SendingQueue::$_table . '` ' .
+          'SET `deleted_at` = NOW() ' .
+          'WHERE `newsletter_id` IN (' . join(',', Helpers::flattenArray($ids)) . ')'
+        );
+      }
     });
 
     return parent::bulkTrash($orm);
   }
 
   function delete() {
-    // delete segment associations
-    $this->segmentRelations()->deleteMany();
-    // delete queue associations
-    $this->queue()->deleteMany();
+    // delete queue, notification history and segment associations
+    $children = $this->children()->select('id')->findArray();
+    if($children) {
+      $children = Helpers::flattenArray($children);
+      $this->children()->deleteMany();
+      SendingQueue::whereIn('newsletter_id', array_merge($children, array($this->id)))->deleteMany();
+      NewsletterSegment::whereIn('newsletter_id', array_merge($children, array($this->id)))->deleteMany();
+    } else {
+      $this->queue()->deleteMany();
+      $this->segmentRelations()->deleteMany();
+    }
 
     return parent::delete();
   }
 
   static function bulkDelete($orm) {
-    // bulk delete segment associations
+    // bulk delete queue, notification history and segment associations
     parent::bulkAction($orm, function($ids) {
-      NewsletterSegment::whereIn('newsletter_id', $ids)
-        ->deleteMany();
-    });
-
-    // bulk delete queue associations
-    parent::bulkAction($orm, function($ids) {
-      SendingQueue::whereIn('newsletter_id', $ids)
-        ->deleteMany();
+      $children = Newsletter::whereIn('parent_id', $ids)->select('id')->findArray();
+      if($children) {
+        $children = Helpers::flattenArray($children);
+        Newsletter::whereIn('parent_id', $ids)->deleteMany();
+        SendingQueue::whereIn('newsletter_id', array_merge($children, $ids))->deleteMany();
+        NewsletterSegment::whereIn('newsletter_id', array_merge($children, $ids))->deleteMany();
+      } else {
+        SendingQueue::whereIn('newsletter_id', $ids)->deleteMany();
+        NewsletterSegment::whereIn('newsletter_id', $ids)->deleteMany();
+      }
     });
 
     return parent::bulkDelete($orm);
   }
 
   function restore() {
-    // restore trashed queue associations
-    SendingQueue::rawExecute(
-      'UPDATE `' . SendingQueue::$_table . '` ' .
-      'SET `deleted_at` = null ' .
-      'WHERE `newsletter_id` = ' . $this->id
-    );
+    // restore trashed queue and notification history associations
+    $children = $this->children()->select('id')->findArray();
+    if($children) {
+      $this->children()->rawExecute(
+        'UPDATE `' . self::$_table . '` ' .
+        'SET `deleted_at` = null ' .
+        'WHERE `parent_id` = ' . $this->id
+      );
+      SendingQueue::rawExecute(
+        'UPDATE `' . SendingQueue::$_table . '` ' .
+        'SET `deleted_at` = null ' .
+        'WHERE `newsletter_id` IN (' . join(',', array_merge(Helpers::flattenArray($children), array($this->id))) . ')'
+      );
+    } else {
+      SendingQueue::rawExecute(
+        'UPDATE `' . SendingQueue::$_table . '` ' .
+        'SET `deleted_at` = null ' .
+        'WHERE `newsletter_id` = ' . $this->id
+      );
+    }
 
     if($this->status == self::STATUS_SENDING) {
       $this->set('status', self::STATUS_DRAFT);
@@ -151,13 +208,27 @@ class Newsletter extends Model {
   }
 
   static function bulkRestore($orm) {
-    // bulk restore trashed queue associations
+    // bulk restore trashed queue and notification history associations
     parent::bulkAction($orm, function($ids) {
-      SendingQueue::whereIn('newsletter_id', $ids)
-        ->whereNotNull('deleted_at')
-        ->findResultSet()
-        ->set('deleted_at', null)
-        ->save();
+      $children = Newsletter::whereIn('parent_id', $ids)->select('id')->findArray();
+      if($children) {
+        Newsletter::whereIn('parent_id', $ids)
+          ->whereNotNull('deleted_at')
+          ->findResultSet()
+          ->set('deleted_at', null)
+          ->save();
+        SendingQueue::whereIn('newsletter_id', Helpers::flattenArray($children))
+          ->whereNotNull('deleted_at')
+          ->findResultSet()
+          ->set('deleted_at', null)
+          ->save();
+      } else {
+        SendingQueue::whereIn('newsletter_id', $ids)
+          ->whereNotNull('deleted_at')
+          ->findResultSet()
+          ->set('deleted_at', null)
+          ->save();
+      }
     });
 
     parent::bulkAction($orm, function($ids) {

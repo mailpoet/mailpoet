@@ -503,6 +503,19 @@ class SchedulerTest extends MailPoetTest {
     }
   }
 
+  function testItDoesNotProcessScheduledJobsWhenNewsletterIsNotActive() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_DRAFT);
+    $queue = $this->_createQueue($newsletter->id);
+    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->save();
+
+    $scheduler = Stub::make(new Scheduler(), array(
+      'processScheduledStandardNewsletter' => Stub::never()
+    ), $this);
+    // scheduled job is not processed
+    $scheduler->process();
+  }
+
   function _createNewsletterSegment($newsletter_id, $segment_id) {
     $newsletter_segment = NewsletterSegment::create();
     $newsletter_segment->newsletter_id = $newsletter_id;
@@ -544,9 +557,10 @@ class SchedulerTest extends MailPoetTest {
     return $subscriber;
   }
 
-  function _createNewsletter($type = Newsletter::TYPE_NOTIFICATION) {
+  function _createNewsletter($type = Newsletter::TYPE_NOTIFICATION, $status = 'active') {
     $newsletter = Newsletter::create();
     $newsletter->type = $type;
+    $newsletter->status = $status;
     $newsletter->save();
     expect($newsletter->getErrors())->false();
     return $newsletter;

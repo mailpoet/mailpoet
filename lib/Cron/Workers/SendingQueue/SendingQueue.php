@@ -6,10 +6,10 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
-use MailPoet\Router\Endpoints\Track;
 
 if(!defined('ABSPATH')) exit;
 
@@ -28,8 +28,12 @@ class SendingQueue {
   function process() {
     $this->enforceSendingAndExecutionLimits();
     foreach(self::getRunningQueues() as $queue) {
-      // get and pre-process newsletter (render, replace shortcodes/links, etc.)
-      $newsletter = $this->newsletter_task->getAndPreProcess($queue);
+      $newsletter = $this->newsletter_task->getNewsletterFromQueue($queue);
+      if(!$newsletter) {
+        continue;
+      }
+      // pre-process newsletter (render, replace shortcodes/links, etc.)
+      $newsletter = $this->newsletter_task->preProcessNewsletter($newsletter, $queue);
       if(!$newsletter) {
         $queue->delete();
         continue;
@@ -37,7 +41,7 @@ class SendingQueue {
       // configure mailer
       $this->mailer_task->configureMailer($newsletter);
       // get newsletter segments
-      $newsletter_segments_ids = $this->newsletter_task->getSegments($newsletter);
+      $newsletter_segments_ids = $this->newsletter_task->getNewsletterSegments($newsletter);
       // get subscribers
       $queue->subscribers = $queue->getSubscribers();
       $subscriber_batches = array_chunk(
