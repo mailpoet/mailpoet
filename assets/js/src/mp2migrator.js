@@ -137,7 +137,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         data: {
         }
       }).done(function () {
-        window.location.reload();
+        MailPoet.MP2Migrator.gotoWelcomePage();
       });
       return false;
     },
