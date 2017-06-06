@@ -20,8 +20,7 @@ class Beacon {
       CronDaemon::ACTION_PING
     );
     $cron_ping_url = str_replace(home_url(), CronHelper::getSiteUrl(), $cron_ping_url);
-
-    return array(
+    $beacon_data = array(
       'name' => $current_user->display_name,
       'email' => $current_user->user_email,
       'PHP version' => PHP_VERSION,
@@ -55,5 +54,7 @@ class Beacon {
       'Bounce Email Address' => Setting::getValue('bounce.address'),
       'Total number of subscribers' =>  Subscriber::getTotalSubscribers()
     );
+
+    return array_map('utf8_encode', $beacon_data);
   }
 }
