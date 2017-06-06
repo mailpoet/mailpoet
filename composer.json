@@ -15,7 +15,8 @@
     "mtdowling/cron-expression": "^1.1",
     "nesbot/carbon": "^1.21",
     "soundasleep/html2text": "^0.3.4",
-    "sabberworm/php-css-parser": "^8.1"
+    "sabberworm/php-css-parser": "^8.1",
+    "symfony/polyfill-xml": "^1.3"
   },
   "require-dev": {
     "codeception/codeception": "^2.2.9",
