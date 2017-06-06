@@ -24,10 +24,9 @@ if(!class_exists('ProgressBar', false)) {
      *
      */
     public function __construct($progress_bar_id) {
-      $upload_dir = wp_upload_dir();
-      $filename = Env::$plugin_name . '-' . $progress_bar_id . '-progress.json';
-      $this->filename = $upload_dir['basedir'] . '/' . $filename;
-      $this->url = $upload_dir['baseurl'] . '/' . $filename;
+      $filename = $progress_bar_id . '-progress.json';
+      $this->filename = Env::$temp_path . '/' . $filename;
+      $this->url = Env::$temp_url . '/' . $filename;
       $counters = $this->readProgress();
       if(isset($counters->total)) {
         $this->total_count = $counters->total;
