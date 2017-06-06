@@ -140,9 +140,8 @@ class MP2Migrator {
     if(!Setting::getValue('mailpoet_migration_started', false)) {
       $this->eraseMP3Data();
       Setting::setValue('mailpoet_migration_started', true);
+      $this->displayDataToMigrate();
     }
-
-    $this->displayDataToMigrate();
 
     $this->importSegments();
     $this->segments_mapping = $this->getImportedMapping('segments');

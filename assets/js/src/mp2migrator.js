@@ -18,8 +18,8 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
     },
 
     updateDisplay: function () {
-      MailPoet.MP2Migrator.displayLogs();
-      MailPoet.MP2Migrator.updateProgressbar();
+      MailPoet.MP2Migrator.displayLogs_timeout = setTimeout(MailPoet.MP2Migrator.displayLogs, 1000);
+      MailPoet.MP2Migrator.updateProgressbar_timeout = setTimeout(MailPoet.MP2Migrator.updateProgressbar, 1000);
     },
 
     displayLogs: function () {
