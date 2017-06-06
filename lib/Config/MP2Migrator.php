@@ -22,6 +22,7 @@ class MP2Migrator {
   private $log_file;
   public $log_file_url;
   public $progressbar;
+  private $segments_mapping = array(); // Mapping between old and new segment IDs
 
   public function __construct() {
     $this->defineMP2Tables();
@@ -144,6 +145,7 @@ class MP2Migrator {
     $this->displayDataToMigrate();
 
     $this->importSegments();
+    $this->segments_mapping = $this->getImportedMapping('segments');
     $this->importCustomFields();
     $this->importSubscribers();
 
@@ -194,7 +196,7 @@ class MP2Migrator {
     global $wpdb;
 
     $table = MP_SEGMENTS_TABLE;
-    $wpdb->query("DELETE FROM {$table} WHERE type != 'wp_users'");
+    $wpdb->query("DELETE FROM {$table} WHERE type != '" . Segment::TYPE_WP_USERS . "'");
   }
 
   /**
@@ -329,13 +331,26 @@ class MP2Migrator {
    */
   private function importSegment($list_data) {
     $datetime = new \MailPoet\WP\DateTime();
-    $segment = Segment::createOrUpdate(array(
-      'id' => $list_data['list_id'],
-      'name' => $list_data['name'],
-      'type' => $list_data['is_enabled'] ? 'default' : 'wp_users',
-      'description' => $list_data['description'],
-      'created_at' => $datetime->formatTime($list_data['created_at'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
-    ));
+    if($list_data['is_enabled']) {
+      $segment = Segment::createOrUpdate(array(
+        'name' => $list_data['name'],
+        'type' => 'default',
+        'description' => $list_data['description'],
+        'created_at' => $datetime->formatTime($list_data['created_at'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
+      ));
+    } else {
+      $segment = Segment::getWPSegment();
+    }
+     if(!empty($segment)) {
+      // Map the segment with its old ID
+      $mapping = new MappingToExternalEntities();
+      $mapping->create(array(
+        'old_id' => $list_data['list_id'],
+        'type' => 'segments',
+        'new_id' => $segment->id,
+        'created_at' => $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
+      ));
+    }
     Setting::setValue('last_imported_list_id', $list_data['list_id']);
     return $segment;
   }
@@ -527,7 +542,6 @@ class MP2Migrator {
   private function importSubscriber($user_data) {
     $datetime = new \MailPoet\WP\DateTime();
     $subscriber = Subscriber::createOrUpdate(array(
-      'id' => $user_data['user_id'],
       'wp_user_id' => !empty($user_data['wpuser_id']) ? $user_data['wpuser_id'] : null,
       'email' => $user_data['email'],
       'first_name' => $user_data['firstname'],
@@ -540,6 +554,7 @@ class MP2Migrator {
     ));
     Setting::setValue('last_imported_user_id', $user_data['user_id']);
     if(!empty($subscriber)) {
+      // Map the subscriber with its old ID
       $mapping = new MappingToExternalEntities();
       $mapping->create(array(
         'old_id' => $user_data['user_id'],
@@ -615,16 +630,20 @@ class MP2Migrator {
    * @return SubscriberSegment
    */
   private function importSubscriberSegment($subscriber_id, $user_list) {
+    $subscriber_segment = null;
     $datetime = new \MailPoet\WP\DateTime();
-    $data = array(
-      'subscriber_id' => $subscriber_id,
-      'segment_id' => $user_list['list_id'],
-      'status' => empty($user_list['unsub_date']) ? 'subscribed' : 'unsubscribed',
-      'created_at' => $datetime->formatTime($user_list['sub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
-      'updated_at' => !empty($user_list['unsub_date']) ? $datetime->formatTime($user_list['unsub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT) : null,
-    );
-    $subscriber_segment = new SubscriberSegment();
-    $subscriber_segment->createOrUpdate($data);
+    if(isset($this->segments_mapping[$user_list['list_id']])) {
+      $segment_id = $this->segments_mapping[$user_list['list_id']];
+      $data = array(
+        'subscriber_id' => $subscriber_id,
+        'segment_id' => $segment_id,
+        'status' => empty($user_list['unsub_date']) ? 'subscribed' : 'unsubscribed',
+        'created_at' => $datetime->formatTime($user_list['sub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
+        'updated_at' => !empty($user_list['unsub_date']) ? $datetime->formatTime($user_list['unsub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT) : null,
+      );
+      $subscriber_segment = new SubscriberSegment();
+      $subscriber_segment->createOrUpdate($data);
+    }
     return $subscriber_segment;
   }
 
