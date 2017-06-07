@@ -156,7 +156,6 @@ class MP2Migrator {
     }
 
     $this->importSegments();
-    $this->segments_mapping = $this->getImportedMapping('segments');
     $this->importCustomFields();
     $this->importSubscribers();
 
@@ -287,6 +286,7 @@ class MP2Migrator {
   private function importSegments() {
     $imported_segments_count = 0;
     if($this->importStopped()) {
+      $this->segments_mapping = $this->getImportedMapping('segments');
       return;
     }
     $this->log(__("Importing segments...", 'mailpoet'));
@@ -308,6 +308,8 @@ class MP2Migrator {
       $this->progressbar->incrementCurrentCount($lists_count);
     } while(($lists != null) && ($lists_count > 0));
 
+    $this->segments_mapping = $this->getImportedMapping('segments');
+    
     $this->log(sprintf(_n("%d segment imported", "%d segments imported", $imported_segments_count, 'mailpoet'), $imported_segments_count));
   }
 

@@ -133,9 +133,9 @@ class MP2MigratorTest extends MailPoetTest {
       'created_at' => $timestamp,
     ));
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
+    $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
     $table = MP_SEGMENTS_TABLE;
-    $segment = $wpdb->get_row("SELECT * FROM $table WHERE id=$id");
-    expect($segment->id)->equals($id);
+    $segment = $wpdb->get_row("SELECT * FROM $table WHERE id=" . $importedSegmentsMapping[$id]);
     expect($segment->name)->equals($name);
     expect($segment->description)->equals($description);
   }
@@ -195,7 +195,7 @@ class MP2MigratorTest extends MailPoetTest {
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
-    expect(Subscriber::count())->equals(4);
+    expect(Subscriber::count())->equals(5); // 4 MP2 users + the current user
     
     // Check a subscriber data
     $this->initImport();
@@ -240,7 +240,7 @@ class MP2MigratorTest extends MailPoetTest {
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
-    expect(SubscriberSegment::count())->equals(7);
+    expect(SubscriberSegment::count())->equals(8); // 7 + the current user belongs to WordPress users segment
     
     // Check a subscriber segment data
     
@@ -278,10 +278,12 @@ class MP2MigratorTest extends MailPoetTest {
     
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
+    $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
     $importedSubscribersMapping = $this->MP2Migrator->getImportedMapping('subscribers');
     $table = MP_SUBSCRIBER_SEGMENT_TABLE;
+    $segment_id = $importedSegmentsMapping[$list_id];
     $subscriber_id = $importedSubscribersMapping[$user_id];
-    $subscriber_segment = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriber_id' AND segment_id='$list_id'");
+    $subscriber_segment = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriber_id' AND segment_id='$segment_id'");
     expect($subscriber_segment)->notNull();
   }
   
