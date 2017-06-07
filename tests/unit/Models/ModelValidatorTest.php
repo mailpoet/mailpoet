@@ -6,6 +6,7 @@ class ModelValidatorTest extends MailPoetTest {
   public $validator;
 
   function __construct() {
+    parent::__construct();
     $this->validator = new ModelValidator();
   }
 

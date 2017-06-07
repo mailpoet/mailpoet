@@ -4,6 +4,7 @@ use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 
 class MailChimpTest extends MailPoetTest {
   function __construct() {
+    parent::__construct();
     $this->api_key = getenv('WP_TEST_IMPORT_MAILCHIMP_API');
     $this->mailchimp = new MailChimp($this->api_key);
     $this->lists = explode(",", getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS'));

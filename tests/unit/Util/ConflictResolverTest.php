@@ -6,6 +6,7 @@ class ConflictResolverTest extends MailPoetTest {
   public $wp_filter;
 
   function __construct() {
+    parent::__construct();
     $this->conflict_resolver = new ConflictResolver();
     $this->conflict_resolver->init();
     global $wp_filter;

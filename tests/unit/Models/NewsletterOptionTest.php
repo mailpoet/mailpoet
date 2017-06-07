@@ -8,6 +8,7 @@ class NewsletterOptionTest extends MailPoetTest {
   public $data;
 
   function __construct() {
+    parent::__construct();
     $this->data = array(
       'newsletter_id' => 1,
       'option_field_id' => 2,
