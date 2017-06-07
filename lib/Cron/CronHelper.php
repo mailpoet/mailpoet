@@ -85,15 +85,19 @@ class CronHelper {
     // proxy where there could be different ports (e.g., host:8080 => guest:80)
     $site_url = ($site_url) ? $site_url : home_url();
     $parsed_url = parse_url($site_url);
+    $scheme = '';
+    if ($parsed_url['scheme'] === 'https') {
+      $scheme = 'ssl://';
+    }
     // 1. if site URL does not contain a port, return the URL
     if(empty($parsed_url['port'])) return $site_url;
     // 2. if site URL contains valid port, try connecting to it
-    $fp = @fsockopen($parsed_url['host'], $parsed_url['port'], $errno, $errstr, 1);
+    $fp = @fsockopen($scheme . $parsed_url['host'], $parsed_url['port'], $errno, $errstr, 1);
     if($fp) return $site_url;
     // 3. if connection fails, attempt to connect the standard port derived from URL
     // schema
     $port = (strtolower($parsed_url['scheme']) === 'http') ? 80 : 443;
-    $fp = @fsockopen($parsed_url['host'], $port, $errno, $errstr, 1);
+    $fp = @fsockopen($scheme . $parsed_url['host'], $port, $errno, $errstr, 1);
     if($fp) return sprintf('%s://%s', $parsed_url['scheme'], $parsed_url['host']);
     // 4. throw an error if all connection attempts failed
     throw new \Exception(__('Site URL is unreachable.', 'mailpoet'));
