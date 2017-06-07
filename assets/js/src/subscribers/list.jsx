@@ -81,6 +81,22 @@ const messages = {
       ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
+  },
+  onNoItemsFound: (group) => {
+    if (group === 'bounced' && !mailpoet_premium_active) {
+      return (
+        <div>
+          <p>{MailPoet.I18n.t('bouncedSubscribersHelp')}</p>
+          <p>
+            <a href={ `admin.php?page=mailpoet-premium` } className="button-primary">
+              {MailPoet.I18n.t('bouncedSubscribersPremiumButtonText')}
+            </a>
+          </p>
+        </div>
+      );
+    }
+    // use default message
+    return false;
   }
 };
 

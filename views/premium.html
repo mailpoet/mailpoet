@@ -1,0 +1,148 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+
+<style type="text/css">
+.mailpoet_video {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+</style>
+
+<div class="wrap about-wrap">
+  <h1 style="text-align: center; margin-right: 0;"><%= __('What is MailPoet Premium?') %></h1>
+
+  <p class="about-text" style="text-align: center; margin-right: 0;"><%= __("Detailed statistics, actionable insights, awesome deliverability, plus great support!") %></p>
+
+  <hr>
+
+  <div class="feature-section one-col">
+    <h2><%= __("Insightful Statistics") %></h2>
+    <p class="lead-description"><%= __("Which links get the most clicks? Which subscribers opened your emails? With MailPoet's stats program, it's easy to find out. Need even more details? Integrating with Google Analytics is as easy as 1-2-3.") %></p>
+    <% set video_url = '//ps.w.org/mailpoet/assets/premium/premium-page-animated-stats.mp4' %>
+    <video autoplay loop width="100%" class="mailpoet_video">
+      <source type="video/mp4" src="<%= video_url %>" />
+      <a href="<%= video_url %>"><%= video_url %></a>
+    </video>
+  </div>
+
+  <hr>
+
+  <div class="feature-section one-col">
+    <h2><%= __("Hello Inbox, Goodbye Spambox!") %></h2>
+    <p class="lead-description"><%= __("The MailPoet Sending Service's delivery rate is over 98%: one of the best in the industry! Our in-house sending service is constantly monitored, tweaked, and improved to make sure that your emails arrive successfully.") %></p>
+    <table class="widefat">
+      <thead>
+        <tr>
+         <td></td>
+         <td><strong><%= __("MailPoet") %></strong></td>
+         <td><strong><%= __("Web host") %></strong></td>
+         <td><strong><%= __("Third party") %></strong></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="alternate">
+         <td><strong><%= __("Speed") %></strong></td>
+         <td><%= __("50,000 / hour") %></td>
+         <td><%= __("300 / hour") %></td>
+         <td><%= __("2,000 / hour") %></td>
+        </tr>
+        <tr>
+         <td><strong><%= __("Daily email limits") %></strong></td>
+         <td><%= __("None") %></td>
+         <td><%= __("Yes") %></td>
+         <td><%= __("Depends") %></td>
+        </tr>
+        <tr class="alternate">
+         <td><strong><%= __("Personal deliverability support") %></strong></td>
+         <td><%= __("Yes!") %></td>
+         <td><%= __("No") %></td>
+         <td><%= __("No") %></td>
+        </tr>
+        <tr>
+         <td><strong><%= __("SPF and DKIM Signatures") %></strong></td>
+         <td><%= __("No need!") %></td>
+         <td><%= __("Update your DNS") %></td>
+         <td><%= __("Depends") %></td>
+        </tr>
+        <tr class="alternate">
+         <td><strong><%= __("Double opt-in") %></strong></td>
+         <td><%= __("Enforced") %></td>
+         <td><%= __("Not enforced") %></td>
+         <td><%= __("Depends") %></td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              href="http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods?utm_source=plugin&utm_medium=premium&utm_campaign=compare"
+              target="_blank"
+            >
+              <%= __("View full comparison table") %>
+            </a>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <p><%= __("Spammers are ineligible to use the MailPoet Sending Service. We reserve the right to cancel any sending plan if we detect more than 5% hard bounces. [link]Customers are required to clean their lists before joining MailPoet[/link].")
+      |replace({
+      '[link]': '<a target="_blank" href="http://beta.docs.mailpoet.com/article/127-checklist-before-importing-subscribers?utm_source=plugin&utm_medium=premium&utm_campaign=clean-lists">',
+      '[/link]': '</a>'
+      })
+      |raw
+    %></p>
+  </div>
+
+  <hr>
+
+  <div class="feature-section two-col">
+    <div class="col">
+      <h3><%= __("Welcome to My Newsletter!") %></h3>
+      <% set video_url = '//ps.w.org/mailpoet/assets/premium/premium-page-animated-welcome-emails.mp4' %>
+      <video autoplay loop width="100%" class="mailpoet_video">
+        <source type="video/mp4" src="<%= video_url %>" />
+        <a href="<%= video_url %>"><%= video_url %></a>
+      </video>
+      <p><%= __("Want to send autoresponders and welcome emails to your subscribers? In MailPoet, it’s easy as 1-2-3. Create welcome emails, educational courses, and other automatic email newsletters.") %></p>
+    </div>
+    <div class="col">
+      <h3><%= __("We’re Here to Help!") %></h3>
+      <% set video_url = '//ps.w.org/mailpoet/assets/premium/premium-page-animated-support.mp4' %>
+      <video autoplay loop width="100%" class="mailpoet_video">
+        <source type="video/mp4" src="<%= video_url %>" />
+        <a href="<%= video_url %>"><%= video_url %></a>
+      </video>
+      <p><%= __("We pride ourselves on giving nearly round-the-clock support. Our remote team spans several continents, hemispheres, and time-zones! If you’ve got a problem, we will help you fix it!") %></p>
+    </div>
+  </div>
+
+  <hr>
+
+  <div clas="feature-section one-col">
+    <h2><%= __("Get Started for Just $10") %></h2>
+    <p class="lead-description"><%= __("Our plans start at just $10 per month. Each plan offers unlimited emails. Pricing scales up with the size of your list.") %></p>
+    <br>
+    <p style="text-align: center">
+      <a
+        target="_blank"
+        href="https://account.mailpoet.com?s=<%= subscriber_count %>&utm_source=plugin&utm_medium=premium&utm_campaign=purchase"
+        class="button button-primary"
+        style="font-size: 1.5em; padding: 10px 18px; height: 46px;"
+      ><%= __("Purchase Now") %></a>
+    </p>
+    <br>
+    <div style="width: 65%; margin: 0 auto;">
+      <p style="text-align: center"><%= __("Don't need to use our sending service? Not a problem; we understand. You can also [link]buy the Premium[/link] features separately. Prices start at $100 per year for 1 website, $249 for 4 sites and $499 for an unlimited number of sites.")
+        |replace({
+        '[link]': '<a target="_blank" href="https://account.mailpoet.com/premium?utm_source=plugin&utm_medium=premium&utm_campaign=buy-premium">',
+        '[/link]': '</a>'
+        })
+        |raw
+      %></p>
+    </div>
+  </div>
+
+</div>
+
+<% endblock %>

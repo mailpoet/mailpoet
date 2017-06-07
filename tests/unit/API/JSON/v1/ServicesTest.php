@@ -3,6 +3,7 @@
 use Codeception\Util\Stub;
 use MailPoet\API\JSON\v1\Services;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\Config\Installer;
 use MailPoet\Services\Bridge;
 
 class ServicesTest extends MailPoetTest {
@@ -89,6 +90,9 @@ class ServicesTest extends MailPoetTest {
     );
     $response = $this->services_endpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
+    foreach (array_keys(Installer::getPremiumStatus()) as $key) {
+      expect(isset($response->meta[$key]))->true();
+    }
   }
 
   function testItRespondsWithErrorIfPremiumKeyIsInvalid() {

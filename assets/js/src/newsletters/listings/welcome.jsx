@@ -101,7 +101,7 @@ const bulk_actions = [
   }
 ];
 
-const newsletter_actions = [
+let newsletter_actions = [
   {
     name: 'view',
     link: function(newsletter) {
@@ -123,37 +123,11 @@ const newsletter_actions = [
     }
   },
   {
-    name: 'duplicate',
-    label: MailPoet.I18n.t('duplicate'),
-    onClick: function(newsletter, refresh) {
-      return MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'newsletters',
-        action: 'duplicate',
-        data: {
-          id: newsletter.id
-        }
-      }).done((response) => {
-        MailPoet.Notice.success(
-          (MailPoet.I18n.t('newsletterDuplicated')).replace(
-            '%$1s', response.data.subject
-          )
-        );
-        refresh();
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map(function(error) { return error.message; }),
-            { scroll: true }
-          );
-        }
-      });
-    }
-  },
-  {
     name: 'trash'
   }
 ];
+
+newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletter_actions);
 
 const NewsletterListWelcome = React.createClass({
   mixins: [ StatisticsMixin, MailerMixin ],

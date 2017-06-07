@@ -46,19 +46,26 @@ class BridgeTest extends MailPoetTest {
     expect($this->bridge->api instanceof API)->true();
   }
 
-  function testItChecksMSSKey() {
+  function testItChecksValidMSSKey() {
     $result = $this->bridge->checkMSSKey($this->valid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::MAILPOET_KEY_VALID);
+    expect($this->getMSSKey())->equals($this->valid_key);
+  }
 
+  function testItChecksInvalidMSSKey() {
     $result = $this->bridge->checkMSSKey($this->invalid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::MAILPOET_KEY_INVALID);
+    expect($this->getMSSKey())->equals($this->invalid_key);
+  }
 
+  function testItChecksExpiringMSSKey() {
     $result = $this->bridge->checkMSSKey($this->expiring_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::MAILPOET_KEY_EXPIRING);
     expect($result['data']['expire_at'])->notEmpty();
+    expect($this->getMSSKey())->equals($this->expiring_key);
   }
 
   function testItReturnsErrorStateOnEmptyAPIResponseCodeDuringMSSCheck() {
@@ -67,25 +74,36 @@ class BridgeTest extends MailPoetTest {
     $result = $this->bridge->checkMSSKey($this->valid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::MAILPOET_KEY_CHECK_ERROR);
+    expect($this->getMSSKey())->notEquals($this->valid_key);
   }
 
-  function testItChecksPremiumKey() {
+  function testItChecksValidPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->valid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_VALID);
+    expect($this->getPremiumKey())->equals($this->valid_key);
+  }
 
+  function testItChecksInvalidPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->invalid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_INVALID);
+    expect($this->getPremiumKey())->equals($this->invalid_key);
+  }
 
+  function testItChecksAlreadyUsedPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->used_premium_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_ALREADY_USED);
+    expect($this->getPremiumKey())->equals($this->used_premium_key);
+  }
 
+  function testItChecksExpiringPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->expiring_premium_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_EXPIRING);
     expect($result['data']['expire_at'])->notEmpty();
+    expect($this->getPremiumKey())->equals($this->expiring_premium_key);
   }
 
   function testItReturnsErrorStateOnEmptyAPIResponseCodeDuringPremiumCheck() {
@@ -94,6 +112,7 @@ class BridgeTest extends MailPoetTest {
     $result = $this->bridge->checkPremiumKey($this->valid_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_CHECK_ERROR);
+    expect($this->getPremiumKey())->notEquals($this->valid_key);
   }
 
   function testItUpdatesSubscriberCount() {
@@ -150,11 +169,19 @@ class BridgeTest extends MailPoetTest {
     );
   }
 
+  private function getMSSKey() {
+    return Setting::getValue(Bridge::API_KEY_SETTING_NAME);
+  }
+
   private function fillPremiumKey() {
     Setting::setValue(
       Bridge::PREMIUM_KEY_SETTING_NAME,
       '123457890abcdef'
     );
+  }
+
+  private function getPremiumKey() {
+    return Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME);
   }
 
   function _after() {

@@ -9,6 +9,7 @@
     var mailpoet_custom_fields = <%= json_encode(custom_fields) %>;
     var mailpoet_month_names = <%= json_encode(month_names) %>;
     var mailpoet_date_formats = <%= json_encode(date_formats) %>;
+    var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
   </script>
 <% endblock %>
 
@@ -18,6 +19,8 @@
     'searchLabel': __('Search'),
     'loadingItems': __('Loading subscribers...'),
     'noItemsFound': __('No subscribers were found.'),
+    'bouncedSubscribersHelp': __("Emails that are invalid or don't exist anymore are called \"bounced addresses\". It's a good practice not to send emails to bounced addresses to keep a good reputation with spam filters. Send your emails with MailPoet and we'll automatically ensure to keep a list of bounced addresses without any setup."),
+    'bouncedSubscribersPremiumButtonText': __('Get premium version!'),
     'selectAllLabel': __('All subscribers on this page are selected.'),
     'selectedAllLabel': __('All %d subscribers are selected.'),
     'selectAllLink': __('Select all subscribers on all pages.'),

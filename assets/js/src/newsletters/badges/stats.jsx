@@ -20,7 +20,7 @@ const badges = {
 
 const stats = {
   opened: {
-    badgeRanges: [30, 15, 0],
+    badgeRanges: [30, 10, 0],
     badgeTypes: [
       'excellent',
       'good',
