@@ -213,7 +213,22 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function svnCheckout() {
-    return $this->_exec('svn co https://plugins.svn.wordpress.org/mailpoet/ .mp_svn');
+    $svn_dir = ".mp_svn";
+
+    $collection = $this->collectionBuilder();
+
+    if(!file_exists($svn_dir)) {
+      $collection->taskFileSystemStack()
+        ->mkdir($svn_dir);
+    }
+
+    return $collection->taskExecStack()
+      ->stopOnFail()
+      ->dir($svn_dir)
+      ->exec('svn co https://plugins.svn.wordpress.org/mailpoet/ -N .')
+      ->exec('svn up trunk')
+      ->exec('svn up assets')
+      ->run();
   }
 
   function svnPublish($opts = ['force' => false]) {
@@ -293,15 +308,15 @@ class RoboFile extends \Robo\Tasks {
       // Remove files from SVN repo that have already been removed locally
       ->exec("svn st | grep ^! | awk '$awkCmd' | xargs $xargsFlag svn rm")
       // Recursively add files to SVN that haven't been added yet
-      ->exec("svn add --force * --auto-props --parents --depth infinity -q")
-      // Tag the release
-      ->exec("svn cp trunk tags/$plugin_version");
+      ->exec("svn add --force * --auto-props --parents --depth infinity -q");
 
     $result = $collection->run();
 
     if($result->wasSuccessful()) {
       // Run or suggest release command depending on a flag
+      $repo_url = "https://plugins.svn.wordpress.org/$plugin_dist_name";
       $release_cmd = "svn ci -m \"Release $plugin_version\"";
+      $tag_cmd = "svn copy $repo_url/trunk $repo_url/tags/$plugin_version -m \"Tag $plugin_version\"";
       if(!empty($opts['force'])) {
         $svn_login = getenv('WP_SVN_USERNAME');
         $svn_password = getenv('WP_SVN_PASSWORD');
@@ -314,10 +329,14 @@ class RoboFile extends \Robo\Tasks {
           ->stopOnFail()
           ->dir($svn_dir)
           ->exec($release_cmd)
+          ->exec($tag_cmd)
           ->run();
       } else {
         $this->yell(
           "Go to '$svn_dir' and run '$release_cmd' to publish the release"
+        );
+        $this->yell(
+          "Run '$tag_cmd' to tag the release"
         );
       }
     }
