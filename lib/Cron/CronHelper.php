@@ -86,7 +86,7 @@ class CronHelper {
     $site_url = ($site_url) ? $site_url : home_url();
     $parsed_url = parse_url($site_url);
     $scheme = '';
-    if ($parsed_url['scheme'] === 'https') {
+    if($parsed_url['scheme'] === 'https') {
       $scheme = 'ssl://';
     }
     // 1. if site URL does not contain a port, return the URL
