@@ -59,6 +59,15 @@ class MP2Migrator {
   }
 
   /**
+   * Test if the migration is already started but is not completed
+   *
+   * @return boolean
+   */
+  public function isMigrationStartedAndNotCompleted() {
+    return Setting::getValue('mailpoet_migration_started', false) && !Setting::getValue('mailpoet_migration_complete', false);
+  }
+
+  /**
    * Test if the migration is needed
    *
    * @return boolean
@@ -104,6 +113,10 @@ class MP2Migrator {
    *
    */
   public function init() {
+    if(!Setting::getValue('mailpoet_migration_started', false)) {
+      $this->emptyLog();
+      $this->progressbar->setTotalCount(0);
+    }
     $this->enqueueScripts();
   }
 
@@ -132,7 +145,6 @@ class MP2Migrator {
   public function import() {
     set_time_limit(self::IMPORT_TIMEOUT_IN_SECONDS);
     ob_start();
-    $this->emptyLog();
     $datetime = new \MailPoet\WP\DateTime();
     $this->log(sprintf('=== ' . __('START IMPORT', 'mailpoet') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     Setting::setValue('import_stopped', false); // Reset the stop import action
@@ -148,9 +160,11 @@ class MP2Migrator {
     $this->importCustomFields();
     $this->importSubscribers();
 
-    Setting::setValue('mailpoet_migration_complete', true);
-
-    $this->log(__('IMPORT COMPLETE', 'mailpoet'));
+    if(!$this->importStopped()) {
+      Setting::setValue('mailpoet_migration_complete', true);
+      $this->log(__('IMPORT COMPLETE', 'mailpoet'));
+    }
+    
     $this->log(sprintf('=== ' . __('END IMPORT', 'mailpoet') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     $result = ob_get_contents();
     ob_clean();

@@ -10,7 +10,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
       clearTimeout(MailPoet.MP2Migrator.displayLogs_timeout);
       clearTimeout(MailPoet.MP2Migrator.updateProgressbar_timeout);
       clearTimeout(MailPoet.MP2Migrator.update_wordpress_info_timeout);
-      MailPoet.MP2Migrator.updateDisplay();
+      setTimeout(MailPoet.MP2Migrator.updateDisplay, 1000)
     },
 
     stopLogger: function () {
@@ -18,8 +18,8 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
     },
 
     updateDisplay: function () {
-      MailPoet.MP2Migrator.displayLogs_timeout = setTimeout(MailPoet.MP2Migrator.displayLogs, 1000);
-      MailPoet.MP2Migrator.updateProgressbar_timeout = setTimeout(MailPoet.MP2Migrator.updateProgressbar, 1000);
+      MailPoet.MP2Migrator.displayLogs();
+      MailPoet.MP2Migrator.updateProgressbar();
     },
 
     displayLogs: function () {
@@ -55,12 +55,15 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         dataType: 'json'
       }).always(function (result) {
         // Move the progress bar
-        var progress = 100;
-        if(Number(result.total) !== 0) {
+        var progress = 0;
+        if((result.total !== undefined) && (Number(result.total) !== 0)) {
           progress = Math.round(Number(result.current) / Number(result.total) * 100);
         }
         jQuery('#progressbar').progressbar('option', 'value', progress);
         jQuery('#progresslabel').html(progress + '%');
+        if(Number(result.current !== 0)) {
+          jQuery('#skip-import').hide();
+        }
         if(MailPoet.MP2Migrator.is_logging) {
           MailPoet.MP2Migrator.updateProgressbar_timeout = setTimeout(MailPoet.MP2Migrator.updateProgressbar, 1000);
         }
@@ -75,6 +78,8 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
       // Disable the import button
       MailPoet.MP2Migrator.import_button_label = jQuery('#import').val();
       jQuery('#import').val(MailPoet.I18n.t('importing')).attr('disabled', 'disabled');
+      // Hide the Skip button
+      jQuery('#skip-import').hide();
       // Show the stop button
       jQuery('#stop-import').show();
 
@@ -174,6 +179,9 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
     jQuery('#goto-welcome').click(function() {
       MailPoet.MP2Migrator.gotoWelcomePage();
     });
+    
+    // Update the display
+    MailPoet.MP2Migrator.updateDisplay();
   });
 
 });
