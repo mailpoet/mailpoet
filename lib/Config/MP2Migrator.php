@@ -23,6 +23,7 @@ class MP2Migrator {
   public $log_file_url;
   public $progressbar;
   private $segments_mapping = array(); // Mapping between old and new segment IDs
+  private $wp_users_segment;
 
   public function __construct() {
     $this->defineMP2Tables();
@@ -500,6 +501,7 @@ class MP2Migrator {
       return;
     }
     $this->log(__("Importing subscribers...", 'mailpoet'));
+    $this->wp_users_segment = Segment::getWPSegment();
     do {
       if($this->importStopped()) {
         break;
@@ -649,10 +651,11 @@ class MP2Migrator {
     $datetime = new \MailPoet\WP\DateTime();
     if(isset($this->segments_mapping[$user_list['list_id']])) {
       $segment_id = $this->segments_mapping[$user_list['list_id']];
+      $status = (($segment_id == $this->wp_users_segment->id) || empty($user_list['unsub_date'])) ? 'subscribed' : 'unsubscribed'; // the users belonging to the wp_users segment are always subscribed
       $data = array(
         'subscriber_id' => $subscriber_id,
         'segment_id' => $segment_id,
-        'status' => empty($user_list['unsub_date']) ? 'subscribed' : 'unsubscribed',
+        'status' => $status,
         'created_at' => $datetime->formatTime($user_list['sub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
         'updated_at' => !empty($user_list['unsub_date']) ? $datetime->formatTime($user_list['unsub_date'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT) : null,
       );
