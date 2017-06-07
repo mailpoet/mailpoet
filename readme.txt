@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.7.5
-Stable tag: 3.0.0-beta.33.1
+Stable tag: 3.0.0-beta.34.0.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -90,6 +90,13 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-beta.34.0.0 - 2017-06-07 =
+* Added: Premium features are officially available. Free users can visit the Premium page in the menu for more info. Premium users: get your key on account.mailpoet.com to continue using Premium;
+* Improved: email addresses are now validated using WordPress is_email() function. Kudos Oskar L. and cnesbit!;
+* Fixed: scheduled sending queue jobs are paused when post notifications are made inactive. Thanks Oskar!;
+* Fixed: post notification history no longer displays a blank subject for notifications waiting in queue. Thanks Lyon!;
+* Fixed: unsubscribe page works again. Thx Oskar one more time!
 
 = 3.0.0-beta.33.1 - 2017-05-30 =
 * Updated: minimum required PHP version was increased from 5.3 to 5.3.3. Don't be stuck in the last decade. Ask your host to upgrade you to PHP 7;
