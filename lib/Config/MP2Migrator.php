@@ -348,13 +348,13 @@ class MP2Migrator {
       $segment = Segment::createOrUpdate(array(
         'name' => $list_data['name'],
         'type' => 'default',
-        'description' => $list_data['description'],
+        'description' => !empty($list_data['description']) ? $list_data['description'] : '',
         'created_at' => $datetime->formatTime($list_data['created_at'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT),
       ));
     } else {
       $segment = Segment::getWPSegment();
     }
-     if(!empty($segment)) {
+    if(!empty($segment)) {
       // Map the segment with its old ID
       $mapping = new MappingToExternalEntities();
       $mapping->create(array(
