@@ -14,6 +14,7 @@ use MailPoet\Newsletter\Renderer\Renderer;
 
 class NewsletterRendererTest extends MailPoetTest {
   function __construct() {
+    parent::__construct();
     $this->newsletter = array(
       'body' => json_decode(
         file_get_contents(dirname(__FILE__) . '/RendererTestData.json'), true

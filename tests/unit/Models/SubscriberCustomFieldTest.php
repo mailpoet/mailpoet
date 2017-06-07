@@ -3,6 +3,7 @@ use MailPoet\Models\SubscriberCustomField;
 
 class SubscriberCustomFieldTest extends MailPoetTest {
   function __construct() {
+    parent::__construct();
     $this->data = array(
       array(
         'custom_field_id' => 10,

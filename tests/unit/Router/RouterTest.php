@@ -10,6 +10,7 @@ class FrontRouterTest extends MailPoetTest {
   public $router;
 
   function __construct() {
+    parent::__construct();
     $this->router_data = array(
       Router::NAME => '',
       'endpoint' => 'mock_endpoint',

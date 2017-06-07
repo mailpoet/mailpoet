@@ -7,6 +7,7 @@ class DatabaseTestTest extends MailPoetTest {
   public $database;
 
   function __construct() {
+    parent::__construct();
     $this->database = new Database();
   }
 

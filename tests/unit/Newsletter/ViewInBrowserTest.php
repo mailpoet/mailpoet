@@ -11,6 +11,7 @@ use MailPoet\Router\Router;
 
 class ViewInBrowserTest extends MailPoetTest {
   function __construct() {
+    parent::__construct();
     $this->newsletter =
       array(
         'body' => json_decode(
