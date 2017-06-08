@@ -131,9 +131,9 @@ define([
     className: "mailpoet_block mailpoet_automated_latest_content_block mailpoet_droppable_block",
     initialize: function() {
       function replaceButtonStylesHandler(data) {
-        this.model.set({'readMoreButton': data});
+        this.model.set({"readMoreButton": data});
       }
-      App.getChannel().on('replaceAllButtonStyles', replaceButtonStylesHandler.bind(this));
+      App.getChannel().on("replaceAllButtonStyles", replaceButtonStylesHandler.bind(this));
     },
     getTemplate: function() { return templates.automatedLatestContentBlock; },
     regions: {
