@@ -282,6 +282,43 @@ define([
       });
     });
 
+    describe('replaceAllButtonStyles', function () {
+      var model, view, module, onStub;
+
+      before(function() {
+        module = AutomatedLatestContentBlock;
+      });
+
+      beforeEach(function () {
+        onStub = sinon.stub()
+        global.stubChannel(EditorApplication, {on: onStub})
+        global.stubConfig(EditorApplication);
+        EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
+        EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
+        model = {set: sinon.stub()}
+        view = new (module.AutomatedLatestContentBlockView)({model: model});
+      });
+
+      it("listens to the event", function () {
+        expect(onStub).to.have.been.calledOnce;
+        expect(onStub).to.have.been.calledWith("replaceAllButtonStyles", sinon.match.func);
+      });
+
+      it("updates the model", function () {
+        const callback = onStub.getCall(0).args[1];
+        const data = {
+          styles: {
+            block: {
+              borderRadius: "14px",
+            },
+          },
+        };
+        callback(data);
+        expect(model.set).to.have.been.calledOnce;
+        expect(model.set).to.have.been.calledWithMatch(sinon.match.has("readMoreButton", data));
+      });
+    });
+
     describe('block settings view', function () {
       var model, view, module;
 
@@ -510,3 +547,4 @@ define([
     });
   });
 });
+

@@ -259,6 +259,38 @@ define([
       });
     });
 
+    describe('replaceAllButtonStyles', function () {
+      var model, view, onStub;
+
+
+      beforeEach(function () {
+        onStub = sinon.stub()
+        global.stubChannel(EditorApplication, {on: onStub})
+        model = {set: sinon.stub(), toJSON: sinon.stub()}
+        view = new (ButtonBlock.ButtonBlockView)({model: model});
+        view.render();
+      });
+
+      it("listens to the event", function () {
+        expect(onStub).to.have.been.calledOnce;
+        expect(onStub).to.have.been.calledWith("replaceAllButtonStyles", sinon.match.func);
+      });
+
+      it("updates the model", function () {
+        const callback = onStub.getCall(0).args[1];
+        const data = {
+          styles: {
+            block: {
+              borderRadius: "14px",
+            },
+          },
+        };
+        callback(data);
+        expect(model.set).to.have.been.calledOnce;
+        expect(model.set).to.have.been.calledWithExactly(data);
+      });
+    });
+
     describe('block settings view', function () {
       var model;
 
