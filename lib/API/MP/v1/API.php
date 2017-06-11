@@ -113,20 +113,31 @@ class API {
       $new_subscriber->saveCustomFields($custom_fields);
     }
 
+    // reload subscriber to get the saved status/created|updated|delete dates/other fields
+    $new_subscriber = Subscriber::findOne($new_subscriber->id);
+
     // subscribe to segments and optionally: 1) send confirmation email, 2) schedule welcome email(s)
     if(!empty($segments)) {
       $this->subscribeToLists($new_subscriber->id, $segments);
 
       // send confirmation email
       if($send_confirmation_email && $new_subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
-        $this->sendConfirmationEmail($new_subscriber);
+        $this->_sendConfirmationEmail($new_subscriber);
       }
 
       // schedule welcome email(s)
-      if($schedule_welcome_email) {
-        Scheduler::scheduleSubscriberWelcomeNotification($new_subscriber->id, $segments);
+      if($schedule_welcome_email && $new_subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
+        $this->_scheduleWelcomeNotification($new_subscriber, $segments);
       }
     }
     return $new_subscriber->withCustomFields()->withSubscriptions()->asArray();
+  }
+
+  protected function _sendConfirmationEmail(Subscriber $subscriber) {
+    return $subscriber->sendConfirmationEmail();
+  }
+
+  protected function _scheduleWelcomeNotification(Subscriber $subscriber, array $segments) {
+    return Scheduler::scheduleSubscriberWelcomeNotification($subscriber->id, $segments);
   }
 }
