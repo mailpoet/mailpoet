@@ -44,9 +44,8 @@
         >
           <%= __('Your MailPoet Sending Service key is invalid.') %>
         </div>
-        <br/>
         <div
-          class="mailpoet_premium_download"
+          class="mailpoet_premium_download mailpoet_paragraph"
           <% if premium_plugin_installed or not(premium_key_valid) %>
             style="display: none;"
           <% endif %>
@@ -67,7 +66,7 @@
            </span>
         </div>
         <div
-          class="mailpoet_premium_activate"
+          class="mailpoet_premium_activate mailpoet_paragraph"
           <% if not(premium_plugin_installed) or premium_plugin_active or not(premium_key_valid) %>
             style="display: none;"
           <% endif %>
@@ -77,6 +76,22 @@
             class="mailpoet_premium_activate_link button-primary"
             href="<%= premium_activate_url | default('#') %>"
           ><%= __('Activate Premium.') %></a>
+        </div>
+        <div
+          class="mailpoet_mss_activate mailpoet_paragraph"
+          <% if mss_active or not(mss_key_valid) %>
+            style="display: none;"
+          <% endif %>
+        >
+          <span>
+            <%= __("Don't forget to activate the MailPoet Sending Service in the [link]Send with...[/link] tab above.")
+              |replace({
+                '[link]': '<a href="#mta">',
+                '[/link]': '</a>'
+                })
+              |raw
+            %>
+          </span>
         </div>
       </td>
     </tr>
@@ -149,6 +164,7 @@
 
       function verifyMailPoetSendingServiceKey(key) {
         $('.mailpoet_mss_key_valid, .mailpoet_mss_key_invalid').addClass('mailpoet_hidden');
+        $('.mailpoet_mss_activate').hide();
 
         return MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
@@ -162,6 +178,9 @@
           $('.mailpoet_notice_server').hide();
           $('.mailpoet_mss_key_valid').text(response.data.message);
           $('.mailpoet_mss_key_valid').removeClass('mailpoet_hidden');
+          if (!response.meta.mss_active) {
+            $('.mailpoet_mss_activate').show();
+          }
           updateMailPoetMethodButton();
         }).fail(function(response) {
           if (response.errors.length > 0) {
