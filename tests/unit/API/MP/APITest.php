@@ -1,16 +1,12 @@
 <?php
 
 use Codeception\Util\Fixtures;
+use Codeception\Util\Stub;
 use MailPoet\API\API;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberCustomField;
-use MailPoet\Models\SubscriberSegment;
 
 class MPAPITest extends MailPoetTest {
   const VERSION = 'v1';
@@ -248,98 +244,84 @@ class MPAPITest extends MailPoetTest {
     expect($result['subscriptions'][0]['id'])->equals($segment->id);
   }
 
-  function testItSendsConfirmationEmailByDefaultAfterAddingSubscriber() {
-    $segment = Segment::createOrUpdate(
+  function testItSchedulesWelcomeNotificationByDefaultAfterAddingSubscriber() {
+    $API = Stub::makeEmptyExcept(
+      new MailPoet\API\MP\v1\API(),
+      'addSubscriber',
       array(
-        'name' => 'Default',
-        'type' => Segment::TYPE_DEFAULT
-      )
+        '_scheduleWelcomeNotification' => Stub::once()
+      ), $this);
+    $subscriber = array(
+      'email' => 'test@example.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED
     );
+    $segments = array(1);
+    $API->addSubscriber($subscriber, $segments);
+  }
+
+  function testItDoesNotScheduleWelcomeNotificationAfterAddingSubscriberIfStatusIsNotSubscribed() {
+    $API = Stub::makeEmptyExcept(
+      new MailPoet\API\MP\v1\API(),
+      'addSubscriber',
+      array(
+        '_scheduleWelcomeNotification' => Stub::never()
+      ), $this);
     $subscriber = array(
       'email' => 'test@example.com'
     );
-    // create newsletter with associated options to send welcome email one day after subscription to segment
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_WELCOME;
-    $newsletter->status = Newsletter::STATUS_ACTIVE;
-    $newsletter->save();
-    $newsletter_options = array(
-      'event' => 'segment',
-      'segment' => $segment->id,
-      'afterTimeType' => 'days',
-      'afterTimeNumber' => 1
+    $segments = array(1);
+    $API->addSubscriber($subscriber, $segments);
+  }
+
+  function testItDoesNotScheduleWelcomeNotificationAfterAddingSubscriberWhenDisabledByOption() {
+    $API = Stub::makeEmptyExcept(
+      new MailPoet\API\MP\v1\API(),
+      'addSubscriber',
+      array(
+        '_scheduleWelcomeNotification' => Stub::never()
+      ), $this);
+    $subscriber = array(
+      'email' => 'test@example.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED
     );
-    foreach($newsletter_options as $option => $value) {
-      $newsletter_option_field = NewsletterOptionField::create();
-      $newsletter_option_field->name = $option;
-      $newsletter_option_field->newsletter_type = $newsletter->type;
-      $newsletter_option_field->save();
-      expect($newsletter_option_field->getErrors())->false();
+    $segments = array(1);
+    $options = array('schedule_welcome_email' => false);
+    $API->addSubscriber($subscriber, $segments, $options);
+  }
 
-      $newsletter_option = NewsletterOption::create();
-      $newsletter_option->option_field_id = $newsletter_option_field->id;
-      $newsletter_option->newsletter_id = $newsletter->id;
-      $newsletter_option->value = $value;
-      $newsletter_option->save();
-      expect($newsletter_option->getErrors())->false();
-    }
-
-    expect(SendingQueue::findArray())->count(0);
-    API::MP(self::VERSION)->addSubscriber($subscriber, array($segment->id));
-    expect(SendingQueue::findArray())->count(1);
+  function testByDefaultItSendsConfirmationEmailAfterAddingSubscriber() {
+    $API = Stub::makeEmptyExcept(
+      new MailPoet\API\MP\v1\API(),
+      'addSubscriber',
+      array(
+        '_sendConfirmationEmail' => Stub::once()
+      ), $this);
+    $subscriber = array(
+      'email' => 'test@example.com'
+    );
+    $segments = array(1);
+    $API->addSubscriber($subscriber, $segments);
   }
 
   function testItDoesNotSendConfirmationEmailAfterAddingSubscriberWhenOptionIsSet() {
-    $segment = Segment::createOrUpdate(
+    $API = Stub::makeEmptyExcept(
+      new MailPoet\API\MP\v1\API(),
+      'addSubscriber',
       array(
-        'name' => 'Default',
-        'type' => Segment::TYPE_DEFAULT
-      )
-    );
+        '_sendConfirmationEmail' => Stub::never()
+      ), $this);
     $subscriber = array(
       'email' => 'test@example.com'
     );
-    $options = array('schedule_welcome_email' => false);
-
-    // create newsletter with associated options to send welcome email one day after subscription to segment
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_WELCOME;
-    $newsletter->status = Newsletter::STATUS_ACTIVE;
-    $newsletter->save();
-    $newsletter_options = array(
-      'event' => 'segment',
-      'segment' => $segment->id,
-      'afterTimeType' => 'days',
-      'afterTimeNumber' => 1
-    );
-    foreach($newsletter_options as $option => $value) {
-      $newsletter_option_field = NewsletterOptionField::create();
-      $newsletter_option_field->name = $option;
-      $newsletter_option_field->newsletter_type = $newsletter->type;
-      $newsletter_option_field->save();
-      expect($newsletter_option_field->getErrors())->false();
-
-      $newsletter_option = NewsletterOption::create();
-      $newsletter_option->option_field_id = $newsletter_option_field->id;
-      $newsletter_option->newsletter_id = $newsletter->id;
-      $newsletter_option->value = $value;
-      $newsletter_option->save();
-      expect($newsletter_option->getErrors())->false();
-    }
-
-    expect(SendingQueue::findArray())->count(0);
-    API::MP(self::VERSION)->addSubscriber($subscriber, array($segment->id), $options);
-    expect(SendingQueue::findArray())->count(0);
+    $segments = array(1);
+    $options = array('send_confirmation_email' => false);
+    $API->addSubscriber($subscriber, $segments, $options);
   }
 
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }
