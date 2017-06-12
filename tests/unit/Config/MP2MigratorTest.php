@@ -191,12 +191,6 @@ class MP2MigratorTest extends MailPoetTest {
   public function testImportSubscribers() {
     global $wpdb;
     
-    // Check the subscribers number
-    $this->initImport();
-    $this->loadMP2Fixtures();
-    $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
-    expect(Subscriber::count())->equals(5); // 4 MP2 users + the current user
-    
     // Check a subscriber data
     $this->initImport();
     $id = 999;
@@ -234,13 +228,6 @@ class MP2MigratorTest extends MailPoetTest {
    */
   public function testImportSubscriberSegments() {
     global $wpdb;
-    
-    // Check the subscriber segments number
-    $this->initImport();
-    $this->loadMP2Fixtures();
-    $this->invokeMethod($this->MP2Migrator, 'importSegments');
-    $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
-    expect(SubscriberSegment::count())->equals(8); // 7 + the current user belongs to WordPress users segment
     
     // Check a subscriber segment data
     
