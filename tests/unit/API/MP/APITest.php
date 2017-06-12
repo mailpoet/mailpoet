@@ -281,10 +281,11 @@ class MPAPITest extends MailPoetTest {
         '_scheduleWelcomeNotification' => Stub::never()
       ), $this);
     $subscriber = array(
-      'email' => 'test@example.com'
+      'email' => 'test@example.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED
     );
     $segments = array(1);
-    $options = array('schedule_welcome_notification' => false);
+    $options = array('schedule_welcome_email' => false);
     $API->addSubscriber($subscriber, $segments, $options);
   }
 
