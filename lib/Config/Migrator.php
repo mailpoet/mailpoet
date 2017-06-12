@@ -33,7 +33,8 @@ class Migrator {
       'statistics_clicks',
       'statistics_opens',
       'statistics_unsubscribes',
-      'statistics_forms'
+      'statistics_forms',
+      'mapping_to_external_entities'
     );
   }
 
@@ -79,7 +80,7 @@ class Migrator {
   function settings() {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'name varchar(20) NOT NULL,',
+      'name varchar(50) NOT NULL,',
       'value longtext,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
@@ -359,6 +360,18 @@ class Migrator {
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY form_subscriber (form_id,subscriber_id)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function mappingToExternalEntities() {
+    $attributes = array(
+      'old_id mediumint(9) NOT NULL,',
+      'type varchar(50) NOT NULL,',
+      'new_id mediumint(9) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'PRIMARY KEY (old_id, type),',
+      'KEY new_id (new_id)'
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }

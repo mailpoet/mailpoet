@@ -217,6 +217,18 @@ class Menu {
 
     add_submenu_page(
       true,
+      $this->setPageTitle(__('Migration', 'mailpoet')),
+      '',
+      Env::$required_permission,
+      'mailpoet-migration',
+      array(
+        $this,
+        'migration'
+      )
+    );
+
+    add_submenu_page(
+      true,
       $this->setPageTitle(__('Update', 'mailpoet')),
       __('Update', 'mailpoet'),
       Env::$required_permission,
@@ -277,6 +289,16 @@ class Menu {
       'sub_menu' => 'mailpoet-newsletters'
     );
     $this->displayPage('welcome.html', $data);
+  }
+
+  function migration() {
+    $mp2_migrator = new MP2Migrator();
+    $mp2_migrator->init();
+    $data = array(
+      'log_file_url' => $mp2_migrator->log_file_url,
+      'progress_url' => $mp2_migrator->progressbar->url,
+    );
+    $this->displayPage('mp2migration.html', $data);
   }
 
   function update() {

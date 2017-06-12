@@ -136,4 +136,5 @@ class Helpers {
   static function splitObject($object = array()) {
     return explode(self::DIVIDER, $object);
   }
+  
 }
