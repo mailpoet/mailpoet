@@ -36,7 +36,7 @@ function mailpoet_deactivate_plugin() {
 }
 
 // Check for minimum supported PHP version
-if(version_compare(phpversion(), '5.3.3', '<')) {
+if(version_compare(phpversion(), '5.3.30', '<')) {
   add_action('admin_notices', 'mailpoet_php_version_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
