@@ -169,6 +169,8 @@ If the job goes fine, you'll get a message like this:
 ```
 Go to '.mp_svn' and run 'svn ci -m "Release 3.0.0-beta.9"' to publish the
 release
+
+Run 'svn copy ...' to tag the release
 ```
 It's quite literal: you can review the changes to be pushed and if you're satisfied, run the suggested command to finish the release publishing process.
 
