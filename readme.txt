@@ -2,8 +2,8 @@
 Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
-Tested up to: 4.7.5
-Stable tag: 3.0.0-beta.34.0.0
+Tested up to: 4.8
+Stable tag: 3.0.0-beta.35.0.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -90,6 +90,14 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-beta.35.0.0 - 2017-06-13 =
+* Added: Subscriber and List migration from MailPoet 2, the option will be offered for new installations;
+* Improved: switched "Your own website" sending method to use PHPMailer library from WordPress;
+* Fixed: "Subscriber Import" screen allows hyphens in email addresses. Thanks Cherian!
+* Fixed: "addSubscriber" method in MailPoet API sends confirmation emails;
+* Fixed: subscribing via a IPv6 IP address no longer throws an error. Thanks Hans!
+* Fixed: "Apply to all" button will apply button styles to Automatic Latest Content as well.
 
 = 3.0.0-beta.34.0.0 - 2017-06-07 =
 * Added: Premium features are officially available. Free users can visit the Premium page in the menu for more info. Premium users: get your key on account.mailpoet.com to continue using Premium;
