@@ -217,10 +217,14 @@ class RoboFile extends \Robo\Tasks {
 
     $collection = $this->collectionBuilder();
 
-    if(!file_exists($svn_dir)) {
-      $collection->taskFileSystemStack()
-        ->mkdir($svn_dir);
+    // Clean up the SVN dir for faster shallow checkout
+    if(file_exists($svn_dir)) {
+      $collection->taskExecStack()
+        ->exec('rm -rf ' . $svn_dir);
     }
+
+    $collection->taskFileSystemStack()
+        ->mkdir($svn_dir);
 
     return $collection->taskExecStack()
       ->stopOnFail()
