@@ -78,7 +78,7 @@
           ><%= __('Activate Premium.') %></a>
         </div>
         <div
-          class="mailpoet_mss_activate mailpoet_spaced_block"
+          class="mailpoet_mss_activate_notice mailpoet_spaced_block"
           <% if mss_active or not(mss_key_valid) %>
             style="display: none;"
           <% endif %>
@@ -164,7 +164,7 @@
 
       function verifyMailPoetSendingServiceKey(key) {
         $('.mailpoet_mss_key_valid, .mailpoet_mss_key_invalid').addClass('mailpoet_hidden');
-        $('.mailpoet_mss_activate').hide();
+        $('.mailpoet_mss_activate_notice').hide();
 
         return MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
@@ -178,17 +178,14 @@
           $('.mailpoet_notice_server').hide();
           $('.mailpoet_mss_key_valid').text(response.data.message);
           $('.mailpoet_mss_key_valid').removeClass('mailpoet_hidden');
-          if (!response.meta.mss_active) {
-            $('.mailpoet_mss_activate').show();
-          }
-          updateMailPoetMethodButton();
+          updateMSSActivationUI();
         }).fail(function(response) {
           if (response.errors.length > 0) {
             $('.mailpoet_mss_key_invalid').text(
               response.errors.map(function(error) { return error.message; }).join(' ')
             );
             $('.mailpoet_mss_key_invalid').removeClass('mailpoet_hidden');
-            updateMailPoetMethodButton();
+            updateMSSActivationUI();
           }
         });
       }

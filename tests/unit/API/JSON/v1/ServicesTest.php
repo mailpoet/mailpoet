@@ -26,7 +26,6 @@ class ServicesTest extends MailPoetTest {
     );
     $response = $this->services_endpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['mss_active'])->equals(Bridge::isMPSendingServiceEnabled());
   }
 
   function testItRespondsWithErrorIfMSSKeyIsInvalid() {

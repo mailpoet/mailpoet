@@ -49,10 +49,7 @@ class Services extends APIEndpoint {
     }
 
     if($success_message) {
-      return $this->successResponse(
-        array('message' => $success_message),
-        array('mss_active' => Bridge::isMPSendingServiceEnabled())
-      );
+      return $this->successResponse(array('message' => $success_message));
     }
 
     switch($state) {
