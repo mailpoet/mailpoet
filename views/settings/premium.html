@@ -45,7 +45,7 @@
           <%= __('Your MailPoet Sending Service key is invalid.') %>
         </div>
         <div
-          class="mailpoet_premium_download mailpoet_paragraph"
+          class="mailpoet_premium_download mailpoet_spaced_block"
           <% if premium_plugin_installed or not(premium_key_valid) %>
             style="display: none;"
           <% endif %>
@@ -66,7 +66,7 @@
            </span>
         </div>
         <div
-          class="mailpoet_premium_activate mailpoet_paragraph"
+          class="mailpoet_premium_activate mailpoet_spaced_block"
           <% if not(premium_plugin_installed) or premium_plugin_active or not(premium_key_valid) %>
             style="display: none;"
           <% endif %>
@@ -78,7 +78,7 @@
           ><%= __('Activate Premium.') %></a>
         </div>
         <div
-          class="mailpoet_mss_activate mailpoet_paragraph"
+          class="mailpoet_mss_activate mailpoet_spaced_block"
           <% if mss_active or not(mss_key_valid) %>
             style="display: none;"
           <% endif %>
