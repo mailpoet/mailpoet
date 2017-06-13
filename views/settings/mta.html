@@ -829,7 +829,7 @@
         // Hide server error notices
         $('.mailpoet_notice_server').hide();
 
-        updateMailPoetMethodButton();
+        updateMSSActivationUI();
       }
 
       function getMethodFromGroup(group) {
@@ -1020,14 +1020,15 @@
     });
   });
 
-  // enable/disable MSS method activate button
-  function updateMailPoetMethodButton() {
+  // enable/disable MSS method activate button and notice
+  function updateMSSActivationUI() {
     var $ = jQuery;
     var group = $('.mailpoet_sending_methods .mailpoet_active').data('group');
-    var key_invalid = $('.mailpoet_mss_key_valid').hasClass('mailpoet_hidden');
-    $('.mailpoet_sending_service_activate').prop('disabled', group === 'mailpoet' || key_invalid);
+    var key_valid = !$('.mailpoet_mss_key_valid').hasClass('mailpoet_hidden');
+    var activation_possible = group !== 'mailpoet' && key_valid;
+    $('.mailpoet_sending_service_activate').prop('disabled', !activation_possible);
+    $('.mailpoet_mss_activate_notice').toggle(activation_possible);
   }
-
 </script>
 
 <%= partial(

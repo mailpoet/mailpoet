@@ -11,6 +11,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
@@ -362,6 +363,7 @@ class Menu {
       'total_subscribers' => Subscriber::getTotalSubscribers(),
       'premium_plugin_active' => License::getLicense(),
       'premium_key_valid' => !empty($this->premium_key_valid),
+      'mss_active' => Bridge::isMPSendingServiceEnabled(),
       'mss_key_valid' => !empty($mp_api_key_valid),
       'pages' => Pages::getAll(),
       'flags' => $flags,
