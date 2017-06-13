@@ -25,7 +25,6 @@ class Initializer {
   function init() {
     $requirements_check_results = $this->checkRequirements();
 
-    // abort initialization if PDO extension is missing
     if(!$requirements_check_results[RequirementsChecker::TEST_PDO_EXTENSION] ||
       !$requirements_check_results[RequirementsChecker::TEST_VENDOR_SOURCE]
     ) {
@@ -42,6 +41,16 @@ class Initializer {
         'activate'
       )
     );
+
+    add_action('activated_plugin', array(
+      new PluginActivatedHook(new DeferredAdminNotices),
+      'action'
+    ), 10, 2);
+
+    add_action('admin_init', array(
+      new DeferredAdminNotices,
+      'flushAll'
+    ));
 
     add_action('plugins_loaded', array(
       $this,
@@ -62,8 +71,8 @@ class Initializer {
   }
 
   function checkRequirements() {
-    $requrements = new RequirementsChecker();
-    return $requrements->checkAllRequirements();
+    $requirements = new RequirementsChecker();
+    return $requirements->checkAllRequirements();
   }
 
   function setupDB() {
