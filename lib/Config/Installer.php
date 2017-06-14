@@ -89,7 +89,7 @@ class Installer {
     return $installed_plugin;
   }
 
-  private static function getPluginFile($slug) {
+  static function getPluginFile($slug) {
     $plugin_file = false;
     $installed_plugin = self::getInstalledPlugin($slug);
     if(!empty($installed_plugin)) {
