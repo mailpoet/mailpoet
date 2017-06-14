@@ -49,7 +49,7 @@ class Initializer {
 
     add_action('admin_init', array(
       new DeferredAdminNotices,
-      'flushAll'
+      'printAndClean'
     ));
 
     add_action('plugins_loaded', array(

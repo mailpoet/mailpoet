@@ -20,7 +20,7 @@ class DeferredAdminNotices {
     update_option(DeferredAdminNotices::OPTIONS_KEY_NAME, $notices);
   }
 
-  public function flushAll() {
+  public function printAndClean() {
     $notices = get_option(DeferredAdminNotices::OPTIONS_KEY_NAME, array());
 
     foreach($notices as $notice) {
