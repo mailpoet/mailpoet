@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Models;
+use Carbon\Carbon;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
@@ -489,6 +490,37 @@ class Newsletter extends Model {
       'clicked' => !empty($clicks->cnt) ? $clicks->cnt : 0,
       'opened' => !empty($opens->cnt) ? $opens->cnt : 0,
       'unsubscribed' => !empty($unsubscribes->cnt) ? $unsubscribes->cnt : 0
+    );
+  }
+
+  static function getAnalytics() {
+    $welcome_newsletters_count = Newsletter::getPublished()
+      ->filter('filterType', self::TYPE_WELCOME)
+      ->filter('filterStatus', self::STATUS_ACTIVE)
+      ->count();
+
+    $notifications_count = Newsletter::getPublished()
+      ->filter('filterType', self::TYPE_NOTIFICATION)
+      ->filter('filterStatus', self::STATUS_ACTIVE)
+      ->count();
+
+    $sent_newsletters = static::table_alias('newsletters')
+      ->where('newsletters.type', self::TYPE_STANDARD)
+      ->where('newsletters.status', self::STATUS_SENT)
+      ->join(
+        MP_SENDING_QUEUES_TABLE,
+        'queues.newsletter_id = newsletters.id',
+        'queues'
+      )
+      ->where('queues.status', SendingQueue::STATUS_COMPLETED)
+      ->whereGte('queues.processed_at', Carbon::now()->subMonths(3))
+      ->count();
+
+
+    return array(
+      'welcome_newsletters_count' => $welcome_newsletters_count,
+      'notifications_count' => $notifications_count,
+      'sent_newsletters' => $sent_newsletters,
     );
   }
 

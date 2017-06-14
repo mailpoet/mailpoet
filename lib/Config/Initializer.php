@@ -88,7 +88,6 @@ class Initializer {
       $this->setupUpdater();
       $this->setupLocalizer();
       $this->setupMenu();
-      $this->setupAnalytics();
       $this->setupChangelog();
       $this->setupShortcodes();
       $this->setupImages();
@@ -176,11 +175,6 @@ class Initializer {
   function setupMenu() {
     $menu = new Menu($this->renderer, Env::$assets_url);
     $menu->init();
-  }
-
-  function setupAnalytics() {
-    $analytics = new Analytics();
-    $analytics->init();
   }
 
   function setupChangelog() {

@@ -67,6 +67,13 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
 )%>
 
 <script type="text/javascript">
+  mailpoet_analytics_enabled = <%= is_analytics_enabled() | json_encode %>;
+  mailpoet_analytics_data = <%= json_encode(get_analytics_data()) %>;
+</script>
+
+<%= javascript('lib/analytics.js') %>
+
+<script type="text/javascript">
   if(window['HS'] !== undefined) {
     // HelpScout Beacon: Configuration
     HS.beacon.config({
