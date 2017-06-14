@@ -347,8 +347,6 @@ class Menu {
 
 
   function settings() {
-    if($this->subscribers_over_limit) return $this->displaySubscriberLimitExceededTemplate();
-
     $settings = Setting::getAll();
     $flags = $this->_getFlags();
 
