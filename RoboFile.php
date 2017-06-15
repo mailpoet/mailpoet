@@ -85,6 +85,9 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function compileCss($opts = ['env' => null]) {
+    // Clean up folder from previous files
+    array_map('unlink', glob("assets/css/*.*"));
+
     $css_files = array(
       'assets/css/src/admin.styl',
       'assets/css/src/newsletter_editor/newsletter_editor.styl',
@@ -93,7 +96,7 @@ class RoboFile extends \Robo\Tasks {
       'assets/css/src/importExport.styl'
     );
 
-    return $this->_exec(join(' ', array(
+    $this->_exec(join(' ', array(
       './node_modules/stylus/bin/stylus',
       '--include ./node_modules',
       '--include-css',
@@ -101,6 +104,24 @@ class RoboFile extends \Robo\Tasks {
       join(' ', $css_files),
       '-o assets/css/'
     )));
+
+    // Create manifest file
+    $manifest = [];
+    foreach(glob('assets/css/*.css') as $style) {
+      // Hash and rename styles if production environment
+      if($opts['env'] === 'production') {
+        $hashed_style = sprintf(
+          '%s.%s.css',
+          pathinfo($style)['filename'],
+          substr(md5_file($style), 0, 8)
+        );
+        $manifest[basename($style)] = $hashed_style;
+        rename($style, str_replace(basename($style), $hashed_style, $style));
+      } else {
+        $manifest[basename($style)] = basename($style);
+      }
+    }
+    file_put_contents('assets/css/manifest.json', json_encode($manifest, JSON_PRETTY_PRINT));
   }
 
   function makepot() {
