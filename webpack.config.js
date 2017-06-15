@@ -156,6 +156,7 @@ config.push(_.extend({}, baseConfig, {
       'segments/segments.jsx',
       'forms/forms.jsx',
       'settings/tabs.js',
+      'settings/reinstall_from_scratch.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
       'helpscout'
