@@ -47,4 +47,16 @@
 
 </div>
 
+
+<script type="text/javascript">
+  jQuery(function($) {
+    $(function() {
+      MailPoet.trackEvent(
+        'User has updated MailPoet',
+        {'MailPoet Free version': window.mailpoet_version}
+      );
+    });
+  });
+</script>
 <% endblock %>
+
