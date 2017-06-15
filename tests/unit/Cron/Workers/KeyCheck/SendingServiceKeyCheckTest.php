@@ -8,6 +8,7 @@ use MailPoet\Services\Bridge;
 
 class SendingServiceKeyCheckTest extends MailPoetTest {
   function _before() {
+    $this->mss_key = 'some_key';
     $this->worker = new SendingServiceKeyCheck(microtime(true));
   }
 
@@ -23,10 +24,20 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
       new Bridge,
       array(
         'checkMSSKey' => $response,
+        'storeMSSKeyAndState' => null,
         'updateSubscriberCount' => Stub::once()
       ),
       $this
     );
+    $this->worker->bridge->expects($this->once())
+      ->method('checkMSSKey')
+      ->with($this->equalTo($this->mss_key));
+    $this->worker->bridge->expects($this->once())
+      ->method('storeMSSKeyAndState')
+      ->with(
+        $this->equalTo($this->mss_key),
+        $this->equalTo($response)
+      );
     $this->setMailPoetSendingMethod();
     expect($this->worker->checkKey())->equals($response);
   }
@@ -36,7 +47,7 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
       Mailer::MAILER_CONFIG_SETTING_NAME,
       array(
         'method' => 'MailPoet',
-        'mailpoet_api_key' => 'some_key',
+        'mailpoet_api_key' => $this->mss_key,
       )
     );
   }

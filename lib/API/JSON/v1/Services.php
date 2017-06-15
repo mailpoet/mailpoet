@@ -30,6 +30,7 @@ class Services extends APIEndpoint {
 
     try {
       $result = $this->bridge->checkMSSKey($key);
+      $this->bridge->storeMSSKeyAndState($key, $result);
     } catch(\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()
@@ -79,6 +80,7 @@ class Services extends APIEndpoint {
 
     try {
       $result = $this->bridge->checkPremiumKey($key);
+      $this->bridge->storePremiumKeyAndState($key, $result);
     } catch(\Exception $e) {
       return $this->errorResponse(array(
         $e->getCode() => $e->getMessage()

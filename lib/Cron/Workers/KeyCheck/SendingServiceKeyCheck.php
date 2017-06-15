@@ -15,7 +15,9 @@ class SendingServiceKeyCheck extends KeyCheckWorker {
 
   function checkKey() {
     $mailer_config = Mailer::getMailerConfig();
-    $result = $this->bridge->checkMSSKey($mailer_config['mailpoet_api_key']);
+    $mss_key = $mailer_config['mailpoet_api_key'];
+    $result = $this->bridge->checkMSSKey($mss_key);
+    $this->bridge->storeMSSKeyAndState($mss_key, $result);
     $this->bridge->updateSubscriberCount($result);
     return $result;
   }

@@ -16,6 +16,7 @@ class PremiumKeyCheck extends KeyCheckWorker {
   function checkKey() {
     $premium_key = Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME);
     $result = $this->bridge->checkPremiumKey($premium_key);
+    $this->bridge->storePremiumKeyAndState($premium_key, $result);
     return $result;
   }
 }

@@ -63,38 +63,45 @@ class Bridge {
   function checkMSSKey($api_key) {
     $this->initApi($api_key);
     $result = $this->api->checkMSSKey();
-    return $this->processAPIKeyCheckResult($result);
+    return $this->processMSSKeyCheckResult($result);
   }
 
-  private function processAPIKeyCheckResult(array $result) {
+  private function processMSSKeyCheckResult(array $result) {
     $state_map = array(
       200 => self::MAILPOET_KEY_VALID,
       401 => self::MAILPOET_KEY_INVALID,
       402 => self::MAILPOET_KEY_EXPIRING
     );
 
-    $update_settings = false;
-
     if(!empty($result['code']) && isset($state_map[$result['code']])) {
       $key_state = $state_map[$result['code']];
-      $update_settings = true;
     } else {
       $key_state = self::MAILPOET_KEY_CHECK_ERROR;
     }
 
-    // store the key itself
-    if($update_settings) {
-      Setting::setValue(
-        self::API_KEY_SETTING_NAME,
-        $this->api->getKey()
-      );
-    }
-
     return $this->buildKeyState(
       $key_state,
-      $result,
+      $result
+    );
+  }
+
+  function storeMSSKeyAndState($key, $state) {
+    if(empty($state['state'])
+      || $state['state'] === self::MAILPOET_KEY_CHECK_ERROR
+    ) {
+      return false;
+    }
+
+    // store the key itself
+    Setting::setValue(
+      self::API_KEY_SETTING_NAME,
+      $key
+    );
+
+    // store the key state
+    Setting::setValue(
       self::API_KEY_STATE_SETTING_NAME,
-      $update_settings
+      $state
     );
   }
 
@@ -111,8 +118,6 @@ class Bridge {
       402 => self::PREMIUM_KEY_ALREADY_USED
     );
 
-    $update_settings = false;
-
     if(!empty($result['code']) && isset($state_map[$result['code']])) {
       if($state_map[$result['code']] == self::PREMIUM_KEY_VALID
         && !empty($result['data']['expire_at'])
@@ -121,40 +126,42 @@ class Bridge {
       } else {
         $key_state = $state_map[$result['code']];
       }
-      $update_settings = true;
     } else {
       $key_state = self::PREMIUM_KEY_CHECK_ERROR;
     }
 
-    // store the key itself
-    if($update_settings) {
-      Setting::setValue(
-        self::PREMIUM_KEY_SETTING_NAME,
-        $this->api->getKey()
-      );
-    }
-
     return $this->buildKeyState(
       $key_state,
-      $result,
-      self::PREMIUM_KEY_STATE_SETTING_NAME,
-      $update_settings
+      $result
     );
   }
 
-  private function buildKeyState($key_state, $result, $setting_name, $update_settings = false) {
+  function storePremiumKeyAndState($key, $state) {
+    if(empty($state['state'])
+      || $state['state'] === self::PREMIUM_KEY_CHECK_ERROR
+    ) {
+      return false;
+    }
+
+    // store the key itself
+    Setting::setValue(
+      self::PREMIUM_KEY_SETTING_NAME,
+      $key
+    );
+
+    // store the key state
+    Setting::setValue(
+      self::PREMIUM_KEY_STATE_SETTING_NAME,
+      $state
+    );
+  }
+
+  private function buildKeyState($key_state, $result) {
     $state = array(
       'state' => $key_state,
       'data' => !empty($result['data']) ? $result['data'] : null,
       'code' => !empty($result['code']) ? $result['code'] : self::CHECK_ERROR_UNKNOWN
     );
-
-    if($update_settings) {
-      Setting::setValue(
-        $setting_name,
-        $state
-      );
-    }
 
     return $state;
   }

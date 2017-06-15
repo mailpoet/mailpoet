@@ -21,12 +21,21 @@ class PremiumKeyCheckTest extends MailPoetTest {
     $response = array('code' => Bridge::PREMIUM_KEY_VALID);
     $this->worker->bridge = Stub::make(
       new Bridge,
-      array('checkPremiumKey' => $response),
+      array(
+        'checkPremiumKey' => $response,
+        'storePremiumKeyAndState' => null
+      ),
       $this
     );
     $this->worker->bridge->expects($this->once())
       ->method('checkPremiumKey')
       ->with($this->equalTo($this->premium_key));
+    $this->worker->bridge->expects($this->once())
+      ->method('storePremiumKeyAndState')
+      ->with(
+        $this->equalTo($this->premium_key),
+        $this->equalTo($response)
+      );
     $this->fillPremiumKey();
     expect($this->worker->checkKey())->equals($response);
   }
