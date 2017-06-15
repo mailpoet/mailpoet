@@ -138,7 +138,8 @@ config.push(_.extend({}, baseConfig, {
       'notice',
       'num',
       'jquery.serialize_object',
-      'parsleyjs'
+      'parsleyjs',
+      'analytics_event.js',
     ],
     admin_vendor: [
       'react',

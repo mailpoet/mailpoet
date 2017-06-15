@@ -29,7 +29,7 @@ class Analytics {
   /** @return boolean */
   function isEnabled() {
     $analytics_settings = Setting::getValue('analytics', array());
-    return $analytics_settings["enabled"] === "1";
+    return ($analytics_settings["enabled"] === "1") || ($analytics_settings["enabled"] === "true");
   }
 
   private function shouldSend() {
