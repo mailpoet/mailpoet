@@ -2,31 +2,39 @@ define(
   ['mailpoet'],
   function(MailPoet) {
 
-    const eventsCache = [];
-    MailPoet.trackEvent = function(name, data) {
-      eventsCache.push({
-        name: name,
-        data: data
-      });
-    };
+    MailPoet.trackEvent = cacheEvent;
+    MailPoet.forceTrackEvent = cacheEvent;
 
-    function waitForMixpanelInitialised() {
-      if (window.mixpanel === undefined) {
-        setTimeout(waitForMixpanelInitialised, 100)
-      } else {
-        exportMixpanel(MailPoet);
-        trackCachedEvents(eventsCache);
-      }
-    }
-    waitForMixpanelInitialised();
+    initialiseMixpanelWhenLoaded();
   }
 );
 
+var eventsCache = [];
+function cacheEvent(name, data) {
+  eventsCache.push({
+    name: name,
+    data: data
+  });
+}
+
+function initialiseMixpanelWhenLoaded() {
+  if (typeof window.mixpanel === "object" && typeof window.mixpanel.track === "function") {
+    exportMixpanel(MailPoet);
+    trackCachedEvents(eventsCache);
+  } else {
+    setTimeout(initialiseMixpanelWhenLoaded, 100);
+  }
+}
+
+function track(name, data){
+  window.mixpanel.track(name, data);
+}
+
 function exportMixpanel(MailPoet) {
+  MailPoet.forceTrackEvent = track;
+
   if (window.mailpoet_analytics_enabled) {
-    MailPoet.trackEvent = function(name, data){
-      window.mixpanel.track(name, data);
-    }
+    MailPoet.trackEvent = track;
   } else {
     MailPoet.trackEvent = function () {};
   }
