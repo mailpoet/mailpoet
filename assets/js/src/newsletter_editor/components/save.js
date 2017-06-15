@@ -7,7 +7,7 @@ define([
     'backbone.marionette',
     'jquery',
     'blob',
-    'filesaver',
+    'file-saver',
     'html2canvas'
   ], function(
     App,

@@ -28,8 +28,7 @@ baseConfig = {
       'interact$': 'interact.js/interact.js',
       'spectrum$': 'spectrum-colorpicker/spectrum.js',
       'wp-js-hooks': 'WP-JS-Hooks/src/event-manager.js',
-      'blob$': 'blob/Blob.js',
-      'filesaver$': 'filesaver/FileSaver.js',
+      'blob$': 'blob-tmp/Blob.js',
       'papaparse': 'papaparse/papaparse.min.js',
       'helpscout': 'helpscout.js',
       'html2canvas': 'html2canvas/dist/html2canvas.js',
@@ -177,7 +176,7 @@ config.push(_.extend({}, baseConfig, {
       'spectrum',
       'sticky-kit',
       'blob',
-      'filesaver',
+      'file-saver',
       'velocity-animate',
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',
@@ -265,7 +264,7 @@ config.push(_.extend({}, baseConfig, {
       'backbone.radio',
       'select2',
       'blob',
-      'filesaver',
+      'file-saver',
       'velocity-animate',
 
       'mailpoet',
@@ -338,8 +337,7 @@ config.push(_.extend({}, baseConfig, {
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
-      'blob$': 'blob/Blob.js',
-      'filesaver$': 'filesaver/FileSaver.js'
+      'blob$': 'blob-tmp/Blob.js'
     },
   },
   externals: {
