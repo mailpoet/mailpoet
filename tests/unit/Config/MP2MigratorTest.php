@@ -6,7 +6,7 @@ use MailPoet\Models\MappingToExternalEntities;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
-use MailPoet\Models\SubscriberSegment;
+use MailPoet\Models\Form;
 use Helper\Database;
 
 class MP2MigratorTest extends MailPoetTest {
@@ -347,6 +347,153 @@ class MP2MigratorTest extends MailPoetTest {
     ));
     $result = $this->invokeMethod($this->MP2Migrator, 'getImportedMapping', array('testMapping'));
     expect($result[$old_id])->equals($new_id);
+  }
+  
+  /**
+   * Test the importForms function
+   * 
+   * @global object $wpdb
+   */
+  public function testImportForms() {
+    global $wpdb;
+    
+    // Check the forms number
+    $this->initImport();
+    $this->loadMP2Fixtures();
+    $this->invokeMethod($this->MP2Migrator, 'importForms');
+    expect(Form::count())->equals(2);
+    
+    // Check a form data
+    $this->initImport();
+    $id = 999;
+    $name = 'Test form';
+    $list_id = 2;
+    
+    // Insert a MP2 list
+    $wpdb->insert($wpdb->prefix . 'wysija_list', array(
+      'list_id' => $list_id,
+      'name' => 'Test list',
+      'description' => 'Test list description',
+      'is_enabled' => 1,
+      'is_public' => 1,
+      'created_at' => 1486319877,
+    ));
+    $this->invokeMethod($this->MP2Migrator, 'importSegments');
+    $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
+    
+    // Insert a MP2 form
+    $data = array(
+      'version' => 0.4,
+      'settings' => array(
+        'on_success' => 'message',
+        'success_message' => 'Test message',
+        'lists' => array($list_id),
+        'lists_selected_by' => 'admin',
+      ),
+      'body' => array(
+        array(
+          'name' => 'E-mail',
+          'type' => 'input',
+          'field' => 'email',
+          'params' => array(
+            'label' => 'E-mail',
+            'required' => 1,
+          ),
+        ),
+      ),
+    );
+    $wpdb->insert($wpdb->prefix . 'wysija_form', array(
+      'form_id' => $id,
+      'name' => $name,
+      'data' => base64_encode(serialize($data)),
+    ));
+    $this->invokeMethod($this->MP2Migrator, 'importForms');
+    $table = MP_FORMS_TABLE;
+    $form = $wpdb->get_row("SELECT * FROM $table WHERE id=" . 1);
+    expect($form->name)->equals($name);
+    $settings = unserialize(($form->settings));
+    expect($settings['on_success'])->equals('message');
+    expect($settings['success_message'])->equals('Test message');
+    expect($settings['segments'][0])->equals($importedSegmentsMapping[$list_id]);
+    $body = unserialize(($form->body));
+    expect($body[0]['name'])->equals('E-mail');
+    expect($body[0]['type'])->equals('text');
+  }
+  
+  /**
+   * Test the replaceMP2Shortcodes function
+   * 
+   */
+  public function testReplaceMP2Shortcodes() {
+    $this->initImport();
+    
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[total_subscribers]'));
+    expect($result)->equals('[mailpoet_subscribers_count]');
+    
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('Total: [total_subscribers]'));
+    expect($result)->equals('Total: [mailpoet_subscribers_count]');
+    
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('Total: [total_subscribers] found'));
+    expect($result)->equals('Total: [mailpoet_subscribers_count] found');
+    
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[wysija_subscribers_count list_id=&quot;1,2&quot; ]'));
+    expect($result)->notEquals('mailpoet_subscribers_count segments=1,2');
+    
+    $this->loadMP2Fixtures();
+    $this->invokeMethod($this->MP2Migrator, 'importSegments');
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[wysija_subscribers_count list_id=&quot;1,2&quot; ]'));
+    $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
+    expect($result)->equals(sprintf('[mailpoet_subscribers_count segments=%d,%d]', $importedSegmentsMapping[1], $importedSegmentsMapping[2]));
+  }
+  
+  /**
+   * Test the getMappedSegmentIds function
+   * 
+   */
+  public function testGetMappedSegmentIds() {
+    $this->initImport();
+    
+    $lists = array(1, 2);
+    $this->loadMP2Fixtures();
+    $this->invokeMethod($this->MP2Migrator, 'importSegments');
+    $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
+    $result = $this->invokeMethod($this->MP2Migrator, 'getMappedSegmentIds', array($lists));
+    $expected_lists = array($importedSegmentsMapping[1],$importedSegmentsMapping[2]);
+    expect($result)->equals($expected_lists);
+  }
+  
+  /**
+   * Test the replaceListIds function
+   * 
+   */
+  public function testReplaceListIds() {
+    $this->initImport();
+    
+    $lists = array(
+      array(
+        'list_id' => 1,
+        'name' => 'List 1',
+        ),
+      array(
+        'list_id' => 2,
+        'name' => 'List 2',
+        ),
+    );
+    $this->loadMP2Fixtures();
+    $this->invokeMethod($this->MP2Migrator, 'importSegments');
+    $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceListIds', array($lists));
+    $expected_lists = array(
+      array(
+        'id' => $importedSegmentsMapping[1],
+        'name' => 'List 1',
+        ),
+      array(
+        'id' => $importedSegmentsMapping[2],
+        'name' => 'List 2',
+        ),
+    );
+    expect($result)->equals($expected_lists);
   }
   
 }

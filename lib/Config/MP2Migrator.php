@@ -817,7 +817,7 @@ class MP2Migrator {
     $data = unserialize($serialized_data);
     $settings = $data['settings'];
     $body = $data['body'];
-    $segments = $this->getMappedSegmentIDs($settings['lists']);
+    $segments = $this->getMappedSegmentIds($settings['lists']);
     $mp3_form_settings = array(
       'on_success' => $settings['on_success'],
       'success_message' => $settings['success_message'],
@@ -846,7 +846,7 @@ class MP2Migrator {
         'id' => $field_id,
         'static' => in_array($field_id, array('email', 'submit')),
         'params' => $params,
-        'position' => $field['position'],
+        'position' => isset($field['position'])? $field['position'] : '',
       );
     }
 
@@ -864,7 +864,7 @@ class MP2Migrator {
    *
    * @param array $mp2_list_ids
    */
-  private function getMappedSegmentIDs($mp2_list_ids) {
+  private function getMappedSegmentIds($mp2_list_ids) {
     $mp3_segment_ids = array();
     foreach($mp2_list_ids as $list_id) {
       if(isset($this->segments_mapping[$list_id])) {
@@ -895,7 +895,7 @@ class MP2Migrator {
   private function replaceMP2ShortcodesCallback($matches) {
     if(!empty($matches)) {
       $mp2_lists = explode(',', $matches[1]);
-      $segments = $this->getMappedSegmentIDs($mp2_lists);
+      $segments = $this->getMappedSegmentIds($mp2_lists);
       $segments_ids = implode(',', $segments);
       return '[mailpoet_subscribers_count segments=' . $segments_ids . ']';
     }
