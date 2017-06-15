@@ -367,6 +367,9 @@ class SchedulerTest extends MailPoetTest {
     expect($updated_queue_subscribers['to_process'])->equals(array($subscriber->id));
     // set queue's status to null
     expect($updated_queue->status)->null();
+    // set newsletter's status to sending
+    $updated_newsletter = Newsletter::findOne($newsletter->id);
+    expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENDING);
   }
 
   function testItFailsToProcessPostNotificationNewsletterWhenSegmentsDontExist() {
@@ -422,6 +425,10 @@ class SchedulerTest extends MailPoetTest {
     $updated_queue_subscribers = $updated_queue->getSubscribers();
     expect($updated_queue_subscribers['to_process'])->equals(array($subscriber->id));
     expect($updated_queue->newsletter_id)->equals($notification_history->id);
+    // set notification history's status to sending
+    $updated_notification_history = Newsletter::where('parent_id', $newsletter->id)
+      ->findOne();
+    expect($updated_notification_history->status)->equals(Newsletter::STATUS_SENDING);
   }
 
   function testItFailsToProcessWhenScheduledQueuesNotFound() {
@@ -513,6 +520,35 @@ class SchedulerTest extends MailPoetTest {
       'processScheduledStandardNewsletter' => Stub::never()
     ), $this);
     // scheduled job is not processed
+    $scheduler->timer = microtime(true);
+    $scheduler->process();
+  }
+
+  function testItProcessesScheduledJobsWhenNewsletterIsActive() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_ACTIVE);
+    $queue = $this->_createQueue($newsletter->id);
+    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->save();
+
+    $scheduler = Stub::make(new Scheduler(), array(
+      'processScheduledStandardNewsletter' => Stub::once()
+    ), $this);
+    // scheduled job is processed
+    $scheduler->timer = microtime(true);
+    $scheduler->process();
+  }
+
+  function testItProcessesScheduledJobsWhenNewsletterIsScheduled() {
+    $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_SCHEDULED);
+    $queue = $this->_createQueue($newsletter->id);
+    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $queue->save();
+
+    $scheduler = Stub::make(new Scheduler(), array(
+      'processScheduledStandardNewsletter' => Stub::once()
+    ), $this);
+    // scheduled job is processed
+    $scheduler->timer = microtime(true);
     $scheduler->process();
   }
 
@@ -534,7 +570,6 @@ class SchedulerTest extends MailPoetTest {
     expect($subscriber_segment->getErrors())->false();
     return $subscriber_segment;
   }
-
 
   function _createSegment() {
     $segment = Segment::create();
