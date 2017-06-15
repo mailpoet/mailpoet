@@ -57,6 +57,11 @@ class Functions extends \Twig_Extension {
         array('is_safe' => array('all'))
       ),
       new \Twig_SimpleFunction(
+        'mailpoet_version',
+        array($this, 'getMailPoetVersion'),
+        array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
         'wp_time_format',
         array($this, 'getWPTimeFormat'),
         array('is_safe' => array('all'))
@@ -114,6 +119,10 @@ class Functions extends \Twig_Extension {
     return (get_option('date_format')) ?
       get_option('date_format') :
       'F j, Y';
+  }
+
+  function getMailPoetVersion() {
+    return MAILPOET_VERSION;
   }
 
   function getWPTimeFormat() {

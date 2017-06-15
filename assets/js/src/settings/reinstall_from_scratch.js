@@ -12,6 +12,11 @@ define(
 
     function eventHandler() {
       if (confirm(MailPoet.I18n.t('reinstallConfirmation'))) {
+        MailPoet.trackEvent(
+          'User has reinstalled MailPoet via Settings',
+          {'MailPoet Free version': window.mailpoet_version}
+        );
+
         MailPoet.Modal.loading(true);
         MailPoet.Ajax.post({
           'api_version': window.mailpoet_api_version,
@@ -20,7 +25,7 @@ define(
         }).always(function () {
           MailPoet.Modal.loading(false);
         }).done(function () {
-          window.location = "admin.php?page=mailpoet-newsletters";
+          window.location = 'admin.php?page=mailpoet-newsletters';
         }).fail(function (response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
