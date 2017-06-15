@@ -10,18 +10,17 @@ class Analytics {
   const SETTINGS_LAST_SENT_KEY = "analytics_last_sent";
   const SEND_AFTER_DAYS = 7;
 
-  /** @var Setting */
-  private $settings;
+  /** @var Reporter */
+  private $reporter;
 
-  public function __construct(Setting $settings) {
-    $this->settings = $settings;
+  public function __construct(Reporter $reporter) {
+    $this->reporter = $reporter;
   }
 
   /** @return array */
-  function getData() {
+  function generateAnalytics() {
     if($this->shouldSend()) {
-      $analytics = new Reporter();
-      $data = $analytics->getData();
+      $data = $this->reporter->getData();
       $this->recordDataSent();
       return $data;
     }
@@ -29,7 +28,7 @@ class Analytics {
 
   /** @return boolean */
   function isEnabled() {
-    $analytics_settings = $this->settings->getValue('analytics', array());
+    $analytics_settings = Setting::getValue('analytics', array());
     return $analytics_settings["enabled"] === "1";
   }
 
@@ -37,7 +36,7 @@ class Analytics {
     if(!$this->isEnabled()) {
       return false;
     }
-    $lastSent = $this->settings->getValue(Analytics::SETTINGS_LAST_SENT_KEY);
+    $lastSent = Setting::getValue(Analytics::SETTINGS_LAST_SENT_KEY);
     if(!$lastSent) {
       return true;
     }
@@ -46,7 +45,7 @@ class Analytics {
   }
 
   private function recordDataSent() {
-    $this->settings->setValue(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::create());
+    Setting::setValue(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::now());
   }
 
 }

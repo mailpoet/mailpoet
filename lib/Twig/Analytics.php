@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Twig;
 
+use MailPoet\Analytics\Reporter;
 use MailPoet\Models\Setting;
 
 if(!defined('ABSPATH')) exit;
@@ -12,11 +13,11 @@ class Analytics extends \Twig_Extension {
   }
 
   public function getFunctions() {
-    $analytics = new \MailPoet\Analytics\Analytics(new Setting());
+    $analytics = new \MailPoet\Analytics\Analytics(new Reporter());
     return array(
       new \Twig_SimpleFunction(
         'get_analytics_data',
-        array($analytics, 'getData'),
+        array($analytics, 'generateAnalytics'),
         array('is_safe' => array('all'))
       ),
       new \Twig_SimpleFunction(
