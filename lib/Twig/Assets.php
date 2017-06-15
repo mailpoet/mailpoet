@@ -3,11 +3,7 @@ namespace MailPoet\Twig;
 
 if(!defined('ABSPATH')) exit;
 
-class Assets
-  extends \Twig_Extension
-  implements \Twig_Extension_GlobalsInterface
-{
-
+class Assets extends \Twig_Extension implements \Twig_Extension_GlobalsInterface {
   private $_globals;
 
   public function __construct($globals) {
@@ -47,12 +43,10 @@ class Assets
     $output = array();
 
     foreach($stylesheets as $stylesheet) {
-      $url = $this->appendVersionToUrl(
-        $this->_globals['assets_url'] . '/css/' . $stylesheet
-      );
       $output[] = sprintf(
-        '<link rel="stylesheet" type="text/css" href="%s">',
-        $url
+        '<link rel="stylesheet" type="text/css" href="%s/css/%s" />',
+        $this->_globals['assets_url'],
+        $this->getAssetFilename('css', $stylesheet)
       );
     }
 
@@ -64,12 +58,10 @@ class Assets
     $output = array();
 
     foreach($scripts as $script) {
-      $url = $this->appendVersionToUrl(
-        $this->_globals['assets_url'] . '/js/' . $script
-      );
       $output[] = sprintf(
-        '<script type="text/javascript" src="%s"></script>',
-        $url
+        '<script type="text/javascript" src="%s/js/%s"></script>',
+        $this->_globals['assets_url'],
+        $this->getAssetFilename('js', $script)
       );
     }
 
@@ -84,5 +76,17 @@ class Assets
 
   public function appendVersionToUrl($url) {
     return add_query_arg('mailpoet_version', $this->_globals['version'], $url);
+  }
+
+  public function getAssetFileName($asset_type, $asset) {
+    $manifest = sprintf(
+      '%s/%s/manifest.json',
+      $this->_globals['assets_path'],
+      $asset_type,
+      $asset
+    );
+    if(!is_file($manifest)) return $asset;
+    $manifest = json_decode(file_get_contents($manifest), true);
+    return (!empty($manifest[$asset])) ? $manifest[$asset] : $asset;
   }
 }
