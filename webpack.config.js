@@ -1,11 +1,16 @@
-var webpack = require('webpack'),
-    _ = require('underscore'),
-    path = require('path'),
-    baseConfig = {},
-    config = [],
-    globalPrefix = 'MailPoetLib';
+var webpack = require('webpack');
+var webpackManifestPlugin = require('webpack-manifest-plugin');
+var webpackMD5HashPlugin = require('webpack-md5-hash');
+var webpackCleanPlugin = require('clean-webpack-plugin');
+var _ = require('underscore');
+var path = require('path');
+var globalPrefix = 'MailPoetLib';
+var PRODUCTION_ENV = process.env.NODE_ENV === 'production';
+var manifestCache = {};
 
-baseConfig = {
+// Base config
+var baseConfig = {
+  cache: true,
   context: __dirname,
   watch: {
     aggregateTimeout: 300,
@@ -13,7 +18,8 @@ baseConfig = {
   },
   output: {
     path: './assets/js',
-    filename: '[name].js',
+    filename: (PRODUCTION_ENV) ? '[name].[chunkhash:8].js' : '[name].js',
+    chunkFilename: (PRODUCTION_ENV) ? '[name].[chunkhash:8].chunk.js' : '[name].chunk.js'
   },
   resolve: {
     modulesDirectories: [
@@ -38,6 +44,11 @@ baseConfig = {
   node: {
     fs: 'empty'
   },
+  plugins: [
+    new webpackCleanPlugin([
+      './assets/js/*.*',
+    ])
+  ],
   module: {
     loaders: [
       {
@@ -120,8 +131,8 @@ baseConfig = {
   }
 };
 
-// Admin
-config.push(_.extend({}, baseConfig, {
+// Admin config
+var adminConfig = {
   name: 'admin',
   entry: {
     vendor: [
@@ -213,17 +224,26 @@ config.push(_.extend({}, baseConfig, {
     ]
   },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin('admin_vendor', 'admin_vendor.js', ['admin_vendor', 'admin']),
-    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js')
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'admin_vendor',
+      fileName: 'admin_vendor.js',
+      chunks: ['admin_vendor', 'admin'],
+      minChunks: Infinity
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      fileName: 'vendor.js',
+      minChunks: Infinity
+    })
   ],
   externals: {
     'jquery': 'jQuery',
     'tinymce': 'tinymce'
   }
-}));
+};
 
-// Public
-config.push(_.extend({}, baseConfig, {
+// Public config
+var publicConfig = {
   name: 'public',
   entry: {
     public: [
@@ -237,10 +257,10 @@ config.push(_.extend({}, baseConfig, {
   externals: {
     'jquery': 'jQuery'
   }
-}));
+};
 
-// mp2migrator
-config.push(_.extend({}, baseConfig, {
+// Migrator config
+var migratorConfig = {
   name: 'mp2migrator',
   entry: {
     mp2migrator: [
@@ -251,10 +271,9 @@ config.push(_.extend({}, baseConfig, {
     'jquery': 'jQuery',
     'mailpoet': 'MailPoet'
   }
-}));
-
-// Test
-config.push(_.extend({}, baseConfig, {
+};
+// Test config
+var testConfig = {
   name: 'test',
   entry: {
     vendor: ['handlebars', 'handlebars_helpers'],
@@ -348,6 +367,17 @@ config.push(_.extend({}, baseConfig, {
     'interact': 'interact',
     'spectrum': 'spectrum',
   }
-}));
+};
 
-module.exports = config;
+module.exports = _.map([adminConfig, publicConfig, migratorConfig, testConfig], function (config) {
+  if (config.name !== 'test') {
+    config.plugins = config.plugins || [];
+    config.plugins.push(
+      new webpackMD5HashPlugin(),
+      new webpackManifestPlugin({
+        cache: manifestCache
+      })
+    );
+  }
+  return _.extend({}, baseConfig, config);
+});
