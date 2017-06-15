@@ -1,7 +1,6 @@
 <?php
 
 class RoboFile extends \Robo\Tasks {
-
   function install() {
     return $this->taskExecStack()
       ->stopOnFail()
@@ -67,18 +66,25 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('./node_modules/webpack/bin/webpack.js --watch');
   }
 
-  function compileAll() {
+  function compileAll($opts = ['env' => null]) {
     $collection = $this->collectionBuilder();
-    $collection->addCode(array($this, 'compileJs'));
-    $collection->addCode(array($this, 'compileCss'));
+    $collection->addCode(function() use ($opts) {
+      return call_user_func(array($this, 'compileJs'), $opts);
+    });
+    $collection->addCode(function() use ($opts) {
+      return call_user_func(array($this, 'compileCss'), $opts);
+    });
     return $collection->run();
   }
 
-  function compileJs() {
-    return $this->_exec('./node_modules/webpack/bin/webpack.js --bail');
+  function compileJs($opts = ['env' => null]) {
+    $env = ($opts['env']) ?
+      sprintf('NODE_ENV="%s"', $opts['env']) :
+      null;
+    return $this->_exec($env . ' ./node_modules/webpack/bin/webpack.js --bail');
   }
 
-  function compileCss() {
+  function compileCss($opts = ['env' => null]) {
     $css_files = array(
       'assets/css/src/admin.styl',
       'assets/css/src/newsletter_editor/newsletter_editor.styl',
