@@ -279,7 +279,9 @@ class Newsletters extends APIEndpoint {
 
       $shortcodes = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
         $newsletter,
-        $subscriber
+        $subscriber,
+        $queue = false,
+        $wp_user_preview = true
       );
 
       list(
