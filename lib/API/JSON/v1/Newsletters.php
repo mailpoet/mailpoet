@@ -296,7 +296,8 @@ class Newsletters extends APIEndpoint {
             $sender = false,
             $reply_to = false
         );
-        $result = $mailer->send($rendered_newsletter, $data['subscriber']);
+        $extra_params = array('unsubscribe_url' => home_url());
+        $result = $mailer->send($rendered_newsletter, $data['subscriber'], $extra_params);
 
         if($result['response'] === false) {
           $error = sprintf(
