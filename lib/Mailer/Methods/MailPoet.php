@@ -27,7 +27,7 @@ class MailPoet {
       return Mailer::formatMailerSendErrorResult($response);
     }
 
-    $message_body = $this->getBody($newsletter, $subscriber);
+    $message_body = $this->getBody($newsletter, $subscriber, $extra_params);
     $result = $this->api->sendMessages($message_body);
 
     switch($result['status']) {
@@ -57,9 +57,9 @@ class MailPoet {
     );
   }
 
-  function getBody($newsletter, $subscriber) {
+  function getBody($newsletter, $subscriber, $extra_params = array()) {
     $_this = $this;
-    $composeBody = function($newsletter, $subscriber) use($_this) {
+    $composeBody = function($newsletter, $subscriber, $unsubscribe_url) use($_this) {
       $body = array(
         'to' => (array(
           'address' => $subscriber['email'],
@@ -81,6 +81,12 @@ class MailPoet {
       if(!empty($newsletter['body']['text'])) {
         $body['text'] = $newsletter['body']['text'];
       }
+      if(!empty($newsletter['body']['text'])) {
+        $body['text'] = $newsletter['body']['text'];
+      }
+      if($unsubscribe_url) {
+        $body['list_unsubscribe'] = $unsubscribe_url;
+      }
       return $body;
     };
     if(is_array($newsletter) && is_array($subscriber)) {
@@ -88,11 +94,16 @@ class MailPoet {
       for($record = 0; $record < count($newsletter); $record++) {
         $body[] = $composeBody(
           $newsletter[$record],
-          $this->processSubscriber($subscriber[$record])
+          $this->processSubscriber($subscriber[$record]),
+          (!empty($extra_params['unsubscribe_url'][$record])) ? $extra_params['unsubscribe_url'][$record] : false
         );
       }
     } else {
-      $body[] = $composeBody($newsletter, $this->processSubscriber($subscriber));
+      $body[] = $composeBody(
+        $newsletter,
+        $this->processSubscriber($subscriber),
+        (!empty($extra_params['unsubscribe_url'])) ? $extra_params['unsubscribe_url'] : false
+      );
     }
     return $body;
   }

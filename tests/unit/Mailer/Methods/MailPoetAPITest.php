@@ -1,9 +1,8 @@
 <?php
 
 use Codeception\Util\Stub;
-use MailPoet\Mailer\Methods\MailPoet;
 use MailPoet\Config\ServicesChecker;
-use MailPoet\Services\Bridge\API;
+use MailPoet\Mailer\Methods\MailPoet;
 
 class MailPoetAPITest extends MailPoetTest {
   function _before() {
@@ -67,6 +66,32 @@ class MailPoetAPITest extends MailPoetTest {
     expect($body[0]['subject'])->equals($this->newsletter['subject']);
     expect($body[0]['html'])->equals($this->newsletter['body']['html']);
     expect($body[0]['text'])->equals($this->newsletter['body']['text']);
+  }
+
+  function testItCanAddExtraParametersToSingleMessage() {
+    $extra_params = array('unsubscribe_url' => 'http://example.com');
+    $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $extra_params);
+    expect($body[0]['list_unsubscribe'])->equals($extra_params['unsubscribe_url']);
+  }
+
+  function testItCanAddExtraParametersToMultipleMessages() {
+    $extra_params = array('unsubscribe_url' => 'http://example.com');
+    $newsletters = array_fill(0, 10, $this->newsletter);
+    $subscribers = array_fill(0, 10, $this->subscriber);
+    $body = $this->mailer->getBody($newsletters, $subscribers, $extra_params);
+    expect($body[0]['list_unsubscribe'])->equals($extra_params['unsubscribe_url'][0]);
+    expect($body[9]['list_unsubscribe'])->equals($extra_params['unsubscribe_url'][9]);
+  }
+
+  function testItCanAddUnsubscribeUrlToMultipleMessages() {
+    $newsletters = array_fill(0, 10, $this->newsletter);
+    $subscribers = array_fill(0, 10, $this->subscriber);
+    $extra_params = array('unsubscribe_url' => array_fill(0, 10, 'http://example.com'));
+
+    $body = $this->mailer->getBody($newsletters, $subscribers, $extra_params);
+    expect(count($body))->equals(10);
+    expect($body[0]['list_unsubscribe'])->equals($extra_params['unsubscribe_url'][0]);
+    expect($body[9]['list_unsubscribe'])->equals($extra_params['unsubscribe_url'][9]);
   }
 
   function testItCanProcessSubscriber() {
