@@ -85,6 +85,7 @@ class Initializer {
       $this->maybeDbUpdate();
       $this->setupRenderer();
       $this->setupInstaller();
+      $this->setupUpdater();
       $this->setupLocalizer();
       $this->setupMenu();
       $this->setupAnalytics();
@@ -151,6 +152,20 @@ class Initializer {
       Installer::PREMIUM_PLUGIN_SLUG
     );
     $installer->init();
+  }
+
+  function setupUpdater() {
+    $slug = Installer::PREMIUM_PLUGIN_SLUG;
+    $plugin_file = Installer::getPluginFile($slug);
+    if(empty($plugin_file) || !defined('MAILPOET_PREMIUM_VERSION')) {
+      return false;
+    }
+    $updater = new Updater(
+      $plugin_file,
+      $slug,
+      MAILPOET_PREMIUM_VERSION
+    );
+    $updater->init();
   }
 
   function setupLocalizer() {
