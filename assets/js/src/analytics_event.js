@@ -5,7 +5,7 @@ define(
     MailPoet.trackEvent = cacheEvent;
     MailPoet.forceTrackEvent = cacheEvent;
 
-    initialiseMixpanelWhenLoaded();
+    initializeMixpanelWhenLoaded();
   }
 );
 
@@ -17,12 +17,12 @@ function cacheEvent(name, data) {
   });
 }
 
-function initialiseMixpanelWhenLoaded() {
+function initializeMixpanelWhenLoaded() {
   if (typeof window.mixpanel === "object" && typeof window.mixpanel.track === "function") {
     exportMixpanel(MailPoet);
     trackCachedEvents(eventsCache);
   } else {
-    setTimeout(initialiseMixpanelWhenLoaded, 100);
+    setTimeout(initializeMixpanelWhenLoaded, 100);
   }
 }
 
