@@ -131,7 +131,7 @@ class SendingQueue {
         $prepared_newsletters = array();
         $prepared_subscribers = array();
         $prepared_subscribers_ids = array();
-        $unsubscribe_links = array();
+        $unsubscribe_urls = array();
         $statistics = array();
       }
     }

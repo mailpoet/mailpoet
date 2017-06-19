@@ -81,9 +81,6 @@ class MailPoet {
       if(!empty($newsletter['body']['text'])) {
         $body['text'] = $newsletter['body']['text'];
       }
-      if(!empty($newsletter['body']['text'])) {
-        $body['text'] = $newsletter['body']['text'];
-      }
       if($unsubscribe_url) {
         $body['list_unsubscribe'] = $unsubscribe_url;
       }
