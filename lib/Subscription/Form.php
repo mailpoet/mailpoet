@@ -2,8 +2,7 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\API\JSON\API;
-use MailPoet\API\JSON\Endpoints\Subscribers;
-use MailPoet\API\Response as APIResponse;
+use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Util\Url;
 
 class Form {
