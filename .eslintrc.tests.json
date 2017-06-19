@@ -1,0 +1,47 @@
+{
+  "extends": "airbnb/legacy",
+  "env": {
+    "amd": true,
+    "mocha": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "rules": {
+    "import/no-amd": 0,
+
+
+
+    "no-undef": 0,
+    "one-var": 0,
+    "indent": 0,
+    "linebreak-style": 0,
+    "no-whitespace-before-property": 0,
+    "object-property-newline": 0,
+    "global-require": 0,
+    "semi": 0,
+    "keyword-spacing": 0,
+    "no-bitwise": 0,
+    "no-multi-assign": 0,
+    "newline-per-chained-call": 0,
+    "no-spaced-func": 0,
+    "func-call-spacing": 0,
+    "max-len": 0,
+    "space-unary-ops": 0,
+    "quotes": 0,
+    "no-unused-vars": 0,
+    "no-unused-expressions": 0,
+    "no-underscore-dangle": 0,
+    "quote-props": 0,
+    "no-shadow": 0,
+    "padded-blocks": 0,
+    "comma-dangle": 0,
+    "vars-on-top": 0,
+    "space-before-blocks": 0,
+    "object-curly-spacing": 0,
+    "no-param-reassign": 0,
+    "one-var-declaration-per-line": 0,
+    "func-names": 0,
+    "space-before-function-paren": 0
+  }
+}
