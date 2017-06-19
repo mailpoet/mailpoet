@@ -6,10 +6,6 @@ define(
     MailPoet
   ) {
 
-    if (MailPoet.I18n.t('reinstallConfirmation') === 'TRANSLATION "reinstallConfirmation" NOT FOUND') {
-      return;
-    }
-
     function eventHandler() {
       if (confirm(MailPoet.I18n.t('reinstallConfirmation'))) {
         MailPoet.trackEvent(

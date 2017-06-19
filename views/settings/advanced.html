@@ -165,12 +165,3 @@
     </tr>
   </tbody>
 </table>
-<%= javascript(
-'vendor.js',
-'mailpoet.js'
-)%>
-<% block translations %>
-  <%= localize({
-    'reinstallConfirmation': __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.).')
-  }) %>
-<% endblock %>
