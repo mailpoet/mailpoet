@@ -93,6 +93,7 @@ class SendingQueue {
     $prepared_newsletters = array();
     $prepared_subscribers = array();
     $prepared_subscribers_ids = array();
+    $unsubscribe_urls = array();
     $statistics = array();
     foreach($subscribers as $subscriber) {
       // render shortcodes and replace subscriber data in tracked links
@@ -110,6 +111,8 @@ class SendingQueue {
         $subscriber
       );
       $prepared_subscribers_ids[] = $subscriber->id;
+      // save personalized unsubsribe link
+      $unsubscribe_urls[] = Links::getUnsubscribeUrl($queue, $subscriber->id);
       // keep track of values for statistics purposes
       $statistics[] = array(
         'newsletter_id' => $newsletter->id,
@@ -123,11 +126,12 @@ class SendingQueue {
           $prepared_newsletters[0],
           $prepared_subscribers[0],
           $statistics,
-          array('unsubscribe_url' => Links::getUnsubscribeUrl($queue, $prepared_subscribers_ids[0]))
+          array('unsubscribe_url' => $unsubscribe_urls[0])
         );
         $prepared_newsletters = array();
         $prepared_subscribers = array();
         $prepared_subscribers_ids = array();
+        $unsubscribe_urls = array();
         $statistics = array();
       }
     }
@@ -137,7 +141,8 @@ class SendingQueue {
         $prepared_subscribers_ids,
         $prepared_newsletters,
         $prepared_subscribers,
-        $statistics
+        $statistics,
+        array('unsubscribe_url' => $unsubscribe_urls)
       );
     }
     return $queue;
