@@ -31,13 +31,13 @@ class Scheduler {
         ->findOne($queue->newsletter_id);
       if(!$newsletter || $newsletter->deleted_at !== null) {
         $queue->delete();
-      } elseif($newsletter->status !== 'active') {
+      } elseif($newsletter->status !== Newsletter::STATUS_ACTIVE && $newsletter->status !== Newsletter::STATUS_SCHEDULED) {
         continue;
-      } elseif($newsletter->type === 'welcome') {
+      } elseif($newsletter->type === Newsletter::TYPE_WELCOME) {
         $this->processWelcomeNewsletter($newsletter, $queue);
-      } elseif($newsletter->type === 'notification') {
+      } elseif($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
         $this->processPostNotificationNewsletter($newsletter, $queue);
-      } elseif($newsletter->type === 'standard') {
+      } elseif($newsletter->type === Newsletter::TYPE_STANDARD) {
         $this->processScheduledStandardNewsletter($newsletter, $queue);
       }
       CronHelper::enforceExecutionLimit($this->timer);
@@ -99,6 +99,8 @@ class Scheduler {
     $queue->count_total = $queue->count_to_process = count($subscribers);
     $queue->status = null;
     $queue->save();
+    // update notification status
+    $notification_history->setStatus(Newsletter::STATUS_SENDING);
     return true;
   }
 
@@ -118,6 +120,8 @@ class Scheduler {
     $queue->count_total = $queue->count_to_process = count($subscribers);
     $queue->status = null;
     $queue->save();
+    // update newsletter status
+    $newsletter->setStatus(Newsletter::STATUS_SENDING);
     return true;
   }
 
@@ -134,7 +138,7 @@ class Scheduler {
       return false;
     }
     // check if subscriber is confirmed (subscribed)
-    if($subscriber->status !== 'subscribed') {
+    if($subscriber->status !== Subscriber::STATUS_SUBSCRIBED) {
       // reschedule delivery in 5 minutes
       $scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
       $queue->scheduled_at = $scheduled_at->addMinutes(
@@ -187,7 +191,7 @@ class Scheduler {
   }
 
   static function getScheduledQueues() {
-    return SendingQueue::where('status', 'scheduled')
+    return SendingQueue::where('status', SendingQueue::STATUS_SCHEDULED)
       ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
       ->whereNull('type')
       ->findMany();
