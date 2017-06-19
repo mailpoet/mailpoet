@@ -78,6 +78,10 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('./node_modules/webpack/bin/webpack.js --bail');
   }
 
+  function lintJavascript() {
+    return $this->_exec('npm run lint');
+  }
+
   function compileCss() {
     $css_files = array(
       'assets/css/src/admin.styl',

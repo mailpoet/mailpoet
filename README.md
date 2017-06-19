@@ -61,6 +61,11 @@ $ ./do test:debug
 $ ./do qa
 ```
 
+- Javascript linter:
+```sh
+$ ./do lint:javascript
+```
+
 # CSS
 - [Stylus](https://learnboost.github.io/stylus/)
 - [Nib extension](http://tj.github.io/nib/)
