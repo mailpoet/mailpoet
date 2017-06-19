@@ -2,9 +2,9 @@
   "private": true,
   "scripts": {
     "lint": "npm run lint6 && npm run lint5 && npm run lint-tests",
-    "lint6": "eslint -c .eslintrc.es6.json 'assets/js/src/**/*.jsx'",
-    "lint5": "eslint -c .eslintrc.es5.json 'assets/js/src/**/*.js'",
-    "lint-tests": "eslint -c .eslintrc.tests.json 'tests/javascript'"
+    "lint6": "eslint -c .eslintrc.es6.json --max-warnings 0 'assets/js/src/**/*.jsx'",
+    "lint5": "eslint -c .eslintrc.es5.json --max-warnings 0 'assets/js/src/**/*.js'",
+    "lint-tests": "eslint -c .eslintrc.tests.json --max-warnings 0 'tests/javascript'"
   },
   "dependencies": {
     "WP-JS-Hooks": "github:carldanley/WP-JS-Hooks",
