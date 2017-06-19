@@ -1,0 +1,218 @@
+/*
+Based on /wp-admin/css/about.css of WP 4.7.
+This is to make MailPoet pages independent of the WordPress
+About page styles that may differ across WP versions.
+*/
+
+.mailpoet-about-wrap
+  position: relative
+  margin: 25px 40px 0 20px
+  max-width: 1050px /* readability */
+  font-size: 15px
+
+  div.updated, div.error, .notice
+    display: none !important
+
+  hr
+    border: 0
+    height: 0
+    margin: 0
+    border-top: 1px solid rgba(0, 0, 0, 0.1)
+
+  img
+    margin: 0
+    max-width: 100%
+    height: auto
+    vertical-align: middle
+    border: 1px solid rgba(0, 0, 0, 0.1)
+
+  .nav-tab
+    padding-right: 15px
+    padding-left: 15px
+    font-size: 18px
+
+  p
+    line-height: 1.5
+    font-size: 14px
+
+  .feature-section p
+    max-width: 55em
+    margin-left: auto
+    margin-right: auto
+
+  h1
+    margin: 0.2em 200px 0 0
+    padding: 0
+    color: #32373c
+    line-height: 1.2em
+    font-size: 2.8em
+    font-weight: 400
+
+  h2
+    margin: 40px 0 .6em
+    font-size: 2.7em
+    line-height: 1.3
+    font-weight: 300
+    text-align: center
+
+  h3
+    margin: 1.25em 0 .6em
+    font-size: 1.4em
+    line-height: 1.5
+
+  h4
+    color: #23282d
+
+  .about-description
+  .about-text
+    margin-top: 1.4em
+    font-weight: 400
+    line-height: 1.6em
+    font-size: 19px
+
+  .about-text
+    margin: 1em 200px 1em 0
+    min-height: 60px
+    color: #555d66
+
+  [class$=col]
+    .col
+      float: left
+      position: relative
+
+  .two-col
+    .col
+      margin-right: 4.799999999%
+      width: 47.6%
+
+  .two-col
+    img
+      margin-bottom: 1.5em
+
+  .feature-section
+    &.two-col
+      .col
+        display: inline-block
+        float: none
+        margin-top: 1em
+        margin-right: 4.799999999%
+        width: calc( 47.6% - 4px )
+        vertical-align: top
+
+  .three-col
+    .col
+      margin-right: 4.999999999%
+      width: 29.95%
+
+  .two-col .col:nth-of-type(2n)
+  .three-col .col:nth-of-type(3n)
+    margin-right: 0
+
+  .feature-section
+    &.two-col
+      h3
+        margin-top: 0
+
+  .feature-section
+    h4
+      margin: 1.4em 0 0.6em 0
+      font-size: 1em
+
+  .feature-section
+    p
+      margin-top: 0.6em
+
+  .lead-description
+    font-size: 1.5em
+    text-align: center
+
+  .two-col-text
+    column-count: 2
+    column-gap: 40px
+
+  .two-col-text
+    p:first-of-type
+      margin-top: 0
+
+  .headline-feature
+    &.feature-video
+      position: relative
+      margin: 40px 0
+      padding-bottom: 56.25%
+      width: 100%
+      max-width: 100%
+      height: 0
+      text-align: center
+
+  .feature-video
+    embed
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+
+  .featured-image
+    text-align: center
+
+  .feature-section
+    overflow: hidden
+    padding: 0 0 40px
+
+  .feature-section
+    &.no-heading
+      padding-top: 35px
+
+  .headline-feature
+    margin: 0 auto
+    max-width: 80%
+
+  .feature-section
+    .media-container
+      overflow: hidden
+
+  .feature-section
+    img
+      margin-bottom: 1em
+
+  .embed-container
+    text-align: center
+
+  .embed-container
+    iframe
+      max-width: 100%
+
+  .wp-embedded-content
+    max-width: 100%
+
+  .feature-section
+    .col
+      margin-top: 40px
+
+  .changelog
+    margin-bottom: 40px
+
+  .changelog
+    &.feature-section
+      .col
+        margin-top: 40px
+
+  @media screen and (max-width: 782px)
+    .two-col-text
+      column-count: 1
+    .three-col img
+      display: block
+      margin: 0 auto
+
+  @media only screen and (max-width: 500px)
+    margin-right: 20px
+    margin-left: 10px
+    h1
+    .about-text
+      margin-right: 0
+    .about-text
+      margin-bottom: 0.25em
+    .two-col .col
+    .three-col .col
+      width: 100% !important
+      float: none !important
