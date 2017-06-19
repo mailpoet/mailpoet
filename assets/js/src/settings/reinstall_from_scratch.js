@@ -40,5 +40,8 @@ define(
       return false;
     }
 
-    document.getElementById('mailpoet_reinstall').addEventListener('click', eventHandler, false);
+    var element = document.getElementById('mailpoet_reinstall');
+    if (element) {
+      element.addEventListener('click', eventHandler, false);
+    }
   });
