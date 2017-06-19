@@ -78,10 +78,6 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('./node_modules/webpack/bin/webpack.js --bail');
   }
 
-  function lintJavascript() {
-    return $this->_exec('npm run lint');
-  }
-
   function compileCss() {
     $css_files = array(
       'assets/css/src/admin.styl',
@@ -193,11 +189,16 @@ class RoboFile extends \Robo\Tasks {
     $collection->addCode(function() {
       return $this->qaCodeSniffer('all');
     });
+    $collection->addCode(array($this, 'qaLintJavascript'));
     return $collection->run();
   }
 
   function qaLint() {
     return $this->_exec('./tasks/php_lint.sh lib/ tests/ mailpoet.php');
+  }
+
+  function qaLintJavascript() {
+    return $this->_exec('npm run lint');
   }
 
   function qaCodeSniffer($severity='errors') {
