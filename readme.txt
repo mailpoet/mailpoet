@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.8
-Stable tag: 3.0.0-beta.35.0.0
+Stable tag: 3.0.0-beta.36.0.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -90,6 +90,17 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-beta.36.0.0 - 2017-06-20 =
+* Improved: "view in browser" link is disabled in preview emails. Thanks Riccardo;
+* Improved: show a warning when activating on Multisite environments;
+* Improved: suggest to activate MailPoet Sending Service after a successful key check;
+* Added: MailPoet Sending Service sets the List-Unsubscribe header;
+* Fixed: outdated JS assets aren't loaded in new releases;
+* Fixed: settings page is not blocked any more if you have more than 2000 subscribers which prevented Premium version updates;
+* Fixed: premium and Welcome pages are correctly formated in WP 4.8;
+* Fixed: scheduled regular emails are now sent. Thanks Karen;
+* Fixed: subscription form no longer throws an error message when included in a popup. Thanks Gregor.
 
 = 3.0.0-beta.35.0.0 - 2017-06-13 =
 * Added: Subscriber and List migration from MailPoet 2, the option will be offered for new installations;
