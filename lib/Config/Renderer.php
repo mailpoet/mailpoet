@@ -72,31 +72,19 @@ class Renderer {
 
   function setupGlobalVariables() {
     $this->renderer->addExtension(new Twig\Assets(array(
-                                                    'version' => Env::$version,
-                                                    'assets_url' => Env::$assets_url,
-                                                    'assets_manifest_js' => $this->assets_manifest_js,
-                                                    'assets_manifest_css' => $this->assets_manifest_css
-                                                  )));
+      'version' => Env::$version,
+      'assets_url' => Env::$assets_url,
+      'assets_manifest_js' => $this->assets_manifest_js,
+      'assets_manifest_css' => $this->assets_manifest_css
+    )));
   }
 
   function setupSyntax() {
     $lexer = new TwigLexer($this->renderer, array(
-      'tag_comment' => array(
-        '<#',
-        '#>'
-      ),
-      'tag_block' => array(
-        '<%',
-        '%>'
-      ),
-      'tag_variable' => array(
-        '<%=',
-        '%>'
-      ),
-      'interpolation' => array(
-        '%{',
-        '}'
-      )
+      'tag_comment' => array('<#', '#>'),
+      'tag_block' => array('<%', '%>'),
+      'tag_variable' => array('<%=', '%>'),
+      'interpolation' => array('%{', '}')
     ));
     $this->renderer->setLexer($lexer);
   }
@@ -116,11 +104,11 @@ class Renderer {
       return $this->renderer->render($template, $context);
     } catch(\RuntimeException $e) {
       throw new \Exception(sprintf(
-                             __('Failed to render template "%s". Please ensure the template cache folder "%s" exists and has write permissions. Terminated with error: "%s"'),
-                             $template,
-                             $this->cache_path,
-                             $e->getMessage()
-                           ));
+        __('Failed to render template "%s". Please ensure the template cache folder "%s" exists and has write permissions. Terminated with error: "%s"'),
+        $template,
+        $this->cache_path,
+        $e->getMessage()
+      ));
     }
   }
 
