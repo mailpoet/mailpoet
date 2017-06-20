@@ -1,9 +1,11 @@
 <?php
+
 namespace MailPoet\Config;
-use Twig_Loader_Filesystem as TwigFileSystem;
+
+use MailPoet\Twig;
 use Twig_Environment as TwigEnv;
 use Twig_Lexer as TwigLexer;
-use MailPoet\Twig;
+use Twig_Loader_Filesystem as TwigFileSystem;
 
 if(!defined('ABSPATH')) exit;
 
@@ -12,6 +14,8 @@ class Renderer {
   protected $caching_enabled;
   protected $debugging_enabled;
   protected $renderer;
+  public $assets_manifest_js;
+  public $assets_manifest_css;
 
   function __construct($caching_enabled = false, $debugging_enabled = false) {
     $this->caching_enabled = $caching_enabled;
@@ -27,6 +31,9 @@ class Renderer {
         'auto_reload' => true
       )
     );
+
+    $this->assets_manifest_js = $this->getAssetManifest(Env::$assets_path . '/js/manifest.json');
+    $this->assets_manifest_css = $this->getAssetManifest(Env::$assets_path . '/css/manifest.json');
 
     $this->setupDebug();
     $this->setupTranslations();
@@ -66,7 +73,9 @@ class Renderer {
   function setupGlobalVariables() {
     $this->renderer->addExtension(new Twig\Assets(array(
       'version' => Env::$version,
-      'assets_url' => Env::$assets_url
+      'assets_url' => Env::$assets_url,
+      'assets_manifest_js' => $this->assets_manifest_js,
+      'assets_manifest_css' => $this->assets_manifest_css
     )));
   }
 
@@ -103,8 +112,13 @@ class Renderer {
     }
   }
 
-
   function addGlobal($key, $value) {
     return $this->renderer->addGlobal($key, $value);
+  }
+
+  function getAssetManifest($manifest_file) {
+    return (is_readable($manifest_file)) ?
+      json_decode(file_get_contents($manifest_file), true) :
+      false;
   }
 }

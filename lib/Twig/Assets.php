@@ -1,28 +1,26 @@
 <?php
 namespace MailPoet\Twig;
 
+use MailPoet\Config\Env;
+
 if(!defined('ABSPATH')) exit;
 
-class Assets
-  extends \Twig_Extension
-  implements \Twig_Extension_GlobalsInterface
-{
-
+class Assets extends \Twig_Extension implements \Twig_Extension_GlobalsInterface {
   private $_globals;
 
-  public function __construct($globals) {
+  function __construct($globals) {
     $this->_globals = $globals;
   }
 
-  public function getName() {
+  function getName() {
     return 'assets';
   }
 
-  public function getGlobals() {
+  function getGlobals() {
     return $this->_globals;
   }
 
-  public function getFunctions() {
+  function getFunctions() {
     return array(
       new \Twig_SimpleFunction(
         'stylesheet',
@@ -42,47 +40,47 @@ class Assets
     );
   }
 
-  public function generateStylesheet() {
+  function generateStylesheet() {
     $stylesheets = func_get_args();
     $output = array();
 
     foreach($stylesheets as $stylesheet) {
-      $url = $this->appendVersionToUrl(
-        $this->_globals['assets_url'] . '/css/' . $stylesheet
-      );
       $output[] = sprintf(
-        '<link rel="stylesheet" type="text/css" href="%s">',
-        $url
+        '<link rel="stylesheet" type="text/css" href="%s/css/%s" />',
+        $this->_globals['assets_url'],
+        $this->getAssetFilename($this->_globals['assets_manifest_css'], $stylesheet)
       );
     }
 
     return join("\n", $output);
   }
 
-  public function generateJavascript() {
+  function generateJavascript() {
     $scripts = func_get_args();
     $output = array();
 
     foreach($scripts as $script) {
-      $url = $this->appendVersionToUrl(
-        $this->_globals['assets_url'] . '/js/' . $script
-      );
       $output[] = sprintf(
-        '<script type="text/javascript" src="%s"></script>',
-        $url
+        '<script type="text/javascript" src="%s/js/%s"></script>',
+        $this->_globals['assets_url'],
+        $this->getAssetFilename($this->_globals['assets_manifest_js'], $script)
       );
     }
 
     return join("\n", $output);
   }
 
-  public function generateImageUrl($path) {
+  function generateImageUrl($path) {
     return $this->appendVersionToUrl(
       $this->_globals['assets_url'] . '/img/' . $path
     );
   }
 
-  public function appendVersionToUrl($url) {
+  function appendVersionToUrl($url) {
     return add_query_arg('mailpoet_version', $this->_globals['version'], $url);
+  }
+
+  function getAssetFileName($manifest, $asset) {
+    return (!empty($manifest[$asset])) ? $manifest[$asset] : $asset;
   }
 }

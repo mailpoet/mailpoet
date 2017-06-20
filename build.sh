@@ -19,7 +19,7 @@ mkdir $plugin_name
 echo '[BUILD] Generating production CSS and JS assets'
 rm -rf node_modules
 npm install
-./do compile:all
+./do compile:all --env production
 
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
