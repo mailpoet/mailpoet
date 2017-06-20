@@ -5,8 +5,16 @@
  *   This function does nothing if analytics is disabled.
  * - `forceTrackEvent` which sends given event to analytics
  *   even if it has been disabled.
+ *
  */
 
+/**
+ *  This is to cache events which are triggered before the mixpanel
+ *  library is loaded. This might happen if an event is tracked
+ *  on page load and the mixpanel library takes a long time to load.
+ *  After it is loaded all events are posted.
+ * @type {Array.Object}
+ */
 var eventsCache = [];
 
 function track(name, data){
