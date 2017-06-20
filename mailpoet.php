@@ -54,8 +54,10 @@ function mailpoet_php_version_notice() {
   printf('<div class="error"><p>%1$s</p></div>', $notice);
 }
 
-$serverSoftware = strtolower($_SERVER["SERVER_SOFTWARE"]);
-if(strpos($serverSoftware, "microsoft-iis") !== false) {
+if(
+  isset($_SERVER["SERVER_SOFTWARE"])
+  && strpos(strtolower($_SERVER["SERVER_SOFTWARE"]), "microsoft-iis") !== false
+) {
   add_action('admin_notices', 'mailpoet_php_version_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
