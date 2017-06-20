@@ -89,7 +89,6 @@ class Shortcodes {
       if(!empty($title)) {
         $html .= '<h3 class="mailpoet_archive_title">'.$title.'</h3>';
       }
-
       $html .= '<ul class="mailpoet_archive">';
       foreach($newsletters as $newsletter) {
         $queue = $newsletter->queue()->findOne();
@@ -123,7 +122,7 @@ class Shortcodes {
     );
     return '<a href="'.esc_attr($preview_url).'" target="_blank" title="'
       .esc_attr(__('Preview in a new tab', 'mailpoet')).'">'
-      .esc_attr($newsletter->subject).
+      .esc_attr($newsletter->newsletter_rendered_subject).
     '</a>';
   }
 }

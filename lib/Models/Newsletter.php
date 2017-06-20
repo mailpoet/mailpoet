@@ -860,6 +860,7 @@ class Newsletter extends Model {
   static function getArchives($segment_ids = array()) {
     $orm = self::table_alias('newsletters')
       ->distinct()->select('newsletters.*')
+      ->select('newsletter_rendered_subject')
       ->whereIn('newsletters.type', array(
         self::TYPE_STANDARD,
         self::TYPE_NOTIFICATION_HISTORY
