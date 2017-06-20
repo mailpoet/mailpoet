@@ -165,34 +165,3 @@
     </tr>
   </tbody>
 </table>
-
-<script type="text/javascript">
-  jQuery(function($) {
-    $(function() {
-      $('#mailpoet_reinstall').on('click', function() {
-        if(confirm(
-          "<%= __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.).') %>"
-        )) {
-          MailPoet.Modal.loading(true);
-          MailPoet.Ajax.post({
-            'api_version': window.mailpoet_api_version,
-            'endpoint': 'setup',
-            'action': 'reset'
-          }).always(function() {
-            MailPoet.Modal.loading(false);
-          }).done(function(response) {
-            window.location = "<%= admin_url('admin.php?page=mailpoet-newsletters') %>";
-          }).fail(function(response) {
-            if (response.errors.length > 0) {
-              MailPoet.Notice.error(
-                response.errors.map(function(error) { return error.message; }),
-                { scroll: true }
-              );
-            }
-          });
-        }
-        return false;
-      });
-    });
-  });
-</script>

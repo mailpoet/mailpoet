@@ -138,7 +138,8 @@ config.push(_.extend({}, baseConfig, {
       'notice',
       'num',
       'jquery.serialize_object',
-      'parsleyjs'
+      'parsleyjs',
+      'analytics_event',
     ],
     admin_vendor: [
       'react',
@@ -156,6 +157,7 @@ config.push(_.extend({}, baseConfig, {
       'segments/segments.jsx',
       'forms/forms.jsx',
       'settings/tabs.js',
+      'settings/reinstall_from_scratch.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
       'helpscout'

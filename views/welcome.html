@@ -124,7 +124,15 @@ jQuery(function($) {
           data: {
             analytics: { enabled: (is_enabled)}
           }
-        })
+        });
+
+        if (is_enabled) {
+          MailPoet.forceTrackEvent(
+            'User has installed MailPoet',
+            {'MailPoet Free version': window.mailpoet_version}
+          );
+        }
+
       })
     });
 });

@@ -135,3 +135,8 @@
     });
   </script>
 <% endblock %>
+<% block translations %>
+  <%= localize({
+    'reinstallConfirmation': __('Are you sure? All of your MailPoet data will be permanently erased (newsletters, statistics, subscribers, etc.).')
+  }) %>
+<% endblock %>
