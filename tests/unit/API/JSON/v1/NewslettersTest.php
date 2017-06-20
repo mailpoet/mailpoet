@@ -585,10 +585,15 @@ class NewslettersTest extends MailPoetTest {
       'mailer' => Stub::makeEmpty(
         '\MailPoet\Mailer\Mailer',
         array(
-          'send' => function($newsletter, $subscriber) {
+          'send' => function($newsletter, $subscriber, $extra_params) {
             expect(is_array($newsletter))->true();
             expect($newsletter['body']['text'])->contains('Hello test');
             expect($subscriber)->equals($subscriber);
+            expect($extra_params['unsubscribe_url'])->equals(home_url());
+            // system links are replaced with hashes
+            expect($newsletter['body']['html'])->contains('href="#">View in browser');
+            expect($newsletter['body']['html'])->contains('href="#">Unsubscribe');
+            expect($newsletter['body']['html'])->contains('href="#">Manage subscription');
             return array('response' => true);
           }
         )
