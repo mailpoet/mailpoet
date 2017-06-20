@@ -96,7 +96,7 @@ class RoboFile extends \Robo\Tasks {
       'assets/css/src/importExport.styl'
     );
 
-    $this->_exec(join(' ', array(
+    $compilation_result = $this->_exec(join(' ', array(
       './node_modules/stylus/bin/stylus',
       '--include ./node_modules',
       '--include-css',
@@ -122,6 +122,7 @@ class RoboFile extends \Robo\Tasks {
       }
     }
     file_put_contents('assets/css/manifest.json', json_encode($manifest, JSON_PRETTY_PRINT));
+    return $compilation_result;
   }
 
   function makepot() {

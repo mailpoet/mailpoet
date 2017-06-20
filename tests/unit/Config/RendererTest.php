@@ -88,7 +88,7 @@ class RendererTest extends MailPoetTest {
   }
 
   function _removeAssetsManifests() {
-    if(is_file(Env::$temp_path . '/js.json')) unlink(Env::$temp_path . '/js.json');
-    if(is_file(Env::$temp_path . '/css.json')) unlink(Env::$temp_path . '/css.json');
+    if(is_readable(Env::$temp_path . '/js.json')) unlink(Env::$temp_path . '/js.json');
+    if(is_readable(Env::$temp_path . '/css.json')) unlink(Env::$temp_path . '/css.json');
   }
 }
