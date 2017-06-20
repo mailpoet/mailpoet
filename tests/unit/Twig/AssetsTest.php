@@ -1,43 +1,36 @@
 <?php
 
-use MailPoet\Config\Env;
 use MailPoet\Twig\Assets;
 
 class AssetsTest extends MailPoetTest {
-  function __construct() {
+  function _before() {
     $this->assets_url = 'https://www.testing.com/wp-content/plugins/mailpoet/assets';
-    $this->assets_path = Env::$temp_path;
-    $this->assets_path_js = $this->assets_path . '/js';
-    $this->assets_path_css = $this->assets_path . '/css';
-    $this->assets_manifest_js = $this->assets_path_js . '/manifest.json';
-    $this->assets_manifest_css = $this->assets_path_css . '/manifest.json';
     $this->version = '1.2.3';
     $this->assets_extension = new Assets(
       array(
         'assets_url' => $this->assets_url,
-        'assets_path' => $this->assets_path,
+        'assets_manifest_js' => false,
+        'assets_manifest_css' => false,
         'version' => $this->version
       )
     );
-    $this->_after(); // delete folders if any were present before the test suite was initialized
-  }
-
-  function _before() {
-    $this->createDir($this->assets_path_js);
-    $this->createDir($this->assets_path_css);
   }
 
   function testItGeneratesJavascriptTagsForAssetsUsinManifestFile() {
-    $manifest = file_put_contents(
-      $this->assets_manifest_js,
-      json_encode(
-        array(
-          'script1.js' => 'script1.hash.js',
-          'script2.js' => 'script2.hash.js'
-        )
+    $manifest = array(
+      'script1.js' => 'script1.hash.js',
+      'script2.js' => 'script2.hash.js'
+    );
+
+    $assets_extension = new Assets(
+      array(
+        'assets_url' => $this->assets_url,
+        'assets_manifest_js' => $manifest,
+        'version' => $this->version
       )
     );
-    expect($this->assets_extension->generateJavascript('script1.js', 'script2.js'))->equals(
+
+    expect($assets_extension->generateJavascript('script1.js', 'script2.js'))->equals(
       '<script type="text/javascript" src="' . $this->assets_url . '/js/script1.hash.js"></script>'
       . "\n"
       . '<script type="text/javascript" src="' . $this->assets_url . '/js/script2.hash.js"></script>'
@@ -53,16 +46,20 @@ class AssetsTest extends MailPoetTest {
   }
 
   function testItGeneratesStylesheetTagsForAssetsUsingManifestFile() {
-    $manifest = file_put_contents(
-      $this->assets_manifest_css,
-      json_encode(
-        array(
-          'style1.css' => 'style1.hash.css',
-          'style2.css' => 'style2.hash.css'
-        )
+    $manifest = array(
+      'style1.css' => 'style1.hash.css',
+      'style2.css' => 'style2.hash.css'
+    );
+
+    $assets_extension = new Assets(
+      array(
+        'assets_url' => $this->assets_url,
+        'assets_manifest_css' => $manifest,
+        'version' => $this->version
       )
     );
-    expect($this->assets_extension->generateStylesheet('style1.css', 'style2.css'))->equals(
+
+    expect($assets_extension->generateStylesheet('style1.css', 'style2.css'))->equals(
       '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/css/style1.hash.css" />'
       . "\n"
       . '<link rel="stylesheet" type="text/css" href="' . $this->assets_url . '/css/style2.hash.css" />'
@@ -100,21 +97,5 @@ class AssetsTest extends MailPoetTest {
     expect($this->assets_extension->appendVersionToUrl($with_query_string))->equals(
       $with_query_string . '&mailpoet_version=' . $this->version
     );
-  }
-
-  function _after() {
-    $this->removeDir($this->assets_path_js);
-    $this->removeDir($this->assets_path_css);
-  }
-
-  private function createDir($dir) {
-    if(is_dir($dir)) return;
-    mkdir($dir);
-  }
-
-  private function removeDir($dir) {
-    if(!is_dir($dir)) return;
-    array_map('unlink', glob($dir . '/*.*'));
-    rmdir($dir);
   }
 }
