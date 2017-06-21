@@ -851,8 +851,18 @@ class MP2Migrator {
       if($type == 'segment') {
           $field_id = 'segments';
       } else {
-          $field_id = $field['field'];
+        switch($field['field']) {
+          case 'firstname':
+            $field_id = 'first_name';
+            break;
+          case 'lastname':
+            $field_id = 'last_name';
+            break;
+          default:
+            $field_id = $field['field'];
+        }
       }
+      $field_id = preg_replace('/^cf_(\d+)$/', '$1', $field_id);
       $params = $this->mapCustomFieldParams($field['name'], $field['params']);
       if(isset($params['text'])) {
         $params['text'] = $this->replaceMP2Shortcodes(html_entity_decode($params['text']));
@@ -864,6 +874,7 @@ class MP2Migrator {
         'type' => $type,
         'name' => $field['name'],
         'id' => $field_id,
+        'unique' => !in_array($field['type'], array('html', 'divider', 'email', 'submit'))? "1" : "0",
         'static' => in_array($field_id, array('email', 'submit'))? "1" : "0",
         'params' => $params,
         'position' => isset($field['position'])? $field['position'] : '',
