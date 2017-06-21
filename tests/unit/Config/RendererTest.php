@@ -50,7 +50,8 @@ class RendererTest extends MailPoetTest {
         'renderer' => Stub::makeEmpty('Twig_Environment',
           array(
             'render' => Stub::atLeastOnce(function() { return 'test render'; }),
-          )
+          ),
+          $this
         ),
       )
     );
@@ -69,7 +70,8 @@ class RendererTest extends MailPoetTest {
             'render' => Stub::atLeastOnce(function() use ($exception_message) {
               throw new \RuntimeException($exception_message);
             }),
-          )
+          ),
+          $this
         ),
       )
     );
