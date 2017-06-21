@@ -473,7 +473,27 @@ class MP2Migrator {
       $params['validate'] = $this->mapCustomFieldValidateValue($params['validate']);
     }
     if(isset($params['date_order'])) { // Convert the date_order field
-      $params['date_format'] = strtoupper($params['date_order']);
+      switch($params['date_type']) {
+        
+        case 'year_month':
+          if(preg_match('/y$/i', $params['date_order'])) {
+            $params['date_format'] = 'MM/YYYY';
+          } else {
+            $params['date_format'] = 'YYYY/MM';
+          }
+          break;
+        
+        case 'month';
+          $params['date_format'] = 'MM';
+          break;
+        
+        case 'year';
+          $params['date_format'] = 'YYYY';
+          break;
+        
+        default:
+          $params['date_format'] = strtoupper($params['date_order']);
+      }
       unset($params['date_order']);
     }
     return $params;
