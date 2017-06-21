@@ -85,6 +85,7 @@ class Newsletter {
     // extract and save newsletter posts
     PostsTask::extractAndSave($rendered_newsletter, $newsletter);
     // update queue with the rendered and pre-processed newsletter
+    $queue->newsletter_rendered_subject = Shortcodes::process($newsletter->subject, $newsletter, null, $queue);
     $queue->newsletter_rendered_body = $rendered_newsletter;
     $queue->save();
     return $newsletter;
