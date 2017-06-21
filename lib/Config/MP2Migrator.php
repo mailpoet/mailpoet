@@ -474,7 +474,7 @@ class MP2Migrator {
     }
     if(isset($params['date_order'])) { // Convert the date_order field
       switch($params['date_type']) {
-        
+
         case 'year_month':
           if(preg_match('/y$/i', $params['date_order'])) {
             $params['date_format'] = 'MM/YYYY';
@@ -482,15 +482,15 @@ class MP2Migrator {
             $params['date_format'] = 'YYYY/MM';
           }
           break;
-        
+
         case 'month';
           $params['date_format'] = 'MM';
           break;
-        
+
         case 'year';
           $params['date_format'] = 'YYYY';
           break;
-        
+
         default:
           $params['date_format'] = strtoupper($params['date_order']);
       }
