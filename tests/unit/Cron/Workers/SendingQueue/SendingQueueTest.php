@@ -220,7 +220,8 @@ class SendingQueueTest extends MailPoetTest {
             expect($extra_params['unsubscribe_url'])->equals($directUnsubscribeURL);
             return true;
           })
-        )
+        ),
+        $this
       )
     );
     $sending_queue_worker->process();
@@ -239,7 +240,8 @@ class SendingQueueTest extends MailPoetTest {
             expect($extra_params['unsubscribe_url'])->equals($trackedUnsubscribeURL);
             return true;
           })
-        )
+        ),
+        $this
       )
     );
     $sending_queue_worker->process();
@@ -257,7 +259,8 @@ class SendingQueueTest extends MailPoetTest {
             expect(!empty($newsletter['body']['text']))->true();
             return true;
           })
-        )
+        ),
+        $this
       )
     );
     $sending_queue_worker->process();
@@ -303,7 +306,8 @@ class SendingQueueTest extends MailPoetTest {
             return true;
           }),
           'getProcessingMethod' => Stub::exactly(1, function() { return 'bulk'; })
-        )
+        ),
+        $this
       )
     );
     $sending_queue_worker->process();
@@ -351,7 +355,8 @@ class SendingQueueTest extends MailPoetTest {
             expect(!empty($newsletter['body']['text']))->true();
             return true;
           })
-        )
+        ),
+        $this
       )
     );
     $sending_queue_worker->process();
@@ -400,7 +405,8 @@ class SendingQueueTest extends MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }))
+      array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; })),
+      $this
     );
     $sending_queue_worker->process();
 
@@ -438,7 +444,7 @@ class SendingQueueTest extends MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }))
+      array('send' => function($newsletter, $subscriber) { return true; })
     );
     $sending_queue_worker->process();
 

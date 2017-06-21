@@ -21,7 +21,8 @@ class UpdaterTest extends MailPoetTest {
       $this->updater,
       array(
         'checkForUpdate' => Stub::once()
-      )
+      ),
+      $this
     );
     $updater->init();
     apply_filters('pre_set_site_transient_update_plugins', null);
@@ -48,7 +49,8 @@ class UpdaterTest extends MailPoetTest {
             'package' => home_url() . '/wp-content/uploads/mailpoet-premium.zip'
           );
         }
-      )
+      ),
+      $this
     );
     $result = $updater->checkForUpdate($update_transient);
     expect($result->last_checked)->greaterOrEquals($update_transient->last_checked);

@@ -18,7 +18,8 @@ class InstallerTest extends MailPoetTest {
       $this->installer,
       array(
         'getPluginInformation' => Stub::once()
-      )
+      ),
+      $this
     );
     $installer->init();
     apply_filters('plugins_api', null, null, null);
@@ -51,7 +52,8 @@ class InstallerTest extends MailPoetTest {
           $obj->package = $obj->download_link;
           return $obj;
         }
-      )
+      ),
+      $this
     );
     $result = $installer->getPluginInformation(false, 'plugin_information', $args);
     expect($result->slug)->equals($this->slug);

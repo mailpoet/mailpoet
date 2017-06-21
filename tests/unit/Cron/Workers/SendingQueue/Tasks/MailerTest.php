@@ -107,7 +107,8 @@ class MailerTaskTest extends MailPoetTest {
       (object)array(
         'mailer_instance' => Stub::make(
           $php_mail_class,
-          array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; }))
+          array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; })),
+          $this
         )
       )
     );
