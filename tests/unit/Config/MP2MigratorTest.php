@@ -436,12 +436,12 @@ class MP2MigratorTest extends MailPoetTest {
     $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('Total: [total_subscribers] found'));
     expect($result)->equals('Total: [mailpoet_subscribers_count] found');
     
-    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[wysija_subscribers_count list_id=&quot;1,2&quot; ]'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[wysija_subscribers_count list_id="1,2" ]'));
     expect($result)->notEquals('mailpoet_subscribers_count segments=1,2');
     
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
-    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[wysija_subscribers_count list_id=&quot;1,2&quot; ]'));
+    $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[wysija_subscribers_count list_id="1,2" ]'));
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
     expect($result)->equals(sprintf('[mailpoet_subscribers_count segments=%d,%d]', $importedSegmentsMapping[1], $importedSegmentsMapping[2]));
   }
