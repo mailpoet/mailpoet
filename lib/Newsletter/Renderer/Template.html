@@ -45,10 +45,25 @@
         .mailpoet_header_footer_padded {
             padding: 10px 20px;
         }
-        @media screen and (max-width: 480px) and (-webkit-min-device-pixel-ratio: 1) {
+
+        /* https://www.emailonacid.com/blog/article/email-development/tips-for-coding-email-preheaders */
+        .mailpoet_preheader, .mailpoet_preheader * {
+            display: none;
+            visibility: hidden;
+            mso-hide: all;
+            font-size: 1px;
+            color: #ffffff;
+            line-height: 1px;
+            max-height: 0px;
+            max-width: 0px;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        @media screen and (max-width: 480px) {
             .mailpoet_button {width:100% !important;}
         }
-        @media screen and (max-width: 599px) and (-webkit-min-device-pixel-ratio: 1) {
+        @media screen and (max-width: 599px) {
             .mailpoet_header {
                 padding: 10px 20px;
             }
