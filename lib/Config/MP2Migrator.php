@@ -835,7 +835,7 @@ class MP2Migrator {
       }
       $params = $this->mapCustomFieldParams($field['name'], $field['params']);
       if(isset($params['text'])) {
-        $params['text'] = $this->replaceMP2Shortcodes($params['text']);
+        $params['text'] = $this->replaceMP2Shortcodes(html_entity_decode($params['text']));
       }
       if(isset($params['values'])) {
         $params['values'] = $this->replaceListIds($params['values']);
@@ -882,7 +882,7 @@ class MP2Migrator {
    */
   private function replaceMP2Shortcodes($text) {
     $text = str_replace('[total_subscribers]', '[mailpoet_subscribers_count]', $text);
-    $text = preg_replace_callback('/\[wysija_subscribers_count list_id=&quot;(.*)&quot; \]/', array($this, 'replaceMP2ShortcodesCallback'), $text);
+    $text = preg_replace_callback('/\[wysija_subscribers_count list_id="(.*)" \]/', array($this, 'replaceMP2ShortcodesCallback'), $text);
     return $text;
   }
 
