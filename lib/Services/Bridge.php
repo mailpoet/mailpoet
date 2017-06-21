@@ -187,13 +187,17 @@ class Bridge {
     $api_key_set = !empty($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
     $premium_key_set = !empty($settings['premium']['premium_key']);
     if($api_key_set) {
-      $result = $this->checkMSSKey($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key']);
+      $api_key = $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'];
+      $state = $this->checkMSSKey($api_key);
+      $this->storeMSSKeyAndState($api_key, $state);
       if(self::isMPSendingServiceEnabled()) {
-        $this->updateSubscriberCount($result);
+        $this->updateSubscriberCount($state);
       }
     }
     if($premium_key_set) {
-      $this->checkPremiumKey($settings['premium']['premium_key']);
+      $premium_key = $settings['premium']['premium_key'];
+      $state = $this->checkPremiumKey($premium_key);
+      $this->storePremiumKeyAndState($premium_key, $state);
     }
   }
 }

@@ -183,23 +183,46 @@ class BridgeTest extends MailPoetTest {
     expect($this->getMSSKeyState())->equals(array('state' => Bridge::MAILPOET_KEY_INVALID));
   }
 
-  function testItChecksKeysOnSettingsSave() {
-    $api = Stub::make(
-      new API(null),
+  function testItChecksAndStoresKeysOnSettingsSave() {
+    $response = array('abc' => 'def');
+    $bridge = Stub::makeEmptyExcept(
+      $this->bridge,
+      'onSettingsSave',
       array(
-        'checkMSSKey' => Stub::once(function() { return array(); }),
-        'checkPremiumKey' => Stub::once(function() { return array(); })
+        'checkMSSKey' => $response,
+        'checkPremiumKey' => $response
       ),
       $this
     );
-    $this->bridge->api = $api;
+    $bridge->expects($this->once())
+      ->method('checkMSSKey')
+      ->with($this->equalTo($this->valid_key));
+    $bridge->expects($this->once())
+      ->method('storeMSSKeyAndState')
+      ->with(
+        $this->equalTo($this->valid_key),
+        $this->equalTo($response)
+      );
+    $bridge->expects($this->once())
+      ->method('updateSubscriberCount')
+      ->with($this->equalTo($response));
+
+    $bridge->expects($this->once())
+      ->method('checkPremiumKey')
+      ->with($this->equalTo($this->valid_key));
+    $bridge->expects($this->once())
+      ->method('storePremiumKeyAndState')
+      ->with(
+        $this->equalTo($this->valid_key),
+        $this->equalTo($response)
+      );
 
     $settings = array();
     $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'] = $this->valid_key;
     $settings['premium']['premium_key'] = $this->valid_key;
 
     $this->setMailPoetSendingMethod();
-    $this->bridge->onSettingsSave($settings);
+    $bridge->onSettingsSave($settings);
   }
 
   private function setMailPoetSendingMethod() {
