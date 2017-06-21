@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\Analytics;
+
 use Carbon\Carbon;
 use MailPoet\Models\Setting;
 
@@ -7,7 +9,7 @@ if(!defined('ABSPATH')) exit;
 
 class Analytics {
 
-  const SETTINGS_LAST_SENT_KEY = "analytics_last_sent";
+  const SETTINGS_LAST_SENT_KEY = 'analytics_last_sent';
   const SEND_AFTER_DAYS = 7;
 
   /** @var Reporter */
@@ -29,7 +31,7 @@ class Analytics {
   /** @return boolean */
   function isEnabled() {
     $analytics_settings = Setting::getValue('analytics', array());
-    return ($analytics_settings["enabled"] === "1") || ($analytics_settings["enabled"] === "true");
+    return !empty($analytics_settings['enabled']) === true;
   }
 
   private function shouldSend() {
