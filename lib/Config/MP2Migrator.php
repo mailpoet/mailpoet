@@ -829,9 +829,9 @@ class MP2Migrator {
     foreach($body as $field) {
       $type = $this->mapCustomFieldType($field['type']);
       if($type == 'segment') {
-        $field_id = 'segments';
+          $field_id = 'segments';
       } else {
-        $field_id = sanitize_key(remove_accents($field['name']));
+          $field_id = $field['field'];
       }
       $params = $this->mapCustomFieldParams($field['name'], $field['params']);
       if(isset($params['text'])) {
@@ -844,7 +844,7 @@ class MP2Migrator {
         'type' => $type,
         'name' => $field['name'],
         'id' => $field_id,
-        'static' => in_array($field_id, array('email', 'submit')),
+        'static' => in_array($field_id, array('email', 'submit'))? "1" : "0",
         'params' => $params,
         'position' => isset($field['position'])? $field['position'] : '',
       );
