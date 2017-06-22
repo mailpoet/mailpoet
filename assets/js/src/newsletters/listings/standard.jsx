@@ -1,7 +1,6 @@
 import React from 'react'
-import { Router, Link } from 'react-router'
+import { Link } from 'react-router'
 import classNames from 'classnames'
-import jQuery from 'jquery'
 import MailPoet from 'mailpoet'
 import Hooks from 'wp-js-hooks'
 
@@ -175,7 +174,7 @@ const NewsletterListStandard = React.createClass({
             <a
               className="row-title"
               href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }
-            >{ newsletter.subject }</a>
+            >{ newsletter.queue.newsletter_rendered_subject || newsletter.subject }</a>
           </strong>
           { actions }
         </td>

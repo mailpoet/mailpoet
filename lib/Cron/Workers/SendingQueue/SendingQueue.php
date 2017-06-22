@@ -103,9 +103,6 @@ class SendingQueue {
           $subscriber,
           $queue
         );
-      if(!$queue->newsletter_rendered_subject) {
-        $queue->newsletter_rendered_subject = $prepared_newsletters[0]['subject'];
-      }
       // format subscriber name/address according to mailer settings
       $prepared_subscribers[] = $this->mailer_task->prepareSubscriberForSending(
         $subscriber
