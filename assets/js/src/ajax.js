@@ -1,3 +1,18 @@
+function requestFailed(xhr) {
+  if (xhr.responseJSON) {
+    return xhr.responseJSON;
+  }
+  var message = "An error has happened while performing a request, the server has responded with response code "
+    + xhr.status;
+  return {
+    errors: [
+      {
+        message: message
+      }
+    ]
+  }
+}
+
 define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, _) {
 
   MailPoet.Ajax = {
@@ -60,9 +75,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
           'json'
         ).then(function(data) {
           return data;
-        }, function(xhr) {
-          return xhr.responseJSON;
-        });
+        }, requestFailed);
 
         // clear options
         this.options = {};
