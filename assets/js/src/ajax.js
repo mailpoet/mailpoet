@@ -1,9 +1,8 @@
-function requestFailed(xhr) {
+function requestFailed(errorMessage, xhr) {
   if (xhr.responseJSON) {
     return xhr.responseJSON;
   }
-  var message = "An error has happened while performing a request, the server has responded with response code "
-    + xhr.status;
+  var message = errorMessage.replace("%d", xhr.status);
   return {
     errors: [
       {
@@ -75,7 +74,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
           'json'
         ).then(function(data) {
           return data;
-        }, requestFailed);
+        }, _.partial(requestFailed, MailPoet.I18n.t('ajaxFailedErrorMessage')));
 
         // clear options
         this.options = {};
