@@ -1,5 +1,5 @@
 define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, _) {
-  'use strict';
+
   MailPoet.Ajax = {
       version: 0.5,
       options: {},
@@ -44,7 +44,6 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
 
         // set request params
         var params = this.getParams();
-        var deferred = jQuery.Deferred();
 
         // remove null values from the data object
         if (_.isObject(params.data)) {
@@ -54,7 +53,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
         }
 
         // ajax request
-        deferred = jQuery.post(
+        var deferred = jQuery.post(
           this.options.url,
           params,
           null,
