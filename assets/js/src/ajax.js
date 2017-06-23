@@ -1,19 +1,5 @@
-function requestFailed(errorMessage, xhr) {
-  if (xhr.responseJSON) {
-    return xhr.responseJSON;
-  }
-  var message = errorMessage.replace("%d", xhr.status);
-  return {
-    errors: [
-      {
-        message: message
-      }
-    ]
-  }
-}
-
 define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, _) {
-
+  'use strict';
   MailPoet.Ajax = {
       version: 0.5,
       options: {},
@@ -58,6 +44,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
 
         // set request params
         var params = this.getParams();
+        var deferred = jQuery.Deferred();
 
         // remove null values from the data object
         if (_.isObject(params.data)) {
@@ -67,14 +54,16 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
         }
 
         // ajax request
-        var deferred = jQuery.post(
+        deferred = jQuery.post(
           this.options.url,
           params,
           null,
           'json'
         ).then(function(data) {
           return data;
-        }, _.partial(requestFailed, MailPoet.I18n.t('ajaxFailedErrorMessage')));
+        }, function(xhr) {
+          return xhr.responseJSON;
+        });
 
         // clear options
         this.options = {};
