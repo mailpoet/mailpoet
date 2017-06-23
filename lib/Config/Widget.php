@@ -87,17 +87,22 @@ class Widget {
   }
 
   function setupDependencies() {
-    wp_enqueue_style('mailpoet_public', Env::$assets_url.'/css/public.css');
+    wp_enqueue_style(
+      'mailpoet_public',
+      Env::$assets_url . '/css/' . $this->renderer->getCssAsset('public.css')
+    );
 
-    wp_enqueue_script('mailpoet_vendor',
-      Env::$assets_url.'/js/vendor.js',
+    wp_enqueue_script(
+      'mailpoet_vendor',
+      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('vendor.js'),
       array(),
       Env::$version,
       true
     );
 
-    wp_enqueue_script('mailpoet_public',
-      Env::$assets_url.'/js/public.js',
+    wp_enqueue_script(
+      'mailpoet_public',
+      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('public.js'),
       array(),
       Env::$version,
       true
@@ -110,15 +115,17 @@ class Widget {
   }
 
   function setupAdminWidgetPageDependencies() {
-    wp_enqueue_script('mailpoet_vendor',
-      Env::$assets_url.'/js/vendor.js',
+    wp_enqueue_script(
+      'mailpoet_vendor',
+      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('vendor.js'),
       array(),
       Env::$version,
       true
     );
 
-    wp_enqueue_script('mailpoet_admin',
-      Env::$assets_url.'/js/mailpoet.js',
+    wp_enqueue_script(
+      'mailpoet_admin',
+      Env::$assets_url . '/js/' . $this->renderer->getJsAsset('mailpoet.js'),
       array(),
       Env::$version,
       true

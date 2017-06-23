@@ -23,8 +23,8 @@ class RendererTest extends MailPoetTest {
       'script2.js' => 'script2.hash.js'
     );
     $assets_manifest_css = array(
-      'style1.js' => 'style1.hash.js',
-      'style2.js' => 'style2.hash.js'
+      'style1.css' => 'style1.hash.css',
+      'style2.css' => 'style2.hash.css'
     );
     file_put_contents(Env::$temp_path . '/js.json', json_encode($assets_manifest_js));
     file_put_contents(Env::$temp_path . '/css.json', json_encode($assets_manifest_css));
@@ -35,6 +35,28 @@ class RendererTest extends MailPoetTest {
 
   function testItReturnsFalseAssetManifestDoesNotExist() {
     expect($this->renderer->getAssetManifest(Env::$temp_path . '/js.json'))->false();
+  }
+
+  function testItCanGetCssAsset() {
+    $assets_manifest_css = array(
+      'style1.css' => 'style1.hash.css',
+      'style2.css' => 'style2.hash.css'
+    );
+    $renderer = $this->renderer;
+    $renderer->assets_manifest_css = $assets_manifest_css;
+    expect($renderer->getCssAsset('style1.css'))->equals('style1.hash.css');
+    expect($renderer->getCssAsset('style2.css'))->equals('style2.hash.css');
+  }
+
+  function testItCanGetJsAsset() {
+    $assets_manifest_js = array(
+      'script1.js' => 'script1.hash.js',
+      'script2.js' => 'script2.hash.js'
+    );
+    $renderer = $this->renderer;
+    $renderer->assets_manifest_js = $assets_manifest_js;
+    expect($renderer->getJsAsset('script1.js'))->equals('script1.hash.js');
+    expect($renderer->getJsAsset('script2.js'))->equals('script2.hash.js');
   }
 
   function testItWillNotEnableCacheWhenWpDebugIsOn() {
