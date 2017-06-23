@@ -121,4 +121,16 @@ class Renderer {
       json_decode(file_get_contents($manifest_file), true) :
       false;
   }
+
+  function getJsAsset($asset) {
+    return (!empty($this->assets_manifest_js[$asset])) ?
+      $this->assets_manifest_js[$asset] :
+      $asset;
+  }
+
+  function getCssAsset($asset) {
+    return (!empty($this->assets_manifest_css[$asset])) ?
+      $this->assets_manifest_css[$asset] :
+      $asset;
+  }
 }
