@@ -248,6 +248,7 @@ var publicConfig = {
   entry: {
     public: [
       'mailpoet',
+      'i18n',
       'ajax',
       'iframe',
       'jquery.serialize_object',
