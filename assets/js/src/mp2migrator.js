@@ -61,7 +61,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         }
         jQuery('#progressbar').progressbar('option', 'value', progress);
         jQuery('#progresslabel').html(progress + '%');
-        if(Number(result.current !== 0)) {
+        if(Number(result.current) !== 0) {
           jQuery('#skip-import').hide();
         }
         if(MailPoet.MP2Migrator.is_logging) {

@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Util\ProgressBar;
+use MailPoet\Models\Form;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -159,12 +160,13 @@ class MP2Migrator {
     $this->importSegments();
     $this->importCustomFields();
     $this->importSubscribers();
+    $this->importForms();
 
     if(!$this->importStopped()) {
       Setting::setValue('mailpoet_migration_complete', true);
       $this->log(__('IMPORT COMPLETE', 'mailpoet'));
     }
-    
+
     $this->log(sprintf('=== ' . __('END IMPORT', 'mailpoet') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     $result = ob_get_contents();
     ob_clean();
@@ -199,6 +201,7 @@ class MP2Migrator {
   private function resetMigrationCounters() {
     Setting::setValue('last_imported_user_id', 0);
     Setting::setValue('last_imported_list_id', 0);
+    Setting::setValue('last_imported_form_id', 0);
   }
 
   /**
@@ -262,17 +265,17 @@ class MP2Migrator {
     $total_count += $users_count;
     $result .= sprintf(_n('%d subscriber', '%d subscribers', $users_count, 'mailpoet'), $users_count) . "\n";
 
+    // Forms
+    $forms_count = \ORM::for_table(MP2_FORM_TABLE)->count();
+    $total_count += $forms_count;
+    $result .= sprintf(_n('%d form', '%d forms', $forms_count, 'mailpoet'), $forms_count) . "\n";
+
     // TODO to reactivate during the next phases
     /*
     // Emails
     $emails_count = \ORM::for_table(MP2_EMAIL_TABLE)->count();
     $total_count += $emails_count;
     $result .= sprintf(_n('%d newsletter', '%d newsletters', $emails_count, 'mailpoet'), $emails_count) . "\n";
-
-    // Forms
-    $forms_count = \ORM::for_table(MP2_FORM_TABLE)->count();
-    $total_count += $forms_count;
-    $result .= sprintf(_n('%d form', '%d forms', $forms_count, 'mailpoet'), $forms_count) . "\n";
     */
 
     $this->progressbar->setTotalCount($total_count);
@@ -310,7 +313,7 @@ class MP2Migrator {
     } while(($lists != null) && ($lists_count > 0));
 
     $this->segments_mapping = $this->getImportedMapping('segments');
-    
+
     $this->log(sprintf(_n("%d segment imported", "%d segments imported", $imported_segments_count, 'mailpoet'), $imported_segments_count));
   }
 
@@ -424,7 +427,7 @@ class MP2Migrator {
       'id' => $custom_field['id'],
       'name' => $custom_field['name'],
       'type' => $this->mapCustomFieldType($custom_field['type']),
-      'params' => $this->mapCustomFieldParams($custom_field),
+      'params' => $this->mapCustomFieldParams($custom_field['name'], unserialize($custom_field['settings'])),
     );
     $custom_field = new CustomField();
     $custom_field->createOrUpdate($data);
@@ -443,6 +446,9 @@ class MP2Migrator {
       case 'input':
         $type = 'text';
         break;
+      case 'list':
+        $type = 'segment';
+        break;
       default:
         $type = $mp2_type;
     }
@@ -452,17 +458,42 @@ class MP2Migrator {
   /**
    * Map the MailPoet 2 custom field settings with the MailPoet custom field params
    *
-   * @param array $custom_field MP2 custom field
+   * @param string $name Parameter name
+   * @param array $params MP2 parameters
    * @return string serialized MP3 custom field params
    */
-  private function mapCustomFieldParams($custom_field) {
-    $params = unserialize($custom_field['settings']);
-    $params['label'] = $custom_field['name'];
+  private function mapCustomFieldParams($name, $params) {
+    if(!isset($params['label'])) {
+      $params['label'] = $name;
+    }
+    if(isset($params['required'])) {
+      $params['required'] = (bool)$params['required'];
+    }
     if(isset($params['validate'])) {
       $params['validate'] = $this->mapCustomFieldValidateValue($params['validate']);
     }
     if(isset($params['date_order'])) { // Convert the date_order field
-      $params['date_format'] = strtoupper($params['date_order']);
+      switch($params['date_type']) {
+
+        case 'year_month':
+          if(preg_match('/y$/i', $params['date_order'])) {
+            $params['date_format'] = 'MM/YYYY';
+          } else {
+            $params['date_format'] = 'YYYY/MM';
+          }
+          break;
+
+        case 'month';
+          $params['date_format'] = 'MM';
+          break;
+
+        case 'year';
+          $params['date_format'] = 'YYYY';
+          break;
+
+        default:
+          $params['date_format'] = strtoupper($params['date_order']);
+      }
       unset($params['date_order']);
     }
     return $params;
@@ -737,6 +768,197 @@ class MP2Migrator {
       $mappings[$relation['old_id']] = $relation['new_id'];
     }
     return $mappings;
+  }
+
+  /**
+   * Import the forms
+   *
+   */
+  private function importForms() {
+    $imported_forms_count = 0;
+    if($this->importStopped()) {
+      return;
+    }
+    $this->log(__("Importing forms...", 'mailpoet'));
+    do {
+      if($this->importStopped()) {
+        break;
+      }
+      $forms = $this->getForms(self::CHUNK_SIZE);
+      $forms_count = count($forms);
+
+      if(is_array($forms)) {
+        foreach($forms as $form) {
+          $new_form = $this->importForm($form);
+          if(!empty($new_form)) {
+            $imported_forms_count++;
+          }
+        }
+      }
+      $this->progressbar->incrementCurrentCount($forms_count);
+    } while(($forms != null) && ($forms_count > 0));
+
+    $this->log(sprintf(_n("%d form imported", "%d forms imported", $imported_forms_count, 'mailpoet'), $imported_forms_count));
+  }
+
+  /**
+   * Get the Mailpoet 2 forms
+   *
+   * @global object $wpdb
+   * @param int $limit Number of forms max
+   * @return array Forms
+   */
+  private function getForms($limit) {
+    global $wpdb;
+    $forms = array();
+
+    $last_id = Setting::getValue('last_imported_form_id', 0);
+    $table = MP2_FORM_TABLE;
+    $sql = "
+      SELECT f.*
+      FROM `$table` f
+      WHERE f.form_id > '$last_id'
+      ORDER BY f.form_id
+      LIMIT $limit
+      ";
+    $forms = $wpdb->get_results($sql, ARRAY_A);
+
+    return $forms;
+  }
+
+  /**
+   * Import a form
+   *
+   * @param array $form_data Form data
+   * @return Form
+   */
+  private function importForm($form_data) {
+    $serialized_data = base64_decode($form_data['data']);
+    $data = unserialize($serialized_data);
+    $settings = $data['settings'];
+    $body = $data['body'];
+    $segments = $this->getMappedSegmentIds($settings['lists']);
+    $mp3_form_settings = array(
+      'on_success' => $settings['on_success'],
+      'success_message' => $settings['success_message'],
+      'segments_selected_by' => $settings['lists_selected_by'],
+      'segments' => $segments,
+    );
+
+    $mp3_form_body = array();
+    foreach($body as $field) {
+      $type = $this->mapCustomFieldType($field['type']);
+      if($type == 'segment') {
+          $field_id = 'segments';
+      } else {
+        switch($field['field']) {
+          case 'firstname':
+            $field_id = 'first_name';
+            break;
+          case 'lastname':
+            $field_id = 'last_name';
+            break;
+          default:
+            $field_id = $field['field'];
+        }
+      }
+      $field_id = preg_replace('/^cf_(\d+)$/', '$1', $field_id);
+      $params = $this->mapCustomFieldParams($field['name'], $field['params']);
+      if(isset($params['text'])) {
+        $params['text'] = $this->replaceMP2Shortcodes(html_entity_decode($params['text']));
+      }
+      if(isset($params['values'])) {
+        $params['values'] = $this->replaceListIds($params['values']);
+      }
+      $mp3_form_body[] = array(
+        'type' => $type,
+        'name' => $field['name'],
+        'id' => $field_id,
+        'unique' => !in_array($field['type'], array('html', 'divider', 'email', 'submit'))? "1" : "0",
+        'static' => in_array($field_id, array('email', 'submit'))? "1" : "0",
+        'params' => $params,
+        'position' => isset($field['position'])? $field['position'] : '',
+      );
+    }
+
+    $form = Form::createOrUpdate(array(
+      'name' => $form_data['name'],
+      'body' => $mp3_form_body,
+      'settings' => $mp3_form_settings,
+    ));
+    Setting::setValue('last_imported_form_id', $form_data['form_id']);
+    return $form;
+  }
+
+  /**
+   * Get the MP3 segments IDs of the MP2 lists IDs
+   *
+   * @param array $mp2_list_ids
+   */
+  private function getMappedSegmentIds($mp2_list_ids) {
+    $mp3_segment_ids = array();
+    foreach($mp2_list_ids as $list_id) {
+      if(isset($this->segments_mapping[$list_id])) {
+        $mp3_segment_ids[] = $this->segments_mapping[$list_id];
+      }
+    }
+    return $mp3_segment_ids;
+  }
+
+  /**
+   * Replace the MP2 shortcodes used in the textarea fields
+   *
+   * @param string $text Text
+   * @return string Text
+   */
+  private function replaceMP2Shortcodes($text) {
+    $text = str_replace('[total_subscribers]', '[mailpoet_subscribers_count]', $text);
+    $text = preg_replace_callback('/\[wysija_subscribers_count list_id="(.*)" \]/', array($this, 'replaceMP2ShortcodesCallback'), $text);
+    return $text;
+  }
+
+  /**
+   * Callback function for MP2 shortcodes replacement
+   *
+   * @param array $matches PREG matches
+   * @return string Replacement
+   */
+  private function replaceMP2ShortcodesCallback($matches) {
+    if(!empty($matches)) {
+      $mp2_lists = explode(',', $matches[1]);
+      $segments = $this->getMappedSegmentIds($mp2_lists);
+      $segments_ids = implode(',', $segments);
+      return '[mailpoet_subscribers_count segments=' . $segments_ids . ']';
+    }
+  }
+
+  /**
+   * Replace the MP2 list IDs by MP3 segment IDs
+   *
+   * @param array $values Field values
+   * @return array Field values
+   */
+  private function replaceListIds($values) {
+    $mp3_values = array();
+    foreach($values as $value) {
+      $mp3_value = array();
+      foreach($value as $item => $item_value) {
+        if(($item == 'list_id') && isset($this->segments_mapping[$item_value])) {
+          $segment_id = $this->segments_mapping[$item_value];
+          $mp3_value['id'] = $segment_id;
+          $segment = Segment::findOne($segment_id);
+          if(isset($segment)) {
+            $mp3_value['name'] = $segment->get('name');
+          }
+        } else {
+          $mp3_value[$item] = $item_value;
+        }
+      }
+      if(!empty($mp3_value)) {
+        $mp3_values[] = $mp3_value;
+      }
+    }
+    return $mp3_values;
   }
 
 }
