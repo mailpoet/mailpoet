@@ -38,10 +38,17 @@ rm -Rf $plugin_name/assets/js/src
 rm -Rf $plugin_name/lang/*.po
 
 # Remove extra files (docs, examples,...) from 3rd party extensions
+unameString=`uname`
+if [[ "$unameString" == 'Darwin' ]]; then
+   findCommand='find -E '
+else
+   findCommand='find -regextype posix-egrep '
+fi
+
 echo '[BUILD] Removing obsolete files from vendor libraries'
-find $plugin_name/vendor -type f -regextype posix-egrep -iregex ".*\/*\.(markdown|md|txt)" -print0 | xargs -0 rm -f
-find $plugin_name/vendor -type f -regextype posix-egrep -iregex ".*\/(readme|license|version|changes|changelog)" -print0 | xargs -0 rm -f
-find $plugin_name/vendor -type d -regextype posix-egrep -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
+$findCommand $plugin_name/vendor -type f -iregex ".*\/*\.(markdown|md|txt)" -print0 | xargs -0 rm -f
+$findCommand $plugin_name/vendor -type f -iregex ".*\/(readme|license|version|changes|changelog)" -print0 | xargs -0 rm -f
+$findCommand $plugin_name/vendor -type d -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
 
 # Remove unit tests from 3rd party extensions
 echo '[BUILD] Removing unit tests from vendor libraries'
