@@ -3,7 +3,7 @@
 use Carbon\Carbon;
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Models\SendingQueue;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge\API;
@@ -48,37 +48,37 @@ class BounceTest extends MailPoetTest {
     expect($this->worker->checkProcessingRequirements())->true();
   }
 
-  function testItDeletesQueueIfThereAreNoSubscribersWhenPreparingQueue() {
+  function testItDeletesTaskIfThereAreNoSubscribersWhenPreparingTask() {
     Subscriber::deleteMany();
-    $queue = $this->createScheduledQueue();
-    $result = $this->worker->prepareQueue($queue);
-    expect(SendingQueue::findOne($queue->id))->isEmpty();
+    $task = $this->createScheduledTask();
+    $result = $this->worker->prepareTask($task);
+    expect(ScheduledTask::findOne($task->id))->isEmpty();
     expect($result)->false();
   }
 
-  function testItPreparesQueue() {
-    $queue = $this->createScheduledQueue();
-    expect(empty($queue->subscribers['to_process']))->true();
-    $this->worker->prepareQueue($queue);
-    expect($queue->status)->null();
-    expect(!empty($queue->subscribers['to_process']))->true();
+  function testItPreparesTask() {
+    $task = $this->createScheduledTask();
+    expect(empty($task->subscribers['to_process']))->true();
+    $this->worker->prepareTask($task);
+    expect($task->status)->null();
+    expect(!empty($task->subscribers['to_process']))->true();
   }
 
-  function testItDeletesQueueIfThereAreNoSubscribersToProcessWhenProcessingQueue() {
-    $queue = $this->createScheduledQueue();
-    $queue->subscribers = null;
-    $queue->save();
-    $result = $this->worker->processQueue($queue);
-    expect(SendingQueue::findOne($queue->id))->isEmpty();
+  function testItDeletesTaskIfThereAreNoSubscribersToProcessWhenProcessingTask() {
+    $task = $this->createScheduledTask();
+    $task->subscribers = null;
+    $task->save();
+    $result = $this->worker->processTask($task);
+    expect(ScheduledTask::findOne($task->id))->isEmpty();
     expect($result)->false();
   }
 
-  function testItProcessesQueue() {
-    $queue = $this->createRunningQueue();
-    $this->worker->prepareQueue($queue);
-    expect(!empty($queue->subscribers['to_process']))->true();
-    $this->worker->processQueue($queue);
-    expect(!empty($queue->subscribers['processed']))->true();
+  function testItProcessesTask() {
+    $task = $this->createRunningTask();
+    $this->worker->prepareTask($task);
+    expect(!empty($task->subscribers['to_process']))->true();
+    $this->worker->processTask($task);
+    expect(!empty($task->subscribers['processed']))->true();
   }
 
   function testItSetsSubscriberStatusAsBounced() {
@@ -104,29 +104,27 @@ class BounceTest extends MailPoetTest {
     );
   }
 
-  private function createScheduledQueue() {
-    $queue = SendingQueue::create();
-    $queue->type = 'bounce';
-    $queue->status = SendingQueue::STATUS_SCHEDULED;
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
-    $queue->newsletter_id = 0;
-    $queue->save();
-    return $queue;
+  private function createScheduledTask() {
+    $task = ScheduledTask::create();
+    $task->type = 'bounce';
+    $task->status = ScheduledTask::STATUS_SCHEDULED;
+    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->save();
+    return $task;
   }
 
-  private function createRunningQueue() {
-    $queue = SendingQueue::create();
-    $queue->type = 'bounce';
-    $queue->status = null;
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
-    $queue->newsletter_id = 0;
-    $queue->save();
-    return $queue;
+  private function createRunningTask() {
+    $task = ScheduledTask::create();
+    $task->type = 'bounce';
+    $task->status = null;
+    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->save();
+    return $task;
   }
 
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Setting::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 }

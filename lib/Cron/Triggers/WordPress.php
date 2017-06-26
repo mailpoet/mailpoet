@@ -28,20 +28,20 @@ class WordPress {
     // sending service
     $mp_sending_enabled = Bridge::isMPSendingServiceEnabled();
     // bounce sync
-    $bounce_due_queues = BounceWorker::getAllDueQueues();
-    $bounce_future_queues = BounceWorker::getFutureQueues();
+    $bounce_due_tasks = BounceWorker::getAllDueTasks();
+    $bounce_future_tasks = BounceWorker::getFutureTasks();
     // sending service key check
-    $sskeycheck_due_queues = SendingServiceKeyCheckWorker::getAllDueQueues();
-    $sskeycheck_future_queues = SendingServiceKeyCheckWorker::getFutureQueues();
+    $msskeycheck_due_tasks = SendingServiceKeyCheckWorker::getAllDueTasks();
+    $msskeycheck_future_tasks = SendingServiceKeyCheckWorker::getFutureTasks();
     // premium key check
     $premium_key_specified = Bridge::isPremiumKeySpecified();
-    $premium_keycheck_due_queues = PremiumKeyCheckWorker::getAllDueQueues();
-    $premium_keycheck_future_queues = PremiumKeyCheckWorker::getFutureQueues();
+    $premium_keycheck_due_tasks = PremiumKeyCheckWorker::getAllDueTasks();
+    $premium_keycheck_future_tasks = PremiumKeyCheckWorker::getFutureTasks();
     // check requirements for each worker
     $sending_queue_active = (($scheduled_queues || $running_queues) && !$sending_limit_reached && !$sending_is_paused);
-    $bounce_sync_active = ($mp_sending_enabled && ($bounce_due_queues || !$bounce_future_queues));
-    $sending_service_key_check_active = ($mp_sending_enabled && ($sskeycheck_due_queues || !$sskeycheck_future_queues));
-    $premium_key_check_active = ($premium_key_specified && ($premium_keycheck_due_queues || !$premium_keycheck_future_queues));
+    $bounce_sync_active = ($mp_sending_enabled && ($bounce_due_tasks || !$bounce_future_tasks));
+    $sending_service_key_check_active = ($mp_sending_enabled && ($msskeycheck_due_tasks || !$msskeycheck_future_tasks));
+    $premium_key_check_active = ($premium_key_specified && ($premium_keycheck_due_tasks || !$premium_keycheck_future_tasks));
 
     return ($sending_queue_active || $bounce_sync_active || $sending_service_key_check_active || $premium_key_check_active);
   }
