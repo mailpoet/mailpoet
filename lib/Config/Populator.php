@@ -26,7 +26,6 @@ class Populator {
       'newsletter_templates',
     );
     $this->templates = array(
-      "FranksRoastHouseTemplate",
       "NewsletterBlank1Column",
       "NewsletterBlank12Column",
       "NewsletterBlank121Column",
@@ -35,9 +34,6 @@ class Populator {
       "WelcomeBlank1Column",
       "WelcomeBlank12Column",
       "SimpleText",
-      "Restaurant",
-      "StoreDiscount",
-      "TravelEmail"
     );
   }
 
