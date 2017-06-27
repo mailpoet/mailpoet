@@ -193,8 +193,16 @@ class Initializer {
   }
 
   function setupHooks() {
-    $hooks = new Hooks();
-    $hooks->init();
+    if(!$this->plugin_initialized) {
+      return;
+    }
+
+    try {
+      $hooks = new Hooks();
+      $hooks->init();
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e);
+    }
   }
 
   function setupJSONAPI() {
@@ -224,6 +232,7 @@ class Initializer {
   }
 
   function handleFailedInitialization($message) {
+    Menu::addErrorPage();
     return WPNotice::displayError($message);
   }
 }
