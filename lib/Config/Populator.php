@@ -39,6 +39,7 @@ class Populator {
       "WorldCup",
       "FoodBox",
       "Discount",
+      "KickOff",
     );
   }
 
