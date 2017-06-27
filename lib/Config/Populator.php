@@ -41,7 +41,8 @@ class Populator {
       "Discount",
       "KickOff",
       "TakeAHike",
-      "FestivalEvent"
+      "FestivalEvent",
+      "PieceOfCake",
     );
   }
 
