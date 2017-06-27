@@ -34,6 +34,7 @@ class Populator {
       "WelcomeBlank1Column",
       "WelcomeBlank12Column",
       "SimpleText",
+      "BurgerJoint",
     );
   }
 
