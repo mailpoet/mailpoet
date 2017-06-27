@@ -37,6 +37,7 @@ class Populator {
       "BurgerJoint",
       "AppWelcome",
       "WorldCup",
+      "FoodBox",
     );
   }
 
