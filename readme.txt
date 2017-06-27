@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.8
-Stable tag: 3.0.0-beta.36.0.1
+Stable tag: 3.0.0-beta.36.1.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -90,6 +90,10 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-beta.36.1.0 - 2017-06-27 =
+* Improved: error notices are displayed when AJAX requests fail;
+* Added: MailPoet 2 forms are migrated when MailPoet 3 is installed/reinstalled.
 
 = 3.0.0-beta.36.0.1 - 2017-06-23 =
 * Improved: preheader will now be hidden in Gmail app;
