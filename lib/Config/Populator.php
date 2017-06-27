@@ -44,6 +44,7 @@ class Populator {
       "FestivalEvent",
       "PieceOfCake",
       "Shoes",
+      "ScienceWeekly",
     );
   }
 
