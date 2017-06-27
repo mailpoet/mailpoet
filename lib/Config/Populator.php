@@ -43,6 +43,7 @@ class Populator {
       "TakeAHike",
       "FestivalEvent",
       "PieceOfCake",
+      "Shoes",
     );
   }
 
