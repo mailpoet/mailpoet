@@ -49,6 +49,7 @@ class Populator {
       "Faith",
       "TravelNomads",
       "CoffeeShop",
+      "NewsDay",
     );
   }
 
