@@ -576,6 +576,34 @@ class Menu {
     return (stripos($screen_id, 'mailpoet-') !== false);
   }
 
+  /**
+   * This error page is used when the initialization is failed
+   * to display admin notices only
+   */
+  static function addErrorPage() {
+    if(!self::isOnMailPoetAdminPage()) {
+      return false;
+    }
+    // Check if page already exists
+    if(get_plugin_page_hook($_REQUEST['page'], '')
+      || get_plugin_page_hook($_REQUEST['page'], 'mailpoet-newsletters')
+    ) {
+      return false;
+    }
+    add_submenu_page(
+      true,
+      'MailPoet',
+      'MailPoet',
+      Env::$required_permission,
+      $_REQUEST['page'],
+      array(__CLASS__, 'errorPageCallback')
+    );
+  }
+
+  static function errorPageCallback() {
+    // Used for displaying admin notices only
+  }
+
   function checkMailPoetAPIKey(ServicesChecker $checker = null) {
     if(self::isOnMailPoetAdminPage()) {
       $show_notices = isset($_REQUEST['page'])
