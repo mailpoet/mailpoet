@@ -48,6 +48,7 @@ class Populator {
       "ChocolateStore",
       "Faith",
       "TravelNomads",
+      "CoffeeShop",
     );
   }
 
