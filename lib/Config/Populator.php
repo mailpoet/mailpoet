@@ -36,6 +36,7 @@ class Populator {
       "SimpleText",
       "BurgerJoint",
       "AppWelcome",
+      "WorldCup",
     );
   }
 
