@@ -40,6 +40,7 @@ class Populator {
       "FoodBox",
       "Discount",
       "KickOff",
+      "TakeAHike",
     );
   }
 
