@@ -169,4 +169,15 @@ class Model extends \Sudzy\ValidModel {
   static function getTrashed() {
     return static::whereNotNull('deleted_at');
   }
+
+  /**
+   * Rethrow PDOExceptions to prevent exposing sensitive data in stack traces
+   */
+  public static function __callStatic($method, $parameters) {
+    try {
+      return parent::__callStatic($method, $parameters);
+    } catch (\PDOException $e) {
+      throw new \Exception($e->getMessage());
+    }
+  }
 }
