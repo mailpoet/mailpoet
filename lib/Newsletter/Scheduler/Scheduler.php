@@ -160,10 +160,11 @@ class Scheduler {
     return $relation->value;
   }
 
-  static function getNextRunDate($schedule) {
+  static function getNextRunDate($schedule, $from_timestamp = false) {
+    $from_timestamp = ($from_timestamp) ? $from_timestamp : current_time('timestamp');
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
-      $next_run_date = $schedule->getNextRunDate(Carbon::createFromTimestamp(current_time('timestamp')))
+      $next_run_date = $schedule->getNextRunDate(Carbon::createFromTimestamp($from_timestamp))
         ->format('Y-m-d H:i:s');
     } catch(\Exception $e) {
       $next_run_date = false;

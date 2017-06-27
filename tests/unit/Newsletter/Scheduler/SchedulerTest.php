@@ -330,8 +330,9 @@ class NewsletterSchedulerTest extends MailPoetTest {
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
-    expect(Scheduler::getNextRunDate($newsletter_option->value))
-      ->contains('14:00:00');
+    $current_time = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    expect(Scheduler::getNextRunDate($newsletter_option->value, $current_time))
+      ->equals('2017-01-01 14:00:00');
 
     // weekly notification is scheduled every Tuesday at 14:00
     $newsletter = (object)array(
@@ -347,11 +348,9 @@ class NewsletterSchedulerTest extends MailPoetTest {
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
-    $next_run_date = ($current_time->dayOfWeek === Carbon::TUESDAY && $current_time->hour < 14) ?
-      $current_time :
-      $current_time->next(Carbon::TUESDAY);
-    expect(Scheduler::getNextRunDate($newsletter_option->value))
-      ->equals($next_run_date->format('Y-m-d 14:00:00'));
+    $current_time = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    expect(Scheduler::getNextRunDate($newsletter_option->value, $current_time))
+      ->equals('2017-01-03 14:00:00');
 
     // monthly notification is scheduled every 20th day at 14:00
     $newsletter = (object)array(
@@ -363,12 +362,12 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'timeOfDay' => 50400 // 14:00
     );
     Scheduler::processPostNotificationSchedule($newsletter);
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
-    expect(Scheduler::getNextRunDate($newsletter_option->value))
-      ->contains('-19 14:00:00');
+    $current_time = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    expect(Scheduler::getNextRunDate($newsletter_option->value, $current_time))
+      ->equals('2017-01-19 14:00:00');
 
     // monthly notification is scheduled every last Saturday at 14:00
     $newsletter = (object)array(
@@ -380,17 +379,12 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'timeOfDay' => 50400 // 14:00
     );
     Scheduler::processPostNotificationSchedule($newsletter);
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
-    $next_run_date = (
-      $current_time->day <= $current_time->lastOfMonth(Carbon::SATURDAY)->day &&
-      $current_time->hour < '14'
-    ) ? $current_time->lastOfMonth(Carbon::SATURDAY)
-      : $current_time->copy()->addMonth()->lastOfMonth(Carbon::SATURDAY);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
-    expect(Scheduler::getNextRunDate($newsletter_option->value))
-      ->equals($next_run_date->format('Y-m-d 14:00:00'));
+    $current_time = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
+    expect(Scheduler::getNextRunDate($newsletter_option->value, $current_time))
+      ->equals('2017-02-25 14:00:00');
 
     // notification is scheduled immediately (next minute)
     $newsletter = (object)array(
@@ -402,12 +396,12 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'timeOfDay' => null
     );
     Scheduler::processPostNotificationSchedule($newsletter);
-    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
       ->where('option_field_id', $newsletter_option_field->id)
       ->findOne();
-    expect(Scheduler::getNextRunDate($newsletter_option->value))
-      ->equals($current_time->addMinute()->format('Y-m-d H:i:00'));
+    $current_time = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    expect(Scheduler::getNextRunDate($newsletter_option->value, $current_time))
+      ->equals('2017-01-01 13:01:00');
   }
 
   function _createQueue(
