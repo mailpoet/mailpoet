@@ -38,6 +38,7 @@ class Populator {
       "AppWelcome",
       "WorldCup",
       "FoodBox",
+      "Discount",
     );
   }
 
