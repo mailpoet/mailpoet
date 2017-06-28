@@ -50,6 +50,7 @@ class Populator {
       "TravelNomads",
       "CoffeeShop",
       "NewsDay",
+      "YogaStudio",
     );
   }
 
