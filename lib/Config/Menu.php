@@ -167,6 +167,18 @@ class Menu {
       )
     );
 
+    add_submenu_page(
+      $main_page_slug,
+      $this->setPageTitle(__('Help', 'mailpoet')),
+      __('Help', 'mailpoet'),
+      Env::$required_permission,
+      'mailpoet-help',
+      array(
+        $this,
+        'help'
+      )
+    );
+
     // Only show this page in menu if the Premium plugin is not activated
     add_submenu_page(
       License::getLicense() ? true : $main_page_slug,
@@ -375,6 +387,10 @@ class Menu {
     $data = array_merge($data, Installer::getPremiumStatus());
 
     $this->displayPage('settings.html', $data);
+  }
+
+  function help() {
+    $this->displayPage('help.html', array());
   }
 
   private function _getFlags() {
