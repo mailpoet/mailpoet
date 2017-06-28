@@ -4,7 +4,7 @@ namespace MailPoet\Config\PopulatorData\Templates;
 
 
 class FoodBox {
-  
+
   private $template_image_url;
   private $social_icon_url;
 
@@ -751,6 +751,7 @@ class FoodBox {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/welcome-to-foodbox.jpg';
   }
 
 }
