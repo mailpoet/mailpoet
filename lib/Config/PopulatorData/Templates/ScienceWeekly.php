@@ -671,6 +671,7 @@ class ScienceWeekly {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/science-weekly.jpg';
   }
 
 }

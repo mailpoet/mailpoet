@@ -840,6 +840,7 @@ class ChocolateStore {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/chocolate-store.jpg';
   }
 
 }

@@ -409,6 +409,7 @@ class AppWelcome {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/app-welcome-email.jpg';
   }
 
 }

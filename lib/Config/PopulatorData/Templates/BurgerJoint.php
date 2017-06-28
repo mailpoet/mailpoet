@@ -491,6 +491,7 @@ class BurgerJoint {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/burger-joint.jpg';
   }
 
 }

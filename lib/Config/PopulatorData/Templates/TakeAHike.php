@@ -763,6 +763,7 @@ class TakeAHike {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/take-a-hike.jpg';
   }
 
 }

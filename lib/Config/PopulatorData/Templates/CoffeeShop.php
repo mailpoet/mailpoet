@@ -417,6 +417,7 @@ class CoffeeShop {
   }
 
   private function getThumbnail() {
+    return '//ps.w.org/mailpoet/assets/newsletter-templates/franks-roast-house/coffee-shop.jpg';
   }
 
 }

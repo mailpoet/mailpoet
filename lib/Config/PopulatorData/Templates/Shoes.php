@@ -573,6 +573,7 @@ class Shoes {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/shoes.jpg';
   }
 
 }

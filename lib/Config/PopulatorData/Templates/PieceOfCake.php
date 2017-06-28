@@ -438,6 +438,7 @@ class PieceOfCake {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/piece-of-cake.jpg';
   }
 
 }

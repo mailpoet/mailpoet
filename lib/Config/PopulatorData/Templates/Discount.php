@@ -461,6 +461,7 @@ class Discount {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/discount.jpg';
   }
 
 }

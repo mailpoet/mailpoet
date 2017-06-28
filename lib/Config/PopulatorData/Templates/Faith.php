@@ -482,6 +482,7 @@ class Faith {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/faith.jpg';
   }
 
 }

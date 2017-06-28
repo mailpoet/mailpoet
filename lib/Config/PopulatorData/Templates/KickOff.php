@@ -715,6 +715,7 @@ class KickOff {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/sports.jpg';
   }
 
 }

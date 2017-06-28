@@ -597,6 +597,7 @@ class TravelNomads {
   }
 
   private function getThumbnail() {
+    return $this->template_image_url . '/travel-nomads.jpg';
   }
 
 }
