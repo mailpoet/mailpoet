@@ -43,6 +43,10 @@ define([
         expect(model.get('amount')).to.match(/^\d+$/);
       });
 
+      it('has post offset initialized', function () {
+        expect(model.get('offset')).to.equal(0);
+      });
+
       it('has post type filter', function () {
         expect(model.get('contentType')).to.match(/^(post|page|mailpoet_page)$/);
       });
@@ -196,6 +200,55 @@ define([
         expect(model.get('divider.src')).to.equal('http://example.org/someConfigDividerImage.png');
         expect(model.get('divider.styles.block.backgroundColor')).to.equal('#456789');
         expect(model.get('divider.styles.block.padding')).to.equal('38px');
+      });
+
+      it('resets offset when fetching posts', function () {
+        model.set('offset', 10);
+        model.fetchAvailablePosts();
+        expect(model.get('offset')).to.equal(0);
+      });
+
+      it('increases offset when loading more posts', function () {
+        model.set({
+          amount: 2,
+          offset: 0
+        });
+        model.set('_availablePosts', new Backbone.Collection([{}, {}])); // 2 posts
+        model.trigger('loadMorePosts');
+        expect(model.get('offset')).to.equal(2);
+      });
+
+      it('does not increase offset when there is no more posts to load', function () {
+        model.set({
+          amount: 10,
+          offset: 0
+        });
+        model.set('_availablePosts', new Backbone.Collection([{}, {}])); // 2 posts
+        model.trigger('loadMorePosts');
+        expect(model.get('offset')).to.equal(0);
+      });
+
+      it('triggers loading and loaded events for more posts', function () {
+        var stub = sinon.stub(CommunicationComponent, 'getPosts', function() {
+          var deferred = jQuery.Deferred();
+          deferred.resolve([{}]); // 1 post
+          return deferred;
+        });
+        var spy = sinon.spy(model, 'trigger');
+
+        model.set({
+          amount: 2,
+          offset: 0
+        });
+        model.set('_availablePosts', new Backbone.Collection([{}, {}])); // 2 posts
+        model._loadMorePosts();
+
+        stub.restore();
+        spy.restore();
+
+        expect(spy.withArgs('loadingMorePosts').calledOnce).to.be.true;
+        expect(spy.withArgs('morePostsLoaded').calledOnce).to.be.true;
+        expect(model.get('_availablePosts').length).to.equal(3);
       });
     });
 
