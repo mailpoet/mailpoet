@@ -31,7 +31,12 @@ class Initializer {
       return;
     }
 
-    $this->setupDB();
+    try {
+      $this->setupDB();
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e);
+      return;
+    }
 
     // activation function
     register_activation_hook(
@@ -232,7 +237,10 @@ class Initializer {
   }
 
   function handleFailedInitialization($message) {
-    Menu::addErrorPage();
+    // Check if we are able to add pages at this point
+    if (function_exists('wp_get_current_user')) {
+      Menu::addErrorPage();
+    }
     return WPNotice::displayError($message);
   }
 }
