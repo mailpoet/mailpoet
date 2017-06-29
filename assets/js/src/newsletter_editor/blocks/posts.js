@@ -122,7 +122,7 @@ define([
     _loadMorePosts: function() {
       var that = this,
         postCount = this.get('_availablePosts').length,
-        nextOffset = this.get('offset') + ~~this.get('amount');
+        nextOffset = this.get('offset') + Number(this.get('amount'));
 
       if(postCount === 0 || postCount < nextOffset) {
         // No more posts to load
