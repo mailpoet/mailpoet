@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Helpscout\Beacon;
 use MailPoet\Listing;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
@@ -390,7 +391,7 @@ class Menu {
   }
 
   function help() {
-    $this->displayPage('help.html', array());
+    $this->displayPage('help.html', array('data' => Beacon::getData()));
   }
 
   private function _getFlags() {
