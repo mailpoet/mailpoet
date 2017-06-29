@@ -42,9 +42,17 @@ class Database {
       $driver_options[] = $character_set;
     }
 
-    $current_options = ORM::for_table("")
-      ->raw_query('SELECT @@session.wait_timeout as wait_timeout')
-      ->findOne();
+    /**
+     * Rethrow PDOExceptions to prevent exposing sensitive data in stack traces
+     */
+    try {
+      $current_options = ORM::for_table("")
+        ->raw_query('SELECT @@session.wait_timeout as wait_timeout')
+        ->findOne();
+    } catch (\PDOException $e) {
+      throw new \Exception($e->getMessage());
+    }
+
     if($current_options && (int)$current_options->wait_timeout < $this->driver_option_wait_timeout) {
       $driver_options[] = 'SESSION wait_timeout = ' . $this->driver_option_wait_timeout;
     }
