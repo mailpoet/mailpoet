@@ -161,6 +161,7 @@ class MP2Migrator {
     $this->importCustomFields();
     $this->importSubscribers();
     $this->importForms();
+    $this->importSettings();
 
     if(!$this->importStopped()) {
       Setting::setValue('mailpoet_migration_complete', true);
@@ -959,6 +960,153 @@ class MP2Migrator {
       }
     }
     return $mp3_values;
+  }
+
+  /**
+   * Import the settings
+   * 
+   */
+  private function importSettings() {
+    $encoded_options = get_option('wysija');
+    $options = unserialize(base64_decode($encoded_options));
+
+    // Sender
+    $sender = Setting::getValue('sender');
+    $sender['name'] = isset($options['from_name']) ? $options['from_name'] : '';
+    $sender['address'] = isset($options['from_email']) ? $options['from_email'] : '';
+    Setting::setValue('sender', $sender);
+
+    // Reply To
+    $reply_to = Setting::getValue('reply_to');
+    $reply_to['name'] = isset($options['replyto_name']) ? $options['replyto_name'] : '';
+    $reply_to['address'] = isset($options['replyto_email']) ? $options['replyto_email'] : '';
+    Setting::setValue('reply_to', $reply_to);
+
+    // Bounce
+    $bounce = Setting::getValue('bounce');
+    $bounce['address'] = isset($options['bounce_email']) ? $options['bounce_email'] : '';
+    Setting::setValue('bounce', $bounce);
+
+    // Notification
+    $notification = Setting::getValue('notification');
+    $notification['address'] = isset($options['emails_notified']) ? $options['emails_notified'] : '';
+    Setting::setValue('notification', $notification);
+
+    // Subscribe
+    $subscribe = Setting::getValue('subscribe');
+    $subscribe['on_comment']['enabled'] = isset($options['manage_subscriptions']) ? $options['manage_subscriptions'] : '0';
+    $subscribe['on_comment']['label'] = isset($options['commentform_linkname']) ? $options['commentform_linkname'] : '';
+    $subscribe['on_comment']['segments'] = isset($options['commentform_lists'])? $this->getMappedSegmentIds($options['commentform_lists']) : array();
+    $subscribe['on_register']['enabled'] = isset($options['registerform']) ? $options['registerform'] : '0';
+    $subscribe['on_register']['label'] = isset($options['registerform_linkname']) ? $options['registerform_linkname'] : '';
+    $subscribe['on_register']['segments'] = isset($options['registerform_lists'])? $this->getMappedSegmentIds($options['registerform_lists']) : array();
+    Setting::setValue('subscribe', $subscribe);
+
+    // Subscription
+    $subscription = Setting::getValue('subscription');
+    $subscription['pages']['unsubscribe'] = isset($options['unsubscribe_page']) ? $options['unsubscribe_page'] : '';
+    $subscription['pages']['confirmation'] = isset($options['confirmation_page']) ? $options['confirmation_page'] : '';
+    $subscription['pages']['manage'] = isset($options['subscriptions_page']) ? $options['subscriptions_page'] : '';
+    $subscription['segments'] = isset($options['manage_subscriptions_lists'])? $this->getMappedSegmentIds($options['manage_subscriptions_lists']) : array();
+    Setting::setValue('subscription', $subscription);
+
+    // Confirmation email
+    $signup_confirmation = Setting::getValue('signup_confirmation');
+    $signup_confirmation['enabled'] = isset($options['confirm_dbleoptin']) && ($options['confirm_dbleoptin'] == 0) ? 0 : 1;
+    if(isset($options['confirm_email_id'])) {
+      $confirm_email_id = $options['confirm_email_id'];
+      $confirm_email = $this->getEmail($confirm_email_id);
+      if(!empty($confirm_email)) {
+        $signup_confirmation['from']['name'] = isset($confirm_email['from_name']) ? $confirm_email['from_name'] : '';
+        $signup_confirmation['from']['address'] = isset($confirm_email['from_email']) ? $confirm_email['from_email'] : '';
+        $signup_confirmation['reply_to']['name'] = isset($confirm_email['replyto_name']) ? $confirm_email['replyto_name'] : '';
+        $signup_confirmation['reply_to']['address'] = isset($confirm_email['replyto_email']) ? $confirm_email['replyto_email'] : '';
+        $signup_confirmation['subject'] = isset($confirm_email['subject']) ? $confirm_email['subject'] : '';
+        $signup_confirmation['body'] = isset($confirm_email['body']) ? $confirm_email['body'] : '';
+      }
+    }
+    Setting::setValue('signup_confirmation', $signup_confirmation);
+
+    // Analytics
+    $analytics = Setting::getValue('analytics');
+    $analytics['enabled'] = isset($options['analytics']) ? $options['analytics'] : '';
+    Setting::setValue('analytics', $analytics);
+
+    // Cron trigger
+    $cron_trigger = Setting::getValue('cron_trigger');
+    $cron_trigger['method'] = isset($options['cron_page_hit_trigger']) ? 'MailPoet' : 'WordPress';
+    Setting::setValue('cron_trigger', $cron_trigger);
+
+    // MTA
+    $mta_group = Setting::getValue('mta_group');
+    $mta_group = isset($options['sending_method']) && ($options['sending_method'] == 'smtp') ? 'smtp' : 'website';
+    Setting::setValue('mta_group', $mta_group);
+
+    $mta = Setting::getValue('mta');
+    $mta['method'] = isset($options['sending_method']) && ($options['sending_method'] == 'smtp') ? 'SMTP' : 'PHPMail';
+    $mta['frequency']['emails'] =  isset($options['sending_emails_number']) ? $options['sending_emails_number'] : '70';
+    $mta['frequency']['interval'] =  $this->mapFrequencyInterval(isset($options['sending_emails_each']) ? $options['sending_emails_each'] : '');
+    $mta['host'] = isset($options['smtp_host']) ? $options['smtp_host'] : '';
+    $mta['port'] = isset($options['smtp_port']) ? $options['smtp_port'] : '';
+    $mta['login'] = isset($options['smtp_login']) ? $options['smtp_login'] : '';
+    $mta['password'] = isset($options['smtp_password']) ? $options['smtp_password'] : '';
+    $mta['encryption'] = isset($options['smtp_secure']) ? $options['smtp_secure'] : '';
+    $mta['authentication'] = !isset($options['smtp_auth']) ? '1' : '-1';
+    Setting::setValue('mta', $mta);
+
+    $this->log(__("Settings imported", 'mailpoet'));
+  }
+
+  /**
+   * Get an email
+   *
+   * @global object $wpdb
+   * @param int $email_id
+   * @return array Email
+   */
+  private function getEmail($email_id) {
+    global $wpdb;
+    $email = array();
+
+    $table = MP2_EMAIL_TABLE;
+    $sql = "
+      SELECT e.*
+      FROM `$table` e
+      WHERE e.email_id = '$email_id'
+      ";
+    $email = $wpdb->get_row($sql, ARRAY_A);
+
+    return $email;
+  }
+
+  /**
+   * Map the Email frequency interval
+   *
+   * @param string $interval_str Interval
+   * @return string Interval
+   */
+  private function mapFrequencyInterval($interval_str) {
+    switch($interval_str) {
+      case 'one_min':
+        $interval = 1;
+        break;
+
+      case 'two_min':
+        $interval = 2;
+        break;
+
+      case 'five_min':
+        $interval = 5;
+        break;
+
+      case 'ten_min':
+        $interval = 10;
+        break;
+
+      default:
+        $interval = 15;
+    }
+    return (string)$interval;
   }
 
 }
