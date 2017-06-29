@@ -238,7 +238,7 @@ class Initializer {
 
   function handleFailedInitialization($message) {
     // Check if we are able to add pages at this point
-    if (function_exists('wp_get_current_user')) {
+    if(function_exists('wp_get_current_user')) {
       Menu::addErrorPage();
     }
     return WPNotice::displayError($message);
