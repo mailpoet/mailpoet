@@ -42,25 +42,21 @@ class Database {
       $driver_options[] = $character_set;
     }
 
-    /**
-     * Rethrow PDOExceptions to prevent exposing sensitive data in stack traces
-     */
+    ORM::configure('driver_options', array(
+      PDO::MYSQL_ATTR_INIT_COMMAND => 'SET ' . implode(', ', $driver_options)
+    ));
+
     try {
       $current_options = ORM::for_table("")
         ->raw_query('SELECT @@session.wait_timeout as wait_timeout')
         ->findOne();
+      if($current_options && (int)$current_options->wait_timeout < $this->driver_option_wait_timeout) {
+        ORM::raw_execute('SET SESSION wait_timeout = ' . $this->driver_option_wait_timeout);
+      }
     } catch (\PDOException $e) {
+      // Rethrow PDOExceptions to prevent exposing sensitive data in stack traces
       throw new \Exception($e->getMessage());
     }
-
-    if($current_options && (int)$current_options->wait_timeout < $this->driver_option_wait_timeout) {
-      $driver_options[] = 'SESSION wait_timeout = ' . $this->driver_option_wait_timeout;
-    }
-    // reset the database
-    ORM::set_db(null);
-    ORM::configure('driver_options', array(
-      PDO::MYSQL_ATTR_INIT_COMMAND => 'SET ' . implode(', ', $driver_options)
-    ));
   }
 
   function defineTables() {
