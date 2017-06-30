@@ -22,10 +22,9 @@ if(container) {
     <Router history={ history }>
       <Route path="/" component={ App }>
         <IndexRedirect to="knowledgeBase" />
-        {/* Listings */}
+        {/* Pages */}
         <Route path="knowledgeBase(/)**" params={{ tab: 'knowledgeBase' }} component={ KnowledgeBase } />
         <Route path="systemInfo(/)**" params={{ tab: 'systemInfo' }} component={ SystemInfo } />
-
       </Route>
     </Router>
   ), container);

@@ -24,7 +24,7 @@ function KnowledgeBase() {
         <li><a target="_blank" href="http://beta.docs.mailpoet.com/category/123-newsletter-designer">Newsletter Designer</a></li>
         <li><a target="_blank" href="http://beta.docs.mailpoet.com/category/121-subscribers-and-lists">Subscribers and Lists</a></li>
       </ul>
-      <a href="http://beta.docs.mailpoet.com/" className="button button-primary">{MailPoet.I18n.t('knowledgeBaseButton')}</a>
+      <a target="_blank" href="http://beta.docs.mailpoet.com/" className="button button-primary">{MailPoet.I18n.t('knowledgeBaseButton')}</a>
     </div>
   );
 };
