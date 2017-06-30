@@ -497,4 +497,217 @@ class MP2MigratorTest extends MailPoetTest {
     expect($result)->equals($expected_lists);
   }
 
+  /**
+   * Test the mapFrequencyInterval function
+   *
+   */
+  public function testMapFrequencyInterval() {
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('one_min'));
+    expect($result)->equals(1);
+
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('two_min'));
+    expect($result)->equals(2);
+
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('five_min'));
+    expect($result)->equals(5);
+
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('ten_min'));
+    expect($result)->equals(10);
+
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('fifteen_min'));
+    expect($result)->equals(15);
+
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('thirty_min'));
+    expect($result)->equals(15);
+
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('hourly'));
+    expect($result)->equals(15);
+
+    $result = $this->invokeMethod($this->MP2Migrator, 'mapFrequencyInterval', array('two_hours'));
+    expect($result)->equals(15);
+  }
+
+  /**
+   * Test the importSettings function
+   *
+   */
+  public function testImportSettings() {
+    $this->loadMP2OptionsFixtures();
+
+    $this->invokeMethod($this->MP2Migrator, 'importSettings');
+
+    $sender = Setting::getValue('sender');
+    expect($sender['name'])->equals('Sender');
+    expect($sender['address'])->equals('sender@email.com');
+
+    $reply_to = Setting::getValue('reply_to');
+    expect($reply_to['name'])->equals('Reply');
+    expect($reply_to['address'])->equals('reply@email.com');
+
+    $bounce = Setting::getValue('bounce');
+    expect($bounce['address'])->equals('bounce@email.com');
+
+    $notification = Setting::getValue('notification');
+    expect($notification['address'])->equals('notification@email.com');
+
+    $subscribe = Setting::getValue('subscribe');
+    expect($subscribe['on_comment']['enabled'])->equals(1);
+    expect($subscribe['on_comment']['label'])->equals('Oui, ajoutez moi à votre liste de diffusion !!!');
+    expect($subscribe['on_register']['enabled'])->equals(1);
+    expect($subscribe['on_register']['label'])->equals('Oui, ajoutez moi à votre liste de diffusion 2');
+
+    $subscription = Setting::getValue('subscription');
+    expect($subscription['pages']['unsubscribe'])->equals(2);
+    expect($subscription['pages']['confirmation'])->equals(4);
+    expect($subscription['pages']['manage'])->equals(4);
+
+    $signup_confirmation = Setting::getValue('signup_confirmation');
+    expect($signup_confirmation['enabled'])->equals(1);
+
+    $analytics = Setting::getValue('analytics');
+    expect($analytics['enabled'])->equals(1);
+
+    $cron_trigger = Setting::getValue('cron_trigger');
+    expect($cron_trigger['method'])->equals('WordPress');
+
+    $mta_group = Setting::getValue('mta_group');
+    expect($mta_group)->equals('smtp');
+
+    $mta = Setting::getValue('mta');
+    expect($mta['method'])->equals('SMTP');
+    expect($mta['frequency']['emails'])->equals(25);
+    expect($mta['frequency']['interval'])->equals(5);
+    expect($mta['host'])->equals('smtp.mondomaine.com');
+    expect($mta['port'])->equals(25);
+    expect($mta['login'])->equals('login');
+    expect($mta['password'])->equals('password');
+    expect($mta['encryption'])->equals('ssl');
+    expect($mta['authentication'])->equals(1);
+  }
+
+  /**
+   * Load some MP2 fixtures
+   *
+   */
+  private function loadMP2OptionsFixtures() {
+    $wysija_options = array (
+      'from_name' => 'Sender',
+      'replyto_name' => 'Reply',
+      'emails_notified' => 'notification@email.com',
+      'from_email' => 'sender@email.com',
+      'replyto_email' => 'reply@email.com',
+      'default_list_id' => 1,
+      'total_subscribers' => '1262',
+      'importwp_list_id' => 2,
+      'confirm_email_link' => 4,
+      'uploadfolder' => '',
+      'uploadurl' => '',
+      'confirm_email_id' => 2,
+      'installed' => true,
+      'manage_subscriptions' => 1,
+      'installed_time' => 1486319877,
+      'wysija_db_version' => '2.7.7',
+      'dkim_domain' => 'localhost',
+      'wysija_whats_new' => '2.7.10',
+      'ignore_msgs' =>
+      array (
+        'ctaupdate' => 1,
+      ),
+      'queue_sends_slow' => 1,
+      'emails_notified_when_sub' => 1,
+      'emails_notified_when_bounce' => false,
+      'emails_notified_when_dailysummary' => 1,
+      'bounce_process_auto' => false,
+      'ms_bounce_process_auto' => false,
+      'sharedata' => false,
+      'dkim_active' => false,
+      'commentform' => 1,
+      'smtp_rest' => false,
+      'ms_smtp_rest' => false,
+      'debug_log_cron' => false,
+      'debug_log_post_notif' => false,
+      'debug_log_query_errors' => false,
+      'debug_log_queue_process' => false,
+      'debug_log_manual' => false,
+      'company_address' => 'mon adresse postale',
+      'commentform_lists' =>
+      array (
+        0 => '15',
+        1 => '3',
+      ),
+      'unsubscribe_page' => '2',
+      'confirmation_page' => '4',
+      'smtp_host' => 'smtp.mondomaine.com',
+      'smtp_login' => 'login',
+      'smtp_password' => 'password',
+      'smtp_port' => '25',
+      'smtp_secure' => 'ssl',
+      'test_mails' => 'test@email.com',
+      'bounce_email' => 'bounce@email.com',
+      'subscriptions_page' => '4',
+      'html_source' => '1',
+      'industry' => 'e-commerce',
+      'archive_linkname' => '[wysija_archive]',
+      'subscribers_count_linkname' => '[wysija_subscribers_count]',
+      'archive_lists' =>
+      array (
+        0 => '15',
+      ),
+      'commentform_linkname' => 'Oui, ajoutez moi à votre liste de diffusion !!!',
+      'registerform' => 1,
+      'registerform_linkname' => 'Oui, ajoutez moi à votre liste de diffusion 2',
+      'registerform_lists' =>
+      array (
+        0 => '12',
+        1 => '11',
+        2 => '8',
+      ),
+      'viewinbrowser_linkname' => 'Problèmes d\'affichage ?? [link]Affichez cette newsletter dans votre navigateur.[/link]',
+      'unsubscribe_linkname' => 'Se désabonner...',
+      'analytics' => '1',
+      'subscribers_count_lists' =>
+      array (
+        0 => '15',
+      ),
+      'premium_key' => '',
+      'premium_val' => '',
+      'last_save' => 1498810541,
+      'sending_emails_each' => 'five_min',
+      'sending_emails_number' => '25',
+      'sending_method' => 'smtp',
+      'manage_subscriptions_lists' =>
+      array (
+        0 => '3',
+        1 => '12',
+        2 => '11',
+      ),
+      'rolescap---administrator---newsletters' => false,
+      'rolescap---editor---newsletters' => false,
+      'rolescap---author---newsletters' => false,
+      'rolescap---contributor---newsletters' => false,
+      'rolescap---subscriber---newsletters' => false,
+      'rolescap---administrator---subscribers' => false,
+      'rolescap---editor---subscribers' => false,
+      'rolescap---author---subscribers' => false,
+      'rolescap---contributor---subscribers' => false,
+      'rolescap---subscriber---subscribers' => false,
+      'rolescap---administrator---config' => false,
+      'rolescap---editor---config' => false,
+      'rolescap---author---config' => false,
+      'rolescap---contributor---config' => false,
+      'rolescap---subscriber---config' => false,
+      'rolescap---administrator---theme_tab' => false,
+      'rolescap---editor---theme_tab' => false,
+      'rolescap---author---theme_tab' => false,
+      'rolescap---contributor---theme_tab' => false,
+      'rolescap---subscriber---theme_tab' => false,
+      'rolescap---administrator---style_tab' => false,
+      'rolescap---editor---style_tab' => false,
+      'rolescap---author---style_tab' => false,
+      'rolescap---contributor---style_tab' => false,
+      'rolescap---subscriber---style_tab' => false,
+    );
+    update_option('wysija', base64_encode(serialize($wysija_options)));
+  }
+
 }
