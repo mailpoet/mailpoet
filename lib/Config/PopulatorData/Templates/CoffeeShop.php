@@ -5,8 +5,10 @@ namespace MailPoet\Config\PopulatorData\Templates;
 class CoffeeShop {
 
   private $social_icon_url;
+  private $template_image_url;
 
   function __construct($assets_url) {
+    $this->template_image_url = '//ps.w.org/mailpoet/assets/newsletter-templates/franks-roast-house';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
@@ -70,7 +72,7 @@ class CoffeeShop {
                   2 => array(
                     'type' => 'image',
                     'link' => 'http://www.example.com',
-                    'src' => '//ps.w.org/mailpoet/assets/newsletter-templates/franks-roast-house/header-v2.jpg',
+                    'src' => $this->template_image_url . '/header-v2.jpg',
                     'alt' => 'Frank\'s Café',
                     'fullWidth' => true,
                     'width' => '600px',
@@ -99,7 +101,7 @@ class CoffeeShop {
                   5 => array(
                     'type' => 'image',
                     'link' => 'http://example.org',
-                    'src' => '//ps.w.org/mailpoet/assets/newsletter-templates/franks-roast-house/coffee-grain.jpg',
+                    'src' => $this->template_image_url . '/coffee-grain.jpg',
                     'alt' => 'Coffee grain',
                     'fullWidth' => true,
                     'width' => '1599px',
@@ -167,7 +169,7 @@ class CoffeeShop {
                   2 => array(
                     'type' => 'image',
                     'link' => 'http://example.org',
-                    'src' => '//ps.w.org/mailpoet/assets/newsletter-templates/franks-roast-house/sandwich.jpg',
+                    'src' => $this->template_image_url . '/sandwich.jpg',
                     'alt' => 'Sandwich',
                     'fullWidth' => false,
                     'width' => '640px',
@@ -287,7 +289,7 @@ class CoffeeShop {
                   2 => array(
                     'type' => 'image',
                     'link' => 'http://example.org',
-                    'src' => '//ps.w.org/mailpoet/assets/newsletter-templates/franks-roast-house/map-v2.jpg',
+                    'src' => $this->template_image_url . '/map-v2.jpg',
                     'alt' => 'Map',
                     'fullWidth' => false,
                     'width' => '636px',
@@ -417,7 +419,7 @@ class CoffeeShop {
   }
 
   private function getThumbnail() {
-    return '//ps.w.org/mailpoet/assets/newsletter-templates/franks-roast-house/coffee-shop.jpg';
+    return $this->template_image_url . '/coffee-shop.jpg';
   }
 
 }
