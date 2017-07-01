@@ -145,10 +145,7 @@
 
 <p class="mailpoet_sending_methods_help">
   <%= __("Need help to pick? [link]Check out the comparison table of sending methods[/link].")
-    |replace({
-      '[link]': '<a target="_blank" href="http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods">',
-      '[/link]': '</a>'
-      })
+    |replaceLink('http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods', {'target' : '_blank'})
     |raw
   %>
 </p>

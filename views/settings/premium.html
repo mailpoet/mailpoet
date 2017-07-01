@@ -56,11 +56,8 @@
           ><%= __('Install Premium now.') %>
           </a>
           <span>
-            <%= __("[link]Read guide[/link] on how to install Premium.")
-              |replace({
-                '[link]': '<a target="_blank" href="http://beta.docs.mailpoet.com/article/194-instructions-to-install-the-premium-plugin">',
-                '[/link]': '</a>'
-                })
+            <%= __('[link]Read guide[/link] on how to install Premium.')
+              |replaceLink('http://beta.docs.mailpoet.com/article/194-instructions-to-install-the-premium-plugin', {'target' : '_blank'})
               |raw
             %>
            </span>
@@ -85,10 +82,7 @@
         >
           <span>
             <%= __("Don't forget to activate the MailPoet Sending Service in the [link]Send with...[/link] tab above.")
-              |replace({
-                '[link]': '<a href="#mta">',
-                '[/link]': '</a>'
-                })
+              |replaceLink('#mta')
               |raw
             %>
           </span>

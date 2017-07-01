@@ -30,7 +30,7 @@
           <th scope="row">
             <label for="paste_input"> <%= __('Copy and paste your subscribers from Excel/Spreadsheets') %>
               <p class="description">
-                <%= csvDescription|replace({'[link]': csvKBLink, '[/link]': '</a>'})|raw %>
+                <%= csvDescription|replaceLink(csvKBLink, {'target' : '_blank'})|raw %>
               </p>
             </label>
           </th>
@@ -54,7 +54,7 @@
             <label for="file_local">
               <%= __('Upload a file') %>
               <p class="description">
-                <%= csvDescription|replace({'[link]': csvKBLink, '[/link]': '</a>'})|raw %>
+                <%= csvDescription|replaceLink(csvKBLink, {'target' : '_blank'})|raw %>
               </p>
             </label>
           </th>
@@ -114,10 +114,7 @@
               <br/>
               <%=
               __('[link]Read more at our Knowledge Base[/link]')
-              |replace({
-              '[link]': '<a target="_blank" href="http://docs.mailpoet.com/article/127-checklist-before-importing-subscribers">',
-              '[/link]': '</a>'
-              })
+              |replaceLink('http://docs.mailpoet.com/article/127-checklist-before-importing-subscribers', {'target' : '_blank'})
               |raw
               %>
             </p>
