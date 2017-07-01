@@ -3,6 +3,15 @@
 <% block content %>
   <div id="forms_container"></div>
 
+  <div>
+    <p class="mailpoet_sending_methods_help help">
+      <%= __('<strong>Tip:</strong> we have a [link]list of plugins[/link] that work with MailPoet if you need fancier forms.')
+      |replaceLink('http://beta.docs.mailpoet.com/article/198-list-of-forms-plugins-that-work-with-mailpoet?utm_source=plugin&utm_medium=settings&utm_campaign=helpdocs', {'target' : '_blank'})
+      |raw
+      %>
+    </p>
+  </div>
+
   <script type="text/javascript">
     var mailpoet_listing_per_page = <%= items_per_page %>;
     var mailpoet_segments = <%= json_encode(segments) %>;
