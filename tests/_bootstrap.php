@@ -38,6 +38,15 @@ $destroy = function($model) {
 };
 array_map($destroy, $models);
 
+$console->writeln('Initializing AspectMock library...');
+$kernel = \AspectMock\Kernel::getInstance();
+$kernel->init(
+  array(
+    'debug' => true,
+    'includePaths' => [__DIR__ . '/../lib']
+  )
+);
+
 abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $backupGlobals = true;
   protected $backupGlobalsBlacklist = array(
@@ -93,22 +102,21 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test {
   protected $runTestInSeparateProcess = false;
   protected $preserveGlobalState = false;
   protected $inIsolation = false;
-  
-	/**
-	 * Call protected/private method of a class.
-	 *
-	 * @param object &$object    Instantiated object that we will run method on.
-	 * @param string $methodName Method name to call
-	 * @param array  $parameters Array of parameters to pass into method.
-	 *
-	 * @return mixed Method return.
-	 */
-	public function invokeMethod(&$object, $methodName, array $parameters = array()) {
-		$reflection = new \ReflectionClass(get_class($object));
-		$method = $reflection->getMethod($methodName);
-		$method->setAccessible(true);
 
-		return $method->invokeArgs($object, $parameters);
-	}
-	
+  /**
+   * Call protected/private method of a class.
+   *
+   * @param object &$object Instantiated object that we will run method on.
+   * @param string $methodName Method name to call
+   * @param array $parameters Array of parameters to pass into method.
+   *
+   * @return mixed Method return.
+   */
+  public function invokeMethod(&$object, $methodName, array $parameters = array()) {
+    $reflection = new \ReflectionClass(get_class($object));
+    $method = $reflection->getMethod($methodName);
+    $method->setAccessible(true);
+
+    return $method->invokeArgs($object, $parameters);
+  }
 }
