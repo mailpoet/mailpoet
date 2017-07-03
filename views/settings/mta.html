@@ -153,7 +153,13 @@
             <option data-interval="5" data-emails="25" value="server">
               <%= __('Your web host / web server') %>
             </option>
-            <option data-interval="5" data-emails="100" value="manual">
+            <option data-interval="5" data-emails="100" value="manual"
+              <%
+              if settings.mta_group == "smtp"
+              %>
+              selected="selected"
+              <% endif %>
+            >
               <%= __('SMTP') %>
             </option>
             <!-- providers -->
