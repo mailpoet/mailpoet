@@ -114,6 +114,7 @@ class SendingQueueTest extends MailPoetTest {
       $sending_queue_worker->process();
       self::fail('Execution limits function was not called.');
     } catch(\Exception $e) {
+      // No exception handling needed
     }
   }
 

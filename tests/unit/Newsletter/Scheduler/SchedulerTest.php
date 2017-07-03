@@ -1,4 +1,3 @@
-
 <?php
 
 use Carbon\Carbon;
@@ -10,7 +9,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 
 class NewsletterSchedulerTest extends MailPoetTest {
- function testItSetsConstants() {
+  function testItSetsConstants() {
     expect(Scheduler::SECONDS_IN_HOUR)->notEmpty();
     expect(Scheduler::LAST_WEEKDAY_FORMAT)->notEmpty();
     expect(Scheduler::WORDPRESS_ALL_ROLES)->notEmpty();
@@ -324,7 +323,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'monthDay' => null,
       'nthWeekDay' => null,
       'weekDay' => null,
-      'timeOfDay' => 50400 // 14:00
+      'timeOfDay' => 50400 // 2 p.m.
     );
     Scheduler::processPostNotificationSchedule($newsletter);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
@@ -341,7 +340,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'monthDay' => null,
       'nthWeekDay' => null,
       'weekDay' => Carbon::TUESDAY,
-      'timeOfDay' => 50400 // 14:00
+      'timeOfDay' => 50400 // 2 p.m.
     );
     Scheduler::processPostNotificationSchedule($newsletter);
     $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
@@ -359,7 +358,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'monthDay' => 19, // 20th (count starts from 0)
       'nthWeekDay' => null,
       'weekDay' => null,
-      'timeOfDay' => 50400 // 14:00
+      'timeOfDay' => 50400 // 2 p.m.
     );
     Scheduler::processPostNotificationSchedule($newsletter);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)
@@ -376,7 +375,7 @@ class NewsletterSchedulerTest extends MailPoetTest {
       'monthDay' => null,
       'nthWeekDay' => 'L', // L = last
       'weekDay' => Carbon::SATURDAY,
-      'timeOfDay' => 50400 // 14:00
+      'timeOfDay' => 50400 // 2 p.m.
     );
     Scheduler::processPostNotificationSchedule($newsletter);
     $newsletter_option = NewsletterOption::where('newsletter_id', $newsletter->id)

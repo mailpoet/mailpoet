@@ -143,8 +143,7 @@ class ExportTest extends MailPoetTest {
         '|' .
         preg_quote(Env::$temp_url, '|') . '/' .
         basename($this->export->export_file) .
-        '|'
-        , $this->export->export_file_URL)
+        '|', $this->export->export_file_URL)
     )->equals(1);
     expect($this->export->subscriber_batch_size)->notNull();
   }

@@ -108,7 +108,7 @@ class ServicesTest extends MailPoetTest {
     );
     $response = $this->services_endpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    foreach (array_keys(Installer::getPremiumStatus()) as $key) {
+    foreach(array_keys(Installer::getPremiumStatus()) as $key) {
       expect(isset($response->meta[$key]))->true();
     }
   }
