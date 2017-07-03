@@ -17,6 +17,12 @@
   name="mta_group"
   value="<%= settings.mta_group %>"
 />
+<input
+  type="hidden"
+  id="mailpoet_smtp_provider"
+  name="mailpoet_smtp_provider"
+  value="<%= settings.smtp_provider %>"
+/>
 <!-- mta: method -->
 <input
   type="hidden"
@@ -226,12 +232,12 @@
                 <%= __("I'll set my own frequency") %>
               </option>
             </select>
-            <span id="mailpoet_recommended_daily_emails" style="display: none">xxxxx</span>
+            <span id="mailpoet_recommended_daily_emails" style="display: none"></span>
           </p>
           <div id="mailpoet_sending_frequency_manual" style="display:none">
             <p>
               <input
-                id="website_frequency_emails"
+                id="other_frequency_emails"
                 type="number"
                 min="1"
                 max="1000"
@@ -242,7 +248,7 @@
               <% endif %>
               />
               <%= __('emails') %>
-              <select id="website_frequency_interval">
+              <select id="other_frequency_interval">
                 <% for interval in intervals %>
                 <option
                   value="<%= interval %>"
@@ -657,7 +663,6 @@
       });
 
       // sending frequency update based on selected provider
-      $('#mailpoet_smtp_provider').on('change keyup', setProviderForm);
       $('#mailpoet_web_host').on('change keyup', renderHostSendingFrequency);
 
       // update manual sending frequency when values are changed
@@ -677,7 +682,6 @@
 
       // save configuration of a sending method
       $('.mailpoet_sending_service_activate').on('click', function(e) {
-        e.preventDefault();
         saveSendingMethodConfiguration('mailpoet');
       });
       $('.mailpoet_mta_setup_save').on('click', function() {
@@ -748,9 +752,6 @@
         // set active sending method
         $('.mailpoet_sending_methods li[data-group="'+group+'"]')
           .addClass('mailpoet_active');
-
-        // set smtp method value
-        $('#mta_group').val(group);
 
         var method = getMethodFromGroup(group);
 
@@ -856,21 +857,28 @@
 
       if(val === "server") {
         $('#mailpoet_sending_method_host').show();
+        $('#mta_group').val('website');
       } else {
         $('#mailpoet_sending_method_host').hide();
       }
       if(val === "manual") {
         $('.mailpoet_smtp_field').show();
+        $('#mta_group').val('smtp');
+        $('#mailpoet_smtp_provider').val('manual');
       } else {
         $('.mailpoet_smtp_field').hide();
       }
       if(val === "AmazonSES") {
         $('.mailpoet_aws_field').show();
+        $('#mta_group').val('smtp');
+        $('#mailpoet_smtp_provider').val('AmazonSES');
       } else {
         $('.mailpoet_aws_field').hide();
       }
       if(val === "SendGrid") {
         $('.mailpoet_sendgrid_field').show();
+        $('#mta_group').val('smtp');
+        $('#mailpoet_smtp_provider').val('SendGrid');
       } else {
         $('.mailpoet_sendgrid_field').hide();
       }
