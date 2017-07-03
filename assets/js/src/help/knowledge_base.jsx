@@ -7,9 +7,6 @@ function KnowledgeBase() {
 
   return (
     <div>
-      <h1 className="title">
-        {MailPoet.I18n.t('pageTitle')}
-      </h1>
 
       <Tabs tab="knowledgeBase" />
 

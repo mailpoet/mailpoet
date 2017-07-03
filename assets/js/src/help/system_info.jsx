@@ -32,9 +32,6 @@ function KnowledgeBase() {
   const data = window.help_scout_data;
   return (
     <div>
-      <h1 className="title">
-        {MailPoet.I18n.t('pageTitle')}
-      </h1>
 
       <Tabs tab="systemInfo" />
 
