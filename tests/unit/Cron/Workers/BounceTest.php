@@ -19,7 +19,7 @@ class BounceTest extends MailPoetTest {
       'good_address@example.com'
     );
 
-    foreach ($this->emails as $email) {
+    foreach($this->emails as $email) {
         Subscriber::createOrUpdate(array(
           'status' => Subscriber::STATUS_SUBSCRIBED,
           'email' => $email

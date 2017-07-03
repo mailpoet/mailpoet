@@ -19,7 +19,7 @@ class SchedulerTest extends MailPoetTest {
     expect(Scheduler::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT)->equals(5);
   }
 
- function testItConstructs() {
+  function testItConstructs() {
     $scheduler = new Scheduler();
     expect($scheduler->timer)->greaterOrEquals(5);
     $timer = microtime(true) - 2;
@@ -80,7 +80,7 @@ class SchedulerTest extends MailPoetTest {
     expect(SendingQueue::findMany())->notEmpty();
     $scheduler->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     expect(SendingQueue::findMany())->count(0);
-    }
+  }
 
   function testItCanRescheduleQueueDeliveryTime() {
     $newsletter = $this->_createNewsletter();

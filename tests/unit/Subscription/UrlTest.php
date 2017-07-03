@@ -21,7 +21,7 @@ class UrlTest extends MailPoetTest {
     // actual subscriber
     $subscriber = Subscriber::createOrUpdate(array(
       'email' => 'john@mailpoet.com'
-   ));
+    ));
     $url = Url::getConfirmationUrl($subscriber);
     expect($url)->contains('action=confirm');
     expect($url)->contains('endpoint=subscription');

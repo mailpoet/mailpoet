@@ -57,7 +57,7 @@ class DateTimeTest extends MailPoetTest {
     $one_hour_interval = array_keys($this->date_time->getTimeInterval(
       '00:00:00',
       '+1 hour',
-      $total_steps=5
+      $total_steps = 5
     ));
     $one_hour_expected = array(
       '00:00:00', '01:00:00', '02:00:00', '03:00:00', '04:00:00');
@@ -66,7 +66,7 @@ class DateTimeTest extends MailPoetTest {
     $quarter_hour_interval = array_keys($this->date_time->getTimeInterval(
       '00:00:00',
       '+15 minute',
-      $total_steps=5
+      $total_steps = 5
     ));
     $quarter_hour_expected = array(
       '00:00:00', '00:15:00', '00:30:00', '00:45:00', '01:00:00',
@@ -76,7 +76,7 @@ class DateTimeTest extends MailPoetTest {
     $offset_start_time_interval = array_keys($this->date_time->getTimeInterval(
       '03:00:00',
       '+1 hour',
-      $total_steps=5
+      $total_steps = 5
     ));
     $offset_start_time_expected = array(
       '03:00:00', '04:00:00', '05:00:00', '06:00:00', '07:00:00',

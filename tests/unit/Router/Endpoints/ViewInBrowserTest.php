@@ -177,7 +177,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
     expect($result->queue)->false();
   }
 
- function testItProcessesBrowserPreviewData() {
+  function testItProcessesBrowserPreviewData() {
     $processed_data = $this->view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
     expect($processed_data->queue->id)->equals($this->queue->id);
     expect($processed_data->subscriber->id)->equals($this->subscriber->id);
