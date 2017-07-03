@@ -14,11 +14,11 @@ const App = React.createClass({
   }
 });
 
-const container = document.getElementById('mailpoet_help');
+const container = document.getElementById('help_container');
 
 if(container) {
 
-  const mailpoet_listing = ReactDOM.render((
+  ReactDOM.render((
     <Router history={ history }>
       <Route path="/" component={ App }>
         <IndexRedirect to="knowledgeBase" />
@@ -29,5 +29,4 @@ if(container) {
     </Router>
   ), container);
 
-  window.mailpoet_listing = mailpoet_listing;
 }
