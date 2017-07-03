@@ -235,14 +235,23 @@ class RoboFile extends \Robo\Tasks {
     } else {
       $severityFlag = '-n';
     }
-    return $this->_exec(
-      './vendor/bin/phpcs '.
-      '--standard=./tasks/code_sniffer/MailPoet '.
-      '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,'.
-      './lib/Util/pQuery/*,./lib/Config/PopulatorData/Templates/* '.
-      'lib/ '.
-      $severityFlag
-    );
+    return $this->collectionBuilder()
+      ->taskExec(
+        './vendor/bin/phpcs '.
+        '--standard=./tasks/code_sniffer/MailPoet '.
+        '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,'.
+        './lib/Util/pQuery/*,./lib/Config/PopulatorData/Templates/* '.
+        'lib/ '.
+        $severityFlag
+      )
+      ->taskExec(
+        './vendor/bin/phpcs '.
+        '--standard=./tasks/code_sniffer/MailPoetTests '.
+        '--ignore=./tests/unit/_bootstrap.php '.
+        'tests/unit/ '.
+        $severityFlag
+      )
+      ->run();
   }
 
   function svnCheckout() {

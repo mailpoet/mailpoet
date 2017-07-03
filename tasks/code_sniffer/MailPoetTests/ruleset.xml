@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<ruleset name="MailPoet">
+  <description>MailPoet specific rule set</description>
+
+  <!-- Control structures must have at least one statement in the body -->
+  <!--<rule ref="Generic.CodeAnalysis.EmptyStatement"/>-->
+  <!-- For loops with only second expression should be while loops -->
+  <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop"/>
+  <!-- Same variable should not be used for two nested loops as incrementers -->
+  <rule ref="Generic.CodeAnalysis.JumbledIncrementer"/>
+  <!-- Shouldn't use if statements that are always evaluated -->
+  <rule ref="Generic.CodeAnalysis.UnconditionalIfStatement"/>
+  <!-- Final methods don't need final in classes marked as final -->
+  <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
+  <!-- All parameters in function signature should be used within the function -->
+  <!--<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>-->
+  <!-- Don't use methods that extend and only call the parent method -->
+  <!--<rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>-->
+
+  <!-- Disallow usage of BOMs -->
+  <rule ref="Generic.Files.ByteOrderMark"/>
+  <!-- Lines can be 80 chars long, show errors at 120 chars -->
+  <!--<rule ref="Generic.Files.LineLength">-->
+    <!--<properties>-->
+      <!--<property name="lineLimit" value="80"/>-->
+      <!--<property name="absoluteLineLimit" value="120"/>-->
+    <!--</properties>-->
+  <!--</rule>-->
+  <!-- Use Unix newlines -->
+  <rule ref="Generic.Files.LineEndings">
+    <properties>
+      <property name="eolChar" value="\n"/>
+    </properties>
+  </rule>
+  <!-- Limit classes to one per file -->
+  <rule ref="Generic.Files.OneClassPerFile"/>
+  <!-- Limit interfaces to one per file -->
+  <rule ref="Generic.Files.OneInterfacePerFile"/>
+
+  <!-- Disallow multiple statements on a single line -->
+  <rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+  <!-- There should be no space after cast -->
+  <rule ref="Generic.Formatting.NoSpaceAfterCast"/>
+
+  <!-- Function calls should have one space after comma -->
+  <!-- And single spaces should surround equals sign for default values -->
+  <rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
+  <!-- Opening brace should be on the same line as the function declaration -->
+  <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
+
+  <!-- Nesting level should be kept under 5, not more than 10 -->
+  <rule ref="Generic.Metrics.NestingLevel"/>
+
+  <!-- Method names should use camelCaps -->
+  <rule ref="PSR1.Methods.CamelCapsMethodName"/>
+  <!-- Constants should be all uppercase with underscores separating words -->
+  <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
+
+  <!-- Disallow characters before PHP opening tag -->
+  <rule ref="Generic.PHP.CharacterBeforePHPOpeningTag"/>
+  <rule ref="Generic.PHP.DisallowShortOpenTag"/>
+  <!-- true, false, null should always be lower case -->
+  <rule ref="Generic.PHP.LowerCaseConstant"/>
+  <!-- System keywords should always be lower case -->
+  <rule ref="Generic.PHP.LowerCaseKeyword"/>
+  <!-- Disallow silencing errors with @ -->
+  <!--<rule ref="Generic.PHP.NoSilencedErrors"/>-->
+
+  <!-- Disallow indenting with tabs -->
+  <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
+  <!-- Control structures, classes, functions indent 2 spaces per level -->
+  <rule ref="Generic.WhiteSpace.ScopeIndent">
+    <properties>
+      <property name="indent" value="2"/>
+    </properties>
+  </rule>
+
+  <!-- Closing brace should be at the same level as opening brace -->
+  <rule ref="PEAR.WhiteSpace.ScopeClosingBrace">
+    <properties>
+      <property name="indent" value="2"/>
+    </properties>
+  </rule>
+
+  <!-- Each class must be in a file by itself and must be under a namespace -->
+  <rule ref="PSR1.Classes.ClassDeclaration"/>
+
+  <!-- One namespace per use, one blank line after final use statement -->
+  <rule ref="PSR2.Namespaces.UseDeclaration"/>
+
+  <!-- When referencing arrays there should be no whitespace between brackets -->
+  <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
+  <!-- Class name and file name must match -->
+  <rule ref="Squiz.Classes.ClassFileName"/>
+  <!-- Classes should be named camel case with first letter capitalised -->
+  <rule ref="Squiz.Classes.ValidClassName"/>
+  <!-- Checks for empty catch statements. It must at least have a comment -->
+  <rule ref="Squiz.Commenting.EmptyCatchComment"/>
+  <!-- There should be a space between each foreach condition -->
+  <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration"/>
+  <!-- There should be a space between each for condition -->
+  <rule ref="Squiz.ControlStructures.ForLoopDeclaration"/>
+
+  <!-- There should not be commented out code -->
+  <rule ref="Squiz.PHP.CommentedOutCode">
+    <properties>
+      <property name="maxPercentage" value="50"/>
+    </properties>
+  </rule>
+  <!-- Discourage use of debug functions -->
+  <rule ref="Squiz.PHP.DiscouragedFunctions"/>
+  <!-- Discourage use of eval -->
+  <rule ref="Squiz.PHP.Eval"/>
+  <!-- Warn about non executable code -->
+  <rule ref="Squiz.PHP.NonExecutableCode"/>
+
+  <!-- Warn about usage of "$this" in static methods -->
+  <rule ref="Squiz.Scope.StaticThisUsage"/>
+
+  <!-- Remove space between if/for/while and opening parenthesis -->
+  <rule ref="MailPoetTests.ControlStructures.ControlSignature"/>
+
+  <!-- Run against the PHPCompatibility ruleset -->
+  <rule ref="PHPCompatibility" />
+  <config name="testVersion" value="5.4-7.0"/>
+</ruleset>
