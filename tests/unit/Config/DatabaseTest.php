@@ -1,5 +1,6 @@
 <?php
 
+use Codeception\Util\Stub;
 use MailPoet\Config\Database;
 use MailPoet\Config\Env;
 
@@ -57,5 +58,27 @@ class DatabaseTestTest extends MailPoetTest {
     expect($result->sql_mode)->notContains('ONLY_FULL_GROUP_BY');
     // time zone should be set based on WP's time zone
     expect($result->time_zone)->equals(Env::$db_timezone_offset);
+  }
+
+  function testItRethrowsPDOExceptions() {
+    $message = 'Error message';
+    $pdo = Stub::make(
+      'PDO',
+      array(
+        'prepare' => function() use ($message) {
+          throw new \PDOException($message);
+        }
+      )
+    );
+    \ORM::setDb($pdo);
+    try {
+      $this->database->setupDriverOptions();
+      $this->fail('Exception was not thrown');
+    } catch(\Exception $e) {
+      expect($e instanceof \PDOException)->false();
+      expect($e->getMessage())->equals($message);
+    }
+    // Remove the DB stub
+    $this->_before();
   }
 }
