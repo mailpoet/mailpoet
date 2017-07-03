@@ -76,14 +76,14 @@
   </rule>
 
   <!-- Closing brace should be at the same level as opening brace -->
-  <rule ref="PEAR.WhiteSpace.ScopeClosingBrace">
+  <!-- <rule ref="PEAR.WhiteSpace.ScopeClosingBrace">
     <properties>
       <property name="indent" value="2"/>
     </properties>
-  </rule>
+  </rule> -->
 
   <!-- Each class must be in a file by itself and must be under a namespace -->
-  <rule ref="PSR1.Classes.ClassDeclaration"/>
+  <!-- <rule ref="PSR1.Classes.ClassDeclaration"/> -->
 
   <!-- One namespace per use, one blank line after final use statement -->
   <rule ref="PSR2.Namespaces.UseDeclaration"/>
@@ -91,7 +91,7 @@
   <!-- When referencing arrays there should be no whitespace between brackets -->
   <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
   <!-- Class name and file name must match -->
-  <rule ref="Squiz.Classes.ClassFileName"/>
+  <!-- <rule ref="Squiz.Classes.ClassFileName"/> -->
   <!-- Classes should be named camel case with first letter capitalised -->
   <rule ref="Squiz.Classes.ValidClassName"/>
   <!-- Checks for empty catch statements. It must at least have a comment -->
@@ -121,6 +121,8 @@
   <rule ref="MailPoetTests.ControlStructures.ControlSignature"/>
 
   <!-- Run against the PHPCompatibility ruleset -->
-  <rule ref="PHPCompatibility" />
+  <rule ref="PHPCompatibility">
+    <exclude name="PHPCompatibility.PHP.EmptyNonVariable"/>
+  </rule>
   <config name="testVersion" value="5.4-7.0"/>
 </ruleset>
