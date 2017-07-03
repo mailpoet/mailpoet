@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\Block;
 use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Helpscout\Beacon;
 use MailPoet\Listing;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Form;
@@ -164,6 +165,18 @@ class Menu {
       array(
         $this,
         'settings'
+      )
+    );
+
+    add_submenu_page(
+      $main_page_slug,
+      $this->setPageTitle(__('Help', 'mailpoet')),
+      __('Help', 'mailpoet'),
+      Env::$required_permission,
+      'mailpoet-help',
+      array(
+        $this,
+        'help'
       )
     );
 
@@ -375,6 +388,10 @@ class Menu {
     $data = array_merge($data, Installer::getPremiumStatus());
 
     $this->displayPage('settings.html', $data);
+  }
+
+  function help() {
+    $this->displayPage('help.html', array('data' => Beacon::getData()));
   }
 
   private function _getFlags() {

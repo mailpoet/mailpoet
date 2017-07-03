@@ -168,6 +168,7 @@ var adminConfig = {
       'segments/segments.jsx',
       'forms/forms.jsx',
       'settings/tabs.js',
+      'help/help.jsx',
       'settings/reinstall_from_scratch.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',

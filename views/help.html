@@ -1,0 +1,28 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+
+<h1 class="title"><%= __('Help') %></h1>
+
+<div id="mailpoet_help">
+
+  <script type="text/javascript">
+    var help_scout_data = <%= json_encode(data) %>;
+  </script>
+
+  <div id="help_container"></div>
+
+</div>
+
+<% endblock %>
+<% block translations %>
+<%= localize({
+  'tabKnowledgeBaseTitle': __('Knowledge Base'),
+  'tabSystemInfoTitle': __('System Info'),
+  'knowledgeBaseIntro': __('Click on one of these categories below to find more information:'),
+  'knowledgeBaseButton': __('Visit our Knowledge Base for more articles'),
+  'systemInfoIntro': __('The information below is useful when you need to get in touch with our support. Just copy all the text below and paste it into a message to us.'),
+  'systemInfoDataError': __('Sorry, there was an error, please try again later.'),
+}) %>
+<% endblock %>
+
