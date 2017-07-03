@@ -48,6 +48,7 @@ define([
       return this._getDefaults({
         type: 'posts',
         amount: '10',
+        offset: 0,
         contentType: 'post', // 'post'|'page'|'mailpoet_page'
         postStatus: 'publish', // 'draft'|'pending'|'private'|'publish'|'future'
         terms: [], // List of category and tag objects
@@ -98,6 +99,7 @@ define([
 
       this.fetchAvailablePosts();
       this.on('change:amount change:contentType change:terms change:inclusionType change:postStatus change:search change:sortBy', refreshAvailablePosts);
+      this.on('loadMorePosts', this._loadMorePosts, this);
 
       this.listenTo(this.get('_selectedPosts'), 'add remove reset', refreshTransformedPosts);
       this.on('change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:showDivider', refreshTransformedPosts);
@@ -108,12 +110,34 @@ define([
     },
     fetchAvailablePosts: function() {
       var that = this;
+      this.set('offset', 0);
       CommunicationComponent.getPosts(this.toJSON()).done(function(posts) {
         that.get('_availablePosts').reset(posts);
         that.get('_selectedPosts').reset(); // Empty out the collection
         that.trigger('change:_availablePosts');
       }).fail(function() {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
+      });
+    },
+    _loadMorePosts: function() {
+      var that = this,
+        postCount = this.get('_availablePosts').length,
+        nextOffset = this.get('offset') + Number(this.get('amount'));
+
+      if(postCount === 0 || postCount < nextOffset) {
+        // No more posts to load
+        return false;
+      }
+      this.set('offset', nextOffset);
+      this.trigger('loadingMorePosts');
+
+      CommunicationComponent.getPosts(this.toJSON()).done(function(posts) {
+        that.get('_availablePosts').add(posts);
+        that.trigger('change:_availablePosts');
+      }).fail(function() {
+        MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
+      }).always(function() {
+        that.trigger('morePostsLoaded');
       });
     },
     _refreshTransformedPosts: function() {
@@ -260,6 +284,7 @@ define([
   });
 
   var PostsSelectionCollectionView = Marionette.CollectionView.extend({
+    className: 'mailpoet_post_scroll_container',
     childView: function() { return SinglePostSelectionSettingsView; },
     emptyView: function() { return EmptyPostSelectionSettingsView; },
     childViewOptions: function() {
@@ -269,6 +294,16 @@ define([
     },
     initialize: function(options) {
       this.blockModel = options.blockModel;
+    },
+    events: {
+      'scroll': 'onPostsScroll',
+    },
+    onPostsScroll: function(event) {
+      var $postsBox = jQuery(event.target);
+      if($postsBox.scrollTop() + $postsBox.innerHeight() >= $postsBox[0].scrollHeight){
+        // Load more posts if scrolled to bottom
+        this.blockModel.trigger('loadMorePosts');
+      }
     },
   });
 
@@ -283,6 +318,20 @@ define([
         'change .mailpoet_posts_post_status': _.partial(this.changeField, 'postStatus'),
         'input .mailpoet_posts_search_term': _.partial(this.changeField, 'search'),
       };
+    },
+    modelEvents: {
+      'change:offset': function(model, value) {
+        // Scroll posts view to top if settings are changed
+        if (value === 0) {
+          this.$('.mailpoet_post_scroll_container').scrollTop(0);
+        }
+      },
+      'loadingMorePosts': function() {
+        this.$('.mailpoet_post_selection_loading').css('visibility', 'visible');
+      },
+      'morePostsLoaded': function() {
+        this.$('.mailpoet_post_selection_loading').css('visibility', 'hidden');
+      }
     },
     onRender: function() {
       // Dynamically update available post types

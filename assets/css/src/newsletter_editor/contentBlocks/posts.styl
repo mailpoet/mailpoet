@@ -18,6 +18,7 @@
 .mailpoet_settings_posts_display_options
 .mailpoet_settings_posts_selection
   animation-slide-open-downwards()
+  overflow-x: hidden
 
 .mailpoet_settings_posts_show_display_options,
 .mailpoet_settings_posts_show_post_selection
@@ -26,7 +27,12 @@
 
 .mailpoet_post_selection_container
   margin-top: 20px
-  margin-bottom: 20px
+  margin-bottom: 0
+
+.mailpoet_post_scroll_container
+  overflow-y: scroll
+  overflow-x: hidden
+  max-height: 400px
 
 .mailpoet_settings_posts_single_post
   border-radius(1px)
@@ -45,3 +51,6 @@
   .mailpoet_select_post_checkbox
     margin-left: 10px
     margin-right: 8px
+
+.mailpoet_post_selection_loading
+  color: #999
