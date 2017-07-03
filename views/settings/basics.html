@@ -387,6 +387,10 @@
       $('#mailpoet_subscription_edit_segments').select2();
       $('#mailpoet_shortcode_archives_list').select2();
       $('#mailpoet_shortcode_subscribers_count').select2();
+      // fix lengthy placeholder from being cut off by select 2
+      $('.select2-search__field').each(function() {
+        $(this).css('width', ($(this).attr('placeholder').length * 0.75) + 'em');
+      });
 
       // shortcodes
       $('#mailpoet_shortcode_archives_list, #mailpoet_shortcode_subscribers_count')
