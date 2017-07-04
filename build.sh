@@ -40,15 +40,17 @@ rm -Rf $plugin_name/lang/*.po
 # Remove extra files (docs, examples,...) from 3rd party extensions
 unameString=`uname`
 if [[ "$unameString" == 'Darwin' ]]; then
-   findCommand='find -E '
+   findPreArgs=' -E '
+   findMidArgs=''
 else
-   findCommand='find -regextype posix-egrep '
+   findPreArgs=''
+   findMidArgs=' -regextype posix-egrep '
 fi
 
 echo '[BUILD] Removing obsolete files from vendor libraries'
-$findCommand $plugin_name/vendor -type f -iregex ".*\/*\.(markdown|md|txt)" -print0 | xargs -0 rm -f
-$findCommand $plugin_name/vendor -type f -iregex ".*\/(readme|license|version|changes|changelog)" -print0 | xargs -0 rm -f
-$findCommand $plugin_name/vendor -type d -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
+find $findPreArgs $plugin_name/vendor -type f $findMidArgs -iregex ".*\/*\.(markdown|md|txt)" -print0 | xargs -0 rm -f
+find $findPreArgs $plugin_name/vendor -type f $findMidArgs -iregex ".*\/(readme|license|version|changes|changelog)" -print0 | xargs -0 rm -f
+find $findPreArgs $plugin_name/vendor -type d $findMidArgs -iregex ".*\/(docs?|examples?|\.git)" -print0 | xargs -0 rm -rf
 
 # Remove unit tests from 3rd party extensions
 echo '[BUILD] Removing unit tests from vendor libraries'
