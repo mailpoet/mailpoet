@@ -10,8 +10,7 @@ use MailPoet\Newsletter\ViewInBrowser;
 use MailPoet\Router\Router;
 
 class ViewInBrowserTest extends MailPoetTest {
-  function __construct() {
-    parent::__construct();
+  function _before() {
     $this->newsletter =
       array(
         'body' => json_decode(
@@ -66,9 +65,7 @@ class ViewInBrowserTest extends MailPoetTest {
     $this->queue_rendered_newsletter_with_tracking = array(
       'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="' . Links::DATA_TAG_CLICK . '-90e56">Unsubscribe</a> or visit <a href="' . Links::DATA_TAG_CLICK . '-i1893">Google</a><img alt="" class="" src="' . Links::DATA_TAG_OPEN . '"></p>'
     );
-  }
-
-  function _before() {
+    $this->view_in_browser = new ViewInBrowser();
     // create newsletter
     $newsletter = Newsletter::create();
     $newsletter->hydrate($this->newsletter);
@@ -101,7 +98,7 @@ class ViewInBrowserTest extends MailPoetTest {
   }
 
   function testItRendersNewsletter() {
-    $rendered_body = ViewInBrowser::renderNewsletter(
+    $rendered_body = $this->view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
       $queue = false,
@@ -111,7 +108,7 @@ class ViewInBrowserTest extends MailPoetTest {
   }
 
   function testItReusesRenderedNewsletterBodyWhenQueueExists() {
-    $rendered_body = ViewInBrowser::renderNewsletter(
+    $rendered_body = $this->view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
       $this->queue,
@@ -122,7 +119,7 @@ class ViewInBrowserTest extends MailPoetTest {
 
   function testItConvertsShortcodes() {
     Setting::setValue('tracking.enabled', false);
-    $rendered_body = ViewInBrowser::renderNewsletter(
+    $rendered_body = $this->view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
       $this->queue,
@@ -136,7 +133,7 @@ class ViewInBrowserTest extends MailPoetTest {
     Setting::setValue('tracking.enabled', true);
     $queue = $this->queue;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
-    $rendered_body = ViewInBrowser::renderNewsletter(
+    $rendered_body = $this->view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
       $queue,
@@ -148,7 +145,7 @@ class ViewInBrowserTest extends MailPoetTest {
   function testItConvertsHashedLinksToUrlsWhenPreviewIsEnabledAndNewsletterWasSent() {
     $queue = $this->queue;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
-    $rendered_body = ViewInBrowser::renderNewsletter(
+    $rendered_body = $this->view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
       $queue,
@@ -162,7 +159,7 @@ class ViewInBrowserTest extends MailPoetTest {
   function testReplacesLinkShortcodesWithUrlHashWhenPreviewIsEnabledAndNewsletterWasSent() {
     $queue = $this->queue;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
-    $rendered_body = ViewInBrowser::renderNewsletter(
+    $rendered_body = $this->view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
       $queue,
@@ -176,7 +173,7 @@ class ViewInBrowserTest extends MailPoetTest {
   function testRemovesOpenTrackingTagWhenPreviewIsEnabledAndNewsletterWasSent() {
     $queue = $this->queue;
     $queue->newsletter_rendered_body = $this->queue_rendered_newsletter_with_tracking;
-    $rendered_body = ViewInBrowser::renderNewsletter(
+    $rendered_body = $this->view_in_browser->renderNewsletter(
       $this->newsletter,
       $this->subscriber,
       $queue,

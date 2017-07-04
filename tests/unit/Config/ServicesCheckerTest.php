@@ -9,23 +9,24 @@ class ServicesCheckerTest extends MailPoetTest {
   function _before() {
     $this->setMailPoetSendingMethod();
     $this->fillPremiumKey();
+    $this->services_checker = new ServicesChecker();
   }
 
   function testItDoesNotCheckMSSKeyIfMPSendingServiceIsDisabled() {
     $this->disableMailPoetSendingMethod();
-    $result = ServicesChecker::isMailPoetAPIKeyValid();
+    $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->null();
   }
 
   function testItForciblyChecksMSSKeyIfMPSendingServiceIsDisabled() {
     $this->disableMailPoetSendingMethod();
-    $result = ServicesChecker::isMailPoetAPIKeyValid(false, true);
+    $result = $this->services_checker->isMailPoetAPIKeyValid(false, true);
     expect($result)->false();
   }
 
   function testItReturnsFalseIfMSSKeyIsNotSpecified() {
     Setting::setValue(Bridge::API_KEY_SETTING_NAME, '');
-    $result = ServicesChecker::isMailPoetAPIKeyValid();
+    $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->false();
   }
 
@@ -34,7 +35,7 @@ class ServicesCheckerTest extends MailPoetTest {
       Bridge::API_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::MAILPOET_KEY_VALID)
     );
-    $result = ServicesChecker::isMailPoetAPIKeyValid();
+    $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->true();
   }
 
@@ -43,7 +44,7 @@ class ServicesCheckerTest extends MailPoetTest {
       Bridge::API_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::MAILPOET_KEY_INVALID)
     );
-    $result = ServicesChecker::isMailPoetAPIKeyValid();
+    $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->false();
   }
 
@@ -55,7 +56,7 @@ class ServicesCheckerTest extends MailPoetTest {
         'data' => array('expire_at' => date('c'))
       )
     );
-    $result = ServicesChecker::isMailPoetAPIKeyValid();
+    $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->true();
   }
 
@@ -66,7 +67,7 @@ class ServicesCheckerTest extends MailPoetTest {
         'state' => 'unexpected'
       )
     );
-    $result = ServicesChecker::isMailPoetAPIKeyValid();
+    $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->false();
   }
 
@@ -77,13 +78,13 @@ class ServicesCheckerTest extends MailPoetTest {
         'state' => ''
       )
     );
-    $result = ServicesChecker::isMailPoetAPIKeyValid();
+    $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->false();
   }
 
   function testItReturnsFalseIfPremiumKeyIsNotSpecified() {
     $this->clearPremiumKey();
-    $result = ServicesChecker::isPremiumKeyValid();
+    $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
   }
 
@@ -92,7 +93,7 @@ class ServicesCheckerTest extends MailPoetTest {
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::PREMIUM_KEY_VALID)
     );
-    $result = ServicesChecker::isPremiumKeyValid();
+    $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->true();
   }
 
@@ -101,7 +102,7 @@ class ServicesCheckerTest extends MailPoetTest {
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::PREMIUM_KEY_INVALID)
     );
-    $result = ServicesChecker::isPremiumKeyValid();
+    $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
   }
 
@@ -110,7 +111,7 @@ class ServicesCheckerTest extends MailPoetTest {
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
       array('state' => Bridge::PREMIUM_KEY_ALREADY_USED)
     );
-    $result = ServicesChecker::isPremiumKeyValid();
+    $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
   }
 
@@ -122,7 +123,7 @@ class ServicesCheckerTest extends MailPoetTest {
         'data' => array('expire_at' => date('c'))
       )
     );
-    $result = ServicesChecker::isPremiumKeyValid();
+    $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->true();
   }
 
@@ -133,7 +134,7 @@ class ServicesCheckerTest extends MailPoetTest {
         'state' => 'unexpected'
       )
     );
-    $result = ServicesChecker::isPremiumKeyValid();
+    $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
   }
 
@@ -144,7 +145,7 @@ class ServicesCheckerTest extends MailPoetTest {
         'state' => ''
       )
     );
-    $result = ServicesChecker::isPremiumKeyValid();
+    $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
   }
 
