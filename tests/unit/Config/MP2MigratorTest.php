@@ -567,9 +567,6 @@ class MP2MigratorTest extends MailPoetTest {
     $analytics = Setting::getValue('analytics');
     expect($analytics['enabled'])->equals(1);
 
-    $cron_trigger = Setting::getValue('cron_trigger');
-    expect($cron_trigger['method'])->equals('WordPress');
-
     $mta_group = Setting::getValue('mta_group');
     expect($mta_group)->equals('smtp');
 

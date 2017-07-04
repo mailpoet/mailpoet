@@ -1032,11 +1032,6 @@ class MP2Migrator {
     $analytics['enabled'] = isset($options['analytics']) ? $options['analytics'] : '';
     Setting::setValue('analytics', $analytics);
 
-    // Cron trigger
-    $cron_trigger = Setting::getValue('cron_trigger');
-    $cron_trigger['method'] = isset($options['cron_page_hit_trigger']) ? 'MailPoet' : 'WordPress';
-    Setting::setValue('cron_trigger', $cron_trigger);
-
     // MTA
     $mta_group = Setting::getValue('mta_group');
     $mta_group = isset($options['sending_method']) && ($options['sending_method'] == 'smtp') ? 'smtp' : 'website';
