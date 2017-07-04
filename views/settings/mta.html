@@ -240,13 +240,25 @@
               <option value="auto">
                 <%= __('Recommended') %>
               </option>
-              <option value="manual">
+              <option value="manual"
+                <%
+                if not(settings.mailpoet_sending_frequency == 'auto')
+                %>
+                selected="selected"
+                <% endif %>
+              >
                 <%= __("I'll set my own frequency") %>
               </option>
             </select>
-            <span id="mailpoet_recommended_daily_emails" style="display: none"></span>
+            <span id="mailpoet_recommended_daily_emails"></span>
           </p>
-          <div id="mailpoet_sending_frequency_manual" style="display:none">
+          <div id="mailpoet_sending_frequency_manual"
+            <%
+            if settings.mailpoet_sending_frequency == 'auto'
+            %>
+              style="display: none"
+            <% endif %>
+          >
             <p>
               <input
                 id="other_frequency_emails"
