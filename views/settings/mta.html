@@ -697,18 +697,12 @@
 
       // testing sending method
       $('#mailpoet_mta_test').on('click', function() {
-        // get form data
-        var data = $('#mailpoet_settings_form').serializeObject();
         // get test email and include it in data
         var recipient = $('#mailpoet_mta_test_email').val();
 
         var settings = jQuery('#mailpoet_settings_form').serializeObject();
         var mailer = settings.mta;
-        mailer.method = getMethodFromGroup(
-          ($('.mailpoet_sending_method:visible').data('group') !== undefined)
-          ? $('.mailpoet_sending_method:visible').data('group')
-          : $('#mta_group').val()
-        );
+        mailer.method = getMethodFromGroup($('#mta_group').val());
 
         // check that we have a from address
         if(settings.sender.address.length === 0) {
@@ -836,7 +830,7 @@
         $('.mailpoet_sending_methods li[data-group="'+group+'"]')
           .addClass('mailpoet_active');
 
-        var method = getMethodFromGroup(group);
+        var method = getMethodFromGroup($('#mta_group').val());
 
         $('#mta_method').val(method);
 
@@ -921,16 +915,11 @@
     }
 
     function sendingFrequencyMethodUpdated() {
-      var sendingMethod = $('#mailpoet_smtp_method').find('option:selected').first().val();
       var method = $(this).find('option:selected').first();
       if(method.val() === "manual") {
         $('#mailpoet_sending_frequency_manual').show();
-        // $('#mailpoet_recommended_daily_emails').hide();
       } else {
         $('#mailpoet_sending_frequency_manual').hide();
-//        if(sendingMethod !== "server") {
-//          $('#mailpoet_recommended_daily_emails').show();
-//        }
       }
     }
 
