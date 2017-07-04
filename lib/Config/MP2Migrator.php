@@ -994,7 +994,7 @@ class MP2Migrator {
 
     // Subscribe
     $subscribe = Setting::getValue('subscribe');
-    $subscribe['on_comment']['enabled'] = isset($options['manage_subscriptions']) ? $options['manage_subscriptions'] : '0';
+    $subscribe['on_comment']['enabled'] = isset($options['commentform']) ? $options['commentform'] : '0';
     $subscribe['on_comment']['label'] = isset($options['commentform_linkname']) ? $options['commentform_linkname'] : '';
     $subscribe['on_comment']['segments'] = isset($options['commentform_lists'])? $this->getMappedSegmentIds($options['commentform_lists']) : array();
     $subscribe['on_register']['enabled'] = isset($options['registerform']) ? $options['registerform'] : '0';
