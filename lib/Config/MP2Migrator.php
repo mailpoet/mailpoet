@@ -1043,7 +1043,7 @@ class MP2Migrator {
     Setting::setValue('mta_group', $mta_group);
 
     $mta = Setting::getValue('mta');
-    $mta['method'] = isset($options['sending_method']) && ($options['sending_method'] == 'smtp') ? 'SMTP' : 'PHPMail';
+    $mta['method'] = (isset($options['smtp_rest']) && !empty($options['smtp_rest'])) ? 'SendGrid' : (isset($options['sending_method']) && ($options['sending_method'] == 'smtp') ? 'SMTP' : 'PHPMail');
     $mta['frequency']['emails'] =  isset($options['sending_emails_number']) ? $options['sending_emails_number'] : '70';
     $mta['frequency']['interval'] =  $this->mapFrequencyInterval(isset($options['sending_emails_each']) ? $options['sending_emails_each'] : '');
     $mta['host'] = isset($options['smtp_host']) ? $options['smtp_host'] : '';
@@ -1053,6 +1053,11 @@ class MP2Migrator {
     $mta['encryption'] = isset($options['smtp_secure']) ? $options['smtp_secure'] : '';
     $mta['authentication'] = !isset($options['smtp_auth']) ? '1' : '-1';
     Setting::setValue('mta', $mta);
+
+    // SMTP Provider
+    if($mta['method'] == 'SendGrid') {
+      Setting::setValue('smtp_provider', 'SendGrid');
+    }
 
     $this->log(__("Settings imported", 'mailpoet'));
   }
