@@ -179,7 +179,13 @@
           </select>
         </td>
       </tr>
-      <tr id="mailpoet_sending_method_host">
+      <tr id="mailpoet_sending_method_host"
+        <%
+        if settings.mta_group == "smtp"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="mailpoet_web_host">
             <%= __('Your web host') %>
@@ -286,7 +292,13 @@
           </div>
         </td>
       </tr>
-      <tr class="mailpoet_smtp_field" style="display:none;" data-field="host">
+      <tr class="mailpoet_smtp_field" data-field="host"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "manual"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="settings[mta_host]">
             <%= __('SMTP Hostname') %>
@@ -305,7 +317,13 @@
         </td>
       </tr>
       <!-- smtp: port -->
-      <tr class="mailpoet_smtp_field" style="display:none;" data-field="port">
+      <tr class="mailpoet_smtp_field" data-field="port"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "manual"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="settings[mta_port]">
             <%= __('SMTP Port') %>
@@ -326,7 +344,13 @@
       </tr>
 
       <!-- smtp: amazon region -->
-      <tr class="mailpoet_aws_field" style="display:none;" data-field="region">
+      <tr class="mailpoet_aws_field" data-field="region"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "AmazonSES"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="settings[mta_region]">
             <%= __('Region') %>
@@ -355,7 +379,13 @@
       </tr>
 
       <!-- smtp: amazon access_key -->
-      <tr class="mailpoet_aws_field" style="display:none;" data-field="access_key">
+      <tr class="mailpoet_aws_field" data-field="access_key"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "AmazonSES"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="settings[mta_access_key]">
             <%= __('Access Key') %>
@@ -376,7 +406,13 @@
       </tr>
 
       <!-- smtp: amazon secret_key -->
-      <tr class="mailpoet_aws_field" style="display:none;" data-field="secret_key">
+      <tr class="mailpoet_aws_field" data-field="secret_key"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "AmazonSES"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="settings[mta_secret_key]">
             <%= __('Secret Key') %>
@@ -397,7 +433,13 @@
       </tr>
 
       <!-- smtp: domain -->
-      <tr class="mailpoet_smtp_field" style="display:none;" data-field="domain">
+      <tr class="mailpoet_smtp_field" data-field="domain"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "manual"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="settings[mta_domain]">
             <%= __('Domain') %>
@@ -417,7 +459,13 @@
       </tr>
 
       <!-- smtp: api key -->
-      <tr class="mailpoet_sendgrid_field" style="display:none;" data-field="api_key">
+      <tr class="mailpoet_sendgrid_field" data-field="api_key"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "SendGrid"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="settings[mta_api_key]">
             <%= __('API Key') %>
@@ -435,7 +483,13 @@
       </tr>
 
       <!-- smtp: login -->
-      <tr id="mta_login" class="mailpoet_smtp_field" style="display:none;" data-field="login">
+      <tr id="mta_login" class="mailpoet_smtp_field" data-field="login"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "manual"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="settings[mta_login]">
             <%= __('Login') %>
@@ -452,7 +506,13 @@
         </td>
       </tr>
       <!-- smtp: password -->
-      <tr id="mta_password" class="mailpoet_smtp_field" style="display:none;" data-field="password">
+      <tr id="mta_password" class="mailpoet_smtp_field" data-field="password"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "manual"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="settings[mta_password]">
             <%= __('Password') %>
@@ -469,7 +529,13 @@
         </td>
       </tr>
       <!-- smtp: security protocol -->
-      <tr class="mailpoet_smtp_field" style="display:none;" data-field="encryption">
+      <tr class="mailpoet_smtp_field" data-field="encryption"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "manual"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label for="settings[mta_encryption]">
             <%= __('Secure Connection') %>
@@ -494,7 +560,13 @@
         </td>
       </tr>
       <!-- smtp: authentication -->
-      <tr class="mailpoet_smtp_field" style="display:none;" data-field="authentication">
+      <tr class="mailpoet_smtp_field" data-field="authentication"
+        <%
+        if settings.mta_group != "smtp" or settings.smtp_provider != "manual"
+        %>
+        style="display:none;"
+        <% endif %>
+      >
         <th scope="row">
           <label>
             <%= __('Authentication') %>
