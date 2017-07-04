@@ -8,3 +8,4 @@ modules:
         - Asserts
         - \Helper\Unit
         - \Helper\WordPress
+error_level: E_ALL
