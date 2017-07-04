@@ -293,7 +293,7 @@
                 </option>
                 <% endfor %>
               </select>
-              <span id="mailpoet_website_daily_emails"></span>
+              <span id="mailpoet_other_daily_emails"></span>
             </p>
             <br />
             <p>
@@ -756,18 +756,11 @@
       $('#mailpoet_web_host').on('change keyup', renderHostSendingFrequency);
 
       // update manual sending frequency when values are changed
-      $('#website_frequency_emails').on('change keyup', function() {
-        updateSendingFrequency('website');
+      $('#other_frequency_emails').on('change keyup', function() {
+        updateSendingFrequency('other');
       });
-      $('#website_frequency_interval').on('change keyup', function() {
-        updateSendingFrequency('website');
-      });
-
-      $('#smtp_frequency_emails').on('change keyup', function() {
-        updateSendingFrequency('smtp');
-      });
-      $('#smtp_frequency_interval').on('change keyup', function() {
-        updateSendingFrequency('smtp');
+      $('#other_frequency_interval').on('change keyup', function() {
+        updateSendingFrequency('other');
       });
 
       // save configuration of a sending method
@@ -932,12 +925,12 @@
       var method = $(this).find('option:selected').first();
       if(method.val() === "manual") {
         $('#mailpoet_sending_frequency_manual').show();
-        $('#mailpoet_recommended_daily_emails').hide();
+        // $('#mailpoet_recommended_daily_emails').hide();
       } else {
         $('#mailpoet_sending_frequency_manual').hide();
-        if(sendingMethod !== "server") {
-          $('#mailpoet_recommended_daily_emails').show();
-        }
+//        if(sendingMethod !== "server") {
+//          $('#mailpoet_recommended_daily_emails').show();
+//        }
       }
     }
 
