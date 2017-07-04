@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.8
-Stable tag: 3.0.0-beta.36.1.0
+Stable tag: 3.0.0-beta.36.2.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -90,6 +90,13 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-beta.36.2.0 - 2017-07-04 =
+* Added: 13 new default templates to choose from;
+* Added: a new help page in the menu to help us help you better;
+* Added: link to list of form plugins that work with MailPoet in our Forms page;
+* Improved: display infinite number of posts in Posts widget, instead of just 10. Kudos Keith!
+* Fixed: DB connection exceptions are now safely handled. Thanks FxB!
 
 = 3.0.0-beta.36.1.0 - 2017-06-27 =
 * Improved: error notices are displayed when AJAX requests fail;
