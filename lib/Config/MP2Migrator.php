@@ -1039,8 +1039,10 @@ class MP2Migrator {
 
     $mta = Setting::getValue('mta');
     $mta['method'] = (isset($options['smtp_rest']) && !empty($options['smtp_rest'])) ? 'SendGrid' : (isset($options['sending_method']) && ($options['sending_method'] == 'smtp') ? 'SMTP' : 'PHPMail');
-    $mta['frequency']['emails'] =  isset($options['sending_emails_number']) ? $options['sending_emails_number'] : '70';
-    $mta['frequency']['interval'] =  $this->mapFrequencyInterval(isset($options['sending_emails_each']) ? $options['sending_emails_each'] : '');
+    $sending_emails_number = isset($options['sending_emails_number']) ? $options['sending_emails_number'] : '';
+    $sending_emails_each = isset($options['sending_emails_each']) ? $options['sending_emails_each'] : '';
+    $mta['frequency']['emails'] = $this->mapFrequencyEmails($sending_emails_number, $sending_emails_each);
+    $mta['frequency']['interval'] =  $this->mapFrequencyInterval($sending_emails_each);
     $mta['host'] = isset($options['smtp_host']) ? $options['smtp_host'] : '';
     $mta['port'] = isset($options['smtp_port']) ? $options['smtp_port'] : '';
     $mta['login'] = isset($options['smtp_login']) ? $options['smtp_login'] : '';
@@ -1107,6 +1109,36 @@ class MP2Migrator {
         $interval = 15;
     }
     return (string)$interval;
+  }
+
+  /**
+   * Map the Email frequency number
+   *
+   * @param int $emails_number Emails number
+   * @param string $interval_str Interval
+   * @return int Emails number
+   */
+  private function mapFrequencyEmails($emails_number, $interval_str) {
+    if(empty($emails_number)) {
+      $emails_number = 70;
+    } else {
+      switch($interval_str) {
+        case 'thirty_min':
+          $emails_number /= 2;
+          break;
+
+        case 'hourly':
+        case '':
+          $emails_number /= 4;
+          break;
+
+        case 'two_hours':
+          $emails_number /= 8;
+          break;
+      }
+      $emails_number = round($emails_number);
+    }
+    return $emails_number;
   }
 
 }
