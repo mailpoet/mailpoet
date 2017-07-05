@@ -28,7 +28,7 @@
       <br />
     </div>
 
-    <div id="progressbar" class="mailpoet_progress mailpoet_progress_complete">
+    <div id="progressbar" class="mailpoet_progress mailpoet_progress_complete" style="display: none">
       <span id="progresslabel" class="mailpoet_progress_label">0%</span>
     </div>
 
@@ -38,8 +38,10 @@
     </div>
 
     <br />
-    <small><strong><%= __('Log...') %></strong></small>
-    <div id="logger"></div>
+    <div id="logger-container" style="display: none">
+      <small><strong><%= __('Log...') %></strong></small>
+      <div id="logger"></div>
+    </div>
 
   </div>
 
