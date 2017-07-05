@@ -83,8 +83,8 @@ const columns = [
     display: mailpoet_tracking_enabled
   },
   {
-    name: 'updated_at',
-    label: MailPoet.I18n.t('lastModifiedOn'),
+    name: 'sent_at',
+    label: MailPoet.I18n.t('sentOn'),
     sortable: true
   }
 ];
@@ -188,8 +188,8 @@ const NewsletterListStandard = React.createClass({
             { this.renderStatistics(newsletter, undefined, meta.current_time) }
           </td>
         ) : null }
-        <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
-          <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
+        <td className="column-date" data-colname={ MailPoet.I18n.t('sentOn') }>
+          <abbr>{ (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet') }</abbr>
         </td>
       </div>
     );
@@ -216,7 +216,7 @@ const NewsletterListStandard = React.createClass({
           item_actions={ newsletter_actions }
           messages={ messages }
           auto_refresh={ true }
-          sort_by="updated_at"
+          sort_by="sent_at"
           sort_order="desc"
           afterGetItems={ this.checkMailerStatus }
         />
