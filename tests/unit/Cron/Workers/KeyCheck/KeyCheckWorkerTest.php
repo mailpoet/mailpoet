@@ -2,7 +2,7 @@
 
 use Carbon\Carbon;
 use Codeception\Util\Stub;
-use MailPoet\Models\SendingQueue;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 
@@ -20,8 +20,8 @@ class KeyCheckWorkerTest extends MailPoetTest {
   }
 
   function testItReturnsTrueOnSuccessfulKeyCheck() {
-    $queue = $this->createRunningQueue();
-    $result = $this->worker->processQueueStrategy($queue);
+    $task = $this->createRunningTask();
+    $result = $this->worker->processTaskStrategy($task);
     expect($result)->true();
   }
 
@@ -34,8 +34,8 @@ class KeyCheckWorkerTest extends MailPoetTest {
       ),
       $this
     );
-    $queue = $this->createRunningQueue();
-    $result = $worker->processQueueStrategy($queue);
+    $task = $this->createRunningTask();
+    $result = $worker->processTaskStrategy($task);
     expect($result)->false();
   }
 
@@ -48,23 +48,22 @@ class KeyCheckWorkerTest extends MailPoetTest {
       ),
       $this
     );
-    $queue = $this->createRunningQueue();
-    $result = $worker->processQueueStrategy($queue);
+    $task = $this->createRunningTask();
+    $result = $worker->processTaskStrategy($task);
     expect($result)->false();
   }
 
-  private function createRunningQueue() {
-    $queue = SendingQueue::create();
-    $queue->type = MockKeyCheckWorker::TASK_TYPE;
-    $queue->status = null;
-    $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
-    $queue->newsletter_id = 0;
-    $queue->save();
-    return $queue;
+  private function createRunningTask() {
+    $task = ScheduledTask::create();
+    $task->type = MockKeyCheckWorker::TASK_TYPE;
+    $task->status = null;
+    $task->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
+    $task->save();
+    return $task;
   }
 
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Setting::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

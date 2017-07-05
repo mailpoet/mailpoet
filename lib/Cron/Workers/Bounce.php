@@ -3,7 +3,7 @@ namespace MailPoet\Cron\Workers;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Models\SendingQueue;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
@@ -32,7 +32,7 @@ class Bounce extends SimpleWorker {
     return Bridge::isMPSendingServiceEnabled();
   }
 
-  function prepareQueue(SendingQueue $queue) {
+  function prepareTask(ScheduledTask $task) {
     $subscribers = Subscriber::select('id')
       ->whereNull('deleted_at')
       ->whereIn('status', array(
@@ -43,30 +43,30 @@ class Bounce extends SimpleWorker {
     $subscribers = Helpers::arrayColumn($subscribers, 'id');
 
     if(empty($subscribers)) {
-      $queue->delete();
+      $task->delete();
       return false;
     }
 
-    // update current queue
-    $queue->subscribers = serialize(
+    // update current task
+    $task->subscribers = serialize(
       array(
         'to_process' => $subscribers
       )
     );
-    $queue->count_total = $queue->count_to_process = count($subscribers);
+    $task->count_total = $task->count_to_process = count($subscribers);
 
-    return parent::prepareQueue($queue);
+    return parent::prepareTask($task);
   }
 
-  function processQueue(SendingQueue $queue) {
-    $queue->subscribers = $queue->getSubscribers();
-    if(empty($queue->subscribers['to_process'])) {
-      $queue->delete();
+  function processTask(ScheduledTask $task) {
+    $task->subscribers = $task->getSubscribers();
+    if(empty($task->subscribers['to_process'])) {
+      $task->delete();
       return false;
     }
 
     $subscriber_batches = array_chunk(
-      $queue->subscribers['to_process'],
+      $task->subscribers['to_process'],
       self::BATCH_SIZE
     );
 
@@ -82,7 +82,7 @@ class Bounce extends SimpleWorker {
 
       $this->processEmails($subscriber_emails);
 
-      $queue->updateProcessedSubscribers($subscribers_to_process_ids);
+      $task->updateProcessedSubscribers($subscribers_to_process_ids);
     }
 
     return true;

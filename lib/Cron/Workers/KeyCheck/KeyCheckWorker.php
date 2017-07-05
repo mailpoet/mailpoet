@@ -3,7 +3,7 @@ namespace MailPoet\Cron\Workers\KeyCheck;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SimpleWorker;
-use MailPoet\Models\SendingQueue;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
 
 if(!defined('ABSPATH')) exit;
@@ -19,7 +19,7 @@ abstract class KeyCheckWorker extends SimpleWorker {
     }
   }
 
-  function processQueueStrategy(SendingQueue $queue) {
+  function processTaskStrategy(ScheduledTask $task) {
     try {
       $result = $this->checkKey();
     } catch (\Exception $e) {
@@ -27,7 +27,7 @@ abstract class KeyCheckWorker extends SimpleWorker {
     }
 
     if(empty($result['code']) || $result['code'] == Bridge::CHECK_ERROR_UNAVAILABLE) {
-      $this->reschedule($queue, self::UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT);
+      $this->reschedule($task, self::UNAVAILABLE_SERVICE_RESCHEDULE_TIMEOUT);
       return false;
     }
 

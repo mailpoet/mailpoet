@@ -56,6 +56,7 @@ class Populator {
 
   function up() {
     $this->convertExistingDataToUTF8();
+    $this->migrateSimpleScheduledTasks();
 
     array_map(array($this, 'populate'), $this->models);
 
@@ -384,6 +385,55 @@ class Populator {
         implode(' AND ', $where_query)
       ));
     }
+  }
+
+  /**
+   * This migrates simple scheduled tasks from sending queues table to scheduled tasks table
+   */
+  public function migrateSimpleScheduledTasks() {
+    global $wpdb;
+
+    if(!version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.36.2.0', '<=')) {
+      // Data conversion should only be performed only once, when migrating from
+      // older version
+      return;
+    }
+
+    $column_list = array(
+      'id',
+      'type',
+      'subscribers',
+      'status',
+      'priority',
+      'count_total',
+      'count_processed',
+      'count_to_process',
+      'scheduled_at',
+      'processed_at',
+      'created_at',
+      'updated_at',
+      'deleted_at'
+    );
+
+    $task_types = array(
+      'bounce',
+      'sending_service_key_check',
+      'premium_key_check'
+    );
+
+    $wpdb->query(sprintf(
+      'INSERT IGNORE INTO %s SELECT %s FROM %s WHERE %s',
+      MP_SCHEDULED_TASKS_TABLE,
+      '`' . join('`, `', $column_list) . '`',
+      MP_SENDING_QUEUES_TABLE,
+      '`type` IN("' . join('" , "', $task_types) . '")'
+    ));
+
+    $wpdb->query(sprintf(
+      'DELETE FROM %s WHERE %s',
+      MP_SENDING_QUEUES_TABLE,
+      '`type` IN("' . join('" , "', $task_types) . '")'
+    ));
   }
 
 }
