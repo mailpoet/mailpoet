@@ -1055,6 +1055,13 @@ class MP2Migrator {
     if($mta['method'] == 'SendGrid') {
       Setting::setValue('smtp_provider', 'SendGrid');
     }
+    
+    // Installation date
+    if(isset($options['installed_time'])) {
+      $datetime = new \MailPoet\WP\DateTime();
+      $installed_at = $datetime->formatTime($options['installed_time'], \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT);
+      Setting::setValue('installed_at', $installed_at);
+    }
 
     $this->log(__("Settings imported", 'mailpoet'));
   }
