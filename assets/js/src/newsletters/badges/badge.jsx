@@ -1,6 +1,6 @@
-import React from 'react'
-import classNames from 'classnames'
-import ReactTooltip from 'react-tooltip'
+import React from 'react';
+import classNames from 'classnames';
+import ReactTooltip from 'react-tooltip';
 
 class Badge extends React.Component {
   render() {

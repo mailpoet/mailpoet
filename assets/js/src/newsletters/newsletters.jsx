@@ -1,20 +1,20 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Router, Route, IndexRedirect, Link, useRouterHistory } from 'react-router'
-import { createHashHistory } from 'history'
-import Hooks from 'wp-js-hooks'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router, Route, IndexRedirect, Link, useRouterHistory } from 'react-router';
+import { createHashHistory } from 'history';
+import Hooks from 'wp-js-hooks';
 
-import NewsletterTypes from 'newsletters/types.jsx'
-import NewsletterTemplates from 'newsletters/templates.jsx'
-import NewsletterSend from 'newsletters/send.jsx'
+import NewsletterTypes from 'newsletters/types.jsx';
+import NewsletterTemplates from 'newsletters/templates.jsx';
+import NewsletterSend from 'newsletters/send.jsx';
 
-import NewsletterTypeStandard from 'newsletters/types/standard.jsx'
-import NewsletterTypeNotification from 'newsletters/types/notification/notification.jsx'
+import NewsletterTypeStandard from 'newsletters/types/standard.jsx';
+import NewsletterTypeNotification from 'newsletters/types/notification/notification.jsx';
 
-import NewsletterListStandard from 'newsletters/listings/standard.jsx'
-import NewsletterListWelcome from 'newsletters/listings/welcome.jsx'
-import NewsletterListNotification from 'newsletters/listings/notification.jsx'
-import NewsletterListNotificationHistory from 'newsletters/listings/notification_history.jsx'
+import NewsletterListStandard from 'newsletters/listings/standard.jsx';
+import NewsletterListWelcome from 'newsletters/listings/welcome.jsx';
+import NewsletterListNotification from 'newsletters/listings/notification.jsx';
+import NewsletterListNotificationHistory from 'newsletters/listings/notification_history.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 

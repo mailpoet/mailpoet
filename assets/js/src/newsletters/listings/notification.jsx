@@ -1,22 +1,22 @@
-import React from 'react'
-import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
-import { createHashHistory } from 'history'
+import React from 'react';
+import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router';
+import { createHashHistory } from 'history';
 
-import Listing from 'listing/listing.jsx'
-import ListingTabs from 'newsletters/listings/tabs.jsx'
+import Listing from 'listing/listing.jsx';
+import ListingTabs from 'newsletters/listings/tabs.jsx';
 
-import { MailerMixin } from 'newsletters/listings/mixins.jsx'
+import { MailerMixin } from 'newsletters/listings/mixins.jsx';
 
-import classNames from 'classnames'
-import jQuery from 'jquery'
-import MailPoet from 'mailpoet'
+import classNames from 'classnames';
+import jQuery from 'jquery';
+import MailPoet from 'mailpoet';
 
 import {
   timeOfDayValues,
   weekDayValues,
   monthDayValues,
   nthWeekDayValues
-} from 'newsletters/scheduling/common.jsx'
+} from 'newsletters/scheduling/common.jsx';
 
 const mailpoet_settings = window.mailpoet_settings || {};
 
@@ -203,7 +203,7 @@ const NewsletterListNotification = React.createClass({
 
     // get list of segments' name
     const segments = newsletter.segments.map(function(segment) {
-      return segment.name
+      return segment.name;
     });
 
     // check if the user has specified segments to send to

@@ -12,7 +12,7 @@ function(
     handleFilterAction: function() {
       let filters = {};
       this.getAvailableFilters().map((filter, i) => {
-        filters[this.refs['filter-'+i].name] = this.refs['filter-'+i].value
+        filters[this.refs['filter-'+i].name] = this.refs['filter-'+i].value;
       });
       return this.props.onSelectFilter(filters);
     },

@@ -12,7 +12,7 @@ define([
     getInitialState: function() {
       return {
         page: null
-      }
+      };
     },
     setPage: function(page) {
       this.setState({

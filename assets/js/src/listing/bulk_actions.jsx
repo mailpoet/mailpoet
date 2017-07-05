@@ -11,7 +11,7 @@ function(
       return {
         action: false,
         extra: false
-      }
+      };
     },
     handleChangeAction: function(e) {
       this.setState({

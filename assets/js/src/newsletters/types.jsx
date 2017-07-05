@@ -53,7 +53,7 @@ define(
                 <a className="button button-primary" onClick={ this.createNewsletter.bind(null, 'standard') }>
                   {MailPoet.I18n.t('create')}
                 </a>
-              )
+              );
             }.bind(this)()
           },
           {
@@ -67,7 +67,7 @@ define(
                     {MailPoet.I18n.t('getPremiumVersion')}
                   </a>
                 </div>
-              )
+              );
             }()
           },
           {
@@ -79,7 +79,7 @@ define(
                 <a className="button button-primary" onClick={ this.setupNewsletter.bind(null, 'notification') }>
                   {MailPoet.I18n.t('setUp')}
                 </a>
-              )
+              );
             }.bind(this)()
           }
         ];
@@ -109,7 +109,7 @@ define(
                       </div>
                     </div>
                   </li>
-                )
+                );
               }, this)}
             </ul>
           </div>

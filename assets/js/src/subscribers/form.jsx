@@ -175,7 +175,7 @@ define(
           </strong> { MailPoet.I18n.t('customFieldsTip') }
         </p>
       );
-    }
+    };
 
     var Link = Router.Link;
 

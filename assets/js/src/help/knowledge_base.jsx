@@ -1,7 +1,7 @@
-import React from 'react'
-import MailPoet from 'mailpoet'
+import React from 'react';
+import MailPoet from 'mailpoet';
 
-import Tabs from './tabs.jsx'
+import Tabs from './tabs.jsx';
 
 function KnowledgeBase() {
 

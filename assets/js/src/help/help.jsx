@@ -1,10 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Router, Route, IndexRedirect, useRouterHistory } from 'react-router'
-import { createHashHistory } from 'history'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router, Route, IndexRedirect, useRouterHistory } from 'react-router';
+import { createHashHistory } from 'history';
 
-import KnowledgeBase from 'help/knowledge_base.jsx'
-import SystemInfo from 'help/system_info.jsx'
+import KnowledgeBase from 'help/knowledge_base.jsx';
+import SystemInfo from 'help/system_info.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 

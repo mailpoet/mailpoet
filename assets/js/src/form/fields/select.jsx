@@ -1,5 +1,5 @@
-import React from 'react'
-import _ from 'underscore'
+import React from 'react';
+import _ from 'underscore';
 
 const FormFieldSelect = React.createClass({
   render() {
@@ -38,7 +38,7 @@ const FormFieldSelect = React.createClass({
           (item) => item[0]
         );
     } else {
-      keys = Object.keys(this.props.field.values)
+      keys = Object.keys(this.props.field.values);
     }
 
     const options = keys.map(

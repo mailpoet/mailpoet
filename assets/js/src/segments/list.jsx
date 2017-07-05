@@ -1,10 +1,10 @@
-import React from 'react'
-import { Router, Link } from 'react-router'
-import jQuery from 'jquery'
-import MailPoet from 'mailpoet'
-import classNames from 'classnames'
+import React from 'react';
+import { Router, Link } from 'react-router';
+import jQuery from 'jquery';
+import MailPoet from 'mailpoet';
+import classNames from 'classnames';
 
-import Listing from 'listing/listing.jsx'
+import Listing from 'listing/listing.jsx';
 
 var columns = [
   {

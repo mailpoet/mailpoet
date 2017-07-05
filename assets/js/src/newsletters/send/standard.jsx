@@ -206,7 +206,7 @@ define(
       },
       _buildStateFromProps: function(props) {
         let value = props.value || defaultDateTime;
-        const [date, time] = value.split(this._DATE_TIME_SEPARATOR)
+        const [date, time] = value.split(this._DATE_TIME_SEPARATOR);
         return {
           date: date,
           time: time,
@@ -227,7 +227,7 @@ define(
               name: this.props.name || '',
               value: this.getDateTime(),
             }
-          })
+          });
         }
       },
       getDateTime: function() {

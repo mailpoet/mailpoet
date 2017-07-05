@@ -1,9 +1,9 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
-import { createHashHistory } from 'history'
-import SubscriberList from 'subscribers/list.jsx'
-import SubscriberForm from 'subscribers/form.jsx'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router';
+import { createHashHistory } from 'history';
+import SubscriberList from 'subscribers/list.jsx';
+import SubscriberForm from 'subscribers/form.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
@@ -13,7 +13,7 @@ const App = React.createClass({
   }
 });
 
-const container = document.getElementById('subscribers_container')
+const container = document.getElementById('subscribers_container');
 
 if(container) {
   ReactDOM.render((

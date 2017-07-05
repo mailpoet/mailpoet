@@ -1,13 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import ReactStringReplace from 'react-string-replace'
-import { Link } from 'react-router'
-import MailPoet from 'mailpoet'
-import classNames from 'classnames'
-import moment from 'moment'
-import jQuery from 'jquery'
-import Hooks from 'wp-js-hooks'
-import StatsBadge from 'newsletters/badges/stats.jsx'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import ReactStringReplace from 'react-string-replace';
+import { Link } from 'react-router';
+import MailPoet from 'mailpoet';
+import classNames from 'classnames';
+import moment from 'moment';
+import jQuery from 'jquery';
+import Hooks from 'wp-js-hooks';
+import StatsBadge from 'newsletters/badges/stats.jsx';
 
 const _QueueMixin = {
   pauseSending: function(newsletter) {
@@ -58,14 +58,14 @@ const _QueueMixin = {
     } else if (mailer_log.status === 'paused' && newsletter.queue.status !== 'completed') {
       return (
         <span>{MailPoet.I18n.t('paused')}</span>
-      )
+      );
     } else {
       if (newsletter.queue.status === 'scheduled') {
         return (
           <span>
             { MailPoet.I18n.t('scheduledFor') } { MailPoet.Date.format(newsletter.queue.scheduled_at) }
           </span>
-        )
+        );
       }
       const progressClasses = classNames(
         'mailpoet_progress',
@@ -149,7 +149,7 @@ const _StatisticsMixin = {
       // condition for standard and post notification listings
       is_sent = newsletter.statistics
         && newsletter.queue
-        && newsletter.queue.status !== 'scheduled'
+        && newsletter.queue.status !== 'scheduled';
     }
     if (!is_sent) {
       return (
@@ -301,7 +301,7 @@ const _StatisticsMixin = {
       </div>
     );
   }
-}
+};
 
 const _MailerMixin = {
   checkMailerStatus: function(state) {
@@ -369,7 +369,7 @@ const _MailerMixin = {
       }
     });
   }
-}
+};
 
 
 

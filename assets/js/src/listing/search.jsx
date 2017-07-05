@@ -14,7 +14,7 @@ define([
       );
     },
     componentWillReceiveProps: function(nextProps) {
-      this.refs.search.value = nextProps.search
+      this.refs.search.value = nextProps.search;
     },
     render: function() {
       if(this.props.search === false) {

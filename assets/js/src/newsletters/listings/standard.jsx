@@ -1,17 +1,17 @@
-import React from 'react'
-import { Link } from 'react-router'
-import classNames from 'classnames'
-import MailPoet from 'mailpoet'
-import Hooks from 'wp-js-hooks'
+import React from 'react';
+import { Link } from 'react-router';
+import classNames from 'classnames';
+import MailPoet from 'mailpoet';
+import Hooks from 'wp-js-hooks';
 
-import Listing from 'listing/listing.jsx'
-import ListingTabs from 'newsletters/listings/tabs.jsx'
+import Listing from 'listing/listing.jsx';
+import ListingTabs from 'newsletters/listings/tabs.jsx';
 
 import {
   QueueMixin,
   StatisticsMixin,
   MailerMixin
-} from 'newsletters/listings/mixins.jsx'
+} from 'newsletters/listings/mixins.jsx';
 
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
 const mailpoet_settings = window.mailpoet_settings || {};
@@ -164,7 +164,7 @@ const NewsletterListStandard = React.createClass({
     );
 
     const segments = newsletter.segments.map(function(segment) {
-      return segment.name
+      return segment.name;
     }).join(', ');
 
     return (

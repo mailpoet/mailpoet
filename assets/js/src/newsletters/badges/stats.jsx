@@ -1,7 +1,7 @@
-import MailPoet from 'mailpoet'
-import React from 'react'
+import MailPoet from 'mailpoet';
+import React from 'react';
 
-import Badge from './badge.jsx'
+import Badge from './badge.jsx';
 
 const badges = {
   excellent: {

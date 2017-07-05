@@ -1,5 +1,5 @@
-import _ from 'underscore'
-import MailPoet from 'mailpoet'
+import _ from 'underscore';
+import MailPoet from 'mailpoet';
 
 const timeFormat = window.mailpoet_time_format || 'H:i';
 

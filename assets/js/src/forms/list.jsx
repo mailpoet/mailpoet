@@ -1,9 +1,9 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Router, Link } from 'react-router'
-import Listing from 'listing/listing.jsx'
-import classNames from 'classnames'
-import MailPoet from 'mailpoet'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router, Link } from 'react-router';
+import Listing from 'listing/listing.jsx';
+import classNames from 'classnames';
+import MailPoet from 'mailpoet';
 
 const columns = [
   {

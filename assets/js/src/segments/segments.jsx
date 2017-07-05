@@ -1,16 +1,16 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
-import { createHashHistory } from 'history'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router';
+import { createHashHistory } from 'history';
 
-import SegmentList from 'segments/list.jsx'
-import SegmentForm from 'segments/form.jsx'
+import SegmentList from 'segments/list.jsx';
+import SegmentForm from 'segments/form.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
 const App = React.createClass({
   render() {
-    return this.props.children
+    return this.props.children;
   }
 });
 

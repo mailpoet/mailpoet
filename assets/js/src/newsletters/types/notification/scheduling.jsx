@@ -1,13 +1,13 @@
-import _ from 'underscore'
-import React from 'react'
-import Select from 'form/fields/select.jsx'
+import _ from 'underscore';
+import React from 'react';
+import Select from 'form/fields/select.jsx';
 import {
   intervalValues,
   timeOfDayValues,
   weekDayValues,
   monthDayValues,
   nthWeekDayValues
-} from 'newsletters/scheduling/common.jsx'
+} from 'newsletters/scheduling/common.jsx';
 
 const intervalField = {
   name: 'intervalType',

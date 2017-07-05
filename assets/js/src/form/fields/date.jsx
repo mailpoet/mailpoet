@@ -105,7 +105,7 @@ define([
         year: '',
         month: '',
         day: ''
-      }
+      };
     }
     componentDidMount() {
       this.extractDateParts();

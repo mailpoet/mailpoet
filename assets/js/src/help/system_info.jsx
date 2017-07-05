@@ -1,8 +1,8 @@
-import React from 'react'
-import MailPoet from 'mailpoet'
-import _ from 'underscore'
+import React from 'react';
+import MailPoet from 'mailpoet';
+import _ from 'underscore';
 
-import Tabs from './tabs.jsx'
+import Tabs from './tabs.jsx';
 
 function handleFocus(event) {
   event.target.select();

@@ -1,15 +1,15 @@
-import MailPoet from 'mailpoet'
-import jQuery from 'jquery'
-import React from 'react'
-import _ from 'underscore'
-import { Router, Link } from 'react-router'
-import classNames from 'classnames'
-import ListingBulkActions from 'listing/bulk_actions.jsx'
-import ListingHeader from 'listing/header.jsx'
-import ListingPages from 'listing/pages.jsx'
-import ListingSearch from 'listing/search.jsx'
-import ListingGroups from 'listing/groups.jsx'
-import ListingFilters from 'listing/filters.jsx'
+import MailPoet from 'mailpoet';
+import jQuery from 'jquery';
+import React from 'react';
+import _ from 'underscore';
+import { Router, Link } from 'react-router';
+import classNames from 'classnames';
+import ListingBulkActions from 'listing/bulk_actions.jsx';
+import ListingHeader from 'listing/header.jsx';
+import ListingPages from 'listing/pages.jsx';
+import ListingSearch from 'listing/search.jsx';
+import ListingGroups from 'listing/groups.jsx';
+import ListingFilters from 'listing/filters.jsx';
 
 const ListingItem = React.createClass({
   getInitialState: function() {
@@ -324,8 +324,8 @@ const Listing = React.createClass({
           case 'filter':
             let filters = {};
             value.split('&').map(function(pair) {
-                let [k, v] = pair.split('=')
-                filters[k] = v
+                let [k, v] = pair.split('=');
+                filters[k] = v;
               }
             );
 
@@ -380,21 +380,21 @@ const Listing = React.createClass({
               'sort_by',
               'sort_order'
             ].indexOf(key) !== -1
-          )
+          );
         })
         .map(key => {
           let value = this.state[key];
           if (value === Object(value)) {
-            value = jQuery.param(value)
+            value = jQuery.param(value);
           } else if (value === Boolean(value)) {
-            value = value.toString()
+            value = value.toString();
           }
 
           if (value !== '' && value !== null) {
-            return `${key}[${value}]`
+            return `${key}[${value}]`;
           }
         })
-        .filter(key => { return (key !== undefined) })
+        .filter(key => { return (key !== undefined); })
         .join('/');
 
       // set url
@@ -616,7 +616,7 @@ const Listing = React.createClass({
       filter: this.state.filter,
       group: this.state.group,
       search: this.state.search
-    }
+    };
     if (selected_ids !== 'all') {
       data.listing.selection = selected_ids;
     }

@@ -1,12 +1,12 @@
-import React from 'react'
-import { Router, Route, Link } from 'react-router'
+import React from 'react';
+import { Router, Route, Link } from 'react-router';
 
-import jQuery from 'jquery'
-import MailPoet from 'mailpoet'
-import classNames from 'classnames'
+import jQuery from 'jquery';
+import MailPoet from 'mailpoet';
+import classNames from 'classnames';
 
-import Listing from 'listing/listing.jsx'
-import Selection from 'form/fields/selection.jsx'
+import Listing from 'listing/listing.jsx';
+import Selection from 'form/fields/selection.jsx';
 
 const columns = [
   {
@@ -123,7 +123,7 @@ const bulk_actions = [
     getData: function() {
       return {
         segment_id: ~~(jQuery('#move_to_segment').val())
-      }
+      };
     },
     onSuccess: function(response) {
       MailPoet.Notice.success(
@@ -155,7 +155,7 @@ const bulk_actions = [
     getData: function() {
       return {
         segment_id: ~~(jQuery('#add_to_segment').val())
-      }
+      };
     },
     onSuccess: function(response) {
       MailPoet.Notice.success(
@@ -187,7 +187,7 @@ const bulk_actions = [
     getData: function() {
       return {
         segment_id: ~~(jQuery('#remove_from_segment').val())
-      }
+      };
     },
     onSuccess: function(response) {
       MailPoet.Notice.success(
@@ -377,7 +377,7 @@ const SubscriberList = React.createClass({
           sort_order={ 'desc' }
         />
       </div>
-    )
+    );
   }
 });
 

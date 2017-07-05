@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet'
-import React from 'react'
-import classNames from 'classnames'
+import MailPoet from 'mailpoet';
+import React from 'react';
+import classNames from 'classnames';
 
 const ListingHeader = React.createClass({
   handleSelectItems: function() {
