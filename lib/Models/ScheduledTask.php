@@ -7,30 +7,9 @@ class ScheduledTask extends Model {
   public static $_table = MP_SCHEDULED_TASKS_TABLE;
   const STATUS_COMPLETED = 'completed';
   const STATUS_SCHEDULED = 'scheduled';
-  const STATUS_PAUSED = 'paused';
   const PRIORITY_HIGH = 1;
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
-
-  function pause() {
-    if($this->count_processed === $this->count_total) {
-      return false;
-    } else {
-      $this->set('status', self::STATUS_PAUSED);
-      $this->save();
-      return ($this->getErrors() === false && $this->id() > 0);
-    }
-  }
-
-  function resume() {
-    if($this->count_processed === $this->count_total) {
-      return $this->complete();
-    } else {
-      $this->setExpr('status', 'NULL');
-      $this->save();
-      return ($this->getErrors() === false && $this->id() > 0);
-    }
-  }
 
   function complete() {
     $this->set('status', self::STATUS_COMPLETED);
