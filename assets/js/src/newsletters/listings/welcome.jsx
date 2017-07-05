@@ -1,6 +1,5 @@
 import React from 'react';
-import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router';
-import { createHashHistory } from 'history';
+import { Link } from 'react-router';
 
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
@@ -8,7 +7,6 @@ import ListingTabs from 'newsletters/listings/tabs.jsx';
 import { StatisticsMixin, MailerMixin } from 'newsletters/listings/mixins.jsx';
 
 import classNames from 'classnames';
-import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import Hooks from 'wp-js-hooks';
@@ -16,7 +14,6 @@ import Hooks from 'wp-js-hooks';
 const mailpoet_roles = window.mailpoet_roles || {};
 const mailpoet_segments = window.mailpoet_segments || {};
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
-const mailpoet_settings = window.mailpoet_settings || {};
 
 const messages = {
   onTrash: (response) => {

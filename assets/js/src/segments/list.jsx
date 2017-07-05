@@ -1,6 +1,5 @@
 import React from 'react';
-import { Router, Link } from 'react-router';
-import jQuery from 'jquery';
+import { Link } from 'react-router';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 
@@ -136,7 +135,7 @@ const item_actions = [
   },
   {
     name: 'read_more',
-    link: function (item) {
+    link: function () {
       return (
         <a
           href="http://docs.mailpoet.com/article/133-the-wordpress-users-list"

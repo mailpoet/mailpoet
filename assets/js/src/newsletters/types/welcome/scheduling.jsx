@@ -3,10 +3,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import Select from 'form/fields/select.jsx';
 import Text from 'form/fields/text.jsx';
-import {
-  timeDelayValues,
-  intervalValues
-} from 'newsletters/scheduling/common.jsx';
+import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
 
 const availableRoles = window.mailpoet_roles || {};
 const availableSegments = _.filter(

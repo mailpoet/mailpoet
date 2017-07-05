@@ -76,7 +76,7 @@ define(
             item: response.data,
             fields: this.getFieldsByNewsletter(response.data)
           });
-        }).fail((response) => {
+        }).fail(() => {
           this.setState({
             loading: false,
             item: {}
@@ -152,7 +152,7 @@ define(
       handleSave: function (e) {
         e.preventDefault();
 
-        this._save(e).done((response) => {
+        this._save(e).done(() => {
           MailPoet.Notice.success(
             MailPoet.I18n.t('newsletterUpdated')
           );
@@ -164,7 +164,7 @@ define(
         e.preventDefault();
         var redirectTo = e.target.href;
 
-        this._save(e).done((response) => {
+        this._save(e).done(() => {
           MailPoet.Notice.success(
             MailPoet.I18n.t('newsletterUpdated')
           );
@@ -172,7 +172,7 @@ define(
           window.location = redirectTo;
         }).fail(this._showError);
       },
-      _save: function (e) {
+      _save: function () {
         var data = this.state.item;
         this.setState({ loading: true });
 

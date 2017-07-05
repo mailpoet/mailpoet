@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router, Route, Link } from 'react-router';
+import { Link } from 'react-router';
 
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
@@ -298,20 +298,6 @@ const SubscriberList = React.createClass({
         <span>
           { subscribed_segments.join(', ') }
         </span>
-      );
-    }
-
-
-    let avatar = false;
-    if (subscriber.avatar_url) {
-      avatar = (
-        <img
-          className="avatar"
-          src={ subscriber.avatar_url }
-          title=""
-          width="32"
-          height="32"
-        />
       );
     }
 

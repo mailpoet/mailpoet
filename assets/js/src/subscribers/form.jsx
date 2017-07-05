@@ -167,7 +167,7 @@ define(
       }
     };
 
-    var afterFormContent = function (subscriber) {
+    var afterFormContent = function () {
       return (
         <p className="description">
           <strong>

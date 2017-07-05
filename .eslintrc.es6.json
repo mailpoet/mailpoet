@@ -47,7 +47,6 @@
     "arrow-body-style": 0,
     "prefer-template": 0,
     "eol-last": 0,
-    "no-unused-vars": 0,
     "keyword-spacing": 0,
     "default-case": 0,
     "quote-props": 0,

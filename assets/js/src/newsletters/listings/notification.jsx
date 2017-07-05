@@ -1,6 +1,5 @@
 import React from 'react';
-import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router';
-import { createHashHistory } from 'history';
+import { Link } from 'react-router';
 
 import Listing from 'listing/listing.jsx';
 import ListingTabs from 'newsletters/listings/tabs.jsx';
@@ -8,7 +7,6 @@ import ListingTabs from 'newsletters/listings/tabs.jsx';
 import { MailerMixin } from 'newsletters/listings/mixins.jsx';
 
 import classNames from 'classnames';
-import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 
 import {
@@ -17,8 +15,6 @@ import {
   monthDayValues,
   nthWeekDayValues
 } from 'newsletters/scheduling/common.jsx';
-
-const mailpoet_settings = window.mailpoet_settings || {};
 
 const messages = {
   onTrash: (response) => {

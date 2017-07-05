@@ -5,23 +5,16 @@ define(
     'underscore',
     'mailpoet',
     'wp-js-hooks',
-    'form/fields/checkbox.jsx',
-    'form/fields/select.jsx',
-    'form/fields/text.jsx',
   ],
   function (
     React,
     jQuery,
     _,
     MailPoet,
-    Hooks,
-    Checkbox,
-    Select,
-    Text
+    Hooks
   ) {
 
-    var settings = window.mailpoet_settings || {},
-        currentTime = window.mailpoet_current_time || '00:00',
+    var currentTime = window.mailpoet_current_time || '00:00',
         defaultDateTime = window.mailpoet_current_date + ' ' + '00:00:00';
         timeOfDayItems = window.mailpoet_schedule_time_of_day,
         dateDisplayFormat = window.mailpoet_date_display_format,
@@ -417,7 +410,7 @@ define(
     fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
     return {
-      getFields: function (newsletter) {
+      getFields: function () {
         return fields;
       },
       getSendButtonOptions: function (newsletter) {

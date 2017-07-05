@@ -2,7 +2,7 @@ import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 import React from 'react';
 import _ from 'underscore';
-import { Router, Link } from 'react-router';
+import { Link } from 'react-router';
 import classNames from 'classnames';
 import ListingBulkActions from 'listing/bulk_actions.jsx';
 import ListingHeader from 'listing/header.jsx';
@@ -34,7 +34,7 @@ const ListingItem = React.createClass({
   handleDeleteItem: function (id) {
     this.props.onDeleteItem(id);
   },
-  handleToggleItem: function (id) {
+  handleToggleItem: function () {
     this.setState({ expanded: !this.state.expanded });
   },
   render: function () {
@@ -435,7 +435,7 @@ const Listing = React.createClass({
       this.initWithParams(params);
 
       if (this.props.auto_refresh) {
-        jQuery(document).on('heartbeat-tick.mailpoet', function (e, data) {
+        jQuery(document).on('heartbeat-tick.mailpoet', function () {
           this.getItems();
         }.bind(this));
       }

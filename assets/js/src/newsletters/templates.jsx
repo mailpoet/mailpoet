@@ -167,7 +167,7 @@ define(
             data: {
               id: template.id
             }
-          }).done((response) => {
+          }).done(() => {
             this.getTemplates();
           });
         } else {

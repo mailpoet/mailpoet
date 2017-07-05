@@ -30,7 +30,7 @@ function (
         this.setupSelect2();
       }
     },
-    componentDidUpdate: function (prevProps, prevState) {
+    componentDidUpdate: function (prevProps) {
       if(
         (this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)
@@ -71,7 +71,7 @@ function (
       });
 
       var hasRemoved = false;
-      select2.on('select2:unselecting', function (e) {
+      select2.on('select2:unselecting', function () {
         hasRemoved = true;
       });
       select2.on('select2:opening', function (e) {

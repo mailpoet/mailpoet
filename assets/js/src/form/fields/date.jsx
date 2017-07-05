@@ -110,7 +110,7 @@ define([
     componentDidMount() {
       this.extractDateParts();
     }
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
       if (
         (this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)

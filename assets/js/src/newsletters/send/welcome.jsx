@@ -10,7 +10,6 @@ define(
     Scheduling
   ) {
 
-    var settings = window.mailpoet_settings || {};
 
     var fields = [
       {
@@ -76,10 +75,10 @@ define(
     fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
     return {
-      getFields: function (newsletter) {
+      getFields: function () {
         return fields;
       },
-      getSendButtonOptions: function (newsletter) {
+      getSendButtonOptions: function () {
         return {
           value: MailPoet.I18n.t('activate')
         };

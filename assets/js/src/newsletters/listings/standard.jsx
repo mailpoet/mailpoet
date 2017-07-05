@@ -14,7 +14,6 @@ import {
 } from 'newsletters/listings/mixins.jsx';
 
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
-const mailpoet_settings = window.mailpoet_settings || {};
 
 const messages = {
   onTrash: (response) => {

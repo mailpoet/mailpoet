@@ -75,7 +75,7 @@ define(
             loading: false,
             item: response.data
           });
-        }).fail((response) => {
+        }).fail(() => {
           this.setState({
             loading: false,
             item: {}
@@ -119,7 +119,7 @@ define(
           data: item
         }).always(() => {
           this.setState({ loading: false });
-        }).done((response) => {
+        }).done(() => {
           if(this.props.onSuccess !== undefined) {
             this.props.onSuccess();
           } else {
