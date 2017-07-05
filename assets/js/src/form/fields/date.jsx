@@ -17,7 +17,7 @@ define([
       }
 
       const currentYear = Moment().year();
-      for (let i = currentYear; i >= currentYear - yearsRange; i--) {
+      for (let i = currentYear; i >= currentYear - yearsRange; i -= 1) {
         years.push((
           <option
             key={ i }
@@ -47,7 +47,7 @@ define([
         ));
       }
 
-      for (let i = 1; i <= 12; i++) {
+      for (let i = 1; i <= 12; i += 1) {
         months.push((
           <option
             key={ i }
@@ -77,7 +77,7 @@ define([
         ));
       }
 
-      for (let i = 1; i <= 31; i++) {
+      for (let i = 1; i <= 31; i += 1) {
         days.push((
           <option
             key={ i }
