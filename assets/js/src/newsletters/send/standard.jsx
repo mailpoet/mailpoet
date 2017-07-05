@@ -349,7 +349,7 @@ define(
           return !!(!segment.deleted_at);
         },
         getLabel: function(segment) {
-          return segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')';
+          return segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
         },
         transformChangedValue: function(segment_ids) {
           var all_segments = this.state.items;
