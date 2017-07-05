@@ -4,11 +4,11 @@ define([
   'jquery',
   'select2'
 ],
-function (
+(
   React,
   ReactDOM,
   jQuery
-) {
+) => {
   var Selection = React.createClass({
     getInitialState: function () {
       return {
@@ -71,10 +71,10 @@ function (
       });
 
       var hasRemoved = false;
-      select2.on('select2:unselecting', function () {
+      select2.on('select2:unselecting', () => {
         hasRemoved = true;
       });
-      select2.on('select2:opening', function (e) {
+      select2.on('select2:opening', (e) => {
         if(hasRemoved === true) {
           hasRemoved = false;
           e.preventDefault();
@@ -91,7 +91,7 @@ function (
       } else if(this.props.item !== undefined && this.props.field.name !== undefined) {
         if (this.allowMultipleValues()) {
           if (Array.isArray(this.props.item[this.props.field.name])) {
-            return this.props.item[this.props.field.name].map(function (item) {
+            return this.props.item[this.props.field.name].map((item) => {
               return item.id;
             });
           }

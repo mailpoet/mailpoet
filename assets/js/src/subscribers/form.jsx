@@ -6,13 +6,13 @@ define(
     'form/form.jsx',
     'react-string-replace'
   ],
-  function (
+  (
     React,
     Router,
     MailPoet,
     Form,
     ReactStringReplace
-  ) {
+  ) => {
     var fields = [
       {
         name: 'email',
@@ -68,7 +68,7 @@ define(
             return null;
           }
 
-          return subscriber.subscriptions.map(function (subscription) {
+          return subscriber.subscriptions.map((subscription) => {
             if (subscription.status === 'subscribed') {
               return subscription.segment_id;
             }
@@ -84,7 +84,7 @@ define(
           let label = '';
 
           if (subscriber.subscriptions !== undefined) {
-            subscriber.subscriptions.map(function (subscription) {
+            subscriber.subscriptions.map((subscription) => {
               if (segment.id === subscription.segment_id) {
                 label = segment.name;
 

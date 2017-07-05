@@ -124,7 +124,7 @@ const item_actions = [
         refresh();
       }).fail((response) => {
         MailPoet.Notice.error(
-          response.errors.map(function (error) { return error.message; }),
+          response.errors.map((error) => { return error.message; }),
           { scroll: true }
         );
       });
@@ -156,7 +156,7 @@ const item_actions = [
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         action: 'synchronize'
-      }).done(function (response) {
+      }).done((response) => {
         MailPoet.Modal.loading(false);
         if(response === true) {
           MailPoet.Notice.success(

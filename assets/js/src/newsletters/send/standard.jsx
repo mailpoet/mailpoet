@@ -6,13 +6,13 @@ define(
     'mailpoet',
     'wp-js-hooks',
   ],
-  function (
+  (
     React,
     jQuery,
     _,
     MailPoet,
     Hooks
-  ) {
+  ) => {
 
     var currentTime = window.mailpoet_current_time || '00:00',
         defaultDateTime = window.mailpoet_current_date + ' ' + '00:00:00';
@@ -346,8 +346,8 @@ define(
         },
         transformChangedValue: function (segment_ids) {
           var all_segments = this.state.items;
-          return _.map(segment_ids, function (id) {
-            return _.find(all_segments, function (segment) {
+          return _.map(segment_ids, (id) => {
+            return _.find(all_segments, (segment) => {
               return segment.id === id;
             });
           });

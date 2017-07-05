@@ -63,7 +63,7 @@ const ListingItem = React.createClass({
 
     if (custom_actions.length > 0) {
       let is_first = true;
-      item_actions = custom_actions.map(function (action, index) {
+      item_actions = custom_actions.map((action, index) => {
         if (action.display !== undefined) {
           if (action.display(this.props.item) === false) {
             return;
@@ -125,7 +125,7 @@ const ListingItem = React.createClass({
         }
 
         return custom_action;
-      }.bind(this));
+      });
     } else {
       item_actions = (
         <span className="edit">
@@ -259,7 +259,7 @@ const ListingItems = React.createClass({
             </td>
           </tr>
 
-          {this.props.items.map(function (item, index) {
+          {this.props.items.map((item, index) => {
             item.id = parseInt(item.id, 10);
             item.selected = (this.props.selected_ids.indexOf(item.id) !== -1);
 
@@ -279,7 +279,7 @@ const ListingItems = React.createClass({
                 key={ `item-${item.id}-${index}` }
                 item={ item } />
             );
-          }.bind(this))}
+          })}
         </tbody>
       );
     }
@@ -323,7 +323,7 @@ const Listing = React.createClass({
         switch(key) {
           case 'filter':
             let filters = {};
-            value.split('&').map(function (pair) {
+            value.split('&').map((pair) => {
                 let [k, v] = pair.split('=');
                 filters[k] = v;
               }
@@ -352,9 +352,9 @@ const Listing = React.createClass({
       state.sort_order = this.props.sort_order;
     }
 
-    this.setState(state, function () {
+    this.setState(state, () => {
       this.getItems();
-    }.bind(this));
+    });
   },
   getParams: function () {
     // get all route parameters (without the "splat")
@@ -435,9 +435,9 @@ const Listing = React.createClass({
       this.initWithParams(params);
 
       if (this.props.auto_refresh) {
-        jQuery(document).on('heartbeat-tick.mailpoet', function () {
+        jQuery(document).on('heartbeat-tick.mailpoet', () => {
           this.getItems();
-        }.bind(this));
+        });
       }
     }
   },
@@ -489,7 +489,7 @@ const Listing = React.createClass({
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function (error) { return error.message; }),
+            response.errors.map((error) => { return error.message; }),
             { scroll: true }
           );
         }
@@ -519,7 +519,7 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function (error) { return error.message; }),
+        response.errors.map((error) => { return error.message; }),
         { scroll: true }
       );
     });
@@ -547,7 +547,7 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function (error) { return error.message; }),
+        response.errors.map((error) => { return error.message; }),
         { scroll: true }
       );
     });
@@ -575,7 +575,7 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function (error) { return error.message; }),
+        response.errors.map((error) => { return error.message; }),
         { scroll: true }
       );
     });
@@ -592,7 +592,7 @@ const Listing = React.createClass({
       this.handleGroup('all');
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function (error) { return error.message; }),
+        response.errors.map((error) => { return error.message; }),
         { scroll: true }
       );
     });
@@ -636,17 +636,17 @@ const Listing = React.createClass({
       page: 1,
       selection: false,
       selected_ids: []
-    }, function () {
+    }, () => {
       this.setParams();
-    }.bind(this));
+    });
   },
   handleSort: function (sort_by, sort_order = 'asc') {
     this.setState({
       sort_by: sort_by,
       sort_order: (sort_order === 'asc') ? 'asc' : 'desc',
-    }, function () {
+    }, () => {
       this.setParams();
-    }.bind(this));
+    });
   },
   handleSelectItem: function (id, is_checked) {
     var selected_ids = this.state.selected_ids,
@@ -673,7 +673,7 @@ const Listing = React.createClass({
     if (is_checked === false) {
       this.clearSelection();
     } else {
-      var selected_ids = this.state.items.map(function (item) {
+      var selected_ids = this.state.items.map((item) => {
         return ~~item.id;
       });
 
@@ -703,9 +703,9 @@ const Listing = React.createClass({
     this.setState({
       filter: filters,
       page: 1
-    }, function () {
+    }, () => {
       this.setParams();
-    }.bind(this));
+    });
   },
   handleGroup: function (group) {
     // reset search
@@ -716,18 +716,18 @@ const Listing = React.createClass({
       filter: {},
       search: '',
       page: 1
-    }, function () {
+    }, () => {
       this.setParams();
-    }.bind(this));
+    });
   },
   handleSetPage: function (page) {
     this.setState({
       page: page,
       selection: false,
       selected_ids: []
-    }, function () {
+    }, () => {
       this.setParams();
-    }.bind(this));
+    });
   },
   handleRenderItem: function (item, actions) {
     const render = this.props.onRenderItem(item, actions, this.state.meta);
@@ -743,7 +743,7 @@ const Listing = React.createClass({
 
     // columns
     let columns = this.props.columns || [];
-    columns = columns.filter(function (column) {
+    columns = columns.filter((column) => {
       return (column.display === undefined || !!(column.display) === true);
     });
 

@@ -109,7 +109,7 @@ const item_actions = [
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function (error) { return error.message; }),
+            response.errors.map((error) => { return error.message; }),
             { scroll: true }
           );
         }
@@ -132,7 +132,7 @@ const FormList = React.createClass({
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(function (error) { return error.message; }),
+          response.errors.map((error) => { return error.message; }),
           { scroll: true }
         );
       }
@@ -145,9 +145,9 @@ const FormList = React.createClass({
       'has-row-actions'
     );
 
-    let segments = mailpoet_segments.filter(function (segment) {
+    let segments = mailpoet_segments.filter((segment) => {
       return (jQuery.inArray(segment.id, form.segments) !== -1);
-    }).map(function (segment) {
+    }).map((segment) => {
       return segment.name;
     }).join(', ');
 

@@ -2,10 +2,10 @@ define([
   'react',
   'mailpoet'
 ],
-function (
+(
   React,
   MailPoet
-) {
+) => {
   var ListingBulkActions = React.createClass({
     getInitialState: function () {
       return {
@@ -17,7 +17,7 @@ function (
       this.setState({
         action: e.target.value,
         extra: false
-      }, function () {
+      }, () => {
         var action = this.getSelectedAction();
 
         // action on select callback
@@ -26,7 +26,7 @@ function (
             extra: action.onSelect(e)
           });
         }
-      }.bind(this));
+      });
     },
     handleApplyAction: function (e) {
       e.preventDefault();
@@ -67,7 +67,7 @@ function (
     getSelectedAction: function () {
       var selected_action = this.refs.action.value;
       if(selected_action.length > 0) {
-        var action = this.props.bulk_actions.filter(function (action) {
+        var action = this.props.bulk_actions.filter((action) => {
           return (action.name === selected_action);
         });
 
@@ -97,14 +97,14 @@ function (
             onChange={this.handleChangeAction}
           >
             <option value="">{MailPoet.I18n.t('bulkActions')}</option>
-            { this.props.bulk_actions.map(function (action, index) {
+            { this.props.bulk_actions.map((action, index) => {
               return (
                 <option
                   value={ action.name }
                   key={ 'action-' + index }
                 >{ action.label }</option>
               );
-            }.bind(this)) }
+            }) }
           </select>
           <input
             onClick={ this.handleApplyAction }

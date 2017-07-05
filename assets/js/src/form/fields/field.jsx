@@ -8,7 +8,7 @@ define([
   'form/fields/selection.jsx',
   'form/fields/date.jsx',
 ],
-function (
+(
   React,
   FormFieldText,
   FormFieldTextarea,
@@ -17,7 +17,7 @@ function (
   FormFieldCheckbox,
   FormFieldSelection,
   FormFieldDate
-) {
+) => {
   var FormField = React.createClass({
     renderField: function (data, inline = false) {
       var description = false;
@@ -87,14 +87,14 @@ function (
       var field = false;
 
       if(this.props.field['fields'] !== undefined) {
-        field = this.props.field.fields.map(function (subfield, index) {
+        field = this.props.field.fields.map((subfield, index) => {
           return this.renderField({
             index: index,
             field: subfield,
             item: this.props.item,
             onValueChange: this.props.onValueChange || false
           });
-        }.bind(this));
+        });
       } else {
         field = this.renderField(this.props);
       }

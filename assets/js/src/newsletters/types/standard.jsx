@@ -5,12 +5,12 @@ define(
     'mailpoet',
     'newsletters/breadcrumb.jsx'
   ],
-  function (
+  (
     React,
     Router,
     MailPoet,
     Breadcrumb
-  ) {
+  ) => {
 
     var NewsletterStandard = React.createClass({
       contextTypes: {
@@ -33,7 +33,7 @@ define(
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function (error) { return error.message; }),
+              response.errors.map((error) => { return error.message; }),
               { scroll: true }
             );
           }

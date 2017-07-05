@@ -10,7 +10,7 @@ define(
     'newsletters/send/welcome.jsx',
     'newsletters/breadcrumb.jsx'
   ],
-  function (
+  (
     React,
     Router,
     _,
@@ -20,7 +20,7 @@ define(
     NotificationNewsletterFields,
     WelcomeNewsletterFields,
     Breadcrumb
-  ) {
+  ) => {
 
     var NewsletterSend = React.createClass({
       contextTypes: {
@@ -198,7 +198,7 @@ define(
       _showError: (response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function (error) { return error.message; }),
+            response.errors.map((error) => { return error.message; }),
             { scroll: true }
           );
         }

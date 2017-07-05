@@ -25,9 +25,9 @@ const TIME_STEP_SECONDS = 3600;
 const numberOfTimeSteps = SECONDS_IN_DAY / TIME_STEP_SECONDS;
 
 const _timeOfDayValues = _.object(_.map(
-  _.times(numberOfTimeSteps,function (step) {
+  _.times(numberOfTimeSteps,(step) => {
     return step * TIME_STEP_SECONDS;
-  }), function (seconds) {
+  }), (seconds) => {
     let date = new Date(null);
     date.setSeconds(seconds);
     const timeLabel = MailPoet.Date.format(date, { format: timeFormat, offset: 0 });
@@ -48,9 +48,9 @@ const _weekDayValues = {
 const NUMBER_OF_DAYS_IN_MONTH = 28;
 const _monthDayValues = _.object(
   _.map(
-    _.times(NUMBER_OF_DAYS_IN_MONTH, function (day) {
+    _.times(NUMBER_OF_DAYS_IN_MONTH, (day) => {
       return day;
-    }), function (day) {
+    }), (day) => {
       const labels = {
         0: MailPoet.I18n.t('first'),
         1: MailPoet.I18n.t('second'),

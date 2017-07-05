@@ -18,13 +18,13 @@ const _QueueMixin = {
       data: {
         newsletter_id: newsletter.id
       }
-    }).done(function () {
+    }).done(() => {
       jQuery('#resume_'+newsletter.id).show();
       jQuery('#pause_'+newsletter.id).hide();
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(function (error) { return error.message; }),
+          response.errors.map((error) => { return error.message; }),
           { scroll: true }
         );
       }
@@ -38,13 +38,13 @@ const _QueueMixin = {
       data: {
         newsletter_id: newsletter.id
       }
-    }).done(function () {
+    }).done(() => {
       jQuery('#pause_'+newsletter.id).show();
       jQuery('#resume_'+newsletter.id).hide();
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(function (error) { return error.message; }),
+          response.errors.map((error) => { return error.message; }),
           { scroll: true }
         );
       }
@@ -356,14 +356,14 @@ const _MailerMixin = {
       api_version: window.mailpoet_api_version,
       endpoint: 'mailer',
       action: 'resumeSending'
-    }).done(function () {
+    }).done(() => {
       MailPoet.Notice.hide('mailpoet_mailer_error');
       MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
       window.mailpoet_listing.forceUpdate();
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(function (error) { return error.message; }),
+          response.errors.map((error) => { return error.message; }),
           { scroll: true }
         );
       }

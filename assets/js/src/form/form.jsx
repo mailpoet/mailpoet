@@ -6,13 +6,13 @@ define(
     'react-router',
     'form/fields/field.jsx'
   ],
-  function (
+  (
     React,
     MailPoet,
     classNames,
     Router,
     FormField
-  ) {
+  ) => {
 
     var Form = React.createClass({
       contextTypes: {
@@ -98,15 +98,15 @@ define(
 
         // only get values from displayed fields
         var item = {};
-        this.props.fields.map(function (field) {
+        this.props.fields.map((field) => {
           if(field['fields'] !== undefined) {
-            field.fields.map(function (subfield) {
+            field.fields.map((subfield) => {
               item[subfield.name] = this.state.item[subfield.name];
-            }.bind(this));
+            });
           } else {
             item[field.name] = this.state.item[field.name];
           }
-        }.bind(this));
+        });
         // set id if specified
         if(this.props.params.id !== undefined) {
           item.id = this.props.params.id;
@@ -154,7 +154,7 @@ define(
       },
       render: function () {
         if(this.getErrors() !== undefined) {
-          var errors = this.getErrors().map(function (error, index) {
+          var errors = this.getErrors().map((error, index) => {
             return (
               <p key={ 'error-'+index } className="mailpoet_error">
                 { error.message }
@@ -179,7 +179,7 @@ define(
           afterFormContent = this.props.afterFormContent(this.getValues());
         }
 
-        var fields = this.props.fields.map(function (field, i) {
+        var fields = this.props.fields.map((field, i) => {
           return (
             <FormField
               field={ field }
@@ -187,7 +187,7 @@ define(
               onValueChange={ this.handleValueChange }
               key={ 'field-'+i } />
           );
-        }.bind(this));
+        });
 
         var actions = false;
         if(this.props.children) {

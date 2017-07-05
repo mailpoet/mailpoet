@@ -4,11 +4,11 @@ define(
     'wp-js-hooks',
     'newsletters/types/welcome/scheduling.jsx'
   ],
-  function (
+  (
     MailPoet,
     Hooks,
     Scheduling
-  ) {
+  ) => {
 
 
     var fields = [

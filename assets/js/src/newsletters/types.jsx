@@ -6,13 +6,13 @@ define(
     'react-router',
     'newsletters/breadcrumb.jsx'
   ],
-  function (
+  (
     React,
     MailPoet,
     Hooks,
     Router,
     Breadcrumb
-  ) {
+  ) => {
     var NewsletterTypes = React.createClass({
       contextTypes: {
         router: React.PropTypes.object.isRequired
@@ -36,7 +36,7 @@ define(
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function (error) { return error.message; }),
+              response.errors.map((error) => { return error.message; }),
               { scroll: true }
             );
           }
@@ -93,7 +93,7 @@ define(
             <Breadcrumb step="type" />
 
             <ul className="mailpoet_boxes clearfix">
-              {types.map(function (type, index) {
+              {types.map((type, index) => {
                 return (
                   <li key={index} data-type={type.id}>
                     <div>

@@ -5,12 +5,12 @@ define(
     'newsletters/types/notification/scheduling.jsx',
     'underscore'
   ],
-  function (
+  (
     MailPoet,
     Hooks,
     Scheduling,
     _
-  ) {
+  ) => {
 
     var fields = [
       {
@@ -47,8 +47,8 @@ define(
         },
         transformChangedValue: function (segment_ids) {
           var all_segments = this.state.items;
-          return _.map(segment_ids, function (id) {
-            return _.find(all_segments, function (segment) {
+          return _.map(segment_ids, (id) => {
+            return _.find(all_segments, (segment) => {
               return segment.id === id;
             });
           });

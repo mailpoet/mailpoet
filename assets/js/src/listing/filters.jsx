@@ -3,11 +3,11 @@ define([
   'jquery',
   'mailpoet'
 ],
-function (
+(
   React,
   jQuery,
   MailPoet
-) {
+) => {
   var ListingFilters = React.createClass({
     handleFilterAction: function () {
       let filters = {};
@@ -21,7 +21,7 @@ function (
     },
     getAvailableFilters: function () {
       let filters = this.props.filters;
-      return Object.keys(filters).filter(function (filter) {
+      return Object.keys(filters).filter((filter) => {
         return !(
           filters[filter].length === 0
           || (
@@ -34,24 +34,24 @@ function (
     render: function () {
       const filters = this.props.filters;
       const available_filters = this.getAvailableFilters()
-        .map(function (filter, i) {
+        .map((filter, i) => {
           return (
             <select
               ref={ `filter-${i}` }
               key={ `filter-${i}` }
               name={ filter }
             >
-            { filters[filter].map(function (option, j) {
+            { filters[filter].map((option, j) => {
               return (
                 <option
                   value={ option.value }
                   key={ 'filter-option-' + j }
                 >{ option.label }</option>
               );
-            }.bind(this)) }
+            }) }
             </select>
           );
-      }.bind(this));
+      });
 
       let button;
 

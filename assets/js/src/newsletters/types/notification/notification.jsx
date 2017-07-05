@@ -7,14 +7,14 @@ define(
     'newsletters/types/notification/scheduling.jsx',
     'newsletters/breadcrumb.jsx'
   ],
-  function (
+  (
     _,
     React,
     Router,
     MailPoet,
     Scheduling,
     Breadcrumb
-  ) {
+  ) => {
 
     var field = {
       name: 'options',
@@ -56,7 +56,7 @@ define(
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function (error) { return error.message; }),
+              response.errors.map((error) => { return error.message; }),
               { scroll: true }
             );
           }

@@ -2,11 +2,11 @@ define([
     'react',
     'classnames',
     'mailpoet'
-  ], function (
+  ], (
     React,
     classNames,
     MailPoet
-  ) {
+  ) => {
 
   var ListingPages = React.createClass({
     getInitialState: function () {
@@ -17,9 +17,9 @@ define([
     setPage: function (page) {
       this.setState({
         page: null
-      }, function () {
+      }, () => {
         this.props.onSetPage(this.constrainPage(page));
-      }.bind(this));
+      });
     },
     setFirstPage: function () {
       this.setPage(1);

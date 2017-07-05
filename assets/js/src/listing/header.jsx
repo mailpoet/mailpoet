@@ -9,7 +9,7 @@ const ListingHeader = React.createClass({
     );
   },
   render: function () {
-    const columns = this.props.columns.map(function (column, index) {
+    const columns = this.props.columns.map((column, index) => {
       column.is_primary = (index === 0);
       column.sorted = (this.props.sort_by === column.name)
         ? this.props.sort_order
@@ -21,7 +21,7 @@ const ListingHeader = React.createClass({
           key={ 'column-' + index }
           column={column} />
       );
-    }.bind(this));
+    });
 
     let checkbox;
 

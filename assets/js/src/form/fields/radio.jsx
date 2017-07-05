@@ -1,9 +1,9 @@
 define([
   'react'
 ],
-function (
+(
   React
-) {
+) => {
   const FormFieldRadio = React.createClass({
     render: function () {
       if (this.props.field.values === undefined) {

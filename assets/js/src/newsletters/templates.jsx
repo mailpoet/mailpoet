@@ -7,14 +7,14 @@ define(
     'classnames',
     'newsletters/breadcrumb.jsx'
   ],
-  function (
+  (
     React,
     _,
     MailPoet,
     Router,
     classNames,
     Breadcrumb
-  ) {
+  ) => {
 
     var ImportTemplate = React.createClass({
       saveTemplate: function (template) {
@@ -31,14 +31,14 @@ define(
           endpoint: 'newsletterTemplates',
           action: 'save',
           data: template
-        }).always(function () {
+        }).always(() => {
           MailPoet.Modal.loading(false);
         }).done((response) => {
           this.props.onImport(response.data);
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function (error) { return error.message; }),
+              response.errors.map((error) => { return error.message; }),
               { scroll: true }
             );
           }
@@ -145,7 +145,7 @@ define(
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function (error) { return error.message; }),
+              response.errors.map((error) => { return error.message; }),
               { scroll: true }
             );
           }
@@ -185,7 +185,7 @@ define(
         this.getTemplates();
       },
       render: function () {
-        var templates = this.state.templates.map(function (template, index) {
+        var templates = this.state.templates.map((template, index) => {
           var deleteLink = (
             <div className="mailpoet_delete">
               <a
@@ -236,7 +236,7 @@ define(
               { (template.readonly === "1") ? false : deleteLink }
             </li>
           );
-        }.bind(this));
+        });
 
         var boxClasses = classNames(
           'mailpoet_boxes',

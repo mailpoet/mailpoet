@@ -1,10 +1,10 @@
 define([
     'mailpoet',
     'react'
-  ], function (
+  ], (
     MailPoet,
     React
-  ) {
+  ) => {
 
   var ListingSearch = React.createClass({
     handleSearch: function (e) {

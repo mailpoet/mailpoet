@@ -196,7 +196,7 @@ const NewsletterListWelcome = React.createClass({
 
       case 'segment':
         // get segment
-        const segment = _.find(mailpoet_segments, function (segment) {
+        const segment = _.find(mailpoet_segments, (segment) => {
           return (~~(segment.id) === ~~(newsletter.options.segment));
         });
 

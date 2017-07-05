@@ -8,7 +8,7 @@ import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
 const availableRoles = window.mailpoet_roles || {};
 const availableSegments = _.filter(
   window.mailpoet_segments || [],
-  function (segment) {
+  (segment) => {
     return segment.type === 'default';
   }
 );
@@ -23,7 +23,7 @@ const events = {
 
 const availableSegmentValues = _.object(_.map(
   availableSegments,
-  function (segment) {
+  (segment) => {
     let name = segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
     return [segment.id, name];
   }
@@ -113,7 +113,7 @@ const WelcomeScheduling = React.createClass({
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function (error) { return error.message; }),
+            response.errors.map((error) => { return error.message; }),
             { scroll: true }
           );
         }

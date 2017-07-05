@@ -1,9 +1,9 @@
 define([
   'react'
 ],
-function (
+(
   React
-) {
+) => {
   var FormFieldTextarea = React.createClass({
     render: function () {
       return (

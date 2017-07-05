@@ -1,10 +1,10 @@
 define([
   'react',
   'moment',
-], function (
+], (
   React,
   Moment
-) {
+) => {
   class FormFieldDateYear extends React.Component {
     render() {
       const yearsRange = 100;

@@ -5,12 +5,12 @@ define(
     'mailpoet',
     'form/form.jsx'
   ],
-  function (
+  (
     React,
     Router,
     MailPoet,
     Form
-  ) {
+  ) => {
 
     let fields = [
       {

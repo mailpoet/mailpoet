@@ -1,9 +1,9 @@
 define([
   'react'
 ],
-function (
+(
   React
-) {
+) => {
   const FormFieldCheckbox = React.createClass({
     onValueChange: function (e) {
       e.target.value = this.refs.checkbox.checked ? '1' : '0';
