@@ -315,16 +315,16 @@ const Listing = React.createClass({
     return [matches[1], matches[2]];
   },
   initWithParams: function (params) {
-    let state = this.getInitialState();
+    const state = this.getInitialState();
      // check for url params
     if (params.splat) {
       params.splat.split('/').map(param => {
-        let [key, value] = this.getParam(param);
+        const [key, value] = this.getParam(param);
         switch(key) {
           case 'filter':
-            let filters = {};
+            const filters = {};
             value.split('&').map((pair) => {
-                let [k, v] = pair.split('=');
+                const [k, v] = pair.split('=');
                 filters[k] = v;
               }
             );
@@ -358,7 +358,7 @@ const Listing = React.createClass({
   },
   getParams: function () {
     // get all route parameters (without the "splat")
-    let params = _.omit(this.props.params, 'splat');
+    const params = _.omit(this.props.params, 'splat');
     // TODO:
     // find a way to set the "type" in the routes definition
     // so that it appears in `this.props.params`
@@ -369,7 +369,7 @@ const Listing = React.createClass({
   },
   setParams: function () {
     if (this.props.location) {
-      let params = Object.keys(this.state)
+      const params = Object.keys(this.state)
         .filter(key => {
           return (
             [
@@ -398,7 +398,7 @@ const Listing = React.createClass({
         .join('/');
 
       // set url
-      let url = this.getUrlWithParams(params);
+      const url = this.getUrlWithParams(params);
 
       if (this.props.location.pathname !== url) {
         this.context.router.push(`${url}`);

@@ -105,7 +105,7 @@ const bulk_actions = [
     name: 'moveToList',
     label: MailPoet.I18n.t('moveToList'),
     onSelect: function () {
-      let field = {
+      const field = {
         id: 'move_to_segment',
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
@@ -137,7 +137,7 @@ const bulk_actions = [
     name: 'addToList',
     label: MailPoet.I18n.t('addToList'),
     onSelect: function () {
-      let field = {
+      const field = {
         id: 'add_to_segment',
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
@@ -169,7 +169,7 @@ const bulk_actions = [
     name: 'removeFromList',
     label: MailPoet.I18n.t('removeFromList'),
     onSelect: function () {
-      let field = {
+      const field = {
         id: 'remove_from_segment',
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
@@ -253,7 +253,7 @@ const SubscriberList = React.createClass({
     return result;
   },
   renderItem: function (subscriber, actions) {
-    let row_classes = classNames(
+    const row_classes = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions',
@@ -284,7 +284,7 @@ const SubscriberList = React.createClass({
 
     // Subscriptions
     if (subscriber.subscriptions.length > 0) {
-      let subscribed_segments = [];
+      const subscribed_segments = [];
 
       subscriber.subscriptions.map((subscription) => {
         const segment = this.getSegmentFromId(subscription.segment_id);

@@ -161,9 +161,9 @@ define([
     },
     render: function () {
       const options = this.state.items.map((item, index) => {
-        let label = this.getLabel(item);
-        let searchLabel = this.getSearchLabel(item);
-        let value = this.getValue(item);
+        const label = this.getLabel(item);
+        const searchLabel = this.getSearchLabel(item);
+        const value = this.getValue(item);
 
         return (
           <option

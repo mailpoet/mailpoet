@@ -321,7 +321,7 @@ const _MailerMixin = {
   },
   getMailerError(state) {
     let mailer_error_notice;
-    let mailer_check_settings_notice = ReactStringReplace(
+    const mailer_check_settings_notice = ReactStringReplace(
       MailPoet.I18n.t('mailerCheckSettingsNotice'),
       /\[link\](.*?)\[\/link\]/g,
       (match) => (

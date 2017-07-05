@@ -40,7 +40,7 @@ const NotificationScheduling = React.createClass({
   },
   handleValueChange: function (name, value) {
     const oldValue = this._getCurrentValue();
-    let newValue = {};
+    const newValue = {};
 
     newValue[name] = value;
 

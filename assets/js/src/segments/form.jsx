@@ -12,7 +12,7 @@ define(
     Form
   ) => {
 
-    let fields = [
+    const fields = [
       {
         name: 'name',
         label: MailPoet.I18n.t('name'),

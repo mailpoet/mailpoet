@@ -24,7 +24,7 @@ const events = {
 const availableSegmentValues = _.object(_.map(
   availableSegments,
   (segment) => {
-    let name = segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
+    const name = segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
     return [segment.id, name];
   }
 ));
@@ -58,7 +58,7 @@ const WelcomeScheduling = React.createClass({
   },
   handleValueChange: function (name, value) {
     const oldValue = this._getCurrentValue();
-    let newValue = {};
+    const newValue = {};
 
     newValue[name] = value;
 

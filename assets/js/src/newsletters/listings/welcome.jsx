@@ -155,8 +155,7 @@ const NewsletterListWelcome = React.createClass({
     });
   },
   renderStatus: function (newsletter) {
-    let total_sent;
-    total_sent = (
+    const total_sent = (
       MailPoet.I18n.t('sentToXSubscribers')
       .replace('%$1d', newsletter.total_sent.toLocaleString())
     );

@@ -181,7 +181,7 @@ define([
         field = matches[1];
         property = matches[2];
 
-        let value = ~~(e.target.value);
+        const value = ~~(e.target.value);
 
         this.setState({
           [`${property}`]: value

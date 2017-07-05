@@ -10,7 +10,7 @@ define([
 ) => {
   var ListingFilters = React.createClass({
     handleFilterAction: function () {
-      let filters = {};
+      const filters = {};
       this.getAvailableFilters().map((filter, i) => {
         filters[this.refs['filter-'+i].name] = this.refs['filter-'+i].value;
       });
@@ -20,7 +20,7 @@ define([
       return this.props.onEmptyTrash();
     },
     getAvailableFilters: function () {
-      let filters = this.props.filters;
+      const filters = this.props.filters;
       return Object.keys(filters).filter((filter) => {
         return !(
           filters[filter].length === 0

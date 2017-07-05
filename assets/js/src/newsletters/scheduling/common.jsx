@@ -28,7 +28,7 @@ const _timeOfDayValues = _.object(_.map(
   _.times(numberOfTimeSteps,(step) => {
     return step * TIME_STEP_SECONDS;
   }), (seconds) => {
-    let date = new Date(null);
+    const date = new Date(null);
     date.setSeconds(seconds);
     const timeLabel = MailPoet.Date.format(date, { format: timeFormat, offset: 0 });
     return [seconds, timeLabel];

@@ -139,7 +139,7 @@ const FormList = React.createClass({
     });
   },
   renderItem(form, actions) {
-    let row_classes = classNames(
+    const row_classes = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'

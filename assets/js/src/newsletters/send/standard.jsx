@@ -198,7 +198,7 @@ define(
         this.setState(this._buildStateFromProps(nextProps));
       },
       _buildStateFromProps: function (props) {
-        let value = props.value || defaultDateTime;
+        const value = props.value || defaultDateTime;
         const [date, time] = value.split(this._DATE_TIME_SEPARATOR);
         return {
           date: date,
@@ -416,11 +416,11 @@ define(
       getSendButtonOptions: function (newsletter) {
         newsletter = newsletter || {};
 
-        let isScheduled = (
+        const isScheduled = (
           typeof newsletter.options === 'object'
           && newsletter.options.isScheduled === '1'
         );
-        let options = {
+        const options = {
           value: (isScheduled
             ? MailPoet.I18n.t('schedule')
             : MailPoet.I18n.t('send'))

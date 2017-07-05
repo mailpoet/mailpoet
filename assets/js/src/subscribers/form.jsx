@@ -109,7 +109,7 @@ define(
 
     var custom_fields = window.mailpoet_custom_fields || [];
     custom_fields.map(custom_field => {
-      let field = {
+      const field = {
         name: 'cf_' + custom_field.id,
         label: custom_field.name,
         type: custom_field.type
