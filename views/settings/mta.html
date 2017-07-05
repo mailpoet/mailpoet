@@ -906,12 +906,16 @@
 
     function renderSMTPSendingFrequency() {
       // set sending frequency
+      var emails = $('#smtp_frequency_emails').val();
+      var interval = $('#smtp_frequency_interval').val();
       setSendingFrequency({
         output: '#mailpoet_smtp_daily_emails',
         only_daily: true,
-        emails: $('#smtp_frequency_emails').val(),
-        interval: $('#smtp_frequency_interval').val()
+        emails: emails,
+        interval: interval
       });
+      $('#mta_frequency_emails').val(emails);
+      $('#mta_frequency_interval').val(interval);
     }
 
     function sendingFrequencyMethodUpdated() {
@@ -968,6 +972,8 @@
         emails: emails,
         interval: interval
       });
+      $('#mta_frequency_emails').val(emails);
+      $('#mta_frequency_interval').val(interval);
     }
 
     function renderHostSendingFrequency() {
@@ -1000,6 +1006,8 @@
           interval: interval
         });
       }
+      $('#mta_frequency_emails').val(emails);
+      $('#mta_frequency_interval').val(interval);
     }
 
     function updateSendingFrequency(method) {
