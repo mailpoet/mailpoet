@@ -10,7 +10,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 
 class NewsletterSchedulerTest extends MailPoetTest {
- function testItSetsConstants() {
+  function testItSetsConstants() {
     expect(Scheduler::SECONDS_IN_HOUR)->notEmpty();
     expect(Scheduler::LAST_WEEKDAY_FORMAT)->notEmpty();
     expect(Scheduler::WORDPRESS_ALL_ROLES)->notEmpty();
@@ -61,6 +61,27 @@ class NewsletterSchedulerTest extends MailPoetTest {
     // duplicate queue record should not be created
     Scheduler::createPostNotificationQueue($newsletter);
     expect(SendingQueue::findMany())->count(1);
+  }
+
+  function testItDoesNotCreateDuplicateWelcomeNotificationQueueRecords() {
+    $newsletter = (object)array(
+      'id' => 1,
+      'afterTimeNumber' => 2,
+      'afterTimeType' => 'hours'
+    );
+    $existing_subscriber = 678;
+    $existing_queue = SendingQueue::create();
+    $existing_queue->newsletter_id = $newsletter->id;
+    $existing_queue->subscribers = array('to_process' => array($existing_subscriber));
+    $existing_queue->save();
+
+    // queue is not scheduled
+    Scheduler::createWelcomeNotificationQueue($newsletter, $existing_subscriber);
+    expect(SendingQueue::findMany())->count(1);
+
+    // queue is not scheduled
+    Scheduler::createWelcomeNotificationQueue($newsletter, 1);
+    expect(SendingQueue::findMany())->count(2);
   }
 
   function testItCreatesWelcomeNotificationQueueRecord() {

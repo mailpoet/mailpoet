@@ -73,6 +73,10 @@ class Scheduler {
   }
 
   static function createWelcomeNotificationQueue($newsletter, $subscriber_id) {
+    $previously_scheduled_notification = SendingQueue::where('newsletter_id', $newsletter->id)
+      ->whereLike('subscribers', '%' . serialize(array($subscriber_id)) . '%')
+      ->findOne();
+    if(!empty($previously_scheduled_notification)) return;
     $queue = SendingQueue::create();
     $queue->newsletter_id = $newsletter->id;
     $queue->subscribers = serialize(

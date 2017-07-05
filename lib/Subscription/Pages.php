@@ -57,7 +57,7 @@ class Pages {
   }
 
   function confirm() {
-    if($this->subscriber === false) {
+    if($this->subscriber === false || $this->subscriber->status === Subscriber::STATUS_SUBSCRIBED) {
       return false;
     }
 
@@ -204,7 +204,6 @@ class Pages {
       return __("You are now unsubscribed.", 'mailpoet');
     }
   }
-
 
   private function getConfirmContent() {
     if($this->isPreview() || $this->subscriber !== false) {
