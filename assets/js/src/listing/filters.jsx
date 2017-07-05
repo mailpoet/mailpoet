@@ -3,25 +3,25 @@ define([
   'jquery',
   'mailpoet'
 ],
-function(
+(
   React,
   jQuery,
   MailPoet
-) {
+) => {
   var ListingFilters = React.createClass({
-    handleFilterAction: function() {
-      let filters = {};
+    handleFilterAction: function () {
+      const filters = {};
       this.getAvailableFilters().map((filter, i) => {
-        filters[this.refs['filter-'+i].name] = this.refs['filter-'+i].value
+        filters[this.refs['filter-'+i].name] = this.refs['filter-'+i].value;
       });
       return this.props.onSelectFilter(filters);
     },
-    handleEmptyTrash: function() {
+    handleEmptyTrash: function () {
       return this.props.onEmptyTrash();
     },
-    getAvailableFilters: function() {
-      let filters = this.props.filters;
-      return Object.keys(filters).filter(function(filter) {
+    getAvailableFilters: function () {
+      const filters = this.props.filters;
+      return Object.keys(filters).filter((filter) => {
         return !(
           filters[filter].length === 0
           || (
@@ -31,39 +31,39 @@ function(
         );
       });
     },
-    componentDidUpdate: function() {
+    componentDidUpdate: function () {
       const selected_filters = this.props.filter;
-      const available_filters = this.getAvailableFilters().map(
-        function(filter, i) {
+      this.getAvailableFilters().map(
+        (filter, i) => {
           if (selected_filters[filter] !== undefined && selected_filters[filter]) {
             jQuery(this.refs['filter-'+i])
               .val(selected_filters[filter])
               .trigger('change');
+            }
           }
-        }.bind(this)
-      );
+        );
     },
-    render: function() {
+    render: function () {
       const filters = this.props.filters;
       const available_filters = this.getAvailableFilters()
-        .map(function(filter, i) {
+        .map((filter, i) => {
           return (
             <select
               ref={ `filter-${i}` }
               key={ `filter-${i}` }
               name={ filter }
             >
-            { filters[filter].map(function(option, j) {
+            { filters[filter].map((option, j) => {
               return (
                 <option
                   value={ option.value }
                   key={ 'filter-option-' + j }
                 >{ option.label }</option>
               );
-            }.bind(this)) }
+            }) }
             </select>
           );
-      }.bind(this));
+      });
 
       let button;
 

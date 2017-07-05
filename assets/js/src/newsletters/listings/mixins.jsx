@@ -1,16 +1,16 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import ReactStringReplace from 'react-string-replace'
-import { Link } from 'react-router'
-import MailPoet from 'mailpoet'
-import classNames from 'classnames'
-import moment from 'moment'
-import jQuery from 'jquery'
-import Hooks from 'wp-js-hooks'
-import StatsBadge from 'newsletters/badges/stats.jsx'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import ReactStringReplace from 'react-string-replace';
+import { Link } from 'react-router';
+import MailPoet from 'mailpoet';
+import classNames from 'classnames';
+import moment from 'moment';
+import jQuery from 'jquery';
+import Hooks from 'wp-js-hooks';
+import StatsBadge from 'newsletters/badges/stats.jsx';
 
 const _QueueMixin = {
-  pauseSending: function(newsletter) {
+  pauseSending: function (newsletter) {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
@@ -18,19 +18,19 @@ const _QueueMixin = {
       data: {
         newsletter_id: newsletter.id
       }
-    }).done(function() {
+    }).done(() => {
       jQuery('#resume_'+newsletter.id).show();
       jQuery('#pause_'+newsletter.id).hide();
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(function(error) { return error.message; }),
+          response.errors.map((error) => { return error.message; }),
           { scroll: true }
         );
       }
     });
   },
-  resumeSending: function(newsletter) {
+  resumeSending: function (newsletter) {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'sendingQueue',
@@ -38,19 +38,19 @@ const _QueueMixin = {
       data: {
         newsletter_id: newsletter.id
       }
-    }).done(function() {
+    }).done(() => {
       jQuery('#pause_'+newsletter.id).show();
       jQuery('#resume_'+newsletter.id).hide();
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(function(error) { return error.message; }),
+          response.errors.map((error) => { return error.message; }),
           { scroll: true }
         );
       }
     });
   },
-  renderQueueStatus: function(newsletter, mailer_log) {
+  renderQueueStatus: function (newsletter, mailer_log) {
     if (!newsletter.queue) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
@@ -58,14 +58,14 @@ const _QueueMixin = {
     } else if (mailer_log.status === 'paused' && newsletter.queue.status !== 'completed') {
       return (
         <span>{MailPoet.I18n.t('paused')}</span>
-      )
+      );
     } else {
       if (newsletter.queue.status === 'scheduled') {
         return (
           <span>
             { MailPoet.I18n.t('scheduledFor') } { MailPoet.Date.format(newsletter.queue.scheduled_at) }
           </span>
-        )
+        );
       }
       const progressClasses = classNames(
         'mailpoet_progress',
@@ -144,12 +144,12 @@ const _QueueMixin = {
 };
 
 const _StatisticsMixin = {
-  renderStatistics: function(newsletter, is_sent, current_time) {
+  renderStatistics: function (newsletter, is_sent, current_time) {
     if (is_sent === undefined) {
       // condition for standard and post notification listings
       is_sent = newsletter.statistics
         && newsletter.queue
-        && newsletter.queue.status !== 'scheduled'
+        && newsletter.queue.status !== 'scheduled';
     }
     if (!is_sent) {
       return (
@@ -301,10 +301,10 @@ const _StatisticsMixin = {
       </div>
     );
   }
-}
+};
 
 const _MailerMixin = {
-  checkMailerStatus: function(state) {
+  checkMailerStatus: function (state) {
     if (state.meta.mta_log.error && state.meta.mta_log.status === 'paused') {
       MailPoet.Notice.error(
         '',
@@ -321,10 +321,10 @@ const _MailerMixin = {
   },
   getMailerError(state) {
     let mailer_error_notice;
-    let mailer_check_settings_notice = ReactStringReplace(
+    const mailer_check_settings_notice = ReactStringReplace(
       MailPoet.I18n.t('mailerCheckSettingsNotice'),
       /\[link\](.*?)\[\/link\]/g,
-      (match, i) => (
+      (match) => (
         <a href={`?page=mailpoet-settings#mta`}>{ match }</a>
       )
     );
@@ -356,20 +356,20 @@ const _MailerMixin = {
       api_version: window.mailpoet_api_version,
       endpoint: 'mailer',
       action: 'resumeSending'
-    }).done(function() {
+    }).done(() => {
       MailPoet.Notice.hide('mailpoet_mailer_error');
       MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
       window.mailpoet_listing.forceUpdate();
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(function(error) { return error.message; }),
+          response.errors.map((error) => { return error.message; }),
           { scroll: true }
         );
       }
     });
   }
-}
+};
 
 
 

@@ -1,24 +1,20 @@
-import React from 'react'
-import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
-import { createHashHistory } from 'history'
+import React from 'react';
+import { Link } from 'react-router';
 
-import Listing from 'listing/listing.jsx'
-import ListingTabs from 'newsletters/listings/tabs.jsx'
+import Listing from 'listing/listing.jsx';
+import ListingTabs from 'newsletters/listings/tabs.jsx';
 
-import { MailerMixin } from 'newsletters/listings/mixins.jsx'
+import { MailerMixin } from 'newsletters/listings/mixins.jsx';
 
-import classNames from 'classnames'
-import jQuery from 'jquery'
-import MailPoet from 'mailpoet'
+import classNames from 'classnames';
+import MailPoet from 'mailpoet';
 
 import {
   timeOfDayValues,
   weekDayValues,
   monthDayValues,
   nthWeekDayValues
-} from 'newsletters/scheduling/common.jsx'
-
-const mailpoet_settings = window.mailpoet_settings || {};
+} from 'newsletters/scheduling/common.jsx';
 
 const messages = {
   onTrash: (response) => {
@@ -106,7 +102,7 @@ const bulk_actions = [
 const newsletter_actions = [
   {
     name: 'view',
-    link: function(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={ newsletter.preview_url } target="_blank">
           {MailPoet.I18n.t('preview')}
@@ -116,7 +112,7 @@ const newsletter_actions = [
   },
   {
     name: 'edit',
-    link: function(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
           {MailPoet.I18n.t('edit')}
@@ -127,7 +123,7 @@ const newsletter_actions = [
   {
     name: 'duplicate',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: function(newsletter, refresh) {
+    onClick: function (newsletter, refresh) {
       return MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'newsletters',
@@ -145,7 +141,7 @@ const newsletter_actions = [
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function(error) { return error.message; }),
+            response.errors.map((error) => { return error.message; }),
             { scroll: true }
           );
         }
@@ -159,7 +155,7 @@ const newsletter_actions = [
 
 const NewsletterListNotification = React.createClass({
   mixins: [ MailerMixin ],
-  updateStatus: function(e) {
+  updateStatus: function (e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
     e.persist();
@@ -185,7 +181,7 @@ const NewsletterListNotification = React.createClass({
       e.target.value = response.status;
     });
   },
-  renderStatus: function(newsletter) {
+  renderStatus: function (newsletter) {
     return (
       <select
         data-id={ newsletter.id }
@@ -197,13 +193,13 @@ const NewsletterListNotification = React.createClass({
       </select>
     );
   },
-  renderSettings: function(newsletter) {
+  renderSettings: function (newsletter) {
     let sendingFrequency;
     let sendingToSegments;
 
     // get list of segments' name
-    const segments = newsletter.segments.map(function(segment) {
-      return segment.name
+    const segments = newsletter.segments.map((segment) => {
+      return segment.name;
     });
 
     // check if the user has specified segments to send to
@@ -264,7 +260,7 @@ const NewsletterListNotification = React.createClass({
       </span>
     );
   },
-  renderHistoryLink: function(newsletter) {
+  renderHistoryLink: function (newsletter) {
     const childrenCount = ~~(newsletter.children_count);
     if (childrenCount === 0) {
       return (
@@ -278,7 +274,7 @@ const NewsletterListNotification = React.createClass({
       );
     }
   },
-  renderItem: function(newsletter, actions) {
+  renderItem: function (newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -311,7 +307,7 @@ const NewsletterListNotification = React.createClass({
       </div>
     );
   },
-  render: function() {
+  render: function () {
     return (
       <div>
         <h1 className="title">

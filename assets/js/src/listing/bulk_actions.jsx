@@ -2,22 +2,22 @@ define([
   'react',
   'mailpoet'
 ],
-function(
+(
   React,
   MailPoet
-) {
+) => {
   var ListingBulkActions = React.createClass({
-    getInitialState: function() {
+    getInitialState: function () {
       return {
         action: false,
         extra: false
-      }
+      };
     },
-    handleChangeAction: function(e) {
+    handleChangeAction: function (e) {
       this.setState({
         action: e.target.value,
         extra: false
-      }, function() {
+      }, () => {
         var action = this.getSelectedAction();
 
         // action on select callback
@@ -26,9 +26,9 @@ function(
             extra: action.onSelect(e)
           });
         }
-      }.bind(this));
+      });
     },
-    handleApplyAction: function(e) {
+    handleApplyAction: function (e) {
       e.preventDefault();
 
       var action = this.getSelectedAction();
@@ -47,7 +47,7 @@ function(
 
       data.action = this.state.action;
 
-      var onSuccess = function() {};
+      var onSuccess = function () {};
       if(action['onSuccess'] !== undefined) {
         onSuccess = action.onSuccess;
       }
@@ -64,10 +64,10 @@ function(
         extra: false
       });
     },
-    getSelectedAction: function() {
+    getSelectedAction: function () {
       var selected_action = this.refs.action.value;
       if(selected_action.length > 0) {
-        var action = this.props.bulk_actions.filter(function(action) {
+        var action = this.props.bulk_actions.filter((action) => {
           return (action.name === selected_action);
         });
 
@@ -77,7 +77,7 @@ function(
       }
       return null;
     },
-    render: function() {
+    render: function () {
       if(this.props.bulk_actions.length === 0) {
         return null;
       }
@@ -97,14 +97,14 @@ function(
             onChange={this.handleChangeAction}
           >
             <option value="">{MailPoet.I18n.t('bulkActions')}</option>
-            { this.props.bulk_actions.map(function(action, index) {
+            { this.props.bulk_actions.map((action, index) => {
               return (
                 <option
                   value={ action.name }
                   key={ 'action-' + index }
                 >{ action.label }</option>
               );
-            }.bind(this)) }
+            }) }
           </select>
           <input
             onClick={ this.handleApplyAction }

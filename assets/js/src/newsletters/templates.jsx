@@ -7,17 +7,17 @@ define(
     'classnames',
     'newsletters/breadcrumb.jsx'
   ],
-  function(
+  (
     React,
     _,
     MailPoet,
     Router,
     classNames,
     Breadcrumb
-  ) {
+  ) => {
 
     var ImportTemplate = React.createClass({
-      saveTemplate: function(template) {
+      saveTemplate: function (template) {
 
         // Stringify to enable transmission of primitive non-string value types
         if (!_.isUndefined(template.body)) {
@@ -31,20 +31,20 @@ define(
           endpoint: 'newsletterTemplates',
           action: 'save',
           data: template
-        }).always(function() {
+        }).always(() => {
           MailPoet.Modal.loading(false);
         }).done((response) => {
           this.props.onImport(response.data);
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
+              response.errors.map((error) => { return error.message; }),
               { scroll: true }
             );
           }
         });
       },
-      handleSubmit: function(e) {
+      handleSubmit: function (e) {
         e.preventDefault();
 
         if (_.size(this.refs.templateFile.files) <= 0) return false;
@@ -63,7 +63,7 @@ define(
 
         reader.readAsText(file);
       },
-      render: function() {
+      render: function () {
         return (
           <div>
             <h2>{MailPoet.I18n.t('importTemplateTitle')}</h2>
@@ -83,16 +83,16 @@ define(
     });
 
     var NewsletterTemplates = React.createClass({
-      getInitialState: function() {
+      getInitialState: function () {
         return {
           loading: false,
           templates: []
         };
       },
-      componentDidMount: function() {
+      componentDidMount: function () {
         this.getTemplates();
       },
-      getTemplates: function() {
+      getTemplates: function () {
         this.setState({ loading: true });
 
         MailPoet.Modal.loading(true);
@@ -123,7 +123,7 @@ define(
           }
         });
       },
-      handleSelectTemplate: function(template) {
+      handleSelectTemplate: function (template) {
         var body = template.body;
 
         // Stringify to enable transmission of primitive non-string value types
@@ -145,13 +145,13 @@ define(
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
+              response.errors.map((error) => { return error.message; }),
               { scroll: true }
             );
           }
         });
       },
-      handleDeleteTemplate: function(template) {
+      handleDeleteTemplate: function (template) {
         this.setState({ loading: true });
         if(
           window.confirm(
@@ -167,25 +167,25 @@ define(
             data: {
               id: template.id
             }
-          }).done((response) => {
+          }).done(() => {
             this.getTemplates();
           });
         } else {
            this.setState({ loading: false });
         }
       },
-      handleShowTemplate: function(template) {
+      handleShowTemplate: function (template) {
         MailPoet.Modal.popup({
           title: template.name,
           template: '<div class="mailpoet_boxes_preview" style="background-color: {{ body.globalStyles.body.backgroundColor }}"><img src="{{ thumbnail }}" /></div>',
           data: template
         });
       },
-      handleTemplateImport: function() {
+      handleTemplateImport: function () {
         this.getTemplates();
       },
-      render: function() {
-        var templates = this.state.templates.map(function(template, index) {
+      render: function () {
+        var templates = this.state.templates.map((template, index) => {
           var deleteLink = (
             <div className="mailpoet_delete">
               <a
@@ -236,7 +236,7 @@ define(
               { (template.readonly === "1") ? false : deleteLink }
             </li>
           );
-        }.bind(this));
+        });
 
         var boxClasses = classNames(
           'mailpoet_boxes',

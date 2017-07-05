@@ -6,37 +6,37 @@ define(
     'react-router',
     'form/fields/field.jsx'
   ],
-  function(
+  (
     React,
     MailPoet,
     classNames,
     Router,
     FormField
-  ) {
+  ) => {
 
     var Form = React.createClass({
       contextTypes: {
         router: React.PropTypes.object.isRequired
       },
-      getDefaultProps: function() {
+      getDefaultProps: function () {
         return {
           params: {},
         };
       },
-      getInitialState: function() {
+      getInitialState: function () {
         return {
           loading: false,
           errors: [],
           item: {}
         };
       },
-      getValues: function() {
+      getValues: function () {
         return this.props.item ? this.props.item : this.state.item;
       },
-      getErrors: function() {
+      getErrors: function () {
         return this.props.errors ? this.props.errors : this.state.errors;
       },
-      componentDidMount: function() {
+      componentDidMount: function () {
         if(this.isMounted()) {
           if(this.props.params.id !== undefined) {
             this.loadItem(this.props.params.id);
@@ -47,7 +47,7 @@ define(
           }
         }
       },
-      componentWillReceiveProps: function(props) {
+      componentWillReceiveProps: function (props) {
         if(props.params.id === undefined) {
           this.setState({
             loading: false,
@@ -60,7 +60,7 @@ define(
           this.loadItem(props.params.id);
         }
       },
-      loadItem: function(id) {
+      loadItem: function (id) {
         this.setState({ loading: true });
 
         MailPoet.Ajax.post({
@@ -75,16 +75,16 @@ define(
             loading: false,
             item: response.data
           });
-        }).fail((response) => {
+        }).fail(() => {
           this.setState({
             loading: false,
             item: {}
-          }, function() {
+          }, function () {
             this.context.router.push('/new');
           });
         });
       },
-      handleSubmit: function(e) {
+      handleSubmit: function (e) {
         e.preventDefault();
 
         // handle validation
@@ -98,15 +98,15 @@ define(
 
         // only get values from displayed fields
         var item = {};
-        this.props.fields.map(function(field) {
+        this.props.fields.map((field) => {
           if(field['fields'] !== undefined) {
-            field.fields.map(function(subfield) {
+            field.fields.map((subfield) => {
               item[subfield.name] = this.state.item[subfield.name];
-            }.bind(this));
+            });
           } else {
             item[field.name] = this.state.item[field.name];
           }
-        }.bind(this));
+        });
         // set id if specified
         if(this.props.params.id !== undefined) {
           item.id = this.props.params.id;
@@ -119,7 +119,7 @@ define(
           data: item
         }).always(() => {
           this.setState({ loading: false });
-        }).done((response) => {
+        }).done(() => {
           if(this.props.onSuccess !== undefined) {
             this.props.onSuccess();
           } else {
@@ -137,7 +137,7 @@ define(
           }
         });
       },
-      handleValueChange: function(e) {
+      handleValueChange: function (e) {
         if (this.props.onChange) {
           return this.props.onChange(e);
         } else {
@@ -152,9 +152,9 @@ define(
           return true;
         }
       },
-      render: function() {
+      render: function () {
         if(this.getErrors() !== undefined) {
-          var errors = this.getErrors().map(function(error, index) {
+          var errors = this.getErrors().map((error, index) => {
             return (
               <p key={ 'error-'+index } className="mailpoet_error">
                 { error.message }
@@ -179,7 +179,7 @@ define(
           afterFormContent = this.props.afterFormContent(this.getValues());
         }
 
-        var fields = this.props.fields.map(function(field, i) {
+        var fields = this.props.fields.map((field, i) => {
           return (
             <FormField
               field={ field }
@@ -187,7 +187,7 @@ define(
               onValueChange={ this.handleValueChange }
               key={ 'field-'+i } />
           );
-        }.bind(this));
+        });
 
         var actions = false;
         if(this.props.children) {

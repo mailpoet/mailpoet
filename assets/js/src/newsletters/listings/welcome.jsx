@@ -1,22 +1,19 @@
-import React from 'react'
-import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
-import { createHashHistory } from 'history'
+import React from 'react';
+import { Link } from 'react-router';
 
-import Listing from 'listing/listing.jsx'
-import ListingTabs from 'newsletters/listings/tabs.jsx'
+import Listing from 'listing/listing.jsx';
+import ListingTabs from 'newsletters/listings/tabs.jsx';
 
-import { StatisticsMixin, MailerMixin } from 'newsletters/listings/mixins.jsx'
+import { StatisticsMixin, MailerMixin } from 'newsletters/listings/mixins.jsx';
 
-import classNames from 'classnames'
-import jQuery from 'jquery'
-import MailPoet from 'mailpoet'
-import _ from 'underscore'
-import Hooks from 'wp-js-hooks'
+import classNames from 'classnames';
+import MailPoet from 'mailpoet';
+import _ from 'underscore';
+import Hooks from 'wp-js-hooks';
 
 const mailpoet_roles = window.mailpoet_roles || {};
 const mailpoet_segments = window.mailpoet_segments || {};
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
-const mailpoet_settings = window.mailpoet_settings || {};
 
 const messages = {
   onTrash: (response) => {
@@ -104,7 +101,7 @@ const bulk_actions = [
 let newsletter_actions = [
   {
     name: 'view',
-    link: function(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={ newsletter.preview_url } target="_blank">
           {MailPoet.I18n.t('preview')}
@@ -114,7 +111,7 @@ let newsletter_actions = [
   },
   {
     name: 'edit',
-    link: function(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
           {MailPoet.I18n.t('edit')}
@@ -131,7 +128,7 @@ newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_n
 
 const NewsletterListWelcome = React.createClass({
   mixins: [ StatisticsMixin, MailerMixin ],
-  updateStatus: function(e) {
+  updateStatus: function (e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
     e.persist();
@@ -157,9 +154,8 @@ const NewsletterListWelcome = React.createClass({
       e.target.value = response.status;
     });
   },
-  renderStatus: function(newsletter) {
-    let total_sent;
-    total_sent = (
+  renderStatus: function (newsletter) {
+    const total_sent = (
       MailPoet.I18n.t('sentToXSubscribers')
       .replace('%$1d', newsletter.total_sent.toLocaleString())
     );
@@ -180,7 +176,7 @@ const NewsletterListWelcome = React.createClass({
       </div>
     );
   },
-  renderSettings: function(newsletter) {
+  renderSettings: function (newsletter) {
     let sendingEvent;
     let sendingDelay;
 
@@ -199,7 +195,7 @@ const NewsletterListWelcome = React.createClass({
 
       case 'segment':
         // get segment
-        const segment = _.find(mailpoet_segments, function(segment) {
+        const segment = _.find(mailpoet_segments, (segment) => {
           return (~~(segment.id) === ~~(newsletter.options.segment));
         });
 
@@ -251,7 +247,7 @@ const NewsletterListWelcome = React.createClass({
       </span>
     );
   },
-  renderItem: function(newsletter, actions) {
+  renderItem: function (newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -289,7 +285,7 @@ const NewsletterListWelcome = React.createClass({
       </div>
     );
   },
-  render: function() {
+  render: function () {
     return (
       <div>
         <h1 className="title">

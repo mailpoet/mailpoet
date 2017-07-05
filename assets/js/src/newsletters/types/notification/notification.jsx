@@ -7,14 +7,14 @@ define(
     'newsletters/types/notification/scheduling.jsx',
     'newsletters/breadcrumb.jsx'
   ],
-  function(
+  (
     _,
     React,
     Router,
     MailPoet,
     Scheduling,
     Breadcrumb
-  ) {
+  ) => {
 
     var field = {
       name: 'options',
@@ -26,7 +26,7 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired
       },
-      getInitialState: function() {
+      getInitialState: function () {
         return {
           options: {
             intervalType: 'daily',
@@ -37,12 +37,12 @@ define(
           }
         };
       },
-      handleValueChange: function(event) {
+      handleValueChange: function (event) {
         var state = this.state;
         state[event.target.name] = event.target.value;
         this.setState(state);
       },
-      handleNext: function() {
+      handleNext: function () {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',
@@ -56,16 +56,16 @@ define(
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
+              response.errors.map((error) => { return error.message; }),
               { scroll: true }
             );
           }
         });
       },
-      showTemplateSelection: function(newsletterId) {
+      showTemplateSelection: function (newsletterId) {
         this.context.router.push(`/template/${newsletterId}`);
       },
-      render: function() {
+      render: function () {
         return (
           <div>
             <h1>{MailPoet.I18n.t('postNotificationNewsletterTypeTitle')}</h1>

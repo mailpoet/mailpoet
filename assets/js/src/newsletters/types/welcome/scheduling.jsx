@@ -1,17 +1,14 @@
-import _ from 'underscore'
-import React from 'react'
-import MailPoet from 'mailpoet'
-import Select from 'form/fields/select.jsx'
-import Text from 'form/fields/text.jsx'
-import {
-  timeDelayValues,
-  intervalValues
-} from 'newsletters/scheduling/common.jsx'
+import _ from 'underscore';
+import React from 'react';
+import MailPoet from 'mailpoet';
+import Select from 'form/fields/select.jsx';
+import Text from 'form/fields/text.jsx';
+import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
 
 const availableRoles = window.mailpoet_roles || {};
 const availableSegments = _.filter(
   window.mailpoet_segments || [],
-  function (segment) {
+  (segment) => {
     return segment.type === 'default';
   }
 );
@@ -26,8 +23,8 @@ const events = {
 
 const availableSegmentValues = _.object(_.map(
   availableSegments,
-  function(segment) {
-    let name = segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')';
+  (segment) => {
+    const name = segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
     return [segment.id, name];
   }
 ));
@@ -56,12 +53,12 @@ const WelcomeScheduling = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired
   },
-  _getCurrentValue: function() {
+  _getCurrentValue: function () {
     return (this.props.item[this.props.field.name] || {});
   },
-  handleValueChange: function(name, value) {
+  handleValueChange: function (name, value) {
     const oldValue = this._getCurrentValue();
-    let newValue = {};
+    const newValue = {};
 
     newValue[name] = value;
 
@@ -72,37 +69,37 @@ const WelcomeScheduling = React.createClass({
       }
     });
   },
-  handleEventChange: function(event) {
+  handleEventChange: function (event) {
     return this.handleValueChange(
       'event',
       event.target.value
     );
   },
-  handleSegmentChange: function(event) {
+  handleSegmentChange: function (event) {
     return this.handleValueChange(
       'segment',
       event.target.value
     );
   },
-  handleRoleChange: function(event) {
+  handleRoleChange: function (event) {
     return this.handleValueChange(
       'role',
       event.target.value
     );
   },
-  handleAfterTimeNumberChange: function(event) {
+  handleAfterTimeNumberChange: function (event) {
     return this.handleValueChange(
       'afterTimeNumber',
       event.target.value
     );
   },
-  handleAfterTimeTypeChange: function(event) {
+  handleAfterTimeTypeChange: function (event) {
     return this.handleValueChange(
       'afterTimeType',
       event.target.value
     );
   },
-  handleNext: function() {
+  handleNext: function () {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -116,16 +113,16 @@ const WelcomeScheduling = React.createClass({
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function(error) { return error.message; }),
+            response.errors.map((error) => { return error.message; }),
             { scroll: true }
           );
         }
       });
   },
-  showTemplateSelection: function(newsletterId) {
+  showTemplateSelection: function (newsletterId) {
     this.context.router.push(`/template/${ newsletterId }`);
   },
-  render: function() {
+  render: function () {
     const value = this._getCurrentValue();
     let roleSegmentSelection;
     let timeNumber;

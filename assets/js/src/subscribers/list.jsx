@@ -1,12 +1,12 @@
-import React from 'react'
-import { Router, Route, Link } from 'react-router'
+import React from 'react';
+import { Link } from 'react-router';
 
-import jQuery from 'jquery'
-import MailPoet from 'mailpoet'
-import classNames from 'classnames'
+import jQuery from 'jquery';
+import MailPoet from 'mailpoet';
+import classNames from 'classnames';
 
-import Listing from 'listing/listing.jsx'
-import Selection from 'form/fields/selection.jsx'
+import Listing from 'listing/listing.jsx';
+import Selection from 'form/fields/selection.jsx';
 
 const columns = [
   {
@@ -104,12 +104,12 @@ const bulk_actions = [
   {
     name: 'moveToList',
     label: MailPoet.I18n.t('moveToList'),
-    onSelect: function() {
-      let field = {
+    onSelect: function () {
+      const field = {
         id: 'move_to_segment',
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
-        filter: function(segment) {
+        filter: function (segment) {
           return !!(
             !segment.deleted_at && segment.type === 'default'
           );
@@ -120,12 +120,12 @@ const bulk_actions = [
         <Selection field={ field }/>
       );
     },
-    getData: function() {
+    getData: function () {
       return {
         segment_id: ~~(jQuery('#move_to_segment').val())
-      }
+      };
     },
-    onSuccess: function(response) {
+    onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
         .replace('%$1d', (~~(response.meta.count)).toLocaleString())
@@ -136,12 +136,12 @@ const bulk_actions = [
   {
     name: 'addToList',
     label: MailPoet.I18n.t('addToList'),
-    onSelect: function() {
-      let field = {
+    onSelect: function () {
+      const field = {
         id: 'add_to_segment',
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
-        filter: function(segment) {
+        filter: function (segment) {
           return !!(
             !segment.deleted_at && segment.type === 'default'
           );
@@ -152,12 +152,12 @@ const bulk_actions = [
         <Selection field={ field }/>
       );
     },
-    getData: function() {
+    getData: function () {
       return {
         segment_id: ~~(jQuery('#add_to_segment').val())
-      }
+      };
     },
-    onSuccess: function(response) {
+    onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersAddedToList')
         .replace('%$1d', (~~response.meta.count).toLocaleString())
@@ -168,12 +168,12 @@ const bulk_actions = [
   {
     name: 'removeFromList',
     label: MailPoet.I18n.t('removeFromList'),
-    onSelect: function() {
-      let field = {
+    onSelect: function () {
+      const field = {
         id: 'remove_from_segment',
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
-        filter: function(segment) {
+        filter: function (segment) {
           return !!(
             segment.type === 'default'
           );
@@ -184,12 +184,12 @@ const bulk_actions = [
         <Selection field={ field }/>
       );
     },
-    getData: function() {
+    getData: function () {
       return {
         segment_id: ~~(jQuery('#remove_from_segment').val())
-      }
+      };
     },
-    onSuccess: function(response) {
+    onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromList')
         .replace('%$1d', (~~response.meta.count).toLocaleString())
@@ -200,7 +200,7 @@ const bulk_actions = [
   {
     name: 'removeFromAllLists',
     label: MailPoet.I18n.t('removeFromAllLists'),
-    onSuccess: function(response) {
+    onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists')
         .replace('%$1d', (~~response.meta.count).toLocaleString())
@@ -210,7 +210,7 @@ const bulk_actions = [
   {
     name: 'sendConfirmationEmail',
     label: MailPoet.I18n.t('resendConfirmationEmail'),
-    onSuccess: function(response) {
+    onSuccess: function (response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleConfirmationEmailsSent')
         .replace('%$1d', (~~response.meta.count).toLocaleString())
@@ -228,7 +228,7 @@ const item_actions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
-    link: function(subscriber) {
+    link: function (subscriber) {
       return (
         <Link to={ `/edit/${subscriber.id}` }>{MailPoet.I18n.t('edit')}</Link>
       );
@@ -236,24 +236,24 @@ const item_actions = [
   },
   {
     name: 'trash',
-    display: function(subscriber) {
+    display: function (subscriber) {
       return !!(~~subscriber.wp_user_id === 0);
     }
   }
 ];
 
 const SubscriberList = React.createClass({
-  getSegmentFromId: function(segment_id) {
+  getSegmentFromId: function (segment_id) {
     let result = false;
-    mailpoet_segments.map(function(segment) {
+    mailpoet_segments.map((segment) => {
       if (segment.id === segment_id) {
         result = segment;
       }
     });
     return result;
   },
-  renderItem: function(subscriber, actions) {
-    let row_classes = classNames(
+  renderItem: function (subscriber, actions) {
+    const row_classes = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions',
@@ -284,7 +284,7 @@ const SubscriberList = React.createClass({
 
     // Subscriptions
     if (subscriber.subscriptions.length > 0) {
-      let subscribed_segments = [];
+      const subscribed_segments = [];
 
       subscriber.subscriptions.map((subscription) => {
         const segment = this.getSegmentFromId(subscription.segment_id);
@@ -298,20 +298,6 @@ const SubscriberList = React.createClass({
         <span>
           { subscribed_segments.join(', ') }
         </span>
-      );
-    }
-
-
-    let avatar = false;
-    if (subscriber.avatar_url) {
-      avatar = (
-        <img
-          className="avatar"
-          src={ subscriber.avatar_url }
-          title=""
-          width="32"
-          height="32"
-        />
       );
     }
 
@@ -344,7 +330,7 @@ const SubscriberList = React.createClass({
       </div>
     );
   },
-  render: function() {
+  render: function () {
     return (
       <div>
         <h1 className="title">
@@ -377,7 +363,7 @@ const SubscriberList = React.createClass({
           sort_order={ 'desc' }
         />
       </div>
-    )
+    );
   }
 });
 

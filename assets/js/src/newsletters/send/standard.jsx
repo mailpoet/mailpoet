@@ -5,23 +5,16 @@ define(
     'underscore',
     'mailpoet',
     'wp-js-hooks',
-    'form/fields/checkbox.jsx',
-    'form/fields/select.jsx',
-    'form/fields/text.jsx',
   ],
-  function(
+  (
     React,
     jQuery,
     _,
     MailPoet,
-    Hooks,
-    Checkbox,
-    Select,
-    Text
-  ) {
+    Hooks
+  ) => {
 
-    var settings = window.mailpoet_settings || {},
-        currentTime = window.mailpoet_current_time || '00:00',
+    var currentTime = window.mailpoet_current_time || '00:00',
         defaultDateTime = window.mailpoet_current_date + ' ' + '00:00:00';
         timeOfDayItems = window.mailpoet_schedule_time_of_day,
         dateDisplayFormat = window.mailpoet_date_display_format,
@@ -90,7 +83,7 @@ define(
     };
 
     var DateText = React.createClass({
-      onChange: function(event) {
+      onChange: function (event) {
         // Swap display format to storage format
         var displayDate = event.target.value,
             storageDate = this.getStorageDate(displayDate);
@@ -98,19 +91,19 @@ define(
         event.target.value = storageDate;
         this.props.onChange(event);
       },
-      componentDidMount: function() {
+      componentDidMount: function () {
         var $element = jQuery(this.refs.dateInput),
             that = this;
         if ($element.datepicker) {
           // Override jQuery UI datepicker Date parsing and formatting
-          jQuery.datepicker.parseDate = function(format, value) {
+          jQuery.datepicker.parseDate = function (format, value) {
             // Transform string format to Date object
             return MailPoet.Date.toDate(value, {
               parseFormat: dateDisplayFormat,
               format: format
             });
           };
-          jQuery.datepicker.formatDate = function(format, value) {
+          jQuery.datepicker.formatDate = function (format, value) {
             // Transform Date object to string format
             var newValue = MailPoet.Date.format(value, {
               format: format
@@ -121,7 +114,7 @@ define(
           $element.datepicker(_.extend({
             dateFormat: this.props.displayFormat,
             isRTL: false,
-            onSelect: function(value) {
+            onSelect: function (value) {
               that.onChange({
                 target: {
                   name: that.getFieldName(),
@@ -134,27 +127,27 @@ define(
           this.datepickerInitialized = true;
         }
       },
-      componentWillUnmount: function() {
+      componentWillUnmount: function () {
         if (this.datepickerInitialized) {
           jQuery(this.refs.dateInput).datepicker('destroy');
         }
       },
-      getFieldName: function() {
+      getFieldName: function () {
         return this.props.name || 'date';
       },
-      getDisplayDate: function(date) {
+      getDisplayDate: function (date) {
         return MailPoet.Date.format(date, {
           parseFormat: this.props.storageFormat,
           format: this.props.displayFormat
         });
       },
-      getStorageDate: function(date) {
+      getStorageDate: function (date) {
         return MailPoet.Date.format(date, {
           parseFormat: this.props.displayFormat,
           format: this.props.storageFormat
         });
       },
-      render: function() {
+      render: function () {
         return (
           <input
             type="text"
@@ -170,7 +163,7 @@ define(
     });
 
     var TimeSelect = React.createClass({
-      render: function() {
+      render: function () {
         const options = Object.keys(timeOfDayItems).map(
           (value, index) => {
             return (
@@ -198,42 +191,42 @@ define(
 
     var DateTime = React.createClass({
       _DATE_TIME_SEPARATOR: " ",
-      getInitialState: function() {
+      getInitialState: function () {
         return this._buildStateFromProps(this.props);
       },
-      componentWillReceiveProps: function(nextProps) {
+      componentWillReceiveProps: function (nextProps) {
         this.setState(this._buildStateFromProps(nextProps));
       },
-      _buildStateFromProps: function(props) {
-        let value = props.value || defaultDateTime;
-        const [date, time] = value.split(this._DATE_TIME_SEPARATOR)
+      _buildStateFromProps: function (props) {
+        const value = props.value || defaultDateTime;
+        const [date, time] = value.split(this._DATE_TIME_SEPARATOR);
         return {
           date: date,
           time: time,
         };
       },
-      handleChange: function(event) {
+      handleChange: function (event) {
         var newState = {};
         newState[event.target.name] = event.target.value;
 
-        this.setState(newState, function() {
+        this.setState(newState, function () {
           this.propagateChange();
         });
       },
-      propagateChange: function() {
+      propagateChange: function () {
         if (this.props.onChange) {
           return this.props.onChange({
             target: {
               name: this.props.name || '',
               value: this.getDateTime(),
             }
-          })
+          });
         }
       },
-      getDateTime: function() {
+      getDateTime: function () {
         return [this.state.date, this.state.time].join(this._DATE_TIME_SEPARATOR);
       },
-      render: function() {
+      render: function () {
         return (
           <span>
             <DateText
@@ -254,7 +247,7 @@ define(
     });
 
     var StandardScheduling = React.createClass({
-      _getCurrentValue: function() {
+      _getCurrentValue: function () {
         return _.defaults(
           this.props.item[this.props.field.name] || {},
           {
@@ -263,7 +256,7 @@ define(
           }
         );
       },
-      handleValueChange: function(event) {
+      handleValueChange: function (event) {
         var oldValue = this._getCurrentValue(),
             newValue = {};
         newValue[event.target.name] = event.target.value;
@@ -275,21 +268,21 @@ define(
           }
         });
       },
-      handleCheckboxChange: function(event) {
+      handleCheckboxChange: function (event) {
         event.target.value = this.refs.isScheduled.checked ? '1' : '0';
         return this.handleValueChange(event);
       },
-      isScheduled: function() {
+      isScheduled: function () {
         return this._getCurrentValue().isScheduled === '1';
       },
-      getDateValidation: function() {
+      getDateValidation: function () {
         return {
           'data-parsley-required': true,
           'data-parsley-required-message': MailPoet.I18n.t('noScheduledDateError'),
           'data-parsley-errors-container': '#mailpoet_scheduling',
         };
       },
-      render: function() {
+      render: function () {
         var schedulingOptions;
 
         if (this.isScheduled()) {
@@ -345,16 +338,16 @@ define(
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         multiple: true,
-        filter: function(segment) {
+        filter: function (segment) {
           return !!(!segment.deleted_at);
         },
-        getLabel: function(segment) {
-          return segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')';
+        getLabel: function (segment) {
+          return segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
         },
-        transformChangedValue: function(segment_ids) {
+        transformChangedValue: function (segment_ids) {
           var all_segments = this.state.items;
-          return _.map(segment_ids, function(id) {
-            return _.find(all_segments, function(segment) {
+          return _.map(segment_ids, (id) => {
+            return _.find(all_segments, (segment) => {
               return segment.id === id;
             });
           });
@@ -417,17 +410,17 @@ define(
     fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
     return {
-      getFields: function(newsletter) {
+      getFields: function () {
         return fields;
       },
-      getSendButtonOptions: function(newsletter) {
+      getSendButtonOptions: function (newsletter) {
         newsletter = newsletter || {};
 
-        let isScheduled = (
+        const isScheduled = (
           typeof newsletter.options === 'object'
           && newsletter.options.isScheduled === '1'
         );
-        let options = {
+        const options = {
           value: (isScheduled
             ? MailPoet.I18n.t('schedule')
             : MailPoet.I18n.t('send'))

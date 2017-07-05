@@ -1,21 +1,19 @@
-import React from 'react'
-import { Router, Link } from 'react-router'
-import classNames from 'classnames'
-import jQuery from 'jquery'
-import MailPoet from 'mailpoet'
-import Hooks from 'wp-js-hooks'
+import React from 'react';
+import { Link } from 'react-router';
+import classNames from 'classnames';
+import MailPoet from 'mailpoet';
+import Hooks from 'wp-js-hooks';
 
-import Listing from 'listing/listing.jsx'
-import ListingTabs from 'newsletters/listings/tabs.jsx'
+import Listing from 'listing/listing.jsx';
+import ListingTabs from 'newsletters/listings/tabs.jsx';
 
 import {
   QueueMixin,
   StatisticsMixin,
   MailerMixin
-} from 'newsletters/listings/mixins.jsx'
+} from 'newsletters/listings/mixins.jsx';
 
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
-const mailpoet_settings = window.mailpoet_settings || {};
 
 const columns = [
   {
@@ -44,7 +42,7 @@ const columns = [
 let newsletter_actions = [
   {
     name: 'view',
-    link: function(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={ newsletter.preview_url } target="_blank">
           {MailPoet.I18n.t('preview')}
@@ -58,23 +56,21 @@ newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_notificat
 
 const NewsletterListNotificationHistory = React.createClass({
   mixins: [ QueueMixin, StatisticsMixin, MailerMixin ],
-  renderSentDate: function(newsletter) {
+  renderSentDate: function (newsletter) {
     return (newsletter.queue.status === 'completed')
       ? ( <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr> )
-      : MailPoet.I18n.t('notSentYet')
+      : MailPoet.I18n.t('notSentYet');
   },
-  renderItem: function(newsletter, actions, meta) {
+  renderItem: function (newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'
     );
 
-    const segments = newsletter.segments.map(function(segment) {
-      return segment.name
+    const segments = newsletter.segments.map((segment) => {
+      return segment.name;
     }).join(', ');
-
-    const mailer_log = window.mailpoet_settings.mta_log || {};
 
     return (
       <div>
@@ -104,7 +100,7 @@ const NewsletterListNotificationHistory = React.createClass({
       </div>
     );
   },
-  render: function() {
+  render: function () {
     return (
       <div>
         <h1 className="title">

@@ -1,14 +1,14 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Router, Route, IndexRoute, Link, useRouterHistory } from 'react-router'
-import { createHashHistory } from 'history'
-import FormList from 'forms/list.jsx'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router, Route, IndexRoute, useRouterHistory } from 'react-router';
+import { createHashHistory } from 'history';
+import FormList from 'forms/list.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
 const App = React.createClass({
   render() {
-    return this.props.children
+    return this.props.children;
   }
 });
 

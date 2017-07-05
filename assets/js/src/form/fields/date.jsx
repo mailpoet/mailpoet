@@ -1,10 +1,10 @@
 define([
   'react',
   'moment',
-], function(
+], (
   React,
   Moment
-) {
+) => {
   class FormFieldDateYear extends React.Component {
     render() {
       const yearsRange = 100;
@@ -17,7 +17,7 @@ define([
       }
 
       const currentYear = Moment().year();
-      for (let i = currentYear; i >= currentYear - yearsRange; i--) {
+      for (let i = currentYear; i >= currentYear - yearsRange; i -= 1) {
         years.push((
           <option
             key={ i }
@@ -47,7 +47,7 @@ define([
         ));
       }
 
-      for (let i = 1; i <= 12; i++) {
+      for (let i = 1; i <= 12; i += 1) {
         months.push((
           <option
             key={ i }
@@ -77,7 +77,7 @@ define([
         ));
       }
 
-      for (let i = 1; i <= 31; i++) {
+      for (let i = 1; i <= 31; i += 1) {
         days.push((
           <option
             key={ i }
@@ -105,12 +105,12 @@ define([
         year: '',
         month: '',
         day: ''
-      }
+      };
     }
     componentDidMount() {
       this.extractDateParts();
     }
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
       if (
         (this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)
@@ -181,7 +181,7 @@ define([
         field = matches[1];
         property = matches[2];
 
-        let value = ~~(e.target.value);
+        const value = ~~(e.target.value);
 
         this.setState({
           [`${property}`]: value

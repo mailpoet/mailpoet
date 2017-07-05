@@ -1,10 +1,9 @@
-import React from 'react'
-import { Router, Link } from 'react-router'
-import jQuery from 'jquery'
-import MailPoet from 'mailpoet'
-import classNames from 'classnames'
+import React from 'react';
+import { Link } from 'react-router';
+import MailPoet from 'mailpoet';
+import classNames from 'classnames';
 
-import Listing from 'listing/listing.jsx'
+import Listing from 'listing/listing.jsx';
 
 var columns = [
   {
@@ -98,12 +97,12 @@ const bulk_actions = [
 const item_actions = [
   {
     name: 'edit',
-    link: function(item) {
+    link: function (item) {
       return (
         <Link to={ `/edit/${item.id}` }>{MailPoet.I18n.t('edit')}</Link>
       );
     },
-    display: function(segment) {
+    display: function (segment) {
       return (segment.type !== 'wp_users');
     }
   },
@@ -125,18 +124,18 @@ const item_actions = [
         refresh();
       }).fail((response) => {
         MailPoet.Notice.error(
-          response.errors.map(function(error) { return error.message; }),
+          response.errors.map((error) => { return error.message; }),
           { scroll: true }
         );
       });
     },
-    display: function(segment) {
+    display: function (segment) {
       return (segment.type !== 'wp_users');
     }
   },
   {
     name: 'read_more',
-    link: function(item) {
+    link: function () {
       return (
         <a
           href="http://docs.mailpoet.com/article/133-the-wordpress-users-list"
@@ -144,20 +143,20 @@ const item_actions = [
         >{MailPoet.I18n.t('readMore')}</a>
       );
     },
-    display: function(segment) {
+    display: function (segment) {
       return (segment.type === 'wp_users');
     }
   },
   {
     name: 'synchronize_segment',
     label: MailPoet.I18n.t('forceSync'),
-    onClick: function(item, refresh) {
+    onClick: function (item, refresh) {
       MailPoet.Modal.loading(true);
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         action: 'synchronize'
-      }).done(function(response) {
+      }).done((response) => {
         MailPoet.Modal.loading(false);
         if(response === true) {
           MailPoet.Notice.success(
@@ -167,13 +166,13 @@ const item_actions = [
         }
       });
     },
-    display: function(segment) {
+    display: function (segment) {
       return (segment.type === 'wp_users');
     }
   },
   {
     name: 'view_subscribers',
-    link: function(item) {
+    link: function (item) {
       return (
         <a href={ item.subscribers_url }>{MailPoet.I18n.t('viewSubscribers')}</a>
       );
@@ -181,14 +180,14 @@ const item_actions = [
   },
   {
     name: 'trash',
-    display: function(segment) {
+    display: function (segment) {
       return (segment.type !== 'wp_users');
     }
   }
 ];
 
 const SegmentList = React.createClass({
-  renderItem: function(segment, actions) {
+  renderItem: function (segment, actions) {
     var rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -245,7 +244,7 @@ const SegmentList = React.createClass({
       </div>
     );
   },
-  render: function() {
+  render: function () {
     return (
       <div>
         <h1 className="title">

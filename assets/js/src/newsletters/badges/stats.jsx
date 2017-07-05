@@ -1,7 +1,7 @@
-import MailPoet from 'mailpoet'
-import React from 'react'
+import MailPoet from 'mailpoet';
+import React from 'react';
 
-import Badge from './badge.jsx'
+import Badge from './badge.jsx';
 
 const badges = {
   excellent: {
@@ -51,7 +51,7 @@ const stats = {
 class StatsBadge extends React.Component {
   getBadgeType(stat, rate) {
     const len = stat.badgeRanges.length;
-    for (var i = 0; i < len; i++) {
+    for (var i = 0; i < len; i += 1) {
       if (rate > stat.badgeRanges[i]) {
         return stat.badgeTypes[i];
       }

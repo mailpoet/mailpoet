@@ -1,11 +1,11 @@
-define(['react', 'classnames'], function(React, classNames) {
+define(['react', 'classnames'], (React, classNames) => {
 
     var ListingGroups = React.createClass({
-      handleSelect: function(group) {
+      handleSelect: function (group) {
         return this.props.onSelectGroup(group);
       },
-      render: function() {
-        var groups = this.props.groups.map(function(group, index) {
+      render: function () {
+        var groups = this.props.groups.map((group, index) => {
           if(group.name === 'trash' && group.count === 0) {
             return false;
           }
@@ -25,7 +25,7 @@ define(['react', 'classnames'], function(React, classNames) {
               </a>
             </li>
           );
-        }.bind(this));
+        });
 
         return (
           <ul className="subsubsub">

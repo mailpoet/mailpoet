@@ -5,14 +5,12 @@ define(
     'newsletters/types/notification/scheduling.jsx',
     'underscore'
   ],
-  function(
+  (
     MailPoet,
     Hooks,
     Scheduling,
     _
-  ) {
-
-    var settings = window.mailpoet_settings || {};
+  ) => {
 
     var fields = [
       {
@@ -41,16 +39,16 @@ define(
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         multiple: true,
-        filter: function(segment) {
+        filter: function (segment) {
           return !!(!segment.deleted_at);
         },
-        getLabel: function(segment) {
-          return segment.name + ' (' + parseInt(segment.subscribers).toLocaleString() + ')';
+        getLabel: function (segment) {
+          return segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
         },
-        transformChangedValue: function(segment_ids) {
+        transformChangedValue: function (segment_ids) {
           var all_segments = this.state.items;
-          return _.map(segment_ids, function(id) {
-            return _.find(all_segments, function(segment) {
+          return _.map(segment_ids, (id) => {
+            return _.find(all_segments, (segment) => {
               return segment.id === id;
             });
           });
@@ -107,10 +105,10 @@ define(
     fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
     return {
-      getFields: function(newsletter) {
+      getFields: function () {
         return fields;
       },
-      getSendButtonOptions: function(newsletter) {
+      getSendButtonOptions: function () {
         return {
           value: MailPoet.I18n.t('activate')
         };

@@ -1,23 +1,23 @@
-import MailPoet from 'mailpoet'
-import jQuery from 'jquery'
-import React from 'react'
-import _ from 'underscore'
-import { Router, Link } from 'react-router'
-import classNames from 'classnames'
-import ListingBulkActions from 'listing/bulk_actions.jsx'
-import ListingHeader from 'listing/header.jsx'
-import ListingPages from 'listing/pages.jsx'
-import ListingSearch from 'listing/search.jsx'
-import ListingGroups from 'listing/groups.jsx'
-import ListingFilters from 'listing/filters.jsx'
+import MailPoet from 'mailpoet';
+import jQuery from 'jquery';
+import React from 'react';
+import _ from 'underscore';
+import { Link } from 'react-router';
+import classNames from 'classnames';
+import ListingBulkActions from 'listing/bulk_actions.jsx';
+import ListingHeader from 'listing/header.jsx';
+import ListingPages from 'listing/pages.jsx';
+import ListingSearch from 'listing/search.jsx';
+import ListingGroups from 'listing/groups.jsx';
+import ListingFilters from 'listing/filters.jsx';
 
 const ListingItem = React.createClass({
-  getInitialState: function() {
+  getInitialState: function () {
     return {
       expanded: false
     };
   },
-  handleSelectItem: function(e) {
+  handleSelectItem: function (e) {
     this.props.onSelectItem(
       parseInt(e.target.value, 10),
       e.target.checked
@@ -25,19 +25,19 @@ const ListingItem = React.createClass({
 
     return !e.target.checked;
   },
-  handleRestoreItem: function(id) {
+  handleRestoreItem: function (id) {
     this.props.onRestoreItem(id);
   },
-  handleTrashItem: function(id) {
+  handleTrashItem: function (id) {
     this.props.onTrashItem(id);
   },
-  handleDeleteItem: function(id) {
+  handleDeleteItem: function (id) {
     this.props.onDeleteItem(id);
   },
-  handleToggleItem: function(id) {
+  handleToggleItem: function () {
     this.setState({ expanded: !this.state.expanded });
   },
-  render: function() {
+  render: function () {
     var checkbox = false;
 
     if (this.props.is_selectable === true) {
@@ -63,7 +63,7 @@ const ListingItem = React.createClass({
 
     if (custom_actions.length > 0) {
       let is_first = true;
-      item_actions = custom_actions.map(function(action, index) {
+      item_actions = custom_actions.map((action, index) => {
         if (action.display !== undefined) {
           if (action.display(this.props.item) === false) {
             return;
@@ -125,7 +125,7 @@ const ListingItem = React.createClass({
         }
 
         return custom_action;
-      }.bind(this));
+      });
     } else {
       item_actions = (
         <span className="edit">
@@ -196,7 +196,7 @@ const ListingItem = React.createClass({
 
 
 const ListingItems = React.createClass({
-  render: function() {
+  render: function () {
     if (this.props.items.length === 0) {
       let message;
       if (this.props.loading === true) {
@@ -259,7 +259,7 @@ const ListingItems = React.createClass({
             </td>
           </tr>
 
-          {this.props.items.map(function(item, index) {
+          {this.props.items.map((item, index) => {
             item.id = parseInt(item.id, 10);
             item.selected = (this.props.selected_ids.indexOf(item.id) !== -1);
 
@@ -279,7 +279,7 @@ const ListingItems = React.createClass({
                 key={ `item-${item.id}-${index}` }
                 item={ item } />
             );
-          }.bind(this))}
+          })}
         </tbody>
       );
     }
@@ -290,7 +290,7 @@ const Listing = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired
   },
-  getInitialState: function() {
+  getInitialState: function () {
     return {
       loading: false,
       search: '',
@@ -309,23 +309,23 @@ const Listing = React.createClass({
       meta: {}
     };
   },
-  getParam: function(param) {
+  getParam: function (param) {
     const regex = /(.*)\[(.*)\]/;
     const matches = regex.exec(param);
     return [matches[1], matches[2]];
   },
-  initWithParams: function(params) {
-    let state = this.getInitialState();
+  initWithParams: function (params) {
+    const state = this.getInitialState();
      // check for url params
     if (params.splat) {
       params.splat.split('/').map(param => {
-        let [key, value] = this.getParam(param);
+        const [key, value] = this.getParam(param);
         switch(key) {
           case 'filter':
-            let filters = {};
-            value.split('&').map(function(pair) {
-                let [k, v] = pair.split('=')
-                filters[k] = v
+            const filters = {};
+            value.split('&').map((pair) => {
+                const [k, v] = pair.split('=');
+                filters[k] = v;
               }
             );
 
@@ -352,13 +352,13 @@ const Listing = React.createClass({
       state.sort_order = this.props.sort_order;
     }
 
-    this.setState(state, function() {
+    this.setState(state, () => {
       this.getItems();
-    }.bind(this));
+    });
   },
-  getParams: function() {
+  getParams: function () {
     // get all route parameters (without the "splat")
-    let params = _.omit(this.props.params, 'splat');
+    const params = _.omit(this.props.params, 'splat');
     // TODO:
     // find a way to set the "type" in the routes definition
     // so that it appears in `this.props.params`
@@ -367,9 +367,9 @@ const Listing = React.createClass({
     }
     return params;
   },
-  setParams: function() {
+  setParams: function () {
     if (this.props.location) {
-      let params = Object.keys(this.state)
+      const params = Object.keys(this.state)
         .filter(key => {
           return (
             [
@@ -380,32 +380,32 @@ const Listing = React.createClass({
               'sort_by',
               'sort_order'
             ].indexOf(key) !== -1
-          )
+          );
         })
         .map(key => {
           let value = this.state[key];
           if (value === Object(value)) {
-            value = jQuery.param(value)
+            value = jQuery.param(value);
           } else if (value === Boolean(value)) {
-            value = value.toString()
+            value = value.toString();
           }
 
           if (value !== '' && value !== null) {
-            return `${key}[${value}]`
+            return `${key}[${value}]`;
           }
         })
-        .filter(key => { return (key !== undefined) })
+        .filter(key => { return (key !== undefined); })
         .join('/');
 
       // set url
-      let url = this.getUrlWithParams(params);
+      const url = this.getUrlWithParams(params);
 
       if (this.props.location.pathname !== url) {
         this.context.router.push(`${url}`);
       }
     }
   },
-  getUrlWithParams: function(params) {
+  getUrlWithParams: function (params) {
     let base_url = (this.props.base_url !== undefined)
       ? this.props.base_url
       : null;
@@ -417,7 +417,7 @@ const Listing = React.createClass({
       return `/${ params }`;
     }
   },
-  setBaseUrlParams: function(base_url) {
+  setBaseUrlParams: function (base_url) {
     if (base_url.indexOf(':') !== -1) {
       const params = this.getParams();
       Object.keys(params).map((key) => {
@@ -429,23 +429,23 @@ const Listing = React.createClass({
 
     return base_url;
   },
-  componentDidMount: function() {
+  componentDidMount: function () {
     if (this.isMounted()) {
       const params = this.props.params || {};
       this.initWithParams(params);
 
       if (this.props.auto_refresh) {
-        jQuery(document).on('heartbeat-tick.mailpoet', function(e, data) {
+        jQuery(document).on('heartbeat-tick.mailpoet', () => {
           this.getItems();
-        }.bind(this));
+        });
       }
     }
   },
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function (nextProps) {
     const params = nextProps.params || {};
     this.initWithParams(params);
   },
-  getItems: function() {
+  getItems: function () {
     if (this.isMounted()) {
       this.setState({ loading: true });
 
@@ -489,14 +489,14 @@ const Listing = React.createClass({
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function(error) { return error.message; }),
+            response.errors.map((error) => { return error.message; }),
             { scroll: true }
           );
         }
       });
     }
   },
-  handleRestoreItem: function(id) {
+  handleRestoreItem: function (id) {
     this.setState({
       loading: true,
       page: 1
@@ -519,12 +519,12 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function(error) { return error.message; }),
+        response.errors.map((error) => { return error.message; }),
         { scroll: true }
       );
     });
   },
-  handleTrashItem: function(id) {
+  handleTrashItem: function (id) {
     this.setState({
       loading: true,
       page: 1
@@ -547,12 +547,12 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function(error) { return error.message; }),
+        response.errors.map((error) => { return error.message; }),
         { scroll: true }
       );
     });
   },
-  handleDeleteItem: function(id) {
+  handleDeleteItem: function (id) {
     this.setState({
       loading: true,
       page: 1
@@ -575,12 +575,12 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function(error) { return error.message; }),
+        response.errors.map((error) => { return error.message; }),
         { scroll: true }
       );
     });
   },
-  handleEmptyTrash: function() {
+  handleEmptyTrash: function () {
     return this.handleBulkAction('all', {
       action: 'delete',
       group: 'trash'
@@ -592,12 +592,12 @@ const Listing = React.createClass({
       this.handleGroup('all');
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function(error) { return error.message; }),
+        response.errors.map((error) => { return error.message; }),
         { scroll: true }
       );
     });
   },
-  handleBulkAction: function(selected_ids, params) {
+  handleBulkAction: function (selected_ids, params) {
     if (
       this.state.selection === false
       && this.state.selected_ids.length === 0
@@ -616,7 +616,7 @@ const Listing = React.createClass({
       filter: this.state.filter,
       group: this.state.group,
       search: this.state.search
-    }
+    };
     if (selected_ids !== 'all') {
       data.listing.selection = selected_ids;
     }
@@ -630,25 +630,25 @@ const Listing = React.createClass({
       this.getItems();
     });
   },
-  handleSearch: function(search) {
+  handleSearch: function (search) {
     this.setState({
       search: search,
       page: 1,
       selection: false,
       selected_ids: []
-    }, function() {
+    }, () => {
       this.setParams();
-    }.bind(this));
+    });
   },
-  handleSort: function(sort_by, sort_order = 'asc') {
+  handleSort: function (sort_by, sort_order = 'asc') {
     this.setState({
       sort_by: sort_by,
       sort_order: (sort_order === 'asc') ? 'asc' : 'desc',
-    }, function() {
+    }, () => {
       this.setParams();
-    }.bind(this));
+    });
   },
-  handleSelectItem: function(id, is_checked) {
+  handleSelectItem: function (id, is_checked) {
     var selected_ids = this.state.selected_ids,
         selection = false;
 
@@ -669,11 +669,11 @@ const Listing = React.createClass({
       selected_ids: selected_ids
     });
   },
-  handleSelectItems: function(is_checked) {
+  handleSelectItems: function (is_checked) {
     if (is_checked === false) {
       this.clearSelection();
     } else {
-      var selected_ids = this.state.items.map(function(item) {
+      var selected_ids = this.state.items.map((item) => {
         return ~~item.id;
       });
 
@@ -683,7 +683,7 @@ const Listing = React.createClass({
       });
     }
   },
-  handleSelectAll: function() {
+  handleSelectAll: function () {
     if (this.state.selection === 'all') {
       this.clearSelection();
     } else {
@@ -693,21 +693,21 @@ const Listing = React.createClass({
       });
     }
   },
-  clearSelection: function() {
+  clearSelection: function () {
     this.setState({
       selection: false,
       selected_ids: []
     });
   },
-  handleFilter: function(filters) {
+  handleFilter: function (filters) {
     this.setState({
       filter: filters,
       page: 1
-    }, function() {
+    }, () => {
       this.setParams();
-    }.bind(this));
+    });
   },
-  handleGroup: function(group) {
+  handleGroup: function (group) {
     // reset search
     jQuery('#search_input').val('');
 
@@ -716,34 +716,34 @@ const Listing = React.createClass({
       filter: {},
       search: '',
       page: 1
-    }, function() {
+    }, () => {
       this.setParams();
-    }.bind(this));
+    });
   },
-  handleSetPage: function(page) {
+  handleSetPage: function (page) {
     this.setState({
       page: page,
       selection: false,
       selected_ids: []
-    }, function() {
+    }, () => {
       this.setParams();
-    }.bind(this));
+    });
   },
-  handleRenderItem: function(item, actions) {
+  handleRenderItem: function (item, actions) {
     const render = this.props.onRenderItem(item, actions, this.state.meta);
     return render.props.children;
   },
-  handleRefreshItems: function() {
+  handleRefreshItems: function () {
     this.getItems();
   },
-  render: function() {
+  render: function () {
     const items = this.state.items;
     const sort_by = this.state.sort_by;
     const sort_order = this.state.sort_order;
 
     // columns
     let columns = this.props.columns || [];
-    columns = columns.filter(function(column) {
+    columns = columns.filter((column) => {
       return (column.display === undefined || !!(column.display) === true);
     });
 
