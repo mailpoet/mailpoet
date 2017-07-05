@@ -31,6 +31,18 @@ define([
         );
       });
     },
+    componentDidUpdate: function () {
+      const selected_filters = this.props.filter;
+      this.getAvailableFilters().map(
+        (filter, i) => {
+          if (selected_filters[filter] !== undefined && selected_filters[filter]) {
+            jQuery(this.refs['filter-'+i])
+              .val(selected_filters[filter])
+              .trigger('change');
+            }
+          }
+        );
+    },
     render: function () {
       const filters = this.props.filters;
       const available_filters = this.getAvailableFilters()
