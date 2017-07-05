@@ -1,15 +1,15 @@
 define([
   'react'
 ],
-function(
+function (
   React
 ) {
   const FormFieldCheckbox = React.createClass({
-    onValueChange: function(e) {
+    onValueChange: function (e) {
       e.target.value = this.refs.checkbox.checked ? '1' : '0';
       return this.props.onValueChange(e);
     },
-    render: function() {
+    render: function () {
       if (this.props.field.values === undefined) {
         return false;
       }

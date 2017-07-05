@@ -6,7 +6,7 @@ define(
     'react-router',
     'newsletters/breadcrumb.jsx'
   ],
-  function(
+  function (
     React,
     MailPoet,
     Hooks,
@@ -17,12 +17,12 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired
       },
-      setupNewsletter: function(type) {
+      setupNewsletter: function (type) {
         if(type !== undefined) {
           this.context.router.push(`/new/${type}`);
         }
       },
-      createNewsletter: function(type) {
+      createNewsletter: function (type) {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',
@@ -36,19 +36,19 @@ define(
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
+              response.errors.map(function (error) { return error.message; }),
               { scroll: true }
             );
           }
         });
       },
-      render: function() {
+      render: function () {
         var types = [
           {
             'id': 'standard',
             'title': MailPoet.I18n.t('regularNewsletterTypeTitle'),
             'description': MailPoet.I18n.t('regularNewsletterTypeDescription'),
-            'action': function() {
+            'action': function () {
               return (
                 <a className="button button-primary" onClick={ this.createNewsletter.bind(null, 'standard') }>
                   {MailPoet.I18n.t('create')}
@@ -60,7 +60,7 @@ define(
             'id': 'welcome',
             'title': MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
             'description': MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
-            'action': function() {
+            'action': function () {
               return (
                 <div>
                   <a href="?page=mailpoet-premium" target="_blank">
@@ -74,7 +74,7 @@ define(
             'id': 'notification',
             'title': MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
             'description': MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
-            'action': function() {
+            'action': function () {
               return (
                 <a className="button button-primary" onClick={ this.setupNewsletter.bind(null, 'notification') }>
                   {MailPoet.I18n.t('setUp')}
@@ -93,7 +93,7 @@ define(
             <Breadcrumb step="type" />
 
             <ul className="mailpoet_boxes clearfix">
-              {types.map(function(type, index) {
+              {types.map(function (type, index) {
                 return (
                   <li key={index} data-type={type.id}>
                     <div>

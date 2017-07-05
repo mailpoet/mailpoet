@@ -12,12 +12,12 @@ import ListingGroups from 'listing/groups.jsx';
 import ListingFilters from 'listing/filters.jsx';
 
 const ListingItem = React.createClass({
-  getInitialState: function() {
+  getInitialState: function () {
     return {
       expanded: false
     };
   },
-  handleSelectItem: function(e) {
+  handleSelectItem: function (e) {
     this.props.onSelectItem(
       parseInt(e.target.value, 10),
       e.target.checked
@@ -25,19 +25,19 @@ const ListingItem = React.createClass({
 
     return !e.target.checked;
   },
-  handleRestoreItem: function(id) {
+  handleRestoreItem: function (id) {
     this.props.onRestoreItem(id);
   },
-  handleTrashItem: function(id) {
+  handleTrashItem: function (id) {
     this.props.onTrashItem(id);
   },
-  handleDeleteItem: function(id) {
+  handleDeleteItem: function (id) {
     this.props.onDeleteItem(id);
   },
-  handleToggleItem: function(id) {
+  handleToggleItem: function (id) {
     this.setState({ expanded: !this.state.expanded });
   },
-  render: function() {
+  render: function () {
     var checkbox = false;
 
     if (this.props.is_selectable === true) {
@@ -63,7 +63,7 @@ const ListingItem = React.createClass({
 
     if (custom_actions.length > 0) {
       let is_first = true;
-      item_actions = custom_actions.map(function(action, index) {
+      item_actions = custom_actions.map(function (action, index) {
         if (action.display !== undefined) {
           if (action.display(this.props.item) === false) {
             return;
@@ -196,7 +196,7 @@ const ListingItem = React.createClass({
 
 
 const ListingItems = React.createClass({
-  render: function() {
+  render: function () {
     if (this.props.items.length === 0) {
       let message;
       if (this.props.loading === true) {
@@ -259,7 +259,7 @@ const ListingItems = React.createClass({
             </td>
           </tr>
 
-          {this.props.items.map(function(item, index) {
+          {this.props.items.map(function (item, index) {
             item.id = parseInt(item.id, 10);
             item.selected = (this.props.selected_ids.indexOf(item.id) !== -1);
 
@@ -290,7 +290,7 @@ const Listing = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired
   },
-  getInitialState: function() {
+  getInitialState: function () {
     return {
       loading: false,
       search: '',
@@ -309,12 +309,12 @@ const Listing = React.createClass({
       meta: {}
     };
   },
-  getParam: function(param) {
+  getParam: function (param) {
     const regex = /(.*)\[(.*)\]/;
     const matches = regex.exec(param);
     return [matches[1], matches[2]];
   },
-  initWithParams: function(params) {
+  initWithParams: function (params) {
     let state = this.getInitialState();
      // check for url params
     if (params.splat) {
@@ -323,7 +323,7 @@ const Listing = React.createClass({
         switch(key) {
           case 'filter':
             let filters = {};
-            value.split('&').map(function(pair) {
+            value.split('&').map(function (pair) {
                 let [k, v] = pair.split('=');
                 filters[k] = v;
               }
@@ -352,11 +352,11 @@ const Listing = React.createClass({
       state.sort_order = this.props.sort_order;
     }
 
-    this.setState(state, function() {
+    this.setState(state, function () {
       this.getItems();
     }.bind(this));
   },
-  getParams: function() {
+  getParams: function () {
     // get all route parameters (without the "splat")
     let params = _.omit(this.props.params, 'splat');
     // TODO:
@@ -367,7 +367,7 @@ const Listing = React.createClass({
     }
     return params;
   },
-  setParams: function() {
+  setParams: function () {
     if (this.props.location) {
       let params = Object.keys(this.state)
         .filter(key => {
@@ -405,7 +405,7 @@ const Listing = React.createClass({
       }
     }
   },
-  getUrlWithParams: function(params) {
+  getUrlWithParams: function (params) {
     let base_url = (this.props.base_url !== undefined)
       ? this.props.base_url
       : null;
@@ -417,7 +417,7 @@ const Listing = React.createClass({
       return `/${ params }`;
     }
   },
-  setBaseUrlParams: function(base_url) {
+  setBaseUrlParams: function (base_url) {
     if (base_url.indexOf(':') !== -1) {
       const params = this.getParams();
       Object.keys(params).map((key) => {
@@ -429,23 +429,23 @@ const Listing = React.createClass({
 
     return base_url;
   },
-  componentDidMount: function() {
+  componentDidMount: function () {
     if (this.isMounted()) {
       const params = this.props.params || {};
       this.initWithParams(params);
 
       if (this.props.auto_refresh) {
-        jQuery(document).on('heartbeat-tick.mailpoet', function(e, data) {
+        jQuery(document).on('heartbeat-tick.mailpoet', function (e, data) {
           this.getItems();
         }.bind(this));
       }
     }
   },
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function (nextProps) {
     const params = nextProps.params || {};
     this.initWithParams(params);
   },
-  getItems: function() {
+  getItems: function () {
     if (this.isMounted()) {
       this.setState({ loading: true });
 
@@ -489,14 +489,14 @@ const Listing = React.createClass({
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function(error) { return error.message; }),
+            response.errors.map(function (error) { return error.message; }),
             { scroll: true }
           );
         }
       });
     }
   },
-  handleRestoreItem: function(id) {
+  handleRestoreItem: function (id) {
     this.setState({
       loading: true,
       page: 1
@@ -519,12 +519,12 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function(error) { return error.message; }),
+        response.errors.map(function (error) { return error.message; }),
         { scroll: true }
       );
     });
   },
-  handleTrashItem: function(id) {
+  handleTrashItem: function (id) {
     this.setState({
       loading: true,
       page: 1
@@ -547,12 +547,12 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function(error) { return error.message; }),
+        response.errors.map(function (error) { return error.message; }),
         { scroll: true }
       );
     });
   },
-  handleDeleteItem: function(id) {
+  handleDeleteItem: function (id) {
     this.setState({
       loading: true,
       page: 1
@@ -575,12 +575,12 @@ const Listing = React.createClass({
       this.getItems();
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function(error) { return error.message; }),
+        response.errors.map(function (error) { return error.message; }),
         { scroll: true }
       );
     });
   },
-  handleEmptyTrash: function() {
+  handleEmptyTrash: function () {
     return this.handleBulkAction('all', {
       action: 'delete',
       group: 'trash'
@@ -592,12 +592,12 @@ const Listing = React.createClass({
       this.handleGroup('all');
     }).fail((response) => {
       MailPoet.Notice.error(
-        response.errors.map(function(error) { return error.message; }),
+        response.errors.map(function (error) { return error.message; }),
         { scroll: true }
       );
     });
   },
-  handleBulkAction: function(selected_ids, params) {
+  handleBulkAction: function (selected_ids, params) {
     if (
       this.state.selection === false
       && this.state.selected_ids.length === 0
@@ -630,25 +630,25 @@ const Listing = React.createClass({
       this.getItems();
     });
   },
-  handleSearch: function(search) {
+  handleSearch: function (search) {
     this.setState({
       search: search,
       page: 1,
       selection: false,
       selected_ids: []
-    }, function() {
+    }, function () {
       this.setParams();
     }.bind(this));
   },
-  handleSort: function(sort_by, sort_order = 'asc') {
+  handleSort: function (sort_by, sort_order = 'asc') {
     this.setState({
       sort_by: sort_by,
       sort_order: (sort_order === 'asc') ? 'asc' : 'desc',
-    }, function() {
+    }, function () {
       this.setParams();
     }.bind(this));
   },
-  handleSelectItem: function(id, is_checked) {
+  handleSelectItem: function (id, is_checked) {
     var selected_ids = this.state.selected_ids,
         selection = false;
 
@@ -669,11 +669,11 @@ const Listing = React.createClass({
       selected_ids: selected_ids
     });
   },
-  handleSelectItems: function(is_checked) {
+  handleSelectItems: function (is_checked) {
     if (is_checked === false) {
       this.clearSelection();
     } else {
-      var selected_ids = this.state.items.map(function(item) {
+      var selected_ids = this.state.items.map(function (item) {
         return ~~item.id;
       });
 
@@ -683,7 +683,7 @@ const Listing = React.createClass({
       });
     }
   },
-  handleSelectAll: function() {
+  handleSelectAll: function () {
     if (this.state.selection === 'all') {
       this.clearSelection();
     } else {
@@ -693,21 +693,21 @@ const Listing = React.createClass({
       });
     }
   },
-  clearSelection: function() {
+  clearSelection: function () {
     this.setState({
       selection: false,
       selected_ids: []
     });
   },
-  handleFilter: function(filters) {
+  handleFilter: function (filters) {
     this.setState({
       filter: filters,
       page: 1
-    }, function() {
+    }, function () {
       this.setParams();
     }.bind(this));
   },
-  handleGroup: function(group) {
+  handleGroup: function (group) {
     // reset search
     jQuery('#search_input').val('');
 
@@ -716,34 +716,34 @@ const Listing = React.createClass({
       filter: {},
       search: '',
       page: 1
-    }, function() {
+    }, function () {
       this.setParams();
     }.bind(this));
   },
-  handleSetPage: function(page) {
+  handleSetPage: function (page) {
     this.setState({
       page: page,
       selection: false,
       selected_ids: []
-    }, function() {
+    }, function () {
       this.setParams();
     }.bind(this));
   },
-  handleRenderItem: function(item, actions) {
+  handleRenderItem: function (item, actions) {
     const render = this.props.onRenderItem(item, actions, this.state.meta);
     return render.props.children;
   },
-  handleRefreshItems: function() {
+  handleRefreshItems: function () {
     this.getItems();
   },
-  render: function() {
+  render: function () {
     const items = this.state.items;
     const sort_by = this.state.sort_by;
     const sort_order = this.state.sort_order;
 
     // columns
     let columns = this.props.columns || [];
-    columns = columns.filter(function(column) {
+    columns = columns.filter(function (column) {
       return (column.display === undefined || !!(column.display) === true);
     });
 

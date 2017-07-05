@@ -44,7 +44,7 @@ const columns = [
 let newsletter_actions = [
   {
     name: 'view',
-    link: function(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={ newsletter.preview_url } target="_blank">
           {MailPoet.I18n.t('preview')}
@@ -58,19 +58,19 @@ newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_notificat
 
 const NewsletterListNotificationHistory = React.createClass({
   mixins: [ QueueMixin, StatisticsMixin, MailerMixin ],
-  renderSentDate: function(newsletter) {
+  renderSentDate: function (newsletter) {
     return (newsletter.queue.status === 'completed')
       ? ( <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr> )
       : MailPoet.I18n.t('notSentYet');
   },
-  renderItem: function(newsletter, actions, meta) {
+  renderItem: function (newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'
     );
 
-    const segments = newsletter.segments.map(function(segment) {
+    const segments = newsletter.segments.map(function (segment) {
       return segment.name;
     }).join(', ');
 
@@ -104,7 +104,7 @@ const NewsletterListNotificationHistory = React.createClass({
       </div>
     );
   },
-  render: function() {
+  render: function () {
     return (
       <div>
         <h1 className="title">

@@ -4,33 +4,33 @@ define([
   'jquery',
   'select2'
 ],
-function(
+function (
   React,
   ReactDOM,
   jQuery
 ) {
   var Selection = React.createClass({
-    getInitialState: function() {
+    getInitialState: function () {
       return {
         items: [],
         select2: false
       };
     },
-    componentWillMount: function() {
+    componentWillMount: function () {
       this.loadCachedItems();
     },
-    allowMultipleValues: function() {
+    allowMultipleValues: function () {
       return (this.props.field.multiple === true);
     },
-    isSelect2Initialized: function() {
+    isSelect2Initialized: function () {
       return (this.state.select2 === true);
     },
-    componentDidMount: function() {
+    componentDidMount: function () {
       if(this.allowMultipleValues()) {
         this.setupSelect2();
       }
     },
-    componentDidUpdate: function(prevProps, prevState) {
+    componentDidUpdate: function (prevProps, prevState) {
       if(
         (this.props.item !== undefined && prevProps.item !== undefined)
         && (this.props.item.id !== prevProps.item.id)
@@ -40,24 +40,24 @@ function(
           .trigger('change');
       }
     },
-    componentWillUnmount: function() {
+    componentWillUnmount: function () {
       if(this.allowMultipleValues()) {
         this.destroySelect2();
       }
     },
-    destroySelect2: function() {
+    destroySelect2: function () {
       if(this.isSelect2Initialized()) {
         jQuery('#'+this.refs.select.id).select2('destroy');
       }
     },
-    setupSelect2: function() {
+    setupSelect2: function () {
       if(this.isSelect2Initialized()) {
         return;
       }
 
       var select2 = jQuery('#'+this.refs.select.id).select2({
         width: (this.props.width || ''),
-        templateResult: function(item) {
+        templateResult: function (item) {
           if(item.element && item.element.selected) {
             return null;
           } else {
@@ -71,10 +71,10 @@ function(
       });
 
       var hasRemoved = false;
-      select2.on('select2:unselecting', function(e) {
+      select2.on('select2:unselecting', function (e) {
         hasRemoved = true;
       });
-      select2.on('select2:opening', function(e) {
+      select2.on('select2:opening', function (e) {
         if(hasRemoved === true) {
           hasRemoved = false;
           e.preventDefault();
@@ -85,13 +85,13 @@ function(
 
       this.setState({ select2: true });
     },
-    getSelectedValues: function() {
+    getSelectedValues: function () {
       if(this.props.field['selected'] !== undefined) {
         return this.props.field['selected'](this.props.item);
       } else if(this.props.item !== undefined && this.props.field.name !== undefined) {
         if (this.allowMultipleValues()) {
           if (Array.isArray(this.props.item[this.props.field.name])) {
-            return this.props.item[this.props.field.name].map(function(item) {
+            return this.props.item[this.props.field.name].map(function (item) {
               return item.id;
             });
           }
@@ -101,7 +101,7 @@ function(
       }
       return null;
     },
-    loadCachedItems: function() {
+    loadCachedItems: function () {
       if(typeof(window['mailpoet_'+this.props.field.endpoint]) !== 'undefined') {
         var items = window['mailpoet_'+this.props.field.endpoint];
 
@@ -115,7 +115,7 @@ function(
         });
       }
     },
-    handleChange: function(e) {
+    handleChange: function (e) {
       if(this.props.onValueChange !== undefined) {
         if(this.props.field.multiple) {
           value = jQuery('#'+this.refs.select.id).val();
@@ -131,19 +131,19 @@ function(
         });
       }
     },
-    getLabel: function(item) {
+    getLabel: function (item) {
       if(this.props.field['getLabel'] !== undefined) {
         return this.props.field.getLabel(item, this.props.item);
       }
       return item.name;
     },
-    getSearchLabel: function(item) {
+    getSearchLabel: function (item) {
       if(this.props.field['getSearchLabel'] !== undefined) {
         return this.props.field.getSearchLabel(item, this.props.item);
       }
       return null;
     },
-    getValue: function(item) {
+    getValue: function (item) {
       if(this.props.field['getValue'] !== undefined) {
         return this.props.field.getValue(item, this.props.item);
       }
@@ -152,14 +152,14 @@ function(
     // When it's impossible to represent the desired value in DOM,
     // this function may be used to transform the placeholder value into
     // desired value.
-    transformChangedValue: function(value) {
+    transformChangedValue: function (value) {
       if(typeof this.props.field['transformChangedValue'] === 'function') {
         return this.props.field.transformChangedValue.call(this, value);
       } else {
         return value;
       }
     },
-    render: function() {
+    render: function () {
       const options = this.state.items.map((item, index) => {
         let label = this.getLabel(item);
         let searchLabel = this.getSearchLabel(item);

@@ -10,7 +10,7 @@ define(
     'newsletters/send/welcome.jsx',
     'newsletters/breadcrumb.jsx'
   ],
-  function(
+  function (
     React,
     Router,
     _,
@@ -26,41 +26,41 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired
       },
-      getInitialState: function() {
+      getInitialState: function () {
         return {
           fields: [],
           item: {},
           loading: false,
         };
       },
-      getFieldsByNewsletter: function(newsletter) {
+      getFieldsByNewsletter: function (newsletter) {
         var type = this.getSubtype(newsletter);
         return type.getFields(newsletter);
       },
-      getSendButtonOptions: function() {
+      getSendButtonOptions: function () {
         var type = this.getSubtype(this.state.item);
         return type.getSendButtonOptions(this.state.item);
       },
-      getSubtype: function(newsletter) {
+      getSubtype: function (newsletter) {
         switch(newsletter.type) {
           case 'notification': return NotificationNewsletterFields;
           case 'welcome': return WelcomeNewsletterFields;
           default: return StandardNewsletterFields;
         }
       },
-      isValid: function() {
+      isValid: function () {
         return jQuery('#mailpoet_newsletter').parsley().isValid();
       },
-      componentDidMount: function() {
+      componentDidMount: function () {
         if(this.isMounted()) {
           this.loadItem(this.props.params.id);
         }
         jQuery('#mailpoet_newsletter').parsley();
       },
-      componentWillReceiveProps: function(props) {
+      componentWillReceiveProps: function (props) {
         this.loadItem(props.params.id);
       },
-      loadItem: function(id) {
+      loadItem: function (id) {
         this.setState({ loading: true });
 
         MailPoet.Ajax.post({
@@ -85,7 +85,7 @@ define(
           });
         });
       },
-      handleSend: function(e) {
+      handleSend: function (e) {
         e.preventDefault();
 
         if(!this.isValid()) {
@@ -149,7 +149,7 @@ define(
         }
         return false;
       },
-      handleSave: function(e) {
+      handleSave: function (e) {
         e.preventDefault();
 
         this._save(e).done((response) => {
@@ -160,7 +160,7 @@ define(
           this.context.router.push(`/${ this.state.item.type || '' }`);
         }).fail(this._showError);
       },
-      handleRedirectToDesign: function(e) {
+      handleRedirectToDesign: function (e) {
         e.preventDefault();
         var redirectTo = e.target.href;
 
@@ -172,7 +172,7 @@ define(
           window.location = redirectTo;
         }).fail(this._showError);
       },
-      _save: function(e) {
+      _save: function (e) {
         var data = this.state.item;
         this.setState({ loading: true });
 
@@ -198,12 +198,12 @@ define(
       _showError: (response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function(error) { return error.message; }),
+            response.errors.map(function (error) { return error.message; }),
             { scroll: true }
           );
         }
       },
-      handleFormChange: function(e) {
+      handleFormChange: function (e) {
         var item = this.state.item,
           field = e.target.name;
 
@@ -214,7 +214,7 @@ define(
         });
         return true;
       },
-      render: function() {
+      render: function () {
         return (
           <div>
             <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>

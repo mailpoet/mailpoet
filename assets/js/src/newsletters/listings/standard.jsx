@@ -101,7 +101,7 @@ const bulk_actions = [
 let newsletter_actions = [
   {
     name: 'view',
-    link: function(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={ newsletter.preview_url } target="_blank">
           {MailPoet.I18n.t('preview')}
@@ -111,7 +111,7 @@ let newsletter_actions = [
   },
   {
     name: 'edit',
-    link: function(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
           {MailPoet.I18n.t('edit')}
@@ -122,7 +122,7 @@ let newsletter_actions = [
   {
     name: 'duplicate',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: function(newsletter, refresh) {
+    onClick: function (newsletter, refresh) {
       return MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'newsletters',
@@ -140,7 +140,7 @@ let newsletter_actions = [
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function(error) { return error.message; }),
+            response.errors.map(function (error) { return error.message; }),
             { scroll: true }
           );
         }
@@ -156,14 +156,14 @@ newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_standard_
 
 const NewsletterListStandard = React.createClass({
   mixins: [ QueueMixin, StatisticsMixin, MailerMixin ],
-  renderItem: function(newsletter, actions, meta) {
+  renderItem: function (newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'
     );
 
-    const segments = newsletter.segments.map(function(segment) {
+    const segments = newsletter.segments.map(function (segment) {
       return segment.name;
     }).join(', ');
 
@@ -195,7 +195,7 @@ const NewsletterListStandard = React.createClass({
       </div>
     );
   },
-  render: function() {
+  render: function () {
     return (
       <div>
         <h1 className="title">

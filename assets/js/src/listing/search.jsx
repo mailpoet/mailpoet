@@ -1,22 +1,22 @@
 define([
     'mailpoet',
     'react'
-  ], function(
+  ], function (
     MailPoet,
     React
   ) {
 
   var ListingSearch = React.createClass({
-    handleSearch: function(e) {
+    handleSearch: function (e) {
       e.preventDefault();
       this.props.onSearch(
         this.refs.search.value
       );
     },
-    componentWillReceiveProps: function(nextProps) {
+    componentWillReceiveProps: function (nextProps) {
       this.refs.search.value = nextProps.search;
     },
-    render: function() {
+    render: function () {
       if(this.props.search === false) {
         return false;
       } else {

@@ -5,7 +5,7 @@ define(
     'mailpoet',
     'form/form.jsx'
   ],
-  function(
+  function (
     React,
     Router,
     MailPoet,
@@ -27,10 +27,10 @@ define(
     ];
 
     const messages = {
-      onUpdate: function() {
+      onUpdate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('segmentUpdated'));
       },
-      onCreate: function() {
+      onCreate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('segmentAdded'));
       }
     };
@@ -38,7 +38,7 @@ define(
     var Link = Router.Link;
 
     const SegmentForm = React.createClass({
-      render: function() {
+      render: function () {
         return (
           <div>
             <h1 className="title">

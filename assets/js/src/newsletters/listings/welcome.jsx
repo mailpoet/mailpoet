@@ -104,7 +104,7 @@ const bulk_actions = [
 let newsletter_actions = [
   {
     name: 'view',
-    link: function(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={ newsletter.preview_url } target="_blank">
           {MailPoet.I18n.t('preview')}
@@ -114,7 +114,7 @@ let newsletter_actions = [
   },
   {
     name: 'edit',
-    link: function(newsletter) {
+    link: function (newsletter) {
       return (
         <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
           {MailPoet.I18n.t('edit')}
@@ -131,7 +131,7 @@ newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_n
 
 const NewsletterListWelcome = React.createClass({
   mixins: [ StatisticsMixin, MailerMixin ],
-  updateStatus: function(e) {
+  updateStatus: function (e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
     e.persist();
@@ -157,7 +157,7 @@ const NewsletterListWelcome = React.createClass({
       e.target.value = response.status;
     });
   },
-  renderStatus: function(newsletter) {
+  renderStatus: function (newsletter) {
     let total_sent;
     total_sent = (
       MailPoet.I18n.t('sentToXSubscribers')
@@ -180,7 +180,7 @@ const NewsletterListWelcome = React.createClass({
       </div>
     );
   },
-  renderSettings: function(newsletter) {
+  renderSettings: function (newsletter) {
     let sendingEvent;
     let sendingDelay;
 
@@ -199,7 +199,7 @@ const NewsletterListWelcome = React.createClass({
 
       case 'segment':
         // get segment
-        const segment = _.find(mailpoet_segments, function(segment) {
+        const segment = _.find(mailpoet_segments, function (segment) {
           return (~~(segment.id) === ~~(newsletter.options.segment));
         });
 
@@ -251,7 +251,7 @@ const NewsletterListWelcome = React.createClass({
       </span>
     );
   },
-  renderItem: function(newsletter, actions) {
+  renderItem: function (newsletter, actions) {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
@@ -289,7 +289,7 @@ const NewsletterListWelcome = React.createClass({
       </div>
     );
   },
-  render: function() {
+  render: function () {
     return (
       <div>
         <h1 className="title">

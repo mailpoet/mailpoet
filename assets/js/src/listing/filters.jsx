@@ -3,25 +3,25 @@ define([
   'jquery',
   'mailpoet'
 ],
-function(
+function (
   React,
   jQuery,
   MailPoet
 ) {
   var ListingFilters = React.createClass({
-    handleFilterAction: function() {
+    handleFilterAction: function () {
       let filters = {};
       this.getAvailableFilters().map((filter, i) => {
         filters[this.refs['filter-'+i].name] = this.refs['filter-'+i].value;
       });
       return this.props.onSelectFilter(filters);
     },
-    handleEmptyTrash: function() {
+    handleEmptyTrash: function () {
       return this.props.onEmptyTrash();
     },
-    getAvailableFilters: function() {
+    getAvailableFilters: function () {
       let filters = this.props.filters;
-      return Object.keys(filters).filter(function(filter) {
+      return Object.keys(filters).filter(function (filter) {
         return !(
           filters[filter].length === 0
           || (
@@ -31,10 +31,10 @@ function(
         );
       });
     },
-    componentDidUpdate: function() {
+    componentDidUpdate: function () {
       const selected_filters = this.props.filter;
       const available_filters = this.getAvailableFilters().map(
-        function(filter, i) {
+        function (filter, i) {
           if (selected_filters[filter] !== undefined && selected_filters[filter]) {
             jQuery(this.refs['filter-'+i])
               .val(selected_filters[filter])
@@ -43,17 +43,17 @@ function(
         }.bind(this)
       );
     },
-    render: function() {
+    render: function () {
       const filters = this.props.filters;
       const available_filters = this.getAvailableFilters()
-        .map(function(filter, i) {
+        .map(function (filter, i) {
           return (
             <select
               ref={ `filter-${i}` }
               key={ `filter-${i}` }
               name={ filter }
             >
-            { filters[filter].map(function(option, j) {
+            { filters[filter].map(function (option, j) {
               return (
                 <option
                   value={ option.value }

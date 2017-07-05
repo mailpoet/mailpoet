@@ -6,7 +6,7 @@ define(
     'form/form.jsx',
     'react-string-replace'
   ],
-  function(
+  function (
     React,
     Router,
     MailPoet,
@@ -18,7 +18,7 @@ define(
         name: 'email',
         label: MailPoet.I18n.t('email'),
         type: 'text',
-        disabled: function(subscriber) {
+        disabled: function (subscriber) {
           return ~~(subscriber.wp_user_id > 0);
         }
       },
@@ -26,7 +26,7 @@ define(
         name: 'first_name',
         label: MailPoet.I18n.t('firstname'),
         type: 'text',
-        disabled: function(subscriber) {
+        disabled: function (subscriber) {
           return ~~(subscriber.wp_user_id > 0);
         }
       },
@@ -34,7 +34,7 @@ define(
         name: 'last_name',
         label: MailPoet.I18n.t('lastname'),
         type: 'text',
-        disabled: function(subscriber) {
+        disabled: function (subscriber) {
           return ~~(subscriber.wp_user_id > 0);
         }
       },
@@ -48,7 +48,7 @@ define(
           'unsubscribed': MailPoet.I18n.t('unsubscribed'),
           'bounced': MailPoet.I18n.t('bounced')
         },
-        filter: function(subscriber, value) {
+        filter: function (subscriber, value) {
           if (~~(subscriber.wp_user_id) > 0 && value === 'unconfirmed') {
             return false;
           }
@@ -63,28 +63,28 @@ define(
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         multiple: true,
-        selected: function(subscriber) {
+        selected: function (subscriber) {
           if (Array.isArray(subscriber.subscriptions) === false) {
             return null;
           }
 
-          return subscriber.subscriptions.map(function(subscription) {
+          return subscriber.subscriptions.map(function (subscription) {
             if (subscription.status === 'subscribed') {
               return subscription.segment_id;
             }
           });
         },
-        filter: function(segment) {
+        filter: function (segment) {
           return !!(!segment.deleted_at && segment.type === 'default');
         },
-        getLabel: function(segment) {
+        getLabel: function (segment) {
           return segment.name + ' ('+ segment.subscribers +')';
         },
-        getSearchLabel: function(segment, subscriber) {
+        getSearchLabel: function (segment, subscriber) {
           let label = '';
 
           if (subscriber.subscriptions !== undefined) {
-            subscriber.subscriptions.map(function(subscription) {
+            subscriber.subscriptions.map(function (subscription) {
               if (segment.id === subscription.segment_id) {
                 label = segment.name;
 
@@ -139,15 +139,15 @@ define(
     });
 
     var messages = {
-      onUpdate: function() {
+      onUpdate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('subscriberUpdated'));
       },
-      onCreate: function() {
+      onCreate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('subscriberAdded'));
       }
     };
 
-    var beforeFormContent = function(subscriber) {
+    var beforeFormContent = function (subscriber) {
       if (~~(subscriber.wp_user_id) > 0) {
         return (
           <p className="description">
@@ -167,7 +167,7 @@ define(
       }
     };
 
-    var afterFormContent = function(subscriber) {
+    var afterFormContent = function (subscriber) {
       return (
         <p className="description">
           <strong>
@@ -180,7 +180,7 @@ define(
     var Link = Router.Link;
 
     var SubscriberForm = React.createClass({
-      render: function() {
+      render: function () {
         return (
           <div>
             <h1 className="title">

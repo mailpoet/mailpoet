@@ -35,10 +35,10 @@ const nthWeekDayField = {
 };
 
 const NotificationScheduling = React.createClass({
-  _getCurrentValue: function() {
+  _getCurrentValue: function () {
     return (this.props.item[this.props.field.name] || {});
   },
-  handleValueChange: function(name, value) {
+  handleValueChange: function (name, value) {
     const oldValue = this._getCurrentValue();
     let newValue = {};
 
@@ -51,37 +51,37 @@ const NotificationScheduling = React.createClass({
       }
     });
   },
-  handleIntervalChange: function(event) {
+  handleIntervalChange: function (event) {
     return this.handleValueChange(
       'intervalType',
       event.target.value
     );
   },
-  handleTimeOfDayChange: function(event) {
+  handleTimeOfDayChange: function (event) {
     return this.handleValueChange(
       'timeOfDay',
       event.target.value
     );
   },
-  handleWeekDayChange: function(event) {
+  handleWeekDayChange: function (event) {
     return this.handleValueChange(
       'weekDay',
       event.target.value
     );
   },
-  handleMonthDayChange: function(event) {
+  handleMonthDayChange: function (event) {
     return this.handleValueChange(
       'monthDay',
       event.target.value
     );
   },
-  handleNthWeekDayChange: function(event) {
+  handleNthWeekDayChange: function (event) {
     return this.handleValueChange(
       'nthWeekDay',
       event.target.value
     );
   },
-  render: function() {
+  render: function () {
     const value = this._getCurrentValue();
     let timeOfDaySelection;
     let weekDaySelection;

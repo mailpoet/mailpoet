@@ -4,7 +4,7 @@ define(
     'wp-js-hooks',
     'newsletters/types/welcome/scheduling.jsx'
   ],
-  function(
+  function (
     MailPoet,
     Hooks,
     Scheduling
@@ -76,10 +76,10 @@ define(
     fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
     return {
-      getFields: function(newsletter) {
+      getFields: function (newsletter) {
         return fields;
       },
-      getSendButtonOptions: function(newsletter) {
+      getSendButtonOptions: function (newsletter) {
         return {
           value: MailPoet.I18n.t('activate')
         };

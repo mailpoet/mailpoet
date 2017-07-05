@@ -5,7 +5,7 @@ define(
     'mailpoet',
     'newsletters/breadcrumb.jsx'
   ],
-  function(
+  function (
     React,
     Router,
     MailPoet,
@@ -16,10 +16,10 @@ define(
       contextTypes: {
         router: React.PropTypes.object.isRequired
       },
-      showTemplateSelection: function(newsletterId) {
+      showTemplateSelection: function (newsletterId) {
         this.context.router.push(`/template/${newsletterId}`);
       },
-      componentDidMount: function() {
+      componentDidMount: function () {
         // No options for this type, create a newsletter upon mounting
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
@@ -33,13 +33,13 @@ define(
         }).fail((response) => {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
+              response.errors.map(function (error) { return error.message; }),
               { scroll: true }
             );
           }
         });
       },
-      render: function() {
+      render: function () {
         return (
           <div>
             <h1>{MailPoet.I18n.t('regularNewsletterTypeTitle')}</h1>

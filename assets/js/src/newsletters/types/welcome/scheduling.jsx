@@ -26,7 +26,7 @@ const events = {
 
 const availableSegmentValues = _.object(_.map(
   availableSegments,
-  function(segment) {
+  function (segment) {
     let name = segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
     return [segment.id, name];
   }
@@ -56,10 +56,10 @@ const WelcomeScheduling = React.createClass({
   contextTypes: {
     router: React.PropTypes.object.isRequired
   },
-  _getCurrentValue: function() {
+  _getCurrentValue: function () {
     return (this.props.item[this.props.field.name] || {});
   },
-  handleValueChange: function(name, value) {
+  handleValueChange: function (name, value) {
     const oldValue = this._getCurrentValue();
     let newValue = {};
 
@@ -72,37 +72,37 @@ const WelcomeScheduling = React.createClass({
       }
     });
   },
-  handleEventChange: function(event) {
+  handleEventChange: function (event) {
     return this.handleValueChange(
       'event',
       event.target.value
     );
   },
-  handleSegmentChange: function(event) {
+  handleSegmentChange: function (event) {
     return this.handleValueChange(
       'segment',
       event.target.value
     );
   },
-  handleRoleChange: function(event) {
+  handleRoleChange: function (event) {
     return this.handleValueChange(
       'role',
       event.target.value
     );
   },
-  handleAfterTimeNumberChange: function(event) {
+  handleAfterTimeNumberChange: function (event) {
     return this.handleValueChange(
       'afterTimeNumber',
       event.target.value
     );
   },
-  handleAfterTimeTypeChange: function(event) {
+  handleAfterTimeTypeChange: function (event) {
     return this.handleValueChange(
       'afterTimeType',
       event.target.value
     );
   },
-  handleNext: function() {
+  handleNext: function () {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -116,16 +116,16 @@ const WelcomeScheduling = React.createClass({
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function(error) { return error.message; }),
+            response.errors.map(function (error) { return error.message; }),
             { scroll: true }
           );
         }
       });
   },
-  showTemplateSelection: function(newsletterId) {
+  showTemplateSelection: function (newsletterId) {
     this.context.router.push(`/template/${ newsletterId }`);
   },
-  render: function() {
+  render: function () {
     const value = this._getCurrentValue();
     let roleSegmentSelection;
     let timeNumber;

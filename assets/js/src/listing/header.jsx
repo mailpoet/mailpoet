@@ -3,13 +3,13 @@ import React from 'react';
 import classNames from 'classnames';
 
 const ListingHeader = React.createClass({
-  handleSelectItems: function() {
+  handleSelectItems: function () {
     return this.props.onSelectItems(
       this.refs.toggle.checked
     );
   },
-  render: function() {
-    const columns = this.props.columns.map(function(column, index) {
+  render: function () {
+    const columns = this.props.columns.map(function (column, index) {
       column.is_primary = (index === 0);
       column.sorted = (this.props.sort_by === column.name)
         ? this.props.sort_order
@@ -52,12 +52,12 @@ const ListingHeader = React.createClass({
 });
 
 const ListingColumn = React.createClass({
-  handleSort: function() {
+  handleSort: function () {
     const sort_by = this.props.column.name;
     const sort_order = (this.props.column.sorted === 'asc') ? 'desc' : 'asc';
     this.props.onSort(sort_by, sort_order);
   },
-  render: function() {
+  render: function () {
     const classes = classNames(
       'manage-column',
       { 'column-primary': this.props.column.is_primary },

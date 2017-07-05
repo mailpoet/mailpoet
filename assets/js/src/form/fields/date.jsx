@@ -1,7 +1,7 @@
 define([
   'react',
   'moment',
-], function(
+], function (
   React,
   Moment
 ) {

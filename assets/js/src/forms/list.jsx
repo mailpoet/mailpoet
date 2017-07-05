@@ -86,7 +86,7 @@ const item_actions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
-    link: function(item) {
+    link: function (item) {
       return (
         <a href={ `admin.php?page=mailpoet-form-editor&id=${item.id}` }>{MailPoet.I18n.t('edit')}</a>
       );
@@ -95,7 +95,7 @@ const item_actions = [
   {
     name: 'duplicate',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: function(item, refresh) {
+    onClick: function (item, refresh) {
       return MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'forms',
@@ -111,7 +111,7 @@ const item_actions = [
       }).fail((response) => {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
-            response.errors.map(function(error) { return error.message; }),
+            response.errors.map(function (error) { return error.message; }),
             { scroll: true }
           );
         }
@@ -134,7 +134,7 @@ const FormList = React.createClass({
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
-          response.errors.map(function(error) { return error.message; }),
+          response.errors.map(function (error) { return error.message; }),
           { scroll: true }
         );
       }
@@ -147,9 +147,9 @@ const FormList = React.createClass({
       'has-row-actions'
     );
 
-    let segments = mailpoet_segments.filter(function(segment) {
+    let segments = mailpoet_segments.filter(function (segment) {
       return (jQuery.inArray(segment.id, form.segments) !== -1);
-    }).map(function(segment) {
+    }).map(function (segment) {
       return segment.name;
     }).join(', ');
 

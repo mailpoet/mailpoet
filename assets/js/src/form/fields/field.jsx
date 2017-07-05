@@ -8,7 +8,7 @@ define([
   'form/fields/selection.jsx',
   'form/fields/date.jsx',
 ],
-function(
+function (
   React,
   FormFieldText,
   FormFieldTextarea,
@@ -19,7 +19,7 @@ function(
   FormFieldDate
 ) {
   var FormField = React.createClass({
-    renderField: function(data, inline = false) {
+    renderField: function (data, inline = false) {
       var description = false;
       if(data.field.description) {
         description = (
@@ -83,11 +83,11 @@ function(
         );
       }
     },
-    render: function() {
+    render: function () {
       var field = false;
 
       if(this.props.field['fields'] !== undefined) {
-        field = this.props.field.fields.map(function(subfield, index) {
+        field = this.props.field.fields.map(function (subfield, index) {
           return this.renderField({
             index: index,
             field: subfield,
