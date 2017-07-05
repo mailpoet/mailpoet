@@ -768,11 +768,10 @@
       });
       $('#mailpoet_smtp_method').on('change keyup', renderHostsSelect);
       $('#mailpoet_sending_frequency').on('change keyup', sendingFrequencyMethodUpdated);
+      $('#mailpoet_smtp_method').trigger("change");
+      $('#other_frequency_emails').trigger("change");
 
       function saveSendingMethodConfiguration(group) {
-
-        var emails = $('#'+group+'_frequency_emails').val(),
-          interval = $('#'+group+'_frequency_interval').val();
 
         // set sending method
         if(group === undefined) {
@@ -782,10 +781,6 @@
         } else {
           // set new sending method active
           setSendingMethodGroup(group);
-
-          // update sending frequency values
-          $('#mta_frequency_emails').val(emails);
-          $('#mta_frequency_interval').val(interval);
 
           // enforce signup confirmation depending on selected group
           setSignupConfirmation(group);
@@ -920,10 +915,17 @@
 
     function sendingFrequencyMethodUpdated() {
       var method = $(this).find('option:selected').first();
+      var sendingMethod = $('#mailpoet_smtp_method').find('option:selected').first().val();
       if(method.val() === "manual") {
         $('#mailpoet_sending_frequency_manual').show();
+        $('#mailpoet_recommended_daily_emails').hide();
+        $('#other_frequency_emails').trigger("change");
       } else {
         $('#mailpoet_sending_frequency_manual').hide();
+        if(sendingMethod !== "server") {
+          $('#mailpoet_recommended_daily_emails').show();
+        }
+        $('#mailpoet_smtp_method').trigger("change");
       }
     }
 
@@ -958,7 +960,7 @@
       } else {
         $('.mailpoet_sendgrid_field').hide();
       }
-     const frequencyMethod = $('#mailpoet_sending_frequency').find('option:selected').first().val();
+      const frequencyMethod = $('#mailpoet_sending_frequency').find('option:selected').first().val();
       if(frequencyMethod === "manual") {
         $('#mailpoet_recommended_daily_emails').hide();
       } else {
@@ -966,6 +968,11 @@
       }
       var emails = method.data('emails');
       var interval = method.data('interval');
+      if(val === "server") {
+
+        var emails = $('#mailpoet_web_host').find('option:selected').first().data('emails');
+        var interval = $('#mailpoet_web_host').find('option:selected').first().data('interval');
+      }
       setSendingFrequency({
         output: '#mailpoet_recommended_daily_emails',
         only_daily: false,
