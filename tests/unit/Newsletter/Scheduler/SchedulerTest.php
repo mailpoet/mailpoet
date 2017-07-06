@@ -62,6 +62,27 @@ class NewsletterSchedulerTest extends MailPoetTest {
     expect(SendingQueue::findMany())->count(1);
   }
 
+  function testItDoesNotCreateDuplicateWelcomeNotificationQueueRecords() {
+    $newsletter = (object)array(
+      'id' => 1,
+      'afterTimeNumber' => 2,
+      'afterTimeType' => 'hours'
+    );
+    $existing_subscriber = 678;
+    $existing_queue = SendingQueue::create();
+    $existing_queue->newsletter_id = $newsletter->id;
+    $existing_queue->subscribers = array('to_process' => array($existing_subscriber));
+    $existing_queue->save();
+
+    // queue is not scheduled
+    Scheduler::createWelcomeNotificationQueue($newsletter, $existing_subscriber);
+    expect(SendingQueue::findMany())->count(1);
+
+    // queue is not scheduled
+    Scheduler::createWelcomeNotificationQueue($newsletter, 1);
+    expect(SendingQueue::findMany())->count(2);
+  }
+
   function testItCreatesWelcomeNotificationQueueRecord() {
     $newsletter = (object)array(
       'id' => 1,

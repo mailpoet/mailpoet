@@ -27,6 +27,14 @@ class PagesTest extends MailPoetTest {
     expect($confirmed_subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
+  function testItDoesNotConfirmSubscriptionOnDuplicateAttempt() {
+    $subscriber = $this->subscriber;
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->save();
+    $subscription = new Pages($action = false, $this->data);
+    expect($subscription->confirm())->false();
+  }
+
   function testItSendsWelcomeNotificationUponConfirmingSubscription() {
     // create segment
     $segment = Segment::create();
