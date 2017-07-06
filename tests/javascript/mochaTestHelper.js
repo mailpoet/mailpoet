@@ -43,6 +43,7 @@ global.interact = function () {
     dropzone: global.interact,
     preventDefault: global.interact,
     actionChecker: global.interact,
+    styleCursor: global.interact
   };
 };
 
