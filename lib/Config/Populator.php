@@ -3,7 +3,9 @@ namespace MailPoet\Config;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Segments\WP;
 use MailPoet\Models\Setting;
 use MailPoet\Settings\Pages;
@@ -26,37 +28,38 @@ class Populator {
       'newsletter_templates',
     );
     $this->templates = array(
-      "NewsletterBlank1Column",
-      "NewsletterBlank12Column",
-      "NewsletterBlank121Column",
-      "NewsletterBlank13Column",
-      "PostNotificationsBlank1Column",
-      "WelcomeBlank1Column",
-      "WelcomeBlank12Column",
-      "SimpleText",
-      "BurgerJoint",
-      "AppWelcome",
-      "WorldCup",
-      "FoodBox",
-      "Discount",
-      "KickOff",
-      "TakeAHike",
-      "FestivalEvent",
-      "PieceOfCake",
-      "Shoes",
-      "ScienceWeekly",
-      "ChocolateStore",
-      "Faith",
-      "TravelNomads",
-      "CoffeeShop",
-      "NewsDay",
-      "YogaStudio",
+      'NewsletterBlank1Column',
+      'NewsletterBlank12Column',
+      'NewsletterBlank121Column',
+      'NewsletterBlank13Column',
+      'PostNotificationsBlank1Column',
+      'WelcomeBlank1Column',
+      'WelcomeBlank12Column',
+      'SimpleText',
+      'BurgerJoint',
+      'AppWelcome',
+      'WorldCup',
+      'FoodBox',
+      'Discount',
+      'KickOff',
+      'TakeAHike',
+      'FestivalEvent',
+      'PieceOfCake',
+      'Shoes',
+      'ScienceWeekly',
+      'ChocolateStore',
+      'Faith',
+      'TravelNomads',
+      'CoffeeShop',
+      'NewsDay',
+      'YogaStudio',
     );
   }
 
   function up() {
     $this->convertExistingDataToUTF8();
     $this->migrateSimpleScheduledTasks();
+    $this->populateNewsletterSentAtField();
 
     array_map(array($this, 'populate'), $this->models);
 
@@ -328,8 +331,10 @@ class Populator {
    * character set, which usually defaults to latin1, but stored UTF-8 data.
    * This method converts existing incorrectly stored data that uses the
    * default character set, into a new character set that is used by WordPress.
+   *
+   * TODO: remove in final release
    */
-  public function convertExistingDataToUTF8() {
+  function convertExistingDataToUTF8() {
     global $wpdb;
 
     if(!version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.32', '<=')) {
@@ -361,7 +366,6 @@ class Populator {
       'forms' => array('name', 'body', 'settings', 'styles'),
     );
 
-
     foreach($tables as $table => $columns) {
       $query = "UPDATE `%s` SET %s WHERE %s";
       $columns_query = array();
@@ -387,15 +391,16 @@ class Populator {
     }
   }
 
-  /**
+  /*
    * This migrates simple scheduled tasks from sending queues table to scheduled tasks table
+   *
+   * TODO: remove in final release
    */
   public function migrateSimpleScheduledTasks() {
     global $wpdb;
 
-    if(!version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.36.2.0', '<=')) {
-      // Data conversion should only be performed only once, when migrating from
-      // older version
+    // perform once for versions below 3.0.0-beta.36.2.1
+    if(version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.36.2.1', '>=')) {
       return;
     }
 
@@ -436,4 +441,25 @@ class Populator {
     ));
   }
 
+  /*
+   * This populates existing newsletters' sent_at field with processed_at field data from
+   * corresponding sending queue.
+   *
+   * TODO: remove in final release
+   */
+  function populateNewsletterSentAtField() {
+    global $wpdb;
+
+    // perform once for versions below 3.0.0-beta.36.2.1
+    if(version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.36.2.1', '>=')) {
+      return;
+    }
+
+    $query = "UPDATE `%s` newsletters JOIN `%s` queues ON newsletters.id = queues.newsletter_id SET newsletters.sent_at = queues.processed_at";
+    $wpdb->query(sprintf(
+      $query,
+      Newsletter::$_table,
+      SendingQueue::$_table
+    ));
+  }
 }
