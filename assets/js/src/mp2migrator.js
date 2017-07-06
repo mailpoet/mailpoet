@@ -129,6 +129,15 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         jQuery('#stop-import').removeAttr('disabled'); // Enable the button
         MailPoet.MP2Migrator.reactivateImportButton();
         MailPoet.MP2Migrator.updateDisplay(); // Get the latest information after the import was stopped
+      }).fail(function (response) {
+        if(response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function (error) {
+              return error.message;
+            }),
+            {scroll: true}
+          );
+        }
       });
       MailPoet.MP2Migrator.stopLogger();
       return false;
@@ -143,6 +152,15 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         }
       }).done(function () {
         MailPoet.MP2Migrator.gotoWelcomePage();
+      }).fail(function (response) {
+        if(response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function (error) {
+              return error.message;
+            }),
+            {scroll: true}
+          );
+        }
       });
       return false;
     },
