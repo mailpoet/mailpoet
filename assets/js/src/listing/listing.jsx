@@ -487,7 +487,7 @@ const Listing = React.createClass({
           }
         });
       }).fail((response) => {
-        if (response.errors.length > 0) {
+        if(response.errors.length > 0) {
           MailPoet.Notice.error(
             response.errors.map((error) => { return error.message; }),
             { scroll: true }
@@ -628,6 +628,13 @@ const Listing = React.createClass({
       data: data
     }).done(() => {
       this.getItems();
+    }).fail((response) => {
+      if(response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map((error) => { return error.message; }),
+          { scroll: true }
+        );
+      }
     });
   },
   handleSearch: function (search) {

@@ -84,6 +84,13 @@ class Widget extends \WP_Widget {
             window.location =
               "<?php echo $form_edit_url; ?>" + response.data.id;
           }
+        }).fail((response) => {
+          if(response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map((error) => { return error.message; }),
+              { scroll: true }
+            );
+          }
         });
         return false;
     }

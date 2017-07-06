@@ -121,6 +121,13 @@ define(
               loading: false
             });
           }
+        }).fail((response) => {
+          if(response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map((error) => { return error.message; }),
+              { scroll: true }
+            );
+          }
         });
       },
       handleSelectTemplate: function (template) {
@@ -169,6 +176,13 @@ define(
             }
           }).done(() => {
             this.getTemplates();
+          }).fail((response) => {
+            if (response.errors.length > 0) {
+              MailPoet.Notice.error(
+                response.errors.map((error) => { return error.message; }),
+                { scroll: true }
+              );
+            }
           });
         } else {
            this.setState({ loading: false });

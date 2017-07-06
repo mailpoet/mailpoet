@@ -9,7 +9,7 @@ function requestFailed(errorMessage, xhr) {
         message: message
       }
     ]
-  }
+  };
 }
 
 define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, _) {
@@ -50,7 +50,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
           endpoint: this.options.endpoint,
           method: this.options.action,
           data: this.options.data || {}
-        }
+        };
       },
       request: function(method, options) {
         // set options
@@ -62,8 +62,8 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(MailPoet, jQuery, 
         // remove null values from the data object
         if (_.isObject(params.data)) {
           params.data = _.pick(params.data, function(value) {
-            return (value !== null)
-          })
+            return (value !== null);
+          });
         }
 
         // ajax request
