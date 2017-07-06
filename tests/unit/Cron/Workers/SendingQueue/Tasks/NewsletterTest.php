@@ -183,30 +183,34 @@ class NewsletterTaskTest extends MailPoetTest {
     expect($newsletter_post->post_id)->equals('10');
   }
 
-  function testItUpdatesStatusToSentOnlyForStandardAndPostNotificationNewsletters() {
+  function testItUpdatesStatusAndSetsSentAtDateOnlyForStandardAndPostNotificationNewsletters() {
     $newsletter = $this->newsletter;
+    $queue = new stdClass();
+    $queue->processed_at =  date('Y-m-d H:i:s');
 
     // newsletter type is 'standard'
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->status = 'not_sent';
     $newsletter->save();
-    $this->newsletter_task->markNewsletterAsSent($newsletter);
+    $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
     $updated_newsletter = Newsletter::findOne($newsletter->id);
     expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENT);
+    expect($updated_newsletter->sent_at)->equals($queue->processed_at);
 
     // newsletter type is 'notification history'
     $newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     $newsletter->status = 'not_sent';
     $newsletter->save();
-    $this->newsletter_task->markNewsletterAsSent($newsletter);
+    $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
     $updated_newsletter = Newsletter::findOne($newsletter->id);
     expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENT);
+    expect($updated_newsletter->sent_at)->equals($queue->processed_at);
 
     // all other newsletter types
     $newsletter->type = Newsletter::TYPE_WELCOME;
     $newsletter->status = 'not_sent';
     $newsletter->save();
-    $this->newsletter_task->markNewsletterAsSent($newsletter);
+    $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
     $updated_newsletter = Newsletter::findOne($newsletter->id);
     expect($updated_newsletter->status)->notEquals(Newsletter::STATUS_SENT);
   }
