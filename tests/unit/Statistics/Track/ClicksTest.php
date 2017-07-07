@@ -49,7 +49,7 @@ class ClicksTest extends MailPoetTest {
   function testItAbortsWhenTrackDataIsEmptyOrMissingLink() {
     // abort function should be called twice:
     $clicks = Stub::make($this->clicks, array(
-      'abort' => Stub::exactly(2, function() { })
+      'abort' => Stub::exactly(2)
     ), $this);
     $data = $this->track_data;
     // 1. when tracking data does not exist
@@ -64,7 +64,7 @@ class ClicksTest extends MailPoetTest {
     $data->subscriber->wp_user_id = 99;
     $data->preview = true;
     $clicks = Stub::make($this->clicks, array(
-      'redirectToUrl' => function() { }
+      'redirectToUrl' => null
     ), $this);
     $clicks->track($data);
     expect(StatisticsClicks::findMany())->isEmpty();
@@ -74,7 +74,7 @@ class ClicksTest extends MailPoetTest {
   function testItTracksClickAndOpenEvent() {
     $data = $this->track_data;
     $clicks = Stub::make($this->clicks, array(
-      'redirectToUrl' => function() { }
+      'redirectToUrl' => null
     ), $this);
     $clicks->track($data);
     expect(StatisticsClicks::findMany())->notEmpty();
@@ -83,14 +83,14 @@ class ClicksTest extends MailPoetTest {
 
   function testItRedirectsToUrlAfterTracking() {
     $clicks = Stub::make($this->clicks, array(
-      'redirectToUrl' => Stub::exactly(1, function() { })
+      'redirectToUrl' => Stub::exactly(1)
     ), $this);
     $clicks->track($this->track_data);
   }
 
   function testItIncrementsClickEventCount() {
     $clicks = Stub::make($this->clicks, array(
-      'redirectToUrl' => function() { }
+      'redirectToUrl' => null
     ), $this);
     $clicks->track($this->track_data);
     expect(StatisticsClicks::findMany()[0]->count)->equals(1);
@@ -111,7 +111,7 @@ class ClicksTest extends MailPoetTest {
 
   function testItFailsToConvertsInvalidShortcodeToUrl() {
     $clicks = Stub::make($this->clicks, array(
-      'abort' => Stub::exactly(1, function() { })
+      'abort' => Stub::exactly(1)
     ), $this);
     // should call abort() method if shortcode action does not exist
     $link = $clicks->processUrl(

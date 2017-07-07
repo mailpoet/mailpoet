@@ -29,7 +29,9 @@ class KeyCheckWorkerTest extends MailPoetTest {
     $worker = Stub::make(
       $this->worker,
       array(
-        'checkKey' => function () { throw new \Exception; },
+        'checkKey' => function () {
+          throw new \Exception;
+        },
         'reschedule' => Stub::once()
       ),
       $this

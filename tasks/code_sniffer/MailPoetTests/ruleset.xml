@@ -76,11 +76,11 @@
   </rule>
 
   <!-- Closing brace should be at the same level as opening brace -->
-  <!-- <rule ref="PEAR.WhiteSpace.ScopeClosingBrace">
+  <rule ref="PEAR.WhiteSpace.ScopeClosingBrace">
     <properties>
       <property name="indent" value="2"/>
     </properties>
-  </rule> -->
+  </rule>
 
   <!-- Each class must be in a file by itself and must be under a namespace -->
   <!-- <rule ref="PSR1.Classes.ClassDeclaration"/> -->
@@ -121,8 +121,6 @@
   <rule ref="MailPoetTests.ControlStructures.ControlSignature"/>
 
   <!-- Run against the PHPCompatibility ruleset -->
-  <rule ref="PHPCompatibility">
-    <exclude name="PHPCompatibility.PHP.EmptyNonVariable"/>
-  </rule>
+  <rule ref="PHPCompatibility" />
   <config name="testVersion" value="5.4-7.0"/>
 </ruleset>

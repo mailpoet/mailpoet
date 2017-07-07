@@ -38,7 +38,7 @@ class OpensTest extends MailPoetTest {
 
   function testItReturnsImageWhenTrackDataIsEmpty() {
     $opens = Stub::make($this->opens, array(
-      'returnResponse' => Stub::exactly(1, function() { })
+      'returnResponse' => Stub::exactly(1)
     ), $this);
     $opens->track(false);
     expect(StatisticsOpens::findMany())->isEmpty();
@@ -49,7 +49,7 @@ class OpensTest extends MailPoetTest {
     $data->subscriber->wp_user_id = 99;
     $data->preview = true;
     $opens = Stub::make($this->opens, array(
-      'returnResponse' => function() { }
+      'returnResponse' => null
     ), $this);
     $opens->track($data);
     expect(StatisticsOpens::findMany())->isEmpty();
@@ -61,7 +61,7 @@ class OpensTest extends MailPoetTest {
 
   function testItTracksOpenEvent() {
     $opens = Stub::make($this->opens, array(
-      'returnResponse' => function() { }
+      'returnResponse' => null
     ), $this);
     $opens->track($this->track_data);
     expect(StatisticsOpens::findMany())->notEmpty();
@@ -69,7 +69,7 @@ class OpensTest extends MailPoetTest {
 
   function testItDoesNotTrackRepeatedOpenEvents() {
     $opens = Stub::make($this->opens, array(
-      'returnResponse' => function() { }
+      'returnResponse' => null
     ), $this);
     for($count = 0; $count <= 2; $count++) {
       $opens->track($this->track_data);
@@ -79,7 +79,7 @@ class OpensTest extends MailPoetTest {
 
   function testItReturnsImageAfterTracking() {
     $opens = Stub::make($this->opens, array(
-      'returnResponse' => Stub::exactly(1, function() { })
+      'returnResponse' => Stub::exactly(1)
     ), $this);
     $opens->track($this->track_data);
   }
