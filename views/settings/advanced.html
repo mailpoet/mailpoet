@@ -60,7 +60,7 @@
                 checked="checked"
                 <% endif %>
               /><%= __("MailPoet's own script. Doesn't work with [link]these hosts[/link].")
-                    |replaceLink('http://docs.mailpoet.com/article/131-hosts-which-mailpoet-task-scheduler-wont-work', {'target' : '_blank'})
+                    |replaceLinkTags('http://docs.mailpoet.com/article/131-hosts-which-mailpoet-task-scheduler-wont-work', {'target' : '_blank'})
                     |raw
                  %>
           </label>

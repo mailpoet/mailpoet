@@ -27,7 +27,8 @@ class ServicesChecker {
       if($display_error_notice) {
         $error = Helpers::replaceLinkTags(
           __('All sending is currently paused! Your key to send with MailPoet is invalid. [link]Visit MailPoet.com to purchase a key[/link]', 'mailpoet'),
-          'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers()
+          'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers(),
+          array('target' => '_blank')
         );
         WPNotice::displayError($error);
       }
@@ -40,7 +41,8 @@ class ServicesChecker {
         $date = $date_time->formatDate(strtotime($mss_key['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
           __('Your newsletters are awesome! Don\'t forget to [link]upgrade your MailPoet email plan[/link] by %s to keep sending them to your subscribers.', 'mailpoet'),
-          'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers()
+          'https://account.mailpoet.com?s=' . Subscriber::getTotalSubscribers(),
+          array('target' => '_blank')
         );
         $error = sprintf($error, $date);
         WPNotice::displayWarning($error);
@@ -70,7 +72,8 @@ class ServicesChecker {
       if($display_error_notice) {
         $error = Helpers::replaceLinkTags(
           __('Warning! Your License Key is either invalid or expired. [link]Renew your License now[/link] to enjoy automatic updates and Premium support.', 'mailpoet'),
-          'https://account.mailpoet.com'
+          'https://account.mailpoet.com',
+          array('target' => '_blank')
         );
         WPNotice::displayError($error);
       }
@@ -83,7 +86,8 @@ class ServicesChecker {
         $date = $date_time->formatDate(strtotime($premium_key['data']['expire_at']));
         $error = Helpers::replaceLinkTags(
           __('Your License Key is expiring! Don\'t forget to [link]renew your license[/link] by %s to keep enjoying automatic updates and Premium support.', 'mailpoet'),
-          'https://account.mailpoet.com'
+          'https://account.mailpoet.com',
+          array('target' => '_blank')
         );
         $error = sprintf($error, $date);
         WPNotice::displayWarning($error);

@@ -88,7 +88,7 @@
       </tbody>
     </table>
     <p><%= __("Spammers are ineligible to use the MailPoet Sending Service. We reserve the right to cancel any sending plan if we detect more than 5% hard bounces. [link]Customers are required to clean their lists before joining MailPoet[/link].")
-      |replaceLink('http://beta.docs.mailpoet.com/article/127-checklist-before-importing-subscribers?utm_source=plugin&utm_medium=premium&utm_campaign=clean-lists', {'target' : '_blank'})
+      |replaceLinkTags('http://beta.docs.mailpoet.com/article/127-checklist-before-importing-subscribers?utm_source=plugin&utm_medium=premium&utm_campaign=clean-lists', {'target' : '_blank'})
       |raw
     %></p>
   </div>
@@ -134,11 +134,11 @@
     <br>
     <div style="width: 65%; margin: 0 auto;">
       <p style="text-align: center"><%= __("Already a Premium customer? [link]Add your Key in the Settings page[/link].")
-        |replaceLink(admin_url('admin.php?page=mailpoet-settings#premium'), {'target' : '_blank'})
+        |replaceLinkTags(admin_url('admin.php?page=mailpoet-settings#premium'), {'target' : '_blank'})
         |raw
       %></p>
       <p style="text-align: center"><%= __("Don't need to use our sending service? Not a problem; we understand. You can also [link]buy the Premium[/link] features separately. Prices start at $100 per year for 1 website, $249 for 4 sites and $499 for an unlimited number of sites.")
-        |replaceLink('https://account.mailpoet.com/premium?utm_source=plugin&utm_medium=premium&utm_campaign=buy-premium', {'target' : '_blank'})
+        |replaceLinkTags('https://account.mailpoet.com/premium?utm_source=plugin&utm_medium=premium&utm_campaign=buy-premium', {'target' : '_blank'})
         |raw
       %></p>
     </div>
