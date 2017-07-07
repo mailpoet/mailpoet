@@ -122,14 +122,14 @@ class SendingQueueTest extends MailPoetTest {
     $sending_queue_worker = Stub::make(
       new SendingQueueWorker(),
       array(
-        'enforceSendingAndExecutionLimits' => Stub::exactly(1, function() { })
+        'enforceSendingAndExecutionLimits' => Stub::exactly(1)
       ), $this);
     $sending_queue_worker->__construct(
       $timer = false,
       Stub::make(
         new MailerTask(),
         array(
-          'send' => function() { }
+          'send' => null
         )
       )
     );
@@ -162,7 +162,7 @@ class SendingQueueTest extends MailPoetTest {
       Stub::make(
         new MailerTask(),
         array(
-          'send' => function() { }
+          'send' => null
         )
       )
     );
@@ -187,7 +187,7 @@ class SendingQueueTest extends MailPoetTest {
           // this function returns a queue object
           return (object)array('status' => null);
         },
-        'enforceSendingAndExecutionLimits' => Stub::exactly(2, function() { })
+        'enforceSendingAndExecutionLimits' => Stub::exactly(2)
       ), $this);
     $sending_queue_worker->__construct();
     $sending_queue_worker->process();
@@ -306,7 +306,9 @@ class SendingQueueTest extends MailPoetTest {
             expect(!empty($newsletter[0]['body']['text']))->true();
             return true;
           }),
-          'getProcessingMethod' => Stub::exactly(1, function() { return 'bulk'; })
+          'getProcessingMethod' => Stub::exactly(1, function() {
+            return 'bulk';
+          })
         ),
         $this
       )
@@ -406,7 +408,9 @@ class SendingQueueTest extends MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => Stub::exactly(1, function($newsletter, $subscriber) { return true; })),
+      array('send' => Stub::exactly(1, function() {
+        return true;
+      })),
       $this
     );
     $sending_queue_worker->process();
@@ -445,7 +449,7 @@ class SendingQueueTest extends MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => function($newsletter, $subscriber) { return true; })
+      array('send' => true)
     );
     $sending_queue_worker->process();
 
@@ -467,7 +471,7 @@ class SendingQueueTest extends MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => function($newsletter, $subscriber) { return true; })
+      array('send' => true)
     );
 
     // newsletter is sent to existing subscriber
@@ -490,7 +494,7 @@ class SendingQueueTest extends MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => function($newsletter, $subscriber) { return true; })
+      array('send' => true)
     );
 
     // newsletter is not sent to globally unsubscribed subscriber
@@ -508,7 +512,7 @@ class SendingQueueTest extends MailPoetTest {
     $sending_queue_worker = $this->sending_queue_worker;
     $sending_queue_worker->mailer_task = Stub::make(
       new MailerTask(),
-      array('send' => function($newsletter, $subscriber) { return true; })
+      array('send' => true)
     );
 
     // newsletter is not sent to subscriber unsubscribed from segment

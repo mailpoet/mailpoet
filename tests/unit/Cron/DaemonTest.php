@@ -69,10 +69,10 @@ class DaemonTest extends MailPoetTest {
 
   function testItCanExecuteWorkers() {
     $daemon = Stub::make(new Daemon(true), array(
-      'executeScheduleWorker' => Stub::exactly(1, function() { }),
-      'executeQueueWorker' => Stub::exactly(1, function() { }),
-      'pauseExecution' => function($a) { },
-      'callSelf' => function() { }
+      'executeScheduleWorker' => Stub::exactly(1),
+      'executeQueueWorker' => Stub::exactly(1),
+      'pauseExecution' => null,
+      'callSelf' => null
     ), $this);
     $data = array(
       'token' => 123
@@ -90,8 +90,8 @@ class DaemonTest extends MailPoetTest {
       'executeQueueWorker' => function() {
         throw new \Exception();
       },
-      'pauseExecution' => function($a) { },
-      'callSelf' => function() { }
+      'pauseExecution' => null,
+      'callSelf' => null
     ), $this);
     $data = array(
       'token' => 123
@@ -103,13 +103,13 @@ class DaemonTest extends MailPoetTest {
 
   function testItCanPauseExecution() {
     $daemon = Stub::make(new Daemon(true), array(
-      'executeScheduleWorker' => function() { },
-      'executeQueueWorker' => function() { },
+      'executeScheduleWorker' => null,
+      'executeQueueWorker' => null,
       'pauseExecution' => Stub::exactly(1, function($pause_delay) {
         expect($pause_delay)->lessThan(CronHelper::DAEMON_EXECUTION_LIMIT);
         expect($pause_delay)->greaterThan(CronHelper::DAEMON_EXECUTION_LIMIT - 1);
       }),
-      'callSelf' => function() { }
+      'callSelf' => null
     ), $this);
     $data = array(
       'token' => 123
@@ -125,9 +125,9 @@ class DaemonTest extends MailPoetTest {
       'executeScheduleWorker' => function() {
         Setting::deleteValue(CronHelper::DAEMON_SETTING);
       },
-      'executeQueueWorker' => function() { },
-      'pauseExecution' => function() { },
-      'terminateRequest' => Stub::exactly(1, function() { })
+      'executeQueueWorker' => null,
+      'pauseExecution' => null,
+      'terminateRequest' => Stub::exactly(1)
     ), $this);
     $data = array(
       'token' => 123
@@ -145,9 +145,9 @@ class DaemonTest extends MailPoetTest {
           array('token' => 567)
         );
       },
-      'executeQueueWorker' => function() { },
-      'pauseExecution' => function() { },
-      'terminateRequest' => Stub::exactly(1, function() { })
+      'executeQueueWorker' => null,
+      'pauseExecution' => null,
+      'terminateRequest' => Stub::exactly(1)
     ), $this);
     $data = array(
       'token' => 123
@@ -159,10 +159,10 @@ class DaemonTest extends MailPoetTest {
 
   function testItUpdatesDaemonTokenDuringExecution() {
     $daemon = Stub::make(new Daemon(true), array(
-      'executeScheduleWorker' => function() { },
-      'executeQueueWorker' => function() { },
-      'pauseExecution' => function() { },
-      'callSelf' => function() { }
+      'executeScheduleWorker' => null,
+      'executeQueueWorker' => null,
+      'pauseExecution' => null,
+      'callSelf' => null
     ), $this);
     $data = array(
       'token' => 123
@@ -178,12 +178,12 @@ class DaemonTest extends MailPoetTest {
     ignore_user_abort(0);
     expect(ignore_user_abort())->equals(0);
     $daemon = Stub::make(new Daemon(true), array(
-      'pauseExecution' => function() { },
+      'pauseExecution' => null,
       // workers should be executed
-      'executeScheduleWorker' => Stub::exactly(1, function() { }),
-      'executeQueueWorker' => Stub::exactly(1, function() { }),
+      'executeScheduleWorker' => Stub::exactly(1),
+      'executeQueueWorker' => Stub::exactly(1),
       // daemon should call itself
-      'callSelf' => Stub::exactly(1, function() { }),
+      'callSelf' => Stub::exactly(1),
     ), $this);
     $data = array(
       'token' => 123

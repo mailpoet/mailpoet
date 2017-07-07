@@ -10,7 +10,9 @@ class RendererTest extends MailPoetTest {
 
   function testItUsesCorrectAssetsManifestFilenames() {
     $renderer = Stub::make(new Renderer(),
-      array('getAssetManifest' => function($manifest) { return $manifest; })
+      array('getAssetManifest' => function($manifest) {
+        return $manifest;
+      })
     );
     $renderer->__construct();
     expect($renderer->assets_manifest_js)->equals(Env::$assets_path . '/js/manifest.json');
@@ -71,7 +73,9 @@ class RendererTest extends MailPoetTest {
       array(
         'renderer' => Stub::makeEmpty('Twig_Environment',
           array(
-            'render' => Stub::atLeastOnce(function() { return 'test render'; }),
+            'render' => Stub::atLeastOnce(function() {
+              return 'test render';
+            }),
           ),
           $this
         ),

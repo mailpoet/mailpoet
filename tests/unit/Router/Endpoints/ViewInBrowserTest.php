@@ -37,7 +37,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
 
   function testItAbortsWhenBrowserPreviewDataIsMissing() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Stub::exactly(2, function() { })
+      '_abort' => Stub::exactly(2)
     ), $this);
     // newsletter ID is required
     $data = $this->browser_preview_data;
@@ -51,7 +51,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
 
   function testItAbortsWhenBrowserPreviewDataIsInvalid() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_abort' => Stub::exactly(3, function() { })
+      '_abort' => Stub::exactly(3)
     ), $this);
     // newsletter ID is invalid
     $data = $this->browser_preview_data;
@@ -186,7 +186,7 @@ class ViewInBrowserRouterTest extends MailPoetTest {
 
   function testItReturnsViewActionResult() {
     $view_in_browser = Stub::make($this->view_in_browser, array(
-      '_displayNewsletter' => Stub::exactly(1, function() { })
+      '_displayNewsletter' => Stub::exactly(1)
     ), $this);
     $view_in_browser->data = $view_in_browser->_processBrowserPreviewData($this->browser_preview_data);
     $view_in_browser->view();

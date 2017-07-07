@@ -81,7 +81,9 @@ class ServicesTest extends MailPoetTest {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkMSSKey' => function() { throw new \Exception('test'); },
+        'checkMSSKey' => function() {
+          throw new \Exception('test');
+        },
         'storeMSSKeyAndState' => Stub::never()
       ),
       $this
@@ -176,7 +178,9 @@ class ServicesTest extends MailPoetTest {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkPremiumKey' => function() { throw new \Exception('test'); },
+        'checkPremiumKey' => function() {
+          throw new \Exception('test');
+        },
         'storePremiumKeyAndState' => Stub::never()
       ),
       $this

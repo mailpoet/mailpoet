@@ -213,7 +213,9 @@ class SchedulerTest extends MailPoetTest {
 
     // return false when WP user cannot be verified
     $scheduler = Stub::make(new Scheduler(), array(
-      'verifyWPSubscriber' => Stub::exactly(1, function() { return false; })
+      'verifyWPSubscriber' => Stub::exactly(1, function() {
+        return false;
+      })
     ), $this);
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->false();
   }
@@ -226,7 +228,9 @@ class SchedulerTest extends MailPoetTest {
 
     // return false when subscriber cannot be verified
     $scheduler = Stub::make(new Scheduler(), array(
-      'verifyMailpoetSubscriber' => Stub::exactly(1, function() { return false; })
+      'verifyMailpoetSubscriber' => Stub::exactly(1, function() {
+        return false;
+      })
     ), $this);
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->false();
   }
@@ -239,7 +243,7 @@ class SchedulerTest extends MailPoetTest {
     $queue = $this->_createQueue($newsletter->id);
     $queue->subscribers = serialize(array('to_process' => array(1)));
     $scheduler = Stub::make(new Scheduler(), array(
-      'verifyMailpoetSubscriber' => Stub::exactly(1, function() { })
+      'verifyMailpoetSubscriber' => Stub::exactly(1)
     ), $this);
     expect($queue->status)->notNull();
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
@@ -255,7 +259,7 @@ class SchedulerTest extends MailPoetTest {
     $queue = $this->_createQueue($newsletter->id);
     $queue->subscribers = serialize(array('to_process' => array(1)));
     $scheduler = Stub::make(new Scheduler(), array(
-      'verifyWPSubscriber' => Stub::exactly(1, function() { })
+      'verifyWPSubscriber' => Stub::exactly(1)
     ), $this);
     expect($queue->status)->notNull();
     expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
@@ -378,7 +382,9 @@ class SchedulerTest extends MailPoetTest {
 
     // delete or reschedule queue when segments don't exist
     $scheduler = Stub::make(new Scheduler(), array(
-      'deleteQueueOrUpdateNextRunDate' => Stub::exactly(1, function() { return false; })
+      'deleteQueueOrUpdateNextRunDate' => Stub::exactly(1, function() {
+        return false;
+      })
     ), $this);
     expect($scheduler->processPostNotificationNewsletter($newsletter, $queue))->false();
   }
@@ -391,7 +397,9 @@ class SchedulerTest extends MailPoetTest {
 
     // delete or reschedule queue when there are no subscribers in segments
     $scheduler = Stub::make(new Scheduler(), array(
-      'deleteQueueOrUpdateNextRunDate' => Stub::exactly(1, function() { return false; })
+      'deleteQueueOrUpdateNextRunDate' => Stub::exactly(1, function() {
+        return false;
+      })
     ), $this);
     expect($scheduler->processPostNotificationNewsletter($newsletter, $queue))->false();
   }
@@ -463,7 +471,7 @@ class SchedulerTest extends MailPoetTest {
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
     $scheduler = Stub::make(new Scheduler(), array(
-      'processWelcomeNewsletter' => Stub::exactly(1, function($newsletter, $queue) { })
+      'processWelcomeNewsletter' => Stub::exactly(1)
     ), $this);
     $scheduler->timer = microtime(true);
     $scheduler->process();
@@ -475,7 +483,7 @@ class SchedulerTest extends MailPoetTest {
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
     $scheduler = Stub::make(new Scheduler(), array(
-      'processPostNotificationNewsletter' => Stub::exactly(1, function($newsletter, $queue) { })
+      'processPostNotificationNewsletter' => Stub::exactly(1)
     ), $this);
     $scheduler->timer = microtime(true);
     $scheduler->process();
@@ -487,7 +495,7 @@ class SchedulerTest extends MailPoetTest {
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
     $scheduler = Stub::make(new Scheduler(), array(
-      'processScheduledStandardNewsletter' => Stub::exactly(1, function($newsletter, $queue) { })
+      'processScheduledStandardNewsletter' => Stub::exactly(1)
     ), $this);
     $scheduler->timer = microtime(true);
     $scheduler->process();
@@ -499,7 +507,7 @@ class SchedulerTest extends MailPoetTest {
     $queue->scheduled_at = Carbon::createFromTimestamp(current_time('timestamp'));
     $queue->save();
     $scheduler = Stub::make(new Scheduler(), array(
-      'processPostNotificationNewsletter' => Stub::exactly(1, function($newsletter, $queue) { })
+      'processPostNotificationNewsletter' => Stub::exactly(1)
     ), $this);
     $scheduler->timer = microtime(true) - CronHelper::DAEMON_EXECUTION_LIMIT;
     try {

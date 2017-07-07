@@ -52,7 +52,9 @@ class SubscriptionFormSubmissionTest extends MailPoetTest {
 
   function testItSubscribesAndRedirectsBackWithSuccessResponse() {
     $mock = Mock::double('MailPoet\Util\Url', [
-      'redirectBack' => function($params) { return $params; }
+      'redirectBack' => function($params) {
+        return $params;
+      }
     ]);
     $result = Form::onSubmit($this->request_data);
     expect(SubscriberModel::findOne($this->request_data['data']['email']))->notEmpty();
@@ -70,7 +72,9 @@ class SubscriptionFormSubmissionTest extends MailPoetTest {
     $form->settings = serialize($form_settings);
     $form->save();
     $mock = Mock::double('MailPoet\Util\Url', [
-      'redirectTo' => function($params) { return $params; }
+      'redirectTo' => function($params) {
+        return $params;
+      }
     ]);
     $result = Form::onSubmit($this->request_data);
     expect(SubscriberModel::findOne($this->request_data['data']['email']))->notEmpty();
@@ -83,7 +87,9 @@ class SubscriptionFormSubmissionTest extends MailPoetTest {
     $request_data = $this->request_data;
     $request_data['data']['email'] = false;
     $mock = Mock::double('MailPoet\Util\Url', [
-      'redirectBack' => function($params) { return $params; }
+      'redirectBack' => function($params) {
+        return $params;
+      }
     ]);
     $result = Form::onSubmit($request_data);
     expect(SubscriberModel::findMany())->isEmpty();
