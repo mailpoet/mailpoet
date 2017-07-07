@@ -60,8 +60,8 @@ class Services extends APIEndpoint {
       default:
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
         $error = sprintf(
-          __('Error validating MailPoet Sending Service key, please try again later (code: %s)', 'mailpoet'),
-          $code
+          __('Error validating MailPoet Sending Service key, please try again later (%s)', 'mailpoet'),
+          $this->getErrorDescriptionByCode($code)
         );
         break;
     }
@@ -116,12 +116,28 @@ class Services extends APIEndpoint {
       default:
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
         $error = sprintf(
-          __('Error validating Premium key, please try again later (code: %s)', 'mailpoet'),
-          $code
+          __('Error validating Premium key, please try again later (%s)', 'mailpoet'),
+          $this->getErrorDescriptionByCode($code)
         );
         break;
     }
 
     return $this->errorResponse(array(APIError::BAD_REQUEST => $error));
+  }
+
+  private function getErrorDescriptionByCode($code) {
+    switch($code) {
+      case Bridge::CHECK_ERROR_UNAVAILABLE:
+        $text = __('Service unavailable', 'mailpoet');
+        break;
+      case Bridge::CHECK_ERROR_UNKNOWN:
+        $text = __('Contact your hosting support to check the connection between your host and https://bridge.mailpoet.com', 'mailpoet');
+        break;
+      default:
+        $text = sprintf(_x('code: %s', 'Error code (inside parentheses)', 'mailpoet'), $code);
+        break;
+    }
+
+    return $text;
   }
 }

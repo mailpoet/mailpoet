@@ -74,7 +74,43 @@ class ServicesTest extends MailPoetTest {
     );
     $response = $this->services_endpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains((string)Bridge::CHECK_ERROR_UNAVAILABLE);
+    expect($response->errors[0]['message'])->contains(
+      $this->invokeMethod(
+        $this->services_endpoint, 'getErrorDescriptionByCode', array(Bridge::CHECK_ERROR_UNAVAILABLE)
+      )
+    );
+  }
+
+  function testItRespondsWithErrorIfServiceDidNotReturnAResponseCodeDuringMSSCheck() {
+    $this->services_endpoint->bridge = Stub::make(
+      new Bridge(),
+      array(
+        'checkMSSKey' => null,
+        'storeMSSKeyAndState' => Stub::once()
+      ),
+      $this
+    );
+    $response = $this->services_endpoint->checkMSSKey($this->data);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->contains(
+      $this->invokeMethod(
+        $this->services_endpoint, 'getErrorDescriptionByCode', array(Bridge::CHECK_ERROR_UNKNOWN)
+      )
+    );
+  }
+
+  function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringMSSCheck() {
+    $this->services_endpoint->bridge = Stub::make(
+      new Bridge(),
+      array(
+        'checkMSSKey' => array('code' => 404),
+        'storeMSSKeyAndState' => Stub::once()
+      ),
+      $this
+    );
+    $response = $this->services_endpoint->checkMSSKey($this->data);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->contains('404');
   }
 
   function testItRespondsWithErrorIfMSSCheckThrowsAnException() {
@@ -169,7 +205,43 @@ class ServicesTest extends MailPoetTest {
     );
     $response = $this->services_endpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains((string)Bridge::CHECK_ERROR_UNAVAILABLE);
+    expect($response->errors[0]['message'])->contains(
+      $this->invokeMethod(
+        $this->services_endpoint, 'getErrorDescriptionByCode', array(Bridge::CHECK_ERROR_UNAVAILABLE)
+      )
+    );
+  }
+
+  function testItRespondsWithErrorIfServiceDidNotReturnAResponseCodeDuringPremiumCheck() {
+    $this->services_endpoint->bridge = Stub::make(
+      new Bridge(),
+      array(
+        'checkPremiumKey' => null,
+        'storePremiumKeyAndState' => Stub::once()
+      ),
+      $this
+    );
+    $response = $this->services_endpoint->checkPremiumKey($this->data);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->contains(
+      $this->invokeMethod(
+        $this->services_endpoint, 'getErrorDescriptionByCode', array(Bridge::CHECK_ERROR_UNKNOWN)
+      )
+    );
+  }
+
+  function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringPremiumCheck() {
+    $this->services_endpoint->bridge = Stub::make(
+      new Bridge(),
+      array(
+        'checkPremiumKey' => array('code' => 404),
+        'storePremiumKeyAndState' => Stub::once()
+      ),
+      $this
+    );
+    $response = $this->services_endpoint->checkPremiumKey($this->data);
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->errors[0]['message'])->contains('404');
   }
 
   function testItRespondsWithErrorIfPremiumCheckThrowsAnException() {
