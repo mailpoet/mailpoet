@@ -101,7 +101,7 @@ class RequirementsChecker {
   }
 
   function checkXmlExtension() {
-    if(!extension_loaded('xml')) return true;
+    if(extension_loaded('xml')) return true;
     $error = Helpers::replaceLinkTags(
       __('MailPoet requires an XML PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
       '//beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension',
