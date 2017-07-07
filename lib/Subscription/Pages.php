@@ -95,6 +95,7 @@ class Pages {
       }
     }
   }
+  
   function setPageTitle($page_title = '') {
     global $post;
 
@@ -373,16 +374,16 @@ class Pages {
       // check if subscriber's associated WP user is the currently logged in WP user
       $wp_current_user = wp_get_current_user();
       if($wp_current_user->user_email === $subscriber->email) {
-        $form_html .= str_replace(
-          array('[link]', '[/link]'),
-          array('<a href="'.get_edit_profile_url().'" target="_blank">', '</a>'),
-          __('[link]Edit your profile[/link] to update your email.', 'mailpoet')
+        $form_html .= Helpers::replaceLinkTags(
+          __('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
+          get_edit_profile_url(),
+          array('target' => '_blank')
         );
       } else {
-        $form_html .= str_replace(
-          array('[link]', '[/link]'),
-          array('<a href="'.wp_login_url().'" target="_blank">', '</a>'),
-          __('[link]Log in to your account[/link] to update your email.', 'mailpoet')
+        $form_html .= Helpers::replaceLinkTags(
+          __('[link]Log in to your account[/link] to update your email.', 'mailpoet'),
+          wp_login_url(),
+          array('target' => '_blank')
         );
       }
     } else {

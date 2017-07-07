@@ -128,32 +128,26 @@
         <div>
           <!-- Form export links -->
           <p>
-            <%= __("Add this form to your sidebar or footer on the [link]Widgets page[/link].")
-              | replace({
-                  '[link]': '<a href="widgets.php" target="_blank">',
-                  '[/link]': '</a>'
-                })
-              | raw
+            <%= __('Add this form to your sidebar or footer on the [link]Widgets page[/link].')
+              |replaceLinkTags('widgets.php', {'target' : '_blank'})
+              |raw
             %>
           </p>
           <p>
-            <%= __("Copy and paste this [link]shortcode[/link] on to a post or page.")
-              | replace({
-                  '[link]': '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="shortcode">',
-                  '[/link]': '</a>'
-                })
-              | raw
+            <%= __('Copy and paste this [link]shortcode[/link] on to a post or page.')
+              |replaceLinkTags('javascript:;', {'class' : 'mailpoet_form_export_toggle', 'data-type' : 'shortcode'})
+              |raw
             %>
           </p>
           <p>
             <%= __('%sPHP%s and %siFrame%s versions are also available.')
-              | format(
+              |format(
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="php">',
                 '</a>',
                 '<a href="javascript:;" class="mailpoet_form_export_toggle" data-type="iframe">',
                 '</a>'
               )
-              | raw
+              |raw
             %>
          </p>
 
