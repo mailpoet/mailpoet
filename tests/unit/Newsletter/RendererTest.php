@@ -137,8 +137,8 @@ class NewsletterRendererTest extends MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][0];
     $DOM = $this->DOM_parser->parseStr(Header::render($template));
     // element should be properly nested, and styles should be applied
-    expect(!empty($DOM('tr > td.mailpoet_header', 0)->html()))->true();
-    expect(!empty($DOM('tr > td > a', 0)->html()))->true();
+    expect($DOM('tr > td.mailpoet_header', 0)->html())->notEmpty();
+    expect($DOM('tr > td > a', 0)->html())->notEmpty();
     expect($DOM('a', 0)->attr('style'))->notEmpty();
     expect($DOM('td', 0)->attr('style'))->notEmpty();
   }
@@ -210,11 +210,11 @@ class NewsletterRendererTest extends MailPoetTest {
     $DOM = $this->DOM_parser->parseStr(Text::render($template));
     // blockquotes and paragraphs should be converted to spans and placed inside a table
     expect(
-      !empty($DOM('tr > td > table > tr > td.mailpoet_paragraph', 0)->html())
-    )->true();
+      $DOM('tr > td > table > tr > td.mailpoet_paragraph', 0)->html()
+    )->notEmpty();
     expect(
-      !empty($DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
-      ))->true();
+      $DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
+    )->notEmpty();
     // blockquote should contain heading elements but not paragraphs
     expect(
       $DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
@@ -224,15 +224,11 @@ class NewsletterRendererTest extends MailPoetTest {
     )->notContains('<p');
     // ul/ol/li should have mailpoet_paragraph class added & styles applied
     expect(
-      !empty(
       $DOM('tr > td > ul.mailpoet_paragraph > li.mailpoet_paragraph', 0)->html()
-      )
-    )->true();
+    )->notEmpty();
     expect(
-      !empty(
       $DOM('tr > td > ol.mailpoet_paragraph > li.mailpoet_paragraph', 0)->html()
-      )
-    )->true();
+    )->notEmpty();
     expect($DOM('tr > td.mailpoet_text > ul.mailpoet_paragraph', 0)->attr('style'))
       ->contains('padding-top:0;padding-bottom:0;margin-top:10px;text-align:left;margin-bottom:10px;');
     // headings should be styled
@@ -293,8 +289,8 @@ class NewsletterRendererTest extends MailPoetTest {
     $DOM = $this->DOM_parser->parseStr(Button::render($template, $columnCount = 1));
     // element should be properly nested with arcsize/styles/fillcolor set
     expect(
-      !empty($DOM('tr > td > div > table > tr > td > a.mailpoet_button', 0)->html())
-    )->true();
+      $DOM('tr > td > div > table > tr > td > a.mailpoet_button', 0)->html()
+    )->notEmpty();
     expect(
       preg_match(
         '/line-height: 30px/',
@@ -328,7 +324,7 @@ class NewsletterRendererTest extends MailPoetTest {
     $DOM = $this->DOM_parser->parseStr(Social::render($template));
     // element should be properly nested, contain social icons and
     // image source/link href/alt should be  properly set
-    expect(!empty($DOM('tr > td', 0)->html()))->true();
+    expect($DOM('tr > td', 0)->html())->notEmpty();
     expect($DOM('a', 0)->attr('href'))->equals('http://example.com');
     expect($DOM('td > a:nth-of-type(10) > img')->attr('src'))->contains('custom.png');
     expect($DOM('td > a:nth-of-type(10) > img')->attr('alt'))->equals('custom');
@@ -355,8 +351,8 @@ class NewsletterRendererTest extends MailPoetTest {
     $template = $newsletter['content']['blocks'][3]['blocks'][0]['blocks'][0];
     $DOM = $this->DOM_parser->parseStr(Footer::render($template));
     // element should be properly nested, and styles should be applied
-    expect(!empty($DOM('tr > td.mailpoet_footer', 0)->html()))->true();
-    expect(!empty($DOM('tr > td > a', 0)->html()))->true();
+    expect($DOM('tr > td.mailpoet_footer', 0)->html())->notEmpty();
+    expect($DOM('tr > td > a', 0)->html())->notEmpty();
     expect($DOM('a', 0)->attr('style'))->notEmpty();
     expect($DOM('td', 0)->attr('style'))->notEmpty();
   }

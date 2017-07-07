@@ -121,8 +121,6 @@
   <rule ref="MailPoetTests.ControlStructures.ControlSignature"/>
 
   <!-- Run against the PHPCompatibility ruleset -->
-  <rule ref="PHPCompatibility">
-    <exclude name="PHPCompatibility.PHP.EmptyNonVariable"/>
-  </rule>
+  <rule ref="PHPCompatibility" />
   <config name="testVersion" value="5.4-7.0"/>
 </ruleset>

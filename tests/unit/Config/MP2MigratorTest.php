@@ -10,23 +10,23 @@ use MailPoet\Models\Form;
 use Helper\Database;
 
 class MP2MigratorTest extends MailPoetTest {
-  
+
   public function _before() {
     $this->MP2Migrator = new MP2Migrator();
   }
 
   public function _after() {
   }
-  
+
   /**
    * Test the isMigrationNeeded function
-   * 
+   *
    */
   public function testIsMigrationNeeded() {
     Database::loadSQL('dropMP2Tables');
     $result = $this->MP2Migrator->isMigrationNeeded();
     expect($result)->false();
-    
+
     Database::loadSQL('createMP2Tables');
     $result = $this->MP2Migrator->isMigrationNeeded();
     expect($result)->true();
@@ -34,7 +34,7 @@ class MP2MigratorTest extends MailPoetTest {
 
   /**
    * Test the init function
-   * 
+   *
    */
   public function testInit() {
     // Nothing to test
@@ -42,82 +42,83 @@ class MP2MigratorTest extends MailPoetTest {
 
   /**
    * Test the eraseMP3Data function
-   * 
+   *
    */
   public function testEraseMP3Data() {
     global $wpdb;
-    
+
     $this->invokeMethod($this->MP2Migrator, 'eraseMP3Data');
-    
+
     // Check if the subscribers number is equal to the WordPress users number
     $WPUsersCount = \ORM::for_table($wpdb->prefix . 'users')->count();
     expect(Subscriber::count())->equals($WPUsersCount);
-    
+
     // Check if the custom fields number is 0
     expect(CustomField::count())->equals(0);
-    
+
     // Check if the subscribers custom fields number is 0
     expect(SubscriberCustomField::count())->equals(0);
   }
-  
+
   /**
    * Test the resetMigrationCounters function
-   * 
+   *
    */
   public function testResetMigrationCounters() {
     $this->invokeMethod($this->MP2Migrator, 'resetMigrationCounters');
-    
+
     // Check if the last imported user ID is 0
     $lastImportedUserID = Setting::getValue('last_imported_user_id', 0);
     expect($lastImportedUserID)->equals(0);
-    
+
     // Check if the last imported list ID is 0
     $lastImportedListID = Setting::getValue('last_imported_list_id', 0);
     expect($lastImportedListID)->equals(0);
   }
-  
+
   /**
    * Test the stopImport function
-   * 
+   *
    */
   public function testStopImport() {
     delete_option('mailpoet_stopImport');
     $this->MP2Migrator->stopImport();
-    $stopImport = !empty(Setting::getValue('import_stopped', false));
+    $value = Setting::getValue('import_stopped', false);
+    $stopImport = !empty($value);
     expect($stopImport)->true();
   }
 
   /**
    * Create the MP2 tables and erase the MP3 data
-   * 
+   *
    */
   private function initImport() {
     Database::loadSQL('createMP2Tables');
     $this->invokeMethod($this->MP2Migrator, 'eraseMP3Data');
   }
-  
+
   /**
    * Populate the MP2 tables with some samples data
-   * 
+   *
    */
   private function loadMP2Fixtures() {
     Database::loadSQL('populateMP2Tables');
   }
-  
+
   /**
    * Test the importSegments function
-   * 
+   *
    * @global object $wpdb
    */
   public function testImportSegments() {
     global $wpdb;
-    
+
     // Check the segments number
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     expect(Segment::count())->equals(3);
-    
+
     // Check a segment data
     $this->initImport();
     $id = 999;
@@ -139,21 +140,21 @@ class MP2MigratorTest extends MailPoetTest {
     expect($segment->name)->equals($name);
     expect($segment->description)->equals($description);
   }
-  
+
   /**
    * Test the importCustomFields function
-   * 
+   *
    * @global object $wpdb
    */
   public function testImportCustomFields() {
     global $wpdb;
-    
+
     // Check the custom fields number
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importCustomFields');
     expect(CustomField::count())->equals(10);
-    
+
     // Check a custom field data
     $this->initImport();
     $id = 999;
@@ -182,15 +183,15 @@ class MP2MigratorTest extends MailPoetTest {
     expect($custom_field_params['validate'])->equals('alphanum');
     expect($custom_field_params['label'])->equals($name);
   }
-  
+
   /**
    * Test the importSubscribers function
-   * 
+   *
    * @global object $wpdb
    */
   public function testImportSubscribers() {
     global $wpdb;
-    
+
     // Check a subscriber data
     $this->initImport();
     $id = 999;
@@ -220,17 +221,17 @@ class MP2MigratorTest extends MailPoetTest {
     expect($subscriber->confirmed_ip)->equals($confirmed_ip);
     expect($subscriber->status)->equals('subscribed');
   }
-  
+
   /**
    * Test the importSubscriberSegments function
-   * 
+   *
    * @global object $wpdb
    */
   public function testImportSubscriberSegments() {
     global $wpdb;
-    
+
     // Check a subscriber segment data
-    
+
     // Insert a list
     $this->initImport();
     $list_id = 998;
@@ -245,7 +246,7 @@ class MP2MigratorTest extends MailPoetTest {
       'is_public' => 1,
       'created_at' => $timestamp,
     ));
-    
+
     // Insert a user
     $user_id = 999;
     $wp_id = 1;
@@ -255,14 +256,14 @@ class MP2MigratorTest extends MailPoetTest {
       'wpuser_id' => $wp_id,
       'email' => $email,
     ));
-    
+
     // Insert a user list
     $wpdb->insert($wpdb->prefix . 'wysija_user_list', array(
       'list_id' => $list_id,
       'user_id' => $user_id,
       'sub_date' => $timestamp,
     ));
-    
+
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
@@ -273,24 +274,24 @@ class MP2MigratorTest extends MailPoetTest {
     $subscriber_segment = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriber_id' AND segment_id='$segment_id'");
     expect($subscriber_segment)->notNull();
   }
-  
+
   /**
    * Test the importSubscriberCustomFields function
-   * 
+   *
    * @global object $wpdb
    */
   public function testImportSubscriberCustomFields() {
     global $wpdb;
-    
+
     // Check the subscriber custom fields number
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importCustomFields');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
     expect(SubscriberCustomField::count())->equals(40);
-    
+
     // Check a subscriber custom field data
-    
+
     $this->initImport();
     // Insert a custom field
     $cf_id = 1;
@@ -308,7 +309,7 @@ class MP2MigratorTest extends MailPoetTest {
       'required' => $cf_required,
       'settings' => serialize($cf_settings),
     ));
-    
+
     // Insert a user
     $user_id = 999;
     $wp_id = 1;
@@ -320,7 +321,7 @@ class MP2MigratorTest extends MailPoetTest {
       'email' => $email,
       'cf_' . $cf_id => $custom_field_value,
     ));
-    
+
     $this->invokeMethod($this->MP2Migrator, 'importCustomFields');
     $this->invokeMethod($this->MP2Migrator, 'importSubscribers');
     $importedSubscribersMapping = $this->MP2Migrator->getImportedMapping('subscribers');
@@ -329,10 +330,10 @@ class MP2MigratorTest extends MailPoetTest {
     $subscriber_custom_field = $wpdb->get_row("SELECT * FROM $table WHERE subscriber_id='$subscriber_id' AND custom_field_id='$cf_id'");
     expect($subscriber_custom_field->value)->equals($custom_field_value);
   }
-  
+
   /**
    * Test the getImportedMapping function
-   * 
+   *
    */
   public function testGetImportedMapping() {
     $this->initImport();
@@ -348,27 +349,27 @@ class MP2MigratorTest extends MailPoetTest {
     $result = $this->invokeMethod($this->MP2Migrator, 'getImportedMapping', array('testMapping'));
     expect($result[$old_id])->equals($new_id);
   }
-  
+
   /**
    * Test the importForms function
-   * 
+   *
    * @global object $wpdb
    */
   public function testImportForms() {
     global $wpdb;
-    
+
     // Check the forms number
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importForms');
     expect(Form::count())->equals(2);
-    
+
     // Check a form data
     $this->initImport();
     $id = 999;
     $name = 'Test form';
     $list_id = 2;
-    
+
     // Insert a MP2 list
     $wpdb->insert($wpdb->prefix . 'wysija_list', array(
       'list_id' => $list_id,
@@ -380,7 +381,7 @@ class MP2MigratorTest extends MailPoetTest {
     ));
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
-    
+
     // Insert a MP2 form
     $data = array(
       'version' => 0.4,
@@ -419,40 +420,40 @@ class MP2MigratorTest extends MailPoetTest {
     expect($body[0]['name'])->equals('E-mail');
     expect($body[0]['type'])->equals('text');
   }
-  
+
   /**
    * Test the replaceMP2Shortcodes function
-   * 
+   *
    */
   public function testReplaceMP2Shortcodes() {
     $this->initImport();
-    
+
     $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[total_subscribers]'));
     expect($result)->equals('[mailpoet_subscribers_count]');
-    
+
     $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('Total: [total_subscribers]'));
     expect($result)->equals('Total: [mailpoet_subscribers_count]');
-    
+
     $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('Total: [total_subscribers] found'));
     expect($result)->equals('Total: [mailpoet_subscribers_count] found');
-    
+
     $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[wysija_subscribers_count list_id="1,2" ]'));
     expect($result)->notEquals('mailpoet_subscribers_count segments=1,2');
-    
+
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
     $result = $this->invokeMethod($this->MP2Migrator, 'replaceMP2Shortcodes', array('[wysija_subscribers_count list_id="1,2" ]'));
     $importedSegmentsMapping = $this->MP2Migrator->getImportedMapping('segments');
     expect($result)->equals(sprintf('[mailpoet_subscribers_count segments=%d,%d]', $importedSegmentsMapping[1], $importedSegmentsMapping[2]));
   }
-  
+
   /**
    * Test the getMappedSegmentIds function
-   * 
+   *
    */
   public function testGetMappedSegmentIds() {
     $this->initImport();
-    
+
     $lists = array(1, 2);
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importSegments');
@@ -461,14 +462,14 @@ class MP2MigratorTest extends MailPoetTest {
     $expected_lists = array($importedSegmentsMapping[1],$importedSegmentsMapping[2]);
     expect($result)->equals($expected_lists);
   }
-  
+
   /**
    * Test the replaceListIds function
-   * 
+   *
    */
   public function testReplaceListIds() {
     $this->initImport();
-    
+
     $lists = array(
       array(
         'list_id' => 1,
@@ -495,5 +496,5 @@ class MP2MigratorTest extends MailPoetTest {
     );
     expect($result)->equals($expected_lists);
   }
-  
+
 }
