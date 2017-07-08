@@ -1,5 +1,6 @@
 <?php
 
+use AspectMock\Test as Mock;
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use MailPoet\Models\CustomField;
@@ -1045,6 +1046,48 @@ class SubscriberTest extends MailPoetTest {
         '2' => 'France'
       )
     );
+  }
+
+  function testItSendsConfirmationEmail() {
+    Mock::double('MailPoet\Mailer\Mailer', [
+      '__construct' => null,
+      'send' => function($email) {
+        return $email;
+      }
+    ]);
+    Mock::double('MailPoet\Subscription\Url', [
+      'getConfirmationUrl' => 'http://example.com'
+    ]);
+
+    $segment = Segment::createOrUpdate(
+      array(
+        'name' => 'Test segment'
+      )
+    );
+    SubscriberSegment::subscribeToSegments(
+      $this->subscriber,
+      array($segment->id)
+    );
+
+    $result = $this->subscriber->sendConfirmationEmail();
+
+    // email contains subscriber's lists
+    expect($result['body']['html'])->contains('<strong>Test segment</strong>');
+    // email contains activation link
+    expect($result['body']['html'])->contains('<a target="_blank" href="http://example.com">Click here to confirm your subscription.</a>');
+  }
+
+  function testItSetsErrorsWhenConfirmationEmailCannotBeSent() {
+    Mock::double('MailPoet\Mailer\Mailer', [
+      '__construct' => null,
+      'send' => function() {
+        throw new \Exception('send error');
+      }
+    ]);
+
+    $this->subscriber->sendConfirmationEmail();
+    // error is set on the subscriber model object
+    expect($this->subscriber->getErrors()[0])->equals('send error');
   }
 
   function _after() {
