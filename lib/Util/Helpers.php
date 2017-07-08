@@ -5,13 +5,14 @@ class Helpers {
   const DIVIDER = '***MailPoet***';
   const LINK_TAG = 'link';
 
-  static function replaceLinkTags($source, $link = false, $attributes = array()) {
+  static function replaceLinkTags($source, $link = false, $attributes = array(), $link_tag = false) {
     if(!$link) return $source;
+    $link_tag = ($link_tag) ? $link_tag : self::LINK_TAG;
     $attributes = array_map(function($key) use ($attributes) {
       return sprintf('%s="%s"', $key, $attributes[$key]);
     }, array_keys($attributes));
     $source = str_replace(
-      '[' . self::LINK_TAG . ']',
+      '[' . $link_tag . ']',
       sprintf(
         '<a %s href="%s">',
         join(' ', $attributes),
@@ -19,7 +20,7 @@ class Helpers {
       ),
       $source
     );
-    $source = str_replace('[/' . self::LINK_TAG . ']', '</a>', $source);
+    $source = str_replace('[/' . $link_tag . ']', '</a>', $source);
     return preg_replace('/\s+/', ' ', $source);
   }
 
