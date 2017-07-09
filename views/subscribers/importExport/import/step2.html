@@ -46,7 +46,7 @@
         <th scope="row">
           <%=
           __('To add subscribers to a mailing segment, [link]create a list[/link].')
-          |replaceLink('javascript:;', {'target' : '_blank', 'class' : 'mailpoet_create_segment'})
+          |replaceLinkTags('javascript:;', {'target' : '_blank', 'class' : 'mailpoet_create_segment'})
           |raw
           %>
         </th>

@@ -5,14 +5,23 @@ class Helpers {
   const DIVIDER = '***MailPoet***';
   const LINK_TAG = 'link';
 
-  static function replaceLinkTags($text, $link, $target = '_blank') {
-    $text = str_replace(
-      '[' . self::LINK_TAG . ']',
-      sprintf('<a href="%s" target="%s">', $link, $target),
-      $text
+  static function replaceLinkTags($source, $link = false, $attributes = array(), $link_tag = false) {
+    if(!$link) return $source;
+    $link_tag = ($link_tag) ? $link_tag : self::LINK_TAG;
+    $attributes = array_map(function($key) use ($attributes) {
+      return sprintf('%s="%s"', $key, $attributes[$key]);
+    }, array_keys($attributes));
+    $source = str_replace(
+      '[' . $link_tag . ']',
+      sprintf(
+        '<a %s href="%s">',
+        join(' ', $attributes),
+        $link
+      ),
+      $source
     );
-    $text = str_replace('[/' . self::LINK_TAG . ']', '</a>', $text);
-    return $text;
+    $source = str_replace('[/' . $link_tag . ']', '</a>', $source);
+    return preg_replace('/\s+/', ' ', $source);
   }
 
   static function getMaxPostSize($bytes = false) {
@@ -136,5 +145,5 @@ class Helpers {
   static function splitObject($object = array()) {
     return explode(self::DIVIDER, $object);
   }
-  
+
 }

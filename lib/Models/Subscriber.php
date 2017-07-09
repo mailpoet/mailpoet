@@ -104,16 +104,11 @@ class Subscriber extends Model {
     );
 
     // replace activation link
-    $body = str_replace(
-      array(
-        '[activation_link]',
-        '[/activation_link]'
-      ),
-      array(
-        '<a href="'.esc_attr(Subscription\Url::getConfirmationUrl($this)).'">',
-        '</a>'
-      ),
-      $body
+    $body = Helpers::replaceLinkTags(
+      $body,
+      Subscription\Url::getConfirmationUrl($this),
+      array('target' => '_blank'),
+      'activation_link'
     );
 
     // build email data
