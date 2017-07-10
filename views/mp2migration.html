@@ -35,6 +35,7 @@
 
     <div id="upgrade-completed" style="display: none">
       <h3><%= __('Upgrade completed!') %></h3>
+      <p><%= __('Review our <a href="%s" %s>simple checklist</a> to ensure your transition to MailPoet 3 is smooth.') | format('http://beta.docs.mailpoet.com/article/199-checklist-for-those-migrating-from-mailpoet-version-2?utm_source=plugin&utm_medium=migration&utm_campaign=migrationchecklist', 'target="_blank"') | raw %></p>
       <input type="button" name="goto-welcome" id="goto-welcome" class="button button-primary" value="<%= __('Go to MailPoet') %>"  />
     </div>
 
