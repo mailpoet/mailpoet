@@ -759,6 +759,7 @@
 
       // save configuration of a sending method
       $('.mailpoet_sending_service_activate').on('click', function(e) {
+        $('#mta_group').val('mailpoet');
         saveSendingMethodConfiguration('mailpoet');
       });
       $('.mailpoet_mta_setup_save').on('click', function() {
