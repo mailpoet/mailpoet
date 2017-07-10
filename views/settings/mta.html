@@ -758,9 +758,10 @@
       });
 
       // save configuration of a sending method
-      $('.mailpoet_sending_service_activate').on('click', function(e) {
+      $('.mailpoet_sending_service_activate').on('click', function() {
         $('#mta_group').val('mailpoet');
         saveSendingMethodConfiguration('mailpoet');
+        return false;
       });
       $('.mailpoet_mta_setup_save').on('click', function() {
         // get selected method
@@ -792,6 +793,7 @@
           // save settings
           $('.mailpoet_settings_submit > input').trigger('click');
         }
+        return false;
       }
 
       function setSignupConfirmation(group) {
