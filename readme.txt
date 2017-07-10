@@ -22,11 +22,7 @@ Try the new MailPoet! This is a beta version of our completely new email newslet
 
 = See it in action. =
 [Test the demo](http://demo3.mailpoet.com/launch/) or [see the 2 min. video](https://vimeo.com/223581490)
-
-= See it in action. =
-[Test the demo](http://demo3.mailpoet.com/launch/) or [see the 2 min. video](https://vimeo.com/223581490)
 [vimeo https://vimeo.com/223581490] 
-
 
 = What is a beta? =
 
