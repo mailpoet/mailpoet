@@ -98,6 +98,7 @@
 
     <div class="mailpoet_actions">
       <button
+        type="button"
         class="mailpoet_sending_service_activate button-secondary"
         <% if(settings.mta_group == 'mailpoet' or not(mss_key_valid)) %> disabled="disabled"<% endif %>
       ><%= __('Activate') %></button>
@@ -793,7 +794,6 @@
           // save settings
           $('.mailpoet_settings_submit > input').trigger('click');
         }
-        return false;
       }
 
       function setSignupConfirmation(group) {
