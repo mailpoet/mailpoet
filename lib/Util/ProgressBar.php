@@ -65,7 +65,7 @@ if(!class_exists('ProgressBar', false)) {
      * @param int $count Count
      */
     public function setTotalCount($count) {
-      if($count != $this->total_count) {
+      if(($count != $this->total_count) || ($count == 0)) {
         $this->total_count = $count;
         $this->current_count = 0;
         $this->saveProgress();
@@ -91,6 +91,14 @@ if(!class_exists('ProgressBar', false)) {
         'total' => $this->total_count,
         'current' => $this->current_count,
       )));
+    }
+
+    /**
+     * Delete the progress file
+     * 
+     */
+    public function deleteProgressFile() {
+      unlink($this->filename);
     }
 
   }

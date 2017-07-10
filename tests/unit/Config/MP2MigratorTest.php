@@ -16,6 +16,7 @@ class MP2MigratorTest extends MailPoetTest {
   }
 
   public function _after() {
+    $this->MP2Migrator->progressbar->setTotalCount(0);
   }
 
   /**
