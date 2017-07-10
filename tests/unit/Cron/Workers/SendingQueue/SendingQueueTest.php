@@ -341,7 +341,7 @@ class SendingQueueTest extends MailPoetTest {
     expect($statistics)->notEquals(false);
   }
 
-  function testItProcessesStandardewsletters() {
+  function testItProcessesStandardNewsletters() {
     $sending_queue_worker = new SendingQueueWorker(
       $timer = false,
       Stub::make(
