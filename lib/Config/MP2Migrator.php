@@ -271,14 +271,6 @@ class MP2Migrator {
     $total_count += $forms_count;
     $result .= sprintf(_n('%d form', '%d forms', $forms_count, 'mailpoet'), $forms_count) . "\n";
 
-    // TODO to reactivate during the next phases
-    /*
-    // Emails
-    $emails_count = \ORM::for_table(MP2_EMAIL_TABLE)->count();
-    $total_count += $emails_count;
-    $result .= sprintf(_n('%d newsletter', '%d newsletters', $emails_count, 'mailpoet'), $emails_count) . "\n";
-    */
-
     $this->progressbar->setTotalCount($total_count);
 
     return $result;
