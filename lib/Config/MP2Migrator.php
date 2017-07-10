@@ -1038,7 +1038,7 @@ class MP2Migrator {
     Setting::setValue('mta_group', $mta_group);
 
     $mta = Setting::getValue('mta');
-    $mta['method'] = (isset($options['smtp_rest']) && !empty($options['smtp_rest'])) ? 'SendGrid' : (isset($options['sending_method']) && ($options['sending_method'] == 'smtp') ? 'SMTP' : 'PHPMail');
+    $mta['method'] = (isset($options['smtp_host']) && ($options['smtp_host'] == 'smtp.sendgrid.net')) ? 'SendGrid' : (isset($options['sending_method']) && ($options['sending_method'] == 'smtp') ? 'SMTP' : 'PHPMail');
     $sending_emails_number = isset($options['sending_emails_number']) ? $options['sending_emails_number'] : '';
     $sending_emails_each = isset($options['sending_emails_each']) ? $options['sending_emails_each'] : '';
     $mta['frequency']['emails'] = $this->mapFrequencyEmails($sending_emails_number, $sending_emails_each);
