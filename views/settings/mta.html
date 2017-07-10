@@ -98,6 +98,7 @@
 
     <div class="mailpoet_actions">
       <button
+        type="button"
         class="mailpoet_sending_service_activate button-secondary"
         <% if(settings.mta_group == 'mailpoet' or not(mss_key_valid)) %> disabled="disabled"<% endif %>
       ><%= __('Activate') %></button>
@@ -758,7 +759,7 @@
       });
 
       // save configuration of a sending method
-      $('.mailpoet_sending_service_activate').on('click', function(e) {
+      $('.mailpoet_sending_service_activate').on('click', function() {
         $('#mta_group').val('mailpoet');
         saveSendingMethodConfiguration('mailpoet');
       });
