@@ -8,33 +8,34 @@ Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
 
-Try the new MailPoet! This is a beta version of our completely new email newsletter plugin. [Or test the demo.](http://demo3.mailpoet.com/launch/)
+Try the new MailPoet! This is a beta version of our completely new email newsletter plugin.
 
 = What's new? =
 
-* New email designer
+* New designer
 * Responsive templates
-* Send with MailPoet's Sending Service
-* Fast user interface
-* Easier initial configuration
-* Weekly releases since November 2016
+* Send with MailPoet (optional)
+* Improved user experience
+* Easier configuration
+* Solid reliability
+* Import subscribers, lists, forms and settings from old MailPoet
 
-= Check out this 2 minute video. =
+= See it in action. =
+[Test the demo](http://demo3.mailpoet.com/launch/) or [see the 2 min. video](https://vimeo.com/223581490)
+[vimeo https://vimeo.com/223581490] 
 
-[vimeo https://vimeo.com/183339372]
+= What is a beta? =
 
-= Use at your own risk! =
+We consider this version to be a release candidate. In other words, it's pretty solid. Use [the current stable MailPoet](https://wordpress.org/plugins/wysija-newsletters/) instead of this beta version if you are not comfortable in reporting issues.
 
-Use [the current stable MailPoet](https://wordpress.org/plugins/wysija-newsletters/) instead of this beta version if you are not a power user.
-
-* Report bugs!
-* Not RTL optimized, but it works
+* Weekly releases with bug fixes and improvements
+* Report bugs directly from the user interface
+* Not optimized for right-to-left (RTL) languages, but it works
 * Multisite works but is not officially supported
-* Migration script from MailPoet 2.X to this version coming soon.
 
-= Premium version =
+= Premium version available =
 
-Not available yet. Limited stats in free version.
+[Get in touch](www.mailpoet.com/support/sales-pre-sales-questions/) if you are an existing customer and you want to switch.
 
 = Translations =
 
@@ -46,6 +47,7 @@ Not available yet. Limited stats in free version.
 * Portuguese (BR and PT)
 * British
 * Russian
+* Japanese
 * Persian (IR)
 
 We welcome translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" web site will not work!
