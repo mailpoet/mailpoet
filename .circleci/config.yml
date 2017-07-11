@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  setup:
+  build:
     working_directory: /home/circleci/mailpoet
     docker:
       - image: circleci/php:5.6.30-apache-browsers
@@ -32,7 +32,7 @@ jobs:
             sudo a2enmod rewrite
             sudo service apache2 restart
             # Install NodeJS+NPM
-            curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+            curl -sL https://deb.nodesource.com/build_6.x | sudo -E bash -
             sudo apt-get install nodejs build-essential
             # install plugin dependencies
             curl -sS https://getcomposer.org/installer | php
@@ -126,13 +126,13 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - setup
+      - build
       - qa:
         requires:
-          - setup
+          - build
       - js:
         requires:
-          - setup
+          - build
       - php_5:
         requires:
-          - setup
+          - build
