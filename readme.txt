@@ -35,7 +35,7 @@ We consider this version to be a release candidate. In other words, it's pretty 
 
 = Premium version available =
 
-[Get in touch](www.mailpoet.com/support/sales-pre-sales-questions/) if you are an existing customer and you want to switch.
+[Get in touch](https://www.mailpoet.com/support/sales-pre-sales-questions/) if you are an existing customer and you want to switch.
 
 = Translations =
 
