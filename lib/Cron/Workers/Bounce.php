@@ -35,22 +35,26 @@ class Bounce extends SimpleWorker {
   }
 
   function prepareTask(ScheduledTask $task) {
-    $subscribers = Subscriber::select('id')
-      ->whereNull('deleted_at')
-      ->whereIn('status', array(
+    // Prepare subscribers on the DB side for performance reasons
+    Subscriber::rawExecute(
+      'INSERT INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '
+       (task_id, subscriber_id, processed)
+       SELECT ? as task_id, s.`id` as subscriber_id, ? as processed
+       FROM ' . MP_SUBSCRIBERS_TABLE . ' s
+       WHERE s.`deleted_at` IS NULL
+       AND s.`status` IN (?, ?)',
+      array(
+        $task->id,
+        ScheduledTaskSubscriber::STATUS_TO_PROCESS,
         Subscriber::STATUS_SUBSCRIBED,
         Subscriber::STATUS_UNCONFIRMED
-      ))
-      ->findArray();
-    $subscribers = Helpers::arrayColumn($subscribers, 'id');
+      )
+    );
 
-    if(empty($subscribers)) {
+    if(!ScheduledTaskSubscriber::getToProcessCount($task->id)) {
       $task->delete();
       return false;
     }
-
-    // update current task
-    ScheduledTaskSubscriber::addSubscribers($task->id, $subscribers);
 
     return parent::prepareTask($task);
   }

@@ -126,7 +126,7 @@ class Migrator {
     $attributes = array(
       'task_id mediumint(9) NOT NULL,',
       'subscriber_id mediumint(9) NOT NULL,',
-      'processed int(1) NULL,',
+      'processed int(1) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (task_id, subscriber_id)',
     );
