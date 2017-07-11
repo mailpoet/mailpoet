@@ -135,6 +135,10 @@ define([
           it('does not have a settings tool', function () {
             expect(view.$('.mailpoet_edit_block')).to.have.length(0);
           });
+
+          it('has a duplication tool', function () {
+            expect(view.$('.mailpoet_duplicate_block')).to.have.length(1);
+          });
         });
 
         describe.skip('on non-root levels', function () {
@@ -163,6 +167,10 @@ define([
 
           it('has a settings tool', function () {
             expect(view.$('.mailpoet_edit_block')).to.have.length(1);
+          });
+
+          it('has a duplication tool', function () {
+            expect(view.$('.mailpoet_duplicate_block')).to.have.length(1);
           });
         });
 
