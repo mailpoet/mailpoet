@@ -445,32 +445,6 @@
         </td>
       </tr>
 
-      <!-- smtp: domain -->
-      <tr class="mailpoet_smtp_field" data-field="domain"
-        <%
-        if settings.mta_group != "smtp" or settings.smtp_provider != "manual"
-        %>
-        style="display:none;"
-        <% endif %>
-      >
-        <th scope="row">
-          <label for="settings[mta_domain]">
-            <%= __('Domain') %>
-          </label>
-          <p class="description">
-            <%= __('e.g.: smtp.mydomain.com') %>
-          </p>
-        </th>
-        <td>
-          <input
-            type="text"
-            class="regular-text"
-            id="settings[mta_domain]"
-            name="mta[domain]"
-            value="<%= settings.mta.domain %>" />
-        </td>
-      </tr>
-
       <!-- smtp: api key -->
       <tr class="mailpoet_sendgrid_field" data-field="api_key"
         <%
