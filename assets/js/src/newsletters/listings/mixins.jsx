@@ -324,7 +324,7 @@ const _MailerMixin = {
     const mailer_check_settings_notice = ReactStringReplace(
       MailPoet.I18n.t('mailerCheckSettingsNotice'),
       /\[link\](.*?)\[\/link\]/g,
-      (match) => (
+      match => (
         <a href={`?page=mailpoet-settings#mta`}>{ match }</a>
       )
     );

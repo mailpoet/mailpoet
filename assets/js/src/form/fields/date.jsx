@@ -201,7 +201,7 @@ define([
       const dateType = this.props.field.params.date_type;
       const dateSelects = dateFormats[dateType][0].split('/');
 
-      const fields = dateSelects.map(type => {
+      const fields = dateSelects.map((type) => {
         switch(type) {
           case 'YYYY':
             return (<FormFieldDateYear

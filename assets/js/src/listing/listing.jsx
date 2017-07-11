@@ -318,7 +318,7 @@ const Listing = React.createClass({
     const state = this.getInitialState();
      // check for url params
     if (params.splat) {
-      params.splat.split('/').map(param => {
+      params.splat.split('/').map((param) => {
         const [key, value] = this.getParam(param);
         switch(key) {
           case 'filter':
@@ -370,7 +370,7 @@ const Listing = React.createClass({
   setParams: function () {
     if (this.props.location) {
       const params = Object.keys(this.state)
-        .filter(key => {
+        .filter((key) => {
           return (
             [
               'group',
@@ -382,7 +382,7 @@ const Listing = React.createClass({
             ].indexOf(key) !== -1
           );
         })
-        .map(key => {
+        .map((key) => {
           let value = this.state[key];
           if (value === Object(value)) {
             value = jQuery.param(value);
@@ -394,7 +394,7 @@ const Listing = React.createClass({
             return `${key}[${value}]`;
           }
         })
-        .filter(key => { return (key !== undefined); })
+        .filter((key) => { return (key !== undefined); })
         .join('/');
 
       // set url

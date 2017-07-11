@@ -33,9 +33,9 @@ const FormFieldSelect = React.createClass({
         _.map(
           _.sortBy(
             _.pairs(this.props.field.values),
-            (item) => sortBy(item[0], item[1])
+            item => sortBy(item[0], item[1])
           ),
-          (item) => item[0]
+          item => item[0]
         );
     } else {
       keys = Object.keys(this.props.field.values);
