@@ -4,6 +4,8 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
@@ -48,27 +50,18 @@ class Bounce extends SimpleWorker {
     }
 
     // update current task
-    $task->subscribers = serialize(
-      array(
-        'to_process' => $subscribers
-      )
-    );
-    $task->count_total = $task->count_to_process = count($subscribers);
+    ScheduledTaskSubscriber::addSubscribers($task->id, $subscribers);
 
     return parent::prepareTask($task);
   }
 
   function processTask(ScheduledTask $task) {
-    $task->subscribers = $task->getSubscribers();
-    if(empty($task->subscribers['to_process'])) {
+    $subscriber_batches = new BatchIterator($task->id, self::BATCH_SIZE);
+
+    if(count($subscriber_batches) === 0) {
       $task->delete();
       return false;
     }
-
-    $subscriber_batches = array_chunk(
-      $task->subscribers['to_process'],
-      self::BATCH_SIZE
-    );
 
     foreach($subscriber_batches as $subscribers_to_process_ids) {
       // abort if execution limit is reached

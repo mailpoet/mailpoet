@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge\API;
@@ -58,10 +59,10 @@ class BounceTest extends MailPoetTest {
 
   function testItPreparesTask() {
     $task = $this->createScheduledTask();
-    expect(empty($task->subscribers['to_process']))->true();
+    expect(ScheduledTaskSubscriber::getToProcessCount($task->id))->isEmpty();
     $this->worker->prepareTask($task);
     expect($task->status)->null();
-    expect(!empty($task->subscribers['to_process']))->true();
+    expect(ScheduledTaskSubscriber::getToProcessCount($task->id))->notEmpty();
   }
 
   function testItDeletesTaskIfThereAreNoSubscribersToProcessWhenProcessingTask() {
@@ -76,9 +77,9 @@ class BounceTest extends MailPoetTest {
   function testItProcessesTask() {
     $task = $this->createRunningTask();
     $this->worker->prepareTask($task);
-    expect(!empty($task->subscribers['to_process']))->true();
+    expect(ScheduledTaskSubscriber::getToProcessCount($task->id))->notEmpty();
     $this->worker->processTask($task);
-    expect(!empty($task->subscribers['processed']))->true();
+    expect(ScheduledTaskSubscriber::getProcessedCount($task->id))->notEmpty();
   }
 
   function testItSetsSubscriberStatusAsBounced() {
@@ -125,6 +126,7 @@ class BounceTest extends MailPoetTest {
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Setting::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 }
