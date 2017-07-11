@@ -191,7 +191,7 @@ const NewsletterListWelcome = React.createClass({
             '%$1s', mailpoet_roles[newsletter.options.role]
           );
         }
-      break;
+        break;
 
       case 'segment':
         // get segment
@@ -210,7 +210,7 @@ const NewsletterListWelcome = React.createClass({
             '%$1s', segment.name
           );
         }
-      break;
+        break;
     }
 
     // set sending delay
@@ -221,19 +221,19 @@ const NewsletterListWelcome = React.createClass({
             sendingDelay = MailPoet.I18n.t('sendingDelayHours').replace(
               '%$1d', newsletter.options.afterTimeNumber
             );
-          break;
+            break;
 
           case 'days':
             sendingDelay = MailPoet.I18n.t('sendingDelayDays').replace(
               '%$1d', newsletter.options.afterTimeNumber
             );
-          break;
+            break;
 
           case 'weeks':
             sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace(
               '%$1d', newsletter.options.afterTimeNumber
             );
-          break;
+            break;
         }
         sendingEvent += ' [' + sendingDelay + ']';
       }

@@ -1,8 +1,8 @@
 define([
-    'react',
-    'classnames',
-    'mailpoet'
-  ], (
+  'react',
+  'classnames',
+  'mailpoet'
+], (
     React,
     classNames,
     MailPoet

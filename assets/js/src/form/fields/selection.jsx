@@ -124,7 +124,7 @@ define([
         }
         const transformedValue = this.transformChangedValue(value);
         this.props.onValueChange({
-         target: {
+          target: {
             value: transformedValue,
             name: this.props.field.name
           }

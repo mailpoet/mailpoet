@@ -109,15 +109,15 @@ const WelcomeScheduling = React.createClass({
         options: this.state
       }
     }).done((response) => {
-        this.showTemplateSelection(response.data.id);
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
+      this.showTemplateSelection(response.data.id);
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
             response.errors.map((error) => { return error.message; }),
             { scroll: true }
           );
-        }
-      });
+      }
+    });
   },
   showTemplateSelection: function (newsletterId) {
     this.context.router.push(`/template/${ newsletterId }`);

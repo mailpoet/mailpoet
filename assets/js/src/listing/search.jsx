@@ -1,7 +1,7 @@
 define([
-    'mailpoet',
-    'react'
-  ], (
+  'mailpoet',
+  'react'
+], (
     MailPoet,
     React
   ) => {

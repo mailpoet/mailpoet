@@ -36,35 +36,35 @@ define([
       switch(data.field.type) {
         case 'text':
           field = (<FormFieldText {...data} />);
-        break;
+          break;
 
         case 'textarea':
           field = (<FormFieldTextarea {...data} />);
-        break;
+          break;
 
         case 'select':
           field = (<FormFieldSelect {...data} />);
-        break;
+          break;
 
         case 'radio':
           field = (<FormFieldRadio {...data} />);
-        break;
+          break;
 
         case 'checkbox':
           field = (<FormFieldCheckbox {...data} />);
-        break;
+          break;
 
         case 'selection':
           field = (<FormFieldSelection {...data} />);
-        break;
+          break;
 
         case 'date':
           field = (<FormFieldDate {...data} />);
-        break;
+          break;
 
         case 'reactComponent':
           field = (<data.field.component {...data} />);
-        break;
+          break;
       }
 
       if(inline === true) {

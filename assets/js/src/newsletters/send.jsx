@@ -178,8 +178,8 @@ define(
 
         // Store only properties that can be changed on this page
         const IGNORED_NEWSLETTER_PROPERTIES = [
-            'preheader', 'body', 'created_at', 'deleted_at', 'hash',
-            'status', 'updated_at', 'type'
+          'preheader', 'body', 'created_at', 'deleted_at', 'hash',
+          'status', 'updated_at', 'type'
         ];
         const newsletterData = _.omit(
             data,

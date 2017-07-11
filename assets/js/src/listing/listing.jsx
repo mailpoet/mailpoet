@@ -137,7 +137,7 @@ const ListingItem = React.createClass({
     let actions;
 
     if (this.props.group === 'trash') {
-       actions = (
+      actions = (
         <div>
           <div className="row-actions">
             <span>
@@ -324,13 +324,13 @@ const Listing = React.createClass({
           case 'filter':
             const filters = {};
             value.split('&').map((pair) => {
-                const [k, v] = pair.split('=');
-                filters[k] = v;
-              }
+              const [k, v] = pair.split('=');
+              filters[k] = v;
+            }
             );
 
             state.filter = filters;
-          break;
+            break;
           default:
             state[key] = value;
         }
@@ -657,7 +657,7 @@ const Listing = React.createClass({
   },
   handleSelectItem: function (id, is_checked) {
     let selected_ids = this.state.selected_ids,
-        selection = false;
+      selection = false;
 
     if (is_checked) {
       selected_ids = jQuery.merge(selected_ids, [ id ]);

@@ -128,11 +128,11 @@ define(
           field.year_placeholder = MailPoet.I18n.t('year');
           field.month_placeholder = MailPoet.I18n.t('month');
           field.day_placeholder = MailPoet.I18n.t('day');
-        break;
+          break;
 
         case 'select':
           field.placeholder = '-';
-        break;
+          break;
       }
 
       fields.push(field);

@@ -39,8 +39,8 @@ define([
             jQuery(this.refs['filter-'+i])
               .val(selected_filters[filter])
               .trigger('change');
-            }
           }
+        }
         );
     },
     render: function () {
@@ -63,7 +63,7 @@ define([
             }) }
             </select>
           );
-      });
+        });
 
       let button;
 
