@@ -772,15 +772,22 @@ class Newsletter extends Model {
   }
 
   static function listingQuery($data = array()) {
-    return self::select(array(
+    $query = self::select(
+      array(
         'id',
         'subject',
         'hash',
         'type',
         'status',
+        'sent_at',
         'updated_at',
         'deleted_at'
-      ))
+      )
+    );
+    if($data['sort_by'] === 'sent_at') {
+      $query = $query->orderByExpr('ISNULL(sent_at) DESC');
+    }
+    return $query
       ->filter('filterBy', $data)
       ->filter('groupBy', $data)
       ->filter('search', $data['search']);

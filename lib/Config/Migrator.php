@@ -211,6 +211,7 @@ class Migrator {
       'reply_to_name varchar(150) NOT NULL DEFAULT "",',
       'preheader varchar(250) NOT NULL DEFAULT "",',
       'body longtext,',
+      'sent_at TIMESTAMP NULL,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',

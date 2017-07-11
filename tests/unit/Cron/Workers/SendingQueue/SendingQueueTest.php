@@ -343,6 +343,53 @@ class SendingQueueTest extends MailPoetTest {
     expect($statistics)->notEquals(false);
   }
 
+  function testItProcessesStandardNewsletters() {
+    $sending_queue_worker = new SendingQueueWorker(
+      $timer = false,
+      Stub::make(
+        new MailerTask(),
+        array(
+          'send' => Stub::exactly(1, function($newsletter, $subscriber) {
+            // newsletter body should not be empty
+            expect(!empty($newsletter['body']['html']))->true();
+            expect(!empty($newsletter['body']['text']))->true();
+            return true;
+          })
+        ),
+        $this
+      )
+    );
+    $sending_queue_worker->process();
+
+    // queue status is set to completed
+    $updated_queue = SendingQueue::findOne($this->queue->id);
+    expect($updated_queue->status)->equals(SendingQueue::STATUS_COMPLETED);
+
+    // newsletter status is set to sent and sent_at date is populated
+    $updated_newsletter = Newsletter::findOne($this->newsletter->id);
+    expect($updated_newsletter->status)->equals(Newsletter::STATUS_SENT);
+    expect($updated_newsletter->sent_at)->equals($updated_queue->processed_at);
+
+    // queue subscriber processed/to process count is updated
+    $updated_queue->subscribers = $updated_queue->getSubscribers();
+    expect($updated_queue->subscribers)->equals(
+      array(
+        'to_process' => array(),
+        'processed' => array($this->subscriber->id)
+      )
+    );
+    expect($updated_queue->count_total)->equals(1);
+    expect($updated_queue->count_processed)->equals(1);
+    expect($updated_queue->count_to_process)->equals(0);
+
+    // statistics entry should be created
+    $statistics = StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)
+      ->where('subscriber_id', $this->subscriber->id)
+      ->where('queue_id', $this->queue->id)
+      ->findOne();
+    expect($statistics)->notEquals(false);
+  }
+
   function testItCanProcessWelcomeNewsletters() {
     $this->newsletter->type = Newsletter::TYPE_WELCOME;
     $this->newsletter_segment->delete();

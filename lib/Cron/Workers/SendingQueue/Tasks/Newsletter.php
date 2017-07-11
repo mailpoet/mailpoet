@@ -125,12 +125,14 @@ class Newsletter {
     );
   }
 
-  function markNewsletterAsSent($newsletter) {
+  function markNewsletterAsSent($newsletter, $queue) {
     // if it's a standard or notification history newsletter, update its status
     if($newsletter->type === NewsletterModel::TYPE_STANDARD ||
        $newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY
     ) {
-      $newsletter->setStatus(NewsletterModel::STATUS_SENT);
+      $newsletter->status = NewsletterModel::STATUS_SENT;
+      $newsletter->sent_at = $queue->processed_at;
+      $newsletter->save();
     }
   }
 

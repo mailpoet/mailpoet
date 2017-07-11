@@ -31,6 +31,51 @@ class NewslettersTest extends MailPoetTest {
       ));
   }
 
+  function testItKeepsUnsentNewslettersAtTheTopWhenSortingBySentAtDate() {
+    $router = new Newsletters();
+
+    $sent_newsletters = array();
+    for($i = 1; $i <= 3; $i++) {
+      $sent_newsletters[$i] = Newsletter::create();
+      $sent_newsletters[$i]->type = Newsletter::TYPE_STANDARD;
+      $sent_newsletters[$i]->subject = 'Sent newsletter ' . $i;
+      $sent_newsletters[$i]->sent_at = '2017-01-0' . $i . ' 01:01:01';
+      $sent_newsletters[$i]->save();
+    };
+
+    // sorting by ASC order retains unsent newsletters at the top
+    $response = $router->listing(
+      array(
+        'params' => array(
+          'type' => 'standard'
+        ),
+        'sort_by' => 'sent_at',
+        'sort_order' => 'asc'
+      )
+    );
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data[0]['id'])->equals($this->newsletter->id);
+    expect($response->data[1]['id'])->equals($sent_newsletters[1]->id);
+    expect($response->data[2]['id'])->equals($sent_newsletters[2]->id);
+    expect($response->data[3]['id'])->equals($sent_newsletters[3]->id);
+
+    // sorting by DESC order retains unsent newsletters at the top
+    $response = $router->listing(
+      array(
+        'params' => array(
+          'type' => 'standard'
+        ),
+        'sort_by' => 'sent_at',
+        'sort_order' => 'desc'
+      )
+    );
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data[0]['id'])->equals($this->newsletter->id);
+    expect($response->data[1]['id'])->equals($sent_newsletters[3]->id);
+    expect($response->data[2]['id'])->equals($sent_newsletters[2]->id);
+    expect($response->data[3]['id'])->equals($sent_newsletters[1]->id);
+  }
+
   function testItCanGetANewsletter() {
     $router = new Newsletters();
 

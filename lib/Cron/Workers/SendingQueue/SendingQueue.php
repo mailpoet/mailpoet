@@ -70,7 +70,7 @@ class SendingQueue {
           );
           $queue->removeNonexistentSubscribers($subscibers_to_remove);
           if(!count($queue->subscribers['to_process'])) {
-            $this->newsletter_task->markNewsletterAsSent($newsletter);
+            $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
             continue;
           }
         }
@@ -80,7 +80,7 @@ class SendingQueue {
           $found_subscribers
         );
         if($queue->status === SendingQueueModel::STATUS_COMPLETED) {
-          $this->newsletter_task->markNewsletterAsSent($newsletter);
+          $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
         }
         $this->enforceSendingAndExecutionLimits();
       }

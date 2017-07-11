@@ -34,7 +34,7 @@ const columns = [
     display: mailpoet_tracking_enabled
   },
   {
-    name: 'processed_at',
+    name: 'sent_at',
     label: MailPoet.I18n.t('sentOn'),
   }
 ];
@@ -56,11 +56,6 @@ newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_notificat
 
 const NewsletterListNotificationHistory = React.createClass({
   mixins: [ QueueMixin, StatisticsMixin, MailerMixin ],
-  renderSentDate: function (newsletter) {
-    return (newsletter.queue.status === 'completed')
-      ? ( <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr> )
-      : MailPoet.I18n.t('notSentYet');
-  },
   renderItem: function (newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',
@@ -94,8 +89,8 @@ const NewsletterListNotificationHistory = React.createClass({
             { this.renderStatistics(newsletter, undefined, meta.current_time) }
           </td>
         ) : null }
-        <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
-          { this.renderSentDate(newsletter) }
+        <td className="column-date" data-colname={ MailPoet.I18n.t('sentOn') }>
+          { (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet') }
         </td>
       </div>
     );
@@ -125,7 +120,7 @@ const NewsletterListNotificationHistory = React.createClass({
           columns={columns}
           item_actions={ newsletter_actions }
           auto_refresh={ true }
-          sort_by="updated_at"
+          sort_by="sent_at"
           sort_order="desc"
           afterGetItems={ this.checkMailerStatus }
         />
