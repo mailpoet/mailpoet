@@ -340,7 +340,7 @@ class Populator {
     if(!version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.32', '<=')) {
       // Data conversion should only be performed only once, when migrating from
       // older version
-      return;
+      return false;
     }
 
     $source_charset = $wpdb->get_var('SELECT @@GLOBAL.character_set_connection');
@@ -389,6 +389,8 @@ class Populator {
         implode(' AND ', $where_query)
       ));
     }
+
+    return true;
   }
 
   /*
@@ -401,7 +403,7 @@ class Populator {
 
     // perform once for versions below 3.0.0-beta.36.2.1
     if(version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.36.2.1', '>=')) {
-      return;
+      return false;
     }
 
     $column_list = array(
@@ -439,6 +441,8 @@ class Populator {
       MP_SENDING_QUEUES_TABLE,
       '`type` IN("' . join('" , "', $task_types) . '")'
     ));
+
+    return true;
   }
 
   /*
@@ -452,7 +456,7 @@ class Populator {
 
     // perform once for versions below 3.0.0-beta.36.2.1
     if(version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.36.2.1', '>=')) {
-      return;
+      return false;
     }
 
     $query = "UPDATE `%s` newsletters JOIN `%s` queues ON newsletters.id = queues.newsletter_id SET newsletters.sent_at = queues.processed_at";
@@ -461,5 +465,7 @@ class Populator {
       Newsletter::$_table,
       SendingQueue::$_table
     ));
+
+    return true;
   }
 }
