@@ -124,7 +124,7 @@ jobs:
           destination: fake-mailer
 workflows:
   version: 2
-  build-and-test:
+  build_and_test:
     jobs:
       - setup
       - qa:
