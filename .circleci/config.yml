@@ -1,7 +1,7 @@
 version: 2
 jobs:
-  build:
-    working_directory: ~/mailpoet
+  setup:
+    working_directory: /home/circleci/mailpoet
     docker:
       - image: circleci/php:5.6.30-apache-browsers
       - image: circleci/mysql:5.7
@@ -61,9 +61,32 @@ jobs:
           key: npm-{{ checksum "package.json" }}
           paths:
             - node_modules
+      - persist_to_workspace:
+          root: .
+          paths: .
+  qa:
+    working_directory: /home/circleci/mailpoet
+    docker:
+      - image: circleci/php:5.6.30-apache-browsers
+      - image: circleci/mysql:5.7
+    environment:
+      TZ: /usr/share/zoneinfo/Etc/UTC
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
       - run:
           name: "QA Scripts"
           command: ./do qa
+  js:
+    working_directory: /home/circleci/mailpoet
+    docker:
+      - image: circleci/php:5.6.30-apache-browsers
+      - image: circleci/mysql:5.7
+    environment:
+      TZ: /usr/share/zoneinfo/Etc/UTC
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
       - run:
           name: "Preparing test results folder"
           command: mkdir test-results
@@ -72,6 +95,21 @@ jobs:
           command: |
             mkdir test-results/mocha
             ./do t:j test-results/mocha/junit.xml
+      - store_test_results:
+          path: test-results/mocha
+      - store_artifacts:
+          path: test-results/mocha
+          destination: mocha
+  php_5:
+    working_directory: /home/circleci/mailpoet
+    docker:
+      - image: circleci/php:5.6.30-apache-browsers
+      - image: circleci/mysql:5.7
+    environment:
+      TZ: /usr/share/zoneinfo/Etc/UTC
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
       - run:
           name: "PHP Unit tests"
           command: |
@@ -81,11 +119,20 @@ jobs:
       - store_artifacts:
           path: tests/_output
           destination: codeception
-      - store_test_results:
-          path: test-results/mocha
-      - store_artifacts:
-          path: test-results/mocha
-          destination: mocha
       - store_artifacts:
           path: /tmp/fake-mailer/
           destination: fake-mailer
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - setup
+      - qa:
+        requires:
+          - setup
+      - js:
+        requires:
+          - setup
+      - php_5:
+        requires:
+          - setup
