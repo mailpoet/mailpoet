@@ -94,7 +94,6 @@
     "no-irregular-whitespace": 0,
     "padded-blocks": 0,
     "no-underscore-dangle": 0,
-    "object-curly-spacing": 0,
     "no-undef": 0
   }
 }

@@ -310,7 +310,7 @@ const SubscriberList = React.createClass({
               to={ `/edit/${ subscriber.id }` }
             >{ subscriber.email }</Link>
           </strong>
-          <p style={{margin: 0}}>
+          <p style={{ margin: 0 }}>
             { subscriber.first_name } { subscriber.last_name }
           </p>
           { actions }
