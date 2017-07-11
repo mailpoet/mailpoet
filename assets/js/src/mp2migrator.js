@@ -63,6 +63,8 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         jQuery('#progresslabel').html(progress + '%');
         if(Number(result.current) !== 0) {
           jQuery('#skip-import').hide();
+          jQuery('#progressbar').show();
+          jQuery('#logger-container').show();
         }
         if(MailPoet.MP2Migrator.is_logging) {
           MailPoet.MP2Migrator.updateProgressbar_timeout = setTimeout(MailPoet.MP2Migrator.updateProgressbar, 1000);

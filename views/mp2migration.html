@@ -8,13 +8,14 @@
   <p class="about-text"><strong><%= __('This new version is quite an upgrade.') %></strong> <%= __('Since this new version is completely new, we first need to update your database before we begin.') %></p>
 
   <h3><%= __('What will be kept in MailPoet 3') %></h3>
+  <p><%= __('All the data from your previous MailPoet will be preserved and left intact, rest assured. Get in touch with us if you have issues with the upgrade process by using the form %s at the bottom right of all your MailPoet pages.') | format('<img width="30" style="margin:0" src="' ~ image_url('welcome_template/beacon.png') ~ '" alt="Beacon" />') | raw %></p>
   <ul>
-  <li><strong><%= __('Subscribers and lists') %> <img draggable="false" class="emoji" alt="✔" src="https://s.w.org/images/core/emoji/2.2.1/svg/2714.svg"></strong></li>
-  <li><strong><%= __('Forms') %> <img draggable="false" class="emoji" alt="✔" src="https://s.w.org/images/core/emoji/2.2.1/svg/2714.svg"></strong></li>
-  <li><%= __('Settings') %> (<%= __('soon') %>!)</li>
-  <li><%= __('Archive of sent newsletters') %> (<%= __('soon') %>!)</li>
+    <li><strong>Subscribers and lists <img draggable="false" class="emoji" alt="✔" src="https://s.w.org/images/core/emoji/2.2.1/svg/2714.svg"></strong></li>
+    <li><strong>Forms <img draggable="false" class="emoji" alt="✔" src="https://s.w.org/images/core/emoji/2.2.1/svg/2714.svg"></strong></li>
+    <li><strong>Settings <img draggable="false" class="emoji" alt="✔" src="https://s.w.org/images/core/emoji/2.2.1/svg/2714.svg"></strong></li>
+    <li>Archive of sent newsletters (will not be migrated)</li>
+    <li>Statistics (will not be migrated)</li>
   </ul>
-
   <div style="position: absolute; top: .2em; right: 0;"></div>
   <hr />
 
@@ -28,18 +29,21 @@
       <br />
     </div>
 
-    <div id="progressbar" class="mailpoet_progress mailpoet_progress_complete">
+    <div id="progressbar" class="mailpoet_progress mailpoet_progress_complete" style="display: none">
       <span id="progresslabel" class="mailpoet_progress_label">0%</span>
     </div>
 
     <div id="upgrade-completed" style="display: none">
       <h3><%= __('Upgrade completed!') %></h3>
+      <p><%= __('Review our <a href="%s" %s>simple checklist</a> to ensure your transition to MailPoet 3 is smooth.') | format('http://beta.docs.mailpoet.com/article/199-checklist-for-those-migrating-from-mailpoet-version-2?utm_source=plugin&utm_medium=migration&utm_campaign=migrationchecklist', 'target="_blank"') | raw %></p>
       <input type="button" name="goto-welcome" id="goto-welcome" class="button button-primary" value="<%= __('Go to MailPoet') %>"  />
     </div>
 
     <br />
-    <small><strong><%= __('Log...') %></strong></small>
-    <div id="logger"></div>
+    <div id="logger-container" style="display: none">
+      <small><strong><%= __('Log...') %></strong></small>
+      <div id="logger"></div>
+    </div>
 
   </div>
 

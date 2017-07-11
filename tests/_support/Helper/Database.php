@@ -13,9 +13,12 @@ class Database extends \Codeception\Module
    * @param string $filename Filename without extension
    */
   static public function loadSQL($filename) {
+    global $wpdb;
+
     $db = \ORM::getDb();
     $full_filename = Env::$path . '/tests/_data/' . $filename . '.sql';
     $sql = file_get_contents($full_filename);
+    $sql = preg_replace('/`wp_/', '`' . $wpdb->prefix, $sql); // Use the current database prefix
     $db->exec($sql);
   }
   
