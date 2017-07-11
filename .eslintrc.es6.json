@@ -89,7 +89,6 @@
     "one-var-declaration-per-line": 0,
     "no-script-url": 0,
     "wrap-iife": 0,
-    "no-var": 0,
     "vars-on-top": 0,
     "space-infix-ops": 0,
     "no-irregular-whitespace": 0,

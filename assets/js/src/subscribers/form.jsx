@@ -13,7 +13,7 @@ define(
     Form,
     ReactStringReplace
   ) => {
-    var fields = [
+    const fields = [
       {
         name: 'email',
         label: MailPoet.I18n.t('email'),
@@ -107,7 +107,7 @@ define(
       }
     ];
 
-    var custom_fields = window.mailpoet_custom_fields || [];
+    const custom_fields = window.mailpoet_custom_fields || [];
     custom_fields.map(custom_field => {
       const field = {
         name: 'cf_' + custom_field.id,
@@ -138,7 +138,7 @@ define(
       fields.push(field);
     });
 
-    var messages = {
+    const messages = {
       onUpdate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('subscriberUpdated'));
       },
@@ -147,7 +147,7 @@ define(
       }
     };
 
-    var beforeFormContent = function (subscriber) {
+    const beforeFormContent = function (subscriber) {
       if (~~(subscriber.wp_user_id) > 0) {
         return (
           <p className="description">
@@ -167,7 +167,7 @@ define(
       }
     };
 
-    var afterFormContent = function () {
+    const afterFormContent = function () {
       return (
         <p className="description">
           <strong>
@@ -177,9 +177,9 @@ define(
       );
     };
 
-    var Link = Router.Link;
+    const Link = Router.Link;
 
-    var SubscriberForm = React.createClass({
+    const SubscriberForm = React.createClass({
       render: function () {
         return (
           <div>

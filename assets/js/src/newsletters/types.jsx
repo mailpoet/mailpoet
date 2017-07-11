@@ -13,7 +13,7 @@ define(
     Router,
     Breadcrumb
   ) => {
-    var NewsletterTypes = React.createClass({
+    const NewsletterTypes = React.createClass({
       contextTypes: {
         router: React.PropTypes.object.isRequired
       },
@@ -43,7 +43,7 @@ define(
         });
       },
       render: function () {
-        var types = [
+        let types = [
           {
             'id': 'standard',
             'title': MailPoet.I18n.t('regularNewsletterTypeTitle'),

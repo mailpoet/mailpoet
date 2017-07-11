@@ -38,7 +38,7 @@ const ListingItem = React.createClass({
     this.setState({ expanded: !this.state.expanded });
   },
   render: function () {
-    var checkbox = false;
+    let checkbox = false;
 
     if (this.props.is_selectable === true) {
       checkbox = (
@@ -608,7 +608,7 @@ const Listing = React.createClass({
 
     this.setState({ loading: true });
 
-    var data = params || {};
+    const data = params || {};
     data.listing = {
       params: this.getParams(),
       offset: 0,
@@ -656,7 +656,7 @@ const Listing = React.createClass({
     });
   },
   handleSelectItem: function (id, is_checked) {
-    var selected_ids = this.state.selected_ids,
+    let selected_ids = this.state.selected_ids,
         selection = false;
 
     if (is_checked) {
@@ -680,7 +680,7 @@ const Listing = React.createClass({
     if (is_checked === false) {
       this.clearSelection();
     } else {
-      var selected_ids = this.state.items.map((item) => {
+      const selected_ids = this.state.items.map((item) => {
         return ~~item.id;
       });
 

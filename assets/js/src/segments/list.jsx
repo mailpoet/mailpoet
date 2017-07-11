@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import Listing from 'listing/listing.jsx';
 
-var columns = [
+const columns = [
   {
     name: 'name',
     label: MailPoet.I18n.t('name'),
@@ -196,7 +196,7 @@ const item_actions = [
 
 const SegmentList = React.createClass({
   renderItem: function (segment, actions) {
-    var rowClasses = classNames(
+    const rowClasses = classNames(
       'manage-column',
       'column-primary',
       'has-row-actions'

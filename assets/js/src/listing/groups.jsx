@@ -1,16 +1,16 @@
 define(['react', 'classnames'], (React, classNames) => {
 
-    var ListingGroups = React.createClass({
+    const ListingGroups = React.createClass({
       handleSelect: function (group) {
         return this.props.onSelectGroup(group);
       },
       render: function () {
-        var groups = this.props.groups.map((group, index) => {
+        const groups = this.props.groups.map((group, index) => {
           if(group.name === 'trash' && group.count === 0) {
             return false;
           }
 
-          var classes = classNames(
+          const classes = classNames(
             { 'current' : (group.name === this.props.group) }
           );
 

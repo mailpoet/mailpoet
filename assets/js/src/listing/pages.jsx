@@ -8,7 +8,7 @@ define([
     MailPoet
   ) => {
 
-  var ListingPages = React.createClass({
+  const ListingPages = React.createClass({
     getInitialState: function () {
       return {
         page: null
@@ -60,17 +60,17 @@ define([
       if(this.props.count === 0) {
         return false;
       } else {
-        var pagination = false;
-        var firstPage = (
+        let pagination = false;
+        let firstPage = (
           <span aria-hidden="true" className="tablenav-pages-navspan">«</span>
         );
-        var previousPage = (
+        let previousPage = (
           <span aria-hidden="true" className="tablenav-pages-navspan">‹</span>
         );
-        var nextPage = (
+        let nextPage = (
           <span aria-hidden="true" className="tablenav-pages-navspan">›</span>
         );
-        var lastPage = (
+        let lastPage = (
           <span aria-hidden="true" className="tablenav-pages-navspan">»</span>
         );
 
@@ -159,12 +159,12 @@ define([
           );
         }
 
-        var classes = classNames(
+        const classes = classNames(
           'tablenav-pages',
           { 'one-page': (this.props.count <= this.props.limit) }
         );
 
-        var numberOfItemsLabel;
+        let numberOfItemsLabel;
         if (this.props.count == 1) {
           numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsSingular');
         } else {

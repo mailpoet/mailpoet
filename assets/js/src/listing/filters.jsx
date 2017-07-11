@@ -8,7 +8,7 @@ define([
   jQuery,
   MailPoet
 ) => {
-  var ListingFilters = React.createClass({
+  const ListingFilters = React.createClass({
     handleFilterAction: function () {
       const filters = {};
       this.getAvailableFilters().map((filter, i) => {

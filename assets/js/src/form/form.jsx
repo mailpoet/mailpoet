@@ -14,7 +14,7 @@ define(
     FormField
   ) => {
 
-    var Form = React.createClass({
+    const Form = React.createClass({
       contextTypes: {
         router: React.PropTypes.object.isRequired
       },
@@ -97,7 +97,7 @@ define(
         this.setState({ loading: true });
 
         // only get values from displayed fields
-        var item = {};
+        const item = {};
         this.props.fields.map((field) => {
           if(field['fields'] !== undefined) {
             field.fields.map((subfield) => {
@@ -141,8 +141,8 @@ define(
         if (this.props.onChange) {
           return this.props.onChange(e);
         } else {
-          var item = this.state.item,
-            field = e.target.name;
+          const item = this.state.item;
+          const field = e.target.name;
 
           item[field] = e.target.value;
 
@@ -153,8 +153,9 @@ define(
         }
       },
       render: function () {
+        let errors;
         if(this.getErrors() !== undefined) {
-          var errors = this.getErrors().map((error, index) => {
+          errors = this.getErrors().map((error, index) => {
             return (
               <p key={ 'error-'+index } className="mailpoet_error">
                 { error.message }
@@ -163,13 +164,13 @@ define(
           });
         }
 
-        var formClasses = classNames(
+        const formClasses = classNames(
           'mailpoet_form',
           { 'mailpoet_form_loading': this.state.loading || this.props.loading }
         );
 
-        var beforeFormContent = false;
-        var afterFormContent = false;
+        let beforeFormContent = false;
+        let afterFormContent = false;
 
         if (this.props.beforeFormContent !== undefined) {
           beforeFormContent = this.props.beforeFormContent(this.getValues());
@@ -179,7 +180,7 @@ define(
           afterFormContent = this.props.afterFormContent(this.getValues());
         }
 
-        var fields = this.props.fields.map((field, i) => {
+        const fields = this.props.fields.map((field, i) => {
           return (
             <FormField
               field={ field }
@@ -189,7 +190,7 @@ define(
           );
         });
 
-        var actions = false;
+        let actions = false;
         if(this.props.children) {
           actions = this.props.children;
         } else {

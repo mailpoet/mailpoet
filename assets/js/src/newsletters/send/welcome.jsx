@@ -11,7 +11,7 @@ define(
   ) => {
 
 
-    var fields = [
+    let fields = [
       {
         name: 'subject',
         label: MailPoet.I18n.t('subjectLine'),

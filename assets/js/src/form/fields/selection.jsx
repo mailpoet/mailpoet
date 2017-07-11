@@ -9,7 +9,7 @@ define([
   ReactDOM,
   jQuery
 ) => {
-  var Selection = React.createClass({
+  const Selection = React.createClass({
     getInitialState: function () {
       return {
         items: [],
@@ -55,7 +55,7 @@ define([
         return;
       }
 
-      var select2 = jQuery('#'+this.refs.select.id).select2({
+      const select2 = jQuery('#'+this.refs.select.id).select2({
         width: (this.props.width || ''),
         templateResult: function (item) {
           if(item.element && item.element.selected) {
@@ -70,7 +70,7 @@ define([
         }
       });
 
-      var hasRemoved = false;
+      let hasRemoved = false;
       select2.on('select2:unselecting', () => {
         hasRemoved = true;
       });
@@ -103,7 +103,7 @@ define([
     },
     loadCachedItems: function () {
       if(typeof(window['mailpoet_'+this.props.field.endpoint]) !== 'undefined') {
-        var items = window['mailpoet_'+this.props.field.endpoint];
+        let items = window['mailpoet_'+this.props.field.endpoint];
 
 
         if(this.props.field['filter'] !== undefined) {
@@ -122,7 +122,7 @@ define([
         } else {
           value = e.target.value;
         }
-        var transformedValue = this.transformChangedValue(value);
+        const transformedValue = this.transformChangedValue(value);
         this.props.onValueChange({
          target: {
             value: transformedValue,
