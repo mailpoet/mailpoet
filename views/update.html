@@ -24,8 +24,8 @@
     <a href="admin.php?page=mailpoet-update" class="nav-tab nav-tab-active"><%= __("What's New") %></a>
   </h2>
 
-  <div id="mailpoet-changelog" class="feature-section one-col">
-    <h2><%= __("List of Changes") %></h2>
+  <div id="mailpoet-changelog" class="feature-section one-col-left">
+    <h2 class="mailpoet-feature-top"><%= __("List of Changes") %></h2>
     <% if changelog %>
       <% for item in changelog %>
         <h3><%= item.version %></h3>
@@ -34,7 +34,6 @@
             <li><%= change %></li>
           <% endfor %>
         </ul>
-        <br>
       <% endfor %>
     <% else %>
       <p style="text-align: center"><%= __("See readme.txt for a changelog.") %></p>
@@ -47,12 +46,13 @@
   <% if(not settings.analytics.enabled) %>
     <div id="mailpoet-changelog" class="feature-section one-col">
       <h2><%= __("Do Your Part to Make MailPoet Better") %></h2>
-      <p style="text-align: center">
+      <div class="lead-description">
         <label>
           <input type="checkbox" id="mailpoet_analytics_enabled" value="1">&nbsp;
           <%= __("Yes, share my data anonymously.") %>
         </label>
-      <p style="text-align: center"><%= __("By sharing your data with us, you can help us understand what our users like (and don't like).") %>
+      </div>
+      <p><%= __("By sharing your data with us, you can help us understand what our users like (and don't like).") %>
         <%= __("We use it to prioritize and develop new plugin features.") %><br>
         <%= __("Share your data to help shape the future of MailPoet! [link]Read more.[/link]")
           |replaceLinkTags('http://docs.mailpoet.com/article/36-share-your-data', {'target' : '_blank'})
@@ -74,8 +74,8 @@
   <hr>
 
   <div class="feature-section one-col">
-      <p style="text-align: center"><a class="button button-primary" href="admin.php?page=mailpoet-newsletters"><%= __("Awesome! Now, take me to MailPoet") %> &rarr;</a> </p>
-    </div>
+    <a class="button button-primary" href="admin.php?page=mailpoet-newsletters"><%= __("Awesome! Now, take me to MailPoet") %> &rarr;</a>
+  </div>
 
 </div>
 
