@@ -21,7 +21,7 @@ class ScheduledTaskSubscriber extends Model {
 
     $task_subscriber->task_id = $data['task_id'];
     $task_subscriber->subscriber_id = $data['subscriber_id'];
-    $task_subscriber->processed = self::STATUS_TO_PROCESS;
+    $task_subscriber->processed = !empty($data['processed']) ? self::STATUS_PROCESSED : self::STATUS_TO_PROCESS;
     $task_subscriber->save();
 
     return $task_subscriber;
