@@ -44,9 +44,10 @@
   <hr>
 
   <% if(not settings.analytics.enabled) %>
-    <div id="mailpoet-changelog" class="feature-section one-col">
+    <div class="feature-section one-col">
       <h2><%= __("Do Your Part to Make MailPoet Better") %></h2>
       <div class="lead-description">
+
         <label>
           <input type="checkbox" id="mailpoet_analytics_enabled" value="1">&nbsp;
           <%= __("Yes, share my data anonymously.") %>
@@ -63,7 +64,6 @@
     <hr>
   <% endif %>
 
-
   <div class="feature-section one-col">
     <h2><%= __("Care to Give Your Opinion?") %></h2>
 
@@ -78,7 +78,6 @@
   </div>
 
 </div>
-
 
 <script type="text/javascript">
   jQuery(function($) {
@@ -110,4 +109,3 @@
 
 </script>
 <% endblock %>
-
