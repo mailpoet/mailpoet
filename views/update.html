@@ -24,7 +24,7 @@
     <a href="admin.php?page=mailpoet-update" class="nav-tab nav-tab-active"><%= __("What's New") %></a>
   </h2>
 
-  <div id="mailpoet-changelog" clas="feature-section one-col">
+  <div id="mailpoet-changelog" class="feature-section one-col">
     <h2><%= __("List of Changes") %></h2>
     <% if changelog %>
       <% for item in changelog %>
@@ -39,13 +39,13 @@
     <% else %>
       <p style="text-align: center"><%= __("See readme.txt for a changelog.") %></p>
     <% endif %>
+    <a class="button button-secondary" href="https://wordpress.org/plugins/mailpoet/#developers" target="_blank"><%= __("View all changes") %> &rarr;</a>
   </div>
 
   <hr>
 
   <div clas="feature-section one-col">
-    <br>
-    <p style="text-align: center"><a class="button button-primary" href="admin.php?page=mailpoet-newsletters"><%= __("Awesome! Now, take me to MailPoet") %> &rarr;</a> <a class="button button-secondary" href="https://wordpress.org/plugins/mailpoet/#developers" target="_blank"><%= __("View all changes") %> &rarr;</a></p>
+    <p style="text-align: center"><a class="button button-primary" href="admin.php?page=mailpoet-newsletters"><%= __("Awesome! Now, take me to MailPoet") %> &rarr;</a> </p>
   </div>
 
 </div>
