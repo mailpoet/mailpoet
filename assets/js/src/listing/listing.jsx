@@ -38,7 +38,7 @@ const ListingItem = React.createClass({
     this.setState({ expanded: !this.state.expanded });
   },
   render: function () {
-    var checkbox = false;
+    let checkbox = false;
 
     if (this.props.is_selectable === true) {
       checkbox = (
@@ -137,7 +137,7 @@ const ListingItem = React.createClass({
     let actions;
 
     if (this.props.group === 'trash') {
-       actions = (
+      actions = (
         <div>
           <div className="row-actions">
             <span>
@@ -318,19 +318,19 @@ const Listing = React.createClass({
     const state = this.getInitialState();
      // check for url params
     if (params.splat) {
-      params.splat.split('/').map(param => {
+      params.splat.split('/').map((param) => {
         const [key, value] = this.getParam(param);
         switch(key) {
           case 'filter':
             const filters = {};
             value.split('&').map((pair) => {
-                const [k, v] = pair.split('=');
-                filters[k] = v;
-              }
+              const [k, v] = pair.split('=');
+              filters[k] = v;
+            }
             );
 
             state.filter = filters;
-          break;
+            break;
           default:
             state[key] = value;
         }
@@ -370,7 +370,7 @@ const Listing = React.createClass({
   setParams: function () {
     if (this.props.location) {
       const params = Object.keys(this.state)
-        .filter(key => {
+        .filter((key) => {
           return (
             [
               'group',
@@ -382,7 +382,7 @@ const Listing = React.createClass({
             ].indexOf(key) !== -1
           );
         })
-        .map(key => {
+        .map((key) => {
           let value = this.state[key];
           if (value === Object(value)) {
             value = jQuery.param(value);
@@ -394,7 +394,7 @@ const Listing = React.createClass({
             return `${key}[${value}]`;
           }
         })
-        .filter(key => { return (key !== undefined); })
+        .filter((key) => { return (key !== undefined); })
         .join('/');
 
       // set url
@@ -608,7 +608,7 @@ const Listing = React.createClass({
 
     this.setState({ loading: true });
 
-    var data = params || {};
+    const data = params || {};
     data.listing = {
       params: this.getParams(),
       offset: 0,
@@ -656,8 +656,8 @@ const Listing = React.createClass({
     });
   },
   handleSelectItem: function (id, is_checked) {
-    var selected_ids = this.state.selected_ids,
-        selection = false;
+    let selected_ids = this.state.selected_ids,
+      selection = false;
 
     if (is_checked) {
       selected_ids = jQuery.merge(selected_ids, [ id ]);
@@ -680,7 +680,7 @@ const Listing = React.createClass({
     if (is_checked === false) {
       this.clearSelection();
     } else {
-      var selected_ids = this.state.items.map((item) => {
+      const selected_ids = this.state.items.map((item) => {
         return ~~item.id;
       });
 

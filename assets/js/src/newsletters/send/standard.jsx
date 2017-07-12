@@ -14,13 +14,13 @@ define(
     Hooks
   ) => {
 
-    var currentTime = window.mailpoet_current_time || '00:00',
-        defaultDateTime = window.mailpoet_current_date + ' ' + '00:00:00';
-        timeOfDayItems = window.mailpoet_schedule_time_of_day,
-        dateDisplayFormat = window.mailpoet_date_display_format,
-        dateStorageFormat = window.mailpoet_date_storage_format;
+    const currentTime = window.mailpoet_current_time || '00:00';
+    const defaultDateTime = window.mailpoet_current_date + ' ' + '00:00:00';
+    const timeOfDayItems = window.mailpoet_schedule_time_of_day;
+    const dateDisplayFormat = window.mailpoet_date_display_format;
+    const dateStorageFormat = window.mailpoet_date_storage_format;
 
-    var datepickerTranslations = {
+    const datepickerTranslations = {
       closeText: MailPoet.I18n.t('close'),
       currentText: MailPoet.I18n.t('today'),
       nextText: MailPoet.I18n.t('next'),
@@ -82,18 +82,18 @@ define(
       ],
     };
 
-    var DateText = React.createClass({
+    const DateText = React.createClass({
       onChange: function (event) {
         // Swap display format to storage format
-        var displayDate = event.target.value,
-            storageDate = this.getStorageDate(displayDate);
+        const displayDate = event.target.value;
+        const storageDate = this.getStorageDate(displayDate);
 
         event.target.value = storageDate;
         this.props.onChange(event);
       },
       componentDidMount: function () {
-        var $element = jQuery(this.refs.dateInput),
-            that = this;
+        const $element = jQuery(this.refs.dateInput);
+        const that = this;
         if ($element.datepicker) {
           // Override jQuery UI datepicker Date parsing and formatting
           jQuery.datepicker.parseDate = function (format, value) {
@@ -105,7 +105,7 @@ define(
           };
           jQuery.datepicker.formatDate = function (format, value) {
             // Transform Date object to string format
-            var newValue = MailPoet.Date.format(value, {
+            const newValue = MailPoet.Date.format(value, {
               format: format
             });
             return newValue;
@@ -162,7 +162,7 @@ define(
       },
     });
 
-    var TimeSelect = React.createClass({
+    const TimeSelect = React.createClass({
       render: function () {
         const options = Object.keys(timeOfDayItems).map(
           (value, index) => {
@@ -189,7 +189,7 @@ define(
       }
     });
 
-    var DateTime = React.createClass({
+    const DateTime = React.createClass({
       _DATE_TIME_SEPARATOR: " ",
       getInitialState: function () {
         return this._buildStateFromProps(this.props);
@@ -206,7 +206,7 @@ define(
         };
       },
       handleChange: function (event) {
-        var newState = {};
+        const newState = {};
         newState[event.target.name] = event.target.value;
 
         this.setState(newState, function () {
@@ -246,7 +246,7 @@ define(
       }
     });
 
-    var StandardScheduling = React.createClass({
+    const StandardScheduling = React.createClass({
       _getCurrentValue: function () {
         return _.defaults(
           this.props.item[this.props.field.name] || {},
@@ -257,8 +257,8 @@ define(
         );
       },
       handleValueChange: function (event) {
-        var oldValue = this._getCurrentValue(),
-            newValue = {};
+        const oldValue = this._getCurrentValue();
+        const newValue = {};
         newValue[event.target.name] = event.target.value;
 
         return this.props.onValueChange({
@@ -283,7 +283,7 @@ define(
         };
       },
       render: function () {
-        var schedulingOptions;
+        let schedulingOptions;
 
         if (this.isScheduled()) {
           schedulingOptions = (
@@ -317,7 +317,7 @@ define(
       },
     });
 
-    var fields = [
+    let fields = [
       {
         name: 'subject',
         label: MailPoet.I18n.t('subjectLine'),
@@ -345,7 +345,7 @@ define(
           return segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
         },
         transformChangedValue: function (segment_ids) {
-          var all_segments = this.state.items;
+          const all_segments = this.state.items;
           return _.map(segment_ids, (id) => {
             return _.find(all_segments, (segment) => {
               return segment.id === id;

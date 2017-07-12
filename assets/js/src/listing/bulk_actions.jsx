@@ -6,7 +6,7 @@ define([
   React,
   MailPoet
 ) => {
-  var ListingBulkActions = React.createClass({
+  const ListingBulkActions = React.createClass({
     getInitialState: function () {
       return {
         action: false,
@@ -18,7 +18,7 @@ define([
         action: e.target.value,
         extra: false
       }, () => {
-        var action = this.getSelectedAction();
+        const action = this.getSelectedAction();
 
         // action on select callback
         if(action !== null && action['onSelect'] !== undefined) {
@@ -31,23 +31,23 @@ define([
     handleApplyAction: function (e) {
       e.preventDefault();
 
-      var action = this.getSelectedAction();
+      const action = this.getSelectedAction();
 
       if(action === null) {
         return;
       }
 
-      var selected_ids = (this.props.selection !== 'all')
+      const selected_ids = (this.props.selection !== 'all')
         ? this.props.selected_ids
         : [];
 
-      var data = (action['getData'] !== undefined)
+      const data = (action['getData'] !== undefined)
         ? action.getData()
         : {};
 
       data.action = this.state.action;
 
-      var onSuccess = function () {};
+      let onSuccess = function () {};
       if(action['onSuccess'] !== undefined) {
         onSuccess = action.onSuccess;
       }
@@ -65,9 +65,9 @@ define([
       });
     },
     getSelectedAction: function () {
-      var selected_action = this.refs.action.value;
+      const selected_action = this.refs.action.value;
       if(selected_action.length > 0) {
-        var action = this.props.bulk_actions.filter((action) => {
+        const action = this.props.bulk_actions.filter((action) => {
           return (action.name === selected_action);
         });
 

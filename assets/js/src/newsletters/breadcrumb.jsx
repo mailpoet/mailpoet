@@ -11,9 +11,9 @@ define(
     classNames,
     MailPoet
   ) => {
-    var Link = Router.Link;
+    const Link = Router.Link;
 
-    var Breadcrumb = React.createClass({
+    const Breadcrumb = React.createClass({
       getInitialState: function () {
         return {
           step: null,
@@ -39,12 +39,12 @@ define(
         };
       },
       render: function () {
-        var steps = this.state.steps.map((step, index) => {
-          var stepClasses = classNames(
+        const steps = this.state.steps.map((step, index) => {
+          const stepClasses = classNames(
             { 'mailpoet_current': (this.props.step === step.name) }
           );
 
-          var label = step.label;
+          let label = step.label;
 
           if(step['link'] !== undefined && this.props.step !== step.name) {
             label = (

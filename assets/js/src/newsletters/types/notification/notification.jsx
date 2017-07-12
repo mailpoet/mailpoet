@@ -16,13 +16,13 @@ define(
     Breadcrumb
   ) => {
 
-    var field = {
+    const field = {
       name: 'options',
       type: 'reactComponent',
       component: Scheduling,
     };
 
-    var NewsletterNotification = React.createClass({
+    const NewsletterNotification = React.createClass({
       contextTypes: {
         router: React.PropTypes.object.isRequired
       },
@@ -38,7 +38,7 @@ define(
         };
       },
       handleValueChange: function (event) {
-        var state = this.state;
+        const state = this.state;
         state[event.target.name] = event.target.value;
         this.setState(state);
       },

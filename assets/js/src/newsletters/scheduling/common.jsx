@@ -28,11 +28,11 @@ const _timeOfDayValues = _.object(_.map(
   _.times(numberOfTimeSteps,(step) => {
     return step * TIME_STEP_SECONDS;
   }), (seconds) => {
-    const date = new Date(null);
-    date.setSeconds(seconds);
-    const timeLabel = MailPoet.Date.format(date, { format: timeFormat, offset: 0 });
-    return [seconds, timeLabel];
-  })
+  const date = new Date(null);
+  date.setSeconds(seconds);
+  const timeLabel = MailPoet.Date.format(date, { format: timeFormat, offset: 0 });
+  return [seconds, timeLabel];
+})
 );
 
 const _weekDayValues = {
@@ -51,19 +51,19 @@ const _monthDayValues = _.object(
     _.times(NUMBER_OF_DAYS_IN_MONTH, (day) => {
       return day;
     }), (day) => {
-      const labels = {
-        0: MailPoet.I18n.t('first'),
-        1: MailPoet.I18n.t('second'),
-        2: MailPoet.I18n.t('third')
-      };
-      let label;
-      if (labels[day] !== undefined) {
-        label = labels[day];
-      } else {
-        label = MailPoet.I18n.t('nth').replace("%$1d", day + 1);
-      }
-      return [day + 1, label];
+    const labels = {
+      0: MailPoet.I18n.t('first'),
+      1: MailPoet.I18n.t('second'),
+      2: MailPoet.I18n.t('third')
+    };
+    let label;
+    if (labels[day] !== undefined) {
+      label = labels[day];
+    } else {
+      label = MailPoet.I18n.t('nth').replace("%$1d", day + 1);
     }
+    return [day + 1, label];
+  }
   )
 );
 

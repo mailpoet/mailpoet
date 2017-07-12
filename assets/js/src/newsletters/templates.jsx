@@ -16,7 +16,7 @@ define(
     Breadcrumb
   ) => {
 
-    var ImportTemplate = React.createClass({
+    const ImportTemplate = React.createClass({
       saveTemplate: function (template) {
 
         // Stringify to enable transmission of primitive non-string value types
@@ -49,9 +49,9 @@ define(
 
         if (_.size(this.refs.templateFile.files) <= 0) return false;
 
-        var file = _.first(this.refs.templateFile.files);
-        var reader = new FileReader();
-        var saveTemplate = this.saveTemplate;
+        const file = _.first(this.refs.templateFile.files);
+        const reader = new FileReader();
+        const saveTemplate = this.saveTemplate;
 
         reader.onload = (e) => {
           try {
@@ -82,7 +82,7 @@ define(
       },
     });
 
-    var NewsletterTemplates = React.createClass({
+    const NewsletterTemplates = React.createClass({
       getInitialState: function () {
         return {
           loading: false,
@@ -131,7 +131,7 @@ define(
         });
       },
       handleSelectTemplate: function (template) {
-        var body = template.body;
+        let body = template.body;
 
         // Stringify to enable transmission of primitive non-string value types
         if (!_.isUndefined(body)) {
@@ -185,7 +185,7 @@ define(
             }
           });
         } else {
-           this.setState({ loading: false });
+          this.setState({ loading: false });
         }
       },
       handleShowTemplate: function (template) {
@@ -199,8 +199,8 @@ define(
         this.getTemplates();
       },
       render: function () {
-        var templates = this.state.templates.map((template, index) => {
-          var deleteLink = (
+        const templates = this.state.templates.map((template, index) => {
+          const deleteLink = (
             <div className="mailpoet_delete">
               <a
                 href="javascript:;"
@@ -209,7 +209,8 @@ define(
                 {MailPoet.I18n.t('delete')}
               </a>
             </div>
-          ), thumbnail = '';
+          );
+          let thumbnail = '';
 
           if (typeof template.thumbnail === 'string'
               && template.thumbnail.length > 0) {
@@ -252,7 +253,7 @@ define(
           );
         });
 
-        var boxClasses = classNames(
+        const boxClasses = classNames(
           'mailpoet_boxes',
           'clearfix',
           { 'mailpoet_boxes_loading': this.state.loading }

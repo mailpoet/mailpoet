@@ -12,7 +12,7 @@ define(
     _
   ) => {
 
-    var fields = [
+    let fields = [
       {
         name: 'subject',
         label: MailPoet.I18n.t('subjectLine'),
@@ -46,7 +46,7 @@ define(
           return segment.name + ' (' + parseInt(segment.subscribers, 10).toLocaleString() + ')';
         },
         transformChangedValue: function (segment_ids) {
-          var all_segments = this.state.items;
+          const all_segments = this.state.items;
           return _.map(segment_ids, (id) => {
             return _.find(all_segments, (segment) => {
               return segment.id === id;

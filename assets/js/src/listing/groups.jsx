@@ -1,20 +1,20 @@
 define(['react', 'classnames'], (React, classNames) => {
 
-    var ListingGroups = React.createClass({
-      handleSelect: function (group) {
-        return this.props.onSelectGroup(group);
-      },
-      render: function () {
-        var groups = this.props.groups.map((group, index) => {
-          if(group.name === 'trash' && group.count === 0) {
-            return false;
-          }
+  const ListingGroups = React.createClass({
+    handleSelect: function (group) {
+      return this.props.onSelectGroup(group);
+    },
+    render: function () {
+      const groups = this.props.groups.map((group, index) => {
+        if(group.name === 'trash' && group.count === 0) {
+          return false;
+        }
 
-          var classes = classNames(
+        const classes = classNames(
             { 'current' : (group.name === this.props.group) }
           );
 
-          return (
+        return (
             <li key={index}>
               {(index > 0) ? ' |' : ''}
               <a
@@ -24,17 +24,17 @@ define(['react', 'classnames'], (React, classNames) => {
                 {group.label} <span className="count">({ group.count.toLocaleString() })</span>
               </a>
             </li>
-          );
-        });
+        );
+      });
 
-        return (
+      return (
           <ul className="subsubsub">
             { groups }
           </ul>
-        );
-      }
-    });
+      );
+    }
+  });
 
-    return ListingGroups;
-  }
+  return ListingGroups;
+}
 );

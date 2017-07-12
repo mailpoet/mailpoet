@@ -51,7 +51,7 @@ const stats = {
 class StatsBadge extends React.Component {
   getBadgeType(stat, rate) {
     const len = stat.badgeRanges.length;
-    for (var i = 0; i < len; i += 1) {
+    for (let i = 0; i < len; i += 1) {
       if (rate > stat.badgeRanges[i]) {
         return stat.badgeTypes[i];
       }

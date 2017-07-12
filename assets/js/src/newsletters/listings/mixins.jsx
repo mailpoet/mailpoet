@@ -69,7 +69,7 @@ const _QueueMixin = {
       }
       const progressClasses = classNames(
         'mailpoet_progress',
-        { 'mailpoet_progress_complete': newsletter.queue.status === 'completed'}
+        { 'mailpoet_progress_complete': newsletter.queue.status === 'completed' }
       );
 
       // calculate percentage done
@@ -128,7 +128,7 @@ const _QueueMixin = {
           <div className={ progressClasses }>
               <span
                 className="mailpoet_progress_bar"
-                style={ { width: progress_bar_width + "%"} }
+                style={ { width: progress_bar_width + "%" } }
               ></span>
               <span className="mailpoet_progress_label">
                 { percentage }
@@ -324,7 +324,7 @@ const _MailerMixin = {
     const mailer_check_settings_notice = ReactStringReplace(
       MailPoet.I18n.t('mailerCheckSettingsNotice'),
       /\[link\](.*?)\[\/link\]/g,
-      (match) => (
+      match => (
         <a href={`?page=mailpoet-settings#mta`}>{ match }</a>
       )
     );

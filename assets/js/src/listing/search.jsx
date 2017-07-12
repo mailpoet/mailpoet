@@ -1,12 +1,12 @@
 define([
-    'mailpoet',
-    'react'
-  ], (
+  'mailpoet',
+  'react'
+], (
     MailPoet,
     React
   ) => {
 
-  var ListingSearch = React.createClass({
+  const ListingSearch = React.createClass({
     handleSearch: function (e) {
       e.preventDefault();
       this.props.onSearch(

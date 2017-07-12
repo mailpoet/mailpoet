@@ -35,7 +35,7 @@ function KnowledgeBase() {
 
       <Tabs tab="systemInfo" />
 
-      <div className="mailpoet_notice notice inline notice-success" style={{marginTop: "1em"}}>
+      <div className="mailpoet_notice notice inline notice-success" style={{ marginTop: "1em" }}>
         <p>{MailPoet.I18n.t('systemInfoIntro')}</p>
       </div>
 

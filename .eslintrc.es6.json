@@ -45,12 +45,9 @@
     "no-bitwise": 0,
     "arrow-body-style": 0,
     "prefer-template": 0,
-    "eol-last": 0,
     "keyword-spacing": 0,
     "default-case": 0,
     "quote-props": 0,
-    "indent": 0,
-    "arrow-parens": 0,
     "array-callback-return": 0,
     "consistent-return": 0,
     "no-unreachable": 0,
@@ -89,13 +86,11 @@
     "one-var-declaration-per-line": 0,
     "no-script-url": 0,
     "wrap-iife": 0,
-    "no-var": 0,
     "vars-on-top": 0,
     "space-infix-ops": 0,
     "no-irregular-whitespace": 0,
     "padded-blocks": 0,
     "no-underscore-dangle": 0,
-    "object-curly-spacing": 0,
     "no-undef": 0
   }
 }

@@ -22,7 +22,7 @@ define(
     Breadcrumb
   ) => {
 
-    var NewsletterSend = React.createClass({
+    const NewsletterSend = React.createClass({
       contextTypes: {
         router: React.PropTypes.object.isRequired
       },
@@ -34,11 +34,11 @@ define(
         };
       },
       getFieldsByNewsletter: function (newsletter) {
-        var type = this.getSubtype(newsletter);
+        const type = this.getSubtype(newsletter);
         return type.getFields(newsletter);
       },
       getSendButtonOptions: function () {
-        var type = this.getSubtype(this.state.item);
+        const type = this.getSubtype(this.state.item);
         return type.getSendButtonOptions(this.state.item);
       },
       getSubtype: function (newsletter) {
@@ -162,7 +162,7 @@ define(
       },
       handleRedirectToDesign: function (e) {
         e.preventDefault();
-        var redirectTo = e.target.href;
+        const redirectTo = e.target.href;
 
         this._save(e).done(() => {
           MailPoet.Notice.success(
@@ -173,13 +173,13 @@ define(
         }).fail(this._showError);
       },
       _save: function () {
-        var data = this.state.item;
+        const data = this.state.item;
         this.setState({ loading: true });
 
         // Store only properties that can be changed on this page
         const IGNORED_NEWSLETTER_PROPERTIES = [
-            'preheader', 'body', 'created_at', 'deleted_at', 'hash',
-            'status', 'updated_at', 'type'
+          'preheader', 'body', 'created_at', 'deleted_at', 'hash',
+          'status', 'updated_at', 'type'
         ];
         const newsletterData = _.omit(
             data,
@@ -204,8 +204,8 @@ define(
         }
       },
       handleFormChange: function (e) {
-        var item = this.state.item,
-          field = e.target.name;
+        const item = this.state.item;
+        const field = e.target.name;
 
         item[field] = e.target.value;
 

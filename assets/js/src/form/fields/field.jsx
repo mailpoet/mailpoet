@@ -18,16 +18,16 @@ define([
   FormFieldSelection,
   FormFieldDate
 ) => {
-  var FormField = React.createClass({
+  const FormField = React.createClass({
     renderField: function (data, inline = false) {
-      var description = false;
+      let description = false;
       if(data.field.description) {
         description = (
           <p className="description">{ data.field.description }</p>
         );
       }
 
-      var field = false;
+      let field = false;
 
       if(data.field['field'] !== undefined) {
         data.field = jQuery.merge(data.field, data.field.field);
@@ -36,35 +36,35 @@ define([
       switch(data.field.type) {
         case 'text':
           field = (<FormFieldText {...data} />);
-        break;
+          break;
 
         case 'textarea':
           field = (<FormFieldTextarea {...data} />);
-        break;
+          break;
 
         case 'select':
           field = (<FormFieldSelect {...data} />);
-        break;
+          break;
 
         case 'radio':
           field = (<FormFieldRadio {...data} />);
-        break;
+          break;
 
         case 'checkbox':
           field = (<FormFieldCheckbox {...data} />);
-        break;
+          break;
 
         case 'selection':
           field = (<FormFieldSelection {...data} />);
-        break;
+          break;
 
         case 'date':
           field = (<FormFieldDate {...data} />);
-        break;
+          break;
 
         case 'reactComponent':
           field = (<data.field.component {...data} />);
-        break;
+          break;
       }
 
       if(inline === true) {
@@ -84,7 +84,7 @@ define([
       }
     },
     render: function () {
-      var field = false;
+      let field = false;
 
       if(this.props.field['fields'] !== undefined) {
         field = this.props.field.fields.map((subfield, index) => {
@@ -99,7 +99,7 @@ define([
         field = this.renderField(this.props);
       }
 
-      var tip = false;
+      let tip = false;
       if(this.props.field.tip) {
         tip = (
           <p className="description">{ this.props.field.tip }</p>

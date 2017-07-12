@@ -35,7 +35,7 @@ define(
       }
     };
 
-    var Link = Router.Link;
+    const Link = Router.Link;
 
     const SegmentForm = React.createClass({
       render: function () {

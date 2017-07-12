@@ -265,19 +265,19 @@ const SubscriberList = React.createClass({
     switch(subscriber.status) {
       case 'subscribed':
         status = MailPoet.I18n.t('subscribed');
-      break;
+        break;
 
       case 'unconfirmed':
         status = MailPoet.I18n.t('unconfirmed');
-      break;
+        break;
 
       case 'unsubscribed':
         status = MailPoet.I18n.t('unsubscribed');
-      break;
+        break;
 
       case 'bounced':
         status = MailPoet.I18n.t('bounced');
-      break;
+        break;
     }
 
     let segments = false;
@@ -310,7 +310,7 @@ const SubscriberList = React.createClass({
               to={ `/edit/${ subscriber.id }` }
             >{ subscriber.email }</Link>
           </strong>
-          <p style={{margin: 0}}>
+          <p style={{ margin: 0 }}>
             { subscriber.first_name } { subscriber.last_name }
           </p>
           { actions }
