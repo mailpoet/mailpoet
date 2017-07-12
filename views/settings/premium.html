@@ -25,22 +25,22 @@
           ><%= __('Verify') %></a>
         </div>
         <div
-          class="mailpoet_premium_key_valid mailpoet_key_valid mailpoet_success<% if not(settings.premium.premium_key) or not(premium_key_valid) %> mailpoet_hidden<% endif %>"
+          class="mailpoet_premium_key_valid mailpoet_success_item mailpoet_success<% if not(settings.premium.premium_key) or not(premium_key_valid) %> mailpoet_hidden<% endif %>"
         >
           <%= __('Your Premium key has been successfully validated.') %>
         </div>
         <div
-          class="mailpoet_premium_key_invalid mailpoet_key_invalid mailpoet_error<% if not(settings.premium.premium_key) or premium_key_valid %> mailpoet_hidden<% endif %>"
+          class="mailpoet_premium_key_invalid mailpoet_error_item mailpoet_error<% if not(settings.premium.premium_key) or premium_key_valid %> mailpoet_hidden<% endif %>"
         >
           <%= __('Your Premium key is invalid.') %>
         </div>
         <div
-          class="mailpoet_mss_key_valid mailpoet_key_valid mailpoet_success<% if not(settings.mta.mailpoet_api_key) or not(mss_key_valid) %> mailpoet_hidden<% endif %>"
+          class="mailpoet_mss_key_valid mailpoet_success_item mailpoet_success<% if not(settings.mta.mailpoet_api_key) or not(mss_key_valid) %> mailpoet_hidden<% endif %>"
         >
           <%= __('Your MailPoet Sending Service key has been successfully validated.') %>
         </div>
         <div
-          class="mailpoet_mss_key_invalid mailpoet_key_invalid mailpoet_error<% if not(settings.mta.mailpoet_api_key) or mss_key_valid %> mailpoet_hidden<% endif %>"
+          class="mailpoet_mss_key_invalid mailpoet_error_item mailpoet_error<% if not(settings.mta.mailpoet_api_key) or mss_key_valid %> mailpoet_hidden<% endif %>"
         >
           <%= __('Your MailPoet Sending Service key is invalid.') %>
         </div>
