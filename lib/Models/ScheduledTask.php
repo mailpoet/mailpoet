@@ -11,10 +11,6 @@ class ScheduledTask extends Model {
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
 
-  function taskSubscribers() {
-    return $this->has_many(__NAMESPACE__ . '\ScheduledTaskSubscriber', 'task_id', 'id');
-  }
-
   function complete() {
     $this->set('status', self::STATUS_COMPLETED);
     $this->save();
@@ -28,22 +24,5 @@ class ScheduledTask extends Model {
     }
     parent::save();
     return $this;
-  }
-
-  function updateProcessedSubscribers(array $processed_subscribers) {
-    $this->taskSubscribers()
-      ->whereIn('subscriber_id', $processed_subscribers)
-      ->findResultSet()
-      ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
-      ->save();
-    $this->checkCompleted();
-  }
-
-  private function checkCompleted() {
-    if(!ScheduledTaskSubscriber::getToProcessCount($this->id)) {
-      $this->processed_at = current_time('mysql');
-      $this->status = self::STATUS_COMPLETED;
-      return $this->save();
-    }
   }
 }
