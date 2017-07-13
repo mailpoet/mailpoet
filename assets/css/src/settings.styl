@@ -9,15 +9,25 @@
   // sending methods
   .mailpoet_sending_methods
     margin 25px 0 0 0
-    li
-      float left
-      position relative
-      padding 15px 15px 0 15px
+    display flex
+    flex-direction row
+    justify-content space-around
+    > li
+      flex-grow 1
+      flex-shrink 1
+      display flex
+      flex-direction column
+      flex-basis 0
       margin 0 25px 25px 0
-      width 300px
-      height 300px
       border 1px solid #dedede
       background-color #fff
+      max-width 500px
+      .mailpoet_sending_method_description
+        padding: 25px
+        flex-grow 1
+        flex-shrink 0
+    > li:last-child
+      margin-right 0
     h3
       text-align center
       height 54px
@@ -25,12 +35,12 @@
     .mailpoet_description
       font-size 14px
     .mailpoet_status
+      display flex
+      flex-direction row
+      justify-content space-between
+      align-items center
       background-color #2f2f2f
       color #fff
-      position absolute
-      bottom 0
-      left 0
-      right 0
       text-overflow ellipsis
       padding 15px
       span
@@ -43,23 +53,17 @@
           visibility visible
       #mailpoet_mta_activate
         visibility hidden
-    .mailpoet_actions
-      bottom 15px
-      color #fff
-      padding 0
-      position absolute
-      right 15px
-      .button-secondary
-        margin 0 -6px -4px 0
 
-  // premium key
-  .mailpoet_key
-    &_valid
-      &::before
-        content '✔ '
-    &_invalid
-      &::before
-        content: '✗ '
+  ul.sending-method-benefits
+    list-style-type: none
+    margin-bottom: 2em
+    margin-top: 2em
+
+  .mailpoet_success_item::before
+    content '✔ '
+
+  .mailpoet_error_item::before
+    content '✗ '
 
   // responsive
   @media screen and (max-width: 782px)
@@ -67,8 +71,10 @@
       width auto
 
     .mailpoet_sending_methods
-      li
-        float none
-        width auto
+      flex-flow: row wrap
+      justify-content: space-around
+      > li
         margin-right 0
+        flex-basis auto
+
 
