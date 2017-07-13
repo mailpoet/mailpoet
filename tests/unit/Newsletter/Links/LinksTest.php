@@ -9,15 +9,26 @@ use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Router\Router;
 
 class LinksTest extends MailPoetTest {
-  function testItOnlyExtractsLinksFromHrefs() {
-    $template = '<a href="http://link1.com">some site</a> http://link2.com <img src="http://link3.com">';
+  function testItOnlyExtractsLinksFromAnchorTags() {
+    $template = '<a href="http://example.com">some site</a> http://link2.com <img src="http://link3.com">';
     $result = Links::extract($template);
 
     expect($result[0])->equals(
       array(
         'type' => Links::LINK_TYPE_LINK,
-        'html' => 'href="http://link1.com"',
-        'link' => 'http://link1.com'
+        'link' => 'http://example.com'
+      )
+    );
+  }
+
+  function testItOnlyHashesAndReplacesLinksInAnchorTags() {
+    $template = '<a href="http://example.com"><img src="http://example.com" /></a>';
+    $result = Links::process($template);
+    expect($result[0])->equals(
+      sprintf(
+        '<a href="%s-%s"><img src="http://example.com" /></a>',
+        Links::DATA_TAG_CLICK,
+        $result[1][0]['hash']
       )
     );
   }
@@ -29,14 +40,13 @@ class LinksTest extends MailPoetTest {
     expect($result[0])->equals(
       array(
         'type' => Links::LINK_TYPE_SHORTCODE,
-        'html' => '[link:some_link_shortcode]',
         'link' => '[link:some_link_shortcode]'
       )
     );
   }
 
   function testItHashesAndReplacesLinks() {
-    $template = '<a href="http://link1.com">some site</a> [link:some_link_shortcode]';
+    $template = '<a href="http://example.com">some site</a> [link:some_link_shortcode]';
     list($updated_content, $hashed_links) = Links::process($template);
 
     // 2 links were hashed
@@ -49,30 +59,41 @@ class LinksTest extends MailPoetTest {
     expect($updated_content)->notContains('link');
   }
 
+
+  function testItHashesAndReplacesLinksWithSpecialCharacters() {
+    $template = '<a href="http://сайт.cóm/彌撒時間">some site</a>';
+    $result = Links::process($template);
+    expect($result[0])->equals(
+      sprintf(
+        '<a href="%s-%s">some site</a>',
+        Links::DATA_TAG_CLICK,
+        $result[1][0]['hash']
+      )
+    );
+  }
+
   function testItDoesNotReplaceUnprocessedLinks() {
-    $template = '<a href="http://link1.com">some site</a> [link:some_link_shortcode]';
-    $extracted_links = Links::extract($template);
+    $template = '<a href="http://example.com">some site</a> [link:some_link_shortcode]';
 
     $processed_links = array(
-      'http://link1.com' => array(
-        'url' => 'http://link1.com',
+      'http://example.com' => array(
+        'type' => Links::LINK_TYPE_LINK,
+        'link' => 'http://example.com',
         'processed_link' => 'replace by this'
       )
     );
 
     list($updated_content, $replaced_links) =
-      Links::replace($template, $extracted_links, $processed_links);
+      Links::replace($template, $processed_links);
 
-    expect($extracted_links)->count(2);
     expect($replaced_links)->count(1);
     // links in returned content were replaced with hashes
     expect($updated_content)
       ->contains('replace by this');
     expect($updated_content)
       ->contains('[link:some_link_shortcode]');
-    expect($updated_content)->notContains('http://link1.com');
+    expect($updated_content)->notContains('http://example.com');
   }
-
 
   function testItCreatesAndTransformsUrlDataObject() {
     $subscriber_email = 'test@example.com';
@@ -131,7 +152,7 @@ class LinksTest extends MailPoetTest {
   function testItCanSaveLinks() {
     $links = array(
       array(
-        'url' => 'http://example.com',
+        'link' => 'http://example.com',
         'hash' => 123
       )
     );
