@@ -54,86 +54,89 @@
 />
 
 <!-- smtp: available sending methods -->
-<ul class="mailpoet_sending_methods clearfix">
+<ul class="mailpoet_sending_methods">
   <li
     data-group="mailpoet"
     <% if(settings.mta_group == 'mailpoet') %>class="mailpoet_active"<% endif %>
   >
-    <h3>
-      <img
-        src="<%= assets_url %>/img/mailpoet_logo.png"
-        alt="MailPoet"
-        width="137"
-        height="54"
-      />
-    </h3>
+    <div class="mailpoet_sending_method_description">
+      <h3>
+        <img
+          src="<%= assets_url %>/img/mailpoet_logo.png"
+          alt="MailPoet"
+          width="137"
+          height="54"
+        />
+      </h3>
 
-    <p
-      class="mailpoet_description<% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden<% endif %>"
-      id="mailpoet_sending_method_active_text"
-    >
-      <strong><%= __("You're now sending with MailPoet!") %></strong>
-      <br />
-      <%= __("Great, you're all set up. Your emails will now be sent quickly and reliably!") %>
-    </p>
+      <p
+        class="mailpoet_description<% if(settings.mta_group != 'mailpoet') %> mailpoet_hidden<% endif %>"
+        id="mailpoet_sending_method_active_text"
+      >
+        <strong><%= __("You're now sending with MailPoet!") %></strong>
+        <br />
+        <%= __("Great, you're all set up. Your emails will now be sent quickly and reliably!") %>
+      </p>
 
-    <div
-      class="mailpoet_description<% if(settings.mta_group == 'mailpoet') %> mailpoet_hidden<% endif %>"
-      id="mailpoet_sending_method_inactive_text"
-    >
-      <strong><%= __("Solve all of your sending problems!") %></strong>
-      <br />
-      <%= __("Let MailPoet send your emails and get the Premium features for as little as 10 dollars or euros per month.") %>
-      <ul class="sending-method-benefits mailpoet_success">
-        <li class="mailpoet_success_item"><%= __('Reach the inbox, not the spam box.') %>
-        <li class="mailpoet_success_item"><%= __('Send emails up to 20 times faster than other sending methods.') %>
-        <li class="mailpoet_success_item"><%= __('SPF & DKIM signatures are already set up! No configuration required.') %>
-        <li class="mailpoet_success_item"><%= __('Automatically remove invalid and bounced addresses (bounce handling) to keep your lists clean.') %>
-      </ul>
-      <a
-        href="<%= admin_url('admin.php?page=mailpoet-premium') %>"
-        class="button button-primary"
-      ><%= __('Find out more') %></a>
+      <div
+        class="mailpoet_description<% if(settings.mta_group == 'mailpoet') %> mailpoet_hidden<% endif %>"
+        id="mailpoet_sending_method_inactive_text"
+      >
+        <strong><%= __("Solve all of your sending problems!") %></strong>
+        <br />
+        <%= __("Let MailPoet send your emails and get the Premium features for as little as 10 dollars or euros per month.") %>
+        <ul class="sending-method-benefits mailpoet_success">
+          <li class="mailpoet_success_item"><%= __('Reach the inbox, not the spam box.') %>
+          <li class="mailpoet_success_item"><%= __('Send emails up to 20 times faster than other sending methods.') %>
+          <li class="mailpoet_success_item"><%= __('SPF & DKIM signatures are already set up! No configuration required.') %>
+          <li class="mailpoet_success_item"><%= __('Automatically remove invalid and bounced addresses (bounce handling) to keep your lists clean.') %>
+        </ul>
+        <a
+          href="<%= admin_url('admin.php?page=mailpoet-premium') %>"
+          class="button button-primary"
+          target="_blank"
+        ><%= __('Find out more') %></a>
+      </div>
     </div>
-
     <div class="mailpoet_status">
       <span><%= __('Activated') %></span>
+
+      <div class="mailpoet_actions">
+        <button
+          type="button"
+          class="mailpoet_sending_service_activate button-secondary"
+        <% if(settings.mta_group == 'mailpoet' or not(mss_key_valid)) %> disabled="disabled"<% endif %>
+        ><%= __('Activate') %></button>
+      </div>
     </div>
 
-    <div class="mailpoet_actions">
-      <button
-        type="button"
-        class="mailpoet_sending_service_activate button-secondary"
-        <% if(settings.mta_group == 'mailpoet' or not(mss_key_valid)) %> disabled="disabled"<% endif %>
-      ><%= __('Activate') %></button>
-    </div>
   </li>
   <li
     data-group="other"
     <% if(settings.mta_group == 'smtp' or settings.mta_group == 'website') %>class="mailpoet_active"<% endif %>
   >
-  <h3><%= __('Other') %></h3>
-  <div class="mailpoet_description">
-    <strong><%= __('Send with your website or third party') %></strong>
-    <br />
-    <%= __('Choose to send emails through your website (not recommended) or a third party sender.') %>
-    <ul class="sending-method-benefits mailpoet_error">
-      <li class="mailpoet_error_item"><%= __('You\'ll probably end up in spam.') %>
-      <li class="mailpoet_error_item"><%= __('Sending speed is limited by your web host.') %>
-      <li class="mailpoet_error_item"><%= __('Manual configuration of SPF and DKIM required.') %>
-      <li class="mailpoet_error_item"><%= __('Bounce handling is available, but only with an extra add-on.') %>
-    </ul>
-  </div>
-
-  <div class="mailpoet_status">
-    <span><%= __('Activated') %></span>
-  </div>
-
-  <div class="mailpoet_actions">
-    <a
-      class="button-secondary"
-      href="#mta/other"><%= __('Configure') %></a>
-  </div>
+    <div class="mailpoet_sending_method_description">
+      <h3><%= __('Other') %></h3>
+      <div class="mailpoet_description">
+        <strong><%= __('Send with your website or third party') %></strong>
+        <br />
+        <%= __('Choose to send emails through your website (not recommended) or a third party sender.') %>
+        <ul class="sending-method-benefits mailpoet_error">
+          <li class="mailpoet_error_item"><%= __('You\'ll probably end up in spam.') %>
+          <li class="mailpoet_error_item"><%= __('Sending speed is limited by your web host.') %>
+          <li class="mailpoet_error_item"><%= __('Manual configuration of SPF and DKIM required.') %>
+          <li class="mailpoet_error_item"><%= __('Bounce handling is available, but only with an extra add-on.') %>
+        </ul>
+      </div>
+    </div>
+    <div class="mailpoet_status">
+      <span><%= __('Activated') %></span>
+      <div class="mailpoet_actions">
+        <a
+          class="button-secondary"
+          href="#mta/other"><%= __('Configure') %></a>
+      </div>
+    </div>
   </li>
 </ul>
 
