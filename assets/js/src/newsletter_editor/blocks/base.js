@@ -52,6 +52,7 @@ define([
     modelEvents: {
       'change': 'render',
       'delete': 'deleteBlock',
+      'duplicate': 'duplicateBlock',
     },
     events: {
       "mouseenter": "showTools",
@@ -142,6 +143,9 @@ define([
         this.model.destroy();
       }.bind(this));
     },
+    duplicateBlock: function() {
+      this.model.collection.add(this.model.toJSON(), {at: this.model.collection.findIndex(this.model)});
+    },
     transitionIn: function() {
       return this._transition('slideDown', 'fadeIn', 'easeOut');
     },
@@ -180,11 +184,13 @@ define([
       "click .mailpoet_delete_block_activate": "showDeletionConfirmation",
       "click .mailpoet_delete_block_cancel": "hideDeletionConfirmation",
       "click .mailpoet_delete_block_confirm": "deleteBlock",
+      "click .mailpoet_duplicate_block": "duplicateBlock",
     },
     // Markers of whether these particular tools will be used for this instance
     tools: {
       settings: true,
       delete: true,
+      duplicate: true,
       move: true,
     },
     getSettingsView: function() { return Module.BlockSettingsView; },
@@ -219,6 +225,11 @@ define([
     deleteBlock: function(event) {
       event.preventDefault();
       this.model.trigger('delete');
+      return false;
+    },
+    duplicateBlock: function(event) {
+      event.preventDefault();
+      this.model.trigger('duplicate');
       return false;
     },
   });

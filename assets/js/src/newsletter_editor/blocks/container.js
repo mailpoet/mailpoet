@@ -161,6 +161,7 @@ define([
         tools: {
           settings: this.renderOptions.depth === 1,
           delete: this.renderOptions.depth === 1,
+          duplicate: true,
           move: this.renderOptions.depth === 1,
           layerSelector: false,
         },
