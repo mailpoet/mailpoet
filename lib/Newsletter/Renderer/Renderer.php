@@ -124,7 +124,7 @@ class Renderer {
   }
 
   function renderTextVersion($template) {
-    $template = utf8_encode($template);
+    $template = (mb_detect_encoding($template, 'UTF-8', true)) ? $template : utf8_encode($template);
     return @\Html2Text\Html2Text::convert($template);
   }
 
