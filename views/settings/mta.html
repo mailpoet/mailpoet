@@ -279,10 +279,10 @@
                 type="number"
                 min="1"
                 max="1000"
-              <% if(settings.mta_group == 'website') %>
-              value="<%= settings.mta.frequency.emails %>"
+              <% if(settings.mta.frequency.emails) %>
+                value="<%= settings.mta.frequency.emails %>"
               <% else %>
-              value="<%= default_frequency.website.emails %>"
+                value="<%= default_frequency.website.emails %>"
               <% endif %>
               />
               <%= __('emails') %>
