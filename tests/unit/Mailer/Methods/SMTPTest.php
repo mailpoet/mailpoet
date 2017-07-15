@@ -1,5 +1,6 @@
 <?php
 
+use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\WP\Hooks;
@@ -184,6 +185,19 @@ class SMTPTest extends MailPoetTest {
     );
   }
 
+  function testItAppliesTimeoutFilter() {
+    $mailer = $this->mailer->buildMailer();
+    expect($mailer->getTransport()->getTimeout())->equals(MailPoet\Mailer\Methods\SMTP::SMTP_CONNECTION_TIMEOUT);
+    Hooks::addFilter(
+      'mailpoet_mailer_smtp_connection_timeout',
+      function() {
+        return 20;
+      }
+    );
+    $mailer = $this->mailer->buildMailer();
+    expect($mailer->getTransport()->getTimeout())->equals(20);
+  }
+
   function testItCanSend() {
     if(getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') return;
     $result = $this->mailer->send(
@@ -191,5 +205,9 @@ class SMTPTest extends MailPoetTest {
       $this->subscriber
     );
     expect($result['response'])->true();
+  }
+
+  function _after() {
+    WPHooksHelper::releaseAllHooks();
   }
 }
