@@ -157,7 +157,7 @@ class SendingQueue {
     );
     // log error message and schedule retry/pause sending
     if($send_result['response'] === false) {
-      MailerLog::processSendingError(
+      MailerLog::processError(
         $send_result['operation'],
         $send_result['error_message']
       );

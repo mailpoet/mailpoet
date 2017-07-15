@@ -1,7 +1,9 @@
 <?php
+
 use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterPost;
@@ -186,7 +188,7 @@ class NewsletterTaskTest extends MailPoetTest {
   function testItUpdatesStatusAndSetsSentAtDateOnlyForStandardAndPostNotificationNewsletters() {
     $newsletter = $this->newsletter;
     $queue = new stdClass();
-    $queue->processed_at =  date('Y-m-d H:i:s');
+    $queue->processed_at = date('Y-m-d H:i:s');
 
     // newsletter type is 'standard'
     $newsletter->type = Newsletter::TYPE_STANDARD;
@@ -254,6 +256,19 @@ class NewsletterTaskTest extends MailPoetTest {
     expect($this->newsletter_task->getNewsletterSegments($this->newsletter))->equals(
       array(1,2,3)
     );
+  }
+
+  function testItLogsErrorWhenQueueWithCannotBeSaved() {
+    $queue = $this->queue;
+    $queue->non_existent_column = true; // this will trigger save error
+    try {
+      $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue);
+      self::fail('Sending error exception was not thrown.');
+    } catch(Exception $e) {
+      $mailer_log = MailerLog::getMailerLog();
+      expect($mailer_log['error']['operation'])->equals('queue_save');
+      expect($mailer_log['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+    }
   }
 
   function _after() {

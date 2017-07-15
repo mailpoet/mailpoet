@@ -9,7 +9,7 @@ class LinkTaskTest extends MailPoetTest {
   function testItCanSaveLinks() {
     $links = array(
       array(
-        'url' => 'http://example.com',
+        'link' => 'http://example.com',
         'hash' => 'some_hash'
       )
     );
@@ -20,7 +20,7 @@ class LinkTaskTest extends MailPoetTest {
       ->findOne();
     expect($newsletter_link->newsletter_id)->equals($newsletter->id);
     expect($newsletter_link->queue_id)->equals($queue->id);
-    expect($newsletter_link->url)->equals($links[0]['url']);
+    expect($newsletter_link->url)->equals($links[0]['link']);
   }
 
   function testItCanHashAndReplaceLinks() {
@@ -35,7 +35,7 @@ class LinkTaskTest extends MailPoetTest {
       ->contains($processed_and_hashed_links[0]['hash']);
     expect($processed_rendered_newsletter_body['text'])
       ->contains($processed_and_hashed_links[0]['hash']);
-    expect($processed_and_hashed_links[0]['url'])->equals('http://example.com');
+    expect($processed_and_hashed_links[0]['link'])->equals('http://example.com');
   }
 
   function testItCanProcessRenderedBody() {
