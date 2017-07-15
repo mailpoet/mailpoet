@@ -170,6 +170,10 @@ class Model extends \Sudzy\ValidModel {
     return static::whereNotNull('deleted_at');
   }
 
+  function asArray() {
+    return call_user_func_array('parent::as_array', func_get_args());
+  }
+
   /**
    * Rethrow PDOExceptions to prevent exposing sensitive data in stack traces
    */
