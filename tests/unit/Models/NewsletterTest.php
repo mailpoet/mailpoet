@@ -375,13 +375,6 @@ class NewsletterTest extends MailPoetTest {
       ->equals(Security::HASH_LENGTH);
   }
 
-  function testItRegeneratesHashOnNewsletterDuplication() {
-    $duplicate_newsletter = $this->newsletter->duplicate();
-    expect($duplicate_newsletter->hash)->notEquals($this->newsletter->hash);
-    expect(strlen($duplicate_newsletter->hash))
-      ->equals(Security::HASH_LENGTH);
-  }
-
   function testItRegeneratesHashOnNotificationHistoryCreation() {
     $notification_history = $this->newsletter->createNotificationHistory();
     expect($notification_history->hash)->notEquals($this->newsletter->hash);
@@ -743,6 +736,30 @@ class NewsletterTest extends MailPoetTest {
     expect(Newsletter::findArray())->count(0);
     expect(SendingQueue::findArray())->count(0);
     expect(NewsletterSegment::findArray())->count(0);
+  }
+
+  function testDuplicatesNewsletter() {
+    $original_newsletter = $this->newsletter;
+    $original_newsletter->status = Newsletter::STATUS_SENT;
+    $original_newsletter->sent_at = $original_newsletter->deleted_at = $original_newsletter->created_at = $original_newsletter->updated_at = date( '2000-m-d H:i:s');
+    $original_newsletter->save();
+    $data = array('subject' => 'duplicate newsletter');
+    $duplicate_newsletter = $this->newsletter->duplicate($data);
+    $duplicate_newsletter = Newsletter::findOne($duplicate_newsletter->id);
+    // hash is different
+    expect($duplicate_newsletter->hash)->notEquals($this->newsletter->hash);
+    expect(strlen($duplicate_newsletter->hash))->equals(Security::HASH_LENGTH);
+    // status is set to draft
+    expect($duplicate_newsletter->status)->equals(Newsletter::STATUS_DRAFT);
+    // sent at/delete at dates are null
+    expect($duplicate_newsletter->sent_at)->null();
+    expect($duplicate_newsletter->deleted_at)->null();
+    // created at/updated at dates are different
+    expect($duplicate_newsletter->created_at)->notEquals($original_newsletter->created_at);
+    expect($duplicate_newsletter->updated_at)->notEquals($original_newsletter->updated_at);
+    // body and subject are the same
+    expect($duplicate_newsletter->body)->equals($original_newsletter->body);
+    expect($duplicate_newsletter->subject)->equals($data['subject']);
   }
 
   function _after() {
