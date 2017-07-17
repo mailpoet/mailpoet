@@ -1,69 +1,52 @@
 <?php
 namespace MailPoet\Newsletter\Links;
 
-use MailPoet\Models\Subscriber;
-use MailPoet\Router\Router;
-use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Models\NewsletterLink;
+use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
+use MailPoet\Router\Endpoints\Track as TrackEndpoint;
+use MailPoet\Router\Router;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\pQuery\pQuery as DomParser;
 use MailPoet\Util\Security;
 
 class Links {
   const DATA_TAG_CLICK = '[mailpoet_click_data]';
   const DATA_TAG_OPEN = '[mailpoet_open_data]';
-
   const LINK_TYPE_SHORTCODE = 'shortcode';
-  const LINK_TYPE_LINK = 'link';
+  const LINK_TYPE_URL = 'link';
 
   static function process($content) {
     $extracted_links = self::extract($content);
     $processed_links = self::hash($extracted_links);
-    return self::replace($content, $extracted_links, $processed_links);
+    return self::replace($content, $processed_links);
   }
 
   static function extract($content) {
     $extracted_links = array();
-    // adopted from WP's wp_extract_urls() function &  modified to work on hrefs
-    # match href=' or href="
-    $regex = '#(?:href.*?=.*?)(["\']?)('
-      # match http://
-      . '(?:([\w-]+:)?//?)'
-      # match everything except for special characters # until .
-      . '[^\s()<>]+'
-      . '[.]'
-      # conditionally match everything except for special characters after .
-      . '(?:'
-      . '\([\w\d]+\)|'
-      . '(?:'
-      . '[^`!()\[\]{}:;\'".,<>«»“”‘’\s]|'
-      . '(?:[:]\d+)?/?'
-      . ')+'
-      . ')'
-      . ')\\1#';
-    // extract shortcodes with [link:*] format
+    // extract link shortcodes
     $shortcodes = new Shortcodes();
-    $shortcodes = $shortcodes->extract($content, $categories = array('link'));
+    $shortcodes = $shortcodes->extract(
+      $content,
+      $categories = array(Link::CATEGORY_NAME)
+    );
     if($shortcodes) {
       $extracted_links = array_map(function($shortcode) {
         return array(
           'type' => Links::LINK_TYPE_SHORTCODE,
-          'html' => $shortcode,
           'link' => $shortcode
         );
       }, $shortcodes);
     }
-    // extract urls with href="url" format
-    preg_match_all($regex, $content, $matched_urls);
-    $matched_urls_count = count($matched_urls[0]);
-    if($matched_urls_count) {
-      for($index = 0; $index < $matched_urls_count; $index++) {
-        $extracted_links[] = array(
-          'type' => self::LINK_TYPE_LINK,
-          'html' => $matched_urls[0][$index],
-          'link' => $matched_urls[2][$index]
-        );
-      }
+    // extract HTML anchor tags
+    $DOM = DomParser::parseStr($content);
+    foreach($DOM->query('a') as $link) {
+      if(!$link->href) continue;
+      $extracted_links[] = array(
+        'type' => self::LINK_TYPE_URL,
+        'link' => $link->href
+      );
     }
     return array_unique($extracted_links, SORT_REGULAR);
   }
@@ -74,10 +57,11 @@ class Links {
       $hash = Security::generateHash();
       // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
-      $key = $extracted_link['link'];
-      $processed_links[$key] = array(
+      $link = $extracted_link['link'];
+      $processed_links[$link] = array(
+        'type' => $extracted_link['type'],
         'hash' => $hash,
-        'url' => $extracted_link['link'],
+        'link' => $link,
         // replace link with a temporary data tag + hash
         // it will be further replaced with the proper track API URL during sending
         'processed_link' => self::DATA_TAG_CLICK . '-' . $hash
@@ -86,33 +70,30 @@ class Links {
     return $processed_links;
   }
 
-  static function replace($content, $extracted_links, $processed_links) {
-    foreach($extracted_links as $key => $extracted_link) {
-      $key = $extracted_link['link'];
-      if(!($hasReplacement = isset($processed_links[$key]['processed_link']))) {
-        continue;
+  static function replace($content, $processed_links) {
+    // replace HTML anchor tags
+    $DOM = DomParser::parseStr($content);
+    foreach($DOM->query('a') as $link) {
+      $link_to_replace = $link->href;
+      $replacement_link = (!empty($processed_links[$link_to_replace]['processed_link'])) ?
+        $processed_links[$link_to_replace]['processed_link'] :
+        null;
+      if(!$replacement_link) continue;
+      $link->setAttribute('href', $replacement_link);
+    }
+    $content = $DOM->__toString();
+    // replace link shortcodes and markdown links
+    foreach($processed_links as $processed_link) {
+      $link_to_replace = $processed_link['link'];
+      $replacement_link = $processed_link['processed_link'];
+      if($processed_link['type'] == self::LINK_TYPE_SHORTCODE) {
+        $content = str_replace($link_to_replace, $replacement_link, $content);
       }
-      $processed_link = $processed_links[$key]['processed_link'];
-      // first, replace URL in the extracted HTML source with encoded link
-      $processed_link_html_source = str_replace(
-        $extracted_link['link'], $processed_link,
-        $extracted_link['html']
-      );
-      // second, replace original extracted HTML source with processed URL source
-      $content = str_replace(
-        $extracted_link['html'], $processed_link_html_source, $content
-      );
-      // third, replace text version URL with processed link: [description](url)
-      // regex is used to avoid replacing description URLs that are wrapped in round brackets
-      // i.e., <a href="http://google.com">(http://google.com)</a> => [(http://google.com)](http://processed_link)
-      $regex_escaped_extracted_link = preg_quote($extracted_link['link'], '/');
       $content = preg_replace(
-        '/\[(.*?)\](\(' . $regex_escaped_extracted_link . '\))/',
-        '[$1](' . $processed_link . ')',
+        '/\[(.*?)\](\(' . preg_quote($link_to_replace, '/') . '\))/',
+        '[$1](' . $replacement_link . ')',
         $content
       );
-      // Clean up data used to generate a new link
-      unset($processed_links[$key]['processed_link']);
     }
     return array(
       $content,
@@ -156,12 +137,12 @@ class Links {
 
   static function save(array $links, $newsletter_id, $queue_id) {
     foreach($links as $link) {
-      if(empty($link['hash']) || empty($link['url'])) continue;
+      if(empty($link['hash']) || empty($link['link'])) continue;
       $newsletter_link = NewsletterLink::create();
       $newsletter_link->newsletter_id = $newsletter_id;
       $newsletter_link->queue_id = $queue_id;
       $newsletter_link->hash = $link['hash'];
-      $newsletter_link->url = $link['url'];
+      $newsletter_link->url = $link['link'];
       $newsletter_link->save();
     }
   }
@@ -178,7 +159,7 @@ class Links {
       // convert either only link shortcodes or all hashes links if "convert all"
       // option is specified
       if($newsletter_link &&
-         (preg_match('/\[link:/', $newsletter_link->url) || $convert_all)
+        (preg_match('/\[link:/', $newsletter_link->url) || $convert_all)
       ) {
         $content = str_replace($link, $newsletter_link->url, $content);
       }

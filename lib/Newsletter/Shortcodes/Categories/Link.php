@@ -7,6 +7,8 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscription\Url as SubscriptionUrl;
 
 class Link {
+  const CATEGORY_NAME = 'link';
+
   static function process(
     $action,
     $action_argument,

@@ -148,7 +148,7 @@ class MailerLogTest extends MailPoetTest {
     expect($mailer_log['retry_at'])->null();
     expect($mailer_log['error'])->null();
     // retry attempt should be incremented, error logged, retry attempt scheduled
-    MailerLog::processSendingError($operation = 'send', $error = 'email rejected');
+    MailerLog::processError($operation = 'send', $error = 'email rejected');
     $mailer_log = MailerLog::getMailerLog();
     expect($mailer_log['retry_attempt'])->equals(1);
     expect($mailer_log['retry_at'])->greaterThan(time());
