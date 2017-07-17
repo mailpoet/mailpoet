@@ -53,6 +53,7 @@ class ConflictResolver {
 
   function resolveStylesConflict() {
     $_this = $this;
+    $_this->permitted_assets_locations['styles'] = apply_filters('mailpoet_conflict_resolver_whitelist_style', $_this->permitted_assets_locations['styles']);
     // unload all styles except from the list of allowed
     $dequeue_styles = function() use($_this) {
       global $wp_styles;
@@ -73,6 +74,7 @@ class ConflictResolver {
 
   function resolveScriptsConflict() {
     $_this = $this;
+    $_this->permitted_assets_locations['scripts'] = apply_filters('mailpoet_conflict_resolver_whitelist_script', $_this->permitted_assets_locations['scripts']);
     // unload all scripts except from the list of allowed
     $dequeue_scripts = function() use($_this) {
       global $wp_scripts;

@@ -1,5 +1,8 @@
 <?php
+
+use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Util\ConflictResolver;
+use MailPoet\WP\Hooks;
 
 class ConflictResolverTest extends MailPoetTest {
   public $conflict_resolver;
@@ -42,6 +45,26 @@ class ConflictResolverTest extends MailPoetTest {
     expect(empty($queued_styles['permitted_style']))->false();
   }
 
+  function testItWhitelistsStyles() {
+    wp_enqueue_style('select2', '/wp-content/some/offending/plugin/select2.css');
+    Hooks::addFilter(
+      'mailpoet_conflict_resolver_whitelist_style',
+      function($whitelisted_styles) {
+        $whitelisted_styles[] = '^/wp-content/some/offending/plugin';
+        return $whitelisted_styles;
+      }
+    );
+    $this->conflict_resolver->resolveStylesConflict();
+    do_action('wp_print_styles');
+    do_action('admin_print_styles');
+    do_action('admin_print_footer_scripts');
+    do_action('admin_footer');
+    global $wp_styles;
+    $queued_styles = array_flip($wp_styles->queue);
+    // it should not dequeue select2 style
+    expect(empty($queued_styles['select2']))->false();
+  }
+
   function testItUnloadsAllScriptsFromLocationsNotOnPermittedList() {
     expect(!empty($this->wp_filter['mailpoet_conflict_resolver_scripts']))->true();
     // grab a random permitted script location
@@ -59,5 +82,27 @@ class ConflictResolverTest extends MailPoetTest {
     expect(empty($queued_scripts['select2']))->true();
     expect(empty($queued_scripts['some_random_script']))->true();
     expect(empty($queued_scripts['permitted_script']))->false();
+  }
+
+  function testItWhitelistsScripts() {
+    wp_enqueue_script('select2', '/wp-content/some/offending/plugin/select2.js');
+    Hooks::addFilter(
+      'mailpoet_conflict_resolver_whitelist_script',
+      function($whitelisted_scripts) {
+        $whitelisted_scripts[] = '^/wp-content/some/offending/plugin';
+        return $whitelisted_scripts;
+      }
+    );
+    $this->conflict_resolver->resolveStylesConflict();
+    do_action('wp_print_scripts');
+    do_action('admin_print_footer_scripts');
+    global $wp_scripts;
+    $queued_scripts = array_flip($wp_scripts->queue);
+    // it should not dequeue select2 script
+    expect(empty($queued_scripts['select2']))->false();
+  }
+
+  function _after() {
+    WPHooksHelper::releaseAllHooks();
   }
 }
