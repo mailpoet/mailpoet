@@ -56,7 +56,7 @@ class Pages {
   static function isMailpoetPage($id) {
     $mailpoetPages = static::getMailPoetPages();
     foreach($mailpoetPages as $mailpoetPage) {
-      if ($mailpoetPage->ID === $id) {
+      if($mailpoetPage->ID === $id) {
         return true;
       }
     }

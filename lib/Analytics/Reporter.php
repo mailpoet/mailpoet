@@ -16,8 +16,9 @@ class Reporter {
     $mta = Setting::getValue('mta', array());
     $premium_status = Installer::getPremiumStatus();
     $newsletters = Newsletter::getAnalytics();
-    $isCronTriggerMethodWP = Setting::getValue('cron_trigger.method') === CronTrigger::$available_methods["wordpress"];
+    $isCronTriggerMethodWP = Setting::getValue('cron_trigger.method') === CronTrigger::$available_methods['wordpress'];
     $checker = new ServicesChecker();
+    $bounceAddress = Setting::getValue('bounce.address');
 
 
     return array(
@@ -27,27 +28,38 @@ class Reporter {
       'Total number of subscribers' =>  Subscriber::getTotalSubscribers(),
       'Sending Method' => $mta['method'],
       'Date of plugin installation' => Setting::getValue('installed_at'),
-      'Subscribe in comments' => (boolean) Setting::getValue('subscribe.on_comment.enabled', false),
-      'Subscribe in registration form' => (boolean) Setting::getValue('subscribe.on_register.enabled', false),
-      'Manage Subscription page > MailPoet page' => (boolean) Pages::isMailpoetPage(intval(Setting::getValue('subscription.pages.manage'))),
-      'Unsubscribe page > MailPoet page' => (boolean) Pages::isMailpoetPage(intval(Setting::getValue('subscription.pages.unsubscribe'))),
-      'Sign-up confirmation' => (boolean) Setting::getValue('signup_confirmation.enabled', false),
-      'Sign-up confirmation: Confirmation page > MailPoet page' => (boolean) Pages::isMailpoetPage(intval(Setting::getValue('subscription.pages.confirmation'))),
-      'Bounce email address' => !empty(Setting::getValue('bounce.address')),
-      'Newsletter task scheduler (cron)' => $isCronTriggerMethodWP ? "visitors" : "script",
-      'Open and click tracking' => (boolean) Setting::getValue('tracking.enabled', false),
+      'Subscribe in comments' => (boolean)Setting::getValue('subscribe.on_comment.enabled', false),
+      'Subscribe in registration form' => (boolean)Setting::getValue('subscribe.on_register.enabled', false),
+      'Manage Subscription page > MailPoet page' => (boolean)Pages::isMailpoetPage(intval(Setting::getValue('subscription.pages.manage'))),
+      'Unsubscribe page > MailPoet page' => (boolean)Pages::isMailpoetPage(intval(Setting::getValue('subscription.pages.unsubscribe'))),
+      'Sign-up confirmation' => (boolean)Setting::getValue('signup_confirmation.enabled', false),
+      'Sign-up confirmation: Confirmation page > MailPoet page' => (boolean)Pages::isMailpoetPage(intval(Setting::getValue('subscription.pages.confirmation'))),
+      'Bounce email address' => !empty($bounceAddress),
+      'Newsletter task scheduler (cron)' => $isCronTriggerMethodWP ? 'visitors' : 'script',
+      'Open and click tracking' => (boolean)Setting::getValue('tracking.enabled', false),
       'Premium key valid' => $checker->isPremiumKeyValid(),
-
-
-
-
       'Number of standard newsletters sent in last 3 months' => $newsletters['sent_newsletters'],
       'Number of active post notifications' => $newsletters['notifications_count'],
       'Number of active welcome emails' => $newsletters['welcome_newsletters_count'],
-      'Is WooCommerce plugin installed' => is_plugin_active("woocommerce/woocommerce.php"),
-      'Plugin > MailPoet Premium' => is_plugin_active("mailpoet-premium/mailpoet-premium.php"),
-      'Plugin > bounce add-on' => is_plugin_active("mailpoet-bounce-handler.php"),
-      'Plugin > Bloom' => is_plugin_active("bloom-for-publishers/bloom.php"),
+      'Plugin > MailPoet Premium' => is_plugin_active('mailpoet-premium/mailpoet-premium.php'),
+      'Plugin > bounce add-on' => is_plugin_active('mailpoet-bounce-handler/mailpoet-bounce-handler.php'),
+      'Plugin > Bloom' => is_plugin_active('bloom-for-publishers/bloom.php'),
+      'Plugin > WP Holler' => is_plugin_active('holler-box/holler-box.php'),
+      'Plugin > WP-SMTP' => is_plugin_active('wp-mail-smtp/wp_mail_smtp.php'),
+      'Plugin > WooCommerce' => is_plugin_active('woocommerce/woocommerce.php'),
+      'Plugin > WooCommerce Subscription' => is_plugin_active('woocommerce-subscriptions/woocommerce-subscriptions.php'),
+      'Plugin > WooCommerce Follow Up Emails' => is_plugin_active('woocommerce-follow-up-emails/woocommerce-follow-up-emails.php'),
+      'Plugin > WooCommerce Email Customizer' => is_plugin_active('woocommerce-email-customizer/woocommerce-email-customizer.php'),
+      'Plugin > WooCommerce Memberships' => is_plugin_active('woocommerce-memberships/woocommerce-memberships.php'),
+      'Plugin > WooCommerce MailChimp' => is_plugin_active('woocommerce-mailchimp/woocommerce-mailchimp.php'),
+      'Plugin > MailChimp for WooCommerce' => is_plugin_active('mailchimp-for-woocommerce/mailchimp-woocommerce.php'),
+      'Plugin > The Event Calendar' => is_plugin_active('the-events-calendar/the-events-calendar.php'),
+      'Plugin > Gravity Forms' => is_plugin_active('gravityforms/gravityforms.php'),
+      'Plugin > Ninja Forms' => is_plugin_active('ninja-forms/ninja-forms.php'),
+      'Plugin > WPForms' => is_plugin_active('wpforms-lite/wpforms.php'),
+      'Plugin > Formidable Forms' => is_plugin_active('formidable/formidable.php'),
+      'Plugin > Contact Form 7' => is_plugin_active('contact-form-7/wp-contact-form-7.php'),
+      'Plugin > Easy Digital Downloads' => is_plugin_active('easy-digital-downloads/easy-digital-downloads.php'),
     );
   }
 
