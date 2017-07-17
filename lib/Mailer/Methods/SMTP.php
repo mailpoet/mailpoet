@@ -17,7 +17,7 @@ class SMTP {
   public $reply_to;
   public $return_path;
   public $mailer;
-  const SMTP_CONNECTION_TIMEOUT = 10; // seconds
+  const SMTP_CONNECTION_TIMEOUT = 15; // seconds
 
   function __construct(
     $host, $port, $authentication, $login = null, $password = null, $encryption,
@@ -55,7 +55,8 @@ class SMTP {
   function buildMailer() {
     $transport = \Swift_SmtpTransport::newInstance(
       $this->host, $this->port, $this->encryption);
-    $transport->setTimeout(self::SMTP_CONNECTION_TIMEOUT);
+    $connection_timeout = Hooks::applyFilters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT);
+    $transport->setTimeout($connection_timeout);
     if($this->authentication) {
       $transport
         ->setUsername($this->login)
