@@ -15,7 +15,7 @@ class LinksTest extends MailPoetTest {
 
     expect($result[0])->equals(
       array(
-        'type' => Links::LINK_TYPE_LINK,
+        'type' => Links::LINK_TYPE_URL,
         'link' => 'http://example.com'
       )
     );
@@ -77,7 +77,7 @@ class LinksTest extends MailPoetTest {
 
     $processed_links = array(
       'http://example.com' => array(
-        'type' => Links::LINK_TYPE_LINK,
+        'type' => Links::LINK_TYPE_URL,
         'link' => 'http://example.com',
         'processed_link' => 'replace by this'
       )

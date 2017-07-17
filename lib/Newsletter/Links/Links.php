@@ -3,6 +3,7 @@ namespace MailPoet\Newsletter\Links;
 
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Router\Router;
@@ -13,9 +14,8 @@ use MailPoet\Util\Security;
 class Links {
   const DATA_TAG_CLICK = '[mailpoet_click_data]';
   const DATA_TAG_OPEN = '[mailpoet_open_data]';
-
   const LINK_TYPE_SHORTCODE = 'shortcode';
-  const LINK_TYPE_LINK = 'link';
+  const LINK_TYPE_URL = 'link';
 
   static function process($content) {
     $extracted_links = self::extract($content);
@@ -29,7 +29,7 @@ class Links {
     $shortcodes = new Shortcodes();
     $shortcodes = $shortcodes->extract(
       $content,
-      $categories = array(self::LINK_TYPE_LINK)
+      $categories = array(Link::CATEGORY_NAME)
     );
     if($shortcodes) {
       $extracted_links = array_map(function($shortcode) {
@@ -44,7 +44,7 @@ class Links {
     foreach($DOM->query('a') as $link) {
       if(!$link->href) continue;
       $extracted_links[] = array(
-        'type' => self::LINK_TYPE_LINK,
+        'type' => self::LINK_TYPE_URL,
         'link' => $link->href
       );
     }
@@ -79,7 +79,7 @@ class Links {
         $processed_links[$link_to_replace]['processed_link'] :
         null;
       if(!$replacement_link) continue;
-      $link->setAttribute('href', $processed_links[$link_to_replace]['processed_link']);
+      $link->setAttribute('href', $replacement_link);
     }
     $content = $DOM->__toString();
     // replace link shortcodes and markdown links
