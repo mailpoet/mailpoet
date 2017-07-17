@@ -280,6 +280,9 @@ class Newsletter extends Model {
     // reset hash
     $duplicate->set('hash', null);
 
+    // reset sent at date
+    $duplicate->set('sent_at', null);
+
     $duplicate->save();
 
     if($duplicate->getErrors() === false) {
