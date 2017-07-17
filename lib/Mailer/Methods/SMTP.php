@@ -55,7 +55,7 @@ class SMTP {
   function buildMailer() {
     $transport = \Swift_SmtpTransport::newInstance(
       $this->host, $this->port, $this->encryption);
-    $connection_timeout = apply_filters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT);
+    $connection_timeout = Hooks::applyFilters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT);
     $transport->setTimeout($connection_timeout);
     if($this->authentication) {
       $transport
