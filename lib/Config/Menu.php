@@ -340,7 +340,7 @@ class Menu {
 
     $readme_file = Env::$path . '/readme.txt';
     if(is_readable($readme_file)) {
-      $changelog = Readme::parseChangelog(file_get_contents($readme_file), 2);
+      $changelog = Readme::parseChangelog(file_get_contents($readme_file), 1);
       if($changelog) {
         $data['changelog'] = $changelog;
       }

@@ -19,9 +19,12 @@
 </style>
 
 <div class="wrap mailpoet-about-wrap">
-  <h1><%= __('Welcome to MailPoet') %> <%= settings.version %></h1>
+  <h1><%= __('Greetings, humans.') %></h1>
 
-  <p class="about-text"><%= __("Thank you for helping us test and improve this new version of MailPoet. You're one of our extra-special beta testers. We really appreciate your help!") %>
+  <p class="about-text"><%= __('Thanks for using MailPoet! We really appreciate all of your love, affection, [link]and (good) plugin reviews.[/link]')
+    |replaceLinkTags('https://wordpress.org/support/plugin/wysija-newsletters/reviews/', {'target' : '_blank'})
+    |raw
+    %>
   </p>
   <div class="mailpoet-logo"><img src="<%= image_url('welcome_template/mailpoet-logo.png') %>" alt="<%= __('MailPoet Logo') %>" /></div>
 
