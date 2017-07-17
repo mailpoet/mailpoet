@@ -171,6 +171,15 @@ class Model extends \Sudzy\ValidModel {
   }
 
   /**
+   * PHP 5.3 fix for incorrectly returned model results when using asArray() function. 
+   * Jira reference: https://goo.gl/UZaMj5
+   * TODO: remove after phasing out PHP 5.3 support
+   */ 
+  function asArray() {
+    return call_user_func_array('parent::as_array', func_get_args());
+  }
+
+  /**
    * Rethrow PDOExceptions to prevent exposing sensitive data in stack traces
    */
   public static function __callStatic($method, $parameters) {
