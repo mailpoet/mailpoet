@@ -828,6 +828,7 @@ const Listing = React.createClass({
             filters={ this.state.filters }
             filter={ this.state.filter }
             group={ this.state.group }
+            onBeforeSelectFilter={ this.props.onBeforeSelectFilter || null }
             onSelectFilter={ this.handleFilter }
             onEmptyTrash={ this.handleEmptyTrash }
           />

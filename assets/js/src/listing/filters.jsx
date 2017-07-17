@@ -14,6 +14,9 @@ define([
       this.getAvailableFilters().map((filter, i) => {
         filters[this.refs['filter-'+i].name] = this.refs['filter-'+i].value;
       });
+      if (this.props.onBeforeSelectFilter) {
+        this.props.onBeforeSelectFilter(filters);
+      }
       return this.props.onSelectFilter(filters);
     },
     handleEmptyTrash: function () {

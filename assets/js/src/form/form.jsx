@@ -181,11 +181,20 @@ define(
         }
 
         const fields = this.props.fields.map((field, i) => {
+          // Compose an onChange handler from the default and custom one
+          let onValueChange = this.handleValueChange;
+          if (field.onBeforeChange) {
+            onValueChange = (e) => {
+              field.onBeforeChange(e);
+              return this.handleValueChange(e);
+            };
+          }
+
           return (
             <FormField
               field={ field }
               item={ this.getValues() }
-              onValueChange={ this.handleValueChange }
+              onValueChange={ onValueChange }
               key={ 'field-'+i } />
           );
         });

@@ -286,6 +286,7 @@ const _StatisticsMixin = {
           <Link
             key={ `stats-${newsletter.id}` }
             to={ params.link }
+            onClick={ params.onClick || null }
           >
             {content}
           </Link>

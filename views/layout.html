@@ -45,6 +45,7 @@ jQuery('.toplevel_page_mailpoet-newsletters.menu-top-last')
   var mailpoet_date_format = "<%= wp_datetime_format()|escape('js') %>";
   var mailpoet_time_format = "<%= wp_time_format()|escape('js') %>";
   var mailpoet_version = "<%= mailpoet_version() %>";
+  var mailpoet_premium_version = "<%= mailpoet_premium_version() %>";
   var mailpoet_analytics_enabled = <%= is_analytics_enabled() | json_encode %>;
   var mailpoet_analytics_data = <%= json_encode(get_analytics_data()) %>;
 </script>

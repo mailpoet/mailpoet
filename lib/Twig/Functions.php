@@ -62,6 +62,11 @@ class Functions extends \Twig_Extension {
         array('is_safe' => array('all'))
       ),
       new \Twig_SimpleFunction(
+        'mailpoet_premium_version',
+        array($this, 'getMailPoetPremiumVersion'),
+        array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
         'wp_time_format',
         array($this, 'getWPTimeFormat'),
         array('is_safe' => array('all'))
@@ -123,6 +128,10 @@ class Functions extends \Twig_Extension {
 
   function getMailPoetVersion() {
     return MAILPOET_VERSION;
+  }
+
+  function getMailPoetPremiumVersion() {
+    return (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A';
   }
 
   function getWPTimeFormat() {
