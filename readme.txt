@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.8
-Stable tag: 3.0.0-beta.36.3.0
+Stable tag: 3.0.0-beta.36.3.1
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -92,6 +92,15 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-beta.36.3.1 - 2017-07-18 =
+* Added: you can now duplicate any item in the email designer;
+* Improved: added filter to specify custom SMTP connection timeout value. Thanks, Rik;
+* Improved: added a custom filter to whitelist JS/CSS styles that are loaded by other plugins on MailPoet's pages;
+* Fixed: sending is not interrupted if a newsletter contains URLs with unicode characters. Thanks Sam!
+* Fixed: sent date is reset when newsletter is duplicated;
+* Fixed: SMTP sending frequency is properly updated when changed;
+* Fixed: newsletter/form/subscriber listings no longer throw an error on some PHP 5.3 hosts. Thanks, Jérôme!
 
 = 3.0.0-beta.36.3.0 - 2017-07-11 =
 * Added: migration script for MailPoet 2 users now imports settings;
