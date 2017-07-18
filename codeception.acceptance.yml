@@ -1,0 +1,50 @@
+actor: Tester
+paths:
+    tests: tests
+    log: tests/_output
+    data: tests/_data
+    support: tests/_support
+    envs: tests/_envs
+settings:
+    colors: true
+    memory_limit: 1024M
+    log: true
+    strict_xml: true
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+modules:
+    config:
+        WPWebDriver:
+            host: chrome
+            url: 'http://wordpress'
+            browser: chrome
+            port: 4444
+            window_size: '1024x768'
+            restart: true
+            wait: 0
+            adminUsername: admin
+            adminPassword: password
+            adminPath: /wp-admin
+        WPLoader:
+            wpRootFolder: /wp-core
+            dbName: wordpress
+            dbHost: mysql
+            dbUser: wordpress
+            dbPassword: wordpress
+            wpDebug: false
+            tablePrefix: wp_
+            domain: wordpress
+            plugins: ['mailpoet/mailpoet.php']
+            activatePlugins: ['mailpoet/mailpoet.php']
+coverage:
+    enabled: true
+    whitelist:
+        include:
+            - lib/*
+        exclude:
+            - lib/Config/PopulatorData/*
+            - lib/Util/Sudzy/*
+            - lib/Util/CSS.php
+            - lib/Util/Helpers.php
+            - lib/Util/XLSXWriter.php

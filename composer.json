@@ -24,6 +24,8 @@
     "codeception/verify": "^0.3.3",
     "consolidation/robo": "^1.0.5",
     "henrikbjorn/lurker": "^1.2",
+    "lucatume/wp-browser": "1.19.12",
+    "phpunit/phpunit": "4.8.21",
     "vlucas/phpdotenv": "^2.4.0",
     "umpirsky/twig-gettext-extractor": "1.1.*",
     "raveren/kint": "^1.0",

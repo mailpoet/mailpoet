@@ -154,9 +154,9 @@ class RoboFile extends \Robo\Tasks {
 
   function testUnit($opts=['file' => null, 'xml' => false]) {
     $this->loadEnv();
-    $this->_exec('vendor/bin/codecept build');
+    $this->_exec('vendor/bin/codecept build -c codeception.unit.yml');
 
-    $command = 'vendor/bin/codecept run unit -f '.(($opts['file']) ? $opts['file'] : '');
+    $command = 'vendor/bin/codecept run unit -c codeception.unit.yml -f '.(($opts['file']) ? $opts['file'] : '');
 
     if($opts['xml']) {
       $command .= ' --xml';
@@ -166,9 +166,9 @@ class RoboFile extends \Robo\Tasks {
 
   function testCoverage($opts=['file' => null, 'xml' => false]) {
     $this->loadEnv();
-    $this->_exec('vendor/bin/codecept build');
+    $this->_exec('vendor/bin/codecept build -c codeception.unit.yml');
     $command = join(' ', array(
-      'vendor/bin/codecept run',
+      'vendor/bin/codecept run -c codeception.unit.yml ',
       (($opts['file']) ? $opts['file'] : ''),
       '--coverage',
       ($opts['xml']) ? '--coverage-xml' : '--coverage-html'
@@ -201,9 +201,9 @@ class RoboFile extends \Robo\Tasks {
 
   function testDebug($opts=['file' => null, 'xml' => false]) {
     $this->loadEnv();
-    $this->_exec('vendor/bin/codecept build');
+    $this->_exec('vendor/bin/codecept build -c codeception.unit.yml');
 
-    $command = 'vendor/bin/codecept run unit --debug -f '.(($opts['file']) ? $opts['file'] : '');
+    $command = 'vendor/bin/codecept run unit -c codeception.unit.yml --debug -f '.(($opts['file']) ? $opts['file'] : '');
 
     if($opts['xml']) {
       $command .= ' --xml';
@@ -211,10 +211,14 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
+  function testAcceptance() {
+    return $this->_exec('docker-compose run codeception --steps --debug -vvv');
+  }
+
   function testFailed() {
     $this->loadEnv();
-    $this->_exec('vendor/bin/codecept build');
-    return $this->_exec('vendor/bin/codecept run -g failed');
+    $this->_exec('vendor/bin/codecept build -c codeception.unit.yml');
+    return $this->_exec('vendor/bin/codecept run -c codeception.unit.yml -g failed');
   }
 
   function qa() {

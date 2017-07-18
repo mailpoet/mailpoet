@@ -1,0 +1,58 @@
+version: '2.1'
+
+services:
+  codeception:
+    build: .
+    depends_on:
+      - wordpress
+    volumes:
+      - ./:/project
+      - wp-core:/wp-core
+      - ./:/wp-core/wp-content/plugins/mailpoet
+    entrypoint: /docker-entrypoint.sh
+
+  wordpress:
+    build: ./tests/wordpressDockerfile
+    image: wordpress:latest
+    depends_on:
+      mysql:
+        condition: service_healthy
+      chrome:
+        condition: service_healthy
+    volumes:
+      - wp-core:/var/www/html
+      - ./:/var/www/html/wp-content/plugins/mailpoet
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_PASSWORD: wordpress
+
+  mysql:
+    image: mysql:5.6
+    environment:
+       MYSQL_ROOT_PASSWORD: wordpress
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: wordpress
+       MYSQL_PASSWORD: wordpress
+    healthcheck:
+      test: "mysql -uwordpress -pwordpress -e 'SELECT 1'"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  chrome:
+    environment:
+      - DBUS_SESSION_BUS_ADDRESS=/dev/null
+    volumes:
+      - /dev/shm:/dev/shm
+    image: selenium/standalone-chrome-debug
+    ports:
+      - '4444'
+      - '5900:5900'
+    healthcheck:
+      test: "wget -O/dev/null http://localhost:4444"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+volumes:
+  wp-core:

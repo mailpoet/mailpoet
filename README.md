@@ -180,3 +180,21 @@ Run 'svn copy ...' to tag the release
 It's quite literal: you can review the changes to be pushed and if you're satisfied, run the suggested command to finish the release publishing process.
 
 If you're confident, execute `./do publish --force` and your release will be published to the remote SVN repository without manual intervention (automatically). For easier authentication you might want to set `WP_SVN_USERNAME` and `WP_SVN_PASSWORD` environment variables.
+
+# Acceptance testing
+
+We are using Gravity Flow plugin's setup as an example for our acceptance test suite: https://www.stevenhenty.com/learn-acceptance-testing-deeply/
+
+From the article above:
+
+_Windows users only: enable hard drive sharing in the Docker settings._
+
+The browser runs in a docker container. You can use a VNC client to watch the test run, follow instructions in official 
+repo: https://github.com/SeleniumHQ/docker-selenium
+If you’re on a Mac, you can open vnc://localhost:5900 in Safari to watch the tests running in Chrome. If you’re on Windows, you’ll need a VNC client. Password: secret.
+
+
+To run tests:
+```sh
+$ ./do test:acceptance
+```
