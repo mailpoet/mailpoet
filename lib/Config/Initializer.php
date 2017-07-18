@@ -13,6 +13,8 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
 
+  const UNABLE_TO_CONNECT = '<strong>Mailpoet:</strong> Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our <a href="http://beta.docs.mailpoet.com/article/200-solving-database-connection-issues">Knowledge Base article</a> for steps how to resolve it.';
+
   protected $plugin_initialized = false;
 
   function __construct($params = array(
@@ -34,8 +36,7 @@ class Initializer {
     try {
       $this->setupDB();
     } catch(\Exception $e) {
-      $this->handleFailedInitialization($e);
-      return;
+      return WPNotice::displayWarning(self::UNABLE_TO_CONNECT);
     }
 
     // activation function
@@ -236,11 +237,11 @@ class Initializer {
     $conflict_resolver->init();
   }
 
-  function handleFailedInitialization($message) {
+  function handleFailedInitialization($exception) {
     // Check if we are able to add pages at this point
     if(function_exists('wp_get_current_user')) {
       Menu::addErrorPage();
     }
-    return WPNotice::displayError($message);
+    return WPNotice::displayError($exception);
   }
 }
