@@ -11,7 +11,6 @@ class Renderer {
       $this->getOneColumnTemplate($styles, $class) :
       $this->getMultipleColumnsTemplate($styles, $width, $alignment, $class);
     $result = array_map(function($content) use ($template) {
-      $content = Renderer::removePaddingFromLastElement($content);
       return $template['content_start'] . $content . $template['content_end'];
     }, $columns_data);
     $result = implode('', $result);
@@ -77,10 +76,6 @@ class Renderer {
       </td>
     </tr>';
     return $template;
-  }
-
-  function removePaddingFromLastElement($element) {
-    return preg_replace('/mailpoet_padded_bottom(?!.*mailpoet_padded_bottom)/ism', '', $element);
   }
 
   function getBackgroundColor($styles) {
