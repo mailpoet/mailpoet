@@ -113,26 +113,6 @@ class RendererTest extends \MailPoetTest {
     expect($rendered_column_content)->equals($column_content);
   }
 
-  function testItRemovesPaddingFromLastColumnElement() {
-    $column_content = array('
-      <tr><td class="mailpoet_padded_bottom"></td></tr>
-      <tr><td class="mailpoet_padded_bottom"></td></tr>
-      <tr><td class="mailpoet_padded_bottom"></td></tr>
-      <tr><td class="mailpoet_padded_bottom"></td></tr>'
-    );
-    $column_styles = array(
-      'block' => array(
-        'backgroundColor' => "#999999"
-      )
-    );
-    $rendered_column_content = $this->column_renderer->render(
-      $column_styles,
-      count($column_content),
-      $column_content
-    );
-    expect(substr_count($rendered_column_content, 'mailpoet_padded'))->equals(3);
-  }
-
   function testItRendersHeader() {
     $newsletter = $this->newsletter['body'];
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][0];
@@ -143,7 +123,6 @@ class RendererTest extends \MailPoetTest {
     expect($DOM('a', 0)->attr('style'))->notEmpty();
     expect($DOM('td', 0)->attr('style'))->notEmpty();
   }
-
 
   function testItRendersImage() {
     $newsletter = $this->newsletter['body'];
