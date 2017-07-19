@@ -14,7 +14,6 @@ class Reporter {
   function getData() {
 
     $mta = Setting::getValue('mta', array());
-    $premium_status = Installer::getPremiumStatus();
     $newsletters = Newsletter::getAnalytics();
     $isCronTriggerMethodWP = Setting::getValue('cron_trigger.method') === CronTrigger::$available_methods['wordpress'];
     $checker = new ServicesChecker();
@@ -24,9 +23,8 @@ class Reporter {
     return array(
       'MailPoet Free version' => MAILPOET_VERSION,
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
-      'Premium Plugin Active' => $premium_status['premium_plugin_active'],
       'Total number of subscribers' =>  Subscriber::getTotalSubscribers(),
-      'Sending Method' => $mta['method'],
+      'Sending Method' => isset($mta['method']) ? $mta['method'] : null,
       'Date of plugin installation' => Setting::getValue('installed_at'),
       'Subscribe in comments' => (boolean)Setting::getValue('subscribe.on_comment.enabled', false),
       'Subscribe in registration form' => (boolean)Setting::getValue('subscribe.on_register.enabled', false),
