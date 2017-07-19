@@ -48,6 +48,21 @@ class Pages {
     ));
   }
 
+  /**
+   * @param int $id
+   *
+   * @return bool
+   */
+  static function isMailpoetPage($id) {
+    $mailpoetPages = static::getMailPoetPages();
+    foreach($mailpoetPages as $mailpoetPage) {
+      if($mailpoetPage->ID === $id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   static function getAll() {
     $all_pages = array_merge(
       static::getMailPoetPages(),
