@@ -1,6 +1,7 @@
 <?php
 
 use Codeception\Util\Stub;
+use MailPoet\Models\Model as MPModel;
 
 class ModelTest extends MailPoetTest {
   function testItRethrowsPDOExceptions() {
@@ -25,7 +26,7 @@ class ModelTest extends MailPoetTest {
   }
 
   function testItConvertsModelObjectToArray() {
-    $model = Model::create();
+    $model = MPModel::create();
     $model->first = 'first';
     $model->last = 'last';
     expect($model->asArray('first'))->equals(
