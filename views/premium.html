@@ -6,12 +6,33 @@
 .mailpoet_video {
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
+.videoWrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  /*padding-top: 25px;*/
+  height: 0;
+}
+.videoWrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 </style>
 
 <div class="wrap mailpoet-about-wrap">
   <h1 style="text-align: center; margin-right: 0;"><%= __('What is MailPoet Premium?') %></h1>
 
-  <p class="about-text" style="text-align: center; margin-right: 0;"><%= __("Detailed statistics, actionable insights, awesome deliverability, plus great support!") %></p>
+  <p class="about-text" style="text-align: center; margin-right: 0;"><%= __("Check out the brief video below. Or, keep reading!") %></p>
+
+  <hr>
+
+  <div class="headline-feature feature-video">
+    <div class="videoWrapper">
+      <iframe src="https://player.vimeo.com/video/225337083" width="1050" height="591" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+    </div>
+  </div>
 
   <hr>
 
@@ -31,7 +52,7 @@
   <h2><%= __("Hello Inbox, Goodbye Spambox!") %></h2>
 
   <div class="feature-section one-col">
-    <p class="lead-description"><%= __("The MailPoet Sending Service's delivery rate is over 98%: one of the best in the industry! Our in-house sending service is constantly monitored, tweaked, and improved to make sure that your emails arrive successfully.") %></p>
+    <p class="lead-description"><%= __("Having issues with reaching your subscribers? Always ending up in the spam box? Don't panic! You're not alone - over a quarter of our plugin users have sending issues, usually because they are sending emails via their web host. Instead, try using the new MailPoet Sending Service.") %></p>
     <table class="widefat">
       <thead>
         <tr>
@@ -73,17 +94,16 @@
          <td><%= __("Depends") %></td>
         </tr>
         <tr>
-          <td>
-            <a
-              href="http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods?utm_source=plugin&utm_medium=premium&utm_campaign=compare"
-              target="_blank"
-            >
-              <%= __("View full comparison table") %>
-            </a>
+          <td colspan="4">
+            <div style="text-align: center">
+              <a
+                href="http://beta.docs.mailpoet.com/article/181-comparison-table-of-sending-methods?utm_source=plugin&utm_medium=premium&utm_campaign=compare"
+                target="_blank"
+              >
+                <%= __("View full comparison table") %>
+              </a>
+            </div>
           </td>
-          <td></td>
-          <td></td>
-          <td></td>
         </tr>
       </tbody>
     </table>
@@ -121,7 +141,7 @@
   <h2><%= __("Get Started for Just $10") %></h2>
 
   <div clas="feature-section one-col">
-    <p class="lead-description"><%= __("Our plans start at just $10 per month. Each plan offers unlimited emails. Pricing scales up with the size of your list.") %></p>
+    <p class="lead-description"><%= __("Our plans start at just $10 per month. Plus, if you pay annually, you’ll get two months for free!") %></p>
     <br>
     <p style="text-align: center">
       <a
