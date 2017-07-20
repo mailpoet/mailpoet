@@ -6,9 +6,9 @@ use MailPoet\Tasks\Subscribers\BatchIterator;
 
 class BatchIteratorTest extends \MailPoetTest {
   function _before() {
-    $this->task_id = 123;
+    $this->task_id = 123; // random ID
     $this->batch_size = 2;
-    $this->subscriber_count = 5;
+    $this->subscriber_count = 10;
     for($i = 0; $i < $this->subscriber_count; $i++) {
       ScheduledTaskSubscriber::createOrUpdate(array(
         'task_id' => $this->task_id,
@@ -28,7 +28,7 @@ class BatchIteratorTest extends \MailPoetTest {
   }
 
   function testItConstructs() {
-    $iterator = new BatchIterator(123, 456);
+    $iterator = new BatchIterator(123, 456); // random IDs
     expect_that($iterator instanceof BatchIterator);
   }
 
@@ -37,6 +37,14 @@ class BatchIteratorTest extends \MailPoetTest {
     $i = 0;
     foreach($this->iterator as $batch) {
       $i++;
+
+      // process subscribers
+      ScheduledTaskSubscriber::where('task_id', $this->task_id)
+        ->whereIn('subscriber_id', $batch)
+        ->findResultSet()
+        ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
+        ->save();
+
       if($i < $iterations) {
         expect(count($batch))->equals($this->batch_size);
       } else {

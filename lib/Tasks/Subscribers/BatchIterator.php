@@ -9,7 +9,8 @@ if(!defined('ABSPATH')) exit;
 class BatchIterator implements \Iterator, \Countable {
   private $task_id;
   private $batch_size;
-  private $offset = 0;
+  private $last_processed_id = 0;
+  private $batch_last_id;
 
   function __construct($task_id, $batch_size) {
     if($task_id <= 0) {
@@ -22,29 +23,29 @@ class BatchIterator implements \Iterator, \Countable {
   }
 
   function rewind() {
-    $this->offset = 0;
+    $this->last_processed_id = 0;
   }
 
   function current() {
     $subscribers = $this->getSubscribers()
       ->orderByAsc('subscriber_id')
       ->limit($this->batch_size)
-      ->offset($this->offset)
       ->findArray();
     $subscribers = Helpers::arrayColumn($subscribers, 'subscriber_id');
+    $this->batch_last_id = end($subscribers);
     return $subscribers;
   }
 
   function key() {
-    return $this->offset;
+    return null;
   }
 
   function next() {
-    $this->offset += $this->batch_size;
+    $this->last_processed_id = $this->batch_last_id;
   }
 
   function valid() {
-    return $this->offset < $this->count();
+    return $this->count() > 0;
   }
 
   function count() {
@@ -54,6 +55,7 @@ class BatchIterator implements \Iterator, \Countable {
   private function getSubscribers() {
     return ScheduledTaskSubscriber::select('subscriber_id')
       ->where('task_id', $this->task_id)
+      ->whereGt('subscriber_id', $this->last_processed_id)
       ->where('processed', ScheduledTaskSubscriber::STATUS_UNPROCESSED);
   }
 }
