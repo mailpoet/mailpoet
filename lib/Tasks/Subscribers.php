@@ -24,7 +24,7 @@ class Subscribers {
     return !empty($subscriber);
   }
 
-  function removeNonexistentSubscribers($subscribers_to_remove) {
+  function removeSubscribers($subscribers_to_remove) {
     $this->getSubscribers()
       ->whereIn('subscriber_id', $subscribers_to_remove)
       ->deleteMany();
@@ -42,8 +42,7 @@ class Subscribers {
 
   private function checkCompleted() {
     if(!ScheduledTaskSubscriber::getUnprocessedCount($this->task->id)) {
-      $this->task->processed_at = current_time('mysql');
-      return $this->task->complete();
+      $this->task->complete();
     }
   }
 }

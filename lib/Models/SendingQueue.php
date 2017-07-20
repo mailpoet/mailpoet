@@ -92,7 +92,7 @@ class SendingQueue extends Model {
     return $model;
   }
 
-  function removeNonexistentSubscribers($subscribers_to_remove) {
+  function removeSubscribers($subscribers_to_remove) {
     $subscribers = $this->getSubscribers();
     $subscribers['to_process'] = array_values(
       array_diff(

@@ -12,6 +12,7 @@ class ScheduledTask extends Model {
   const PRIORITY_LOW = 10;
 
   function complete() {
+    $this->processed_at = current_time('mysql');
     $this->set('status', self::STATUS_COMPLETED);
     $this->save();
     return ($this->getErrors() === false && $this->id() > 0);
