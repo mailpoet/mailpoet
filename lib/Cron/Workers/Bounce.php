@@ -39,7 +39,7 @@ class Bounce extends SimpleWorker {
   function prepareTask(ScheduledTask $task) {
     BounceTask::prepareSubscribers($task);
 
-    if(!ScheduledTaskSubscriber::getToProcessCount($task->id)) {
+    if(!ScheduledTaskSubscriber::getUnprocessedCount($task->id)) {
       $task->delete();
       return false;
     }

@@ -59,10 +59,10 @@ class BounceTest extends MailPoetTest {
 
   function testItPreparesTask() {
     $task = $this->createScheduledTask();
-    expect(ScheduledTaskSubscriber::getToProcessCount($task->id))->isEmpty();
+    expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->isEmpty();
     $this->worker->prepareTask($task);
     expect($task->status)->null();
-    expect(ScheduledTaskSubscriber::getToProcessCount($task->id))->notEmpty();
+    expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->notEmpty();
   }
 
   function testItDeletesTaskIfThereAreNoSubscribersToProcessWhenProcessingTask() {
@@ -77,7 +77,7 @@ class BounceTest extends MailPoetTest {
   function testItProcessesTask() {
     $task = $this->createRunningTask();
     $this->worker->prepareTask($task);
-    expect(ScheduledTaskSubscriber::getToProcessCount($task->id))->notEmpty();
+    expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->notEmpty();
     $this->worker->processTask($task);
     expect(ScheduledTaskSubscriber::getProcessedCount($task->id))->notEmpty();
   }

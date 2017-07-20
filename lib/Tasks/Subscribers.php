@@ -41,7 +41,7 @@ class Subscribers {
   }
 
   private function checkCompleted() {
-    if(!ScheduledTaskSubscriber::getToProcessCount($this->task->id)) {
+    if(!ScheduledTaskSubscriber::getUnprocessedCount($this->task->id)) {
       $this->task->processed_at = current_time('mysql');
       return $this->task->complete();
     }

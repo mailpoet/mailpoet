@@ -16,7 +16,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
   function testItCanBeCreated() {
     expect($this->task_subscriber->task_id)->equals($this->task_id);
     expect($this->task_subscriber->subscriber_id)->equals($this->subscriber_id);
-    expect($this->task_subscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_TO_PROCESS);
+    expect($this->task_subscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
   }
 
   function testItCanBeUpdated() {
@@ -41,12 +41,12 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
     expect($task_subscribers[2]->subscriber_id)->equals($subscriber_ids[2]);
   }
 
-  function testItCanGetToProcessCount() {
-    $count = ScheduledTaskSubscriber::getToProcessCount($this->task_id);
+  function testItCangetUnprocessedCount() {
+    $count = ScheduledTaskSubscriber::getUnprocessedCount($this->task_id);
     expect($count)->equals(1);
     $this->task_subscriber->processed = ScheduledTaskSubscriber::STATUS_PROCESSED;
     $this->task_subscriber->save();
-    $count = ScheduledTaskSubscriber::getToProcessCount($this->task_id);
+    $count = ScheduledTaskSubscriber::getUnprocessedCount($this->task_id);
     expect($count)->equals(0);
   }
 

@@ -19,7 +19,7 @@ class Bounce {
        AND s.`status` IN (?, ?)',
       array(
         $task->id,
-        ScheduledTaskSubscriber::STATUS_TO_PROCESS,
+        ScheduledTaskSubscriber::STATUS_UNPROCESSED,
         Subscriber::STATUS_SUBSCRIBED,
         Subscriber::STATUS_UNCONFIRMED
       )

@@ -54,6 +54,6 @@ class BatchIterator implements \Iterator, \Countable {
   private function getSubscribers() {
     return ScheduledTaskSubscriber::select('subscriber_id')
       ->where('task_id', $this->task_id)
-      ->where('processed', ScheduledTaskSubscriber::STATUS_TO_PROCESS);
+      ->where('processed', ScheduledTaskSubscriber::STATUS_UNPROCESSED);
   }
 }
