@@ -17,7 +17,7 @@
     <a href="admin.php?page=mailpoet-update" class="nav-tab nav-tab-active"><%= __("What's New") %></a>
   </h2>
 
-  <div id="mailpoet-changelog" class="feature-section one-col-left">
+  <div id="mailpoet-changelog" class="feature-section one-col">
     <h2 class="mailpoet-feature-top"><%= __('List of Changes') %></h2>
     <% if changelog %>
       <% for item in changelog %>
@@ -37,7 +37,7 @@
   <hr>
 
   <% if(not settings.analytics.enabled) %>
-    <div class="feature-section one-col">
+    <div class="feature-section one-col mailpoet_centered">
       <h2><%= __('Do Your Part to Make MailPoet Better') %></h2>
       <div class="lead-description">
 
@@ -46,7 +46,7 @@
           <%= __('Yes, share my data anonymously.') %>
         </label>
       </div>
-      <p><%= __("By sharing your data with us, you can help us understand what our users like (and don't like).") %>
+      <p class="top-space-triple"><%= __("By sharing your data with us, you can help us understand what our users like (and don't like).") %>
         <%= __('We use it to prioritize and develop new plugin features.') %><br>
         <%= __('Share your data to help shape the future of MailPoet! [link]Read more.[/link]')
           |replaceLinkTags('http://docs.mailpoet.com/article/36-share-your-data', {'target' : '_blank'})
@@ -57,7 +57,7 @@
     <hr>
   <% endif %>
 
-  <div class="feature-section one-col">
+  <div class="feature-section one-col mailpoet_centered">
     <h2><%= __('Care to Give Your Opinion?') %></h2>
 
     <script type="text/javascript" charset="utf-8" src="http://static.polldaddy.com/p/9780744.js"></script>
@@ -66,8 +66,8 @@
 
   <hr>
 
-  <div class="feature-section one-col">
-    <a class="button button-primary" href="admin.php?page=mailpoet-newsletters"><%= __('Awesome! Now, take me to MailPoet') %> &rarr;</a>
+  <div class="feature-section one-col mailpoet_centered">
+    <a class="button button-primary go-to-plugin" href="admin.php?page=mailpoet-newsletters"><%= __('Awesome! Now, take me to MailPoet') %> &rarr;</a>
   </div>
 
 </div>
