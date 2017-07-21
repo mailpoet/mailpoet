@@ -110,6 +110,13 @@ class Newsletters extends APIEndpoint {
         }
       }
 
+      $queue = $newsletter->getQueue();
+      if ($queue) {
+        $queue->newsletter_rendered_body = null;
+        $queue->newsletter_rendered_subject = null;
+        $queue->save();
+      }
+
       Hooks::doAction('mailpoet_api_newsletters_save_after', $newsletter);
 
       return $this->successResponse($newsletter->asArray());
