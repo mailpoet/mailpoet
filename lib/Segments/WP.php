@@ -26,13 +26,9 @@ class WP {
       case 'deleted_user':
       case 'remove_user_from_blog':
         if($subscriber !== false) {
-          // unlink subscriber to wp user
-          $subscriber->setExpr('wp_user_id', 'NULL')->save();
-
-          // delete subscription to wp segment
-          SubscriberSegment::where('subscriber_id', $subscriber->id)
-            ->where('segment_id', $wp_segment->id)
-            ->deleteMany();
+          // unlink subscriber from wp user and delete
+          $subscriber->set('wp_user_id', null);
+          $subscriber->delete();
         }
         break;
       case 'profile_update':
@@ -96,6 +92,14 @@ class WP {
     foreach($wp_users as $wp_user_id) {
       static::synchronizeUser($wp_user_id);
     }
+
+    // remove orphaned wp segment subscribers (not having a matching wp user id),
+    // e.g. if wp users were deleted directly from the database
+    $wp_segment->subscribers()
+      ->whereNotIn('wp_user_id', $wp_users)
+      ->findResultSet()
+      ->set('wp_user_id', null)
+      ->delete();
 
     return true;
   }
