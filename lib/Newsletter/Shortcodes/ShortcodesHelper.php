@@ -118,7 +118,7 @@ class ShortcodesHelper {
     return array_map(function ($custom_field) {
       return array(
         'text' => $custom_field->name,
-        'shortcode' => 'subscriber:cf_' . $custom_field->id
+        'shortcode' => '[subscriber:cf_' . $custom_field->id . ']'
       );
     }, $custom_fields);
   }

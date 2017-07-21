@@ -29,7 +29,7 @@ class ShortcodesHelperTest extends MailPoetTest {
     $custom_subscriber_shortcode = end($shortcodes['Subscriber']);
     expect($custom_subscriber_shortcode['text'])->equals($custom_field->name);
     expect($custom_subscriber_shortcode['shortcode'])
-      ->equals('subscriber:cf_' . $custom_field->id);
+      ->equals('[subscriber:cf_' . $custom_field->id . ']');
   }
 
   function _after() {
