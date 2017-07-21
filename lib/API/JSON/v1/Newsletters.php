@@ -33,6 +33,7 @@ class Newsletters extends APIEndpoint {
       $newsletter = $newsletter
         ->withSegments()
         ->withOptions()
+        ->withSendingQueue()
         ->asArray();
       $newsletter = Hooks::applyFilters('mailpoet_api_newsletters_get_after', $newsletter);
       return $this->successResponse($newsletter);
@@ -111,7 +112,7 @@ class Newsletters extends APIEndpoint {
       }
 
       $queue = $newsletter->getQueue();
-      if ($queue) {
+      if($queue) {
         $queue->newsletter_rendered_body = null;
         $queue->newsletter_rendered_subject = null;
         $queue->save();

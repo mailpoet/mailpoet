@@ -1215,23 +1215,26 @@
         newsletter: response.data,
         config: config,
       });
-      MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'sending_queue',
-        action: 'pause',
-        data: {
-          newsletter_id: response.data.id
+      var queue = response.data.queue;
+      if (queue && queue.status == 'scheduled') {
+        MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'sending_queue',
+          action: 'pause',
+          data: {
+            newsletter_id: response.data.id
+          }
+        }).done(response =>
+          MailPoet.Notice.success(MailPoet.I18n.t('newsletterIsPaused'))
+        )
+      }).fail(function(response) {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map(function(error) { return error.message; }),
+            { scroll: true, static: true }
+          );
         }
-      }).done(response =>
-        MailPoet.Notice.success(MailPoet.I18n.t('newsletterIsPaused'))
-      )
-    }).fail(function(response) {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map(function(error) { return error.message; }),
-          { scroll: true, static: true }
-        );
-      }
-    });
+      });
+    }
   </script>
 <% endblock %>

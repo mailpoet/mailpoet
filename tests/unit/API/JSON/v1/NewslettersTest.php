@@ -99,6 +99,7 @@ class NewslettersTest extends \MailPoetTest {
       Newsletter::findOne($this->newsletter->id)
         ->withSegments()
         ->withOptions()
+        ->withSendingQueue()
         ->asArray()
     );
     $hook_name = 'mailpoet_api_newsletters_get_after';

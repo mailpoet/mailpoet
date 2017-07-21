@@ -149,6 +149,37 @@ define(
         }
         return false;
       },
+      handleResume: function (e) {
+        e.preventDefault();
+        if(!this.isValid()) {
+          jQuery('#mailpoet_newsletter').parsley().validate();
+        } else {
+          this._save(e).done(() => {
+            this.setState({ loading: true });
+          }).done(() => {
+            MailPoet.Ajax.post({
+              api_version: window.mailpoet_api_version,
+              endpoint: 'sendingQueue',
+              action: 'resume',
+              data: {
+                newsletter_id: this.state.item.id
+              }
+            }).done(() => {
+              this.context.router.push(`/${ this.state.item.type || '' }`);
+            }).fail((response) => {
+              if (response.errors.length > 0) {
+                MailPoet.Notice.error(
+                  response.errors.map((error) => { return error.message; }),
+                  { scroll: true }
+                );
+              }
+            });
+          }).fail(this._showError).always(() => {
+            this.setState({ loading: false });
+          });
+        }
+        return false;
+      },
       handleSave: function (e) {
         e.preventDefault();
 
@@ -174,6 +205,7 @@ define(
       },
       _save: function () {
         const data = this.state.item;
+        data.queue = undefined;
         this.setState({ loading: true });
 
         // Store only properties that can be changed on this page
@@ -238,6 +270,15 @@ define(
                   {...this.getSendButtonOptions()}
                   />
                 &nbsp;
+                {
+                  this.state.item.queue && this.state.item.queue.status == 'paused'
+                  ? <input
+                  className="button button-secondary"
+                  type="button"
+                  onClick={ this.handleResume }
+                  value={MailPoet.I18n.t('resume')} />
+                  : null
+                }
                 <input
                   className="button button-secondary"
                   type="submit"
