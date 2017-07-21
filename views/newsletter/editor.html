@@ -341,6 +341,7 @@
     'unsavedChangesWillBeLost': __('There are unsaved changes which will be lost if you leave this page.'),
     'selectColor': _x('Select', 'select color'),
     'cancelColorSelection': _x('Cancel', 'cancel color selection'),
+    'newsletterIsPaused': __('Email sending has been paused'),
   }) %>
 <% endblock %>
 
@@ -1214,6 +1215,16 @@
         newsletter: response.data,
         config: config,
       });
+      MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'sending_queue',
+        action: 'pause',
+        data: {
+          newsletter_id: response.data.id
+        }
+      }).done(response =>
+        MailPoet.Notice.success(MailPoet.I18n.t('newsletterIsPaused'))
+      )
     }).fail(function(response) {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
