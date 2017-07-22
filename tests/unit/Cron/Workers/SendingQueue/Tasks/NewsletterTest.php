@@ -1,5 +1,6 @@
 <?php
 
+use AspectMock\Test as Mock;
 use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
@@ -269,6 +270,45 @@ class NewsletterTaskTest extends MailPoetTest {
       expect($mailer_log['error']['operation'])->equals('queue_save');
       expect($mailer_log['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
     }
+  }
+
+  function testItLogsErrorWhenQueueRenderedNewsletterBodyIsInvalid() {
+    $queue = $this->queue;
+    $queue_mock = Mock::double(
+      new stdClass(),
+      array(
+        'getNewsletterRenderedBody' => null
+      )
+    );
+    $queue_mock->id = $queue->id;
+
+    // broken serialized object
+    $queue->newsletter_rendered_body = 'a:2:{s:4:"html"';
+    $queue->save();
+    try {
+      $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock);
+      self::fail('Sending error exception was not thrown.');
+    } catch(Exception $e) {
+      $mailer_log = MailerLog::getMailerLog();
+      expect($mailer_log['error']['operation'])->equals('queue_save');
+      expect($mailer_log['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+    }
+  }
+
+  function testItPreProcessesNewsletterWhenQueueRenderedNewsletterBodyIsValid() {
+    $queue = $this->queue;
+    $queue_mock = Mock::double(
+      new stdClass(),
+      array(
+        'getNewsletterRenderedBody' => null
+      )
+    );
+    $queue_mock->id = $queue->id;
+
+    // properly serialized object
+    $queue->newsletter_rendered_body = 'a:2:{s:4:"html";s:4:"test";s:4:"text";s:4:"test";}';
+    $queue->save();
+    expect($this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock))->equals($this->newsletter);
   }
 
   function _after() {

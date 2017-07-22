@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
+use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
@@ -89,7 +90,14 @@ class Newsletter {
     $queue->newsletter_rendered_subject = Shortcodes::process($newsletter->subject, $newsletter, null, $queue);
     $queue->newsletter_rendered_body = $rendered_newsletter;
     $queue->save();
-    if($queue->getErrors()) {
+    // catch DB errors
+    $queue_errors = $queue->getErrors();
+    if(!$queue_errors) {
+      // verify that the rendered body was successfully saved
+      $queue = SendingQueueModel::findOne($queue->id);
+      $queue_errors = ($queue->isRenderedNewsletterBodyValid() !== true);
+    }
+    if($queue_errors) {
       return MailerLog::processError(
         'queue_save',
         __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.')

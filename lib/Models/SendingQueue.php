@@ -86,9 +86,8 @@ class SendingQueue extends Model {
 
   function asArray() {
     $model = parent::asArray();
-    $model['subscribers'] = (is_serialized($this->subscribers))
-      ? unserialize($this->subscribers)
-      : $this->subscribers;
+    $model['subscribers'] = $this->getSubscribers();
+    $model['newsletter_rendered_body'] = $this->getNewsletterRenderedBody();
     return $model;
   }
 
@@ -118,6 +117,11 @@ class SendingQueue extends Model {
     );
     $this->subscribers = $subscribers;
     $this->updateCount();
+  }
+
+  function isRenderedNewsletterBodyValid() {
+    $newsletter_body = $this->getNewsletterRenderedBody();
+    return (is_array($newsletter_body) && !empty($newsletter_body['html']) && !empty($newsletter_body['text']));
   }
 
   function updateCount() {
