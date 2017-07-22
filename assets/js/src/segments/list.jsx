@@ -156,14 +156,12 @@ const item_actions = [
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
         action: 'synchronize'
-      }).done((response) => {
+      }).done(() => {
         MailPoet.Modal.loading(false);
-        if(response === true) {
-          MailPoet.Notice.success(
-            (MailPoet.I18n.t('listSynchronized')).replace('%$1s', item.name)
-          );
-          refresh();
-        }
+        MailPoet.Notice.success(
+          (MailPoet.I18n.t('listSynchronized')).replace('%$1s', item.name)
+        );
+        refresh();
       }).fail((response) => {
         MailPoet.Modal.loading(false);
         if(response.errors.length > 0) {
