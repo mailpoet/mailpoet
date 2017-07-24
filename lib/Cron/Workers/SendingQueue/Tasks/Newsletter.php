@@ -1,13 +1,14 @@
 <?php
+
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
-use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterSegment as NewsletterSegmentModel;
+use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\Setting;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
@@ -28,20 +29,24 @@ class Newsletter {
     // get existing active or sending newsletter
     $newsletter = $queue->newsletter()
       ->whereNull('deleted_at')
-      ->whereAnyIs(array(
-        array('status' => NewsletterModel::STATUS_ACTIVE),
-        array('status' => NewsletterModel::STATUS_SENDING)
-      ))
+      ->whereAnyIs(
+        array(
+          array('status' => NewsletterModel::STATUS_ACTIVE),
+          array('status' => NewsletterModel::STATUS_SENDING)
+        )
+      )
       ->findOne();
     if(!$newsletter) return false;
     // if this is a notification history, get existing active or sending parent newsletter
     if($newsletter->type == NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
       $parent_newsletter = $newsletter->parent()
         ->whereNull('deleted_at')
-        ->whereAnyIs(array(
-          array('status' => NewsletterModel::STATUS_ACTIVE),
-          array('status' => NewsletterModel::STATUS_SENDING)
-        ))
+        ->whereAnyIs(
+          array(
+            array('status' => NewsletterModel::STATUS_ACTIVE),
+            array('status' => NewsletterModel::STATUS_SENDING)
+          )
+        )
         ->findOne();
       if(!$parent_newsletter) return false;
     }
@@ -51,7 +56,9 @@ class Newsletter {
   function preProcessNewsletter($newsletter, $queue) {
     // return the newsletter if it was previously rendered
     if(!is_null($queue->getNewsletterRenderedBody())) {
-      return $newsletter;
+      return (!$queue->validate()) ?
+        $this->stopNewsletterPreProcessing() :
+        $newsletter;
     }
     // if tracking is enabled, do additional processing
     if($this->tracking_enabled) {
@@ -78,7 +85,7 @@ class Newsletter {
     // check if this is a post notification and if it contains posts
     $newsletter_contains_posts = strpos($rendered_newsletter['html'], 'data-post-id');
     if($newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY &&
-       !$newsletter_contains_posts
+      !$newsletter_contains_posts
     ) {
       // delete notification history record since it will never be sent
       $newsletter->delete();
@@ -95,13 +102,10 @@ class Newsletter {
     if(!$queue_errors) {
       // verify that the rendered body was successfully saved
       $queue = SendingQueueModel::findOne($queue->id);
-      $queue_errors = ($queue->isRenderedNewsletterBodyValid() !== true);
+      $queue_errors = ($queue->validate() !== true);
     }
     if($queue_errors) {
-      return MailerLog::processError(
-        'queue_save',
-        __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.')
-      );
+      $this->stopNewsletterPreProcessing();
     }
     return $newsletter;
   }
@@ -156,5 +160,12 @@ class Newsletter {
       ->select('segment_id')
       ->findArray();
     return Helpers::flattenArray($segments);
+  }
+
+  function stopNewsletterPreProcessing() {
+    MailerLog::processError(
+      'queue_save',
+      __('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.')
+    );
   }
 }
