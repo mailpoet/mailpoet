@@ -131,7 +131,7 @@ class Functions extends \Twig_Extension {
   }
 
   function getMailPoetPremiumVersion() {
-    return (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A';
+    return (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : false;
   }
 
   function getWPTimeFormat() {

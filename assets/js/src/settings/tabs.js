@@ -70,6 +70,14 @@ define(
 
         // show "save settings" button
         jQuery('.mailpoet_settings_submit').show();
+
+        MailPoet.trackEvent(
+          'User has clicked a tab in Settings',
+          {
+            'MailPoet Free version': window.mailpoet_version,
+            'Tab ID': tab
+          }
+        );
       }
     }));
 

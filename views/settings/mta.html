@@ -724,6 +724,7 @@
             "<%= __('The email has been sent! Check your inbox.') | escape('js') %>",
             { scroll: true }
           );
+          trackTestEmailSent(true);
         }).fail(function(response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
@@ -731,6 +732,7 @@
               { scroll: true }
             );
           }
+          trackTestEmailSent(false);
         });
       });
 
@@ -858,6 +860,24 @@
       // render sending frequency form
       $('#mailpoet_smtp_provider').trigger('change');
       $('#mailpoet_web_host').trigger('change');
+
+      function trackTestEmailSent(success) {
+        MailPoet.trackEvent(
+          'User has sent a test email from Settings',
+          {
+            'Sending was successful': !!success,
+            'Sending method type': mailer.method,
+            'MailPoet Free version': window.mailpoet_version
+          }
+        );
+      }
+
+      $('.mailpoet_sending_methods_help a').on('click', function() {
+        MailPoet.trackEvent(
+          'User has clicked to view the sending comparison table',
+          {'MailPoet Free version': window.mailpoet_version}
+        );
+      });
     });
 
     function setProviderForm() {

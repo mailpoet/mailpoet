@@ -97,6 +97,19 @@
               "<%= __('Settings saved') | escape('js') %>",
               { scroll: true }
             );
+            MailPoet.trackEvent(
+              'User has saved Settings',
+              {
+                'MailPoet Free version': window.mailpoet_version,
+                'Sending method type': settings_data.mta_group || null,
+                'Sending frequency (emails)': settings_data.mta_group != 'mailpoet' && settings_data.mta && settings_data.mta.frequency && settings_data.mta.frequency.emails,
+                'Sending frequency (interval)': settings_data.mta_group != 'mailpoet' && settings_data.mta && settings_data.mta.frequency && settings_data.mta.frequency.interval,
+                'Sending provider': settings_data.mta_group == 'smtp' && settings_data.smtp_provider,
+                'Sign-up confirmation enabled': (settings_data.signup_confirmation && settings_data.signup_confirmation.enabled == true),
+                'Bounce email is present': (settings_data.bounce && settings_data.bounce.address != ""),
+                'Newsletter task scheduler method': (settings_data.cron_trigger && settings_data.cron_trigger.method)
+              }
+            );
           }).fail(function(response) {
             if (response.errors.length > 0) {
               MailPoet.Notice.error(
