@@ -18,6 +18,7 @@ class Migrator {
       'settings',
       'custom_fields',
       'scheduled_tasks',
+      'scheduled_task_subscribers',
       'sending_queues',
       'subscribers',
       'subscriber_segment',
@@ -109,18 +110,25 @@ class Migrator {
     $attributes = array(
       'id mediumint(9) NOT NULL AUTO_INCREMENT,',
       'type varchar(90) NULL DEFAULT NULL,',
-      'subscribers longtext,',
       'status varchar(12) NULL DEFAULT NULL,',
       'priority mediumint(9) NOT NULL DEFAULT 0,',
-      'count_total mediumint(9) NOT NULL DEFAULT 0,',
-      'count_processed mediumint(9) NOT NULL DEFAULT 0,',
-      'count_to_process mediumint(9) NOT NULL DEFAULT 0,',
       'scheduled_at TIMESTAMP NULL,',
       'processed_at TIMESTAMP NULL,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at TIMESTAMP NULL,',
       'PRIMARY KEY  (id)',
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function scheduledTaskSubscribers() {
+    $attributes = array(
+      'task_id mediumint(9) NOT NULL,',
+      'subscriber_id mediumint(9) NOT NULL,',
+      'processed int(1) NOT NULL,',
+      'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (task_id, subscriber_id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }

@@ -64,11 +64,11 @@ class SendingQueue {
         }
         // if some subscribers weren't found, remove them from the processing list
         if(count($found_subscribers_ids) !== count($subscribers_to_process_ids)) {
-          $subscibers_to_remove = array_diff(
+          $subscribers_to_remove = array_diff(
             $subscribers_to_process_ids,
             $found_subscribers_ids
           );
-          $queue->removeNonexistentSubscribers($subscibers_to_remove);
+          $queue->removeSubscribers($subscribers_to_remove);
           if(!count($queue->subscribers['to_process'])) {
             $this->newsletter_task->markNewsletterAsSent($newsletter, $queue);
             continue;

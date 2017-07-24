@@ -4,6 +4,10 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Tasks\Bounce as BounceTask;
+use MailPoet\Tasks\Subscribers as TaskSubscribers;
+use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
@@ -33,42 +37,25 @@ class Bounce extends SimpleWorker {
   }
 
   function prepareTask(ScheduledTask $task) {
-    $subscribers = Subscriber::select('id')
-      ->whereNull('deleted_at')
-      ->whereIn('status', array(
-        Subscriber::STATUS_SUBSCRIBED,
-        Subscriber::STATUS_UNCONFIRMED
-      ))
-      ->findArray();
-    $subscribers = Helpers::arrayColumn($subscribers, 'id');
+    BounceTask::prepareSubscribers($task);
 
-    if(empty($subscribers)) {
+    if(!ScheduledTaskSubscriber::getUnprocessedCount($task->id)) {
       $task->delete();
       return false;
     }
-
-    // update current task
-    $task->subscribers = serialize(
-      array(
-        'to_process' => $subscribers
-      )
-    );
-    $task->count_total = $task->count_to_process = count($subscribers);
 
     return parent::prepareTask($task);
   }
 
   function processTask(ScheduledTask $task) {
-    $task->subscribers = $task->getSubscribers();
-    if(empty($task->subscribers['to_process'])) {
+    $subscriber_batches = new BatchIterator($task->id, self::BATCH_SIZE);
+
+    if(count($subscriber_batches) === 0) {
       $task->delete();
       return false;
     }
 
-    $subscriber_batches = array_chunk(
-      $task->subscribers['to_process'],
-      self::BATCH_SIZE
-    );
+    $task_subscribers = new TaskSubscribers($task);
 
     foreach($subscriber_batches as $subscribers_to_process_ids) {
       // abort if execution limit is reached
@@ -82,7 +69,7 @@ class Bounce extends SimpleWorker {
 
       $this->processEmails($subscriber_emails);
 
-      $task->updateProcessedSubscribers($subscribers_to_process_ids);
+      $task_subscribers->updateProcessedSubscribers($subscribers_to_process_ids);
     }
 
     return true;

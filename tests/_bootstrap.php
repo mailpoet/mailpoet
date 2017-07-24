@@ -19,6 +19,7 @@ $models = array(
   'NewsletterOptionField',
   'Segment',
   'ScheduledTask',
+  'ScheduledTaskSubscriber',
   'SendingQueue',
   'Setting',
   'Subscriber',

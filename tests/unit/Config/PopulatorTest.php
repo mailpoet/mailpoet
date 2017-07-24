@@ -38,6 +38,6 @@ class PopulatorTest extends MailPoetTest {
   function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    update_option('mailpoet_db_version', Env::$version);
+    update_option('mailpoet_db_version', MAILPOET_VERSION);
   }
 }
