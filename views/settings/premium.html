@@ -146,6 +146,13 @@
               .attr('href', response.meta.premium_activate_url || '#');
             $('.mailpoet_premium_activate').show();
           }
+          MailPoet.trackEvent(
+            'User has validated a Premium key',
+            {
+              'MailPoet Free version': window.mailpoet_version,
+              'Premium plugin is active': response.meta.premium_plugin_active
+            }
+          );
         }).fail(function(response) {
           if (response.errors.length > 0) {
             $('.mailpoet_premium_key_invalid').text(
@@ -153,6 +160,13 @@
             );
             $('.mailpoet_premium_key_invalid').removeClass('mailpoet_hidden');
           }
+          MailPoet.trackEvent(
+            'User has failed to validate a Premium key',
+            {
+              'MailPoet Free version': window.mailpoet_version,
+              'Premium plugin is active': !!window.mailpoet_premium_version
+            }
+          );
         });
       }
 
@@ -183,6 +197,20 @@
           }
         });
       }
+
+      $('.mailpoet_premium_install_link').on('click', function() {
+        MailPoet.trackEvent(
+          'User has installed the Premium plugin from Settings',
+          {'MailPoet Free version': window.mailpoet_version}
+        );
+      });
+
+      $('.mailpoet_premium_activate_link').on('click', function() {
+        MailPoet.trackEvent(
+          'User has activated the Premium plugin from Settings',
+          {'MailPoet Free version': window.mailpoet_version}
+        );
+      });
 
     });
   });
