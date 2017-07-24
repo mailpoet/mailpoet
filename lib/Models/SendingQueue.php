@@ -12,6 +12,14 @@ class SendingQueue extends Model {
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
 
+  function __construct() {
+    parent::__construct();
+
+    $this->addValidations('newsletter_rendered_body', array(
+      'validRenderedNewsletterBody' => __('Rendered newsletter body is invalid!', 'mailpoet')
+    ));
+  }
+
   function newsletter() {
     return $this->has_one(__NAMESPACE__ . '\Newsletter', 'id', 'newsletter_id');
   }
@@ -43,10 +51,10 @@ class SendingQueue extends Model {
   }
 
   function save() {
-    if(!is_serialized($this->subscribers)) {
+    if(!is_serialized($this->subscribers) && !is_null($this->newsletter_rendered_body)) {
       $this->set('subscribers', serialize($this->subscribers));
     }
-    if(!is_serialized($this->newsletter_rendered_body)) {
+    if(!is_serialized($this->newsletter_rendered_body) && !is_null($this->newsletter_rendered_body)) {
       $this->set('newsletter_rendered_body', serialize($this->newsletter_rendered_body));
     }
     // set the default priority to medium
@@ -117,11 +125,6 @@ class SendingQueue extends Model {
     );
     $this->subscribers = $subscribers;
     $this->updateCount();
-  }
-
-  function isRenderedNewsletterBodyValid() {
-    $newsletter_body = $this->getNewsletterRenderedBody();
-    return (is_array($newsletter_body) && !empty($newsletter_body['html']) && !empty($newsletter_body['text']));
   }
 
   function updateCount() {
