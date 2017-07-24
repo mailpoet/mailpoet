@@ -1,4 +1,4 @@
-version: '2.1'
+version: '2'
 
 services:
   codeception:
@@ -15,10 +15,8 @@ services:
     build: ./tests/wordpressDockerfile
     image: wordpress:latest
     depends_on:
-      mysql:
-        condition: service_healthy
-      chrome:
-        condition: service_healthy
+      - mysql
+      - chrome
     volumes:
       - wp-core:/var/www/html
       - ./:/var/www/html/wp-content/plugins/mailpoet
@@ -35,11 +33,6 @@ services:
        MYSQL_DATABASE: wordpress
        MYSQL_USER: wordpress
        MYSQL_PASSWORD: wordpress
-    healthcheck:
-      test: "mysql -uwordpress -pwordpress -e 'SELECT 1'"
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
   chrome:
     environment:
@@ -50,10 +43,5 @@ services:
     ports:
       - '4444'
       - '5900:5900'
-    healthcheck:
-      test: "wget -O/dev/null http://localhost:4444"
-      interval: 30s
-      timeout: 10s
-      retries: 5
 volumes:
   wp-core:

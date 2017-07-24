@@ -5,6 +5,12 @@ wp-su() {
     sudo -E -u www-data wp "$@"
 }
 
+while ! mysqladmin ping -hmysql --silent; do
+    echo 'Waiting for the database'
+    sleep 1
+done
+
+
 # Make sure permissions are correct.
 cd /wp-core
 chown www-data:www-data wp-content/plugins
