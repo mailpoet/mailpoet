@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Models;
 
 if(!defined('ABSPATH')) exit;
@@ -78,14 +79,12 @@ class Model extends \Sudzy\ValidModel {
 
   static function bulkTrash($orm) {
     $model = get_called_class();
-    $count = self::bulkAction($orm, function($ids) use($model) {
+    $count = self::bulkAction($orm, function($ids) use ($model) {
       $model::rawExecute(join(' ', array(
-          'UPDATE `'.$model::$_table.'`',
-          'SET `deleted_at` = NOW()',
-          'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'
-        )),
-        $ids
-      );
+        'UPDATE `' . $model::$_table . '`',
+        'SET `deleted_at` = NOW()',
+        'WHERE `id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')'
+      )), $ids);
     });
 
     return array('count' => $count);
@@ -93,7 +92,7 @@ class Model extends \Sudzy\ValidModel {
 
   static function bulkDelete($orm) {
     $model = get_called_class();
-    $count = self::bulkAction($orm, function($ids) use($model) {
+    $count = self::bulkAction($orm, function($ids) use ($model) {
       $model::whereIn('id', $ids)->deleteMany();
     });
 
@@ -106,14 +105,12 @@ class Model extends \Sudzy\ValidModel {
 
   static function bulkRestore($orm) {
     $model = get_called_class();
-    $count = self::bulkAction($orm, function($ids) use($model) {
+    $count = self::bulkAction($orm, function($ids) use ($model) {
       $model::rawExecute(join(' ', array(
-          'UPDATE `'.$model::$_table.'`',
-          'SET `deleted_at` = NULL',
-          'WHERE `id` IN ('.rtrim(str_repeat('?,', count($ids)), ',').')'
-        )),
-        $ids
-      );
+        'UPDATE `' . $model::$_table . '`',
+        'SET `deleted_at` = NULL',
+        'WHERE `id` IN (' . rtrim(str_repeat('?,', count($ids)), ',') . ')'
+      )), $ids);
     });
 
     return array('count' => $count);
@@ -124,7 +121,7 @@ class Model extends \Sudzy\ValidModel {
 
     if($total === 0) return false;
 
-    $rows = $orm->select(static::$_table.'.id')
+    $rows = $orm->select(static::$_table . '.id')
       ->offset(null)
       ->limit(null)
       ->findArray();
@@ -138,7 +135,8 @@ class Model extends \Sudzy\ValidModel {
     }
 
     // get number of affected rows
-    return $orm->get_last_statement()->rowCount();
+    return $orm->get_last_statement()
+      ->rowCount();
   }
 
   function duplicate($data = array()) {
@@ -146,7 +144,7 @@ class Model extends \Sudzy\ValidModel {
     $model_data = array_merge($this->asArray(), $data);
     unset($model_data['id']);
 
-    $duplicate =  $model::create();
+    $duplicate = $model::create();
     $duplicate->hydrate($model_data);
     $duplicate->set_expr('created_at', 'NOW()');
     $duplicate->set_expr('updated_at', 'NOW()');
@@ -171,10 +169,10 @@ class Model extends \Sudzy\ValidModel {
   }
 
   /**
-   * PHP 5.3 fix for incorrectly returned model results when using asArray() function. 
+   * PHP 5.3 fix for incorrectly returned model results when using asArray() function.
    * Jira reference: https://goo.gl/UZaMj5
    * TODO: remove after phasing out PHP 5.3 support
-   */ 
+   */
   function asArray() {
     return call_user_func_array('parent::as_array', func_get_args());
   }
@@ -185,8 +183,17 @@ class Model extends \Sudzy\ValidModel {
   public static function __callStatic($method, $parameters) {
     try {
       return parent::__callStatic($method, $parameters);
-    } catch (\PDOException $e) {
+    } catch(\PDOException $e) {
       throw new \Exception($e->getMessage());
     }
+  }
+
+  public function validate() {
+    $success = true;
+    foreach(array_keys($this->_validations) as $field) {
+      $success = $success && $this->validateField($field, $this->$field);
+    }
+    $this->setError($this->getValidationErrors());
+    return $success;
   }
 }

@@ -10,7 +10,8 @@ class ModelValidator extends \Sudzy\Engine {
   function __construct() {
     parent::__construct();
     $this->validators = array(
-      'validEmail' => 'validateEmail'
+      'validEmail' => 'validateEmail',
+      'validRenderedNewsletterBody' => 'validateRenderedNewsletterBody'
     );
     $this->setupValidators();
   }
@@ -26,5 +27,12 @@ class ModelValidator extends \Sudzy\Engine {
 
   function validateEmail($email) {
     return is_email($email) !== false;
+  }
+
+  function validateRenderedNewsletterBody($newsletter_body) {
+    $newsletter_body = (!is_serialized($newsletter_body)) ?
+      $newsletter_body :
+      unserialize($newsletter_body);
+    return (is_null($newsletter_body) || (is_array($newsletter_body) && !empty($newsletter_body['html']) && !empty($newsletter_body['text'])));
   }
 }
