@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.8
-Stable tag: 3.0.0-beta.36.3.1
+Stable tag: 3.0.0-beta.37.0.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -22,7 +22,7 @@ Try the new MailPoet! This is a beta version of our completely new email newslet
 
 = See it in action. =
 [Test the demo](http://demo3.mailpoet.com/launch/) or [see the 2 min. video](https://vimeo.com/223581490)
-[vimeo https://vimeo.com/223581490] 
+[vimeo https://vimeo.com/223581490]
 
 = What is a beta? =
 
@@ -92,6 +92,13 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-beta.37.0.0 - 2017-07-25 =
+* Improved: we collect more informative data from those who share it with us in order to improve the plugin. You should share too!
+* Fixed: deleted WordPress users are removed from the WordPress Users list as well;
+* Fixed: shortcodes for custom fields are now inserted correctly in the email designer;
+* Fixed: MailPoet Sending Service stays activated after saving Settings;
+* Fixed: improperly rendered newsletters will not be sent. Thanks Scott and Alison!
 
 = 3.0.0-beta.36.3.1 - 2017-07-18 =
 * Added: you can now duplicate any item in the email designer;
