@@ -757,8 +757,11 @@
       });
       $('#mailpoet_smtp_method').on('change keyup', renderHostsSelect);
       $('#mailpoet_sending_frequency').on('change keyup', sendingFrequencyMethodUpdated);
-      $('#mailpoet_smtp_method').trigger("change");
-      $('#other_frequency_emails').trigger("change");
+
+      <% if(settings.mta_group != 'mailpoet') %>
+        $('#mailpoet_smtp_method').trigger("change");
+        $('#other_frequency_emails').trigger("change");
+      <% endif %>
 
       function saveSendingMethodConfiguration(group) {
 
