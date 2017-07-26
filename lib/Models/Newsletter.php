@@ -458,42 +458,33 @@ class Newsletter extends Model {
   }
 
   function getStatistics() {
-    if($this->type === self::TYPE_WELCOME) {
-      $where = '`queue_id` IN (SELECT `id` FROM ' . MP_SENDING_QUEUES_TABLE . '
-                WHERE `newsletter_id` = ? AND `status` = ?)';
-      $where_params = array($this->id, SendingQueue::STATUS_COMPLETED);
-    } else {
-      if($this->queue === false) {
-        return false;
-      } else {
-        $where = '`queue_id` = ?';
-        $where_params = array($this->queue['id']);
-      }
+    if(($this->type !== self::TYPE_WELCOME) && ($this->queue === false)) {
+      return false;
     }
 
-    $clicks = StatisticsClicks::selectExpr(
-        'COUNT(DISTINCT subscriber_id) as cnt'
-      )
-      ->whereRaw($where, $where_params)
-      ->findOne();
-
-    $opens = StatisticsOpens::selectExpr(
-        'COUNT(DISTINCT subscriber_id) as cnt'
-      )
-      ->whereRaw($where, $where_params)
-      ->findOne();
-
-    $unsubscribes = StatisticsUnsubscribes::selectExpr(
-        'COUNT(DISTINCT subscriber_id) as cnt'
-      )
-      ->whereRaw($where, $where_params)
-      ->findOne();
-
-    return array(
-      'clicked' => !empty($clicks->cnt) ? $clicks->cnt : 0,
-      'opened' => !empty($opens->cnt) ? $opens->cnt : 0,
-      'unsubscribed' => !empty($unsubscribes->cnt) ? $unsubscribes->cnt : 0
+    $statisticsExprs = array(
+      'clicked' => StatisticsClicks::selectExpr('COUNT(DISTINCT subscriber_id) as cnt')->tableAlias("stat"),
+      'opened' => StatisticsOpens::selectExpr('COUNT(DISTINCT subscriber_id) as cnt')->tableAlias("stat"),
+      'unsubscribed' => StatisticsUnsubscribes::selectExpr('COUNT(DISTINCT subscriber_id) as cnt')->tableAlias("stat"),
     );
+    $result = array();
+
+    foreach($statisticsExprs as $name => $statisticsExpr) {
+      if($this->type !== self::TYPE_WELCOME) {
+        $row = $statisticsExpr->whereRaw('`queue_id` = ?', array($this->queue['id']))->findOne();
+      } else {
+        $row = $statisticsExpr
+          ->join(MP_SENDING_QUEUES_TABLE, array("queue_id", "=", "qt.id"), "qt")
+          ->where(array(
+            "qt.status" => SendingQueue::STATUS_COMPLETED,
+            "stat.newsletter_id" => $this->id,
+          ))->findOne();
+      }
+
+      $result[$name] = !empty($row->cnt) ? $row->cnt : 0;
+    }
+
+    return $result;
   }
 
   static function getAnalytics() {
