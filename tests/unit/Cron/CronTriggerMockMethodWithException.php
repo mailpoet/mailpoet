@@ -2,7 +2,7 @@
 
 namespace MailPoet\Cron\Triggers;
 
-class MockMethodWithException {
+class CronTriggerMockMethodWithException {
   static function run() {
     throw new \Exception('Exception thrown');
   }

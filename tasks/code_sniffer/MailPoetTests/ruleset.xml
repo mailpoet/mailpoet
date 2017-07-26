@@ -91,7 +91,7 @@
   <!-- When referencing arrays there should be no whitespace between brackets -->
   <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
   <!-- Class name and file name must match -->
-  <!-- <rule ref="Squiz.Classes.ClassFileName"/> -->
+  <rule ref="Squiz.Classes.ClassFileName"/>
   <!-- Classes should be named camel case with first letter capitalised -->
   <rule ref="Squiz.Classes.ValidClassName"/>
   <!-- Checks for empty catch statements. It must at least have a comment -->

@@ -1,10 +1,11 @@
 <?php
+namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
 use MailPoet\Config\Database;
 use MailPoet\Config\Env;
 
-class DatabaseTestTest extends MailPoetTest {
+class DatabaseTest extends \MailPoetTest {
   public $database;
 
   function __construct() {
@@ -32,14 +33,14 @@ class DatabaseTestTest extends MailPoetTest {
   function testItSelectivelyUpdatesDriverTimeoutOption() {
     $database = $this->database;
     $database->setupDriverOptions();
-    $current_setting = ORM::for_table("")
+    $current_setting = \ORM::for_table("")
       ->raw_query('SELECT @@session.wait_timeout as wait_timeout')
       ->findOne();
     expect($current_setting->wait_timeout)->greaterThan($database->driver_option_wait_timeout);
     $this->_before();
     $database->driver_option_wait_timeout = 99999;
     $database->setupDriverOptions();
-    $current_setting = ORM::for_table("")
+    $current_setting = \ORM::for_table("")
       ->raw_query('SELECT @@session.wait_timeout as wait_timeout')
       ->findOne();
     expect($current_setting->wait_timeout)->equals(99999);
@@ -47,7 +48,7 @@ class DatabaseTestTest extends MailPoetTest {
 
   function testItSetsDBDriverOptions() {
     $this->database->init();
-    $result = ORM::for_table("")
+    $result = \ORM::for_table("")
       ->raw_query(
         'SELECT ' .
         '@@sql_mode as sql_mode, ' .

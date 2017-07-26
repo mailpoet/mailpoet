@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\API\MP;
 
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
@@ -8,7 +9,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 
-class MPAPITest extends MailPoetTest {
+class APITest extends \MailPoetTest {
   const VERSION = 'v1';
 
   function testItReturnsSubscriberFields() {
@@ -246,7 +247,7 @@ class MPAPITest extends MailPoetTest {
 
   function testItSchedulesWelcomeNotificationByDefaultAfterAddingSubscriber() {
     $API = Stub::makeEmptyExcept(
-      new MailPoet\API\MP\v1\API(),
+      new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
         '_scheduleWelcomeNotification' => Stub::once()
@@ -261,7 +262,7 @@ class MPAPITest extends MailPoetTest {
 
   function testItDoesNotScheduleWelcomeNotificationAfterAddingSubscriberIfStatusIsNotSubscribed() {
     $API = Stub::makeEmptyExcept(
-      new MailPoet\API\MP\v1\API(),
+      new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
         '_scheduleWelcomeNotification' => Stub::never()
@@ -275,7 +276,7 @@ class MPAPITest extends MailPoetTest {
 
   function testItDoesNotScheduleWelcomeNotificationAfterAddingSubscriberWhenDisabledByOption() {
     $API = Stub::makeEmptyExcept(
-      new MailPoet\API\MP\v1\API(),
+      new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
         '_scheduleWelcomeNotification' => Stub::never()
@@ -291,7 +292,7 @@ class MPAPITest extends MailPoetTest {
 
   function testByDefaultItSendsConfirmationEmailAfterAddingSubscriber() {
     $API = Stub::makeEmptyExcept(
-      new MailPoet\API\MP\v1\API(),
+      new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
         '_sendConfirmationEmail' => Stub::once()
@@ -305,7 +306,7 @@ class MPAPITest extends MailPoetTest {
 
   function testItDoesNotSendConfirmationEmailAfterAddingSubscriberWhenOptionIsSet() {
     $API = Stub::makeEmptyExcept(
-      new MailPoet\API\MP\v1\API(),
+      new \MailPoet\API\MP\v1\API(),
       'addSubscriber',
       array(
         '_sendConfirmationEmail' => Stub::never()
@@ -319,9 +320,9 @@ class MPAPITest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

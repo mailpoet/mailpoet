@@ -1,11 +1,12 @@
 <?php
+namespace MailPoet\Test\Util\License\Features;
 
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\Models\Subscriber;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
-class SubscribersFeaturesTest extends MailPoetTest {
+class SubscribersTest extends \MailPoetTest {
   function testChecksIfSubscribersWithinLimitWhenPremiumLicenseDoesNotExist() {
     // if premium unlocker plugin is enabled, skip this check
     if(defined('MAILPOET_PREMIUM_LICENSE')) return;
@@ -31,6 +32,6 @@ class SubscribersFeaturesTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 }

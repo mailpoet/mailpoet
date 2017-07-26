@@ -1,11 +1,13 @@
 <?php
+namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
+
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 
 if(!defined('ABSPATH')) exit;
 
-class LinkTaskTest extends MailPoetTest {
+class LinksTest extends \MailPoetTest {
   function testItCanSaveLinks() {
     $links = array(
       array(
@@ -54,7 +56,7 @@ class LinkTaskTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
   }
 }

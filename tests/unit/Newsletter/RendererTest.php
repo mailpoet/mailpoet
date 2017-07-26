@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Newsletter;
 
 use Codeception\Util\Fixtures;
 use MailPoet\Newsletter\Renderer\Blocks\Button;
@@ -12,7 +13,7 @@ use MailPoet\Newsletter\Renderer\Blocks\Text;
 use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnRenderer;
 use MailPoet\Newsletter\Renderer\Renderer;
 
-class NewsletterRendererTest extends MailPoetTest {
+class RendererTest extends \MailPoetTest {
   function __construct() {
     parent::__construct();
     $this->newsletter = array(

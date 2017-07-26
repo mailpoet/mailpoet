@@ -8,7 +8,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 
 require_once('SimpleWorkerMockImplementation.php');
-use MailPoet\Cron\Workers\MockSimpleWorker;
+use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 
 class SimpleWorkerTest extends MailPoetTest {
   function _before() {
@@ -193,7 +193,7 @@ class SimpleWorkerTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

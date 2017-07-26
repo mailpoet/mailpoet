@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Router\Endpoints;
 
 use Codeception\Util\Stub;
 use MailPoet\Models\Newsletter;
@@ -6,7 +7,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\ViewInBrowser;
 
-class ViewInBrowserRouterTest extends MailPoetTest {
+class ViewInBrowserTest extends \MailPoetTest {
   function _before() {
     // create newsletter
     $newsletter = Newsletter::create();
@@ -193,9 +194,9 @@ class ViewInBrowserRouterTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     // reset WP user role
     $wp_user = wp_get_current_user();
     $wp_user->add_role('administrator');

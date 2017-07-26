@@ -2,7 +2,7 @@
 
 namespace MailPoet\Router\Endpoints;
 
-class MockEndpoint {
+class RouterTestMockEndpoint {
   const ACTION_TEST = 'test';
   public $allowed_actions = array(
     self::ACTION_TEST

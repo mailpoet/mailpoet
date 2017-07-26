@@ -5,7 +5,7 @@ use Carbon\Carbon;
 
 if(!defined('ABSPATH')) exit;
 
-class MockAPI {
+class BridgeTestMockAPI {
   public $api_key;
 
   function __construct($api_key) {

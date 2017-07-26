@@ -7,6 +7,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
 
 require_once('BridgeTestMockAPI.php');
+use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
 
 class BridgeTest extends MailPoetTest {
   function _before() {
@@ -20,7 +21,7 @@ class BridgeTest extends MailPoetTest {
 
     $this->bridge = new Bridge();
 
-    $this->bridge->api = new MailPoet\Services\Bridge\MockAPI('key');
+    $this->bridge->api = new MockAPI('key');
   }
 
   function testItChecksIfCurrentSendingMethodIsMailpoet() {
