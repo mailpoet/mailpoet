@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\v1\Subscribers;
@@ -8,7 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Setting;
 
-class SubscribersTest extends MailPoetTest {
+class SubscribersTest extends \MailPoetTest {
   function _before() {
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));

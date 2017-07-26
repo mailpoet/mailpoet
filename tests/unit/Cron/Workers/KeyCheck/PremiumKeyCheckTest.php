@@ -1,11 +1,12 @@
 <?php
+namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
 use Codeception\Util\Stub;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 
-class PremiumKeyCheckTest extends MailPoetTest {
+class PremiumKeyCheckTest extends \MailPoetTest {
   function _before() {
     $this->premium_key = '123457890abcdef';
     $this->worker = new PremiumKeyCheck(microtime(true));
@@ -48,6 +49,6 @@ class PremiumKeyCheckTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

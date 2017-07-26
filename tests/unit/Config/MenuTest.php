@@ -1,10 +1,12 @@
 <?php
+namespace MailPoet\Test\Config;
+
 use Codeception\Util\Stub;
 use MailPoet\Config\Menu;
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
 
-class MenuTest extends MailPoetTest {
+class MenuTest extends \MailPoetTest {
   function testItReturnsTrueIfCurrentPageBelongsToMailpoet() {
     $result = Menu::isOnMailPoetAdminPage(null, 'somepage');
     expect($result)->false();

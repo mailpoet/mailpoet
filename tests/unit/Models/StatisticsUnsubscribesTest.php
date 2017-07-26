@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\Models;
 
 use MailPoet\Models\StatisticsUnsubscribes;
 
-class StatisticsUnsubscribesTest extends MailPoetTest {
+class StatisticsUnsubscribesTest extends \MailPoetTest {
   function testItCanGetExistingStatisticsRecord() {
     $unsubscribe_statistics = StatisticsUnsubscribes::create();
     $unsubscribe_statistics->newsletter_id = 123;
@@ -24,7 +25,7 @@ class StatisticsUnsubscribesTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::for_table(StatisticsUnsubscribes::$_table)
+    \ORM::for_table(StatisticsUnsubscribes::$_table)
       ->deleteMany();
   }
 }

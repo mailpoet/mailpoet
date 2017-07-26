@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Subscribers\ImportExport\Export;
 
 use MailPoet\Config\Env;
 use MailPoet\Models\CustomField;
@@ -8,7 +9,7 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\Export\Export;
 
-class ExportTest extends MailPoetTest {
+class ExportTest extends \MailPoetTest {
   function _before() {
     $this->JSON_data = json_decode(file_get_contents(dirname(__FILE__) . '/ExportTestData.json'), true);
     $this->subscriber_fields = array(
@@ -254,10 +255,10 @@ class ExportTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
   }
 }

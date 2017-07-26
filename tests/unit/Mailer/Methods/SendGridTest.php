@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\Mailer\Methods;
 
 use MailPoet\Mailer\Methods\SendGrid;
 
-class SendGridTest extends MailPoetTest {
+class SendGridTest extends \MailPoetTest {
   function _before() {
     $this->settings = array(
       'method' => 'SendGrid',

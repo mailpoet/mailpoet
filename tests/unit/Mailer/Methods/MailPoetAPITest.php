@@ -1,10 +1,11 @@
 <?php
+namespace MailPoet\Test\Mailer\Methods;
 
 use Codeception\Util\Stub;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\Methods\MailPoet;
 
-class MailPoetAPITest extends MailPoetTest {
+class MailPoetAPITest extends \MailPoetTest {
   function _before() {
     $this->settings = array(
       'method' => 'MailPoet',

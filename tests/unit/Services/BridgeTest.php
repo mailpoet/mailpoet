@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Services;
 
 use Codeception\Util\Stub;
 use MailPoet\Services\Bridge;
@@ -9,7 +10,7 @@ use MailPoet\Models\Setting;
 require_once('BridgeTestMockAPI.php');
 use MailPoet\Services\Bridge\BridgeTestMockAPI as MockAPI;
 
-class BridgeTest extends MailPoetTest {
+class BridgeTest extends \MailPoetTest {
   function _before() {
     $this->valid_key = 'abcdefghijklmnopqrstuvwxyz';
     $this->invalid_key = '401' . $this->valid_key;
@@ -260,6 +261,6 @@ class BridgeTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

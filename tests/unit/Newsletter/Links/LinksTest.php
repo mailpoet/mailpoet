@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Newsletter\Links;
 
 use Codeception\Util\Fixtures;
 use MailPoet\Models\NewsletterLink;
@@ -8,7 +9,7 @@ use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Router\Router;
 
-class LinksTest extends MailPoetTest {
+class LinksTest extends \MailPoetTest {
   function testItOnlyExtractsLinksFromAnchorTags() {
     $template = '<a href="http://example.com">some site</a> http://link2.com <img src="http://link3.com">';
     $result = Links::extract($template);
@@ -219,8 +220,8 @@ class LinksTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
   }
 }

@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Newsletter;
 
 use MailPoet\Config\Populator;
 use MailPoet\Models\CustomField;
@@ -12,7 +13,7 @@ use MailPoet\Newsletter\Shortcodes\Categories\Date;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
-class ShortcodesTest extends MailPoetTest {
+class ShortcodesTest extends \MailPoetTest {
   public $rendered_newsletter;
   public $newsletter;
   public $subscriber;
@@ -24,7 +25,7 @@ class ShortcodesTest extends MailPoetTest {
     $this->WP_post = $this->_createWPPost();
     $this->subscriber = $this->_createSubscriber();
     $this->newsletter = $this->_createNewsletter();
-    $this->shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+    $this->shortcodes_object = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $this->subscriber
     );
@@ -115,7 +116,7 @@ class ShortcodesTest extends MailPoetTest {
       $parent_id = $this->newsletter_id,
       $type = Newsletter::TYPE_NOTIFICATION_HISTORY
     );
-    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+    $shortcodes_object = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
       $post_notification_history,
       $this->subscriber
     );
@@ -127,7 +128,7 @@ class ShortcodesTest extends MailPoetTest {
       $parent_id = $this->newsletter_id,
       $type = Newsletter::TYPE_NOTIFICATION_HISTORY
     );
-    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+    $shortcodes_object = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
       $post_notification_history,
       $this->subscriber
     );
@@ -137,21 +138,21 @@ class ShortcodesTest extends MailPoetTest {
 
   function testSubscriberShortcodesRequireSubscriberObjectOrFalseValue() {
     // when subscriber is empty, default value is returned
-    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+    $shortcodes_object = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $subscriber = false
     );
     $result = $shortcodes_object->process(array('[subscriber:firstname | default:test]'));
     expect($result[0])->equals('test');
     // when subscriber is an object, proper value is returned
-    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+    $shortcodes_object = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $this->subscriber
     );
     $result = $shortcodes_object->process(array('[subscriber:firstname | default:test]'));
     expect($result[0])->equals($this->subscriber->first_name);
     // when subscriber is not empty and not an object, false is returned
-    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+    $shortcodes_object = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $subscriber = array()
     );
@@ -164,7 +165,7 @@ class ShortcodesTest extends MailPoetTest {
     $subscriber = $this->subscriber;
     $subscriber->first_name = '';
     $subscriber->last_name = '';
-    $shortcodes_object = new MailPoet\Newsletter\Shortcodes\Shortcodes(
+    $shortcodes_object = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
       $this->newsletter,
       $subscriber
     );
@@ -356,11 +357,11 @@ class ShortcodesTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
     wp_delete_post($this->WP_post, true);
     wp_delete_user($this->WP_user->ID);
   }

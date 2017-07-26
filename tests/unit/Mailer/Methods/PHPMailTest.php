@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\Mailer\Methods;
 
 use MailPoet\Mailer\Methods\PHPMail;
 
-class PHPMailTest extends MailPoetTest {
+class PHPMailTest extends \MailPoetTest {
   function _before() {
     $this->sender = array(
       'from_name' => 'Sender',

@@ -1,9 +1,11 @@
 <?php
+namespace MailPoet\Test\Helpscout;
+
 use MailPoet\Helpscout\Beacon;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 
-class BeaconTest extends MailPoetTest {
+class BeaconTest extends \MailPoetTest {
   function _before() {
     // create 4 users (1 confirmed, 1 subscribed, 1 unsubscribed, 1 bounced)
     Subscriber::createOrUpdate(array(

@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\Date;
 
-class DateTest extends MailPoetTest {
+class DateTest extends \MailPoetTest {
   function testItCanConvertDateMonthYearFormatToDatetime() {
     $date = array(
       'MM/DD/YYYY' => '05/10/2016',

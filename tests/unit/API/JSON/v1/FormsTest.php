@@ -1,10 +1,12 @@
 <?php
+namespace MailPoet\Test\API\JSON\v1;
+
 use MailPoet\API\JSON\v1\Forms;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
 
-class FormsTest extends MailPoetTest {
+class FormsTest extends \MailPoetTest {
   function _before() {
     $this->form_1 = Form::createOrUpdate(array('name' => 'Form 1'));
     $this->form_2 = Form::createOrUpdate(array('name' => 'Form 2'));

@@ -1,9 +1,11 @@
 <?php
+namespace MailPoet\Test\Config;
+
 use Codeception\Util\Stub;
 use MailPoet\Config\Env;
 use MailPoet\Config\Renderer;
 
-class RendererTest extends MailPoetTest {
+class RendererTest extends \MailPoetTest {
   function _before() {
     $this->renderer = new Renderer($caching = false, $debugging = false);
   }

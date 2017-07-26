@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Models\Setting;
@@ -6,7 +7,7 @@ use MailPoet\Models\Setting;
 require_once('CronTriggerMockMethod.php');
 require_once('CronTriggerMockMethodWithException.php');
 
-class CronTriggerTest extends MailPoetTest {
+class CronTriggerTest extends \MailPoetTest {
   function _before() {
     $this->cron_trigger = new CronTrigger();
   }

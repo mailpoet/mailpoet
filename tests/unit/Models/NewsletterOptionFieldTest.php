@@ -1,10 +1,11 @@
 <?php
+namespace MailPoet\Test\Models;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 
-class NewsletterOptionFieldTest extends MailPoetTest {
+class NewsletterOptionFieldTest extends \MailPoetTest {
   function _before() {
     $this->data = array(
       'name' => 'event',
@@ -114,11 +115,11 @@ class NewsletterOptionFieldTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::forTable(NewsletterOption::$_table)
+    \ORM::forTable(NewsletterOption::$_table)
       ->deleteMany();
-    ORM::forTable(NewsletterOptionField::$_table)
+    \ORM::forTable(NewsletterOptionField::$_table)
       ->deleteMany();
-    ORM::forTable(Newsletter::$_table)
+    \ORM::forTable(Newsletter::$_table)
       ->deleteMany();
   }
 }

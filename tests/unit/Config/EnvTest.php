@@ -1,7 +1,9 @@
 <?php
+namespace MailPoet\Test\Config;
+
 use MailPoet\Config\Env;
 
-class EnvTest extends MailPoetTest {
+class EnvTest extends \MailPoetTest {
   function _before() {
     Env::init('file', '1.0.0');
   }

@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
 use Codeception\Util\Stub;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
@@ -6,7 +7,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 
-class SendingServiceKeyCheckTest extends MailPoetTest {
+class SendingServiceKeyCheckTest extends \MailPoetTest {
   function _before() {
     $this->mss_key = 'some_key';
     $this->worker = new SendingServiceKeyCheck(microtime(true));
@@ -53,6 +54,6 @@ class SendingServiceKeyCheckTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

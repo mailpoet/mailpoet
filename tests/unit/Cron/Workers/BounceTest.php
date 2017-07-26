@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron\Workers;
 
 use Carbon\Carbon;
 use MailPoet\Cron\Workers\Bounce;
@@ -13,7 +14,7 @@ use MailPoet\Util\Helpers;
 require_once('BounceTestMockAPI.php');
 use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
 
-class BounceTest extends MailPoetTest {
+class BounceTest extends \MailPoetTest {
   function _before() {
     $this->emails = array(
       'soft_bounce@example.com',

@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Newsletter;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
@@ -9,7 +10,7 @@ use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\ViewInBrowser;
 use MailPoet\Router\Router;
 
-class ViewInBrowserTest extends MailPoetTest {
+class ViewInBrowserTest extends \MailPoetTest {
   function _before() {
     $this->newsletter =
       array(
@@ -187,9 +188,9 @@ class ViewInBrowserTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

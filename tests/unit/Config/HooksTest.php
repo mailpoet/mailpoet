@@ -1,6 +1,7 @@
 <?php
+namespace MailPoet\Test\Config;
 
-class HooksTest extends MailPoetTest {
+class HooksTest extends \MailPoetTest {
   function testItHooksSchedulerToMultiplePostTypes() {
     $post_types = get_post_types();
     foreach($post_types as $post_type) {

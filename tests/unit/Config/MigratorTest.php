@@ -1,7 +1,9 @@
 <?php
+namespace MailPoet\Test\Config;
+
 use MailPoet\Config\Migrator;
 
-class MigratorTest extends MailPoetTest {
+class MigratorTest extends \MailPoetTest {
   function _before() {
     $this->migrator = new Migrator();
   }

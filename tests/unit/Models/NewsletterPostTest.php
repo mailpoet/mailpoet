@@ -1,9 +1,10 @@
 <?php
+namespace MailPoet\Test\Models;
 
 use Carbon\Carbon;
 use MailPoet\Models\NewsletterPost as NewsletterPost;
 
-class NewsletterPostTest extends MailPoetTest {
+class NewsletterPostTest extends \MailPoetTest {
   function testItCanGetLatestNewsletterPost() {
     foreach(range(1, 5) as $index) {
       $newsletter_post = NewsletterPost::create();
@@ -19,7 +20,7 @@ class NewsletterPostTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::for_table(NewsletterPost::$_table)
+    \ORM::for_table(NewsletterPost::$_table)
       ->deleteMany();
   }
 }

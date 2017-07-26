@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Models;
 
 use AspectMock\Test as Mock;
 use Carbon\Carbon;
@@ -14,7 +15,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 
-class SubscriberTest extends MailPoetTest {
+class SubscriberTest extends \MailPoetTest {
   function _before() {
     $this->data = array(
       'first_name' => 'John',
@@ -378,7 +379,7 @@ class SubscriberTest extends MailPoetTest {
   }
 
   function testItCanCreateOrUpdateMultipleRecords() {
-    ORM::forTable(Subscriber::$_table)->deleteMany();
+    \ORM::forTable(Subscriber::$_table)->deleteMany();
     $columns = array(
       'first_name',
       'last_name',
@@ -1091,14 +1092,14 @@ class SubscriberTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

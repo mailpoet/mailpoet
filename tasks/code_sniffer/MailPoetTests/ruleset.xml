@@ -83,7 +83,7 @@
   </rule>
 
   <!-- Each class must be in a file by itself and must be under a namespace -->
-  <!-- <rule ref="PSR1.Classes.ClassDeclaration"/> -->
+  <rule ref="PSR1.Classes.ClassDeclaration"/>
 
   <!-- One namespace per use, one blank line after final use statement -->
   <rule ref="PSR2.Namespaces.UseDeclaration"/>

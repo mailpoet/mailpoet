@@ -1,10 +1,11 @@
 <?php
+namespace MailPoet\Test\API\JSON\v1;
 
 use MailPoet\API\JSON\v1\CustomFields;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Models\CustomField;
 
-class CustomFieldsTest extends MailPoetTest {
+class CustomFieldsTest extends \MailPoetTest {
   private $custom_fields = array(
     array(
       'name' => 'CF: text',

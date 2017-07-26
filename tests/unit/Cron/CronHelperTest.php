@@ -1,10 +1,11 @@
 <?php
+namespace MailPoet\Test\Cron;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Daemon;
 use MailPoet\Models\Setting;
 
-class CronHelperTest extends MailPoetTest {
+class CronHelperTest extends \MailPoetTest {
   function testItDefinesConstants() {
     expect(CronHelper::DAEMON_EXECUTION_LIMIT)->equals(20);
     expect(CronHelper::DAEMON_EXECUTION_TIMEOUT)->equals(35);
@@ -94,7 +95,7 @@ class CronHelperTest extends MailPoetTest {
     try {
       CronHelper::getSiteUrl($site_url);
       self::fail('Site URL is unreachable exception not thrown.');
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
       expect($e->getMessage())->equals('Site URL is unreachable.');
     }
   }
@@ -105,7 +106,7 @@ class CronHelperTest extends MailPoetTest {
     try {
       CronHelper::enforceExecutionLimit($time - CronHelper::DAEMON_EXECUTION_LIMIT);
       self::fail('Execution limit exception not thrown.');
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
       expect($e->getMessage())->equals('Maximum execution time has been reached.');
     }
   }
@@ -116,6 +117,6 @@ class CronHelperTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

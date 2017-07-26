@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron\Workers;
 
 use Carbon\Carbon;
 use Codeception\Util\Stub;
@@ -10,7 +11,7 @@ use MailPoet\Models\Setting;
 require_once('SimpleWorkerMockImplementation.php');
 use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 
-class SimpleWorkerTest extends MailPoetTest {
+class SimpleWorkerTest extends \MailPoetTest {
   function _before() {
     $this->worker = new MockSimpleWorker();
   }

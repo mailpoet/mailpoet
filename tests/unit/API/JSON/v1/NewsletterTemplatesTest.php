@@ -1,9 +1,11 @@
 <?php
+namespace MailPoet\Test\API\JSON\v1;
+
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\NewsletterTemplates;
 use MailPoet\Models\NewsletterTemplate;
 
-class NewsletterTemplatesTest extends MailPoetTest {
+class NewsletterTemplatesTest extends \MailPoetTest {
   function _before() {
     NewsletterTemplate::createOrUpdate(array(
       'name' => 'Template #1',

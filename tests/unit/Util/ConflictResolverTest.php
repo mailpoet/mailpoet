@@ -1,10 +1,11 @@
 <?php
+namespace MailPoet\Test\Util;
 
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Util\ConflictResolver;
 use MailPoet\WP\Hooks;
 
-class ConflictResolverTest extends MailPoetTest {
+class ConflictResolverTest extends \MailPoetTest {
   public $conflict_resolver;
   public $wp_filter;
 

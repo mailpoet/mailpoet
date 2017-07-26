@@ -1,6 +1,7 @@
 <?php
+namespace MailPoet\Test\Util;
 
-class XlsxWriterTest extends MailPoetTest {
+class XlsxWriterTest extends \MailPoetTest {
 
   public function _before() {
   }
