@@ -239,6 +239,7 @@ class RoboFile extends \Robo\Tasks {
       ->taskExec(
         './vendor/bin/phpcs '.
         '--standard=./tasks/code_sniffer/MailPoet '.
+        '--runtime-set testVersion 5.3-7.0 '.
         '--ignore=./lib/Util/Sudzy/*,./lib/Util/CSS.php,./lib/Util/XLSXWriter.php,'.
         './lib/Util/pQuery/*,./lib/Config/PopulatorData/Templates/* '.
         'lib/ '.
@@ -246,7 +247,8 @@ class RoboFile extends \Robo\Tasks {
       )
       ->taskExec(
         './vendor/bin/phpcs '.
-        '--standard=./tasks/code_sniffer/MailPoetTests '.
+        '--standard=./tasks/code_sniffer/MailPoet '.
+        '--runtime-set testVersion 5.4-7.0 '.
         '--ignore=./tests/unit/_bootstrap.php '.
         'tests/unit/ '.
         $severityFlag
