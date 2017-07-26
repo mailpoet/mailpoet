@@ -231,9 +231,6 @@
               ><%= host.name %></option>
               <% endfor %>
             </select>
-            &nbsp;
-            <!-- website: sending frequency -->
-            <span id="mailpoet_website_sending_frequency"></span>
           </p>
 
         </td>
@@ -1008,13 +1005,6 @@
         host.data('interval') || <%= default_frequency.website.interval %>;
       var fields =
         host.data('fields') || '';
-
-      // set sending frequency
-      setSendingFrequency({
-        output: '#mailpoet_website_sending_frequency',
-        emails: emails,
-        interval: interval
-      });
 
       if (frequencyType === "manual") {
         return;
