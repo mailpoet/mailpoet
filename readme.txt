@@ -1,4 +1,4 @@
-=== MailPoet 3 - Beta Version ===
+=== MailPoet 3 (new) ===
 Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
@@ -8,7 +8,7 @@ Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
 
-Try the new MailPoet! This is a beta version of our completely new email newsletter plugin.
+This is the release candidate of our completely new email newsletter plugin.
 
 = What's new? =
 
@@ -24,9 +24,9 @@ Try the new MailPoet! This is a beta version of our completely new email newslet
 [Test the demo](http://demo3.mailpoet.com/launch/) or [see the 2 min. video](https://vimeo.com/223581490)
 [vimeo https://vimeo.com/223581490]
 
-= What is a beta? =
+= What is a release candidate? =
 
-We consider this version to be a release candidate. In other words, it's pretty solid. Use [the current stable MailPoet](https://wordpress.org/plugins/wysija-newsletters/) instead of this beta version if you are not comfortable in reporting issues.
+MailPoet version 3 is considered production ready and will soon replace version 2 officially. It's fully featured, stable and supported. We only expect minor issues. Further notes:
 
 * Weekly releases with bug fixes and improvements
 * Report bugs directly from the user interface

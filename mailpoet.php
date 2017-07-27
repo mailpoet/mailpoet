@@ -3,10 +3,10 @@
 if(!defined('ABSPATH')) exit;
 
 /*
- * Plugin Name: MailPoet
+ * Plugin Name: MailPoet 3 (new)
  * Version: 3.0.0-beta.37.0.0
  * Plugin URI: http://www.mailpoet.com
- * Description: Create and send beautiful email newsletters, autoresponders, and post notifications without leaving WordPress. This is a beta version of our brand new plugin!
+ * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
  * Author URI: http://www.mailpoet.com
  * Requires at least: 4.6
