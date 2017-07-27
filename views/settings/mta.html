@@ -215,10 +215,10 @@
 
               <!-- web hosts -->
               <option
-                value=""
+                value="manual"
                 data-emails="25"
                 data-interval="5"
-                label="<%= __('Select your web host') %>"
+                label="<%= __('Not listed (default)') %>"
               >
               <% for host_key, host in hosts.web %>
               <option
@@ -231,9 +231,6 @@
               ><%= host.name %></option>
               <% endfor %>
             </select>
-            &nbsp;
-            <!-- website: sending frequency -->
-            <span id="mailpoet_website_sending_frequency"></span>
           </p>
 
         </td>
@@ -311,9 +308,7 @@
             </p>
             <br />
             <p>
-              <%= __('<strong>Warning!</strong> Sending more than the recommended amount of emails? You may break the terms of your web host or provider!') %>'
-              <br />
-              <%= __('Please ask your host for the maximum number of emails you are allowed to send per day.') %>
+              <%= __('<strong>Warning!</strong> You may break the terms of your web host or provider by sending more than the recommended emails per day. Contact your host if you want to send more.') %>
             </p>
           </div>
         </td>
@@ -690,6 +685,7 @@
 
         var settings = jQuery('#mailpoet_settings_form').serializeObject();
         var mailer = settings.mta;
+
         mailer.method = getMethodFromGroup($('#mta_group').val());
 
         // check that we have a from address
@@ -972,18 +968,19 @@
       } else {
         $('.mailpoet_sendgrid_field').hide();
       }
-      const frequencyMethod = $('#mailpoet_sending_frequency').find('option:selected').first().val();
-      if(frequencyMethod === "manual") {
-        $('#mailpoet_recommended_daily_emails').hide();
-      } else {
-        $('#mailpoet_recommended_daily_emails').show();
-      }
       var emails = method.data('emails');
       var interval = method.data('interval');
       if(val === "server") {
-
-        var emails = $('#mailpoet_web_host').find('option:selected').first().data('emails');
-        var interval = $('#mailpoet_web_host').find('option:selected').first().data('interval');
+        emails = $('#mailpoet_web_host').find('option:selected').first().data('emails');
+        interval = $('#mailpoet_web_host').find('option:selected').first().data('interval');
+      }
+      const frequencyMethod = $('#mailpoet_sending_frequency').find('option:selected').first().val();
+      if(frequencyMethod === "manual") {
+        $('#mailpoet_recommended_daily_emails').hide();
+        emails = $('#other_frequency_emails').val();
+        interval = $('#other_frequency_interval').val();
+      } else {
+        $('#mailpoet_recommended_daily_emails').show();
       }
       setSendingFrequency({
         output: '#mailpoet_recommended_daily_emails',
@@ -998,6 +995,8 @@
     function renderHostSendingFrequency() {
 
       var host = $(this).find('option:selected').first();
+      var frequencyType = $("#mailpoet_sending_frequency").find('option:selected').first().val();
+
       var emails =
         host.data('emails') || <%= default_frequency.website.emails %>;
       var interval =
@@ -1005,26 +1004,17 @@
       var fields =
         host.data('fields') || '';
 
-      if(host.val() === 'manual' ) {
-        // set sending frequency
-        setSendingFrequency({
-          output: '#mailpoet_website_daily_emails',
-          only_daily: true,
-          emails: $('#website_frequency_emails').val(),
-          interval: $('#website_frequency_interval').val()
-        });
+      if (frequencyType === "manual") {
+        return;
       } else {
-
-        $('#website_frequency_emails').val(emails);
-        $('#website_frequency_interval').val(interval);
-
-        // set sending frequency
         setSendingFrequency({
-          output: '#mailpoet_website_sending_frequency',
+          output: '#mailpoet_recommended_daily_emails',
+          only_daily: false,
           emails: emails,
           interval: interval
         });
       }
+
       $('#mta_frequency_emails').val(emails);
       $('#mta_frequency_interval').val(interval);
     }
