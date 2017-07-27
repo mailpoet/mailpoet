@@ -25,11 +25,11 @@ define([
         height: '64px',
         styles: {
           block: {
-            textAlign: 'center',
-          },
-        },
+            textAlign: 'center'
+          }
+        }
       }, App.getConfig().get('blockDefaults.image'));
-    },
+    }
   });
 
   Module.ImageBlockView = base.BlockView.extend({
@@ -38,11 +38,11 @@ define([
     onDragSubstituteBy: function() { return Module.ImageWidgetView; },
     templateContext: function() {
       return _.extend({
-        imageMissingSrc: App.getConfig().get('urls.imageMissing'),
+        imageMissingSrc: App.getConfig().get('urls.imageMissing')
       }, base.BlockView.prototype.templateContext.apply(this));
     },
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
-      ShowSettingsBehavior: {},
+      ShowSettingsBehavior: {}
     }),
     onRender: function() {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
@@ -53,11 +53,11 @@ define([
       } else {
         this.$el.removeClass('mailpoet_full_image');
       }
-    },
+    }
   });
 
   Module.ImageBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.ImageBlockSettingsView; },
+    getSettingsView: function() { return Module.ImageBlockSettingsView; }
   });
 
   Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
@@ -70,7 +70,7 @@ define([
         "change .mailpoet_field_image_full_width": _.partial(this.changeBoolCheckboxField, "fullWidth"),
         "change .mailpoet_field_image_alignment": _.partial(this.changeField, "styles.block.textAlign"),
         "click .mailpoet_field_image_select_another_image": "showMediaManager",
-        "click .mailpoet_done_editing": "close",
+        "click .mailpoet_done_editing": "close"
       };
     },
     initialize: function(options) {
@@ -141,7 +141,7 @@ define([
               // Update user settings when users adjust the
               // attachment display settings.
               displayUserSettings: false
-            }),
+            })
           ]);
 
           if(wp.media.view.settings.post.featuredImageId) {
@@ -285,8 +285,8 @@ define([
           },
           displaySettings: false,
           button: {
-            text: 'Select',
-          },
+            text: 'Select'
+          }
         }),
         that = this;
 
@@ -318,7 +318,7 @@ define([
             height: mainSize.height + 'px',
             width: mainSize.width + 'px',
             src: mainSize.url,
-            alt: (attachment.get('alt') !== "" && attachment.get('alt') !== undefined) ? attachment.get('alt') : attachment.get('title'),
+            alt: (attachment.get('alt') !== "" && attachment.get('alt') !== undefined) ? attachment.get('alt') : attachment.get('title')
           });
           // Rerender settings view due to changes from outside of settings view
           that.render();
@@ -346,7 +346,7 @@ define([
       if (typeof this._mediaManager === 'object') {
         this._mediaManager.remove();
       }
-    },
+    }
   });
 
   ImageWidgetView = base.WidgetView.extend({
@@ -359,22 +359,22 @@ define([
         },
         onDrop: function(options) {
           options.droppedView.triggerMethod('showSettings', { showImageManager: true });
-        },
+        }
       }
-    },
+    }
   });
   Module.ImageWidgetView = ImageWidgetView;
 
   App.on('before:start', function(App, options) {
     App.registerBlockType('image', {
       blockModel: Module.ImageBlockModel,
-      blockView: Module.ImageBlockView,
+      blockView: Module.ImageBlockView
     });
 
     App.registerWidget({
       name: 'image',
       widgetView: Module.ImageWidgetView,
-      priority: 91,
+      priority: 91
     });
   });
 

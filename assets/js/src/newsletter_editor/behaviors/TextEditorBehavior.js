@@ -18,7 +18,7 @@ define([
       invalidElements: "script",
       blockFormats: 'Paragraph=p',
       plugins: "link textcolor colorpicker mailpoet_shortcodes",
-      configurationFilter: function(originalConfig) { return originalConfig; },
+      configurationFilter: function(originalConfig) { return originalConfig; }
     },
     onDomRefresh: function() {
       var that = this;
@@ -76,7 +76,7 @@ define([
           editor.on('blur', function(e) {
             that.view.triggerMethod('text:editor:blur');
           });
-        },
+        }
       }));
     }
   });

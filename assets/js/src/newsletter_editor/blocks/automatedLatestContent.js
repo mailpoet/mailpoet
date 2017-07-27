@@ -53,7 +53,7 @@ define([
       });
 
       CommunicationComponent.getBulkTransformedPosts({
-        blocks: blocks,
+        blocks: blocks
       }).then(_.partial(this.refreshBlocks, models));
     },
     refreshBlocks: function(models, renderedBlocks) {
@@ -65,7 +65,7 @@ define([
           model.trigger('refreshPosts', contents);
         }
       );
-    },
+    }
   });
 
   Module.AutomatedLatestContentBlockModel = base.BlockModel.extend({
@@ -97,14 +97,14 @@ define([
         sortBy: 'newest', // 'newest'|'oldest',
         showDivider: true, // true|false
         divider: {},
-        _container: new (App.getBlockTypeModel('container'))(),
+        _container: new (App.getBlockTypeModel('container'))()
       }, App.getConfig().get('blockDefaults.automatedLatestContent'));
     },
     relations: function() {
       return {
         readMoreButton: App.getBlockTypeModel('button'),
         divider: App.getBlockTypeModel('divider'),
-        _container: App.getBlockTypeModel('container'),
+        _container: App.getBlockTypeModel('container')
       };
     },
     initialize: function() {
@@ -124,7 +124,7 @@ define([
      */
     _scheduleFetchPosts: function() {
       App.getChannel().trigger('automatedLatestContentRefresh');
-    },
+    }
   });
 
   Module.AutomatedLatestContentBlockView = base.BlockView.extend({
@@ -138,15 +138,15 @@ define([
     getTemplate: function() { return templates.automatedLatestContentBlock; },
     regions: {
       toolsRegion: '.mailpoet_tools',
-      postsRegion: '.mailpoet_automated_latest_content_block_posts',
+      postsRegion: '.mailpoet_automated_latest_content_block_posts'
     },
     modelEvents: _.extend(
       _.omit(base.BlockView.prototype.modelEvents, 'change'),
       {
-        'postsChanged': 'render',
+        'postsChanged': 'render'
       }),
     events: _.extend(base.BlockView.prototype.events, {
-      'click .mailpoet_automated_latest_content_block_overlay': 'showSettings',
+      'click .mailpoet_automated_latest_content_block_overlay': 'showSettings'
     }),
     onDragSubstituteBy: function() { return Module.AutomatedLatestContentWidgetView; },
     onRender: function() {
@@ -154,16 +154,16 @@ define([
         renderOptions = {
           disableTextEditor: true,
           disableDragAndDrop: true,
-          emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
+          emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay')
         };
       this.toolsView = new Module.AutomatedLatestContentBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
       this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_container'), renderOptions: renderOptions }));
-    },
+    }
   });
 
   Module.AutomatedLatestContentBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.AutomatedLatestContentBlockSettingsView; },
+    getSettingsView: function() { return Module.AutomatedLatestContentBlockSettingsView; }
   });
 
   // Sidebar view container
@@ -192,7 +192,7 @@ define([
         "input .mailpoet_automated_latest_content_categories": _.partial(this.changeField, "categoriesPrecededBy"),
         "input .mailpoet_automated_latest_content_read_more_text": _.partial(this.changeField, "readMoreText"),
         "change .mailpoet_automated_latest_content_sort_by": _.partial(this.changeField, "sortBy"),
-        "click .mailpoet_done_editing": "close",
+        "click .mailpoet_done_editing": "close"
       };
     },
     onRender: function() {
@@ -247,8 +247,8 @@ define([
                 }
               )
             };
-          },
-        },
+          }
+        }
       }).on({
         'select2:select': function(event) {
           var terms = that.model.get('terms');
@@ -261,7 +261,7 @@ define([
           terms.remove(event.params.data);
           // Reset whole model in order for change events to propagate properly
           that.model.set('terms', terms.toJSON());
-        },
+        }
       }).trigger( 'change' );
     },
     toggleDisplayOptions: function(event) {
@@ -282,8 +282,8 @@ define([
         renderOptions: {
           displayFormat: 'subpanel',
           hideLink: true,
-          hideApplyToAll: true,
-        },
+          hideApplyToAll: true
+        }
       })).render();
     },
     showDividerSettings: function(event) {
@@ -292,8 +292,8 @@ define([
         model: this.model.get('divider'),
         renderOptions: {
           displayFormat: 'subpanel',
-          hideApplyToAll: true,
-        },
+          hideApplyToAll: true
+        }
       })).render();
     },
     changeReadMoreType: function(event) {
@@ -356,11 +356,11 @@ define([
       _.each(postTypes, function(type) {
         select.append(jQuery('<option>', {
           value: type.name,
-          text: type.label,
+          text: type.label
         }));
       });
       select.val(selectedValue);
-    },
+    }
   });
 
   Module.AutomatedLatestContentWidgetView = base.WidgetView.extend({
@@ -373,21 +373,21 @@ define([
         },
         onDrop: function(options) {
           options.droppedView.triggerMethod('showSettings');
-        },
+        }
       }
-    },
+    }
   });
 
   App.on('before:start', function(App, options) {
     App.registerBlockType('automatedLatestContent', {
       blockModel: Module.AutomatedLatestContentBlockModel,
-      blockView: Module.AutomatedLatestContentBlockView,
+      blockView: Module.AutomatedLatestContentBlockView
     });
 
     App.registerWidget({
       name: 'automatedLatestContent',
       widgetView: Module.AutomatedLatestContentWidgetView,
-      priority: 97,
+      priority: 97
     });
   });
 

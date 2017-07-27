@@ -22,7 +22,7 @@ define([
       // Use only whitelisted properties to ensure properties editor
       // doesn't control don't change.
       return _.pick(SuperModel.prototype.toJSON.call(this), this.whitelisted);
-    },
+    }
   });
 
   // Content block view and model handlers for different content types
@@ -48,13 +48,13 @@ define([
   Module.getBody = function() {
     return {
       content: App._contentContainer.toJSON(),
-      globalStyles: App.getGlobalStyles().toJSON(),
+      globalStyles: App.getGlobalStyles().toJSON()
     };
   };
 
   Module.toJSON = function() {
     return _.extend({
-      body: Module.getBody(),
+      body: Module.getBody()
     }, App.getNewsletter().toJSON());
   };
 
@@ -94,7 +94,7 @@ define([
     App._contentContainer = new (App.getBlockTypeModel('container'))(content, {parse: true});
     App._contentContainerView = new (App.getBlockTypeView('container'))({
       model: App._contentContainer,
-      renderOptions: { depth: 0 },
+      renderOptions: { depth: 0 }
     });
 
     App._appView.showChildView('contentRegion', App._contentContainerView);

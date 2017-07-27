@@ -6,15 +6,15 @@
 define([
     'backbone.marionette',
     'jquery',
-    'newsletter_editor/behaviors/BehaviorsLookup',
+    'newsletter_editor/behaviors/BehaviorsLookup'
   ], function(Marionette, jQuery, BehaviorsLookup) {
 
   BehaviorsLookup.ShowSettingsBehavior = Marionette.Behavior.extend({
     defaults: {
-      ignoreFrom: '', // selector
+      ignoreFrom: '' // selector
     },
     events: {
-      'click .mailpoet_content': 'showSettings',
+      'click .mailpoet_content': 'showSettings'
     },
     showSettings: function(event) {
       if(!this.isIgnoredElement(event.target)) {
@@ -25,7 +25,7 @@ define([
       return this.options.ignoreFrom
         && this.options.ignoreFrom.length > 0
         && jQuery(element).is(this.options.ignoreFrom);
-    },
+    }
   });
 });
 

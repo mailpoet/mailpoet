@@ -33,11 +33,11 @@ define([
             fontFamily: 'Arial',
             fontSize: '16px',
             fontWeight: 'normal', // 'normal'|'bold'
-            textAlign: 'center',
-          },
-        },
+            textAlign: 'center'
+          }
+        }
       }, App.getConfig().get('blockDefaults.button'));
-    },
+    }
   });
 
   Module.ButtonBlockView = base.BlockView.extend({
@@ -45,7 +45,7 @@ define([
     getTemplate: function() { return templates.buttonBlock; },
     onDragSubstituteBy: function() { return Module.ButtonWidgetView; },
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
-      ShowSettingsBehavior: {},
+      ShowSettingsBehavior: {}
     }),
     initialize: function() {
       base.BlockView.prototype.initialize.apply(this, arguments);
@@ -57,11 +57,11 @@ define([
     onRender: function() {
       this.toolsView = new Module.ButtonBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
-    },
+    }
   });
 
   Module.ButtonBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.ButtonBlockSettingsView; },
+    getSettingsView: function() { return Module.ButtonBlockSettingsView; }
   });
 
   Module.ButtonBlockSettingsView = base.BlockSettingsView.extend({
@@ -95,13 +95,13 @@ define([
         "input .mailpoet_field_button_line_height_input": _.partial(this.updateValueAndCall, '.mailpoet_field_button_line_height', _.partial(this.changePixelField, "styles.block.lineHeight").bind(this)),
 
         "click .mailpoet_field_button_replace_all_styles": "applyToAll",
-        "click .mailpoet_done_editing": "close",
+        "click .mailpoet_done_editing": "close"
       };
     },
     templateContext: function() {
       return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         availableStyles: App.getAvailableStyles().toJSON(),
-        renderOptions: this.renderOptions,
+        renderOptions: this.renderOptions
       });
     },
     applyToAll: function() {
@@ -127,21 +127,21 @@ define([
         cloneOriginal: true,
         drop: function() {
           return new Module.ButtonBlockModel();
-        },
+        }
       }
-    },
+    }
   });
 
   App.on('before:start', function(App, options) {
     App.registerBlockType('button', {
       blockModel: Module.ButtonBlockModel,
-      blockView: Module.ButtonBlockView,
+      blockView: Module.ButtonBlockView
     });
 
     App.registerWidget({
       name: 'button',
       widgetView: Module.ButtonWidgetView,
-      priority: 92,
+      priority: 92
     });
   });
 

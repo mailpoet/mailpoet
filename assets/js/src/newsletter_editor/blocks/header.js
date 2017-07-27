@@ -19,38 +19,38 @@ define([
         text: 'Display problems? <a href="[link:newsletter_view_in_browser_url]">View it in your browser</a>',
         styles: {
           block: {
-            backgroundColor: 'transparent',
+            backgroundColor: 'transparent'
           },
           text: {
             fontColor: '#000000',
             fontFamily: 'Arial',
             fontSize: '12px',
-            textAlign: 'center',
+            textAlign: 'center'
           },
           link: {
             fontColor: '#0000ff',
-            textDecoration: 'underline',
-          },
-        },
+            textDecoration: 'underline'
+          }
+        }
       }, App.getConfig().get('blockDefaults.header'));
-    },
+    }
   });
 
   Module.HeaderBlockView = base.BlockView.extend({
     className: "mailpoet_block mailpoet_header_block mailpoet_droppable_block",
     getTemplate: function() { return templates.headerBlock; },
     modelEvents: _.extend({
-      'change:styles.block.backgroundColor change:styles.text.fontColor change:styles.text.fontFamily change:styles.text.fontSize change:styles.text.textAlign change:styles.link.fontColor change:styles.link.textDecoration': 'render',
+      'change:styles.block.backgroundColor change:styles.text.fontColor change:styles.text.fontFamily change:styles.text.fontSize change:styles.text.textAlign change:styles.link.fontColor change:styles.link.textDecoration': 'render'
     }, _.omit(base.BlockView.prototype.modelEvents, 'change')),
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
       TextEditorBehavior: {
         configurationFilter: function(originalSettings) {
           return _.extend({}, originalSettings, {
             mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
-            mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle'),
+            mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle')
           });
         }
-      },
+      }
     }),
     onDragSubstituteBy: function() { return Module.HeaderWidgetView; },
     onRender: function() {
@@ -67,11 +67,11 @@ define([
     onTextEditorBlur: function() {
       this.enableDragging();
       this.enableShowingTools();
-    },
+    }
   });
 
   Module.HeaderBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.HeaderBlockSettingsView; },
+    getSettingsView: function() { return Module.HeaderBlockSettingsView; }
   });
 
   Module.HeaderBlockSettingsView = base.BlockSettingsView.extend({
@@ -87,14 +87,14 @@ define([
         },
         "change .mailpoet_field_header_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
         "change .mailpoet_field_header_alignment": _.partial(this.changeField, "styles.text.textAlign"),
-        "click .mailpoet_done_editing": "close",
+        "click .mailpoet_done_editing": "close"
       };
     },
     templateContext: function() {
       return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
-        availableStyles: App.getAvailableStyles().toJSON(),
+        availableStyles: App.getAvailableStyles().toJSON()
       });
-    },
+    }
   });
 
   Module.HeaderWidgetView = base.WidgetView.extend({
@@ -104,21 +104,21 @@ define([
         cloneOriginal: true,
         drop: function() {
           return new Module.HeaderBlockModel();
-        },
+        }
       }
-    },
+    }
   });
 
   App.on('before:start', function(App, options) {
     App.registerBlockType('header', {
       blockModel: Module.HeaderBlockModel,
-      blockView: Module.HeaderBlockView,
+      blockView: Module.HeaderBlockView
     });
 
     App.registerWidget({
       name: 'header',
       widgetView: Module.HeaderWidgetView,
-      priority: 98,
+      priority: 98
     });
   });
 

@@ -14,18 +14,18 @@ define([
     getTemplate: function() { return templates.heading; },
     templateContext: function() {
       return {
-        model: this.model.toJSON(),
+        model: this.model.toJSON()
       };
     },
     events: function() {
       return {
         'keyup .mailpoet_input_title': _.partial(this.changeField, "subject"),
-        'keyup .mailpoet_input_preheader': _.partial(this.changeField, "preheader"),
+        'keyup .mailpoet_input_preheader': _.partial(this.changeField, "preheader")
       };
     },
     changeField: function(field, event) {
       this.model.set(field, jQuery(event.target).val());
-    },
+    }
   });
 
   App.on('start', function(App, options) {

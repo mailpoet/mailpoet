@@ -30,10 +30,10 @@ define([
       defaults: {
         name: '',
         priority: 100,
-        widgetView: undefined,
-      },
+        widgetView: undefined
+      }
     }),
-    comparator: 'priority',
+    comparator: 'priority'
   }))();
   Module.registerWidget = function(widget) { return Module._contentWidgets.add(widget); };
   Module.getWidgets = function() { return Module._contentWidgets; };
@@ -44,10 +44,10 @@ define([
       defaults: {
         name: '',
         priority: 100,
-        widgetView: undefined,
-      },
+        widgetView: undefined
+      }
     }),
-    comparator: 'priority',
+    comparator: 'priority'
   }))();
   Module.registerLayoutWidget = function(widget) { return Module._layoutWidgets.add(widget); };
   Module.getLayoutWidgets = function() { return Module._layoutWidgets; };
@@ -58,7 +58,7 @@ define([
       contentRegion: '.mailpoet_content_region',
       layoutRegion: '.mailpoet_layout_region',
       stylesRegion: '.mailpoet_styles_region',
-      previewRegion: '.mailpoet_preview_region',
+      previewRegion: '.mailpoet_preview_region'
     },
     events: {
       'click .mailpoet_sidebar_region h3, .mailpoet_sidebar_region .handlediv': function(event) {
@@ -84,11 +84,11 @@ define([
               easing: "easeIn",
               complete: function() {
                 $targetRegion.removeClass('closed');
-              },
+              }
             }
           );
         }
-      },
+      }
     },
     initialize: function(options) {
       jQuery(window)
@@ -104,7 +104,7 @@ define([
       ));
       this.showChildView('stylesRegion', new Module.SidebarStylesView({
         model: App.getGlobalStyles(),
-        availableStyles: App.getAvailableStyles(),
+        availableStyles: App.getAvailableStyles()
       }));
       this.showChildView('previewRegion', new Module.SidebarPreviewView());
     },
@@ -127,13 +127,13 @@ define([
     },
     onDomRefresh: function() {
       this.$el.parent().stick_in_parent({
-        offset_top: 32,
+        offset_top: 32
       });
       this.$el.parent().on('sticky_kit:stick', this.updateHorizontalScroll.bind(this));
       this.$el.parent().on('sticky_kit:unstick', this.updateHorizontalScroll.bind(this));
       this.$el.parent().on('sticky_kit:bottom', this.updateHorizontalScroll.bind(this));
       this.$el.parent().on('sticky_kit:unbottom', this.updateHorizontalScroll.bind(this));
-    },
+    }
   });
 
   /**
@@ -167,7 +167,7 @@ define([
    * Responsible for rendering draggable layout widgets
    */
   Module.SidebarLayoutWidgetsView = Module.SidebarWidgetsView.extend({
-    getTemplate: function() { return templates.sidebarLayout; },
+    getTemplate: function() { return templates.sidebarLayout; }
   });
 
   /**
@@ -176,7 +176,7 @@ define([
   Module.SidebarStylesView = Marionette.View.extend({
     getTemplate: function() { return templates.sidebarStyles; },
     behaviors: {
-      ColorPickerBehavior: {},
+      ColorPickerBehavior: {}
     },
     events: function() {
       return {
@@ -213,13 +213,13 @@ define([
           this.model.set('link.textDecoration', (event.target.checked) ? event.target.value : 'none');
         },
         "change #mailpoet_newsletter_background_color": _.partial(this.changeColorField, 'wrapper.backgroundColor'),
-        "change #mailpoet_background_color": _.partial(this.changeColorField, 'body.backgroundColor'),
+        "change #mailpoet_background_color": _.partial(this.changeColorField, 'body.backgroundColor')
       };
     },
     templateContext: function() {
       return {
         model: this.model.toJSON(),
-        availableStyles: this.availableStyles.toJSON(),
+        availableStyles: this.availableStyles.toJSON()
       };
     },
     initialize: function(options) {
@@ -234,14 +234,14 @@ define([
         value = 'transparent';
       }
       this.model.set(field, value);
-    },
+    }
   });
 
   Module.SidebarPreviewView = Marionette.View.extend({
     getTemplate: function() { return templates.sidebarPreview; },
     events: {
       'click .mailpoet_show_preview': 'showPreview',
-      'click #mailpoet_send_preview': 'sendPreview',
+      'click #mailpoet_send_preview': 'sendPreview'
     },
     onBeforeDestroy: function() {
       if (this.previewView) {
@@ -263,7 +263,7 @@ define([
         api_version: window.mailpoet_api_version,
         endpoint: 'newsletters',
         action: 'showPreview',
-        data: json,
+        data: json
       }).always(function() {
         MailPoet.Modal.loading(false);
       }).done(function(response) {
@@ -296,7 +296,7 @@ define([
       var $emailField = this.$('#mailpoet_preview_to_email');
       var data = {
         subscriber: $emailField.val(),
-        id: App.getNewsletter().get('id'),
+        id: App.getNewsletter().get('id')
       };
 
       if (data.subscriber.length <= 0) {
@@ -304,7 +304,7 @@ define([
           MailPoet.I18n.t('newsletterPreviewEmailMissing'),
           {
             positionAfter: $emailField,
-            scroll: true,
+            scroll: true
           }
         );
         return false;
@@ -333,7 +333,7 @@ define([
           }
         });
       });
-    },
+    }
   });
 
   Module.NewsletterPreviewView = Marionette.View.extend({
@@ -347,7 +347,7 @@ define([
       return {
         previewUrl: this.previewUrl,
         width: this.width,
-        height: this.height,
+        height: this.height
       };
     }
   });
