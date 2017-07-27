@@ -10,7 +10,7 @@ const history = useRouterHistory(createHashHistory)({ queryKey: false });
 const App = React.createClass({
   render() {
     return this.props.children;
-  }
+  },
 });
 
 const container = document.getElementById('subscribers_container');

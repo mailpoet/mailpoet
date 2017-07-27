@@ -16,8 +16,8 @@ const _QueueMixin = {
       endpoint: 'sendingQueue',
       action: 'pause',
       data: {
-        newsletter_id: newsletter.id
-      }
+        newsletter_id: newsletter.id,
+      },
     }).done(() => {
       jQuery('#resume_'+newsletter.id).show();
       jQuery('#pause_'+newsletter.id).hide();
@@ -36,8 +36,8 @@ const _QueueMixin = {
       endpoint: 'sendingQueue',
       action: 'resume',
       data: {
-        newsletter_id: newsletter.id
-      }
+        newsletter_id: newsletter.id,
+      },
     }).done(() => {
       jQuery('#pause_'+newsletter.id).show();
       jQuery('#resume_'+newsletter.id).hide();
@@ -301,7 +301,7 @@ const _StatisticsMixin = {
         {after_content}
       </div>
     );
-  }
+  },
 };
 
 const _MailerMixin = {
@@ -356,7 +356,7 @@ const _MailerMixin = {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'mailer',
-      action: 'resumeSending'
+      action: 'resumeSending',
     }).done(() => {
       MailPoet.Notice.hide('mailpoet_mailer_error');
       MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
@@ -369,7 +369,7 @@ const _MailerMixin = {
         );
       }
     });
-  }
+  },
 };
 
 

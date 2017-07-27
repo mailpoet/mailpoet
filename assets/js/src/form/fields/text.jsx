@@ -29,7 +29,7 @@ const FormFieldText = React.createClass({
         {...this.props.field.validation}
       />
     );
-  }
+  },
 });
 
 module.exports = FormFieldText;

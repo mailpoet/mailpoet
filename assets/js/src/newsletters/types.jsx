@@ -4,7 +4,7 @@ define(
     'mailpoet',
     'wp-js-hooks',
     'react-router',
-    'newsletters/breadcrumb.jsx'
+    'newsletters/breadcrumb.jsx',
   ],
   (
     React,
@@ -15,7 +15,7 @@ define(
   ) => {
     const NewsletterTypes = React.createClass({
       contextTypes: {
-        router: React.PropTypes.object.isRequired
+        router: React.PropTypes.object.isRequired,
       },
       setupNewsletter: function (type) {
         if(type !== undefined) {
@@ -30,7 +30,7 @@ define(
           data: {
             type: type,
             subject: MailPoet.I18n.t('draftNewsletterTitle'),
-          }
+          },
         }).done((response) => {
           this.context.router.push(`/template/${response.data.id}`);
         }).fail((response) => {
@@ -54,7 +54,7 @@ define(
                   {MailPoet.I18n.t('create')}
                 </a>
               );
-            }.bind(this)()
+            }.bind(this)(),
           },
           {
             'id': 'welcome',
@@ -68,7 +68,7 @@ define(
                   </a>
                 </div>
               );
-            }()
+            }(),
           },
           {
             'id': 'notification',
@@ -80,8 +80,8 @@ define(
                   {MailPoet.I18n.t('setUp')}
                 </a>
               );
-            }.bind(this)()
-          }
+            }.bind(this)(),
+          },
         ];
 
         types = Hooks.applyFilters('mailpoet_newsletters_types', types, this);
@@ -114,7 +114,7 @@ define(
             </ul>
           </div>
         );
-      }
+      },
     });
 
     return NewsletterTypes;

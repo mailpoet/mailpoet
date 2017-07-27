@@ -2,7 +2,7 @@ define([
   'react',
   'react-dom',
   'jquery',
-  'select2'
+  'select2',
 ],
 (
   React,
@@ -13,7 +13,7 @@ define([
     getInitialState: function () {
       return {
         items: [],
-        select2: false
+        select2: false,
       };
     },
     componentWillMount: function () {
@@ -67,7 +67,7 @@ define([
               return item.text;
             }
           }
-        }
+        },
       });
 
       let hasRemoved = false;
@@ -111,7 +111,7 @@ define([
         }
 
         this.setState({
-          items: items
+          items: items,
         });
       }
     },
@@ -126,8 +126,8 @@ define([
         this.props.onValueChange({
           target: {
             value: transformedValue,
-            name: this.props.field.name
-          }
+            name: this.props.field.name,
+          },
         });
       }
     },
@@ -186,7 +186,7 @@ define([
           {...this.props.field.validation}
         >{ options }</select>
       );
-    }
+    },
   });
 
   return Selection;

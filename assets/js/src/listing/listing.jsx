@@ -14,7 +14,7 @@ import ListingFilters from 'listing/filters.jsx';
 const ListingItem = React.createClass({
   getInitialState: function () {
     return {
-      expanded: false
+      expanded: false,
     };
   },
   handleSelectItem: function (e) {
@@ -191,7 +191,7 @@ const ListingItem = React.createClass({
         { this.props.onRenderItem(this.props.item, actions) }
       </tr>
     );
-  }
+  },
 });
 
 
@@ -229,7 +229,7 @@ const ListingItems = React.createClass({
         { 'mailpoet_hidden': (
             this.props.selection === false
             || (this.props.count <= this.props.limit)
-          )
+          ),
         }
       );
 
@@ -283,12 +283,12 @@ const ListingItems = React.createClass({
         </tbody>
       );
     }
-  }
+  },
 });
 
 const Listing = React.createClass({
   contextTypes: {
-    router: React.PropTypes.object.isRequired
+    router: React.PropTypes.object.isRequired,
   },
   getInitialState: function () {
     return {
@@ -306,7 +306,7 @@ const Listing = React.createClass({
       filter: {},
       selected_ids: [],
       selection: false,
-      meta: {}
+      meta: {},
     };
   },
   getParam: function (param) {
@@ -378,7 +378,7 @@ const Listing = React.createClass({
               'search',
               'page',
               'sort_by',
-              'sort_order'
+              'sort_order',
             ].indexOf(key) !== -1
           );
         })
@@ -463,8 +463,8 @@ const Listing = React.createClass({
           filter: this.state.filter,
           search: this.state.search,
           sort_by: this.state.sort_by,
-          sort_order: this.state.sort_order
-        }
+          sort_order: this.state.sort_order,
+        },
       }).always(() => {
         this.setState({ loading: false });
       }).done((response) => {
@@ -473,7 +473,7 @@ const Listing = React.createClass({
           filters: response.meta.filters || {},
           groups: response.meta.groups || [],
           count: response.meta.count || 0,
-          meta: _.omit(response.meta, ['filters', 'groups', 'count'])
+          meta: _.omit(response.meta, ['filters', 'groups', 'count']),
         }, () => {
           // if viewing an empty trash
           if (this.state.group === 'trash' && response.meta.count === 0) {
@@ -499,7 +499,7 @@ const Listing = React.createClass({
   handleRestoreItem: function (id) {
     this.setState({
       loading: true,
-      page: 1
+      page: 1,
     });
 
     MailPoet.Ajax.post({
@@ -507,8 +507,8 @@ const Listing = React.createClass({
       endpoint: this.props.endpoint,
       action: 'restore',
       data: {
-        id: id
-      }
+        id: id,
+      },
     }).done((response) => {
       if (
         this.props.messages !== undefined
@@ -527,7 +527,7 @@ const Listing = React.createClass({
   handleTrashItem: function (id) {
     this.setState({
       loading: true,
-      page: 1
+      page: 1,
     });
 
     MailPoet.Ajax.post({
@@ -535,8 +535,8 @@ const Listing = React.createClass({
       endpoint: this.props.endpoint,
       action: 'trash',
       data: {
-        id: id
-      }
+        id: id,
+      },
     }).done((response) => {
       if (
         this.props.messages !== undefined
@@ -555,7 +555,7 @@ const Listing = React.createClass({
   handleDeleteItem: function (id) {
     this.setState({
       loading: true,
-      page: 1
+      page: 1,
     });
 
     MailPoet.Ajax.post({
@@ -563,8 +563,8 @@ const Listing = React.createClass({
       endpoint: this.props.endpoint,
       action: 'delete',
       data: {
-        id: id
-      }
+        id: id,
+      },
     }).done((response) => {
       if (
         this.props.messages !== undefined
@@ -583,7 +583,7 @@ const Listing = React.createClass({
   handleEmptyTrash: function () {
     return this.handleBulkAction('all', {
       action: 'delete',
-      group: 'trash'
+      group: 'trash',
     }).done((response) => {
       MailPoet.Notice.success(
         MailPoet.I18n.t('permanentlyDeleted').replace('%d', response.meta.count)
@@ -615,7 +615,7 @@ const Listing = React.createClass({
       limit: 0,
       filter: this.state.filter,
       group: this.state.group,
-      search: this.state.search
+      search: this.state.search,
     };
     if (selected_ids !== 'all') {
       data.listing.selection = selected_ids;
@@ -625,7 +625,7 @@ const Listing = React.createClass({
       api_version: window.mailpoet_api_version,
       endpoint: this.props.endpoint,
       action: 'bulkAction',
-      data: data
+      data: data,
     }).done(() => {
       this.getItems();
     }).fail((response) => {
@@ -642,7 +642,7 @@ const Listing = React.createClass({
       search: search,
       page: 1,
       selection: false,
-      selected_ids: []
+      selected_ids: [],
     }, () => {
       this.setParams();
     });
@@ -673,7 +673,7 @@ const Listing = React.createClass({
 
     this.setState({
       selection: selection,
-      selected_ids: selected_ids
+      selected_ids: selected_ids,
     });
   },
   handleSelectItems: function (is_checked) {
@@ -686,7 +686,7 @@ const Listing = React.createClass({
 
       this.setState({
         selected_ids: selected_ids,
-        selection: 'page'
+        selection: 'page',
       });
     }
   },
@@ -696,20 +696,20 @@ const Listing = React.createClass({
     } else {
       this.setState({
         selection: 'all',
-        selected_ids: []
+        selected_ids: [],
       });
     }
   },
   clearSelection: function () {
     this.setState({
       selection: false,
-      selected_ids: []
+      selected_ids: [],
     });
   },
   handleFilter: function (filters) {
     this.setState({
       filter: filters,
-      page: 1
+      page: 1,
     }, () => {
       this.setParams();
     });
@@ -722,7 +722,7 @@ const Listing = React.createClass({
       group: group,
       filter: {},
       search: '',
-      page: 1
+      page: 1,
     }, () => {
       this.setParams();
     });
@@ -731,7 +731,7 @@ const Listing = React.createClass({
     this.setState({
       page: page,
       selection: false,
-      selected_ids: []
+      selected_ids: [],
     }, () => {
       this.setParams();
     });
@@ -762,13 +762,13 @@ const Listing = React.createClass({
         {
           name: 'restore',
           label: MailPoet.I18n.t('restore'),
-          onSuccess: this.props.messages.onRestore
+          onSuccess: this.props.messages.onRestore,
         },
         {
           name: 'delete',
           label: MailPoet.I18n.t('deletePermanently'),
-          onSuccess: this.props.messages.onDelete
-        }
+          onSuccess: this.props.messages.onDelete,
+        },
       ];
     }
 
@@ -897,7 +897,7 @@ const Listing = React.createClass({
         </div>
       </div>
     );
-  }
+  },
 });
 
 module.exports = Listing;

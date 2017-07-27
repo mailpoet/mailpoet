@@ -1,7 +1,7 @@
 define([
   'react',
   'jquery',
-  'mailpoet'
+  'mailpoet',
 ],
 (
   React,
@@ -100,7 +100,7 @@ define([
           { empty_trash }
         </div>
       );
-    }
+    },
   });
 
   return ListingFilters;

@@ -1,5 +1,5 @@
 define([
-  'react'
+  'react',
 ],
 (
   React
@@ -19,7 +19,7 @@ define([
           {...this.props.field.validation}
         />
       );
-    }
+    },
   });
 
   return FormFieldTextarea;

@@ -3,7 +3,7 @@ define(
     'react',
     'react-router',
     'mailpoet',
-    'form/form.jsx'
+    'form/form.jsx',
   ],
   (
     React,
@@ -16,14 +16,14 @@ define(
       {
         name: 'name',
         label: MailPoet.I18n.t('name'),
-        type: 'text'
+        type: 'text',
       },
       {
         name: 'description',
         label: MailPoet.I18n.t('description'),
         type: 'textarea',
-        tip: MailPoet.I18n.t('segmentDescriptionTip')
-      }
+        tip: MailPoet.I18n.t('segmentDescriptionTip'),
+      },
     ];
 
     const messages = {
@@ -32,7 +32,7 @@ define(
       },
       onCreate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('segmentAdded'));
-      }
+      },
     };
 
     const Link = Router.Link;
@@ -54,7 +54,7 @@ define(
             />
           </div>
         );
-      }
+      },
     });
 
     return SegmentForm;

@@ -3,7 +3,7 @@ define(
     'react',
     'react-router',
     'mailpoet',
-    'newsletters/breadcrumb.jsx'
+    'newsletters/breadcrumb.jsx',
   ],
   (
     React,
@@ -14,7 +14,7 @@ define(
 
     const NewsletterStandard = React.createClass({
       contextTypes: {
-        router: React.PropTypes.object.isRequired
+        router: React.PropTypes.object.isRequired,
       },
       showTemplateSelection: function (newsletterId) {
         this.context.router.push(`/template/${newsletterId}`);
@@ -26,8 +26,8 @@ define(
           endpoint: 'newsletters',
           action: 'create',
           data: {
-            type: 'standard'
-          }
+            type: 'standard',
+          },
         }).done((response) => {
           this.showTemplateSelection(response.data.id);
         }).fail((response) => {

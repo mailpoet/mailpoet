@@ -12,27 +12,27 @@ const columns = [
   {
     name: 'email',
     label: MailPoet.I18n.t('subscriber'),
-    sortable: true
+    sortable: true,
   },
   {
     name: 'status',
     label: MailPoet.I18n.t('status'),
-    sortable: true
+    sortable: true,
   },
   {
     name: 'segments',
-    label: MailPoet.I18n.t('lists')
+    label: MailPoet.I18n.t('lists'),
   },
 
   {
     name: 'created_at',
     label: MailPoet.I18n.t('subscribedOn'),
-    sortable: true
+    sortable: true,
   },
   {
     name: 'updated_at',
     label: MailPoet.I18n.t('lastModifiedOn'),
-    sortable: true
+    sortable: true,
   },
 ];
 
@@ -97,7 +97,7 @@ const messages = {
     }
     // use default message
     return false;
-  }
+  },
 };
 
 const bulk_actions = [
@@ -113,7 +113,7 @@ const bulk_actions = [
           return !!(
             !segment.deleted_at && segment.type === 'default'
           );
-        }
+        },
       };
 
       return (
@@ -122,7 +122,7 @@ const bulk_actions = [
     },
     getData: function () {
       return {
-        segment_id: ~~(jQuery('#move_to_segment').val())
+        segment_id: ~~(jQuery('#move_to_segment').val()),
       };
     },
     onSuccess: function (response) {
@@ -131,7 +131,7 @@ const bulk_actions = [
         .replace('%$1d', (~~(response.meta.count)).toLocaleString())
         .replace('%$2s', response.meta.segment)
       );
-    }
+    },
   },
   {
     name: 'addToList',
@@ -145,7 +145,7 @@ const bulk_actions = [
           return !!(
             !segment.deleted_at && segment.type === 'default'
           );
-        }
+        },
       };
 
       return (
@@ -154,7 +154,7 @@ const bulk_actions = [
     },
     getData: function () {
       return {
-        segment_id: ~~(jQuery('#add_to_segment').val())
+        segment_id: ~~(jQuery('#add_to_segment').val()),
       };
     },
     onSuccess: function (response) {
@@ -163,7 +163,7 @@ const bulk_actions = [
         .replace('%$1d', (~~response.meta.count).toLocaleString())
         .replace('%$2s', response.meta.segment)
       );
-    }
+    },
   },
   {
     name: 'removeFromList',
@@ -177,7 +177,7 @@ const bulk_actions = [
           return !!(
             segment.type === 'default'
           );
-        }
+        },
       };
 
       return (
@@ -186,7 +186,7 @@ const bulk_actions = [
     },
     getData: function () {
       return {
-        segment_id: ~~(jQuery('#remove_from_segment').val())
+        segment_id: ~~(jQuery('#remove_from_segment').val()),
       };
     },
     onSuccess: function (response) {
@@ -195,7 +195,7 @@ const bulk_actions = [
         .replace('%$1d', (~~response.meta.count).toLocaleString())
         .replace('%$2s', response.meta.segment)
       );
-    }
+    },
   },
   {
     name: 'removeFromAllLists',
@@ -205,7 +205,7 @@ const bulk_actions = [
         MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists')
         .replace('%$1d', (~~response.meta.count).toLocaleString())
       );
-    }
+    },
   },
   {
     name: 'sendConfirmationEmail',
@@ -215,13 +215,13 @@ const bulk_actions = [
         MailPoet.I18n.t('multipleConfirmationEmailsSent')
         .replace('%$1d', (~~response.meta.count).toLocaleString())
       );
-    }
+    },
   },
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
-    onSuccess: messages.onTrash
-  }
+    onSuccess: messages.onTrash,
+  },
 ];
 
 const item_actions = [
@@ -232,14 +232,14 @@ const item_actions = [
       return (
         <Link to={ `/edit/${subscriber.id}` }>{MailPoet.I18n.t('edit')}</Link>
       );
-    }
+    },
   },
   {
     name: 'trash',
     display: function (subscriber) {
       return !!(~~subscriber.wp_user_id === 0);
-    }
-  }
+    },
+  },
 ];
 
 const SubscriberList = React.createClass({
@@ -364,7 +364,7 @@ const SubscriberList = React.createClass({
         />
       </div>
     );
-  }
+  },
 });
 
 module.exports = SubscriberList;

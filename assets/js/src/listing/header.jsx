@@ -48,7 +48,7 @@ const ListingHeader = React.createClass({
         {columns}
       </tr>
     );
-  }
+  },
 });
 
 const ListingColumn = React.createClass({
@@ -85,7 +85,7 @@ const ListingColumn = React.createClass({
         width={ this.props.column.width || null }
       >{label}</th>
     );
-  }
+  },
 });
 
 module.exports = ListingHeader;

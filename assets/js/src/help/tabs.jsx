@@ -7,12 +7,12 @@ const tabs = [
   {
     name: 'knowledgeBase',
     label: MailPoet.I18n.t('tabKnowledgeBaseTitle'),
-    link: '/knowledgeBase'
+    link: '/knowledgeBase',
   },
   {
     name: 'systemInfo',
     label: MailPoet.I18n.t('tabSystemInfoTitle'),
-    link: '/systemInfo'
+    link: '/systemInfo',
   },
 ];
 

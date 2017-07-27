@@ -1,6 +1,6 @@
 define([
   'react',
-  'mailpoet'
+  'mailpoet',
 ],
 (
   React,
@@ -10,20 +10,20 @@ define([
     getInitialState: function () {
       return {
         action: false,
-        extra: false
+        extra: false,
       };
     },
     handleChangeAction: function (e) {
       this.setState({
         action: e.target.value,
-        extra: false
+        extra: false,
       }, () => {
         const action = this.getSelectedAction();
 
         // action on select callback
         if(action !== null && action['onSelect'] !== undefined) {
           this.setState({
-            extra: action.onSelect(e)
+            extra: action.onSelect(e),
           });
         }
       });
@@ -61,7 +61,7 @@ define([
 
       this.setState({
         action: false,
-        extra: false
+        extra: false,
       });
     },
     getSelectedAction: function () {
@@ -115,7 +115,7 @@ define([
             { this.state.extra }
         </div>
       );
-    }
+    },
   });
 
   return ListingBulkActions;

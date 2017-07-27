@@ -37,7 +37,7 @@ define(
         MailPoet.I18n.t('september'),
         MailPoet.I18n.t('october'),
         MailPoet.I18n.t('november'),
-        MailPoet.I18n.t('december')
+        MailPoet.I18n.t('december'),
       ],
       monthNamesShort: [
         MailPoet.I18n.t('januaryShort'),
@@ -51,7 +51,7 @@ define(
         MailPoet.I18n.t('septemberShort'),
         MailPoet.I18n.t('octoberShort'),
         MailPoet.I18n.t('novemberShort'),
-        MailPoet.I18n.t('decemberShort')
+        MailPoet.I18n.t('decemberShort'),
       ],
       dayNames: [
         MailPoet.I18n.t('sunday'),
@@ -60,7 +60,7 @@ define(
         MailPoet.I18n.t('wednesday'),
         MailPoet.I18n.t('thursday'),
         MailPoet.I18n.t('friday'),
-        MailPoet.I18n.t('saturday')
+        MailPoet.I18n.t('saturday'),
       ],
       dayNamesShort: [
         MailPoet.I18n.t('sundayShort'),
@@ -69,7 +69,7 @@ define(
         MailPoet.I18n.t('wednesdayShort'),
         MailPoet.I18n.t('thursdayShort'),
         MailPoet.I18n.t('fridayShort'),
-        MailPoet.I18n.t('saturdayShort')
+        MailPoet.I18n.t('saturdayShort'),
       ],
       dayNamesMin: [
         MailPoet.I18n.t('sundayMin'),
@@ -78,7 +78,7 @@ define(
         MailPoet.I18n.t('wednesdayMin'),
         MailPoet.I18n.t('thursdayMin'),
         MailPoet.I18n.t('fridayMin'),
-        MailPoet.I18n.t('saturdayMin')
+        MailPoet.I18n.t('saturdayMin'),
       ],
     };
 
@@ -100,13 +100,13 @@ define(
             // Transform string format to Date object
             return MailPoet.Date.toDate(value, {
               parseFormat: dateDisplayFormat,
-              format: format
+              format: format,
             });
           };
           jQuery.datepicker.formatDate = function (format, value) {
             // Transform Date object to string format
             const newValue = MailPoet.Date.format(value, {
-              format: format
+              format: format,
             });
             return newValue;
           };
@@ -138,13 +138,13 @@ define(
       getDisplayDate: function (date) {
         return MailPoet.Date.format(date, {
           parseFormat: this.props.storageFormat,
-          format: this.props.displayFormat
+          format: this.props.displayFormat,
         });
       },
       getStorageDate: function (date) {
         return MailPoet.Date.format(date, {
           parseFormat: this.props.displayFormat,
-          format: this.props.storageFormat
+          format: this.props.storageFormat,
         });
       },
       render: function () {
@@ -186,7 +186,7 @@ define(
             {options}
           </select>
         );
-      }
+      },
     });
 
     const DateTime = React.createClass({
@@ -219,7 +219,7 @@ define(
             target: {
               name: this.props.name || '',
               value: this.getDateTime(),
-            }
+            },
           });
         }
       },
@@ -243,7 +243,7 @@ define(
               validation={this.props.timeValidation} />
           </span>
         );
-      }
+      },
     });
 
     const StandardScheduling = React.createClass({
@@ -252,7 +252,7 @@ define(
           this.props.item[this.props.field.name] || {},
           {
             isScheduled: '0',
-            scheduledAt: defaultDateTime
+            scheduledAt: defaultDateTime,
           }
         );
       },
@@ -264,8 +264,8 @@ define(
         return this.props.onValueChange({
           target: {
             name: this.props.field.name,
-            value: _.extend({}, oldValue, newValue)
-          }
+            value: _.extend({}, oldValue, newValue),
+          },
         });
       },
       handleCheckboxChange: function (event) {
@@ -325,8 +325,8 @@ define(
         type: 'text',
         validation: {
           'data-parsley-required': true,
-          'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError')
-        }
+          'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError'),
+        },
       },
       {
         name: 'segments',
@@ -354,8 +354,8 @@ define(
         },
         validation: {
           'data-parsley-required': true,
-          'data-parsley-required-message': MailPoet.I18n.t('noSegmentsSelectedError')
-        }
+          'data-parsley-required-message': MailPoet.I18n.t('noSegmentsSelectedError'),
+        },
       },
       {
         name: 'sender',
@@ -367,8 +367,8 @@ define(
             type: 'text',
             placeholder: MailPoet.I18n.t('senderNamePlaceholder'),
             validation: {
-              'data-parsley-required': true
-            }
+              'data-parsley-required': true,
+            },
           },
           {
             name: 'sender_address',
@@ -376,10 +376,10 @@ define(
             placeholder: MailPoet.I18n.t('senderAddressPlaceholder'),
             validation: {
               'data-parsley-required': true,
-              'data-parsley-type': 'email'
-            }
-          }
-        ]
+              'data-parsley-type': 'email',
+            },
+          },
+        ],
       },
       {
         name: 'reply-to',
@@ -390,21 +390,21 @@ define(
           {
             name: 'reply_to_name',
             type: 'text',
-            placeholder: MailPoet.I18n.t('replyToNamePlaceholder')
+            placeholder: MailPoet.I18n.t('replyToNamePlaceholder'),
           },
           {
             name: 'reply_to_address',
             type: 'text',
-            placeholder: MailPoet.I18n.t('replyToAddressPlaceholder')
-          }
-        ]
+            placeholder: MailPoet.I18n.t('replyToAddressPlaceholder'),
+          },
+        ],
       },
       {
         name: 'options',
         label: MailPoet.I18n.t('scheduleIt'),
         type: 'reactComponent',
         component: StandardScheduling,
-      }
+      },
     ];
 
     fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
@@ -423,7 +423,7 @@ define(
         const options = {
           value: (isScheduled
             ? MailPoet.I18n.t('schedule')
-            : MailPoet.I18n.t('send'))
+            : MailPoet.I18n.t('send')),
         };
 
         if (newsletter.status === 'sent'

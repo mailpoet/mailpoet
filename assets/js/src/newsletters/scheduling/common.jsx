@@ -8,7 +8,7 @@ const _timeDelayValues = {
   'immediate': MailPoet.I18n.t('delayImmediately'),
   'hours': MailPoet.I18n.t('delayHoursAfter'),
   'days': MailPoet.I18n.t('delayDaysAfter'),
-  'weeks': MailPoet.I18n.t('delayWeeksAfter')
+  'weeks': MailPoet.I18n.t('delayWeeksAfter'),
 };
 
 const _intervalValues = {
@@ -16,7 +16,7 @@ const _intervalValues = {
   'weekly': MailPoet.I18n.t('weekly'),
   'monthly': MailPoet.I18n.t('monthly'),
   'nthWeekDay': MailPoet.I18n.t('monthlyEvery'),
-  'immediately': MailPoet.I18n.t('immediately')
+  'immediately': MailPoet.I18n.t('immediately'),
 };
 
 // notification emails
@@ -42,7 +42,7 @@ const _weekDayValues = {
   3: MailPoet.I18n.t('wednesday'),
   4: MailPoet.I18n.t('thursday'),
   5: MailPoet.I18n.t('friday'),
-  6: MailPoet.I18n.t('saturday')
+  6: MailPoet.I18n.t('saturday'),
 };
 
 const NUMBER_OF_DAYS_IN_MONTH = 28;
@@ -54,7 +54,7 @@ const _monthDayValues = _.object(
     const labels = {
       0: MailPoet.I18n.t('first'),
       1: MailPoet.I18n.t('second'),
-      2: MailPoet.I18n.t('third')
+      2: MailPoet.I18n.t('third'),
     };
     let label;
     if (labels[day] !== undefined) {
@@ -71,7 +71,7 @@ const _nthWeekDayValues = {
   '1': MailPoet.I18n.t('first'),
   '2': MailPoet.I18n.t('second'),
   '3': MailPoet.I18n.t('third'),
-  'L': MailPoet.I18n.t('last')
+  'L': MailPoet.I18n.t('last'),
 };
 
 export { _timeDelayValues as timeDelayValues };

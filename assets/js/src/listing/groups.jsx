@@ -32,7 +32,7 @@ define(['react', 'classnames'], (React, classNames) => {
             { groups }
           </ul>
       );
-    }
+    },
   });
 
   return ListingGroups;

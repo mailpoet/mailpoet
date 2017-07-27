@@ -4,7 +4,7 @@ define(
     'mailpoet',
     'classnames',
     'react-router',
-    'form/fields/field.jsx'
+    'form/fields/field.jsx',
   ],
   (
     React,
@@ -16,7 +16,7 @@ define(
 
     const Form = React.createClass({
       contextTypes: {
-        router: React.PropTypes.object.isRequired
+        router: React.PropTypes.object.isRequired,
       },
       getDefaultProps: function () {
         return {
@@ -27,7 +27,7 @@ define(
         return {
           loading: false,
           errors: [],
-          item: {}
+          item: {},
         };
       },
       getValues: function () {
@@ -42,7 +42,7 @@ define(
             this.loadItem(this.props.params.id);
           } else {
             this.setState({
-              item: jQuery('.mailpoet_form').serializeObject()
+              item: jQuery('.mailpoet_form').serializeObject(),
             });
           }
         }
@@ -51,7 +51,7 @@ define(
         if(props.params.id === undefined) {
           this.setState({
             loading: false,
-            item: {}
+            item: {},
           });
           if (props.item === undefined) {
             this.refs.form.reset();
@@ -68,17 +68,17 @@ define(
           endpoint: this.props.endpoint,
           action: 'get',
           data: {
-            id: id
-          }
+            id: id,
+          },
         }).done((response) => {
           this.setState({
             loading: false,
-            item: response.data
+            item: response.data,
           });
         }).fail(() => {
           this.setState({
             loading: false,
-            item: {}
+            item: {},
           }, function () {
             this.context.router.push('/new');
           });
@@ -116,7 +116,7 @@ define(
           api_version: window.mailpoet_api_version,
           endpoint: this.props.endpoint,
           action: 'save',
-          data: item
+          data: item,
         }).always(() => {
           this.setState({ loading: false });
         }).done(() => {
@@ -147,7 +147,7 @@ define(
           item[field] = e.target.value;
 
           this.setState({
-            item: item
+            item: item,
           });
           return true;
         }
@@ -238,7 +238,7 @@ define(
             { afterFormContent }
           </div>
         );
-      }
+      },
     });
 
     return Form;

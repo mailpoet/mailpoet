@@ -18,7 +18,7 @@ const events = {
   values: {
     'segment': MailPoet.I18n.t('onSubscriptionToList'),
     'user': MailPoet.I18n.t('onWPUserRegistration'),
-  }
+  },
 };
 
 const availableSegmentValues = _.object(_.map(
@@ -31,27 +31,27 @@ const availableSegmentValues = _.object(_.map(
 const segmentField = {
   name: 'segment',
   values: availableSegmentValues,
-  sortBy: (key, value) => value.toLowerCase()
+  sortBy: (key, value) => value.toLowerCase(),
 };
 
 const roleField = {
   name: 'role',
-  values: availableRoles
+  values: availableRoles,
 };
 
 const afterTimeNumberField = {
   name: 'afterTimeNumber',
-  size: 3
+  size: 3,
 };
 
 const afterTimeTypeField = {
   name: 'afterTimeType',
-  values: timeDelayValues
+  values: timeDelayValues,
 };
 
 const WelcomeScheduling = React.createClass({
   contextTypes: {
-    router: React.PropTypes.object.isRequired
+    router: React.PropTypes.object.isRequired,
   },
   _getCurrentValue: function () {
     return (this.props.item[this.props.field.name] || {});
@@ -65,8 +65,8 @@ const WelcomeScheduling = React.createClass({
     return this.props.onValueChange({
       target: {
         name: this.props.field.name,
-        value: _.extend({}, oldValue, newValue)
-      }
+        value: _.extend({}, oldValue, newValue),
+      },
     });
   },
   handleEventChange: function (event) {
@@ -106,8 +106,8 @@ const WelcomeScheduling = React.createClass({
       action: 'create',
       data: {
         type: 'welcome',
-        options: this.state
-      }
+        options: this.state,
+      },
     }).done((response) => {
       this.showTemplateSelection(response.data.id);
     }).fail((response) => {

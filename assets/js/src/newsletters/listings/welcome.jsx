@@ -60,42 +60,42 @@ const messages = {
       ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
-  }
+  },
 };
 
 const columns = [
   {
     name: 'subject',
     label: MailPoet.I18n.t('subject'),
-    sortable: true
+    sortable: true,
   },
   {
     name: 'status',
     label: MailPoet.I18n.t('status'),
-    width: 145
+    width: 145,
   },
   {
     name: 'settings',
-    label: MailPoet.I18n.t('settings')
+    label: MailPoet.I18n.t('settings'),
   },
   {
     name: 'statistics',
     label: MailPoet.I18n.t('statistics'),
-    display: mailpoet_tracking_enabled
+    display: mailpoet_tracking_enabled,
   },
   {
     name: 'updated_at',
     label: MailPoet.I18n.t('lastModifiedOn'),
-    sortable: true
-  }
+    sortable: true,
+  },
 ];
 
 const bulk_actions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
-    onSuccess: messages.onTrash
-  }
+    onSuccess: messages.onTrash,
+  },
 ];
 
 let newsletter_actions = [
@@ -107,7 +107,7 @@ let newsletter_actions = [
           {MailPoet.I18n.t('preview')}
         </a>
       );
-    }
+    },
   },
   {
     name: 'edit',
@@ -117,11 +117,11 @@ let newsletter_actions = [
           {MailPoet.I18n.t('edit')}
         </a>
       );
-    }
+    },
   },
   {
-    name: 'trash'
-  }
+    name: 'trash',
+  },
 ];
 
 newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletter_actions);
@@ -139,8 +139,8 @@ const NewsletterListWelcome = React.createClass({
       action: 'setStatus',
       data: {
         id: ~~(e.target.getAttribute('data-id')),
-        status: e.target.value
-      }
+        status: e.target.value,
+      },
     }).done((response) => {
       if (response.data.status === 'active') {
         MailPoet.Notice.success(MailPoet.I18n.t('welcomeEmailActivated'));
@@ -313,7 +313,7 @@ const NewsletterListWelcome = React.createClass({
         />
       </div>
     );
-  }
+  },
 });
 
 module.exports = NewsletterListWelcome;

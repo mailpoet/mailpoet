@@ -11,19 +11,19 @@ const ListingTabs = React.createClass({
         {
           name: 'standard',
           label: MailPoet.I18n.t('tabStandardTitle'),
-          link: '/standard'
+          link: '/standard',
         },
         {
           name: 'welcome',
           label: MailPoet.I18n.t('tabWelcomeTitle'),
-          link: '/welcome'
+          link: '/welcome',
         },
         {
           name: 'notification',
           label: MailPoet.I18n.t('tabNotificationTitle'),
-          link: '/notification'
-        }
-      ]
+          link: '/notification',
+        },
+      ],
     };
   },
   render() {
@@ -47,7 +47,7 @@ const ListingTabs = React.createClass({
         { tabs }
       </h2>
     );
-  }
+  },
 });
 
 module.exports = ListingTabs;
