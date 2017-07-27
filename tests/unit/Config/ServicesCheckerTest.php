@@ -1,11 +1,12 @@
 <?php
+namespace MailPoet\Test\Config;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 
-class ServicesCheckerTest extends MailPoetTest {
+class ServicesCheckerTest extends \MailPoetTest {
   function _before() {
     $this->setMailPoetSendingMethod();
     $this->fillPremiumKey();

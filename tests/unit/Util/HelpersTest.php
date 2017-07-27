@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\Util;
 
 use MailPoet\Util\Helpers;
 
-class HelpersTest extends MailPoetTest {
+class HelpersTest extends \MailPoetTest {
   function testItReplacesLinkTags() {
     $source = '[link]example link[/link]';
     $link = 'http://example.com';

@@ -1,10 +1,11 @@
 <?php
+namespace MailPoet\Test\Models;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 
-class CustomFieldTest extends MailPoetTest {
+class CustomFieldTest extends \MailPoetTest {
   function _before() {
     $this->data = array(
       'name' => 'City',

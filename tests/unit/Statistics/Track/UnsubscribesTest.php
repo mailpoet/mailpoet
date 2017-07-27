@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Statistics\Track;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
@@ -6,7 +7,7 @@ use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\Unsubscribes;
 
-class UnsubscribesTest extends MailPoetTest {
+class UnsubscribesTest extends \MailPoetTest {
   function _before() {
     // create newsletter
     $newsletter = Newsletter::create();
@@ -48,9 +49,9 @@ class UnsubscribesTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
   }
 }

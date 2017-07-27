@@ -1,10 +1,12 @@
 <?php
+namespace MailPoet\Test\API\JSON\v1;
+
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Models\Setting;
 
-class SettingsTest extends MailPoetTest {
+class SettingsTest extends \MailPoetTest {
   function _before() {
     Setting::setValue('some.setting.key', true);
   }
@@ -51,6 +53,6 @@ class SettingsTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::forTable(Setting::$_table)->deleteMany();
+    \ORM::forTable(Setting::$_table)->deleteMany();
   }
 }

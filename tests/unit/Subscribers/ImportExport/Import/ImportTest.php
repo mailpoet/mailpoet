@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Subscribers\ImportExport\Import;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
@@ -8,7 +9,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\Import\Import;
 use MailPoet\Util\Helpers;
 
-class ImportTest extends MailPoetTest {
+class ImportTest extends \MailPoetTest {
   function _before() {
     $custom_field = CustomField::create();
     $custom_field->name = 'country';
@@ -73,7 +74,7 @@ class ImportTest extends MailPoetTest {
     try {
       $this->import->validateImportData($data);
       self::fail('Missing or invalid data exception not thrown.');
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
       expect($e->getMessage())->equals('Missing or invalid import data.');
     }
     // exception should not be thrown when all fields exist
@@ -86,7 +87,7 @@ class ImportTest extends MailPoetTest {
     try {
       $this->import->validateImportData($data);
       self::fail('Missing or invalid data exception not thrown.');
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
       expect($e->getMessage())->equals('Missing or invalid import data.');
     }
   }
@@ -135,7 +136,7 @@ class ImportTest extends MailPoetTest {
     try {
       $import->process();
       self::fail('No valid subscribers found exception not thrown.');
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
       expect($e->getMessage())->equals('No valid subscribers were found.');
     }
   }
@@ -513,10 +514,10 @@ class ImportTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
   }
 }

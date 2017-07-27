@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Util\Stub;
 use MailPoet\API\JSON\v1\Services;
@@ -6,7 +7,7 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Config\Installer;
 use MailPoet\Services\Bridge;
 
-class ServicesTest extends MailPoetTest {
+class ServicesTest extends \MailPoetTest {
   function _before() {
     $this->services_endpoint = new Services();
     $this->data = array('key' => '1234567890abcdef');
@@ -45,7 +46,7 @@ class ServicesTest extends MailPoetTest {
   }
 
   function testItRespondsWithErrorIfMSSKeyIsExpiring() {
-    $date = new DateTime;
+    $date = new \DateTime;
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
@@ -178,7 +179,7 @@ class ServicesTest extends MailPoetTest {
   }
 
   function testItRespondsWithErrorIfPremiumKeyIsExpiring() {
-    $date = new DateTime;
+    $date = new \DateTime;
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(

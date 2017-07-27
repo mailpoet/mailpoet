@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Newsletter\Scheduler;
 
 use Carbon\Carbon;
 use MailPoet\Models\Newsletter;
@@ -8,7 +9,7 @@ use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 
-class NewsletterSchedulerTest extends MailPoetTest {
+class SchedulerTest extends \MailPoetTest {
   function testItSetsConstants() {
     expect(Scheduler::SECONDS_IN_HOUR)->notEmpty();
     expect(Scheduler::LAST_WEEKDAY_FORMAT)->notEmpty();
@@ -468,10 +469,10 @@ class NewsletterSchedulerTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Router\Endpoints;
 
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
@@ -6,7 +7,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\Track;
 
-class TrackTest extends MailPoetTest {
+class TrackTest extends \MailPoetTest {
   function _before() {
     // create newsletter
     $newsletter = Newsletter::create();
@@ -151,9 +152,9 @@ class TrackTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

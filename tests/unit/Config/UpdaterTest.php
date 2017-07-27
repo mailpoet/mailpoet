@@ -1,9 +1,10 @@
 <?php
+namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
 use MailPoet\Config\Updater;
 
-class UpdaterTest extends MailPoetTest {
+class UpdaterTest extends \MailPoetTest {
   function _before() {
     $this->plugin_name = 'some-plugin/some-plugin.php';
     $this->slug = 'some-plugin';

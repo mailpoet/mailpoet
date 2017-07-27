@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\WP;
 
 use MailPoet\WP\Hooks;
 
-class WPHooksTest extends MailPoetTest {
+class HooksTest extends \MailPoetTest {
   function _before() {
     $this->action = 'mailpoet_test_action';
     $this->filter = 'mailpoet_test_filter';
@@ -10,7 +11,7 @@ class WPHooksTest extends MailPoetTest {
 
   function testItCanProcessActions() {
     $test_value = array('abc', 'def');
-    $test_value2 = new StdClass;
+    $test_value2 = new \stdClass;
     $called = false;
 
     $callback = function ($value, $value2) use ($test_value, $test_value2, &$called) {

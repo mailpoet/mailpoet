@@ -1,4 +1,6 @@
 <?php
+namespace MailPoet\Test\API\JSON\v1;
+
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
@@ -14,7 +16,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 
-class NewslettersTest extends MailPoetTest {
+class NewslettersTest extends \MailPoetTest {
   function _before() {
     $this->newsletter = Newsletter::createOrUpdate(
       array(
@@ -688,10 +690,10 @@ class NewslettersTest extends MailPoetTest {
 
   function _after() {
     WPHooksHelper::releaseAllHooks();
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

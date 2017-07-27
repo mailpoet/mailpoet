@@ -1,7 +1,9 @@
 <?php
+namespace MailPoet\Test\Models;
+
 use MailPoet\Models\StatisticsForms;
 
-class StatisticsFormsTest extends MailPoetTest {
+class StatisticsFormsTest extends \MailPoetTest {
 
   function _before() {
   }

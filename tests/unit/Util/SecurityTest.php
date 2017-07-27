@@ -1,7 +1,9 @@
 <?php
+namespace MailPoet\Test\Util;
+
 use MailPoet\Util\Security;
 
-class SecurityTest extends MailPoetTest {
+class SecurityTest extends \MailPoetTest {
 
   function testItCanGenerateWPNonce() {
     $wp_nonce = Security::generateToken();

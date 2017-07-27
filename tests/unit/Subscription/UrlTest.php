@@ -1,11 +1,13 @@
 <?php
+namespace MailPoet\Test\Subscription;
+
 use MailPoet\Router\Router;
 use MailPoet\Subscription\Url;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
 use MailPoet\Config\Populator;
 
-class UrlTest extends MailPoetTest {
+class UrlTest extends \MailPoetTest {
   function _before() {
     $populator = new Populator();
     $populator->up();

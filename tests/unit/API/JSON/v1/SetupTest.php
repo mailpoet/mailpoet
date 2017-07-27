@@ -1,10 +1,12 @@
 <?php
+namespace MailPoet\Test\API\JSON\v1;
+
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Models\Setting;
 
-class SetupTest extends MailPoetTest {
+class SetupTest extends \MailPoetTest {
   function _before() {
     Setting::setValue('signup_confirmation.enabled', false);
   }

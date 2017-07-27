@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Subscribers\ImportExport;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
@@ -6,7 +7,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 
-class ImportExportFactoryTest extends MailPoetTest {
+class ImportExportFactoryTest extends \MailPoetTest {
   function _before() {
     $segment_1 = Segment::createOrUpdate(array('name' => 'Unconfirmed Segment'));
     $segment_2 = Segment::createOrUpdate(array('name' => 'Confirmed Segment'));

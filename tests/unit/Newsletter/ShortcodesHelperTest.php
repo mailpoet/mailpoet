@@ -1,9 +1,10 @@
 <?php
+namespace MailPoet\Test\Newsletter;
 
 use MailPoet\Models\CustomField;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 
-class ShortcodesHelperTest extends MailPoetTest {
+class ShortcodesHelperTest extends \MailPoetTest {
   function testItCanGetShortcodes() {
     $shortcodes = ShortcodesHelper::getShortcodes();
     expect(array_keys($shortcodes))->equals(
@@ -33,6 +34,6 @@ class ShortcodesHelperTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
   }
 }

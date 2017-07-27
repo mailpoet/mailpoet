@@ -1,7 +1,9 @@
 <?php
+namespace MailPoet\Test\Models;
+
 use MailPoet\Models\SubscriberCustomField;
 
-class SubscriberCustomFieldTest extends MailPoetTest {
+class SubscriberCustomFieldTest extends \MailPoetTest {
   function __construct() {
     parent::__construct();
     $this->data = array(
@@ -72,7 +74,7 @@ class SubscriberCustomFieldTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::forTable(SubscriberCustomField::$_table)
+    \ORM::forTable(SubscriberCustomField::$_table)
       ->deleteMany();
   }
 }

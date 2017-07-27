@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Models\Newsletter;
@@ -6,7 +7,7 @@ use MailPoet\Models\NewsletterPost;
 
 if(!defined('ABSPATH')) exit;
 
-class PostsTaskTest extends MailPoetTest {
+class PostsTest extends \MailPoetTest {
   function testItFailsWhenNoPostsArePresent() {
     $newsletter = (object)array(
       'id' => 1,
@@ -49,6 +50,6 @@ class PostsTaskTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
   }
 }

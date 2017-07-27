@@ -1,9 +1,10 @@
 <?php
+namespace MailPoet\Test\WP;
 
 use Helper\WordPress as WordPressHelper;
 use MailPoet\WP\Posts;
 
-class WPPostsTest extends MailPoetTest {
+class PostsTest extends \MailPoetTest {
 
   function testGetTermsProxiesCallToWordPress() {
     $args = array(

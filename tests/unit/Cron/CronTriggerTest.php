@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Models\Setting;
@@ -6,7 +7,7 @@ use MailPoet\Models\Setting;
 require_once('CronTriggerMockMethod.php');
 require_once('CronTriggerMockMethodWithException.php');
 
-class CronTriggerTest extends MailPoetTest {
+class CronTriggerTest extends \MailPoetTest {
   function _before() {
     $this->cron_trigger = new CronTrigger();
   }
@@ -28,8 +29,8 @@ class CronTriggerTest extends MailPoetTest {
   }
 
   function testItCanGetCurrentMethod() {
-    Setting::setValue(CronTrigger::SETTING_NAME, array('method' => 'MockMethod'));
-    expect($this->cron_trigger->getCurrentMethod())->equals('MockMethod');
+    Setting::setValue(CronTrigger::SETTING_NAME, array('method' => 'CronTriggerMockMethod'));
+    expect($this->cron_trigger->getCurrentMethod())->equals('CronTriggerMockMethod');
   }
 
   function testItCanReturnAvailableMethods() {
@@ -39,7 +40,7 @@ class CronTriggerTest extends MailPoetTest {
 
   function testItCanInitializeCronTriggerMethod() {
     $cron_trigger = $this->cron_trigger;
-    $cron_trigger->current_method = 'MockMethod';
+    $cron_trigger->current_method = 'CronTriggerMockMethod';
     expect($cron_trigger->init())->true();
   }
 
@@ -51,11 +52,11 @@ class CronTriggerTest extends MailPoetTest {
 
   function testItIgnoresExceptionsThrownFromCronTriggerMethods() {
     $cron_trigger = $this->cron_trigger;
-    $cron_trigger->current_method = 'MockMethodWithException';
+    $cron_trigger->current_method = 'CronTriggerMockMethodWithException';
     expect($cron_trigger->init())->null();
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

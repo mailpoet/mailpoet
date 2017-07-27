@@ -3,7 +3,7 @@ namespace MailPoet\Cron\Workers;
 
 if(!defined('ABSPATH')) exit;
 
-class MockSimpleWorker extends SimpleWorker {
+class SimpleWorkerMockImplementation extends SimpleWorker {
   const TASK_TYPE = 'mock_simple_worker';
 
   function init() {

@@ -3,7 +3,7 @@ namespace MailPoet\Cron\Workers\Bounce;
 
 if(!defined('ABSPATH')) exit;
 
-class MockAPI {
+class BounceTestMockAPI {
   function checkBounces(array $emails) {
     return array_map(
       function ($email) {

@@ -1,6 +1,7 @@
 <?php
+namespace MailPoet\Test\Config;
 
-class InitializerTest extends MailPoetTest {
+class InitializerTest extends \MailPoetTest {
   function testItConfiguresHooks() {
     global $wp_filter;
     $is_hooked = false;

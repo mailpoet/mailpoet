@@ -1,11 +1,12 @@
 <?php
+namespace MailPoet\Test\Cron;
 
 use Codeception\Util\Stub;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Daemon;
 use MailPoet\Models\Setting;
 
-class DaemonTest extends MailPoetTest {
+class DaemonTest extends \MailPoetTest {
   function testItDefinesConstants() {
     expect(Daemon::REQUEST_TIMEOUT)->equals(5);
   }
@@ -204,6 +205,6 @@ class DaemonTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

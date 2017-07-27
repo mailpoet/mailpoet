@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Cron\Triggers;
 
 use Carbon\Carbon;
 use MailPoet\API\JSON\Endpoints\Cron;
@@ -9,7 +10,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Setting;
 
-class WordPressCronTriggerTest extends MailPoetTest {
+class WordPressTest extends \MailPoetTest {
   function _before() {
     // cron trigger is by default set to 'WordPress'; when it runs and does not
     // detect any queues to process, it deletes the daemon setting, so Supervisor that's
@@ -116,7 +117,7 @@ class WordPressCronTriggerTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
 }

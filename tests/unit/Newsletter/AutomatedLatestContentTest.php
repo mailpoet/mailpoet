@@ -1,7 +1,9 @@
 <?php
+namespace MailPoet\Test\Newsletter;
+
 use MailPoet\Newsletter\AutomatedLatestContent;
 
-class AutomatedLatestContentTest extends MailPoetTest {
+class AutomatedLatestContentTest extends \MailPoetTest {
   function __construct() {
     parent::__construct();
     $this->alc = new AutomatedLatestContent();

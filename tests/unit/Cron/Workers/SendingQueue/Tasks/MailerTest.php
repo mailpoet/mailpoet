@@ -1,4 +1,6 @@
 <?php
+namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
+
 use Codeception\Util\Stub;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
@@ -8,7 +10,7 @@ use MailPoet\Models\Subscriber;
 
 if(!defined('ABSPATH')) exit;
 
-class MailerTaskTest extends MailPoetTest {
+class MailerTest extends \MailPoetTest {
   public $mailer_task;
   public $sender;
 
@@ -22,11 +24,11 @@ class MailerTaskTest extends MailPoetTest {
   }
 
   function testConfiguresMailerWhenItConstructs() {
-    expect($this->mailer_task->mailer instanceof MailPoet\Mailer\Mailer)->true();
+    expect($this->mailer_task->mailer instanceof \MailPoet\Mailer\Mailer)->true();
   }
 
   function testItCanConfigureMailerWithSenderAndReplyToAddresses() {
-    $newsletter = new stdClass();
+    $newsletter = new \stdClass();
 
     // when no sender/reply-to information is set, use the sender information
     // from Settings
@@ -122,7 +124,7 @@ class MailerTaskTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 }

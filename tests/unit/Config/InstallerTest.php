@@ -1,10 +1,11 @@
 <?php
+namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
 use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 
-class InstallerTest extends MailPoetTest {
+class InstallerTest extends \MailPoetTest {
   function _before() {
     $this->slug = 'some-plugin';
 

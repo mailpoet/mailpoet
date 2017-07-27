@@ -1,4 +1,6 @@
 <?php
+namespace MailPoet\Test\Config;
+
 use MailPoet\Config\MP2Migrator;
 use MailPoet\Models\Setting;
 use MailPoet\Models\CustomField;
@@ -9,7 +11,7 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\Form;
 use Helper\Database;
 
-class MP2MigratorTest extends MailPoetTest {
+class MP2MigratorTest extends \MailPoetTest {
 
   public function _before() {
     $this->MP2Migrator = new MP2Migrator();

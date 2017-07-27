@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
 use AspectMock\Test as Mock;
 use Codeception\Util\Fixtures;
@@ -15,7 +16,7 @@ use MailPoet\Router\Router;
 
 if(!defined('ABSPATH')) exit;
 
-class NewsletterTaskTest extends MailPoetTest {
+class NewsletterTest extends \MailPoetTest {
   function _before() {
     $this->newsletter_task = new NewsletterTask();
     $this->subscriber = Subscriber::create();
@@ -188,7 +189,7 @@ class NewsletterTaskTest extends MailPoetTest {
 
   function testItUpdatesStatusAndSetsSentAtDateOnlyForStandardAndPostNotificationNewsletters() {
     $newsletter = $this->newsletter;
-    $queue = new stdClass();
+    $queue = new \stdClass();
     $queue->processed_at = date('Y-m-d H:i:s');
 
     // newsletter type is 'standard'
@@ -265,7 +266,7 @@ class NewsletterTaskTest extends MailPoetTest {
     try {
       $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue);
       self::fail('Sending error exception was not thrown.');
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
       $mailer_log = MailerLog::getMailerLog();
       expect($mailer_log['error']['operation'])->equals('queue_save');
       expect($mailer_log['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
@@ -274,7 +275,7 @@ class NewsletterTaskTest extends MailPoetTest {
 
   function testItLogsErrorWhenExistingRenderedNewsletterBodyIsInvalid() {
     $queue_mock = Mock::double(
-      new stdClass(),
+      new \stdClass(),
       array(
         'getNewsletterRenderedBody' => 'a:2:{s:4:"html"'
       )
@@ -282,7 +283,7 @@ class NewsletterTaskTest extends MailPoetTest {
     try {
       $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock);
       self::fail('Sending error exception was not thrown.');
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
       $mailer_log = MailerLog::getMailerLog();
       expect($mailer_log['error']['operation'])->equals('queue_save');
       expect($mailer_log['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
@@ -292,7 +293,7 @@ class NewsletterTaskTest extends MailPoetTest {
   function testItLogsErrorWhenNewlyRenderedNewsletterBodyIsInvalid() {
     $queue = $this->queue;
     $queue_mock = Mock::double(
-      new stdClass(),
+      new \stdClass(),
       array(
         'getNewsletterRenderedBody' => null
       )
@@ -305,7 +306,7 @@ class NewsletterTaskTest extends MailPoetTest {
     try {
       $this->newsletter_task->preProcessNewsletter($this->newsletter, $queue_mock);
       self::fail('Sending error exception was not thrown.');
-    } catch(Exception $e) {
+    } catch(\Exception $e) {
       $mailer_log = MailerLog::getMailerLog();
       expect($mailer_log['error']['operation'])->equals('queue_save');
       expect($mailer_log['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
@@ -315,7 +316,7 @@ class NewsletterTaskTest extends MailPoetTest {
   function testItPreProcessesNewsletterWhenNewlyRenderedNewsletterBodyIsValid() {
     $queue = $this->queue;
     $queue_mock = Mock::double(
-      new stdClass(),
+      new \stdClass(),
       array(
         'getNewsletterRenderedBody' => null
       )
@@ -330,10 +331,10 @@ class NewsletterTaskTest extends MailPoetTest {
 
   function _after() {
     WPHooksHelper::releaseAllHooks();
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
   }
 }

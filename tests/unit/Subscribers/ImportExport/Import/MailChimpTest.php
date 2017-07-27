@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\Subscribers\ImportExport\Import;
 
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 
-class MailChimpTest extends MailPoetTest {
+class MailChimpTest extends \MailPoetTest {
   function __construct() {
     parent::__construct();
     $this->api_key = getenv('WP_TEST_IMPORT_MAILCHIMP_API');

@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\Util\License;
 
 use MailPoet\Util\License\License;
 
-class LicenseTest extends MailPoetTest {
+class LicenseTest extends \MailPoetTest {
   function testItGetsLicense() {
     if(defined('MAILPOET_PREMIUM_LICENSE')) return;
     expect(License::getLicense())->false();

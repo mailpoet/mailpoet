@@ -1,11 +1,12 @@
 <?php
+namespace MailPoet\Cron\Triggers;
 
 use MailPoet\API\JSON\Endpoints\Cron;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Triggers\MailPoet;
 use MailPoet\Models\Setting;
 
-class MailPoetCronTriggerTest extends MailPoetTest {
+class MailPoetTest extends \MailPoetTest {
   function _before() {
     // cron trigger is by default set to 'WordPress'; when it runs and does not
     // detect any queues to process, it deletes the daemon setting, so Supervisor that's
@@ -23,6 +24,6 @@ class MailPoetCronTriggerTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\Models;
 
 use MailPoet\Models\NewsletterTemplate;
 
-class NewsletterTemplateTest extends MailPoetTest {
+class NewsletterTemplateTest extends \MailPoetTest {
   function _before() {
     $this->data = array(
       'name' => 'Some template',
@@ -76,7 +77,7 @@ class NewsletterTemplateTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::for_table(NewsletterTemplate::$_table)
+    \ORM::for_table(NewsletterTemplate::$_table)
       ->deleteMany();
   }
 }

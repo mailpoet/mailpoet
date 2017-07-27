@@ -1,6 +1,7 @@
 <?php
+namespace MailPoet\Test\Util;
 
-class CSSTest extends MailPoetTest {
+class CSSTest extends \MailPoetTest {
   public function _before() {
     $this->css = new \MailPoet\Util\CSS();
   }

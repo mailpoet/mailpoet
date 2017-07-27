@@ -1,10 +1,11 @@
 <?php
+namespace MailPoet\Test\API\JSON\v1;
 
 use MailPoet\API\JSON\v1\Mailer;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Mailer\MailerLog;
 
-class MailerEndpointTest extends MailPoetTest {
+class MailerTest extends \MailPoetTest {
   function testItResumesSending() {
     // create mailer log with a "paused" status
     $mailer_log = array('status' => MailerLog::STATUS_PAUSED);

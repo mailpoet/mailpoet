@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\API;
 
 use MailPoet\API\API;
 
-class APITest extends MailPoetTest {
+class APITest extends \MailPoetTest {
   function testItCallsJSONAPI() {
     expect(API::JSON())->isInstanceOf('MailPoet\API\JSON\API');
   }

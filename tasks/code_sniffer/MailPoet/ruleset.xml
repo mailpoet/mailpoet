@@ -122,5 +122,4 @@
 
   <!-- Run against the PHPCompatibility ruleset -->
   <rule ref="PHPCompatibility" />
-  <config name="testVersion" value="5.3-7.0"/>
 </ruleset>

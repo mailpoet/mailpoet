@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron\Workers;
 
 use Carbon\Carbon;
 use Codeception\Util\Stub;
@@ -14,7 +15,7 @@ use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 
-class SchedulerTest extends MailPoetTest {
+class SchedulerTest extends \MailPoetTest {
   function testItDefinesConstants() {
     expect(Scheduler::UNCONFIRMED_SUBSCRIBER_RESCHEDULE_TIMEOUT)->equals(5);
   }
@@ -661,14 +662,14 @@ class SchedulerTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
   }
 }

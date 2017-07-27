@@ -1,9 +1,10 @@
 <?php
+namespace MailPoet\Test\Models;
 
 use Codeception\Util\Stub;
 use MailPoet\Models\Model as MPModel;
 
-class ModelTest extends MailPoetTest {
+class ModelTest extends \MailPoetTest {
   function testItRethrowsPDOExceptions() {
     $message = 'Error message';
     $model = Stub::make('MailPoet\Models\Model');

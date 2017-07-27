@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\Models;
 
 use MailPoet\Models\ModelValidator;
 
-class ModelValidatorTest extends MailPoetTest {
+class ModelValidatorTest extends \MailPoetTest {
   public $validator;
 
   function __construct() {

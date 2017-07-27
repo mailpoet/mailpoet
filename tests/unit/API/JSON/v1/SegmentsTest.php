@@ -1,9 +1,11 @@
 <?php
+namespace MailPoet\Test\API\JSON\v1;
+
 use MailPoet\API\JSON\v1\Segments;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Models\Segment;
 
-class SegmentsTest extends MailPoetTest {
+class SegmentsTest extends \MailPoetTest {
   function _before() {
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));

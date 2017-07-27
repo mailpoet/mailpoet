@@ -1,11 +1,12 @@
 <?php
+namespace MailPoet\Test\Router;
 
 use Codeception\Util\Stub;
 use MailPoet\Router\Router;
 
 require_once('RouterTestMockEndpoint.php');
 
-class FrontRouterTest extends MailPoetTest {
+class RouterTest extends \MailPoetTest {
   public $router_data;
   public $router;
 
@@ -13,7 +14,7 @@ class FrontRouterTest extends MailPoetTest {
     parent::__construct();
     $this->router_data = array(
       Router::NAME => '',
-      'endpoint' => 'mock_endpoint',
+      'endpoint' => 'router_test_mock_endpoint',
       'action' => 'test',
       'data' => base64_encode(json_encode(array('data' => 'dummy data')))
     );
@@ -133,10 +134,10 @@ class FrontRouterTest extends MailPoetTest {
     $data = array('data' => 'dummy data');
     $encoded_data = rtrim(base64_encode(json_encode($data)), '=');
     $result = Router::buildRequest(
-      'mock_endpoint',
+      'router_test_mock_endpoint',
       'test',
       $data
     );
-    expect($result)->contains(Router::NAME . '&endpoint=mock_endpoint&action=test&data=' . $encoded_data);
+    expect($result)->contains(Router::NAME . '&endpoint=router_test_mock_endpoint&action=test&data=' . $encoded_data);
   }
 }

@@ -1,7 +1,9 @@
 <?php
+namespace MailPoet\Test\Util;
+
 use MailPoet\Util\Url;
 
-class UtilUrlTest extends MailPoetTest {
+class UrlTest extends \MailPoetTest {
   function testItCanReturnCurrentUrl() {
     $current_url = Url::getCurrentUrl();
     expect($current_url)->startsWith('http');

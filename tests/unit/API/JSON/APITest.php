@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\API\JSON;
 
 use Codeception\Util\Stub;
 use MailPoet\API\JSON\API;
@@ -10,7 +11,7 @@ require_once(ABSPATH.'wp-admin/includes/user.php');
 require_once('APITestNamespacedEndpointStubV1.php');
 require_once('APITestNamespacedEndpointStubV2.php');
 
-class JSONAPITest extends MailPoetTest {
+class APITest extends \MailPoetTest {
   function _before() {
     // create WP user
     $this->wp_user_id = null;
@@ -74,7 +75,7 @@ class JSONAPITest extends MailPoetTest {
 
   function testItReturns400ErrorWhenAPIVersionIsNotSpecified() {
     $data = array(
-      'endpoint' => 'namespaced_endpoint_stub',
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
       'method' => 'test'
     );
 
@@ -90,7 +91,7 @@ class JSONAPITest extends MailPoetTest {
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
     $data = array(
-      'endpoint' => 'namespaced_endpoint_stub',
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v2',
       'api_version' => 'v2',
       'method' => 'test'
     );
@@ -98,7 +99,7 @@ class JSONAPITest extends MailPoetTest {
 
     expect($this->api->getRequestedAPIVersion())->equals('v2');
     expect($this->api->getRequestedEndpointClass())->equals(
-      'MailPoet\API\JSON\v2\NamespacedEndpointStub'
+      'MailPoet\API\JSON\v2\APITestNamespacedEndpointStubV2'
     );
   }
 
@@ -110,7 +111,7 @@ class JSONAPITest extends MailPoetTest {
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
     $data = array(
-      'endpoint' => 'namespaced_endpoint_stub',
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
       'method' => 'test',
       'api_version' => 'v1',
       'data' => array('test' => 'data')
@@ -129,7 +130,7 @@ class JSONAPITest extends MailPoetTest {
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
 
     $data = array(
-      'endpoint' => 'namespaced_endpoint_stub',
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v2',
       'api_version' => 'v2',
       'method' => 'testVersion'
     );

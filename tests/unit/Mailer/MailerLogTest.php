@@ -1,10 +1,11 @@
 <?php
+namespace MailPoet\Test\Mailer;
 
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Setting;
 
-class MailerLogTest extends MailPoetTest {
+class MailerLogTest extends \MailPoetTest {
   function testItGetsMailerLogWhenOneExists() {
     $mailer_log = array(
       'sent' => 0,
@@ -279,6 +280,6 @@ class MailerLogTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }

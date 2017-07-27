@@ -2,7 +2,7 @@
 
 namespace MailPoet\Cron\Triggers;
 
-class MockMethod {
+class CronTriggerMockMethod {
   static function run() {
     return true;
   }

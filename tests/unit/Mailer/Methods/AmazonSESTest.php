@@ -1,8 +1,9 @@
 <?php
+namespace MailPoet\Test\Mailer\Methods;
 
 use MailPoet\Mailer\Methods\AmazonSES;
 
-class AmazonSESTest extends MailPoetTest {
+class AmazonSESTest extends \MailPoetTest {
   function _before() {
     $this->settings = array(
       'method' => 'AmazonSES',

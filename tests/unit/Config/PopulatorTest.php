@@ -1,11 +1,12 @@
 <?php
+namespace MailPoet\Test\Config;
 
 use MailPoet\Config\Env;
 use MailPoet\Config\Populator;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 
-class PopulatorTest extends MailPoetTest {
+class PopulatorTest extends \MailPoetTest {
   function testItPopulatesNewslettersTableSentAtColumn() {
     // TODO: remove in final release
 
@@ -36,8 +37,8 @@ class PopulatorTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     update_option('mailpoet_db_version', MAILPOET_VERSION);
   }
 }

@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
 use Carbon\Carbon;
 use Codeception\Util\Stub;
@@ -7,9 +8,9 @@ use MailPoet\Models\Setting;
 use MailPoet\Services\Bridge;
 
 require_once('KeyCheckWorkerMockImplementation.php');
-use MailPoet\Cron\Workers\KeyCheck\MockKeyCheckWorker;
+use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCheckWorker;
 
-class KeyCheckWorkerTest extends MailPoetTest {
+class KeyCheckWorkerTest extends \MailPoetTest {
   function _before() {
     $this->worker = new MockKeyCheckWorker();
   }
@@ -65,7 +66,7 @@ class KeyCheckWorkerTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

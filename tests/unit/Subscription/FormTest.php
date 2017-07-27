@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Subscription;
 
 use AspectMock\Test as Mock;
 use MailPoet\Models\Form as FormModel;
@@ -8,7 +9,7 @@ use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Subscription\Form;
 use MailPoet\Util\Security;
 
-class SubscriptionFormSubmissionTest extends MailPoetTest {
+class FormTest extends \MailPoetTest {
   function _before() {
     $this->segment = SegmentModel::createOrUpdate(
       array(
@@ -101,9 +102,9 @@ class SubscriptionFormSubmissionTest extends MailPoetTest {
   function _after() {
     Mock::clean();
     wp_delete_post($this->post);
-    ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
-    ORM::raw_execute('TRUNCATE ' . FormModel::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberModel::$_table);
-    ORM::raw_execute('TRUNCATE ' . SettingModel::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
+    \ORM::raw_execute('TRUNCATE ' . FormModel::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberModel::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SettingModel::$_table);
   }
 }

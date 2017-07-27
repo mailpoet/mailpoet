@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron\Workers;
 
 use Carbon\Carbon;
 use MailPoet\Cron\Workers\Bounce;
@@ -11,8 +12,9 @@ use MailPoet\Services\Bridge\API;
 use MailPoet\Util\Helpers;
 
 require_once('BounceTestMockAPI.php');
+use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
 
-class BounceTest extends MailPoetTest {
+class BounceTest extends \MailPoetTest {
   function _before() {
     $this->emails = array(
       'soft_bounce@example.com',
@@ -29,7 +31,7 @@ class BounceTest extends MailPoetTest {
 
     $this->worker = new Bounce(microtime(true));
 
-    $this->worker->api = new MailPoet\Cron\Workers\Bounce\MockAPI('key');
+    $this->worker->api = new MockAPI('key');
   }
 
   function testItDefinesConstants() {
@@ -124,9 +126,9 @@ class BounceTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
   }
 }

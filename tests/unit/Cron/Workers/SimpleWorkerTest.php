@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron\Workers;
 
 use Carbon\Carbon;
 use Codeception\Util\Stub;
@@ -8,9 +9,9 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Setting;
 
 require_once('SimpleWorkerMockImplementation.php');
-use MailPoet\Cron\Workers\MockSimpleWorker;
+use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 
-class SimpleWorkerTest extends MailPoetTest {
+class SimpleWorkerTest extends \MailPoetTest {
   function _before() {
     $this->worker = new MockSimpleWorker();
   }
@@ -193,7 +194,7 @@ class SimpleWorkerTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Setting::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
+    \ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
   }
 }

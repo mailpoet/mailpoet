@@ -1,11 +1,13 @@
 <?php
+namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
+
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 
 if(!defined('ABSPATH')) exit;
 
-class ShortcodesTaskTest extends MailPoetTest {
+class ShortcodesTest extends \MailPoetTest {
   function testItCanReplaceShortcodes() {
     $queue = $newsletter = (object)array(
       'id' => 1
@@ -21,7 +23,7 @@ class ShortcodesTaskTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
   }
 }

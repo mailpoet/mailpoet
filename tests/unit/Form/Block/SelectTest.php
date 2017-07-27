@@ -1,9 +1,10 @@
 <?php
+namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\Select;
 use MailPoet\Models\Subscriber;
 
-class SelectTest extends MailPoetTest {
+class SelectTest extends \MailPoetTest {
   function _before() {
     $this->block = array(
       'id' => 'status',

@@ -1,7 +1,9 @@
 <?php
+namespace MailPoet\Test\Models;
+
 use MailPoet\Models\Setting;
 
-class SettingTest extends MailPoetTest {
+class SettingTest extends \MailPoetTest {
   function testItCanBeCreated() {
     $setting = Setting::createOrUpdate(array(
       'name' => 'key',

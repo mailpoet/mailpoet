@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Cron\Workers\SendingQueue;
 
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
@@ -22,7 +23,7 @@ use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Subscription\Url;
 
-class SendingQueueTest extends MailPoetTest {
+class SendingQueueTest extends \MailPoetTest {
   function _before() {
     $wp_users = get_users();
     wp_set_current_user($wp_users[0]->ID);
@@ -574,14 +575,14 @@ class SendingQueueTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsNewsletters::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
+    \ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . StatisticsNewsletters::$_table);
   }
 }

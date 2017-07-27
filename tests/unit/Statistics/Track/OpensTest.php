@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Statistics\Track;
 
 use Codeception\Util\Stub;
 use MailPoet\Models\Newsletter;
@@ -7,7 +8,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\Track\Opens;
 
-class OpensTest extends MailPoetTest {
+class OpensTest extends \MailPoetTest {
   function _before() {
     // create newsletter
     $newsletter = Newsletter::create();
@@ -85,9 +86,9 @@ class OpensTest extends MailPoetTest {
   }
 
   function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    \ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    \ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
   }
 }

@@ -7,7 +7,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 
 if(!defined('ABSPATH')) exit;
 
-class NamespacedEndpointStub extends APIEndpoint {
+class APITestNamespacedEndpointStubV2 extends APIEndpoint {
   public $permissions = array(
     'testVersion' => APIAccess::ALL
   );

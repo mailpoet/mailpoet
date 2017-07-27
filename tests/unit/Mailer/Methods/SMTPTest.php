@@ -1,11 +1,12 @@
 <?php
+namespace MailPoet\Test\Mailer\Methods;
 
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\WP\Hooks;
 
-class SMTPTest extends MailPoetTest {
+class SMTPTest extends \MailPoetTest {
   function _before() {
     $this->settings = array(
       'method' => 'SMTP',
@@ -187,7 +188,7 @@ class SMTPTest extends MailPoetTest {
 
   function testItAppliesTimeoutFilter() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->getTransport()->getTimeout())->equals(MailPoet\Mailer\Methods\SMTP::SMTP_CONNECTION_TIMEOUT);
+    expect($mailer->getTransport()->getTimeout())->equals(\MailPoet\Mailer\Methods\SMTP::SMTP_CONNECTION_TIMEOUT);
     Hooks::addFilter(
       'mailpoet_mailer_smtp_connection_timeout',
       function() {

@@ -1,4 +1,5 @@
 <?php
+namespace MailPoet\Test\Config;
 
 use MailPoet\Config\Shortcodes;
 use MailPoet\Models\Newsletter;
@@ -6,7 +7,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 
-class ConfigShortcodesTest extends MailPoetTest {
+class ShortcodesTest extends \MailPoetTest {
   function _before() {
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
@@ -22,7 +23,7 @@ class ConfigShortcodesTest extends MailPoetTest {
     $shortcodes = new Shortcodes();
     // result contains a link pointing to the "view in browser" router endpoint
     $result = $shortcodes->getArchive($params = false);
-    $dom = pQuery::parseStr($result);
+    $dom = \pQuery::parseStr($result);
     $link = $dom->query('a');
     $link = $link->attr('href');
     expect($link)->contains('endpoint=view_in_browser');
