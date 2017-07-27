@@ -84,7 +84,7 @@ const _QueueMixin = {
           <span>
             {
               MailPoet.I18n.t('newsletterQueueCompleted')
-              .replace("%$1d",newsletter.queue.count_processed)
+              .replace("%$1d", newsletter.queue.count_processed)
               .replace("%$2d", newsletter.queue.count_total)
             }
           </span>
