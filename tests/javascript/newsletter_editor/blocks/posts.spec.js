@@ -10,8 +10,8 @@ define([
       Requests: {
         request: function () {
         }, reply: function () {
-        },
-      },
+        }
+      }
     };
     describe('model', function () {
       var model;
@@ -148,14 +148,14 @@ define([
                 styles: {
                   block: {
                     backgroundColor: '#123456',
-                    borderColor: '#234567',
+                    borderColor: '#234567'
                   },
                   link: {
                     fontColor: '#345678',
                     fontFamily: 'Tahoma',
-                    fontSize: '37px',
-                  },
-                },
+                    fontSize: '37px'
+                  }
+                }
               },
               sortBy: 'oldest', // 'newest'|'oldest',
               showDivider: true, // true|false
@@ -164,12 +164,12 @@ define([
                 styles: {
                   block: {
                     backgroundColor: '#456789',
-                    padding: '38px',
-                  },
-                },
-              },
-            },
-          },
+                    padding: '38px'
+                  }
+                }
+              }
+            }
+          }
         });
         var model = new (PostsBlock.PostsBlockModel)();
 
@@ -286,28 +286,28 @@ define([
             {
               name: 'post',
               labels: {
-                singular_name: 'Post',
-              },
+                singular_name: 'Post'
+              }
             },
             {
               name: 'page',
               labels: {
-                singular_name: 'Page',
-              },
+                singular_name: 'Page'
+              }
             },
             {
               name: 'mailpoet_page',
               labels: {
-                singular_name: 'Mailpoet page',
-              },
-            },
+                singular_name: 'Mailpoet page'
+              }
+            }
           ]);
           return deferred;
         };
 
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication, {
-          blockDefaults: {},
+          blockDefaults: {}
         });
         EditorApplication.getBlockTypeModel = sinon.stub().returns(ContainerBlock.ContainerBlockModel);
         model = new (PostsBlock.PostsBlockModel)();

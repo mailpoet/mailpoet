@@ -57,7 +57,7 @@ global.stubChannel = function (EditorApplication, returnObject) {
     trigger: function () {
     },
     on: function () {
-    },
+    }
   }));
 };
 global.stubConfig = function (EditorApplication, config) {
@@ -83,7 +83,7 @@ global.stubImage = function(defaultWidth, defaultHeight) {
       "set": function(src) {
         this.address = src;
         this.onload();
-      },
+      }
     });
   };
 }
@@ -225,5 +225,5 @@ global.templates = {
 
   textBlock: Handlebars.compile(jQuery('#newsletter_editor_template_text_block').html()),
   textInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_text_widget').html()),
-  textBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_text_settings').html()),
+  textBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_text_settings').html())
 };

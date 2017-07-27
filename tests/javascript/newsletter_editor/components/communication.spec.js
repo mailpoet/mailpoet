@@ -14,13 +14,13 @@ define([
                 deferred.resolve({
                   data: {
                     'post': 'val1',
-                    'page': 'val2',
+                    'page': 'val2'
                   }
                 });
                 return deferred;
               }
-            },
-          },
+            }
+          }
         });
       module.getPostTypes().done(function(types) {
         expect(types).to.eql(['val1', 'val2']);
@@ -33,13 +33,13 @@ define([
           module = CommunicationInjector({
             "mailpoet": {
               Ajax: {
-                post: mock,
-              },
-            },
+                post: mock
+              }
+            }
           });
       deferred.resolve({
         'post': 'val1',
-        'page': 'val2',
+        'page': 'val2'
       });
       module.getPostTypes();
       module.getPostTypes();
@@ -55,7 +55,7 @@ define([
             var deferred = jQuery.Deferred();
             deferred.resolve({
               'category': 'val1',
-              'post_tag': 'val2',
+              'post_tag': 'val2'
             });
             return deferred;
           },
@@ -64,9 +64,9 @@ define([
       module = CommunicationInjector({
         "mailpoet": {
           Ajax: {
-            post: spy,
-          },
-        },
+            post: spy
+          }
+        }
       });
 
       module.getTaxonomies('post');
@@ -86,8 +86,8 @@ define([
                 });
                 return deferred;
               }
-            },
-          },
+            }
+          }
         });
       module.getTaxonomies('page').done(function(types) {
         expect(types).to.eql({ 'category': 'val1' });
@@ -100,9 +100,9 @@ define([
           module = CommunicationInjector({
             "mailpoet": {
               Ajax: {
-                post: mock,
-              },
-            },
+                post: mock
+              }
+            }
           });
       deferred.resolve({ 'category': 'val1' });
       module.getTaxonomies('page');
@@ -125,13 +125,13 @@ define([
       module = CommunicationInjector({
         "mailpoet": {
           Ajax: {
-            post: spy,
-          },
-        },
+            post: spy
+          }
+        }
       });
 
       module.getTerms({
-        taxonomies: ['category', 'post_tag'],
+        taxonomies: ['category', 'post_tag']
       });
       expect(spy.args[0][0].data.taxonomies).to.eql(['category', 'post_tag']);
     });
@@ -150,8 +150,8 @@ define([
                 });
                 return deferred;
               }
-            },
-          },
+            }
+          }
         });
       module.getTerms({ taxonomies: ['category'] }).done(function(types) {
         expect(types).to.eql({ 'term1': 'term1val1', 'term2': 'term2val2' });
@@ -164,9 +164,9 @@ define([
           module = CommunicationInjector({
             "mailpoet": {
               Ajax: {
-                post: mock,
-              },
-            },
+                post: mock
+              }
+            }
           });
       deferred.resolve({ 'term1': 'term1val1', 'term2': 'term2val2' });
       module.getTerms({ taxonomies: ['category'] });
@@ -189,9 +189,9 @@ define([
       module = CommunicationInjector({
         "mailpoet": {
           Ajax: {
-            post: spy,
-          },
-        },
+            post: spy
+          }
+        }
       });
 
       module.getPosts({
@@ -218,8 +218,8 @@ define([
                 });
                 return deferred;
               }
-            },
-          },
+            }
+          }
         });
       module.getPosts().done(function(posts) {
         expect(posts).to.eql([{post_title: 'title 1'}, {post_title: 'post title 2'}]);
@@ -232,9 +232,9 @@ define([
           module = CommunicationInjector({
             "mailpoet": {
               Ajax: {
-                post: mock,
-              },
-            },
+                post: mock
+              }
+            }
           });
       deferred.resolve({
         type: 'posts',
@@ -260,9 +260,9 @@ define([
       module = CommunicationInjector({
         "mailpoet": {
           Ajax: {
-            post: spy,
-          },
-        },
+            post: spy
+          }
+        }
       });
 
       module.getTransformedPosts({
@@ -271,7 +271,7 @@ define([
       });
       expect(spy.args[0][0].data).to.eql({
         type: 'posts',
-        posts: [1, 2],
+        posts: [1, 2]
       });
     });
 
@@ -289,8 +289,8 @@ define([
                 });
                 return deferred;
               }
-            },
-          },
+            }
+          }
         });
       module.getTransformedPosts().done(function(posts) {
         expect(posts).to.eql([{type: 'text', text: 'something'}, {type: 'text', text: 'something else'}]);
@@ -303,13 +303,13 @@ define([
           module = CommunicationInjector({
             "mailpoet": {
               Ajax: {
-                post: mock,
-              },
-            },
+                post: mock
+              }
+            }
           });
       deferred.resolve({
         type: 'posts',
-        posts: [1, 3],
+        posts: [1, 3]
       });
       module.getTransformedPosts({});
       module.getTransformedPosts({});

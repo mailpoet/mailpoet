@@ -24,9 +24,9 @@ define([
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             text: {
-              text: 'some custom config text',
-            },
-          },
+              text: 'some custom config text'
+            }
+          }
         });
         var model = new (TextBlock.TextBlockModel)();
 

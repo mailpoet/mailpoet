@@ -8,7 +8,7 @@ define([
       var view;
       beforeEach(function() {
         view = new (SidebarComponent.SidebarWidgetsView)({
-          collection: new Backbone.Collection([]),
+          collection: new Backbone.Collection([])
         });
       });
 
@@ -21,7 +21,7 @@ define([
       var view;
       beforeEach(function() {
         view = new (SidebarComponent.SidebarLayoutWidgetsView)({
-          collection: new Backbone.Collection([]),
+          collection: new Backbone.Collection([])
         });
       });
 
@@ -35,7 +35,7 @@ define([
       beforeEach(function() {
         view = new (SidebarComponent.SidebarStylesView)({
           model: new Backbone.SuperModel({}),
-          availableStyles: new Backbone.SuperModel({}),
+          availableStyles: new Backbone.SuperModel({})
         });
       });
 
@@ -49,43 +49,43 @@ define([
           model = new Backbone.SuperModel({
             text: {
               fontColor: '#000000',
-              fontFamily: 'Arial',
+              fontFamily: 'Arial'
             },
             h1: {
               fontColor: '#000001',
-              fontFamily: 'Arial',
+              fontFamily: 'Arial'
             },
             h2: {
               fontColor: '#000002',
-              fontFamily: 'Arial',
+              fontFamily: 'Arial'
             },
             h3: {
               fontColor: '#000003',
-              fontFamily: 'Arial',
+              fontFamily: 'Arial'
             },
             link: {
               fontColor: '#000005',
-              textDecoration: 'none',
+              textDecoration: 'none'
             },
             wrapper: {
-              backgroundColor: '#090909',
+              backgroundColor: '#090909'
             },
             body: {
-              backgroundColor: '#020202',
-            },
+              backgroundColor: '#020202'
+            }
           });
           availableStyles = new Backbone.SuperModel({
             fonts: ['Arial', 'Times New Roman', 'Tahoma', 'Comic Sans', 'Lucida'],
             textSizes: [
-              '9px', '10px',
+              '9px', '10px'
             ],
             headingSizes: [
-              '10px', '12px', '14px', '16px', '18px',
-            ],
+              '10px', '12px', '14px', '16px', '18px'
+            ]
           });
           view = new (SidebarComponent.SidebarStylesView)({
             model: model,
-            availableStyles: availableStyles,
+            availableStyles: availableStyles
           });
 
           view.render();

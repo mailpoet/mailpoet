@@ -12,12 +12,12 @@ define([
           body: {
             globalStyles: {
               style1: 'style1Value',
-              style2: 'style2Value',
+              style2: 'style2Value'
             },
             content: {
               data1: 'data1Value',
-              data2: 'data2Value',
-            },
+              data2: 'data2Value'
+            }
           },
           subject: 'my test subject'
         });
@@ -26,7 +26,7 @@ define([
       it('triggers autosave on change', function() {
         var mock = sinon.mock({ trigger: function() {} }).expects('trigger').once().withArgs('autoSave');
         global.stubChannel(EditorApplication, {
-          trigger: mock,
+          trigger: mock
         });
         model.set('subject', 'another test subject');
         mock.verify();
@@ -63,7 +63,7 @@ define([
           blockView = new Backbone.View();
         ContentComponent.registerBlockType('testType', {
           blockModel: blockModel,
-          blockView: blockView,
+          blockView: blockView
         });
         expect(ContentComponent.getBlockTypeModel('testType')).to.deep.equal(blockModel);
         expect(ContentComponent.getBlockTypeView('testType')).to.deep.equal(blockView);
@@ -73,11 +73,11 @@ define([
     describe('transformation to json', function() {
       it('includes content, globalStyles and initial newsletter fields', function() {
         var dataField = {
-          containerModelField: 'containerModelValue',
+          containerModelField: 'containerModelValue'
         }, stylesField = {
-          globalStylesField: 'globalStylesValue',
+          globalStylesField: 'globalStylesValue'
         }, newsletterFields = {
-          subject: 'test newsletter subject',
+          subject: 'test newsletter subject'
         };
         EditorApplication._contentContainer = {
           toJSON: function() {
@@ -88,14 +88,14 @@ define([
           return {
             toJSON: function() {
               return stylesField;
-            },
+            }
           };
         };
         EditorApplication.getNewsletter = function() {
           return {
             toJSON: function() {
               return newsletterFields;
-            },
+            }
           };
         };
         var json = ContentComponent.toJSON();
@@ -103,7 +103,7 @@ define([
           body: {
             content: dataField,
             globalStyles: stylesField
-          },
+          }
         }, newsletterFields));
       });
     });

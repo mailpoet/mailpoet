@@ -33,11 +33,11 @@ define([
               container: {
                 styles: {
                   block: {
-                    backgroundColor: '#123456',
-                  },
-                },
-              },
-            },
+                    backgroundColor: '#123456'
+                  }
+                }
+              }
+            }
           });
           var model = new (ContainerBlock.ContainerBlockModel)();
 
@@ -48,7 +48,7 @@ define([
       describe('when creating with children', function () {
         var testModel = {
             type: 'sampleType',
-            someField: 'Some Content',
+            someField: 'Some Content'
           },
           model;
 
@@ -57,7 +57,7 @@ define([
 
           model = new (ContainerBlock.ContainerBlockModel)({
             type: 'container',
-            blocks: [testModel],
+            blocks: [testModel]
           }, {parse: true});
 
           expect(model.get('blocks')).to.have.length(1);
@@ -79,15 +79,15 @@ define([
                 blocks: [
                   {
                     type: 'someType',
-                    someField: 'some text',
+                    someField: 'some text'
                   },
                   {
                     type: 'someType',
-                    someField: 'some text 2',
-                  },
-                ],
+                    someField: 'some text 2'
+                  }
+                ]
               }
-            ],
+            ]
           }, {parse: true});
 
           expect(model.get('blocks')).to.have.length(1);
@@ -119,8 +119,8 @@ define([
             view = new (ContainerBlock.ContainerBlockView)({
               model: model,
               renderOptions: {
-                depth: 0,
-              },
+                depth: 0
+              }
             });
             view.render();
           });
@@ -151,8 +151,8 @@ define([
             view = new (ContainerBlock.ContainerBlockView)({
               model: model,
               renderOptions: {
-                depth: 1,
-              },
+                depth: 1
+              }
             });
             view.render();
           });

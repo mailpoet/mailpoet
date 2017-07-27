@@ -21,12 +21,12 @@ define([
       it('triggers beforeEditorSave event', function() {
         var spy = sinon.spy();
         global.stubChannel(EditorApplication, {
-          trigger: spy,
+          trigger: spy
         });
         EditorApplication.toJSON = sinon.stub().returns({
           body: {
-            type: 'container',
-          },
+            type: 'container'
+          }
         });
         module.save();
         expect(spy.withArgs('beforeEditorSave').calledOnce).to.be.true;
@@ -36,16 +36,16 @@ define([
         var spy = sinon.spy(),
           promise = jQuery.Deferred();
         global.stubChannel(EditorApplication, {
-          trigger: spy,
+          trigger: spy
         });
         EditorApplication.toJSON = sinon.stub().returns({
           body: {
-            type: 'container',
-          },
+            type: 'container'
+          }
         });
         var module = SaveInjector({
           'newsletter_editor/components/communication': {
-            saveNewsletter: sinon.stub().returns(promise),
+            saveNewsletter: sinon.stub().returns(promise)
           }
         });
         promise.resolve({ success: true });
@@ -57,7 +57,7 @@ define([
         var mock = sinon.mock().once().returns(jQuery.Deferred());
         var module = SaveInjector({
           'newsletter_editor/components/communication': {
-            saveNewsletter: mock,
+            saveNewsletter: mock
           }
         });
         global.stubChannel(EditorApplication);
@@ -73,17 +73,17 @@ define([
           mock = sinon.mock()
             .once()
             .withArgs({
-              body: JSON.stringify(body),
+              body: JSON.stringify(body)
             })
             .returns(jQuery.Deferred());
         global.stubChannel(EditorApplication);
 
         EditorApplication.toJSON = sinon.stub().returns({
-          body: body,
+          body: body
         });
         var module = SaveInjector({
           'newsletter_editor/components/communication': {
-            saveNewsletter: mock,
+            saveNewsletter: mock
           }
         });
         module.save();
@@ -125,7 +125,7 @@ define([
         it('triggers newsletter saving when clicked on save button', function() {
           var mock = sinon.mock({ trigger: function() {} }).expects('trigger').once().withArgs('save');
           global.stubChannel(EditorApplication, {
-            trigger: mock,
+            trigger: mock
           });
           view.$('.mailpoet_save_button').click();
 
@@ -142,29 +142,29 @@ define([
             html2canvasMock = jQuery.Deferred();
 
           html2canvasMock.resolve({
-            toDataURL: function() { return 'somedataurl'; },
+            toDataURL: function() { return 'somedataurl'; }
           });
 
           EditorApplication.getBody = sinon.stub();
           var module = SaveInjector({
             'mailpoet': {
               Ajax: {
-                post: mock,
+                post: mock
               },
               I18n: {
-                t: function() { return ''; },
+                t: function() { return ''; }
               },
               Notice: {
                 success: function() {},
-                error: function() {},
-              },
+                error: function() {}
+              }
             },
             'newsletter_editor/App': EditorApplication,
             'html2canvas': function() {
               return {
                 then: function() { return html2canvasMock; }
               };
-            },
+            }
           });
           var view = new (module.SaveView)();
           view.render();
