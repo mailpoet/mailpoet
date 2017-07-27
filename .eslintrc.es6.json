@@ -73,7 +73,6 @@
     "newline-per-chained-call": 0,
     "no-else-return": 0,
     "max-len": 0,
-    "comma-spacing": 0,
     "no-useless-concat": 0,
     "no-unused-expressions": 0,
     "no-sequences": 0,

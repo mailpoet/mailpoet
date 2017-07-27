@@ -25,7 +25,7 @@ const TIME_STEP_SECONDS = 3600;
 const numberOfTimeSteps = SECONDS_IN_DAY / TIME_STEP_SECONDS;
 
 const _timeOfDayValues = _.object(_.map(
-  _.times(numberOfTimeSteps,(step) => {
+  _.times(numberOfTimeSteps, (step) => {
     return step * TIME_STEP_SECONDS;
   }), (seconds) => {
   const date = new Date(null);
