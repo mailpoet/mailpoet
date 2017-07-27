@@ -16,9 +16,9 @@ define([
     defaults: function() {
       return this._getDefaults({
         type: 'text',
-        text: 'Edit this to insert text',
+        text: 'Edit this to insert text'
       }, App.getConfig().get('blockDefaults.text'));
-    },
+    }
   });
 
   Module.TextBlockView = base.BlockView.extend({
@@ -36,16 +36,16 @@ define([
         configurationFilter: function(originalSettings) {
           return _.extend({}, originalSettings, {
             mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
-            mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle'),
+            mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle')
           });
         }
-      },
+      }
     }),
     initialize: function(options) {
       base.BlockView.prototype.initialize.apply(this, arguments);
 
       this.renderOptions = _.defaults(options.renderOptions || {}, {
-        disableTextEditor: false,
+        disableTextEditor: false
       });
 
       this.disableTextEditor = this.renderOptions.disableTextEditor;
@@ -55,8 +55,8 @@ define([
       this.toolsView = new Module.TextBlockToolsView({
         model: this.model,
         tools: {
-          settings: false,
-        },
+          settings: false
+        }
       });
       this.showChildView('toolsRegion', this.toolsView);
     },
@@ -70,15 +70,15 @@ define([
     onTextEditorBlur: function() {
       this.enableDragging();
       this.enableShowingTools();
-    },
+    }
   });
 
   Module.TextBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.TextBlockSettingsView; },
+    getSettingsView: function() { return Module.TextBlockSettingsView; }
   });
 
   Module.TextBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.textBlockSettings; },
+    getTemplate: function() { return templates.textBlockSettings; }
   });
 
   Module.TextWidgetView = base.WidgetView.extend({
@@ -88,21 +88,21 @@ define([
         cloneOriginal: true,
         drop: function() {
           return new Module.TextBlockModel();
-        },
+        }
       }
-    },
+    }
   });
 
   App.on('before:start', function(App, options) {
     App.registerBlockType('text', {
       blockModel: Module.TextBlockModel,
-      blockView: Module.TextBlockView,
+      blockView: Module.TextBlockView
     });
 
     App.registerWidget({
       name: 'text',
       widgetView: Module.TextWidgetView,
-      priority: 90,
+      priority: 90
     });
   });
 

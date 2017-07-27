@@ -19,11 +19,11 @@ define([
         styles: {
           block: {
             backgroundColor: 'transparent',
-            height: '40px',
-          },
-        },
+            height: '40px'
+          }
+        }
       }, App.getConfig().get('blockDefaults.spacer'));
-    },
+    }
   });
 
   Module.SpacerBlockView = base.BlockView.extend({
@@ -34,11 +34,11 @@ define([
         elementSelector: '.mailpoet_spacer',
         resizeHandleSelector: '.mailpoet_resize_handle',
         minLength: 20, // TODO: Move this number to editor configuration
-        modelField: 'styles.block.height',
+        modelField: 'styles.block.height'
       },
       ShowSettingsBehavior: {
         ignoreFrom: '.mailpoet_resize_handle'
-      },
+      }
     }, base.BlockView.prototype.behaviors),
     modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'),
     onDragSubstituteBy: function() { return Module.SpacerWidgetView; },
@@ -58,11 +58,11 @@ define([
     },
     onBeforeDestroy: function() {
       this.stopListening(this.model);
-    },
+    }
   });
 
   Module.SpacerBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.SpacerBlockSettingsView; },
+    getSettingsView: function() { return Module.SpacerBlockSettingsView; }
   });
 
   Module.SpacerBlockSettingsView = base.BlockSettingsView.extend({
@@ -70,9 +70,9 @@ define([
     events: function() {
       return {
         "change .mailpoet_field_spacer_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
-        "click .mailpoet_done_editing": "close",
+        "click .mailpoet_done_editing": "close"
       };
-    },
+    }
   });
 
   Module.SpacerWidgetView = base.WidgetView.extend({
@@ -82,21 +82,21 @@ define([
         cloneOriginal: true,
         drop: function() {
           return new Module.SpacerBlockModel();
-        },
+        }
       }
-    },
+    }
   });
 
   App.on('before:start', function(App, options) {
     App.registerBlockType('spacer', {
       blockModel: Module.SpacerBlockModel,
-      blockView: Module.SpacerBlockView,
+      blockView: Module.SpacerBlockView
     });
 
     App.registerWidget({
       name: 'spacer',
       widgetView: Module.SpacerWidgetView,
-      priority: 94,
+      priority: 94
     });
   });
 

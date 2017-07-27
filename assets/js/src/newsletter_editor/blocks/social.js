@@ -30,7 +30,7 @@ define([
         image: App.getAvailableStyles().get('socialIconSets.default.custom'),
         height: '32px',
         width: '32px',
-        text: defaultValues.get('title'),
+        text: defaultValues.get('title')
       };
     },
     initialize: function(options) {
@@ -42,11 +42,11 @@ define([
         this.set({
           link: defaultValues.get('defaultLink'),
           image: iconSet.get(that.get('iconType')),
-          text: defaultValues.get('title'),
+          text: defaultValues.get('title')
         });
       }, this);
       this.on('change', function() { App.getChannel().trigger('autoSave'); });
-    },
+    }
   });
 
   Module.SocialIconCollectionModel = Backbone.Collection.extend({
@@ -59,11 +59,11 @@ define([
       return this._getDefaults({
         type: 'social',
         iconSet: 'default',
-        icons: new Module.SocialIconCollectionModel(),
+        icons: new Module.SocialIconCollectionModel()
       }, App.getConfig().get('blockDefaults.social'));
     },
     relations: {
-      icons: Module.SocialIconCollectionModel,
+      icons: Module.SocialIconCollectionModel
     },
     initialize: function() {
       this.get('icons').on('add remove change', this._iconsChanged, this);
@@ -80,27 +80,27 @@ define([
     },
     _iconsChanged: function() {
       App.getChannel().trigger('autoSave'); 
-    },
+    }
   });
 
   var SocialIconView = Marionette.View.extend({
     tagName: 'span',
     getTemplate: function() { return templates.socialIconBlock; },
     modelEvents: {
-      'change': 'render',
+      'change': 'render'
     },
     templateContext: function() {
       var allIconSets = App.getAvailableStyles().get('socialIconSets');
       return {
         model: this.model.toJSON(),
         allIconSets: allIconSets.toJSON(),
-        imageMissingSrc: App.getConfig().get('urls.imageMissing'),
+        imageMissingSrc: App.getConfig().get('urls.imageMissing')
       };
-    },
+    }
   });
 
   Module.SocialIconCollectionView = Marionette.CollectionView.extend({
-    childView: SocialIconView,
+    childView: SocialIconView
   });
 
   Module.SocialBlockView = base.BlockView.extend({
@@ -113,7 +113,7 @@ define([
       tools: '> .mailpoet_tools'
     },
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
-      ShowSettingsBehavior: {},
+      ShowSettingsBehavior: {}
     }),
     onDragSubstituteBy: function() { return Module.SocialWidgetView; },
     onRender: function() {
@@ -122,11 +122,11 @@ define([
       this.showChildView('icons', new Module.SocialIconCollectionView({
         collection: this.model.get('icons')
       }))
-    },
+    }
   });
 
   Module.SocialBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.SocialBlockSettingsView; },
+    getSettingsView: function() { return Module.SocialBlockSettingsView; }
   });
 
   // Sidebar view container
@@ -134,11 +134,11 @@ define([
     getTemplate: function() { return templates.socialBlockSettings; },
     regions: {
       iconRegion: '#mailpoet_social_icons_selection',
-      stylesRegion: '#mailpoet_social_icons_styles',
+      stylesRegion: '#mailpoet_social_icons_styles'
     },
     events: function() {
       return {
-        "click .mailpoet_done_editing": "close",
+        "click .mailpoet_done_editing": "close"
       };
     },
     initialize: function() {
@@ -162,7 +162,7 @@ define([
         "change .mailpoet_social_icon_field_type": _.partial(this.changeField, "iconType"),
         "input .mailpoet_social_icon_field_image": _.partial(this.changeField, "image"),
         "input .mailpoet_social_icon_field_link": this.changeLink,
-        "input .mailpoet_social_icon_field_text": _.partial(this.changeField, "text"),
+        "input .mailpoet_social_icon_field_text": _.partial(this.changeField, "text")
       };
     },
     modelEvents: {
@@ -172,7 +172,7 @@ define([
       },
       'change:text': function() {
         this.$('.mailpoet_social_icon_image').attr('alt', this.model.get('text'));
-      },
+      }
     },
     templateContext: function() {
       var icons = App.getConfig().get('socialIcons'),
@@ -182,7 +182,7 @@ define([
       return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         iconTypes: availableIconTypes,
         currentType: icons.get(this.model.get('iconType')).toJSON(),
-        allIconSets: allIconSets.toJSON(),
+        allIconSets: allIconSets.toJSON()
       });
     },
     deleteIcon: function() {
@@ -197,17 +197,17 @@ define([
     },
     changeField: function(field, event) {
       this.model.set(field, jQuery(event.target).val());
-    },
+    }
   });
 
   SocialBlockSettingsIconCollectionView = Marionette.CollectionView.extend({
     behaviors: {
       SortableBehavior: {
-        items: '> div',
-      },
+        items: '> div'
+      }
     },
     childViewContainer: '#mailpoet_social_icon_selector_contents',
-    childView: SocialBlockSettingsIconView,
+    childView: SocialBlockSettingsIconView
   });
 
   // Select icons section container view
@@ -217,10 +217,10 @@ define([
       'icons': '#mailpoet_social_icon_selector_contents'
     },
     events: {
-      'click .mailpoet_add_social_icon': 'addSocialIcon',
+      'click .mailpoet_add_social_icon': 'addSocialIcon'
     },
     modelEvents: {
-      'change:iconSet': 'render',
+      'change:iconSet': 'render'
     },
     addSocialIcon: function() {
       // Add a social icon with default values
@@ -237,10 +237,10 @@ define([
   SocialBlockSettingsStylesView = Marionette.View.extend({
     getTemplate: function() { return templates.socialSettingsStyles; },
     modelEvents: {
-      'change': 'render',
+      'change': 'render'
     },
     events: {
-      'click .mailpoet_social_icon_set': 'changeSocialIconSet',
+      'click .mailpoet_social_icon_set': 'changeSocialIconSet'
     },
     initialize: function() {
       this.listenTo(this.model.get('icons'), 'add remove change', this.render);
@@ -251,7 +251,7 @@ define([
         activeSet: this.model.get('iconSet'),
         socialIconSets: allIconSets.toJSON(),
         availableSets: _.keys(allIconSets.toJSON()),
-        availableSocialIcons: this.model.get('icons').pluck('iconType'),
+        availableSocialIcons: this.model.get('icons').pluck('iconType')
       };
     },
     changeSocialIconSet: function(event) {
@@ -259,7 +259,7 @@ define([
     },
     onBeforeDestroy: function() {
       this.model.get('icons').off('add remove', this.render, this);
-    },
+    }
   });
 
   Module.SocialWidgetView = base.WidgetView.extend({
@@ -279,7 +279,7 @@ define([
                 image: App.getAvailableStyles().get('socialIconSets.default.facebook'),
                 height: '32px',
                 width: '32px',
-                text: 'Facebook',
+                text: 'Facebook'
               },
               {
                 type: 'socialIcon',
@@ -288,25 +288,25 @@ define([
                 image: App.getAvailableStyles().get('socialIconSets.default.twitter'),
                 height: '32px',
                 width: '32px',
-                text: 'Twitter',
-              },
-            ],
+                text: 'Twitter'
+              }
+            ]
           }, { parse: true });
         }
       }
-    },
+    }
   });
 
   App.on('before:start', function(App, options) {
     App.registerBlockType('social', {
       blockModel: Module.SocialBlockModel,
-      blockView: Module.SocialBlockView,
+      blockView: Module.SocialBlockView
     });
 
     App.registerWidget({
       name: 'social',
       widgetView: Module.SocialWidgetView,
-      priority: 95,
+      priority: 95
     });
   });
 

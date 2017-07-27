@@ -21,6 +21,6 @@ define([
         chooseText: MailPoet.I18n.t('selectColor'),
         cancelText: MailPoet.I18n.t('cancelColorSelection')
       });
-    },
+    }
   });
 });

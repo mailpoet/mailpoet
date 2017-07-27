@@ -15,7 +15,7 @@ define([
 
   BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
     defaults: {
-      columnLimit: 3,
+      columnLimit: 3
     },
     onRender: function() {
       var dragAndDropDisabled = _.isObject(this.view.options.renderOptions) && this.view.options.renderOptions.disableDragAndDrop === true;
@@ -195,7 +195,7 @@ define([
             if (view.model.get('orientation') === 'horizontal' && droppableModel.get('type') !== 'container') {
               // Regular blocks always need to be inserted into columns - vertical containers
               tempCollection = new (EditorApplication.getBlockTypeModel('container'))({
-                  orientation: 'vertical',
+                  orientation: 'vertical'
               });
               tempCollection.get('blocks').add(droppableModel);
               viewCollection.add(tempCollection, {at: index});
@@ -210,7 +210,7 @@ define([
             var tempModel = viewCollection.at(dropPosition.index);
 
             tempCollection = new (EditorApplication.getBlockTypeModel('container'))({
-                orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical',
+                orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical'
             });
 
             viewCollection.remove(tempModel);
@@ -218,19 +218,19 @@ define([
             if (tempCollection.get('orientation') === 'horizontal') {
               if (dropPosition.position === 'before') {
                 tempCollection2 = new (EditorApplication.getBlockTypeModel('container'))({
-                  orientation: 'vertical',
+                  orientation: 'vertical'
                 });
                 tempCollection2.get('blocks').add(droppableModel);
                 tempCollection.get('blocks').add(tempCollection2);
               }
               tempCollection2 = new (EditorApplication.getBlockTypeModel('container'))({
-                orientation: 'vertical',
+                orientation: 'vertical'
               });
               tempCollection2.get('blocks').add(tempModel);
               tempCollection.get('blocks').add(tempCollection2);
               if (dropPosition.position === 'after') {
                 tempCollection2 = new (EditorApplication.getBlockTypeModel('container'))({
-                  orientation: 'vertical',
+                  orientation: 'vertical'
                 });
                 tempCollection2.get('blocks').add(droppableModel);
                 tempCollection.get('blocks').add(tempCollection2);
@@ -254,11 +254,11 @@ define([
           event.draggable.onDrop({
             dropBehavior: that,
             droppedModel: droppableModel,
-            droppedView: droppedView,
+            droppedView: droppedView
           });
 
           that.cleanup();
-        },
+        }
       });
     },
     cleanup: function() {
@@ -296,7 +296,7 @@ define([
         return {
           insertionType: 'normal',
           index: 0,
-          position: 'inside',
+          position: 'inside'
         };
       }
 
@@ -347,7 +347,7 @@ define([
       return {
         insertionType: insertionType, // 'normal'|'special'
         index: index,
-        position: position, // 'inside'|'before'|'after'
+        position: position // 'inside'|'before'|'after'
       };
     },
     _computeNormalIndex: function(eventX, eventY) {
@@ -377,13 +377,13 @@ define([
         // First half of the element
         return {
             index: index,
-            position: 'before',
+            position: 'before'
         };
       } else {
         // Second half of the element
         return {
             index: index,
-            position: 'after',
+            position: 'after'
         };
       }
     },

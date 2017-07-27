@@ -15,11 +15,11 @@ define([
       resizeHandleSelector: true, // true will use edges of the element itself
       transformationFunction: function(y) { return y; },
       minLength: 0,
-      modelField: 'styles.block.height',
+      modelField: 'styles.block.height'
     },
     events: {
       "mouseenter": 'showResizeHandle',
-      "mouseleave": 'hideResizeHandle',
+      "mouseleave": 'hideResizeHandle'
     },
     onRender: function() {
       this.attachResize();
@@ -37,8 +37,8 @@ define([
           top: false,
           left: false,
           right: false,
-          bottom: (typeof this.options.resizeHandleSelector === 'string') ? this.view.$(this.options.resizeHandleSelector).get(0) : this.options.resizeHandleSelector,
-        },
+          bottom: (typeof this.options.resizeHandleSelector === 'string') ? this.view.$(this.options.resizeHandleSelector).get(0) : this.options.resizeHandleSelector
+        }
       }).on('resizestart', function(event) {
         that.isBeingResized = true;
         that.$el.addClass('mailpoet_resize_active');
@@ -63,6 +63,6 @@ define([
       if (typeof this.options.resizeHandleSelector === 'string') {
         this.view.$(this.options.resizeHandleSelector).addClass('mailpoet_hidden');
       }
-    },
+    }
   });
 });

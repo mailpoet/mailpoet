@@ -28,7 +28,7 @@ define([
       },
 
       onDrop: function(model, view) {},
-      testAttachToInstance: function(model, view) { return true; },
+      testAttachToInstance: function(model, view) { return true; }
     },
     onRender: function() {
       var that = this,
@@ -38,7 +38,7 @@ define([
       if (!this.options.testAttachToInstance(this.view.model, this.view)) return;
 
       interactable = interact(this.$el.get(0), {
-          ignoreFrom: this.options.ignoreSelector,
+          ignoreFrom: this.options.ignoreSelector
       }).draggable({
         // allow dragging of multple elements at the same time
         max: Infinity,
@@ -111,7 +111,7 @@ define([
               that.view.$el.removeClass('mailpoet_hidden');
             }
           }
-        },
+        }
       })
       .preventDefault('auto')
       .styleCursor(false)
@@ -137,6 +137,6 @@ define([
         // Delegate to view's event handler
         that.options.onDrop.apply(that, [options]);
       };
-    },
+    }
   });
 });

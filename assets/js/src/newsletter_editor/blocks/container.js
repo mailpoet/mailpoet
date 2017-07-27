@@ -30,12 +30,12 @@ define([
         // TODO: If type has no registered model, use a backup one
         return new Type(block, {parse: true});
       });
-    },
+    }
   });
 
   Module.ContainerBlockModel = base.BlockModel.extend({
     relations: {
-      blocks: BlockCollection,
+      blocks: BlockCollection
     },
     defaults: function() {
       return this._getDefaults({
@@ -43,10 +43,10 @@ define([
         orientation: 'vertical',
         styles: {
           block: {
-            backgroundColor: 'transparent',
-          },
+            backgroundColor: 'transparent'
+          }
         },
-        blocks: new BlockCollection(),
+        blocks: new BlockCollection()
       }, App.getConfig().get('blockDefaults.container'));
     },
     validate: function() {
@@ -60,7 +60,7 @@ define([
       // If container has any blocks - add them to a collection
       if (response.type === 'container' && _.has(response, 'blocks')) {
         response.blocks = new BlockCollection(response.blocks, {
-          parse: true,
+          parse: true
         });
       }
       return response;
@@ -71,7 +71,7 @@ define([
       });
 
       return _.flatten(models);
-    },
+    }
   });
 
   Module.ContainerBlocksView = Marionette.CollectionView.extend({
@@ -100,12 +100,12 @@ define([
       blocks: {
         el: '> .mailpoet_container',
         replaceElement: true
-      },
+      }
     }),
     className: 'mailpoet_block mailpoet_container_block mailpoet_droppable_block mailpoet_droppable_layout_block',
     getTemplate: function() { return templates.containerBlock; },
     events: _.extend({}, base.BlockView.prototype.events, {
-      "click .mailpoet_newsletter_layer_selector": "toggleEditingLayer",
+      "click .mailpoet_newsletter_layer_selector": "toggleEditingLayer"
     }),
     ui: {
       tools: '> .mailpoet_tools'
@@ -137,8 +137,8 @@ define([
           // Attach Draggable only to layout containers and disable it
           // for root and column containers.
           return view.renderOptions.depth === 1;
-        },
-      },
+        }
+      }
     }),
     onDragSubstituteBy: function() {
       // For two and three column layouts display their respective widgets,
@@ -163,8 +163,8 @@ define([
           delete: this.renderOptions.depth === 1,
           duplicate: true,
           move: this.renderOptions.depth === 1,
-          layerSelector: false,
-        },
+          layerSelector: false
+        }
       });
       this.showChildView('toolsRegion', this.toolsView);
       this.showChildView('blocks', new Module.ContainerBlocksView({
@@ -213,7 +213,7 @@ define([
         enableContainerLayer();
       }
       event.stopPropagation();
-    },
+    }
   });
 
   Module.ContainerBlockEmptyView = Marionette.View.extend({
@@ -224,13 +224,13 @@ define([
     templateContext: function() {
       return {
         isRoot: this.renderOptions.depth === 0,
-        emptyContainerMessage: this.renderOptions.emptyContainerMessage || '',
+        emptyContainerMessage: this.renderOptions.emptyContainerMessage || ''
       };
-    },
+    }
   });
 
   Module.ContainerBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.ContainerBlockSettingsView; },
+    getSettingsView: function() { return Module.ContainerBlockSettingsView; }
   });
 
   Module.ContainerBlockSettingsView = base.BlockSettingsView.extend({
@@ -238,31 +238,31 @@ define([
     events: function() {
       return {
         "change .mailpoet_field_container_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
-        "click .mailpoet_done_editing": "close",
+        "click .mailpoet_done_editing": "close"
       };
     },
     regions: {
-      columnsSettingsRegion: '.mailpoet_container_columns_settings',
+      columnsSettingsRegion: '.mailpoet_container_columns_settings'
     },
     initialize: function() {
       base.BlockSettingsView.prototype.initialize.apply(this, arguments);
 
       this._columnsSettingsView = new (Module.ContainerBlockColumnsSettingsView)({
-        collection: this.model.get('blocks'),
+        collection: this.model.get('blocks')
       });
     },
     onRender: function() {
       this.showChildView('columnsSettingsRegion', this._columnsSettingsView);
-    },
+    }
   });
 
   Module.ContainerBlockColumnsSettingsView = Marionette.CollectionView.extend({
     childView: function() { return Module.ContainerBlockColumnSettingsView; },
     childViewOptions: function(model, index) {
       return {
-        columnIndex: index,
+        columnIndex: index
       };
-    },
+    }
   });
 
   Module.ContainerBlockColumnSettingsView = Marionette.View.extend({
@@ -273,9 +273,9 @@ define([
     templateContext: function() {
       return {
         model: this.model.toJSON(),
-        columnNumber: this.columnNumber,
+        columnNumber: this.columnNumber
       };
-    },
+    }
   });
 
   Module.OneColumnContainerWidgetView = base.WidgetView.extend({
@@ -288,12 +288,12 @@ define([
           return new Module.ContainerBlockModel({
             orientation: 'horizontal',
             blocks: [
-              new Module.ContainerBlockModel(),
+              new Module.ContainerBlockModel()
             ]
           });
         }
       }
-    },
+    }
   });
 
   Module.TwoColumnContainerWidgetView = base.WidgetView.extend({
@@ -307,12 +307,12 @@ define([
             orientation: 'horizontal',
             blocks: [
               new Module.ContainerBlockModel(),
-              new Module.ContainerBlockModel(),
+              new Module.ContainerBlockModel()
             ]
           });
         }
       }
-    },
+    }
   });
 
   Module.ThreeColumnContainerWidgetView = base.WidgetView.extend({
@@ -327,36 +327,36 @@ define([
             blocks: [
               new Module.ContainerBlockModel(),
               new Module.ContainerBlockModel(),
-              new Module.ContainerBlockModel(),
+              new Module.ContainerBlockModel()
             ]
           });
         }
       }
-    },
+    }
   });
 
   App.on('before:start', function(App, options) {
     App.registerBlockType('container', {
       blockModel: Module.ContainerBlockModel,
-      blockView: Module.ContainerBlockView,
+      blockView: Module.ContainerBlockView
     });
 
     App.registerLayoutWidget({
       name: 'oneColumnLayout',
       priority: 100,
-      widgetView: Module.OneColumnContainerWidgetView,
+      widgetView: Module.OneColumnContainerWidgetView
     });
 
     App.registerLayoutWidget({
       name: 'twoColumnLayout',
       priority: 100,
-      widgetView: Module.TwoColumnContainerWidgetView,
+      widgetView: Module.TwoColumnContainerWidgetView
     });
 
     App.registerLayoutWidget({
       name: 'threeColumnLayout',
       priority: 100,
-      widgetView: Module.ThreeColumnContainerWidgetView,
+      widgetView: Module.ThreeColumnContainerWidgetView
     });
   });
 

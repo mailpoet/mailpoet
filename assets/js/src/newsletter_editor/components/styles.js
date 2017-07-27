@@ -13,7 +13,7 @@ define([
       text: {
         fontColor: '#000000',
         fontFamily: 'Arial',
-        fontSize: '16px',
+        fontSize: '16px'
       },
       h1: {
         fontColor: '#111111',
@@ -23,33 +23,33 @@ define([
       h2: {
         fontColor: '#222222',
         fontFamily: 'Tahoma',
-        fontSize: '32px',
+        fontSize: '32px'
       },
       h3: {
         fontColor: '#333333',
         fontFamily: 'Verdana',
-        fontSize: '24px',
+        fontSize: '24px'
       },
       link: {
         fontColor: '#21759B',
-        textDecoration: 'underline',
+        textDecoration: 'underline'
       },
       wrapper: {
-        backgroundColor: '#ffffff',
+        backgroundColor: '#ffffff'
       },
       body: {
-        backgroundColor: '#cccccc',
-      },
+        backgroundColor: '#cccccc'
+      }
     },
     initialize: function() {
       this.on('change', function() { App.getChannel().trigger('autoSave'); });
-    },
+    }
   });
 
   Module.StylesView = Marionette.View.extend({
     getTemplate: function() { return templates.styles; },
     modelEvents: {
-      'change': 'render',
+      'change': 'render'
     },
     serializeData: function() {
       return this.model.toJSON();

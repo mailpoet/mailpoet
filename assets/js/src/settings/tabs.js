@@ -17,7 +17,7 @@ define(
       routes: {
         '': 'sendingMethodGroup', // the default tab is currently mta, needs its own method
         'mta(/:group)': 'sendingMethodGroup',
-        '(:tab)': 'tabs',
+        '(:tab)': 'tabs'
       },
       sendingMethodGroup: function(group) {
         // display mta tab

@@ -13,15 +13,15 @@ ImageAndTextTemplateWidgetView = EditorApplication.module('blocks.base').WidgetV
           orientation: 'horizontal',
           blocks: [
             {
-              type: 'image',
+              type: 'image'
             },
             {
               type: 'text',
-              text: 'Some random text',
-            },
-          ],
+              text: 'Some random text'
+            }
+          ]
         }, {parse: true});
-      },
+      }
     }
-  },
+  }
 });

@@ -49,7 +49,7 @@ define([
           MailPoet.Notice.error(
             MailPoet.I18n.t('templateSaveFailed'),
             {
-              scroll: true,
+              scroll: true
             }
           );
         } else {
@@ -105,7 +105,7 @@ define([
     promise.then(function(thumbnail) {
       var data = _.extend(options || {}, {
         thumbnail: thumbnail.toDataURL('image/jpeg'),
-        body: JSON.stringify(App.getBody()),
+        body: JSON.stringify(App.getBody())
       });
 
       return MailPoet.Ajax.post({
@@ -132,7 +132,7 @@ define([
     ).then(function(thumbnail) {
       var data = _.extend(options || {}, {
         thumbnail: thumbnail.toDataURL('image/jpeg'),
-        body: App.getBody(),
+        body: App.getBody()
       });
       var blob = new Blob(
         [JSON.stringify(data)],
@@ -154,7 +154,7 @@ define([
       'click .mailpoet_save_as_template': 'saveAsTemplate',
       /* Export template */
       'click .mailpoet_save_export': 'toggleExportTemplate',
-      'click .mailpoet_export_template': 'exportTemplate',
+      'click .mailpoet_export_template': 'exportTemplate'
     },
     initialize: function(options) {
       App.getChannel().on('beforeEditorSave', this.beforeSave, this);
@@ -202,7 +202,7 @@ define([
           MailPoet.I18n.t('templateNameMissing'),
           {
             positionAfter: that.$el,
-            scroll: true,
+            scroll: true
           }
         );
       } else if (templateDescription === '') {
@@ -210,19 +210,19 @@ define([
           MailPoet.I18n.t('templateDescriptionMissing'),
           {
             positionAfter: that.$el,
-            scroll: true,
+            scroll: true
           }
         );
       } else {
         Module.saveTemplate({
           name: templateName,
-          description: templateDescription,
+          description: templateDescription
         }).done(function() {
           MailPoet.Notice.success(
             MailPoet.I18n.t('templateSaved'),
             {
               positionAfter: that.$el,
-              scroll: true,
+              scroll: true
             }
           );
         }).fail(function() {
@@ -230,7 +230,7 @@ define([
             MailPoet.I18n.t('templateSaveFailed'),
             {
               positionAfter: that.$el,
-              scroll: true,
+              scroll: true
             }
           );
         });
@@ -255,7 +255,7 @@ define([
           MailPoet.I18n.t('templateNameMissing'),
           {
             positionAfter: that.$el,
-            scroll: true,
+            scroll: true
           }
         );
       } else if (templateDescription === '') {
@@ -263,13 +263,13 @@ define([
           MailPoet.I18n.t('templateDescriptionMissing'),
           {
             positionAfter: that.$el,
-            scroll: true,
+            scroll: true
           }
         );
       } else {
         Module.exportTemplate({
           name: templateName,
-          description: templateDescription,
+          description: templateDescription
         });
         this.hideExportTemplate();
       }
@@ -311,7 +311,7 @@ define([
     hideValidationError: function() {
       this.$('.mailpoet_save_error').addClass('mailpoet_hidden');
       this.$('.mailpoet_save_next').removeClass('button-disabled');
-    },
+    }
   });
 
   Module.autoSave = function() {

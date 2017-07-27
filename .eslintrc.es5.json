@@ -14,7 +14,6 @@
 
 
 
-    "comma-dangle": 0,
     "space-before-function-paren": 0,
     "prefer-arrow-callback": 0,
     "no-undef": 0,

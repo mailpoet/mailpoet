@@ -32,7 +32,7 @@ define([
             collection.remove(model);
             collection.add(model, { at: newIndex });
           },
-          items: this.options.items,
+          items: this.options.items
         });
       }
     }
