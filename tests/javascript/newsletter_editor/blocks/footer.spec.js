@@ -9,7 +9,7 @@ define([
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication, {
-          blockDefaults: {},
+          blockDefaults: {}
         });
         model = new (FooterBlock.FooterBlockModel)();
       });
@@ -59,7 +59,7 @@ define([
       it('triggers autosave when any of the attributes change', function () {
         var mock = sinon.mock().exactly(8).withArgs('autoSave');
         EditorApplication.getChannel = sinon.stub().returns({
-          trigger: mock,
+          trigger: mock
         });
 
         model.set('text', 'Some new text');
@@ -81,21 +81,21 @@ define([
               text: 'some custom config text',
               styles: {
                 block: {
-                  backgroundColor: '#123456',
+                  backgroundColor: '#123456'
                 },
                 text: {
                   fontColor: '#234567',
                   fontFamily: 'Tahoma',
                   fontSize: '37px',
-                  textAlign: 'right',
+                  textAlign: 'right'
                 },
                 link: {
                   fontColor: '#345678',
-                  textDecoration: 'underline',
-                },
-              },
+                  textDecoration: 'underline'
+                }
+              }
             }
-          },
+          }
         });
         var model = new (FooterBlock.FooterBlockModel)();
 
@@ -133,7 +133,7 @@ define([
       global.stubChannel(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
         fonts: ['Arial', 'Tahoma'],
-        textSizes: ['16px', '20px'],
+        textSizes: ['16px', '20px']
       });
       var model = new (FooterBlock.FooterBlockModel)(),
         view = new (FooterBlock.FooterBlockSettingsView)({model: model});
@@ -150,7 +150,7 @@ define([
         global.stubChannel(EditorApplication);
         global.stubAvailableStyles(EditorApplication, {
           fonts: ['Arial', 'Tahoma'],
-          textSizes: ['16px', '20px'],
+          textSizes: ['16px', '20px']
         });
         model = new (FooterBlock.FooterBlockModel)({});
         view = new (FooterBlock.FooterBlockSettingsView)({model: model});

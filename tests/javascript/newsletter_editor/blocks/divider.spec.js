@@ -10,7 +10,7 @@ define([
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication, {
-          blockDefaults: {},
+          blockDefaults: {}
         });
         global.stubAvailableStyles(EditorApplication);
         model = new (DividerBlock.DividerBlockModel)();
@@ -53,7 +53,7 @@ define([
       it("triggers autosave if any attribute changes", function () {
         var mock = sinon.mock().exactly(5).withArgs('autoSave');
         EditorApplication.getChannel = sinon.stub().returns({
-          trigger: mock,
+          trigger: mock
         });
 
         model.set('styles.block.backgroundColor', '#000000');
@@ -75,11 +75,11 @@ define([
                   padding: '37px',
                   borderStyle: 'inset',
                   borderWidth: '7px',
-                  borderColor: '#345678',
-                },
-              },
-            },
-          },
+                  borderColor: '#345678'
+                }
+              }
+            }
+          }
         });
         var model = new (DividerBlock.DividerBlockModel)();
 
@@ -136,7 +136,7 @@ define([
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
-        dividers: ['solid', 'inset'],
+        dividers: ['solid', 'inset']
       });
       var model = new (DividerBlock.DividerBlockModel)(),
         view = new (DividerBlock.DividerBlockSettingsView)({model: model});
@@ -152,7 +152,7 @@ define([
         before(function() {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
-            dividers: ['solid', 'inset'],
+            dividers: ['solid', 'inset']
           });
         });
 
@@ -202,8 +202,8 @@ define([
           view = new (DividerBlock.DividerBlockSettingsView)({
             model: model,
             renderOptions: {
-              hideApplyToAll: true,
-            },
+              hideApplyToAll: true
+            }
           });
           view.render();
           expect(view.$('.mailpoet_button_divider_apply_to_all').length).to.equal(0);

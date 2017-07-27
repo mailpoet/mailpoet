@@ -3,7 +3,7 @@ define([
     'newsletter_editor/blocks/automatedLatestContent',
     'newsletter_editor/blocks/container',
     'amd-inject-loader!newsletter_editor/blocks/automatedLatestContent',
-    'newsletter_editor/components/communication',
+    'newsletter_editor/components/communication'
   ], function(
     EditorApplication,
     AutomatedLatestContentBlock,
@@ -28,7 +28,7 @@ define([
       var module = AutomatedLatestContentInjector({
         'newsletter_editor/components/communication': {
           getBulkTransformedPosts: mock
-        },
+        }
       });
 
       var model = new module.ALCSupervisor();
@@ -41,11 +41,11 @@ define([
       var block1 = new Backbone.SuperModel(),
         block2 = new Backbone.SuperModel(),
         postsSet1 = [
-          { type: 'customTypeOne' },
+          { type: 'customTypeOne' }
         ],
         postsSet2 = [
           { type: 'customTypeTwo' },
-          { type: 'customTypeTwo' },
+          { type: 'customTypeTwo' }
         ],
         mock1 = sinon.mock(block1),
         mock2 = sinon.mock(block2);
@@ -189,14 +189,14 @@ define([
                 styles: {
                   block: {
                     backgroundColor: '#123456',
-                    borderColor: '#234567',
+                    borderColor: '#234567'
                   },
                   link: {
                     fontColor: '#345678',
                     fontFamily: 'Tahoma',
-                    fontSize: '37px',
-                  },
-                },
+                    fontSize: '37px'
+                  }
+                }
               },
               sortBy: 'oldest', // 'newest'|'oldest',
               showDivider: true, // true|false
@@ -205,12 +205,12 @@ define([
                 styles: {
                   block: {
                     backgroundColor: '#456789',
-                    padding: '38px',
-                  },
-                },
-              },
-            },
-          },
+                    padding: '38px'
+                  }
+                }
+              }
+            }
+          }
         });
         var model = new (module.AutomatedLatestContentBlockModel)();
 
@@ -248,7 +248,7 @@ define([
         var model = new (module.AutomatedLatestContentBlockModel)();
 
         model.updatePosts([{
-          type: 'someCustomType',
+          type: 'someCustomType'
         }]);
 
         expect(model.get('_container.blocks').size()).to.equal(1);
@@ -309,9 +309,9 @@ define([
         const data = {
           styles: {
             block: {
-              borderRadius: "14px",
-            },
-          },
+              borderRadius: "14px"
+            }
+          }
         };
         callback(data);
         expect(model.set).to.have.been.calledOnce;
@@ -328,7 +328,7 @@ define([
             getPostTypes: function() {
               return jQuery.Deferred();
             }
-          },
+          }
         });
       });
 
@@ -339,28 +339,28 @@ define([
             {
               name: 'post',
               labels: {
-                singular_name: 'Post',
-              },
+                singular_name: 'Post'
+              }
             },
             {
               name: 'page',
               labels: {
-                singular_name: 'Page',
-              },
+                singular_name: 'Page'
+              }
             },
             {
               name: 'mailpoet_page',
               labels: {
-                singular_name: 'Mailpoet page',
-              },
-            },
+                singular_name: 'Mailpoet page'
+              }
+            }
           ]);
           return deferred;
         };
 
         global.stubChannel(EditorApplication);
         global.stubConfig(EditorApplication, {
-          blockDefaults: {},
+          blockDefaults: {}
         });
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);

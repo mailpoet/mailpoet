@@ -35,7 +35,6 @@
     "quote-props": 0,
     "no-shadow": 0,
     "padded-blocks": 0,
-    "comma-dangle": 0,
     "vars-on-top": 0,
     "space-before-blocks": 0,
     "object-curly-spacing": 0,

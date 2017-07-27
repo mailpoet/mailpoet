@@ -9,7 +9,7 @@ define([
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global. stubConfig(EditorApplication, {
-          blockDefaults: {},
+          blockDefaults: {}
         });
         model = new (HeaderBlock.HeaderBlockModel)();
       });
@@ -59,7 +59,7 @@ define([
       it("triggers autosave if any attribute changes", function () {
         var mock = sinon.mock().exactly(8).withArgs('autoSave');
         EditorApplication.getChannel = sinon.stub().returns({
-          trigger: mock,
+          trigger: mock
         });
 
         model.set('text', 'Some new text');
@@ -81,21 +81,21 @@ define([
               text: 'some custom config text',
               styles: {
                 block: {
-                  backgroundColor: '#123456',
+                  backgroundColor: '#123456'
                 },
                 text: {
                   fontColor: '#234567',
                   fontFamily: 'Tahoma',
                   fontSize: '37px',
-                  textAlign: 'right',
+                  textAlign: 'right'
                 },
                 link: {
                   fontColor: '#345678',
-                  textDecoration: 'underline',
-                },
-              },
-            },
-          },
+                  textDecoration: 'underline'
+                }
+              }
+            }
+          }
         });
         var model = new (HeaderBlock.HeaderBlockModel)();
 
@@ -133,7 +133,7 @@ define([
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication, {
         fonts: ['Arial', 'Tahoma'],
-        textSizes: ['16px', '20px'],
+        textSizes: ['16px', '20px']
       });
       var model = new (HeaderBlock.HeaderBlockModel)(),
         view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
@@ -150,7 +150,7 @@ define([
         global.stubChannel(EditorApplication);
         global.stubAvailableStyles(EditorApplication, {
           fonts: ['Arial', 'Tahoma'],
-          textSizes: ['16px', '20px'],
+          textSizes: ['16px', '20px']
         });
         model = new (HeaderBlock.HeaderBlockModel)({});
         view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});

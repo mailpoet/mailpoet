@@ -23,5 +23,5 @@ module.exports = {
     options.type = "text/x-handlebars-template";
 
     this.loadScript("views/newsletter/templates/" + path, w, options);
-  },
+  }
 };
