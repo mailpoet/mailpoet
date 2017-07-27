@@ -5,7 +5,7 @@ define(
     'react-router',
     'mailpoet',
     'newsletters/types/notification/scheduling.jsx',
-    'newsletters/breadcrumb.jsx'
+    'newsletters/breadcrumb.jsx',
   ],
   (
     _,
@@ -24,7 +24,7 @@ define(
 
     const NewsletterNotification = React.createClass({
       contextTypes: {
-        router: React.PropTypes.object.isRequired
+        router: React.PropTypes.object.isRequired,
       },
       getInitialState: function () {
         return {
@@ -34,7 +34,7 @@ define(
             weekDay: 1,
             monthDay: 0,
             nthWeekDay: 1,
-          }
+          },
         };
       },
       handleValueChange: function (event) {

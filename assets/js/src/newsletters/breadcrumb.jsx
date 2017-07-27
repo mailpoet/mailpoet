@@ -3,7 +3,7 @@ define(
     'react',
     'react-router',
     'classnames',
-    'mailpoet'
+    'mailpoet',
   ],
   (
     React,
@@ -21,21 +21,21 @@ define(
             {
               name: 'type',
               label: MailPoet.I18n.t('selectType'),
-              link: '/new'
+              link: '/new',
             },
             {
               name: 'template',
-              label: MailPoet.I18n.t('template')
+              label: MailPoet.I18n.t('template'),
             },
             {
               name: 'editor',
-              label: MailPoet.I18n.t('designer')
+              label: MailPoet.I18n.t('designer'),
             },
             {
               name: 'send',
-              label: MailPoet.I18n.t('send')
-            }
-          ]
+              label: MailPoet.I18n.t('send'),
+            },
+          ],
         };
       },
       render: function () {
@@ -67,7 +67,7 @@ define(
             { steps }
           </p>
         );
-      }
+      },
     });
 
     return Breadcrumb;

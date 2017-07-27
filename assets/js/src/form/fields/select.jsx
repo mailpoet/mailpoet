@@ -70,7 +70,7 @@ const FormFieldSelect = React.createClass({
         {options}
       </select>
     );
-  }
+  },
 });
 
 module.exports = FormFieldSelect;

@@ -2,7 +2,7 @@ define(
   [
     'mailpoet',
     'wp-js-hooks',
-    'newsletters/types/welcome/scheduling.jsx'
+    'newsletters/types/welcome/scheduling.jsx',
   ],
   (
     MailPoet,
@@ -19,8 +19,8 @@ define(
         type: 'text',
         validation: {
           'data-parsley-required': true,
-          'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError')
-        }
+          'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError'),
+        },
       },
       {
         name: 'options',
@@ -38,8 +38,8 @@ define(
             type: 'text',
             placeholder: MailPoet.I18n.t('senderNamePlaceholder'),
             validation: {
-              'data-parsley-required': true
-            }
+              'data-parsley-required': true,
+            },
           },
           {
             name: 'sender_address',
@@ -47,10 +47,10 @@ define(
             placeholder: MailPoet.I18n.t('senderAddressPlaceholder'),
             validation: {
               'data-parsley-required': true,
-              'data-parsley-type': 'email'
-            }
-          }
-        ]
+              'data-parsley-type': 'email',
+            },
+          },
+        ],
       },
       {
         name: 'reply-to',
@@ -61,15 +61,15 @@ define(
           {
             name: 'reply_to_name',
             type: 'text',
-            placeholder: MailPoet.I18n.t('replyToNamePlaceholder')
+            placeholder: MailPoet.I18n.t('replyToNamePlaceholder'),
           },
           {
             name: 'reply_to_address',
             type: 'text',
-            placeholder: MailPoet.I18n.t('replyToAddressPlaceholder')
-          }
-        ]
-      }
+            placeholder: MailPoet.I18n.t('replyToAddressPlaceholder'),
+          },
+        ],
+      },
     ];
 
     fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
@@ -80,7 +80,7 @@ define(
       },
       getSendButtonOptions: function () {
         return {
-          value: MailPoet.I18n.t('activate')
+          value: MailPoet.I18n.t('activate'),
         };
       },
     };

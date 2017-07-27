@@ -4,7 +4,7 @@ define(
     'react-router',
     'mailpoet',
     'form/form.jsx',
-    'react-string-replace'
+    'react-string-replace',
   ],
   (
     React,
@@ -20,7 +20,7 @@ define(
         type: 'text',
         disabled: function (subscriber) {
           return ~~(subscriber.wp_user_id > 0);
-        }
+        },
       },
       {
         name: 'first_name',
@@ -28,7 +28,7 @@ define(
         type: 'text',
         disabled: function (subscriber) {
           return ~~(subscriber.wp_user_id > 0);
-        }
+        },
       },
       {
         name: 'last_name',
@@ -36,7 +36,7 @@ define(
         type: 'text',
         disabled: function (subscriber) {
           return ~~(subscriber.wp_user_id > 0);
-        }
+        },
       },
       {
         name: 'status',
@@ -46,14 +46,14 @@ define(
           'subscribed': MailPoet.I18n.t('subscribed'),
           'unconfirmed': MailPoet.I18n.t('unconfirmed'),
           'unsubscribed': MailPoet.I18n.t('unsubscribed'),
-          'bounced': MailPoet.I18n.t('bounced')
+          'bounced': MailPoet.I18n.t('bounced'),
         },
         filter: function (subscriber, value) {
           if (~~(subscriber.wp_user_id) > 0 && value === 'unconfirmed') {
             return false;
           }
           return true;
-        }
+        },
       },
       {
         name: 'segments',
@@ -103,8 +103,8 @@ define(
             });
           }
           return label;
-        }
-      }
+        },
+      },
     ];
 
     const custom_fields = window.mailpoet_custom_fields || [];
@@ -112,7 +112,7 @@ define(
       const field = {
         name: 'cf_' + custom_field.id,
         label: custom_field.name,
-        type: custom_field.type
+        type: custom_field.type,
       };
       if (custom_field.params) {
         field.params = custom_field.params;
@@ -144,7 +144,7 @@ define(
       },
       onCreate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('subscriberAdded'));
-      }
+      },
     };
 
     const beforeFormContent = function (subscriber) {
@@ -198,7 +198,7 @@ define(
             />
           </div>
         );
-      }
+      },
     });
 
     return SubscriberForm;

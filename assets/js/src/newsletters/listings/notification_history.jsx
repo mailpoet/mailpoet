@@ -10,7 +10,7 @@ import ListingTabs from 'newsletters/listings/tabs.jsx';
 import {
   QueueMixin,
   StatisticsMixin,
-  MailerMixin
+  MailerMixin,
 } from 'newsletters/listings/mixins.jsx';
 
 const mailpoet_tracking_enabled = (!!(window['mailpoet_tracking_enabled']));
@@ -22,21 +22,21 @@ const columns = [
   },
   {
     name: 'status',
-    label: MailPoet.I18n.t('status')
+    label: MailPoet.I18n.t('status'),
   },
   {
     name: 'segments',
-    label: MailPoet.I18n.t('lists')
+    label: MailPoet.I18n.t('lists'),
   },
   {
     name: 'statistics',
     label: MailPoet.I18n.t('statistics'),
-    display: mailpoet_tracking_enabled
+    display: mailpoet_tracking_enabled,
   },
   {
     name: 'sent_at',
     label: MailPoet.I18n.t('sentOn'),
-  }
+  },
 ];
 
 let newsletter_actions = [
@@ -48,8 +48,8 @@ let newsletter_actions = [
           {MailPoet.I18n.t('preview')}
         </a>
       );
-    }
-  }
+    },
+  },
 ];
 
 newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_notification_history_actions', newsletter_actions);
@@ -126,7 +126,7 @@ const NewsletterListNotificationHistory = React.createClass({
         />
       </div>
     );
-  }
+  },
 });
 
 module.exports = NewsletterListNotificationHistory;

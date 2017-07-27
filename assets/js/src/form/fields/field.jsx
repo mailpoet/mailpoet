@@ -92,7 +92,7 @@ define([
             index: index,
             field: subfield,
             item: this.props.item,
-            onValueChange: this.props.onValueChange || false
+            onValueChange: this.props.onValueChange || false,
           });
         });
       } else {
@@ -121,7 +121,7 @@ define([
           </td>
         </tr>
       );
-    }
+    },
   });
 
   return FormField;

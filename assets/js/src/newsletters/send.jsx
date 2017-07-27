@@ -8,7 +8,7 @@ define(
     'newsletters/send/standard.jsx',
     'newsletters/send/notification.jsx',
     'newsletters/send/welcome.jsx',
-    'newsletters/breadcrumb.jsx'
+    'newsletters/breadcrumb.jsx',
   ],
   (
     React,
@@ -24,7 +24,7 @@ define(
 
     const NewsletterSend = React.createClass({
       contextTypes: {
-        router: React.PropTypes.object.isRequired
+        router: React.PropTypes.object.isRequired,
       },
       getInitialState: function () {
         return {
@@ -68,18 +68,18 @@ define(
           endpoint: 'newsletters',
           action: 'get',
           data: {
-            id: id
-          }
+            id: id,
+          },
         }).done((response) => {
           this.setState({
             loading: false,
             item: response.data,
-            fields: this.getFieldsByNewsletter(response.data)
+            fields: this.getFieldsByNewsletter(response.data),
           });
         }).fail(() => {
           this.setState({
             loading: false,
-            item: {}
+            item: {},
           }, () => {
             this.context.router.push('/new');
           });
@@ -103,8 +103,8 @@ define(
                   action: 'setStatus',
                   data: {
                     id: this.props.params.id,
-                    status: 'active'
-                  }
+                    status: 'active',
+                  },
                 }).done((response) => {
                   // redirect to listing based on newsletter type
                   this.context.router.push(`/${ this.state.item.type || '' }`);
@@ -126,8 +126,8 @@ define(
                   endpoint: 'sendingQueue',
                   action: 'add',
                   data: {
-                    newsletter_id: this.props.params.id
-                  }
+                    newsletter_id: this.props.params.id,
+                  },
                 }).done((response) => {
                   // redirect to listing based on newsletter type
                   this.context.router.push(`/${ this.state.item.type || '' }`);
@@ -179,7 +179,7 @@ define(
         // Store only properties that can be changed on this page
         const IGNORED_NEWSLETTER_PROPERTIES = [
           'preheader', 'body', 'created_at', 'deleted_at', 'hash',
-          'status', 'updated_at', 'type'
+          'status', 'updated_at', 'type',
         ];
         const newsletterData = _.omit(
             data,
@@ -210,7 +210,7 @@ define(
         item[field] = e.target.value;
 
         this.setState({
-          item: item
+          item: item,
         });
         return true;
       },
@@ -254,7 +254,7 @@ define(
             </Form>
           </div>
         );
-      }
+      },
     });
 
     return NewsletterSend;

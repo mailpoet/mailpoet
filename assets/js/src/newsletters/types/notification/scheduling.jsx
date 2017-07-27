@@ -6,32 +6,32 @@ import {
   timeOfDayValues,
   weekDayValues,
   monthDayValues,
-  nthWeekDayValues
+  nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
 
 const intervalField = {
   name: 'intervalType',
-  values: intervalValues
+  values: intervalValues,
 };
 
 const timeOfDayField = {
   name: 'timeOfDay',
-  values: timeOfDayValues
+  values: timeOfDayValues,
 };
 
 const weekDayField = {
   name: 'weekDay',
-  values: weekDayValues
+  values: weekDayValues,
 };
 
 const monthDayField = {
   name: 'monthDay',
-  values: monthDayValues
+  values: monthDayValues,
 };
 
 const nthWeekDayField = {
   name: 'nthWeekDay',
-  values: nthWeekDayValues
+  values: nthWeekDayValues,
 };
 
 const NotificationScheduling = React.createClass({
@@ -47,8 +47,8 @@ const NotificationScheduling = React.createClass({
     return this.props.onValueChange({
       target: {
         name: this.props.field.name,
-        value: _.extend({}, oldValue, newValue)
-      }
+        value: _.extend({}, oldValue, newValue),
+      },
     });
   },
   handleIntervalChange: function (event) {
@@ -137,7 +137,7 @@ const NotificationScheduling = React.createClass({
         {timeOfDaySelection}
       </div>
     );
-  }
+  },
 });
 
 module.exports = NotificationScheduling;

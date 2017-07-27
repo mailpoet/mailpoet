@@ -1,7 +1,7 @@
 define([
   'react',
   'classnames',
-  'mailpoet'
+  'mailpoet',
 ], (
     React,
     classNames,
@@ -11,12 +11,12 @@ define([
   const ListingPages = React.createClass({
     getInitialState: function () {
       return {
-        page: null
+        page: null,
       };
     },
     setPage: function (page) {
       this.setState({
-        page: null
+        page: null,
       }, () => {
         this.props.onSetPage(this.constrainPage(page));
       });
@@ -47,7 +47,7 @@ define([
     },
     handleChangeManualPage: function (e) {
       this.setState({
-        page: e.target.value
+        page: e.target.value,
       });
     },
     handleBlurManualPage: function (e) {
@@ -178,7 +178,7 @@ define([
           </div>
         );
       }
-    }
+    },
   });
 
   return ListingPages;

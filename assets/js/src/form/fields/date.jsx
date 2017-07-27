@@ -104,7 +104,7 @@ define([
       this.state = {
         year: '',
         month: '',
-        day: ''
+        day: '',
       };
     }
     componentDidMount() {
@@ -132,7 +132,7 @@ define([
       this.setState({
         year: dateTime.format('YYYY'),
         month: dateTime.format('M'),
-        day: dateTime.format('D')
+        day: dateTime.format('D'),
       });
     }
     formatValue() {
@@ -145,26 +145,26 @@ define([
           value = {
             'year': this.state.year,
             'month': this.state.month,
-            'day': this.state.day
+            'day': this.state.day,
           };
           break;
 
         case 'year_month':
           value = {
             'year': this.state.year,
-            'month': this.state.month
+            'month': this.state.month,
           };
           break;
 
         case 'month':
           value = {
-            'month': this.state.month
+            'month': this.state.month,
           };
           break;
 
         case 'year':
           value = {
-            'year': this.state.year
+            'year': this.state.year,
           };
           break;
       }
@@ -184,13 +184,13 @@ define([
         const value = ~~(e.target.value);
 
         this.setState({
-          [`${property}`]: value
+          [`${property}`]: value,
         }, () => {
           this.props.onValueChange({
             target: {
               name: field,
-              value: this.formatValue()
-            }
+              value: this.formatValue(),
+            },
           });
         });
       }

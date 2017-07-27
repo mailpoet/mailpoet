@@ -6,16 +6,16 @@ import Badge from './badge.jsx';
 const badges = {
   excellent: {
     name: MailPoet.I18n.t('excellentBadgeName'),
-    tooltipTitle: MailPoet.I18n.t('excellentBadgeTooltip')
+    tooltipTitle: MailPoet.I18n.t('excellentBadgeTooltip'),
   },
   good: {
     name: MailPoet.I18n.t('goodBadgeName'),
-    tooltipTitle: MailPoet.I18n.t('goodBadgeTooltip')
+    tooltipTitle: MailPoet.I18n.t('goodBadgeTooltip'),
   },
   bad: {
     name: MailPoet.I18n.t('badBadgeName'),
-    tooltipTitle: MailPoet.I18n.t('badBadgeTooltip')
-  }
+    tooltipTitle: MailPoet.I18n.t('badBadgeTooltip'),
+  },
 };
 
 const stats = {
@@ -24,7 +24,7 @@ const stats = {
     badgeTypes: [
       'excellent',
       'good',
-      'bad'
+      'bad',
     ],
     tooltipText: MailPoet.I18n.t('openedStatTooltip'),
   },
@@ -33,18 +33,18 @@ const stats = {
     badgeTypes: [
       'excellent',
       'good',
-      'bad'
+      'bad',
     ],
-    tooltipText: MailPoet.I18n.t('clickedStatTooltip')
+    tooltipText: MailPoet.I18n.t('clickedStatTooltip'),
   },
   unsubscribed: {
     badgeRanges: [3, 1, 0],
     badgeTypes: [
       'bad',
       'good',
-      'excellent'
+      'excellent',
     ],
-    tooltipText: MailPoet.I18n.t('unsubscribedStatTooltip')
+    tooltipText: MailPoet.I18n.t('unsubscribedStatTooltip'),
   },
 };
 

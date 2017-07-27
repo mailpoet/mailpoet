@@ -1,6 +1,6 @@
 define([
   'mailpoet',
-  'react'
+  'react',
 ], (
     MailPoet,
     React
@@ -40,7 +40,7 @@ define([
           </form>
         );
       }
-    }
+    },
   });
 
   return ListingSearch;

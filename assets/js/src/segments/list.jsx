@@ -9,33 +9,33 @@ const columns = [
   {
     name: 'name',
     label: MailPoet.I18n.t('name'),
-    sortable: true
+    sortable: true,
   },
   {
     name: 'description',
-    label: MailPoet.I18n.t('description')
+    label: MailPoet.I18n.t('description'),
   },
   {
     name: 'subscribed',
-    label: MailPoet.I18n.t('subscribed')
+    label: MailPoet.I18n.t('subscribed'),
   },
   {
     name: 'unconfirmed',
-    label: MailPoet.I18n.t('unconfirmed')
+    label: MailPoet.I18n.t('unconfirmed'),
   },
   {
     name: 'unsubscribed',
-    label: MailPoet.I18n.t('unsubscribed')
+    label: MailPoet.I18n.t('unsubscribed'),
   },
   {
     name: 'bounced',
-    label: MailPoet.I18n.t('bounced')
+    label: MailPoet.I18n.t('bounced'),
   },
   {
     name: 'created_at',
     label: MailPoet.I18n.t('createdOn'),
-    sortable: true
-  }
+    sortable: true,
+  },
 ];
 
 const messages = {
@@ -83,15 +83,15 @@ const messages = {
       ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
-  }
+  },
 };
 
 const bulk_actions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
-    onSuccess: messages.onTrash
-  }
+    onSuccess: messages.onTrash,
+  },
 ];
 
 const item_actions = [
@@ -104,7 +104,7 @@ const item_actions = [
     },
     display: function (segment) {
       return (segment.type !== 'wp_users');
-    }
+    },
   },
   {
     name: 'duplicate_segment',
@@ -115,8 +115,8 @@ const item_actions = [
         endpoint: 'segments',
         action: 'duplicate',
         data: {
-          id: item.id
-        }
+          id: item.id,
+        },
       }).done((response) => {
         MailPoet.Notice.success(
           MailPoet.I18n.t('listDuplicated').replace('%$1s', response.data.name)
@@ -131,7 +131,7 @@ const item_actions = [
     },
     display: function (segment) {
       return (segment.type !== 'wp_users');
-    }
+    },
   },
   {
     name: 'read_more',
@@ -145,7 +145,7 @@ const item_actions = [
     },
     display: function (segment) {
       return (segment.type === 'wp_users');
-    }
+    },
   },
   {
     name: 'synchronize_segment',
@@ -155,7 +155,7 @@ const item_actions = [
       MailPoet.Ajax.post({
         api_version: window.mailpoet_api_version,
         endpoint: 'segments',
-        action: 'synchronize'
+        action: 'synchronize',
       }).done(() => {
         MailPoet.Modal.loading(false);
         MailPoet.Notice.success(
@@ -174,7 +174,7 @@ const item_actions = [
     },
     display: function (segment) {
       return (segment.type === 'wp_users');
-    }
+    },
   },
   {
     name: 'view_subscribers',
@@ -182,14 +182,14 @@ const item_actions = [
       return (
         <a href={ item.subscribers_url }>{MailPoet.I18n.t('viewSubscribers')}</a>
       );
-    }
+    },
   },
   {
     name: 'trash',
     display: function (segment) {
       return (segment.type !== 'wp_users');
-    }
-  }
+    },
+  },
 ];
 
 const SegmentList = React.createClass({
@@ -273,7 +273,7 @@ const SegmentList = React.createClass({
         />
       </div>
     );
-  }
+  },
 });
 
 module.exports = SegmentList;

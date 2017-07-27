@@ -1,5 +1,5 @@
 define([
-  'react'
+  'react',
 ],
 (
   React
@@ -42,7 +42,7 @@ define([
           { options }
         </div>
       );
-    }
+    },
   });
 
   return FormFieldCheckbox;

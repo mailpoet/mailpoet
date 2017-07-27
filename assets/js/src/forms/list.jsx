@@ -7,21 +7,21 @@ const columns = [
   {
     name: 'name',
     label: MailPoet.I18n.t('formName'),
-    sortable: true
+    sortable: true,
   },
   {
     name: 'segments',
-    label: MailPoet.I18n.t('segments')
+    label: MailPoet.I18n.t('segments'),
   },
   {
     name: 'signups',
-    label: MailPoet.I18n.t('signups')
+    label: MailPoet.I18n.t('signups'),
   },
   {
     name: 'created_at',
     label: MailPoet.I18n.t('createdOn'),
-    sortable: true
-  }
+    sortable: true,
+  },
 ];
 
 const messages = {
@@ -69,15 +69,15 @@ const messages = {
       ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
-  }
+  },
 };
 
 const bulk_actions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
-    onSuccess: messages.onTrash
-  }
+    onSuccess: messages.onTrash,
+  },
 ];
 
 const item_actions = [
@@ -88,7 +88,7 @@ const item_actions = [
       return (
         <a href={ `admin.php?page=mailpoet-form-editor&id=${item.id}` }>{MailPoet.I18n.t('edit')}</a>
       );
-    }
+    },
   },
   {
     name: 'duplicate',
@@ -99,8 +99,8 @@ const item_actions = [
         endpoint: 'forms',
         action: 'duplicate',
         data: {
-          id: item.id
-        }
+          id: item.id,
+        },
       }).done((response) => {
         MailPoet.Notice.success(
           (MailPoet.I18n.t('formDuplicated')).replace('%$1s', response.data.name)
@@ -114,11 +114,11 @@ const item_actions = [
           );
         }
       });
-    }
+    },
   },
   {
-    name: 'trash'
-  }
+    name: 'trash',
+  },
 ];
 
 const FormList = React.createClass({
@@ -126,7 +126,7 @@ const FormList = React.createClass({
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'forms',
-      action: 'create'
+      action: 'create',
     }).done((response) => {
       window.location = mailpoet_form_edit_url + response.data.id;
     }).fail((response) => {
@@ -203,7 +203,7 @@ const FormList = React.createClass({
         />
       </div>
     );
-  }
+  },
 });
 
 module.exports = FormList;

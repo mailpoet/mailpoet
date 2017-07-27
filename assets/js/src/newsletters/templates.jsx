@@ -5,7 +5,7 @@ define(
     'mailpoet',
     'react-router',
     'classnames',
-    'newsletters/breadcrumb.jsx'
+    'newsletters/breadcrumb.jsx',
   ],
   (
     React,
@@ -30,7 +30,7 @@ define(
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletterTemplates',
           action: 'save',
-          data: template
+          data: template,
         }).always(() => {
           MailPoet.Modal.loading(false);
         }).done((response) => {
@@ -86,7 +86,7 @@ define(
       getInitialState: function () {
         return {
           loading: false,
-          templates: []
+          templates: [],
         };
       },
       componentDidMount: function () {
@@ -112,13 +112,13 @@ define(
                     MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
                   description:
                     MailPoet.I18n.t('mailpoetGuideTemplateDescription'),
-                  readonly: "1"
-                }
+                  readonly: "1",
+                },
               ];
             }
             this.setState({
               templates: response.data,
-              loading: false
+              loading: false,
             });
           }
         }).fail((response) => {
@@ -144,8 +144,8 @@ define(
           action: 'save',
           data: {
             id: this.props.params.id,
-            body: body
-          }
+            body: body,
+          },
         }).done((response) => {
           // TODO: Move this URL elsewhere
           window.location = 'admin.php?page=mailpoet-newsletter-editor&id=' + response.data.id;
@@ -172,8 +172,8 @@ define(
             endpoint: 'newsletterTemplates',
             action: 'delete',
             data: {
-              id: template.id
-            }
+              id: template.id,
+            },
           }).done(() => {
             this.getTemplates();
           }).fail((response) => {
@@ -192,7 +192,7 @@ define(
         MailPoet.Modal.popup({
           title: template.name,
           template: '<div class="mailpoet_boxes_preview" style="background-color: {{ body.globalStyles.body.backgroundColor }}"><img src="{{ thumbnail }}" /></div>',
-          data: template
+          data: template,
         });
       },
       handleTemplateImport: function () {
@@ -272,7 +272,7 @@ define(
             <ImportTemplate onImport={this.handleTemplateImport} />
           </div>
         );
-      }
+      },
     });
 
     return NewsletterTemplates;

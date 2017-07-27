@@ -13,7 +13,7 @@ import {
   timeOfDayValues,
   weekDayValues,
   monthDayValues,
-  nthWeekDayValues
+  nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
 
 const messages = {
@@ -61,42 +61,42 @@ const messages = {
       ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
-  }
+  },
 };
 
 const columns = [
   {
     name: 'subject',
     label: MailPoet.I18n.t('subject'),
-    sortable: true
+    sortable: true,
   },
   {
     name: 'status',
     label: MailPoet.I18n.t('status'),
-    width: 100
+    width: 100,
   },
   {
     name: 'settings',
-    label: MailPoet.I18n.t('settings')
+    label: MailPoet.I18n.t('settings'),
   },
   {
     name: 'history',
     label: MailPoet.I18n.t('history'),
-    width: 100
+    width: 100,
   },
   {
     name: 'updated_at',
     label: MailPoet.I18n.t('lastModifiedOn'),
-    sortable: true
-  }
+    sortable: true,
+  },
 ];
 
 const bulk_actions = [
   {
     name: 'trash',
     label: MailPoet.I18n.t('moveToTrash'),
-    onSuccess: messages.onTrash
-  }
+    onSuccess: messages.onTrash,
+  },
 ];
 
 const newsletter_actions = [
@@ -108,7 +108,7 @@ const newsletter_actions = [
           {MailPoet.I18n.t('preview')}
         </a>
       );
-    }
+    },
   },
   {
     name: 'edit',
@@ -118,7 +118,7 @@ const newsletter_actions = [
           {MailPoet.I18n.t('edit')}
         </a>
       );
-    }
+    },
   },
   {
     name: 'duplicate',
@@ -129,8 +129,8 @@ const newsletter_actions = [
         endpoint: 'newsletters',
         action: 'duplicate',
         data: {
-          id: newsletter.id
-        }
+          id: newsletter.id,
+        },
       }).done((response) => {
         MailPoet.Notice.success(
           (MailPoet.I18n.t('newsletterDuplicated')).replace(
@@ -146,11 +146,11 @@ const newsletter_actions = [
           );
         }
       });
-    }
+    },
   },
   {
-    name: 'trash'
-  }
+    name: 'trash',
+  },
 ];
 
 const NewsletterListNotification = React.createClass({
@@ -166,8 +166,8 @@ const NewsletterListNotification = React.createClass({
       action: 'setStatus',
       data: {
         id: ~~(e.target.getAttribute('data-id')),
-        status: e.target.value
-      }
+        status: e.target.value,
+      },
     }).done((response) => {
       if (response.data.status === 'active') {
         MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
@@ -335,7 +335,7 @@ const NewsletterListNotification = React.createClass({
         />
       </div>
     );
-  }
+  },
 });
 
 module.exports = NewsletterListNotification;
