@@ -40,10 +40,11 @@ class PostContentManager {
     // strip useless tags
     $tags_not_being_stripped = array(
       '<img>', '<p>', '<em>', '<span>', '<b>', '<strong>', '<i>', '<h1>',
-      '<h2>', '<h3>', '<a>', '<ul>', '<ol>', '<li>', '<br>'
+      '<h2>', '<h3>', '<a>', '<ul>', '<ol>', '<li>', '<br>', '<blockquote>'
     );
     $content = strip_tags($content, implode('', $tags_not_being_stripped));
     $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS .'"', wpautop($content));
+    $content = trim($content);
 
     return $content;
   }
