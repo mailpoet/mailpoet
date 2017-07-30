@@ -91,12 +91,18 @@ class Shortcodes {
     return $processed_shortcodes;
   }
 
-  function replace($content, $categories = false) {
+  function replace($content, $content_source = null, $categories = null) {
     $shortcodes = $this->extract($content, $categories);
     if(!$shortcodes) {
       return $content;
     }
-    $processed_shortcodes = $this->process($shortcodes, $content);
+    // if content contains only shortcodes (e.g., [newsletter:post_title]) but their processing
+    // depends on some other content (e.g., "post_id" inside a rendered newsletter),
+    // then we should use that content source when processing shortcodes
+    $processed_shortcodes = $this->process(
+      $shortcodes,
+      ($content_source) ? $content_source : $content
+    );
     $shortcodes = array_intersect_key($shortcodes, $processed_shortcodes);
     return str_replace($shortcodes, $processed_shortcodes, $content);
   }
