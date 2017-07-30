@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
 use MailPoet\Models\Newsletter as NewsletterModel;
@@ -25,7 +26,7 @@ class Newsletter {
       case 'post_title':
         preg_match_all('/data-post-id="(\d+)"/ism', $content, $posts);
         $post_ids = array_unique($posts[1]);
-        $latest_post = self::getLatestWPPost($post_ids);
+        $latest_post = (!empty($post_ids)) ? self::getLatestWPPost($post_ids) : false;
         return ($latest_post) ? $latest_post['post_title'] : false;
 
       case 'number':
@@ -44,6 +45,7 @@ class Newsletter {
   private static function getLatestWPPost($post_ids) {
     $posts = new \WP_Query(
       array(
+        'post_type' => get_post_types(),
         'post__in' => $post_ids,
         'posts_per_page' => 1,
         'ignore_sticky_posts' => true,
