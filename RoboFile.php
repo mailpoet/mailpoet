@@ -199,10 +199,16 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  function testDebug() {
-    $this->_exec('vendor/bin/codecept build');
+  function testDebug($opts=['file' => null, 'xml' => false]) {
     $this->loadEnv();
-    return $this->_exec('vendor/bin/codecept run unit --debug');
+    $this->_exec('vendor/bin/codecept build');
+
+    $command = 'vendor/bin/codecept run unit --debug -f '.(($opts['file']) ? $opts['file'] : '');
+
+    if($opts['xml']) {
+      $command .= ' --xml';
+    }
+    return $this->_exec($command);
   }
 
   function testFailed() {

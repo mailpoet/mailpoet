@@ -2,6 +2,7 @@
 namespace MailPoet\Newsletter\Editor;
 
 use pQuery;
+use MailPoet\Util\DOM as DOMUtil;
 
 if(!defined('ABSPATH')) exit;
 
@@ -17,27 +18,20 @@ class StructureTransformer {
   }
 
   /**
-   * Hoists images to root level, preserves order
-   * and inserts tags before top ancestor
+   * Hoists images to root level, preserves order by splitting neighboring
+   * elements and inserts tags as children of top ancestor
    */
-  private function hoistImagesToRoot($root) {
+  protected function hoistImagesToRoot($root) {
     foreach($root->query('img') as $item) {
-      $top_ancestor = $this->findTopAncestor($item);
+      $top_ancestor = DOMUtil::findTopAncestor($item);
       $offset = $top_ancestor->index();
 
       if($item->hasParent('a')) {
         $item = $item->parent;
       }
 
-      $item->changeParent($root, $offset);
+      DOMUtil::splitOn($item->getRoot(), $item);
     }
-  }
-
-  private static function findTopAncestor($item) {
-    while($item->parent->parent !== null) {
-      $item = $item->parent;
-    }
-    return $item;
   }
 
   /**
