@@ -23,7 +23,7 @@ class ServicesTest extends \MailPoetTest {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkMSSKey' => array('state' => Bridge::MAILPOET_KEY_VALID),
+        'checkMSSKey' => array('state' => Bridge::PREMIUM_KEY_VALID),
         'storeMSSKeyAndState' => Stub::once()
       ),
       $this
@@ -36,7 +36,7 @@ class ServicesTest extends \MailPoetTest {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkMSSKey' => array('state' => Bridge::MAILPOET_KEY_INVALID),
+        'checkMSSKey' => array('state' => Bridge::PREMIUM_KEY_INVALID),
         'storeMSSKeyAndState' => Stub::once()
       ),
       $this
@@ -51,7 +51,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkMSSKey' => array(
-          'state' => Bridge::MAILPOET_KEY_EXPIRING,
+          'state' => Bridge::PREMIUM_KEY_EXPIRING,
           'data' => array('expire_at' => $date->format('c'))
         ),
         'storeMSSKeyAndState' => Stub::once()

@@ -14,7 +14,8 @@ class BridgeTest extends \MailPoetTest {
   function _before() {
     $this->valid_key = 'abcdefghijklmnopqrstuvwxyz';
     $this->invalid_key = '401' . $this->valid_key;
-    $this->expiring_key = '402' . $this->valid_key;
+    $this->expiring_key = 'expiring' . $this->valid_key;
+    $this->used_key = '402' . $this->valid_key;
     $this->uncheckable_key = '503' . $this->valid_key;
 
     $this->expiring_premium_key = 'expiring' . $this->valid_key;
@@ -51,20 +52,26 @@ class BridgeTest extends \MailPoetTest {
   function testItChecksValidMSSKey() {
     $result = $this->bridge->checkMSSKey($this->valid_key);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::MAILPOET_KEY_VALID);
+    expect($result['state'])->equals(Bridge::PREMIUM_KEY_VALID);
   }
 
   function testItChecksInvalidMSSKey() {
     $result = $this->bridge->checkMSSKey($this->invalid_key);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::MAILPOET_KEY_INVALID);
+    expect($result['state'])->equals(Bridge::PREMIUM_KEY_INVALID);
   }
 
   function testItChecksExpiringMSSKey() {
     $result = $this->bridge->checkMSSKey($this->expiring_key);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::MAILPOET_KEY_EXPIRING);
+    expect($result['state'])->equals(Bridge::PREMIUM_KEY_EXPIRING);
     expect($result['data']['expire_at'])->notEmpty();
+  }
+
+  function testItChecksAlreadyUsed() {
+    $result = $this->bridge->checkMSSKey($this->used_key);
+    expect($result)->notEmpty();
+    expect($result['state'])->equals(Bridge::PREMIUM_KEY_ALREADY_USED);
   }
 
   function testItReturnsErrorStateOnEmptyAPIResponseCodeDuringMSSCheck() {
@@ -72,14 +79,14 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
     $result = $this->bridge->checkMSSKey($this->valid_key);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::MAILPOET_KEY_CHECK_ERROR);
+    expect($result['state'])->equals(Bridge::PREMIUM_KEY_CHECK_ERROR);
   }
 
   function testItStoresExpectedMSSKeyStates() {
     $states = array(
-      Bridge::MAILPOET_KEY_VALID => $this->valid_key,
-      Bridge::MAILPOET_KEY_INVALID => $this->invalid_key,
-      Bridge::MAILPOET_KEY_EXPIRING => $this->expiring_key
+      Bridge::PREMIUM_KEY_VALID => $this->valid_key,
+      Bridge::PREMIUM_KEY_INVALID => $this->invalid_key,
+      Bridge::PREMIUM_KEY_EXPIRING => $this->expiring_key
     );
     foreach($states as $state => $key) {
       $state = array('state' => $state);
@@ -91,7 +98,7 @@ class BridgeTest extends \MailPoetTest {
 
   function testItDoesNotStoreErroneousOrUnexpectedMSSKeyStates() {
     $states = array(
-      array('state' => Bridge::MAILPOET_KEY_CHECK_ERROR),
+      array('state' => Bridge::PREMIUM_KEY_CHECK_ERROR),
       array()
     );
     foreach($states as $state) {
@@ -164,14 +171,14 @@ class BridgeTest extends \MailPoetTest {
   function testItUpdatesSubscriberCount() {
     // it performs update if the key is valid or expiring
     $result = array();
-    $result['state'] = Bridge::MAILPOET_KEY_VALID;
+    $result['state'] = Bridge::PREMIUM_KEY_VALID;
     $updated = $this->bridge->updateSubscriberCount($result);
     expect($updated)->true();
-    $result['state'] = Bridge::MAILPOET_KEY_EXPIRING;
+    $result['state'] = Bridge::PREMIUM_KEY_EXPIRING;
     $updated = $this->bridge->updateSubscriberCount($result);
     expect($updated)->true();
     // it does not perform update if the key is invalid
-    $result['state'] = Bridge::MAILPOET_KEY_INVALID;
+    $result['state'] = Bridge::PREMIUM_KEY_INVALID;
     $updated = $this->bridge->updateSubscriberCount($result);
     expect($updated)->null();
   }
@@ -179,10 +186,10 @@ class BridgeTest extends \MailPoetTest {
   function testItInvalidatesMSSKey() {
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::MAILPOET_KEY_VALID)
+      array('state' => Bridge::PREMIUM_KEY_VALID)
     );
     Bridge::invalidateKey();
-    expect($this->getMSSKeyState())->equals(array('state' => Bridge::MAILPOET_KEY_INVALID));
+    expect($this->getMSSKeyState())->equals(array('state' => Bridge::PREMIUM_KEY_INVALID));
   }
 
   function testItChecksAndStoresKeysOnSettingsSave() {
