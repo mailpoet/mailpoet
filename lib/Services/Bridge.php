@@ -64,11 +64,17 @@ class Bridge {
     $state_map = array(
       200 => self::PREMIUM_KEY_VALID,
       401 => self::PREMIUM_KEY_INVALID,
-      402 => self::PREMIUM_KEY_EXPIRING
+      402 => self::PREMIUM_KEY_ALREADY_USED
     );
 
     if(!empty($result['code']) && isset($state_map[$result['code']])) {
-      $key_state = $state_map[$result['code']];
+      if($state_map[$result['code']] == self::PREMIUM_KEY_VALID
+        && !empty($result['data']['expire_at'])
+      ) {
+        $key_state = self::PREMIUM_KEY_EXPIRING;
+      } else {
+        $key_state = $state_map[$result['code']];
+      }
     } else {
       $key_state = self::PREMIUM_KEY_CHECK_ERROR;
     }

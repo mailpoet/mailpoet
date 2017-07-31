@@ -14,7 +14,7 @@ class BridgeTestMockAPI {
 
   function checkMSSKey() {
     // if a key begins with these codes, return them
-    $regex = '/^(401|402|503)/';
+    $regex = '/^(expiring|401|402|503)/';
     $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;
     return $this->processAPICheckResponse($code);
   }
@@ -40,16 +40,17 @@ class BridgeTestMockAPI {
 
   private function processAPICheckResponse($code) {
     switch($code) {
-      case 200:
-        $body = array('subscriber_limit' => 10000);
-        break;
-      case 402:
+      case 'expiring':
+        // a special case of a valid key
+        $code = 200;
         $body = array(
           'subscriber_limit' => 10000,
           'expire_at' => Carbon::createFromTimestamp(current_time('timestamp'))
             ->addMonth()->format('c')
         );
         break;
+      case 200:
+      case 401:
       case 401:
       default:
         $body = null;

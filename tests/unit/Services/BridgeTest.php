@@ -14,7 +14,8 @@ class BridgeTest extends \MailPoetTest {
   function _before() {
     $this->valid_key = 'abcdefghijklmnopqrstuvwxyz';
     $this->invalid_key = '401' . $this->valid_key;
-    $this->expiring_key = '402' . $this->valid_key;
+    $this->expiring_key = 'expiring' . $this->valid_key;
+    $this->used_key = '402' . $this->valid_key;
     $this->uncheckable_key = '503' . $this->valid_key;
 
     $this->expiring_premium_key = 'expiring' . $this->valid_key;
@@ -65,6 +66,12 @@ class BridgeTest extends \MailPoetTest {
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_EXPIRING);
     expect($result['data']['expire_at'])->notEmpty();
+  }
+
+  function testItChecksAlreadyUsed() {
+    $result = $this->bridge->checkMSSKey($this->used_key);
+    expect($result)->notEmpty();
+    expect($result['state'])->equals(Bridge::PREMIUM_KEY_ALREADY_USED);
   }
 
   function testItReturnsErrorStateOnEmptyAPIResponseCodeDuringMSSCheck() {
