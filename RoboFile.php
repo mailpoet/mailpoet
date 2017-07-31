@@ -212,7 +212,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   function testAcceptance() {
-    return $this->_exec('docker-compose run codeception --steps --debug -vvv');
+    return $this->_exec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run codeception --steps --debug -vvv');
   }
 
   function testFailed() {
