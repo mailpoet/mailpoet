@@ -66,7 +66,7 @@ class Migrator {
 
   function segments() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'type varchar(90) NOT NULL DEFAULT "default",',
       'description varchar(250) NOT NULL DEFAULT "",',
@@ -81,7 +81,7 @@ class Migrator {
 
   function settings() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(50) NOT NULL,',
       'value longtext,',
       'created_at TIMESTAMP NULL,',
@@ -94,7 +94,7 @@ class Migrator {
 
   function customFields() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'type varchar(90) NOT NULL,',
       'params longtext NOT NULL,',
@@ -108,7 +108,7 @@ class Migrator {
 
   function scheduledTasks() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'type varchar(90) NULL DEFAULT NULL,',
       'status varchar(12) NULL DEFAULT NULL,',
       'priority mediumint(9) NOT NULL DEFAULT 0,',
@@ -124,8 +124,8 @@ class Migrator {
 
   function scheduledTaskSubscribers() {
     $attributes = array(
-      'task_id mediumint(9) NOT NULL,',
-      'subscriber_id mediumint(9) NOT NULL,',
+      'task_id int(11) unsigned NOT NULL,',
+      'subscriber_id int(11) unsigned NOT NULL,',
       'processed int(1) NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (task_id, subscriber_id)',
@@ -135,17 +135,17 @@ class Migrator {
 
   function sendingQueues() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'type varchar(90) NULL DEFAULT NULL,',
-      'newsletter_id mediumint(9) NOT NULL,',
+      'newsletter_id int(11) unsigned NOT NULL,',
       'newsletter_rendered_body longtext,',
       'newsletter_rendered_subject varchar(250) NULL DEFAULT NULL,',
       'subscribers longtext,',
       'status varchar(12) NULL DEFAULT NULL,',
       'priority mediumint(9) NOT NULL DEFAULT 0,',
-      'count_total mediumint(9) NOT NULL DEFAULT 0,',
-      'count_processed mediumint(9) NOT NULL DEFAULT 0,',
-      'count_to_process mediumint(9) NOT NULL DEFAULT 0,',
+      'count_total int(11) unsigned NOT NULL DEFAULT 0,',
+      'count_processed int(11) unsigned NOT NULL DEFAULT 0,',
+      'count_to_process int(11) unsigned NOT NULL DEFAULT 0,',
       'scheduled_at TIMESTAMP NULL,',
       'processed_at TIMESTAMP NULL,',
       'created_at TIMESTAMP NULL,',
@@ -158,7 +158,7 @@ class Migrator {
 
   function subscribers() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'wp_user_id bigint(20) NULL,',
       'first_name tinytext NOT NULL DEFAULT "",',
       'last_name tinytext NOT NULL DEFAULT "",',
@@ -179,9 +179,9 @@ class Migrator {
 
   function subscriberSegment() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'subscriber_id mediumint(9) NOT NULL,',
-      'segment_id mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'subscriber_id int(11) unsigned NOT NULL,',
+      'segment_id int(11) unsigned NOT NULL,',
       'status varchar(12) NOT NULL DEFAULT "' . Subscriber::STATUS_SUBSCRIBED . '",',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
@@ -193,9 +193,9 @@ class Migrator {
 
   function subscriberCustomField() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'subscriber_id mediumint(9) NOT NULL,',
-      'custom_field_id mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'subscriber_id int(11) unsigned NOT NULL,',
+      'custom_field_id int(11) unsigned NOT NULL,',
       'value varchar(255) NOT NULL DEFAULT "",',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
@@ -207,9 +207,9 @@ class Migrator {
 
   function newsletters() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'hash varchar(150) NULL DEFAULT NULL,',
-      'parent_id mediumint(9) NULL,',
+      'parent_id int(11) unsigned NULL,',
       'subject varchar(250) NOT NULL DEFAULT "",',
       'type varchar(20) NOT NULL DEFAULT "standard",',
       'sender_address varchar(150) NOT NULL DEFAULT "",',
@@ -230,7 +230,7 @@ class Migrator {
 
   function newsletterTemplates() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(250) NOT NULL,',
       'description varchar(250) NOT NULL,',
       'body LONGTEXT,',
@@ -245,7 +245,7 @@ class Migrator {
 
   function newsletterOptionFields() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'newsletter_type varchar(90) NOT NULL,',
       'created_at TIMESTAMP NULL,',
@@ -258,9 +258,9 @@ class Migrator {
 
   function newsletterOption() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'newsletter_id mediumint(9) NOT NULL,',
-      'option_field_id mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'option_field_id int(11) unsigned NOT NULL,',
       'value varchar(255) NOT NULL DEFAULT "",',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
@@ -272,9 +272,9 @@ class Migrator {
 
   function newsletterSegment() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'newsletter_id mediumint(9) NOT NULL,',
-      'segment_id mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'segment_id int(11) unsigned NOT NULL,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
@@ -285,9 +285,9 @@ class Migrator {
 
   function newsletterLinks() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'newsletter_id mediumint(9) NOT NULL,',
-      'queue_id mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'queue_id int(11) unsigned NOT NULL,',
       'url varchar(255) NOT NULL,',
       'hash varchar(20) NOT NULL,',
       'created_at TIMESTAMP NULL,',
@@ -299,9 +299,9 @@ class Migrator {
 
   function newsletterPosts() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'newsletter_id mediumint(9) NOT NULL,',
-      'post_id mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'post_id int(11) unsigned NOT NULL,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id)',
@@ -311,7 +311,7 @@ class Migrator {
 
   function forms() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'name varchar(90) NOT NULL,',
       'body longtext,',
       'settings longtext,',
@@ -326,10 +326,10 @@ class Migrator {
 
   function statisticsNewsletters() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'newsletter_id mediumint(9) NOT NULL,',
-      'subscriber_id mediumint(9) NOT NULL,',
-      'queue_id mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'subscriber_id int(11) unsigned NOT NULL,',
+      'queue_id int(11) unsigned NOT NULL,',
       'sent_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id)',
@@ -339,12 +339,12 @@ class Migrator {
 
   function statisticsClicks() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'newsletter_id mediumint(9) NOT NULL,',
-      'subscriber_id mediumint(9) NOT NULL,',
-      'queue_id mediumint(9) NOT NULL,',
-      'link_id mediumint(9) NOT NULL,',
-      'count mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'subscriber_id int(11) unsigned NOT NULL,',
+      'queue_id int(11) unsigned NOT NULL,',
+      'link_id int(11) unsigned NOT NULL,',
+      'count int(11) unsigned NOT NULL,',
       'created_at TIMESTAMP NULL,',
       'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
@@ -357,10 +357,10 @@ class Migrator {
 
   function statisticsOpens() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'newsletter_id mediumint(9) NOT NULL,',
-      'subscriber_id mediumint(9) NOT NULL,',
-      'queue_id mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'subscriber_id int(11) unsigned NOT NULL,',
+      'queue_id int(11) unsigned NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
@@ -372,10 +372,10 @@ class Migrator {
 
   function statisticsUnsubscribes() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'newsletter_id mediumint(9) NOT NULL,',
-      'subscriber_id mediumint(9) NOT NULL,',
-      'queue_id mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'subscriber_id int(11) unsigned NOT NULL,',
+      'queue_id int(11) unsigned NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
@@ -387,9 +387,9 @@ class Migrator {
 
   function statisticsForms() {
     $attributes = array(
-      'id mediumint(9) NOT NULL AUTO_INCREMENT,',
-      'form_id mediumint(9) NOT NULL,',
-      'subscriber_id mediumint(9) NOT NULL,',
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'form_id int(11) unsigned NOT NULL,',
+      'subscriber_id int(11) unsigned NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY form_subscriber (form_id,subscriber_id)'
@@ -399,9 +399,9 @@ class Migrator {
 
   function mappingToExternalEntities() {
     $attributes = array(
-      'old_id mediumint(9) NOT NULL,',
+      'old_id int(11) unsigned NOT NULL,',
       'type varchar(50) NOT NULL,',
-      'new_id mediumint(9) NOT NULL,',
+      'new_id int(11) unsigned NOT NULL,',
       'created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY (old_id, type),',
       'KEY new_id (new_id)'
