@@ -57,32 +57,7 @@ class Bridge {
   function checkMSSKey($api_key) {
     $this->initApi($api_key);
     $result = $this->api->checkMSSKey();
-    return $this->processMSSKeyCheckResult($result);
-  }
-
-  private function processMSSKeyCheckResult(array $result) {
-    $state_map = array(
-      200 => self::PREMIUM_KEY_VALID,
-      401 => self::PREMIUM_KEY_INVALID,
-      402 => self::PREMIUM_KEY_ALREADY_USED
-    );
-
-    if(!empty($result['code']) && isset($state_map[$result['code']])) {
-      if($state_map[$result['code']] == self::PREMIUM_KEY_VALID
-        && !empty($result['data']['expire_at'])
-      ) {
-        $key_state = self::PREMIUM_KEY_EXPIRING;
-      } else {
-        $key_state = $state_map[$result['code']];
-      }
-    } else {
-      $key_state = self::PREMIUM_KEY_CHECK_ERROR;
-    }
-
-    return $this->buildKeyState(
-      $key_state,
-      $result
-    );
+    return $this->processPremiumKeyCheckResult($result);
   }
 
   function storeMSSKeyAndState($key, $state) {
