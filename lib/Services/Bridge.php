@@ -14,12 +14,6 @@ class Bridge {
   const PREMIUM_KEY_SETTING_NAME = 'premium.premium_key';
   const PREMIUM_KEY_STATE_SETTING_NAME = 'premium.premium_key_state';
 
-  const MAILPOET_KEY_VALID = 'valid';
-  const MAILPOET_KEY_INVALID = 'invalid';
-  const MAILPOET_KEY_EXPIRING = 'expiring';
-
-  const MAILPOET_KEY_CHECK_ERROR = 'check_error';
-
   const PREMIUM_KEY_VALID = 'valid';
   const PREMIUM_KEY_INVALID = 'invalid';
   const PREMIUM_KEY_EXPIRING = 'expiring';
@@ -68,15 +62,15 @@ class Bridge {
 
   private function processMSSKeyCheckResult(array $result) {
     $state_map = array(
-      200 => self::MAILPOET_KEY_VALID,
-      401 => self::MAILPOET_KEY_INVALID,
-      402 => self::MAILPOET_KEY_EXPIRING
+      200 => self::PREMIUM_KEY_VALID,
+      401 => self::PREMIUM_KEY_INVALID,
+      402 => self::PREMIUM_KEY_EXPIRING
     );
 
     if(!empty($result['code']) && isset($state_map[$result['code']])) {
       $key_state = $state_map[$result['code']];
     } else {
-      $key_state = self::MAILPOET_KEY_CHECK_ERROR;
+      $key_state = self::PREMIUM_KEY_CHECK_ERROR;
     }
 
     return $this->buildKeyState(
@@ -87,7 +81,7 @@ class Bridge {
 
   function storeMSSKeyAndState($key, $state) {
     if(empty($state['state'])
-      || $state['state'] === self::MAILPOET_KEY_CHECK_ERROR
+      || $state['state'] === self::PREMIUM_KEY_CHECK_ERROR
     ) {
       return false;
     }
@@ -168,8 +162,8 @@ class Bridge {
 
   function updateSubscriberCount($result) {
     if(!empty($result['state'])
-      && ($result['state'] === self::MAILPOET_KEY_VALID
-      || $result['state'] === self::MAILPOET_KEY_EXPIRING)
+      && ($result['state'] === self::PREMIUM_KEY_VALID
+      || $result['state'] === self::PREMIUM_KEY_EXPIRING)
     ) {
       return $this->api->updateSubscriberCount(Subscriber::getTotalSubscribers());
     }
@@ -179,7 +173,7 @@ class Bridge {
   static function invalidateKey() {
     Setting::setValue(
       self::API_KEY_STATE_SETTING_NAME,
-      array('state' => self::MAILPOET_KEY_INVALID)
+      array('state' => self::PREMIUM_KEY_INVALID)
     );
   }
 

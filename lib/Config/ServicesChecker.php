@@ -22,7 +22,7 @@ class ServicesChecker {
 
     if(!$mss_key_specified
       || empty($mss_key['state'])
-      || $mss_key['state'] == Bridge::MAILPOET_KEY_INVALID
+      || $mss_key['state'] == Bridge::PREMIUM_KEY_INVALID
     ) {
       if($display_error_notice) {
         $error = Helpers::replaceLinkTags(
@@ -33,7 +33,7 @@ class ServicesChecker {
         WPNotice::displayError($error);
       }
       return false;
-    } elseif($mss_key['state'] == Bridge::MAILPOET_KEY_EXPIRING
+    } elseif($mss_key['state'] == Bridge::PREMIUM_KEY_EXPIRING
       && !empty($mss_key['data']['expire_at'])
     ) {
       if($display_error_notice) {
@@ -48,7 +48,7 @@ class ServicesChecker {
         WPNotice::displayWarning($error);
       }
       return true;
-    } elseif($mss_key['state'] == Bridge::MAILPOET_KEY_VALID) {
+    } elseif($mss_key['state'] == Bridge::PREMIUM_KEY_VALID) {
       return true;
     }
 

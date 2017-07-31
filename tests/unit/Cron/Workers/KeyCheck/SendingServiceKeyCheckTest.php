@@ -20,7 +20,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
   }
 
   function testItChecksMSSKey() {
-    $response = array('code' => Bridge::MAILPOET_KEY_VALID);
+    $response = array('code' => Bridge::PREMIUM_KEY_VALID);
     $this->worker->bridge = Stub::make(
       new Bridge,
       array(

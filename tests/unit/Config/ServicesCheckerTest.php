@@ -34,7 +34,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsTrueIfMSSKeyIsValid() {
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::MAILPOET_KEY_VALID)
+      array('state' => Bridge::PREMIUM_KEY_VALID)
     );
     $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->true();
@@ -43,7 +43,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfMSSKeyIsInvalid() {
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::MAILPOET_KEY_INVALID)
+      array('state' => Bridge::PREMIUM_KEY_INVALID)
     );
     $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->false();
@@ -53,7 +53,7 @@ class ServicesCheckerTest extends \MailPoetTest {
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array(
-        'state' => Bridge::MAILPOET_KEY_EXPIRING,
+        'state' => Bridge::PREMIUM_KEY_EXPIRING,
         'data' => array('expire_at' => date('c'))
       )
     );
