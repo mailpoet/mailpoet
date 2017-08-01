@@ -79,7 +79,7 @@ class Date extends Base {
         $html .= '</select>';
       } else if($date_selector === 'MM') {
         $block['selected'] = $month;
-        $html .= '<select class="mailpoet_date_month" ';
+        $html .= '<select class="mailpoet_select mailpoet_date_month" ';
         $html .= static::getInputValidation($block, array(
           'required-message' => __('Please select a month', 'mailpoet')
         ));
