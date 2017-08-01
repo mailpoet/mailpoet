@@ -31,4 +31,4 @@ fi
 
 cd /wp-core/wp-content/plugins/mailpoet
 
-/repo/vendor/bin/codecept run acceptance -c codeception.acceptance.yml $@
+/project/vendor/bin/codecept run acceptance -c codeception.acceptance.yml $@
