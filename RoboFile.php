@@ -292,7 +292,12 @@ class RoboFile extends \Robo\Tasks {
     $plugin_data = get_plugin_data('mailpoet.php', false, false);
     $plugin_version = $plugin_data['Version'];
     $plugin_dist_name = sanitize_title_with_dashes($plugin_data['Name']);
+    $plugin_dist_name = explode('-', $plugin_dist_name);
+    $plugin_dist_name = $plugin_dist_name[0];
     $plugin_dist_file = $plugin_dist_name . '.zip';
+
+    $this->say('name: '. $plugin_dist_name);
+    return;
 
     $this->say('Publishing version: ' . $plugin_version);
 
