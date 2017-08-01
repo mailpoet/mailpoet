@@ -151,6 +151,8 @@ var adminConfig = {
       'jquery.serialize_object',
       'parsleyjs',
       'analytics_event',
+      'help-tooltip.jsx',
+      'help-tooltip',
     ],
     admin_vendor: [
       'react',
