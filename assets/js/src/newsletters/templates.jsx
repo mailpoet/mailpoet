@@ -6,6 +6,7 @@ define(
     'react-router',
     'classnames',
     'newsletters/breadcrumb.jsx',
+    'help-tooltip.jsx',
   ],
   (
     React,
@@ -13,7 +14,8 @@ define(
     MailPoet,
     Router,
     classNames,
-    Breadcrumb
+    Breadcrumb,
+    HelpTooltip
   ) => {
 
     const ImportTemplate = React.createClass({
@@ -69,7 +71,9 @@ define(
             <h2>{MailPoet.I18n.t('importTemplateTitle')}</h2>
             <form onSubmit={this.handleSubmit}>
               <input type="file" placeholder={MailPoet.I18n.t('selectJsonFileToUpload')} ref="templateFile" />
-
+              <HelpTooltip
+                tooltip={MailPoet.I18n.t('helpTooltipTemplateUpload')}
+              />
               <p className="submit">
                 <input
                   className="button button-primary"
