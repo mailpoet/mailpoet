@@ -30,6 +30,10 @@ define([
 
   App.on('start', function(App, options) {
     App._appView.showChildView('headingRegion', new Module.HeadingView({ model: App.getNewsletter() }));
+    MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-subject-line'), {
+      tooltipId: 'tooltip-designer-subject-line-ti',
+      tooltip: MailPoet.I18n.t('helpTooltipDesignerSubjectLine'),
+    });
   });
 
   return Module;
