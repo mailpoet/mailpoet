@@ -54,11 +54,8 @@ function mailpoet_php_version_notice() {
   printf('<div class="error"><p>%1$s</p></div>', $notice);
 }
 
-if(
-  isset($_SERVER["SERVER_SOFTWARE"])
-  && strpos(strtolower($_SERVER["SERVER_SOFTWARE"]), "microsoft-iis") !== false
-) {
-  add_action('admin_notices', 'mailpoet_php_version_notice');
+if(isset($_SERVER['SERVER_SOFTWARE']) && strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'microsoft-iis') !== false) {
+  add_action('admin_notices', 'mailpoet_microsoft_iis_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
   return;
@@ -66,7 +63,7 @@ if(
 
 // Display IIS server error notice
 function mailpoet_microsoft_iis_notice() {
-  $notice = __('MailPoet plugin cannot run under Microsoft\'s Internet Information Services (IIS) web server. We recommend that you use a web server powered by Apache or NGINX.', 'mailpoet');
+  $notice = __("MailPoet plugin cannot run under Microsoft's Internet Information Services (IIS) web server. We recommend that you use a web server powered by Apache or NGINX.", 'mailpoet');
   printf('<div class="error"><p>%1$s</p></div>', $notice);
 }
 
