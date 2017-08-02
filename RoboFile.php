@@ -295,10 +295,6 @@ class RoboFile extends \Robo\Tasks {
     $plugin_dist_name = explode('-', $plugin_dist_name);
     $plugin_dist_name = $plugin_dist_name[0];
     $plugin_dist_file = $plugin_dist_name . '.zip';
-
-    $this->say('name: '. $plugin_dist_name);
-    return;
-
     $this->say('Publishing version: ' . $plugin_version);
 
     // Sanity checks
