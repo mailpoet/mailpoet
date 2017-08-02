@@ -34,6 +34,10 @@ define([
       tooltipId: 'tooltip-designer-subject-line-ti',
       tooltip: MailPoet.I18n.t('helpTooltipDesignerSubjectLine'),
     });
+    MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-preheader'), {
+      tooltipId: 'tooltip-designer-preheader-ti',
+      tooltip: MailPoet.I18n.t('helpTooltipDesignerPreheader'),
+    });
   });
 
   return Module;
