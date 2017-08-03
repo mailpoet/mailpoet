@@ -298,6 +298,7 @@ var testConfig = {
       'mailpoet',
       'notice',
       'i18n',
+      'help-tooltip',
 
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',

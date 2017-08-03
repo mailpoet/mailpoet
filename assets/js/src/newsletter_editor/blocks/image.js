@@ -4,8 +4,9 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/base',
-    'underscore'
-  ], function(App, BaseBlock, _) {
+    'underscore',
+    'mailpoet'
+  ], function(App, BaseBlock, _, MailPoet) {
 
   "use strict";
 

@@ -1,4 +1,4 @@
-define('helpTooltip', ['mailpoet', 'React', 'react-dom', 'help-tooltip.jsx'],
+define('helpTooltip', ['mailpoet', 'react', 'react-dom', 'help-tooltip.jsx'],
   function (MailPoet, React, ReactDOM, TooltipComponent) {
     'use strict';
 
