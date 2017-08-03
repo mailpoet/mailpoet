@@ -64,11 +64,11 @@ define([
     onRender: function() {
       MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-full-width'), {
         tooltipId: 'tooltip-editor-full-width',
-        tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth'),
+        tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth')
       });
       MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-ideal-width'), {
         tooltipId: 'tooltip-editor-ideal-width',
-        tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth'),
+        tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth')
       });
     },
     getTemplate: function() { return templates.imageBlockSettings; },
