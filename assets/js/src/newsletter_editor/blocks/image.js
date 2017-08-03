@@ -66,6 +66,10 @@ define([
         tooltipId: 'tooltip-editor-full-width',
         tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth'),
       });
+      MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-ideal-width'), {
+        tooltipId: 'tooltip-editor-ideal-width',
+        tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth'),
+      });
     },
     getTemplate: function() { return templates.imageBlockSettings; },
     events: function() {
