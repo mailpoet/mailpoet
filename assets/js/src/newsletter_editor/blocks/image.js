@@ -61,6 +61,12 @@ define([
   });
 
   Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
+    onRender: function() {
+      MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-full-width'), {
+        tooltipId: 'tooltip-editor-full-width',
+        tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth'),
+      });
+    },
     getTemplate: function() { return templates.imageBlockSettings; },
     events: function() {
       return {
