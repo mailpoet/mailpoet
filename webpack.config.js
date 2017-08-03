@@ -50,6 +50,9 @@ var baseConfig = {
     ])
   ],
   module: {
+    preLoaders: [
+      { test: /\.json$/, loader: "json-loader" },
+    ],
     loaders: [
       {
         test: /\.jsx$/,

@@ -5,22 +5,9 @@ define('helpTooltip', ['mailpoet', 'React', 'react-dom', 'help-tooltip.jsx'],
     MailPoet.helpTooltip = {
       show: function (domContainerNode, opts) {
 
-        var tooltipText = React.createElement(
-          "span",
-          {
-            style: {
-              pointerEvents: "all",
-            },
-            "dangerouslySetInnerHTML": {
-              __html: opts.tooltip,
-            },
-          },
-          null
-        );
-
         ReactDOM.render(React.createElement(
           TooltipComponent, {
-            tooltip: tooltipText,
+            tooltip: opts.tooltip,
             tooltipId: opts.tooltipId,
           }
         ), domContainerNode);

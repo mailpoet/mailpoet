@@ -217,11 +217,6 @@ define(
         return true;
       },
       render: function () {
-        const tooltip = (<span
-          dangerouslySetInnerHTML={{
-            __html: MailPoet.I18n.t('helpTooltipSendEmail'),
-          }}
-        />);
         return (
           <div>
             <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
@@ -259,7 +254,7 @@ define(
                 </a>.
               </p>
               <HelpTooltip
-                tooltip={tooltip}
+                tooltip={MailPoet.I18n.t('helpTooltipSendEmail')}
                 tooltipId="helpTooltipSendEmail"
               />
             </Form>
