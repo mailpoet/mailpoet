@@ -5,7 +5,6 @@ namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
-use MailPoet\Logger;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\NewsletterSegment as NewsletterSegmentModel;

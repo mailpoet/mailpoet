@@ -166,6 +166,9 @@ define(
               }
             }).done(() => {
               this.context.router.push(`/${ this.state.item.type || '' }`);
+              MailPoet.Notice.success(
+                MailPoet.I18n.t('newsletterSendingHasBeenResumed')
+              );
             }).fail((response) => {
               if (response.errors.length > 0) {
                 MailPoet.Notice.error(

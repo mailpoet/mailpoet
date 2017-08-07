@@ -110,13 +110,16 @@ let newsletter_actions = [
   },
   {
     name: 'edit',
-    link: function (newsletter) {
-      return (
-        <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
-          {MailPoet.I18n.t('edit')}
-        </a>
-      );
-    },
+    label: MailPoet.I18n.t('edit'),
+    onClick: (newsletter) => {
+      if(
+        !newsletter.queue
+        || newsletter.queue.status != 'scheduled'
+        || window.confirm(MailPoet.I18n.t('confirmEdit'))
+      ) {
+        window.location.href = `?page=mailpoet-newsletter-editor&id=${ newsletter.id }`;
+      }
+    }
   },
   {
     name: 'duplicate',

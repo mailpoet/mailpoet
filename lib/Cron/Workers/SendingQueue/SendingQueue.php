@@ -5,7 +5,6 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
-use MailPoet\Logger;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\SendingQueue as SendingQueueModel;

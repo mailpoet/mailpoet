@@ -1,7 +1,6 @@
 <?php
 namespace MailPoet\Newsletter\Links;
 
-use MailPoet\Logger;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
@@ -20,11 +19,8 @@ class Links {
 
   static function process($content, $newsletter_id, $queue_id) {
     $extracted_links = self::extract($content);
-    Logger::log('extracted', $extracted_links);
     $saved_links = self::load($newsletter_id, $queue_id);
-    Logger::log('saved', $saved_links);
     $processed_links = self::hash($extracted_links, $saved_links);
-    Logger::log('processed', $processed_links);
     return self::replace($content, $processed_links);
   }
 
@@ -61,7 +57,7 @@ class Links {
       ->whereEqual('queue_id', $queue_id)
       ->findMany();
     $saved_links = array();
-    foreach ($links as $link) {
+    foreach($links as $link) {
       $saved_links[$link->url] = $link->asArray();
     }
     return $saved_links;
