@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Newsletter\Links;
 
+use MailPoet\Logger;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
@@ -8,8 +9,8 @@ use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Util\Helpers;
-use MailPoet\Util\pQuery\pQuery as DomParser;
 use MailPoet\Util\Security;
+use MailPoet\Util\pQuery\pQuery as DomParser;
 
 class Links {
   const DATA_TAG_CLICK = '[mailpoet_click_data]';
@@ -17,9 +18,13 @@ class Links {
   const LINK_TYPE_SHORTCODE = 'shortcode';
   const LINK_TYPE_URL = 'link';
 
-  static function process($content) {
+  static function process($content, $newsletter_id, $queue_id) {
     $extracted_links = self::extract($content);
-    $processed_links = self::hash($extracted_links);
+    Logger::log('extracted', $extracted_links);
+    $saved_links = self::load($newsletter_id, $queue_id);
+    Logger::log('saved', $saved_links);
+    $processed_links = self::hash($extracted_links, $saved_links);
+    Logger::log('processed', $processed_links);
     return self::replace($content, $processed_links);
   }
 
@@ -51,13 +56,31 @@ class Links {
     return array_unique($extracted_links, SORT_REGULAR);
   }
 
-  static function hash($extracted_links) {
-    $processed_links = array();
+  static function load($newsletter_id, $queue_id) {
+    $links = NewsletterLink::whereEqual('newsletter_id', $newsletter_id)
+      ->whereEqual('queue_id', $queue_id)
+      ->findMany();
+    $saved_links = array();
+    foreach ($links as $link) {
+      $saved_links[$link->url] = $link->asArray();
+    }
+    return $saved_links;
+  }
+
+  static function hash($extracted_links, $saved_links) {
+    $processed_links = array_map(function(&$link) {
+      $link['type'] = Links::LINK_TYPE_URL;
+      $link['link'] = $link['url'];
+      $link['processed_link'] = self::DATA_TAG_CLICK . '-' . $link['hash'];
+      return $link;
+    }, $saved_links);
     foreach($extracted_links as $extracted_link) {
+      $link = $extracted_link['link'];
+      if (array_key_exists($link, $processed_links))
+        continue;
       $hash = Security::generateHash();
       // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
-      $link = $extracted_link['link'];
       $processed_links[$link] = array(
         'type' => $extracted_link['type'],
         'hash' => $hash,
@@ -137,6 +160,8 @@ class Links {
 
   static function save(array $links, $newsletter_id, $queue_id) {
     foreach($links as $link) {
+      if (isset($link['id']))
+        continue;
       if(empty($link['hash']) || empty($link['link'])) continue;
       $newsletter_link = NewsletterLink::create();
       $newsletter_link->newsletter_id = $newsletter_id;
