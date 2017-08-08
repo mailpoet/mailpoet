@@ -119,7 +119,7 @@ let newsletter_actions = [
       ) {
         window.location.href = `?page=mailpoet-newsletter-editor&id=${ newsletter.id }`;
       }
-    }
+    },
   },
   {
     name: 'duplicate',

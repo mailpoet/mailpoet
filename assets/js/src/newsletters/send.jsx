@@ -162,8 +162,8 @@ define(
               endpoint: 'sendingQueue',
               action: 'resume',
               data: {
-                newsletter_id: this.state.item.id
-              }
+                newsletter_id: this.state.item.id,
+              },
             }).done(() => {
               this.context.router.push(`/${ this.state.item.type || '' }`);
               MailPoet.Notice.success(

@@ -166,7 +166,7 @@ class NewslettersTest extends \MailPoetTest {
 
   function testItCanClearRenderedQueueUponSave() {
     $sending_queue = SendingQueue::create();
-    $sending_queue->newsletter_id = 1;
+    $sending_queue->newsletter_id = $this->newsletter->id;
     $sending_queue->status = SendingQueue::STATUS_SCHEDULED;
     $sending_queue->newsletter_rendered_body = 'Rendered body ...';
     $sending_queue->newsletter_rendered_subject = 'Rendered subject ...';
@@ -179,11 +179,14 @@ class NewslettersTest extends \MailPoetTest {
     );
 
     $response = $router->save($newsletter_data);
-    $updated_newsletter = Newsletter::findOne($this->newsletter->id);
-    $updated_queue = $updated_newsletter->getQueue();
+    $updated_newsletter = Newsletter::findOne($this->newsletter->id)
+      ->withSendingQueue()
+      ->asArray();
+    $updated_queue = $updated_newsletter['queue'];
+
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect(unserialize($updated_queue->newsletter_rendered_body))->equals(null);
-    expect(unserialize($updated_queue->newsletter_rendered_subject))->equals(null);
+    expect(unserialize($updated_queue['newsletter_rendered_body']))->equals(null);
+    expect(unserialize($updated_queue['newsletter_rendered_subject']))->equals(null);
   }
 
   function testItCanUpdatePostNotificationScheduleUponSave() {
