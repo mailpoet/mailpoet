@@ -13,10 +13,11 @@ class Styles {
 
 /* paragraphs (label + input) */
 .mailpoet_paragraph {
-
+  line-height:20px;
 }
 
 /* labels */
+.mailpoet_segment_label,
 .mailpoet_text_label,
 .mailpoet_textarea_label,
 .mailpoet_select_label,
@@ -25,18 +26,35 @@ class Styles {
 .mailpoet_list_label,
 .mailpoet_date_label {
   display:block;
+  font-weight:bold;
 }
 
 /* inputs */
 .mailpoet_text,
 .mailpoet_textarea,
 .mailpoet_select,
+.mailpoet_date_month,
+.mailpoet_date_day,
+.mailpoet_date_year,
 .mailpoet_date {
   display:block;
 }
 
-.mailpoet_checkbox {
+.mailpoet_text,
+.mailpoet_textarea {
+  width:200px;
+}
 
+.mailpoet_checkbox {
+}
+
+.mailpoet_submit input {
+}
+
+.mailpoet_divider {
+}
+
+.mailpoet_message {
 }
 
 .mailpoet_validate_success {
