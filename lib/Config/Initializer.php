@@ -39,7 +39,7 @@ class Initializer {
       $this->setupDB();
     } catch(\Exception $e) {
       return WPNotice::displayError(Helpers::replaceLinkTags(
-        __(self::UNABLE_TO_CONNECT),
+        __(self::UNABLE_TO_CONNECT, 'mailpoet'),
         self::SOLVE_DB_ISSUE_URL,
         array('target' => '_blank')
       ));
