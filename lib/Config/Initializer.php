@@ -5,6 +5,7 @@ use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Router;
 use MailPoet\Util\ConflictResolver;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Notice as WPNotice;
 
 if(!defined('ABSPATH')) exit;
@@ -13,7 +14,8 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
 
-  const UNABLE_TO_CONNECT = '<strong>Mailpoet:</strong> Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our <a href="http://beta.docs.mailpoet.com/article/200-solving-database-connection-issues">Knowledge Base article</a> for steps how to resolve it.';
+  const UNABLE_TO_CONNECT = 'Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.';
+  const SOLVE_DB_ISSUE_URL = 'http://beta.docs.mailpoet.com/article/200-solving-database-connection-issues';
 
   protected $plugin_initialized = false;
 
@@ -36,7 +38,11 @@ class Initializer {
     try {
       $this->setupDB();
     } catch(\Exception $e) {
-      return WPNotice::displayWarning(self::UNABLE_TO_CONNECT);
+      return WPNotice::displayError(Helpers::replaceLinkTags(
+        __(self::UNABLE_TO_CONNECT, 'mailpoet'),
+        self::SOLVE_DB_ISSUE_URL,
+        array('target' => '_blank')
+      ));
     }
 
     // activation function
