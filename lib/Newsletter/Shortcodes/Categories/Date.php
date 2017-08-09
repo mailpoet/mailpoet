@@ -61,7 +61,7 @@ class Date {
     $action_argument = false,
     $action_argument_value = false
   ) {
-    $date = new \DateTime('now');
+    $date = new \DateTime(current_time('mysql'));
     $action_formats = array(
       'd' => $date->format('d'),
       'dordinal' => $date->format('dS'),

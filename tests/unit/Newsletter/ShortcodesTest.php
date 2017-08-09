@@ -80,7 +80,7 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   function testItCanProcessDateShortcodes() {
-    $date = new \DateTime('now');
+    $date = new \DateTime(current_time('mysql'));
     expect(Date::process('d'))->equals($date->format('d'));
     expect(Date::process('dordinal'))->equals($date->format('dS'));
     expect(Date::process('dtext'))->equals($date->format('l'));
@@ -92,7 +92,7 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   function testItTranslatesDateShortcodes() {
-    $date = new \DateTime('now');
+    $date = new \DateTime(current_time('mysql'));
     $date_class = new Date();
 
     // custom shortcodes are translated
