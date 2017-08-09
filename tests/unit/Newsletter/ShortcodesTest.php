@@ -91,6 +91,40 @@ class ShortcodesTest extends \MailPoetTest {
     expect(Date::process('custom', 'format', 'U'))->equals($date->format('U'));
   }
 
+  function testItTranslatesDateShortcodes() {
+    $date = new \DateTime('now');
+    $date_class = new Date();
+
+    // custom shortcodes are translated
+    $translatable_custom_shortcodes = array(
+      'l',
+      'D',
+      'F',
+      'M',
+      'a',
+      'A'
+    );
+    foreach($translatable_custom_shortcodes as $translatable_custom_shortcode) {
+      $date_class::$translations = array(
+        $date->format($translatable_custom_shortcode) => $date->format($translatable_custom_shortcode) . '_translated'
+      );
+      expect($date_class::process('custom', 'format', $translatable_custom_shortcode))->equals($date->format($translatable_custom_shortcode) . '_translated');
+    }
+
+    // regular shortcodes are translated
+    $translatable_shortcodes = array(
+      'mtext',
+      'dtext'
+    );
+    foreach($translatable_shortcodes as $translatable_shortcode) {
+      $date_formatted_shortcode = ($translatable_shortcode === 'mtext') ? $date->format('F') : $date->format('l');
+      $date_class::$translations = array(
+        $date_formatted_shortcode => $date_formatted_shortcode . '_translated'
+      );
+      expect($date_class::process($translatable_shortcode))->contains($date_formatted_shortcode . '_translated');
+    }
+  }
+
   function testItCanProcessNewsletterShortcodes() {
     $shortcodes_object = $this->shortcodes_object;
     $content =
@@ -108,7 +142,6 @@ class ShortcodesTest extends \MailPoetTest {
     $wp_post = get_post($this->WP_post);
     expect($result['0'])->equals($wp_post->post_title);
   }
-
 
   function itCanProcessPostNotificationNewsletterNumberShortcode() {
     // create first post notification
@@ -365,4 +398,5 @@ class ShortcodesTest extends \MailPoetTest {
     wp_delete_post($this->WP_post, true);
     wp_delete_user($this->WP_user->ID);
   }
+
 }
