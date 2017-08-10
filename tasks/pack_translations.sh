@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 echo "Getting translations from Transifex..."
 tx pull -a -f

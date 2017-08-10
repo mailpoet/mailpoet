@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # Write ~/.transifexrc file if not exists
 if [ ! -f ~/.transifexrc ]; then
