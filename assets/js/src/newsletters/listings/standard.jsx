@@ -97,6 +97,17 @@ const bulk_actions = [
   },
 ];
 
+const confirmEdit = (newsletter) => {
+  if(
+    !newsletter.queue
+    || newsletter.status != 'sending'
+    || newsletter.queue.status !== null
+    || window.confirm(MailPoet.I18n.t('confirmEdit'))
+  ) {
+    window.location.href = `?page=mailpoet-newsletter-editor&id=${ newsletter.id }`;
+  }
+};
+
 let newsletter_actions = [
   {
     name: 'view',
@@ -111,15 +122,7 @@ let newsletter_actions = [
   {
     name: 'edit',
     label: MailPoet.I18n.t('edit'),
-    onClick: (newsletter) => {
-      if(
-        !newsletter.queue
-        || newsletter.queue.status != 'scheduled'
-        || window.confirm(MailPoet.I18n.t('confirmEdit'))
-      ) {
-        window.location.href = `?page=mailpoet-newsletter-editor&id=${ newsletter.id }`;
-      }
-    },
+    onClick: confirmEdit,
   },
   {
     name: 'duplicate',
@@ -175,7 +178,8 @@ const NewsletterListStandard = React.createClass({
           <strong>
             <a
               className="row-title"
-              href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }
+              href="javascript:;"
+              onClick={() => confirmEdit(newsletter)}
             >{ newsletter.queue.newsletter_rendered_subject || newsletter.subject }</a>
           </strong>
           { actions }

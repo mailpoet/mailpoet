@@ -274,7 +274,9 @@ define(
                   />
                 &nbsp;
                 {
-                  this.state.item.queue && this.state.item.queue.status == 'paused'
+                  this.state.item.status == 'sending'
+                  && this.state.item.queue
+                  && this.state.item.queue.status == 'paused'
                   ? <input
                   className="button button-secondary"
                   type="button"

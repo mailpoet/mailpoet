@@ -1216,7 +1216,7 @@
         config: config,
       });
       var queue = response.data.queue;
-      if (queue && queue.status == 'scheduled') {
+      if (response.data.status == 'sending' && queue && queue.status === null) {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'sending_queue',
