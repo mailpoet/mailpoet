@@ -123,17 +123,4 @@ class ShortcodesHelper {
       );
     }, $custom_fields);
   }
-
-  static function translateShortcode($translations, $shortcode) {
-    $translations = self::prepareTranslations($translations);
-    return str_replace(array_keys($translations), array_values($translations), $shortcode);
-  }
-
-  static function prepareTranslations($translations = array()) {
-    $prepared_translations = array();
-    foreach($translations as $key => $translation) {
-      $prepared_translations[$key] = __($translation, 'mailpoet');
-    }
-    return $prepared_translations;
-  }
 }

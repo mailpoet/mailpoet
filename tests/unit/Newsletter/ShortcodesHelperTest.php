@@ -33,15 +33,6 @@ class ShortcodesHelperTest extends \MailPoetTest {
       ->equals('[subscriber:cf_' . $custom_field->id . ']');
   }
 
-  function testItTranslatesShortcodes() {
-    $translations = array(
-      '1' => 'one',
-      '2' => 'two'
-    );
-    $shortcode = '1 & 2';
-    expect(ShortcodesHelper::translateShortcode($translations, $shortcode))->equals('one & two');
-  }
-
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
   }

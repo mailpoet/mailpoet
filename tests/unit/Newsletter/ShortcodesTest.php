@@ -81,48 +81,14 @@ class ShortcodesTest extends \MailPoetTest {
 
   function testItCanProcessDateShortcodes() {
     $date = new \DateTime(current_time('mysql'));
-    expect(Date::process('d'))->equals($date->format('d'));
-    expect(Date::process('dordinal'))->equals($date->format('dS'));
-    expect(Date::process('dtext'))->equals($date->format('l'));
-    expect(Date::process('m'))->equals($date->format('m'));
-    expect(Date::process('mtext'))->equals($date->format('F'));
-    expect(Date::process('y'))->equals($date->format('Y'));
+    expect(Date::process('d'))->equals(date_i18n('d', current_time('timestamp')));
+    expect(Date::process('dordinal'))->equals(date_i18n('dS', current_time('timestamp')));
+    expect(Date::process('dtext'))->equals(date_i18n('l', current_time('timestamp')));
+    expect(Date::process('m'))->equals(date_i18n('m', current_time('timestamp')));
+    expect(Date::process('mtext'))->equals(date_i18n('F', current_time('timestamp')));
+    expect(Date::process('y'))->equals(date_i18n('Y', current_time('timestamp')));
     // allow custom date formats (http://php.net/manual/en/function.date.php)
-    expect(Date::process('custom', 'format', 'U'))->equals($date->format('U'));
-  }
-
-  function testItTranslatesDateShortcodes() {
-    $date = new \DateTime(current_time('mysql'));
-    $date_class = new Date();
-
-    // custom shortcodes are translated
-    $translatable_custom_shortcodes = array(
-      'l',
-      'D',
-      'F',
-      'M',
-      'a',
-      'A'
-    );
-    foreach($translatable_custom_shortcodes as $translatable_custom_shortcode) {
-      $date_class::$translations = array(
-        $date->format($translatable_custom_shortcode) => $date->format($translatable_custom_shortcode) . '_translated'
-      );
-      expect($date_class::process('custom', 'format', $translatable_custom_shortcode))->equals($date->format($translatable_custom_shortcode) . '_translated');
-    }
-
-    // regular shortcodes are translated
-    $translatable_shortcodes = array(
-      'mtext',
-      'dtext'
-    );
-    foreach($translatable_shortcodes as $translatable_shortcode) {
-      $date_formatted_shortcode = ($translatable_shortcode === 'mtext') ? $date->format('F') : $date->format('l');
-      $date_class::$translations = array(
-        $date_formatted_shortcode => $date_formatted_shortcode . '_translated'
-      );
-      expect($date_class::process($translatable_shortcode))->contains($date_formatted_shortcode . '_translated');
-    }
+    expect(Date::process('custom', 'format', 'U F'))->equals(date_i18n('U F', current_time('timestamp')));
   }
 
   function testItCanProcessNewsletterShortcodes() {
