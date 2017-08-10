@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # Translations (npm install & composer install need to be run before)
 echo '[BUILD] Generating translations'
@@ -9,21 +9,22 @@ plugin_name='mailpoet'
 
 # Remove previous build.
 echo '[BUILD] Removing previous build'
-rm $plugin_name.zip
+test -e $plugin_name.zip && rm $plugin_name.zip
 
 # Create temp dir.
 echo '[BUILD] Creating temporary directory'
+test -d $plugin_name && rm -rf $plugin_name
 mkdir $plugin_name
 
 # Production assets.
 echo '[BUILD] Generating production CSS and JS assets'
-rm -rf node_modules
+test -d node_modules && rm -rf node_modules
 npm install
 ./do compile:all --env production
 
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
-rm -rf vendor
+test -d vendor && rm -rf vendor
 ./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
 # Copy release folders.
