@@ -2,21 +2,19 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\Util\ProgressBar;
-use MailPoet\Models\Form;
-use MailPoet\Models\Setting;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\SubscriberSegment;
-use MailPoet\Models\SubscriberCustomField;
+use MailPoet\Models\Form;
 use MailPoet\Models\MappingToExternalEntities;
-use MailPoet\Config\Activator;
+use MailPoet\Models\Segment;
+use MailPoet\Models\Setting;
+use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberCustomField;
+use MailPoet\Models\SubscriberSegment;
+use MailPoet\Util\ProgressBar;
 
 if(!defined('ABSPATH')) exit;
 
 class MP2Migrator {
-
   const IMPORT_TIMEOUT_IN_SECONDS = 7200; // Timeout = 2 hours
   const CHUNK_SIZE = 10; // To import the data by batch
 
@@ -145,7 +143,9 @@ class MP2Migrator {
    * @return string Result
    */
   public function import() {
-    set_time_limit(self::IMPORT_TIMEOUT_IN_SECONDS);
+    if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
+      @set_time_limit(3600);
+    }
     ob_start();
     $datetime = new \MailPoet\WP\DateTime();
     $this->log(sprintf('=== ' . __('START IMPORT', 'mailpoet') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
@@ -867,10 +867,10 @@ class MP2Migrator {
         'type' => $type,
         'name' => $field['name'],
         'id' => $field_id,
-        'unique' => !in_array($field['type'], array('html', 'divider', 'email', 'submit'))? "1" : "0",
-        'static' => in_array($field_id, array('email', 'submit'))? "1" : "0",
+        'unique' => !in_array($field['type'], array('html', 'divider', 'email', 'submit')) ? "1" : "0",
+        'static' => in_array($field_id, array('email', 'submit')) ? "1" : "0",
         'params' => $params,
-        'position' => isset($field['position'])? $field['position'] : '',
+        'position' => isset($field['position']) ? $field['position'] : '',
       );
     }
 
@@ -956,7 +956,7 @@ class MP2Migrator {
 
   /**
    * Import the settings
-   * 
+   *
    */
   private function importSettings() {
     $encoded_options = get_option('wysija');
@@ -988,10 +988,10 @@ class MP2Migrator {
     $subscribe = Setting::getValue('subscribe');
     $subscribe['on_comment']['enabled'] = isset($options['commentform']) ? $options['commentform'] : '0';
     $subscribe['on_comment']['label'] = isset($options['commentform_linkname']) ? $options['commentform_linkname'] : '';
-    $subscribe['on_comment']['segments'] = isset($options['commentform_lists'])? $this->getMappedSegmentIds($options['commentform_lists']) : array();
+    $subscribe['on_comment']['segments'] = isset($options['commentform_lists']) ? $this->getMappedSegmentIds($options['commentform_lists']) : array();
     $subscribe['on_register']['enabled'] = isset($options['registerform']) ? $options['registerform'] : '0';
     $subscribe['on_register']['label'] = isset($options['registerform_linkname']) ? $options['registerform_linkname'] : '';
-    $subscribe['on_register']['segments'] = isset($options['registerform_lists'])? $this->getMappedSegmentIds($options['registerform_lists']) : array();
+    $subscribe['on_register']['segments'] = isset($options['registerform_lists']) ? $this->getMappedSegmentIds($options['registerform_lists']) : array();
     Setting::setValue('subscribe', $subscribe);
 
     // Subscription
@@ -999,7 +999,7 @@ class MP2Migrator {
     $subscription['pages']['unsubscribe'] = isset($options['unsubscribe_page']) ? $options['unsubscribe_page'] : '';
     $subscription['pages']['confirmation'] = isset($options['confirmation_page']) ? $options['confirmation_page'] : '';
     $subscription['pages']['manage'] = isset($options['subscriptions_page']) ? $options['subscriptions_page'] : '';
-    $subscription['segments'] = isset($options['manage_subscriptions_lists'])? $this->getMappedSegmentIds($options['manage_subscriptions_lists']) : array();
+    $subscription['segments'] = isset($options['manage_subscriptions_lists']) ? $this->getMappedSegmentIds($options['manage_subscriptions_lists']) : array();
     Setting::setValue('subscription', $subscription);
 
     // Confirmation email
@@ -1047,7 +1047,7 @@ class MP2Migrator {
     if($mta['method'] == 'SendGrid') {
       Setting::setValue('smtp_provider', 'SendGrid');
     }
-    
+
     // Installation date
     if(isset($options['installed_time'])) {
       $datetime = new \MailPoet\WP\DateTime();
@@ -1139,5 +1139,4 @@ class MP2Migrator {
     }
     return $emails_number;
   }
-
 }
