@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Subscribers\ImportExport\Export;
 
 use MailPoet\Config\Env;
@@ -26,7 +27,9 @@ class Export {
   public $subscriber_batch_size;
 
   public function __construct($data) {
-    set_time_limit(0);
+    if(strpos(@ini_get('disable_functions'), 'set_time_limit') === false) {
+      set_time_limit(0);
+    }
     $this->export_confirmed_option = $data['export_confirmed_option'];
     $this->export_format_option = $data['export_format_option'];
     $this->group_by_segment_option = $data['group_by_segment_option'];
@@ -47,7 +50,7 @@ class Export {
   function process() {
     try {
       if(is_writable($this->export_path) === false) {
-        throw new \Exception(__("The export file could not be saved on the server.", 'mailpoet'));
+        throw new \Exception(__('The export file could not be saved on the server.', 'mailpoet'));
       }
       if(!extension_loaded('zip')) {
         throw new \Exception(__('Export requires a ZIP extension to be installed on the host.', 'mailpoet'));
@@ -211,7 +214,7 @@ class Export {
     } else {
       // if all subscribers belong to at least one segment, select the segment name
       $subscribers = $subscribers
-        ->selectExpr('MAX('.Segment::$_table . '.name) as segment_name')
+        ->selectExpr('MAX(' . Segment::$_table . '.name) as segment_name')
         ->whereIn(SubscriberSegment::$_table . '.segment_id', $this->segments);
     }
     if($this->group_by_segment_option) {
