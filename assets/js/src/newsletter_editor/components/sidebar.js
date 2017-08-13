@@ -272,10 +272,13 @@ define([
         });
 
         var view = this.previewView.render();
-
+        this.previewView.$el.css('height', '100%');
+ 
         MailPoet.Modal.popup({
           template: '',
           element: this.previewView.$el,
+          width: '95%',
+          height: '94%',
           title: MailPoet.I18n.t('newsletterPreview'),
           onCancel: function() {
             this.previewView.destroy();
@@ -340,8 +343,10 @@ define([
     getTemplate: function() { return templates.newsletterPreview; },
     initialize: function(options) {
       this.previewUrl = options.previewUrl;
-      this.width = App.getConfig().get('newsletterPreview.width');
-      this.height = App.getConfig().get('newsletterPreview.height')
+      this.width = '100%';
+      this.height = '100%';
+      // this.width = App.getConfig().get('newsletterPreview.width');
+      // this.height = App.getConfig().get('newsletterPreview.height')
     },
     templateContext: function() {
       return {
