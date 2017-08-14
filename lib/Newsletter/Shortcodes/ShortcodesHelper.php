@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Newsletter\Shortcodes;
 
 use MailPoet\Models\CustomField;
@@ -115,7 +116,7 @@ class ShortcodesHelper {
   static function getCustomFields() {
     $custom_fields = CustomField::findMany();
     if(!$custom_fields) return false;
-    return array_map(function ($custom_field) {
+    return array_map(function($custom_field) {
       return array(
         'text' => $custom_field->name,
         'shortcode' => '[subscriber:cf_' . $custom_field->id . ']'

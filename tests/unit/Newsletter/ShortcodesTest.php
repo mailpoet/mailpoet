@@ -80,15 +80,15 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   function testItCanProcessDateShortcodes() {
-    $date = new \DateTime('now');
-    expect(Date::process('d'))->equals($date->format('d'));
-    expect(Date::process('dordinal'))->equals($date->format('dS'));
-    expect(Date::process('dtext'))->equals($date->format('l'));
-    expect(Date::process('m'))->equals($date->format('m'));
-    expect(Date::process('mtext'))->equals($date->format('F'));
-    expect(Date::process('y'))->equals($date->format('Y'));
+    $date = new \DateTime(current_time('mysql'));
+    expect(Date::process('d'))->equals(date_i18n('d', current_time('timestamp')));
+    expect(Date::process('dordinal'))->equals(date_i18n('dS', current_time('timestamp')));
+    expect(Date::process('dtext'))->equals(date_i18n('l', current_time('timestamp')));
+    expect(Date::process('m'))->equals(date_i18n('m', current_time('timestamp')));
+    expect(Date::process('mtext'))->equals(date_i18n('F', current_time('timestamp')));
+    expect(Date::process('y'))->equals(date_i18n('Y', current_time('timestamp')));
     // allow custom date formats (http://php.net/manual/en/function.date.php)
-    expect(Date::process('custom', 'format', 'U'))->equals($date->format('U'));
+    expect(Date::process('custom', 'format', 'U F'))->equals(date_i18n('U F', current_time('timestamp')));
   }
 
   function testItCanProcessNewsletterShortcodes() {
@@ -108,7 +108,6 @@ class ShortcodesTest extends \MailPoetTest {
     $wp_post = get_post($this->WP_post);
     expect($result['0'])->equals($wp_post->post_title);
   }
-
 
   function itCanProcessPostNotificationNewsletterNumberShortcode() {
     // create first post notification
@@ -365,4 +364,5 @@ class ShortcodesTest extends \MailPoetTest {
     wp_delete_post($this->WP_post, true);
     wp_delete_user($this->WP_user->ID);
   }
+
 }

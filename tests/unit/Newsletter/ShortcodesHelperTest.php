@@ -5,7 +5,7 @@ use MailPoet\Models\CustomField;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
 
 class ShortcodesHelperTest extends \MailPoetTest {
-  function testItCanGetShortcodes() {
+  function testGetsShortcodes() {
     $shortcodes = ShortcodesHelper::getShortcodes();
     expect(array_keys($shortcodes))->equals(
       array(
@@ -18,7 +18,7 @@ class ShortcodesHelperTest extends \MailPoetTest {
     );
   }
 
-  function testItCanGetCustomShortShortcodes() {
+  function testItGetsCustomShortShortcodes() {
     $shortcodes = ShortcodesHelper::getShortcodes();
     expect(count($shortcodes['Subscriber']))->equals(5);
     $custom_field = CustomField::create();
