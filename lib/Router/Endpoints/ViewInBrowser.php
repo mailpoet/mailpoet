@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Router\Endpoints;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\Config\Env;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
@@ -20,6 +21,7 @@ class ViewInBrowser {
 
   function __construct($data) {
     $this->data = $this->_processBrowserPreviewData($data);
+    $this->access_control = new AccessControl();
   }
 
   function view() {
@@ -69,8 +71,8 @@ class ViewInBrowser {
       $data->queue = false;
     }
 
-    // allow users with 'manage_options' permission to preview any newsletter
-    if(!empty($data->preview) && current_user_can(Env::$required_permission)
+    // allow users with permission to manage emails to preview any newsletter
+    if(!empty($data->preview) && $this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS)
     ) return $data;
 
     // allow others to preview newsletters only when newsletter hash is defined

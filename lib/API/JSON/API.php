@@ -2,7 +2,6 @@
 namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
-use MailPoet\Config\Env;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Hooks;
@@ -20,9 +19,11 @@ class API {
   private $_available_api_versions = array(
       'v1'
   );
+  private $access_control;
   const CURRENT_VERSION = 'v1';
 
   function __construct() {
+    $this->access_control = new AccessControl();
     foreach($this->_available_api_versions as $available_api_version) {
       $this->addEndpointNamespace(
         sprintf('%s\%s', __NAMESPACE__, $available_api_version),
@@ -127,7 +128,7 @@ class API {
         throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
       }
 
-      $endpoint = new $this->_request_endpoint_class();
+      $endpoint = new $this->_request_endpoint_class($this->access_control);
 
       // check the accessibility of the requested endpoint's action
       // by default, an endpoint's action is considered "private"
@@ -148,12 +149,12 @@ class API {
   function validatePermissions($request_method, $permissions) {
     // if method permission is defined, validate it
     if (!empty($permissions['methods'][$request_method])) {
-      return ($permissions['methods'][$request_method] === Access::ALL) ?
+      return ($permissions['methods'][$request_method] === AccessControl::ACCESS_ALL) ?
         true :
-        AccessControl::validatePermission($permissions['methods'][$request_method]);
+        $this->access_control->validatePermission($permissions['methods'][$request_method]);
     }
     // use global permission
-    return AccessControl::validatePermission($permissions['global']);
+    return $this->access_control->validatePermission($permissions['global']);
   }
 
   function checkToken() {

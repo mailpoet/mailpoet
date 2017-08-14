@@ -5,13 +5,16 @@ namespace MailPoet\Config;
 if(!defined('ABSPATH')) exit;
 
 class Activator {
-  const REQUIRED_PERMISSION = AccessControl::PERMISSION_MANAGE_SETTINGS;
+  private $access_control;
 
-  static function activate() {
-    self::validatePermission();
-    if(!current_user_can(self::PERMISSION_ACTIVATE)) {
-      throw new \Exception('MaiLpoet  ID must be greater than zero');
+  function __construct(AccessControl $access_control) {
+    $this->access_control = $access_control;
+    if(!$this->access_control->validatePermission(AccessControl::PERMISSION_UPDATE_PLUGIN)) {
+      throw new \Exception(__('You do not have permission to activate/deactivate MailPoet plugin.', 'mailpoet'));
     }
+  }
+
+  function activate() {
     $migrator = new Migrator();
     $migrator->up();
 
@@ -21,19 +24,8 @@ class Activator {
     update_option('mailpoet_db_version', Env::$version);
   }
 
-  static function deactivate() {
-    self::validatePermission();
+  function deactivate() {
     $migrator = new Migrator();
     $migrator->down();
-  }
-
-  static function validatePermission() {
-    if(AccessControl::validatePermission(self::REQUIRED_PERMISSION)) return;
-    throw new \Exception(
-      sprintf(
-        __('MailPoet can only be activated/deactivated by a user with <strong>%s</strong> capability.', 'mailpoet'),
-        self::REQUIRED_PERMISSION
-      )
-    );
   }
 }

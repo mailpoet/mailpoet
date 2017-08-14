@@ -13,18 +13,18 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
-
   const UNABLE_TO_CONNECT = 'Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.';
   const SOLVE_DB_ISSUE_URL = 'http://beta.docs.mailpoet.com/article/200-solving-database-connection-issues';
 
   protected $plugin_initialized = false;
+  private $access_control;
 
   function __construct($params = array(
     'file' => '',
     'version' => '1.0.0'
   )) {
     Env::init($params['file'], $params['version']);
-    AccessControl::init();
+    $this->access_control = new AccessControl();
   }
 
   function init() {
@@ -136,7 +136,8 @@ class Initializer {
 
     // if current db version and plugin version differ
     if(version_compare($current_db_version, Env::$version) !== 0) {
-      Activator::activate();
+      $activator = new Activator($this->access_control);
+      $activator->activate();
     }
   }
 
@@ -186,12 +187,12 @@ class Initializer {
   }
 
   function setupMenu() {
-    $menu = new Menu($this->renderer, Env::$assets_url);
+    $menu = new Menu($this->renderer, Env::$assets_url, $this->access_control);
     $menu->init();
   }
 
   function setupChangelog() {
-    $changelog = new Changelog();
+    $changelog = new Changelog($this->access_control);
     $changelog->init();
   }
 
@@ -247,7 +248,7 @@ class Initializer {
   function handleFailedInitialization($exception) {
     // Check if we are able to add pages at this point
     if(function_exists('wp_get_current_user')) {
-      Menu::addErrorPage();
+      Menu::addErrorPage($this->access_control);
     }
     return WPNotice::displayError($exception);
   }

@@ -8,23 +8,26 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class AccessControl {
-  static $permissions;
   const PERMISSION_ACCESS_PLUGIN = 'access_plugin';
   const PERMISSION_MANAGE_SETTINGS = 'manage_settings';
   const PERMISSION_MANAGE_EMAILS = 'manage_emails';
   const PERMISSION_MANAGE_SUBSCRIBERS = 'manage_subscribers';
   const PERMISSION_MANAGE_FORMS = 'manage_forms';
   const PERMISSION_MANAGE_SEGMENTS = 'manage_segments';
+  const PERMISSION_UPDATE_PLUGIN = 'update_plugin';
+  const ACCESS_ALL = 'All';
 
-  static function init($permissions = array()) {
-    self::setPermissions($permissions);
+  public $permissions;
+  public $current_user_roles;
+  public $user_capabilities;
+
+  function __construct() {
+    $this->permissions = $this->getDefaultPermissions();
+    $this->user_roles = $this->getUserRoles();
+    $this->user_capabilities = $this->getUserCapabilities();
   }
 
-  static function setPermissions($permissions = array()) {
-    self::$permissions = ($permissions) ? $permissions : self::getPermissions();
-  }
-
-  static function getPermissions() {
+  private function getDefaultPermissions() {
     return array(
       self::PERMISSION_ACCESS_PLUGIN => WPHooks::applyFilters(
         'mailpoet_permission_access_plugin',
@@ -63,18 +66,31 @@ class AccessControl {
         array(
           'administrator'
         )
-      )
+      ),
+      self::PERMISSION_UPDATE_PLUGIN => WPHooks::applyFilters(
+        'mailpoet_permission_update_plugin',
+        array(
+          'administrator'
+        )
+      ),
     );
   }
 
-  static function validatePermission($permission) {
-    if(empty(self::$permissions)) self::init();
-    if(empty(self::$permissions[$permission])) return false;
-    $current_user = wp_get_current_user();
-    $current_user_roles = $current_user->roles;
+  function getUserRoles() {
+    $user = wp_get_current_user();
+    return $user->roles;
+  }
+
+  function getUserCapabilities() {
+    $user = wp_get_current_user();
+    return array_keys($user->allcaps);
+  }
+
+  function validatePermission($permission) {
+    if(empty($this->permissions[$permission])) return false;
     $permitted_roles = array_intersect(
-      $current_user_roles,
-      self::$permissions[$permission]
+      $this->user_roles,
+      $this->permissions[$permission]
     );
     return (!empty($permitted_roles));
   }

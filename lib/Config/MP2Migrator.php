@@ -19,17 +19,19 @@ class MP2Migrator {
   const CHUNK_SIZE = 10; // To import the data by batch
 
   private $log_file;
+  private $access_control;
   public $log_file_url;
   public $progressbar;
   private $segments_mapping = array(); // Mapping between old and new segment IDs
   private $wp_users_segment;
 
-  public function __construct() {
+  public function __construct(AccessControl $access_control) {
     $this->defineMP2Tables();
     $log_filename = 'mp2migration.log';
     $this->log_file = Env::$temp_path . '/' . $log_filename;
     $this->log_file_url = Env::$temp_url . '/' . $log_filename;
     $this->progressbar = new ProgressBar('mp2migration');
+    $this->access_control = $access_control;
   }
 
   private function defineMP2Tables() {
@@ -187,8 +189,9 @@ class MP2Migrator {
    *
    */
   private function eraseMP3Data() {
-    Activator::deactivate();
-    Activator::activate();
+    $activator = new Activator($this->access_control);
+    $activator->deactivate();
+    $activator->activate();
 
     $this->deleteSegments();
     $this->resetMigrationCounters();

@@ -13,10 +13,15 @@ class Setup extends APIEndpoint {
   public $permissions = array(
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS
   );
+  private $access_control;
+
+  function __construct(AccessControl $access_control) {
+    $this->access_control = $access_control;
+  }
 
   function reset() {
     try {
-      $activator = new Activator();
+      $activator = new Activator($this->access_control);
       $activator->deactivate();
       $activator->activate();
       Hooks::doAction('mailpoet_setup_reset');
