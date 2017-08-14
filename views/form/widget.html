@@ -8,6 +8,7 @@
   <div id="<%= form_id %>" class="mailpoet_form mailpoet_form_<%= form_type %>">
     <%= styles | raw %>
     <form
+      target="_self"
       method="post"
       action="<%= admin_url('admin-post.php?action=mailpoet_subscription_form') | raw %>"
       class="mailpoet_form mailpoet_form_<%= form_type %>"
