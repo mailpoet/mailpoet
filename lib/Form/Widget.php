@@ -1,10 +1,13 @@
 <?php
+
 namespace MailPoet\Form;
+
 use MailPoet\API\JSON\API;
 use MailPoet\Config\Renderer;
-use MailPoet\Models\Form;
 use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Models\Form;
 use MailPoet\Util\Security;
+use MailPoet\WP\Hooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -37,7 +40,7 @@ class Widget extends \WP_Widget {
     $instance = wp_parse_args(
       (array)$instance,
       array(
-        'title' => __("Subscribe to Our Newsletter", 'mailpoet')
+        'title' => __('Subscribe to Our Newsletter', 'mailpoet')
       )
     );
 
@@ -109,7 +112,7 @@ class Widget extends \WP_Widget {
       $instance = $args;
     }
 
-    $title = apply_filters(
+    $title = Hooks::applyFilters(
       'widget_title',
       !empty($instance['title']) ? $instance['title'] : '',
       $instance,
@@ -119,7 +122,7 @@ class Widget extends \WP_Widget {
     // get form
     $form = Form::getPublished()->findOne($instance['form']);
 
-    // if the form was not found, return nothing.
+    // if the form was not found, return nothing
     if($form === false) {
       return '';
     } else {
@@ -175,6 +178,7 @@ class Widget extends \WP_Widget {
         try {
           $output = $renderer->render('form/widget.html', $data);
           $output = do_shortcode($output);
+          $output = Hooks::applyFilters('mailpoet_form_widget_post_process', $output);
         } catch(\Exception $e) {
           $output = $e->getMessage();
         }
