@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Config;
 
 use MailPoet\Cron\CronTrigger;
@@ -45,6 +46,7 @@ class Menu {
   }
 
   function setup() {
+    if(!AccessControl::validatePermission('access_plugin')) return;
     if(self::isOnMailPoetAdminPage()) {
       do_action('mailpoet_conflict_resolver_styles');
       do_action('mailpoet_conflict_resolver_scripts');
@@ -55,7 +57,7 @@ class Menu {
     add_menu_page(
       'MailPoet',
       'MailPoet',
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN),
       $main_page_slug,
       null,
       $this->assets_url . '/img/menu_icon.png',
@@ -66,7 +68,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle(__('Emails', 'mailpoet')),
       __('Emails', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS),
       $main_page_slug,
       array(
         $this,
@@ -90,7 +92,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle(__('Forms', 'mailpoet')),
       __('Forms', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_MANAGE_FORMS),
       'mailpoet-forms',
       array(
         $this,
@@ -113,7 +115,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle(__('Subscribers', 'mailpoet')),
       __('Subscribers', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS),
       'mailpoet-subscribers',
       array(
         $this,
@@ -136,7 +138,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle(__('Lists', 'mailpoet')),
       __('Lists', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_MANAGE_SEGMENTS),
       'mailpoet-segments',
       array(
         $this,
@@ -160,7 +162,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle(__('Settings', 'mailpoet')),
       __('Settings', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_MANAGE_SETTINGS),
       'mailpoet-settings',
       array(
         $this,
@@ -172,7 +174,7 @@ class Menu {
       $main_page_slug,
       $this->setPageTitle(__('Help', 'mailpoet')),
       __('Help', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN),
       'mailpoet-help',
       array(
         $this,
@@ -185,7 +187,7 @@ class Menu {
       License::getLicense() ? true : $main_page_slug,
       $this->setPageTitle(__('Premium', 'mailpoet')),
       __('Premium', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN),
       'mailpoet-premium',
       array(
         $this,
@@ -197,7 +199,7 @@ class Menu {
       'admin.php?page=mailpoet-subscribers',
       $this->setPageTitle(__('Import', 'mailpoet')),
       __('Import', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS),
       'mailpoet-import',
       array(
         $this,
@@ -209,7 +211,7 @@ class Menu {
       true,
       $this->setPageTitle(__('Export', 'mailpoet')),
       __('Export', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS),
       'mailpoet-export',
       array(
         $this,
@@ -221,7 +223,7 @@ class Menu {
       true,
       $this->setPageTitle(__('Welcome', 'mailpoet')),
       __('Welcome', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN),
       'mailpoet-welcome',
       array(
         $this,
@@ -231,21 +233,9 @@ class Menu {
 
     add_submenu_page(
       true,
-      $this->setPageTitle(__('Migration', 'mailpoet')),
-      '',
-      Env::$required_permission,
-      'mailpoet-migration',
-      array(
-        $this,
-        'migration'
-      )
-    );
-
-    add_submenu_page(
-      true,
       $this->setPageTitle(__('Update', 'mailpoet')),
       __('Update', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN),
       'mailpoet-update',
       array(
         $this,
@@ -255,9 +245,21 @@ class Menu {
 
     add_submenu_page(
       true,
+      $this->setPageTitle(__('Migration', 'mailpoet')),
+      '',
+      AccessControl::validatePermission(AccessControl::PERMISSION_MANAGE_SETTINGS),
+      'mailpoet-migration',
+      array(
+        $this,
+        'migration'
+      )
+    );
+
+    add_submenu_page(
+      true,
       $this->setPageTitle(__('Form Editor', 'mailpoet')),
       __('Form Editor', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_MANAGE_FORMS),
       'mailpoet-form-editor',
       array(
         $this,
@@ -269,7 +271,7 @@ class Menu {
       true,
       $this->setPageTitle(__('Newsletter', 'mailpoet')),
       __('Newsletter Editor', 'mailpoet'),
-      Env::$required_permission,
+      AccessControl::validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS),
       'mailpoet-newsletter-editor',
       array(
         $this,
@@ -611,9 +613,12 @@ class Menu {
       true,
       'MailPoet',
       'MailPoet',
-      Env::$required_permission,
+      Env::$use_plugin_permission,
       $_REQUEST['page'],
-      array(__CLASS__, 'errorPageCallback')
+      array(
+        __CLASS__,
+        'errorPageCallback'
+      )
     );
   }
 
