@@ -8,7 +8,8 @@ define('helpTooltip', ['mailpoet', 'react', 'react-dom', 'help-tooltip.jsx'],
         ReactDOM.render(React.createElement(
           TooltipComponent, {
             tooltip: opts.tooltip,
-            tooltipId: opts.tooltipId
+            tooltipId: opts.tooltipId,
+            place: opts.place
           }
         ), domContainerNode);
       }

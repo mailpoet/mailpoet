@@ -11,14 +11,22 @@ function Tooltip(props) {
   }
 
   if(typeof props.tooltip === "string") {
-    tooltip = ReactHtmlParser(props.tooltip);
+    tooltip = (<span
+      style={{
+        pointerEvents: "all",
+        maxWidth: "400",
+        display: "inline-block",
+      }}
+    >
+      {ReactHtmlParser(props.tooltip)}
+    </span>);
   }
 
   return (
-    <span>
+    <span className={props.className}>
       <span
         style={{
-          cursor: "help",
+          cursor: "pointer",
         }}
         className="tooltip dashicons dashicons-editor-help"
         data-event="click"
@@ -31,6 +39,7 @@ function Tooltip(props) {
           multiline={true}
           id={tooltipId}
           efect="solid"
+          place={props.place}
         >
           {tooltip}
         </ReactTooltip>
@@ -41,10 +50,14 @@ function Tooltip(props) {
 Tooltip.propTypes = {
   tooltipId: React.PropTypes.string,
   tooltip: React.PropTypes.node.isRequired,
+  place: React.PropTypes.string,
+  className: React.PropTypes.string,
 };
 
 Tooltip.defaultProps = {
   tooltipId: undefined,
+  place: undefined,
+  className: undefined,
 };
 
 module.exports = Tooltip;

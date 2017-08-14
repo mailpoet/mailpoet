@@ -68,12 +68,13 @@ define(
       render: function () {
         return (
           <div>
-            <h2>{MailPoet.I18n.t('importTemplateTitle')}</h2>
+            <h2>{MailPoet.I18n.t('importTemplateTitle')} <HelpTooltip
+              tooltip={MailPoet.I18n.t('helpTooltipTemplateUpload')}
+              place="right"
+              className="tooltip-help-import-template"
+            /></h2>
             <form onSubmit={this.handleSubmit}>
               <input type="file" placeholder={MailPoet.I18n.t('selectJsonFileToUpload')} ref="templateFile" />
-              <HelpTooltip
-                tooltip={MailPoet.I18n.t('helpTooltipTemplateUpload')}
-              />
               <p className="submit">
                 <input
                   className="button button-primary"

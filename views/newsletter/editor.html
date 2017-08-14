@@ -236,12 +236,12 @@
     <div id="mailpoet_editor_main_wrapper">
       <div id="mailpoet_editor_styles">
       </div>
-      <div id="mailpoet_editor_sidebar"></div>
       <div id="mailpoet_editor_content_container">
         <div class="mailpoet_newsletter_wrapper">
           <div id="mailpoet_editor_content"></div>
         </div>
       </div>
+      <div id="mailpoet_editor_sidebar"></div>
       <div class="clear"></div>
     </div>
     <div id="mailpoet_editor_bottom">
@@ -323,7 +323,7 @@
 <% block translations %>
   <% set helpTooltipSendPreview = __("Didn't receive the test email? Read our [link]quick guide[/link] to sending issues. <br><br>A MailPoet logo will appear in the footer of all emails sent with the free version of MailPoet. <br><br>Links in footer don't work in email previews!")
   |replaceLinkTags('http://beta.docs.mailpoet.com/article/146-my-newsletters-are-not-being-received', {'target' : '_blank'})
-  |escape('js') %>'
+  |escape('js') %>
   <%= localize({
     'failedToFetchAvailablePosts': __('Failed to fetch available posts'),
     'failedToFetchRenderedPosts': __('Failed to fetch rendered posts'),
