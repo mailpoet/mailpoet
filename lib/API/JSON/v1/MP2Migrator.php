@@ -1,18 +1,24 @@
 <?php
+
 namespace MailPoet\API\JSON\v1;
+
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
+use MailPoet\Config\AccessControl;
 
 if(!defined('ABSPATH')) exit;
 
 class MP2Migrator extends APIEndpoint {
-  
+  public $permissions = array(
+    'global' => AccessControl::PERMISSION_MANAGE_SETTINGS
+  );
+
   public function __construct() {
     $this->MP2Migrator = new \MailPoet\Config\MP2Migrator();
   }
-  
+
   /**
    * Import end point
-   * 
+   *
    * @param object $data
    * @return object
    */
@@ -26,10 +32,10 @@ class MP2Migrator extends APIEndpoint {
       ));
     }
   }
-  
+
   /**
    * Stop import end point
-   * 
+   *
    * @param object $data
    * @return object
    */
@@ -43,10 +49,10 @@ class MP2Migrator extends APIEndpoint {
       ));
     }
   }
-  
+
   /**
    * Skip import end point
-   * 
+   *
    * @param object $data
    * @return object
    */
@@ -60,5 +66,5 @@ class MP2Migrator extends APIEndpoint {
       ));
     }
   }
-  
+
 }

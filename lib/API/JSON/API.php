@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\API\JSON;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\Config\Env;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
@@ -130,17 +131,11 @@ class API {
 
       // check the accessibility of the requested endpoint's action
       // by default, an endpoint's action is considered "private"
-      $permissions = $endpoint->permissions;
-      if(array_key_exists($this->_request_method, $permissions) === false ||
-         $permissions[$this->_request_method] !== Access::ALL
-      ) {
-        if($this->checkPermissions() === false) {
-          $error_message = __('You do not have the required permissions.', 'mailpoet');
-          $error_response = $this->createErrorResponse(Error::FORBIDDEN, $error_message, Response::STATUS_FORBIDDEN);
-          return $error_response;
-        }
+      if(!$this->validatePermissions($this->_request_method, $endpoint->permissions)) {
+        $error_message = __('You do not have the required permissions.', 'mailpoet');
+        $error_response = $this->createErrorResponse(Error::FORBIDDEN, $error_message, Response::STATUS_FORBIDDEN);
+        return $error_response;
       }
-
       $response = $endpoint->{$this->_request_method}($this->_request_data);
       return $response;
     } catch(\Exception $e) {
@@ -150,8 +145,15 @@ class API {
     }
   }
 
-  function checkPermissions() {
-    return current_user_can(Env::$required_permission);
+  function validatePermissions($request_method, $permissions) {
+    // if method permission is defined, validate it
+    if (!empty($permissions['methods'][$request_method])) {
+      return ($permissions['methods'][$request_method] === Access::ALL) ?
+        true :
+        AccessControl::validatePermission($permissions['methods'][$request_method]);
+    }
+    // use global permission
+    return AccessControl::validatePermission($permissions['global']);
   }
 
   function checkToken() {

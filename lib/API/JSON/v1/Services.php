@@ -1,11 +1,12 @@
 <?php
+
 namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\Config\AccessControl;
 use MailPoet\Config\Installer;
 use MailPoet\Services\Bridge;
-use MailPoet\Util\License\License;
 use MailPoet\WP\DateTime;
 
 if(!defined('ABSPATH')) exit;
@@ -13,6 +14,9 @@ if(!defined('ABSPATH')) exit;
 class Services extends APIEndpoint {
   public $bridge;
   public $date_time;
+  public $permissions = array(
+    'global' => AccessControl::PERMISSION_MANAGE_SETTINGS
+  );
 
   function __construct() {
     $this->bridge = new Bridge();

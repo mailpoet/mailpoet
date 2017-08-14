@@ -1,18 +1,24 @@
 <?php
+
 namespace MailPoet\API\JSON\v1;
+
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
-
+use MailPoet\Config\AccessControl;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
-use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
 
 class SendingQueue extends APIEndpoint {
+  public $permissions = array(
+    'global' => AccessControl::PERMISSION_MANAGE_EMAILS
+  );
+
   function add($data = array()) {
     $newsletter_id = (isset($data['newsletter_id'])
       ? (int)$data['newsletter_id']
