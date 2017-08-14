@@ -2,8 +2,6 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\WP\Hooks;
-
 if(!defined('ABSPATH')) exit;
 
 class Env {
@@ -34,7 +32,6 @@ class Env {
   static $db_collation;
   static $db_charset_collate;
   static $db_timezone_offset;
-  static $required_permission;
 
   static function init($file, $version) {
     global $wpdb;
@@ -72,7 +69,6 @@ class Env {
     self::$db_charset_collate = $wpdb->get_charset_collate();
     self::$db_source_name = self::dbSourceName(self::$db_host, self::$db_socket, self::$db_port, self::$db_charset);
     self::$db_timezone_offset = self::getDbTimezoneOffset();
-    self::$required_permission = Hooks::applyFilters('mailpoet_access_minimum_required_permission', 'manage_options');
   }
 
   private static function dbSourceName($host, $socket, $port, $charset) {

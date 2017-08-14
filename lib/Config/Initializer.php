@@ -24,6 +24,7 @@ class Initializer {
     'version' => '1.0.0'
   )) {
     Env::init($params['file'], $params['version']);
+    AccessControl::init();
   }
 
   function init() {
