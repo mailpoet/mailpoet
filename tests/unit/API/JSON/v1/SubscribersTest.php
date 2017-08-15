@@ -390,10 +390,22 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->contains('has no method');
   }
 
+  function testItFailsWithEmailFilled() {
+    $router = new Subscribers();
+    $response = $router->subscribe(array(
+      'form_id' => $this->form->id,
+      'email' => 'toto@mailpoet.com'
+      // no form ID specified
+    ));
+
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Please leave the first field empty.');
+  }
+
   function testItCannotSubscribeWithoutFormID() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'email' => 'toto@mailpoet.com'
+      'form_field_ZW1haWw' => 'toto@mailpoet.com'
       // no form ID specified
     ));
 
@@ -404,7 +416,7 @@ class SubscribersTest extends \MailPoetTest {
   function testItCannotSubscribeWithoutSegmentsIfTheyAreSelectedByUser() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'email' => 'toto@mailpoet.com',
+      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
       'form_id' => $this->form->id
       // no segments specified
     ));
@@ -416,7 +428,7 @@ class SubscribersTest extends \MailPoetTest {
   function testItCanSubscribe() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'email' => 'toto@mailpoet.com',
+      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
@@ -431,7 +443,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'email' => 'toto@mailpoet.com',
+      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
       'form_id' => $this->form->id
       // no segments specified
     ));
@@ -453,7 +465,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'email' => 'toto@mailpoet.com',
+      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
@@ -465,7 +477,7 @@ class SubscribersTest extends \MailPoetTest {
   function testItCanFilterOutNonFormFieldsWhenSubscribing() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'email' => 'toto@mailpoet.com',
+      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       'segments' => array($this->segment_1->id, $this->segment_2->id),
       // exists in table and in the form
@@ -486,14 +498,14 @@ class SubscribersTest extends \MailPoetTest {
 
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'email' => 'toto@mailpoet.com',
+      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
 
     try {
       $response = $router->subscribe(array(
-        'email' => 'tata@mailpoet.com',
+        'form_field_ZW1haWw=' => 'tata@mailpoet.com',
         'form_id' => $this->form->id,
         'segments' => array($this->segment_1->id, $this->segment_2->id)
       ));

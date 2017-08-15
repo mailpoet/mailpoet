@@ -104,7 +104,7 @@ abstract class Base {
     if((int)$block['id'] > 0) {
       return 'cf_'.$block['id'];
     } else {
-      return $block['id'];
+      return 'form_field_'.base64_encode($block['id']);//obfuscate field name for spambots
     }
   }
 

@@ -66,6 +66,11 @@ class Subscribers extends APIEndpoint {
         APIError::BAD_REQUEST => __('Please specify a valid form ID.', 'mailpoet')
       ));
     }
+    if(!empty($data['email'])) {
+      return $this->badRequest(array(
+        APIError::BAD_REQUEST => __('Please leave the first field empty.', 'mailpoet')
+      ));
+    }
 
     $segment_ids = (!empty($data['segments'])
       ? (array)$data['segments']
@@ -73,6 +78,8 @@ class Subscribers extends APIEndpoint {
     );
     $segment_ids = $form->filterSegments($segment_ids);
     unset($data['segments']);
+
+    $data = $this->deobfuscateFormPayload($data);
 
     if(empty($segment_ids)) {
       return $this->badRequest(array(
@@ -113,6 +120,18 @@ class Subscribers extends APIEndpoint {
         $meta
       );
     }
+  }
+
+  private function deobfuscateFormPayload($data) {
+    $result = array();
+    foreach($data as $key => $value) {
+      if(strpos($key, 'form_field_') === 0) {
+        $result[base64_decode(substr($key, 11))] = $value;
+      } else {
+        $result[$key] = $value;
+      }
+    }
+    return $result;
   }
 
   function save($data = array()) {
