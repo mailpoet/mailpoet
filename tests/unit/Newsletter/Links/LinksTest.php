@@ -34,7 +34,7 @@ class LinksTest extends \MailPoetTest {
     );
   }
 
-  function testItDoesnotRehashExistingLinks() {
+  function testItDoesNotRehashExistingLinks() {
     $link = NewsletterLink::create();
     $link->newsletter_id = 3;
     $link->queue_id = 3;

@@ -250,6 +250,12 @@ define(
         return true;
       },
       render: function () {
+        const isPaused = this.state.item.status == 'sending'
+          && this.state.item.queue
+          && this.state.item.queue.status == 'paused';
+        const fields = (!isPaused)
+          ? this.state.fields
+          : this.state.fields.filter(field => field.name != 'segments' && field.name != 'options');
         return (
           <div>
             <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
@@ -258,32 +264,30 @@ define(
 
             <Form
               id="mailpoet_newsletter"
-              fields={ this.state.fields }
+              fields={ fields }
               item={ this.state.item }
               loading={ this.state.loading }
               onChange={this.handleFormChange}
               onSubmit={this.handleSave}
             >
               <p className="submit">
-                <input
+                {
+                  isPaused ?
+                  <input
+                  className="button button-primary"
+                  type="button"
+                  onClick={ this.handleResume }
+                  value={MailPoet.I18n.t('resume')} />
+                  :
+                  <input
                   className="button button-primary"
                   type="button"
                   onClick={ this.handleSend }
                   value={MailPoet.I18n.t('send')}
                   {...this.getSendButtonOptions()}
                   />
-                &nbsp;
-                {
-                  this.state.item.status == 'sending'
-                  && this.state.item.queue
-                  && this.state.item.queue.status == 'paused'
-                  ? <input
-                  className="button button-secondary"
-                  type="button"
-                  onClick={ this.handleResume }
-                  value={MailPoet.I18n.t('resume')} />
-                  : null
                 }
+                &nbsp;
                 <input
                   className="button button-secondary"
                   type="submit"

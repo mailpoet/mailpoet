@@ -341,7 +341,7 @@
     'unsavedChangesWillBeLost': __('There are unsaved changes which will be lost if you leave this page.'),
     'selectColor': _x('Select', 'select color'),
     'cancelColorSelection': _x('Cancel', 'cancel color selection'),
-    'newsletterIsPaused': __('Email sending has been paused'),
+    'newsletterIsPaused': __('Email sending has been paused.'),
   }) %>
 <% endblock %>
 
@@ -1226,7 +1226,14 @@
           }
         }).done(response =>
           MailPoet.Notice.success(MailPoet.I18n.t('newsletterIsPaused'))
-        );
+        ).fail(function(response) {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map(function(error) { return error.message; }),
+              { scroll: true, static: true }
+            );
+          }
+        });
       }
     }).fail(function(response) {
       if (response.errors.length > 0) {
