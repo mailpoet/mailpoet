@@ -282,6 +282,10 @@ define([
             this.previewView = null;
           }.bind(this)
         });
+
+        MailPoet.trackEvent('Editor > Browser Preview', {
+          'MailPoet Free version': window.mailpoet_version
+        });
       }.bind(this)).fail(function(response) {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
@@ -323,7 +327,12 @@ define([
         }).done(function(response) {
           MailPoet.Notice.success(
             MailPoet.I18n.t('newsletterPreviewSent'),
-            { scroll: true });
+            { scroll: true }
+          );
+          MailPoet.trackEvent('Editor > Preview sent', {
+            'MailPoet Free version': window.mailpoet_version,
+            'Domain name': data.subscriber.substring(data.subscriber.indexOf('@') + 1)
+          });
         }).fail(function(response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(

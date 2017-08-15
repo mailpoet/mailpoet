@@ -38,6 +38,9 @@ const ListingTabs = React.createClass({
           key={ 'tab-'+index }
           className={ tabClasses }
           to={ tab.link }
+          onClick={() => MailPoet.trackEvent('Emails > ' + tab.name,
+            { 'MailPoet Free version': window.mailpoet_version }
+          )}
         >{ tab.label }</Link>
       );
     });

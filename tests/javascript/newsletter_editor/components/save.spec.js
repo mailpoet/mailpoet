@@ -157,7 +157,8 @@ define([
               Notice: {
                 success: function() {},
                 error: function() {}
-              }
+              },
+              trackEvent: function() {}
             },
             'newsletter_editor/App': EditorApplication,
             'html2canvas': function() {
