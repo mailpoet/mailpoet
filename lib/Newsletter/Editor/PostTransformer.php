@@ -14,7 +14,7 @@ class PostTransformer {
   }
 
   function transform($post) {
-    $content_manager = new PostContentManager($post);
+    $content_manager = new PostContentManager();
     $meta_manager = new MetaInformationManager();
 
     $content = $content_manager->getContent($post, $this->args['displayType']);
