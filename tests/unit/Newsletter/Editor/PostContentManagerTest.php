@@ -1,7 +1,9 @@
 <?php
 namespace MailPoet\Test\Newsletter\Editor;
 
+use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Newsletter\Editor\PostContentManager;
+use MailPoet\WP\Hooks;
 
 class PostContentManagerTest extends \MailPoetTest {
 
@@ -93,4 +95,25 @@ class PostContentManagerTest extends \MailPoetTest {
     }
   }
 
+  function testItAppliesCustomMaxExcerptLenghViaHook() {
+    $post_content_manager = new PostContentManager();
+    $post = (object)array(
+      'post_content' => '<p>one two three four five six</p>'
+    );
+    $excerpt = $post_content_manager->getContent($post, 'excerpt');
+    expect($excerpt)->equals('one two three four five six');
+    Hooks::addFilter(
+      'mailpoet_newsletter_post_excerpt_length',
+      function() {
+        return 2;
+      }
+    );
+    $post_content_manager = new PostContentManager();
+    $excerpt = $post_content_manager->getContent($post, 'excerpt');
+    expect($excerpt)->equals('one two &hellip;');
+  }
+
+  function _after() {
+    WPHooksHelper::releaseAllHooks();
+  }
 }

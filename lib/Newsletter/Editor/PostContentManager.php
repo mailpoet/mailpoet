@@ -1,12 +1,19 @@
 <?php
+
 namespace MailPoet\Newsletter\Editor;
+
+use MailPoet\WP\Hooks;
 
 if(!defined('ABSPATH')) exit;
 
 class PostContentManager {
-
-  const MAX_EXCERPT_LENGTH = 60;
   const WP_POST_CLASS = 'mailpoet_wp_post';
+
+  public $max_excerpt_length = 60;
+
+  function __construct() {
+    $this->max_excerpt_length = Hooks::applyFilters('mailpoet_newsletter_post_excerpt_length', $this->max_excerpt_length);
+  }
 
   function getContent($post, $displayType) {
     if($displayType === 'titleOnly') {
@@ -57,7 +64,7 @@ class PostContentManager {
       return $excerpts[0];
     } else {
       // Separator not present, try to shorten long posts
-      return wp_trim_words($content, self::MAX_EXCERPT_LENGTH, ' &hellip;');
+      return wp_trim_words($content, $this->max_excerpt_length, ' &hellip;');
     }
   }
 
@@ -92,5 +99,4 @@ class PostContentManager {
 
     return $content;
   }
-
 }
