@@ -4,6 +4,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Access as APIAccess;
 
+use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Form;
@@ -123,15 +124,8 @@ class Subscribers extends APIEndpoint {
   }
 
   private function deobfuscateFormPayload($data) {
-    $result = array();
-    foreach($data as $key => $value) {
-      if(strpos($key, 'form_field_') === 0) {
-        $result[base64_decode(substr($key, 11))] = $value;
-      } else {
-        $result[$key] = $value;
-      }
-    }
-    return $result;
+    $obfuscator = new FieldNameObfuscator();
+    return $obfuscator->deobfuscateFormPayload($data);
   }
 
   function save($data = array()) {

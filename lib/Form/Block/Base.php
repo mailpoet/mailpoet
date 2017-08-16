@@ -1,6 +1,8 @@
 <?php
 namespace MailPoet\Form\Block;
 
+use MailPoet\Form\Util\FieldNameObfuscator;
+
 abstract class Base {
   protected static function getInputValidation($block, $extra_rules = array()) {
     $rules = array();
@@ -104,7 +106,8 @@ abstract class Base {
     if((int)$block['id'] > 0) {
       return 'cf_'.$block['id'];
     } else {
-      return 'form_field_'.base64_encode($block['id']);//obfuscate field name for spambots
+      $obfuscator = new FieldNameObfuscator();
+      return $obfuscator->obfuscate($block['id']);//obfuscate field name for spambots
     }
   }
 
