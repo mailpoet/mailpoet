@@ -155,6 +155,7 @@ define(
             name={this.getFieldName()}
             value={this.getDisplayDate(this.props.value)}
             readOnly={ true }
+            disabled={this.props.disabled}
             onChange={this.onChange}
             ref="dateInput"
             {...this.props.validation} />
@@ -180,6 +181,7 @@ define(
           <select
             name={this.props.name || 'time'}
             value={this.props.value}
+            disabled={this.props.disabled}
             onChange={this.props.onChange}
             {...this.props.validation}
           >
@@ -235,11 +237,13 @@ define(
               onChange={this.handleChange}
               displayFormat={dateDisplayFormat}
               storageFormat={dateStorageFormat}
+              disabled={this.props.disabled}
               validation={this.props.dateValidation}/>
             <TimeSelect
               name="time"
               value={this.state.time}
               onChange={this.handleChange}
+              disabled={this.props.disabled}
               validation={this.props.timeValidation} />
           </span>
         );
@@ -282,6 +286,11 @@ define(
           'data-parsley-errors-container': '#mailpoet_scheduling',
         };
       },
+      isDisabled: function () {
+        return this.props.item.status == 'sending'
+          && this.props.item.queue
+          && this.props.item.queue.status == 'paused';
+      },
       render: function () {
         let schedulingOptions;
 
@@ -292,6 +301,7 @@ define(
                 name="scheduledAt"
                 value={this._getCurrentValue().scheduledAt}
                 onChange={this.handleValueChange}
+                disabled={this.isDisabled()}
                 dateValidation={this.getDateValidation()} />
               &nbsp;
               <span>
@@ -308,6 +318,7 @@ define(
               type="checkbox"
               value="1"
               checked={this.isScheduled()}
+              disabled={this.isDisabled()}
               name="isScheduled"
               onChange={this.handleCheckboxChange} />
 

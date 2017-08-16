@@ -253,9 +253,9 @@ define(
         const isPaused = this.state.item.status == 'sending'
           && this.state.item.queue
           && this.state.item.queue.status == 'paused';
-        const fields = (!isPaused)
-          ? this.state.fields
-          : this.state.fields.filter(field => field.name != 'segments' && field.name != 'options');
+        // const fields = (!isPaused)
+        //   ? this.state.fields
+        //   : this.state.fields.filter(field => field.name != 'segments' && field.name != 'options');
         return (
           <div>
             <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
@@ -264,7 +264,7 @@ define(
 
             <Form
               id="mailpoet_newsletter"
-              fields={ fields }
+              fields={ this.state.fields }
               item={ this.state.item }
               loading={ this.state.loading }
               onChange={this.handleFormChange}
