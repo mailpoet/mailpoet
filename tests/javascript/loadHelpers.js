@@ -1,9 +1,9 @@
 var fs = require('fs');
 module.exports = {
-  loadFileToContainer: function (path, window, containerTagName, options) {
+  loadFileToContainer: function (path, window, containerTagName, opts) {
     var contents = fs.readFileSync(path),
       container = window.document.createElement(containerTagName);
-    options = options || {};
+    var options = opts || {};
     container.innerHTML = contents;
 
     if (options.type) {
@@ -17,9 +17,9 @@ module.exports = {
   loadScript: function (scriptPath, window, options) {
     this.loadFileToContainer(scriptPath, window, 'script', options);
   },
-  loadTemplate: function (path, window, options) {
+  loadTemplate: function (path, window, opts) {
     var w = window || global.window;
-    options = options || {};
+    var options = opts || {};
     options.type = "text/x-handlebars-template";
 
     this.loadScript("views/newsletter/templates/" + path, w, options);

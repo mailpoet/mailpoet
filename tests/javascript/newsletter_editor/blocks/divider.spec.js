@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/divider'
-  ], function(EditorApplication, DividerBlock) {
+  ], function(App, DividerBlock) {
+  var EditorApplication = App;
 
   describe("Divider", function () {
     describe("model", function () {

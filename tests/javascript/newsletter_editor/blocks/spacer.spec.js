@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/spacer'
-  ], function(EditorApplication, SpacerBlock) {
+  ], function(App, SpacerBlock) {
+  var EditorApplication = App;
 
   describe('Spacer', function () {
     describe('model', function () {

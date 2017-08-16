@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/components/content'
-  ], function(EditorApplication, ContentComponent) {
+  ], function(App, ContentComponent) {
+  var EditorApplication = App;
 
   describe('Content', function() {
     describe('newsletter model', function() {

@@ -5,12 +5,14 @@ define([
     'amd-inject-loader!newsletter_editor/blocks/automatedLatestContent',
     'newsletter_editor/components/communication'
   ], function(
-    EditorApplication,
+    App,
     AutomatedLatestContentBlock,
     ContainerBlock,
     AutomatedLatestContentInjector,
-    CommunicationComponent
+    Communication
   ) {
+  var EditorApplication = App;
+  var CommunicationComponent = Communication;
 
   describe('Automated Latest Content Supervisor', function() {
     var model;
