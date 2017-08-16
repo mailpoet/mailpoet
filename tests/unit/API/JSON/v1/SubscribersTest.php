@@ -4,6 +4,7 @@ namespace MailPoet\Test\API\JSON\v1;
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Segment;
@@ -11,6 +12,8 @@ use MailPoet\Models\Setting;
 
 class SubscribersTest extends \MailPoetTest {
   function _before() {
+    $obfuscator = new FieldNameObfuscator();
+    $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
 
@@ -416,7 +419,7 @@ class SubscribersTest extends \MailPoetTest {
   function testItCannotSubscribeWithoutSegmentsIfTheyAreSelectedByUser() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id
       // no segments specified
     ));
@@ -428,7 +431,7 @@ class SubscribersTest extends \MailPoetTest {
   function testItCanSubscribe() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
@@ -443,7 +446,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id
       // no segments specified
     ));
@@ -465,7 +468,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
@@ -477,7 +480,7 @@ class SubscribersTest extends \MailPoetTest {
   function testItCanFilterOutNonFormFieldsWhenSubscribing() {
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       'segments' => array($this->segment_1->id, $this->segment_2->id),
       // exists in table and in the form
@@ -498,14 +501,14 @@ class SubscribersTest extends \MailPoetTest {
 
     $router = new Subscribers();
     $response = $router->subscribe(array(
-      'form_field_ZW1haWw=' => 'toto@mailpoet.com',
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
       'segments' => array($this->segment_1->id, $this->segment_2->id)
     ));
 
     try {
       $response = $router->subscribe(array(
-        'form_field_ZW1haWw=' => 'tata@mailpoet.com',
+        $this->obfuscatedEmail => 'tata@mailpoet.com',
         'form_id' => $this->form->id,
         'segments' => array($this->segment_1->id, $this->segment_2->id)
       ));

@@ -2,6 +2,7 @@
 namespace MailPoet\Test\Subscription;
 
 use AspectMock\Test as Mock;
+use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form as FormModel;
 use MailPoet\Models\Segment as SegmentModel;
 use MailPoet\Models\Setting as SettingModel;
@@ -31,11 +32,13 @@ class FormTest extends \MailPoetTest {
         )
       )
     );
+    $obfuscator = new FieldNameObfuscator();
+    $obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->request_data = array(
       'action' => 'mailpoet_subscription_form',
       'data' => array(
         'form_id' => $this->form->id,
-        'form_field_ZW1haWw=' => $this->testEmail
+        $obfuscatedEmail => $this->testEmail
       ),
       'token' => Security::generateToken(),
       'api_version' => 'v1',
