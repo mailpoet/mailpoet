@@ -143,7 +143,8 @@ define('date',
       var convertedFormat = [];
       var escapeToken = false;
 
-      for(var index = 0, token = ''; token = format.charAt(index); index++){
+      for(var index = 0, token = ''; format.charAt(index); index += 1){
+        token = format.charAt(index);
         if (escapeToken === true) {
           convertedFormat.push('['+token+']');
           escapeToken = false;

@@ -315,11 +315,13 @@ define(
                     // remove urlencoded characters
                     .replace(/\s+|%\d+|,+/g, '');
                   // detect e-mails that will be otherwise rejected by email regex
-                  if (test = /<(.*?)>/.exec(email)) {
+                  test = /<(.*?)>/.exec(email);
+                  if (test) {
                     // is the email inside angle brackets (e.g., 'some@email.com <some@email.com>')?
                     email = test[1].trim();
                   }
-                  if (test = /mailto:(?:\s+)?(.*)/.exec(email)) {
+                  test = /mailto:(?:\s+)?(.*)/.exec(email);
+                  if (test) {
                     // is the email in 'mailto:email' format?
                     email = test[1].trim();
                   }

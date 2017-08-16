@@ -35,7 +35,6 @@
     "new-cap": 0,
     "no-continue": 0,
     "no-new": 0,
-    "no-cond-assign": 0,
     "space-unary-ops": 0,
     "no-redeclare": 0,
     "no-console": 0,
