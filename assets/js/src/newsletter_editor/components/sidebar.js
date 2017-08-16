@@ -369,6 +369,16 @@ define([
       sidebarView = new SidebarView();
 
     App._appView.showChildView('sidebarRegion', sidebarView);
+
+    MailPoet.helpTooltip.show(document.getElementById('tooltip-send-preview'), {
+      tooltipId: 'tooltip-editor-send-preview',
+      tooltip: MailPoet.I18n.t('helpTooltipSendPreview')
+    });
+
+    MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-styles'), {
+      tooltipId: 'tooltip-editor-designer-styles',
+      tooltip: MailPoet.I18n.t('helpTooltipDesignerStyles')
+    });
   });
 
   return Module;

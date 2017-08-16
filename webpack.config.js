@@ -50,6 +50,9 @@ var baseConfig = {
     ])
   ],
   module: {
+    preLoaders: [
+      { test: /\.json$/, loader: "json-loader" },
+    ],
     loaders: [
       {
         test: /\.jsx$/,
@@ -151,6 +154,8 @@ var adminConfig = {
       'jquery.serialize_object',
       'parsleyjs',
       'analytics_event',
+      'help-tooltip.jsx',
+      'help-tooltip',
     ],
     admin_vendor: [
       'react',
@@ -293,6 +298,7 @@ var testConfig = {
       'mailpoet',
       'notice',
       'i18n',
+      'help-tooltip',
 
       'newsletter_editor/communicationsFix.js',
       'newsletter_editor/App',

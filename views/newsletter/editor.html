@@ -236,12 +236,12 @@
     <div id="mailpoet_editor_main_wrapper">
       <div id="mailpoet_editor_styles">
       </div>
-      <div id="mailpoet_editor_sidebar"></div>
       <div id="mailpoet_editor_content_container">
         <div class="mailpoet_newsletter_wrapper">
           <div id="mailpoet_editor_content"></div>
         </div>
       </div>
+      <div id="mailpoet_editor_sidebar"></div>
       <div class="clear"></div>
     </div>
     <div id="mailpoet_editor_bottom">
@@ -321,6 +321,9 @@
 <% endblock %>
 
 <% block translations %>
+  <% set helpTooltipSendPreview = __("Didn't receive the test email? Read our [link]quick guide[/link] to sending issues. <br><br>A MailPoet logo will appear in the footer of all emails sent with the free version of MailPoet. <br><br>Links in footer don't work in email previews!")
+  |replaceLinkTags('http://beta.docs.mailpoet.com/article/146-my-newsletters-are-not-being-received', {'target' : '_blank'})
+  |escape('js') %>
   <%= localize({
     'failedToFetchAvailablePosts': __('Failed to fetch available posts'),
     'failedToFetchRenderedPosts': __('Failed to fetch rendered posts'),
@@ -329,6 +332,12 @@
     'newsletterPreviewEmailMissing': __('Enter an email address to send the preview newsletter to.'),
     'newsletterPreviewSent': __('Your test email has been sent!'),
     'templateNameMissing': __('Please add a template name'),
+    'helpTooltipSendPreview': helpTooltipSendPreview,
+    'helpTooltipDesignerStyles': __('We only include fonts that will display in all email clients. We understand it can feel limiting!'),
+    'helpTooltipDesignerSubjectLine': __("You can add MailPoet shortcodes here. For example, you can add your subscribers' first names by using this shortcode: [user:firstname | default:reader] Simply copy and paste the shortcode into the field."),
+    'helpTooltipDesignerPreheader': __("This optional text will appear in your subscribers' inboxes, beside the subject line. Write something enticing!"),
+    'helpTooltipDesignerFullWidth': __("This option eliminates padding around the image. It only works if the image is larger than the column size."),
+    'helpTooltipDesignerIdealWidth': __("Use images with widths of at least 1,000 pixels to ensure sharp display on high density screens, like mobile devices."),
     'templateDescriptionMissing': __('Please add a template description'),
     'templateSaved': __('Template has been saved.'),
     'templateSaveFailed': __('Template has not been saved, please try again'),

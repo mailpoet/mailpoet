@@ -9,6 +9,7 @@ define(
     'newsletters/send/notification.jsx',
     'newsletters/send/welcome.jsx',
     'newsletters/breadcrumb.jsx',
+    'help-tooltip.jsx',
   ],
   (
     React,
@@ -19,7 +20,8 @@ define(
     StandardNewsletterFields,
     NotificationNewsletterFields,
     WelcomeNewsletterFields,
-    Breadcrumb
+    Breadcrumb,
+    HelpTooltip
   ) => {
 
     const NewsletterSend = React.createClass({
@@ -251,6 +253,10 @@ define(
                   {MailPoet.I18n.t('goBackToDesign')}
                 </a>.
               </p>
+              <HelpTooltip
+                tooltip={MailPoet.I18n.t('helpTooltipSendEmail')}
+                tooltipId="helpTooltipSendEmail"
+              />
             </Form>
           </div>
         );
