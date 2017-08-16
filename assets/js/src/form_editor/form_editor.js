@@ -11,12 +11,14 @@ Object.extend(document, (function() {
   var cache = Event.cacheDelegated;
 
   function getCacheForSelector(selector) {
-    return cache[selector] = cache[selector] || {};
+    cache[selector] = cache[selector] || {};
+    return cache[selector];
   }
 
   function getWrappersForSelector(selector, eventName) {
     var c = getCacheForSelector(selector);
-    return c[eventName] = c[eventName] || [];
+    c[eventName] = c[eventName] || [];
+    return c[eventName];
   }
 
   function findWrapper(selector, eventName, handler) {

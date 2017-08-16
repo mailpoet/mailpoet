@@ -33,7 +33,6 @@
     "no-useless-return": 0,
     "array-callback-return": 0,
     "new-cap": 0,
-    "no-return-assign": 0,
     "no-continue": 0,
     "no-new": 0,
     "no-cond-assign": 0,
