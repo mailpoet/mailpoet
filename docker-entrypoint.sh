@@ -29,6 +29,10 @@ if ! $(wp-su core is-installed); then
 
 fi
 
+rm -rf /project/vendor
+cd /project
+php composer.phar install
+
 cd /wp-core/wp-content/plugins/mailpoet
 
 /project/vendor/bin/codecept run acceptance -c codeception.acceptance.yml $@
