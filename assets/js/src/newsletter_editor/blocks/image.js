@@ -274,7 +274,7 @@ define([
 
       });
 
-      var theFrame = this._mediaManager = new MediaManager({
+      var theFrame = new MediaManager({
           id: 'mailpoet-media-manager',
           frame: 'select',
           title: 'Select image',
@@ -289,8 +289,9 @@ define([
           }
         }),
         that = this;
+        this._mediaManager = theFrame;
 
-      this._mediaManager.on('insert', function() {
+        this._mediaManager.on('insert', function() {
         // Append media manager image selections to Images tab
         var selection = theFrame.state().get('selection');
         selection.each(function(attachment) {

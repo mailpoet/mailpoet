@@ -89,9 +89,8 @@ define([
             y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
           // translate the element
-          target.style.webkitTransform =
-          target.style.transform =
-            'translate(' + x + 'px, ' + y + 'px)';
+          target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+          target.style.webkitTransform = target.style.transform;
 
           // update the posiion attributes
           target.setAttribute('data-x', x);
@@ -99,7 +98,8 @@ define([
         },
         onend: function (event) {
           var target = event.target;
-          target.style.webkitTransform = target.style.transform = '';
+          target.style.transform = '';
+          target.style.webkitTransform = target.style.transform;
           target.removeAttribute('data-x');
           target.removeAttribute('data-y');
           jQuery(event.interaction.element).addClass('mailpoet_droppable_active');

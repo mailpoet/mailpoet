@@ -74,9 +74,10 @@ define(
           // * Rinse & repeat.
           for ( ; i <= keys_last; i++ ) {
             key = keys[i] === '' ? cur.length : keys[i];
-            cur = cur[key] = i < keys_last
+            cur[key] = i < keys_last
               ? cur[key] || ( keys[i+1] && isNaN( keys[i+1] ) ? {} : [] )
               : val;
+            cur = cur[key];
           }
 
         } else {
