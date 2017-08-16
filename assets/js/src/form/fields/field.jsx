@@ -28,12 +28,13 @@ define([
       }
 
       let field = false;
+      let dataField = data.field;
 
       if(data.field['field'] !== undefined) {
-        data.field = jQuery.merge(data.field, data.field.field);
+        dataField = jQuery.merge(dataField, data.field.field);
       }
 
-      switch(data.field.type) {
+      switch(dataField.type) {
         case 'text':
           field = (<FormFieldText {...data} />);
           break;

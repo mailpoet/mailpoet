@@ -10,8 +10,9 @@ const ListingHeader = React.createClass({
   },
   render: function () {
     const columns = this.props.columns.map((column, index) => {
-      column.is_primary = (index === 0);
-      column.sorted = (this.props.sort_by === column.name)
+      const renderColumn = column;
+      renderColumn.is_primary = (index === 0);
+      renderColumn.sorted = (this.props.sort_by === column.name)
         ? this.props.sort_order
         : 'desc';
       return (
@@ -19,7 +20,7 @@ const ListingHeader = React.createClass({
           onSort={this.props.onSort}
           sort_by={this.props.sort_by}
           key={ 'column-' + index }
-          column={column} />
+          column={renderColumn} />
       );
     });
 

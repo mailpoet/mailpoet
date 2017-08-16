@@ -145,13 +145,14 @@ const _QueueMixin = {
 
 const _StatisticsMixin = {
   renderStatistics: function (newsletter, is_sent, current_time) {
-    if (is_sent === undefined) {
+    let sent = is_sent;
+    if (sent === undefined) {
       // condition for standard and post notification listings
-      is_sent = newsletter.statistics
+      sent = newsletter.statistics
         && newsletter.queue
         && newsletter.queue.status !== 'scheduled';
     }
-    if (!is_sent) {
+    if (!sent) {
       return (
         <span>{MailPoet.I18n.t('notSentYet')}</span>
       );

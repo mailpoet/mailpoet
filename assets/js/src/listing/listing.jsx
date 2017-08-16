@@ -260,8 +260,9 @@ const ListingItems = React.createClass({
           </tr>
 
           {this.props.items.map((item, index) => {
-            item.id = parseInt(item.id, 10);
-            item.selected = (this.props.selected_ids.indexOf(item.id) !== -1);
+            const renderItem = item;
+            renderItem.id = parseInt(item.id, 10);
+            renderItem.selected = (this.props.selected_ids.indexOf(renderItem.id) !== -1);
 
             return (
               <ListingItem
@@ -276,8 +277,8 @@ const ListingItems = React.createClass({
                 is_selectable={ this.props.is_selectable }
                 item_actions={ this.props.item_actions }
                 group={ this.props.group }
-                key={ `item-${item.id}-${index}` }
-                item={ item } />
+                key={ `item-${renderItem.id}-${index}` }
+                item={ renderItem } />
             );
           })}
         </tbody>
@@ -418,16 +419,17 @@ const Listing = React.createClass({
     }
   },
   setBaseUrlParams: function (base_url) {
-    if (base_url.indexOf(':') !== -1) {
+    let ret = base_url;
+    if (ret.indexOf(':') !== -1) {
       const params = this.getParams();
       Object.keys(params).map((key) => {
-        if (base_url.indexOf(':'+key) !== -1) {
-          base_url = base_url.replace(':'+key, params[key]);
+        if (ret.indexOf(':'+key) !== -1) {
+          ret = ret.replace(':'+key, params[key]);
         }
       });
     }
 
-    return base_url;
+    return ret;
   },
   componentDidMount: function () {
     if (this.isMounted()) {
