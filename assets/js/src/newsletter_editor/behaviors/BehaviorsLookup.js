@@ -6,8 +6,8 @@
  */
 define([
     'backbone.marionette'
-  ], function(Marionette) {
-
+  ], function(BackboneMarionette) {
+  var Marionette = BackboneMarionette;
   var BehaviorsLookup = {};
   Marionette.Behaviors.behaviorsLookup = function() {
     return BehaviorsLookup;

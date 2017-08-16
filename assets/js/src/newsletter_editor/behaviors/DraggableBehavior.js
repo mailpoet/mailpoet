@@ -11,8 +11,9 @@ define([
     'newsletter_editor/behaviors/BehaviorsLookup',
     'interact'
   ], function(Marionette, _, jQuery, BehaviorsLookup, interact) {
+  var BL = BehaviorsLookup;
 
-  BehaviorsLookup.DraggableBehavior = Marionette.Behavior.extend({
+  BL.DraggableBehavior = Marionette.Behavior.extend({
     defaults: {
       cloneOriginal: false,
       hideOriginal: false,
@@ -46,7 +47,8 @@ define([
         // Scroll when dragging near edges of a window
         autoScroll: true,
 
-        onstart: function(event) {
+        onstart: function(startEvent) {
+          var event = startEvent;
 
           if (that.options.cloneOriginal === true) {
             // Use substitution instead of a clone
@@ -129,7 +131,8 @@ define([
       } else {
         interactable.getDropModel = this.view.getDropFunc();
       }
-      interactable.onDrop = function(options) {
+      interactable.onDrop = function(opts) {
+        var options = opts;
         if (_.isObject(options)) {
           // Inject Draggable behavior if possible
           options.dragBehavior = that;

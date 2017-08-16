@@ -266,7 +266,8 @@ define([
         },
 
         mainEmbedToolbar: function(toolbar) {
-          toolbar.view = new wp.media.view.Toolbar.Embed({
+          var tbar = toolbar;
+          tbar.view = new wp.media.view.Toolbar.Embed({
             controller: this,
             text: 'Add images'
           });

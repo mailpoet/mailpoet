@@ -358,10 +358,11 @@ define([
   });
 
   App.on('before:start', function(App, options) {
-    App.registerWidget = Module.registerWidget;
-    App.getWidgets = Module.getWidgets;
-    App.registerLayoutWidget = Module.registerLayoutWidget;
-    App.getLayoutWidgets = Module.getLayoutWidgets;
+    var Application = App;
+    Application.registerWidget = Module.registerWidget;
+    Application.getWidgets = Module.getWidgets;
+    Application.registerLayoutWidget = Module.registerLayoutWidget;
+    Application.getLayoutWidgets = Module.getLayoutWidgets;
   });
 
   App.on('start', function(App, options) {

@@ -1,6 +1,7 @@
 define('modal', ['mailpoet', 'jquery'],
-  function(MailPoet, jQuery) {
+  function(mp, jQuery) {
     'use strict';
+    var MailPoet = mp;
     /***************************************************************************
     MailPoet Modal:
 
@@ -459,9 +460,9 @@ define('modal', ['mailpoet', 'jquery'],
           jQuery('#mailpoet_modal_overlay').hide();
           return this;
         },
-        popup: function(options) {
+        popup: function(opts) {
           // get options
-          options = options || {};
+          var options = opts || {};
           // set modal type
           options.type = 'popup';
           // set overlay state
@@ -473,9 +474,9 @@ define('modal', ['mailpoet', 'jquery'],
 
           return this;
         },
-        panel: function(options) {
+        panel: function(opts) {
           // get options
-          options = options || {};
+          var options = opts || {};
           // reset subpanels
           this.subpanels = [];
           // set modal type

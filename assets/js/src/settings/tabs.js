@@ -7,8 +7,9 @@ define(
   function(
     Backbone,
     jQuery,
-    MailPoet
+    mp
   ) {
+    var MailPoet = mp;
     if(jQuery('#mailpoet_settings').length === 0) {
       return;
     }
@@ -50,9 +51,9 @@ define(
           jQuery('#mailpoet_sending_method_setup').fadeIn();
         }
       },
-      tabs: function(tab, section) {
+      tabs: function(tabStr, section) {
         // set default tab
-        tab = tab || 'mta';
+        var tab = tabStr || 'mta';
 
         // reset all active tabs
         jQuery('.nav-tab-wrapper a').removeClass('nav-tab-active');

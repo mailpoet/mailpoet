@@ -3,8 +3,9 @@ define(
     'jquery'
   ],
   function(
-    $
+    jQuery
   ) {
+    var $ = jQuery;
     // Combination of jQuery.deparam and jQuery.serializeObject by Ben Alman.
     /*!
      * jQuery BBQ: Back Button & Query Library - v1.2.1 - 2/17/2010

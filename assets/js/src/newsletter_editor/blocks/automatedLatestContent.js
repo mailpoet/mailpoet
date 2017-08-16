@@ -392,8 +392,9 @@ define([
   });
 
   App.on('start', function(App, options) {
-    App._ALCSupervisor = new Module.ALCSupervisor();
-    App._ALCSupervisor.refresh();
+    var Application = App;
+    Application._ALCSupervisor = new Module.ALCSupervisor();
+    Application._ALCSupervisor.refresh();
   });
 
   return Module;

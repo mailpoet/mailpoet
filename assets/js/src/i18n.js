@@ -2,9 +2,10 @@ define('i18n',
   [
     'mailpoet'
   ], function(
-    MailPoet
+    mp
 ) {
   'use strict';
+  var MailPoet = mp;
 
   var translations = {};
 

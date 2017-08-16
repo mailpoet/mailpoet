@@ -1,4 +1,4 @@
-define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
+define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
   "use strict";
   /*==================================================================================================
 
@@ -22,7 +22,7 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
           MailPoet.Notice.system('You need to updated ASAP!');
 
   ==================================================================================================*/
-
+  var MailPoet = mp;
   MailPoet.Notice = {
     version: 1.0,
     // default options
@@ -103,12 +103,12 @@ define('notice', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
       );
     },
     setMessage: function(message) {
-      message = this.formatMessage(message);
+      var formattedMessage = this.formatMessage(message);
 
       // let's sugar coat the message with a fancy <p>
-      message = '<p>'+message+'</p>';
+      formattedMessage = '<p>'+formattedMessage+'</p>';
       // set message
-      return this.element.html(message);
+      return this.element.html(formattedMessage);
     },
     formatMessage: function(message) {
       if (Array.isArray(message)) {

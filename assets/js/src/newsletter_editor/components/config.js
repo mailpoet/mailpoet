@@ -25,11 +25,12 @@ define([
   };
 
   App.on('before:start', function(App, options) {
+    var Application = App;
     // Expose config methods globally
-    App.getConfig = Module.getConfig;
-    App.setConfig = Module.setConfig;
+    Application.getConfig = Module.getConfig;
+    Application.setConfig = Module.setConfig;
 
-    App.setConfig(options.config);
+    Application.setConfig(options.config);
   });
 
   return Module;

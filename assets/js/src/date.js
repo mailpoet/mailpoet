@@ -4,11 +4,13 @@ define('date',
     'jquery',
     'moment'
   ], function(
-    MailPoet,
+    mp,
     jQuery,
     Moment
 ) {
   'use strict';
+
+  var MailPoet = mp;
 
   MailPoet.Date = {
     version: 0.1,
@@ -17,8 +19,8 @@ define('date',
       offset: 0,
       format: 'F, d Y H:i:s'
     },
-    init: function(options) {
-      options = options || {};
+    init: function (opts) {
+      var options = opts || {};
 
       // set UTC offset
       if (
@@ -39,16 +41,16 @@ define('date',
 
       return this;
     },
-    format: function(date, options) {
-      options = options || {};
+    format: function(date, opts) {
+      var options = opts || {};
       this.init(options);
 
-      var date = Moment(date, this.convertFormat(options.parseFormat));
-      if (options.offset === 0) date = date.utc();
-      return date.format(this.convertFormat(this.options.format));
+      var momentDate = Moment(date, this.convertFormat(options.parseFormat));
+      if (options.offset === 0) momentDate = momentDate.utc();
+      return momentDate.format(this.convertFormat(this.options.format));
     },
-    toDate: function(date, options) {
-      options = options || {};
+    toDate: function(date, opts) {
+      var options = opts || {};
       this.init(options);
 
       return Moment(date, this.convertFormat(options.parseFormat)).toDate();

@@ -7,8 +7,9 @@ define([
     'backbone.marionette',
     'newsletter_editor/behaviors/BehaviorsLookup'
   ], function(Marionette, BehaviorsLookup) {
+  var BL = BehaviorsLookup;
 
-  BehaviorsLookup.HighlightEditingBehavior = Marionette.Behavior.extend({
+  BL.HighlightEditingBehavior = Marionette.Behavior.extend({
     modelEvents: {
       'startEditing': 'enableHighlight',
       'stopEditing': 'disableHighlight'

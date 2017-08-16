@@ -69,10 +69,11 @@ define([
   };
 
   App.on('before:start', function(App, options) {
+    var Application = App;
     // Expose style methods to global application
-    App.getGlobalStyles = Module.getGlobalStyles;
-    App.setGlobalStyles = Module.setGlobalStyles;
-    App.getAvailableStyles = Module.getAvailableStyles;
+    Application.getGlobalStyles = Module.getGlobalStyles;
+    Application.setGlobalStyles = Module.setGlobalStyles;
+    Application.getAvailableStyles = Module.getAvailableStyles;
 
     var body = options.newsletter.body;
     var globalStyles = (_.has(body, 'globalStyles')) ? body.globalStyles : {};

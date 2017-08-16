@@ -1,5 +1,6 @@
-define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
+define('mp2migrator', ['mailpoet', 'jquery'], function(mp, jQuery) {
   'use strict';
+  var MailPoet = mp;
   MailPoet.MP2Migrator = {
 
     fatal_error: '',
@@ -28,7 +29,8 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         cache: false
       }).done(function (result) {
         jQuery("#logger").html('');
-        result.split("\n").forEach(function (row) {
+        result.split("\n").forEach(function (resultRow) {
+          var row = resultRow;
           if(row.substr(0, 7) === '[ERROR]' || row.substr(0, 9) === '[WARNING]' || row === MailPoet.I18n.t('import_stopped_by_user')) {
             row = '<span class="error_msg">' + row + '</span>'; // Mark the errors in red
           }

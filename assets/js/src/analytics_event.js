@@ -24,7 +24,8 @@ function track(name, data){
   window.mixpanel.track(name, data);
 }
 
-function exportMixpanel(MailPoet) {
+function exportMixpanel(mp) {
+  var MailPoet = mp;
   MailPoet.forceTrackEvent = track;
 
   if (window.mailpoet_analytics_enabled) {
@@ -61,7 +62,8 @@ function cacheEvent(forced, name, data) {
 
 define(
   ['mailpoet', 'underscore'],
-  function(MailPoet, _) {
+  function(mp, _) {
+    var MailPoet = mp;
 
     MailPoet.trackEvent = _.partial(cacheEvent, false);
     MailPoet.forceTrackEvent = _.partial(cacheEvent, true);

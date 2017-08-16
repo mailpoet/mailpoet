@@ -8,8 +8,9 @@ define([
     'newsletter_editor/behaviors/BehaviorsLookup',
     'interact'
   ], function(Marionette, BehaviorsLookup, interact) {
+  var BL = BehaviorsLookup;
 
-  BehaviorsLookup.ResizableBehavior = Marionette.Behavior.extend({
+  BL.ResizableBehavior = Marionette.Behavior.extend({
     defaults: {
       elementSelector: null,
       resizeHandleSelector: true, // true will use edges of the element itself

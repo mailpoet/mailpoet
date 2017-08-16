@@ -81,8 +81,8 @@ Object.extend(document, (function() {
 })());
 
 var Observable = (function() {
-  function getEventName(name, namespace) {
-    name = name.substring(2);
+  function getEventName(nameA, namespace) {
+    var name = nameA.substring(2);
     if(namespace) name = namespace + ':' + name;
     return name.underscore().split('_').join(':');
   }
@@ -576,7 +576,8 @@ var WysijaForm = {
     WysijaForm.locks.showingTools = false;
   },
   instances: {},
-  get: function(element, type) {
+  get: function(element, typ) {
+    var type = typ;
     if(type === undefined) type = 'block';
     // identify element
     var id = element.identify();
@@ -895,7 +896,8 @@ WysijaForm.Block = Class.create({
 });
 
 /* Invoked on item dropped */
-WysijaForm.Block.create = function(block, target) {
+WysijaForm.Block.create = function(createBlock, target) {
+  var block = createBlock;
   if($('form_template_' + block.type) === null) {
     return false;
   }

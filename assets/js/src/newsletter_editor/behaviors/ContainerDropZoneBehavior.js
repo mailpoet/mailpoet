@@ -11,7 +11,8 @@ define([
     'jquery',
     'newsletter_editor/behaviors/BehaviorsLookup',
     'interact'
-  ], function(Marionette, _, jQuery, BehaviorsLookup, interact) {
+  ], function(Marionette, _, jQuery, BL, interact) {
+  var BehaviorsLookup = BL;
 
   BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
     defaults: {
@@ -268,7 +269,7 @@ define([
       // 2. Remove visual markings of drop position visualization
       this.view.$('.mailpoet_drop_marker').remove();
     },
-    getDropPosition: function(eventX, eventY, unsafe) {
+    getDropPosition: function(eventX, eventY, is_unsafe) {
       var SPECIAL_AREA_INSERTION_WIDTH = 0.00, // Disable special insertion. Default: 0.3
 
         element = this.view.$el,
@@ -290,7 +291,7 @@ define([
 
         insertionType, index, position, indexAndPosition;
 
-      unsafe = !!unsafe;
+      unsafe = !!is_unsafe;
 
       if (this.getCollection().length === 0) {
         return {

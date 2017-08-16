@@ -1,5 +1,6 @@
-define('iframe', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
+define('iframe', ['mailpoet'], function(mp) {
   'use strict';
+  var MailPoet = mp;
   MailPoet.Iframe = {
     marginY: 20,
     autoSize: function(iframe) {
@@ -10,11 +11,12 @@ define('iframe', ['mailpoet', 'jquery'], function(MailPoet, jQuery) {
         iframe.contentWindow.document.body.scrollHeight
       );
     },
-    setSize: function(iframe, i) {
+    setSize: function(sizeIframe, i) {
+      var iframe = sizeIframe;
       if(!iframe) return;
 
       iframe.style.height = (
-        parseInt(i) + this.marginY
+        parseInt(i, 10) + this.marginY
       ) + "px";
     }
   };
