@@ -2,6 +2,7 @@
 namespace MailPoet\Test\Subscription;
 
 use AspectMock\Test as Mock;
+use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form as FormModel;
 use MailPoet\Models\Segment as SegmentModel;
 use MailPoet\Models\Setting as SettingModel;
@@ -11,6 +12,7 @@ use MailPoet\Util\Security;
 
 class FormTest extends \MailPoetTest {
   function _before() {
+    $this->testEmail = 'test@example.com';
     $this->segment = SegmentModel::createOrUpdate(
       array(
         'name' => 'Test segment'
@@ -30,11 +32,13 @@ class FormTest extends \MailPoetTest {
         )
       )
     );
+    $obfuscator = new FieldNameObfuscator();
+    $obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->request_data = array(
       'action' => 'mailpoet_subscription_form',
       'data' => array(
         'form_id' => $this->form->id,
-        'email' => 'test@example.com'
+        $obfuscatedEmail => $this->testEmail
       ),
       'token' => Security::generateToken(),
       'api_version' => 'v1',
@@ -58,7 +62,7 @@ class FormTest extends \MailPoetTest {
       }
     ]);
     $result = Form::onSubmit($this->request_data);
-    expect(SubscriberModel::findOne($this->request_data['data']['email']))->notEmpty();
+    expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
     $mock->verifyInvoked('redirectBack');
     expect($result['mailpoet_success'])->equals($this->form->id);
     expect($result['mailpoet_error'])->null();
@@ -78,7 +82,7 @@ class FormTest extends \MailPoetTest {
       }
     ]);
     $result = Form::onSubmit($this->request_data);
-    expect(SubscriberModel::findOne($this->request_data['data']['email']))->notEmpty();
+    expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
     $mock->verifyInvoked('redirectTo');
     expect($result)->regExp('/http.*?sample-post/i');
   }

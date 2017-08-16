@@ -4,6 +4,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Access as APIAccess;
 
+use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Form;
@@ -66,6 +67,11 @@ class Subscribers extends APIEndpoint {
         APIError::BAD_REQUEST => __('Please specify a valid form ID.', 'mailpoet')
       ));
     }
+    if(!empty($data['email'])) {
+      return $this->badRequest(array(
+        APIError::BAD_REQUEST => __('Please leave the first field empty.', 'mailpoet')
+      ));
+    }
 
     $segment_ids = (!empty($data['segments'])
       ? (array)$data['segments']
@@ -73,6 +79,8 @@ class Subscribers extends APIEndpoint {
     );
     $segment_ids = $form->filterSegments($segment_ids);
     unset($data['segments']);
+
+    $data = $this->deobfuscateFormPayload($data);
 
     if(empty($segment_ids)) {
       return $this->badRequest(array(
@@ -113,6 +121,11 @@ class Subscribers extends APIEndpoint {
         $meta
       );
     }
+  }
+
+  private function deobfuscateFormPayload($data) {
+    $obfuscator = new FieldNameObfuscator();
+    return $obfuscator->deobfuscateFormPayload($data);
   }
 
   function save($data = array()) {
