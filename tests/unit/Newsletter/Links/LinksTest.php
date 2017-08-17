@@ -24,12 +24,31 @@ class LinksTest extends \MailPoetTest {
 
   function testItOnlyHashesAndReplacesLinksInAnchorTags() {
     $template = '<a href="http://example.com"><img src="http://example.com" /></a>';
-    $result = Links::process($template);
+    $result = Links::process($template, 0, 0);
     expect($result[0])->equals(
       sprintf(
         '<a href="%s-%s"><img src="http://example.com" /></a>',
         Links::DATA_TAG_CLICK,
         $result[1][0]['hash']
+      )
+    );
+  }
+
+  function testItDoesNotRehashExistingLinks() {
+    $link = NewsletterLink::create();
+    $link->newsletter_id = 3;
+    $link->queue_id = 3;
+    $link->hash = 123;
+    $link->url = 'http://example.com';
+    $link->save();
+
+    $template = '<a href="http://example.com"><img src="http://example.com" /></a>';
+    $result = Links::process($template, 3, 3);
+    expect($result[0])->equals(
+      sprintf(
+        '<a href="%s-%s"><img src="http://example.com" /></a>',
+        Links::DATA_TAG_CLICK,
+        123
       )
     );
   }
@@ -48,7 +67,7 @@ class LinksTest extends \MailPoetTest {
 
   function testItHashesAndReplacesLinks() {
     $template = '<a href="http://example.com">some site</a> [link:some_link_shortcode]';
-    list($updated_content, $hashed_links) = Links::process($template);
+    list($updated_content, $hashed_links) = Links::process($template, 0, 0);
 
     // 2 links were hashed
     expect(count($hashed_links))->equals(2);
@@ -63,7 +82,7 @@ class LinksTest extends \MailPoetTest {
 
   function testItHashesAndReplacesLinksWithSpecialCharacters() {
     $template = '<a href="http://сайт.cóm/彌撒時間">some site</a>';
-    $result = Links::process($template);
+    $result = Links::process($template, 0, 0);
     expect($result[0])->equals(
       sprintf(
         '<a href="%s-%s">some site</a>',
@@ -169,6 +188,28 @@ class LinksTest extends \MailPoetTest {
       ->findOne();
     expect($newsltter_link->hash)->equals(123);
     expect($newsltter_link->url)->equals('http://example.com');
+  }
+
+  function testItCanLoadLinks() {
+    $link = NewsletterLink::create();
+    $link->newsletter_id = 1;
+    $link->queue_id = 2;
+    $link->hash = 123;
+    $link->url = 'http://example.com';
+    $link->save();
+
+    $link = NewsletterLink::create();
+    $link->newsletter_id = 1;
+    $link->queue_id = 3;
+    $link->hash = 456;
+    $link->url = 'http://demo.com';
+    $link->save();
+
+    $links = Links::load(1, 2);
+    expect(is_array($links))->true();
+    expect(count($links))->equals(1);
+    expect($links['http://example.com']['hash'])->equals(123);
+    expect($links['http://example.com']['url'])->equals('http://example.com');
   }
 
   function testItMatchesHashedLinks() {

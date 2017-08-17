@@ -168,6 +168,40 @@ define(
         }
         return false;
       },
+      handleResume: function (e) {
+        e.preventDefault();
+        if(!this.isValid()) {
+          jQuery('#mailpoet_newsletter').parsley().validate();
+        } else {
+          this._save(e).done(() => {
+            this.setState({ loading: true });
+          }).done(() => {
+            MailPoet.Ajax.post({
+              api_version: window.mailpoet_api_version,
+              endpoint: 'sendingQueue',
+              action: 'resume',
+              data: {
+                newsletter_id: this.state.item.id,
+              },
+            }).done(() => {
+              this.context.router.push(`/${ this.state.item.type || '' }`);
+              MailPoet.Notice.success(
+                MailPoet.I18n.t('newsletterSendingHasBeenResumed')
+              );
+            }).fail((response) => {
+              if (response.errors.length > 0) {
+                MailPoet.Notice.error(
+                  response.errors.map((error) => { return error.message; }),
+                  { scroll: true }
+                );
+              }
+            });
+          }).fail(this._showError).always(() => {
+            this.setState({ loading: false });
+          });
+        }
+        return false;
+      },
       handleSave: function (e) {
         e.preventDefault();
 
@@ -193,6 +227,7 @@ define(
       },
       _save: function () {
         const data = this.state.item;
+        data.queue = undefined;
         this.setState({ loading: true });
 
         // Store only properties that can be changed on this page
@@ -234,6 +269,15 @@ define(
         return true;
       },
       render: function () {
+        const isPaused = this.state.item.status == 'sending'
+          && this.state.item.queue
+          && this.state.item.queue.status == 'paused';
+        const fields = this.state.fields.map((field) => {
+          if (field.name == 'segments' || field.name == 'options') {
+            field.disabled = isPaused;
+          }
+          return field;
+        });
         return (
           <div>
             <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
@@ -242,20 +286,29 @@ define(
 
             <Form
               id="mailpoet_newsletter"
-              fields={ this.state.fields }
+              fields={ fields }
               item={ this.state.item }
               loading={ this.state.loading }
               onChange={this.handleFormChange}
               onSubmit={this.handleSave}
             >
               <p className="submit">
-                <input
+                {
+                  isPaused ?
+                  <input
+                  className="button button-primary"
+                  type="button"
+                  onClick={ this.handleResume }
+                  value={MailPoet.I18n.t('resume')} />
+                  :
+                  <input
                   className="button button-primary"
                   type="button"
                   onClick={ this.handleSend }
                   value={MailPoet.I18n.t('send')}
                   {...this.getSendButtonOptions()}
                   />
+                }
                 &nbsp;
                 <input
                   className="button button-secondary"

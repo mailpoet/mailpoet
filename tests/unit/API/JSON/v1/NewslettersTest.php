@@ -99,6 +99,7 @@ class NewslettersTest extends \MailPoetTest {
       Newsletter::findOne($this->newsletter->id)
         ->withSegments()
         ->withOptions()
+        ->withSendingQueue()
         ->asArray()
     );
     $hook_name = 'mailpoet_api_newsletters_get_after';
@@ -161,6 +162,31 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals($updated_newsletter->asArray());
     expect($updated_newsletter->subject)->equals('My Updated Newsletter');
+  }
+
+  function testItCanClearRenderedQueueUponSave() {
+    $sending_queue = SendingQueue::create();
+    $sending_queue->newsletter_id = $this->newsletter->id;
+    $sending_queue->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_queue->newsletter_rendered_body = 'Rendered body ...';
+    $sending_queue->newsletter_rendered_subject = 'Rendered subject ...';
+    $sending_queue->save();
+
+    $router = new Newsletters();
+    $newsletter_data = array(
+      'id' => $this->newsletter->id,
+      'subject' => 'My Updated Newsletter'
+    );
+
+    $response = $router->save($newsletter_data);
+    $updated_newsletter = Newsletter::findOne($this->newsletter->id)
+      ->withSendingQueue()
+      ->asArray();
+    $updated_queue = $updated_newsletter['queue'];
+
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect(unserialize($updated_queue['newsletter_rendered_body']))->equals(null);
+    expect(unserialize($updated_queue['newsletter_rendered_subject']))->equals(null);
   }
 
   function testItCanUpdatePostNotificationScheduleUponSave() {

@@ -180,6 +180,7 @@ define([
         <select
           id={ this.props.field.id || this.props.field.name }
           ref="select"
+          disabled={this.props.field.disabled}
           data-placeholder={ this.props.field.placeholder }
           multiple={ this.props.field.multiple }
           defaultValue={ this.getSelectedValues() }

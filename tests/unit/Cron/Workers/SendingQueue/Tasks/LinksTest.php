@@ -30,7 +30,7 @@ class LinksTest extends \MailPoetTest {
       'html' => '<a href="http://example.com">Example Link</a>',
       'text' => '<a href="http://example.com">Example Link</a>'
     );
-    $result = Links::hashAndReplaceLinks($rendered_newsletter);
+    $result = Links::hashAndReplaceLinks($rendered_newsletter, 0, 0);
     $processed_rendered_newsletter_body = $result[0];
     $processed_and_hashed_links = $result[1];
     expect($processed_rendered_newsletter_body['html'])
