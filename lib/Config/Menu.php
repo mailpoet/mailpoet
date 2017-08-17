@@ -55,7 +55,7 @@ class Menu {
   }
 
   function setup() {
-    if(!$this->access_control->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN)) return;
+    if(!$this->access_control->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) return;
     if(self::isOnMailPoetAdminPage()) {
       do_action('mailpoet_conflict_resolver_styles');
       do_action('mailpoet_conflict_resolver_scripts');

@@ -16,7 +16,7 @@ if(!defined('ABSPATH')) exit;
 class Subscribers extends APIEndpoint {
   public $permissions = array(
     'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
-    'methods' => array('subscribe' => AccessControl::ACCESS_ALL)
+    'methods' => array('subscribe' => AccessControl::NO_ACCESS_RESTRICTION)
   );
 
   function get($data = array()) {

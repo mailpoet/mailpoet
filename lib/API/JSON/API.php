@@ -149,7 +149,7 @@ class API {
   function validatePermissions($request_method, $permissions) {
     // if method permission is defined, validate it
     if (!empty($permissions['methods'][$request_method])) {
-      return ($permissions['methods'][$request_method] === AccessControl::ACCESS_ALL) ?
+      return ($permissions['methods'][$request_method] === AccessControl::NO_ACCESS_RESTRICTION) ?
         true :
         $this->access_control->validatePermission($permissions['methods'][$request_method]);
     }

@@ -8,14 +8,14 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class AccessControl {
-  const PERMISSION_ACCESS_PLUGIN = 'access_plugin';
+  const PERMISSION_ACCESS_PLUGIN_ADMIN = 'access_plugin_admin';
   const PERMISSION_MANAGE_SETTINGS = 'manage_settings';
   const PERMISSION_MANAGE_EMAILS = 'manage_emails';
   const PERMISSION_MANAGE_SUBSCRIBERS = 'manage_subscribers';
   const PERMISSION_MANAGE_FORMS = 'manage_forms';
   const PERMISSION_MANAGE_SEGMENTS = 'manage_segments';
   const PERMISSION_UPDATE_PLUGIN = 'update_plugin';
-  const ACCESS_ALL = 'All';
+  const NO_ACCESS_RESTRICTION = 'no_access_restriction';
 
   public $permissions;
   public $current_user_roles;
@@ -29,8 +29,8 @@ class AccessControl {
 
   private function getDefaultPermissions() {
     return array(
-      self::PERMISSION_ACCESS_PLUGIN => WPHooks::applyFilters(
-        'mailpoet_permission_access_plugin',
+      self::PERMISSION_ACCESS_PLUGIN_ADMIN => WPHooks::applyFilters(
+        'mailpoet_permission_access_plugin_admin',
         array(
           'administrator',
           'editor'
