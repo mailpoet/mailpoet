@@ -1,6 +1,8 @@
 <?php
+
 namespace MailPoet\Router\Endpoints;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Daemon;
 
@@ -17,6 +19,9 @@ class CronDaemon {
     self::ACTION_PING_RESPONSE
   );
   public $data;
+  public $permissions = array(
+    'global' => AccessControl::NO_ACCESS_RESTRICTION
+  );
 
   function __construct($data) {
     $this->data = $data;

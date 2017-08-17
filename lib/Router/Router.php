@@ -1,6 +1,8 @@
 <?php
+
 namespace MailPoet\Router;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\Util\Helpers;
 
 if(!defined('ABSPATH')) exit;
@@ -19,12 +21,13 @@ class Router {
     $this->endpoint = isset($api_data['endpoint']) ?
       Helpers::underscoreToCamelCase($api_data['endpoint']) :
       false;
-    $this->action = isset($api_data['action']) ?
+    $this->endpoint_action = isset($api_data['action']) ?
       Helpers::underscoreToCamelCase($api_data['action']) :
       false;
     $this->data = isset($api_data['data']) ?
       self::decodeRequestData($api_data['data']) :
       false;
+    $this->access_control = new AccessControl();
   }
 
   function init() {
@@ -33,15 +36,18 @@ class Router {
     if(!$this->endpoint || !class_exists($endpoint_class)) {
       return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint', 'mailpoet'));
     }
-    $endpoint = new $endpoint_class($this->data);
-    if(!method_exists($endpoint, $this->action) || !in_array($this->action, $endpoint->allowed_actions)) {
+    $endpoint = new $endpoint_class($this->data, $this->access_control);
+    if(!method_exists($endpoint, $this->endpoint_action) || !in_array($this->endpoint_action, $endpoint->allowed_actions)) {
       return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action', 'mailpoet'));
+    }
+    if(!$this->validatePermissions($this->endpoint_action, $endpoint->permissions)) {
+      return $this->terminateRequest(self::RESPONSE_ERROR, __('You do not have the required permissions.', 'mailpoet'));
     }
     do_action('mailpoet_conflict_resolver_router_url_query_parameters');
     return call_user_func(
       array(
         $endpoint,
-        $this->action
+        $this->endpoint_action
       )
     );
   }
@@ -73,5 +79,18 @@ class Router {
   function terminateRequest($code, $message) {
     status_header($code, $message);
     exit;
+  }
+
+  function validatePermissions($endpoint_action, $permissions) {
+    // if method permission is defined, validate it
+    if(!empty($permissions['methods'][$endpoint_action])) {
+      return ($permissions['methods'][$endpoint_action] === AccessControl::NO_ACCESS_RESTRICTION) ?
+        true :
+        $this->access_control->validatePermission($permissions['methods'][$endpoint_action]);
+    }
+    // use global permission
+    return ($permissions['global'] === AccessControl::NO_ACCESS_RESTRICTION) ?
+      true :
+      $this->access_control->validatePermission($permissions['global']);
   }
 }
