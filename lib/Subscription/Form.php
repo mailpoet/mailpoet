@@ -2,14 +2,14 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\API\JSON\API;
+use MailPoet\API\API as API;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Util\Url as UrlHelper;
 
 class Form {
   static function onSubmit($request_data = false) {
     $request_data = ($request_data) ? $request_data : $_REQUEST;
-    $api = new API();
+    $api = API::JSON();
     $api->setRequestData($request_data);
     $form_id = (!empty($request_data['data']['form_id'])) ? (int)$request_data['data']['form_id'] : false;
     $response = $api->processRoute();
