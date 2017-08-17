@@ -1,15 +1,11 @@
 <?php
+
 namespace MailPoet\Config;
+
 use MailPoet\Models\Setting;
 use MailPoet\Util\Url;
 
 class Changelog {
-  private $access_control;
-
-  function __construct(AccessControl $access_control) {
-    $this->access_control = $access_control;
-  }
-
   function init() {
     $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
 
@@ -37,7 +33,7 @@ class Changelog {
     $version = Setting::getValue('version', null);
     $redirect_url = null;
 
-    $mp2_migrator = new MP2Migrator($this->access_control);
+    $mp2_migrator = new MP2Migrator();
     if(!in_array($_GET['page'], array('mailpoet-migration', 'mailpoet-settings')) && $mp2_migrator->isMigrationStartedAndNotCompleted()) {
       // Force the redirection if the migration has started but is not completed
       $redirect_url = admin_url('admin.php?page=mailpoet-migration');

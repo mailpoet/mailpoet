@@ -195,7 +195,7 @@ class Initializer {
   }
 
   function setupChangelog() {
-    $changelog = new Changelog($this->access_control);
+    $changelog = new Changelog();
     $changelog->init();
   }
 
