@@ -37,7 +37,7 @@ class Menu {
     $this->renderer = $renderer;
     $this->assets_url = $assets_url;
     $this->access_control = $access_control;
-    $this->user_capability = $this->access_control->user_capabilities[0];
+    $this->user_capability = $this->access_control->getUserFirstCapability();
     $subscribers_feature = new SubscribersFeature();
     $this->subscribers_over_limit = $subscribers_feature->check();
     $this->checkMailPoetAPIKey();

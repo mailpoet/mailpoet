@@ -86,6 +86,12 @@ class AccessControl {
     return array_keys($user->allcaps);
   }
 
+  function getUserFirstCapability() {
+    return (!empty($this->user_capabilities)) ?
+      $this->user_capabilities[0] :
+      null;
+  }
+
   function validatePermission($permission) {
     if(empty($this->permissions[$permission])) return false;
     $permitted_roles = array_intersect(
