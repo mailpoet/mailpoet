@@ -1,0 +1,47 @@
+version: '2'
+
+services:
+  codeception:
+    build: .
+    depends_on:
+      - wordpress
+    volumes:
+      - ./:/project
+      - wp-core:/wp-core
+      - ./:/wp-core/wp-content/plugins/mailpoet
+    entrypoint: /docker-entrypoint.sh
+
+  wordpress:
+    build: ./tests/wordpressDockerfile
+    image: wordpress:latest
+    depends_on:
+      - mysql
+      - chrome
+    volumes:
+      - wp-core:/var/www/html
+      - ./:/var/www/html/wp-content/plugins/mailpoet
+      - /tmp:/var/www/html/wp-content/uploads/mailpoet/cache
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_PASSWORD: wordpress
+
+  mysql:
+    image: mysql:5.6
+    environment:
+       MYSQL_ROOT_PASSWORD: wordpress
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: wordpress
+       MYSQL_PASSWORD: wordpress
+
+  chrome:
+    environment:
+      - DBUS_SESSION_BUS_ADDRESS=/dev/null
+    volumes:
+      - /dev/shm:/dev/shm
+    image: selenium/standalone-chrome-debug
+    ports:
+      - '4444'
+      - '5900:5900'
+volumes:
+  wp-core:

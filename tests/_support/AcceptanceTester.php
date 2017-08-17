@@ -29,4 +29,29 @@ class AcceptanceTester extends \Codeception\Actor {
     $this->click('Log In');
     $this->saveSessionSnapshot('login');
   }
+
+  /**
+   * Define custom actions here
+   */
+  public function logOut() {
+    $I = $this;
+    $I->amOnPage('/wp-login.php?action=logout');
+    $I->click('log out');
+    $I->wait(1);
+  }
+
+  /**
+   * Navigate to the specified Mailpoet page in the admin.
+   *
+   * @param string $page The page to visit e.g. Inbox or Status
+   */
+  public function amOnMailpoetPage($page) {
+    $I = $this;
+    $I->amOnPage('/wp-admin');
+    $I->click('MailPoet');
+    $I->waitForText($page, 3);
+    $I->click($page);
+    $I->waitForText($page, 3);
+  }
+
 }
