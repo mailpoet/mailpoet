@@ -51,6 +51,7 @@ define(
 
         if (_.size(this.refs.templateFile.files) <= 0) return false;
 
+
         const file = _.first(this.refs.templateFile.files);
         const reader = new FileReader();
         const saveTemplate = this.saveTemplate;
@@ -58,6 +59,9 @@ define(
         reader.onload = (e) => {
           try {
             saveTemplate(JSON.parse(e.target.result));
+            MailPoet.trackEvent('Emails > Template imported', {
+              'MailPoet Free version': window.mailpoet_version,
+            });
           } catch (err) {
             MailPoet.Notice.error(MailPoet.I18n.t('templateFileMalformedError'));
           }
@@ -142,6 +146,11 @@ define(
         if (!_.isUndefined(body)) {
           body = JSON.stringify(body);
         }
+
+        MailPoet.trackEvent('Emails > Template selected', {
+          'MailPoet Free version': window.mailpoet_version,
+          'Email name': template.name,
+        });
 
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,

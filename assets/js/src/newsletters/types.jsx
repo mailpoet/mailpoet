@@ -20,9 +20,17 @@ define(
       setupNewsletter: function (type) {
         if(type !== undefined) {
           this.context.router.push(`/new/${type}`);
+          MailPoet.trackEvent('Emails > Type selected', {
+            'MailPoet Free version': window.mailpoet_version,
+            'Email type': type,
+          });
         }
       },
       createNewsletter: function (type) {
+        MailPoet.trackEvent('Emails > Type selected', {
+          'MailPoet Free version': window.mailpoet_version,
+          'Email type': type,
+        });
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',

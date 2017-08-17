@@ -140,6 +140,9 @@ define([
       );
 
       FileSaver.saveAs(blob, 'template.json');
+      MailPoet.trackEvent('Editor > Template exported', {
+        'MailPoet Free version': window.mailpoet_version
+      });
     });
   };
 
@@ -225,6 +228,9 @@ define([
               scroll: true
             }
           );
+          MailPoet.trackEvent('Editor > Template saved', {
+            'MailPoet Free version': window.mailpoet_version
+          });
         }).fail(function() {
           MailPoet.Notice.error(
             MailPoet.I18n.t('templateSaveFailed'),
