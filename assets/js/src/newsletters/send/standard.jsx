@@ -286,11 +286,6 @@ define(
           'data-parsley-errors-container': '#mailpoet_scheduling',
         };
       },
-      isDisabled: function () {
-        return this.props.item.status == 'sending'
-          && this.props.item.queue
-          && this.props.item.queue.status == 'paused';
-      },
       render: function () {
         let schedulingOptions;
 
@@ -301,7 +296,7 @@ define(
                 name="scheduledAt"
                 value={this._getCurrentValue().scheduledAt}
                 onChange={this.handleValueChange}
-                disabled={this.isDisabled()}
+                disabled={this.props.field.disabled}
                 dateValidation={this.getDateValidation()} />
               &nbsp;
               <span>
@@ -310,7 +305,6 @@ define(
             </span>
           );
         }
-
         return (
           <div>
             <input
@@ -318,7 +312,7 @@ define(
               type="checkbox"
               value="1"
               checked={this.isScheduled()}
-              disabled={this.isDisabled()}
+              disabled={this.props.field.disabled}
               name="isScheduled"
               onChange={this.handleCheckboxChange} />
 
