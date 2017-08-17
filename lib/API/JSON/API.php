@@ -22,8 +22,8 @@ class API {
   private $access_control;
   const CURRENT_VERSION = 'v1';
 
-  function __construct() {
-    $this->access_control = new AccessControl();
+  function __construct(AccessControl $access_control) {
+    $this->access_control = $access_control;
     foreach($this->_available_api_versions as $available_api_version) {
       $this->addEndpointNamespace(
         sprintf('%s\%s', __NAMESPACE__, $available_api_version),
@@ -128,7 +128,7 @@ class API {
         throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));
       }
 
-      $endpoint = new $this->_request_endpoint_class($this->access_control);
+      $endpoint = new $this->_request_endpoint_class();
 
       // check the accessibility of the requested endpoint's action
       // by default, an endpoint's action is considered "private"
