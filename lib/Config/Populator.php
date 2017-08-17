@@ -402,7 +402,7 @@ class Populator {
     global $wpdb;
 
     // perform once for versions below 3.0.0-beta.36.2.1
-    if(version_compare(get_option('mailpoet_db_version'), '3.0.0-beta.36.2.1', '>=')) {
+    if(version_compare(get_option('mailpoet_db_version', '3.0.0-beta.36.2.3'), '3.0.0-beta.36.2.1', '>=')) {
       return false;
     }
 
