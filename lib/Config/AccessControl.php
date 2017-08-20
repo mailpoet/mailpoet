@@ -93,6 +93,7 @@ class AccessControl {
   }
 
   function validatePermission($permission) {
+    if($permission === self::NO_ACCESS_RESTRICTION) return true;
     if(empty($this->permissions[$permission])) return false;
     $permitted_roles = array_intersect(
       $this->user_roles,

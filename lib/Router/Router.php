@@ -14,6 +14,7 @@ class Router {
   public $data;
   const NAME = 'mailpoet_router';
   const RESPONSE_ERROR = 404;
+  const RESPONE_FORBIDDEN = 403;
 
   function __construct($api_data = false) {
     $api_data = ($api_data) ? $api_data : $_GET;
@@ -41,7 +42,7 @@ class Router {
       return $this->terminateRequest(self::RESPONSE_ERROR, __('Invalid router endpoint action', 'mailpoet'));
     }
     if(!$this->validatePermissions($this->endpoint_action, $endpoint->permissions)) {
-      return $this->terminateRequest(self::RESPONSE_ERROR, __('You do not have the required permissions.', 'mailpoet'));
+      return $this->terminateRequest(self::RESPONE_FORBIDDEN, __('You do not have the required permissions.', 'mailpoet'));
     }
     do_action('mailpoet_conflict_resolver_router_url_query_parameters');
     return call_user_func(
@@ -82,15 +83,9 @@ class Router {
   }
 
   function validatePermissions($endpoint_action, $permissions) {
-    // if method permission is defined, validate it
-    if(!empty($permissions['methods'][$endpoint_action])) {
-      return ($permissions['methods'][$endpoint_action] === AccessControl::NO_ACCESS_RESTRICTION) ?
-        true :
-        $this->access_control->validatePermission($permissions['methods'][$endpoint_action]);
-    }
-    // use global permission
-    return ($permissions['global'] === AccessControl::NO_ACCESS_RESTRICTION) ?
-      true :
+    // validate action permission if defined, otherwise validate global permission
+    return(!empty($permissions['actions'][$endpoint_action])) ?
+      $this->access_control->validatePermission($permissions['actions'][$endpoint_action]) :
       $this->access_control->validatePermission($permissions['global']);
   }
 }
