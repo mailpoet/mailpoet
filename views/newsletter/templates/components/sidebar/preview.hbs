@@ -2,7 +2,7 @@
 <h3><%= __('Preview') %></h3>
 <div class="mailpoet_region_content">
     <iframe name="mailpoet_save_preview_email_for_autocomplete" style="display:none" src="about:blank"></iframe>
-    <form target="mailpoet_save_preview_email_for_autocomplete" action="about:blank">
+    <form target="mailpoet_save_preview_email_for_autocomplete">
       <div class="mailpoet_form_field">
           <label>
               <%= __('Send preview to') %><br />
@@ -14,7 +14,7 @@
         <input type="submit" id="mailpoet_send_preview" class="button button-primary mailpoet_button_full" value="<%= __('Send preview') %>" />
         <span id="tooltip-send-preview" class="tooltip-help-send-preview"></span>
       </div>
-    </ofmr>
+    </form>
 
     <hr class="mailpoet_separator" />
 
