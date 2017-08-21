@@ -57,6 +57,8 @@ jQuery.fn.stick_in_parent = function() { return this; };
 global.stubChannel = function (EditorApplication, returnObject) {
   var App = EditorApplication;
   App.getChannel = sinon.stub().returns(_.defaults(returnObject || {}, {
+    request: function () {
+    },
     trigger: function () {
     },
     on: function () {

@@ -321,10 +321,7 @@ define([
       MailPoet.Modal.loading(true);
 
       // save before sending
-      var saveResult = {promise: null};
-      App.getChannel().trigger('save', saveResult);
-
-      saveResult.promise.always(function() {
+      App.getChannel().request('save').always(function() {
         CommunicationComponent.previewNewsletter(data).always(function() {
           MailPoet.Modal.loading(false);
         }).done(function(response) {
