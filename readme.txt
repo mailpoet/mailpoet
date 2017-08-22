@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.8
-Stable tag: 3.0.0-rc.1.0.3
+Stable tag: 3.0.0-rc.1.0.4
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -92,6 +92,13 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-rc.1.0.4 - 2017-08-22 =
+* Added: newsletters can now be paused and edited while sending;
+* Added: tooltips across the UI to quickly answer questions we often get on support;
+* Added: extra measures to help prevent fake subscriptions by bots;
+* Added: a hook to modify maximum post excerpt length;
+* Fixed: it is possible again to switch to other sending methods after choosing MailPoet Sending Service. Thx Bastien!
 
 = 3.0.0-rc.1.0.3 - 2017-08-15 =
 * Improved: newsletter browser preview window in newsletter editor now fits correctly in any screen height;
