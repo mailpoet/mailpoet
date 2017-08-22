@@ -8,8 +8,9 @@ define([
     'underscore',
     'newsletter_editor/behaviors/BehaviorsLookup'
   ], function(Marionette, _, BehaviorsLookup) {
+  var BL = BehaviorsLookup;
 
-  BehaviorsLookup.TextEditorBehavior = Marionette.Behavior.extend({
+  BL.TextEditorBehavior = Marionette.Behavior.extend({
     defaults: {
       selector: '.mailpoet_content',
       toolbar1: "bold italic link unlink forecolor mailpoet_shortcodes",

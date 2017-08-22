@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/button'
-  ], function(EditorApplication, ButtonBlock) {
+  ], function(App, ButtonBlock) {
+  var EditorApplication = App;
 
   describe("Button", function () {
     describe("model", function () {

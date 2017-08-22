@@ -28,7 +28,9 @@ if (!global.document || !global.window) {
 }
 
 global.testHelpers = require('./loadHelpers.js');
-global.$ = global.jQuery = global.window.jQuery = require('jquery');
+global.$ = require('jquery');
+global.jQuery = require('jquery');
+global.window.jQuery = require('jquery');
 
 testHelpers.loadScript('tests/javascript/testBundles/vendor.js', global.window);
 global.Handlebars = global.window.Handlebars;
@@ -46,27 +48,28 @@ global.interact = function () {
     styleCursor: global.interact
   };
 };
-
-jQuery.fn.spectrum = global.spectrum = function() { return this; };
+global.spectrum = function() { return this; };
+jQuery.fn.spectrum = global.spectrum;
 jQuery.fn.stick_in_parent = function() { return this; };
 
 // Add global stubs for convenience
 // TODO: Extract those to a separate file
 global.stubChannel = function (EditorApplication, returnObject) {
-  EditorApplication.getChannel = sinon.stub().returns(_.defaults(returnObject || {}, {
+  var App = EditorApplication;
+  App.getChannel = sinon.stub().returns(_.defaults(returnObject || {}, {
     trigger: function () {
     },
     on: function () {
     }
   }));
 };
-global.stubConfig = function (EditorApplication, config) {
-  config = config || {};
-  EditorApplication.getConfig = sinon.stub().returns(new Backbone.SuperModel(config));
+global.stubConfig = function (EditorApplication, opts) {
+  var App = EditorApplication;
+  App.getConfig = sinon.stub().returns(new Backbone.SuperModel(opts || {}));
 };
 global.stubAvailableStyles = function (EditorApplication, styles) {
-  styles = styles || {};
-  EditorApplication.getAvailableStyles = sinon.stub().returns(new Backbone.SuperModel(styles));
+  var App = EditorApplication;
+  App.getAvailableStyles = sinon.stub().returns(new Backbone.SuperModel(styles || {}));
 };
 
 global.stubImage = function(defaultWidth, defaultHeight) {

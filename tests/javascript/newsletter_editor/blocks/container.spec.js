@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/container'
-  ], function(EditorApplication, ContainerBlock) {
+  ], function(App, ContainerBlock) {
+  var EditorApplication = App;
 
   describe('Container', function () {
     var ModelClass = ContainerBlock.ContainerBlockModel;

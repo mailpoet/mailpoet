@@ -11,12 +11,14 @@ Object.extend(document, (function() {
   var cache = Event.cacheDelegated;
 
   function getCacheForSelector(selector) {
-    return cache[selector] = cache[selector] || {};
+    cache[selector] = cache[selector] || {};
+    return cache[selector];
   }
 
   function getWrappersForSelector(selector, eventName) {
     var c = getCacheForSelector(selector);
-    return c[eventName] = c[eventName] || [];
+    c[eventName] = c[eventName] || [];
+    return c[eventName];
   }
 
   function findWrapper(selector, eventName, handler) {
@@ -79,8 +81,8 @@ Object.extend(document, (function() {
 })());
 
 var Observable = (function() {
-  function getEventName(name, namespace) {
-    name = name.substring(2);
+  function getEventName(nameA, namespace) {
+    var name = nameA.substring(2);
     if(namespace) name = namespace + ':' + name;
     return name.underscore().split('_').join(':');
   }
@@ -574,7 +576,8 @@ var WysijaForm = {
     WysijaForm.locks.showingTools = false;
   },
   instances: {},
-  get: function(element, type) {
+  get: function(element, typ) {
+    var type = typ;
     if(type === undefined) type = 'block';
     // identify element
     var id = element.identify();
@@ -893,7 +896,8 @@ WysijaForm.Block = Class.create({
 });
 
 /* Invoked on item dropped */
-WysijaForm.Block.create = function(block, target) {
+WysijaForm.Block.create = function(createBlock, target) {
+  var block = createBlock;
   if($('form_template_' + block.type) === null) {
     return false;
   }
@@ -1050,7 +1054,8 @@ function info(value) {
       var noop = function() {};
       var methods = ['assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log', 'markTimeline', 'profile', 'profileEnd', 'markTimeline', 'table', 'time', 'timeEnd', 'timeStamp', 'trace', 'warn'];
       var length = methods.length;
-      var console = window.console = {};
+      window.console = {};
+      var console = {};
       while(length--) {
         console[methods[length]] = noop;
       }

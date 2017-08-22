@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/footer'
-  ], function(EditorApplication, FooterBlock) {
+  ], function(App, FooterBlock) {
+  var EditorApplication = App;
 
   describe('Footer', function () {
     describe('model', function () {

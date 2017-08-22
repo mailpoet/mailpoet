@@ -8,8 +8,9 @@ define([
     'jquery',
     'newsletter_editor/behaviors/BehaviorsLookup'
   ], function(Marionette, jQuery, BehaviorsLookup) {
+  var BL = BehaviorsLookup;
 
-  BehaviorsLookup.ShowSettingsBehavior = Marionette.Behavior.extend({
+  BL.ShowSettingsBehavior = Marionette.Behavior.extend({
     defaults: {
       ignoreFrom: '' // selector
     },

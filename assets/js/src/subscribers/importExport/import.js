@@ -52,8 +52,9 @@ define(
         router.on('route:step1', function () {
           // set or reset temporary validation rule on all columns
           mailpoetColumns = jQuery.map(mailpoetColumns, function (column, columnIndex) {
-            column.validation_rule = false;
-            return column;
+            var col = column;
+            col.validation_rule = false;
+            return col;
           });
 
           if (typeof (importData.step1) !== 'undefined') {
@@ -302,10 +303,10 @@ define(
                 advancedOptionComments = false,
                 // trim spaces, commas, periods,
                 // single/double quotes and convert to lowercase
-                detectAndCleanupEmail = function (email) {
+                detectAndCleanupEmail = function (emailString) {
                   var test;
                   // decode HTML entities
-                  email = jQuery('<div />').html(email).text();
+                  var email = jQuery('<div />').html(emailString).text();
                   email = email
                     .toLowerCase()
                     // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
@@ -315,11 +316,13 @@ define(
                     // remove urlencoded characters
                     .replace(/\s+|%\d+|,+/g, '');
                   // detect e-mails that will be otherwise rejected by email regex
-                  if (test = /<(.*?)>/.exec(email)) {
+                  test = /<(.*?)>/.exec(email);
+                  if (test) {
                     // is the email inside angle brackets (e.g., 'some@email.com <some@email.com>')?
                     email = test[1].trim();
                   }
-                  if (test = /mailto:(?:\s+)?(.*)/.exec(email)) {
+                  test = /mailto:(?:\s+)?(.*)/.exec(email);
+                  if (test) {
                     // is the email in 'mailto:email' format?
                     email = test[1].trim();
                   }
@@ -534,12 +537,14 @@ define(
                   data: segments,
                   width: '20em',
                   templateResult: function (item) {
-                    item.subscriberCount = parseInt(item.subscriberCount);
-                    return item.name + ' (' + item.subscriberCount.toLocaleString() + ')';
+                    var i = item;
+                    i.subscriberCount = parseInt(i.subscriberCount, 10);
+                    return i.name + ' (' + i.subscriberCount.toLocaleString() + ')';
                   },
                   templateSelection: function (item) {
-                    item.subscriberCount = parseInt(item.subscriberCount);
-                    return item.name + ' (' + item.subscriberCount.toLocaleString() + ')';
+                    var i = item;
+                    i.subscriberCount = parseInt(i.subscriberCount, 10);
+                    return i.name + ' (' + i.subscriberCount.toLocaleString() + ')';
                   }
                 })
                 .change(function () {
@@ -894,7 +899,8 @@ define(
                     }
                   }
                 }
-                jQuery.map(subscribersClone.subscribers, function (data, index) {
+                jQuery.map(subscribersClone.subscribers, function (dataSubscribers, index) {
+                  var data = dataSubscribers;
                   var rowData = data[matchedColumn.index];
                   if (index === fillerPosition || rowData.trim() === '') return;
                   var date = Moment(rowData, testedFormat, true);

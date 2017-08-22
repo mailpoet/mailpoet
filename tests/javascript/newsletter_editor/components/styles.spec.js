@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/components/styles'
-  ], function(EditorApplication, StylesComponent) {
+  ], function(App, StylesComponent) {
+  var EditorApplication = App;
 
   describe('Styles', function () {
     it('loads and stores globally available styles', function() {

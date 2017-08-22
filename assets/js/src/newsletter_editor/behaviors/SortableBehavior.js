@@ -8,8 +8,9 @@ define([
     'underscore',
     'newsletter_editor/behaviors/BehaviorsLookup'
   ], function(Marionette, _, BehaviorsLookup) {
+  var BL = BehaviorsLookup;
 
-  BehaviorsLookup.SortableBehavior = Marionette.Behavior.extend({
+  BL.SortableBehavior = Marionette.Behavior.extend({
     onRender: function() {
       var collection = this.view.collection;
 

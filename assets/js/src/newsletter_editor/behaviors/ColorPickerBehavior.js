@@ -9,8 +9,9 @@ define([
     'mailpoet',
     'spectrum'
   ], function(Marionette, BehaviorsLookup, MailPoet, Spectrum) {
+  var BL = BehaviorsLookup;
 
-  BehaviorsLookup.ColorPickerBehavior = Marionette.Behavior.extend({
+  BL.ColorPickerBehavior = Marionette.Behavior.extend({
     onRender: function() {
       this.view.$('.mailpoet_color').spectrum({
         clickoutFiresChange: true,

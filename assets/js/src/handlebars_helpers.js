@@ -125,12 +125,13 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
    * @return {String}          The truncated string.
    */
   Handlebars.registerHelper('ellipsis', function (str, limit, append) {
-      if (append === undefined) {
-          append = '';
+      var strAppend = append;
+      if (strAppend === undefined) {
+        strAppend = '';
       }
       var sanitized = str.replace(/(<([^>]+)>)/g, '');
       if (sanitized.length > limit) {
-          return sanitized.substr(0, limit - append.length) + append;
+          return sanitized.substr(0, limit - strAppend.length) + strAppend;
       } else {
           return sanitized;
       }

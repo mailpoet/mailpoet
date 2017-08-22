@@ -194,8 +194,8 @@ define([
       move: true
     },
     getSettingsView: function() { return Module.BlockSettingsView; },
-    initialize: function(options) {
-      options = options || {};
+    initialize: function(opts) {
+      var options = opts || {};
       if (!_.isUndefined(options.tools)) {
         // Make a new block specific tool config object
         this.tools = jQuery.extend({}, this.tools, options.tools || {});

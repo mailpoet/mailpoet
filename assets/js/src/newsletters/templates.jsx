@@ -19,7 +19,8 @@ define(
   ) => {
 
     const ImportTemplate = React.createClass({
-      saveTemplate: function (template) {
+      saveTemplate: function (saveTemplate) {
+        const template = saveTemplate;
 
         // Stringify to enable transmission of primitive non-string value types
         if (!_.isUndefined(template.body)) {

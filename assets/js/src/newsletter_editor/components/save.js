@@ -67,9 +67,10 @@ define([
 
   // For getting a promise after triggering save event
   Module.saveAndProvidePromise = function(saveResult) {
+    var result = saveResult;
     var promise = Module.save();
     if (saveResult !== undefined) {
-      saveResult.promise = promise;
+      result.promise = promise;
     }
   };
 
@@ -337,10 +338,10 @@ define([
   Module.beforeExitWithUnsavedChanges = function(e) {
     if (saveTimeout) {
       var message = MailPoet.I18n.t('unsavedChangesWillBeLost');
-      e = e || window.event;
+      var event = e || window.event;
 
-      if (e) {
-        e.returnValue = message;
+      if (event) {
+        event.returnValue = message;
       }
 
       return message;
@@ -348,12 +349,13 @@ define([
   };
 
   App.on('before:start', function(App, options) {
-    App.save = Module.saveAndProvidePromise;
-    App.getChannel().on('autoSave', Module.autoSave);
+    var Application = App;
+    Application.save = Module.saveAndProvidePromise;
+    Application.getChannel().on('autoSave', Module.autoSave);
 
     window.onbeforeunload = Module.beforeExitWithUnsavedChanges;
 
-    App.getChannel().on('save', function(saveResult) { App.save(saveResult); });
+    Application.getChannel().on('save', function(saveResult) { Application.save(saveResult); });
   });
 
   App.on('start', function(App, options) {

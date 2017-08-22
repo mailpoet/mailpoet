@@ -67,7 +67,8 @@ define([
     return _.filter(blocks, predicate);
   };
 
-  App.on('before:start', function(App, options) {
+  App.on('before:start', function(Application, options) {
+    var App = Application;
     // Expose block methods globally
     App.registerBlockType = Module.registerBlockType;
     App.getBlockTypeModel = Module.getBlockTypeModel;
@@ -80,7 +81,8 @@ define([
     Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['body']));
   });
 
-  App.on('start', function(App, options) {
+  App.on('start', function(Application, options) {
+    var App = Application;
     var body = options.newsletter.body;
     var content = (_.has(body, 'content')) ? body.content : {};
 

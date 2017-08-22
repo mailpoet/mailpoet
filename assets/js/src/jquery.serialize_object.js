@@ -3,8 +3,9 @@ define(
     'jquery'
   ],
   function(
-    $
+    jQuery
   ) {
+    var $ = jQuery;
     // Combination of jQuery.deparam and jQuery.serializeObject by Ben Alman.
     /*!
      * jQuery BBQ: Back Button & Query Library - v1.2.1 - 2/17/2010
@@ -74,9 +75,10 @@ define(
           // * Rinse & repeat.
           for ( ; i <= keys_last; i++ ) {
             key = keys[i] === '' ? cur.length : keys[i];
-            cur = cur[key] = i < keys_last
+            cur[key] = i < keys_last
               ? cur[key] || ( keys[i+1] && isNaN( keys[i+1] ) ? {} : [] )
               : val;
+            cur = cur[key];
           }
 
         } else {

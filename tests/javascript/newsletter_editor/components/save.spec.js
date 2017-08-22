@@ -3,7 +3,8 @@ define([
     'newsletter_editor/components/save',
     'amd-inject-loader!newsletter_editor/components/save',
     'jquery'
-  ], function(EditorApplication, SaveComponent, SaveInjector, jQuery) {
+  ], function(App, SaveComponent, SaveInjector, jQuery) {
+  var EditorApplication = App;
 
   describe('Save', function() {
     describe('save method', function() {

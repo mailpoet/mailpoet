@@ -8,11 +8,13 @@ define(
   ],
   (
     React,
-    jQuery,
+    jq,
     _,
     MailPoet,
     Hooks
   ) => {
+
+    const jQuery = jq;
 
     const currentTime = window.mailpoet_current_time || '00:00';
     const defaultDateTime = window.mailpoet_current_date + ' ' + '00:00:00';
@@ -84,12 +86,13 @@ define(
 
     const DateText = React.createClass({
       onChange: function (event) {
+        const changeEvent = event;
         // Swap display format to storage format
-        const displayDate = event.target.value;
+        const displayDate = changeEvent.target.value;
         const storageDate = this.getStorageDate(displayDate);
 
-        event.target.value = storageDate;
-        this.props.onChange(event);
+        changeEvent.target.value = storageDate;
+        this.props.onChange(changeEvent);
       },
       componentDidMount: function () {
         const $element = jQuery(this.refs.dateInput);
@@ -273,8 +276,9 @@ define(
         });
       },
       handleCheckboxChange: function (event) {
-        event.target.value = this.refs.isScheduled.checked ? '1' : '0';
-        return this.handleValueChange(event);
+        const changeEvent = event;
+        changeEvent.target.value = this.refs.isScheduled.checked ? '1' : '0';
+        return this.handleValueChange(changeEvent);
       },
       isScheduled: function () {
         return this._getCurrentValue().isScheduled === '1';
@@ -419,11 +423,11 @@ define(
         return fields;
       },
       getSendButtonOptions: function (newsletter) {
-        newsletter = newsletter || {};
+        const newsletterOptions = newsletter || {};
 
         const isScheduled = (
-          typeof newsletter.options === 'object'
-          && newsletter.options.isScheduled === '1'
+          typeof newsletterOptions.options === 'object'
+          && newsletterOptions.options.isScheduled === '1'
         );
         const options = {
           value: (isScheduled
@@ -431,8 +435,8 @@ define(
             : MailPoet.I18n.t('send')),
         };
 
-        if (newsletter.status === 'sent'
-            || newsletter.status === 'sending') {
+        if (newsletterOptions.status === 'sent'
+            || newsletterOptions.status === 'sending') {
           options['disabled'] = 'disabled';
         }
 

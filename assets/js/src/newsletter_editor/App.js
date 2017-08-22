@@ -6,7 +6,8 @@ define([
     'underscore',
     'handlebars',
     'handlebars_helpers'
-  ], function(Backbone, Marionette, Radio, jQuery, _, Handlebars) {
+  ], function(Backbone, Marionette, BackboneRadio, jQuery, _, Handlebars) {
+  var Radio = BackboneRadio;
 
   var AppView = Marionette.View.extend({
     el: '#mailpoet_editor',
@@ -28,7 +29,9 @@ define([
     },
 
     getChannel: function(channel) {
-      if (channel === undefined) channel = 'global';
+      if (channel === undefined) {
+        return Radio.channel('global');
+      }
       return Radio.channel(channel);
     }
   });

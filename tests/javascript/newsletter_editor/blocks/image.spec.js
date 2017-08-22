@@ -1,7 +1,8 @@
 define([
     'newsletter_editor/App',
     'newsletter_editor/blocks/image'
-  ], function(EditorApplication, ImageBlock) {
+  ], function(App, ImageBlock) {
+  var EditorApplication = App;
 
   describe('Image', function () {
     describe('model', function () {
