@@ -760,6 +760,8 @@
         saveSendingMethodConfiguration('mailpoet');
       });
       $('.mailpoet_mta_setup_save').on('click', function() {
+        $('#mailpoet_smtp_method').trigger("change");
+        $('#other_frequency_emails').trigger("change");
         // get selected method
         var group = $('.mailpoet_sending_method:visible').data('group');
         saveSendingMethodConfiguration(group);
