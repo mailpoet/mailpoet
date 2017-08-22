@@ -1,6 +1,7 @@
 define('helpTooltip', ['mailpoet', 'react', 'react-dom', 'help-tooltip.jsx'],
-  function (MailPoet, React, ReactDOM, TooltipComponent) {
+  function (mp, React, ReactDOM, TooltipComponent) {
     'use strict';
+    var MailPoet = mp;
 
     MailPoet.helpTooltip = {
       show: function (domContainerNode, opts) {

@@ -273,10 +273,11 @@ define(
           && this.state.item.queue
           && this.state.item.queue.status == 'paused';
         const fields = this.state.fields.map((field) => {
+          const newField = field;
           if (field.name == 'segments' || field.name == 'options') {
-            field.disabled = isPaused;
+            newField.disabled = isPaused;
           }
-          return field;
+          return newField;
         });
         return (
           <div>
