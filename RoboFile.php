@@ -168,7 +168,7 @@ class RoboFile extends \Robo\Tasks {
     $this->loadEnv();
     $this->_exec('vendor/bin/codecept build -c codeception.unit.yml');
     $command = join(' ', array(
-      'vendor/bin/codecept run -c codeception.unit.yml ',
+      'vendor/bin/codecept run unit -c codeception.unit.yml ',
       (($opts['file']) ? $opts['file'] : ''),
       '--coverage',
       ($opts['xml']) ? '--coverage-xml' : '--coverage-html'
