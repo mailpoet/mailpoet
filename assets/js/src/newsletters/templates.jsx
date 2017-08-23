@@ -122,7 +122,7 @@ define(
                     MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
                   description:
                     MailPoet.I18n.t('mailpoetGuideTemplateDescription'),
-                  readonly: "1",
+                  readonly: '1',
                 },
               ];
             }
@@ -179,7 +179,7 @@ define(
           window.confirm(
             (
               MailPoet.I18n.t('confirmTemplateDeletion')
-            ).replace("%$1s", template.name)
+            ).replace('%$1s', template.name)
           )
         ) {
           MailPoet.Ajax.post({
@@ -263,7 +263,7 @@ define(
                     {MailPoet.I18n.t('select')}
                   </a>
               </div>
-              { (template.readonly === "1") ? false : deleteLink }
+              { (template.readonly === '1') ? false : deleteLink }
             </li>
           );
         });

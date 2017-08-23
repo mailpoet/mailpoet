@@ -17,10 +17,10 @@ function printData(data) {
     return (<textarea
       readOnly={true}
       onFocus={handleFocus}
-      value={printableData.join("\n")}
+      value={printableData.join('\n')}
       style={{
-        width: "100%",
-        height: "400px",
+        width: '100%',
+        height: '400px',
       }}
     />);
   } else {
@@ -35,7 +35,7 @@ function KnowledgeBase() {
 
       <Tabs tab="systemInfo" />
 
-      <div className="mailpoet_notice notice inline notice-success" style={{ marginTop: "1em" }}>
+      <div className="mailpoet_notice notice inline notice-success" style={{ marginTop: '1em' }}>
         <p>{MailPoet.I18n.t('systemInfoIntro')}</p>
       </div>
 

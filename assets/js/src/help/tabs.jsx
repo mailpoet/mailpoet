@@ -41,6 +41,6 @@ function Tabs(props) {
 };
 
 Tabs.propTypes = { tab: React.PropTypes.string };
-Tabs.defaultProps = { tab: "knowledgeBase" };
+Tabs.defaultProps = { tab: 'knowledgeBase' };
 
 module.exports = Tabs;
