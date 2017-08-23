@@ -1,7 +1,9 @@
 <?php
+
 namespace MailPoet\Test\Router\Endpoints;
 
 use Codeception\Util\Stub;
+use MailPoet\Config\AccessControl;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
@@ -33,7 +35,7 @@ class ViewInBrowserTest extends \MailPoetTest {
       'preview' => false
     );
     // instantiate class
-    $this->view_in_browser = new ViewInBrowser($this->browser_preview_data);
+    $this->view_in_browser = new ViewInBrowser($this->browser_preview_data, new AccessControl());
   }
 
   function testItAbortsWhenBrowserPreviewDataIsMissing() {
@@ -123,6 +125,7 @@ class ViewInBrowserTest extends \MailPoetTest {
   }
 
   function testItDoesNotRequireWpAdministratorToBeOnProcessedListWhenPreviewIsEnabled() {
+    $view_in_browser = $this->view_in_browser;
     $data = (object)array_merge(
       $this->browser_preview_data,
       array(
@@ -132,19 +135,25 @@ class ViewInBrowserTest extends \MailPoetTest {
       )
     );
     $data->preview = true;
+
     // when WP user is not logged, false should be returned
-    expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
+    expect($view_in_browser->_validateBrowserPreviewData($data))->false();
+
     // when WP user is logged in but does not have 'manage options' permission, false should be returned
     wp_set_current_user(1);
     $wp_user = wp_get_current_user();
     $wp_user->remove_role('administrator');
+    $view_in_browser->access_control = new AccessControl();
     expect($this->view_in_browser->_validateBrowserPreviewData($data))->false();
+
     // when WP user is logged and has 'manage options' permission, data should be returned
     $wp_user->add_role('administrator');
-    expect($this->view_in_browser->_validateBrowserPreviewData($data))->equals($data);
+    $view_in_browser->access_control = new AccessControl();
+    expect($view_in_browser->_validateBrowserPreviewData($data))->equals($data);
   }
 
   function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
+    $view_in_browser = $this->view_in_browser;
     $data = (object)array_merge(
       $this->browser_preview_data,
       array(
@@ -155,7 +164,8 @@ class ViewInBrowserTest extends \MailPoetTest {
     );
     $data->preview = true;
     wp_set_current_user(1);
-    $result = $this->view_in_browser->_validateBrowserPreviewData($data);
+    $view_in_browser->access_control = new AccessControl();
+    $result = $view_in_browser->_validateBrowserPreviewData($data);
     expect($result->subscriber->id)->equals(1);
   }
 

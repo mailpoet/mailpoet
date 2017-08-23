@@ -1,7 +1,9 @@
 <?php
+
 namespace MailPoet\Test\Router;
 
 use Codeception\Util\Stub;
+use MailPoet\Config\AccessControl;
 use MailPoet\Router\Router;
 
 require_once('RouterTestMockEndpoint.php');
@@ -29,7 +31,7 @@ class RouterTest extends \MailPoetTest {
     $router = new Router();
     expect($router->api_request)->equals(true);
     expect($router->endpoint)->equals('viewInBrowser');
-    expect($router->action)->equals('view');
+    expect($router->endpoint_action)->equals('view');
     expect($router->data)->equals($data);
   }
 
@@ -92,6 +94,87 @@ class RouterTest extends \MailPoetTest {
     );
   }
 
+  function testItValidatesGlobalPermission() {
+    $access_control = new AccessControl();
+    $router = $this->router;
+
+    $permissions = array(
+      'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
+    );
+    $access_control->user_roles = array();
+    $router->access_control = $access_control;
+    expect($router->validatePermissions(null, $permissions))->false();
+
+    $access_control->user_roles = $access_control->permissions[AccessControl::PERMISSION_MANAGE_SETTINGS];
+    $router->access_control = $access_control;
+    expect($router->validatePermissions(null, $permissions))->true();
+  }
+
+  function testItValidatesEndpointActionPermission() {
+    $access_control = new AccessControl();
+    $router = $this->router;
+
+    $permissions = array(
+      'global' => null,
+      'actions' => array(
+        'test' => AccessControl::PERMISSION_MANAGE_SETTINGS
+      )
+    );
+
+    $access_control->user_roles = array();
+    $router->access_control = $access_control;
+    expect($router->validatePermissions('test', $permissions))->false();
+
+    $access_control->user_roles = $access_control->permissions[AccessControl::PERMISSION_MANAGE_SETTINGS];
+    $router->access_control = $access_control;
+    expect($router->validatePermissions('test', $permissions))->true();
+  }
+
+  function testItValidatesPermissionBeforeProcessingEndpointAction() {
+    $router = Stub::construct(
+      new Router(),
+      array($this->router_data),
+      array(
+        'validatePermissions' => function($action, $permissions) {
+          expect($action)->equals($this->router_data['action']);
+          expect($permissions)->equals(
+            array(
+              'global' => AccessControl::NO_ACCESS_RESTRICTION
+            )
+          );
+          return true;
+        }
+      )
+    );
+    $result = $router->init();
+    expect($result)->equals(
+      array('data' => 'dummy data')
+    );
+  }
+
+  function testItReturnsForbiddenResponseWhenPermissionFailsValidation() {
+    $router = Stub::construct(
+      new Router(),
+      array($this->router_data),
+      array(
+        'validatePermissions' => false,
+        'terminateRequest' => function($code, $error) {
+          return array(
+            $code,
+            $error
+          );
+        }
+      )
+    );
+    $result = $router->init();
+    expect($result)->equals(
+      array(
+        403,
+        'You do not have the required permissions.'
+      )
+    );
+  }
+
   function testItCallsEndpointAction() {
     $data = array('data' => 'dummy data');
     $result = $this->router->init();
@@ -99,8 +182,7 @@ class RouterTest extends \MailPoetTest {
   }
 
   function testItExecutesUrlParameterConflictResolverAction() {
-    $data = array('data' => 'dummy data');
-    $result = $this->router->init();
+    $this->router->init();
     expect((boolean)did_action('mailpoet_conflict_resolver_router_url_query_parameters'))->true();
   }
 
