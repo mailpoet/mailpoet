@@ -1,5 +1,7 @@
 <?php
+
 namespace MailPoet\Config;
+
 use MailPoet\Models\Form;
 
 if(!defined('ABSPATH')) exit;
@@ -113,10 +115,20 @@ class Widget {
       'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false)
     ));
 
-    $ajaxFailedErrorMessage = __('An error has happened while performing a request, please try again later.');
+    $ajax_failed_error_message = __('An error has happened while performing a request, please try again later.');
+    $inline_script = <<<EOL
+function initMailpoetTranslation() {
+  if(typeof MailPoet !== 'undefined') {
+    MailPoet.I18n.add('ajaxFailedErrorMessage', '%s')
+  } else {
+    setTimeout(waitForElement, 250);
+  }
+}
+setTimeout(initMailpoetTranslation, 250);
+EOL;
     wp_add_inline_script(
       'mailpoet_public',
-      sprintf('MailPoet.I18n.add("ajaxFailedErrorMessage", "%s")', $ajaxFailedErrorMessage),
+      sprintf($inline_script, $ajax_failed_error_message),
       'after'
     );
   }
