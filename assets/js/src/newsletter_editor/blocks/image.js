@@ -44,11 +44,30 @@ define([
       }, base.BlockView.prototype.templateContext.apply(this));
     },
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
-      ShowSettingsBehavior: {}
+      ResizableBehavior: {
+        elementSelector: '.mailpoet_image',
+        resizeHandleSelector: '.mailpoet_resize_handle',
+        minLength: 36,
+        maxLength: 660,
+        modelField: 'width',
+        transformationFunction: function(event) { return event.dx; }
+      },
+      ShowSettingsBehavior: {
+        ignoreFrom: '.mailpoet_resize_handle'
+      }
     }),
-    onRender: function () {
+    initialize: function() {
+      base.BlockView.prototype.initialize.apply(this, arguments);
+      this.listenTo(this.model, 'change:width', this.changeWidth);
+    },
+    changeWidth: function() {
+        this.$('.mailpoet_resize_handle_text').text(this.model.get('width'));      
+    },
+    onRender: function() {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
+      this.$('.mailpoet_resize_handle').css('padding-right', '20px');
+      this.$('.mailpoet_resize_handle').css('cursor', 'ew-resize');
 
       if (this.model.get('fullWidth')) {
         this.$el.addClass('mailpoet_full_image');
@@ -82,10 +101,17 @@ define([
         'change .mailpoet_field_image_full_width': _.partial(this.changeBoolCheckboxField, 'fullWidth'),
         'change .mailpoet_field_image_alignment': _.partial(this.changeField, 'styles.block.textAlign'),
         'click .mailpoet_field_image_select_another_image': 'showMediaManager',
-        'click .mailpoet_done_editing': 'close'
+        'click .mailpoet_done_editing': 'close',
+        'input .mailpoet_field_image_width': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width_input', _.partial(this.changePixelField, 'width').bind(this)),
+        'change .mailpoet_field_image_width': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width_input', _.partial(this.changePixelField, 'width').bind(this)),
+        'input .mailpoet_field_image_width_input': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width', _.partial(this.changePixelField, 'width').bind(this))
       };
     },
-    initialize: function (options) {
+    updateValueAndCall: function(fieldToUpdate, callable, event) {
+      this.$(fieldToUpdate).val(jQuery(event.target).val());
+      callable(event);
+    },
+    initialize: function(options) {
       base.BlockSettingsView.prototype.initialize.apply(this, arguments);
 
       if (options.showImageManager) {

@@ -14,8 +14,9 @@ define([
     defaults: {
       elementSelector: null,
       resizeHandleSelector: true, // true will use edges of the element itself
-      transformationFunction: function (y) { return y; },
+      transformationFunction: function(event) { return event.dy; },
       minLength: 0,
+      maxLength: Infinity,
       modelField: 'styles.block.height'
     },
     events: {
@@ -45,9 +46,10 @@ define([
         that.$el.addClass('mailpoet_resize_active');
       }).on('resizemove', function (event) {
         var currentLength = parseFloat(that.view.model.get(that.options.modelField)),
-          newLength = currentLength + that.options.transformationFunction(event.dy);
+          newLength = currentLength + that.options.transformationFunction(event);
 
         if (newLength < that.options.minLength) newLength = that.options.minLength;
+        if (newLength > that.options.maxLength) newLength = that.options.maxLength;
 
         that.view.model.set(that.options.modelField, newLength + 'px');
       })

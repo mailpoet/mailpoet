@@ -24,6 +24,15 @@
     </label>
 </div>
 <div class="mailpoet_form_field">
+    <label>
+        <div class="mailpoet_form_field_title"><%= __('Width') %></div>
+        <div class="mailpoet_form_field_input_option">
+            <input type="number" name="border-width-input" class="mailpoet_input mailpoet_input_small mailpoet_field_image_width_input" value="{{getNumber model.width}}" min="32" max="660" step="2" /> px
+            <input type="range" min="32" max="660" step="2" name="border-width" class="mailpoet_range mailpoet_range_small mailpoet_field_image_width" value="{{getNumber model.width}}" />
+        </div>
+    </label>
+</div>
+<div class="mailpoet_form_field">
     <div class="mailpoet_form_field_checkbox_option">
         <label>
             <input type="checkbox" name="fullWidth" class="mailpoet_field_image_full_width" value="true" {{#if model.fullWidth }}CHECKED{{/if}}/>
