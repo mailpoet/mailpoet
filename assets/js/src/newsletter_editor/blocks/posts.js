@@ -37,7 +37,7 @@ define([
     DividerBlock
   ) {
 
-  "use strict";
+  'use strict';
 
   var Module = {},
       base = BaseBlock;
@@ -176,7 +176,7 @@ define([
   });
 
   Module.PostsBlockView = base.BlockView.extend({
-    className: "mailpoet_block mailpoet_posts_block mailpoet_droppable_block",
+    className: 'mailpoet_block mailpoet_posts_block mailpoet_droppable_block',
     getTemplate: function() { return templates.postsBlock; },
     modelEvents: {}, // Forcefully disable all events
     regions: _.extend({
@@ -462,25 +462,25 @@ define([
     getTemplate: function() { return templates.displayOptionsPostsBlockSettings; },
     events: function() {
       return {
-        "click .mailpoet_posts_select_button": 'showButtonSettings',
-        "click .mailpoet_posts_select_divider": 'showDividerSettings',
-        "change .mailpoet_posts_read_more_type": 'changeReadMoreType',
-        "change .mailpoet_posts_display_type": 'changeDisplayType',
-        "change .mailpoet_posts_title_format": 'changeTitleFormat',
-        "change .mailpoet_posts_title_as_links": _.partial(this.changeBoolField, 'titleIsLink'),
-        "change .mailpoet_posts_show_divider": _.partial(this.changeBoolField, 'showDivider'),
-        "input .mailpoet_posts_show_amount": _.partial(this.changeField, "amount"),
-        "change .mailpoet_posts_content_type": _.partial(this.changeField, "contentType"),
-        "change .mailpoet_posts_include_or_exclude": _.partial(this.changeField, "inclusionType"),
-        "change .mailpoet_posts_title_alignment": _.partial(this.changeField, "titleAlignment"),
-        "change .mailpoet_posts_image_full_width": _.partial(this.changeBoolField, "imageFullWidth"),
-        "change .mailpoet_posts_featured_image_position": _.partial(this.changeField, "featuredImagePosition"),
-        "change .mailpoet_posts_show_author": _.partial(this.changeField, "showAuthor"),
-        "input .mailpoet_posts_author_preceded_by": _.partial(this.changeField, "authorPrecededBy"),
-        "change .mailpoet_posts_show_categories": _.partial(this.changeField, "showCategories"),
-        "input .mailpoet_posts_categories": _.partial(this.changeField, "categoriesPrecededBy"),
-        "input .mailpoet_posts_read_more_text": _.partial(this.changeField, "readMoreText"),
-        "change .mailpoet_posts_sort_by": _.partial(this.changeField, "sortBy")
+        'click .mailpoet_posts_select_button': 'showButtonSettings',
+        'click .mailpoet_posts_select_divider': 'showDividerSettings',
+        'change .mailpoet_posts_read_more_type': 'changeReadMoreType',
+        'change .mailpoet_posts_display_type': 'changeDisplayType',
+        'change .mailpoet_posts_title_format': 'changeTitleFormat',
+        'change .mailpoet_posts_title_as_links': _.partial(this.changeBoolField, 'titleIsLink'),
+        'change .mailpoet_posts_show_divider': _.partial(this.changeBoolField, 'showDivider'),
+        'input .mailpoet_posts_show_amount': _.partial(this.changeField, 'amount'),
+        'change .mailpoet_posts_content_type': _.partial(this.changeField, 'contentType'),
+        'change .mailpoet_posts_include_or_exclude': _.partial(this.changeField, 'inclusionType'),
+        'change .mailpoet_posts_title_alignment': _.partial(this.changeField, 'titleAlignment'),
+        'change .mailpoet_posts_image_full_width': _.partial(this.changeBoolField, 'imageFullWidth'),
+        'change .mailpoet_posts_featured_image_position': _.partial(this.changeField, 'featuredImagePosition'),
+        'change .mailpoet_posts_show_author': _.partial(this.changeField, 'showAuthor'),
+        'input .mailpoet_posts_author_preceded_by': _.partial(this.changeField, 'authorPrecededBy'),
+        'change .mailpoet_posts_show_categories': _.partial(this.changeField, 'showCategories'),
+        'input .mailpoet_posts_categories': _.partial(this.changeField, 'categoriesPrecededBy'),
+        'input .mailpoet_posts_read_more_text': _.partial(this.changeField, 'readMoreText'),
+        'change .mailpoet_posts_sort_by': _.partial(this.changeField, 'sortBy')
       };
     },
     templateContext: function() {

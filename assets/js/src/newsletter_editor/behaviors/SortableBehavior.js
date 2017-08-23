@@ -16,7 +16,7 @@ define([
 
       if (_.isFunction(this.$el.sortable)) {
         this.$el.sortable({
-          cursor: "move",
+          cursor: 'move',
           start: function(event, ui) {
             ui.item.data('previousIndex', ui.item.index());
           },

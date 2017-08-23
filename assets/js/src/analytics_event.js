@@ -18,7 +18,7 @@
 var eventsCache = [];
 
 function track(name, data){
-  if (typeof window.mixpanel.track !== "function") {
+  if (typeof window.mixpanel.track !== 'function') {
     window.mixpanel.init(window.mixpanelTrackingId);
   }
   window.mixpanel.track(name, data);
@@ -44,7 +44,7 @@ function trackCachedEvents() {
 }
 
 function initializeMixpanelWhenLoaded() {
-  if (typeof window.mixpanel === "object") {
+  if (typeof window.mixpanel === 'object') {
     exportMixpanel(MailPoet);
     trackCachedEvents();
   } else {

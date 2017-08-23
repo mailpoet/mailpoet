@@ -14,7 +14,7 @@ define([
     'modal'
   ], function(App, Marionette, SuperModel, _, jQuery, MailPoet, Modal) {
 
-  "use strict";
+  'use strict';
 
   var Module = {},
       AugmentedView = Marionette.View.extend({});
@@ -55,8 +55,8 @@ define([
       'duplicate': 'duplicateBlock'
     },
     events: {
-      "mouseenter": "showTools",
-      "mouseleave": "hideTools"
+      'mouseenter': 'showTools',
+      'mouseleave': 'hideTools'
     },
     behaviors: {
       DraggableBehavior: {
@@ -180,11 +180,11 @@ define([
   Module.BlockToolsView = AugmentedView.extend({
     getTemplate: function() { return templates.genericBlockTools; },
     events: {
-      "click .mailpoet_edit_block": "changeSettings",
-      "click .mailpoet_delete_block_activate": "showDeletionConfirmation",
-      "click .mailpoet_delete_block_cancel": "hideDeletionConfirmation",
-      "click .mailpoet_delete_block_confirm": "deleteBlock",
-      "click .mailpoet_duplicate_block": "duplicateBlock"
+      'click .mailpoet_edit_block': 'changeSettings',
+      'click .mailpoet_delete_block_activate': 'showDeletionConfirmation',
+      'click .mailpoet_delete_block_cancel': 'hideDeletionConfirmation',
+      'click .mailpoet_delete_block_confirm': 'deleteBlock',
+      'click .mailpoet_duplicate_block': 'duplicateBlock'
     },
     // Markers of whether these particular tools will be used for this instance
     tools: {
@@ -298,7 +298,7 @@ define([
     behaviors: {
       DraggableBehavior: {
         drop: function() {
-          throw "Unsupported operation";
+          throw 'Unsupported operation';
         }
       }
     }

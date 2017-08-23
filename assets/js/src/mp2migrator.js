@@ -28,8 +28,8 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(mp, jQuery) {
         url: mailpoet_mp2_migrator.log_file_url,
         cache: false
       }).done(function (result) {
-        jQuery("#logger").html('');
-        result.split("\n").forEach(function (resultRow) {
+        jQuery('#logger').html('');
+        result.split('\n').forEach(function (resultRow) {
           var row = resultRow;
           if(row.substr(0, 7) === '[ERROR]' || row.substr(0, 9) === '[WARNING]' || row === MailPoet.I18n.t('import_stopped_by_user')) {
             row = '<span class="error_msg">' + row + '</span>'; // Mark the errors in red
@@ -39,10 +39,10 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(mp, jQuery) {
             jQuery('#import-actions').hide();
             jQuery('#upgrade-completed').show();
           }
-          jQuery("#logger").append(row + "<br />\n");
+          jQuery('#logger').append(row + '<br />\n');
 
         });
-        jQuery("#logger").append('<span class="error_msg">' + MailPoet.MP2Migrator.fatal_error + '</span>' + "<br />\n");
+        jQuery('#logger').append('<span class="error_msg">' + MailPoet.MP2Migrator.fatal_error + '</span>' + '<br />\n');
       }).always(function () {
         if(MailPoet.MP2Migrator.is_logging) {
           MailPoet.MP2Migrator.displayLogs_timeout = setTimeout(MailPoet.MP2Migrator.displayLogs, 1000);

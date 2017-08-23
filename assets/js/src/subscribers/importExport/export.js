@@ -13,7 +13,7 @@ define(
   Handlebars,
   select2
  ) {
-   if (!jQuery("#mailpoet_subscribers_export").length) {
+   if (!jQuery('#mailpoet_subscribers_export').length) {
      return;
    }
    jQuery(document).ready(function () {
@@ -27,11 +27,11 @@ define(
      jQuery('#mailpoet_subscribers_export > div.inside').html(subscribers_export_template(exportData));
 
      // define reusable variables
-     var segmentsContainerElement = jQuery("#export_lists"),
-      subscriberFieldsContainerElement = jQuery("#export_columns"),
+     var segmentsContainerElement = jQuery('#export_lists'),
+      subscriberFieldsContainerElement = jQuery('#export_columns'),
       exportConfirmedOptionElement = jQuery(':radio[name="option_confirmed"]'),
       groupBySegmentOptionElement = jQuery(':checkbox[name="option_group_by_list"]'),
-      nextStepButton = jQuery("a.mailpoet_export_process"),
+      nextStepButton = jQuery('a.mailpoet_export_process'),
       renderSegmentsAndFields = function (container, data) {
         if (container.data('select2')) {
           container
@@ -107,7 +107,7 @@ define(
        'first_name',
        'last_name',
        'status'
-     ]).trigger("change");
+     ]).trigger('change');
 
      exportConfirmedOptionElement.change(function () {
        var selectedSegments = segmentsContainerElement.val();
@@ -144,7 +144,7 @@ define(
           data: JSON.stringify({
             'export_confirmed_option': exportData.exportConfirmedOption,
             'export_format_option': jQuery(':radio[name="option_format"]:checked').val(),
-            'group_by_segment_option': (groupBySegmentOptionElement.is(":visible")) ? groupBySegmentOptionElement.prop('checked') : false,
+            'group_by_segment_option': (groupBySegmentOptionElement.is(':visible')) ? groupBySegmentOptionElement.prop('checked') : false,
             'segments': (exportData.segments) ? segmentsContainerElement.val() : false,
             'subscriber_fields': subscriberFieldsContainerElement.val()
           })

@@ -20,7 +20,7 @@ define([
     StickyKit
   ) {
 
-  "use strict";
+  'use strict';
 
   var Module = {};
 
@@ -69,7 +69,7 @@ define([
           'slideUp',
           {
             duration: 250,
-            easing: "easeOut",
+            easing: 'easeOut',
             complete: function() {
               $openRegion.addClass('closed');
             }.bind(this)
@@ -81,7 +81,7 @@ define([
             'slideDown',
             {
               duration: 250,
-              easing: "easeIn",
+              easing: 'easeIn',
               complete: function() {
                 $targetRegion.removeClass('closed');
               }
@@ -180,40 +180,40 @@ define([
     },
     events: function() {
       return {
-        "change #mailpoet_text_font_color": _.partial(this.changeColorField, 'text.fontColor'),
-        "change #mailpoet_text_font_family": function(event) {
+        'change #mailpoet_text_font_color': _.partial(this.changeColorField, 'text.fontColor'),
+        'change #mailpoet_text_font_family': function(event) {
           this.model.set('text.fontFamily', event.target.value);
         },
-        "change #mailpoet_text_font_size": function(event) {
+        'change #mailpoet_text_font_size': function(event) {
           this.model.set('text.fontSize', event.target.value);
         },
-        "change #mailpoet_h1_font_color": _.partial(this.changeColorField, 'h1.fontColor'),
-        "change #mailpoet_h1_font_family": function(event) {
+        'change #mailpoet_h1_font_color': _.partial(this.changeColorField, 'h1.fontColor'),
+        'change #mailpoet_h1_font_family': function(event) {
           this.model.set('h1.fontFamily', event.target.value);
         },
-        "change #mailpoet_h1_font_size": function(event) {
+        'change #mailpoet_h1_font_size': function(event) {
           this.model.set('h1.fontSize', event.target.value);
         },
-        "change #mailpoet_h2_font_color": _.partial(this.changeColorField, 'h2.fontColor'),
-        "change #mailpoet_h2_font_family": function(event) {
+        'change #mailpoet_h2_font_color': _.partial(this.changeColorField, 'h2.fontColor'),
+        'change #mailpoet_h2_font_family': function(event) {
           this.model.set('h2.fontFamily', event.target.value);
         },
-        "change #mailpoet_h2_font_size": function(event) {
+        'change #mailpoet_h2_font_size': function(event) {
           this.model.set('h2.fontSize', event.target.value);
         },
-        "change #mailpoet_h3_font_color": _.partial(this.changeColorField, 'h3.fontColor'),
-        "change #mailpoet_h3_font_family": function(event) {
+        'change #mailpoet_h3_font_color': _.partial(this.changeColorField, 'h3.fontColor'),
+        'change #mailpoet_h3_font_family': function(event) {
           this.model.set('h3.fontFamily', event.target.value);
         },
-        "change #mailpoet_h3_font_size": function(event) {
+        'change #mailpoet_h3_font_size': function(event) {
           this.model.set('h3.fontSize', event.target.value);
         },
-        "change #mailpoet_a_font_color": _.partial(this.changeColorField, 'link.fontColor'),
-        "change #mailpoet_a_font_underline": function(event) {
+        'change #mailpoet_a_font_color': _.partial(this.changeColorField, 'link.fontColor'),
+        'change #mailpoet_a_font_underline': function(event) {
           this.model.set('link.textDecoration', (event.target.checked) ? event.target.value : 'none');
         },
-        "change #mailpoet_newsletter_background_color": _.partial(this.changeColorField, 'wrapper.backgroundColor'),
-        "change #mailpoet_background_color": _.partial(this.changeColorField, 'body.backgroundColor')
+        'change #mailpoet_newsletter_background_color': _.partial(this.changeColorField, 'wrapper.backgroundColor'),
+        'change #mailpoet_background_color': _.partial(this.changeColorField, 'body.backgroundColor')
       };
     },
     templateContext: function() {

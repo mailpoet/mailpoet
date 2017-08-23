@@ -112,7 +112,7 @@ define(
            *  Paste
            */
           pasteInputElement
-              .attr('value', pasteInputPlaceholderElement).css('color', "#999")
+              .attr('value', pasteInputPlaceholderElement).css('color', '#999')
               .focus(function () {
                 if (jQuery(this).val() === pasteInputPlaceholderElement) {
                   jQuery(this).attr('value', '').css('color', '#222');
@@ -120,7 +120,7 @@ define(
               })
               .blur(function () {
                 if (jQuery(this).val() === '') {
-                  jQuery(this).attr('value', pasteInputPlaceholderElement).css('color', "#999");
+                  jQuery(this).attr('value', pasteInputPlaceholderElement).css('color', '#999');
                 }
               })
               .keyup(function () {
@@ -378,7 +378,7 @@ define(
                         processedSubscribers[0] = rowData;
                       }
                     }
-                    else if (rowData[emailColumnPosition] !== "") {
+                    else if (rowData[emailColumnPosition] !== '') {
                       var email = detectAndCleanupEmail(rowData[emailColumnPosition]);
                       if (_.has(parsedEmails, email)) {
                         duplicateEmails.push(email);
@@ -512,7 +512,7 @@ define(
                 var details = jQuery('.mailpoet_subscribers_data_parse_results_details');
                 jQuery(details).toggle();
                 this.text =
-                    (jQuery(details).is(":visible"))
+                    (jQuery(details).is(':visible'))
                         ? MailPoet.I18n.t('hideDetails')
                         : MailPoet.I18n.t('showDetails');
               });
@@ -626,7 +626,7 @@ define(
 
           // register partial template that will contain subscribers data
           Handlebars.registerPartial(
-              "subscribers_data_template_partial",
+              'subscribers_data_template_partial',
               subscribersDataTemplatePartial
           );
 

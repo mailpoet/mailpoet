@@ -13,12 +13,12 @@ define([
   BL.TextEditorBehavior = Marionette.Behavior.extend({
     defaults: {
       selector: '.mailpoet_content',
-      toolbar1: "bold italic link unlink forecolor mailpoet_shortcodes",
-      toolbar2: "",
-      validElements: "p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br",
-      invalidElements: "script",
+      toolbar1: 'bold italic link unlink forecolor mailpoet_shortcodes',
+      toolbar2: '',
+      validElements: 'p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br',
+      invalidElements: 'script',
       blockFormats: 'Paragraph=p',
-      plugins: "link textcolor colorpicker mailpoet_shortcodes",
+      plugins: 'link textcolor colorpicker mailpoet_shortcodes',
       configurationFilter: function(originalConfig) { return originalConfig; }
     },
     onDomRefresh: function() {

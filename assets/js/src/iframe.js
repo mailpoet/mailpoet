@@ -17,7 +17,7 @@ define('iframe', ['mailpoet'], function(mp) {
 
       iframe.style.height = (
         parseInt(i, 10) + this.marginY
-      ) + "px";
+      ) + 'px';
     }
   };
 

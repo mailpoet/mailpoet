@@ -2,7 +2,7 @@ function requestFailed(errorMessage, xhr) {
   if (xhr.responseJSON) {
     return xhr.responseJSON;
   }
-  var message = errorMessage.replace("%d", xhr.status);
+  var message = errorMessage.replace('%d', xhr.status);
   return {
     errors: [
       {

@@ -46,8 +46,8 @@ tinymce.PluginManager.add('mailpoet_shortcodes', function(editor, url) {
 
       // Open window
       editor.windowManager.open({
-        height: parseInt(editor.getParam("plugin_mailpoet_shortcodes_height", 400)),
-        width: parseInt(editor.getParam("plugin_mailpoet_shortcodes_width", 450)),
+        height: parseInt(editor.getParam('plugin_mailpoet_shortcodes_height', 400)),
+        width: parseInt(editor.getParam('plugin_mailpoet_shortcodes_width', 450)),
         autoScroll: true,
         title: editor.settings.mailpoet_shortcodes_window_title,
         body: shortcodes,

@@ -11,7 +11,7 @@ define([
     'jquery'
   ], function(App, BaseBlock, Backbone, Marionette, SuperModel, _, jQuery) {
 
-  "use strict";
+  'use strict';
 
   var Module = {},
       base = BaseBlock,
@@ -138,7 +138,7 @@ define([
     },
     events: function() {
       return {
-        "click .mailpoet_done_editing": "close"
+        'click .mailpoet_done_editing': 'close'
       };
     },
     initialize: function() {
@@ -158,11 +158,11 @@ define([
     getTemplate: function() { return templates.socialSettingsIcon; },
     events: function() {
       return {
-        "click .mailpoet_delete_block": "deleteIcon",
-        "change .mailpoet_social_icon_field_type": _.partial(this.changeField, "iconType"),
-        "input .mailpoet_social_icon_field_image": _.partial(this.changeField, "image"),
-        "input .mailpoet_social_icon_field_link": this.changeLink,
-        "input .mailpoet_social_icon_field_text": _.partial(this.changeField, "text")
+        'click .mailpoet_delete_block': 'deleteIcon',
+        'change .mailpoet_social_icon_field_type': _.partial(this.changeField, 'iconType'),
+        'input .mailpoet_social_icon_field_image': _.partial(this.changeField, 'image'),
+        'input .mailpoet_social_icon_field_link': this.changeLink,
+        'input .mailpoet_social_icon_field_text': _.partial(this.changeField, 'text')
       };
     },
     modelEvents: {

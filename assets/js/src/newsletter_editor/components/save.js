@@ -22,7 +22,7 @@ define([
     html2canvas
   ) {
 
-  "use strict";
+  'use strict';
 
   var Module = {},
       saveTimeout;
@@ -82,8 +82,8 @@ define([
       // Removes 1px left transparent border from resulting canvas.
 
       var oldContext = oldCanvas.getContext('2d'),
-          newCanvas = document.createElement("canvas"),
-          newContext = newCanvas.getContext("2d"),
+          newCanvas = document.createElement('canvas'),
+          newContext = newCanvas.getContext('2d'),
           leftBorderWidth = 1;
 
       newCanvas.width = oldCanvas.width;
@@ -300,8 +300,8 @@ define([
 
       var contents = JSON.stringify(jsonObject);
       if (App.getConfig().get('validation.validateUnsubscribeLinkPresent') &&
-          contents.indexOf("[link:subscription_unsubscribe_url]") < 0 &&
-          contents.indexOf("[link:subscription_unsubscribe]") < 0) {
+          contents.indexOf('[link:subscription_unsubscribe_url]') < 0 &&
+          contents.indexOf('[link:subscription_unsubscribe]') < 0) {
         this.showValidationError(MailPoet.I18n.t('unsubscribeLinkMissing'));
         return;
       }

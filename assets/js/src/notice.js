@@ -1,5 +1,5 @@
 define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
-  "use strict";
+  'use strict';
   /*==================================================================================================
 
       MailPoet Notice:
