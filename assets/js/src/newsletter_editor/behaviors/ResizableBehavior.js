@@ -19,8 +19,8 @@ define([
       modelField: 'styles.block.height'
     },
     events: {
-      "mouseenter": 'showResizeHandle',
-      "mouseleave": 'hideResizeHandle'
+      'mouseenter': 'showResizeHandle',
+      'mouseleave': 'hideResizeHandle'
     },
     onRender: function() {
       this.attachResize();

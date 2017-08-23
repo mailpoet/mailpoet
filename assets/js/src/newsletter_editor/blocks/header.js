@@ -7,7 +7,7 @@ define([
     'underscore'
   ], function(App, BaseBlock, _) {
 
-  "use strict";
+  'use strict';
 
   var Module = {},
       base = BaseBlock;
@@ -37,7 +37,7 @@ define([
   });
 
   Module.HeaderBlockView = base.BlockView.extend({
-    className: "mailpoet_block mailpoet_header_block mailpoet_droppable_block",
+    className: 'mailpoet_block mailpoet_header_block mailpoet_droppable_block',
     getTemplate: function() { return templates.headerBlock; },
     modelEvents: _.extend({
       'change:styles.block.backgroundColor change:styles.text.fontColor change:styles.text.fontFamily change:styles.text.fontSize change:styles.text.textAlign change:styles.link.fontColor change:styles.link.textDecoration': 'render'
@@ -78,16 +78,16 @@ define([
     getTemplate: function() { return templates.headerBlockSettings; },
     events: function() {
       return {
-        "change .mailpoet_field_header_text_color": _.partial(this.changeColorField, "styles.text.fontColor"),
-        "change .mailpoet_field_header_text_font_family": _.partial(this.changeField, "styles.text.fontFamily"),
-        "change .mailpoet_field_header_text_size": _.partial(this.changeField, "styles.text.fontSize"),
-        "change #mailpoet_field_header_link_color": _.partial(this.changeColorField, "styles.link.fontColor"),
-        "change #mailpoet_field_header_link_underline": function(event) {
+        'change .mailpoet_field_header_text_color': _.partial(this.changeColorField, 'styles.text.fontColor'),
+        'change .mailpoet_field_header_text_font_family': _.partial(this.changeField, 'styles.text.fontFamily'),
+        'change .mailpoet_field_header_text_size': _.partial(this.changeField, 'styles.text.fontSize'),
+        'change #mailpoet_field_header_link_color': _.partial(this.changeColorField, 'styles.link.fontColor'),
+        'change #mailpoet_field_header_link_underline': function(event) {
           this.model.set('styles.link.textDecoration', (event.target.checked) ? event.target.value : 'none');
         },
-        "change .mailpoet_field_header_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
-        "change .mailpoet_field_header_alignment": _.partial(this.changeField, "styles.text.textAlign"),
-        "click .mailpoet_done_editing": "close"
+        'change .mailpoet_field_header_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
+        'change .mailpoet_field_header_alignment': _.partial(this.changeField, 'styles.text.textAlign'),
+        'click .mailpoet_done_editing': 'close'
       };
     },
     templateContext: function() {

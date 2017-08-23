@@ -694,7 +694,7 @@ WysijaForm.DraggableItem = Class.create({
     return this.element.up('ul');
   },
   insert: function() {
-    $$("body")[0].insert(this.clone);
+    $$('body')[0].insert(this.clone);
   },
   onMousedown: function(event) {
     var draggable = new Draggable(this.clone, {

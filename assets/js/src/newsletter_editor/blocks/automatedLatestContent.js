@@ -28,7 +28,7 @@ define([
     jQuery
   ) {
 
-  "use strict";
+  'use strict';
 
   var Module = {},
       base = BaseBlock;
@@ -128,12 +128,12 @@ define([
   });
 
   Module.AutomatedLatestContentBlockView = base.BlockView.extend({
-    className: "mailpoet_block mailpoet_automated_latest_content_block mailpoet_droppable_block",
+    className: 'mailpoet_block mailpoet_automated_latest_content_block mailpoet_droppable_block',
     initialize: function() {
       function replaceButtonStylesHandler(data) {
-        this.model.set({"readMoreButton": data});
+        this.model.set({'readMoreButton': data});
       }
-      App.getChannel().on("replaceAllButtonStyles", replaceButtonStylesHandler.bind(this));
+      App.getChannel().on('replaceAllButtonStyles', replaceButtonStylesHandler.bind(this));
     },
     getTemplate: function() { return templates.automatedLatestContentBlock; },
     regions: {
@@ -171,28 +171,28 @@ define([
     getTemplate: function() { return templates.automatedLatestContentBlockSettings; },
     events: function() {
       return {
-        "click .mailpoet_automated_latest_content_hide_display_options": 'toggleDisplayOptions',
-        "click .mailpoet_automated_latest_content_show_display_options": 'toggleDisplayOptions',
-        "click .mailpoet_automated_latest_content_select_button": 'showButtonSettings',
-        "click .mailpoet_automated_latest_content_select_divider": 'showDividerSettings',
-        "change .mailpoet_automated_latest_content_read_more_type": 'changeReadMoreType',
-        "change .mailpoet_automated_latest_content_display_type": 'changeDisplayType',
-        "change .mailpoet_automated_latest_content_title_format": 'changeTitleFormat',
-        "change .mailpoet_automated_latest_content_title_as_links": _.partial(this.changeBoolField, 'titleIsLink'),
-        "change .mailpoet_automated_latest_content_show_divider": _.partial(this.changeBoolField, 'showDivider'),
-        "input .mailpoet_automated_latest_content_show_amount": _.partial(this.changeField, "amount"),
-        "change .mailpoet_automated_latest_content_content_type": _.partial(this.changeField, "contentType"),
-        "change .mailpoet_automated_latest_content_include_or_exclude": _.partial(this.changeField, "inclusionType"),
-        "change .mailpoet_automated_latest_content_title_alignment": _.partial(this.changeField, "titleAlignment"),
-        "change .mailpoet_automated_latest_content_image_full_width": _.partial(this.changeBoolField, "imageFullWidth"),
-        "change .mailpoet_automated_latest_content_featured_image_position": _.partial(this.changeField, "featuredImagePosition"),
-        "change .mailpoet_automated_latest_content_show_author": _.partial(this.changeField, "showAuthor"),
-        "input .mailpoet_automated_latest_content_author_preceded_by": _.partial(this.changeField, "authorPrecededBy"),
-        "change .mailpoet_automated_latest_content_show_categories": _.partial(this.changeField, "showCategories"),
-        "input .mailpoet_automated_latest_content_categories": _.partial(this.changeField, "categoriesPrecededBy"),
-        "input .mailpoet_automated_latest_content_read_more_text": _.partial(this.changeField, "readMoreText"),
-        "change .mailpoet_automated_latest_content_sort_by": _.partial(this.changeField, "sortBy"),
-        "click .mailpoet_done_editing": "close"
+        'click .mailpoet_automated_latest_content_hide_display_options': 'toggleDisplayOptions',
+        'click .mailpoet_automated_latest_content_show_display_options': 'toggleDisplayOptions',
+        'click .mailpoet_automated_latest_content_select_button': 'showButtonSettings',
+        'click .mailpoet_automated_latest_content_select_divider': 'showDividerSettings',
+        'change .mailpoet_automated_latest_content_read_more_type': 'changeReadMoreType',
+        'change .mailpoet_automated_latest_content_display_type': 'changeDisplayType',
+        'change .mailpoet_automated_latest_content_title_format': 'changeTitleFormat',
+        'change .mailpoet_automated_latest_content_title_as_links': _.partial(this.changeBoolField, 'titleIsLink'),
+        'change .mailpoet_automated_latest_content_show_divider': _.partial(this.changeBoolField, 'showDivider'),
+        'input .mailpoet_automated_latest_content_show_amount': _.partial(this.changeField, 'amount'),
+        'change .mailpoet_automated_latest_content_content_type': _.partial(this.changeField, 'contentType'),
+        'change .mailpoet_automated_latest_content_include_or_exclude': _.partial(this.changeField, 'inclusionType'),
+        'change .mailpoet_automated_latest_content_title_alignment': _.partial(this.changeField, 'titleAlignment'),
+        'change .mailpoet_automated_latest_content_image_full_width': _.partial(this.changeBoolField, 'imageFullWidth'),
+        'change .mailpoet_automated_latest_content_featured_image_position': _.partial(this.changeField, 'featuredImagePosition'),
+        'change .mailpoet_automated_latest_content_show_author': _.partial(this.changeField, 'showAuthor'),
+        'input .mailpoet_automated_latest_content_author_preceded_by': _.partial(this.changeField, 'authorPrecededBy'),
+        'change .mailpoet_automated_latest_content_show_categories': _.partial(this.changeField, 'showCategories'),
+        'input .mailpoet_automated_latest_content_categories': _.partial(this.changeField, 'categoriesPrecededBy'),
+        'input .mailpoet_automated_latest_content_read_more_text': _.partial(this.changeField, 'readMoreText'),
+        'change .mailpoet_automated_latest_content_sort_by': _.partial(this.changeField, 'sortBy'),
+        'click .mailpoet_done_editing': 'close'
       };
     },
     onRender: function() {

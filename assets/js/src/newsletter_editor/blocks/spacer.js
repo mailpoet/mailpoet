@@ -7,7 +7,7 @@ define([
     'underscore'
   ], function(App, BaseBlock, _) {
 
-  "use strict";
+  'use strict';
 
   var Module = {},
       base = BaseBlock;
@@ -27,7 +27,7 @@ define([
   });
 
   Module.SpacerBlockView = base.BlockView.extend({
-    className: "mailpoet_block mailpoet_spacer_block mailpoet_droppable_block",
+    className: 'mailpoet_block mailpoet_spacer_block mailpoet_droppable_block',
     getTemplate: function() { return templates.spacerBlock; },
     behaviors: _.defaults({
       ResizableBehavior: {
@@ -69,8 +69,8 @@ define([
     getTemplate: function() { return templates.spacerBlockSettings; },
     events: function() {
       return {
-        "change .mailpoet_field_spacer_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
-        "click .mailpoet_done_editing": "close"
+        'change .mailpoet_field_spacer_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
+        'click .mailpoet_done_editing': 'close'
       };
     }
   });

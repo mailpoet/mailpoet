@@ -6,7 +6,7 @@ define([
     'jquery'
   ], function(App, Backbone, Marionette, _, jQuery) {
 
-  "use strict";
+  'use strict';
 
   var Module = {};
 
@@ -19,8 +19,8 @@ define([
     },
     events: function() {
       return {
-        'keyup .mailpoet_input_title': _.partial(this.changeField, "subject"),
-        'keyup .mailpoet_input_preheader': _.partial(this.changeField, "preheader")
+        'keyup .mailpoet_input_title': _.partial(this.changeField, 'subject'),
+        'keyup .mailpoet_input_preheader': _.partial(this.changeField, 'preheader')
       };
     },
     changeField: function(field, event) {
@@ -33,7 +33,7 @@ define([
     MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-subject-line'), {
       tooltipId: 'tooltip-designer-subject-line-ti',
       tooltip: MailPoet.I18n.t('helpTooltipDesignerSubjectLine'),
-      place: "right"
+      place: 'right'
     });
     MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-preheader'), {
       tooltipId: 'tooltip-designer-preheader-ti',

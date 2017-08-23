@@ -19,7 +19,7 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
           }
 
           // set date format
-          var f = block.hash.format || "MMM Do, YYYY";
+          var f = block.hash.format || 'MMM Do, YYYY';
           // check if we passed a timestamp
           if(parseInt(timestamp, 10) == timestamp) {
               return moment.unix(timestamp).format(f);
@@ -67,7 +67,7 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
   });
 
   Handlebars.registerHelper('nl2br', function(value, block) {
-      return value.gsub("\n", "<br />");
+      return value.gsub('\n', '<br />');
   });
 
   Handlebars.registerHelper('json_encode', function(value, block) {
@@ -78,7 +78,7 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
       return JSON.parse(value);
   });
   Handlebars.registerHelper('url', function(value, block) {
-      var url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+      var url = window.location.protocol + '//' + window.location.host + window.location.pathname;
 
       return url + value;
   });
@@ -99,7 +99,7 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
       // extract all lines into an array
       if(value === undefined) return '';
 
-      var lines = value.trim().split("\n");
+      var lines = value.trim().split('\n');
 
       // remove header & footer
       lines.shift();
@@ -148,10 +148,10 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
       case 'Courier New': return new Handlebars.SafeString("'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace");
       case 'Georgia': return new Handlebars.SafeString("Georgia, Times, 'Times New Roman', serif");
       case 'Lucida': return new Handlebars.SafeString("'Lucida Sans Unicode', 'Lucida Grande', sans-serif");
-      case 'Tahoma': return new Handlebars.SafeString("Tahoma, Verdana, Segoe, sans-serif");
+      case 'Tahoma': return new Handlebars.SafeString('Tahoma, Verdana, Segoe, sans-serif');
       case 'Times New Roman': return new Handlebars.SafeString("'Times New Roman', Times, Baskerville, Georgia, serif");
       case 'Trebuchet MS': return new Handlebars.SafeString("'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif");
-      case 'Verdana': return new Handlebars.SafeString("Verdana, Geneva, sans-serif");
+      case 'Verdana': return new Handlebars.SafeString('Verdana, Geneva, sans-serif');
       default: return font;
     }
   });

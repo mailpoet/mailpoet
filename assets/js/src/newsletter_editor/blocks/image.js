@@ -8,7 +8,7 @@ define([
     'mailpoet'
   ], function(App, BaseBlock, _, MailPoet) {
 
-  "use strict";
+  'use strict';
 
   var Module = {},
       base = BaseBlock,
@@ -34,7 +34,7 @@ define([
   });
 
   Module.ImageBlockView = base.BlockView.extend({
-    className: "mailpoet_block mailpoet_image_block mailpoet_droppable_block",
+    className: 'mailpoet_block mailpoet_image_block mailpoet_droppable_block',
     getTemplate: function() { return templates.imageBlock; },
     onDragSubstituteBy: function() { return Module.ImageWidgetView; },
     templateContext: function() {
@@ -75,13 +75,13 @@ define([
     getTemplate: function() { return templates.imageBlockSettings; },
     events: function() {
       return {
-        "input .mailpoet_field_image_link": _.partial(this.changeField, "link"),
-        "input .mailpoet_field_image_address": 'changeAddress',
-        "input .mailpoet_field_image_alt_text": _.partial(this.changeField, "alt"),
-        "change .mailpoet_field_image_full_width": _.partial(this.changeBoolCheckboxField, "fullWidth"),
-        "change .mailpoet_field_image_alignment": _.partial(this.changeField, "styles.block.textAlign"),
-        "click .mailpoet_field_image_select_another_image": "showMediaManager",
-        "click .mailpoet_done_editing": "close"
+        'input .mailpoet_field_image_link': _.partial(this.changeField, 'link'),
+        'input .mailpoet_field_image_address': 'changeAddress',
+        'input .mailpoet_field_image_alt_text': _.partial(this.changeField, 'alt'),
+        'change .mailpoet_field_image_full_width': _.partial(this.changeBoolCheckboxField, 'fullWidth'),
+        'change .mailpoet_field_image_alignment': _.partial(this.changeField, 'styles.block.textAlign'),
+        'click .mailpoet_field_image_select_another_image': 'showMediaManager',
+        'click .mailpoet_done_editing': 'close'
       };
     },
     initialize: function(options) {
@@ -331,7 +331,7 @@ define([
             height: mainSize.height + 'px',
             width: mainSize.width + 'px',
             src: mainSize.url,
-            alt: (attachment.get('alt') !== "" && attachment.get('alt') !== undefined) ? attachment.get('alt') : attachment.get('title')
+            alt: (attachment.get('alt') !== '' && attachment.get('alt') !== undefined) ? attachment.get('alt') : attachment.get('title')
           });
           // Rerender settings view due to changes from outside of settings view
           that.render();

@@ -12,7 +12,7 @@ define([
     'newsletter_editor/blocks/base'
   ], function(Backbone, Marionette, _, jQuery, App, BaseBlock) {
 
-  "use strict";
+  'use strict';
 
   var Module = {},
       base = BaseBlock,
@@ -105,7 +105,7 @@ define([
     className: 'mailpoet_block mailpoet_container_block mailpoet_droppable_block mailpoet_droppable_layout_block',
     getTemplate: function() { return templates.containerBlock; },
     events: _.extend({}, base.BlockView.prototype.events, {
-      "click .mailpoet_newsletter_layer_selector": "toggleEditingLayer"
+      'click .mailpoet_newsletter_layer_selector': 'toggleEditingLayer'
     }),
     ui: {
       tools: '> .mailpoet_tools'
@@ -237,8 +237,8 @@ define([
     getTemplate: function() { return templates.containerBlockSettings; },
     events: function() {
       return {
-        "change .mailpoet_field_container_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
-        "click .mailpoet_done_editing": "close"
+        'change .mailpoet_field_container_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
+        'click .mailpoet_done_editing': 'close'
       };
     },
     regions: {

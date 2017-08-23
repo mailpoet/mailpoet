@@ -4,7 +4,7 @@ define([
     'backbone.supermodel'
   ], function(App, Marionette, SuperModel) {
 
-  "use strict";
+  'use strict';
 
   var Module = {};
 

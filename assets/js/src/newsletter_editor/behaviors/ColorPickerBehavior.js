@@ -17,7 +17,7 @@ define([
         clickoutFiresChange: true,
         showInput: true,
         showInitial: true,
-        preferredFormat: "hex6",
+        preferredFormat: 'hex6',
         allowEmpty: true,
         chooseText: MailPoet.I18n.t('selectColor'),
         cancelText: MailPoet.I18n.t('cancelColorSelection')

@@ -9,7 +9,7 @@ define([
     'mailpoet'
   ], function(App, BaseBlock, _, jQuery, MailPoet) {
 
-  "use strict";
+  'use strict';
 
   var Module = {},
       base = BaseBlock;
@@ -32,7 +32,7 @@ define([
   });
 
   Module.DividerBlockView = base.BlockView.extend({
-    className: "mailpoet_block mailpoet_divider_block mailpoet_droppable_block",
+    className: 'mailpoet_block mailpoet_divider_block mailpoet_droppable_block',
     getTemplate: function() { return templates.dividerBlock; },
     modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'),
     behaviors: _.defaults({
@@ -87,16 +87,16 @@ define([
     getTemplate: function() { return templates.dividerBlockSettings; },
     events: function() {
       return {
-        "click .mailpoet_field_divider_style": 'changeStyle',
+        'click .mailpoet_field_divider_style': 'changeStyle',
 
-        "input .mailpoet_field_divider_border_width": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width_input', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
-        "change .mailpoet_field_divider_border_width": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width_input', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
-        "input .mailpoet_field_divider_border_width_input": _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width', _.partial(this.changePixelField, "styles.block.borderWidth").bind(this)),
+        'input .mailpoet_field_divider_border_width': _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width_input', _.partial(this.changePixelField, 'styles.block.borderWidth').bind(this)),
+        'change .mailpoet_field_divider_border_width': _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width_input', _.partial(this.changePixelField, 'styles.block.borderWidth').bind(this)),
+        'input .mailpoet_field_divider_border_width_input': _.partial(this.updateValueAndCall, '.mailpoet_field_divider_border_width', _.partial(this.changePixelField, 'styles.block.borderWidth').bind(this)),
 
-        "change .mailpoet_field_divider_border_color": _.partial(this.changeColorField, "styles.block.borderColor"),
-        "change .mailpoet_field_divider_background_color": _.partial(this.changeColorField, "styles.block.backgroundColor"),
-        "click .mailpoet_button_divider_apply_to_all": "applyToAll",
-        "click .mailpoet_done_editing": "close"
+        'change .mailpoet_field_divider_border_color': _.partial(this.changeColorField, 'styles.block.borderColor'),
+        'change .mailpoet_field_divider_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
+        'click .mailpoet_button_divider_apply_to_all': 'applyToAll',
+        'click .mailpoet_done_editing': 'close'
       };
     },
     modelEvents: function() {
