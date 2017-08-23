@@ -143,28 +143,28 @@ define([
       switch(dateType) {
         case 'year_month_day':
           value = {
-            'year': this.state.year,
-            'month': this.state.month,
-            'day': this.state.day,
+            year: this.state.year,
+            month: this.state.month,
+            day: this.state.day,
           };
           break;
 
         case 'year_month':
           value = {
-            'year': this.state.year,
-            'month': this.state.month,
+            year: this.state.year,
+            month: this.state.month,
           };
           break;
 
         case 'month':
           value = {
-            'month': this.state.month,
+            month: this.state.month,
           };
           break;
 
         case 'year':
           value = {
-            'year': this.state.year,
+            year: this.state.year,
           };
           break;
       }

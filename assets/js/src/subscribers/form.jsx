@@ -43,10 +43,10 @@ define(
         label: MailPoet.I18n.t('status'),
         type: 'select',
         values: {
-          'subscribed': MailPoet.I18n.t('subscribed'),
-          'unconfirmed': MailPoet.I18n.t('unconfirmed'),
-          'unsubscribed': MailPoet.I18n.t('unsubscribed'),
-          'bounced': MailPoet.I18n.t('bounced'),
+          subscribed: MailPoet.I18n.t('subscribed'),
+          unconfirmed: MailPoet.I18n.t('unconfirmed'),
+          unsubscribed: MailPoet.I18n.t('unsubscribed'),
+          bounced: MailPoet.I18n.t('bounced'),
         },
         filter: function (subscriber, value) {
           if (~~(subscriber.wp_user_id) > 0 && value === 'unconfirmed') {

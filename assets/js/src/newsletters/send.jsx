@@ -119,7 +119,7 @@ define(
                     MailPoet.trackEvent('Emails > Welcome email activated', {
                       'MailPoet Free version': window.mailpoet_version,
                       'List type': opts.event,
-                      'Delay': opts.afterTimeNumber + ' ' + opts.afterTimeType,
+                      Delay: opts.afterTimeNumber + ' ' + opts.afterTimeType,
                     });
                   } else if (response.data.type === 'notification') {
                     MailPoet.Notice.success(
@@ -127,7 +127,7 @@ define(
                     );
                     MailPoet.trackEvent('Emails > Post notifications activated', {
                       'MailPoet Free version': window.mailpoet_version,
-                      'Frequency': opts.intervalType,
+                      Frequency: opts.intervalType,
                     });
                   }
                 }).fail(this._showError);

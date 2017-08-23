@@ -166,7 +166,7 @@ define(
 
         const formClasses = classNames(
           'mailpoet_form',
-          { 'mailpoet_form_loading': this.state.loading || this.props.loading }
+          { mailpoet_form_loading: this.state.loading || this.props.loading }
         );
 
         let beforeFormContent = false;

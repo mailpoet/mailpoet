@@ -53,10 +53,10 @@ define(
       render: function () {
         let types = [
           {
-            'id': 'standard',
-            'title': MailPoet.I18n.t('regularNewsletterTypeTitle'),
-            'description': MailPoet.I18n.t('regularNewsletterTypeDescription'),
-            'action': function () {
+            id: 'standard',
+            title: MailPoet.I18n.t('regularNewsletterTypeTitle'),
+            description: MailPoet.I18n.t('regularNewsletterTypeDescription'),
+            action: function () {
               return (
                 <a className="button button-primary" onClick={ this.createNewsletter.bind(null, 'standard') }>
                   {MailPoet.I18n.t('create')}
@@ -65,10 +65,10 @@ define(
             }.bind(this)(),
           },
           {
-            'id': 'welcome',
-            'title': MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
-            'description': MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
-            'action': function () {
+            id: 'welcome',
+            title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
+            description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
+            action: function () {
               return (
                 <div>
                   <a href="?page=mailpoet-premium" target="_blank">
@@ -79,10 +79,10 @@ define(
             }(),
           },
           {
-            'id': 'notification',
-            'title': MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
-            'description': MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
-            'action': function () {
+            id: 'notification',
+            title: MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
+            description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
+            action: function () {
               return (
                 <a className="button button-primary" onClick={ this.setupNewsletter.bind(null, 'notification') }>
                   {MailPoet.I18n.t('setUp')}

@@ -62,9 +62,9 @@ const ListingColumn = React.createClass({
     const classes = classNames(
       'manage-column',
       { 'column-primary': this.props.column.is_primary },
-      { 'sortable': this.props.column.sortable },
+      { sortable: this.props.column.sortable },
       this.props.column.sorted,
-      { 'sorted': (this.props.sort_by === this.props.column.name) }
+      { sorted: (this.props.sort_by === this.props.column.name) }
     );
     let label;
 
