@@ -147,14 +147,10 @@ class API {
   }
 
   function validatePermissions($request_method, $permissions) {
-    // if method permission is defined, validate it
-    if (!empty($permissions['methods'][$request_method])) {
-      return ($permissions['methods'][$request_method] === AccessControl::NO_ACCESS_RESTRICTION) ?
-        true :
-        $this->access_control->validatePermission($permissions['methods'][$request_method]);
-    }
-    // use global permission
-    return $this->access_control->validatePermission($permissions['global']);
+    // validate method permission if defined, otherwise validate global permission
+    return(!empty($permissions['methods'][$request_method])) ?
+      $this->access_control->validatePermission($permissions['methods'][$request_method]) :
+      $this->access_control->validatePermission($permissions['global']);
   }
 
   function checkToken() {
