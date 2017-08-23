@@ -90,15 +90,15 @@ define([
         global.stubChannel(EditorApplication);
         global.stubAvailableStyles(EditorApplication, {
           socialIconSets: {
-            'default': {
-              'custom': 'http://www.sott.net/images/icons/big_x.png'
+            default: {
+              custom: 'http://www.sott.net/images/icons/big_x.png'
             },
-            'light': {
-              'custom': 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png'
+            light: {
+              custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png'
             }
           },
           socialIcons: {
-            'custom': {
+            custom: {
               title: 'Custom',
               linkFieldName: 'Page URL',
               defaultLink: 'http://example.org'
@@ -174,15 +174,15 @@ define([
         global.stubChannel(EditorApplication);
         global.stubAvailableStyles(EditorApplication, {
           socialIconSets: {
-            'default': {
-              'custom': 'someimage.png'
+            default: {
+              custom: 'someimage.png'
             },
-            'light': {
-              'custom': 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png'
+            light: {
+              custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png'
             }
           },
           socialIcons: {
-            'custom': {
+            custom: {
               title: 'Custom',
               linkFieldName: 'Page URL',
               defaultLink: 'http://example.org'
@@ -217,15 +217,15 @@ define([
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication, {
             socialIconSets: {
-              'default': {
-                'custom': 'http://www.sott.net/images/icons/big_x.png'
+              default: {
+                custom: 'http://www.sott.net/images/icons/big_x.png'
               },
-              'light': {
-                'custom': 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png'
+              light: {
+                custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png'
               }
             },
             socialIcons: {
-              'custom': {
+              custom: {
                 title: 'Custom',
                 linkFieldName: 'Page URL',
                 defaultLink: 'http://example.org'

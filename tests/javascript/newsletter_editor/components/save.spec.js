@@ -148,7 +148,7 @@ define([
 
           EditorApplication.getBody = sinon.stub();
           var module = SaveInjector({
-            'mailpoet': {
+            mailpoet: {
               Ajax: {
                 post: mock
               },
@@ -162,7 +162,7 @@ define([
               trackEvent: function() {}
             },
             'newsletter_editor/App': EditorApplication,
-            'html2canvas': function() {
+            html2canvas: function() {
               return {
                 then: function() { return html2canvasMock; }
               };
