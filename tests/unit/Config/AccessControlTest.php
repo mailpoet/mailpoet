@@ -8,74 +8,40 @@ use MailPoet\WP\Hooks;
 
 class AccessControlTest extends \MailPoetTest {
   function testItSetsDefaultPermissionsUponInitialization() {
-    AccessControl::init();
     $default_permissions = array(
-      'access_plugin' => array(
+      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN => array(
         'administrator',
         'editor'
       ),
-      'manage_settings' => array(
+      AccessControl::PERMISSION_MANAGE_SETTINGS => array(
         'administrator'
       ),
-      'manage_emails' => array(
+      AccessControl::PERMISSION_MANAGE_EMAILS => array(
         'administrator',
         'editor'
       ),
-      'manage_subscribers' => array(
+      AccessControl::PERMISSION_MANAGE_SUBSCRIBERS => array(
         'administrator'
       ),
-      'manage_forms' => array(
+      AccessControl::PERMISSION_MANAGE_FORMS => array(
         'administrator'
       ),
-      'manage_segments' => array(
+      AccessControl::PERMISSION_MANAGE_SEGMENTS => array(
+        'administrator'
+      ),
+      AccessControl::PERMISSION_UPDATE_PLUGIN => array(
         'administrator'
       )
     );
-    expect(AccessControl::getPermissions())->equals($default_permissions);
+    $access_control = new AccessControl();
+    expect($access_control->permissions)->equals($default_permissions);
   }
 
-  function testItSetsCustomPermissionsUponInitialization() {
-    $custom_permissions = array(
-      'custom_permissions' => array(
-        'custom_role'
-      )
-    );
-    AccessControl::init($custom_permissions);
-    expect(AccessControl::$permissions)->equals($custom_permissions);
-  }
-
-  function testItGetsPermissions() {
-    expect(AccessControl::getPermissions())->equals(
-      array(
-        'access_plugin' => array(
-          'administrator',
-          'editor'
-        ),
-        'manage_settings' => array(
-          'administrator'
-        ),
-        'manage_emails' => array(
-          'administrator',
-          'editor'
-        ),
-        'manage_subscribers' => array(
-          'administrator'
-        ),
-        'manage_forms' => array(
-          'administrator'
-        ),
-        'manage_segments' => array(
-          'administrator'
-        )
-      )
-    );
-  }
-
-  function testItAllowsSettingCustonPermissions() {
+  function testItAllowsSettingCustomPermissions() {
     Hooks::addFilter(
-      'mailpoet_permission_access_plugin',
+      'mailpoet_permission_access_plugin_admin',
       function() {
-        return array('custom_access_plugin_role');
+        return array('custom_access_plugin_admin_role');
       }
     );
     Hooks::addFilter(
@@ -105,30 +71,40 @@ class AccessControlTest extends \MailPoetTest {
     Hooks::addFilter(
       'mailpoet_permission_manage_segments',
       function() {
-        return array('custom_manage_forms_role');
+        return array('custom_manage_segments_role');
       }
     );
-    AccessControl::init();
-    expect(AccessControl::$permissions)->equals(
+    Hooks::addFilter(
+      'mailpoet_permission_update_plugin',
+      function() {
+        return array('custom_update_plugin_role');
+      }
+    );
+
+    $access_control = new AccessControl();
+    expect($access_control->permissions)->equals(
       array(
-        'access_plugin' => array(
-          'custom_access_plugin_role'
+        AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN => array(
+          'custom_access_plugin_admin_role'
         ),
-        'manage_settings' => array(
+        AccessControl::PERMISSION_MANAGE_SETTINGS => array(
           'custom_manage_settings_role'
         ),
-        'manage_emails' => array(
+        AccessControl::PERMISSION_MANAGE_EMAILS => array(
           'custom_manage_emails_role'
         ),
-        'manage_subscribers' => array(
+        AccessControl::PERMISSION_MANAGE_SUBSCRIBERS => array(
           'custom_manage_subscribers_role'
         ),
-        'manage_forms' => array(
+        AccessControl::PERMISSION_MANAGE_FORMS => array(
           'custom_manage_forms_role'
         ),
-        'manage_segments' => array(
-          'custom_manage_forms_role'
-        )
+        AccessControl::PERMISSION_MANAGE_SEGMENTS => array(
+          'custom_manage_segments_role'
+        ),
+        AccessControl::PERMISSION_UPDATE_PLUGIN => array(
+          'custom_update_plugin_role'
+        ),
       )
     );
   }
