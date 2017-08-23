@@ -5,18 +5,18 @@ const timeFormat = window.mailpoet_time_format || 'H:i';
 
 // welcome emails
 const _timeDelayValues = {
-  'immediate': MailPoet.I18n.t('delayImmediately'),
-  'hours': MailPoet.I18n.t('delayHoursAfter'),
-  'days': MailPoet.I18n.t('delayDaysAfter'),
-  'weeks': MailPoet.I18n.t('delayWeeksAfter'),
+  immediate: MailPoet.I18n.t('delayImmediately'),
+  hours: MailPoet.I18n.t('delayHoursAfter'),
+  days: MailPoet.I18n.t('delayDaysAfter'),
+  weeks: MailPoet.I18n.t('delayWeeksAfter'),
 };
 
 const _intervalValues = {
-  'daily': MailPoet.I18n.t('daily'),
-  'weekly': MailPoet.I18n.t('weekly'),
-  'monthly': MailPoet.I18n.t('monthly'),
-  'nthWeekDay': MailPoet.I18n.t('monthlyEvery'),
-  'immediately': MailPoet.I18n.t('immediately'),
+  daily: MailPoet.I18n.t('daily'),
+  weekly: MailPoet.I18n.t('weekly'),
+  monthly: MailPoet.I18n.t('monthly'),
+  nthWeekDay: MailPoet.I18n.t('monthlyEvery'),
+  immediately: MailPoet.I18n.t('immediately'),
 };
 
 // notification emails
@@ -68,10 +68,10 @@ const _monthDayValues = _.object(
 );
 
 const _nthWeekDayValues = {
-  '1': MailPoet.I18n.t('first'),
-  '2': MailPoet.I18n.t('second'),
-  '3': MailPoet.I18n.t('third'),
-  'L': MailPoet.I18n.t('last'),
+  1: MailPoet.I18n.t('first'),
+  2: MailPoet.I18n.t('second'),
+  3: MailPoet.I18n.t('third'),
+  L: MailPoet.I18n.t('last'),
 };
 
 export { _timeDelayValues as timeDelayValues };

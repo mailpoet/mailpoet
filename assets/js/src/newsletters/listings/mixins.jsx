@@ -69,7 +69,7 @@ const _QueueMixin = {
       }
       const progressClasses = classNames(
         'mailpoet_progress',
-        { 'mailpoet_progress_complete': newsletter.queue.status === 'completed' }
+        { mailpoet_progress_complete: newsletter.queue.status === 'completed' }
       );
 
       // calculate percentage done

@@ -16,8 +16,8 @@ const availableSegments = _.filter(
 const events = {
   name: 'event',
   values: {
-    'segment': MailPoet.I18n.t('onSubscriptionToList'),
-    'user': MailPoet.I18n.t('onWPUserRegistration'),
+    segment: MailPoet.I18n.t('onSubscriptionToList'),
+    user: MailPoet.I18n.t('onWPUserRegistration'),
   },
 };
 

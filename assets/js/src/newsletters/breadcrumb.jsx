@@ -41,7 +41,7 @@ define(
       render: function () {
         const steps = this.state.steps.map((step, index) => {
           const stepClasses = classNames(
-            { 'mailpoet_current': (this.props.step === step.name) }
+            { mailpoet_current: (this.props.step === step.name) }
           );
 
           let label = step.label;

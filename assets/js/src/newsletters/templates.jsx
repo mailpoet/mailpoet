@@ -271,7 +271,7 @@ define(
         const boxClasses = classNames(
           'mailpoet_boxes',
           'clearfix',
-          { 'mailpoet_boxes_loading': this.state.loading }
+          { mailpoet_boxes_loading: this.state.loading }
         );
 
         return (

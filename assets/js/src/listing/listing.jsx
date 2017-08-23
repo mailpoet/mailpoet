@@ -226,7 +226,7 @@ const ListingItems = React.createClass({
     } else {
       const select_all_classes = classNames(
         'mailpoet_select_all',
-        { 'mailpoet_hidden': (
+        { mailpoet_hidden: (
             this.props.selection === false
             || (this.props.count <= this.props.limit)
           ),
@@ -783,7 +783,7 @@ const Listing = React.createClass({
       'widefat',
       'fixed',
       'striped',
-      { 'mailpoet_listing_loading': this.state.loading }
+      { mailpoet_listing_loading: this.state.loading }
     );
 
     // search
