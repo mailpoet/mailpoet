@@ -25,7 +25,7 @@ define(
      */
     $.fn.serializeObject = function(coerce) {
       var obj = {},
-        coerce_types = { 'true': !0, 'false': !1, 'null': null };
+        coerce_types = { true: !0, false: !1, null: null };
 
       // Iterate over all name=value pairs.
       $.each( this.serializeArray(), function(j, v){

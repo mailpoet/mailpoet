@@ -49,7 +49,7 @@ define([
   Module.StylesView = Marionette.View.extend({
     getTemplate: function() { return templates.styles; },
     modelEvents: {
-      'change': 'render'
+      change: 'render'
     },
     serializeData: function() {
       return this.model.toJSON();

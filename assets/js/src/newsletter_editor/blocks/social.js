@@ -87,7 +87,7 @@ define([
     tagName: 'span',
     getTemplate: function() { return templates.socialIconBlock; },
     modelEvents: {
-      'change': 'render'
+      change: 'render'
     },
     templateContext: function() {
       var allIconSets = App.getAvailableStyles().get('socialIconSets');
@@ -214,7 +214,7 @@ define([
   SocialBlockSettingsIconSelectorView = Marionette.View.extend({
     getTemplate: function() { return templates.socialSettingsIconSelector; },
     regions: {
-      'icons': '#mailpoet_social_icon_selector_contents'
+      icons: '#mailpoet_social_icon_selector_contents'
     },
     events: {
       'click .mailpoet_add_social_icon': 'addSocialIcon'
@@ -237,7 +237,7 @@ define([
   SocialBlockSettingsStylesView = Marionette.View.extend({
     getTemplate: function() { return templates.socialSettingsStyles; },
     modelEvents: {
-      'change': 'render'
+      change: 'render'
     },
     events: {
       'click .mailpoet_social_icon_set': 'changeSocialIconSet'
