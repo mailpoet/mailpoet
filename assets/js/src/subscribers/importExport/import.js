@@ -30,9 +30,9 @@ define(
         router = new (Backbone.Router.extend({
           routes: {
             '': 'home',
-            'step1': 'step1',
-            'step2': 'step2',
-            'step3': 'step3'
+            step1: 'step1',
+            step2: 'step2',
+            step3: 'step3'
           },
           home: function () {
             this.navigate('step1', {trigger: true});
@@ -407,13 +407,13 @@ define(
                   // since we assume that the header line is always present, we need
                   // to detect the header by checking if it contains a valid e-mail address
                   importData.step1 = {
-                    'header': (!emailRegex.test(
+                    header: (!emailRegex.test(
                             processedSubscribers[0][emailColumnPosition])
                     ) ? processedSubscribers.shift() : null,
-                    'subscribers': processedSubscribers,
-                    'subscribersCount': processedSubscribers.length,
-                    'duplicate': duplicateEmails,
-                    'invalid': invalidEmails
+                    subscribers: processedSubscribers,
+                    subscribersCount: processedSubscribers.length,
+                    duplicate: duplicateEmails,
+                    invalid: invalidEmails
                   };
                   router.navigate('step2', {trigger: true});
                 }
@@ -592,9 +592,9 @@ define(
                 }
               }).done(function(response) {
                 mailpoetSegments.push({
-                  'id': response.data.id,
-                  'name': response.data.name,
-                  'subscriberCount': 0
+                  id: response.data.id,
+                  name: response.data.name,
+                  subscriberCount: 0
                 });
 
                 var selected_values = segmentSelectElement.val();
@@ -670,7 +670,7 @@ define(
                       && displayedColumnsIds.indexOf(columnId) === -1)
                           ? columnId
                           : 'ignore';
-                  displayedColumns[i] = {'column_id': columnId};
+                  displayedColumns[i] = {column_id: columnId};
                   displayedColumnsIds.push(columnId);
                 }
                 return options.fn(displayedColumns);
@@ -747,17 +747,17 @@ define(
                       data: data
                     }).done(function(response) {
                       var new_column_data = {
-                        'id': response.data.id,
-                        'name': response.data.name,
-                        'type': response.data.type,
-                        'params': response.data.params,
-                        'custom': true
+                        id: response.data.id,
+                        name: response.data.name,
+                        type: response.data.type,
+                        params: response.data.params,
+                        custom: true
                       };
                       // if this is the first custom column, create an "optgroup"
                       if (mailpoetColumnsSelect2.length === 2) {
                         mailpoetColumnsSelect2.push({
-                          'name': MailPoet.I18n.t('userColumns'),
-                          'children': []
+                          name: MailPoet.I18n.t('userColumns'),
+                          children: []
                         });
                       }
                       mailpoetColumnsSelect2[2].children.push(new_column_data);
@@ -974,10 +974,10 @@ define(
               timestamp = Date.now() / 1000,
               subscribers = [],
               importResults = {
-                'created': 0,
-                'updated': 0,
-                'errors': [],
-                'segments': []
+                created: 0,
+                updated: 0,
+                errors: [],
+                segments: []
               },
               splitSubscribers = function (subscribers, size) {
                 return subscribers.reduce(function (res, item, index) {

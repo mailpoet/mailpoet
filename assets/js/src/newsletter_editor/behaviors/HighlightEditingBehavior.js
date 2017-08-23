@@ -11,8 +11,8 @@ define([
 
   BL.HighlightEditingBehavior = Marionette.Behavior.extend({
     modelEvents: {
-      'startEditing': 'enableHighlight',
-      'stopEditing': 'disableHighlight'
+      startEditing: 'enableHighlight',
+      stopEditing: 'disableHighlight'
     },
     enableHighlight: function() {
       this.$el.addClass('mailpoet_highlight');

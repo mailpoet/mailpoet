@@ -131,7 +131,7 @@ define([
     className: 'mailpoet_block mailpoet_automated_latest_content_block mailpoet_droppable_block',
     initialize: function() {
       function replaceButtonStylesHandler(data) {
-        this.model.set({'readMoreButton': data});
+        this.model.set({readMoreButton: data});
       }
       App.getChannel().on('replaceAllButtonStyles', replaceButtonStylesHandler.bind(this));
     },
@@ -143,7 +143,7 @@ define([
     modelEvents: _.extend(
       _.omit(base.BlockView.prototype.modelEvents, 'change'),
       {
-        'postsChanged': 'render'
+        postsChanged: 'render'
       }),
     events: _.extend(base.BlockView.prototype.events, {
       'click .mailpoet_automated_latest_content_block_overlay': 'showSettings'

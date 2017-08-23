@@ -319,10 +319,10 @@ var WysijaForm = {
   save: function() {
     var position = 1,
       data = {
-        'name': $F('mailpoet_form_name'),
-        'settings': $('mailpoet_form_settings').serialize(true),
-        'body': [],
-        'styles': (MailPoet.CodeEditor !== undefined) ? MailPoet.CodeEditor.getValue() : null
+        name: $F('mailpoet_form_name'),
+        settings: $('mailpoet_form_settings').serialize(true),
+        body: [],
+        styles: (MailPoet.CodeEditor !== undefined) ? MailPoet.CodeEditor.getValue() : null
       };
     // body
     WysijaForm.getBlocks().each(function(b) {

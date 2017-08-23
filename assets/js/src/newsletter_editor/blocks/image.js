@@ -177,7 +177,7 @@ define([
 
           var handlers = {
               content: {
-                'embed': 'embedContent',
+                embed: 'embedContent',
                 'edit-selection': 'editSelectionContent'
               },
               toolbar: {

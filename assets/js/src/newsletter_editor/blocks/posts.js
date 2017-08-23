@@ -296,7 +296,7 @@ define([
       this.blockModel = options.blockModel;
     },
     events: {
-      'scroll': 'onPostsScroll'
+      scroll: 'onPostsScroll'
     },
     onPostsScroll: function(event) {
       var $postsBox = jQuery(event.target);
@@ -326,10 +326,10 @@ define([
           this.$('.mailpoet_post_scroll_container').scrollTop(0);
         }
       },
-      'loadingMorePosts': function() {
+      loadingMorePosts: function() {
         this.$('.mailpoet_post_selection_loading').css('visibility', 'visible');
       },
-      'morePostsLoaded': function() {
+      morePostsLoaded: function() {
         this.$('.mailpoet_post_selection_loading').css('visibility', 'hidden');
       }
     },

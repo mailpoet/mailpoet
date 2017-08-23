@@ -142,11 +142,11 @@ define(
           endpoint: 'ImportExport',
           action: 'processExport',
           data: JSON.stringify({
-            'export_confirmed_option': exportData.exportConfirmedOption,
-            'export_format_option': jQuery(':radio[name="option_format"]:checked').val(),
-            'group_by_segment_option': (groupBySegmentOptionElement.is(':visible')) ? groupBySegmentOptionElement.prop('checked') : false,
-            'segments': (exportData.segments) ? segmentsContainerElement.val() : false,
-            'subscriber_fields': subscriberFieldsContainerElement.val()
+            export_confirmed_option: exportData.exportConfirmedOption,
+            export_format_option: jQuery(':radio[name="option_format"]:checked').val(),
+            group_by_segment_option: (groupBySegmentOptionElement.is(':visible')) ? groupBySegmentOptionElement.prop('checked') : false,
+            segments: (exportData.segments) ? segmentsContainerElement.val() : false,
+            subscriber_fields: subscriberFieldsContainerElement.val()
           })
         }).always(function(response) {
           MailPoet.Modal.loading(false);

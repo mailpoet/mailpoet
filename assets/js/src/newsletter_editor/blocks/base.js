@@ -50,13 +50,13 @@ define([
       toolsRegion: '> .mailpoet_tools'
     },
     modelEvents: {
-      'change': 'render',
-      'delete': 'deleteBlock',
-      'duplicate': 'duplicateBlock'
+      change: 'render',
+      delete: 'deleteBlock',
+      duplicate: 'duplicateBlock'
     },
     events: {
-      'mouseenter': 'showTools',
-      'mouseleave': 'hideTools'
+      mouseenter: 'showTools',
+      mouseleave: 'hideTools'
     },
     behaviors: {
       DraggableBehavior: {
