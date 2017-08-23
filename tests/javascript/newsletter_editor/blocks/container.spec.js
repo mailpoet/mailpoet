@@ -28,7 +28,7 @@ define([
           expect(model.get('blocks')).to.be.instanceof(Backbone.Collection);
         });
 
-        it("uses defaults from config when they are set", function () {
+        it('uses defaults from config when they are set', function () {
           global.stubConfig(EditorApplication, {
             blockDefaults: {
               container: {

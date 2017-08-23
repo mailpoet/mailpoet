@@ -33,13 +33,13 @@ define([
         expect(model.get('styles.block.backgroundColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
       });
 
-      it("changes attributes with set", function () {
+      it('changes attributes with set', function () {
         var newValue = '33px';
         model.set('styles.block.height', newValue);
         expect(model.get('styles.block.height')).to.equal(newValue);
       });
 
-      it("triggers autosave if any attribute changes", function () {
+      it('triggers autosave if any attribute changes', function () {
         var mock = sinon.mock().exactly(2).withArgs('autoSave');
         EditorApplication.getChannel = sinon.stub().returns({
           trigger: mock
@@ -51,7 +51,7 @@ define([
         mock.verify();
       });
 
-      it("uses defaults from config when they are set", function () {
+      it('uses defaults from config when they are set', function () {
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             spacer: {

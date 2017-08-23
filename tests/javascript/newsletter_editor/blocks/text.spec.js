@@ -20,7 +20,7 @@ define([
         expect(model.get('text')).to.be.a('string');
       });
 
-      it("uses defaults from config when they are set", function () {
+      it('uses defaults from config when they are set', function () {
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             text: {

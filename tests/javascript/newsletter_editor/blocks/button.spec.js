@@ -4,8 +4,8 @@ define([
   ], function(App, ButtonBlock) {
   var EditorApplication = App;
 
-  describe("Button", function () {
-    describe("model", function () {
+  describe('Button', function () {
+    describe('model', function () {
       var model;
 
       beforeEach(function () {
@@ -22,69 +22,69 @@ define([
         }
       });
 
-      it("has a button type", function () {
+      it('has a button type', function () {
         expect(model.get('type')).to.equal('button');
       });
 
-      it("has a label", function () {
+      it('has a label', function () {
         expect(model.get('text')).to.be.a('string');
       });
 
-      it("has a url", function () {
+      it('has a url', function () {
         expect(model.get('url')).to.be.a('string');
       });
 
-      it("has a block background color", function () {
+      it('has a block background color', function () {
         expect(model.get('styles.block.backgroundColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
       });
 
-      it("has a block border color", function () {
+      it('has a block border color', function () {
         expect(model.get('styles.block.borderColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
       });
 
-      it("has a block border width", function () {
+      it('has a block border width', function () {
         expect(model.get('styles.block.borderWidth')).to.match(/^\d+px$/);
       });
 
-      it("has block border radius", function () {
+      it('has block border radius', function () {
         expect(model.get('styles.block.borderRadius')).to.match(/^\d+px$/);
       });
 
-      it("has block border style", function () {
+      it('has block border style', function () {
         expect(model.get('styles.block.borderStyle')).to.equal('solid');
       });
 
-      it("has a text color", function () {
+      it('has a text color', function () {
         expect(model.get('styles.block.fontColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
       });
 
-      it("has a text font family", function () {
+      it('has a text font family', function () {
         expect(model.get('styles.block.fontFamily')).to.be.a('string');
       });
 
-      it("has a text size", function () {
+      it('has a text size', function () {
         expect(model.get('styles.block.fontSize')).to.match(/^\d+px$/);
       });
 
-      it("has a text font weight", function () {
+      it('has a text font weight', function () {
         expect(model.get('styles.block.fontWeight')).to.match(/^(bold|normal)$/);
       });
 
-      it("has width", function () {
+      it('has width', function () {
         expect(model.get('styles.block.width')).to.match(/^\d+px$/);
       });
 
-      it("has line height", function () {
+      it('has line height', function () {
         expect(model.get('styles.block.lineHeight')).to.match(/^\d+px$/);
       });
 
-      it("changes attributes with set", function () {
+      it('changes attributes with set', function () {
         var newText = 'Some new text';
         model.set('text', newText);
         expect(model.get('text')).to.equal(newText);
       });
 
-      it("triggers autosave if any attribute changes", function () {
+      it('triggers autosave if any attribute changes', function () {
         var mock = sinon.mock().exactly(12).withArgs('autoSave');
         EditorApplication.getChannel = sinon.stub().returns({
           trigger: mock
@@ -104,7 +104,7 @@ define([
         mock.verify();
       });
 
-      it("uses defaults from config when they are set", function () {
+      it('uses defaults from config when they are set', function () {
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             button: {
@@ -272,17 +272,17 @@ define([
         view.render();
       });
 
-      it("listens to the event", function () {
+      it('listens to the event', function () {
         expect(onStub).to.have.been.calledOnce;
-        expect(onStub).to.have.been.calledWith("replaceAllButtonStyles", sinon.match.func);
+        expect(onStub).to.have.been.calledWith('replaceAllButtonStyles', sinon.match.func);
       });
 
-      it("updates the model", function () {
+      it('updates the model', function () {
         const callback = onStub.getCall(0).args[1];
         const data = {
           styles: {
             block: {
-              borderRadius: "14px"
+              borderRadius: '14px'
             }
           }
         };

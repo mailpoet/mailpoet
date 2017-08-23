@@ -166,7 +166,7 @@ define([
         expect(model.get('divider')).to.be.instanceof(Backbone.Model);
       });
 
-      it("uses defaults from config when they are set", function () {
+      it('uses defaults from config when they are set', function () {
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             automatedLatestContent: {
@@ -301,23 +301,23 @@ define([
         view = new (module.AutomatedLatestContentBlockView)({model: model});
       });
 
-      it("listens to the event", function () {
+      it('listens to the event', function () {
         expect(onStub).to.have.been.calledOnce;
-        expect(onStub).to.have.been.calledWith("replaceAllButtonStyles", sinon.match.func);
+        expect(onStub).to.have.been.calledWith('replaceAllButtonStyles', sinon.match.func);
       });
 
-      it("updates the model", function () {
+      it('updates the model', function () {
         const callback = onStub.getCall(0).args[1];
         const data = {
           styles: {
             block: {
-              borderRadius: "14px"
+              borderRadius: '14px'
             }
           }
         };
         callback(data);
         expect(model.set).to.have.been.calledOnce;
-        expect(model.set).to.have.been.calledWithMatch(sinon.match.has("readMoreButton", data));
+        expect(model.set).to.have.been.calledWithMatch(sinon.match.has('readMoreButton', data));
       });
     });
 

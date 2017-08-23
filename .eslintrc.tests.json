@@ -27,7 +27,6 @@
     "func-call-spacing": 0,
     "max-len": 0,
     "space-unary-ops": 0,
-    "quotes": 0,
     "no-unused-vars": 0,
     "no-unused-expressions": 0,
     "no-underscore-dangle": 0,
