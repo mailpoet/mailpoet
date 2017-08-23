@@ -73,7 +73,7 @@ class Menu {
     );
 
     // Emails page
-    if ($this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS)) {
+    if($this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS)) {
       $newsletters_page = add_submenu_page(
         self::MAIN_PAGE_SLUG,
         $this->setPageTitle(__('Emails', 'mailpoet')),
