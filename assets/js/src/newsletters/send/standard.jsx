@@ -195,7 +195,7 @@ define(
     });
 
     const DateTime = React.createClass({
-      _DATE_TIME_SEPARATOR: " ",
+      _DATE_TIME_SEPARATOR: ' ',
       getInitialState: function () {
         return this._buildStateFromProps(this.props);
       },

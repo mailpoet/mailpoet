@@ -6,16 +6,16 @@ function Tooltip(props) {
   let tooltipId = props.tooltipId;
   let tooltip = props.tooltip;
   // tooltip ID must be unique, defaults to tooltip text
-  if(!props.tooltipId && typeof props.tooltip === "string") {
+  if(!props.tooltipId && typeof props.tooltip === 'string') {
     tooltipId = props.tooltip;
   }
 
-  if(typeof props.tooltip === "string") {
+  if(typeof props.tooltip === 'string') {
     tooltip = (<span
       style={{
-        pointerEvents: "all",
-        maxWidth: "400",
-        display: "inline-block",
+        pointerEvents: 'all',
+        maxWidth: '400',
+        display: 'inline-block',
       }}
     >
       {ReactHtmlParser(props.tooltip)}
@@ -26,7 +26,7 @@ function Tooltip(props) {
     <span className={props.className}>
       <span
         style={{
-          cursor: "pointer",
+          cursor: 'pointer',
         }}
         className="tooltip dashicons dashicons-editor-help"
         data-event="click"

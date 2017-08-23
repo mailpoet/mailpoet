@@ -84,8 +84,8 @@ const _QueueMixin = {
           <span>
             {
               MailPoet.I18n.t('newsletterQueueCompleted')
-              .replace("%$1d", newsletter.queue.count_processed)
-              .replace("%$2d", newsletter.queue.count_total)
+              .replace('%$1d', newsletter.queue.count_processed)
+              .replace('%$2d', newsletter.queue.count_total)
             }
           </span>
         );
@@ -120,7 +120,7 @@ const _QueueMixin = {
         percentage = MailPoet.I18n.t('noSubscribers');
       } else {
         progress_bar_width = percentage;
-        percentage += "%";
+        percentage += '%';
       }
 
       return (
@@ -128,7 +128,7 @@ const _QueueMixin = {
           <div className={ progressClasses }>
               <span
                 className="mailpoet_progress_bar"
-                style={ { width: progress_bar_width + "%" } }
+                style={ { width: progress_bar_width + '%' } }
               ></span>
               <span className="mailpoet_progress_label">
                 { percentage }
@@ -239,7 +239,7 @@ const _StatisticsMixin = {
         <div>
           <span className="mailpoet_stats_text">
             { percentage_opened_display }%,
-            { " " }
+            { ' ' }
             { percentage_clicked_display }%
             <span className="mailpoet_stat_hidden">
               , { percentage_unsubscribed_display }%
@@ -327,7 +327,7 @@ const _MailerMixin = {
       MailPoet.I18n.t('mailerCheckSettingsNotice'),
       /\[link\](.*?)\[\/link\]/g,
       match => (
-        <a href={`?page=mailpoet-settings#mta`}>{ match }</a>
+        <a href={'?page=mailpoet-settings#mta'}>{ match }</a>
       )
     );
     if (state.meta.mta_log.error.operation === 'send') {

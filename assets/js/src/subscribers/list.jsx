@@ -88,7 +88,7 @@ const messages = {
         <div>
           <p>{MailPoet.I18n.t('bouncedSubscribersHelp')}</p>
           <p>
-            <a href={ `admin.php?page=mailpoet-premium` } className="button-primary">
+            <a href={ 'admin.php?page=mailpoet-premium' } className="button-primary">
               {MailPoet.I18n.t('bouncedSubscribersPremiumButtonText')}
             </a>
           </p>
