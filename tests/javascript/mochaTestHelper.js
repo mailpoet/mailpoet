@@ -80,10 +80,10 @@ global.stubImage = function(defaultWidth, defaultHeight) {
     this.address = '';
 
     Object.defineProperty(this, 'src', {
-      'get': function() {
+      get: function() {
         return this.address;
       },
-      'set': function(src) {
+      set: function(src) {
         this.address = src;
         this.onload();
       }

@@ -7,14 +7,14 @@ define([
   describe('getPostTypes', function() {
     it('fetches post types from the server', function() {
       var module = CommunicationInjector({
-          'mailpoet': {
+          mailpoet: {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
                 deferred.resolve({
                   data: {
-                    'post': 'val1',
-                    'page': 'val2'
+                    post: 'val1',
+                    page: 'val2'
                   }
                 });
                 return deferred;
@@ -31,15 +31,15 @@ define([
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
           module = CommunicationInjector({
-            'mailpoet': {
+            mailpoet: {
               Ajax: {
                 post: mock
               }
             }
           });
       deferred.resolve({
-        'post': 'val1',
-        'page': 'val2'
+        post: 'val1',
+        page: 'val2'
       });
       module.getPostTypes();
       module.getPostTypes();
@@ -54,15 +54,15 @@ define([
           post = function(params) {
             var deferred = jQuery.Deferred();
             deferred.resolve({
-              'category': 'val1',
-              'post_tag': 'val2'
+              category: 'val1',
+              post_tag: 'val2'
             });
             return deferred;
           },
           module;
       spy = sinon.spy(post);
       module = CommunicationInjector({
-        'mailpoet': {
+        mailpoet: {
           Ajax: {
             post: spy
           }
@@ -75,13 +75,13 @@ define([
 
     it('fetches taxonomies from the server', function() {
       var module = CommunicationInjector({
-          'mailpoet': {
+          mailpoet: {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
                 deferred.resolve({
                   data: {
-                    'category': 'val1'
+                    category: 'val1'
                   }
                 });
                 return deferred;
@@ -90,7 +90,7 @@ define([
           }
         });
       module.getTaxonomies('page').done(function(types) {
-        expect(types).to.eql({ 'category': 'val1' });
+        expect(types).to.eql({ category: 'val1' });
       });
     });
 
@@ -98,13 +98,13 @@ define([
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
           module = CommunicationInjector({
-            'mailpoet': {
+            mailpoet: {
               Ajax: {
                 post: mock
               }
             }
           });
-      deferred.resolve({ 'category': 'val1' });
+      deferred.resolve({ category: 'val1' });
       module.getTaxonomies('page');
       module.getTaxonomies('page');
 
@@ -123,7 +123,7 @@ define([
       var module;
       spy = sinon.spy(post);
       module = CommunicationInjector({
-        'mailpoet': {
+        mailpoet: {
           Ajax: {
             post: spy
           }
@@ -138,14 +138,14 @@ define([
 
     it('fetches terms from the server', function() {
       var module = CommunicationInjector({
-          'mailpoet': {
+          mailpoet: {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
                 deferred.resolve({
                   data: {
-                    'term1': 'term1val1',
-                    'term2': 'term2val2'
+                    term1: 'term1val1',
+                    term2: 'term2val2'
                   }
                 });
                 return deferred;
@@ -154,7 +154,7 @@ define([
           }
         });
       module.getTerms({ taxonomies: ['category'] }).done(function(types) {
-        expect(types).to.eql({ 'term1': 'term1val1', 'term2': 'term2val2' });
+        expect(types).to.eql({ term1: 'term1val1', term2: 'term2val2' });
       });
     });
 
@@ -162,13 +162,13 @@ define([
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
           module = CommunicationInjector({
-            'mailpoet': {
+            mailpoet: {
               Ajax: {
                 post: mock
               }
             }
           });
-      deferred.resolve({ 'term1': 'term1val1', 'term2': 'term2val2' });
+      deferred.resolve({ term1: 'term1val1', term2: 'term2val2' });
       module.getTerms({ taxonomies: ['category'] });
       module.getTerms({ taxonomies: ['category'] });
 
@@ -187,7 +187,7 @@ define([
           module;
       spy = sinon.spy(post);
       module = CommunicationInjector({
-        'mailpoet': {
+        mailpoet: {
           Ajax: {
             post: spy
           }
@@ -206,7 +206,7 @@ define([
 
     it('fetches posts from the server', function() {
       var module = CommunicationInjector({
-          'mailpoet': {
+          mailpoet: {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
@@ -230,7 +230,7 @@ define([
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
           module = CommunicationInjector({
-            'mailpoet': {
+            mailpoet: {
               Ajax: {
                 post: mock
               }
@@ -258,7 +258,7 @@ define([
           module;
       spy = sinon.spy(post);
       module = CommunicationInjector({
-        'mailpoet': {
+        mailpoet: {
           Ajax: {
             post: spy
           }
@@ -277,7 +277,7 @@ define([
 
     it('fetches transformed posts from the server', function() {
       var module = CommunicationInjector({
-          'mailpoet': {
+          mailpoet: {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
@@ -301,7 +301,7 @@ define([
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
           module = CommunicationInjector({
-            'mailpoet': {
+            mailpoet: {
               Ajax: {
                 post: mock
               }
