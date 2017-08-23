@@ -3,7 +3,7 @@
 namespace MailPoet\Form;
 
 use MailPoet\API\JSON\API;
-use MailPoet\Config\Renderer;
+use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Models\Form;
 use MailPoet\Util\Security;
@@ -174,7 +174,7 @@ class Widget extends \WP_Widget {
         $data['api_version'] = API::CURRENT_VERSION;
 
         // render form
-        $renderer = new Renderer();
+        $renderer = new ConfigRenderer();
         try {
           $output = $renderer->render('form/widget.html', $data);
           $output = do_shortcode($output);

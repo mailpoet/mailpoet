@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\API;
 
 use MailPoet\Config\AccessControl;
@@ -6,8 +7,7 @@ use MailPoet\Config\AccessControl;
 if(!defined('ABSPATH')) exit;
 
 class API {
-  static function JSON() {
-    $access_control = new AccessControl();
+  static function JSON(AccessControl $access_control) {
     return new \MailPoet\API\JSON\API($access_control);
   }
 

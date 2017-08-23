@@ -223,7 +223,7 @@ class Initializer {
   }
 
   function setupJSONAPI() {
-    API\API::JSON()->init();
+    API\API::JSON($this->access_control)->init();
   }
 
   function setupRouter() {

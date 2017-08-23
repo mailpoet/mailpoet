@@ -28,7 +28,7 @@ class APITest extends \MailPoetTest {
     } else {
       $this->wp_user_id = $wp_user_id;
     }
-    $this->api = API::JSON();
+    $this->api = API::JSON(new AccessControl());
   }
 
   function testItCallsAPISetupAction() {
