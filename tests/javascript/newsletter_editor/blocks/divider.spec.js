@@ -4,8 +4,8 @@ define([
   ], function(App, DividerBlock) {
   var EditorApplication = App;
 
-  describe("Divider", function () {
-    describe("model", function () {
+  describe('Divider', function () {
+    describe('model', function () {
       var model;
 
       beforeEach(function () {
@@ -21,15 +21,15 @@ define([
         delete EditorApplication.getChannel;
       });
 
-      it("has a divider type", function () {
+      it('has a divider type', function () {
         expect(model.get('type')).to.equal('divider');
       });
 
-      it("has a background color", function () {
+      it('has a background color', function () {
         expect(model.get('styles.block.backgroundColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
       });
 
-      it("has padding", function () {
+      it('has padding', function () {
         expect(model.get('styles.block.padding')).to.match(/^\d+px$/);
       });
 
@@ -45,13 +45,13 @@ define([
         expect(model.get('styles.block.borderColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
       });
 
-      it("changes attributes with set", function () {
+      it('changes attributes with set', function () {
         var newValue = 'outset';
         model.set('styles.block.borderStyle', newValue);
         expect(model.get('styles.block.borderStyle')).to.equal(newValue);
       });
 
-      it("triggers autosave if any attribute changes", function () {
+      it('triggers autosave if any attribute changes', function () {
         var mock = sinon.mock().exactly(5).withArgs('autoSave');
         EditorApplication.getChannel = sinon.stub().returns({
           trigger: mock
@@ -66,7 +66,7 @@ define([
         mock.verify();
       });
 
-      it("uses defaults from config when they are set", function () {
+      it('uses defaults from config when they are set', function () {
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             divider: {

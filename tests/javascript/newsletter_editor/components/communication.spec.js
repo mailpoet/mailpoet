@@ -7,7 +7,7 @@ define([
   describe('getPostTypes', function() {
     it('fetches post types from the server', function() {
       var module = CommunicationInjector({
-          "mailpoet": {
+          'mailpoet': {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
@@ -31,7 +31,7 @@ define([
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
           module = CommunicationInjector({
-            "mailpoet": {
+            'mailpoet': {
               Ajax: {
                 post: mock
               }
@@ -62,7 +62,7 @@ define([
           module;
       spy = sinon.spy(post);
       module = CommunicationInjector({
-        "mailpoet": {
+        'mailpoet': {
           Ajax: {
             post: spy
           }
@@ -75,7 +75,7 @@ define([
 
     it('fetches taxonomies from the server', function() {
       var module = CommunicationInjector({
-          "mailpoet": {
+          'mailpoet': {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
@@ -98,7 +98,7 @@ define([
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
           module = CommunicationInjector({
-            "mailpoet": {
+            'mailpoet': {
               Ajax: {
                 post: mock
               }
@@ -123,7 +123,7 @@ define([
       var module;
       spy = sinon.spy(post);
       module = CommunicationInjector({
-        "mailpoet": {
+        'mailpoet': {
           Ajax: {
             post: spy
           }
@@ -138,7 +138,7 @@ define([
 
     it('fetches terms from the server', function() {
       var module = CommunicationInjector({
-          "mailpoet": {
+          'mailpoet': {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
@@ -162,7 +162,7 @@ define([
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
           module = CommunicationInjector({
-            "mailpoet": {
+            'mailpoet': {
               Ajax: {
                 post: mock
               }
@@ -187,7 +187,7 @@ define([
           module;
       spy = sinon.spy(post);
       module = CommunicationInjector({
-        "mailpoet": {
+        'mailpoet': {
           Ajax: {
             post: spy
           }
@@ -206,7 +206,7 @@ define([
 
     it('fetches posts from the server', function() {
       var module = CommunicationInjector({
-          "mailpoet": {
+          'mailpoet': {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
@@ -230,7 +230,7 @@ define([
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
           module = CommunicationInjector({
-            "mailpoet": {
+            'mailpoet': {
               Ajax: {
                 post: mock
               }
@@ -258,7 +258,7 @@ define([
           module;
       spy = sinon.spy(post);
       module = CommunicationInjector({
-        "mailpoet": {
+        'mailpoet': {
           Ajax: {
             post: spy
           }
@@ -277,7 +277,7 @@ define([
 
     it('fetches transformed posts from the server', function() {
       var module = CommunicationInjector({
-          "mailpoet": {
+          'mailpoet': {
             Ajax: {
               post: function() {
                 var deferred = jQuery.Deferred();
@@ -301,7 +301,7 @@ define([
       var deferred = jQuery.Deferred(),
           mock = sinon.mock({ post: function() {} }).expects('post').once().returns(deferred),
           module = CommunicationInjector({
-            "mailpoet": {
+            'mailpoet': {
               Ajax: {
                 post: mock
               }

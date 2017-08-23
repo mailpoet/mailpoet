@@ -20,8 +20,8 @@ module.exports = {
   loadTemplate: function (path, window, opts) {
     var w = window || global.window;
     var options = opts || {};
-    options.type = "text/x-handlebars-template";
+    options.type = 'text/x-handlebars-template';
 
-    this.loadScript("views/newsletter/templates/" + path, w, options);
+    this.loadScript('views/newsletter/templates/' + path, w, options);
   }
 };

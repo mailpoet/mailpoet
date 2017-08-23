@@ -51,13 +51,13 @@ define([
         expect(model.get('styles.link.textDecoration')).to.match(/^(underline|none)$/);
       });
 
-      it("changes attributes with set", function () {
+      it('changes attributes with set', function () {
         var newValue = 'Some random teeeext';
         model.set('text', newValue);
         expect(model.get('text')).to.equal(newValue);
       });
 
-      it("triggers autosave if any attribute changes", function () {
+      it('triggers autosave if any attribute changes', function () {
         var mock = sinon.mock().exactly(8).withArgs('autoSave');
         EditorApplication.getChannel = sinon.stub().returns({
           trigger: mock
@@ -75,7 +75,7 @@ define([
         mock.verify();
       });
 
-      it("uses defaults from config when they are set", function () {
+      it('uses defaults from config when they are set', function () {
         global.stubConfig(EditorApplication, {
           blockDefaults: {
             header: {
