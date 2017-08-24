@@ -647,7 +647,7 @@ class Menu {
       true,
       'MailPoet',
       'MailPoet',
-      $access_control->user_capabilities[0],
+      $access_control->getUserFirstCapability(),
       $_REQUEST['page'],
       array(
         __CLASS__,
