@@ -349,12 +349,13 @@ define([
   };
 
   App.on('before:start', function(App, options) {
-    Application.save = Module.save; //saveAndProvidePromise;
+    var Application = App;
+    Application.save = Module.save;
     Application.getChannel().on('autoSave', Module.autoSave);
 
     window.onbeforeunload = Module.beforeExitWithUnsavedChanges;
 
-    Application.getChannel().reply('save', App.save);
+    Application.getChannel().reply('save', Application.save);
   });
 
   App.on('start', function(App, options) {
