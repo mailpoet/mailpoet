@@ -46,29 +46,32 @@ define([
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
       ResizableBehavior: {
         elementSelector: '.mailpoet_image',
-        resizeHandleSelector: '.mailpoet_resize_handle',
-        minLength: 36,
-        maxLength: 660,
-        modelField: 'width',
-        transformationFunction: function(event) { return event.dx; }
+        resizeHandleSelector: '.mailpoet_image_resize_handle',
+        onResize: function(event, that) {
+          var corner = that.$('.mailpoet_image').offset(),
+              width  = event.pageX - corner.left
+          if(width < 36) {
+            width = 36;
+          }
+          if(width > 660) {
+            width = 660;
+          }
+          var height = (that.view.model.get('height') / that.view.model.get('width')) * width;
+          that.view.model.set({ width: width, height: height });
+          that.$('.mailpoet_content').css('width', width + 'px');
+        }
       },
       ShowSettingsBehavior: {
-        ignoreFrom: '.mailpoet_resize_handle'
+        ignoreFrom: '.mailpoet_image_resize_handle'
       }
     }),
     initialize: function() {
       base.BlockView.prototype.initialize.apply(this, arguments);
-      this.listenTo(this.model, 'change:width', this.changeWidth);
-    },
-    changeWidth: function() {
-        this.$('.mailpoet_resize_handle_text').text(this.model.get('width'));      
     },
     onRender: function() {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
-      this.$('.mailpoet_resize_handle').css('padding-right', '20px');
-      this.$('.mailpoet_resize_handle').css('cursor', 'ew-resize');
-
+      
       if (this.model.get('fullWidth')) {
         this.$el.addClass('mailpoet_full_image');
       } else {

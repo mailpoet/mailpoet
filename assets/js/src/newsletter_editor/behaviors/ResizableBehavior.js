@@ -17,7 +17,8 @@ define([
       transformationFunction: function(event) { return event.dy; },
       minLength: 0,
       maxLength: Infinity,
-      modelField: 'styles.block.height'
+      modelField: 'styles.block.height',
+      onResize: null
     },
     events: {
       mouseenter: 'showResizeHandle',
@@ -44,7 +45,10 @@ define([
       }).on('resizestart', function (event) {
         that.isBeingResized = true;
         that.$el.addClass('mailpoet_resize_active');
-      }).on('resizemove', function (event) {
+      }).on('resizemove', function(event) {
+        if (that.options.onResize) {
+          return that.options.onResize(event, that)
+        }
         var currentLength = parseFloat(that.view.model.get(that.options.modelField)),
           newLength = currentLength + that.options.transformationFunction(event);
 
