@@ -12,7 +12,6 @@ class Shortcodes {
   function init() {
     // form widget shortcode
     add_shortcode('mailpoet_form', array($this, 'formWidget'));
-    add_shortcode('wysija_form', array($this, 'formWidget'));
 
     // subscribers count shortcode
     add_shortcode('mailpoet_subscribers_count', array(
