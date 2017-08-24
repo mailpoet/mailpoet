@@ -6,7 +6,7 @@
   <div>
     <p class="mailpoet_sending_methods_help help">
       <%= __('<strong>Tip:</strong> we have a [link]list of plugins[/link] that work with MailPoet if you need fancier forms.')
-      |replaceLinkTags('http://beta.docs.mailpoet.com/article/198-list-of-forms-plugins-that-work-with-mailpoet?utm_source=plugin&utm_medium=settings&utm_campaign=helpdocs', {'target' : '_blank'})
+      |replaceLinkTags('http://beta.docs.mailpoet.com/article/198-list-of-forms-plugins-that-work-with-mailpoet?utm_source=plugin&utm_medium=settings&utm_campaign=helpdocs', {'target' : '_blank', id: 'mailpoet_helper_link'})
       |raw
       %>
     </p>
@@ -67,4 +67,14 @@
     'moveToTrash': __('Move to trash'),
     'new': __('Add New'),
   }) %>
+<% endblock %>
+
+<% block after_javascript %>
+<script type="text/javascript">
+  jQuery('#mailpoet_helper_link').on('click', function() {
+    MailPoet.trackEvent('Forms page > link to doc page', {
+      'MailPoet Free version': window.mailpoet_version
+    });
+  });
+</script>
 <% endblock %>

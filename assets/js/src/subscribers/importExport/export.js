@@ -157,6 +157,11 @@ define(
            .replace('[/link]', '</a>');
           jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
           window.location.href = response.data.exportFileURL;
+          MailPoet.trackEvent('Subscribers export completed', {
+            'Total exported': response.data.totalExported,
+            'Only confirmed?': exportData.exportConfirmedOption,
+            'MailPoet Free version': window.mailpoet_version
+          });
         }).fail(function(response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
