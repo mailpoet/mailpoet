@@ -70,12 +70,20 @@ class ServicesChecker {
       || $premium_key['state'] === Bridge::KEY_ALREADY_USED
     ) {
       if($display_error_notice) {
+        $errorString = __('[link1]Register[/link1] your copy of the MailPoet Premium plugin to receive access to automatic upgrades and support. Need a license key? [link2]Purchase one now.[/link2]', 'mailpoet');
         $error = Helpers::replaceLinkTags(
-          __('Warning! Your License Key is either invalid or expired. [link]Renew your License now[/link] to enjoy automatic updates and Premium support.', 'mailpoet'),
-          'https://account.mailpoet.com',
-          array('target' => '_blank')
+          $errorString,
+          'admin.php?page=mailpoet-settings#premium',
+          array(),
+          'link1'
         );
-        WPNotice::displayError($error);
+        $error = Helpers::replaceLinkTags(
+          $error,
+          'admin.php?page=mailpoet-premium',
+          array(),
+          'link2'
+        );
+        WPNotice::displayWarning($error);
       }
       return false;
     } elseif($premium_key['state'] === Bridge::KEY_EXPIRING
