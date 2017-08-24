@@ -139,7 +139,7 @@ class Initializer {
       if(!$this->access_control->validatePermission(AccessControl::PERMISSION_UPDATE_PLUGIN)) {
         throw new \Exception(__('You do not have permission to activate/deactivate MailPoet plugin.', 'mailpoet'));
       }
-      $activator = new Activator($this->access_control);
+      $activator = new Activator();
       $activator->activate();
     }
   }
