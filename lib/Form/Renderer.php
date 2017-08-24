@@ -15,7 +15,7 @@ class Renderer {
     $styles = new Util\Styles(static::getStyles($form));
 
     $html = '<style type="text/css">';
-    $html .= '.mailpoet_hp_email_label{position: absolute;left: -999em;}';// move honeypot field out of the sight
+    $html .= '.mailpoet_hp_email_label{position: absolute;left: -999em;}'; // move honeypot field out of sight
     $html .= $styles->render($prefix);
     $html .= '</style>';
 
@@ -38,11 +38,13 @@ class Renderer {
     }
   }
 
-  static function renderBlocks($blocks = array()) {
-    // this is a honeypot for spambots
-    $html = '<label class="mailpoet_hp_email_label">Please leave this field empty<input type="email" name="data[email]"></label>';
+  static function renderBlocks($blocks = array(), $honeypot_enabled = true) {
+    // add honeypot for spambots
+    $html = ($honeypot_enabled) ?
+      '<label class="mailpoet_hp_email_label">' . __('Please leave this field empty', 'mailpoet') . '<input type="email" name="data[email]"></label>' :
+      '';
     foreach($blocks as $key => $block) {
-      $html .= static::renderBlock($block)."\n";
+      $html .= static::renderBlock($block) . PHP_EOL;
     }
 
     return $html;
