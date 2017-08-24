@@ -329,7 +329,10 @@ define([
   };
 
   Module._cancelAutosave = function() {
-    if (saveTimeout) { clearTimeout(saveTimeout); saveTimeout = undefined; }
+    if (!saveTimeout) return;
+
+    clearTimeout(saveTimeout);
+    saveTimeout = undefined;
   };
 
   Module.beforeExitWithUnsavedChanges = function(e) {
