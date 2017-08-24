@@ -172,12 +172,12 @@ define([
         it('saves newsletter when clicked on "next" button', function() {
           var spy = sinon.spy(),
               module = SaveInjector({
-            'newsletter_editor/components/communication': {
-              saveNewsletter: function() {
-                return jQuery.Deferred();
-              }
-            }
-          });
+                'newsletter_editor/components/communication': {
+                  saveNewsletter: function() {
+                    return jQuery.Deferred();
+                  }
+                }
+              });
           global.stubChannel(EditorApplication, {
             trigger: spy
           });
