@@ -488,7 +488,10 @@ class Subscriber extends Model {
       unset($data['segments']);
     }
 
-    $data = self::setRequiredFieldsDefaultValues($data);
+    // if new subscriber, make sure that required fields are set
+    if(!$subscriber) {
+      $data = self::setRequiredFieldsDefaultValues($data);
+    }
 
     // get custom fields
     list($data, $custom_fields) = self::extractCustomFieldsFromFromObject($data);
