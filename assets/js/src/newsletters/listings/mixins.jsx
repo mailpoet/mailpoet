@@ -327,7 +327,7 @@ const _MailerMixin = {
       MailPoet.I18n.t('mailerCheckSettingsNotice'),
       /\[link\](.*?)\[\/link\]/g,
       match => (
-        <a href={'?page=mailpoet-settings#mta'}>{ match }</a>
+        <a href={'?page=mailpoet-settings#mta'} key="check-sending">{ match }</a>
       )
     );
     if (state.meta.mta_log.error.operation === 'send') {
