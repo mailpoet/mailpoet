@@ -121,7 +121,7 @@ function initMailpoetTranslation() {
   if(typeof MailPoet !== 'undefined') {
     MailPoet.I18n.add('ajaxFailedErrorMessage', '%s')
   } else {
-    setTimeout(waitForElement, 250);
+    setTimeout(initMailpoetTranslation, 250);
   }
 }
 setTimeout(initMailpoetTranslation, 250);
