@@ -65,15 +65,6 @@ define([
     });
   };
 
-  // For getting a promise after triggering save event
-  Module.saveAndProvidePromise = function(saveResult) {
-    var result = saveResult;
-    var promise = Module.save();
-    if (saveResult !== undefined) {
-      result.promise = promise;
-    }
-  };
-
   Module.getThumbnail = function(element, options) {
     var promise = html2canvas(element, options || {});
 
@@ -169,7 +160,7 @@ define([
     },
     save: function() {
       this.hideOptionContents();
-      App.getChannel().trigger('save');
+      App.getChannel().request('save');
     },
     beforeSave: function() {
       // TODO: Add a loading animation instead
@@ -289,7 +280,10 @@ define([
     next: function() {
       this.hideOptionContents();
       if(!this.$('.mailpoet_save_next').hasClass('button-disabled')) {
-        window.location.href = App.getConfig().get('urls.send');
+        Module._cancelAutosave();
+        Module.save().done(function(response) {
+          window.location.href = App.getConfig().get('urls.send');
+        });
       }
     },
     validateNewsletter: function(jsonObject) {
@@ -326,13 +320,19 @@ define([
     // may be requested
     var AUTOSAVE_DELAY_DURATION = 1000;
 
-    // Cancel save timer if another change happens before it completes
-    if (saveTimeout) clearTimeout(saveTimeout);
+    Module._cancelAutosave();
     saveTimeout = setTimeout(function() {
-      App.getChannel().trigger('save');
-      clearTimeout(saveTimeout);
-      saveTimeout = undefined;
+      App.getChannel().request('save').always(function() {
+        Module._cancelAutosave();
+      });
     }, AUTOSAVE_DELAY_DURATION);
+  };
+
+  Module._cancelAutosave = function() {
+    if (!saveTimeout) return;
+
+    clearTimeout(saveTimeout);
+    saveTimeout = undefined;
   };
 
   Module.beforeExitWithUnsavedChanges = function(e) {
@@ -350,12 +350,12 @@ define([
 
   App.on('before:start', function(App, options) {
     var Application = App;
-    Application.save = Module.saveAndProvidePromise;
+    Application.save = Module.save;
     Application.getChannel().on('autoSave', Module.autoSave);
 
     window.onbeforeunload = Module.beforeExitWithUnsavedChanges;
 
-    Application.getChannel().on('save', function(saveResult) { Application.save(saveResult); });
+    Application.getChannel().reply('save', Application.save);
   });
 
   App.on('start', function(App, options) {

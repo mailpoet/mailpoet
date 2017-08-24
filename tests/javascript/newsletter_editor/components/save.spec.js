@@ -92,15 +92,6 @@ define([
         mock.verify();
       });
 
-      it('provides a promise if a result container is passed to save event', function() {
-        var spy = sinon.spy(module, 'save'),
-          saveResult = {promise: null};
-        module.saveAndProvidePromise(saveResult);
-        spy.restore();
-        expect(spy.calledOnce).to.be.true;
-        expect(saveResult.promise).to.be.an('object');
-        expect(saveResult.promise.then).to.be.a('function');
-      });
     });
 
     describe('view', function() {
@@ -124,9 +115,9 @@ define([
         });
 
         it('triggers newsletter saving when clicked on save button', function() {
-          var mock = sinon.mock({ trigger: function() {} }).expects('trigger').once().withArgs('save');
+          var mock = sinon.mock({ request: function() {} }).expects('request').once().withArgs('save');
           global.stubChannel(EditorApplication, {
-            trigger: mock
+            request: mock
           });
           view.$('.mailpoet_save_button').click();
 
@@ -177,6 +168,26 @@ define([
 
           mock.verify();
         });
+
+        it('saves newsletter when clicked on "next" button', function() {
+          var spy = sinon.spy(),
+              module = SaveInjector({
+                'newsletter_editor/components/communication': {
+                  saveNewsletter: function() {
+                    return jQuery.Deferred();
+                  }
+                }
+              });
+          global.stubChannel(EditorApplication, {
+            trigger: spy
+          });
+          var view = new (module.SaveView)();
+          view.render();
+
+          view.$('.mailpoet_save_next').click();
+          expect(spy.withArgs('beforeEditorSave').calledOnce).to.be.true;
+        });
+
       });
     });
   });
