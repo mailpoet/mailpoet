@@ -16,7 +16,7 @@ class Router {
   const RESPONSE_ERROR = 404;
   const RESPONE_FORBIDDEN = 403;
 
-  function __construct($api_data = false) {
+  function __construct(AccessControl $access_control, $api_data = false) {
     $api_data = ($api_data) ? $api_data : $_GET;
     $this->api_request = isset($api_data[self::NAME]);
     $this->endpoint = isset($api_data['endpoint']) ?
@@ -28,7 +28,7 @@ class Router {
     $this->data = isset($api_data['data']) ?
       self::decodeRequestData($api_data['data']) :
       false;
-    $this->access_control = new AccessControl();
+    $this->access_control = $access_control;
   }
 
   function init() {

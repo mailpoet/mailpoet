@@ -227,7 +227,7 @@ class Initializer {
   }
 
   function setupRouter() {
-    $router = new Router\Router();
+    $router = new Router\Router($this->access_control);
     $router->init();
   }
 
