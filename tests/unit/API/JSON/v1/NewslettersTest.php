@@ -8,6 +8,7 @@ use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\Segment;
@@ -139,7 +140,6 @@ class NewslettersTest extends \MailPoetTest {
     $hook_name = 'mailpoet_api_newsletters_save_after';
     expect(WPHooksHelper::isActionDone($hook_name))->true();
     expect(WPHooksHelper::getActionDone($hook_name)[0] instanceof Newsletter)->true();
-
 
     $invalid_data = array(
       'subject' => 'Missing newsletter type'
@@ -355,6 +355,51 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])
       ->equals('This newsletter does not exist.');
+  }
+
+  function testItReschedulesPastDuePostNotificationsWhenStatusIsSetBackToActive() {
+    $newsletter_option_field = NewsletterOptionField::create();
+    $newsletter_option_field->name = 'schedule';
+    $newsletter_option_field->newsletter_type = Newsletter::TYPE_NOTIFICATION;
+    $newsletter_option_field->save();
+    $schedule = sprintf('0 %d * * *', Carbon::createFromTimestamp(current_time('timestamp'))->hour); // every day at current hour
+    $random_future_date = Carbon::createFromTimestamp(current_time('timestamp'))->addDays(10)->format('Y-m-d H:i:s'); // 10 days from now
+    $newsletter_option = NewsletterOption::createOrUpdate(
+      array(
+        'newsletter_id' => $this->post_notification->id,
+        'option_field_id' => $newsletter_option_field->id,
+        'value' => $schedule
+      )
+    );
+    $sending_queue_1 = SendingQueue::create();
+    $sending_queue_1->newsletter_id = $this->post_notification->id;
+    $sending_queue_1->scheduled_at = Scheduler::getPreviousRunDate($schedule);
+    $sending_queue_1->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_queue_1->save();
+    $sending_queue_2 = SendingQueue::create();
+    $sending_queue_2->newsletter_id = $this->post_notification->id;
+    $sending_queue_2->scheduled_at = $random_future_date;
+    $sending_queue_2->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_queue_2->save();
+    $sending_queue_3 = SendingQueue::create();
+    $sending_queue_3->newsletter_id = $this->post_notification->id;
+    $sending_queue_3->scheduled_at = Scheduler::getPreviousRunDate($schedule);
+    $sending_queue_3->save();
+
+    $router = new Newsletters();
+    $response = $router->setStatus(
+      array(
+        'id' => $this->post_notification->id,
+        'status' => Newsletter::STATUS_ACTIVE
+      )
+    );
+    $sending_queues = SendingQueue::findMany();
+    // previously scheduled notification is rescheduled for future date
+    expect($sending_queues[0]->scheduled_at)->equals(Scheduler::getNextRunDate($schedule));
+    // future scheduled notifications are left intact
+    expect($sending_queues[1]->scheduled_at)->equals($random_future_date);
+    // previously unscheduled (e.g., sent/sending) notifications are left intact
+    expect($sending_queues[2]->scheduled_at)->equals(Scheduler::getPreviousRunDate($schedule));
   }
 
   function testItCanRestoreANewsletter() {
