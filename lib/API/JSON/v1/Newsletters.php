@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\API\JSON\v1;
 
+use Carbon\Carbon;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Listing;
@@ -134,7 +135,7 @@ class Newsletters extends APIEndpoint {
     }
 
     $id = (isset($data['id'])) ? (int)$data['id'] : false;
-    $newsletter = Newsletter::findOne($id);
+    $newsletter = Newsletter::filter('filterWithOptions')->findOne($id);
 
     if($newsletter === false) {
       return $this->errorResponse(array(
@@ -147,11 +148,22 @@ class Newsletters extends APIEndpoint {
 
     if(!empty($errors)) {
       return $this->errorResponse($errors);
-    } else {
-      return $this->successResponse(
-        Newsletter::findOne($newsletter->id)->asArray()
-      );
     }
+
+    // if there are past due notifications, reschedule them for the next send date
+    if($newsletter->type === Newsletter::TYPE_NOTIFICATION && $status === Newsletter::STATUS_ACTIVE) {
+      $next_run_date = Scheduler::getNextRunDate($newsletter->schedule);
+      $newsletter->queue()
+        ->whereLte('scheduled_at', Carbon::createFromTimestamp(current_time('timestamp')))
+        ->where('status', SendingQueue::STATUS_SCHEDULED)
+        ->findResultSet()
+        ->set('scheduled_at', $next_run_date)
+        ->save();
+    }
+
+    return $this->successResponse(
+      Newsletter::findOne($newsletter->id)->asArray()
+    );
   }
 
   function restore($data = array()) {

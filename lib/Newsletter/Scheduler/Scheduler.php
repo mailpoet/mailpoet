@@ -176,6 +176,18 @@ class Scheduler {
     return $next_run_date;
   }
 
+  static function getPreviousRunDate($schedule, $from_timestamp = false) {
+    $from_timestamp = ($from_timestamp) ? $from_timestamp : current_time('timestamp');
+    try {
+      $schedule = \Cron\CronExpression::factory($schedule);
+      $previous_run_date = $schedule->getPreviousRunDate(Carbon::createFromTimestamp($from_timestamp))
+        ->format('Y-m-d H:i:s');
+    } catch(\Exception $e) {
+      $previous_run_date = false;
+    }
+    return $previous_run_date;
+  }
+
   static function getNewsletters($type) {
     return Newsletter::getPublished()
       ->filter('filterType', $type)

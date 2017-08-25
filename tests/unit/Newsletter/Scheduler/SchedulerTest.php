@@ -25,7 +25,7 @@ class SchedulerTest extends \MailPoetTest {
   function testItGetsActiveNewslettersFilteredByType() {
     $newsletter = $this->_createNewsletter($type = Newsletter::TYPE_WELCOME);
 
-    // no newsletters wtih type "notification" should be found
+    // no newsletters with type "notification" should be found
     expect(Scheduler::getNewsletters(Newsletter::TYPE_NOTIFICATION))->isEmpty();
 
     // one newsletter with type "welcome" should be found
@@ -39,6 +39,15 @@ class SchedulerTest extends \MailPoetTest {
       ->equals($current_time->addMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
     expect(Scheduler::getNextRunDate('invalid CRON expression'))->false();
+  }
+
+  function testItCanGetPreviousRunDate() {
+    // it accepts cron syntax and returns previous run date
+    $current_time = Carbon::createFromTimestamp(current_time('timestamp'));
+    expect(Scheduler::getPreviousRunDate('* * * * *'))
+      ->equals($current_time->subMinute()->format('Y-m-d H:i:00'));
+    // when invalid CRON expression is used, false response is returned
+    expect(Scheduler::getPreviousRunDate('invalid CRON expression'))->false();
   }
 
   function testItFormatsDatetimeString() {
