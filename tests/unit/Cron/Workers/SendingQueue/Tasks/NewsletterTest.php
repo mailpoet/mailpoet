@@ -180,6 +180,8 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   function testItSavesNewsletterPosts() {
+    $this->newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $this->newsletter->parent_id = $this->newsletter->id;
     $result = $this->newsletter_task->preProcessNewsletter($this->newsletter, $this->queue);
     $newsletter_post = NewsletterPost::where('newsletter_id', $this->newsletter->id)
       ->findOne();
