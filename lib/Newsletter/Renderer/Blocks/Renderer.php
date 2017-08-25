@@ -23,11 +23,8 @@ class Renderer {
         $parent = Newsletter::findOne($newsletter_id);
         $newer_than_timestamp = $parent->created_at;
       }
-    } else if($preview) {
-      $newsletter_id = false;
-      $newer_than_timestamp = false;
     } else {
-      $newsletter_id = $newsletter['id'];
+      $newsletter_id = false;
       $newer_than_timestamp = false;
     }
     $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent(

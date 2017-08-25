@@ -11,6 +11,7 @@ class PostsTest extends \MailPoetTest {
   function testItFailsWhenNoPostsArePresent() {
     $newsletter = (object)array(
       'id' => 1,
+      'type' => Newsletter::TYPE_NOTIFICATION_HISTORY
     );
     $rendered_newsletter = array(
       'html' => 'Sample newsletter'
@@ -19,21 +20,6 @@ class PostsTest extends \MailPoetTest {
   }
 
   function testItCanExtractAndSavePosts() {
-    $post_id = 10;
-    $newsletter = (object)array(
-      'id' => 1,
-      'type' => Newsletter::TYPE_STANDARD
-    );
-    $rendered_newsletter = array(
-      'html' => '<a data-post-id="' . $post_id . '" href="#">sample post</a>'
-    );
-    expect(PostsTask::extractAndSave($rendered_newsletter, $newsletter))->equals(true);
-    $newsletter_post = NewsletterPost::where('newsletter_id', $newsletter->id)
-      ->findOne();
-    expect($newsletter_post->post_id)->equals($post_id);
-  }
-
-  function testItSetsNewsletterIdToParentIdWhenNewsletterIsANotificationHistory() {
     $post_id = 10;
     $newsletter = (object)array(
       'id' => 2,
@@ -47,6 +33,21 @@ class PostsTest extends \MailPoetTest {
     $newsletter_post = NewsletterPost::where('newsletter_id', $newsletter->parent_id)
       ->findOne();
     expect($newsletter_post->post_id)->equals($post_id);
+  }
+
+  function testItDoesNotSavePostsWhenNewsletterIsNotANotificationHistory() {
+    $post_id = 10;
+    $newsletter = (object)array(
+      'id' => 2,
+      'parent_id' => 1,
+      'type' => Newsletter::TYPE_WELCOME
+    );
+    $rendered_newsletter = array(
+      'html' => '<a data-post-id="' . $post_id . '" href="#">sample post</a>'
+    );
+    expect(PostsTask::extractAndSave($rendered_newsletter, $newsletter))->equals(false);
+    $newsletter->type = Newsletter::TYPE_STANDARD;
+    expect(PostsTask::extractAndSave($rendered_newsletter, $newsletter))->equals(false);
   }
 
   function _after() {
