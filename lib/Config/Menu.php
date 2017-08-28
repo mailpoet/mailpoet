@@ -48,6 +48,11 @@ class Menu {
     if(self::isOnMailPoetAdminPage()) {
       do_action('mailpoet_conflict_resolver_styles');
       do_action('mailpoet_conflict_resolver_scripts');
+
+      if($_REQUEST['page'] === 'mailpoet-newsletter-editor') {
+        // Disable WP emojis to not interfere with the newsletter editor emoji handling
+        $this->disableWPEmojis();
+      }
     }
 
     $main_page_slug = 'mailpoet-newsletters';
@@ -276,6 +281,11 @@ class Menu {
         'newletterEditor'
       )
     );
+  }
+
+  function disableWPEmojis() {
+    remove_action('admin_print_scripts', 'print_emoji_detection_script');
+    remove_action('admin_print_styles', 'print_emoji_styles');
   }
 
   function welcome() {

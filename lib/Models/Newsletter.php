@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
+use MailPoet\WP\Emoji;
 
 if(!defined('ABSPATH')) exit;
 
@@ -792,6 +793,10 @@ class Newsletter extends Model {
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
       $newsletter = self::findOne((int)$data['id']);
+    }
+
+    if(!empty($data['body'])) {
+      $data['body'] = Emoji::encodeForUTF8Column(self::$_table, 'body', $data['body']);
     }
 
     if($newsletter === false) {
