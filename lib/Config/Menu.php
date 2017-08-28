@@ -671,10 +671,8 @@ class Menu {
 
   function checkPremiumKey(ServicesChecker $checker = null) {
     if(self::isOnMailPoetAdminPage()) {
-      $show_notices = isset($_REQUEST['page'])
-        && stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) === false;
       $checker = $checker ?: new ServicesChecker();
-      $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
+      $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices = true);
     }
   }
 

@@ -70,9 +70,9 @@ class ServicesChecker {
       || $premium_key['state'] === Bridge::KEY_ALREADY_USED
     ) {
       if($display_error_notice) {
-        $errorString = __('[link1]Register[/link1] your copy of the MailPoet Premium plugin to receive access to automatic upgrades and support. Need a license key? [link2]Purchase one now.[/link2]', 'mailpoet');
+        $error_string = __('[link1]Register[/link1] your copy of the MailPoet Premium plugin to receive access to automatic upgrades and support. Need a license key? [link2]Purchase one now.[/link2]', 'mailpoet');
         $error = Helpers::replaceLinkTags(
-          $errorString,
+          $error_string,
           'admin.php?page=mailpoet-settings#premium',
           array(),
           'link1'
@@ -83,7 +83,7 @@ class ServicesChecker {
           array(),
           'link2'
         );
-        WPNotice::displayWarning($error);
+        WPNotice::displayInlineWarning($error);
       }
       return false;
     } elseif($premium_key['state'] === Bridge::KEY_EXPIRING
@@ -98,7 +98,7 @@ class ServicesChecker {
           array('target' => '_blank')
         );
         $error = sprintf($error, $date);
-        WPNotice::displayWarning($error);
+        WPNotice::displayInlineWarning($error);
       }
       return true;
     } elseif($premium_key['state'] === Bridge::KEY_VALID) {
