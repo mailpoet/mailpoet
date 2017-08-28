@@ -1025,6 +1025,29 @@ class SubscriberTest extends \MailPoetTest {
     );
   }
 
+  function testItSetsDefaultValuesForNewSubscribers() {
+    $result = Subscriber::createOrUpdate(
+      array(
+        'email' => 'new.subscriber@example.com'
+      )
+    );
+    expect($result->getErrors())->false();
+    expect($result->first_name)->isEmpty();
+    expect($result->last_name)->isEmpty();
+  }
+
+  function testItDoesNotSetDefaultValuesForExistingSubscribers() {
+    $existing_subscriber_data = $this->data;
+    $result = Subscriber::createOrUpdate(
+      array(
+        'email' => $existing_subscriber_data['email']
+      )
+    );
+    expect($result->getErrors())->false();
+    expect($result->first_name)->equals($this->data['first_name']);
+    expect($result->last_name)->equals($this->data['last_name']);
+  }
+
   function testItExtractsCustomFieldsFromObject() {
     $data = array(
       'email' => 'test@example.com',
