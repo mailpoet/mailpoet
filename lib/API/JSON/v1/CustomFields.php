@@ -1,12 +1,19 @@
 <?php
+
 namespace MailPoet\API\JSON\v1;
+
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\Config\AccessControl;
 use MailPoet\Models\CustomField;
 
 if(!defined('ABSPATH')) exit;
 
 class CustomFields extends APIEndpoint {
+  public $permissions = array(
+    'global' => AccessControl::PERMISSION_MANAGE_FORMS
+  );
+
   function getAll() {
     $collection = CustomField::orderByAsc('created_at')->findMany();
     $custom_fields = array_map(function($custom_field) {

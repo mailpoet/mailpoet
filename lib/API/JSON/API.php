@@ -1,7 +1,7 @@
 <?php
 namespace MailPoet\API\JSON;
 
-use MailPoet\Config\Env;
+use MailPoet\Config\AccessControl;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Hooks;
@@ -19,9 +19,11 @@ class API {
   private $_available_api_versions = array(
       'v1'
   );
+  private $access_control;
   const CURRENT_VERSION = 'v1';
 
-  function __construct() {
+  function __construct(AccessControl $access_control) {
+    $this->access_control = $access_control;
     foreach($this->_available_api_versions as $available_api_version) {
       $this->addEndpointNamespace(
         sprintf('%s\%s', __NAMESPACE__, $available_api_version),
@@ -130,17 +132,11 @@ class API {
 
       // check the accessibility of the requested endpoint's action
       // by default, an endpoint's action is considered "private"
-      $permissions = $endpoint->permissions;
-      if(array_key_exists($this->_request_method, $permissions) === false ||
-         $permissions[$this->_request_method] !== Access::ALL
-      ) {
-        if($this->checkPermissions() === false) {
-          $error_message = __('You do not have the required permissions.', 'mailpoet');
-          $error_response = $this->createErrorResponse(Error::FORBIDDEN, $error_message, Response::STATUS_FORBIDDEN);
-          return $error_response;
-        }
+      if(!$this->validatePermissions($this->_request_method, $endpoint->permissions)) {
+        $error_message = __('You do not have the required permissions.', 'mailpoet');
+        $error_response = $this->createErrorResponse(Error::FORBIDDEN, $error_message, Response::STATUS_FORBIDDEN);
+        return $error_response;
       }
-
       $response = $endpoint->{$this->_request_method}($this->_request_data);
       return $response;
     } catch(\Exception $e) {
@@ -150,8 +146,11 @@ class API {
     }
   }
 
-  function checkPermissions() {
-    return current_user_can(Env::$required_permission);
+  function validatePermissions($request_method, $permissions) {
+    // validate method permission if defined, otherwise validate global permission
+    return(!empty($permissions['methods'][$request_method])) ?
+      $this->access_control->validatePermission($permissions['methods'][$request_method]) :
+      $this->access_control->validatePermission($permissions['global']);
   }
 
   function checkToken() {

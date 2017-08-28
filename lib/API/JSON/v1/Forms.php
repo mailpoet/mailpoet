@@ -1,17 +1,23 @@
 <?php
+
 namespace MailPoet\API\JSON\v1;
+
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
-
+use MailPoet\Config\AccessControl;
+use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Form\Util;
+use MailPoet\Listing;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
-use MailPoet\Form\Renderer as FormRenderer;
-use MailPoet\Listing;
-use MailPoet\Form\Util;
 
 if(!defined('ABSPATH')) exit;
 
 class Forms extends APIEndpoint {
+  public $permissions = array(
+    'global' => AccessControl::PERMISSION_MANAGE_FORMS
+  );
+
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $form = Form::findOne($id);

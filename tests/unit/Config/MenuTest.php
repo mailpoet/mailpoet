@@ -1,7 +1,9 @@
 <?php
+
 namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
+use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
 use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
@@ -39,7 +41,7 @@ class MenuTest extends \MailPoetTest {
   function testItChecksMailpoetAPIKey() {
     $renderer = Stub::make(new Renderer());
     $assets_url = '';
-    $menu = new Menu($renderer, $assets_url);
+    $menu = new Menu($renderer, $assets_url, new AccessControl());
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(
@@ -62,7 +64,7 @@ class MenuTest extends \MailPoetTest {
   function testItChecksPremiumKey() {
     $renderer = Stub::make(new Renderer());
     $assets_url = '';
-    $menu = new Menu($renderer, $assets_url);
+    $menu = new Menu($renderer, $assets_url, new AccessControl());
 
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $checker = Stub::make(

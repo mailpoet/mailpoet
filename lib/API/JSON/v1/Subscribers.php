@@ -1,21 +1,22 @@
 <?php
+
 namespace MailPoet\API\JSON\v1;
+
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
-use MailPoet\API\JSON\Access as APIAccess;
-
-use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\Config\AccessControl;
 use MailPoet\Listing;
-use MailPoet\Models\Subscriber;
+use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\Form;
 use MailPoet\Models\StatisticsForms;
+use MailPoet\Models\Subscriber;
 
 if(!defined('ABSPATH')) exit;
 
 class Subscribers extends APIEndpoint {
-
   public $permissions = array(
-    'subscribe' => APIAccess::ALL
+    'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
+    'methods' => array('subscribe' => AccessControl::NO_ACCESS_RESTRICTION)
   );
 
   function get($data = array()) {

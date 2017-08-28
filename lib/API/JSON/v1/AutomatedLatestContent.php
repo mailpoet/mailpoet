@@ -1,12 +1,18 @@
 <?php
+
 namespace MailPoet\API\JSON\v1;
+
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
+use MailPoet\Config\AccessControl;
 use MailPoet\WP\Posts as WPPosts;
 
 if(!defined('ABSPATH')) exit;
 
 class AutomatedLatestContent extends APIEndpoint {
   public $ALC;
+  public $permissions = array(
+    'global' => AccessControl::PERMISSION_MANAGE_EMAILS
+  );
 
   function __construct() {
     $this->ALC = new \MailPoet\Newsletter\AutomatedLatestContent();

@@ -1,11 +1,16 @@
 <?php
+
 namespace MailPoet\API\JSON;
+
+use MailPoet\Config\AccessControl;
 
 if(!defined('ABSPATH')) exit;
 
 abstract class Endpoint {
-
-  public $permissions = array();
+  public $permissions = array(
+    'global' => array(AccessControl::PERMISSION_MANAGE_SETTINGS),
+    'methods' => array()
+  );
 
   function successResponse(
     $data = array(), $meta = array(), $status = Response::STATUS_OK
@@ -18,7 +23,7 @@ abstract class Endpoint {
   ) {
     if(empty($errors)) {
       $errors = array(
-        Error::UNKNOWN  => __('An unknown error occurred.', 'mailpoet')
+        Error::UNKNOWN => __('An unknown error occurred.', 'mailpoet')
       );
     }
     return new ErrorResponse($errors, $meta, $status);

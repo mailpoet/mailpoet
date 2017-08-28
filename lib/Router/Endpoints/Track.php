@@ -1,6 +1,8 @@
 <?php
+
 namespace MailPoet\Router\Endpoints;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue;
@@ -20,6 +22,9 @@ class Track {
     self::ACTION_OPEN
   );
   public $data;
+  public $permissions = array(
+    'global' => AccessControl::NO_ACCESS_RESTRICTION
+  );
 
   function __construct($data) {
     $this->data = $this->_processTrackData($data);
@@ -38,8 +43,8 @@ class Track {
   function _processTrackData($data) {
     $data = (object)Links::transformUrlDataObject($data);
     if(empty($data->queue_id) ||
-       empty($data->subscriber_id) ||
-       empty($data->subscriber_token)
+      empty($data->subscriber_id) ||
+      empty($data->subscriber_token)
     ) {
       return false;
     }

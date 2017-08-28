@@ -1,13 +1,19 @@
 <?php
-namespace MailPoet\API\JSON\v1;
-use MailPoet\API\JSON\Endpoint as APIEndpoint;
 
-use MailPoet\Subscribers\ImportExport\Import\MailChimp;
+namespace MailPoet\API\JSON\v1;
+
+use MailPoet\API\JSON\Endpoint as APIEndpoint;
+use MailPoet\Config\AccessControl;
 use MailPoet\Models\Segment;
+use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 
 if(!defined('ABSPATH')) exit;
 
 class ImportExport extends APIEndpoint {
+  public $permissions = array(
+    'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS
+  );
+
   function getMailChimpLists($data) {
     try {
       $mailChimp = new MailChimp($data['api_key']);

@@ -1,10 +1,11 @@
 <?php
+
 namespace MailPoet\Config;
 
 if(!defined('ABSPATH')) exit;
 
 class Activator {
-  static function activate() {
+  function activate() {
     $migrator = new Migrator();
     $migrator->up();
 
@@ -14,7 +15,7 @@ class Activator {
     update_option('mailpoet_db_version', Env::$version);
   }
 
-  static function deactivate() {
+  function deactivate() {
     $migrator = new Migrator();
     $migrator->down();
   }

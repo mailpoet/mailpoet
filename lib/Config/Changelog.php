@@ -1,12 +1,11 @@
 <?php
+
 namespace MailPoet\Config;
+
 use MailPoet\Models\Setting;
 use MailPoet\Util\Url;
 
 class Changelog {
-  function __construct() {
-  }
-
   function init() {
     $doing_ajax = (bool)(defined('DOING_AJAX') && DOING_AJAX);
 

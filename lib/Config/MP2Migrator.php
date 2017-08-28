@@ -187,8 +187,9 @@ class MP2Migrator {
    *
    */
   private function eraseMP3Data() {
-    Activator::deactivate();
-    Activator::activate();
+    $activator = new Activator();
+    $activator->deactivate();
+    $activator->activate();
 
     $this->deleteSegments();
     $this->resetMigrationCounters();

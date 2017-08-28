@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Config;
 
 if(!defined('ABSPATH')) exit;
@@ -31,7 +32,6 @@ class Env {
   static $db_collation;
   static $db_charset_collate;
   static $db_timezone_offset;
-  static $required_permission = 'manage_options';
 
   static function init($file, $version) {
     global $wpdb;

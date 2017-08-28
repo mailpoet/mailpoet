@@ -1,12 +1,19 @@
 <?php
+
 namespace MailPoet\API\JSON\v1;
+
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\Config\AccessControl;
 use MailPoet\Mailer\MailerLog;
 
 if(!defined('ABSPATH')) exit;
 
 class Mailer extends APIEndpoint {
+  public $permissions = array(
+    'global' => AccessControl::PERMISSION_MANAGE_EMAILS
+  );
+
   function send($data = array()) {
     try {
       $mailer = new \MailPoet\Mailer\Mailer(

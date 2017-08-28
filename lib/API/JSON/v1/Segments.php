@@ -1,15 +1,21 @@
 <?php
+
 namespace MailPoet\API\JSON\v1;
+
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
-
-use MailPoet\Models\Segment;
+use MailPoet\Config\AccessControl;
 use MailPoet\Listing;
+use MailPoet\Models\Segment;
 use MailPoet\Segments\WP;
 
 if(!defined('ABSPATH')) exit;
 
 class Segments extends APIEndpoint {
+  public $permissions = array(
+    'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS
+  );
+
   function get($data = array()) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);

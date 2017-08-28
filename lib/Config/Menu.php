@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Config;
 
 use MailPoet\Cron\CronTrigger;
@@ -25,9 +26,18 @@ use MailPoet\WP\Readme;
 if(!defined('ABSPATH')) exit;
 
 class Menu {
-  function __construct($renderer, $assets_url) {
+  const MAIN_PAGE_SLUG = 'mailpoet-newsletters';
+
+  public $renderer;
+  public $assets_url;
+  private $access_control;
+  private $subscribers_over_limit;
+
+  function __construct($renderer, $assets_url, AccessControl $access_control) {
     $this->renderer = $renderer;
     $this->assets_url = $assets_url;
+    $this->access_control = $access_control;
+    $this->user_capability = $this->access_control->getUserFirstCapability();
     $subscribers_feature = new SubscribersFeature();
     $this->subscribers_over_limit = $subscribers_feature->check();
     $this->checkMailPoetAPIKey();
@@ -45,134 +55,204 @@ class Menu {
   }
 
   function setup() {
+    if(!$this->access_control->validatePermission(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN)) return;
     if(self::isOnMailPoetAdminPage()) {
       do_action('mailpoet_conflict_resolver_styles');
       do_action('mailpoet_conflict_resolver_scripts');
     }
 
-    $main_page_slug = 'mailpoet-newsletters';
-
+    // Main page
     add_menu_page(
       'MailPoet',
       'MailPoet',
-      Env::$required_permission,
-      $main_page_slug,
+      $this->user_capability,
+      self::MAIN_PAGE_SLUG,
       null,
       $this->assets_url . '/img/menu_icon.png',
       30
     );
 
-    $newsletters_page = add_submenu_page(
-      $main_page_slug,
-      $this->setPageTitle(__('Emails', 'mailpoet')),
-      __('Emails', 'mailpoet'),
-      Env::$required_permission,
-      $main_page_slug,
-      array(
-        $this,
-        'newsletters'
-      )
-    );
+    // Emails page
+    if($this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_EMAILS)) {
+      $newsletters_page = add_submenu_page(
+        self::MAIN_PAGE_SLUG,
+        $this->setPageTitle(__('Emails', 'mailpoet')),
+        __('Emails', 'mailpoet'),
+        $this->user_capability,
+        self::MAIN_PAGE_SLUG,
+        array(
+          $this,
+          'newsletters'
+        )
+      );
 
-    // add limit per page to screen options
-    add_action('load-' . $newsletters_page, function() {
-      add_screen_option('per_page', array(
-        'label' => _x(
-          'Number of newsletters per page',
-          'newsletters per page (screen options)',
-          'mailpoet'
-        ),
-        'option' => 'mailpoet_newsletters_per_page'
-      ));
-    });
+      // add limit per page to screen options
+      add_action('load-' . $newsletters_page, function() {
+        add_screen_option('per_page', array(
+          'label' => _x(
+            'Number of newsletters per page',
+            'newsletters per page (screen options)',
+            'mailpoet'
+          ),
+          'option' => 'mailpoet_newsletters_per_page'
+        ));
+      });
 
-    $forms_page = add_submenu_page(
-      $main_page_slug,
-      $this->setPageTitle(__('Forms', 'mailpoet')),
-      __('Forms', 'mailpoet'),
-      Env::$required_permission,
-      'mailpoet-forms',
-      array(
-        $this,
-        'forms'
-      )
-    );
-    // add limit per page to screen options
-    add_action('load-' . $forms_page, function() {
-      add_screen_option('per_page', array(
-        'label' => _x(
-          'Number of forms per page',
-          'forms per page (screen options)',
-          'mailpoet'
-        ),
-        'option' => 'mailpoet_forms_per_page'
-      ));
-    });
+      // newsletter editor
+      add_submenu_page(
+        true,
+        $this->setPageTitle(__('Newsletter', 'mailpoet')),
+        __('Newsletter Editor', 'mailpoet'),
+        $this->user_capability,
+        'mailpoet-newsletter-editor',
+        array(
+          $this,
+          'newletterEditor'
+        )
+      );
+    }
 
-    $subscribers_page = add_submenu_page(
-      $main_page_slug,
-      $this->setPageTitle(__('Subscribers', 'mailpoet')),
-      __('Subscribers', 'mailpoet'),
-      Env::$required_permission,
-      'mailpoet-subscribers',
-      array(
-        $this,
-        'subscribers'
-      )
-    );
-    // add limit per page to screen options
-    add_action('load-' . $subscribers_page, function() {
-      add_screen_option('per_page', array(
-        'label' => _x(
-          'Number of subscribers per page',
-          'subscribers per page (screen options)',
-          'mailpoet'
-        ),
-        'option' => 'mailpoet_subscribers_per_page'
-      ));
-    });
+    // Forms page
+    if($this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_FORMS)) {
+      $forms_page = add_submenu_page(
+        self::MAIN_PAGE_SLUG,
+        $this->setPageTitle(__('Forms', 'mailpoet')),
+        __('Forms', 'mailpoet'),
+        $this->user_capability,
+        'mailpoet-forms',
+        array(
+          $this,
+          'forms'
+        )
+      );
 
-    $segments_page = add_submenu_page(
-      $main_page_slug,
-      $this->setPageTitle(__('Lists', 'mailpoet')),
-      __('Lists', 'mailpoet'),
-      Env::$required_permission,
-      'mailpoet-segments',
-      array(
-        $this,
-        'segments'
-      )
-    );
+      // add limit per page to screen options
+      add_action('load-' . $forms_page, function() {
+        add_screen_option('per_page', array(
+          'label' => _x(
+            'Number of forms per page',
+            'forms per page (screen options)',
+            'mailpoet'
+          ),
+          'option' => 'mailpoet_forms_per_page'
+        ));
+      });
 
-    // add limit per page to screen options
-    add_action('load-' . $segments_page, function() {
-      add_screen_option('per_page', array(
-        'label' => _x(
-          'Number of segments per page',
-          'segments per page (screen options)',
-          'mailpoet'
-        ),
-        'option' => 'mailpoet_segments_per_page'
-      ));
-    });
+      // form editor
+      add_submenu_page(
+        true,
+        $this->setPageTitle(__('Form Editor', 'mailpoet')),
+        __('Form Editor', 'mailpoet'),
+        $this->user_capability,
+        'mailpoet-form-editor',
+        array(
+          $this,
+          'formEditor'
+        )
+      );
+    }
 
+    // Subscribers page
+    if($this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_SUBSCRIBERS)) {
+      $subscribers_page = add_submenu_page(
+        self::MAIN_PAGE_SLUG,
+        $this->setPageTitle(__('Subscribers', 'mailpoet')),
+        __('Subscribers', 'mailpoet'),
+        $this->user_capability,
+        'mailpoet-subscribers',
+        array(
+          $this,
+          'subscribers'
+        )
+      );
+
+      // add limit per page to screen options
+      add_action('load-' . $subscribers_page, function() {
+        add_screen_option('per_page', array(
+          'label' => _x(
+            'Number of subscribers per page',
+            'subscribers per page (screen options)',
+            'mailpoet'
+          ),
+          'option' => 'mailpoet_subscribers_per_page'
+        ));
+      });
+
+      // import
+      add_submenu_page(
+        'admin.php?page=mailpoet-subscribers',
+        $this->setPageTitle(__('Import', 'mailpoet')),
+        __('Import', 'mailpoet'),
+        $this->user_capability,
+        'mailpoet-import',
+        array(
+          $this,
+          'import'
+        )
+      );
+
+      // export
+      add_submenu_page(
+        true,
+        $this->setPageTitle(__('Export', 'mailpoet')),
+        __('Export', 'mailpoet'),
+        $this->user_capability,
+        'mailpoet-export',
+        array(
+          $this,
+          'export'
+        )
+      );
+    }
+
+    // Segments page
+    if($this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_SEGMENTS)) {
+      $segments_page = add_submenu_page(
+        self::MAIN_PAGE_SLUG,
+        $this->setPageTitle(__('Lists', 'mailpoet')),
+        __('Lists', 'mailpoet'),
+        $this->user_capability,
+        'mailpoet-segments',
+        array(
+          $this,
+          'segments'
+        )
+      );
+
+      // add limit per page to screen options
+      add_action('load-' . $segments_page, function() {
+        add_screen_option('per_page', array(
+          'label' => _x(
+            'Number of segments per page',
+            'segments per page (screen options)',
+            'mailpoet'
+          ),
+          'option' => 'mailpoet_segments_per_page'
+        ));
+      });
+    }
+
+    // Settings page
+    if($this->access_control->validatePermission(AccessControl::PERMISSION_MANAGE_SETTINGS)) {
+      add_submenu_page(
+        self::MAIN_PAGE_SLUG,
+        $this->setPageTitle(__('Settings', 'mailpoet')),
+        __('Settings', 'mailpoet'),
+        $this->user_capability,
+        'mailpoet-settings',
+        array(
+          $this,
+          'settings'
+        )
+      );
+    }
+
+    // Help page
     add_submenu_page(
-      $main_page_slug,
-      $this->setPageTitle(__('Settings', 'mailpoet')),
-      __('Settings', 'mailpoet'),
-      Env::$required_permission,
-      'mailpoet-settings',
-      array(
-        $this,
-        'settings'
-      )
-    );
-
-    add_submenu_page(
-      $main_page_slug,
+      self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Help', 'mailpoet')),
       __('Help', 'mailpoet'),
-      Env::$required_permission,
+      $this->user_capability,
       'mailpoet-help',
       array(
         $this,
@@ -180,12 +260,13 @@ class Menu {
       )
     );
 
+    // Premium page
     // Only show this page in menu if the Premium plugin is not activated
     add_submenu_page(
-      License::getLicense() ? true : $main_page_slug,
+      License::getLicense() ? true : self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Premium', 'mailpoet')),
       __('Premium', 'mailpoet'),
-      Env::$required_permission,
+      $this->user_capability,
       'mailpoet-premium',
       array(
         $this,
@@ -193,35 +274,12 @@ class Menu {
       )
     );
 
-    add_submenu_page(
-      'admin.php?page=mailpoet-subscribers',
-      $this->setPageTitle(__('Import', 'mailpoet')),
-      __('Import', 'mailpoet'),
-      Env::$required_permission,
-      'mailpoet-import',
-      array(
-        $this,
-        'import'
-      )
-    );
-
-    add_submenu_page(
-      true,
-      $this->setPageTitle(__('Export', 'mailpoet')),
-      __('Export', 'mailpoet'),
-      Env::$required_permission,
-      'mailpoet-export',
-      array(
-        $this,
-        'export'
-      )
-    );
-
+    // Welcome page
     add_submenu_page(
       true,
       $this->setPageTitle(__('Welcome', 'mailpoet')),
       __('Welcome', 'mailpoet'),
-      Env::$required_permission,
+      $this->user_capability,
       'mailpoet-welcome',
       array(
         $this,
@@ -229,23 +287,12 @@ class Menu {
       )
     );
 
-    add_submenu_page(
-      true,
-      $this->setPageTitle(__('Migration', 'mailpoet')),
-      '',
-      Env::$required_permission,
-      'mailpoet-migration',
-      array(
-        $this,
-        'migration'
-      )
-    );
-
+    // Update page
     add_submenu_page(
       true,
       $this->setPageTitle(__('Update', 'mailpoet')),
       __('Update', 'mailpoet'),
-      Env::$required_permission,
+      $this->user_capability,
       'mailpoet-update',
       array(
         $this,
@@ -253,27 +300,16 @@ class Menu {
       )
     );
 
+    // Migration page
     add_submenu_page(
       true,
-      $this->setPageTitle(__('Form Editor', 'mailpoet')),
-      __('Form Editor', 'mailpoet'),
-      Env::$required_permission,
-      'mailpoet-form-editor',
+      $this->setPageTitle(__('Migration', 'mailpoet')),
+      '',
+      $this->user_capability,
+      'mailpoet-migration',
       array(
         $this,
-        'formEditor'
-      )
-    );
-
-    add_submenu_page(
-      true,
-      $this->setPageTitle(__('Newsletter', 'mailpoet')),
-      __('Newsletter Editor', 'mailpoet'),
-      Env::$required_permission,
-      'mailpoet-newsletter-editor',
-      array(
-        $this,
-        'newletterEditor'
+        'migration'
       )
     );
   }
@@ -293,20 +329,20 @@ class Menu {
       or
       strpos($redirect_url, 'mailpoet') === false
     ) {
-      $redirect_url = admin_url('admin.php?page=mailpoet-newsletters');
+      $redirect_url = admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG);
     }
 
     $data = array(
       'settings' => Setting::getAll(),
       'current_user' => wp_get_current_user(),
       'redirect_url' => $redirect_url,
-      'sub_menu' => 'mailpoet-newsletters'
+      'sub_menu' => self::MAIN_PAGE_SLUG
     );
     $this->displayPage('welcome.html', $data);
   }
 
   function migration() {
-    $mp2_migrator = new MP2Migrator();
+    $mp2_migrator = new MP2Migrator($this->access_control);
     $mp2_migrator->init();
     $data = array(
       'log_file_url' => $mp2_migrator->log_file_url,
@@ -328,14 +364,14 @@ class Menu {
       or
       strpos($redirect_url, 'mailpoet') === false
     ) {
-      $redirect_url = admin_url('admin.php?page=mailpoet-newsletters');
+      $redirect_url = admin_url('admin.php?page=' . self::MAIN_PAGE_SLUG);
     }
 
     $data = array(
       'settings' => Setting::getAll(),
       'current_user' => wp_get_current_user(),
       'redirect_url' => $redirect_url,
-      'sub_menu' => 'mailpoet-newsletters'
+      'sub_menu' => self::MAIN_PAGE_SLUG
     );
 
     $readme_file = Env::$path . '/readme.txt';
@@ -352,7 +388,7 @@ class Menu {
   function premium() {
     $data = array(
       'subscriber_count' => Subscriber::getTotalSubscribers(),
-      'sub_menu' => 'mailpoet-newsletters'
+      'sub_menu' => self::MAIN_PAGE_SLUG
     );
 
     $this->displayPage('premium.html', $data);
@@ -505,7 +541,7 @@ class Menu {
       'shortcodes' => ShortcodesHelper::getShortcodes(),
       'settings' => Setting::getAll(),
       'current_wp_user' => Subscriber::getCurrentWPUser(),
-      'sub_menu' => 'mailpoet-newsletters'
+      'sub_menu' => self::MAIN_PAGE_SLUG
     );
     wp_enqueue_media();
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));
@@ -597,13 +633,13 @@ class Menu {
    * This error page is used when the initialization is failed
    * to display admin notices only
    */
-  static function addErrorPage() {
+  static function addErrorPage(AccessControl $access_control) {
     if(!self::isOnMailPoetAdminPage()) {
       return false;
     }
     // Check if page already exists
     if(get_plugin_page_hook($_REQUEST['page'], '')
-      || get_plugin_page_hook($_REQUEST['page'], 'mailpoet-newsletters')
+      || get_plugin_page_hook($_REQUEST['page'], self::MAIN_PAGE_SLUG)
     ) {
       return false;
     }
@@ -611,9 +647,12 @@ class Menu {
       true,
       'MailPoet',
       'MailPoet',
-      Env::$required_permission,
+      $access_control->getUserFirstCapability(),
       $_REQUEST['page'],
-      array(__CLASS__, 'errorPageCallback')
+      array(
+        __CLASS__,
+        'errorPageCallback'
+      )
     );
   }
 
@@ -624,7 +663,7 @@ class Menu {
   function checkMailPoetAPIKey(ServicesChecker $checker = null) {
     if(self::isOnMailPoetAdminPage()) {
       $show_notices = isset($_REQUEST['page'])
-        && stripos($_REQUEST['page'], 'mailpoet-newsletters') === false;
+        && stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) === false;
       $checker = $checker ?: new ServicesChecker();
       $this->mp_api_key_valid = $checker->isMailPoetAPIKeyValid($show_notices);
     }
@@ -633,7 +672,7 @@ class Menu {
   function checkPremiumKey(ServicesChecker $checker = null) {
     if(self::isOnMailPoetAdminPage()) {
       $show_notices = isset($_REQUEST['page'])
-        && stripos($_REQUEST['page'], 'mailpoet-newsletters') === false;
+        && stripos($_REQUEST['page'], self::MAIN_PAGE_SLUG) === false;
       $checker = $checker ?: new ServicesChecker();
       $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
     }
