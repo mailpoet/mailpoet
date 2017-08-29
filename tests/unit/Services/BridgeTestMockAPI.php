@@ -49,10 +49,6 @@ class BridgeTestMockAPI {
             ->addMonth()->format('c')
         );
         break;
-      case 200:
-      case 401:
-      case 402:
-      case 403:
       default:
         $body = null;
         break;
@@ -71,10 +67,6 @@ class BridgeTestMockAPI {
             ->addMonth()->format('c')
         );
         break;
-      case 200:
-      case 401:
-      case 402:
-      case 403:
       default:
         $body = null;
         break;

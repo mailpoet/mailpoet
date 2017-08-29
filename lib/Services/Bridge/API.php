@@ -33,12 +33,7 @@ class API {
     $code = wp_remote_retrieve_response_code($result);
     switch($code) {
       case 200:
-      case 402:
         $body = json_decode(wp_remote_retrieve_body($result), true);
-        break;
-      case 401:
-      case 403:
-        $body = wp_remote_retrieve_body($result);
         break;
       default:
         $body = null;
