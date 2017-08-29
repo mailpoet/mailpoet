@@ -61,6 +61,9 @@ class Services extends APIEndpoint {
       case Bridge::KEY_INVALID:
         $error = __('Your MailPoet Sending Service key is invalid.', 'mailpoet');
         break;
+      case Bridge::KEY_ALREADY_USED:
+        $error = __('Your MailPoet Sending Service key is already used on another site.', 'mailpoet');
+        break;
       default:
         $code = !empty($result['code']) ? $result['code'] : Bridge::CHECK_ERROR_UNKNOWN;
         $error = sprintf(
