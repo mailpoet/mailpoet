@@ -8,7 +8,7 @@ if(!defined('ABSPATH')) exit;
 
 abstract class Endpoint {
   public $permissions = array(
-    'global' => array(AccessControl::PERMISSION_MANAGE_SETTINGS),
+    'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
     'methods' => array()
   );
 
