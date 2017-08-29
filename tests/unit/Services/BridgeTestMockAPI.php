@@ -14,14 +14,14 @@ class BridgeTestMockAPI {
 
   function checkMSSKey() {
     // if a key begins with these codes, return them
-    $regex = '/^(expiring|401|402|503)/';
+    $regex = '/^(expiring|401|402|403|503)/';
     $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;
     return $this->processAPICheckResponse($code);
   }
 
   function checkPremiumKey() {
     // if a key begins with these codes, return them
-    $regex = '/^(expiring|401|402|503)/';
+    $regex = '/^(expiring|401|402|403|503)/';
     $code = preg_match($regex, $this->api_key, $m) ? $m[1] : 200;
     return $this->processPremiumResponse($code);
   }
@@ -51,7 +51,8 @@ class BridgeTestMockAPI {
         break;
       case 200:
       case 401:
-      case 401:
+      case 402:
+      case 403:
       default:
         $body = null;
         break;
@@ -73,6 +74,7 @@ class BridgeTestMockAPI {
       case 200:
       case 401:
       case 402:
+      case 403:
       default:
         $body = null;
         break;

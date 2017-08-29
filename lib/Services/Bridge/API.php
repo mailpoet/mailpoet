@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Services\Bridge;
 
 if(!defined('ABSPATH')) exit;
@@ -9,7 +10,6 @@ class API {
   const SENDING_STATUS_SEND_ERROR = 'send_error';
 
   const RESPONSE_CODE_KEY_INVALID = 401;
-
   const RESPONSE_CODE_STATS_SAVED = 204;
 
   private $api_key;
@@ -37,6 +37,7 @@ class API {
         $body = json_decode(wp_remote_retrieve_body($result), true);
         break;
       case 401:
+      case 403:
         $body = wp_remote_retrieve_body($result);
         break;
       default:

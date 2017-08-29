@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Services;
 
 use MailPoet\Mailer\Mailer;
@@ -31,7 +32,7 @@ class Bridge {
       $mailer_config = Mailer::getMailerConfig();
       return !empty($mailer_config['method'])
         && $mailer_config['method'] === Mailer::METHOD_MAILPOET;
-    } catch (\Exception $e) {
+    } catch(\Exception $e) {
       return false;
     }
   }
@@ -90,7 +91,8 @@ class Bridge {
     $state_map = array(
       200 => self::PREMIUM_KEY_VALID,
       401 => self::PREMIUM_KEY_INVALID,
-      402 => self::PREMIUM_KEY_ALREADY_USED
+      402 => self::PREMIUM_KEY_ALREADY_USED,
+      403 => self::PREMIUM_KEY_INVALID
     );
 
     if(!empty($result['code']) && isset($state_map[$result['code']])) {
