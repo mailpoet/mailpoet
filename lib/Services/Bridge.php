@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Services;
 
 use MailPoet\Mailer\Mailer;
@@ -14,12 +15,13 @@ class Bridge {
   const PREMIUM_KEY_SETTING_NAME = 'premium.premium_key';
   const PREMIUM_KEY_STATE_SETTING_NAME = 'premium.premium_key_state';
 
-  const PREMIUM_KEY_VALID = 'valid';
-  const PREMIUM_KEY_INVALID = 'invalid';
-  const PREMIUM_KEY_EXPIRING = 'expiring';
-  const PREMIUM_KEY_ALREADY_USED = 'already_used';
+  const PREMIUM_KEY_VALID = 'valid'; // for backwards compatibility until version 3.0.0
+  const KEY_VALID = 'valid';
+  const KEY_INVALID = 'invalid';
+  const KEY_EXPIRING = 'expiring';
+  const KEY_ALREADY_USED = 'already_used';
 
-  const PREMIUM_KEY_CHECK_ERROR = 'check_error';
+  const KEY_CHECK_ERROR = 'check_error';
 
   const CHECK_ERROR_UNAVAILABLE = 503;
   const CHECK_ERROR_UNKNOWN = 'unknown';
@@ -31,7 +33,7 @@ class Bridge {
       $mailer_config = Mailer::getMailerConfig();
       return !empty($mailer_config['method'])
         && $mailer_config['method'] === Mailer::METHOD_MAILPOET;
-    } catch (\Exception $e) {
+    } catch(\Exception $e) {
       return false;
     }
   }
@@ -57,12 +59,12 @@ class Bridge {
   function checkMSSKey($api_key) {
     $this->initApi($api_key);
     $result = $this->api->checkMSSKey();
-    return $this->processPremiumKeyCheckResult($result);
+    return $this->processKeyCheckResult($result);
   }
 
   function storeMSSKeyAndState($key, $state) {
     if(empty($state['state'])
-      || $state['state'] === self::PREMIUM_KEY_CHECK_ERROR
+      || $state['state'] === self::KEY_CHECK_ERROR
     ) {
       return false;
     }
@@ -83,26 +85,27 @@ class Bridge {
   function checkPremiumKey($key) {
     $this->initApi($key);
     $result = $this->api->checkPremiumKey();
-    return $this->processPremiumKeyCheckResult($result);
+    return $this->processKeyCheckResult($result);
   }
 
-  private function processPremiumKeyCheckResult(array $result) {
+  private function processKeyCheckResult(array $result) {
     $state_map = array(
-      200 => self::PREMIUM_KEY_VALID,
-      401 => self::PREMIUM_KEY_INVALID,
-      402 => self::PREMIUM_KEY_ALREADY_USED
+      200 => self::KEY_VALID,
+      401 => self::KEY_INVALID,
+      402 => self::KEY_ALREADY_USED,
+      403 => self::KEY_INVALID
     );
 
     if(!empty($result['code']) && isset($state_map[$result['code']])) {
-      if($state_map[$result['code']] == self::PREMIUM_KEY_VALID
+      if($state_map[$result['code']] == self::KEY_VALID
         && !empty($result['data']['expire_at'])
       ) {
-        $key_state = self::PREMIUM_KEY_EXPIRING;
+        $key_state = self::KEY_EXPIRING;
       } else {
         $key_state = $state_map[$result['code']];
       }
     } else {
-      $key_state = self::PREMIUM_KEY_CHECK_ERROR;
+      $key_state = self::KEY_CHECK_ERROR;
     }
 
     return $this->buildKeyState(
@@ -113,7 +116,7 @@ class Bridge {
 
   function storePremiumKeyAndState($key, $state) {
     if(empty($state['state'])
-      || $state['state'] === self::PREMIUM_KEY_CHECK_ERROR
+      || $state['state'] === self::KEY_CHECK_ERROR
     ) {
       return false;
     }
@@ -143,8 +146,8 @@ class Bridge {
 
   function updateSubscriberCount($result) {
     if(!empty($result['state'])
-      && ($result['state'] === self::PREMIUM_KEY_VALID
-      || $result['state'] === self::PREMIUM_KEY_EXPIRING)
+      && ($result['state'] === self::KEY_VALID
+      || $result['state'] === self::KEY_EXPIRING)
     ) {
       return $this->api->updateSubscriberCount(Subscriber::getTotalSubscribers());
     }
@@ -154,7 +157,7 @@ class Bridge {
   static function invalidateKey() {
     Setting::setValue(
       self::API_KEY_STATE_SETTING_NAME,
-      array('state' => self::PREMIUM_KEY_INVALID)
+      array('state' => self::KEY_INVALID)
     );
   }
 

@@ -19,7 +19,7 @@ class PremiumKeyCheckTest extends \MailPoetTest {
   }
 
   function testItChecksPremiumKey() {
-    $response = array('code' => Bridge::PREMIUM_KEY_VALID);
+    $response = array('code' => Bridge::KEY_VALID);
     $this->worker->bridge = Stub::make(
       new Bridge,
       array(
