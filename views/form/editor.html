@@ -513,6 +513,10 @@
                   });
                 }
 
+                MailPoet.trackEvent('Forms > Add New', {
+                  'MailPoet Free version': window.mailpoet_version
+                });
+
                 // if there is a callback, call it!
                 if(callback !== undefined) {
                   callback();
@@ -566,8 +570,13 @@
         mailpoet_form_export();
 
         $(document).on('click', '.mailpoet_form_export_toggle', function() {
+          var type = $(this).data('type');
           $('.mailpoet_form_export_output').hide();
-          $('#mailpoet_form_export_'+$(this).data('type')).show();
+          $('#mailpoet_form_export_' + type).show();
+          MailPoet.trackEvent('Forms > Embed', {
+            'Embed type': type,
+            'MailPoet Free version': window.mailpoet_version
+          });
           return false;
         });
 
@@ -614,6 +623,7 @@
           var id = $(this).data('id');
           var item = $(this).parent();
           var name = $(this).siblings('.mailpoet_form_field').attr('wysija_name');
+          var type = $(this).siblings('.mailpoet_form_field').attr('wysija_type');
 
           if(window.confirm(
             "<%= __('This field will be deleted for all your subscribers. Are you sure?') %>"
@@ -636,6 +646,12 @@
               MailPoet.Notice.success(
                 "<%= __('Removed custom field %$1s') | escape('js') %>".replace('%$1s', '"' + name + '"')
               );
+
+              MailPoet.trackEvent('Forms > Delete custom field', {
+                'Field type': type,
+                'MailPoet Free version': window.mailpoet_version
+              });
+
             });
           }
         });

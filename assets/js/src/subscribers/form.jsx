@@ -144,6 +144,9 @@ define(
       },
       onCreate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('subscriberAdded'));
+        MailPoet.trackEvent('Subscribers > Add new', {
+          'MailPoet Free version': window.mailpoet_version,
+        });
       },
     };
 

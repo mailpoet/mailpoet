@@ -82,6 +82,11 @@
           // close popup
           MailPoet.Modal.close();
 
+          MailPoet.trackEvent('Forms > Add new custom field', {
+            'Field type': data.type,
+            'MailPoet Free version': window.mailpoet_version
+          });
+
           if(WysijaForm.updateBlock(response.data) === true) {
             // trigger save, if a block has been updated
             mailpoet_form_save(false);

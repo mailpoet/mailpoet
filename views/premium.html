@@ -148,3 +148,11 @@
 </div>
 
 <% endblock %>
+
+<% block after_javascript %>
+<script type="text/javascript">
+  MailPoet.trackEvent('Premium page viewed', {
+    'MailPoet Free version': window.mailpoet_version
+  });
+</script>
+<% endblock %>

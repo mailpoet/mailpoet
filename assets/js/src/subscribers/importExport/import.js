@@ -141,7 +141,7 @@ define(
             // delay loading indicator for 10ms or else it's just too fast :)
             MailPoet.Modal.loading(true);
             setTimeout(function () {
-              Papa.parse(pasteInputElement.val(), parseCSV());
+              Papa.parse(pasteInputElement.val(), parseCSV(false));
             }, 10);
           });
 
@@ -168,7 +168,7 @@ define(
               MailPoet.Modal.loading(true);
               setTimeout(function () {
                 uploadElement.parse({
-                  config: parseCSV()
+                  config: parseCSV(true)
                 })
               }, 10);
             }
@@ -238,6 +238,10 @@ define(
               MailPoet.Modal.loading(false);
             }).done(function(response) {
               importData.step1 = response.data;
+              MailPoet.trackEvent('Subscribers import started', {
+                source: 'MailChimp',
+                'MailPoet Free version': window.mailpoet_version
+              });
               router.navigate('step2', {trigger: true});
             }).fail(function(response) {
               if (response.errors.length > 0) {
@@ -289,7 +293,7 @@ define(
             element.closest('table a').addClass(disabled);
           }
 
-          function parseCSV() {
+          function parseCSV(isFile) {
             var processedSubscribers = [],
                 parsedEmails = [],
                 duplicateEmails = [],
@@ -415,6 +419,10 @@ define(
                     duplicate: duplicateEmails,
                     invalid: invalidEmails
                   };
+                  MailPoet.trackEvent('Subscribers import started', {
+                    source: isFile ? 'file upload' : 'pasted data',
+                    'MailPoet Free version': window.mailpoet_version
+                  });
                   router.navigate('step2', {trigger: true});
                 }
                 else {
@@ -1069,6 +1077,12 @@ define(
           if (importData.step2.errors.length > 0) {
             MailPoet.Notice.error(_.flatten(importData.step2.errors));
           }
+
+          MailPoet.trackEvent('Subscribers import finished', {
+            'Subscribers created': importData.step2.created,
+            'Subscribers updated': importData.step2.updated,
+            'MailPoet Free version': window.mailpoet_version
+          });
 
           // display statistics
           var subscribersDataImportResultsTemplate =

@@ -32,6 +32,9 @@ define(
       },
       onCreate: function () {
         MailPoet.Notice.success(MailPoet.I18n.t('segmentAdded'));
+        MailPoet.trackEvent('Lists > Add new', {
+          'MailPoet Free version': window.mailpoet_version,
+        });
       },
     };
 
