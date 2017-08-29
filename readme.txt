@@ -3,7 +3,8 @@ Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.8
-Stable tag: 3.0.0-rc.1.0.4
+Requires PHP: 5.3
+Stable tag: 3.0.0-rc.2.0.0
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -92,6 +93,17 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-rc.2.0.0 - 2017-08-29 =
+* Improved: MailPoet updates on high traffic sites now use less resources;
+* Improved: newsletter is saved when "next" button is pressed in newsletter editor;
+* Improved: allows editors to manage emails and adds hooks to extend plugin's roles/permissions;
+* Improved: we collect more informative data from those who share their data with us. You should too!
+* Fixed: subscription management form works again;
+* Fixed: MailPoet 3 no longer processes the "wysija_form" shortcode used by the old MailPoet 2 to allow both plugins to display forms. Please use the newer "mailpoet_form" shortcode instead. Thx Lynn!
+* Fixed: reactivated post notifications will be sent on next scheduled time. Thx Luc! 
+* Fixed: updating subscription information of WP users no longer erases their first/last name;
+* Fixed: automated latest content in welcome emails always displays the latest posts. Kudos Ehi!
 
 = 3.0.0-rc.1.0.4 - 2017-08-22 =
 * Added: newsletters can now be paused and edited while sending;
