@@ -44,9 +44,9 @@ class Services extends APIEndpoint {
     $state = !empty($result['state']) ? $result['state'] : null;
 
     $success_message = null;
-    if($state == Bridge::PREMIUM_KEY_VALID) {
+    if($state == Bridge::KEY_VALID) {
       $success_message = __('Your MailPoet Sending Service key has been successfully validated.', 'mailpoet');
-    } elseif($state == Bridge::PREMIUM_KEY_EXPIRING) {
+    } elseif($state == Bridge::KEY_EXPIRING) {
       $success_message = sprintf(
         __('Your MailPoet Sending Service key expires on %s!', 'mailpoet'),
         $this->date_time->formatDate(strtotime($result['data']['expire_at']))
@@ -58,7 +58,7 @@ class Services extends APIEndpoint {
     }
 
     switch($state) {
-      case Bridge::PREMIUM_KEY_INVALID:
+      case Bridge::KEY_INVALID:
         $error = __('Your MailPoet Sending Service key is invalid.', 'mailpoet');
         break;
       default:
@@ -94,9 +94,9 @@ class Services extends APIEndpoint {
     $state = !empty($result['state']) ? $result['state'] : null;
 
     $success_message = null;
-    if($state == Bridge::PREMIUM_KEY_VALID) {
+    if($state == Bridge::KEY_VALID) {
       $success_message = __('Your Premium key has been successfully validated.', 'mailpoet');
-    } elseif($state == Bridge::PREMIUM_KEY_EXPIRING) {
+    } elseif($state == Bridge::KEY_EXPIRING) {
       $success_message = sprintf(
         __('Your Premium key expires on %s.', 'mailpoet'),
         $this->date_time->formatDate(strtotime($result['data']['expire_at']))
@@ -111,10 +111,10 @@ class Services extends APIEndpoint {
     }
 
     switch($state) {
-      case Bridge::PREMIUM_KEY_INVALID:
+      case Bridge::KEY_INVALID:
         $error = __('Your Premium key is invalid.', 'mailpoet');
         break;
-      case Bridge::PREMIUM_KEY_ALREADY_USED:
+      case Bridge::KEY_ALREADY_USED:
         $error = __('Your Premium key is already used on another site.', 'mailpoet');
         break;
       default:

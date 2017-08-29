@@ -34,7 +34,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsTrueIfMSSKeyIsValid() {
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::PREMIUM_KEY_VALID)
+      array('state' => Bridge::KEY_VALID)
     );
     $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->true();
@@ -43,7 +43,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfMSSKeyIsInvalid() {
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::PREMIUM_KEY_INVALID)
+      array('state' => Bridge::KEY_INVALID)
     );
     $result = $this->services_checker->isMailPoetAPIKeyValid();
     expect($result)->false();
@@ -53,7 +53,7 @@ class ServicesCheckerTest extends \MailPoetTest {
     Setting::setValue(
       Bridge::API_KEY_STATE_SETTING_NAME,
       array(
-        'state' => Bridge::PREMIUM_KEY_EXPIRING,
+        'state' => Bridge::KEY_EXPIRING,
         'data' => array('expire_at' => date('c'))
       )
     );
@@ -92,7 +92,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsTrueIfPremiumKeyIsValid() {
     Setting::setValue(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::PREMIUM_KEY_VALID)
+      array('state' => Bridge::KEY_VALID)
     );
     $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->true();
@@ -101,7 +101,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfPremiumKeyIsInvalid() {
     Setting::setValue(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::PREMIUM_KEY_INVALID)
+      array('state' => Bridge::KEY_INVALID)
     );
     $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
@@ -110,7 +110,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   function testItReturnsFalseIfPremiumKeyIsAlreadyUsed() {
     Setting::setValue(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
-      array('state' => Bridge::PREMIUM_KEY_ALREADY_USED)
+      array('state' => Bridge::KEY_ALREADY_USED)
     );
     $result = $this->services_checker->isPremiumKeyValid();
     expect($result)->false();
@@ -120,7 +120,7 @@ class ServicesCheckerTest extends \MailPoetTest {
     Setting::setValue(
       Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
       array(
-        'state' => Bridge::PREMIUM_KEY_EXPIRING,
+        'state' => Bridge::KEY_EXPIRING,
         'data' => array('expire_at' => date('c'))
       )
     );

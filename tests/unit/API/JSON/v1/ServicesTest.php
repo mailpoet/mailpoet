@@ -23,7 +23,7 @@ class ServicesTest extends \MailPoetTest {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkMSSKey' => array('state' => Bridge::PREMIUM_KEY_VALID),
+        'checkMSSKey' => array('state' => Bridge::KEY_VALID),
         'storeMSSKeyAndState' => Stub::once()
       ),
       $this
@@ -36,7 +36,7 @@ class ServicesTest extends \MailPoetTest {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkMSSKey' => array('state' => Bridge::PREMIUM_KEY_INVALID),
+        'checkMSSKey' => array('state' => Bridge::KEY_INVALID),
         'storeMSSKeyAndState' => Stub::once()
       ),
       $this
@@ -51,7 +51,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkMSSKey' => array(
-          'state' => Bridge::PREMIUM_KEY_EXPIRING,
+          'state' => Bridge::KEY_EXPIRING,
           'data' => array('expire_at' => $date->format('c'))
         ),
         'storeMSSKeyAndState' => Stub::once()
@@ -140,7 +140,7 @@ class ServicesTest extends \MailPoetTest {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkPremiumKey' => array('state' => Bridge::PREMIUM_KEY_VALID),
+        'checkPremiumKey' => array('state' => Bridge::KEY_VALID),
         'storePremiumKeyAndState' => Stub::once()
       ),
       $this
@@ -156,7 +156,7 @@ class ServicesTest extends \MailPoetTest {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkPremiumKey' => array('state' => Bridge::PREMIUM_KEY_INVALID),
+        'checkPremiumKey' => array('state' => Bridge::KEY_INVALID),
         'storePremiumKeyAndState' => Stub::once()
       ),
       $this
@@ -169,7 +169,7 @@ class ServicesTest extends \MailPoetTest {
     $this->services_endpoint->bridge = Stub::make(
       new Bridge(),
       array(
-        'checkPremiumKey' => array('state' => Bridge::PREMIUM_KEY_ALREADY_USED),
+        'checkPremiumKey' => array('state' => Bridge::KEY_ALREADY_USED),
         'storePremiumKeyAndState' => Stub::once()
       ),
       $this
@@ -184,7 +184,7 @@ class ServicesTest extends \MailPoetTest {
       new Bridge(),
       array(
         'checkPremiumKey' => array(
-          'state' => Bridge::PREMIUM_KEY_EXPIRING,
+          'state' => Bridge::KEY_EXPIRING,
           'data' => array('expire_at' => $date->format('c'))
         ),
         'storePremiumKeyAndState' => Stub::once()
