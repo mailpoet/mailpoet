@@ -158,7 +158,6 @@ define(
            .replace('[/link]', '</a>');
           jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
           window.location.href = response.data.exportFileURL;
-          console.log(response.data, exportData)
           MailPoet.trackEvent('Subscribers export completed', {
             'Total exported': response.data.totalExported,
             'Only confirmed?': exportData.exportConfirmedOption,
