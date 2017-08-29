@@ -670,10 +670,10 @@ class Menu {
   }
 
   function checkPremiumKey(ServicesChecker $checker = null) {
-    if(self::isOnMailPoetAdminPage()) {
-      $checker = $checker ?: new ServicesChecker();
-      $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices = true);
-    }
+    $show_notices = isset($_SERVER['SCRIPT_NAME'])
+      && stripos($_SERVER['SCRIPT_NAME'], 'plugins.php') !== false;
+    $checker = $checker ?: new ServicesChecker();
+    $this->premium_key_valid = $checker->isPremiumKeyValid($show_notices);
   }
 
   private function getLimitPerPage($model = null) {

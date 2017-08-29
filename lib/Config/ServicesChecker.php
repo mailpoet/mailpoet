@@ -83,7 +83,7 @@ class ServicesChecker {
           array(),
           'link2'
         );
-        WPNotice::displayInlineWarning($error);
+        WPNotice::displayWarning($error);
       }
       return false;
     } elseif($premium_key['state'] === Bridge::KEY_EXPIRING
@@ -98,7 +98,7 @@ class ServicesChecker {
           array('target' => '_blank')
         );
         $error = sprintf($error, $date);
-        WPNotice::displayInlineWarning($error);
+        WPNotice::displayWarning($error);
       }
       return true;
     } elseif($premium_key['state'] === Bridge::KEY_VALID) {

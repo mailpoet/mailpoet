@@ -10,12 +10,10 @@ class Notice {
 
   private $type;
   private $message;
-  private $display_inline;
 
-  function __construct($type, $message, $display_inline) {
+  function __construct($type, $message) {
     $this->type = $type;
     $this->message = $message;
-    $this->display_inline = $display_inline;
   }
 
   static function displayError($message) {
@@ -31,10 +29,6 @@ class Notice {
     self::createNotice(self::TYPE_WARNING, $message);
   }
 
-  static function displayInlineWarning($message) {
-    self::createNotice(self::TYPE_WARNING, $message, true);
-  }
-
   static function displaySuccess($message) {
     self::createNotice(self::TYPE_SUCCESS, $message);
   }
@@ -43,16 +37,13 @@ class Notice {
     self::createNotice(self::TYPE_INFO, $message);
   }
 
-  protected static function createNotice($type, $message, $display_inline = false) {
-    $notice = new Notice($type, $message, $display_inline);
+  protected static function createNotice($type, $message) {
+    $notice = new Notice($type, $message);
     add_action('admin_notices', array($notice, 'displayWPNotice'));
   }
 
   function displayWPNotice() {
     $class = sprintf('notice notice-%s mailpoet_notice_server', $this->type);
-    if($this->display_inline) {
-      $class .= ' inline';
-    }
     $message = nl2br($this->message);
 
     printf('<div class="%1$s"><p>%2$s</p></div>', $class, $message);
