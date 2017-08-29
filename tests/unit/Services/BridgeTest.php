@@ -16,6 +16,7 @@ class BridgeTest extends \MailPoetTest {
     $this->invalid_key = '401' . $this->valid_key;
     $this->expiring_key = 'expiring' . $this->valid_key;
     $this->used_key = '402' . $this->valid_key;
+    $this->forbidden_endpoint_key = '403' . $this->valid_key;
     $this->uncheckable_key = '503' . $this->valid_key;
 
     $this->expiring_premium_key = 'expiring' . $this->valid_key;
@@ -74,6 +75,12 @@ class BridgeTest extends \MailPoetTest {
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_ALREADY_USED);
   }
 
+  function testItChecksForbiddenEndpointMSSKey() {
+    $result = $this->bridge->checkMSSKey($this->forbidden_endpoint_key);
+    expect($result)->notEmpty();
+    expect($result['state'])->equals(Bridge::PREMIUM_KEY_INVALID);
+  }
+
   function testItReturnsErrorStateOnEmptyAPIResponseCodeDuringMSSCheck() {
     $api = Stub::make(new API(null), array('checkMSSKey' => array()), $this);
     $this->bridge->api = $api;
@@ -124,6 +131,12 @@ class BridgeTest extends \MailPoetTest {
     $result = $this->bridge->checkPremiumKey($this->used_premium_key);
     expect($result)->notEmpty();
     expect($result['state'])->equals(Bridge::PREMIUM_KEY_ALREADY_USED);
+  }
+
+  function testItChecksForbiddenEndpointPremiumKey() {
+    $result = $this->bridge->checkPremiumKey($this->forbidden_endpoint_key);
+    expect($result)->notEmpty();
+    expect($result['state'])->equals(Bridge::PREMIUM_KEY_INVALID);
   }
 
   function testItChecksExpiringPremiumKey() {
