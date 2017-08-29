@@ -137,13 +137,14 @@ define(
          return;
        }
        MailPoet.Modal.loading(true);
+       var exportFormat = jQuery(':radio[name="option_format"]:checked').val();
        MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'ImportExport',
           action: 'processExport',
           data: JSON.stringify({
             export_confirmed_option: exportData.exportConfirmedOption,
-            export_format_option: jQuery(':radio[name="option_format"]:checked').val(),
+            export_format_option: exportFormat,
             group_by_segment_option: (groupBySegmentOptionElement.is(':visible')) ? groupBySegmentOptionElement.prop('checked') : false,
             segments: (exportData.segments) ? segmentsContainerElement.val() : false,
             subscriber_fields: subscriberFieldsContainerElement.val()
@@ -157,9 +158,11 @@ define(
            .replace('[/link]', '</a>');
           jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
           window.location.href = response.data.exportFileURL;
+          console.log(response.data, exportData)
           MailPoet.trackEvent('Subscribers export completed', {
             'Total exported': response.data.totalExported,
             'Only confirmed?': exportData.exportConfirmedOption,
+            'File Format': exportFormat,
             'MailPoet Free version': window.mailpoet_version
           });
         }).fail(function(response) {

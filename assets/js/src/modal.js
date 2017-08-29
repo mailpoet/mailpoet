@@ -309,7 +309,6 @@ define('modal', ['mailpoet', 'jquery'],
         setDimensions: function() {
           switch(this.options.type) {
             case 'popup':
-              console.log(this.options)
               // set popup dimensions
               jQuery('#mailpoet_popup').css({
                 width: this.options.width,
