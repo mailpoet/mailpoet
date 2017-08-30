@@ -1,11 +1,10 @@
 <?php
+
 namespace MailPoet\Config;
+
 use MailPoet\Models\Setting;
 
 class Hooks {
-  function __construct() {
-  }
-
   function init() {
     $this->setupWPUsers();
     $this->setupImageSize();
