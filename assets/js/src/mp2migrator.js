@@ -1,5 +1,6 @@
 define('mp2migrator', ['mailpoet', 'jquery'], function(mp, jQuery) {
   'use strict';
+
   var MailPoet = mp;
   MailPoet.MP2Migrator = {
 

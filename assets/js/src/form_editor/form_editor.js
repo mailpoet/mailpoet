@@ -4,6 +4,7 @@
  * company: Wysija
  * framework: prototype 1.7.2
  */
+
 'use strict';
 
 Event.cacheDelegated = {};
