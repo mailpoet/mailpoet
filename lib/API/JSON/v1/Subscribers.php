@@ -74,6 +74,8 @@ class Subscribers extends APIEndpoint {
       ));
     }
 
+    $data = $this->deobfuscateFormPayload($data);
+
     $segment_ids = (!empty($data['segments'])
       ? (array)$data['segments']
       : array()
@@ -81,7 +83,6 @@ class Subscribers extends APIEndpoint {
     $segment_ids = $form->filterSegments($segment_ids);
     unset($data['segments']);
 
-    $data = $this->deobfuscateFormPayload($data);
 
     if(empty($segment_ids)) {
       return $this->badRequest(array(
