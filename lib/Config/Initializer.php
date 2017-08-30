@@ -61,7 +61,7 @@ class Initializer {
     add_action('init', array(
       $this,
       'onInit'
-    ));
+    ), 0);
 
     add_action('wp_loaded', array(
       $this,
@@ -113,7 +113,7 @@ class Initializer {
       do_action('mailpoet_initialized', MAILPOET_VERSION);
     } catch(\Exception $e) {
       define('MAILPOET_INITIALIZED', false);
-      
+
       return $this->handleFailedInitialization($e);
     }
 
