@@ -60,7 +60,6 @@
     "no-multi-spaces": 0,
     "class-methods-use-this": 0,
     "key-spacing": 0,
-    "no-multiple-empty-lines": 0,
     "space-in-parens": 0,
     "no-case-declarations": 0,
     "array-bracket-spacing": 0,
