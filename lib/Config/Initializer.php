@@ -112,10 +112,9 @@ class Initializer {
 
       do_action('mailpoet_initialized', MAILPOET_VERSION);
     } catch(\Exception $e) {
-      $this->handleFailedInitialization($e);
       define('MAILPOET_INITIALIZED', false);
-
-      return;
+      
+      return $this->handleFailedInitialization($e);
     }
 
     define('MAILPOET_INITIALIZED', true);
@@ -203,8 +202,8 @@ class Initializer {
   }
 
   function setupJSONAPI() {
-    API\API::JSON($this->access_control)
-      ->init();
+    $json_api = API\API::JSON($this->access_control);
+    $json_api->init();
   }
 
   function setupRouter() {
