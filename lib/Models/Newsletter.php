@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
+use MailPoet\WP\Emoji;
 
 if(!defined('ABSPATH')) exit;
 
@@ -79,11 +80,15 @@ class Newsletter extends Model {
       $this->set_expr('deleted_at', 'NULL');
     }
 
-    $this->set('body',
-      is_array($this->body)
-      ? json_encode($this->body)
-      : $this->body
-    );
+    if(isset($this->body)) {
+      if(is_array($this->body)) {
+        $this->body = json_encode($this->body);
+      }
+      $this->set(
+        'body',
+        Emoji::encodeForUTF8Column(self::$_table, 'body', $this->body)
+      );
+    }
 
     $this->set('hash',
       ($this->hash)
