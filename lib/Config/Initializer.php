@@ -17,6 +17,8 @@ class Initializer {
   private $access_control;
   private $renderer;
 
+  const INITILIAZED = 'MAILPOET_INITIALIZED';
+
   function __construct($params = array(
     'file' => '',
     'version' => '1.0.0'
@@ -113,12 +115,10 @@ class Initializer {
 
       do_action('mailpoet_initialized', MAILPOET_VERSION);
     } catch(\Exception $e) {
-      define('MAILPOET_INITIALIZED', false);
-
       return $this->handleFailedInitialization($e);
     }
 
-    define('MAILPOET_INITIALIZED', true);
+    define(self::INITILIAZED, true);
   }
 
   function maybeDbUpdate() {
@@ -222,6 +222,7 @@ class Initializer {
   }
 
   function setupHooks() {
+    if(!defined(self::INITILIAZED)) return;
     try {
       $hooks = new Hooks();
       $hooks->init();
