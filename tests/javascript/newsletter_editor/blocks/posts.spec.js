@@ -11,7 +11,8 @@ define([
     Backbone.Radio = {
       Requests: {
         request: function () {
-        }, reply: function () {
+        },
+        reply: function () {
         }
       }
     };

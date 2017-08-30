@@ -13,7 +13,6 @@
     "one-var": 0,
     "indent": 0,
     "no-whitespace-before-property": 0,
-    "object-property-newline": 0,
     "global-require": 0,
     "semi": 0,
     "keyword-spacing": 0,
