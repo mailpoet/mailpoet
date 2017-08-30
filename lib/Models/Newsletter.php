@@ -80,11 +80,15 @@ class Newsletter extends Model {
       $this->set_expr('deleted_at', 'NULL');
     }
 
-    $this->set('body',
-      is_array($this->body)
-      ? json_encode($this->body)
-      : $this->body
-    );
+    if(isset($this->body)) {
+      if(is_array($this->body)) {
+        $this->body = json_encode($this->body);
+      }
+      $this->set(
+        'body',
+        Emoji::encodeForUTF8Column(self::$_table, 'body', $this->body)
+      );
+    }
 
     $this->set('hash',
       ($this->hash)
@@ -793,10 +797,6 @@ class Newsletter extends Model {
 
     if(isset($data['id']) && (int)$data['id'] > 0) {
       $newsletter = self::findOne((int)$data['id']);
-    }
-
-    if(!empty($data['body'])) {
-      $data['body'] = Emoji::encodeForUTF8Column(self::$_table, 'body', $data['body']);
     }
 
     if($newsletter === false) {
