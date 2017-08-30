@@ -162,7 +162,9 @@ define(
                   }
                 }).fail(this._showError);
             }
-          }).fail(this._showError).always(() => {
+          })
+          .fail(this._showError)
+          .always(() => {
             this.setState({ loading: false });
           });
         }
@@ -196,7 +198,9 @@ define(
                 );
               }
             });
-          }).fail(this._showError).always(() => {
+          })
+          .fail(this._showError)
+          .always(() => {
             this.setState({ loading: false });
           });
         }
