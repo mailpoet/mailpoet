@@ -541,7 +541,8 @@ class Menu {
       'shortcodes' => ShortcodesHelper::getShortcodes(),
       'settings' => Setting::getAll(),
       'current_wp_user' => Subscriber::getCurrentWPUser(),
-      'sub_menu' => self::MAIN_PAGE_SLUG
+      'sub_menu' => self::MAIN_PAGE_SLUG,
+      'mss_active' => Bridge::isMPSendingServiceEnabled()
     );
     wp_enqueue_media();
     wp_enqueue_script('tinymce-wplink', includes_url('js/tinymce/plugins/wplink/plugin.js'));

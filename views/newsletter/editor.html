@@ -1200,7 +1200,7 @@
         height: '768px'
       },
       validation: {
-        validateUnsubscribeLinkPresent: true, // TODO: Add validation based on whether Mailpoet MTA is used or not
+        validateUnsubscribeLinkPresent: <%= mss_active ? 'true' : 'false' %>,
       },
       urls: {
         send: '<%= admin_url('admin.php?page=mailpoet-newsletters#/send/' ~ (params('id') | intval)) %>',
