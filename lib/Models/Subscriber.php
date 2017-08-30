@@ -149,7 +149,11 @@ class Subscriber extends Model {
 
   static function generateToken($email = null) {
     if($email !== null) {
-      return substr(md5(AUTH_KEY . $email), 0, self::SUBSCRIBER_TOKEN_LENGTH);
+      $auth_key = '';
+      if(defined('AUTH_KEY')) {
+        $auth_key = AUTH_KEY;
+      }
+      return substr(md5($auth_key . $email), 0, self::SUBSCRIBER_TOKEN_LENGTH);
     }
     return false;
   }
