@@ -15,6 +15,7 @@ require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
   private $access_control;
+  private $renderer;
 
   function __construct($params = array(
     'file' => '',
@@ -160,12 +161,8 @@ class Initializer {
   }
 
   function setupWidget() {
-    try {
-      $widget = new Widget($this->renderer);
-      $widget->init();
-    } catch(\Exception $e) {
-      $this->handleFailedInitialization($e);
-    }
+    $widget = new Widget($this->renderer);
+    $widget->init();
   }
 
   function setupLocalizer() {
