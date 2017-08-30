@@ -14,9 +14,6 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
 class Initializer {
-  const UNABLE_TO_CONNECT = 'Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.';
-  const SOLVE_DB_ISSUE_URL = 'http://beta.docs.mailpoet.com/article/200-solving-database-connection-issues';
-
   private $access_control;
 
   function __construct($params = array(
@@ -40,8 +37,8 @@ class Initializer {
       $this->setupDB();
     } catch(\Exception $e) {
       return WPNotice::displayError(Helpers::replaceLinkTags(
-        __(self::UNABLE_TO_CONNECT, 'mailpoet'),
-        self::SOLVE_DB_ISSUE_URL,
+        __('Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.', 'mailpoet'),
+        '//beta.docs.mailpoet.com/article/200-solving-database-connection-issues',
         array('target' => '_blank')
       ));
     }
