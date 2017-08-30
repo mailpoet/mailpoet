@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.0.0-rc.2.0.0
+Stable tag: 3.0.0-rc.2.0.1
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -93,6 +93,12 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-rc.2.0.1 - 2017-08-30 =
+* Fixed: newsletters with emojis are properly saved and sent on certain hosts. Thanks Alison, Scott and Swann!
+* Fixed: plugin activates on multisite environments;
+* Fixed: subscription forms with list selection field are working now;
+* Fixed: newsletter editor does not require "unsubscribe" link when a third-party sending method is used;
 
 = 3.0.0-rc.2.0.0 - 2017-08-29 =
 * Improved: MailPoet updates on high traffic sites now use less resources;
