@@ -12,7 +12,6 @@
     "no-undef": 0,
     "one-var": 0,
     "indent": 0,
-    "linebreak-style": 0,
     "no-whitespace-before-property": 0,
     "object-property-newline": 0,
     "global-require": 0,
