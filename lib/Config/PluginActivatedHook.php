@@ -12,7 +12,7 @@ class PluginActivatedHook {
   }
 
   public function action($plugin, $network_wide) {
-    if($network_wide) {
+    if($plugin === plugin_basename(Env::$file) && $network_wide) {
       $this->deferred_admin_notices->addNetworkAdminNotice(__('We noticed that you\'re using an unsupported environment. While MailPoet might work within a MultiSite environment, we don’t support it.', 'mailpoet'));
     }
   }

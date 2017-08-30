@@ -5,6 +5,10 @@ use MailPoet\Config\Env;
 
 class EnvTest extends \MailPoetTest {
   function _before() {
+    // Back up original environment values
+    $this->file = Env::$file;
+    $this->version = Env::$version;
+
     Env::init('file', '1.0.0');
   }
 
@@ -79,5 +83,10 @@ class EnvTest extends \MailPoetTest {
     expect(Env::getDbTimezoneOffset('+1.5'))->equals("+01:30");
     expect(Env::getDbTimezoneOffset('+11'))->equals("+11:00");
     expect(Env::getDbTimezoneOffset('-5.5'))->equals("-05:30");
+  }
+
+  function _after() {
+    // Restore the original environment
+    Env::init($this->file, $this->version);
   }
 }
