@@ -22,7 +22,6 @@ class Initializer {
     'version' => '1.0.0'
   )) {
     Env::init($params['file'], $params['version']);
-    $this->access_control = new AccessControl();
   }
 
   function init() {
@@ -91,6 +90,8 @@ class Initializer {
 
   function onInit() {
     try {
+      $this->setupAccessControl();
+
       $this->maybeDbUpdate();
       $this->setupInstaller();
       $this->setupUpdater();
@@ -130,6 +131,10 @@ class Initializer {
       }
       $this->runActivator();
     }
+  }
+
+  function setupAccessControl() {
+    $this->access_control = new AccessControl();
   }
 
   function setupInstaller() {
