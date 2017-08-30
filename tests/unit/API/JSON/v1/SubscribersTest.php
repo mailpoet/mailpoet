@@ -14,6 +14,7 @@ class SubscribersTest extends \MailPoetTest {
   function _before() {
     $obfuscator = new FieldNameObfuscator();
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
+    $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
     $this->segment_1 = Segment::createOrUpdate(array('name' => 'Segment 1'));
     $this->segment_2 = Segment::createOrUpdate(array('name' => 'Segment 2'));
 
@@ -433,7 +434,7 @@ class SubscribersTest extends \MailPoetTest {
     $response = $router->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
-      'segments' => array($this->segment_1->id, $this->segment_2->id)
+      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
     ));
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
@@ -470,7 +471,7 @@ class SubscribersTest extends \MailPoetTest {
     $response = $router->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
-      'segments' => array($this->segment_1->id, $this->segment_2->id)
+      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
     ));
 
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
@@ -482,7 +483,7 @@ class SubscribersTest extends \MailPoetTest {
     $response = $router->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
-      'segments' => array($this->segment_1->id, $this->segment_2->id),
+      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id),
       // exists in table and in the form
       'first_name' => 'aaa',
       // exists in table, but not in the form
@@ -503,14 +504,14 @@ class SubscribersTest extends \MailPoetTest {
     $response = $router->subscribe(array(
       $this->obfuscatedEmail => 'toto@mailpoet.com',
       'form_id' => $this->form->id,
-      'segments' => array($this->segment_1->id, $this->segment_2->id)
+      $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
     ));
 
     try {
       $response = $router->subscribe(array(
         $this->obfuscatedEmail => 'tata@mailpoet.com',
         'form_id' => $this->form->id,
-        'segments' => array($this->segment_1->id, $this->segment_2->id)
+        $this->obfuscatedSegments => array($this->segment_1->id, $this->segment_2->id)
       ));
       $this->fail('It should not be possible to subscribe a second time so soon');
     } catch(\Exception $e) {
