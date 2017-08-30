@@ -22,8 +22,12 @@ class Security {
 
   static function generateHash($length = false) {
     $length = ($length) ? $length : self::HASH_LENGTH;
+    $auth_key = '';
+    if(defined('AUTH_KEY')) {
+      $auth_key = AUTH_KEY;
+    }
     return substr(
-      md5(AUTH_KEY . self::generateRandomString(64)),
+      md5($auth_key . self::generateRandomString(64)),
       0,
       $length
     );
