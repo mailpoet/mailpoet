@@ -50,7 +50,8 @@ define([
         if (newLength < that.options.minLength) newLength = that.options.minLength;
 
         that.view.model.set(that.options.modelField, newLength + 'px');
-      }).on('resizeend', function(event) {
+      })
+      .on('resizeend', function(event) {
         that.isBeingResized = null;
         that.$el.removeClass('mailpoet_resize_active');
       });

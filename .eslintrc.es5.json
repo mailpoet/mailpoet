@@ -19,7 +19,6 @@
     "guard-for-in": 0,
     "no-prototype-builtins": 0,
     "no-restricted-syntax": 0,
-    "newline-per-chained-call": 0,
     "no-useless-concat": 0,
     "no-multi-spaces": 0,
     "no-nested-ternary": 0,
