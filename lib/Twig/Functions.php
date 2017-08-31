@@ -1,5 +1,6 @@
 <?php
 namespace MailPoet\Twig;
+use MailPoet\Config\ServicesChecker;
 
 if(!defined('ABSPATH')) exit;
 
@@ -64,6 +65,11 @@ class Functions extends \Twig_Extension {
       new \Twig_SimpleFunction(
         'mailpoet_premium_version',
         array($this, 'getMailPoetPremiumVersion'),
+        array('is_safe' => array('all'))
+      ),
+      new \Twig_SimpleFunction(
+        'mailpoet_has_valid_premium_key',
+        array($this, 'hasValidPremiumKey'),
         array('is_safe' => array('all'))
       ),
       new \Twig_SimpleFunction(
@@ -150,5 +156,10 @@ class Functions extends \Twig_Extension {
       return $args[$key];
     }
     return null;
+  }
+
+  function hasValidPremiumKey() {
+    $checker = new ServicesChecker();
+    return $checker->isPremiumKeyValid(false);
   }
 }
