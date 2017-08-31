@@ -23,6 +23,7 @@
   }
 }(this, function(Marionette, Radio, _) {
   'use strict';
+
   var MarionetteApplication = Marionette.Application;
   MarionetteApplication.prototype._initChannel = function () {
     this.channelName = _.result(this, 'channelName') || 'global';

@@ -5,6 +5,7 @@ define('i18n',
     mp
 ) {
   'use strict';
+
   var MailPoet = mp;
 
   var translations = {};

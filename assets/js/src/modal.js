@@ -1,6 +1,7 @@
 define('modal', ['mailpoet', 'jquery'],
   function(mp, jQuery) {
     'use strict';
+
     var MailPoet = mp;
     /***************************************************************************
     MailPoet Modal:

@@ -1,5 +1,6 @@
 define('iframe', ['mailpoet'], function(mp) {
   'use strict';
+
   var MailPoet = mp;
   MailPoet.Iframe = {
     marginY: 20,
