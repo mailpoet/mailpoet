@@ -34,6 +34,8 @@ define([
         toolbar1: this.options.toolbar1,
         toolbar2: this.options.toolbar2,
 
+        browser_spellcheck: true,
+
         valid_elements: this.options.validElements,
         invalid_elements: this.options.invalidElements,
         block_formats: this.options.blockFormats,
