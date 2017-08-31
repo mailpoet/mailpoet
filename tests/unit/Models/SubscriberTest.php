@@ -1020,7 +1020,40 @@ class SubscriberTest extends \MailPoetTest {
     expect(Subscriber::setRequiredFieldsDefaultValues(array()))->equals(
       array(
         'first_name' => '',
-        'last_name' => ''
+        'last_name' => '',
+        'status' => Subscriber::STATUS_UNCONFIRMED
+      )
+    );
+  }
+
+  function testItSetsDefaultStatusDependingOnSingupConfirmationOption() {
+    // when signup confirmation is disabled, status should be 'subscribed'
+    Setting::setValue('signup_confirmation.enabled', false);
+    expect(Subscriber::setRequiredFieldsDefaultValues(array()))->equals(
+      array(
+        'first_name' => '',
+        'last_name' => '',
+        'status' => Subscriber::STATUS_SUBSCRIBED
+      )
+    );
+
+    Setting::setValue('signup_confirmation.enabled', true);
+    // when signup confirmation is enabled, status should be 'unconfirmed'
+    expect(Subscriber::setRequiredFieldsDefaultValues(array()))->equals(
+      array(
+        'first_name' => '',
+        'last_name' => '',
+        'status' => Subscriber::STATUS_UNCONFIRMED
+      )
+    );
+
+    // when status is specified, it should not change regardless of signup confirmation option
+    Setting::setValue('signup_confirmation.enabled', true);
+    expect(Subscriber::setRequiredFieldsDefaultValues(array('status' => Subscriber::STATUS_SUBSCRIBED)))->equals(
+      array(
+        'first_name' => '',
+        'last_name' => '',
+        'status' => Subscriber::STATUS_SUBSCRIBED
       )
     );
   }
@@ -1034,6 +1067,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($result->getErrors())->false();
     expect($result->first_name)->isEmpty();
     expect($result->last_name)->isEmpty();
+    expect($result->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
   function testItDoesNotSetDefaultValuesForExistingSubscribers() {
