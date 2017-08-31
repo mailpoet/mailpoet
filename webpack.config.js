@@ -36,7 +36,6 @@ var baseConfig = {
       'wp-js-hooks': 'WP-JS-Hooks/src/event-manager.js',
       'blob$': 'blob-tmp/Blob.js',
       'papaparse': 'papaparse/papaparse.min.js',
-      'helpscout': 'helpscout.js',
       'html2canvas': 'html2canvas/dist/html2canvas.js',
       'asyncqueue': 'vendor/jquery.asyncqueue.js'
     },
@@ -119,10 +118,6 @@ var baseConfig = {
         loader: 'expose-loader?Handlebars',
       },
       {
-        include: /helpscout.js$/,
-        loader: 'exports-loader?window.HS',
-      },
-      {
         include: /html2canvas.js$/,
         loader: 'expose-loader?html2canvas',
       },
@@ -177,7 +172,6 @@ var adminConfig = {
       'settings/reinstall_from_scratch.js',
       'subscribers/importExport/import.js',
       'subscribers/importExport/export.js',
-      'helpscout'
     ],
     form_editor: [
       'form_editor/form_editor.js',
