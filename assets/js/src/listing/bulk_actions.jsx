@@ -56,7 +56,7 @@ define([
         const promise = this.props.onBulkAction(selected_ids, data);
         if (promise !== false) {
           promise.then(onSuccess);
-        };
+        }
       }
 
       this.setState({
