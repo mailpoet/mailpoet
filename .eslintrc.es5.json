@@ -22,7 +22,6 @@
     "no-useless-concat": 0,
     "no-multi-spaces": 0,
     "no-nested-ternary": 0,
-    "semi-spacing": 0,
     "no-sequences": 0,
     "no-useless-return": 0,
     "array-callback-return": 0,
