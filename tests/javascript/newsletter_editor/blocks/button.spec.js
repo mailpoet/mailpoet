@@ -265,9 +265,9 @@ define([
 
 
       beforeEach(function () {
-        onStub = sinon.stub()
-        global.stubChannel(EditorApplication, {on: onStub})
-        model = {set: sinon.stub(), toJSON: sinon.stub()}
+        onStub = sinon.stub();
+        global.stubChannel(EditorApplication, {on: onStub});
+        model = {set: sinon.stub(), toJSON: sinon.stub()};
         view = new (ButtonBlock.ButtonBlockView)({model: model});
         view.render();
       });

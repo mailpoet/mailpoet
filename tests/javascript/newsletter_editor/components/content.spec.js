@@ -54,7 +54,7 @@ define([
           expect(json.subject).to.equal('some subject');
           expect(json.preheader).to.equal('some preheader');
           expect(json).to.not.include.keys('segments', 'modified_at', 'someField');
-        })
+        });
       });
     });
 

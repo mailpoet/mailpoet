@@ -119,7 +119,7 @@ define([
         var deferred = jQuery.Deferred();
         deferred.resolve({});
         return deferred;
-      }
+      };
       var module;
       spy = sinon.spy(post);
       module = CommunicationInjector({
