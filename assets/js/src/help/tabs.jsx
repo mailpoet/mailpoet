@@ -38,7 +38,7 @@ function Tabs(props) {
       { tabLinks }
     </h2>
   );
-};
+}
 
 Tabs.propTypes = { tab: React.PropTypes.string };
 Tabs.defaultProps = { tab: 'knowledgeBase' };

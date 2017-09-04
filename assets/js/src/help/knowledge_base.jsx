@@ -24,6 +24,6 @@ function KnowledgeBase() {
       <a target="_blank" href="http://beta.docs.mailpoet.com/" className="button button-primary">{MailPoet.I18n.t('knowledgeBaseButton')}</a>
     </div>
   );
-};
+}
 
 module.exports = KnowledgeBase;

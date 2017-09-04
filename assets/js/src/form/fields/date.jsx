@@ -245,7 +245,7 @@ define([
         </div>
       );
     }
-  };
+  }
 
   return FormFieldDate;
 });

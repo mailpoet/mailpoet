@@ -42,6 +42,6 @@ function KnowledgeBase() {
       {printData(data)}
     </div>
   );
-};
+}
 
 module.exports = KnowledgeBase;
