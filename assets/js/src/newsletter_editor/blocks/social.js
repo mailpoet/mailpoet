@@ -121,7 +121,7 @@ define([
       this.showChildView('toolsRegion', this.toolsView);
       this.showChildView('icons', new Module.SocialIconCollectionView({
         collection: this.model.get('icons')
-      }))
+      }));
     }
   });
 
