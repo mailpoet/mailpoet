@@ -875,7 +875,8 @@ class Subscriber extends Model {
   static function setRequiredFieldsDefaultValues($data) {
     $required_field_default_values = array(
       'first_name' => '',
-      'last_name' => ''
+      'last_name' => '',
+      'status' => (!Setting::getValue('signup_confirmation.enabled')) ? self::STATUS_SUBSCRIBED : self::STATUS_UNCONFIRMED
     );
     foreach($required_field_default_values as $field => $value) {
       if(!isset($data[$field])) {
