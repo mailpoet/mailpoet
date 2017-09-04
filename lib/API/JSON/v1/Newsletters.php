@@ -268,7 +268,7 @@ class Newsletters extends APIEndpoint {
         $subscriber
       );
       // strip protocol to avoid mix content error
-      $preview_url = preg_replace('!http?:!i', '', $preview_url);
+      $preview_url = preg_replace('{^https?:}i', '', $preview_url);
 
       return $this->successResponse(
         Newsletter::findOne($newsletter->id)->asArray(),
