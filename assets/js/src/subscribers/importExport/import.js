@@ -931,7 +931,7 @@ define(
                       + '</span> '
                     );
                     preventNextStep = true;
-                  };
+                  }
                 });
                 if (preventNextStep && !jQuery('.mailpoet_invalidDate').length) {
                   MailPoet.Notice.error(MailPoet.I18n.t('columnContainsInvalidDate'), {

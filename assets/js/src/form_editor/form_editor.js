@@ -756,7 +756,7 @@ WysijaForm.Block = Class.create({
       this.element.addClassName('hover');
       try {
         this.getControls().show();
-      } catch(e) {;
+      } catch(e) {
       }
     }
   },

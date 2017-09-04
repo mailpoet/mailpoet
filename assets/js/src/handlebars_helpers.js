@@ -5,7 +5,7 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
           output = '';
       for(var i = 0; i < size; i++) {
           output += arguments[i];
-      };
+      }
       return output;
   });
 
@@ -28,7 +28,7 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
           }
     } else {
       return timestamp;
-    };
+    }
   });
 
   Handlebars.registerHelper('cycle', function(value, block) {
