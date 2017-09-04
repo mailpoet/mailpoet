@@ -25,14 +25,14 @@ Object.extend(document, (function() {
   function findWrapper(selector, eventName, handler) {
     var c = getWrappersForSelector(selector, eventName);
     return c.find(function(wrapper) {
-      return wrapper.handler === handler
+      return wrapper.handler === handler;
     });
   }
 
   function destroyWrapper(selector, eventName, handler) {
     var c = getCacheForSelector(selector);
     if(!c[eventName]) return false;
-    var wrapper = findWrapper(selector, eventName, handler)
+    var wrapper = findWrapper(selector, eventName, handler);
     c[eventName] = c[eventName].without(wrapper);
     return wrapper;
   }
@@ -78,7 +78,7 @@ Object.extend(document, (function() {
       }
       return document;
     }
-  }
+  };
 })());
 
 var Observable = (function() {
@@ -101,7 +101,7 @@ var Observable = (function() {
   function getWrapper(handler, klass) {
     return function(event) {
       return handler.call(new klass(this), event, event.memo);
-    }
+    };
   }
 
   function onDomLoad(selector, klass) {
@@ -126,7 +126,7 @@ var Observable = (function() {
       });
       delete this.handlers[selector];
     }
-  }
+  };
 })();
 
 // override droppables

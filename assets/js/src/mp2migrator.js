@@ -12,7 +12,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(mp, jQuery) {
       clearTimeout(MailPoet.MP2Migrator.displayLogs_timeout);
       clearTimeout(MailPoet.MP2Migrator.updateProgressbar_timeout);
       clearTimeout(MailPoet.MP2Migrator.update_wordpress_info_timeout);
-      setTimeout(MailPoet.MP2Migrator.updateDisplay, 1000)
+      setTimeout(MailPoet.MP2Migrator.updateDisplay, 1000);
     },
 
     stopLogger: function () {

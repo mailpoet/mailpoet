@@ -169,7 +169,7 @@ define(
               setTimeout(function () {
                 uploadElement.parse({
                   config: parseCSV(true)
-                })
+                });
               }, 10);
             }
           });
@@ -433,7 +433,7 @@ define(
                   MailPoet.Notice.error(errorNotice);
                 }
               }
-            }
+            };
           }
         });
 
@@ -573,14 +573,14 @@ define(
                       toggleNextStepButton('on');
                     }
                   }
-                })
+                });
           }
 
           jQuery('.mailpoet_create_segment').click(function() {
             MailPoet.Modal.popup({
               title: MailPoet.I18n.t('addNewList'),
               template: jQuery('#new_segment_template').html()
-            })
+            });
             jQuery('#new_segment_name').keypress(function(e) {
               if (e.which == 13) {
                 jQuery('#new_segment_process').click();
@@ -607,7 +607,7 @@ define(
 
                 var selected_values = segmentSelectElement.val();
                 if (selected_values === null) {
-                  selected_values = [response.data.id]
+                  selected_values = [response.data.id];
                 } else {
                   selected_values.push(response.data.id);
                 }
@@ -784,7 +784,7 @@ define(
                               templateSelection: function (item) {
                                 return item.name;
                               }
-                            })
+                            });
                         });
                       jQuery(selectElement).data('column-id', new_column_data.id);
                       jQuery(selectElement).data('validation-rule', false);
@@ -893,11 +893,11 @@ define(
                 }
                 else {
                   for (var format in allowedDateFormats) {
-                    var testedFormat = allowedDateFormats[format]
+                    var testedFormat = allowedDateFormats[format];
                     if (Moment(firstRowData, testedFormat, true).isValid()) {
                       var validationRule = (typeof(testedFormat) === 'function') ?
                         'datetime' :
-                        testedFormat
+                        testedFormat;
                       // set validation on the column element
                       jQuery(matchedColumn.element).data('validation-rule', validationRule);
                       break;
@@ -1038,7 +1038,7 @@ define(
                   }
                 });
                 batchNumber++;
-              })
+              });
             });
 
             queue.run();

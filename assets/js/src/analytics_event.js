@@ -38,7 +38,7 @@ function exportMixpanel(mp) {
 function trackCachedEvents() {
   eventsCache.map(function (event) {
     if (window.mailpoet_analytics_enabled || event.forced) {
-      window.mixpanel.track(event.name, event.data)
+      window.mixpanel.track(event.name, event.data);
     }
   });
 }
