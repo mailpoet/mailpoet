@@ -91,7 +91,7 @@ global.stubImage = function(defaultWidth, defaultHeight) {
       }
     });
   };
-}
+};
 
 
 testHelpers.loadTemplate('blocks/base/toolsGeneric.hbs', window, {id: 'newsletter_editor_template_tools_generic'});

@@ -292,12 +292,12 @@ define([
       });
 
       beforeEach(function () {
-        onStub = sinon.stub()
-        global.stubChannel(EditorApplication, {on: onStub})
+        onStub = sinon.stub();
+        global.stubChannel(EditorApplication, {on: onStub});
         global.stubConfig(EditorApplication);
         EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
         EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-        model = {set: sinon.stub()}
+        model = {set: sinon.stub()};
         view = new (module.AutomatedLatestContentBlockView)({model: model});
       });
 
