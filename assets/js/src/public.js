@@ -33,13 +33,13 @@ function(
         form.parsley().on('form:submit', function(parsley) {
           var form_data = form.serializeObject() || {};
           // check if we're on the same domain
-          if(isSameDomain(MailPoetForm.ajax_url) === false) {
+          if(isSameDomain(window.MailPoetForm.ajax_url) === false) {
             // non ajax post request
             return true;
           } else {
             // ajax request
             MailPoet.Ajax.post({
-              url: MailPoetForm.ajax_url,
+              url: window.MailPoetForm.ajax_url,
               token: form_data.token,
               api_version: form_data.api_version,
               endpoint: 'subscribers',

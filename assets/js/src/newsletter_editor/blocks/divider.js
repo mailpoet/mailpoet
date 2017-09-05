@@ -33,7 +33,7 @@ define([
 
   Module.DividerBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_divider_block mailpoet_droppable_block',
-    getTemplate: function() { return templates.dividerBlock; },
+    getTemplate: function() { return window.templates.dividerBlock; },
     modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'),
     behaviors: _.defaults({
       ResizableBehavior: {
@@ -84,7 +84,7 @@ define([
   });
 
   Module.DividerBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.dividerBlockSettings; },
+    getTemplate: function() { return window.templates.dividerBlockSettings; },
     events: function() {
       return {
         'click .mailpoet_field_divider_style': 'changeStyle',
@@ -129,7 +129,7 @@ define([
   });
 
   Module.DividerWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return templates.dividerInsertion; },
+    getTemplate: function() { return window.templates.dividerInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,

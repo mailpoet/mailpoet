@@ -177,7 +177,7 @@ define([
 
   Module.PostsBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_posts_block mailpoet_droppable_block',
-    getTemplate: function() { return templates.postsBlock; },
+    getTemplate: function() { return window.templates.postsBlock; },
     modelEvents: {}, // Forcefully disable all events
     regions: _.extend({
       postsRegion: '.mailpoet_posts_block_posts'
@@ -216,7 +216,7 @@ define([
   });
 
   Module.PostsBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.postsBlockSettings; },
+    getTemplate: function() { return window.templates.postsBlockSettings; },
     regions: {
       selectionRegion: '.mailpoet_settings_posts_selection',
       displayOptionsRegion: '.mailpoet_settings_posts_display_options'
@@ -308,7 +308,7 @@ define([
   });
 
   var PostSelectionSettingsView = Marionette.View.extend({
-    getTemplate: function() { return templates.postSelectionPostsBlockSettings; },
+    getTemplate: function() { return window.templates.postSelectionPostsBlockSettings; },
     regions: {
       posts: '.mailpoet_post_selection_container'
     },
@@ -428,11 +428,11 @@ define([
   });
 
   var EmptyPostSelectionSettingsView = Marionette.View.extend({
-    getTemplate: function() { return templates.emptyPostPostsBlockSettings; }
+    getTemplate: function() { return window.templates.emptyPostPostsBlockSettings; }
   });
 
   var SinglePostSelectionSettingsView = Marionette.View.extend({
-    getTemplate: function() { return templates.singlePostPostsBlockSettings; },
+    getTemplate: function() { return window.templates.singlePostPostsBlockSettings; },
     events: function() {
       return {
         'change .mailpoet_select_post_checkbox': 'postSelectionChange'
@@ -459,7 +459,7 @@ define([
   });
 
   var PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.displayOptionsPostsBlockSettings; },
+    getTemplate: function() { return window.templates.displayOptionsPostsBlockSettings; },
     events: function() {
       return {
         'click .mailpoet_posts_select_button': 'showButtonSettings',
@@ -564,7 +564,7 @@ define([
   });
 
   Module.PostsWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return templates.postsInsertion; },
+    getTemplate: function() { return window.templates.postsInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,

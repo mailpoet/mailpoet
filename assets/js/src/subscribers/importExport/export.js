@@ -17,14 +17,14 @@ define(
      return;
    }
    jQuery(document).ready(function () {
-     if (!exportData.segments) {
+     if (!window.exportData.segments) {
        return;
      }
      var subscribers_export_template =
       Handlebars.compile(jQuery('#mailpoet_subscribers_export_template').html());
 
      //render template
-     jQuery('#mailpoet_subscribers_export > div.inside').html(subscribers_export_template(exportData));
+     jQuery('#mailpoet_subscribers_export > div.inside').html(subscribers_export_template(window.exportData));
 
      // define reusable variables
      var segmentsContainerElement = jQuery('#export_lists'),
@@ -77,9 +77,9 @@ define(
            }
          })
          .on('change', function () {
-           if ((exportData.segments && segmentsContainerElement.select2('data').length && subscriberFieldsContainerElement.select2('data').length)
+           if ((window.exportData.segments && segmentsContainerElement.select2('data').length && subscriberFieldsContainerElement.select2('data').length)
             ||
-            (!exportData.segments && subscriberFieldsContainerElement.select2('data').length)
+            (!window.exportData.segments && subscriberFieldsContainerElement.select2('data').length)
            ) {
              toggleNextStepButton('on');
            }
@@ -87,20 +87,20 @@ define(
              toggleNextStepButton('off');
            }
 
-           if (segmentsContainerElement.select2('data').length > 1 && exportData.groupBySegmentOption) {
+           if (segmentsContainerElement.select2('data').length > 1 && window.exportData.groupBySegmentOption) {
              jQuery('.mailpoet_group_by_list').show();
            }
-           else if (exportData.groupBySegmentOption) {
+           else if (window.exportData.groupBySegmentOption) {
              jQuery('.mailpoet_group_by_list').hide();
            }
          });
        };
 
      // set confirmed subscribers export option to false
-     exportData.exportConfirmedOption = false;
+     window.exportData.exportConfirmedOption = false;
 
-     renderSegmentsAndFields(subscriberFieldsContainerElement, subscriberFieldsSelect2);
-     renderSegmentsAndFields(segmentsContainerElement, segments);
+     renderSegmentsAndFields(subscriberFieldsContainerElement, window.subscriberFieldsSelect2);
+     renderSegmentsAndFields(segmentsContainerElement, window.segments);
 
      subscriberFieldsContainerElement.val([
        'email',
@@ -112,12 +112,12 @@ define(
      exportConfirmedOptionElement.change(function () {
        var selectedSegments = segmentsContainerElement.val();
        if (this.value == 1) {
-         exportData.exportConfirmedOption = true;
-         renderSegmentsAndFields(segmentsContainerElement, segmentsWithConfirmedSubscribers);
+         window.exportData.exportConfirmedOption = true;
+         renderSegmentsAndFields(segmentsContainerElement, window.segmentsWithConfirmedSubscribers);
        }
        else {
-         exportData.exportConfirmedOption = false;
-         renderSegmentsAndFields(segmentsContainerElement, segments);
+         window.exportData.exportConfirmedOption = false;
+         renderSegmentsAndFields(segmentsContainerElement, window.segments);
        }
        segmentsContainerElement.val(selectedSegments).trigger('change');
      });
@@ -143,24 +143,24 @@ define(
          endpoint: 'ImportExport',
          action: 'processExport',
          data: JSON.stringify({
-           export_confirmed_option: exportData.exportConfirmedOption,
+           export_confirmed_option: window.exportData.exportConfirmedOption,
            export_format_option: exportFormat,
            group_by_segment_option: (groupBySegmentOptionElement.is(':visible')) ? groupBySegmentOptionElement.prop('checked') : false,
-           segments: (exportData.segments) ? segmentsContainerElement.val() : false,
+           segments: (window.exportData.segments) ? segmentsContainerElement.val() : false,
            subscriber_fields: subscriberFieldsContainerElement.val()
          })
        }).always(function(response) {
          MailPoet.Modal.loading(false);
        }).done(function(response) {
-         resultMessage = MailPoet.I18n.t('exportMessage')
-           .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
-           .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
-           .replace('[/link]', '</a>');
+         var resultMessage = MailPoet.I18n.t('exportMessage')
+         .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
+         .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
+         .replace('[/link]', '</a>');
          jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
          window.location.href = response.data.exportFileURL;
          MailPoet.trackEvent('Subscribers export completed', {
            'Total exported': response.data.totalExported,
-           'Only confirmed?': exportData.exportConfirmedOption,
+           'Only confirmed?': window.exportData.exportConfirmedOption,
            'File Format': exportFormat,
            'MailPoet Free version': window.mailpoet_version
          });

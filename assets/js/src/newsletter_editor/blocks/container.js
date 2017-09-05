@@ -103,7 +103,7 @@ define([
       }
     }),
     className: 'mailpoet_block mailpoet_container_block mailpoet_droppable_block mailpoet_droppable_layout_block',
-    getTemplate: function() { return templates.containerBlock; },
+    getTemplate: function() { return window.templates.containerBlock; },
     events: _.extend({}, base.BlockView.prototype.events, {
       'click .mailpoet_newsletter_layer_selector': 'toggleEditingLayer'
     }),
@@ -217,7 +217,7 @@ define([
   });
 
   Module.ContainerBlockEmptyView = Marionette.View.extend({
-    getTemplate: function() { return templates.containerEmpty; },
+    getTemplate: function() { return window.templates.containerEmpty; },
     initialize: function(options) {
       this.renderOptions = _.defaults(options.renderOptions || {}, {});
     },
@@ -234,7 +234,7 @@ define([
   });
 
   Module.ContainerBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.containerBlockSettings; },
+    getTemplate: function() { return window.templates.containerBlockSettings; },
     events: function() {
       return {
         'change .mailpoet_field_container_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
@@ -266,7 +266,7 @@ define([
   });
 
   Module.ContainerBlockColumnSettingsView = Marionette.View.extend({
-    getTemplate: function() { return templates.containerBlockColumnSettings; },
+    getTemplate: function() { return window.templates.containerBlockColumnSettings; },
     initialize: function(options) {
       this.columnNumber = (options.columnIndex || 0) + 1;
     },
@@ -280,7 +280,7 @@ define([
 
   Module.OneColumnContainerWidgetView = base.WidgetView.extend({
     className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
-    getTemplate: function() { return templates.oneColumnLayoutInsertion; },
+    getTemplate: function() { return window.templates.oneColumnLayoutInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,
@@ -298,7 +298,7 @@ define([
 
   Module.TwoColumnContainerWidgetView = base.WidgetView.extend({
     className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
-    getTemplate: function() { return templates.twoColumnLayoutInsertion; },
+    getTemplate: function() { return window.templates.twoColumnLayoutInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,
@@ -317,7 +317,7 @@ define([
 
   Module.ThreeColumnContainerWidgetView = base.WidgetView.extend({
     className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
-    getTemplate: function() { return templates.threeColumnLayoutInsertion; },
+    getTemplate: function() { return window.templates.threeColumnLayoutInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,

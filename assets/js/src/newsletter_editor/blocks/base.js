@@ -178,7 +178,7 @@ define([
   });
 
   Module.BlockToolsView = AugmentedView.extend({
-    getTemplate: function() { return templates.genericBlockTools; },
+    getTemplate: function() { return window.templates.genericBlockTools; },
     events: {
       'click .mailpoet_edit_block': 'changeSettings',
       'click .mailpoet_delete_block_activate': 'showDeletionConfirmation',

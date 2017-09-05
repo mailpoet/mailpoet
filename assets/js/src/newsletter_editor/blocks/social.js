@@ -85,7 +85,7 @@ define([
 
   var SocialIconView = Marionette.View.extend({
     tagName: 'span',
-    getTemplate: function() { return templates.socialIconBlock; },
+    getTemplate: function() { return window.templates.socialIconBlock; },
     modelEvents: {
       change: 'render'
     },
@@ -105,7 +105,7 @@ define([
 
   Module.SocialBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_social_block mailpoet_droppable_block',
-    getTemplate: function() { return templates.socialBlock; },
+    getTemplate: function() { return window.templates.socialBlock; },
     regions: _.extend({}, base.BlockView.prototype.regions, {
       icons: '.mailpoet_social'
     }),
@@ -131,7 +131,7 @@ define([
 
   // Sidebar view container
   Module.SocialBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.socialBlockSettings; },
+    getTemplate: function() { return window.templates.socialBlockSettings; },
     regions: {
       iconRegion: '#mailpoet_social_icons_selection',
       stylesRegion: '#mailpoet_social_icons_styles'
@@ -155,7 +155,7 @@ define([
 
   // Single icon settings view, used by the selector view
   SocialBlockSettingsIconView = Marionette.View.extend({
-    getTemplate: function() { return templates.socialSettingsIcon; },
+    getTemplate: function() { return window.templates.socialSettingsIcon; },
     events: function() {
       return {
         'click .mailpoet_delete_block': 'deleteIcon',
@@ -212,7 +212,7 @@ define([
 
   // Select icons section container view
   SocialBlockSettingsIconSelectorView = Marionette.View.extend({
-    getTemplate: function() { return templates.socialSettingsIconSelector; },
+    getTemplate: function() { return window.templates.socialSettingsIconSelector; },
     regions: {
       icons: '#mailpoet_social_icon_selector_contents'
     },
@@ -235,7 +235,7 @@ define([
   });
 
   SocialBlockSettingsStylesView = Marionette.View.extend({
-    getTemplate: function() { return templates.socialSettingsStyles; },
+    getTemplate: function() { return window.templates.socialSettingsStyles; },
     modelEvents: {
       change: 'render'
     },
@@ -263,7 +263,7 @@ define([
   });
 
   Module.SocialWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return templates.socialInsertion; },
+    getTemplate: function() { return window.templates.socialInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,

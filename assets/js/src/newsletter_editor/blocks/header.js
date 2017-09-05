@@ -4,8 +4,9 @@
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/base',
-  'underscore'
-], function(App, BaseBlock, _) {
+  'underscore',
+  'mailpoet'
+], function(App, BaseBlock, _, MailPoet) {
 
   'use strict';
 
@@ -38,7 +39,7 @@ define([
 
   Module.HeaderBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_header_block mailpoet_droppable_block',
-    getTemplate: function() { return templates.headerBlock; },
+    getTemplate: function() { return window.templates.headerBlock; },
     modelEvents: _.extend({
       'change:styles.block.backgroundColor change:styles.text.fontColor change:styles.text.fontFamily change:styles.text.fontSize change:styles.text.textAlign change:styles.link.fontColor change:styles.link.textDecoration': 'render'
     }, _.omit(base.BlockView.prototype.modelEvents, 'change')),
@@ -75,7 +76,7 @@ define([
   });
 
   Module.HeaderBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.headerBlockSettings; },
+    getTemplate: function() { return window.templates.headerBlockSettings; },
     events: function() {
       return {
         'change .mailpoet_field_header_text_color': _.partial(this.changeColorField, 'styles.text.fontColor'),
@@ -98,7 +99,7 @@ define([
   });
 
   Module.HeaderWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return templates.headerInsertion; },
+    getTemplate: function() { return window.templates.headerInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,

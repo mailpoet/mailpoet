@@ -1,8 +1,9 @@
 define([
   'newsletter_editor/App',
   'backbone.marionette',
-  'backbone.supermodel'
-], function(App, Marionette, SuperModel) {
+  'backbone.supermodel',
+  'underscore'
+], function(App, Marionette, SuperModel, _) {
 
   'use strict';
 
@@ -47,7 +48,7 @@ define([
   });
 
   Module.StylesView = Marionette.View.extend({
-    getTemplate: function() { return templates.styles; },
+    getTemplate: function() { return window.templates.styles; },
     modelEvents: {
       change: 'render'
     },

@@ -135,7 +135,7 @@ define([
       }
       App.getChannel().on('replaceAllButtonStyles', replaceButtonStylesHandler.bind(this));
     },
-    getTemplate: function() { return templates.automatedLatestContentBlock; },
+    getTemplate: function() { return window.templates.automatedLatestContentBlock; },
     regions: {
       toolsRegion: '.mailpoet_tools',
       postsRegion: '.mailpoet_automated_latest_content_block_posts'
@@ -168,7 +168,7 @@ define([
 
   // Sidebar view container
   Module.AutomatedLatestContentBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.automatedLatestContentBlockSettings; },
+    getTemplate: function() { return window.templates.automatedLatestContentBlockSettings; },
     events: function() {
       return {
         'click .mailpoet_automated_latest_content_hide_display_options': 'toggleDisplayOptions',
@@ -364,7 +364,7 @@ define([
   });
 
   Module.AutomatedLatestContentWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return templates.automatedLatestContentInsertion; },
+    getTemplate: function() { return window.templates.automatedLatestContentInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,

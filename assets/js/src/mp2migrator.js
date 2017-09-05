@@ -26,7 +26,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(mp, jQuery) {
 
     displayLogs: function () {
       jQuery.ajax({
-        url: mailpoet_mp2_migrator.log_file_url,
+        url: window.mailpoet_mp2_migrator.log_file_url,
         cache: false
       }).done(function (result) {
         jQuery('#logger').html('');
@@ -53,7 +53,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(mp, jQuery) {
 
     updateProgressbar: function () {
       jQuery.ajax({
-        url: mailpoet_mp2_migrator.progress_url,
+        url: window.mailpoet_mp2_migrator.progress_url,
         cache: false,
         dataType: 'json'
       }).always(function (result) {

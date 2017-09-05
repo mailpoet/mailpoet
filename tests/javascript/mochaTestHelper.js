@@ -232,3 +232,4 @@ global.templates = {
   textInsertion: Handlebars.compile(jQuery('#newsletter_editor_template_text_widget').html()),
   textBlockSettings: Handlebars.compile(jQuery('#newsletter_editor_template_text_settings').html())
 };
+global.window.templates = global.templates;

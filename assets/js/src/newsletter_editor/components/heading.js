@@ -3,15 +3,16 @@ define([
   'backbone',
   'backbone.marionette',
   'underscore',
-  'jquery'
-], function(App, Backbone, Marionette, _, jQuery) {
+  'jquery',
+  'mailpoet'
+], function(App, Backbone, Marionette, _, jQuery, MailPoet) {
 
   'use strict';
 
   var Module = {};
 
   Module.HeadingView = Marionette.View.extend({
-    getTemplate: function() { return templates.heading; },
+    getTemplate: function() { return window.templates.heading; },
     templateContext: function() {
       return {
         model: this.model.toJSON()

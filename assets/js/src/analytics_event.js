@@ -43,15 +43,6 @@ function trackCachedEvents() {
   });
 }
 
-function initializeMixpanelWhenLoaded() {
-  if (typeof window.mixpanel === 'object') {
-    exportMixpanel(MailPoet);
-    trackCachedEvents();
-  } else {
-    setTimeout(initializeMixpanelWhenLoaded, 100);
-  }
-}
-
 function cacheEvent(forced, name, data) {
   eventsCache.push({
     name: name,
@@ -65,9 +56,18 @@ define(
   function(mp, _) {
     var MailPoet = mp;
 
+    function initializeMixpanelWhenLoaded() {
+      if (typeof window.mixpanel === 'object') {
+        exportMixpanel(MailPoet);
+        trackCachedEvents();
+      } else {
+        setTimeout(initializeMixpanelWhenLoaded, 100);
+      }
+    }
+
     MailPoet.trackEvent = _.partial(cacheEvent, false);
     MailPoet.forceTrackEvent = _.partial(cacheEvent, true);
 
-    initializeMixpanelWhenLoaded();
+    initializeMixpanelWhenLoaded(MailPoet);
   }
 );
