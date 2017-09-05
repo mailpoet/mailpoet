@@ -19,8 +19,14 @@ class AutomatedLatestContent extends APIEndpoint {
   }
 
   function getPostTypes() {
+    $post_types = array_map(function($post_type) {
+      return array(
+        'name' => $post_type->name,
+        'label' => $post_type->label
+      );
+    }, get_post_types(array(), 'objects'));
     return $this->successResponse(
-      get_post_types(array(), 'objects')
+      $post_types
     );
   }
 
