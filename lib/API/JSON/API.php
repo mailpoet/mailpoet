@@ -130,6 +130,10 @@ class API {
 
       $endpoint = new $this->_request_endpoint_class();
 
+      if(!method_exists($endpoint, $this->_request_method)) {
+        throw new \Exception(__('Invalid API endpoint method.', 'mailpoet'));
+      }
+
       // check the accessibility of the requested endpoint's action
       // by default, an endpoint's action is considered "private"
       if(!$this->validatePermissions($this->_request_method, $endpoint->permissions)) {

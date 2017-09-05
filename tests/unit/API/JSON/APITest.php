@@ -221,6 +221,26 @@ class APITest extends \MailPoetTest {
     expect($api->validatePermissions('test', $permissions))->true();
   }
 
+  function testItThrowsExceptionWhenInvalidEndpointMethodIsCalled() {
+    $this->api = API::JSON(new AccessControl());
+    $namespace = array(
+      'name' => 'MailPoet\API\JSON\v2',
+      'version' => 'v2'
+    );
+    $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
+
+    $data = array(
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v2',
+      'api_version' => 'v2',
+      'method' => 'fakeMethod'
+    );
+    $this->api->setRequestData($data);
+    $response = $this->api->processRoute();
+
+    expect($response->status)->equals(Response::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Invalid API endpoint method.');
+  }
+
   function _after() {
     WPHooksHelper::releaseAllHooks();
     wp_delete_user($this->wp_user_id);
