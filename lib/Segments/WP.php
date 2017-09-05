@@ -79,56 +79,15 @@ class WP {
   }
 
   static function synchronizeUsers() {
-    // get wordpress users list
     $wp_segment = Segment::getWPSegment();
-    $s = microtime(true);
 
-    // insert all wordpress users from wp table
-    Subscriber::raw_execute('
-      INSERT IGNORE INTO wp_mailpoet_subscribers(wp_user_id, email, status, created_at)
-        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM wp_users wu
-          LEFT JOIN wp_mailpoet_subscribers mps ON wu.id = mps.wp_user_id
-          WHERE mps.wp_user_id IS NULL
-    ');
-
-    // update first name
-    Subscriber::raw_execute('
-      UPDATE wp_mailpoet_subscribers
-        JOIN wp_usermeta ON wp_mailpoet_subscribers.wp_user_id = wp_usermeta.user_id AND meta_key = "first_name"
-      SET first_name = meta_value
-        WHERE wp_mailpoet_subscribers.first_name = ""
-        AND wp_mailpoet_subscribers.wp_user_id IS NOT NULL
-    ');
-
-    // update last name
-    Subscriber::raw_execute('
-      UPDATE wp_mailpoet_subscribers
-        JOIN wp_usermeta ON wp_mailpoet_subscribers.wp_user_id = wp_usermeta.user_id AND meta_key = "last_name"
-      SET last_name = meta_value
-        WHERE wp_mailpoet_subscribers.last_name = ""
-        AND wp_mailpoet_subscribers.wp_user_id IS NOT NULL
-    ');
-
-    // use display name if first name is missing
-    Subscriber::raw_execute('
-      UPDATE wp_mailpoet_subscribers
-        JOIN wp_users ON wp_mailpoet_subscribers.wp_user_id = wp_users.id
-      SET first_name = display_name
-        WHERE wp_mailpoet_subscribers.first_name = ""
-        AND wp_mailpoet_subscribers.wp_user_id IS NOT NULL
-    ');
-
-    // insert users to the wp users list
-    Subscriber::raw_execute(sprintf('
-     INSERT IGNORE INTO wp_mailpoet_subscriber_segment(subscriber_id, segment_id, created_at)
-      SELECT mps.id, "%s", CURRENT_TIMESTAMP() FROM wp_mailpoet_subscribers mps
-        WHERE mps.wp_user_id IS NOT NULL
-    ', $wp_segment->id));
-
-    $e = microtime(true) - $s;
-
-    file_put_contents('/tmp/whole', $e);
-    $s = microtime(true);
+    self::updateSubscribersEmails();
+    self::insertSubscribers();
+    self::updateFirstNames();
+    self::updateLastNames();
+    self::updateFristNameIfMissing();
+    self::insertUsersToSegment($wp_segment);
+    self::removeFromTrash();
 
     // fetch all wp users id
     $wp_users = \get_users(array(
@@ -143,11 +102,80 @@ class WP {
       ->findResultSet()
       ->set('wp_user_id', null)
       ->delete();
-    $e = microtime(true) - $s;
-
-    file_put_contents('/tmp/whole-e', $e);
 
     return true;
+  }
+
+  private static function updateSubscribersEmails() {
+    $subscribers_table = Subscriber::$_table;
+    Subscriber::raw_execute(sprintf('
+      UPDATE IGNORE %s
+        JOIN wp_users ON %s.wp_user_id = wp_users.id
+      SET email = user_email
+        WHERE %s.wp_user_id IS NOT NULL
+    ', $subscribers_table, $subscribers_table, $subscribers_table));
+  }
+
+  private static function insertSubscribers() {
+    $subscribers_table = Subscriber::$_table;
+    Subscriber::raw_execute(sprintf('
+      INSERT IGNORE INTO %s(wp_user_id, email, status, created_at)
+        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM wp_users wu
+          LEFT JOIN %s mps ON wu.id = mps.wp_user_id
+          WHERE mps.wp_user_id IS NULL
+    ', $subscribers_table, $subscribers_table));
+  }
+
+  private static function updateFirstNames() {
+    $subscribers_table = Subscriber::$_table;
+    Subscriber::raw_execute(sprintf('
+      UPDATE %s
+        JOIN wp_usermeta ON %s.wp_user_id = wp_usermeta.user_id AND meta_key = "first_name"
+      SET first_name = meta_value
+        WHERE %s.first_name = ""
+        AND %s.wp_user_id IS NOT NULL
+    ', $subscribers_table, $subscribers_table, $subscribers_table, $subscribers_table));
+  }
+
+  private static function updateLastNames() {
+    $subscribers_table = Subscriber::$_table;
+    Subscriber::raw_execute(sprintf('
+      UPDATE %s
+        JOIN wp_usermeta ON %s.wp_user_id = wp_usermeta.user_id AND meta_key = "last_name"
+      SET last_name = meta_value
+        WHERE %s.last_name = ""
+        AND %s.wp_user_id IS NOT NULL
+    ', $subscribers_table, $subscribers_table, $subscribers_table, $subscribers_table));
+  }
+
+  private static function updateFristNameIfMissing() {
+    $subscribers_table = Subscriber::$_table;
+    Subscriber::raw_execute(sprintf('
+      UPDATE %s
+        JOIN wp_users ON %s.wp_user_id = wp_users.id
+      SET first_name = display_name
+        WHERE %s.first_name = ""
+        AND %s.wp_user_id IS NOT NULL
+    ', $subscribers_table, $subscribers_table, $subscribers_table, $subscribers_table));
+  }
+
+  private static function insertUsersToSegment($wp_segment) {
+    $subscribers_table = Subscriber::$_table;
+    $wp_mailpoet_subscriber_segment_table = SubscriberSegment::$_table;
+    Subscriber::raw_execute(sprintf('
+     INSERT IGNORE INTO %s(subscriber_id, segment_id, created_at)
+      SELECT mps.id, "%s", CURRENT_TIMESTAMP() FROM %s mps
+        WHERE mps.wp_user_id IS NOT NULL
+    ', $wp_mailpoet_subscriber_segment_table, $wp_segment->id, $subscribers_table));
+  }
+
+  private static function removeFromTrash() {
+    $subscribers_table = Subscriber::$_table;
+    Subscriber::raw_execute(sprintf('
+      UPDATE %s       
+      SET deleted_at = NULL
+        WHERE %s.wp_user_id IS NOT NULL
+    ', $subscribers_table, $subscribers_table));
   }
 }
 
