@@ -81,17 +81,60 @@ class WP {
   static function synchronizeUsers() {
     // get wordpress users list
     $wp_segment = Segment::getWPSegment();
+    $s = microtime(true);
+
+    // insert all wordpress users from wp table
+    Subscriber::raw_execute('
+      INSERT IGNORE INTO wp_mailpoet_subscribers(wp_user_id, email, status, created_at)
+        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM wp_users wu
+          LEFT JOIN wp_mailpoet_subscribers mps ON wu.id = mps.wp_user_id
+          WHERE mps.wp_user_id IS NULL
+    ');
+
+    // update first name
+    Subscriber::raw_execute('
+      UPDATE wp_mailpoet_subscribers
+        JOIN wp_usermeta ON wp_mailpoet_subscribers.wp_user_id = wp_usermeta.user_id AND meta_key = "first_name"
+      SET first_name = meta_value
+        WHERE wp_mailpoet_subscribers.first_name = ""
+        AND wp_mailpoet_subscribers.wp_user_id IS NOT NULL
+    ');
+
+    // update last name
+    Subscriber::raw_execute('
+      UPDATE wp_mailpoet_subscribers
+        JOIN wp_usermeta ON wp_mailpoet_subscribers.wp_user_id = wp_usermeta.user_id AND meta_key = "last_name"
+      SET last_name = meta_value
+        WHERE wp_mailpoet_subscribers.last_name = ""
+        AND wp_mailpoet_subscribers.wp_user_id IS NOT NULL
+    ');
+
+    // use display name if first name is missing
+    Subscriber::raw_execute('
+      UPDATE wp_mailpoet_subscribers
+        JOIN wp_users ON wp_mailpoet_subscribers.wp_user_id = wp_users.id
+      SET first_name = display_name
+        WHERE wp_mailpoet_subscribers.first_name = ""
+        AND wp_mailpoet_subscribers.wp_user_id IS NOT NULL
+    ');
+
+    // insert users to the wp users list
+    Subscriber::raw_execute(sprintf('
+     INSERT IGNORE INTO wp_mailpoet_subscriber_segment(subscriber_id, segment_id, created_at)
+      SELECT mps.id, "%s", CURRENT_TIMESTAMP() FROM wp_mailpoet_subscribers mps
+        WHERE mps.wp_user_id IS NOT NULL
+    ', $wp_segment->id));
+
+    $e = microtime(true) - $s;
+
+    file_put_contents('/tmp/whole', $e);
+    $s = microtime(true);
 
     // fetch all wp users id
     $wp_users = \get_users(array(
       'count_total'  => false,
       'fields' => 'ID'
     ));
-
-    // update data for each wp user
-    foreach($wp_users as $wp_user_id) {
-      static::synchronizeUser($wp_user_id);
-    }
 
     // remove orphaned wp segment subscribers (not having a matching wp user id),
     // e.g. if wp users were deleted directly from the database
@@ -100,7 +143,11 @@ class WP {
       ->findResultSet()
       ->set('wp_user_id', null)
       ->delete();
+    $e = microtime(true) - $s;
+
+    file_put_contents('/tmp/whole-e', $e);
 
     return true;
   }
 }
+
