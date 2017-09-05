@@ -1,12 +1,13 @@
 <?php
+
 namespace MailPoet\Test\API\JSON\v1;
 
 use Carbon\Carbon;
 use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
-use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\API\JSON\Response as APIResponse;
+use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -745,6 +746,17 @@ class NewslettersTest extends \MailPoetTest {
     $router = new Newsletters();
     $response = $router->sendPreview($data);
     expect($response->errors[0]['message'])->equals('The email could not be sent: failed');
+  }
+
+  function testItReturnsBrowserPreviewUrlWithoutProtocol() {
+    $data = array(
+      'id' => $this->newsletter->id,
+      'body' => 'fake body'
+    );
+    $router = new Newsletters();
+    $response = $router->showPreview($data);
+    expect($response->meta['preview_url'])->notContains('http');
+    expect($response->meta['preview_url'])->regExp('!^\/\/!');
   }
 
   function testItGeneratesPreviewLinksWithNewsletterHashAndNoSubscriberData() {
