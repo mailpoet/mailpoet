@@ -172,7 +172,7 @@ class Migrator {
       'deleted_at TIMESTAMP NULL,',
       'unconfirmed_data longtext,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY email (email)',
+      'UNIQUE KEY email (email),',
       'KEY wp_user_id (wp_user_id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
