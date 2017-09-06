@@ -1,7 +1,7 @@
 import React from 'react';
-import Listing from 'listing/listing.jsx';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
+import Listing from '../listing/listing.jsx';
 
 const columns = [
   {

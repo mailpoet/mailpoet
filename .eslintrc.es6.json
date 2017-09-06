@@ -10,6 +10,9 @@
       "jsx": true
     }
   },
+  "settings": {
+    "import/resolver": "webpack"
+  },
   "rules": {
     "comma-dangle": ["error", "always-multiline"],
     "import/no-amd": 0,
@@ -43,7 +46,6 @@
     "default-case": 0,
     "array-callback-return": 0,
     "consistent-return": 0,
-    "import/no-unresolved": 0,
     "import/extensions": 0,
     "import/no-extraneous-dependencies": 0,
     "camelcase": 0,
