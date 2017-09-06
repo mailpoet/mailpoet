@@ -1,3 +1,6 @@
+const expect = global.expect;
+const sinon = global.sinon;
+
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/button'

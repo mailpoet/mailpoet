@@ -2,6 +2,7 @@ var chai = require('chai');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
 var chaiJq = require('chai-jq');
+var _ = require('underscore');
 
 chai.use(sinonChai);
 chai.use(chaiJq);
@@ -26,13 +27,16 @@ if (!global.document || !global.window) {
     return this.compareDocumentPosition(node) & 16;
   };
 }
+const testHelpers = require('./loadHelpers.js');
+global.testHelpers = testHelpers;
+const jQuery = require('jquery');
+global.$ = jQuery;
+global.jQuery = jQuery;
+global.window.jQuery = jQuery;
 
-global.testHelpers = require('./loadHelpers.js');
-global.$ = require('jquery');
-global.jQuery = require('jquery');
-global.window.jQuery = require('jquery');
 
 testHelpers.loadScript('tests/javascript/testBundles/vendor.js', global.window);
+const Handlebars = global.window.Handlebars;
 global.Handlebars = global.window.Handlebars;
 
 // Stub out interact.js
@@ -67,11 +71,11 @@ global.stubChannel = function (EditorApplication, returnObject) {
 };
 global.stubConfig = function (EditorApplication, opts) {
   var App = EditorApplication;
-  App.getConfig = sinon.stub().returns(new Backbone.SuperModel(opts || {}));
+  App.getConfig = sinon.stub().returns(new global.Backbone.SuperModel(opts || {}));
 };
 global.stubAvailableStyles = function (EditorApplication, styles) {
   var App = EditorApplication;
-  App.getAvailableStyles = sinon.stub().returns(new Backbone.SuperModel(styles || {}));
+  App.getAvailableStyles = sinon.stub().returns(new global.Backbone.SuperModel(styles || {}));
 };
 
 global.stubImage = function(defaultWidth, defaultHeight) {

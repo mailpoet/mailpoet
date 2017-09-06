@@ -1,3 +1,8 @@
+const expect = global.expect;
+const sinon = global.sinon;
+const Backbone = global.Backbone;
+const jQuery = global.jQuery;
+
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/automatedLatestContent',
