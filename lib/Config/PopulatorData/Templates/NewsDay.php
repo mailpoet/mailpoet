@@ -15,7 +15,7 @@ class NewsDay {
   function get() {
     return array(
       'name' => __("News Day", 'mailpoet'),
-      'description' => __("Media ready template. ", 'mailpoet'),
+      'description' => __("Media ready template.", 'mailpoet'),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
