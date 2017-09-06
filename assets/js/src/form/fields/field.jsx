@@ -7,6 +7,7 @@ define([
   'form/fields/checkbox.jsx',
   'form/fields/selection.jsx',
   'form/fields/date.jsx',
+  'jquery',
 ],
 (
   React,
@@ -16,7 +17,8 @@ define([
   FormFieldRadio,
   FormFieldCheckbox,
   FormFieldSelection,
-  FormFieldDate
+  FormFieldDate,
+  jQuery
 ) => {
   const FormField = React.createClass({
     renderField: function (data, inline = false) {

@@ -5,13 +5,15 @@ define(
     'classnames',
     'react-router',
     'form/fields/field.jsx',
+    'jquery',
   ],
   (
     React,
     MailPoet,
     classNames,
     Router,
-    FormField
+    FormField,
+    jQuery
   ) => {
 
     const Form = React.createClass({

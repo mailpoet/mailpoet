@@ -10,6 +10,7 @@ define(
     'newsletters/send/welcome.jsx',
     'newsletters/breadcrumb.jsx',
     'help-tooltip.jsx',
+    'jquery',
   ],
   (
     React,
@@ -21,7 +22,8 @@ define(
     NotificationNewsletterFields,
     WelcomeNewsletterFields,
     Breadcrumb,
-    HelpTooltip
+    HelpTooltip,
+    jQuery
   ) => {
 
     const NewsletterSend = React.createClass({

@@ -317,7 +317,7 @@ const NewsletterListNotification = React.createClass({
         <ListingTabs tab="notification" />
 
         <Listing
-          limit={ mailpoet_listing_per_page }
+          limit={ window.mailpoet_listing_per_page }
           location={ this.props.location }
           params={ this.props.params }
           endpoint="newsletters"

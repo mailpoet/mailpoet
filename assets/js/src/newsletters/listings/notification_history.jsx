@@ -110,7 +110,7 @@ const NewsletterListNotificationHistory = React.createClass({
         >{MailPoet.I18n.t('backToPostNotifications')}</Link>
 
         <Listing
-          limit={ mailpoet_listing_per_page }
+          limit={ window.mailpoet_listing_per_page }
           location={ this.props.location }
           params={ this.props.params }
           endpoint="newsletters"

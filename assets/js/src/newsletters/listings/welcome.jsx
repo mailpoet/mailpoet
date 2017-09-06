@@ -295,7 +295,7 @@ const NewsletterListWelcome = React.createClass({
         <ListingTabs tab="welcome" />
 
         <Listing
-          limit={ mailpoet_listing_per_page }
+          limit={ window.mailpoet_listing_per_page }
           location={ this.props.location }
           params={ this.props.params }
           endpoint="newsletters"

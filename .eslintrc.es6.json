@@ -77,7 +77,6 @@
     "space-infix-ops": 0,
     "no-irregular-whitespace": 0,
     "padded-blocks": 0,
-    "no-underscore-dangle": 0,
-    "no-undef": 0
+    "no-underscore-dangle": 0
   }
 }
