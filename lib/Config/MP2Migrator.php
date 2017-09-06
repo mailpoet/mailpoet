@@ -148,7 +148,7 @@ class MP2Migrator {
     }
     ob_start();
     $datetime = new \MailPoet\WP\DateTime();
-    $this->log(sprintf('=== ' . strtoupper(__('Start import', 'mailpoet')) . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
+    $this->log(sprintf('=== ' . mb_strtoupper(__('Start import', 'mailpoet'), 'UTF-8') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     Setting::setValue('import_stopped', false); // Reset the stop import action
 
     if(!Setting::getValue('mailpoet_migration_started', false)) {
@@ -165,10 +165,10 @@ class MP2Migrator {
 
     if(!$this->importStopped()) {
       Setting::setValue('mailpoet_migration_complete', true);
-      $this->log(strtoupper(__('Import complete', 'mailpoet')));
+      $this->log(mb_strtoupper(__('Import complete', 'mailpoet'), 'UTF-8'));
     }
 
-    $this->log(sprintf('=== ' . strtoupper(__('End import', 'mailpoet')) . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
+    $this->log(sprintf('=== ' . mb_strtoupper(__('End import', 'mailpoet'), 'UTF-8') . ' %s ===', $datetime->formatTime(time(), \MailPoet\WP\DateTime::DEFAULT_DATE_TIME_FORMAT)));
     $result = ob_get_contents();
     ob_clean();
     return $result;
@@ -223,7 +223,7 @@ class MP2Migrator {
    */
   public function stopImport() {
     Setting::setValue('import_stopped', true);
-    $this->log(strtoupper(__('Import stopped by user', 'mailpoet')));
+    $this->log(mb_strtoupper(__('Import stopped by user', 'mailpoet'), 'UTF-8'));
   }
 
   /**
@@ -486,7 +486,7 @@ class MP2Migrator {
           break;
 
         default:
-          $params['date_format'] = strtoupper($params['date_order']);
+          $params['date_format'] = mb_strtoupper($params['date_order'], 'UTF-8');
       }
       unset($params['date_order']);
     }
