@@ -107,56 +107,61 @@ class WP {
   }
 
   private static function updateSubscribersEmails() {
+    global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE IGNORE %s
-        JOIN wp_users ON %s.wp_user_id = wp_users.id
+        JOIN %susers as wu ON %s.wp_user_id = wu.id
       SET email = user_email
         WHERE %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $subscribers_table, $subscribers_table));
+    ', $subscribers_table, $wpdb->prefix, $subscribers_table, $subscribers_table));
   }
 
   private static function insertSubscribers() {
+    global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       INSERT IGNORE INTO %s(wp_user_id, email, status, created_at)
-        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM wp_users wu
+        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM %susers wu
           LEFT JOIN %s mps ON wu.id = mps.wp_user_id
           WHERE mps.wp_user_id IS NULL
-    ', $subscribers_table, $subscribers_table));
+    ', $subscribers_table, $wpdb->prefix, $subscribers_table));
   }
 
   private static function updateFirstNames() {
+    global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE %s
-        JOIN wp_usermeta ON %s.wp_user_id = wp_usermeta.user_id AND meta_key = "first_name"
+        JOIN %susermeta as wpum ON %s.wp_user_id = wpum.user_id AND meta_key = "first_name"
       SET first_name = meta_value
         WHERE %s.first_name = ""
         AND %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $subscribers_table, $subscribers_table, $subscribers_table));
+    ', $subscribers_table, $wpdb->prefix, $subscribers_table, $subscribers_table, $subscribers_table));
   }
 
   private static function updateLastNames() {
+    global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE %s
-        JOIN wp_usermeta ON %s.wp_user_id = wp_usermeta.user_id AND meta_key = "last_name"
+        JOIN %susermeta as wpum ON %s.wp_user_id = wpum.user_id AND meta_key = "last_name"
       SET last_name = meta_value
         WHERE %s.last_name = ""
         AND %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $subscribers_table, $subscribers_table, $subscribers_table));
+    ', $subscribers_table, $wpdb->prefix, $subscribers_table, $subscribers_table, $subscribers_table));
   }
 
   private static function updateFristNameIfMissing() {
+    global $wpdb;
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE %s
-        JOIN wp_users ON %s.wp_user_id = wp_users.id
+        JOIN %susers wu ON %s.wp_user_id = wu.id
       SET first_name = display_name
         WHERE %s.first_name = ""
         AND %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $subscribers_table, $subscribers_table, $subscribers_table));
+    ', $subscribers_table, $wpdb->prefix, $subscribers_table, $subscribers_table, $subscribers_table));
   }
 
   private static function insertUsersToSegment($wp_segment) {
