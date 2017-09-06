@@ -114,7 +114,6 @@ define('modal', ['mailpoet', 'jquery'],
         } else {
           return window.Handlebars.compile(template);
         }
-        return false;
       },
       init: function(options) {
         if(this.initialized === true) {
