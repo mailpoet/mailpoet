@@ -114,7 +114,13 @@ var Observable = (function() {
       if(!this.handlers) this.handlers = {};
       if(this.handlers[selector]) return;
       var klass = this;
-      if(this.prototype.onDomLoaded) document.loaded ? onDomLoad(selector, klass) : document.observe('dom:loaded', onDomLoad.curry(selector, klass));
+      if(this.prototype.onDomLoaded) {
+        if(document.loaded) {
+          onDomLoad(selector, klass);
+        } else {
+          document.observe('dom:loaded', onDomLoad.curry(selector, klass));
+        }
+      }
       this.handlers[selector] = getHandlers(klass).each(function(handler) {
         document.delegate(selector, handler.key, handler.value);
       });
