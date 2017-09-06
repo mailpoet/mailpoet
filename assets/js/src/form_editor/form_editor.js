@@ -486,7 +486,7 @@ var WysijaForm = {
       // get parent dimensions and position
       var parentDim = element.up('.mailpoet_form_block').getDimensions(),
         parentPos = element.up('.mailpoet_form_block').cumulativeOffset(),
-        is_visible = (parentPos.top <= (WysijaForm.scroll.top + viewportHeight)) ? true : false,
+        is_visible = (parentPos.top <= (WysijaForm.scroll.top + viewportHeight)),
         buttonMargin = 5,
         relativeTop = buttonMargin;
 

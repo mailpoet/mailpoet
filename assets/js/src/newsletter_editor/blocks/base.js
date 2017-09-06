@@ -275,7 +275,7 @@ define([
       this.model.set(field, jQuery(event.target).val() + suffix);
     },
     changeBoolField: function(field, event) {
-      this.model.set(field, (jQuery(event.target).val() === 'true') ? true : false);
+      this.model.set(field, (jQuery(event.target).val() === 'true'));
     },
     changeBoolCheckboxField: function(field, event) {
       this.model.set(field, (!!jQuery(event.target).prop('checked')));

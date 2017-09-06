@@ -1020,7 +1020,7 @@ define(
                     subscribers: subscribers[batchNumber],
                     timestamp: timestamp,
                     segments: segmentSelectElement.val(),
-                    updateSubscribers: (jQuery(':radio[name="subscriber_update_option"]:checked').val() === 'yes') ? true : false
+                    updateSubscribers: (jQuery(':radio[name="subscriber_update_option"]:checked').val() === 'yes')
                   })
                 }).done(function(response) {
                   importResults.created += response.data.created;
