@@ -132,7 +132,7 @@ class SimpleText {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<p>Thanks for reading. See you soon!</p>\n<p></p>\n<p><strong><em>The MailPoet Team</em></strong></p>", 'mailpoet')
+                    "text" => __("<p>Thanks for reading. See you soon!</p>\n<p>&nbsp;</p>\n<p><strong><em>The MailPoet Team</em></strong></p>", 'mailpoet')
                   ),
                   array(
                     "type" => "footer",

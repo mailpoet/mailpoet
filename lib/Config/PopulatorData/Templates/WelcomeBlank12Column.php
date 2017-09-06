@@ -117,7 +117,7 @@ class WelcomeBlank12Column {
                   ),
                   array(
                     "type" => "text",
-                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p></p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p></p>\n<p>You recently joined our list and we'd like to give you a warm welcome!</p>", 'mailpoet')
+                    "text" => __("<h1 style=\"text-align: center;\"><strong>Hi, new subscriber!</strong></h1>\n<p>&nbsp;</p>\n<p>[subscriber:firstname | default:Subscriber],</p>\n<p>&nbsp;</p>\n<p>You recently joined our list and we'd like to give you a warm welcome!</p>", 'mailpoet')
                   ),
                   array(
                     "type" => "divider",

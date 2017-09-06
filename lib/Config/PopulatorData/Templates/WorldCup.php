@@ -15,7 +15,7 @@ class WorldCup {
   function get() {
     return array(
       'name' => __("World Cup", 'mailpoet'),
-      'description' => __("Always a winner. ", 'mailpoet'),
+      'description' => __("Always a winner.", 'mailpoet'),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
       'body' => json_encode($this->getBody()),
