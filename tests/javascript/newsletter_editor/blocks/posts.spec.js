@@ -254,8 +254,8 @@ define([
         stub.restore();
         spy.restore();
 
-        expect(spy.withArgs('loadingMorePosts').calledOnce).to.be.true;
-        expect(spy.withArgs('morePostsLoaded').calledOnce).to.be.true;
+        expect(spy.withArgs('loadingMorePosts').calledOnce).to.be.true;// eslint-disable-line no-unused-expressions
+        expect(spy.withArgs('morePostsLoaded').calledOnce).to.be.true;// eslint-disable-line no-unused-expressions
         expect(model.get('_availablePosts').length).to.equal(3);
       });
     });

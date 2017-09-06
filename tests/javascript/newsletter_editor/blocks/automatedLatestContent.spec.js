@@ -307,7 +307,7 @@ define([
       });
 
       it('listens to the event', function () {
-        expect(onStub).to.have.been.calledOnce;
+        expect(onStub).to.have.been.callCount(1);
         expect(onStub).to.have.been.calledWith('replaceAllButtonStyles', sinon.match.func);
       });
 
@@ -321,7 +321,7 @@ define([
           }
         };
         callback(data);
-        expect(model.set).to.have.been.calledOnce;
+        expect(model.set).to.have.been.callCount(1);
         expect(model.set).to.have.been.calledWithMatch(sinon.match.has('readMoreButton', data));
       });
     });
