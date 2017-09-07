@@ -346,8 +346,8 @@ const _MailerMixin = {
         <p>{ mailer_check_settings_notice }</p>
         <p>
           <a href="javascript:;"
-             className="button"
-             onClick={ this.resumeMailerSending }
+            className="button"
+            onClick={ this.resumeMailerSending }
           >{ MailPoet.I18n.t('mailerResumeSendingButton') }</a>
         </p>
       </div>

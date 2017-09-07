@@ -18,7 +18,6 @@
     "react/jsx-max-props-per-line": 0,
     "react/prop-types": 0,
     "react/jsx-first-prop-new-line": 0,
-    "react/jsx-indent-props": 0,
     "react/no-is-mounted": 0,
     "react/jsx-no-target-blank": 0,
     "react/no-render-return-value": 0,

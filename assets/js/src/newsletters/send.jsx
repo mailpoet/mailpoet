@@ -301,17 +301,17 @@ define(
                 {
                   isPaused ?
                   <input
-                  className="button button-primary"
-                  type="button"
-                  onClick={ this.handleResume }
-                  value={MailPoet.I18n.t('resume')} />
+                    className="button button-primary"
+                    type="button"
+                    onClick={ this.handleResume }
+                    value={MailPoet.I18n.t('resume')} />
                   :
                   <input
-                  className="button button-primary"
-                  type="button"
-                  onClick={ this.handleSend }
-                  value={MailPoet.I18n.t('send')}
-                  {...this.getSendButtonOptions()}
+                    className="button button-primary"
+                    type="button"
+                    onClick={ this.handleSend }
+                    value={MailPoet.I18n.t('send')}
+                    {...this.getSendButtonOptions()}
                   />
                 }
                 &nbsp;
