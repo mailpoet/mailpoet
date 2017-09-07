@@ -110,10 +110,10 @@ jQuery(function($) {
           data: {
             analytics: { enabled: (is_enabled)}
           }
-        }).fail((response) => {
+        }).fail(function(response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
-              response.errors.map((error) => { return error.message; }),
+              response.errors.map(function(error) { return error.message; }),
               { scroll: true }
             );
           }
