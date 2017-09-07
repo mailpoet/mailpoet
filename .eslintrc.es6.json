@@ -22,7 +22,6 @@
     "react/jsx-no-target-blank": 0,
     "react/no-render-return-value": 0,
     "react/jsx-boolean-value": 0,
-    "react/jsx-indent": 0,
     "react/jsx-no-bind": 0,
     "react/no-array-index-key": 0,
     "react/self-closing-comp": 0,

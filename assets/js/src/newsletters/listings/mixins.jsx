@@ -126,13 +126,13 @@ const _QueueMixin = {
       return (
         <div>
           <div className={ progressClasses }>
-              <span
-                className="mailpoet_progress_bar"
-                style={ { width: progress_bar_width + '%' } }
+            <span
+              className="mailpoet_progress_bar"
+              style={ { width: progress_bar_width + '%' } }
               ></span>
-              <span className="mailpoet_progress_label">
-                { percentage }
-              </span>
+            <span className="mailpoet_progress_label">
+              { percentage }
+            </span>
           </div>
           <p style={{ textAlign:'center' }}>
             { label }

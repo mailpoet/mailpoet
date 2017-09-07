@@ -244,24 +244,24 @@ define(
               </div>
 
               <div className="mailpoet_description">
-                  <h3>{ template.name }</h3>
-                  <p>{ template.description }</p>
+                <h3>{ template.name }</h3>
+                <p>{ template.description }</p>
               </div>
 
               <div className="mailpoet_actions">
-                  <a
-                    className="button button-secondary"
-                    onClick={ this.handleShowTemplate.bind(null, template) }
+                <a
+                  className="button button-secondary"
+                  onClick={ this.handleShowTemplate.bind(null, template) }
                   >
-                    {MailPoet.I18n.t('preview')}
-                  </a>
+                  {MailPoet.I18n.t('preview')}
+                </a>
                   &nbsp;
-                  <a
-                    className="button button-primary"
-                    onClick={ this.handleSelectTemplate.bind(null, template) }
+                <a
+                  className="button button-primary"
+                  onClick={ this.handleSelectTemplate.bind(null, template) }
                   >
-                    {MailPoet.I18n.t('select')}
-                  </a>
+                  {MailPoet.I18n.t('select')}
+                </a>
               </div>
               { (template.readonly === '1') ? false : deleteLink }
             </li>

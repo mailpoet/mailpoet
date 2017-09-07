@@ -34,15 +34,15 @@ function Tooltip(props) {
         data-for={tooltipId}
       >
       </span>
-        <ReactTooltip
-          globalEventOff="click"
-          multiline={true}
-          id={tooltipId}
-          efect="solid"
-          place={props.place}
+      <ReactTooltip
+        globalEventOff="click"
+        multiline={true}
+        id={tooltipId}
+        efect="solid"
+        place={props.place}
         >
-          {tooltip}
-        </ReactTooltip>
+        {tooltip}
+      </ReactTooltip>
     </span>
   );
 }
