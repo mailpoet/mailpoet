@@ -18,7 +18,11 @@ define([
       this.view.$('.mailpoet_color').each(function () {
         var $input = that.view.$(this);
         var updateColorInput = function(color) {
-          $input.val(color.toString(preferredFormat));
+          if(color && color.getAlpha() > 0) {
+            $input.val(color.toString(preferredFormat));
+          } else {
+            $input.val('');
+          }
           $input.trigger('change');
         };
         $input.spectrum({
@@ -33,6 +37,7 @@ define([
           allowEmpty: true,
           chooseText: MailPoet.I18n.t('selectColor'),
           cancelText: MailPoet.I18n.t('cancelColorSelection'),
+          change: updateColorInput,
           move: updateColorInput,
           hide: updateColorInput
         });
