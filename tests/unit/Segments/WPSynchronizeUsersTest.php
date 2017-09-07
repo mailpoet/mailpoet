@@ -34,7 +34,7 @@ class WPSynchronizeUsersTest extends \MailPoetTest  {
   function testItSynchronizeEmails() {
     $id = $this->insertUser();
     WP::synchronizeUsers();
-    $this->updateWPUserEmail($id,'user-sync-test-xx@email.com');
+    $this->updateWPUserEmail($id, 'user-sync-test-xx@email.com');
     WP::synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
     expect($subscriber->email)->equals('user-sync-test-xx@email.com');
@@ -118,9 +118,13 @@ class WPSynchronizeUsersTest extends \MailPoetTest  {
     $db = \ORM::getDb();
     $db->exec(sprintf('
          INSERT INTO 
-           %susers(user_login, user_email) 
+           %susers(user_login, user_email, user_registered) 
            VALUES 
-           (CONCAT("user-sync-test", rand()), CONCAT("user", rand(), "@example.com"))', $wpdb->prefix));
+           (
+             CONCAT("user-sync-test", rand()), 
+             CONCAT("user", rand(), "@example.com"),
+             "2017-01-02 12:31:12"
+           )', $wpdb->prefix));
     $id = $db->lastInsertId();
     $this->userIds[] = $id;
     return $id;
