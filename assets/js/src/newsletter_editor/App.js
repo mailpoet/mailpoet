@@ -1,12 +1,12 @@
 define([
-    'backbone',
-    'backbone.marionette',
-    'backbone.radio',
-    'jquery',
-    'underscore',
-    'handlebars',
-    'handlebars_helpers'
-  ], function(Backbone, Marionette, BackboneRadio, jQuery, _, Handlebars) {
+  'backbone',
+  'backbone.marionette',
+  'backbone.radio',
+  'jquery',
+  'underscore',
+  'handlebars',
+  'handlebars_helpers'
+], function(Backbone, Marionette, BackboneRadio, jQuery, _, Handlebars) {
   var Radio = BackboneRadio;
 
   var AppView = Marionette.View.extend({

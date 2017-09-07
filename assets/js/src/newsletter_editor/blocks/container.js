@@ -4,19 +4,19 @@
  * as other containers.
  */
 define([
-    'backbone',
-    'backbone.marionette',
-    'underscore',
-    'jquery',
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/base'
-  ], function(Backbone, Marionette, _, jQuery, App, BaseBlock) {
+  'backbone',
+  'backbone.marionette',
+  'underscore',
+  'jquery',
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/base'
+], function(Backbone, Marionette, _, jQuery, App, BaseBlock) {
 
   'use strict';
 
   var Module = {},
-      base = BaseBlock,
-      BlockCollection;
+    base = BaseBlock,
+    BlockCollection;
 
   BlockCollection = Backbone.Collection.extend({
     model: base.BlockModel,

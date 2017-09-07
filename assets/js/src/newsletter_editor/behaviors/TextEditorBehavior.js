@@ -4,10 +4,10 @@
  * Adds TinyMCE text editing capabilities to a view
  */
 define([
-    'backbone.marionette',
-    'underscore',
-    'newsletter_editor/behaviors/BehaviorsLookup'
-  ], function(Marionette, _, BehaviorsLookup) {
+  'backbone.marionette',
+  'underscore',
+  'newsletter_editor/behaviors/BehaviorsLookup'
+], function(Marionette, _, BehaviorsLookup) {
   var BL = BehaviorsLookup;
 
   BL.TextEditorBehavior = Marionette.Behavior.extend({
@@ -73,7 +73,7 @@ define([
 
           editor.on('focus', function(e) {
             that.view.triggerMethod('text:editor:focus');
-              that._isActivationClick = true;
+            that._isActivationClick = true;
           });
 
           editor.on('blur', function(e) {

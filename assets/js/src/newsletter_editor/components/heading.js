@@ -1,10 +1,10 @@
 define([
-    'newsletter_editor/App',
-    'backbone',
-    'backbone.marionette',
-    'underscore',
-    'jquery'
-  ], function(App, Backbone, Marionette, _, jQuery) {
+  'newsletter_editor/App',
+  'backbone',
+  'backbone.marionette',
+  'underscore',
+  'jquery'
+], function(App, Backbone, Marionette, _, jQuery) {
 
   'use strict';
 

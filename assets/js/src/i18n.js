@@ -4,22 +4,22 @@ define('i18n',
   ], function(
     mp
 ) {
-  'use strict';
+    'use strict';
 
-  var MailPoet = mp;
+    var MailPoet = mp;
 
-  var translations = {};
+    var translations = {};
 
-  MailPoet.I18n = {
-    add: function(key, value) {
-      translations[key] = value;
-    },
-    t: function(key) {
-      return translations[key] || 'TRANSLATION "%$1s" NOT FOUND'.replace('%$1s', key);
-    },
-    all: function() {
-      return translations;
-    }
-  };
+    MailPoet.I18n = {
+      add: function(key, value) {
+        translations[key] = value;
+      },
+      t: function(key) {
+        return translations[key] || 'TRANSLATION "%$1s" NOT FOUND'.replace('%$1s', key);
+      },
+      all: function() {
+        return translations;
+      }
+    };
 
-});
+  });

@@ -1,6 +1,6 @@
 define('admin', [
-    'jquery'
-  ],
+  'jquery'
+],
   function(jQuery) {
     jQuery(function($) {
       // dom ready

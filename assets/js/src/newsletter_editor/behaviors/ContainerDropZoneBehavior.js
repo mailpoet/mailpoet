@@ -6,12 +6,12 @@
  * accept droppables
  */
 define([
-    'backbone.marionette',
-    'underscore',
-    'jquery',
-    'newsletter_editor/behaviors/BehaviorsLookup',
-    'interact'
-  ], function(Marionette, _, jQuery, BL, interact) {
+  'backbone.marionette',
+  'underscore',
+  'jquery',
+  'newsletter_editor/behaviors/BehaviorsLookup',
+  'interact'
+], function(Marionette, _, jQuery, BL, interact) {
   var BehaviorsLookup = BL;
 
   BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
@@ -21,7 +21,7 @@ define([
     onRender: function() {
       var dragAndDropDisabled = _.isObject(this.view.options.renderOptions) && this.view.options.renderOptions.disableDragAndDrop === true;
       if (!dragAndDropDisabled) {
-          this.addDropZone();
+        this.addDropZone();
       }
     },
     addDropZone: function(_event) {
@@ -196,7 +196,7 @@ define([
             if (view.model.get('orientation') === 'horizontal' && droppableModel.get('type') !== 'container') {
               // Regular blocks always need to be inserted into columns - vertical containers
               tempCollection = new (EditorApplication.getBlockTypeModel('container'))({
-                  orientation: 'vertical'
+                orientation: 'vertical'
               });
               tempCollection.get('blocks').add(droppableModel);
               viewCollection.add(tempCollection, {at: index});
@@ -211,7 +211,7 @@ define([
             var tempModel = viewCollection.at(dropPosition.index);
 
             tempCollection = new (EditorApplication.getBlockTypeModel('container'))({
-                orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical'
+              orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical'
             });
 
             viewCollection.remove(tempModel);
@@ -377,14 +377,14 @@ define([
       if (eventOffset <= closeOffset + elementDimension / 2) {
         // First half of the element
         return {
-            index: index,
-            position: 'before'
+          index: index,
+          position: 'before'
         };
       } else {
         // Second half of the element
         return {
-            index: index,
-            position: 'after'
+          index: index,
+          position: 'after'
         };
       }
     },

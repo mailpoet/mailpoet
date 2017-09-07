@@ -5,8 +5,8 @@
  * For more check: http://marionettejs.com/docs/marionette.behaviors.html#behaviorslookup
  */
 define([
-    'backbone.marionette'
-  ], function(BackboneMarionette) {
+  'backbone.marionette'
+], function(BackboneMarionette) {
   var Marionette = BackboneMarionette;
   var BehaviorsLookup = {};
   Marionette.Behaviors.behaviorsLookup = function() {

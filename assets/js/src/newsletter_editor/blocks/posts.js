@@ -11,36 +11,36 @@
  * block settings view.
  */
 define([
-    'backbone',
-    'backbone.marionette',
-    'backbone.radio',
-    'underscore',
-    'jquery',
-    'mailpoet',
-    'newsletter_editor/App',
-    'newsletter_editor/components/communication',
-    'newsletter_editor/blocks/base',
-    'newsletter_editor/blocks/button',
-    'newsletter_editor/blocks/divider',
-    'select2'
-  ], function(
-    Backbone,
-    Marionette,
-    Radio,
-    _,
-    jQuery,
-    MailPoet,
-    App,
-    CommunicationComponent,
-    BaseBlock,
-    ButtonBlock,
-    DividerBlock
+  'backbone',
+  'backbone.marionette',
+  'backbone.radio',
+  'underscore',
+  'jquery',
+  'mailpoet',
+  'newsletter_editor/App',
+  'newsletter_editor/components/communication',
+  'newsletter_editor/blocks/base',
+  'newsletter_editor/blocks/button',
+  'newsletter_editor/blocks/divider',
+  'select2'
+], function(
+  Backbone,
+  Marionette,
+  Radio,
+  _,
+  jQuery,
+  MailPoet,
+  App,
+  CommunicationComponent,
+  BaseBlock,
+  ButtonBlock,
+  DividerBlock
   ) {
 
   'use strict';
 
   var Module = {},
-      base = BaseBlock;
+    base = BaseBlock;
 
   Module.PostsBlockModel = base.BlockModel.extend({
     stale: ['_selectedPosts', '_availablePosts', '_transformedPosts'],
@@ -414,7 +414,7 @@ define([
     },
     _updateContentTypes: function(postTypes) {
       var select = this.$('.mailpoet_settings_posts_content_type'),
-          selectedValue = this.model.get('contentType');
+        selectedValue = this.model.get('contentType');
 
       select.find('option').remove();
       _.each(postTypes, function(type) {

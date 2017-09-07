@@ -2,17 +2,17 @@
  * Button content block
  */
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/base',
-    'mailpoet',
-    'underscore',
-    'jquery'
-  ], function(App, BaseBlock, MailPoet, _, jQuery) {
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/base',
+  'mailpoet',
+  'underscore',
+  'jquery'
+], function(App, BaseBlock, MailPoet, _, jQuery) {
 
   'use strict';
 
   var Module = {},
-      base = BaseBlock;
+    base = BaseBlock;
 
   Module.ButtonBlockModel = base.BlockModel.extend({
     defaults: function() {

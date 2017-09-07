@@ -4,10 +4,10 @@
  * Allows resizing elements within a block
  */
 define([
-    'backbone.marionette',
-    'newsletter_editor/behaviors/BehaviorsLookup',
-    'interact'
-  ], function(Marionette, BehaviorsLookup, interact) {
+  'backbone.marionette',
+  'newsletter_editor/behaviors/BehaviorsLookup',
+  'interact'
+], function(Marionette, BehaviorsLookup, interact) {
   var BL = BehaviorsLookup;
 
   BL.ResizableBehavior = Marionette.Behavior.extend({
@@ -31,7 +31,7 @@ define([
     },
     attachResize: function() {
       var domElement = (this.options.elementSelector === null) ? this.view.$el.get(0) : this.view.$(this.options.elementSelector).get(0),
-          that = this;
+        that = this;
       interact(domElement).resizable({
         //axis: 'y',
         edges: {

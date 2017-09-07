@@ -4,10 +4,10 @@
  * Allows sorting elements within a collection
  */
 define([
-    'backbone.marionette',
-    'underscore',
-    'newsletter_editor/behaviors/BehaviorsLookup'
-  ], function(Marionette, _, BehaviorsLookup) {
+  'backbone.marionette',
+  'underscore',
+  'newsletter_editor/behaviors/BehaviorsLookup'
+], function(Marionette, _, BehaviorsLookup) {
   var BL = BehaviorsLookup;
 
   BL.SortableBehavior = Marionette.Behavior.extend({

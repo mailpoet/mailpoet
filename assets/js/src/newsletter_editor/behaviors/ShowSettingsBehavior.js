@@ -4,10 +4,10 @@
  * Opens up settings of a BlockView if contents are clicked upon
  */
 define([
-    'backbone.marionette',
-    'jquery',
-    'newsletter_editor/behaviors/BehaviorsLookup'
-  ], function(Marionette, jQuery, BehaviorsLookup) {
+  'backbone.marionette',
+  'jquery',
+  'newsletter_editor/behaviors/BehaviorsLookup'
+], function(Marionette, jQuery, BehaviorsLookup) {
   var BL = BehaviorsLookup;
 
   BL.ShowSettingsBehavior = Marionette.Behavior.extend({

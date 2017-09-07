@@ -2,23 +2,23 @@
  * Social icons content block
  */
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/base',
-    'backbone',
-    'backbone.marionette',
-    'backbone.supermodel',
-    'underscore',
-    'jquery'
-  ], function(App, BaseBlock, Backbone, Marionette, SuperModel, _, jQuery) {
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/base',
+  'backbone',
+  'backbone.marionette',
+  'backbone.supermodel',
+  'underscore',
+  'jquery'
+], function(App, BaseBlock, Backbone, Marionette, SuperModel, _, jQuery) {
 
   'use strict';
 
   var Module = {},
-      base = BaseBlock,
-      SocialBlockSettingsIconSelectorView,
-      SocialBlockSettingsIconView,
-      SocialBlockSettingsIconCollectionView,
-      SocialBlockSettingsStylesView;
+    base = BaseBlock,
+    SocialBlockSettingsIconSelectorView,
+    SocialBlockSettingsIconView,
+    SocialBlockSettingsIconCollectionView,
+    SocialBlockSettingsStylesView;
 
   Module.SocialIconModel = SuperModel.extend({
     defaults: function() {

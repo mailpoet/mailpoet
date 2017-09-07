@@ -1,17 +1,17 @@
 define(
- [
-   'underscore',
-   'jquery',
-   'mailpoet',
-   'handlebars',
-   'select2'
- ],
+  [
+    'underscore',
+    'jquery',
+    'mailpoet',
+    'handlebars',
+    'select2'
+  ],
  function (
-  _,
-  jQuery,
-  MailPoet,
-  Handlebars,
-  select2
+   _,
+   jQuery,
+   MailPoet,
+   Handlebars,
+   select2
  ) {
    if (!jQuery('#mailpoet_subscribers_export').length) {
      return;
@@ -28,17 +28,17 @@ define(
 
      // define reusable variables
      var segmentsContainerElement = jQuery('#export_lists'),
-      subscriberFieldsContainerElement = jQuery('#export_columns'),
-      exportConfirmedOptionElement = jQuery(':radio[name="option_confirmed"]'),
-      groupBySegmentOptionElement = jQuery(':checkbox[name="option_group_by_list"]'),
-      nextStepButton = jQuery('a.mailpoet_export_process'),
-      renderSegmentsAndFields = function (container, data) {
-        if (container.data('select2')) {
-          container
+       subscriberFieldsContainerElement = jQuery('#export_columns'),
+       exportConfirmedOptionElement = jQuery(':radio[name="option_confirmed"]'),
+       groupBySegmentOptionElement = jQuery(':checkbox[name="option_group_by_list"]'),
+       nextStepButton = jQuery('a.mailpoet_export_process'),
+       renderSegmentsAndFields = function (container, data) {
+         if (container.data('select2')) {
+           container
            .html('')
            .select2('destroy');
-        }
-        container
+         }
+         container
          .select2({
            data: data,
            width: '20em',
@@ -55,11 +55,11 @@ define(
          })
          .on('select2:selecting', function (selectEvent) {
            var selectElement = this,
-            selectedOptionId = selectEvent.params.args.data.id,
-            fieldsToExclude = [
-              'select',
-              'deselect'
-            ];
+             selectedOptionId = selectEvent.params.args.data.id,
+             fieldsToExclude = [
+               'select',
+               'deselect'
+             ];
            if (_.contains(fieldsToExclude, selectedOptionId)) {
              selectEvent.preventDefault();
              if (selectedOptionId === 'deselect') {
@@ -94,7 +94,7 @@ define(
              jQuery('.mailpoet_group_by_list').hide();
            }
          });
-      };
+       };
 
      // set confirmed subscribers export option to false
      exportData.exportConfirmedOption = false;
@@ -139,39 +139,39 @@ define(
        MailPoet.Modal.loading(true);
        var exportFormat = jQuery(':radio[name="option_format"]:checked').val();
        MailPoet.Ajax.post({
-          api_version: window.mailpoet_api_version,
-          endpoint: 'ImportExport',
-          action: 'processExport',
-          data: JSON.stringify({
-            export_confirmed_option: exportData.exportConfirmedOption,
-            export_format_option: exportFormat,
-            group_by_segment_option: (groupBySegmentOptionElement.is(':visible')) ? groupBySegmentOptionElement.prop('checked') : false,
-            segments: (exportData.segments) ? segmentsContainerElement.val() : false,
-            subscriber_fields: subscriberFieldsContainerElement.val()
-          })
-        }).always(function(response) {
-          MailPoet.Modal.loading(false);
-        }).done(function(response) {
-          resultMessage = MailPoet.I18n.t('exportMessage')
+         api_version: window.mailpoet_api_version,
+         endpoint: 'ImportExport',
+         action: 'processExport',
+         data: JSON.stringify({
+           export_confirmed_option: exportData.exportConfirmedOption,
+           export_format_option: exportFormat,
+           group_by_segment_option: (groupBySegmentOptionElement.is(':visible')) ? groupBySegmentOptionElement.prop('checked') : false,
+           segments: (exportData.segments) ? segmentsContainerElement.val() : false,
+           subscriber_fields: subscriberFieldsContainerElement.val()
+         })
+       }).always(function(response) {
+         MailPoet.Modal.loading(false);
+       }).done(function(response) {
+         resultMessage = MailPoet.I18n.t('exportMessage')
            .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
            .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
            .replace('[/link]', '</a>');
-          jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
-          window.location.href = response.data.exportFileURL;
-          MailPoet.trackEvent('Subscribers export completed', {
-            'Total exported': response.data.totalExported,
-            'Only confirmed?': exportData.exportConfirmedOption,
-            'File Format': exportFormat,
-            'MailPoet Free version': window.mailpoet_version
-          });
-        }).fail(function(response) {
-          if (response.errors.length > 0) {
-            MailPoet.Notice.error(
+         jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
+         window.location.href = response.data.exportFileURL;
+         MailPoet.trackEvent('Subscribers export completed', {
+           'Total exported': response.data.totalExported,
+           'Only confirmed?': exportData.exportConfirmedOption,
+           'File Format': exportFormat,
+           'MailPoet Free version': window.mailpoet_version
+         });
+       }).fail(function(response) {
+         if (response.errors.length > 0) {
+           MailPoet.Notice.error(
               response.errors.map(function(error) { return error.message; }),
               { scroll: true }
             );
-          }
-        });
+         }
+       });
      });
    });
  });

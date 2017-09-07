@@ -2,17 +2,17 @@
  * Image content block
  */
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/base',
-    'underscore',
-    'mailpoet'
-  ], function(App, BaseBlock, _, MailPoet) {
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/base',
+  'underscore',
+  'mailpoet'
+], function(App, BaseBlock, _, MailPoet) {
 
   'use strict';
 
   var Module = {},
-      base = BaseBlock,
-      ImageWidgetView;
+    base = BaseBlock,
+    ImageWidgetView;
 
   Module.ImageBlockModel = base.BlockModel.extend({
     defaults: function() {
@@ -176,14 +176,14 @@ define([
           this.on('updateExcluded', this.browseContent, this);
 
           var handlers = {
-              content: {
-                embed: 'embedContent',
-                'edit-selection': 'editSelectionContent'
-              },
-              toolbar: {
-                'main-insert': 'mainInsertToolbar'
-              }
-            };
+            content: {
+              embed: 'embedContent',
+              'edit-selection': 'editSelectionContent'
+            },
+            toolbar: {
+              'main-insert': 'mainInsertToolbar'
+            }
+          };
 
           _.each(handlers, function(regionHandlers, region) {
             _.each(regionHandlers, function(callback, handler) {
@@ -301,9 +301,9 @@ define([
           }
         }),
         that = this;
-        this._mediaManager = theFrame;
+      this._mediaManager = theFrame;
 
-        this._mediaManager.on('insert', function() {
+      this._mediaManager.on('insert', function() {
         // Append media manager image selections to Images tab
         var selection = theFrame.state().get('selection');
         selection.each(function(attachment) {

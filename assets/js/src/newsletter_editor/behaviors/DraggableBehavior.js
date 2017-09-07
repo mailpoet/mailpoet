@@ -5,12 +5,12 @@
  * Part of the drag&drop behavior.
  */
 define([
-    'backbone.marionette',
-    'underscore',
-    'jquery',
-    'newsletter_editor/behaviors/BehaviorsLookup',
-    'interact'
-  ], function(Marionette, _, jQuery, BehaviorsLookup, interact) {
+  'backbone.marionette',
+  'underscore',
+  'jquery',
+  'newsletter_editor/behaviors/BehaviorsLookup',
+  'interact'
+], function(Marionette, _, jQuery, BehaviorsLookup, interact) {
   var BL = BehaviorsLookup;
 
   BL.DraggableBehavior = Marionette.Behavior.extend({
@@ -33,13 +33,13 @@ define([
     },
     onRender: function() {
       var that = this,
-          interactable;
+        interactable;
 
       // Give instances more control over whether Draggable should be applied
       if (!this.options.testAttachToInstance(this.view.model, this.view)) return;
 
       interactable = interact(this.$el.get(0), {
-          ignoreFrom: this.options.ignoreSelector
+        ignoreFrom: this.options.ignoreSelector
       }).draggable({
         // allow dragging of multple elements at the same time
         max: Infinity,
