@@ -79,29 +79,15 @@ class WP {
   }
 
   static function synchronizeUsers() {
-    $wp_segment = Segment::getWPSegment();
 
     self::updateSubscribersEmails();
     self::insertSubscribers();
+    self::removeFromTrash();
     self::updateFirstNames();
     self::updateLastNames();
     self::updateFristNameIfMissing();
-    self::insertUsersToSegment($wp_segment);
-    self::removeFromTrash();
-
-    // fetch all wp users id
-    $wp_users = \get_users(array(
-      'count_total'  => false,
-      'fields' => 'ID'
-    ));
-
-    // remove orphaned wp segment subscribers (not having a matching wp user id),
-    // e.g. if wp users were deleted directly from the database
-    $wp_segment->subscribers()
-      ->whereNotIn('wp_user_id', $wp_users)
-      ->findResultSet()
-      ->set('wp_user_id', null)
-      ->delete();
+    self::insertUsersToSegment();
+    self::removeOrphanedSubscribers();
 
     return true;
   }
@@ -164,7 +150,8 @@ class WP {
     ', $subscribers_table, $wpdb->prefix, $subscribers_table, $subscribers_table, $subscribers_table));
   }
 
-  private static function insertUsersToSegment($wp_segment) {
+  private static function insertUsersToSegment() {
+    $wp_segment = Segment::getWPSegment();
     $subscribers_table = Subscriber::$_table;
     $wp_mailpoet_subscriber_segment_table = SubscriberSegment::$_table;
     Subscriber::raw_execute(sprintf('
@@ -181,6 +168,19 @@ class WP {
       SET deleted_at = NULL
         WHERE %s.wp_user_id IS NOT NULL
     ', $subscribers_table, $subscribers_table));
+  }
+
+  private static function removeOrphanedSubscribers() {
+    // remove orphaned wp segment subscribers (not having a matching wp user id),
+    // e.g. if wp users were deleted directly from the database
+    global $wpdb;
+    $subscribers_table = Subscriber::$_table;
+    Subscriber::raw_execute(sprintf('
+      UPDATE %s as wpms
+        LEFT JOIN %susers as wu ON wpms.wp_user_id = wu.id
+        SET wp_user_id = NULL
+        WHERE wu.ID IS NULL;
+    ', $subscribers_table, $wpdb->prefix));
   }
 }
 
