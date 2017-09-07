@@ -1,32 +1,21 @@
 <?php
+
 namespace MailPoet\Config;
 
 if(!defined('ABSPATH')) exit;
 
 class Localizer {
-  function __construct($renderer) {
-    $this->renderer = $renderer;
-  }
-
   function init() {
-    add_action(
-      'init',
-      array($this, 'setup')
-    );
-  }
-
-  function setup() {
     $this->loadGlobalText();
     $this->loadPluginText();
-    $this->setGlobalRtl();
   }
 
   function loadGlobalText() {
-    $language_path =
-      Env::$languages_path
-      . '/'
-      . $this->locale()
-      . '.mo';
+    $language_path = sprintf(
+      '%s/%s.mo',
+      Env::$languages_path,
+      $this->locale()
+    );
     load_textdomain(Env::$plugin_name, $language_path);
   }
 
@@ -36,10 +25,6 @@ class Localizer {
       false,
       dirname(plugin_basename(Env::$file)) . '/lang/'
     );
-  }
-
-  function setGlobalRtl() {
-    $this->renderer->addGlobal('is_rtl', is_rtl());
   }
 
   function locale() {

@@ -170,7 +170,7 @@ class Initializer {
   }
 
   function setupLocalizer() {
-    $localizer = new Localizer($this->renderer);
+    $localizer = new Localizer();
     $localizer->init();
   }
 
