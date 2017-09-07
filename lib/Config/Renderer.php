@@ -34,7 +34,6 @@ class Renderer {
 
     $this->assets_manifest_js = $this->getAssetManifest(Env::$assets_path . '/js/manifest.json');
     $this->assets_manifest_css = $this->getAssetManifest(Env::$assets_path . '/css/manifest.json');
-
     $this->setupDebug();
     $this->setupTranslations();
     $this->setupFunctions();
@@ -110,10 +109,6 @@ class Renderer {
         $e->getMessage()
       ));
     }
-  }
-
-  function addGlobal($key, $value) {
-    return $this->renderer->addGlobal($key, $value);
   }
 
   function getAssetManifest($manifest_file) {
