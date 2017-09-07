@@ -1,7 +1,7 @@
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/header'
-  ], function(App, HeaderBlock) {
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/header'
+], function(App, HeaderBlock) {
   var EditorApplication = App;
 
   describe('Header', function () {
@@ -145,18 +145,18 @@ define([
       });
 
       describe('once rendered', function () {
-      var model, view;
+        var model, view;
 
-      beforeEach(function() {
-        global.stubChannel(EditorApplication);
-        global.stubAvailableStyles(EditorApplication, {
-          fonts: ['Arial', 'Tahoma'],
-          textSizes: ['16px', '20px']
+        beforeEach(function() {
+          global.stubChannel(EditorApplication);
+          global.stubAvailableStyles(EditorApplication, {
+            fonts: ['Arial', 'Tahoma'],
+            textSizes: ['16px', '20px']
+          });
+          model = new (HeaderBlock.HeaderBlockModel)({});
+          view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
+          view.render();
         });
-        model = new (HeaderBlock.HeaderBlockModel)({});
-        view = new (HeaderBlock.HeaderBlockSettingsView)({model: model});
-        view.render();
-      });
 
         it('updates the model when text font color changes', function () {
           view.$('.mailpoet_field_header_text_color').val('#123456').change();

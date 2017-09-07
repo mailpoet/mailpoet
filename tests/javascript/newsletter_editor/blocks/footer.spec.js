@@ -1,7 +1,7 @@
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/footer'
-  ], function(App, FooterBlock) {
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/footer'
+], function(App, FooterBlock) {
   var EditorApplication = App;
 
   describe('Footer', function () {
@@ -145,18 +145,18 @@ define([
       });
 
       describe('once rendered', function () {
-      var model, view;
+        var model, view;
 
-      beforeEach(function() {
-        global.stubChannel(EditorApplication);
-        global.stubAvailableStyles(EditorApplication, {
-          fonts: ['Arial', 'Tahoma'],
-          textSizes: ['16px', '20px']
+        beforeEach(function() {
+          global.stubChannel(EditorApplication);
+          global.stubAvailableStyles(EditorApplication, {
+            fonts: ['Arial', 'Tahoma'],
+            textSizes: ['16px', '20px']
+          });
+          model = new (FooterBlock.FooterBlockModel)({});
+          view = new (FooterBlock.FooterBlockSettingsView)({model: model});
+          view.render();
         });
-        model = new (FooterBlock.FooterBlockModel)({});
-        view = new (FooterBlock.FooterBlockSettingsView)({model: model});
-        view.render();
-      });
 
         it('updates the model when text font color changes', function () {
           view.$('.mailpoet_field_footer_text_color').val('#123456').change();

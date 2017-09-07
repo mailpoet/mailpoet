@@ -1,7 +1,7 @@
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/container'
-  ], function(App, ContainerBlock) {
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/container'
+], function(App, ContainerBlock) {
   var EditorApplication = App;
 
   describe('Container', function () {
@@ -193,13 +193,13 @@ define([
       });
 
       describe('once rendered', function () {
-      var model, view;
-      beforeEach(function() {
-        global.stubChannel(EditorApplication);
-        global.stubAvailableStyles(EditorApplication);
-        model = new (ContainerBlock.ContainerBlockModel)();
-        view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
-      });
+        var model, view;
+        beforeEach(function() {
+          global.stubChannel(EditorApplication);
+          global.stubAvailableStyles(EditorApplication);
+          model = new (ContainerBlock.ContainerBlockModel)();
+          view = new (ContainerBlock.ContainerBlockSettingsView)({model: model});
+        });
 
         it('updates the model when background color changes', function () {
           view.$('.mailpoet_field_container_background_color').val('#123456').change();

@@ -1,7 +1,7 @@
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/components/content'
-  ], function(App, ContentComponent) {
+  'newsletter_editor/App',
+  'newsletter_editor/components/content'
+], function(App, ContentComponent) {
   var EditorApplication = App;
 
   describe('Content', function() {
@@ -74,12 +74,12 @@ define([
     describe('transformation to json', function() {
       it('includes content, globalStyles and initial newsletter fields', function() {
         var dataField = {
-          containerModelField: 'containerModelValue'
-        }, stylesField = {
-          globalStylesField: 'globalStylesValue'
-        }, newsletterFields = {
-          subject: 'test newsletter subject'
-        };
+            containerModelField: 'containerModelValue'
+          }, stylesField = {
+            globalStylesField: 'globalStylesValue'
+          }, newsletterFields = {
+            subject: 'test newsletter subject'
+          };
         EditorApplication._contentContainer = {
           toJSON: function() {
             return dataField;

@@ -1,15 +1,15 @@
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/automatedLatestContent',
-    'newsletter_editor/blocks/container',
-    'amd-inject-loader!newsletter_editor/blocks/automatedLatestContent',
-    'newsletter_editor/components/communication'
-  ], function(
-    App,
-    AutomatedLatestContentBlock,
-    ContainerBlock,
-    AutomatedLatestContentInjector,
-    Communication
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/automatedLatestContent',
+  'newsletter_editor/blocks/container',
+  'amd-inject-loader!newsletter_editor/blocks/automatedLatestContent',
+  'newsletter_editor/components/communication'
+], function(
+  App,
+  AutomatedLatestContentBlock,
+  ContainerBlock,
+  AutomatedLatestContentInjector,
+  Communication
   ) {
   var EditorApplication = App;
   var CommunicationComponent = Communication;
