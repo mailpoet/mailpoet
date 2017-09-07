@@ -1233,9 +1233,9 @@
           data: {
             newsletter_id: response.data.id
           }
-        }).done(response =>
+        }).done(function(respose) {
           MailPoet.Notice.success(MailPoet.I18n.t('newsletterIsPaused'))
-        ).fail(function(response) {
+        }).fail(function(response) {
           if (response.errors.length > 0) {
             MailPoet.Notice.error(
               response.errors.map(function(error) { return error.message; }),
