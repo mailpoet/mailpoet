@@ -1,9 +1,9 @@
 define([
-    'newsletter_editor/App',
-    'backbone.supermodel',
-    'underscore',
-    'mailpoet'
-  ], function(App, SuperModel, _, MailPoet) {
+  'newsletter_editor/App',
+  'backbone.supermodel',
+  'underscore',
+  'mailpoet'
+], function(App, SuperModel, _, MailPoet) {
   'use strict';
 
   var Module = {};
@@ -15,7 +15,7 @@ define([
     whitelisted: ['id', 'subject', 'preheader'],
     initialize: function(options) {
       this.on('change', function() {
-          App.getChannel().trigger('autoSave');
+        App.getChannel().trigger('autoSave');
       });
     },
     toJSON: function() {
@@ -59,7 +59,7 @@ define([
   };
 
   Module.getNewsletter = function() {
-      return Module.newsletter;
+    return Module.newsletter;
   };
 
   Module.findModels = function(predicate) {

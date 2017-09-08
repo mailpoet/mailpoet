@@ -1,23 +1,23 @@
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/components/communication',
-    'mailpoet',
-    'backbone',
-    'backbone.marionette',
-    'backbone.supermodel',
-    'underscore',
-    'jquery',
-    'sticky-kit'
-  ], function(
-    App,
-    CommunicationComponent,
-    MailPoet,
-    Backbone,
-    Marionette,
-    SuperModel,
-    _,
-    jQuery,
-    StickyKit
+  'newsletter_editor/App',
+  'newsletter_editor/components/communication',
+  'mailpoet',
+  'backbone',
+  'backbone.marionette',
+  'backbone.supermodel',
+  'underscore',
+  'jquery',
+  'sticky-kit'
+], function(
+  App,
+  CommunicationComponent,
+  MailPoet,
+  Backbone,
+  Marionette,
+  SuperModel,
+  _,
+  jQuery,
+  StickyKit
   ) {
 
   'use strict';

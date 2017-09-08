@@ -2,15 +2,15 @@
  * Spacer content block
  */
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/base',
-    'underscore'
-  ], function(App, BaseBlock, _) {
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/base',
+  'underscore'
+], function(App, BaseBlock, _) {
 
   'use strict';
 
   var Module = {},
-      base = BaseBlock;
+    base = BaseBlock;
 
   Module.SpacerBlockModel = base.BlockModel.extend({
     defaults: function() {

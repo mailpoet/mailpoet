@@ -15,22 +15,22 @@ define(['react', 'classnames'], (React, classNames) => {
           );
 
         return (
-            <li key={index}>
-              {(index > 0) ? ' |' : ''}
-              <a
-                href="javascript:;"
-                className={classes}
-                onClick={this.handleSelect.bind(this, group.name)} >
-                {group.label} <span className="count">({ group.count.toLocaleString() })</span>
-              </a>
-            </li>
+          <li key={index}>
+            {(index > 0) ? ' |' : ''}
+            <a
+              href="javascript:;"
+              className={classes}
+              onClick={this.handleSelect.bind(this, group.name)} >
+              {group.label} <span className="count">({ group.count.toLocaleString() })</span>
+            </a>
+          </li>
         );
       });
 
       return (
-          <ul className="subsubsub">
-            { groups }
-          </ul>
+        <ul className="subsubsub">
+          { groups }
+        </ul>
       );
     },
   });

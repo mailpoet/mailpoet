@@ -2,15 +2,15 @@
  * Footer content block
  */
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/base',
-    'underscore'
-  ], function(App, BaseBlock, _) {
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/base',
+  'underscore'
+], function(App, BaseBlock, _) {
 
   'use strict';
 
   var Module = {},
-      base = BaseBlock;
+    base = BaseBlock;
 
   Module.FooterBlockModel = base.BlockModel.extend({
     defaults: function() {
@@ -83,8 +83,8 @@ define([
         'change .mailpoet_field_footer_text_size': _.partial(this.changeField, 'styles.text.fontSize'),
         'change #mailpoet_field_footer_link_color': _.partial(this.changeColorField, 'styles.link.fontColor'),
         'change #mailpoet_field_footer_link_underline': function(event) {
-        this.model.set('styles.link.textDecoration', (event.target.checked) ? event.target.value : 'none');
-      },
+          this.model.set('styles.link.textDecoration', (event.target.checked) ? event.target.value : 'none');
+        },
         'change .mailpoet_field_footer_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
         'change .mailpoet_field_footer_alignment': _.partial(this.changeField, 'styles.text.textAlign'),
         'click .mailpoet_done_editing': 'close'

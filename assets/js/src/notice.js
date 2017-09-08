@@ -75,7 +75,7 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
       // setup onClose callback
       var onClose = null;
       if (this.options.onClose !== null) {
-          onClose = this.options.onClose;
+        onClose = this.options.onClose;
       }
 
       // listen to remove event
@@ -83,7 +83,7 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
         jQuery(this).fadeOut(200, function() {
           // on close callback
           if (onClose !== null) {
-              onClose();
+            onClose();
           }
           // remove notice
           jQuery(this).remove();
@@ -144,13 +144,13 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
       switch (this.options.type) {
         case 'success':
           this.element.addClass('notice notice-success');
-        break;
+          break;
         case 'system':
           this.element.addClass('notice notice-warning');
-        break;
+          break;
         case 'error':
           this.element.addClass('notice notice-error');
-        break;
+          break;
       }
 
       // make the notice appear
@@ -167,7 +167,7 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
       } else if (this.options.hideClose === false) {
         this.element.append('<a href="javascript:;" class="mailpoet_notice_close"><span class="dashicons dashicons-dismiss"></span></a>');
         this.element.find('.mailpoet_notice_close').on('click', function() {
-            jQuery(this).trigger('close');
+          jQuery(this).trigger('close');
         });
       }
 

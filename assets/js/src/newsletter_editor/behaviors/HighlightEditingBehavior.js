@@ -4,9 +4,9 @@
  * Highlights a block that is being edited
  */
 define([
-    'backbone.marionette',
-    'newsletter_editor/behaviors/BehaviorsLookup'
-  ], function(Marionette, BehaviorsLookup) {
+  'backbone.marionette',
+  'newsletter_editor/behaviors/BehaviorsLookup'
+], function(Marionette, BehaviorsLookup) {
   var BL = BehaviorsLookup;
 
   BL.HighlightEditingBehavior = Marionette.Behavior.extend({

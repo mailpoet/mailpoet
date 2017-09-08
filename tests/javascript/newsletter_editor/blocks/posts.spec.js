@@ -1,9 +1,9 @@
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/components/communication',
-    'newsletter_editor/blocks/posts',
-    'newsletter_editor/blocks/container'
-  ], function(App, Communication, PostsBlock, ContainerBlock) {
+  'newsletter_editor/App',
+  'newsletter_editor/components/communication',
+  'newsletter_editor/blocks/posts',
+  'newsletter_editor/blocks/container'
+], function(App, Communication, PostsBlock, ContainerBlock) {
   var EditorApplication = App;
   var CommunicationComponent = Communication;
 

@@ -1,31 +1,31 @@
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/components/communication',
-    'mailpoet',
-    'notice',
-    'backbone',
-    'backbone.marionette',
-    'jquery',
-    'blob',
-    'file-saver',
-    'html2canvas'
-  ], function(
-    App,
-    CommunicationComponent,
-    MailPoet,
-    Notice,
-    Backbone,
-    Marionette,
-    jQuery,
-    Blob,
-    FileSaver,
-    html2canvas
+  'newsletter_editor/App',
+  'newsletter_editor/components/communication',
+  'mailpoet',
+  'notice',
+  'backbone',
+  'backbone.marionette',
+  'jquery',
+  'blob',
+  'file-saver',
+  'html2canvas'
+], function(
+  App,
+  CommunicationComponent,
+  MailPoet,
+  Notice,
+  Backbone,
+  Marionette,
+  jQuery,
+  Blob,
+  FileSaver,
+  html2canvas
   ) {
 
   'use strict';
 
   var Module = {},
-      saveTimeout;
+    saveTimeout;
 
   // Save editor contents to server
   Module.save = function() {
@@ -73,9 +73,9 @@ define([
       // Removes 1px left transparent border from resulting canvas.
 
       var oldContext = oldCanvas.getContext('2d'),
-          newCanvas = document.createElement('canvas'),
-          newContext = newCanvas.getContext('2d'),
-          leftBorderWidth = 1;
+        newCanvas = document.createElement('canvas'),
+        newContext = newCanvas.getContext('2d'),
+        leftBorderWidth = 1;
 
       newCanvas.width = oldCanvas.width;
       newCanvas.height = oldCanvas.height;
@@ -92,7 +92,7 @@ define([
 
   Module.saveTemplate = function(options) {
     var that = this,
-        promise = jQuery.Deferred();
+      promise = jQuery.Deferred();
 
     promise.then(function(thumbnail) {
       var data = _.extend(options || {}, {
@@ -189,8 +189,8 @@ define([
     },
     saveAsTemplate: function() {
       var templateName = this.$('.mailpoet_save_as_template_name').val(),
-          templateDescription = this.$('.mailpoet_save_as_template_description').val(),
-          that = this;
+        templateDescription = this.$('.mailpoet_save_as_template_description').val(),
+        that = this;
 
       if (templateName === '') {
         MailPoet.Notice.error(
@@ -245,8 +245,8 @@ define([
     },
     exportTemplate: function() {
       var templateName = this.$('.mailpoet_export_template_name').val(),
-          templateDescription = this.$('.mailpoet_export_template_description').val(),
-          that = this;
+        templateDescription = this.$('.mailpoet_export_template_description').val(),
+        that = this;
 
       if (templateName === '') {
         MailPoet.Notice.error(

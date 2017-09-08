@@ -7,31 +7,31 @@
  * block settings view.
  */
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/base',
-    'newsletter_editor/blocks/button',
-    'newsletter_editor/blocks/divider',
-    'newsletter_editor/components/communication',
-    'mailpoet',
-    'backbone.supermodel',
-    'underscore',
-    'jquery'
-  ], function(
-    App,
-    BaseBlock,
-    ButtonBlock,
-    DividerBlock,
-    CommunicationComponent,
-    MailPoet,
-    SuperModel,
-    _,
-    jQuery
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/base',
+  'newsletter_editor/blocks/button',
+  'newsletter_editor/blocks/divider',
+  'newsletter_editor/components/communication',
+  'mailpoet',
+  'backbone.supermodel',
+  'underscore',
+  'jquery'
+], function(
+  App,
+  BaseBlock,
+  ButtonBlock,
+  DividerBlock,
+  CommunicationComponent,
+  MailPoet,
+  SuperModel,
+  _,
+  jQuery
   ) {
 
   'use strict';
 
   var Module = {},
-      base = BaseBlock;
+    base = BaseBlock;
 
   Module.ALCSupervisor = SuperModel.extend({
     initialize: function() {
@@ -61,7 +61,7 @@ define([
         _.zip(models, renderedBlocks),
         function(args) {
           var model = args[0],
-              contents = args[1];
+            contents = args[1];
           model.trigger('refreshPosts', contents);
         }
       );
@@ -350,7 +350,7 @@ define([
     },
     _updateContentTypes: function(postTypes) {
       var select = this.$('.mailpoet_automated_latest_content_content_type'),
-          selectedValue = this.model.get('contentType');
+        selectedValue = this.model.get('contentType');
 
       select.find('option').remove();
       _.each(postTypes, function(type) {

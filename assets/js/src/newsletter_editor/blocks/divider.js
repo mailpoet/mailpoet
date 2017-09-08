@@ -2,17 +2,17 @@
  * Divider content block
  */
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/blocks/base',
-    'underscore',
-    'jquery',
-    'mailpoet'
-  ], function(App, BaseBlock, _, jQuery, MailPoet) {
+  'newsletter_editor/App',
+  'newsletter_editor/blocks/base',
+  'underscore',
+  'jquery',
+  'mailpoet'
+], function(App, BaseBlock, _, jQuery, MailPoet) {
 
   'use strict';
 
   var Module = {},
-      base = BaseBlock;
+    base = BaseBlock;
 
   Module.DividerBlockModel = base.BlockModel.extend({
     defaults: function() {

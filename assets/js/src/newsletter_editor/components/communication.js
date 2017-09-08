@@ -1,9 +1,9 @@
 define([
-    'newsletter_editor/App',
-    'underscore',
-    'mailpoet',
-    'ajax'
-  ], function(App, _, MailPoet) {
+  'newsletter_editor/App',
+  'underscore',
+  'mailpoet',
+  'ajax'
+], function(App, _, MailPoet) {
 
   var Module = {};
 

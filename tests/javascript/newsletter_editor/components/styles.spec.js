@@ -1,7 +1,7 @@
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/components/styles'
-  ], function(App, StylesComponent) {
+  'newsletter_editor/App',
+  'newsletter_editor/components/styles'
+], function(App, StylesComponent) {
   var EditorApplication = App;
 
   describe('Styles', function () {

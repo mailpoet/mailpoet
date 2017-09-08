@@ -1,9 +1,9 @@
 define([
-    'newsletter_editor/App',
-    'newsletter_editor/components/save',
-    'amd-inject-loader!newsletter_editor/components/save',
-    'jquery'
-  ], function(App, SaveComponent, SaveInjector, jQuery) {
+  'newsletter_editor/App',
+  'newsletter_editor/components/save',
+  'amd-inject-loader!newsletter_editor/components/save',
+  'jquery'
+], function(App, SaveComponent, SaveInjector, jQuery) {
   var EditorApplication = App;
 
   describe('Save', function() {
@@ -171,13 +171,13 @@ define([
 
         it('saves newsletter when clicked on "next" button', function() {
           var spy = sinon.spy(),
-              module = SaveInjector({
-                'newsletter_editor/components/communication': {
-                  saveNewsletter: function() {
-                    return jQuery.Deferred();
-                  }
+            module = SaveInjector({
+              'newsletter_editor/components/communication': {
+                saveNewsletter: function() {
+                  return jQuery.Deferred();
                 }
-              });
+              }
+            });
           global.stubChannel(EditorApplication, {
             trigger: spy
           });

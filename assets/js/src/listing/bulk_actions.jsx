@@ -112,7 +112,7 @@ define([
             defaultValue={MailPoet.I18n.t('apply')}
             className="button action" />
 
-            { this.state.extra }
+          { this.state.extra }
         </div>
       );
     },

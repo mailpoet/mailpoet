@@ -56,14 +56,14 @@ define([
               key={ `filter-${i}` }
               name={ filter }
             >
-            { filters[filter].map((option, j) => {
-              return (
-                <option
-                  value={ option.value }
-                  key={ 'filter-option-' + j }
+              { filters[filter].map((option, j) => {
+                return (
+                  <option
+                    value={ option.value }
+                    key={ 'filter-option-' + j }
                 >{ option.label }</option>
-              );
-            }) }
+                );
+              }) }
             </select>
           );
         });
