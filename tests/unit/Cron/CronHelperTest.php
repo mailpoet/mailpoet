@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Test\Cron;
 
 use MailPoet\Cron\CronHelper;
@@ -6,6 +7,10 @@ use MailPoet\Cron\Daemon;
 use MailPoet\Models\Setting;
 
 class CronHelperTest extends \MailPoetTest {
+  function _before() {
+    Setting::setValue('version', MAILPOET_VERSION);
+  }
+
   function testItDefinesConstants() {
     expect(CronHelper::DAEMON_EXECUTION_LIMIT)->equals(20);
     expect(CronHelper::DAEMON_EXECUTION_TIMEOUT)->equals(35);
