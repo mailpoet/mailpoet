@@ -124,7 +124,7 @@ class CronHelperTest extends \MailPoetTest {
 
   function testItPingsDaemon() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    expect(CronHelper::pingDaemon())->true();
+    expect(CronHelper::pingDaemon())->equals('pong');
   }
 
   function _after() {
