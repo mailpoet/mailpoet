@@ -45,6 +45,9 @@ class Initializer {
       ));
     }
 
+    // configure renderer
+    $this->setupRenderer();
+
     // activation function
     register_activation_hook(
       Env::$file,
@@ -62,7 +65,12 @@ class Initializer {
     add_action('init', array(
       $this,
       'onInit'
-    ), 0);
+    ));
+
+    add_action('widgets_init', array(
+      $this,
+      'setupWidget'
+    ));
 
     add_action('wp_loaded', array(
       $this,
@@ -98,8 +106,6 @@ class Initializer {
       $this->setupInstaller();
       $this->setupUpdater();
 
-      $this->setupRenderer();
-      $this->setupWidget();
       $this->setupLocalizer();
       $this->setupMenu();
       $this->setupShortcodes();
