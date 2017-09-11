@@ -15,9 +15,11 @@ define([
       stopEditing: 'disableHighlight'
     },
     enableHighlight: function() {
+      this.view._isBeingEdited = true;
       this.$el.addClass('mailpoet_highlight');
     },
     disableHighlight: function() {
+      this.view._isBeingEdited = false;
       this.$el.removeClass('mailpoet_highlight');
     }
   });
