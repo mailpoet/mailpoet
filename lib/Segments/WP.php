@@ -174,13 +174,14 @@ class WP {
     // remove orphaned wp segment subscribers (not having a matching wp user id),
     // e.g. if wp users were deleted directly from the database
     global $wpdb;
-    $subscribers_table = Subscriber::$_table;
-    Subscriber::raw_execute(sprintf('
-      UPDATE %s as wpms
-        LEFT JOIN %susers as wu ON wpms.wp_user_id = wu.id
-        SET wp_user_id = NULL
-        WHERE wu.ID IS NULL;
-    ', $subscribers_table, $wpdb->prefix));
+
+    Subscriber::table_alias('wpms')
+      ->leftOuterJoin($wpdb->prefix . 'users', array('wpms.wp_user_id', '=', 'wu.id'), 'wu')
+      ->whereNull('wu.id')
+      ->findResultSet()
+      ->set('wp_user_id', null)
+      ->delete();
+
   }
 }
 
