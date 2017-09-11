@@ -2,6 +2,8 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Models\Setting;
+
 if(!defined('ABSPATH')) exit;
 
 class Activator {
@@ -11,8 +13,7 @@ class Activator {
 
     $populator = new Populator();
     $populator->up();
-
-    update_option('mailpoet_db_version', Env::$version);
+    Setting::setValue('db_version', Env::$version);
   }
 
   function deactivate() {

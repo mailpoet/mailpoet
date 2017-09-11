@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\API;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Models\Setting;
 use MailPoet\Router;
 use MailPoet\Util\ConflictResolver;
 use MailPoet\Util\Helpers;
@@ -122,7 +123,11 @@ class Initializer {
   }
 
   function maybeDbUpdate() {
-    $current_db_version = get_option('mailpoet_db_version', false);
+    try {
+      $current_db_version = Setting::getValue('db_version');
+    } catch(\Exception $e) {
+      $current_db_version = null;
+    }
 
     // if current db version and plugin version differ
     if(version_compare($current_db_version, Env::$version) !== 0) {

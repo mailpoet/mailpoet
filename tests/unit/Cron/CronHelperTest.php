@@ -7,6 +7,10 @@ use MailPoet\Models\Setting;
 use MailPoet\WP\Hooks;
 
 class CronHelperTest extends \MailPoetTest {
+  function _before() {
+    Setting::setValue('db_version', MAILPOET_VERSION);
+  }
+
   function testItDefinesConstants() {
     expect(CronHelper::DAEMON_EXECUTION_LIMIT)->equals(20);
     expect(CronHelper::DAEMON_EXECUTION_TIMEOUT)->equals(35);
