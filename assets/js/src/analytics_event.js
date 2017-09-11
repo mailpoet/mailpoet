@@ -68,6 +68,6 @@ define(
     MailPoet.trackEvent = _.partial(cacheEvent, false);
     MailPoet.forceTrackEvent = _.partial(cacheEvent, true);
 
-    initializeMixpanelWhenLoaded(MailPoet);
+    initializeMixpanelWhenLoaded();
   }
 );
