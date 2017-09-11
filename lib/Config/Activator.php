@@ -13,7 +13,7 @@ class Activator {
 
     $populator = new Populator();
     $populator->up();
-    Setting::setValue('version', Env::$version);
+    Setting::setValue('db_version', Env::$version);
   }
 
   function deactivate() {

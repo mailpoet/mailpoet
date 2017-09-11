@@ -337,7 +337,7 @@ class Populator {
   function convertExistingDataToUTF8() {
     global $wpdb;
 
-    if(!version_compare(Setting::getValue('version', '3.0.0-beta.33'), '3.0.0-beta.32', '<=')) {
+    if(!version_compare(Setting::getValue('db_version', '3.0.0-beta.33'), '3.0.0-beta.32', '<=')) {
       // Data conversion should only be performed only once, when migrating from
       // older version
       return false;
@@ -402,7 +402,7 @@ class Populator {
     global $wpdb;
 
     // perform once for versions below 3.0.0-beta.36.2.1
-    if(version_compare(Setting::getValue('version', '3.0.0-beta.36.2.3'), '3.0.0-beta.36.2.1', '>=')) {
+    if(version_compare(Setting::getValue('db_version', '3.0.0-beta.36.2.3'), '3.0.0-beta.36.2.1', '>=')) {
       return false;
     }
 
@@ -455,7 +455,7 @@ class Populator {
     global $wpdb;
 
     // perform once for versions below 3.0.0-beta.36.2.1
-    if(version_compare(Setting::getValue('version', '3.0.0-beta.36.2.3'), '3.0.0-beta.36.2.1', '>=')) {
+    if(version_compare(Setting::getValue('db_version', '3.0.0-beta.36.2.3'), '3.0.0-beta.36.2.1', '>=')) {
       return false;
     }
 

@@ -124,7 +124,7 @@ class Initializer {
 
   function maybeDbUpdate() {
     try {
-      $current_db_version = Setting::getValue('version');
+      $current_db_version = Setting::getValue('db_version');
     } catch(\Exception $e) {
       $current_db_version = null;
     }

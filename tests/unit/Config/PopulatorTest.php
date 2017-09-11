@@ -12,7 +12,7 @@ class PopulatorTest extends \MailPoetTest {
     // TODO: remove in final release
 
     // run for versions <= 3.0.0-beta.36.2.0
-    Setting::setValue('version', '3.0.0-beta.36.2.0');
+    Setting::setValue('db_version', '3.0.0-beta.36.2.0');
     $newsletters = array();
     for($i = 1; $i <= 3; $i++) {
       $newsletters[$i] = Newsletter::create();
@@ -32,7 +32,7 @@ class PopulatorTest extends \MailPoetTest {
     expect(Newsletter::whereNotNull('sent_at')->findMany())->count(1);
 
     // do not run for versions >= 3.0.0-beta.36.2.1
-    Setting::setValue('version', '3.0.0-beta.36.2.1');
+    Setting::setValue('db_version', '3.0.0-beta.36.2.1');
     $populator = new Populator();
     expect($populator->populateNewsletterSentAtField())->false();
   }
@@ -40,6 +40,6 @@ class PopulatorTest extends \MailPoetTest {
   function _after() {
     \ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     \ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    Setting::setValue('version', MAILPOET_VERSION);
+    Setting::setValue('db_version', MAILPOET_VERSION);
   }
 }

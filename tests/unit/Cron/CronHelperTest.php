@@ -8,7 +8,7 @@ use MailPoet\Models\Setting;
 
 class CronHelperTest extends \MailPoetTest {
   function _before() {
-    Setting::setValue('version', MAILPOET_VERSION);
+    Setting::setValue('db_version', MAILPOET_VERSION);
   }
 
   function testItDefinesConstants() {
