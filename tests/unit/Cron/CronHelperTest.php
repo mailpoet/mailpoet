@@ -1,9 +1,10 @@
 <?php
+
 namespace MailPoet\Test\Cron;
 
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\Daemon;
 use MailPoet\Models\Setting;
+use MailPoet\WP\Hooks;
 
 class CronHelperTest extends \MailPoetTest {
   function testItDefinesConstants() {
@@ -77,20 +78,30 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   function testItGetsSiteUrl() {
-    // 1. do nothing when the url does not contain port
+    // 1. do nothing when the url is manually overridden via a hook
+    $filter = function() {
+      return 'custom_url';
+    };
+    add_filter('mailpoet_cron_request_url', $filter);
+    expect(CronHelper::getSiteUrl())->equals('custom_url');
+    remove_filter('mailpoet_cron_request_url', $filter);
+
+    // 2. do nothing when the url does not contain port
     $site_url = 'http://example.com';
     expect(CronHelper::getSiteUrl($site_url))->equals($site_url);
 
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
 
-    //2. when url contains valid port, try connecting to it
+    // 3. when url contains valid port, try connecting to it
     $site_url = 'http://example.com:80';
     expect(CronHelper::getSiteUrl($site_url))->equals($site_url);
-    //3. when url contains invalid port, try connecting to it. when connection fails,
+
+    // 4. when url contains invalid port, try connecting to it. when connection fails,
     // another attempt will be made to connect to the standard port derived from URL schema
     $site_url = 'http://example.com:8080';
     expect(CronHelper::getSiteUrl($site_url))->equals('http://example.com');
-    //4. when connection can't be established, exception should be thrown
+
+    // 5. when connection can't be established, exception should be thrown
     $site_url = 'https://invalid:80';
     try {
       CronHelper::getSiteUrl($site_url);
@@ -113,7 +124,7 @@ class CronHelperTest extends \MailPoetTest {
 
   function testItPingsDaemon() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
-    expect(CronHelper::pingDaemon())->true();
+    expect(CronHelper::pingDaemon())->equals('pong');
   }
 
   function _after() {

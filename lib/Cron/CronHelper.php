@@ -1,10 +1,12 @@
 <?php
+
 namespace MailPoet\Cron;
 
 use MailPoet\Models\Setting;
 use MailPoet\Router\Endpoints\CronDaemon as CronDaemonEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Util\Security;
+use MailPoet\WP\Hooks as WPHooks;
 
 if(!defined('ABSPATH')) exit;
 
@@ -59,7 +61,7 @@ class CronHelper {
       'user-agent' => 'MailPoet (www.mailpoet.com) Cron'
     );
     $result = wp_remote_get($url, $args);
-    return wp_remote_retrieve_body($result) === 'pong';
+    return wp_remote_retrieve_body($result);
   }
 
   static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
@@ -83,6 +85,9 @@ class CronHelper {
   static function getSiteUrl($site_url = false) {
     // additional check for some sites running inside a virtual machine or behind
     // proxy where there could be different ports (e.g., host:8080 => guest:80)
+    $custom_cron_url = WPHooks::applyFilters('mailpoet_cron_request_url', null);
+    if($custom_cron_url) return $custom_cron_url;
+
     $site_url = ($site_url) ? $site_url : home_url();
     $parsed_url = parse_url($site_url);
     $scheme = '';
