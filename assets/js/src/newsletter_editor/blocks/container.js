@@ -138,7 +138,8 @@ define([
           // for root and column containers.
           return view.renderOptions.depth === 1;
         }
-      }
+      },
+      HighlightContainerBehavior: {}
     }),
     onDragSubstituteBy: function() {
       // For two and three column layouts display their respective widgets,
