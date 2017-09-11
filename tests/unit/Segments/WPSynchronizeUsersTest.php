@@ -98,6 +98,14 @@ class WPSynchronizeUsersTest extends \MailPoetTest  {
   }
 
   function _before() {
+    $this->cleanData();
+  }
+
+  function _after() {
+    $this->cleanData();
+  }
+
+  private function cleanData() {
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     global $wpdb;
     $db = \ORM::getDb();
