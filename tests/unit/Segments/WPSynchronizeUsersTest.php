@@ -121,6 +121,13 @@ class WPSynchronizeUsersTest extends \MailPoetTest  {
     return Subscriber::whereIn("wp_user_id", $this->userIds)->count();
   }
 
+  /**
+   * Insert a user without invoking wp hooks.
+   * Those tests are testing user synchronisation, so we need data in wp_users table which has not been synchronised to
+   * mailpoet database yet. We cannot use wp_insert_user functions because they would do the sync on insert.
+   *
+   * @return string
+   */
   private function insertUser() {
     global $wpdb;
     $db = \ORM::getDb();
