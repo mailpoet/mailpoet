@@ -217,8 +217,8 @@ class Initializer {
   }
 
   function postInitialize() {
+    if(!defined(self::INITIALIZED)) return;
     try {
-      if(!defined(self::INITIALIZED)) return;
       $this->setupHooks();
       $this->setupJSONAPI();
       $this->setupRouter();
