@@ -1,3 +1,5 @@
+const expect = global.expect;
+
 define([
   'newsletter_editor/App',
   'newsletter_editor/components/config'

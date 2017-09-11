@@ -5,8 +5,9 @@ define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/base',
   'underscore',
-  'mailpoet'
-], function(App, BaseBlock, _, MailPoet) {
+  'mailpoet',
+  'jquery'
+], function(App, BaseBlock, _, MailPoet, jQuery) {
 
   'use strict';
 
@@ -35,7 +36,7 @@ define([
 
   Module.ImageBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_image_block mailpoet_droppable_block',
-    getTemplate: function() { return templates.imageBlock; },
+    getTemplate: function() { return window.templates.imageBlock; },
     onDragSubstituteBy: function() { return Module.ImageWidgetView; },
     templateContext: function() {
       return _.extend({
@@ -72,7 +73,7 @@ define([
         tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth')
       });
     },
-    getTemplate: function() { return templates.imageBlockSettings; },
+    getTemplate: function() { return window.templates.imageBlockSettings; },
     events: function() {
       return {
         'input .mailpoet_field_image_link': _.partial(this.changeField, 'link'),
@@ -98,10 +99,10 @@ define([
         return;
       }
 
-      var MediaManager = wp.media.view.MediaFrame.Select.extend({
+      var MediaManager = window.wp.media.view.MediaFrame.Select.extend({
 
         initialize: function() {
-          wp.media.view.MediaFrame.prototype.initialize.apply(this, arguments);
+          window.wp.media.view.MediaFrame.prototype.initialize.apply(this, arguments);
 
           _.defaults(this.options, {
             multiple: true,
@@ -123,7 +124,7 @@ define([
         },
 
         createQuery: function(options) {
-          var query = wp.media.query(options);
+          var query = window.wp.media.query(options);
           return query;
         },
 
@@ -133,7 +134,7 @@ define([
           // Add the default states.
           this.states.add([
             // Main states.
-            new wp.media.controller.Library({
+            new window.wp.media.controller.Library({
               id: 'insert',
               title: 'Add images',
               priority: 20,
@@ -155,8 +156,8 @@ define([
             })
           ]);
 
-          if(wp.media.view.settings.post.featuredImageId) {
-            this.states.add(new wp.media.controller.FeaturedImage());
+          if(window.wp.media.view.settings.post.featuredImageId) {
+            this.states.add(new window.wp.media.controller.FeaturedImage());
           }
         },
 
@@ -193,13 +194,13 @@ define([
         },
 
         uploadContent: function() {
-          wp.media.view.MediaFrame.Select.prototype.uploadContent.apply(this, arguments);
+          window.wp.media.view.MediaFrame.Select.prototype.uploadContent.apply(this, arguments);
           this.$el.addClass('hide-toolbar');
         },
 
         // Content
         embedContent: function() {
-          var view = new wp.media.view.Embed({
+          var view = new window.wp.media.view.Embed({
             controller: this,
             model: this.state()
           }).render();
@@ -213,7 +214,7 @@ define([
             selection = state.get('selection'),
             view;
 
-          view = new wp.media.view.AttachmentsBrowser({
+          view = new window.wp.media.view.AttachmentsBrowser({
             controller: this,
             collection: selection,
             selection: selection,
@@ -222,7 +223,7 @@ define([
             search: false,
             dragInfo: true,
 
-            AttachmentView: wp.media.view.Attachment.EditSelection
+            AttachmentView: window.wp.media.view.Attachment.EditSelection
           }).render();
 
           view.toolbar.set('backToLibrary', {
@@ -242,7 +243,7 @@ define([
         selectionStatusToolbar: function(view) {
           var editable = this.state().get('editable');
 
-          view.set('selection', new wp.media.view.Selection({
+          view.set('selection', new window.wp.media.view.Selection({
             controller: this,
             collection: this.state().get('selection'),
             priority: -40,
@@ -278,7 +279,7 @@ define([
 
         mainEmbedToolbar: function(toolbar) {
           var tbar = toolbar;
-          tbar.view = new wp.media.view.Toolbar.Embed({
+          tbar.view = new window.wp.media.view.Toolbar.Embed({
             controller: this,
             text: 'Add images'
           });
@@ -363,7 +364,7 @@ define([
   });
 
   ImageWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return templates.imageInsertion; },
+    getTemplate: function() { return window.templates.imageInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,

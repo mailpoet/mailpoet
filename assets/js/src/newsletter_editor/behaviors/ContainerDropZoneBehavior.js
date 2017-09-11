@@ -1,3 +1,4 @@
+
 /**
  * ContainerDropZoneBehavior
  *
@@ -195,7 +196,8 @@ define([
 
             if (view.model.get('orientation') === 'horizontal' && droppableModel.get('type') !== 'container') {
               // Regular blocks always need to be inserted into columns - vertical containers
-              tempCollection = new (EditorApplication.getBlockTypeModel('container'))({
+
+              tempCollection = new (window.EditorApplication.getBlockTypeModel('container'))({
                 orientation: 'vertical'
               });
               tempCollection.get('blocks').add(droppableModel);
@@ -210,7 +212,7 @@ define([
             // and inserting dropModel into that
             var tempModel = viewCollection.at(dropPosition.index);
 
-            tempCollection = new (EditorApplication.getBlockTypeModel('container'))({
+            tempCollection = new (window.EditorApplication.getBlockTypeModel('container'))({
               orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical'
             });
 
@@ -218,19 +220,19 @@ define([
 
             if (tempCollection.get('orientation') === 'horizontal') {
               if (dropPosition.position === 'before') {
-                tempCollection2 = new (EditorApplication.getBlockTypeModel('container'))({
+                tempCollection2 = new (window.EditorApplication.getBlockTypeModel('container'))({
                   orientation: 'vertical'
                 });
                 tempCollection2.get('blocks').add(droppableModel);
                 tempCollection.get('blocks').add(tempCollection2);
               }
-              tempCollection2 = new (EditorApplication.getBlockTypeModel('container'))({
+              tempCollection2 = new (window.EditorApplication.getBlockTypeModel('container'))({
                 orientation: 'vertical'
               });
               tempCollection2.get('blocks').add(tempModel);
               tempCollection.get('blocks').add(tempCollection2);
               if (dropPosition.position === 'after') {
-                tempCollection2 = new (EditorApplication.getBlockTypeModel('container'))({
+                tempCollection2 = new (window.EditorApplication.getBlockTypeModel('container'))({
                   orientation: 'vertical'
                 });
                 tempCollection2.get('blocks').add(droppableModel);
@@ -291,7 +293,7 @@ define([
 
         insertionType, index, position, indexAndPosition;
 
-      unsafe = !!is_unsafe;
+      var unsafe = !!is_unsafe;
 
       if (this.getCollection().length === 0) {
         return {

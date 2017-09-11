@@ -112,9 +112,8 @@ define('modal', ['mailpoet', 'jquery'],
         if(this.renderer === 'html') {
           return function() { return template; };
         } else {
-          return Handlebars.compile(template);
+          return window.Handlebars.compile(template);
         }
-        return false;
       },
       init: function(options) {
         if(this.initialized === true) {

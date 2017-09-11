@@ -1,7 +1,8 @@
 import React from 'react';
-import Listing from 'listing/listing.jsx';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
+import jQuery from 'jquery';
+import Listing from '../listing/listing.jsx';
 
 const columns = [
   {
@@ -128,7 +129,7 @@ const FormList = React.createClass({
       endpoint: 'forms',
       action: 'create',
     }).done((response) => {
-      window.location = mailpoet_form_edit_url + response.data.id;
+      window.location = window.mailpoet_form_edit_url + response.data.id;
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -145,7 +146,7 @@ const FormList = React.createClass({
       'has-row-actions'
     );
 
-    let segments = mailpoet_segments.filter((segment) => {
+    let segments = window.mailpoet_segments.filter((segment) => {
       return (jQuery.inArray(segment.id, form.segments) !== -1);
     }).map((segment) => {
       return segment.name;
@@ -190,7 +191,7 @@ const FormList = React.createClass({
         </h1>
 
         <Listing
-          limit={ mailpoet_listing_per_page }
+          limit={ window.mailpoet_listing_per_page }
           location={ this.props.location }
           params={ this.props.params }
           messages={ messages }

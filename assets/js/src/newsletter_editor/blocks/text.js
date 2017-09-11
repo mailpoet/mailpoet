@@ -4,8 +4,9 @@
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/base',
-  'underscore'
-], function(App, BaseBlock, _) {
+  'underscore',
+  'mailpoet'
+], function(App, BaseBlock, _, MailPoet) {
 
   'use strict';
 
@@ -23,7 +24,7 @@ define([
 
   Module.TextBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_text_block mailpoet_droppable_block',
-    getTemplate: function() { return templates.textBlock; },
+    getTemplate: function() { return window.templates.textBlock; },
     modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'), // Prevent rerendering on model change due to text editor redrawing
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
       TextEditorBehavior: {
@@ -78,11 +79,11 @@ define([
   });
 
   Module.TextBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.textBlockSettings; }
+    getTemplate: function() { return window.templates.textBlockSettings; }
   });
 
   Module.TextWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return templates.textInsertion; },
+    getTemplate: function() { return window.templates.textInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,

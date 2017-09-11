@@ -258,7 +258,7 @@ const SegmentList = React.createClass({
         </h1>
 
         <Listing
-          limit={ mailpoet_listing_per_page }
+          limit={ window.mailpoet_listing_per_page }
           location={ this.props.location }
           params={ this.props.params }
           messages={ messages }

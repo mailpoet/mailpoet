@@ -178,7 +178,7 @@ define([
   });
 
   Module.BlockToolsView = AugmentedView.extend({
-    getTemplate: function() { return templates.genericBlockTools; },
+    getTemplate: function() { return window.templates.genericBlockTools; },
     events: {
       'click .mailpoet_edit_block': 'changeSettings',
       'click .mailpoet_delete_block_activate': 'showDeletionConfirmation',
@@ -275,7 +275,7 @@ define([
       this.model.set(field, jQuery(event.target).val() + suffix);
     },
     changeBoolField: function(field, event) {
-      this.model.set(field, (jQuery(event.target).val() === 'true') ? true : false);
+      this.model.set(field, (jQuery(event.target).val() === 'true'));
     },
     changeBoolCheckboxField: function(field, event) {
       this.model.set(field, (!!jQuery(event.target).prop('checked')));

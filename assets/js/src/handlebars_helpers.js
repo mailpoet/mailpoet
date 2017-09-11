@@ -22,9 +22,9 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
       var f = block.hash.format || 'MMM Do, YYYY';
           // check if we passed a timestamp
       if(parseInt(timestamp, 10) == timestamp) {
-        return moment.unix(timestamp).format(f);
+        return window.moment.unix(timestamp).format(f);
       } else {
-        return moment.utc(timestamp).format(f);
+        return window.moment.utc(timestamp).format(f);
       }
     } else {
       return timestamp;

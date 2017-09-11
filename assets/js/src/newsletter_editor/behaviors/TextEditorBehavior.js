@@ -65,7 +65,7 @@ define([
             editor.focus();
             if (that._isActivationClick) {
               editor.selection.setRng(
-                  tinymce.dom.RangeUtils.getCaretRangeFromPoint(e.clientX, e.clientY, editor.getDoc())
+                  window.tinymce.dom.RangeUtils.getCaretRangeFromPoint(e.clientX, e.clientY, editor.getDoc())
               );
               that._isActivationClick = false;
             }

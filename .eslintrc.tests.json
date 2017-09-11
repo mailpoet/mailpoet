@@ -9,7 +9,6 @@
   },
   "rules": {
     "import/no-amd": 0,
-    "no-undef": 0,
     "one-var": 0,
     "no-whitespace-before-property": 0,
     "global-require": 0,
@@ -20,7 +19,6 @@
     "max-len": 0,
     "space-unary-ops": 0,
     "no-unused-vars": 0,
-    "no-unused-expressions": 0,
     "no-underscore-dangle": 0,
     "no-shadow": 0,
     "padded-blocks": 0,

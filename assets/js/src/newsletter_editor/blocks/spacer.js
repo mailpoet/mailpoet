@@ -28,7 +28,7 @@ define([
 
   Module.SpacerBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_spacer_block mailpoet_droppable_block',
-    getTemplate: function() { return templates.spacerBlock; },
+    getTemplate: function() { return window.templates.spacerBlock; },
     behaviors: _.defaults({
       ResizableBehavior: {
         elementSelector: '.mailpoet_spacer',
@@ -66,7 +66,7 @@ define([
   });
 
   Module.SpacerBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.spacerBlockSettings; },
+    getTemplate: function() { return window.templates.spacerBlockSettings; },
     events: function() {
       return {
         'change .mailpoet_field_spacer_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
@@ -76,7 +76,7 @@ define([
   });
 
   Module.SpacerWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return templates.spacerInsertion; },
+    getTemplate: function() { return window.templates.spacerInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,

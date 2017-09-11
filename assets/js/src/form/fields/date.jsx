@@ -212,7 +212,6 @@ define([
               year={ this.state.year }
               placeholder={ this.props.field.year_placeholder }
             />);
-            break;
 
           case 'MM':
             return (<FormFieldDateMonth
@@ -224,7 +223,6 @@ define([
               monthNames={ monthNames }
               placeholder={ this.props.field.month_placeholder }
             />);
-            break;
 
           case 'DD':
             return (<FormFieldDateDay
@@ -235,7 +233,6 @@ define([
               day={ this.state.day }
               placeholder={ this.props.field.day_placeholder }
             />);
-            break;
         }
       });
 

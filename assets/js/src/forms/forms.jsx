@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute, useRouterHistory } from 'react-router';
 import { createHashHistory } from 'history';
-import FormList from 'forms/list.jsx';
+import FormList from './list.jsx';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 

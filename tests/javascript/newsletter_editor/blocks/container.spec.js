@@ -1,3 +1,7 @@
+const expect = global.expect;
+const sinon = global.sinon;
+const Backbone = global.Backbone;
+
 define([
   'newsletter_editor/App',
   'newsletter_editor/blocks/container'

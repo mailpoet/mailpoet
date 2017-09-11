@@ -42,7 +42,7 @@ define([
 
   Module.ButtonBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_button_block mailpoet_droppable_block',
-    getTemplate: function() { return templates.buttonBlock; },
+    getTemplate: function() { return window.templates.buttonBlock; },
     onDragSubstituteBy: function() { return Module.ButtonWidgetView; },
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
       ShowSettingsBehavior: {}
@@ -65,7 +65,7 @@ define([
   });
 
   Module.ButtonBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return templates.buttonBlockSettings; },
+    getTemplate: function() { return window.templates.buttonBlockSettings; },
     events: function() {
       return {
         'input .mailpoet_field_button_text': _.partial(this.changeField, 'text'),
@@ -121,7 +121,7 @@ define([
   });
 
   Module.ButtonWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return templates.buttonInsertion; },
+    getTemplate: function() { return window.templates.buttonInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,

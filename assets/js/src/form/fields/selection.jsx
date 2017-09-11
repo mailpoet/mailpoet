@@ -116,6 +116,7 @@ define([
       }
     },
     handleChange: function (e) {
+      let value;
       if(this.props.onValueChange !== undefined) {
         if(this.props.field.multiple) {
           value = jQuery('#'+this.refs.select.id).val();

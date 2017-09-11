@@ -54,7 +54,7 @@ define([
             // Use substitution instead of a clone
             var tempClone = (_.isFunction(that.options.onDragSubstituteBy)) ? that.options.onDragSubstituteBy(that) : undefined,
               // Or use a clone
-              clone = tempClone ? tempClone : event.target.cloneNode(true),
+              clone = tempClone || event.target.cloneNode(true),
 
               $original = jQuery(event.target),
               $clone = jQuery(clone),

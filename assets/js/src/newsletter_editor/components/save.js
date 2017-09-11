@@ -8,7 +8,9 @@ define([
   'jquery',
   'blob',
   'file-saver',
-  'html2canvas'
+  'html2canvas',
+  'underscore',
+  'jquery'
 ], function(
   App,
   CommunicationComponent,
@@ -19,8 +21,10 @@ define([
   jQuery,
   Blob,
   FileSaver,
-  html2canvas
-  ) {
+  html2canvas,
+  _,
+  $
+) {
 
   'use strict';
 
@@ -139,7 +143,7 @@ define([
   };
 
   Module.SaveView = Marionette.View.extend({
-    getTemplate: function() { return templates.save; },
+    getTemplate: function() { return window.templates.save; },
     events: {
       'click .mailpoet_save_button': 'save',
       'click .mailpoet_save_show_options': 'toggleSaveOptions',

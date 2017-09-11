@@ -83,7 +83,7 @@ const messages = {
     MailPoet.Notice.success(message);
   },
   onNoItemsFound: (group) => {
-    if (group === 'bounced' && !mailpoet_premium_active) {
+    if (group === 'bounced' && !window.mailpoet_premium_active) {
       return (
         <div>
           <p>{MailPoet.I18n.t('bouncedSubscribersHelp')}</p>
@@ -245,7 +245,7 @@ const item_actions = [
 const SubscriberList = React.createClass({
   getSegmentFromId: function (segment_id) {
     let result = false;
-    mailpoet_segments.map((segment) => {
+    window.mailpoet_segments.map((segment) => {
       if (segment.id === segment_id) {
         result = segment;
       }
@@ -350,7 +350,7 @@ const SubscriberList = React.createClass({
         </h1>
 
         <Listing
-          limit={ mailpoet_listing_per_page }
+          limit={ window.mailpoet_listing_per_page }
           location={ this.props.location }
           params={ this.props.params }
           endpoint="subscribers"

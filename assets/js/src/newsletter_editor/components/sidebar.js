@@ -53,7 +53,7 @@ define([
   Module.getLayoutWidgets = function() { return Module._layoutWidgets; };
 
   var SidebarView = Marionette.View.extend({
-    getTemplate: function() { return templates.sidebar; },
+    getTemplate: function() { return window.templates.sidebar; },
     regions: {
       contentRegion: '.mailpoet_content_region',
       layoutRegion: '.mailpoet_layout_region',
@@ -147,7 +147,7 @@ define([
    * Responsible for rendering draggable content widgets
    */
   Module.SidebarWidgetsView = Marionette.View.extend({
-    getTemplate: function() { return templates.sidebarContent; },
+    getTemplate: function() { return window.templates.sidebarContent; },
     regions: {
       widgets: '.mailpoet_region_content'
     },
@@ -167,14 +167,14 @@ define([
    * Responsible for rendering draggable layout widgets
    */
   Module.SidebarLayoutWidgetsView = Module.SidebarWidgetsView.extend({
-    getTemplate: function() { return templates.sidebarLayout; }
+    getTemplate: function() { return window.templates.sidebarLayout; }
   });
 
   /**
    * Responsible for managing global styles
    */
   Module.SidebarStylesView = Marionette.View.extend({
-    getTemplate: function() { return templates.sidebarStyles; },
+    getTemplate: function() { return window.templates.sidebarStyles; },
     behaviors: {
       ColorPickerBehavior: {}
     },
@@ -238,7 +238,7 @@ define([
   });
 
   Module.SidebarPreviewView = Marionette.View.extend({
-    getTemplate: function() { return templates.sidebarPreview; },
+    getTemplate: function() { return window.templates.sidebarPreview; },
     events: {
       'click .mailpoet_show_preview': 'showPreview',
       'click #mailpoet_send_preview': 'sendPreview'
@@ -346,7 +346,7 @@ define([
   });
 
   Module.NewsletterPreviewView = Marionette.View.extend({
-    getTemplate: function() { return templates.newsletterPreview; },
+    getTemplate: function() { return window.templates.newsletterPreview; },
     initialize: function(options) {
       this.previewUrl = options.previewUrl;
       this.width = '100%';

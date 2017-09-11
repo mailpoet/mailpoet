@@ -1,3 +1,6 @@
+const expect = global.expect;
+const sinon = global.sinon;
+
 define([
   'newsletter_editor/App',
   'newsletter_editor/components/save',
@@ -30,7 +33,8 @@ define([
           }
         });
         module.save();
-        expect(spy.withArgs('beforeEditorSave').calledOnce).to.be.true;
+        expect(spy).to.have.callCount(1);
+        expect(spy).to.have.been.calledWith('beforeEditorSave');
       });
 
       it('triggers afterEditorSave event', function() {
@@ -51,7 +55,7 @@ define([
         });
         promise.resolve({ success: true });
         module.save();
-        expect(spy.withArgs('afterEditorSave').calledOnce).to.be.true;
+        expect(spy.withArgs('afterEditorSave').calledOnce).to.be.true;// eslint-disable-line no-unused-expressions
       });
 
       it('sends newsletter json to server for saving', function() {
@@ -185,7 +189,8 @@ define([
           view.render();
 
           view.$('.mailpoet_save_next').click();
-          expect(spy.withArgs('beforeEditorSave').calledOnce).to.be.true;
+          expect(spy).to.have.callCount(1);
+          expect(spy).to.have.been.calledWith('beforeEditorSave');
         });
 
       });

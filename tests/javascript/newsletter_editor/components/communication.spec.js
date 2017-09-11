@@ -1,3 +1,7 @@
+const expect = global.expect;
+const jQuery = global.jQuery;
+const sinon = global.sinon;
+
 define([
   'newsletter_editor/App',
   'newsletter_editor/components/communication',
