@@ -15,6 +15,7 @@ class Migrator {
     $this->charset_collate = Env::$db_charset_collate;
     $this->models = array(
       'segments',
+      'dynamic_segment_filters',
       'settings',
       'custom_fields',
       'scheduled_tasks',
@@ -76,6 +77,19 @@ class Migrator {
       'deleted_at TIMESTAMP NULL,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY name (name)'
+    );
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  function dynamicSegmentFilters() {
+    $attributes = array(
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'segment_id int(11) unsigned NOT NULL,',
+      'created_at TIMESTAMP NULL,',
+      'updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'filter_data LONGTEXT,',
+      'PRIMARY KEY (id),',
+      'KEY segment_id (segment_id)',
     );
     return $this->sqlify(__FUNCTION__, $attributes);
   }
