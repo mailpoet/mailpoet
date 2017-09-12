@@ -1,0 +1,9 @@
+<% extends 'layout.html' %>
+
+<% block content %>
+  <%= do_action('mailpoet_pages_' ~ page_name) %>
+<% endblock %>
+
+<% block translations %>
+  <%= do_action('mailpoet_pages_translations_' ~ page_name) %>
+<% endblock %>
