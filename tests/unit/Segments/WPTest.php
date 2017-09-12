@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Segments\WP;
+use Codeception\Util\Fixtures;
 
 class WPTest extends \MailPoetTest  {
 
@@ -108,6 +109,21 @@ class WPTest extends \MailPoetTest  {
     expect($subscribers->count())->equals(1);
   }
 
+  function testItDoesntDeleteNonWPData() {
+    $this->insertUser();
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(array(
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'user-sync-test' . rand() . '@example.com',
+    ));
+    $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
+    $subscriber->save();
+    WP::synchronizeUsers();
+    $subscribersCount = $this->getSubscribersCount();
+    expect($subscribersCount)->equals(2);
+  }
+
   function _before() {
     $this->cleanData();
   }
@@ -122,14 +138,20 @@ class WPTest extends \MailPoetTest  {
     $db = \ORM::getDb();
     $db->exec(sprintf('
        DELETE FROM
-         %susers       
+         %susers
        WHERE
          user_email LIKE "user-sync-test%%"
     ', $wpdb->prefix));
+    $db->exec(sprintf('
+       DELETE FROM
+         %s
+       WHERE
+         email LIKE "user-sync-test%%"
+    ', Subscriber::$_table));
   }
 
   private function getSubscribersCount() {
-    return Subscriber::whereIn("wp_user_id", $this->userIds)->count();
+    return Subscriber::whereLike("email", "user-sync-test%")->count();
   }
 
   /**
@@ -148,7 +170,7 @@ class WPTest extends \MailPoetTest  {
            VALUES 
            (
              CONCAT("user-sync-test", rand()), 
-             CONCAT("user", rand(), "@example.com"),
+             CONCAT("user-sync-test", rand(), "@example.com"),
              "2017-01-02 12:31:12"
            )', $wpdb->prefix));
     $id = $db->lastInsertId();
