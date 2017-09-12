@@ -62,12 +62,17 @@ class Initializer {
 
     add_action('init', array(
       $this,
-      'onInit'
+      'preInitialize'
     ), 0);
+
+    add_action('init', array(
+      $this,
+      'initialize'
+    ));
 
     add_action('wp_loaded', array(
       $this,
-      'setupHooks'
+      'postInitialize'
     ));
 
     add_action('admin_init', array(
@@ -91,7 +96,27 @@ class Initializer {
     $database->init();
   }
 
-  function onInit() {
+  function preInitialize() {
+    try {
+      $this->setupRenderer();
+      $this->setupWidget();
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e);
+    }
+  }
+
+  function setupRenderer() {
+    $caching = !WP_DEBUG;
+    $debugging = WP_DEBUG;
+    $this->renderer = new Renderer($caching, $debugging);
+  }
+
+  function setupWidget() {
+    $widget = new Widget($this->renderer);
+    $widget->init();
+  }
+
+  function initialize() {
     try {
       $this->setupAccessControl();
 
@@ -99,8 +124,6 @@ class Initializer {
       $this->setupInstaller();
       $this->setupUpdater();
 
-      $this->setupRenderer();
-      $this->setupWidget();
       $this->setupLocalizer();
       $this->setupMenu();
       $this->setupShortcodes();
@@ -110,8 +133,6 @@ class Initializer {
       $this->setupCronTrigger();
       $this->setupConflictResolver();
 
-      $this->setupJSONAPI();
-      $this->setupRouter();
       $this->setupPages();
 
       do_action('mailpoet_initialized', MAILPOET_VERSION);
@@ -163,17 +184,6 @@ class Initializer {
     $updater->init();
   }
 
-  function setupRenderer() {
-    $caching = !WP_DEBUG;
-    $debugging = WP_DEBUG;
-    $this->renderer = new Renderer($caching, $debugging);
-  }
-
-  function setupWidget() {
-    $widget = new Widget($this->renderer);
-    $widget->init();
-  }
-
   function setupLocalizer() {
     $localizer = new Localizer();
     $localizer->init();
@@ -211,6 +221,17 @@ class Initializer {
     $conflict_resolver->init();
   }
 
+  function postInitialize() {
+    if(!defined(self::INITIALIZED)) return;
+    try {
+      $this->setupHooks();
+      $this->setupJSONAPI();
+      $this->setupRouter();
+    } catch(\Exception $e) {
+      $this->handleFailedInitialization($e);
+    }
+  }
+
   function setupJSONAPI() {
     $json_api = API\API::JSON($this->access_control);
     $json_api->init();
@@ -227,13 +248,8 @@ class Initializer {
   }
 
   function setupHooks() {
-    if(!defined(self::INITIALIZED)) return;
-    try {
-      $hooks = new Hooks();
-      $hooks->init();
-    } catch(\Exception $e) {
-      $this->handleFailedInitialization($e);
-    }
+    $hooks = new Hooks();
+    $hooks->init();
   }
 
   function handleFailedInitialization($exception) {
