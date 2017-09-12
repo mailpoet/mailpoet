@@ -74,8 +74,16 @@ var baseConfig = {
         loader: 'expose-loader?_',
       },
       {
+        include: require.resolve('history'),
+        loader: 'expose-loader?' + globalPrefix + '.History',
+      },
+      {
         include: require.resolve('react'),
         loader: 'expose-loader?' + globalPrefix + '.React',
+      },
+      {
+        include: require.resolve('react-dom'),
+        loader: 'expose-loader?' + globalPrefix + '.ReactDOM',
       },
       {
         include: require.resolve('react-router'),
@@ -92,6 +100,10 @@ var baseConfig = {
       {
         test: /listing.jsx/i,
         loader: 'expose-loader?' + globalPrefix + '.Listing!babel-loader',
+      },
+      {
+        test: /form.jsx/i,
+        loader: 'expose-loader?' + globalPrefix + '.Form!babel-loader',
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/newsletters/badges/stats.jsx'),
@@ -158,9 +170,11 @@ var adminConfig = {
       'react-router',
       'react-string-replace',
       'listing/listing.jsx',
+      'form/form.jsx',
       'newsletters/badges/stats.jsx',
       'newsletters/breadcrumb.jsx',
-      'newsletters/types/welcome/scheduling.jsx'
+      'newsletters/types/welcome/scheduling.jsx',
+      'history',
     ],
     admin: [
       'subscribers/subscribers.jsx',
