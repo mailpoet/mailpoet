@@ -4,7 +4,7 @@ Tags: newsletter, email, welcome email, post notification, autoresponder, signup
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.0.0-rc.2.0.2
+Stable tag: 3.0.0-rc.2.0.3
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
@@ -93,6 +93,14 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0-rc.2.0.3 - 2017-09-12 =
+* Added: hook to override default cron URL. Thanks Fred;
+* Improved: WordPress user sync optimized for large membership sites; Thanks Nagui and @deltafactory!
+* Improved: column blocks are highlighted when hovering over their tools in the newsletter editor. Now column blocks are easier to visualize;
+* Improved: color picker in the the email designer got instant color previews and history of recent picks to help you design newsletter elements more rapidly;
+* Fixed: Twig does not throw a deprecated notice. Thanks Pascal;
+* Fixed: newsletter editor now longer hangs on Internet Explorer. Thanks Danielle;
 
 = 3.0.0-rc.2.0.2 - 2017-09-05 =
 * Added: browser spellchecker in newsletter editor;
