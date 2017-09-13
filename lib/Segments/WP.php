@@ -88,8 +88,6 @@ class WP {
     self::updateFristNameIfMissing();
     self::insertUsersToSegment();
     self::removeOrphanedSubscribers();
-    self::removeWPInconsistentubscribers();
-    self::removeOrphanedLinks();
 
     return true;
   }
@@ -159,7 +157,7 @@ class WP {
     Subscriber::raw_execute(sprintf('
      INSERT IGNORE INTO %s(subscriber_id, segment_id, created_at)
       SELECT mps.id, "%s", CURRENT_TIMESTAMP() FROM %s mps
-        WHERE mps.wp_user_id IS NOT NULL
+        WHERE mps.wp_user_id > 0
     ', $wp_mailpoet_subscriber_segment_table, $wp_segment->id, $subscribers_table));
   }
 
@@ -176,42 +174,14 @@ class WP {
     // remove orphaned wp segment subscribers (not having a matching wp user id),
     // e.g. if wp users were deleted directly from the database
     global $wpdb;
+    
+    $wp_segment = Segment::getWPSegment();
 
-    Subscriber::table_alias('wpms')
-      ->leftOuterJoin($wpdb->prefix . 'users', array('wpms.wp_user_id', '=', 'wu.id'), 'wu')
+    $wp_segment->subscribers()
+      ->leftOuterJoin($wpdb->prefix . 'users', array(MP_SUBSCRIBERS_TABLE . '.wp_user_id', '=', 'wu.id'), 'wu')
       ->whereNull('wu.id')
-      ->whereGt('wpms.wp_user_id', 0)
       ->findResultSet()
       ->set('wp_user_id', null)
       ->delete();
-
-  }
-
-  private static function removeWPInconsistentubscribers() {
-    // remove subscribers subscribed to WP list, but not having wp_user_id
-    $wp_segment = Segment::getWPSegment();
-    $subscribers_table = Subscriber::$_table;
-    $wp_mailpoet_subscriber_segment_table = SubscriberSegment::$_table;
-    Subscriber::raw_execute(sprintf('
-      DELETE wpms FROM
-        %s as wpms 
-      JOIN %s as wuss ON wpms.id = wuss.subscriber_id 
-      WHERE 
-       wpms.wp_user_id IS NULL
-       and wuss.segment_id=%d;
-
-    ', $subscribers_table, $wp_mailpoet_subscriber_segment_table, $wp_segment->id));
-  }
-
-  private static function removeOrphanedLinks() {
-    $subscribers_table = Subscriber::$_table;
-    $wp_mailpoet_subscriber_segment_table = SubscriberSegment::$_table;
-    Subscriber::raw_execute(sprintf('
-      DELETE wuss FROM
-        %s as wuss
-      LEFT JOIN %s as wpms ON wpms.id = wuss.subscriber_id 
-      WHERE wpms.id IS NULL
-    ', $wp_mailpoet_subscriber_segment_table, $subscribers_table));
   }
 }
-
