@@ -14,11 +14,15 @@ define([
     defaults: {
       elementSelector: null,
       resizeHandleSelector: true, // true will use edges of the element itself
-      transformationFunction: function(event) { return event.dy; },
       minLength: 0,
       maxLength: Infinity,
       modelField: 'styles.block.height',
-      onResize: null
+      onResize: function(event) {
+        var currentLength = parseFloat(this.view.model.get(this.options.modelField)),
+          newLength = currentLength + event.y;
+        newLength = Math.min(this.options.maxLength, Math.max(this.options.minLength, newLength));
+        this.view.model.set(this.options.modelField, newLength + 'px');
+      }
     },
     events: {
       mouseenter: 'showResizeHandle',
@@ -42,20 +46,14 @@ define([
           right: false,
           bottom: (typeof this.options.resizeHandleSelector === 'string') ? this.view.$(this.options.resizeHandleSelector).get(0) : this.options.resizeHandleSelector
         }
-      }).on('resizestart', function (event) {
+      })
+      .on('resizestart', function(event) {
         that.isBeingResized = true;
         that.$el.addClass('mailpoet_resize_active');
-      }).on('resizemove', function(event) {
-        if (that.options.onResize) {
-          return that.options.onResize(event, that)
-        }
-        var currentLength = parseFloat(that.view.model.get(that.options.modelField)),
-          newLength = currentLength + that.options.transformationFunction(event);
-
-        if (newLength < that.options.minLength) newLength = that.options.minLength;
-        if (newLength > that.options.maxLength) newLength = that.options.maxLength;
-
-        that.view.model.set(that.options.modelField, newLength + 'px');
+      })
+      .on('resizemove', function(event) {
+        var onResize = that.options.onResize.bind(that);
+        return onResize(event);
       })
       .on('resizeend', function (event) {
         that.isBeingResized = null;

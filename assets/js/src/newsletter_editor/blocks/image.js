@@ -25,6 +25,8 @@ define([
         fullWidth: true, // true | false
         width: '64px',
         height: '64px',
+        maxWidth: false,
+        minWidth: '36px',
         styles: {
           block: {
             textAlign: 'center'
@@ -47,31 +49,37 @@ define([
       ResizableBehavior: {
         elementSelector: '.mailpoet_image',
         resizeHandleSelector: '.mailpoet_image_resize_handle',
-        onResize: function(event, that) {
-          var corner = that.$('.mailpoet_image').offset(),
-              width  = event.pageX - corner.left
-          if(width < 36) {
-            width = 36;
-          }
-          if(width > 660) {
-            width = 660;
-          }
-          var height = (that.view.model.get('height') / that.view.model.get('width')) * width;
-          that.view.model.set({ width: width, height: height });
-          that.$('.mailpoet_content').css('width', width + 'px');
+        onResize: function(event) {
+          var corner = this.$('.mailpoet_image').offset(),
+            width    = event.pageX - corner.left,
+            minWidth = parseInt(this.view.model.get('minWidth')),
+            maxWidth = parseInt(this.view.model.get('maxWidth'));
+
+          width = Math.min(maxWidth, Math.max(minWidth, width));
+          var height = (this.view.model.get('height') / this.view.model.get('width')) * width;
+          this.view.model.set({ width: width, height: height });
         }
       },
       ShowSettingsBehavior: {
         ignoreFrom: '.mailpoet_image_resize_handle'
       }
     }),
-    initialize: function() {
-      base.BlockView.prototype.initialize.apply(this, arguments);
+    onDomRefresh: function() {
+      var maxWidth = Math.min(660, this.$el.width());
+      this.model.set('maxWidth', maxWidth + 'px');      
     },
     onRender: function() {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
-      
+
+      var maxWidth = parseInt(this.model.get('maxWidth')),
+        minWidth   = parseInt(this.model.get('minWidth')),
+        width      = parseInt(this.model.get('width'));
+
+      width = Math.min(maxWidth, Math.max(minWidth, width));
+      this.model.set('width', width + 'px');
+      this.$('.mailpoet_content').css('width', width + 'px');
+
       if (this.model.get('fullWidth')) {
         this.$el.addClass('mailpoet_full_image');
       } else {
@@ -110,9 +118,25 @@ define([
         'input .mailpoet_field_image_width_input': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width', _.partial(this.changePixelField, 'width').bind(this))
       };
     },
+    modelEvents: function() {
+      return {
+        'change:maxWidth': 'updateMaxWidth',
+        'change:width': 'updateWidth'
+      };
+    },
     updateValueAndCall: function(fieldToUpdate, callable, event) {
       this.$(fieldToUpdate).val(jQuery(event.target).val());
       callable(event);
+    },
+    updateMaxWidth: function() {
+      var maxWidth = parseInt(this.model.get('maxWidth'));
+      this.$('.mailpoet_field_image_width').attr('max', maxWidth);
+      this.$('.mailpoet_field_image_width_input').attr('max', maxWidth);      
+    },
+    updateWidth: function() {
+      var width = parseInt(this.model.get('width'));
+      this.$('.mailpoet_field_image_width').val(width);
+      this.$('.mailpoet_field_image_width_input').val(width);      
     },
     initialize: function(options) {
       base.BlockSettingsView.prototype.initialize.apply(this, arguments);
