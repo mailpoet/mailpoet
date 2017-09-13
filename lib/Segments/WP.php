@@ -88,6 +88,7 @@ class WP {
     self::updateFristNameIfMissing();
     self::insertUsersToSegment();
     self::removeOrphanedSubscribers();
+    self::removeWPInconsistentubscribers();
 
     return true;
   }
@@ -183,6 +184,22 @@ class WP {
       ->set('wp_user_id', null)
       ->delete();
 
+  }
+
+  private static function removeWPInconsistentubscribers() {
+    // remove subscribers subscribed to WP list, but not having wp_user_id
+    $wp_segment = Segment::getWPSegment();
+    $subscribers_table = Subscriber::$_table;
+    $wp_mailpoet_subscriber_segment_table = SubscriberSegment::$_table;
+    Subscriber::raw_execute(sprintf('
+      DELETE wpms FROM
+        %s as wpms 
+      JOIN %s as wuss ON wpms.id = wuss.subscriber_id 
+      WHERE 
+       wpms.wp_user_id IS NULL
+       and wuss.segment_id=%d;
+
+    ', $subscribers_table, $wp_mailpoet_subscriber_segment_table, $wp_segment->id));
   }
 }
 

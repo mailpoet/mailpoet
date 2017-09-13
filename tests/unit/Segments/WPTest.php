@@ -7,8 +7,8 @@ require_once(ABSPATH . 'wp-admin/includes/user.php');
 use Carbon\Carbon;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\WP;
-use Codeception\Util\Fixtures;
 
 class WPTest extends \MailPoetTest  {
 
@@ -144,6 +144,30 @@ class WPTest extends \MailPoetTest  {
     expect($subscribersCount)->equals(3);
   }
 
+  function testItRemovesSubscribersInWPSegmentWithoutWPId() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(array(
+      'first_name' => 'Mike',
+      'last_name' => 'Mike',
+      'email' => 'user-sync-test' . rand() . '@example.com',
+      'wp_user_id' => NULL,
+    ));
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->save();
+    $wp_segment = Segment::getWPSegment();
+    $association = SubscriberSegment::create();
+    $association->subscriber_id = $subscriber->id;
+    $association->segment_id = $wp_segment->id;
+    $association->save();
+    $subscribersCount = $this->getSubscribersCount();
+    expect($subscribersCount)->equals(1);
+    WP::synchronizeUsers();
+    var_dump($subscriber);
+    var_dump(\ORM::get_last_query());
+    $subscribersCount = $this->getSubscribersCount(0);
+    expect($subscribersCount)->equals(0);
+  }
+
   function _before() {
     $this->cleanData();
   }
@@ -158,6 +182,12 @@ class WPTest extends \MailPoetTest  {
     $db = \ORM::getDb();
     $db->exec(sprintf('
        DELETE FROM
+         %s
+       WHERE
+         subscriber_id IN (select id from %s WHERE email LIKE "user-sync-test%%")
+    ', SubscriberSegment::$_table, Subscriber::$_table));
+    $db->exec(sprintf('
+       DELETE FROM
          %susers
        WHERE
          user_email LIKE "user-sync-test%%"
@@ -170,7 +200,7 @@ class WPTest extends \MailPoetTest  {
     ', Subscriber::$_table));
   }
 
-  private function getSubscribersCount() {
+  private function getSubscribersCount($a = null) {
     return Subscriber::whereLike("email", "user-sync-test%")->count();
   }
 
