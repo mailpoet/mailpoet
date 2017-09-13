@@ -186,6 +186,12 @@ class WPTest extends \MailPoetTest  {
     ', SubscriberSegment::$_table, Subscriber::$_table));
     $db->exec(sprintf('
        DELETE FROM
+         %susermeta
+       WHERE
+         user_id IN (select id from %susers WHERE user_email LIKE "user-sync-test%%")
+    ', $wpdb->prefix, $wpdb->prefix));
+    $db->exec(sprintf('
+       DELETE FROM
          %susers
        WHERE
          user_email LIKE "user-sync-test%%"
