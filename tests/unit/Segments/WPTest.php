@@ -7,6 +7,7 @@ require_once(ABSPATH . 'wp-admin/includes/user.php');
 use Carbon\Carbon;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\WP;
 
 class WPTest extends \MailPoetTest  {
@@ -67,6 +68,15 @@ class WPTest extends \MailPoetTest  {
     expect($subscriber->first_name)->equals('First name');
   }
 
+  function testItSynchronizeFirstNamesFromMetaNotDisplayName() {
+    $id = $this->insertUser();
+    update_user_meta($id, 'first_name', 'First name');
+    $this->updateWPUserDisplayName($id, 'display_name');
+    WP::synchronizeUsers();
+    $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
+    expect($subscriber->first_name)->equals('First name');
+  }
+
   function testItSynchronizeSegment() {
     $this->insertUser();
     $this->insertUser();
@@ -108,6 +118,54 @@ class WPTest extends \MailPoetTest  {
     expect($subscribers->count())->equals(1);
   }
 
+  function testItDoesntDeleteNonWPData() {
+    $this->insertUser();
+    // wp_user_id is null
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(array(
+      'first_name' => 'John',
+      'last_name' => 'John',
+      'email' => 'user-sync-test' . rand() . '@example.com',
+    ));
+    $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
+    $subscriber->save();
+    // wp_user_id is zero
+    $subscriber2 = Subscriber::create();
+    $subscriber2->hydrate(array(
+      'first_name' => 'Mike',
+      'last_name' => 'Mike',
+      'email' => 'user-sync-test2' . rand() . '@example.com',
+      'wp_user_id' => 0,
+    ));
+    $subscriber2->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber2->save();
+    WP::synchronizeUsers();
+    $subscribersCount = $this->getSubscribersCount();
+    expect($subscribersCount)->equals(3);
+  }
+
+  function testItRemovesSubscribersInWPSegmentWithoutWPId() {
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate(array(
+      'first_name' => 'Mike',
+      'last_name' => 'Mike',
+      'email' => 'user-sync-test' . rand() . '@example.com',
+      'wp_user_id' => null,
+    ));
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->save();
+    $wp_segment = Segment::getWPSegment();
+    $association = SubscriberSegment::create();
+    $association->subscriber_id = $subscriber->id;
+    $association->segment_id = $wp_segment->id;
+    $association->save();
+    $subscribersCount = $this->getSubscribersCount();
+    expect($subscribersCount)->equals(1);
+    WP::synchronizeUsers();
+    $subscribersCount = $this->getSubscribersCount(0);
+    expect($subscribersCount)->equals(0);
+  }
+
   function _before() {
     $this->cleanData();
   }
@@ -118,18 +176,37 @@ class WPTest extends \MailPoetTest  {
 
   private function cleanData() {
     \ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    \ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     global $wpdb;
     $db = \ORM::getDb();
     $db->exec(sprintf('
        DELETE FROM
-         %susers       
+         %s
+       WHERE
+         subscriber_id IN (select id from %s WHERE email LIKE "user-sync-test%%")
+    ', SubscriberSegment::$_table, Subscriber::$_table));
+    $db->exec(sprintf('
+       DELETE FROM
+         %susermeta
+       WHERE
+         user_id IN (select id from %susers WHERE user_email LIKE "user-sync-test%%")
+    ', $wpdb->prefix, $wpdb->prefix));
+    $db->exec(sprintf('
+       DELETE FROM
+         %susers
        WHERE
          user_email LIKE "user-sync-test%%"
     ', $wpdb->prefix));
+    $db->exec(sprintf('
+       DELETE FROM
+         %s
+       WHERE
+         email LIKE "user-sync-test%%"
+    ', Subscriber::$_table));
   }
 
-  private function getSubscribersCount() {
-    return Subscriber::whereIn("wp_user_id", $this->userIds)->count();
+  private function getSubscribersCount($a = null) {
+    return Subscriber::whereLike("email", "user-sync-test%")->count();
   }
 
   /**
@@ -148,7 +225,7 @@ class WPTest extends \MailPoetTest  {
            VALUES 
            (
              CONCAT("user-sync-test", rand()), 
-             CONCAT("user", rand(), "@example.com"),
+             CONCAT("user-sync-test", rand(), "@example.com"),
              "2017-01-02 12:31:12"
            )', $wpdb->prefix));
     $id = $db->lastInsertId();

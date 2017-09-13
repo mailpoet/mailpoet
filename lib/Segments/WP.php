@@ -157,7 +157,7 @@ class WP {
     Subscriber::raw_execute(sprintf('
      INSERT IGNORE INTO %s(subscriber_id, segment_id, created_at)
       SELECT mps.id, "%s", CURRENT_TIMESTAMP() FROM %s mps
-        WHERE mps.wp_user_id IS NOT NULL
+        WHERE mps.wp_user_id > 0
     ', $wp_mailpoet_subscriber_segment_table, $wp_segment->id, $subscribers_table));
   }
 
@@ -174,14 +174,14 @@ class WP {
     // remove orphaned wp segment subscribers (not having a matching wp user id),
     // e.g. if wp users were deleted directly from the database
     global $wpdb;
+    
+    $wp_segment = Segment::getWPSegment();
 
-    Subscriber::table_alias('wpms')
-      ->leftOuterJoin($wpdb->prefix . 'users', array('wpms.wp_user_id', '=', 'wu.id'), 'wu')
+    $wp_segment->subscribers()
+      ->leftOuterJoin($wpdb->prefix . 'users', array(MP_SUBSCRIBERS_TABLE . '.wp_user_id', '=', 'wu.id'), 'wu')
       ->whereNull('wu.id')
       ->findResultSet()
       ->set('wp_user_id', null)
       ->delete();
-
   }
 }
-
