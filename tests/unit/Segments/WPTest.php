@@ -118,6 +118,18 @@ class WPTest extends \MailPoetTest  {
     expect($subscribers->count())->equals(1);
   }
 
+  function testItRemovesOrphanedLinks() {
+    $count1 = SubscriberSegment::count();
+    $wp_segment = Segment::getWPSegment();
+    $association = SubscriberSegment::create();
+    $association->subscriber_id = rand() * 4;
+    $association->segment_id = $wp_segment->id;
+    $association->save();
+    WP::synchronizeUsers();
+    $count2 = SubscriberSegment::count();
+    expect($count1)->equals($count2);
+  }
+
   function testItDoesntDeleteNonWPData() {
     $this->insertUser();
     // wp_user_id is null

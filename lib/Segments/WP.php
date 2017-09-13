@@ -89,6 +89,7 @@ class WP {
     self::insertUsersToSegment();
     self::removeOrphanedSubscribers();
     self::removeWPInconsistentubscribers();
+    self::removeOrphanedLinks();
 
     return true;
   }
@@ -200,6 +201,17 @@ class WP {
        and wuss.segment_id=%d;
 
     ', $subscribers_table, $wp_mailpoet_subscriber_segment_table, $wp_segment->id));
+  }
+
+  private static function removeOrphanedLinks() {
+    $subscribers_table = Subscriber::$_table;
+    $wp_mailpoet_subscriber_segment_table = SubscriberSegment::$_table;
+    Subscriber::raw_execute(sprintf('
+      DELETE wuss FROM
+        %s as wuss
+      LEFT JOIN %s as wpms ON wpms.id = wuss.subscriber_id 
+      WHERE wpms.id IS NULL
+    ', $wp_mailpoet_subscriber_segment_table, $subscribers_table));
   }
 }
 
