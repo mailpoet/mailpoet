@@ -150,7 +150,7 @@ class WPTest extends \MailPoetTest  {
       'first_name' => 'Mike',
       'last_name' => 'Mike',
       'email' => 'user-sync-test' . rand() . '@example.com',
-      'wp_user_id' => NULL,
+      'wp_user_id' => null,
     ));
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
@@ -162,8 +162,6 @@ class WPTest extends \MailPoetTest  {
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(1);
     WP::synchronizeUsers();
-    var_dump($subscriber);
-    var_dump(\ORM::get_last_query());
     $subscribersCount = $this->getSubscribersCount(0);
     expect($subscribersCount)->equals(0);
   }
