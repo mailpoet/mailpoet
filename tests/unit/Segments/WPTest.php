@@ -68,6 +68,15 @@ class WPTest extends \MailPoetTest  {
     expect($subscriber->first_name)->equals('First name');
   }
 
+  function testItSynchronizeFirstNamesFromMetaNotDisplayName() {
+    $id = $this->insertUser();
+    update_user_meta($id, 'first_name', 'First name');
+    $this->updateWPUserDisplayName($id, 'display_name');
+    WP::synchronizeUsers();
+    $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
+    expect($subscriber->first_name)->equals('First name');
+  }
+
   function testItSynchronizeSegment() {
     $this->insertUser();
     $this->insertUser();
