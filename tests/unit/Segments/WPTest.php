@@ -111,6 +111,7 @@ class WPTest extends \MailPoetTest  {
 
   function testItDoesntDeleteNonWPData() {
     $this->insertUser();
+    // wp_user_id is null
     $subscriber = Subscriber::create();
     $subscriber->hydrate(array(
       'first_name' => 'John',
@@ -119,9 +120,19 @@ class WPTest extends \MailPoetTest  {
     ));
     $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
     $subscriber->save();
+    // wp_user_id is zero
+    $subscriber2 = Subscriber::create();
+    $subscriber2->hydrate(array(
+      'first_name' => 'Mike',
+      'last_name' => 'Mike',
+      'email' => 'user-sync-test2' . rand() . '@example.com',
+      'wp_user_id' => 0,
+    ));
+    $subscriber2->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber2->save();
     WP::synchronizeUsers();
     $subscribersCount = $this->getSubscribersCount();
-    expect($subscribersCount)->equals(2);
+    expect($subscribersCount)->equals(3);
   }
 
   function _before() {

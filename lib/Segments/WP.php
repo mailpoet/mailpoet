@@ -178,7 +178,7 @@ class WP {
     Subscriber::table_alias('wpms')
       ->leftOuterJoin($wpdb->prefix . 'users', array('wpms.wp_user_id', '=', 'wu.id'), 'wu')
       ->whereNull('wu.id')
-      ->whereNotNull('wpms.wp_user_id')
+      ->whereGt('wpms.wp_user_id', 0)
       ->findResultSet()
       ->set('wp_user_id', null)
       ->delete();
