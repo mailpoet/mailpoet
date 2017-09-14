@@ -25,8 +25,6 @@ define([
         fullWidth: true, // true | false
         width: '64px',
         height: '64px',
-        maxWidth: false,
-        minWidth: '36px',
         styles: {
           block: {
             textAlign: 'center'
@@ -51,40 +49,23 @@ define([
         resizeHandleSelector: '.mailpoet_image_resize_handle',
         onResize: function(event) {
           var corner = this.$('.mailpoet_image').offset(),
-            width    = event.pageX - corner.left,
-            minWidth = parseInt(this.view.model.get('minWidth')),
-            maxWidth = parseInt(this.view.model.get('maxWidth'));
-
-          width = Math.min(maxWidth, Math.max(minWidth, width));
-          var height = (this.view.model.get('height') / this.view.model.get('width')) * width;
-          this.view.model.set({ width: width, height: height });
+            width    = event.pageX - corner.left;
+          this.view.model.set('width', width + 'px');
         }
       },
       ShowSettingsBehavior: {
         ignoreFrom: '.mailpoet_image_resize_handle'
       }
     }),
-    onDomRefresh: function() {
-      var maxWidth = Math.min(660, this.$el.width());
-      this.model.set('maxWidth', maxWidth + 'px');      
-    },
     onRender: function() {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
-
-      var maxWidth = parseInt(this.model.get('maxWidth')),
-        minWidth   = parseInt(this.model.get('minWidth')),
-        width      = parseInt(this.model.get('width'));
-
-      width = Math.min(maxWidth, Math.max(minWidth, width));
-      this.model.set('width', width + 'px');
-      this.$('.mailpoet_content').css('width', width + 'px');
-
       if (this.model.get('fullWidth')) {
         this.$el.addClass('mailpoet_full_image');
       } else {
         this.$el.removeClass('mailpoet_full_image');
       }
+      this.$('.mailpoet_content').css('width', this.model.get('width'));
     }
   });
 
