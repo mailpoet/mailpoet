@@ -1,42 +1,51 @@
-=== MailPoet 3 (new) ===
+=== MailPoet 3 (New) ===
 Contributors: mailpoet, wysija
 Tags: newsletter, email, welcome email, post notification, autoresponder, signup, subscription, SMTP
 Requires at least: 4.6
 Tested up to: 4.8
 Requires PHP: 5.3
-Stable tag: 3.0.0-rc.2.0.3
+Stable tag: 3.0.0
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
+
 Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
 
-This is the release candidate of our completely new email newsletter plugin.
+Welcome to the new MailPoet. Sending emails from within WordPress just got even easier.
 
-= What's new? =
+= What's inside? =
 
-* New designer
-* Responsive templates
-* Send with MailPoet (optional)
+* New designer with responsive templates
+* Send your emails with MailPoet’s Sending Service (optional)
 * Improved user experience
-* Easier configuration
+* Easy configuration
 * Solid reliability
-* Import subscribers, lists, forms and settings from old MailPoet
+* Weekly releases
 
 = See it in action. =
 [Test the demo](http://demo3.mailpoet.com/launch/) or [see the 2 min. video](https://vimeo.com/223581490)
 [vimeo https://vimeo.com/223581490]
 
-= What is a release candidate? =
+= Before you install =
 
-MailPoet version 3 is considered production ready and will soon replace version 2 officially. It's fully featured, stable and supported. We only expect minor issues. Further notes:
+Take note:
+* Not optimized for right-to-left (RTL) languages yet
+* Multisite works, but is not officially supported
+* Please check the translations in your language
+* Review [our minimum requirements](http://beta.docs.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3)
 
-* Weekly releases with bug fixes and improvements
-* Report bugs directly from the user interface
-* Not optimized for right-to-left (RTL) languages, but it works
-* Multisite works but is not officially supported
+= What about the Premium? =
 
-= Premium version available =
+MailPoet is fully featured in its free version and works up until you have 2000 subscribers.
 
-[Get in touch](https://www.mailpoet.com/support/sales-pre-sales-questions/) if you are an existing customer and you want to switch.
+The Premium version adds the following features:
+* detailed stats for opens and clicks
+* ability to send Welcome Emails automatically; i.e. "Welcome to my Newsletter” autoresponders or multi-email courses
+* removes the small MailPoet logo in the footer of your emails
+* same day support (Monday to Friday)
+
+Plus: if you sign up to one of our sending plans, you’ll get all of these fancy features for free. Visit the Premium page inside the plugin for more info.
 
 = Translations =
 
@@ -50,8 +59,15 @@ MailPoet version 3 is considered production ready and will soon replace version 
 * Russian
 * Japanese
 * Persian (IR)
+* Norwegian
+* Swedish
+* Turkish
 
-We welcome translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" web site will not work!
+We welcome experienced translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" web site will not work.
+
+= Security =
+
+[Security audits are made by LogicalTrust](https://logicaltrust.net/en/), an independant third party.
 
 == Installation ==
 
@@ -60,7 +76,7 @@ There are 3 ways to install this plugin:
 = 1. The super easy way =
 1. In your WordPress dashboard, navigate to Plugins > Add New
 1. Search for `MailPoet`
-1. Click on "install now" under "MailPoet 3 – Beta Version"
+1. Click on "install now"
 1. Activate the plugin
 1. A new `MailPoet` menu will appear in your WordPress dashboard
 
@@ -82,7 +98,7 @@ There are 3 ways to install this plugin:
 
 = Need help? =
 
-Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You can write to us on the forums too.
+Stop by our [support site](https://www.mailpoet.com/support).
 
 == Screenshots ==
 
@@ -93,6 +109,9 @@ Our [support site](https://beta.docs.mailpoet.com) has plenty of articles. You c
 5. Subscriber import (via a CSV file or directly from MailChimp)
 
 == Changelog ==
+
+= 3.0.0 - 2017-09-19 =
+* Official launch of the new MailPoet. :)
 
 = 3.0.0-rc.2.0.3 - 2017-09-12 =
 * Added: hook to override default cron URL. Thanks Fred;
