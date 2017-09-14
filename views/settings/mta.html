@@ -120,14 +120,17 @@
     <div class="mailpoet_sending_method_description">
       <h3><%= __('Other') %></h3>
       <div class="mailpoet_description">
-        <strong><%= __('Send with your website or third party') %></strong>
-        <br />
-        <%= __('Choose to send emails through your website (not recommended) or a third party sender.') %>
+        <strong><%= __('Send emails via your host (not recommended!) or via a third-party sender.') %></strong>
         <ul class="sending-method-benefits mailpoet_error">
-          <li class="mailpoet_error_item"><%= __("You'll probably end up in spam.") %>
-          <li class="mailpoet_error_item"><%= __('Sending speed is limited by your web host.') %>
-          <li class="mailpoet_error_item"><%= __('Manual configuration of SPF and DKIM required.') %>
-          <li class="mailpoet_error_item"><%= __('Bounce handling is available, but only with an extra add-on.') %>
+          <li class="mailpoet_error_item"><%= __("Unless you're a pro, you’ll probably end up in spam.") %>
+          <li class="mailpoet_error_item"><%= __("Sending speed is limited by your host and/or your third-party (with a 2,000 per hour maximum).") %>
+          <li class="mailpoet_error_item"><%= __("Manual configuration of SPF and DKIM required.") %>
+          <li class="mailpoet_error_item"><%=
+            __("Bounce handling is available, but only with an extra [link]add-on[/link].")
+            |replaceLinkTags('https://wordpress.org/plugins/bounce-handler-mailpoet/', {'target' : '_blank'})
+            |raw
+          %>
+          <li class="mailpoet_error_item"><%= __("You’ll need a separate plugin to send your WordPress site emails (optional).") %>
         </ul>
       </div>
     </div>
