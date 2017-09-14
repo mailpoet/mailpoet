@@ -68,7 +68,7 @@ We welcome experienced translators to translate directly on [our Transifex proje
 
 = Security =
 
-[Security audits are made by LogicalTrust](https://logicaltrust.net/en/), an independant third party.
+[Security audits are made by LogicalTrust](https://logicaltrust.net/en/), an independent third party.
 
 == Installation ==
 
