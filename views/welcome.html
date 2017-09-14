@@ -6,7 +6,7 @@
   <h1><%= __('Greetings, humans.') %></h1>
 
   <p class="about-text"><%= __('Thanks for using MailPoet! We really appreciate all of your love, affection, [link]and (good) plugin reviews.[/link]')
-    |replaceLinkTags('https://wordpress.org/support/plugin/wysija-newsletters/reviews/', {'target' : '_blank'})
+    |replaceLinkTags('https://wordpress.org/support/plugin/mailpoet/reviews/', {'target' : '_blank'})
     |raw
     %>
   </p>
@@ -17,9 +17,32 @@
     <a href="admin.php?page=mailpoet-update" class="nav-tab"><%= __("What's new") %></a>
   </h2>
 
+  <% set random = random(2) %>
+
+  <div <% if random != 0 %>style="display: none;"<% endif %>>
+    <h2><%= __('Coming this Fall to a WordPress plugin page near you') %></h2>
+    <p class="about-text mailpoet_centered mailpoet-top-text"><%= __('The highly-anticipated sequel to Dead Poets Society, Introduction to MailPoet will keep you on the edge of your seat.
+      “Five out of five stars,” says Rafael Ehlers, MailPoet Support Manager.
+      “A must-watch for aspiring email poets.”') %>
+  </div>
+  <div <% if random != 1 %>style="display: none;"<% endif %>>
+    <h2><%= __('But first, watch this video') %></h2>
+    <p class="about-text mailpoet_centered mailpoet-top-text"><%= __('Wait a second. Don’t click that big blue button just yet.
+      Yeah, we’re talking to you. Before you do anything, you should really watch this video.
+      It won’t change your life, but it will save you (and our support team) a ton of time.
+      And what is life without time? So, maybe it is life-changing, after all…') %>
+  </div>
+  <div <% if random != 2 %>style="display: none;"<% endif %>>
+    <h2><%= __('Explanatory videos are boring, we know') %></h2>
+    <p class="about-text mailpoet_centered mailpoet-top-text"><%= __('But this video is really important!
+      We promise. Over the course of three minutes, you’ll learn how to send your first newsletter,
+      manage your lists, make billions of dollars and live happily ever after.
+      That’s right – it’s that good. So get watching.') %>
+  </div>
+
   <div class="headline-feature feature-video">
     <div class="videoWrapper">
-      <iframe width="1050" height="591" src="https://player.vimeo.com/video/184501111?title=0&byline=0&portrait=0" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+      <iframe width="1050" height="591" src="https://player.vimeo.com/video/229737424" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
     </div>
   </div>
 
@@ -28,13 +51,12 @@
   <div class="feature-section two-col">
     <h2><%= __('Want to Make MailPoet Even Better?') %></h2>
     <div class="col">
-      <h3><%= __('We Need Your Feedback!') %></h3>
-      <p><%= __('As a beta tester, you have a very important job: to tell us what you think about this new version. If you love it, tell us! If you hate it, let us know! Any and all feedback is useful.') %></p>
-      <p><%= __('To get in touch with us, simply click on the blue circle in the bottom right corner of your screen. This button is visible on all MailPoet pages on your WordPress dashboard.') %> <img width="30" style="margin:0" src="<%= image_url('welcome_template/beacon.png') %>" alt="Beacon" /></p>
+      <h3><%= __('Documentation Is One Click Away') %></h3>
+      <p><%= __('Simply click on the blue circle in the bottom right corner of any of the MailPoet pages to access our documentation.') %> <em><%= __('Voilà!') %></em>
     </div>
     <div class="col">
       <h3><%= __('Sharing is Caring') %></h3>
-      <p><%= __("By sharing your data <i>anonymously</i> with us, you can help us understand <i>how people use MailPoet</i> and <i>what sort of features they like and don't like</i>.") %> <a href="http://beta.docs.mailpoet.com/article/130-sharing-your-data-with-us" target="_blank"><%= __('Find out more') %> &rarr;</a>
+      <p><%= __("By sharing your data <i>anonymously</i> with us, you can help us understand how people use MailPoet and what sort of features they like and don't like.") %> <a href="http://beta.docs.mailpoet.com/article/130-sharing-your-data-with-us" target="_blank"><%= __('Find out more') %> &rarr;</a>
       <br><br>
       <label>
         <input type="checkbox" id="mailpoet_analytics_enabled" value="1"
@@ -58,7 +80,7 @@
     </div>
     <div class="col">
       <h3><%= __("Learn the Ropes") %></h3>
-      <p><%= __("New to MailPoet? Check out our brand new email course. Over the span of 3 weeks, we'll teach you how to create and send your first MailPoet email newsletter. Sign up below!") %></p>
+      <p><%= __("New to MailPoet? Check out our brand new email course. Over the course of a week, we'll teach you how to create and send your first MailPoet email newsletter. Sign up below!") %></p>
       <p>
       <iframe width="100%" height="100%" scrolling="no" frameborder="0" src="http://newsletters.mailpoet.com?mailpoet_form_iframe=4" class="mailpoet_form_iframe" vspace="0" tabindex="0" onload="if(window['MailPoet']) MailPoet.Iframe.autoSize(this);" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true"></iframe>
       </p>
