@@ -4,6 +4,7 @@ namespace MailPoet\Test\Helpscout;
 use MailPoet\Helpscout\Beacon;
 use MailPoet\Models\Setting;
 use MailPoet\Models\Subscriber;
+use MailPoet\Services\Bridge;
 
 class BeaconTest extends \MailPoetTest {
   function _before() {
@@ -128,6 +129,12 @@ class BeaconTest extends \MailPoetTest {
   function testItReturnsPremiumVersion() {
     expect($this->beacon_data['MailPoet Premium version'])->equals(
       (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A'
+    );
+  }
+
+  function testItReturnsPremiumKey() {
+    expect($this->beacon_data['MailPoet Premium/MSS key'])->equals(
+      Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME) ?: Setting::getValue(Bridge::API_KEY_SETTING_NAME)
     );
   }
 }

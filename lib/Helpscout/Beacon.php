@@ -5,6 +5,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\Setting;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Router\Router;
+use MailPoet\Services\Bridge;
 
 if(!defined('ABSPATH')) exit;
 
@@ -20,12 +21,14 @@ class Beacon {
       CronDaemon::ACTION_PING
     );
     $cron_ping_url = str_replace(home_url(), CronHelper::getSiteUrl(), $cron_ping_url);
+    $premium_key = Setting::getValue(Bridge::PREMIUM_KEY_SETTING_NAME) ?: Setting::getValue(Bridge::API_KEY_SETTING_NAME);
     return array(
       'name' => $current_user->display_name,
       'email' => $current_user->user_email,
       'PHP version' => PHP_VERSION,
       'MailPoet Free version' => MAILPOET_VERSION,
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
+      'MailPoet Premium/MSS key' => $premium_key,
       'WordPress version' => get_bloginfo('version'),
       'Database version' => $db_version,
       'Web server' => (!empty($_SERVER["SERVER_SOFTWARE"])) ? $_SERVER["SERVER_SOFTWARE"] : 'N/A',
