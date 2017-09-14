@@ -17,6 +17,8 @@
     <a href="admin.php?page=mailpoet-update" class="nav-tab"><%= __("What's new") %></a>
   </h2>
 
+  <% set random = random(2) %>
+
   <div <% if random != 0 %>style="display: none;"<% endif %>>
     <h2><%= __('Coming this Fall to a WordPress plugin page near you') %></h2>
     <p class="about-text mailpoet_centered mailpoet-top-text"><%= __('The highly-anticipated sequel to Dead Poets Society, Introduction to MailPoet will keep you on the edge of your seat.
