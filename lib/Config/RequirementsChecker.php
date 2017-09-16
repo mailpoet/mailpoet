@@ -13,6 +13,7 @@ class RequirementsChecker {
   const TEST_XML_EXTENSION = 'XmlExtension';
   const TEST_ZIP_EXTENSION = 'ZipExtension';
   const TEST_VENDOR_SOURCE = 'VendorSource';
+  const TWIG_MINIMUM_VERSION = '1.26.0';
 
   public $display_error_notice;
   public $vendor_classes = array(
@@ -140,11 +141,26 @@ class RequirementsChecker {
           $dependency_path
         );
 
-        return $this->processError($error);
+        $return_error = true;
+
+        // if a Twig dependency is loaded by another plugin, check for valid version
+        if(strpos($dependency, '\Twig_') === 0) {
+          $return_error = ($this->isValidTwigVersion()) ? false : $return_error;
+        }
+
+        if($return_error) return $this->processError($error);
       }
     }
 
     return true;
+  }
+
+  function isValidTwigVersion() {
+    return (
+      class_exists('\Twig_Environment') &&
+      defined('\Twig_Environment::VERSION') &&
+      version_compare(\Twig_Environment::VERSION, self::TWIG_MINIMUM_VERSION, '>=')
+    );
   }
 
   private function getDependencyPath($namespaced_class) {
