@@ -9,11 +9,15 @@ class Handlebars extends \Twig_Extension {
     return array(
       new \Twig_SimpleFunction(
         'partial',
-        array($this, 'generatePartial'),
+        array(
+          $this,
+          'generatePartial'
+        ),
         array(
           'needs_environment' => true,
-          'needs_context'     => true,
-          'is_safe'           => array('all'))
+          'needs_context' => true,
+          'is_safe' => array('all')
+        )
       )
     );
   }
@@ -37,23 +41,28 @@ class Handlebars extends \Twig_Extension {
         return;
     }
 
-    $output = array();
+    $rendered_template = twig_include($env, $context, $file);
 
-    $output[] = '<script id="'.$id.'" type="text/x-handlebars-template">';
-    $output[] = twig_include($env, $context, $file);
-    $output[] = '</script>';
+    $output = <<<EOL
+<script id="$id" type="text/x-handlebars-template">
+  $rendered_template
+</script>
+EOL;
 
     if($alias !== null) {
-      $output[] = '<script type="text/javascript">';
-      $output[] = 'jQuery(function($) {';
-        $output[] = '$(function() {';
-          $output[] = ' Handlebars.registerPartial(
-            "'.$alias.'",
-            jQuery("#'.$id.'").html());';
-          $output[] = '});';
-        $output[] = '});';
-      $output[] = '</script>';
+      $output .= <<<EOL
+<script type="text/javascript">
+jQuery(function($) {
+  $(function() {
+    Handlebars.registerPartial(
+      '$alias',
+      jQuery('#$id').html()
+    );
+  });
+});
+</script>
+EOL;
     }
-    return join("\n", $output);
+    return $output;
   }
 }
