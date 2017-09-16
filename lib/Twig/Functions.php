@@ -7,11 +7,6 @@ use MailPoet\Config\ServicesChecker;
 if(!defined('ABSPATH')) exit;
 
 class Functions extends \Twig_Extension {
-
-  function getName() {
-    return 'functions';
-  }
-
   function getFunctions() {
     return array(
       new \Twig_SimpleFunction(

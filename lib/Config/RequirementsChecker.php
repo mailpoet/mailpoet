@@ -22,7 +22,6 @@ class RequirementsChecker {
     '\Twig_Loader_Filesystem',
     '\Twig_Lexer',
     '\Twig_Extension',
-    '\Twig_Extension_GlobalsInterface',
     '\Twig_SimpleFunction',
     '\Swift_Mailer',
     '\Swift_SmtpTransport',

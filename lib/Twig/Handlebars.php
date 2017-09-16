@@ -1,14 +1,10 @@
 <?php
+
 namespace MailPoet\Twig;
 
 if(!defined('ABSPATH')) exit;
 
 class Handlebars extends \Twig_Extension {
-
-  public function getName() {
-    return 'handlebars';
-  }
-
   public function getFunctions() {
     return array(
       new \Twig_SimpleFunction(
