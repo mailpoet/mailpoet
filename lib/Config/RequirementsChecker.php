@@ -13,7 +13,7 @@ class RequirementsChecker {
   const TEST_XML_EXTENSION = 'XmlExtension';
   const TEST_ZIP_EXTENSION = 'ZipExtension';
   const TEST_VENDOR_SOURCE = 'VendorSource';
-  const TWIG_MINIMUM_VERSION = '1.26.0';
+  const TWIG_SUPPORTED_VERSIONS = '1.26.0-1.34.4';
 
   public $display_error_notice;
   public $vendor_classes = array(
@@ -156,10 +156,12 @@ class RequirementsChecker {
   }
 
   function isValidTwigVersion() {
+    list($minimum_version, $maximum_version) = explode('-', self::TWIG_SUPPORTED_VERSIONS);
     return (
       class_exists('\Twig_Environment') &&
       defined('\Twig_Environment::VERSION') &&
-      version_compare(\Twig_Environment::VERSION, self::TWIG_MINIMUM_VERSION, '>=')
+      version_compare(\Twig_Environment::VERSION, $minimum_version, '>=') &&
+      version_compare(\Twig_Environment::VERSION, $maximum_version, '<=')
     );
   }
 
