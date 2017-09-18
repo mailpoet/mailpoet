@@ -99,7 +99,7 @@ class APITest extends \MailPoetTest {
     }
   }
 
-  function testItSubscriberSubscriberToMultupleLists() {
+  function testItSubscribesSubscriberToMultupleLists() {
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -111,7 +111,7 @@ class APITest extends \MailPoetTest {
     );
     $result = API::MP(self::VERSION)->subscribeToLists($subscriber->id, array($segment->id));
     expect($result['id'])->equals($subscriber->id);
-    expect($result['subscriptions'][0]['id'])->equals($segment->id);
+    expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
   }
 
   function testItSubscribesSubscriberToSingleList() {
@@ -127,7 +127,7 @@ class APITest extends \MailPoetTest {
     $result = API::MP(self::VERSION)->subscribeToList($subscriber->id, $segment->id);
     expect($result['id'])->equals($subscriber->id);
     expect($result['subscriptions'])->notEmpty();
-    expect($result['subscriptions'][0]['id'])->equals($segment->id);
+    expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
   }
 
   function testItSubscribesSubscriberWithEmailIdentifier() {
@@ -143,7 +143,7 @@ class APITest extends \MailPoetTest {
     $result = API::MP(self::VERSION)->subscribeToList($subscriber->email, $segment->id);
     expect($result['id'])->equals($subscriber->id);
     expect($result['subscriptions'])->notEmpty();
-    expect($result['subscriptions'][0]['id'])->equals($segment->id);
+    expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
   }
 
   function testItGetsSegments() {
@@ -242,7 +242,7 @@ class APITest extends \MailPoetTest {
     $result = API::MP(self::VERSION)->addSubscriber($subscriber, array($segment->id));
     expect($result['id'])->greaterThan(0);
     expect($result['email'])->equals($subscriber['email']);
-    expect($result['subscriptions'][0]['id'])->equals($segment->id);
+    expect($result['subscriptions'][0]['segment_id'])->equals($segment->id);
   }
 
   function testItSchedulesWelcomeNotificationByDefaultAfterAddingSubscriber() {
