@@ -154,7 +154,7 @@ const newsletter_actions = [
 ];
 
 const NewsletterListNotification = React.createClass({
-  mixins: [ MailerMixin ],
+  mixins: [MailerMixin],
   updateStatus: function (e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback

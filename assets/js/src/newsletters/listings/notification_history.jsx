@@ -55,7 +55,7 @@ let newsletter_actions = [
 newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_notification_history_actions', newsletter_actions);
 
 const NewsletterListNotificationHistory = React.createClass({
-  mixins: [ QueueMixin, StatisticsMixin, MailerMixin ],
+  mixins: [QueueMixin, StatisticsMixin, MailerMixin],
   renderItem: function (newsletter, actions, meta) {
     const rowClasses = classNames(
       'manage-column',

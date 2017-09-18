@@ -662,7 +662,7 @@ const Listing = React.createClass({
       selection = false;
 
     if (is_checked) {
-      selected_ids = jQuery.merge(selected_ids, [ id ]);
+      selected_ids = jQuery.merge(selected_ids, [id]);
       // check whether all items on the page are selected
       if (
         jQuery('tbody .check-column :checkbox:not(:checked)').length === 0

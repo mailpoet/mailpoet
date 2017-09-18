@@ -52,7 +52,6 @@
     "no-extra-bind": 0,
     "class-methods-use-this": 0,
     "no-case-declarations": 0,
-    "array-bracket-spacing": 0,
     "no-else-return": 0,
     "max-len": 0,
     "no-useless-concat": 0,

@@ -127,7 +127,7 @@ let newsletter_actions = [
 newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletter_actions);
 
 const NewsletterListWelcome = React.createClass({
-  mixins: [ StatisticsMixin, MailerMixin ],
+  mixins: [StatisticsMixin, MailerMixin],
   updateStatus: function (e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
