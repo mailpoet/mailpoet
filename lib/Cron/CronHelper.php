@@ -61,7 +61,9 @@ class CronHelper {
       'user-agent' => 'MailPoet (www.mailpoet.com) Cron'
     );
     $result = wp_remote_get($url, $args);
-    return wp_remote_retrieve_body($result);
+    return (is_wp_error($result)) ?
+      $result->get_error_message() :
+      wp_remote_retrieve_body($result);
   }
 
   static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
