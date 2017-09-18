@@ -18,7 +18,7 @@ define(
         router: React.PropTypes.object.isRequired,
       },
       setupNewsletter: function (type) {
-        if(type !== undefined) {
+        if (type !== undefined) {
           this.context.router.push(`/new/${type}`);
           MailPoet.trackEvent('Emails > Type selected', {
             'MailPoet Free version': window.mailpoet_version,

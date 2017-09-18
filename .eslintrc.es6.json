@@ -40,7 +40,6 @@
     "no-bitwise": 0,
     "arrow-body-style": 0,
     "prefer-template": 0,
-    "keyword-spacing": 0,
     "default-case": 0,
     "array-callback-return": 0,
     "consistent-return": 0,

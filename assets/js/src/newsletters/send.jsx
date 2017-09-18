@@ -46,7 +46,7 @@ define(
         return type.getSendButtonOptions(this.state.item);
       },
       getSubtype: function (newsletter) {
-        switch(newsletter.type) {
+        switch (newsletter.type) {
           case 'notification': return NotificationNewsletterFields;
           case 'welcome': return WelcomeNewsletterFields;
           default: return StandardNewsletterFields;
@@ -56,7 +56,7 @@ define(
         return jQuery('#mailpoet_newsletter').parsley().isValid();
       },
       componentDidMount: function () {
-        if(this.isMounted()) {
+        if (this.isMounted()) {
           this.loadItem(this.props.params.id);
         }
         jQuery('#mailpoet_newsletter').parsley();
@@ -92,7 +92,7 @@ define(
       handleSend: function (e) {
         e.preventDefault();
 
-        if(!this.isValid()) {
+        if (!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
           this._save(e).done(() => {
@@ -174,7 +174,7 @@ define(
       },
       handleResume: function (e) {
         e.preventDefault();
-        if(!this.isValid()) {
+        if (!this.isValid()) {
           jQuery('#mailpoet_newsletter').parsley().validate();
         } else {
           this._save(e).done(() => {

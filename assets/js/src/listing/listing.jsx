@@ -321,7 +321,7 @@ const Listing = React.createClass({
     if (params.splat) {
       params.splat.split('/').map((param) => {
         const [key, value] = this.getParam(param);
-        switch(key) {
+        switch (key) {
           case 'filter':
             const filters = {};
             value.split('&').map((pair) => {
@@ -489,7 +489,7 @@ const Listing = React.createClass({
           }
         });
       }).fail((response) => {
-        if(response.errors.length > 0) {
+        if (response.errors.length > 0) {
           MailPoet.Notice.error(
             response.errors.map((error) => { return error.message; }),
             { scroll: true }
@@ -631,7 +631,7 @@ const Listing = React.createClass({
     }).done(() => {
       this.getItems();
     }).fail((response) => {
-      if(response.errors.length > 0) {
+      if (response.errors.length > 0) {
         MailPoet.Notice.error(
           response.errors.map((error) => { return error.message; }),
           { scroll: true }

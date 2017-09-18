@@ -15,7 +15,7 @@ const App = React.createClass({
 
 const container = document.getElementById('subscribers_container');
 
-if(container) {
+if (container) {
   ReactDOM.render((
     <Router history={history}>
       <Route path="/" component={App}>

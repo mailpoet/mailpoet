@@ -203,7 +203,7 @@ const NewsletterListNotification = React.createClass({
     });
 
     // check if the user has specified segments to send to
-    if(segments.length === 0) {
+    if (segments.length === 0) {
       return (
         <span className="mailpoet_error">
           { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }

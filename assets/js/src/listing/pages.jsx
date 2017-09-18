@@ -41,7 +41,7 @@ define([
       return Math.min(Math.max(1, Math.abs(~~page)), this.getLastPage());
     },
     handleSetManualPage: function (e) {
-      if(e.which === 13) {
+      if (e.which === 13) {
         this.setPage(this.state.page);
       }
     },
@@ -57,7 +57,7 @@ define([
       return Math.ceil(this.props.count / this.props.limit);
     },
     render: function () {
-      if(this.props.count === 0) {
+      if (this.props.count === 0) {
         return false;
       } else {
         let pagination = false;
@@ -74,8 +74,8 @@ define([
           <span aria-hidden="true" className="tablenav-pages-navspan">»</span>
         );
 
-        if(this.props.limit > 0 && this.props.count > this.props.limit) {
-          if(this.props.page > 1) {
+        if (this.props.limit > 0 && this.props.count > this.props.limit) {
+          if (this.props.page > 1) {
             previousPage = (
               <a href="javascript:;"
                 onClick={this.setPreviousPage}
@@ -86,7 +86,7 @@ define([
             );
           }
 
-          if(this.props.page > 2) {
+          if (this.props.page > 2) {
             firstPage = (
               <a href="javascript:;"
                 onClick={this.setFirstPage}
@@ -97,7 +97,7 @@ define([
             );
           }
 
-          if(this.props.page < this.getLastPage()) {
+          if (this.props.page < this.getLastPage()) {
             nextPage = (
               <a href="javascript:;"
                 onClick={this.setNextPage}
@@ -108,7 +108,7 @@ define([
             );
           }
 
-          if(this.props.page < this.getLastPage() - 1) {
+          if (this.props.page < this.getLastPage() - 1) {
             lastPage = (
               <a href="javascript:;"
                 onClick={this.setLastPage}
@@ -120,7 +120,7 @@ define([
           }
 
           let pageValue =  this.props.page;
-          if(this.state.page !== null) {
+          if (this.state.page !== null) {
             pageValue = this.state.page;
           }
 

@@ -123,7 +123,7 @@ define(
       }
 
       // add placeholders for selects (date, select)
-      switch(custom_field.type) {
+      switch (custom_field.type) {
         case 'date':
           field.year_placeholder = MailPoet.I18n.t('year');
           field.month_placeholder = MailPoet.I18n.t('month');

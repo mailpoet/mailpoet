@@ -164,7 +164,7 @@ const item_actions = [
         refresh();
       }).fail((response) => {
         MailPoet.Modal.loading(false);
-        if(response.errors.length > 0) {
+        if (response.errors.length > 0) {
           MailPoet.Notice.error(
             response.errors.map((error) => { return error.message; }),
             { scroll: true }

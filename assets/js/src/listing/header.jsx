@@ -26,7 +26,7 @@ const ListingHeader = React.createClass({
 
     let checkbox;
 
-    if(this.props.is_selectable === true) {
+    if (this.props.is_selectable === true) {
       checkbox = (
         <th
           className="manage-column column-cb check-column">
@@ -68,7 +68,7 @@ const ListingColumn = React.createClass({
     );
     let label;
 
-    if(this.props.column.sortable === true) {
+    if (this.props.column.sortable === true) {
       label = (
         <a onClick={this.handleSort}>
           <span>{ this.props.column.label }</span>

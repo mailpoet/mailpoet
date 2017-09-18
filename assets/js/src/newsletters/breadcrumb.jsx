@@ -46,7 +46,7 @@ define(
 
           let label = step.label;
 
-          if(step['link'] !== undefined && this.props.step !== step.name) {
+          if (step['link'] !== undefined && this.props.step !== step.name) {
             label = (
               <Link to={step.link}>{ step.label }</Link>
             );

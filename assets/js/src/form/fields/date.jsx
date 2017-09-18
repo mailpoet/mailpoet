@@ -123,7 +123,7 @@ define([
         ? this.props.item[this.props.field.name].trim()
         : '';
 
-      if(value === '') {
+      if (value === '') {
         return;
       }
 
@@ -140,7 +140,7 @@ define([
 
       let value;
 
-      switch(dateType) {
+      switch (dateType) {
         case 'year_month_day':
           value = {
             year: this.state.year,
@@ -202,7 +202,7 @@ define([
       const dateSelects = dateFormats[dateType][0].split('/');
 
       const fields = dateSelects.map((type) => {
-        switch(type) {
+        switch (type) {
           case 'YYYY':
             return (<FormFieldDateYear
               onValueChange={this.onValueChange.bind(this)}

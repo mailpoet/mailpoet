@@ -26,7 +26,7 @@ const App = React.createClass({
 
 const container = document.getElementById('newsletters_container');
 
-if(container) {
+if (container) {
   let extra_routes = [];
   extra_routes = Hooks.applyFilters('mailpoet_newsletters_before_router', extra_routes);
 

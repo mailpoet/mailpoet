@@ -132,7 +132,7 @@ define(
             });
           }
         }).fail((response) => {
-          if(response.errors.length > 0) {
+          if (response.errors.length > 0) {
             MailPoet.Notice.error(
               response.errors.map((error) => { return error.message; }),
               { scroll: true }
@@ -175,7 +175,7 @@ define(
       },
       handleDeleteTemplate: function (template) {
         this.setState({ loading: true });
-        if(
+        if (
           window.confirm(
             (
               MailPoet.I18n.t('confirmTemplateDeletion')

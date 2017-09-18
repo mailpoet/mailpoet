@@ -262,7 +262,7 @@ const SubscriberList = React.createClass({
 
     let status = '';
 
-    switch(subscriber.status) {
+    switch (subscriber.status) {
       case 'subscribed':
         status = MailPoet.I18n.t('subscribed');
         break;

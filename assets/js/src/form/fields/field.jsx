@@ -23,7 +23,7 @@ define([
   const FormField = React.createClass({
     renderField: function (data, inline = false) {
       let description = false;
-      if(data.field.description) {
+      if (data.field.description) {
         description = (
           <p className="description">{ data.field.description }</p>
         );
@@ -32,11 +32,11 @@ define([
       let field = false;
       let dataField = data.field;
 
-      if(data.field['field'] !== undefined) {
+      if (data.field['field'] !== undefined) {
         dataField = jQuery.merge(dataField, data.field.field);
       }
 
-      switch(dataField.type) {
+      switch (dataField.type) {
         case 'text':
           field = (<FormFieldText {...data} />);
           break;
@@ -70,7 +70,7 @@ define([
           break;
       }
 
-      if(inline === true) {
+      if (inline === true) {
         return (
           <span key={'field-' + (data.index || 0)}>
             { field }
@@ -89,7 +89,7 @@ define([
     render: function () {
       let field = false;
 
-      if(this.props.field['fields'] !== undefined) {
+      if (this.props.field['fields'] !== undefined) {
         field = this.props.field.fields.map((subfield, index) => {
           return this.renderField({
             index: index,
@@ -103,7 +103,7 @@ define([
       }
 
       let tip = false;
-      if(this.props.field.tip) {
+      if (this.props.field.tip) {
         tip = (
           <p className="description">{ this.props.field.tip }</p>
         );

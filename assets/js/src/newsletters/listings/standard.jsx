@@ -98,7 +98,7 @@ const bulk_actions = [
 ];
 
 const confirmEdit = (newsletter) => {
-  if(
+  if (
     !newsletter.queue
     || newsletter.status != 'sending'
     || newsletter.queue.status !== null
