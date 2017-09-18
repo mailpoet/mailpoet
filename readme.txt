@@ -114,6 +114,8 @@ Stop by our [support site](https://www.mailpoet.com/support).
 
 = 3.0.0 - 2017-09-19 =
 * Official launch of the new MailPoet. :)
+* Improved: MailPoet 3 now works with other plugins that use a supported version of Twig templating engine. Thanks @supsysticcom;
+* Added: we now offer a free sending plan for 1000 subscribers or less. Thx MailPoet!
 
 = 3.0.0-rc.2.0.3 - 2017-09-12 =
 * Added: hook to override default cron URL. Thanks Fred;
