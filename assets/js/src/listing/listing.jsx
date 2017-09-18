@@ -129,7 +129,7 @@ const ListingItem = React.createClass({
     } else {
       item_actions = (
         <span className="edit">
-          <Link to={`/edit/${ this.props.item.id }`}>{MailPoet.I18n.t('edit')}</Link>
+          <Link to={`/edit/${this.props.item.id}`}>{MailPoet.I18n.t('edit')}</Link>
         </span>
       );
     }
@@ -413,9 +413,9 @@ const Listing = React.createClass({
 
     if (base_url !== null) {
       base_url = this.setBaseUrlParams(base_url);
-      return `/${ base_url }/${ params }`;
+      return `/${base_url}/${params}`;
     } else {
-      return `/${ params }`;
+      return `/${params}`;
     }
   },
   setBaseUrlParams: function (base_url) {

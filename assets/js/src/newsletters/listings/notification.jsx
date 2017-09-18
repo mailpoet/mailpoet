@@ -114,7 +114,7 @@ const newsletter_actions = [
     name: 'edit',
     link: function (newsletter) {
       return (
-        <a href={`?page=mailpoet-newsletter-editor&id=${ newsletter.id }`}>
+        <a href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}>
           {MailPoet.I18n.t('edit')}
         </a>
       );
@@ -269,7 +269,7 @@ const NewsletterListNotification = React.createClass({
     } else {
       return (
         <Link
-          to={`/notification/history/${ newsletter.id }`}
+          to={`/notification/history/${newsletter.id}`}
         >{ MailPoet.I18n.t('viewHistory') }</Link>
       );
     }
@@ -287,7 +287,7 @@ const NewsletterListNotification = React.createClass({
           <strong>
             <a
               className="row-title"
-              href={`?page=mailpoet-newsletter-editor&id=${ newsletter.id }`}
+              href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
             >{ newsletter.subject }</a>
           </strong>
           { actions }

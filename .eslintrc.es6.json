@@ -46,7 +46,6 @@
     "import/extensions": 0,
     "import/no-extraneous-dependencies": 0,
     "camelcase": 0,
-    "template-curly-spacing": 0,
     "eqeqeq": 0,
     "no-lonely-if": 0,
     "space-unary-ops": 0,

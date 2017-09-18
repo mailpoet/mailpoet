@@ -307,7 +307,7 @@ const SubscriberList = React.createClass({
           <strong>
             <Link
               className="row-title"
-              to={`/edit/${ subscriber.id }`}
+              to={`/edit/${subscriber.id}`}
             >{ subscriber.email }</Link>
           </strong>
           <p style={{ margin: 0 }}>

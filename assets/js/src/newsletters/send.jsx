@@ -111,7 +111,7 @@ define(
                   },
                 }).done((response) => {
                   // redirect to listing based on newsletter type
-                  this.context.router.push(`/${ this.state.item.type || '' }`);
+                  this.context.router.push(`/${this.state.item.type || ''}`);
                   const opts = this.state.item.options;
                   // display success message depending on newsletter type
                   if (response.data.type === 'welcome') {
@@ -143,7 +143,7 @@ define(
                   },
                 }).done((response) => {
                   // redirect to listing based on newsletter type
-                  this.context.router.push(`/${ this.state.item.type || '' }`);
+                  this.context.router.push(`/${this.state.item.type || ''}`);
 
                   if (response.data.status === 'scheduled') {
                     MailPoet.Notice.success(
@@ -188,7 +188,7 @@ define(
                 newsletter_id: this.state.item.id,
               },
             }).done(() => {
-              this.context.router.push(`/${ this.state.item.type || '' }`);
+              this.context.router.push(`/${this.state.item.type || ''}`);
               MailPoet.Notice.success(
                 MailPoet.I18n.t('newsletterSendingHasBeenResumed')
               );
@@ -216,7 +216,7 @@ define(
             MailPoet.I18n.t('newsletterUpdated')
           );
         }).done(() => {
-          this.context.router.push(`/${ this.state.item.type || '' }`);
+          this.context.router.push(`/${this.state.item.type || ''}`);
         }).fail(this._showError);
       },
       handleRedirectToDesign: function (e) {

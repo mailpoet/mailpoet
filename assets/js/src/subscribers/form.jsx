@@ -160,7 +160,7 @@ define(
                 (match, i) => (
                   <a
                     key={i}
-                    href={`user-edit.php?user_id=${ subscriber.wp_user_id }`}
+                    href={`user-edit.php?user_id=${subscriber.wp_user_id}`}
                   >{ match }</a>
                 )
               )

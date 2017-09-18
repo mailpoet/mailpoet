@@ -104,7 +104,7 @@ const confirmEdit = (newsletter) => {
     || newsletter.queue.status !== null
     || window.confirm(MailPoet.I18n.t('confirmEdit'))
   ) {
-    window.location.href = `?page=mailpoet-newsletter-editor&id=${ newsletter.id }`;
+    window.location.href = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
   }
 };
 

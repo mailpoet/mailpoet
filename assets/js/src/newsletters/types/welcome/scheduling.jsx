@@ -120,7 +120,7 @@ const WelcomeScheduling = React.createClass({
     });
   },
   showTemplateSelection: function (newsletterId) {
-    this.context.router.push(`/template/${ newsletterId }`);
+    this.context.router.push(`/template/${newsletterId}`);
   },
   render: function () {
     const value = this._getCurrentValue();
