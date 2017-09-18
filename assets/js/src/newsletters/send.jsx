@@ -285,6 +285,7 @@ define(
           }
           return newField;
         });
+        const sendButtonOptions = this.getSendButtonOptions();
         return (
           <div>
             <h1>{MailPoet.I18n.t('finalNewsletterStep')}</h1>
@@ -313,7 +314,7 @@ define(
                       type="button"
                       onClick={ this.handleSend }
                       value={MailPoet.I18n.t('send')}
-                      {...this.getSendButtonOptions()}
+                      {...sendButtonOptions}
                   />
                 }
                 &nbsp;
@@ -330,10 +331,12 @@ define(
                   {MailPoet.I18n.t('goBackToDesign')}
                 </a>.
               </p>
-              <HelpTooltip
-                tooltip={MailPoet.I18n.t('helpTooltipSendEmail')}
-                tooltipId="helpTooltipSendEmail"
-              />
+              { sendButtonOptions['disabled'] && sendButtonOptions['disabled'] === 'disabled' && (
+                <HelpTooltip
+                  tooltip={MailPoet.I18n.t('helpTooltipSendEmail')}
+                  tooltipId="helpTooltipSendEmail"
+                />
+              ) }
             </Form>
           </div>
         );
