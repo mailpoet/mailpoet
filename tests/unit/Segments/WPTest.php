@@ -187,16 +187,16 @@ class WPTest extends \MailPoetTest  {
     ', SubscriberSegment::$_table, Subscriber::$_table));
     $db->exec(sprintf('
        DELETE FROM
-         %susermeta
+         %s
        WHERE
-         user_id IN (select id from %susers WHERE user_email LIKE "user-sync-test%%")
-    ', $wpdb->prefix, $wpdb->prefix));
+         user_id IN (select id from %s WHERE user_email LIKE "user-sync-test%%")
+    ', $wpdb->usermeta, $wpdb->users));
     $db->exec(sprintf('
        DELETE FROM
-         %susers
+         %s
        WHERE
          user_email LIKE "user-sync-test%%"
-    ', $wpdb->prefix));
+    ', $wpdb->users));
     $db->exec(sprintf('
        DELETE FROM
          %s
@@ -220,14 +220,14 @@ class WPTest extends \MailPoetTest  {
     global $wpdb;
     $db = \ORM::getDb();
     $db->exec(sprintf('
-         INSERT INTO 
-           %susers(user_login, user_email, user_registered) 
-           VALUES 
+         INSERT INTO
+           %s (user_login, user_email, user_registered)
+           VALUES
            (
-             CONCAT("user-sync-test", rand()), 
+             CONCAT("user-sync-test", rand()),
              CONCAT("user-sync-test", rand(), "@example.com"),
              "2017-01-02 12:31:12"
-           )', $wpdb->prefix));
+           )', $wpdb->users));
     $id = $db->lastInsertId();
     $this->userIds[] = $id;
     return $id;
@@ -238,11 +238,11 @@ class WPTest extends \MailPoetTest  {
     $db = \ORM::getDb();
     $db->exec(sprintf('
        UPDATE
-         %susers
+         %s
        SET user_email = "%s"
        WHERE
          id = %s
-    ', $wpdb->prefix, $email, $id));
+    ', $wpdb->users, $email, $id));
   }
 
   private function updateWPUserDisplayName($id, $name) {
@@ -250,11 +250,11 @@ class WPTest extends \MailPoetTest  {
     $db = \ORM::getDb();
     $db->exec(sprintf('
        UPDATE
-         %susers
+         %s
        SET display_name = "%s"
        WHERE
          id = %s
-    ', $wpdb->prefix, $name, $id));
+    ', $wpdb->users, $name, $id));
   }
 
   private function deleteWPUser($id) {
@@ -262,10 +262,10 @@ class WPTest extends \MailPoetTest  {
     $db = \ORM::getDb();
     $db->exec(sprintf('
        DELETE FROM
-         %susers       
+         %s
        WHERE
          id = %s
-    ', $wpdb->prefix, $id));
+    ', $wpdb->users, $id));
   }
 
 }

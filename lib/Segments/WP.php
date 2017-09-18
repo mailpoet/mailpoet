@@ -97,10 +97,10 @@ class WP {
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE IGNORE %s
-        JOIN %susers as wu ON %s.wp_user_id = wu.id
+        JOIN %s as wu ON %s.wp_user_id = wu.id
       SET email = user_email
         WHERE %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $wpdb->prefix, $subscribers_table, $subscribers_table));
+    ', $subscribers_table, $wpdb->users, $subscribers_table, $subscribers_table));
   }
 
   private static function insertSubscribers() {
@@ -108,10 +108,10 @@ class WP {
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       INSERT IGNORE INTO %s(wp_user_id, email, status, created_at)
-        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM %susers wu
+        SELECT wu.id, wu.user_email, "subscribed", CURRENT_TIMESTAMP() FROM %s wu
           LEFT JOIN %s mps ON wu.id = mps.wp_user_id
           WHERE mps.wp_user_id IS NULL
-    ', $subscribers_table, $wpdb->prefix, $subscribers_table));
+    ', $subscribers_table, $wpdb->users, $subscribers_table));
   }
 
   private static function updateFirstNames() {
@@ -119,11 +119,11 @@ class WP {
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE %s
-        JOIN %susermeta as wpum ON %s.wp_user_id = wpum.user_id AND meta_key = "first_name"
+        JOIN %s as wpum ON %s.wp_user_id = wpum.user_id AND meta_key = "first_name"
       SET first_name = meta_value
         WHERE %s.first_name = ""
         AND %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $wpdb->prefix, $subscribers_table, $subscribers_table, $subscribers_table));
+    ', $subscribers_table, $wpdb->usermeta, $subscribers_table, $subscribers_table, $subscribers_table));
   }
 
   private static function updateLastNames() {
@@ -131,11 +131,11 @@ class WP {
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE %s
-        JOIN %susermeta as wpum ON %s.wp_user_id = wpum.user_id AND meta_key = "last_name"
+        JOIN %s as wpum ON %s.wp_user_id = wpum.user_id AND meta_key = "last_name"
       SET last_name = meta_value
         WHERE %s.last_name = ""
         AND %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $wpdb->prefix, $subscribers_table, $subscribers_table, $subscribers_table));
+    ', $subscribers_table, $wpdb->usermeta, $subscribers_table, $subscribers_table, $subscribers_table));
   }
 
   private static function updateFristNameIfMissing() {
@@ -143,11 +143,11 @@ class WP {
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
       UPDATE %s
-        JOIN %susers wu ON %s.wp_user_id = wu.id
+        JOIN %s wu ON %s.wp_user_id = wu.id
       SET first_name = display_name
         WHERE %s.first_name = ""
         AND %s.wp_user_id IS NOT NULL
-    ', $subscribers_table, $wpdb->prefix, $subscribers_table, $subscribers_table, $subscribers_table));
+    ', $subscribers_table, $wpdb->users, $subscribers_table, $subscribers_table, $subscribers_table));
   }
 
   private static function insertUsersToSegment() {
@@ -164,7 +164,7 @@ class WP {
   private static function removeFromTrash() {
     $subscribers_table = Subscriber::$_table;
     Subscriber::raw_execute(sprintf('
-      UPDATE %s       
+      UPDATE %s
       SET deleted_at = NULL
         WHERE %s.wp_user_id IS NOT NULL
     ', $subscribers_table, $subscribers_table));
@@ -174,11 +174,11 @@ class WP {
     // remove orphaned wp segment subscribers (not having a matching wp user id),
     // e.g. if wp users were deleted directly from the database
     global $wpdb;
-    
+
     $wp_segment = Segment::getWPSegment();
 
     $wp_segment->subscribers()
-      ->leftOuterJoin($wpdb->prefix . 'users', array(MP_SUBSCRIBERS_TABLE . '.wp_user_id', '=', 'wu.id'), 'wu')
+      ->leftOuterJoin($wpdb->users, array(MP_SUBSCRIBERS_TABLE . '.wp_user_id', '=', 'wu.id'), 'wu')
       ->whereNull('wu.id')
       ->findResultSet()
       ->set('wp_user_id', null)
