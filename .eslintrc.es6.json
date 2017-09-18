@@ -65,7 +65,6 @@
     "no-script-url": 0,
     "wrap-iife": 0,
     "vars-on-top": 0,
-    "no-irregular-whitespace": 0,
     "padded-blocks": 0,
     "no-underscore-dangle": 0
   }

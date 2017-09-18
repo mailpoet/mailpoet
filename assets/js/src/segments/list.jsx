@@ -210,7 +210,7 @@ const SegmentList = React.createClass({
     if (segment.type === 'wp_users') {
       // the WP users segment is not editable so just display its name
       segment_name = (
-        <span className="row-title">{ segment.name }</span>
+        <span className="row-title">{ segment.name }</span>
       );
     } else {
       segment_name = (
