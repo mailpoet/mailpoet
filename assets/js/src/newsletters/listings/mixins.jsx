@@ -134,7 +134,7 @@ const _QueueMixin = {
               { percentage }
             </span>
           </div>
-          <p style={{ textAlign:'center' }}>
+          <p style={{ textAlign: 'center' }}>
             { label }
           </p>
         </div>

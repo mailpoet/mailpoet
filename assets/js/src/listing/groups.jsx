@@ -11,7 +11,7 @@ define(['react', 'classnames'], (React, classNames) => {
         }
 
         const classes = classNames(
-            { current : (group.name === this.props.group) }
+            { current: (group.name === this.props.group) }
           );
 
         return (
