@@ -53,7 +53,7 @@ define(
           }
 
           return (
-            <span key={'step-'+index}>
+            <span key={'step-' + index}>
               <span className={stepClasses}>
                 { label }
               </span>

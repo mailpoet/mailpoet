@@ -12,7 +12,7 @@ define([
     handleFilterAction: function () {
       const filters = {};
       this.getAvailableFilters().map((filter, i) => {
-        filters[this.refs['filter-'+i].name] = this.refs['filter-'+i].value;
+        filters[this.refs['filter-' + i].name] = this.refs['filter-' + i].value;
       });
       if (this.props.onBeforeSelectFilter) {
         this.props.onBeforeSelectFilter(filters);
@@ -39,7 +39,7 @@ define([
       this.getAvailableFilters().map(
         (filter, i) => {
           if (selected_filters[filter] !== undefined && selected_filters[filter]) {
-            jQuery(this.refs['filter-'+i])
+            jQuery(this.refs['filter-' + i])
               .val(selected_filters[filter])
               .trigger('change');
           }

@@ -324,7 +324,7 @@ define(
                 &nbsp;{MailPoet.I18n.t('orSimply')}&nbsp;
                 <a
                   href={
-                    '?page=mailpoet-newsletter-editor&id='+this.props.params.id
+                    '?page=mailpoet-newsletter-editor&id=' + this.props.params.id
                   }
                   onClick={this.handleRedirectToDesign}>
                   {MailPoet.I18n.t('goBackToDesign')}

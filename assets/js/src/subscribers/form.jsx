@@ -78,7 +78,7 @@ define(
           return !!(!segment.deleted_at && segment.type === 'default');
         },
         getLabel: function (segment) {
-          return segment.name + ' ('+ segment.subscribers +')';
+          return segment.name + ' (' + segment.subscribers + ')';
         },
         getSearchLabel: function (segment, subscriber) {
           let label = '';

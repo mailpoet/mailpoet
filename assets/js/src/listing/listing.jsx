@@ -74,7 +74,7 @@ const ListingItem = React.createClass({
 
         if (action.name === 'trash') {
           custom_action = (
-            <span key={'action-'+index} className="trash">
+            <span key={'action-' + index} className="trash">
               {(!is_first) ? ' | ' : ''}
               <a
                 href="javascript:;"
@@ -90,7 +90,7 @@ const ListingItem = React.createClass({
           custom_action = (
             <span
               onClick={this.props.onRefreshItems}
-              key={'action-'+index} className={action.name}>
+              key={'action-' + index} className={action.name}>
               {(!is_first) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
@@ -98,7 +98,7 @@ const ListingItem = React.createClass({
         } else if (action.link) {
           custom_action = (
             <span
-              key={'action-'+index} className={action.name}>
+              key={'action-' + index} className={action.name}>
               {(!is_first) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
@@ -106,7 +106,7 @@ const ListingItem = React.createClass({
         } else {
           custom_action = (
             <span
-              key={'action-'+index} className={action.name}>
+              key={'action-' + index} className={action.name}>
               {(!is_first) ? ' | ' : ''}
               <a href="javascript:;" onClick={
                 (action.onClick !== undefined)
@@ -423,8 +423,8 @@ const Listing = React.createClass({
     if (ret.indexOf(':') !== -1) {
       const params = this.getParams();
       Object.keys(params).map((key) => {
-        if (ret.indexOf(':'+key) !== -1) {
-          ret = ret.replace(':'+key, params[key]);
+        if (ret.indexOf(':' + key) !== -1) {
+          ret = ret.replace(':' + key, params[key]);
         }
       });
     }

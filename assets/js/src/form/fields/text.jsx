@@ -22,7 +22,7 @@ const FormFieldText = React.createClass({
           : false
         }
         name={this.props.field.name}
-        id={'field_'+this.props.field.name}
+        id={'field_' + this.props.field.name}
         value={value}
         placeholder={this.props.field.placeholder}
         onChange={this.props.onValueChange}

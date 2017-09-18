@@ -26,7 +26,7 @@ function Tabs(props) {
 
     return (
       <Link
-        key={'tab-'+index}
+        key={'tab-' + index}
         className={tabClasses}
         to={tab.link}
       >{ tab.label }</Link>

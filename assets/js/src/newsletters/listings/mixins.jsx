@@ -19,8 +19,8 @@ const _QueueMixin = {
         newsletter_id: newsletter.id,
       },
     }).done(() => {
-      jQuery('#resume_'+newsletter.id).show();
-      jQuery('#pause_'+newsletter.id).hide();
+      jQuery('#resume_' + newsletter.id).show();
+      jQuery('#pause_' + newsletter.id).hide();
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -39,8 +39,8 @@ const _QueueMixin = {
         newsletter_id: newsletter.id,
       },
     }).done(() => {
-      jQuery('#pause_'+newsletter.id).show();
-      jQuery('#resume_'+newsletter.id).hide();
+      jQuery('#pause_' + newsletter.id).show();
+      jQuery('#resume_' + newsletter.id).hide();
     }).fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -95,18 +95,18 @@ const _QueueMixin = {
             { newsletter.queue.count_processed } / { newsletter.queue.count_total }
             &nbsp;&nbsp;
             <a
-              id={'resume_'+newsletter.id}
+              id={'resume_' + newsletter.id}
               className="button"
               style={{ display: (newsletter.queue.status === 'paused')
-                ? 'inline-block': 'none' }}
+                ? 'inline-block' : 'none' }}
               href="javascript:;"
               onClick={this.resumeSending.bind(null, newsletter)}
             >{MailPoet.I18n.t('resume')}</a>
             <a
-              id={'pause_'+newsletter.id}
+              id={'pause_' + newsletter.id}
               className="button mailpoet_pause"
               style={{ display: (newsletter.queue.status === null)
-                  ? 'inline-block': 'none' }}
+                  ? 'inline-block' : 'none' }}
               href="javascript:;"
               onClick={this.pauseSending.bind(null, newsletter)}
             >{MailPoet.I18n.t('pause')}</a>

@@ -238,7 +238,7 @@ define(
           }
 
           return (
-            <li key={'template-'+index}>
+            <li key={'template-' + index}>
               <div className="mailpoet_thumbnail">
                 { thumbnail }
               </div>

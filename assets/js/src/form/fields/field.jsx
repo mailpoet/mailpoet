@@ -113,7 +113,7 @@ define([
         <tr>
           <th scope="row">
             <label
-              htmlFor={'field_'+this.props.field.name}
+              htmlFor={'field_' + this.props.field.name}
             >
               { this.props.field.label }
               { tip }
