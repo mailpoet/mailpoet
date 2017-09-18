@@ -119,7 +119,7 @@ define([
             );
           }
 
-          let pageValue =  this.props.page;
+          let pageValue = this.props.page;
           if (this.state.page !== null) {
             pageValue = this.state.page;
           }
