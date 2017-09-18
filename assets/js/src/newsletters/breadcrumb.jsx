@@ -57,7 +57,7 @@ define(
               <span className={stepClasses}>
                 { label }
               </span>
-              { (index < (this.state.steps.length - 1) ) ? ' > ' : '' }
+              { (index < (this.state.steps.length - 1)) ? ' > ' : '' }
             </span>
           );
         });
