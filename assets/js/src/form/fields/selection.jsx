@@ -168,9 +168,9 @@ define([
 
         return (
           <option
-            key={ 'option-'+index }
-            value={ value }
-            title={ searchLabel }
+            key={'option-'+index}
+            value={value}
+            title={searchLabel}
           >
             { label }
           </option>
@@ -179,12 +179,12 @@ define([
 
       return (
         <select
-          id={ this.props.field.id || this.props.field.name }
+          id={this.props.field.id || this.props.field.name}
           ref="select"
           disabled={this.props.field.disabled}
-          data-placeholder={ this.props.field.placeholder }
-          multiple={ this.props.field.multiple }
-          defaultValue={ this.getSelectedValues() }
+          data-placeholder={this.props.field.placeholder}
+          multiple={this.props.field.multiple}
+          defaultValue={this.getSelectedValues()}
           {...this.props.field.validation}
         >{ options }</select>
       );

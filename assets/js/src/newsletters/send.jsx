@@ -293,9 +293,9 @@ define(
 
             <Form
               id="mailpoet_newsletter"
-              fields={ fields }
-              item={ this.state.item }
-              loading={ this.state.loading }
+              fields={fields}
+              item={this.state.item}
+              loading={this.state.loading}
               onChange={this.handleFormChange}
               onSubmit={this.handleSave}
             >
@@ -305,13 +305,13 @@ define(
                     <input
                       className="button button-primary"
                       type="button"
-                      onClick={ this.handleResume }
+                      onClick={this.handleResume}
                       value={MailPoet.I18n.t('resume')} />
                   :
                     <input
                       className="button button-primary"
                       type="button"
-                      onClick={ this.handleSend }
+                      onClick={this.handleSend}
                       value={MailPoet.I18n.t('send')}
                       {...this.getSendButtonOptions()}
                   />

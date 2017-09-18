@@ -16,10 +16,10 @@ const container = document.getElementById('forms_container');
 
 if(container) {
   ReactDOM.render((
-    <Router history={ history }>
-      <Route path="/" component={ App }>
-        <IndexRoute component={ FormList } />
-        <Route path="*" component={ FormList } />
+    <Router history={history}>
+      <Route path="/" component={App}>
+        <IndexRoute component={FormList} />
+        <Route path="*" component={FormList} />
       </Route>
     </Router>
   ), container);

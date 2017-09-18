@@ -14,14 +14,14 @@ define([
       const options = Object.keys(this.props.field.values).map(
         (value, index) => {
           return (
-            <p key={ 'radio-' + index }>
+            <p key={'radio-' + index}>
               <label>
                 <input
                   type="radio"
-                  checked={ selected_value === value }
-                  value={ value }
-                  onChange={ this.props.onValueChange }
-                  name={ this.props.field.name } />
+                  checked={selected_value === value}
+                  value={value}
+                  onChange={this.props.onValueChange}
+                  name={this.props.field.name} />
                 { this.props.field.values[value] }
               </label>
             </p>

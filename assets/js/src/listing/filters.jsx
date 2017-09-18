@@ -52,15 +52,15 @@ define([
         .map((filter, i) => {
           return (
             <select
-              ref={ `filter-${i}` }
-              key={ `filter-${i}` }
-              name={ filter }
+              ref={`filter-${i}`}
+              key={`filter-${i}`}
+              name={filter}
             >
               { filters[filter].map((option, j) => {
                 return (
                   <option
-                    value={ option.value }
-                    key={ 'filter-option-' + j }
+                    value={option.value}
+                    key={'filter-option-' + j}
                 >{ option.label }</option>
                 );
               }) }
@@ -74,7 +74,7 @@ define([
         button = (
           <input
             id="post-query-submit"
-            onClick={ this.handleFilterAction }
+            onClick={this.handleFilterAction}
             type="submit"
             defaultValue={MailPoet.I18n.t('filter')}
             className="button" />
@@ -85,7 +85,7 @@ define([
       if (this.props.group === 'trash') {
         empty_trash = (
           <input
-            onClick={ this.handleEmptyTrash }
+            onClick={this.handleEmptyTrash}
             type="submit"
             value={MailPoet.I18n.t('emptyTrash')}
             className="button"

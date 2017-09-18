@@ -35,9 +35,9 @@ const ListingTabs = React.createClass({
 
       return (
         <Link
-          key={ 'tab-'+index }
-          className={ tabClasses }
-          to={ tab.link }
+          key={'tab-'+index}
+          className={tabClasses}
+          to={tab.link}
           onClick={() => MailPoet.trackEvent(`Tab Emails > ${tab.name} clicked`,
             { 'MailPoet Free version': window.mailpoet_version }
           )}

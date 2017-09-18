@@ -48,13 +48,13 @@ define(
 
           if(step['link'] !== undefined && this.props.step !== step.name) {
             label = (
-              <Link to={ step.link }>{ step.label }</Link>
+              <Link to={step.link}>{ step.label }</Link>
             );
           }
 
           return (
-            <span key={ 'step-'+index }>
-              <span className={ stepClasses }>
+            <span key={'step-'+index}>
+              <span className={stepClasses}>
                 { label }
               </span>
               { (index < (this.state.steps.length - 1) ) ? ' > ' : '' }

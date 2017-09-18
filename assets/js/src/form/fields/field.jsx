@@ -72,14 +72,14 @@ define([
 
       if(inline === true) {
         return (
-          <span key={ 'field-' + (data.index || 0) }>
+          <span key={'field-' + (data.index || 0)}>
             { field }
             { description }
           </span>
         );
       } else {
         return (
-          <div key={ 'field-' + (data.index || 0) }>
+          <div key={'field-' + (data.index || 0)}>
             { field }
             { description }
           </div>
@@ -113,7 +113,7 @@ define([
         <tr>
           <th scope="row">
             <label
-              htmlFor={ 'field_'+this.props.field.name }
+              htmlFor={'field_'+this.props.field.name}
             >
               { this.props.field.label }
               { tip }

@@ -87,7 +87,7 @@ const item_actions = [
     label: MailPoet.I18n.t('edit'),
     link: function (item) {
       return (
-        <a href={ `admin.php?page=mailpoet-form-editor&id=${item.id}` }>{MailPoet.I18n.t('edit')}</a>
+        <a href={`admin.php?page=mailpoet-form-editor&id=${item.id}`}>{MailPoet.I18n.t('edit')}</a>
       );
     },
   },
@@ -158,11 +158,11 @@ const FormList = React.createClass({
 
     return (
       <div>
-        <td className={ row_classes }>
+        <td className={row_classes}>
           <strong>
             <a
               className="row-title"
-              href={ `admin.php?page=mailpoet-form-editor&id=${form.id}` }
+              href={`admin.php?page=mailpoet-form-editor&id=${form.id}`}
             >{ form.name }</a>
           </strong>
           { actions }
@@ -186,21 +186,21 @@ const FormList = React.createClass({
           {MailPoet.I18n.t('pageTitle')} <a
             className="page-title-action"
             href="javascript:;"
-            onClick={ this.createForm }
+            onClick={this.createForm}
           >{MailPoet.I18n.t('new')}</a>
         </h1>
 
         <Listing
-          limit={ window.mailpoet_listing_per_page }
-          location={ this.props.location }
-          params={ this.props.params }
-          messages={ messages }
-          search={ false }
+          limit={window.mailpoet_listing_per_page}
+          location={this.props.location}
+          params={this.props.params}
+          messages={messages}
+          search={false}
           endpoint="forms"
-          onRenderItem={ this.renderItem }
-          columns={ columns }
-          bulk_actions={ bulk_actions }
-          item_actions={ item_actions }
+          onRenderItem={this.renderItem}
+          columns={columns}
+          bulk_actions={bulk_actions}
+          item_actions={item_actions}
         />
       </div>
     );

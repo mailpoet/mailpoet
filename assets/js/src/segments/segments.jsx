@@ -18,12 +18,12 @@ const container = document.getElementById('segments_container');
 
 if(container) {
   ReactDOM.render((
-    <Router history={ history }>
-      <Route path="/" component={ App }>
-        <IndexRoute component={ SegmentList } />
-        <Route path="new" component={ SegmentForm } />
-        <Route path="edit/:id" component={ SegmentForm } />
-        <Route path="*" component={ SegmentList } />
+    <Router history={history}>
+      <Route path="/" component={App}>
+        <IndexRoute component={SegmentList} />
+        <Route path="new" component={SegmentForm} />
+        <Route path="edit/:id" component={SegmentForm} />
+        <Route path="*" component={SegmentList} />
       </Route>
     </Router>
   ), container);

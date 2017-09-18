@@ -159,7 +159,7 @@ define(
         if(this.getErrors() !== undefined) {
           errors = this.getErrors().map((error, index) => {
             return (
-              <p key={ 'error-'+index } className="mailpoet_error">
+              <p key={'error-'+index} className="mailpoet_error">
                 { error.message }
               </p>
             );
@@ -194,10 +194,10 @@ define(
 
           return (
             <FormField
-              field={ field }
-              item={ this.getValues() }
-              onValueChange={ onValueChange }
-              key={ 'field-'+i } />
+              field={field}
+              item={this.getValues()}
+              onValueChange={onValueChange}
+              key={'field-'+i} />
           );
         });
 
@@ -218,9 +218,9 @@ define(
           <div>
             { beforeFormContent }
             <form
-              id={ this.props.id }
+              id={this.props.id}
               ref="form"
-              className={ formClasses }
+              className={formClasses}
               onSubmit={
                 (this.props.onSubmit !== undefined)
                 ? this.props.onSubmit

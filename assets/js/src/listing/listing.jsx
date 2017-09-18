@@ -48,12 +48,12 @@ const ListingItem = React.createClass({
           }</label>
           <input
             type="checkbox"
-            value={ this.props.item.id }
+            value={this.props.item.id}
             checked={
               this.props.item.selected || this.props.selection === 'all'
             }
-            onChange={ this.handleSelectItem }
-            disabled={ this.props.selection === 'all' } />
+            onChange={this.handleSelectItem}
+            disabled={this.props.selection === 'all'} />
         </th>
       );
     }
@@ -74,14 +74,14 @@ const ListingItem = React.createClass({
 
         if (action.name === 'trash') {
           custom_action = (
-            <span key={ 'action-'+index } className="trash">
+            <span key={'action-'+index} className="trash">
               {(!is_first) ? ' | ' : ''}
               <a
                 href="javascript:;"
-                onClick={ this.handleTrashItem.bind(
+                onClick={this.handleTrashItem.bind(
                   null,
                   this.props.item.id
-                ) }>
+                )}>
                 {MailPoet.I18n.t('moveToTrash')}
               </a>
             </span>
@@ -89,8 +89,8 @@ const ListingItem = React.createClass({
         } else if (action.refresh) {
           custom_action = (
             <span
-              onClick={ this.props.onRefreshItems }
-              key={ 'action-'+index } className={ action.name }>
+              onClick={this.props.onRefreshItems}
+              key={'action-'+index} className={action.name}>
               {(!is_first) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
@@ -98,7 +98,7 @@ const ListingItem = React.createClass({
         } else if (action.link) {
           custom_action = (
             <span
-              key={ 'action-'+index } className={ action.name }>
+              key={'action-'+index} className={action.name}>
               {(!is_first) ? ' | ' : ''}
               { action.link(this.props.item) }
             </span>
@@ -106,7 +106,7 @@ const ListingItem = React.createClass({
         } else {
           custom_action = (
             <span
-              key={ 'action-'+index } className={ action.name }>
+              key={'action-'+index} className={action.name}>
               {(!is_first) ? ' | ' : ''}
               <a href="javascript:;" onClick={
                 (action.onClick !== undefined)
@@ -129,7 +129,7 @@ const ListingItem = React.createClass({
     } else {
       item_actions = (
         <span className="edit">
-          <Link to={ `/edit/${ this.props.item.id }` }>{MailPoet.I18n.t('edit')}</Link>
+          <Link to={`/edit/${ this.props.item.id }`}>{MailPoet.I18n.t('edit')}</Link>
         </span>
       );
     }
@@ -143,7 +143,7 @@ const ListingItem = React.createClass({
             <span>
               <a
                 href="javascript:;"
-                onClick={ this.handleRestoreItem.bind(
+                onClick={this.handleRestoreItem.bind(
                   null,
                   this.props.item.id
                 )}
@@ -154,7 +154,7 @@ const ListingItem = React.createClass({
               <a
                 className="submitdelete"
                 href="javascript:;"
-                onClick={ this.handleDeleteItem.bind(
+                onClick={this.handleDeleteItem.bind(
                   null,
                   this.props.item.id
                 )}
@@ -162,7 +162,7 @@ const ListingItem = React.createClass({
             </span>
           </div>
           <button
-            onClick={ this.handleToggleItem.bind(null, this.props.item.id) }
+            onClick={this.handleToggleItem.bind(null, this.props.item.id)}
             className="toggle-row" type="button">
             <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
           </button>
@@ -175,7 +175,7 @@ const ListingItem = React.createClass({
             { item_actions }
           </div>
           <button
-            onClick={ this.handleToggleItem.bind(null, this.props.item.id) }
+            onClick={this.handleToggleItem.bind(null, this.props.item.id)}
             className="toggle-row" type="button">
             <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
           </button>
@@ -186,7 +186,7 @@ const ListingItem = React.createClass({
     const row_classes = classNames({ 'is-expanded': this.state.expanded });
 
     return (
-      <tr className={ row_classes }>
+      <tr className={row_classes}>
         { checkbox }
         { this.props.onRenderItem(this.props.item, actions) }
       </tr>
@@ -235,7 +235,7 @@ const ListingItems = React.createClass({
 
       return (
         <tbody>
-          <tr className={ select_all_classes }>
+          <tr className={select_all_classes}>
             <td colSpan={
                 this.props.columns.length
                 + (this.props.is_selectable ? 1 : 0)
@@ -250,7 +250,7 @@ const ListingItems = React.createClass({
               }
               &nbsp;
               <a
-                onClick={ this.props.onSelectAll }
+                onClick={this.props.onSelectAll}
                 href="javascript:;">{
                   (this.props.selection !== 'all')
                   ? MailPoet.I18n.t('selectAllLink')
@@ -266,19 +266,19 @@ const ListingItems = React.createClass({
 
             return (
               <ListingItem
-                columns={ this.props.columns }
-                onSelectItem={ this.props.onSelectItem }
-                onRenderItem={ this.props.onRenderItem }
-                onDeleteItem={ this.props.onDeleteItem }
-                onRestoreItem={ this.props.onRestoreItem }
-                onTrashItem={ this.props.onTrashItem }
-                onRefreshItems={ this.props.onRefreshItems }
-                selection={ this.props.selection }
-                is_selectable={ this.props.is_selectable }
-                item_actions={ this.props.item_actions }
-                group={ this.props.group }
-                key={ `item-${renderItem.id}-${index}` }
-                item={ renderItem } />
+                columns={this.props.columns}
+                onSelectItem={this.props.onSelectItem}
+                onRenderItem={this.props.onRenderItem}
+                onDeleteItem={this.props.onDeleteItem}
+                onRestoreItem={this.props.onRestoreItem}
+                onTrashItem={this.props.onTrashItem}
+                onRefreshItems={this.props.onRefreshItems}
+                selection={this.props.selection}
+                is_selectable={this.props.is_selectable}
+                item_actions={this.props.item_actions}
+                group={this.props.group}
+                key={`item-${renderItem.id}-${index}`}
+                item={renderItem} />
             );
           })}
         </tbody>
@@ -789,8 +789,8 @@ const Listing = React.createClass({
     // search
     let search = (
       <ListingSearch
-        onSearch={ this.handleSearch }
-        search={ this.state.search }
+        onSearch={this.handleSearch}
+        search={this.state.search}
       />
     );
     if (this.props.search === false) {
@@ -800,9 +800,9 @@ const Listing = React.createClass({
     // groups
     let groups = (
       <ListingGroups
-        groups={ this.state.groups }
-        group={ this.state.group }
-        onSelectGroup={ this.handleGroup }
+        groups={this.state.groups}
+        group={this.state.group}
+        onSelectGroup={this.handleGroup}
       />
     );
     if (this.props.groups === false) {
@@ -821,81 +821,81 @@ const Listing = React.createClass({
         { search }
         <div className="tablenav top clearfix">
           <ListingBulkActions
-            count={ this.state.count }
-            bulk_actions={ bulk_actions }
-            selection={ this.state.selection }
-            selected_ids={ this.state.selected_ids }
-            onBulkAction={ this.handleBulkAction } />
+            count={this.state.count}
+            bulk_actions={bulk_actions}
+            selection={this.state.selection}
+            selected_ids={this.state.selected_ids}
+            onBulkAction={this.handleBulkAction} />
           <ListingFilters
-            filters={ this.state.filters }
-            filter={ this.state.filter }
-            group={ this.state.group }
-            onBeforeSelectFilter={ this.props.onBeforeSelectFilter || null }
-            onSelectFilter={ this.handleFilter }
-            onEmptyTrash={ this.handleEmptyTrash }
+            filters={this.state.filters}
+            filter={this.state.filter}
+            group={this.state.group}
+            onBeforeSelectFilter={this.props.onBeforeSelectFilter || null}
+            onSelectFilter={this.handleFilter}
+            onEmptyTrash={this.handleEmptyTrash}
           />
           <ListingPages
-            count={ this.state.count }
-            page={ this.state.page }
-            limit={ this.state.limit }
-            onSetPage={ this.handleSetPage } />
+            count={this.state.count}
+            page={this.state.page}
+            limit={this.state.limit}
+            onSetPage={this.handleSetPage} />
         </div>
-        <table className={ table_classes }>
+        <table className={table_classes}>
           <thead>
             <ListingHeader
-              onSort={ this.handleSort }
-              onSelectItems={ this.handleSelectItems }
-              selection={ this.state.selection }
-              sort_by={ sort_by }
-              sort_order={ sort_order }
-              columns={ columns }
-              is_selectable={ bulk_actions.length > 0 } />
+              onSort={this.handleSort}
+              onSelectItems={this.handleSelectItems}
+              selection={this.state.selection}
+              sort_by={sort_by}
+              sort_order={sort_order}
+              columns={columns}
+              is_selectable={bulk_actions.length > 0} />
           </thead>
 
           <ListingItems
-            onRenderItem={ this.handleRenderItem }
-            onDeleteItem={ this.handleDeleteItem }
-            onRestoreItem={ this.handleRestoreItem }
-            onTrashItem={ this.handleTrashItem }
-            onRefreshItems={ this.handleRefreshItems }
-            columns={ columns }
-            is_selectable={ bulk_actions.length > 0 }
-            onSelectItem={ this.handleSelectItem }
-            onSelectAll={ this.handleSelectAll }
-            selection={ this.state.selection }
-            selected_ids={ this.state.selected_ids }
-            loading={ this.state.loading }
-            group={ this.state.group }
-            count={ this.state.count }
-            limit={ this.state.limit }
-            item_actions={ item_actions }
-            messages={ messages }
-            items={ items } />
+            onRenderItem={this.handleRenderItem}
+            onDeleteItem={this.handleDeleteItem}
+            onRestoreItem={this.handleRestoreItem}
+            onTrashItem={this.handleTrashItem}
+            onRefreshItems={this.handleRefreshItems}
+            columns={columns}
+            is_selectable={bulk_actions.length > 0}
+            onSelectItem={this.handleSelectItem}
+            onSelectAll={this.handleSelectAll}
+            selection={this.state.selection}
+            selected_ids={this.state.selected_ids}
+            loading={this.state.loading}
+            group={this.state.group}
+            count={this.state.count}
+            limit={this.state.limit}
+            item_actions={item_actions}
+            messages={messages}
+            items={items} />
 
           <tfoot>
             <ListingHeader
-              onSort={ this.handleSort }
-              onSelectItems={ this.handleSelectItems }
-              selection={ this.state.selection }
-              sort_by={ sort_by }
-              sort_order={ sort_order }
-              columns={ columns }
-              is_selectable={ bulk_actions.length > 0 } />
+              onSort={this.handleSort}
+              onSelectItems={this.handleSelectItems}
+              selection={this.state.selection}
+              sort_by={sort_by}
+              sort_order={sort_order}
+              columns={columns}
+              is_selectable={bulk_actions.length > 0} />
           </tfoot>
 
         </table>
         <div className="tablenav bottom">
           <ListingBulkActions
-            count={ this.state.count }
-            bulk_actions={ bulk_actions }
-            selection={ this.state.selection }
-            selected_ids={ this.state.selected_ids }
-            onBulkAction={ this.handleBulkAction } />
+            count={this.state.count}
+            bulk_actions={bulk_actions}
+            selection={this.state.selection}
+            selected_ids={this.state.selected_ids}
+            onBulkAction={this.handleBulkAction} />
           <ListingPages
-            count={ this.state.count }
-            page={ this.state.page }
-            limit={ this.state.limit }
-            onSetPage={ this.handleSetPage } />
+            count={this.state.count}
+            page={this.state.page}
+            limit={this.state.limit}
+            onSetPage={this.handleSetPage} />
         </div>
       </div>
     );

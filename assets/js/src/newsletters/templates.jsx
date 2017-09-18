@@ -219,7 +219,7 @@ define(
             <div className="mailpoet_delete">
               <a
                 href="javascript:;"
-                onClick={ this.handleDeleteTemplate.bind(null, template) }
+                onClick={this.handleDeleteTemplate.bind(null, template)}
               >
                 {MailPoet.I18n.t('delete')}
               </a>
@@ -231,14 +231,14 @@ define(
               && template.thumbnail.length > 0) {
             thumbnail = (
               <a href="javascript:;" onClick={this.handleShowTemplate.bind(null, template)}>
-                <img src={ template.thumbnail } />
+                <img src={template.thumbnail} />
                 <div className="mailpoet_overlay"></div>
               </a>
             );
           }
 
           return (
-            <li key={ 'template-'+index }>
+            <li key={'template-'+index}>
               <div className="mailpoet_thumbnail">
                 { thumbnail }
               </div>
@@ -251,14 +251,14 @@ define(
               <div className="mailpoet_actions">
                 <a
                   className="button button-secondary"
-                  onClick={ this.handleShowTemplate.bind(null, template) }
+                  onClick={this.handleShowTemplate.bind(null, template)}
                   >
                   {MailPoet.I18n.t('preview')}
                 </a>
                   &nbsp;
                 <a
                   className="button button-primary"
-                  onClick={ this.handleSelectTemplate.bind(null, template) }
+                  onClick={this.handleSelectTemplate.bind(null, template)}
                   >
                   {MailPoet.I18n.t('select')}
                 </a>
@@ -280,7 +280,7 @@ define(
 
             <Breadcrumb step="template" />
 
-            <ul className={ boxClasses }>
+            <ul className={boxClasses}>
               { templates }
             </ul>
 

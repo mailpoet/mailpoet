@@ -93,21 +93,21 @@ define([
           <select
             name="bulk_actions"
             ref="action"
-            value={ this.state.action }
+            value={this.state.action}
             onChange={this.handleChangeAction}
           >
             <option value="">{MailPoet.I18n.t('bulkActions')}</option>
             { this.props.bulk_actions.map((action, index) => {
               return (
                 <option
-                  value={ action.name }
-                  key={ 'action-' + index }
+                  value={action.name}
+                  key={'action-' + index}
                 >{ action.label }</option>
               );
             }) }
           </select>
           <input
-            onClick={ this.handleApplyAction }
+            onClick={this.handleApplyAction}
             type="submit"
             defaultValue={MailPoet.I18n.t('apply')}
             className="button action" />

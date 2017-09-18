@@ -157,7 +157,7 @@ define(
             size="10"
             name={this.getFieldName()}
             value={this.getDisplayDate(this.props.value)}
-            readOnly={ true }
+            readOnly={true}
             disabled={this.props.disabled}
             onChange={this.onChange}
             ref="dateInput"
@@ -172,8 +172,8 @@ define(
           (value, index) => {
             return (
               <option
-                key={ 'option-' + index }
-                value={ value }>
+                key={'option-' + index}
+                value={value}>
                 { timeOfDayItems[value] }
               </option>
             );

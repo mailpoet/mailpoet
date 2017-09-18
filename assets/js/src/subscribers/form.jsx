@@ -159,7 +159,7 @@ define(
                 /\[link\](.*?)\[\/link\]/g,
                 (match, i) => (
                   <a
-                    key={ i }
+                    key={i}
                     href={`user-edit.php?user_id=${ subscriber.wp_user_id }`}
                   >{ match }</a>
                 )
@@ -193,11 +193,11 @@ define(
 
             <Form
               endpoint="subscribers"
-              fields={ fields }
-              params={ this.props.params }
-              messages={ messages }
-              beforeFormContent={ beforeFormContent }
-              afterFormContent={ afterFormContent }
+              fields={fields}
+              params={this.props.params}
+              messages={messages}
+              beforeFormContent={beforeFormContent}
+              afterFormContent={afterFormContent}
             />
           </div>
         );

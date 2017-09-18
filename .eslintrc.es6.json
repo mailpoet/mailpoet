@@ -30,7 +30,6 @@
     "react/self-closing-comp": 0,
     "react/jsx-closing-bracket-location": 0,
     "react/no-string-refs": 0,
-    "react/jsx-curly-spacing": 0,
     "react/no-did-mount-set-state": 0,
     "react/prefer-stateless-function": 0,
     "jsx-a11y/label-has-for": 0,

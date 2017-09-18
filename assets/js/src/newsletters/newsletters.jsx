@@ -31,23 +31,23 @@ if(container) {
   extra_routes = Hooks.applyFilters('mailpoet_newsletters_before_router', extra_routes);
 
   const mailpoet_listing = ReactDOM.render((
-    <Router history={ history }>
-      <Route path="/" component={ App }>
+    <Router history={history}>
+      <Route path="/" component={App}>
         <IndexRedirect to="standard" />
         {/* Listings */}
-        <Route path="standard(/)**" params={{ tab: 'standard' }} component={ NewsletterListStandard } />
-        <Route path="welcome(/)**" component={ NewsletterListWelcome } />
-        <Route path="notification/history/:parent_id(/)**" component={ NewsletterListNotificationHistory } />
-        <Route path="notification(/)**" component={ NewsletterListNotification } />
+        <Route path="standard(/)**" params={{ tab: 'standard' }} component={NewsletterListStandard} />
+        <Route path="welcome(/)**" component={NewsletterListWelcome} />
+        <Route path="notification/history/:parent_id(/)**" component={NewsletterListNotificationHistory} />
+        <Route path="notification(/)**" component={NewsletterListNotification} />
         {/* Newsletter: type selection */}
-        <Route path="new" component={ NewsletterTypes } />
+        <Route path="new" component={NewsletterTypes} />
         {/* New newsletter: types */}
-        <Route path="new/standard" component={ NewsletterTypeStandard } />
-        <Route path="new/notification" component={ NewsletterTypeNotification } />
+        <Route path="new/standard" component={NewsletterTypeStandard} />
+        <Route path="new/notification" component={NewsletterTypeNotification} />
         {/* Template selection */}
-        <Route name="template" path="template/:id" component={ NewsletterTemplates } />
+        <Route name="template" path="template/:id" component={NewsletterTemplates} />
         {/* Sending options */}
-        <Route path="send/:id" component={ NewsletterSend } />
+        <Route path="send/:id" component={NewsletterSend} />
         {/* Extra routes */}
         { extra_routes.map(rt => <Route key={rt.path} path={rt.path} component={rt.component} />) }
       </Route>

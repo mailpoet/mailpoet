@@ -95,20 +95,20 @@ const _QueueMixin = {
             { newsletter.queue.count_processed } / { newsletter.queue.count_total }
             &nbsp;&nbsp;
             <a
-              id={ 'resume_'+newsletter.id }
+              id={'resume_'+newsletter.id}
               className="button"
               style={{ display: (newsletter.queue.status === 'paused')
                 ? 'inline-block': 'none' }}
               href="javascript:;"
-              onClick={ this.resumeSending.bind(null, newsletter) }
+              onClick={this.resumeSending.bind(null, newsletter)}
             >{MailPoet.I18n.t('resume')}</a>
             <a
-              id={ 'pause_'+newsletter.id }
+              id={'pause_'+newsletter.id}
               className="button mailpoet_pause"
               style={{ display: (newsletter.queue.status === null)
                   ? 'inline-block': 'none' }}
               href="javascript:;"
-              onClick={ this.pauseSending.bind(null, newsletter) }
+              onClick={this.pauseSending.bind(null, newsletter)}
             >{MailPoet.I18n.t('pause')}</a>
           </span>
         );
@@ -125,10 +125,10 @@ const _QueueMixin = {
 
       return (
         <div>
-          <div className={ progressClasses }>
+          <div className={progressClasses}>
             <span
               className="mailpoet_progress_bar"
-              style={ { width: progress_bar_width + '%' } }
+              style={{ width: progress_bar_width + '%' }}
               ></span>
             <span className="mailpoet_progress_label">
               { percentage }
@@ -285,9 +285,9 @@ const _StatisticsMixin = {
       return (
         <div>
           <Link
-            key={ `stats-${newsletter.id}` }
-            to={ params.link }
-            onClick={ params.onClick || null }
+            key={`stats-${newsletter.id}`}
+            to={params.link}
+            onClick={params.onClick || null}
           >
             {content}
           </Link>
@@ -347,7 +347,7 @@ const _MailerMixin = {
         <p>
           <a href="javascript:;"
             className="button"
-            onClick={ this.resumeMailerSending }
+            onClick={this.resumeMailerSending}
           >{ MailPoet.I18n.t('mailerResumeSendingButton') }</a>
         </p>
       </div>

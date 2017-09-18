@@ -88,7 +88,7 @@ const messages = {
         <div>
           <p>{MailPoet.I18n.t('bouncedSubscribersHelp')}</p>
           <p>
-            <a href={ 'admin.php?page=mailpoet-premium' } className="button-primary">
+            <a href={'admin.php?page=mailpoet-premium'} className="button-primary">
               {MailPoet.I18n.t('bouncedSubscribersPremiumButtonText')}
             </a>
           </p>
@@ -117,7 +117,7 @@ const bulk_actions = [
       };
 
       return (
-        <Selection field={ field } />
+        <Selection field={field} />
       );
     },
     getData: function () {
@@ -149,7 +149,7 @@ const bulk_actions = [
       };
 
       return (
-        <Selection field={ field } />
+        <Selection field={field} />
       );
     },
     getData: function () {
@@ -181,7 +181,7 @@ const bulk_actions = [
       };
 
       return (
-        <Selection field={ field } />
+        <Selection field={field} />
       );
     },
     getData: function () {
@@ -230,7 +230,7 @@ const item_actions = [
     label: MailPoet.I18n.t('edit'),
     link: function (subscriber) {
       return (
-        <Link to={ `/edit/${subscriber.id}` }>{MailPoet.I18n.t('edit')}</Link>
+        <Link to={`/edit/${subscriber.id}`}>{MailPoet.I18n.t('edit')}</Link>
       );
     },
   },
@@ -303,11 +303,11 @@ const SubscriberList = React.createClass({
 
     return (
       <div>
-        <td className={ row_classes }>
+        <td className={row_classes}>
           <strong>
             <Link
               className="row-title"
-              to={ `/edit/${ subscriber.id }` }
+              to={`/edit/${ subscriber.id }`}
             >{ subscriber.email }</Link>
           </strong>
           <p style={{ margin: 0 }}>
@@ -350,17 +350,17 @@ const SubscriberList = React.createClass({
         </h1>
 
         <Listing
-          limit={ window.mailpoet_listing_per_page }
-          location={ this.props.location }
-          params={ this.props.params }
+          limit={window.mailpoet_listing_per_page}
+          location={this.props.location}
+          params={this.props.params}
           endpoint="subscribers"
-          onRenderItem={ this.renderItem }
-          columns={ columns }
-          bulk_actions={ bulk_actions }
-          item_actions={ item_actions }
-          messages={ messages }
-          sort_by={ 'created_at' }
-          sort_order={ 'desc' }
+          onRenderItem={this.renderItem}
+          columns={columns}
+          bulk_actions={bulk_actions}
+          item_actions={item_actions}
+          messages={messages}
+          sort_by={'created_at'}
+          sort_order={'desc'}
         />
       </div>
     );

@@ -113,7 +113,7 @@ let newsletter_actions = [
     name: 'view',
     link: function (newsletter) {
       return (
-        <a href={ newsletter.preview_url } target="_blank">
+        <a href={newsletter.preview_url} target="_blank">
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -174,7 +174,7 @@ const NewsletterListStandard = React.createClass({
 
     return (
       <div>
-        <td className={ rowClasses }>
+        <td className={rowClasses}>
           <strong>
             <a
               className="row-title"
@@ -184,18 +184,18 @@ const NewsletterListStandard = React.createClass({
           </strong>
           { actions }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('status') }>
+        <td className="column" data-colname={MailPoet.I18n.t('status')}>
           { this.renderQueueStatus(newsletter, meta.mta_log) }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
+        <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           { segments }
         </td>
         { (mailpoet_tracking_enabled === true) ? (
-          <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
+          <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
             { this.renderStatistics(newsletter, undefined, meta.current_time) }
           </td>
         ) : null }
-        <td className="column-date" data-colname={ MailPoet.I18n.t('sentOn') }>
+        <td className="column-date" data-colname={MailPoet.I18n.t('sentOn')}>
           <abbr>{ (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet') }</abbr>
         </td>
       </div>
@@ -218,21 +218,21 @@ const NewsletterListStandard = React.createClass({
         <ListingTabs tab="standard" />
 
         <Listing
-          limit={ window.mailpoet_listing_per_page }
-          location={ this.props.location }
-          params={ this.props.params }
+          limit={window.mailpoet_listing_per_page}
+          location={this.props.location}
+          params={this.props.params}
           endpoint="newsletters"
           type="standard"
           base_url="standard"
           onRenderItem={this.renderItem}
           columns={columns}
-          bulk_actions={ bulk_actions }
-          item_actions={ newsletter_actions }
-          messages={ messages }
-          auto_refresh={ true }
+          bulk_actions={bulk_actions}
+          item_actions={newsletter_actions}
+          messages={messages}
+          auto_refresh={true}
           sort_by="sent_at"
           sort_order="desc"
-          afterGetItems={ this.checkMailerStatus }
+          afterGetItems={this.checkMailerStatus}
         />
       </div>
     );

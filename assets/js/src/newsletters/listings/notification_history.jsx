@@ -44,7 +44,7 @@ let newsletter_actions = [
     name: 'view',
     link: function (newsletter) {
       return (
-        <a href={ newsletter.preview_url } target="_blank">
+        <a href={newsletter.preview_url} target="_blank">
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -69,27 +69,27 @@ const NewsletterListNotificationHistory = React.createClass({
 
     return (
       <div>
-        <td className={ rowClasses }>
+        <td className={rowClasses}>
           <strong>
             <a
-              href={ newsletter.preview_url }
+              href={newsletter.preview_url}
               target="_blank"
             >{ newsletter.queue.newsletter_rendered_subject || newsletter.subject }</a>
           </strong>
           { actions }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('status') }>
+        <td className="column" data-colname={MailPoet.I18n.t('status')}>
           { this.renderQueueStatus(newsletter, meta.mta_log) }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('lists') }>
+        <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           { segments }
         </td>
         { (mailpoet_tracking_enabled === true) ? (
-          <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
+          <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
             { this.renderStatistics(newsletter, undefined, meta.current_time) }
           </td>
         ) : null }
-        <td className="column-date" data-colname={ MailPoet.I18n.t('sentOn') }>
+        <td className="column-date" data-colname={MailPoet.I18n.t('sentOn')}>
           { (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet') }
         </td>
       </div>
@@ -110,19 +110,19 @@ const NewsletterListNotificationHistory = React.createClass({
         >{MailPoet.I18n.t('backToPostNotifications')}</Link>
 
         <Listing
-          limit={ window.mailpoet_listing_per_page }
-          location={ this.props.location }
-          params={ this.props.params }
+          limit={window.mailpoet_listing_per_page}
+          location={this.props.location}
+          params={this.props.params}
           endpoint="newsletters"
           type="notification_history"
           base_url="notification/history/:parent_id"
-          onRenderItem={ this.renderItem }
+          onRenderItem={this.renderItem}
           columns={columns}
-          item_actions={ newsletter_actions }
-          auto_refresh={ true }
+          item_actions={newsletter_actions}
+          auto_refresh={true}
           sort_by="sent_at"
           sort_order="desc"
-          afterGetItems={ this.checkMailerStatus }
+          afterGetItems={this.checkMailerStatus}
         />
       </div>
     );
