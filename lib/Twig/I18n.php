@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\Twig;
 
 if(!defined('ABSPATH')) exit;
@@ -10,10 +11,6 @@ class I18n extends \Twig_Extension {
   function __construct($text_domain) {
     // set text domain
     $this->_text_domain = $text_domain;
-  }
-
-  function getName() {
-    return 'i18n';
   }
 
   function getFunctions() {

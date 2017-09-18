@@ -1,23 +1,14 @@
 <?php
-namespace MailPoet\Twig;
 
-use MailPoet\Config\Env;
+namespace MailPoet\Twig;
 
 if(!defined('ABSPATH')) exit;
 
-class Assets extends \Twig_Extension implements \Twig_Extension_GlobalsInterface {
+class Assets extends \Twig_Extension {
   private $_globals;
 
   function __construct($globals) {
     $this->_globals = $globals;
-  }
-
-  function getName() {
-    return 'assets';
-  }
-
-  function getGlobals() {
-    return $this->_globals;
   }
 
   function getFunctions() {
