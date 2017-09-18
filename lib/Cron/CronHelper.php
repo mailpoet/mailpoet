@@ -61,7 +61,7 @@ class CronHelper {
       'blocking' => true,
       'sslverify' => false,
       'timeout' => self::DAEMON_REQUEST_TIMEOUT,
-      'user-agent' => 'MailPoet (www.mailpoet.com) Cron'
+      'user-agent' => 'MailPoet Cron'
     );
     $result = wp_remote_get($url, $args);
     return (is_wp_error($result)) ?
@@ -84,7 +84,7 @@ class CronHelper {
       'blocking' => true,
       'sslverify' => false,
       'timeout' => $timeout,
-      'user-agent' => 'MailPoet (www.mailpoet.com) Cron'
+      'user-agent' => 'MailPoet Cron'
     );
     $result = wp_remote_get($url, $args);
     return wp_remote_retrieve_body($result);
