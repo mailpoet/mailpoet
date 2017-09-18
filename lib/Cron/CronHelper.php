@@ -53,7 +53,10 @@ class CronHelper {
       CronDaemonEndpoint::ENDPOINT,
       CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
-    $url = str_replace(home_url(), self::getSiteUrl(), $url);
+    $custom_cron_url = WPHooks::applyFilters('mailpoet_cron_request_url', $url);
+    $url = ($custom_cron_url === $url) ?
+      str_replace(home_url(), self::getSiteUrl(), $url) :
+      $custom_cron_url;
     $args = array(
       'blocking' => true,
       'sslverify' => false,
@@ -73,7 +76,10 @@ class CronHelper {
       CronDaemonEndpoint::ACTION_RUN,
       $data
     );
-    $url = str_replace(home_url(), self::getSiteUrl(), $url);
+    $custom_cron_url = WPHooks::applyFilters('mailpoet_cron_request_url', $url);
+    $url = ($custom_cron_url === $url) ?
+      str_replace(home_url(), self::getSiteUrl(), $url) :
+      $custom_cron_url;
     $args = array(
       'blocking' => true,
       'sslverify' => false,
@@ -87,9 +93,6 @@ class CronHelper {
   static function getSiteUrl($site_url = false) {
     // additional check for some sites running inside a virtual machine or behind
     // proxy where there could be different ports (e.g., host:8080 => guest:80)
-    $custom_cron_url = WPHooks::applyFilters('mailpoet_cron_request_url', null);
-    if($custom_cron_url) return $custom_cron_url;
-
     $site_url = ($site_url) ? $site_url : home_url();
     $parsed_url = parse_url($site_url);
     $scheme = '';
