@@ -241,7 +241,7 @@ define(
               displayFormat={dateDisplayFormat}
               storageFormat={dateStorageFormat}
               disabled={this.props.disabled}
-              validation={this.props.dateValidation}/>
+              validation={this.props.dateValidation} />
             <TimeSelect
               name="time"
               value={this.state.time}

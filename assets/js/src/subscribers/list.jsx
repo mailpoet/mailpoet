@@ -117,7 +117,7 @@ const bulk_actions = [
       };
 
       return (
-        <Selection field={ field }/>
+        <Selection field={ field } />
       );
     },
     getData: function () {
@@ -149,7 +149,7 @@ const bulk_actions = [
       };
 
       return (
-        <Selection field={ field }/>
+        <Selection field={ field } />
       );
     },
     getData: function () {
@@ -181,7 +181,7 @@ const bulk_actions = [
       };
 
       return (
-        <Selection field={ field }/>
+        <Selection field={ field } />
       );
     },
     getData: function () {
