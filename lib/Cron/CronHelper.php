@@ -48,7 +48,7 @@ class CronHelper {
     return Security::generateRandomString();
   }
 
-  static function pingDaemon($timeout = self::DAEMON_REQUEST_TIMEOUT) {
+  static function pingDaemon($timeout = null) {
     $url = self::getCronUrl(
       CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
@@ -58,7 +58,7 @@ class CronHelper {
       wp_remote_retrieve_body($result);
   }
 
-  static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
+  static function accessDaemon($token, $timeout = null) {
     $data = array('token' => $token);
     $url = self::getCronUrl(
       CronDaemonEndpoint::ACTION_RUN,
@@ -76,6 +76,13 @@ class CronHelper {
       'user-agent' => 'MailPoet Cron'
     );
     return wp_remote_get($url, $args);
+  }
+
+  static function getCronTimeout($timeout = null) {
+    if($timeout) return $timeout;
+    $custom_timeout = WPHooks::applyFilters('mailpoet_cron_request_timeout', $timeout);
+    if(!$custom_timeout) return self::DAEMON_REQUEST_TIMEOUT;
+    return $custom_timeout;
   }
 
   static function getCronUrl($action, $data = false) {
