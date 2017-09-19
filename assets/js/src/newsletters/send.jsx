@@ -331,7 +331,7 @@ define(
                   {MailPoet.I18n.t('goBackToDesign')}
                 </a>.
               </p>
-              { sendButtonOptions['disabled'] && sendButtonOptions['disabled'] === 'disabled' && (
+              { !isPaused && sendButtonOptions['disabled'] && sendButtonOptions['disabled'] === 'disabled' && (
                 <HelpTooltip
                   tooltip={MailPoet.I18n.t('helpTooltipSendEmail')}
                   tooltipId="helpTooltipSendEmail"
