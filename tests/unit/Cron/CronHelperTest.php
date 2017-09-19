@@ -128,6 +128,23 @@ class CronHelperTest extends \MailPoetTest {
     remove_filter('mailpoet_cron_request_url', $filter);
   }
 
+  function testItAllowsSettingCustomCronTimeout() {
+    $filterFunction = function() {
+      return 5;
+    };
+    add_filter('mailpoet_cron_request_timeout', $filterFunction);
+    expect(CronHelper::getCronTimeout())->equals(5);
+    remove_filter('mailpoet_cron_request_timeout', $filterFunction);
+  }
+
+  function testItWorksWithDefaultCronTimeout() {
+    expect(CronHelper::getCronTimeout())->equals(CronHelper::DAEMON_REQUEST_TIMEOUT);
+  }
+
+  function testItWorksWithCustomCronTimeout() {
+    expect(CronHelper::getCronTimeout(12))->equals(12);
+  }
+
   function testItReturnsErrorMessageAsPingResposneWhenCronUrlCannotBeAccessed() {
     Mock::double('MailPoet\Cron\CronHelper', [
       'getSiteUrl' => false
