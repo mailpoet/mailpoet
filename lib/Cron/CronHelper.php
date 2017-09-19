@@ -72,7 +72,7 @@ class CronHelper {
     $args = array(
       'blocking' => true,
       'sslverify' => false,
-      'timeout' => $timeout,
+      'timeout' => WPHooks::applyFilters('mailpoet_cron_request_timeout', $timeout),
       'user-agent' => 'MailPoet Cron'
     );
     return wp_remote_get($url, $args);
