@@ -2,9 +2,9 @@
 
 namespace MailPoet\Test\Cron;
 
+use AspectMock\Test as Mock;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Models\Setting;
-use MailPoet\WP\Hooks;
 
 class CronHelperTest extends \MailPoetTest {
   function _before() {
@@ -74,38 +74,30 @@ class CronHelperTest extends \MailPoetTest {
 
   function testItCreatesRandomToken() {
     // random token is a string of 5 characters
-    $token1 =  CronHelper::createToken();
-    $token2 =  CronHelper::createToken();
+    $token1 = CronHelper::createToken();
+    $token2 = CronHelper::createToken();
     expect($token1)->notEquals($token2);
     expect(is_string($token1))->true();
     expect(strlen($token1))->equals(5);
   }
 
   function testItGetsSiteUrl() {
-    // 1. do nothing when the url is manually overridden via a hook
-    $filter = function() {
-      return 'custom_url';
-    };
-    add_filter('mailpoet_cron_request_url', $filter);
-    expect(CronHelper::getSiteUrl())->equals('custom_url');
-    remove_filter('mailpoet_cron_request_url', $filter);
-
-    // 2. do nothing when the url does not contain port
+    // 1. do nothing when the url does not contain port
     $site_url = 'http://example.com';
     expect(CronHelper::getSiteUrl($site_url))->equals($site_url);
 
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
 
-    // 3. when url contains valid port, try connecting to it
+    // 2. when url contains valid port, try connecting to it
     $site_url = 'http://example.com:80';
     expect(CronHelper::getSiteUrl($site_url))->equals($site_url);
 
-    // 4. when url contains invalid port, try connecting to it. when connection fails,
+    // 3. when url contains invalid port, try connecting to it. when connection fails,
     // another attempt will be made to connect to the standard port derived from URL schema
     $site_url = 'http://example.com:8080';
     expect(CronHelper::getSiteUrl($site_url))->equals('http://example.com');
 
-    // 5. when connection can't be established, exception should be thrown
+    // 4. when connection can't be established, exception should be thrown
     $site_url = 'https://invalid:80';
     try {
       CronHelper::getSiteUrl($site_url);
@@ -126,12 +118,30 @@ class CronHelperTest extends \MailPoetTest {
     }
   }
 
+  function testItAllowsSettingCustomCronUrl() {
+    $filter = function($url) {
+      expect($url)->contains('&endpoint=cron');
+      return 'http://custom_cron_url';
+    };
+    add_filter('mailpoet_cron_request_url', $filter);
+    expect(CronHelper::getCronUrl('sample_action'))->equals('http://custom_cron_url');
+    remove_filter('mailpoet_cron_request_url', $filter);
+  }
+
+  function testItReturnsErrorMessageAsPingResposneWhenCronUrlCannotBeAccessed() {
+    Mock::double('MailPoet\Cron\CronHelper', [
+      'getSiteUrl' => false
+    ]);
+    expect(CronHelper::pingDaemon())->equals('A valid URL was not provided.');
+  }
+
   function testItPingsDaemon() {
     if(getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') return;
     expect(CronHelper::pingDaemon())->equals('pong');
   }
 
   function _after() {
+    Mock::clean();
     \ORM::raw_execute('TRUNCATE ' . Setting::$_table);
   }
 }
