@@ -7,6 +7,9 @@ if(!defined('ABSPATH')) exit;
 class ModelValidator extends \Sudzy\Engine {
   public $validators;
 
+  const EMAIL_MIN_LENGTH = 6;
+  const EMAIL_MAX_LENGTH = 150;
+
   function __construct() {
     parent::__construct();
     $this->validators = array(
@@ -26,7 +29,9 @@ class ModelValidator extends \Sudzy\Engine {
   }
 
   function validateEmail($email) {
-    return is_email($email) !== false;
+    $permitted_length = (strlen($email) >= self::EMAIL_MIN_LENGTH && strlen($email) <= self::EMAIL_MAX_LENGTH);
+    $valid_email = (is_email($email) !== false);
+    return ($permitted_length && $valid_email);
   }
 
   function validateRenderedNewsletterBody($newsletter_body) {

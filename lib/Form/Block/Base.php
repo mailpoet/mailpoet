@@ -1,7 +1,9 @@
 <?php
+
 namespace MailPoet\Form\Block;
 
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\Models\ModelValidator;
 
 abstract class Base {
   protected static function getInputValidation($block, $extra_rules = array()) {
@@ -9,6 +11,8 @@ abstract class Base {
 
     if($block['id'] === 'email') {
       $rules['required'] = true;
+      $rules['minlength'] = ModelValidator::EMAIL_MIN_LENGTH;
+      $rules['maxlength'] = ModelValidator::EMAIL_MAX_LENGTH;
       $rules['error-message'] = __('Please specify a valid email address.', 'mailpoet');
     }
 
