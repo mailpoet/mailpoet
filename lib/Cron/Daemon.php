@@ -13,7 +13,6 @@ class Daemon {
   public $daemon;
   public $request_data;
   public $timer;
-  const REQUEST_TIMEOUT = 5; // seconds
 
   function __construct($request_data = false) {
     $this->request_data = $request_data;
@@ -100,7 +99,7 @@ class Daemon {
   }
 
   function callSelf() {
-    CronHelper::accessDaemon($this->token, self::REQUEST_TIMEOUT);
+    CronHelper::accessDaemon($this->token);
     return $this->terminateRequest();
   }
 

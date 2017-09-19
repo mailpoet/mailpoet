@@ -7,10 +7,6 @@ use MailPoet\Cron\Daemon;
 use MailPoet\Models\Setting;
 
 class DaemonTest extends \MailPoetTest {
-  function testItDefinesConstants() {
-    expect(Daemon::REQUEST_TIMEOUT)->equals(5);
-  }
-
   function testItConstructs() {
     Setting::setValue(
       CronHelper::DAEMON_SETTING,

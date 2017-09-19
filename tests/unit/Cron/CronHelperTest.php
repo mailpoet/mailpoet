@@ -14,7 +14,7 @@ class CronHelperTest extends \MailPoetTest {
   function testItDefinesConstants() {
     expect(CronHelper::DAEMON_EXECUTION_LIMIT)->equals(20);
     expect(CronHelper::DAEMON_EXECUTION_TIMEOUT)->equals(35);
-    expect(CronHelper::DAEMON_REQUEST_TIMEOUT)->equals(2);
+    expect(CronHelper::DAEMON_REQUEST_TIMEOUT)->equals(5);
     expect(CronHelper::DAEMON_SETTING)->equals('cron_daemon');
   }
 
@@ -128,27 +128,29 @@ class CronHelperTest extends \MailPoetTest {
     remove_filter('mailpoet_cron_request_url', $filter);
   }
 
-  function testItAllowsSettingCustomCronTimeout() {
-    $filterFunction = function() {
-      return 5;
+  function testItAllowsSettingCustomCronRequestArguments() {
+    $request_args = array(
+      'blocking' => 'custom_blocking',
+      'sslverify' => 'custom_ssl_verify',
+      'timeout' => 'custom_timeout',
+      'user-agent' => 'custom_user_agent'
+    );
+    $filter = function($args) use ($request_args) {
+      expect($args)->notEmpty();
+      return $request_args;
     };
-    add_filter('mailpoet_cron_request_timeout', $filterFunction);
-    expect(CronHelper::getCronTimeout())->equals(5);
-    remove_filter('mailpoet_cron_request_timeout', $filterFunction);
+    add_filter('mailpoet_cron_request_args', $filter);
+    Mock::func('MailPoet\Cron', 'wp_remote_get', function($url, $args) {
+      return $args;
+    });
+    expect(CronHelper::queryCronUrl('test'))->equals($request_args);
+    remove_filter('mailpoet_cron_request_args', $filter);
   }
 
-  function testItWorksWithDefaultCronTimeout() {
-    expect(CronHelper::getCronTimeout())->equals(CronHelper::DAEMON_REQUEST_TIMEOUT);
-  }
-
-  function testItWorksWithCustomCronTimeout() {
-    expect(CronHelper::getCronTimeout(12))->equals(12);
-  }
-
-  function testItReturnsErrorMessageAsPingResposneWhenCronUrlCannotBeAccessed() {
-    Mock::double('MailPoet\Cron\CronHelper', [
+  function testItReturnsErrorMessageAsPingResponseWhenCronUrlCannotBeAccessed() {
+    Mock::double('MailPoet\Cron\CronHelper', array(
       'getSiteUrl' => false
-    ]);
+    ));
     expect(CronHelper::pingDaemon())->equals('A valid URL was not provided.');
   }
 
