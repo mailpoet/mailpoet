@@ -12,7 +12,7 @@ Create and send beautiful emails and newsletters from WordPress.
 
 == Description ==
 
-Welcome to the new MailPoet. Sending emails from within WordPress just got even easier.
+The new MailPoet is here! With our new free sending plan, send unlimited emails to up to 2,000 subscribers. All without ever leaving WordPress.
 
 = What's inside? =
 
@@ -44,7 +44,7 @@ The Premium version adds the following features:
 * ability to send Welcome Emails automatically; i.e. "Welcome to my Newsletter” autoresponders or multi-email courses
 * removes the small MailPoet logo in the footer of your emails
 * same day support (Monday to Friday)
-* send to over 2000 subscribers with your own sending method (does not apply if you send with MailPoet)
+* send to over 2000 subscribers with your own sending method
 * see the [short video summary on the Premium](http://beta.docs.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
 
 Plus: if you sign up to one of our sending plans, you’ll get all of these fancy features for free. Visit the Premium page inside the plugin for more info.
@@ -115,7 +115,7 @@ Stop by our [support site](https://www.mailpoet.com/support).
 = 3.0.0 - 2017-09-19 =
 * Official launch of the new MailPoet. :)
 * Improved: MailPoet 3 now works with other plugins that use a supported version of Twig templating engine. Thanks @supsysticcom;
-* Added: we now offer a free sending plan for 1000 subscribers or less. Thx MailPoet!
+* Added: we now offer a free sending plan for 2000 subscribers or less. Thx MailPoet!
 
 = 3.0.0-rc.2.0.3 - 2017-09-12 =
 * Added: hook to override default cron URL. Thanks Fred;
