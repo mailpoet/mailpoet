@@ -13,7 +13,7 @@ if(!defined('ABSPATH')) exit;
 class CronHelper {
   const DAEMON_EXECUTION_LIMIT = 20; // seconds
   const DAEMON_EXECUTION_TIMEOUT = 35; // seconds
-  const DAEMON_REQUEST_TIMEOUT = 2; // seconds
+  const DAEMON_REQUEST_TIMEOUT = 5; // seconds
   const DAEMON_SETTING = 'cron_daemon';
 
   static function createDaemon($token) {
@@ -48,41 +48,37 @@ class CronHelper {
     return Security::generateRandomString();
   }
 
-  static function pingDaemon($timeout = null) {
+  static function pingDaemon() {
     $url = self::getCronUrl(
       CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
-    $result = self::queryCronUrl($url, $timeout);
+    $result = self::queryCronUrl($url);
     return (is_wp_error($result)) ?
       $result->get_error_message() :
       wp_remote_retrieve_body($result);
   }
 
-  static function accessDaemon($token, $timeout = null) {
+  static function accessDaemon($token) {
     $data = array('token' => $token);
     $url = self::getCronUrl(
       CronDaemonEndpoint::ACTION_RUN,
       $data
     );
-    $result = self::queryCronUrl($url, $timeout);
+    $result = self::queryCronUrl($url);
     return wp_remote_retrieve_body($result);
   }
 
-  static function queryCronUrl($url, $timeout) {
-    $args = array(
-      'blocking' => true,
-      'sslverify' => false,
-      'timeout' => WPHooks::applyFilters('mailpoet_cron_request_timeout', $timeout),
-      'user-agent' => 'MailPoet Cron'
+  static function queryCronUrl($url) {
+    $args = WPHooks::applyFilters(
+      'mailpoet_cron_request_args',
+      array(
+        'blocking' => true,
+        'sslverify' => false,
+        'timeout' => self::DAEMON_REQUEST_TIMEOUT,
+        'user-agent' => 'MailPoet Cron'
+      )
     );
     return wp_remote_get($url, $args);
-  }
-
-  static function getCronTimeout($timeout = null) {
-    if($timeout) return $timeout;
-    $custom_timeout = WPHooks::applyFilters('mailpoet_cron_request_timeout', $timeout);
-    if(!$custom_timeout) return self::DAEMON_REQUEST_TIMEOUT;
-    return $custom_timeout;
   }
 
   static function getCronUrl($action, $data = false) {
