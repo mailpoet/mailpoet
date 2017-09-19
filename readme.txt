@@ -44,7 +44,7 @@ The Premium version adds the following features:
 * ability to send Welcome Emails automatically; i.e. "Welcome to my Newsletter” autoresponders or multi-email courses
 * removes the small MailPoet logo in the footer of your emails
 * same day support (Monday to Friday)
-* send to over 2000 subscribers with your own sending method (does not apply if you send with MailPoet)
+* send to over 2000 subscribers with your own sending method
 * see the [short video summary on the Premium](http://beta.docs.mailpoet.com/article/208-video-overview-of-mailpoet-premium)
 
 Plus: if you sign up to one of our sending plans, you’ll get all of these fancy features for free. Visit the Premium page inside the plugin for more info.
