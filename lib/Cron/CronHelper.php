@@ -48,22 +48,11 @@ class CronHelper {
     return Security::generateRandomString();
   }
 
-  static function pingDaemon() {
-    $url = Router::buildRequest(
-      CronDaemonEndpoint::ENDPOINT,
+  static function pingDaemon($timeout = self::DAEMON_REQUEST_TIMEOUT) {
+    $url = self::getCronUrl(
       CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
-    $custom_cron_url = WPHooks::applyFilters('mailpoet_cron_request_url', $url);
-    $url = ($custom_cron_url === $url) ?
-      str_replace(home_url(), self::getSiteUrl(), $url) :
-      $custom_cron_url;
-    $args = array(
-      'blocking' => true,
-      'sslverify' => false,
-      'timeout' => self::DAEMON_REQUEST_TIMEOUT,
-      'user-agent' => 'MailPoet Cron'
-    );
-    $result = wp_remote_get($url, $args);
+    $result = self::queryCronUrl($url, $timeout);
     return (is_wp_error($result)) ?
       $result->get_error_message() :
       wp_remote_retrieve_body($result);
@@ -71,23 +60,34 @@ class CronHelper {
 
   static function accessDaemon($token, $timeout = self::DAEMON_REQUEST_TIMEOUT) {
     $data = array('token' => $token);
-    $url = Router::buildRequest(
-      CronDaemonEndpoint::ENDPOINT,
+    $url = self::getCronUrl(
       CronDaemonEndpoint::ACTION_RUN,
       $data
     );
-    $custom_cron_url = WPHooks::applyFilters('mailpoet_cron_request_url', $url);
-    $url = ($custom_cron_url === $url) ?
-      str_replace(home_url(), self::getSiteUrl(), $url) :
-      $custom_cron_url;
+    $result = self::queryCronUrl($url, $timeout);
+    return wp_remote_retrieve_body($result);
+  }
+
+  static function queryCronUrl($url, $timeout) {
     $args = array(
       'blocking' => true,
       'sslverify' => false,
       'timeout' => $timeout,
       'user-agent' => 'MailPoet Cron'
     );
-    $result = wp_remote_get($url, $args);
-    return wp_remote_retrieve_body($result);
+    return wp_remote_get($url, $args);
+  }
+
+  static function getCronUrl($action, $data = false) {
+    $url = Router::buildRequest(
+      CronDaemonEndpoint::ENDPOINT,
+      $action,
+      $data
+    );
+    $custom_cron_url = WPHooks::applyFilters('mailpoet_cron_request_url', $url);
+    return ($custom_cron_url === $url) ?
+      str_replace(home_url(), self::getSiteUrl(), $url) :
+      $custom_cron_url;
   }
 
   static function getSiteUrl($site_url = false) {
