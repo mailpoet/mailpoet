@@ -1,6 +1,7 @@
 <?php
 namespace MailPoet\Test\Config;
 
+use Helper\WordPress;
 use MailPoet\Config\Shortcodes;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
@@ -21,8 +22,20 @@ class ShortcodesTest extends \MailPoetTest {
 
   function testItGetsArchives() {
     $shortcodes = new Shortcodes();
+    WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
+      $args = func_get_args();
+      $filter_name = array_shift($args);
+      switch ($filter_name) {
+        case 'mailpoet_archive_date':
+          return $shortcodes->renderArchiveDate($args[0]);
+        case 'mailpoet_archive_subject':
+          return $shortcodes->renderArchiveSubject($args[0], $args[1], $args[2]);
+      }
+      return '';
+    });
     // result contains a link pointing to the "view in browser" router endpoint
     $result = $shortcodes->getArchive($params = false);
+    WordPress::releaseFunction('apply_filters');
     $dom = \pQuery::parseStr($result);
     $link = $dom->query('a');
     $link = $link->attr('href');
