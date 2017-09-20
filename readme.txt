@@ -112,7 +112,7 @@ Stop by our [support site](https://www.mailpoet.com/support).
 
 == Changelog ==
 
-= 3.0.0 - 2017-09-19 =
+= 3.0.0 - 2017-09-20 =
 * Official launch of the new MailPoet. :)
 * Improved: MailPoet 3 now works with other plugins that use a supported version of Twig templating engine. Thanks @supsysticcom;
 * Added: we now offer a free sending plan for 2000 subscribers or less. Thx MailPoet!
