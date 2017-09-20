@@ -65,70 +65,72 @@ class Newsletters extends APIEndpoint {
     $newsletter = Newsletter::createOrUpdate($data);
     $errors = $newsletter->getErrors();
 
-    if(!empty($errors)) {
-      return $this->badRequest($errors);
-    } else {
-      if(!empty($segments)) {
-        NewsletterSegment::where('newsletter_id', $newsletter->id)
-          ->deleteMany();
+    if(!empty($errors)) return $this->badRequest($errors);
 
-        foreach($segments as $segment) {
-          if(!is_array($segment)) continue;
-          $relation = NewsletterSegment::create();
-          $relation->segment_id = (int)$segment['id'];
-          $relation->newsletter_id = $newsletter->id;
-          $relation->save();
+    if(!empty($segments)) {
+      NewsletterSegment::where('newsletter_id', $newsletter->id)
+        ->deleteMany();
+      foreach($segments as $segment) {
+        if(!is_array($segment)) continue;
+        $relation = NewsletterSegment::create();
+        $relation->segment_id = (int)$segment['id'];
+        $relation->newsletter_id = $newsletter->id;
+        $relation->save();
+      }
+    }
+
+    if(!empty($options)) {
+      $option_fields = NewsletterOptionField::where(
+        'newsletter_type',
+        $newsletter->type
+      )->findMany();
+      // update newsletter options
+      foreach($option_fields as $option_field) {
+        if(isset($options[$option_field->name])) {
+          $newsletter_option = NewsletterOption::createOrUpdate(
+            array(
+              'newsletter_id' => $newsletter->id,
+              'option_field_id' => $option_field->id,
+              'value' => $options[$option_field->name]
+            )
+          );
         }
       }
-
-      if(!empty($options)) {
-        $option_fields = NewsletterOptionField::where(
-          'newsletter_type',
-          $newsletter->type
-        )->findMany();
-
-        // update newsletter options
-        foreach($option_fields as $option_field) {
-          if(isset($options[$option_field->name])) {
-            $newsletter_option = NewsletterOption::createOrUpdate(
-              array(
-                'newsletter_id' => $newsletter->id,
-                'option_field_id' => $option_field->id,
-                'value' => $options[$option_field->name]
-              )
-            );
-          }
-        }
-
-        // reload newsletter with updated options
-        $newsletter = Newsletter::filter('filterWithOptions')
-          ->findOne($newsletter->id);
-
-        // if this is a post notification, process newsletter options and update its schedule
-        if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
-          // generate the new schedule from options and get the new "next run" date
-          $newsletter->schedule = Scheduler::processPostNotificationSchedule($newsletter);
-          $next_run_date = Scheduler::getNextRunDate($newsletter->schedule);
-          // find previously scheduled jobs and reschedule them using the new "next run" date
-          SendingQueue::where('newsletter_id', $newsletter->id)
-            ->where('status', SendingQueue::STATUS_SCHEDULED)
-            ->findResultSet()
-            ->set('scheduled_at', $next_run_date)
-            ->save();
-        }
+      // reload newsletter with updated options
+      $newsletter = Newsletter::filter('filterWithOptions')
+        ->findOne($newsletter->id);
+      // if this is a post notification, process newsletter options and update its schedule
+      if($newsletter->type === Newsletter::TYPE_NOTIFICATION) {
+        // generate the new schedule from options and get the new "next run" date
+        $newsletter->schedule = Scheduler::processPostNotificationSchedule($newsletter);
+        $next_run_date = Scheduler::getNextRunDate($newsletter->schedule);
+        // find previously scheduled jobs and reschedule them using the new "next run" date
+        SendingQueue::where('newsletter_id', $newsletter->id)
+          ->where('status', SendingQueue::STATUS_SCHEDULED)
+          ->findResultSet()
+          ->set('scheduled_at', $next_run_date)
+          ->save();
       }
+    }
 
-      $queue = $newsletter->getQueue();
-      if($queue) {
+    $queue = $newsletter->getQueue();
+    if($queue) {
+      // if newsletter was previously scheduled and is now unscheduled, set its status to DRAFT and delete associated queue record
+      if($newsletter->status === Newsletter::STATUS_SCHEDULED && isset($options['isScheduled']) && empty($options['isScheduled'])) {
+        $queue->delete();
+        $newsletter->status = Newsletter::STATUS_DRAFT;
+        $newsletter->save();
+      } else {
+        $queue->newsletter_rendered_body = null;
         $queue->newsletter_rendered_body = null;
         $queue->newsletter_rendered_subject = null;
         $queue->save();
       }
-
-      Hooks::doAction('mailpoet_api_newsletters_save_after', $newsletter);
-
-      return $this->successResponse($newsletter->asArray());
     }
+
+    Hooks::doAction('mailpoet_api_newsletters_save_after', $newsletter);
+
+    return $this->successResponse($newsletter->asArray());
   }
 
   function setStatus($data = array()) {
