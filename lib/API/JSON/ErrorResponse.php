@@ -1,4 +1,5 @@
 <?php
+
 namespace MailPoet\API\JSON;
 
 if(!defined('ABSPATH')) exit;
@@ -12,23 +13,19 @@ class ErrorResponse extends Response {
   }
 
   function getData() {
-    if(empty($this->errors)) {
-      return null;
-    } else {
-      return array(
-        'errors' => $this->errors
-      );
-    }
+    return (empty($this->errors)) ? null : array('errors' => $this->errors);
   }
 
   function formatErrors($errors = array()) {
-    $formatted_errors = array();
-    foreach($errors as $error => $message) {
-      $formatted_errors[] = array(
+    return array_map(function($error, $message) {
+      // sanitize SQL error
+      if(preg_match('/^SQLSTATE/i', $message)) {
+        $message = __('An unknown error occurred.', 'mailpoet');
+      }
+      return array(
         'error' => $error,
         'message' => $message
       );
-    }
-    return $formatted_errors;
+    }, array_keys($errors), array_values($errors));
   }
 }
