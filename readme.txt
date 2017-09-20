@@ -30,6 +30,7 @@ The new MailPoet is here! With our new free sending plan, send unlimited emails 
 = Before you install =
 
 Take note:
+
 * Not optimized for right-to-left (RTL) languages yet
 * Multisite works, but is not officially supported
 * Please check the translations in your language
@@ -40,6 +41,7 @@ Take note:
 MailPoet is fully featured in its free version and works up until you have 2000 subscribers.
 
 The Premium version adds the following features:
+
 * for each newsletter, see which subscribers opened it and which links they clicked
 * ability to send Welcome Emails automatically; i.e. "Welcome to my Newsletter” autoresponders or multi-email courses
 * removes the small MailPoet logo in the footer of your emails
