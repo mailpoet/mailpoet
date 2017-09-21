@@ -6,7 +6,7 @@
 define([
   'backbone.marionette',
   'newsletter_editor/behaviors/BehaviorsLookup'
-], function(Marionette, BehaviorsLookup) {
+], function (Marionette, BehaviorsLookup) {
   var BL = BehaviorsLookup;
 
   BL.HighlightEditingBehavior = Marionette.Behavior.extend({
@@ -14,11 +14,11 @@ define([
       startEditing: 'enableHighlight',
       stopEditing: 'disableHighlight'
     },
-    enableHighlight: function() {
+    enableHighlight: function () {
       this.view._isBeingEdited = true;
       this.$el.addClass('mailpoet_highlight');
     },
-    disableHighlight: function() {
+    disableHighlight: function () {
       this.view._isBeingEdited = false;
       this.$el.removeClass('mailpoet_highlight');
     }

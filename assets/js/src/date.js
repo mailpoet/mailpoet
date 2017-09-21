@@ -3,7 +3,7 @@ define('date',
     'mailpoet',
     'jquery',
     'moment'
-  ], function(
+  ], function (
     mp,
     jQuery,
     Moment
@@ -41,7 +41,7 @@ define('date',
 
         return this;
       },
-      format: function(date, opts) {
+      format: function (date, opts) {
         var options = opts || {};
         this.init(options);
 
@@ -49,28 +49,28 @@ define('date',
         if (options.offset === 0) momentDate = momentDate.utc();
         return momentDate.format(this.convertFormat(this.options.format));
       },
-      toDate: function(date, opts) {
+      toDate: function (date, opts) {
         var options = opts || {};
         this.init(options);
 
         return Moment(date, this.convertFormat(options.parseFormat)).toDate();
       },
-      short: function(date) {
+      short: function (date) {
         return this.format(date, {
           format: 'F, j Y'
         });
       },
-      full: function(date) {
+      full: function (date) {
         return this.format(date, {
           format: 'F, j Y H:i:s'
         });
       },
-      time: function(date) {
+      time: function (date) {
         return this.format(date, {
           format: 'H:i:s'
         });
       },
-      convertFormat: function(format) {
+      convertFormat: function (format) {
         var format_mappings = {
           date: {
             d: 'DD',

@@ -2,7 +2,7 @@ define(
   [
     'jquery'
   ],
-  function(
+  function (
     jQuery
   ) {
     var $ = jQuery;
@@ -23,12 +23,12 @@ define(
      * Dual licensed under the MIT and GPL licenses.
      * http://benalman.com/about/license/
      */
-    $.fn.serializeObject = function(coerce) {
+    $.fn.serializeObject = function (coerce) {
       var obj = {},
         coerce_types = { true: !0, false: !1, null: null };
 
       // Iterate over all name=value pairs.
-      $.each( this.serializeArray(), function(j, v){
+      $.each( this.serializeArray(), function (j, v){
         var key = v.name,
           val = v.value,
           cur = obj,

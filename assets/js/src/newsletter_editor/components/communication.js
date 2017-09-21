@@ -3,11 +3,11 @@ define([
   'underscore',
   'mailpoet',
   'ajax'
-], function(App, _, MailPoet) {
+], function (App, _, MailPoet) {
 
   var Module = {};
 
-  Module._query = function(args) {
+  Module._query = function (args) {
     return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'automatedLatestContent',
@@ -17,70 +17,70 @@ define([
   };
   Module._cachedQuery = _.memoize(Module._query, JSON.stringify);
 
-  Module.getNewsletter = function(options) {
+  Module.getNewsletter = function (options) {
     return Module._query({
       action: 'get',
       options: options
     });
   };
 
-  Module.getPostTypes = function() {
+  Module.getPostTypes = function () {
     return Module._cachedQuery({
       action: 'getPostTypes',
       options: {}
-    }).then(function(response) {
+    }).then(function (response) {
       return _.values(response.data);
     });
   };
 
-  Module.getTaxonomies = function(postType) {
+  Module.getTaxonomies = function (postType) {
     return Module._cachedQuery({
       action: 'getTaxonomies',
       options: {
         postType: postType
       }
-    }).then(function(response) {
+    }).then(function (response) {
       return response.data;
     });
   };
 
-  Module.getTerms = function(options) {
+  Module.getTerms = function (options) {
     return Module._cachedQuery({
       action: 'getTerms',
       options: options
-    }).then(function(response) {
+    }).then(function (response) {
       return response.data;
     });
   };
 
-  Module.getPosts = function(options) {
+  Module.getPosts = function (options) {
     return Module._cachedQuery({
       action: 'getPosts',
       options: options
-    }).then(function(response) {
+    }).then(function (response) {
       return response.data;
     });
   };
 
-  Module.getTransformedPosts = function(options) {
+  Module.getTransformedPosts = function (options) {
     return Module._cachedQuery({
       action: 'getTransformedPosts',
       options: options
-    }).then(function(response) {
+    }).then(function (response) {
       return response.data;
     });
   };
 
-  Module.getBulkTransformedPosts = function(options) {
+  Module.getBulkTransformedPosts = function (options) {
     return Module._query({
       action: 'getBulkTransformedPosts',
       options: options
-    }).then(function(response) {
+    }).then(function (response) {
       return response.data;
     });
   };
 
-  Module.saveNewsletter = function(options) {
+  Module.saveNewsletter = function (options) {
     return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -89,7 +89,7 @@ define([
     });
   };
 
-  Module.previewNewsletter = function(options) {
+  Module.previewNewsletter = function (options) {
     return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -98,7 +98,7 @@ define([
     });
   };
 
-  App.on('start', function(App, options) {
+  App.on('start', function (App, options) {
     // Prefetch post types
     Module.getPostTypes();
   });

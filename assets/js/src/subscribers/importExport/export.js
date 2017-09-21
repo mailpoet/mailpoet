@@ -149,9 +149,9 @@ define(
            segments: (window.exportData.segments) ? segmentsContainerElement.val() : false,
            subscriber_fields: subscriberFieldsContainerElement.val()
          })
-       }).always(function(response) {
+       }).always(function (response) {
          MailPoet.Modal.loading(false);
-       }).done(function(response) {
+       }).done(function (response) {
          var resultMessage = MailPoet.I18n.t('exportMessage')
          .replace('%1$s', '<strong>' + parseInt(response.data.totalExported).toLocaleString() + '</strong>')
          .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
@@ -164,10 +164,10 @@ define(
            'File Format': exportFormat,
            'MailPoet Free version': window.mailpoet_version
          });
-       }).fail(function(response) {
+       }).fail(function (response) {
          if (response.errors.length > 0) {
            MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
+              response.errors.map(function (error) { return error.message; }),
               { scroll: true }
             );
          }

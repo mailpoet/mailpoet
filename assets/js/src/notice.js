@@ -1,4 +1,4 @@
-define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
+define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
   'use strict';
 
   /*==================================================================================================
@@ -40,13 +40,13 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
       onClose: null
     },
     options: {},
-    init: function(options) {
+    init: function (options) {
       // set options
       this.options = jQuery.extend({}, this.defaults, options);
 
       return this;
     },
-    createNotice: function() {
+    createNotice: function () {
       // clone element
       this.element = jQuery('#mailpoet_notice_'+this.options.type).clone();
 
@@ -79,8 +79,8 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
       }
 
       // listen to remove event
-      jQuery(this.element).on('close', function() {
-        jQuery(this).fadeOut(200, function() {
+      jQuery(this.element).on('close', function () {
+        jQuery(this).fadeOut(200, function () {
           // on close callback
           if (onClose !== null) {
             onClose();
@@ -91,19 +91,19 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
       }.bind(this.element));
 
       // listen to message event
-      jQuery(this.element).on('setMessage', function(e, message) {
+      jQuery(this.element).on('setMessage', function (e, message) {
         MailPoet.Notice.setMessage(message);
       }.bind(this.element));
 
       return this;
     },
-    updateNotice: function() {
+    updateNotice: function () {
       // update notice's message
       jQuery('[data-id="'+this.options.id+'"').first().trigger(
         'setMessage', this.options.message
       );
     },
-    setMessage: function(message) {
+    setMessage: function (message) {
       var formattedMessage = this.formatMessage(message);
 
       // let's sugar coat the message with a fancy <p>
@@ -111,14 +111,14 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
       // set message
       return this.element.html(formattedMessage);
     },
-    formatMessage: function(message) {
+    formatMessage: function (message) {
       if (Array.isArray(message)) {
         return message.join('<br />');
       } else {
         return message;
       }
     },
-    show: function(options) {
+    show: function (options) {
       // initialize
       this.init(options);
 
@@ -133,7 +133,7 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
       }
       this.showNotice();
     },
-    showNotice: function() {
+    showNotice: function () {
       // set message
       this.setMessage(this.options.message);
 
@@ -166,7 +166,7 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
         this.element.delay(this.options.timeout).trigger('close');
       } else if (this.options.hideClose === false) {
         this.element.append('<a href="javascript:;" class="mailpoet_notice_close"><span class="dashicons dashicons-dismiss"></span></a>');
-        this.element.find('.mailpoet_notice_close').on('click', function() {
+        this.element.find('.mailpoet_notice_close').on('click', function () {
           jQuery(this).trigger('close');
         });
       }
@@ -176,7 +176,7 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
         this.options.onOpen(this.element);
       }
     },
-    hide: function(all) {
+    hide: function (all) {
       if (all !== undefined && all === true) {
         // all notices
         jQuery('.mailpoet_notice:not([id])').trigger('close');
@@ -193,19 +193,19 @@ define('notice', ['mailpoet', 'jquery'], function(mp, jQuery) {
           .trigger('close');
       }
     },
-    error: function(message, options) {
+    error: function (message, options) {
       this.show(jQuery.extend({}, {
         type: 'error',
         message: message
       }, options));
     },
-    success: function(message, options) {
+    success: function (message, options) {
       this.show(jQuery.extend({}, {
         type: 'success',
         message: message
       }, options));
     },
-    system: function(message, options) {
+    system: function (message, options) {
       this.show(jQuery.extend({}, {
         type: 'system',
         static: true,

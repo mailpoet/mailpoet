@@ -1,6 +1,6 @@
-define('handlebars_helpers', ['handlebars'], function(Handlebars) {
+define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   // Handlebars helpers
-  Handlebars.registerHelper('concat', function() {
+  Handlebars.registerHelper('concat', function () {
     var size = (arguments.length - 1),
       output = '';
     for(var i = 0; i < size; i++) {
@@ -9,10 +9,10 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
     return output;
   });
 
-  Handlebars.registerHelper('number_format', function(value, block) {
+  Handlebars.registerHelper('number_format', function (value, block) {
     return Number(value).toLocaleString();
   });
-  Handlebars.registerHelper('date_format', function(timestamp, block) {
+  Handlebars.registerHelper('date_format', function (timestamp, block) {
     if(window.moment) {
       if(timestamp === undefined || isNaN(timestamp) || timestamp <= 0) {
         return;
@@ -31,7 +31,7 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
     }
   });
 
-  Handlebars.registerHelper('cycle', function(value, block) {
+  Handlebars.registerHelper('cycle', function (value, block) {
     var values = value.split(' ');
     return values[block.data.index % (values.length + 1)];
   });
@@ -66,23 +66,23 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
     }
   });
 
-  Handlebars.registerHelper('nl2br', function(value, block) {
+  Handlebars.registerHelper('nl2br', function (value, block) {
     return value.gsub('\n', '<br />');
   });
 
-  Handlebars.registerHelper('json_encode', function(value, block) {
+  Handlebars.registerHelper('json_encode', function (value, block) {
     return JSON.stringify(value);
   });
 
-  Handlebars.registerHelper('json_decode', function(value, block) {
+  Handlebars.registerHelper('json_decode', function (value, block) {
     return JSON.parse(value);
   });
-  Handlebars.registerHelper('url', function(value, block) {
+  Handlebars.registerHelper('url', function (value, block) {
     var url = window.location.protocol + '//' + window.location.host + window.location.pathname;
 
     return url + value;
   });
-  Handlebars.registerHelper('emailFromMailto', function(value) {
+  Handlebars.registerHelper('emailFromMailto', function (value) {
     var mailtoMatchingRegex = /^mailto\:/i;
     if (typeof value === 'string' && value.match(mailtoMatchingRegex)) {
       return value.replace(mailtoMatchingRegex, '');
@@ -90,12 +90,12 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
       return value;
     }
   });
-  Handlebars.registerHelper('lookup', function(obj, field, options) {
+  Handlebars.registerHelper('lookup', function (obj, field, options) {
     return obj && obj[field];
   });
 
 
-  Handlebars.registerHelper('rsa_key', function(value, block) {
+  Handlebars.registerHelper('rsa_key', function (value, block) {
       // extract all lines into an array
     if(value === undefined) return '';
 
@@ -109,7 +109,7 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
     return lines.join('');
   });
 
-  Handlebars.registerHelper('trim', function(value, block) {
+  Handlebars.registerHelper('trim', function (value, block) {
     if(value === null || value === undefined) return '';
     return value.trim();
   });
@@ -141,7 +141,7 @@ define('handlebars_helpers', ['handlebars'], function(Handlebars) {
     return parseInt(string, 10);
   });
 
-  Handlebars.registerHelper('fontWithFallback', function(font) {
+  Handlebars.registerHelper('fontWithFallback', function (font) {
     switch(font) {
       case 'Arial': return new Handlebars.SafeString("Arial, 'Helvetica Neue', Helvetica, sans-serif");
       case 'Comic Sans MS': return new Handlebars.SafeString("'Comic Sans MS', 'Marker Felt-Thin', Arial, sans-serif");

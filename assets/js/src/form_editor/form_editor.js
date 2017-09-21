@@ -8,7 +8,7 @@
 'use strict';
 
 Event.cacheDelegated = {};
-Object.extend(document, (function() {
+Object.extend(document, (function () {
   var cache = Event.cacheDelegated;
 
   function getCacheForSelector(selector) {
@@ -24,7 +24,7 @@ Object.extend(document, (function() {
 
   function findWrapper(selector, eventName, handler) {
     var c = getWrappersForSelector(selector, eventName);
-    return c.find(function(wrapper) {
+    return c.find(function (wrapper) {
       return wrapper.handler === handler;
     });
   }
@@ -40,7 +40,7 @@ Object.extend(document, (function() {
   function createWrapper(selector, eventName, handler, context) {
     var wrapper, c = getWrappersForSelector(selector, eventName);
     if(c.pluck('handler').include(handler)) return false;
-    wrapper = function(event) {
+    wrapper = function (event) {
       var element = event.findElement(selector);
       if(element) handler.call(context || element, event, element);
     };
@@ -49,26 +49,26 @@ Object.extend(document, (function() {
     return wrapper;
   }
   return {
-    delegate: function(selector, eventName, handler, context) {
+    delegate: function (selector, eventName, handler, context) {
       var wrapper = createWrapper.apply(null, arguments);
       if(wrapper) document.observe(eventName, wrapper);
       return document;
     },
-    stopDelegating: function(selector, eventName, handler) {
+    stopDelegating: function (selector, eventName, handler) {
       var length = arguments.length;
       switch(length) {
         case 2:
-          getWrappersForSelector(selector, eventName).each(function(wrapper) {
+          getWrappersForSelector(selector, eventName).each(function (wrapper) {
             document.stopDelegating(selector, eventName, wrapper.handler);
           });
           break;
         case 1:
-          Object.keys(getCacheForSelector(selector)).each(function(eventName) {
+          Object.keys(getCacheForSelector(selector)).each(function (eventName) {
             document.stopDelegating(selector, eventName);
           });
           break;
         case 0:
-          Object.keys(cache).each(function(selector) {
+          Object.keys(cache).each(function (selector) {
             document.stopDelegating(selector);
           });
           break;
@@ -81,7 +81,7 @@ Object.extend(document, (function() {
   };
 })());
 
-var Observable = (function() {
+var Observable = (function () {
   function getEventName(nameA, namespace) {
     var name = nameA.substring(2);
     if(namespace) name = namespace + ':' + name;
@@ -91,7 +91,7 @@ var Observable = (function() {
   function getHandlers(klass) {
     var proto = klass.prototype,
       namespace = proto.namespace;
-    return Object.keys(proto).grep(/^on/).inject(window.$H(), function(handlers, name) {
+    return Object.keys(proto).grep(/^on/).inject(window.$H(), function (handlers, name) {
       if(name === 'onDomLoaded') return handlers;
       handlers.set(getEventName(name, namespace), getWrapper(proto[name], klass));
       return handlers;
@@ -99,18 +99,18 @@ var Observable = (function() {
   }
 
   function getWrapper(handler, klass) {
-    return function(event) {
+    return function (event) {
       return handler.call(new klass(this), event, event.memo);
     };
   }
 
   function onDomLoad(selector, klass) {
-    window.$$(selector).each(function(element) {
+    window.$$(selector).each(function (element) {
       new klass(element).onDomLoaded();
     });
   }
   return {
-    observe: function(selector) {
+    observe: function (selector) {
       if(!this.handlers) this.handlers = {};
       if(this.handlers[selector]) return;
       var klass = this;
@@ -121,13 +121,13 @@ var Observable = (function() {
           document.observe('dom:loaded', onDomLoad.curry(selector, klass));
         }
       }
-      this.handlers[selector] = getHandlers(klass).each(function(handler) {
+      this.handlers[selector] = getHandlers(klass).each(function (handler) {
         document.delegate(selector, handler.key, handler.value);
       });
     },
-    stopObserving: function(selector) {
+    stopObserving: function (selector) {
       if(!this.handlers || !this.handlers[selector]) return;
-      this.handlers[selector].each(function(handler) {
+      this.handlers[selector].each(function (handler) {
         document.stopDelegating(selector, handler.key, handler.value);
       });
       delete this.handlers[selector];
@@ -137,18 +137,18 @@ var Observable = (function() {
 
 // override droppables
 Object.extend(window.Droppables, {
-  deactivate: window.Droppables.deactivate.wrap(function(proceed, drop, draggable) {
+  deactivate: window.Droppables.deactivate.wrap(function (proceed, drop, draggable) {
     if(drop.onLeave) drop.onLeave(draggable, drop.element);
     return proceed(drop);
   }),
-  activate: window.Droppables.activate.wrap(function(proceed, drop, draggable) {
+  activate: window.Droppables.activate.wrap(function (proceed, drop, draggable) {
     if(drop.onEnter) drop.onEnter(draggable, drop.element);
     return proceed(drop);
   }),
-  show: function(point, element) {
+  show: function (point, element) {
     if(!this.drops.length) return;
     var drop, affected = [];
-    this.drops.each(function(drop) {
+    this.drops.each(function (drop) {
       if(window.Droppables.isAffected(point, element, drop)) affected.push(drop);
     });
     if(affected.length > 0) drop = window.Droppables.findDeepestChild(affected);
@@ -159,21 +159,21 @@ Object.extend(window.Droppables, {
       if(drop !== this.last_active) window.Droppables.activate(drop, element);
     }
   },
-  displayArea: function(draggable) {
+  displayArea: function (draggable) {
     if(!this.drops.length) return;
 
     // hide controls when displaying drop areas.
     WysijaForm.hideBlockControls();
 
-    this.drops.each(function(drop, iterator) {
+    this.drops.each(function (drop, iterator) {
       if(drop.element.hasClassName('block_placeholder')) {
         drop.element.addClassName('active');
       }
     });
   },
-  hideArea: function() {
+  hideArea: function () {
     if(!this.drops.length) return;
-    this.drops.each(function(drop, iterator) {
+    this.drops.each(function (drop, iterator) {
       if(drop.element.hasClassName('block_placeholder')) {
         drop.element.removeClassName('active');
       } else if(drop.element.hasClassName('image_placeholder')) {
@@ -184,7 +184,7 @@ Object.extend(window.Droppables, {
       }
     });
   },
-  reset: function(draggable) {
+  reset: function (draggable) {
     if(this.last_active) this.deactivate(this.last_active, draggable);
   }
 });
@@ -198,7 +198,7 @@ Object.extend(window.Droppables, {
 var WysijaHistory = {
   container: 'mailpoet_form_history',
   size: 30,
-  enqueue: function(element) {
+  enqueue: function (element) {
     // create deep clone (includes child elements) of passed element
     var clone = element.clone(true);
 
@@ -219,7 +219,7 @@ var WysijaHistory = {
       top: clone
     });
   },
-  dequeue: function() {
+  dequeue: function () {
     // pop last block off the history
     var block = window.$(WysijaHistory.container).select('div').first();
 
@@ -230,10 +230,10 @@ var WysijaHistory = {
       });
     }
   },
-  clear: function() {
+  clear: function () {
     window.$(WysijaHistory.container).innerHTML = '';
   },
-  remove: function(field) {
+  remove: function (field) {
     window.$(WysijaHistory.container).select('[wysija_name="' + field + '"]').invoke('remove');
   }
 };
@@ -268,15 +268,15 @@ var WysijaForm = {
     selectingColor: false,
     showingTools: false
   },
-  encodeHtmlValue: function(str) {
+  encodeHtmlValue: function (str) {
     return str.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
     // ": fix for FileMerge because the previous line fucks up its syntax coloring
   },
-  decodeHtmlValue: function(str) {
+  decodeHtmlValue: function (str) {
     return str.replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&quot;/g, '"');
     // ": fix for FileMerge because the previous line fucks up its syntax coloring
   },
-  loading: function(is_loading) {
+  loading: function (is_loading) {
     if(is_loading) {
       window.$(WysijaForm.options.editor).addClassName('loading');
       window.$(WysijaForm.options.toolbar).addClassName('loading');
@@ -285,25 +285,25 @@ var WysijaForm = {
       window.$(WysijaForm.options.toolbar).removeClassName('loading');
     }
   },
-  loadStatic: function(blocks) {
-    window.$A(blocks).each(function(block) {
+  loadStatic: function (blocks) {
+    window.$A(blocks).each(function (block) {
       // create block
       WysijaForm.Block.create(block, window.$('block_placeholder'));
     });
   },
-  load: function(data) {
+  load: function (data) {
     if(data === undefined) return;
 
     // load body
     if(data.body !== undefined) {
-      window.$A(data.body).each(function(block) {
+      window.$A(data.body).each(function (block) {
         // create block
         WysijaForm.Block.create(block, window.$('block_placeholder'));
       });
 
       // load settings
       var settings_elements = window.$('mailpoet_form_settings').getElements();
-      settings_elements.each(function(setting) {
+      settings_elements.each(function (setting) {
         // skip lists
         if(setting.name === 'segments') {
           return true;
@@ -323,7 +323,7 @@ var WysijaForm = {
       });
     }
   },
-  save: function() {
+  save: function () {
     var position = 1,
       data = {
         name: window.$F('mailpoet_form_name'),
@@ -332,7 +332,7 @@ var WysijaForm = {
         styles: (window.MailPoet.CodeEditor !== undefined) ? window.MailPoet.CodeEditor.getValue() : null
       };
     // body
-    WysijaForm.getBlocks().each(function(b) {
+    WysijaForm.getBlocks().each(function (b) {
       var block_data = (typeof(b.block['save']) === 'function') ? b.block.save() : null;
 
       if(block_data !== null) {
@@ -349,7 +349,7 @@ var WysijaForm = {
 
     return data;
   },
-  init: function() {
+  init: function () {
     // set document scroll
     info('init -> set scroll offsets');
     WysijaForm.setScrollOffsets();
@@ -382,7 +382,7 @@ var WysijaForm = {
     info('init -> toggle widgets');
     WysijaForm.toggleWidgets();
   },
-  getFieldData: function(element) {
+  getFieldData: function (element) {
     // get basic field data
     var data = {
       type: element.readAttribute('wysija_type'),
@@ -400,11 +400,11 @@ var WysijaForm = {
     }
     return data;
   },
-  toggleWidgets: function() {
+  toggleWidgets: function () {
     window.$$('a[wysija_unique="1"]').invoke('removeClassName', 'disabled');
 
     // loop through each unique field already inserted in the editor and disable its toolbar equivalent
-    window.$$('#' + WysijaForm.options.editor + ' [wysija_unique="1"]').map(function(element) {
+    window.$$('#' + WysijaForm.options.editor + ' [wysija_unique="1"]').map(function (element) {
       var field = window.$$('#' + WysijaForm.options.toolbar + ' [wysija_id="' + element.readAttribute('wysija_id') + '"]');
       if(field.length > 0) {
         field.first().addClassName('disabled');
@@ -421,10 +421,10 @@ var WysijaForm = {
       window.$('mailpoet_settings_segment_selection').show();
     }
   },
-  hasSegmentSelection: function() {
+  hasSegmentSelection: function () {
     return (window.$$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]').length > 0);
   },
-  isSegmentSelectionValid: function() {
+  isSegmentSelectionValid: function () {
     var segment_selection = window.$$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]')[0];
     if(segment_selection !== undefined) {
       var block = WysijaForm.get(segment_selection).block.getData();
@@ -436,12 +436,12 @@ var WysijaForm = {
     }
     return false;
   },
-  setBlockPositions: function(event, target) {
+  setBlockPositions: function (event, target) {
     // release dragging lock
     WysijaForm.locks.dragging = false;
 
     var index = 1;
-    WysijaForm.getBlocks().each(function(container) {
+    WysijaForm.getBlocks().each(function (container) {
       container.setPosition(index++);
       // remove z-index value to avoid issues when resizing images
       if(container['block'] !== undefined) {
@@ -471,18 +471,18 @@ var WysijaForm = {
       }
     }
   },
-  setScrollOffsets: function() {
+  setScrollOffsets: function () {
     WysijaForm.scroll = document.viewport.getScrollOffsets();
   },
-  hideSettings: function() {
+  hideSettings: function () {
     window.$(WysijaForm.options.container).select('.wysija_settings').invoke('hide');
   },
-  setSettingsPosition: function() {
+  setSettingsPosition: function () {
     // get viewport offsets and dimensions
     var viewportHeight = document.viewport.getHeight(),
       blockPadding = 5;
 
-    window.$(WysijaForm.options.container).select('.wysija_settings').each(function(element) {
+    window.$(WysijaForm.options.container).select('.wysija_settings').each(function (element) {
       // get parent dimensions and position
       var parentDim = element.up('.mailpoet_form_block').getDimensions(),
         parentPos = element.up('.mailpoet_form_block').cumulativeOffset(),
@@ -506,7 +506,7 @@ var WysijaForm = {
       });
     });
   },
-  initToolbarPosition: function() {
+  initToolbarPosition: function () {
     if(WysijaForm.toolbar.top === null) WysijaForm.toolbar.top = parseInt(window.$(WysijaForm.options.container).positionedOffset().top);
     if(WysijaForm.toolbar.y === null) WysijaForm.toolbar.y = parseInt(WysijaForm.toolbar.top);
 
@@ -518,7 +518,7 @@ var WysijaForm = {
     if(WysijaForm.toolbar.x === null) WysijaForm.toolbar.x = parseInt(WysijaForm.toolbar.left + window.$(WysijaForm.options.container).getDimensions().width + 15);
 
   },
-  setToolbarPosition: function() {
+  setToolbarPosition: function () {
     WysijaForm.initToolbarPosition();
 
     var position = {
@@ -534,7 +534,7 @@ var WysijaForm = {
 
     window.$(WysijaForm.options.toolbar).setStyle(position);
   },
-  updateToolbarPosition: function() {
+  updateToolbarPosition: function () {
     // init toolbar position (updates scroll and toolbar y)
     WysijaForm.initToolbarPosition();
 
@@ -559,31 +559,31 @@ var WysijaForm = {
   },
   blockDropOptions: {
     accept: window.$w('mailpoet_form_field'), // acceptable items (classes array)
-    onEnter: function(draggable, droppable) {
+    onEnter: function (draggable, droppable) {
       window.$(droppable).addClassName('hover');
     },
-    onLeave: function(draggable, droppable) {
+    onLeave: function (draggable, droppable) {
       window.$(droppable).removeClassName('hover');
     },
-    onDrop: function(draggable, droppable) {
+    onDrop: function (draggable, droppable) {
       // custom data for images
       droppable.fire('wjfe:item:drop', WysijaForm.getFieldData(draggable));
       window.$(droppable).removeClassName('hover');
     }
   },
-  hideControls: function() {
+  hideControls: function () {
     try {
       return WysijaForm.getBlocks().invoke('hideControls');
     } catch(e) {
       return;
     }
   },
-  hideTools: function() {
+  hideTools: function () {
     window.$$('.wysija_tools').invoke('hide');
     WysijaForm.locks.showingTools = false;
   },
   instances: {},
-  get: function(element, typ) {
+  get: function (element, typ) {
     var type = typ;
     if(type === undefined) type = 'block';
     // identify element
@@ -593,10 +593,10 @@ var WysijaForm = {
     WysijaForm.instances[id] = instance;
     return instance;
   },
-  makeDroppable: function() {
+  makeDroppable: function () {
     window.Droppables.add('block_placeholder', WysijaForm.blockDropOptions);
   },
-  makeSortable: function() {
+  makeSortable: function () {
     var body = window.$(WysijaForm.options.body);
     window.Sortable.create(body, {
       tag: 'div',
@@ -613,19 +613,19 @@ var WysijaForm = {
       onEnd: WysijaForm.setBlockPositions
     });
   },
-  hideBlockControls: function() {
+  hideBlockControls: function () {
     window.$$('.wysija_controls').invoke('hide');
     this.getBlockElements().invoke('removeClassName', 'hover');
   },
-  getBlocks: function() {
-    return WysijaForm.getBlockElements().map(function(element) {
+  getBlocks: function () {
+    return WysijaForm.getBlockElements().map(function (element) {
       return WysijaForm.get(element);
     });
   },
-  getBlockElements: function() {
+  getBlockElements: function () {
     return window.$(WysijaForm.options.container).select('.mailpoet_form_block');
   },
-  startBlockPositions: function(event, target) {
+  startBlockPositions: function (event, target) {
     if(target.element.hasClassName('mailpoet_form_block')) {
       // store block placeholder id for the block that is being repositionned
       if(target.element.previous('.block_placeholder') !== undefined) {
@@ -634,7 +634,7 @@ var WysijaForm = {
     }
     WysijaForm.locks.dragging = true;
   },
-  encodeURIComponent: function(str) {
+  encodeURIComponent: function (str) {
     // check if it's a url and if so, prevent encoding of protocol
     var regexp = new RegExp(/^http[s]?:\/\//),
       protocol = regexp.exec(str);
@@ -647,9 +647,9 @@ var WysijaForm = {
       return encodeURI(str).replace(/[!'()*]/g, escape);
     }
   },
-  updateBlock: function(field) {
+  updateBlock: function (field) {
     var hasUpdated = false;
-    WysijaForm.getBlocks().each(function(b) {
+    WysijaForm.getBlocks().each(function (b) {
       if(b.block.getData().id === field.id) {
         hasUpdated = true;
         b.block.redraw(field);
@@ -658,9 +658,9 @@ var WysijaForm = {
 
     return hasUpdated;
   },
-  removeBlock: function(field, callback) {
+  removeBlock: function (field, callback) {
     var hasRemoved = false;
-    WysijaForm.getBlocks().each(function(b) {
+    WysijaForm.getBlocks().each(function (b) {
       if(b.block.getData().id === field.id) {
         hasRemoved = true;
         b.block.removeBlock(callback);
@@ -672,14 +672,14 @@ var WysijaForm = {
 };
 
 WysijaForm.DraggableItem = window.Class.create({
-  initialize: function(element) {
+  initialize: function (element) {
     this.elementType = window.$(element).readAttribute('wysija_type');
     this.element = window.$(element).down() || window.$(element);
     this.clone = this.cloneElement();
     this.insert();
   },
   STYLES: new window.Template('position: absolute; top: #{top}px; left: #{left}px;'),
-  cloneElement: function() {
+  cloneElement: function () {
     var clone = this.element.clone(),
       offset = this.element.cumulativeOffset(),
       list = this.getList(),
@@ -694,27 +694,27 @@ WysijaForm.DraggableItem = window.Class.create({
     clone.innerHTML = this.element.innerHTML;
     return clone;
   },
-  getOffset: function() {
+  getOffset: function () {
     return this.element.offsetTop - this.getList().scrollTop;
   },
-  getList: function() {
+  getList: function () {
     return this.element.up('ul');
   },
-  insert: function() {
+  insert: function () {
     window.$$('body')[0].insert(this.clone);
   },
-  onMousedown: function(event) {
+  onMousedown: function (event) {
     var draggable = new window.Draggable(this.clone, {
       scroll: window,
-      onStart: function() {
+      onStart: function () {
         window.Droppables.displayArea(draggable);
       },
-      onEnd: function(drag) {
+      onEnd: function (drag) {
         drag.destroy();
         drag.element.remove();
         window.Droppables.hideArea();
       },
-      starteffect: function(element) {
+      starteffect: function (element) {
         new window.Effect.Opacity(element, {
           duration: 0.2,
           from: element.getOpacity(),
@@ -733,7 +733,7 @@ Object.extend(WysijaForm.DraggableItem, Observable).observe('a[class="mailpoet_f
 
 WysijaForm.Block = window.Class.create({
   /* Invoked on load */
-  initialize: function(element) {
+  initialize: function (element) {
     info('block -> init');
 
     this.element = window.$(element);
@@ -748,16 +748,16 @@ WysijaForm.Block = window.Class.create({
     }
     return this;
   },
-  setPosition: function(position) {
+  setPosition: function (position) {
     this.element.writeAttribute('wysija_position', position);
   },
-  hideControls: function() {
+  hideControls: function () {
     if(this['getControls']) {
       this.element.removeClassName('hover');
       this.getControls().hide();
     }
   },
-  showControls: function() {
+  showControls: function () {
     if(this['getControls']) {
       this.element.addClassName('hover');
       try {
@@ -766,21 +766,21 @@ WysijaForm.Block = window.Class.create({
       }
     }
   },
-  makeBlockDroppable: function() {
+  makeBlockDroppable: function () {
     if(this.isBlockDroppableEnabled() === false) {
       var block_placeholder = this.getBlockDroppable();
       window.Droppables.add(block_placeholder.identify(), WysijaForm.blockDropOptions);
       block_placeholder.addClassName('enabled');
     }
   },
-  removeBlockDroppable: function() {
+  removeBlockDroppable: function () {
     if(this.isBlockDroppableEnabled()) {
       var block_placeholder = this.getBlockDroppable();
       window.Droppables.remove(block_placeholder.identify());
       block_placeholder.removeClassName('enabled');
     }
   },
-  isBlockDroppableEnabled: function() {
+  isBlockDroppableEnabled: function () {
     // if the block_placeholder does not exist, create it
     var block_placeholder = this.getBlockDroppable();
     if(block_placeholder === null) {
@@ -789,30 +789,30 @@ WysijaForm.Block = window.Class.create({
       return block_placeholder.hasClassName('enabled');
     }
   },
-  createBlockDroppable: function() {
+  createBlockDroppable: function () {
     info('block -> createBlockDroppable');
     this.element.insert({
       before: '<div class=\"block_placeholder\">' + window.$('block_placeholder').innerHTML + '</div>'
     });
     return this.element.previous('.block_placeholder');
   },
-  getBlockDroppable: function() {
+  getBlockDroppable: function () {
     if(this.element.previous() === undefined || this.element.previous().hasClassName('block_placeholder') === false) {
       return null;
     } else {
       return this.element.previous();
     }
   },
-  getControls: function() {
+  getControls: function () {
     return this.element.down('.wysija_controls');
   },
-  setupControls: function() {
+  setupControls: function () {
     // enable controls
     this.controls = this.getControls();
 
     if(this.controls) {
       // setup events for block controls
-      this.element.observe('mouseover', function() {
+      this.element.observe('mouseover', function () {
         // special cases where controls shouldn't be displayed
         if(WysijaForm.locks.dragging === true || WysijaForm.locks.selectingColor === true || WysijaForm.locks.showingTools === true) return;
 
@@ -828,7 +828,7 @@ WysijaForm.Block = window.Class.create({
         }
       }.bind(this));
 
-      this.element.observe('mouseout', function() {
+      this.element.observe('mouseout', function () {
         // special cases where controls shouldn't hide
         if(WysijaForm.locks.dragging === true || WysijaForm.locks.selectingColor === true) return;
 
@@ -845,7 +845,7 @@ WysijaForm.Block = window.Class.create({
       // setup click event for remove button
       this.removeButton = this.controls.down('.remove') || null;
       if(this.removeButton !== null) {
-        this.removeButton.observe('click', function() {
+        this.removeButton.observe('click', function () {
           this.removeBlock();
           this.removeButton.stopObserving('click');
         }.bind(this));
@@ -855,7 +855,7 @@ WysijaForm.Block = window.Class.create({
       this.settingsButton = this.element.down('.settings') || null;
 
       if(this.settingsButton !== null) {
-        this.settingsButton.observe('click', function(event) {
+        this.settingsButton.observe('click', function (event) {
           // TODO: refactor
           var block = window.$(event.target).up('.mailpoet_form_block') || null;
           if(block !== null) {
@@ -867,7 +867,7 @@ WysijaForm.Block = window.Class.create({
     }
     return this;
   },
-  removeBlock: function(callback) {
+  removeBlock: function (callback) {
     info('block -> removeBlock');
 
     // save block in history
@@ -875,7 +875,7 @@ WysijaForm.Block = window.Class.create({
 
     window.Effect.Fade(this.element.identify(), {
       duration: 0.2,
-      afterFinish: function(effect) {
+      afterFinish: function (effect) {
         // remove placeholder
         if(effect.element.previous('.block_placeholder') !== undefined) {
           effect.element.previous('.block_placeholder').remove();
@@ -903,7 +903,7 @@ WysijaForm.Block = window.Class.create({
 });
 
 /* Invoked on item dropped */
-WysijaForm.Block.create = function(createBlock, target) {
+WysijaForm.Block.create = function (createBlock, target) {
   var block = createBlock;
   if(window.$('form_template_' + block.type) === null) {
     return false;
@@ -918,7 +918,7 @@ WysijaForm.Block.create = function(createBlock, target) {
     if(block.params.values === undefined) {
       var settings_segments = window.jQuery('#mailpoet_form_segments').val();
       if(settings_segments !== null && settings_segments.length > 0){
-        block.params.values = window.mailpoet_segments.filter(function(segment) {
+        block.params.values = window.mailpoet_segments.filter(function (segment) {
           return (settings_segments.indexOf(segment.id) !== -1);
         });
       }
@@ -958,7 +958,7 @@ WysijaForm.Block.create = function(createBlock, target) {
   WysijaForm.setSettingsPosition();
 };
 
-document.observe('wjfe:item:drop', function(event) {
+document.observe('wjfe:item:drop', function (event) {
   info('create block');
   WysijaForm.Block.create(event.memo, event.target);
 
@@ -967,23 +967,23 @@ document.observe('wjfe:item:drop', function(event) {
   WysijaForm.hideBlockControls();
 
   // toggle widgets
-  setTimeout(function() {
+  setTimeout(function () {
     WysijaForm.toggleWidgets();
   }, 1);
 });
 
 /* Form Widget */
 WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
-  initialize: function(element) {
+  initialize: function (element) {
     info('widget -> init');
     this.element = window.$(element);
     return this;
   },
-  setup: function() {
+  setup: function () {
     info('widget -> setup');
     this.setupControls();
   },
-  save: function() {
+  save: function () {
     info('widget -> save');
     var data = this.getData();
 
@@ -993,7 +993,7 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
 
     return data;
   },
-  setData: function(data) {
+  setData: function (data) {
     var current_data = this.getData(),
       params = window.$H(current_data.params).merge(data.params).toObject();
 
@@ -1005,7 +1005,7 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
     // update params
     this.element.writeAttribute('wysija_params', JSON.stringify(params));
   },
-  getData: function() {
+  getData: function () {
     var data = WysijaForm.getFieldData(this.element);
     // decode params
     if(data.params.length > 0) {
@@ -1013,13 +1013,13 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
     }
     return data;
   },
-  getControls: function() {
+  getControls: function () {
     return this.element.down('.wysija_controls');
   },
-  remove: function() {
+  remove: function () {
     this.removeBlock();
   },
-  redraw: function(data) {
+  redraw: function (data) {
     // set parameters
     this.setData(data);
     var options = this.getData();
@@ -1033,18 +1033,18 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
 
     WysijaForm.init();
   },
-  editSettings: function() {
+  editSettings: function () {
     window.MailPoet.Modal.popup({
       title: window.MailPoet.I18n.t('editFieldSettings'),
       template: window.jQuery('#form_template_field_settings').html(),
       data: this.getData(),
-      onSuccess: function() {
+      onSuccess: function () {
         var data = window.jQuery('#form_field_settings').serializeObject();
         this.redraw(data);
       }.bind(this)
     });
   },
-  getSettings: function() {
+  getSettings: function () {
     return this.element.down('.wysija_settings');
   }
 });
@@ -1057,8 +1057,8 @@ function info(value) {
   if(WysijaForm.options.debug === false) return;
 
   if(!(window.console && console.log)) {
-    (function() {
-      var noop = function() {};
+    (function () {
+      var noop = function () {};
       var methods = ['assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log', 'markTimeline', 'profile', 'profileEnd', 'markTimeline', 'table', 'time', 'timeEnd', 'timeStamp', 'trace', 'warn'];
       var length = methods.length;
       window.console = {};

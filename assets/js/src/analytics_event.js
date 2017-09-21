@@ -53,7 +53,7 @@ function cacheEvent(forced, name, data) {
 
 define(
   ['mailpoet', 'underscore'],
-  function(mp, _) {
+  function (mp, _) {
     var MailPoet = mp;
 
     function initializeMixpanelWhenLoaded() {

@@ -1,4 +1,4 @@
-define('mp2migrator', ['mailpoet', 'jquery'], function(mp, jQuery) {
+define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
   'use strict';
 
   var MailPoet = mp;
@@ -184,22 +184,22 @@ define('mp2migrator', ['mailpoet', 'jquery'], function(mp, jQuery) {
     jQuery('#progressbar').progressbar({value: 0});
 
     // Import button
-    jQuery('#import').click(function() {
+    jQuery('#import').click(function () {
       MailPoet.MP2Migrator.startImport();
     });
       
     // Stop import button
-    jQuery('#stop-import').click(function() {
+    jQuery('#stop-import').click(function () {
       MailPoet.MP2Migrator.stopImport();
     });
 
     // Skip import link
-    jQuery('#skip-import').click(function() {
+    jQuery('#skip-import').click(function () {
       MailPoet.MP2Migrator.skipImport();
     });
 
     // Go to welcome page
-    jQuery('#goto-welcome').click(function() {
+    jQuery('#goto-welcome').click(function () {
       MailPoet.MP2Migrator.gotoWelcomePage();
     });
     

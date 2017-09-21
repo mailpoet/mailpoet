@@ -3,7 +3,7 @@ define([
   'backbone.marionette',
   'backbone.supermodel',
   'underscore'
-], function(App, Marionette, SuperModel, _) {
+], function (App, Marionette, SuperModel, _) {
 
   'use strict';
 
@@ -42,34 +42,34 @@ define([
         backgroundColor: '#cccccc'
       }
     },
-    initialize: function() {
-      this.on('change', function() { App.getChannel().trigger('autoSave'); });
+    initialize: function () {
+      this.on('change', function () { App.getChannel().trigger('autoSave'); });
     }
   });
 
   Module.StylesView = Marionette.View.extend({
-    getTemplate: function() { return window.templates.styles; },
+    getTemplate: function () { return window.templates.styles; },
     modelEvents: {
       change: 'render'
     },
-    serializeData: function() {
+    serializeData: function () {
       return this.model.toJSON();
     }
   });
 
   Module._globalStyles = new SuperModel();
-  Module.getGlobalStyles = function() {
+  Module.getGlobalStyles = function () {
     return Module._globalStyles;
   };
-  Module.setGlobalStyles = function(options) {
+  Module.setGlobalStyles = function (options) {
     Module._globalStyles = new Module.StylesModel(options);
     return Module._globalStyles;
   };
-  Module.getAvailableStyles = function() {
+  Module.getAvailableStyles = function () {
     return App.getConfig().get('availableStyles');
   };
 
-  App.on('before:start', function(App, options) {
+  App.on('before:start', function (App, options) {
     var Application = App;
     // Expose style methods to global application
     Application.getGlobalStyles = Module.getGlobalStyles;
@@ -81,7 +81,7 @@ define([
     this.setGlobalStyles(globalStyles);
   });
 
-  App.on('start', function(App, options) {
+  App.on('start', function (App, options) {
     var stylesView = new Module.StylesView({ model: App.getGlobalStyles() });
     App._appView.showChildView('stylesRegion', stylesView);
   });

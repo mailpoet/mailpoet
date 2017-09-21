@@ -1,7 +1,7 @@
 define('num',
   [
     'mailpoet'
-  ], function(
+  ], function (
     mp
 ) {
     'use strict';

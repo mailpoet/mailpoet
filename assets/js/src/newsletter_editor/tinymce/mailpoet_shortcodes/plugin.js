@@ -10,20 +10,20 @@
 
 /*jshint unused:false */
 /*global tinymce:true */
-tinymce.PluginManager.add('mailpoet_shortcodes', function(editor, url) {
-  var appendLabelAndClose = function(shortcode) {
+tinymce.PluginManager.add('mailpoet_shortcodes', function (editor, url) {
+  var appendLabelAndClose = function (shortcode) {
       editor.insertContent(shortcode);
       editor.windowManager.close();
     },
-    generateOnClickFunc = function(shortcode) {
-      return function() {
+    generateOnClickFunc = function (shortcode) {
+      return function () {
         appendLabelAndClose(shortcode);
       };
     };
 
   editor.addButton('mailpoet_shortcodes', {
     icon: 'mailpoet_shortcodes',
-    onclick: function() {
+    onclick: function () {
       var shortcodes = [],
         configShortcodes = editor.settings.mailpoet_shortcodes;
 

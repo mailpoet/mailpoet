@@ -10,7 +10,7 @@ define([
   'jquery',
   'newsletter_editor/behaviors/BehaviorsLookup',
   'interact'
-], function(Marionette, _, jQuery, BehaviorsLookup, interact) {
+], function (Marionette, _, jQuery, BehaviorsLookup, interact) {
   var BL = BehaviorsLookup;
 
   BL.DraggableBehavior = Marionette.Behavior.extend({
@@ -24,14 +24,14 @@ define([
        *
        * @return Backbone.Model A model that will be passed to the receiver
        */
-      getDropModel: function() {
+      getDropModel: function () {
         throw "Missing 'drop' function for DraggableBehavior";
       },
 
-      onDrop: function(model, view) {},
-      testAttachToInstance: function(model, view) { return true; }
+      onDrop: function (model, view) {},
+      testAttachToInstance: function (model, view) { return true; }
     },
-    onRender: function() {
+    onRender: function () {
       var that = this,
         interactable;
 
@@ -47,7 +47,7 @@ define([
         // Scroll when dragging near edges of a window
         autoScroll: true,
 
-        onstart: function(startEvent) {
+        onstart: function (startEvent) {
           var event = startEvent;
 
           if (that.options.cloneOriginal === true) {
@@ -131,7 +131,7 @@ define([
       } else {
         interactable.getDropModel = this.view.getDropFunc();
       }
-      interactable.onDrop = function(opts) {
+      interactable.onDrop = function (opts) {
         var options = opts;
         if (_.isObject(options)) {
           // Inject Draggable behavior if possible

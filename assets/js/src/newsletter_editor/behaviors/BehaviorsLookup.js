@@ -6,10 +6,10 @@
  */
 define([
   'backbone.marionette'
-], function(BackboneMarionette) {
+], function (BackboneMarionette) {
   var Marionette = BackboneMarionette;
   var BehaviorsLookup = {};
-  Marionette.Behaviors.behaviorsLookup = function() {
+  Marionette.Behaviors.behaviorsLookup = function () {
     return BehaviorsLookup;
   };
 

@@ -23,7 +23,7 @@ define([
   'newsletter_editor/blocks/button',
   'newsletter_editor/blocks/divider',
   'select2'
-], function(
+], function (
   Backbone,
   Marionette,
   Radio,
@@ -44,7 +44,7 @@ define([
 
   Module.PostsBlockModel = base.BlockModel.extend({
     stale: ['_selectedPosts', '_availablePosts', '_transformedPosts'],
-    defaults: function() {
+    defaults: function () {
       return this._getDefaults({
         type: 'posts',
         amount: '10',
@@ -79,7 +79,7 @@ define([
         _transformedPosts: new (App.getBlockTypeModel('container'))()
       }, App.getConfig().get('blockDefaults.posts'));
     },
-    relations: function() {
+    relations: function () {
       return {
         readMoreButton: App.getBlockTypeModel('button'),
         divider: App.getBlockTypeModel('divider'),
@@ -88,7 +88,7 @@ define([
         _transformedPosts: App.getBlockTypeModel('container')
       };
     },
-    initialize: function() {
+    initialize: function () {
       var that = this,
         POST_REFRESH_DELAY_MS = 500,
         refreshAvailablePosts = _.debounce(this.fetchAvailablePosts.bind(this), POST_REFRESH_DELAY_MS),
@@ -108,18 +108,18 @@ define([
 
       this.on('insertSelectedPosts', this._insertSelectedPosts, this);
     },
-    fetchAvailablePosts: function() {
+    fetchAvailablePosts: function () {
       var that = this;
       this.set('offset', 0);
-      CommunicationComponent.getPosts(this.toJSON()).done(function(posts) {
+      CommunicationComponent.getPosts(this.toJSON()).done(function (posts) {
         that.get('_availablePosts').reset(posts);
         that.get('_selectedPosts').reset(); // Empty out the collection
         that.trigger('change:_availablePosts');
-      }).fail(function() {
+      }).fail(function () {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
       });
     },
-    _loadMorePosts: function() {
+    _loadMorePosts: function () {
       var that = this,
         postCount = this.get('_availablePosts').length,
         nextOffset = this.get('offset') + Number(this.get('amount'));
@@ -131,16 +131,16 @@ define([
       this.set('offset', nextOffset);
       this.trigger('loadingMorePosts');
 
-      CommunicationComponent.getPosts(this.toJSON()).done(function(posts) {
+      CommunicationComponent.getPosts(this.toJSON()).done(function (posts) {
         that.get('_availablePosts').add(posts);
         that.trigger('change:_availablePosts');
-      }).fail(function() {
+      }).fail(function () {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchAvailablePosts'));
-      }).always(function() {
+      }).always(function () {
         that.trigger('morePostsLoaded');
       });
     },
-    _refreshTransformedPosts: function() {
+    _refreshTransformedPosts: function () {
       var that = this,
         data = this.toJSON();
 
@@ -151,13 +151,13 @@ define([
         return;
       }
 
-      CommunicationComponent.getTransformedPosts(data).done(function(posts) {
+      CommunicationComponent.getTransformedPosts(data).done(function (posts) {
         that.get('_transformedPosts').get('blocks').reset(posts, {parse: true});
-      }).fail(function() {
+      }).fail(function () {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
       });
     },
-    _insertSelectedPosts: function() {
+    _insertSelectedPosts: function () {
       var that = this,
         data = this.toJSON(),
         index = this.collection.indexOf(this),
@@ -167,9 +167,9 @@ define([
 
       if (data.posts.length === 0) return;
 
-      CommunicationComponent.getTransformedPosts(data).done(function(posts) {
+      CommunicationComponent.getTransformedPosts(data).done(function (posts) {
         collection.add(posts, { at: index });
-      }).fail(function() {
+      }).fail(function () {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
       });
     }
@@ -177,19 +177,19 @@ define([
 
   Module.PostsBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_posts_block mailpoet_droppable_block',
-    getTemplate: function() { return window.templates.postsBlock; },
+    getTemplate: function () { return window.templates.postsBlock; },
     modelEvents: {}, // Forcefully disable all events
     regions: _.extend({
       postsRegion: '.mailpoet_posts_block_posts'
     }, base.BlockView.prototype.regions),
-    onDragSubstituteBy: function() { return Module.PostsWidgetView; },
-    initialize: function() {
+    onDragSubstituteBy: function () { return Module.PostsWidgetView; },
+    initialize: function () {
       base.BlockView.prototype.initialize.apply(this, arguments);
 
       this.toolsView = new Module.PostsBlockToolsView({ model: this.model });
       this.model.reply('blockView', this.notifyAboutSelf, this);
     },
-    onRender: function() {
+    onRender: function () {
       if (!this.getRegion('toolsRegion').hasView()) {
         this.showChildView('toolsRegion', this.toolsView);
       }
@@ -203,20 +203,20 @@ define([
         };
       this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_transformedPosts'), renderOptions: renderOptions }));
     },
-    notifyAboutSelf: function() {
+    notifyAboutSelf: function () {
       return this;
     },
-    onBeforeDestroy: function() {
+    onBeforeDestroy: function () {
       this.model.stopReplying('blockView', this.notifyAboutSelf, this);
     }
   });
 
   Module.PostsBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.PostsBlockSettingsView; }
+    getSettingsView: function () { return Module.PostsBlockSettingsView; }
   });
 
   Module.PostsBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return window.templates.postsBlockSettings; },
+    getTemplate: function () { return window.templates.postsBlockSettings; },
     regions: {
       selectionRegion: '.mailpoet_settings_posts_selection',
       displayOptionsRegion: '.mailpoet_settings_posts_display_options'
@@ -226,17 +226,17 @@ define([
       'click .mailpoet_settings_posts_show_post_selection': 'switchToPostSelection',
       'click .mailpoet_settings_posts_insert_selected': 'insertPosts'
     },
-    templateContext: function() {
+    templateContext: function () {
       return {
         model: this.model.toJSON()
       };
     },
-    initialize: function() {
+    initialize: function () {
       this.model.trigger('startEditing');
       this.selectionView = new PostSelectionSettingsView({ model: this.model });
       this.displayOptionsView = new PostsDisplayOptionsSettingsView({ model: this.model });
     },
-    onRender: function() {
+    onRender: function () {
       var that = this,
         blockView = this.model.request('blockView');
 
@@ -248,7 +248,7 @@ define([
         template: '',
         position: 'right',
         width: App.getConfig().get('sidepanelWidth'),
-        onCancel: function() {
+        onCancel: function () {
           // Self destroy the block if the user closes settings modal
           that.model.destroy();
         }
@@ -258,7 +258,7 @@ define([
       this.selectionView.triggerMethod('attach');
       this.displayOptionsView.triggerMethod('attach');
     },
-    switchToDisplayOptions: function() {
+    switchToDisplayOptions: function () {
       // Switch content view
       this.$('.mailpoet_settings_posts_selection').addClass('mailpoet_closed');
       this.$('.mailpoet_settings_posts_display_options').removeClass('mailpoet_closed');
@@ -267,7 +267,7 @@ define([
       this.$('.mailpoet_settings_posts_show_display_options').addClass('mailpoet_hidden');
       this.$('.mailpoet_settings_posts_show_post_selection').removeClass('mailpoet_hidden');
     },
-    switchToPostSelection: function() {
+    switchToPostSelection: function () {
       // Switch content view
       this.$('.mailpoet_settings_posts_display_options').addClass('mailpoet_closed');
       this.$('.mailpoet_settings_posts_selection').removeClass('mailpoet_closed');
@@ -276,7 +276,7 @@ define([
       this.$('.mailpoet_settings_posts_show_post_selection').addClass('mailpoet_hidden');
       this.$('.mailpoet_settings_posts_show_display_options').removeClass('mailpoet_hidden');
     },
-    insertPosts: function() {
+    insertPosts: function () {
       this.model.trigger('insertSelectedPosts');
       this.model.destroy();
       this.close();
@@ -285,20 +285,20 @@ define([
 
   var PostsSelectionCollectionView = Marionette.CollectionView.extend({
     className: 'mailpoet_post_scroll_container',
-    childView: function() { return SinglePostSelectionSettingsView; },
-    emptyView: function() { return EmptyPostSelectionSettingsView; },
-    childViewOptions: function() {
+    childView: function () { return SinglePostSelectionSettingsView; },
+    emptyView: function () { return EmptyPostSelectionSettingsView; },
+    childViewOptions: function () {
       return {
         blockModel: this.blockModel
       };
     },
-    initialize: function(options) {
+    initialize: function (options) {
       this.blockModel = options.blockModel;
     },
     events: {
       scroll: 'onPostsScroll'
     },
-    onPostsScroll: function(event) {
+    onPostsScroll: function (event) {
       var $postsBox = jQuery(event.target);
       if($postsBox.scrollTop() + $postsBox.innerHeight() >= $postsBox[0].scrollHeight){
         // Load more posts if scrolled to bottom
@@ -308,11 +308,11 @@ define([
   });
 
   var PostSelectionSettingsView = Marionette.View.extend({
-    getTemplate: function() { return window.templates.postSelectionPostsBlockSettings; },
+    getTemplate: function () { return window.templates.postSelectionPostsBlockSettings; },
     regions: {
       posts: '.mailpoet_post_selection_container'
     },
-    events: function() {
+    events: function () {
       return {
         'change .mailpoet_settings_posts_content_type': _.partial(this.changeField, 'contentType'),
         'change .mailpoet_posts_post_status': _.partial(this.changeField, 'postStatus'),
@@ -320,20 +320,20 @@ define([
       };
     },
     modelEvents: {
-      'change:offset': function(model, value) {
+      'change:offset': function (model, value) {
         // Scroll posts view to top if settings are changed
         if (value === 0) {
           this.$('.mailpoet_post_scroll_container').scrollTop(0);
         }
       },
-      loadingMorePosts: function() {
+      loadingMorePosts: function () {
         this.$('.mailpoet_post_selection_loading').css('visibility', 'visible');
       },
-      morePostsLoaded: function() {
+      morePostsLoaded: function () {
         this.$('.mailpoet_post_selection_loading').css('visibility', 'hidden');
       }
     },
-    onRender: function() {
+    onRender: function () {
       // Dynamically update available post types
       CommunicationComponent.getPostTypes().done(_.bind(this._updateContentTypes, this));
       var postsView = new PostsSelectionCollectionView({
@@ -343,7 +343,7 @@ define([
 
       this.showChildView('posts', postsView);
     },
-    onAttach: function() {
+    onAttach: function () {
       var that = this;
 
       this.$('.mailpoet_posts_categories_and_tags').select2({
@@ -356,17 +356,17 @@ define([
               term: params.term
             };
           },
-          transport: function(options, success, failure) {
+          transport: function (options, success, failure) {
             var taxonomies;
             var promise = CommunicationComponent.getTaxonomies(
               that.model.get('contentType')
-            ).then(function(tax) {
+            ).then(function (tax) {
               taxonomies = tax;
               // Fetch available terms based on the list of taxonomies already fetched
               var promise = CommunicationComponent.getTerms({
                 search: options.data.term,
                 taxonomies: _.keys(taxonomies)
-              }).then(function(terms) {
+              }).then(function (terms) {
                 return {
                   taxonomies: taxonomies,
                   terms: terms
@@ -379,12 +379,12 @@ define([
             promise.fail(failure);
             return promise;
           },
-          processResults: function(data) {
+          processResults: function (data) {
             // Transform taxonomies and terms into select2 compatible format
             return {
               results: _.map(
                 data.terms,
-                function(item) {
+                function (item) {
                   return _.defaults({
                     text: data.taxonomies[item.taxonomy].labels.singular_name + ': ' + item.name,
                     id: item.term_id
@@ -395,13 +395,13 @@ define([
           }
         }
       }).on({
-        'select2:select': function(event) {
+        'select2:select': function (event) {
           var terms = that.model.get('terms');
           terms.add(event.params.data);
           // Reset whole model in order for change events to propagate properly
           that.model.set('terms', terms.toJSON());
         },
-        'select2:unselect': function(event) {
+        'select2:unselect': function (event) {
           var terms = that.model.get('terms');
           terms.remove(event.params.data);
           // Reset whole model in order for change events to propagate properly
@@ -409,15 +409,15 @@ define([
         }
       }).trigger( 'change' );
     },
-    changeField: function(field, event) {
+    changeField: function (field, event) {
       this.model.set(field, jQuery(event.target).val());
     },
-    _updateContentTypes: function(postTypes) {
+    _updateContentTypes: function (postTypes) {
       var select = this.$('.mailpoet_settings_posts_content_type'),
         selectedValue = this.model.get('contentType');
 
       select.find('option').remove();
-      _.each(postTypes, function(type) {
+      _.each(postTypes, function (type) {
         select.append(jQuery('<option>', {
           value: type.name,
           text: type.label
@@ -428,26 +428,26 @@ define([
   });
 
   var EmptyPostSelectionSettingsView = Marionette.View.extend({
-    getTemplate: function() { return window.templates.emptyPostPostsBlockSettings; }
+    getTemplate: function () { return window.templates.emptyPostPostsBlockSettings; }
   });
 
   var SinglePostSelectionSettingsView = Marionette.View.extend({
-    getTemplate: function() { return window.templates.singlePostPostsBlockSettings; },
-    events: function() {
+    getTemplate: function () { return window.templates.singlePostPostsBlockSettings; },
+    events: function () {
       return {
         'change .mailpoet_select_post_checkbox': 'postSelectionChange'
       };
     },
-    templateContext: function() {
+    templateContext: function () {
       return {
         model: this.model.toJSON(),
         index: this._index
       };
     },
-    initialize: function(options) {
+    initialize: function (options) {
       this.blockModel = options.blockModel;
     },
-    postSelectionChange: function(event) {
+    postSelectionChange: function (event) {
       var checkBox = jQuery(event.target),
         selectedPostsCollection = this.blockModel.get('_selectedPosts');
       if (checkBox.prop('checked')) {
@@ -459,8 +459,8 @@ define([
   });
 
   var PostsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return window.templates.displayOptionsPostsBlockSettings; },
-    events: function() {
+    getTemplate: function () { return window.templates.displayOptionsPostsBlockSettings; },
+    events: function () {
       return {
         'click .mailpoet_posts_select_button': 'showButtonSettings',
         'click .mailpoet_posts_select_divider': 'showDividerSettings',
@@ -483,12 +483,12 @@ define([
         'change .mailpoet_posts_sort_by': _.partial(this.changeField, 'sortBy')
       };
     },
-    templateContext: function() {
+    templateContext: function () {
       return {
         model: this.model.toJSON()
       };
     },
-    showButtonSettings: function(event) {
+    showButtonSettings: function (event) {
       var buttonModule = ButtonBlock;
       (new buttonModule.ButtonBlockSettingsView({
         model: this.model.get('readMoreButton'),
@@ -499,7 +499,7 @@ define([
         }
       })).render();
     },
-    showDividerSettings: function(event) {
+    showDividerSettings: function (event) {
       var dividerModule = DividerBlock;
       (new dividerModule.DividerBlockSettingsView({
         model: this.model.get('divider'),
@@ -509,7 +509,7 @@ define([
         }
       })).render();
     },
-    changeReadMoreType: function(event) {
+    changeReadMoreType: function (event) {
       var value = jQuery(event.target).val();
       if (value == 'link') {
         this.$('.mailpoet_posts_read_more_text').removeClass('mailpoet_hidden');
@@ -520,7 +520,7 @@ define([
       }
       this.changeField('readMoreType', event);
     },
-    changeDisplayType: function(event) {
+    changeDisplayType: function (event) {
       var value = jQuery(event.target).val();
       if (value == 'titleOnly') {
         this.$('.mailpoet_posts_title_as_list').removeClass('mailpoet_hidden');
@@ -547,7 +547,7 @@ define([
 
       this.changeField('displayType', event);
     },
-    changeTitleFormat: function(event) {
+    changeTitleFormat: function (event) {
       var value = jQuery(event.target).val();
       if (value == 'ul') {
         this.$('.mailpoet_posts_non_title_list_options').addClass('mailpoet_hidden');
@@ -564,18 +564,18 @@ define([
   });
 
   Module.PostsWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return window.templates.postsInsertion; },
+    getTemplate: function () { return window.templates.postsInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,
-        drop: function() {
+        drop: function () {
           return new Module.PostsBlockModel({}, { parse: true });
         }
       }
     }
   });
 
-  App.on('before:start', function(App, options) {
+  App.on('before:start', function (App, options) {
     App.registerBlockType('posts', {
       blockModel: Module.PostsBlockModel,
       blockView: Module.PostsBlockView

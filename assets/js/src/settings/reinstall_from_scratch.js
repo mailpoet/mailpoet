@@ -2,7 +2,7 @@ define(
   [
     'mailpoet'
   ],
-  function(
+  function (
     MailPoet
   ) {
 

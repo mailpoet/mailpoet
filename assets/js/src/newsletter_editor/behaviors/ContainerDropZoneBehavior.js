@@ -12,20 +12,20 @@ define([
   'jquery',
   'newsletter_editor/behaviors/BehaviorsLookup',
   'interact'
-], function(Marionette, _, jQuery, BL, interact) {
+], function (Marionette, _, jQuery, BL, interact) {
   var BehaviorsLookup = BL;
 
   BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
     defaults: {
       columnLimit: 3
     },
-    onRender: function() {
+    onRender: function () {
       var dragAndDropDisabled = _.isObject(this.view.options.renderOptions) && this.view.options.renderOptions.disableDragAndDrop === true;
       if (!dragAndDropDisabled) {
         this.addDropZone();
       }
     },
-    addDropZone: function(_event) {
+    addDropZone: function (_event) {
       var that = this,
         view = this.view,
         domElement = that.$el.get(0),
@@ -47,16 +47,16 @@ define([
       interact(domElement).dropzone({
         accept: acceptableElementSelector,
         overlap: 'pointer', // Mouse pointer denotes location of a droppable
-        ondragenter: function(event) {
+        ondragenter: function (event) {
           // 1. Visually mark block as active for dropping
           view.$el.addClass('mailpoet_drop_active');
         },
-        ondragleave: function(event) {
+        ondragleave: function (event) {
           // 1. Remove visual markings of active dropping container
           // 2. Remove visual markings of drop position visualization
           that.cleanup();
         },
-        ondropmove: function(event) {
+        ondropmove: function (event) {
           // 1. Compute actual location of the mouse within the container
           // 2. Check if insertion is regular (between blocks) or special (with container insertion)
           // 3a. If insertion is regular, compute position where insertion should happen
@@ -163,7 +163,7 @@ define([
 
           element.append(marker);
         },
-        ondrop: function(event) {
+        ondrop: function (event) {
           // 1. Compute actual location of the mouse
           // 2. Check if insertion is regular (between blocks) or special (with container insertion)
           // 3a. If insertion is regular
@@ -264,14 +264,14 @@ define([
         }
       });
     },
-    cleanup: function() {
+    cleanup: function () {
       // 1. Remove visual markings of active dropping container
       this.view.$el.removeClass('mailpoet_drop_active');
 
       // 2. Remove visual markings of drop position visualization
       this.view.$('.mailpoet_drop_marker').remove();
     },
-    getDropPosition: function(eventX, eventY, is_unsafe) {
+    getDropPosition: function (eventX, eventY, is_unsafe) {
       var SPECIAL_AREA_INSERTION_WIDTH = 0.00, // Disable special insertion. Default: 0.3
 
         element = this.view.$el,
@@ -353,7 +353,7 @@ define([
         position: position // 'inside'|'before'|'after'
       };
     },
-    _computeNormalIndex: function(eventX, eventY) {
+    _computeNormalIndex: function (eventX, eventY) {
       // Normal insertion inserts dropModel before target element if
       // event happens on the first half of the element and after the
       // target element if event happens on the second half of the element.
@@ -390,13 +390,13 @@ define([
         };
       }
     },
-    _computeSpecialIndex: function(eventX, eventY) {
+    _computeSpecialIndex: function (eventX, eventY) {
       return this._computeCellIndex(eventX, eventY);
     },
-    _computeCellIndex: function(eventX, eventY) {
+    _computeCellIndex: function (eventX, eventY) {
       var orientation = this.view.model.get('orientation'),
         eventOffset = (orientation === 'vertical') ? eventY : eventX,
-        resultView = this.getChildren().find(function(view) {
+        resultView = this.getChildren().find(function (view) {
           var element = view.$el,
             closeOffset, farOffset;
 
@@ -416,26 +416,26 @@ define([
 
       return index;
     },
-    _canAcceptNormalInsertion: function() {
+    _canAcceptNormalInsertion: function () {
       var orientation = this.view.model.get('orientation'),
         depth = this.view.renderOptions.depth,
         childCount = this.getChildren().length;
       // Note that depth is zero indexed. Root container has depth=0
       return orientation === 'vertical' || (orientation === 'horizontal' && depth === 1 && childCount < this.options.columnLimit);
     },
-    _canAcceptSpecialInsertion: function() {
+    _canAcceptSpecialInsertion: function () {
       var orientation = this.view.model.get('orientation'),
         depth = this.view.renderOptions.depth,
         childCount = this.getChildren().length;
       return depth === 0 || (depth === 1 && orientation === 'horizontal' && childCount <= this.options.columnLimit);
     },
-    getCollectionView: function() {
+    getCollectionView: function () {
       return this.view.getChildView('blocks');
     },
-    getChildren: function() {
+    getChildren: function () {
       return this.getCollectionView().children;
     },
-    getCollection: function() {
+    getCollection: function () {
       return this.getCollectionView().collection;
     }
   });

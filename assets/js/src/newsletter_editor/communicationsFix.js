@@ -6,9 +6,9 @@
  * Courtesy of https://gist.github.com/jmeas/7992474cdb1c5672d88b
  */
 
-(function(root, factory) {
+(function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['backbone.marionette', 'backbone.radio', 'underscore'], function(Marionette, Radio, _) {
+    define(['backbone.marionette', 'backbone.radio', 'underscore'], function (Marionette, Radio, _) {
       return factory(Marionette, Radio, _);
     });
   }
@@ -21,7 +21,7 @@
   else {
     factory(root.Backbone.Marionette, root.Backbone.Radio, root._);
   }
-}(this, function(Marionette, Radio, _) {
+}(this, function (Marionette, Radio, _) {
   'use strict';
 
   var MarionetteApplication = Marionette.Application;
