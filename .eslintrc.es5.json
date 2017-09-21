@@ -51,7 +51,6 @@
     "no-use-before-define": 0,
     "one-var": 0,
     "camelcase": 0,
-    "spaced-comment": 0,
     "padded-blocks": 0,
     "object-curly-spacing": 0,
     "strict": 0,

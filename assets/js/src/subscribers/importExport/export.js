@@ -23,7 +23,7 @@ define(
      var subscribers_export_template =
       Handlebars.compile(jQuery('#mailpoet_subscribers_export_template').html());
 
-     //render template
+     // render template
      jQuery('#mailpoet_subscribers_export > div.inside').html(subscribers_export_template(window.exportData));
 
      // define reusable variables

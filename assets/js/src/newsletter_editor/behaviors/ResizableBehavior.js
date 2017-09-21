@@ -33,7 +33,7 @@ define([
       var domElement = (this.options.elementSelector === null) ? this.view.$el.get(0) : this.view.$(this.options.elementSelector).get(0),
         that = this;
       interact(domElement).resizable({
-        //axis: 'y',
+        // axis: 'y',
         edges: {
           top: false,
           left: false,

@@ -940,13 +940,13 @@ WysijaForm.Block.create = function (createBlock, target) {
   if(target.identify() === 'block_placeholder') {
     // insert block at the bottom
     element = body.insert(output);
-    //block = body.childElements().last();
+    // block = body.childElements().last();
   } else {
     // insert block before the drop target
     element = target.insert({
       before: output
     });
-    //block = target.previous('.mailpoet_form_block');
+    // block = target.previous('.mailpoet_form_block');
   }
   // refresh sortable items
   WysijaForm.makeSortable();

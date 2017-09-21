@@ -47,7 +47,7 @@ define([
     return CommunicationComponent.saveNewsletter(json).done(function (response) {
       if(response.success !== undefined && response.success === true) {
         // TODO: Handle translations
-        //MailPoet.Notice.success("<?php _e('Newsletter has been saved.'); ?>");
+        // MailPoet.Notice.success("<?php _e('Newsletter has been saved.'); ?>");
       } else if(response.error !== undefined) {
         if(response.error.length === 0) {
           MailPoet.Notice.error(

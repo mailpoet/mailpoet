@@ -83,7 +83,7 @@ define([
         titleIsLink: false, // false|true
         imageFullWidth: false, // true|false
         featuredImagePosition: 'belowTitle', // 'aboveTitle'|'belowTitle'|'none'
-        //imageAlignment: 'centerPadded', // 'centerFull'|'centerPadded'|'left'|'right'|'alternate'|'none'
+        // imageAlignment: 'centerPadded', // 'centerFull'|'centerPadded'|'left'|'right'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
         showCategories: 'no', // 'no'|'aboveText'|'belowText'

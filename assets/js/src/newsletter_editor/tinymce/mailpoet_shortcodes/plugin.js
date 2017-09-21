@@ -8,8 +8,8 @@
  * its placeholder into editor text.
  */
 
-/*jshint unused:false */
-/*global tinymce:true */
+/* jshint unused:false */
+/* global tinymce:true */
 tinymce.PluginManager.add('mailpoet_shortcodes', function (editor, url) {
   var appendLabelAndClose = function (shortcode) {
       editor.insertContent(shortcode);
