@@ -39,8 +39,8 @@ define(
         return this.props.errors ? this.props.errors : this.state.errors;
       },
       componentDidMount: function () {
-        if(this.isMounted()) {
-          if(this.props.params.id !== undefined) {
+        if (this.isMounted()) {
+          if (this.props.params.id !== undefined) {
             this.loadItem(this.props.params.id);
           } else {
             this.setState({
@@ -50,7 +50,7 @@ define(
         }
       },
       componentWillReceiveProps: function (props) {
-        if(props.params.id === undefined) {
+        if (props.params.id === undefined) {
           this.setState({
             loading: false,
             item: {},
@@ -90,8 +90,8 @@ define(
         e.preventDefault();
 
         // handle validation
-        if(this.props.isValid !== undefined) {
-          if(this.props.isValid() === false) {
+        if (this.props.isValid !== undefined) {
+          if (this.props.isValid() === false) {
             return;
           }
         }
@@ -101,7 +101,7 @@ define(
         // only get values from displayed fields
         const item = {};
         this.props.fields.map((field) => {
-          if(field['fields'] !== undefined) {
+          if (field['fields'] !== undefined) {
             field.fields.map((subfield) => {
               item[subfield.name] = this.state.item[subfield.name];
             });
@@ -110,7 +110,7 @@ define(
           }
         });
         // set id if specified
-        if(this.props.params.id !== undefined) {
+        if (this.props.params.id !== undefined) {
           item.id = this.props.params.id;
         }
 
@@ -122,19 +122,19 @@ define(
         }).always(() => {
           this.setState({ loading: false });
         }).done(() => {
-          if(this.props.onSuccess !== undefined) {
+          if (this.props.onSuccess !== undefined) {
             this.props.onSuccess();
           } else {
             this.context.router.push('/');
           }
 
-          if(this.props.params.id !== undefined) {
+          if (this.props.params.id !== undefined) {
             this.props.messages.onUpdate();
           } else {
             this.props.messages.onCreate();
           }
         }).fail((response) => {
-          if(response.errors.length > 0) {
+          if (response.errors.length > 0) {
             this.setState({ errors: response.errors });
           }
         });
@@ -156,10 +156,10 @@ define(
       },
       render: function () {
         let errors;
-        if(this.getErrors() !== undefined) {
+        if (this.getErrors() !== undefined) {
           errors = this.getErrors().map((error, index) => {
             return (
-              <p key={ 'error-'+index } className="mailpoet_error">
+              <p key={'error-' + index} className="mailpoet_error">
                 { error.message }
               </p>
             );
@@ -194,15 +194,15 @@ define(
 
           return (
             <FormField
-              field={ field }
-              item={ this.getValues() }
-              onValueChange={ onValueChange }
-              key={ 'field-'+i } />
+              field={field}
+              item={this.getValues()}
+              onValueChange={onValueChange}
+              key={'field-' + i} />
           );
         });
 
         let actions = false;
-        if(this.props.children) {
+        if (this.props.children) {
           actions = this.props.children;
         } else {
           actions = (
@@ -218,9 +218,9 @@ define(
           <div>
             { beforeFormContent }
             <form
-              id={ this.props.id }
+              id={this.props.id}
               ref="form"
-              className={ formClasses }
+              className={formClasses}
               onSubmit={
                 (this.props.onSubmit !== undefined)
                 ? this.props.onSubmit

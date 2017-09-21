@@ -99,7 +99,7 @@ const item_actions = [
     name: 'edit',
     link: function (item) {
       return (
-        <Link to={ `/edit/${item.id}` }>{MailPoet.I18n.t('edit')}</Link>
+        <Link to={`/edit/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
       );
     },
     display: function (segment) {
@@ -164,7 +164,7 @@ const item_actions = [
         refresh();
       }).fail((response) => {
         MailPoet.Modal.loading(false);
-        if(response.errors.length > 0) {
+        if (response.errors.length > 0) {
           MailPoet.Notice.error(
             response.errors.map((error) => { return error.message; }),
             { scroll: true }
@@ -180,7 +180,7 @@ const item_actions = [
     name: 'view_subscribers',
     link: function (item) {
       return (
-        <a href={ item.subscribers_url }>{MailPoet.I18n.t('viewSubscribers')}</a>
+        <a href={item.subscribers_url}>{MailPoet.I18n.t('viewSubscribers')}</a>
       );
     },
   },
@@ -210,41 +210,41 @@ const SegmentList = React.createClass({
     if (segment.type === 'wp_users') {
       // the WP users segment is not editable so just display its name
       segment_name = (
-        <span className="row-title">{ segment.name }</span>
+        <span className="row-title">{ segment.name }</span>
       );
     } else {
       segment_name = (
         <Link
           className="row-title"
-          to={ `/edit/${segment.id}` }
+          to={`/edit/${segment.id}`}
         >{ segment.name }</Link>
       );
     }
 
     return (
       <div>
-        <td className={ rowClasses }>
+        <td className={rowClasses}>
           <strong>
             { segment_name }
           </strong>
           { actions }
         </td>
-        <td className="column-date" data-colname={ MailPoet.I18n.t('description') }>
+        <td className="column-date" data-colname={MailPoet.I18n.t('description')}>
           <abbr>{ segment.description }</abbr>
         </td>
-        <td className="column-date" data-colname={ MailPoet.I18n.t('subscribed') }>
+        <td className="column-date" data-colname={MailPoet.I18n.t('subscribed')}>
           <abbr>{ subscribed.toLocaleString() }</abbr>
         </td>
-        <td className="column-date" data-colname={ MailPoet.I18n.t('unconfirmed') }>
+        <td className="column-date" data-colname={MailPoet.I18n.t('unconfirmed')}>
           <abbr>{ unconfirmed.toLocaleString() }</abbr>
         </td>
-        <td className="column-date" data-colname={ MailPoet.I18n.t('unsubscribed') }>
+        <td className="column-date" data-colname={MailPoet.I18n.t('unsubscribed')}>
           <abbr>{ unsubscribed.toLocaleString() }</abbr>
         </td>
-        <td className="column-date" data-colname={ MailPoet.I18n.t('bounced') }>
+        <td className="column-date" data-colname={MailPoet.I18n.t('bounced')}>
           <abbr>{ bounced.toLocaleString() }</abbr>
         </td>
-        <td className="column-date" data-colname={ MailPoet.I18n.t('createdOn') }>
+        <td className="column-date" data-colname={MailPoet.I18n.t('createdOn')}>
           <abbr>{ MailPoet.Date.format(segment.created_at) }</abbr>
         </td>
       </div>
@@ -258,16 +258,16 @@ const SegmentList = React.createClass({
         </h1>
 
         <Listing
-          limit={ window.mailpoet_listing_per_page }
-          location={ this.props.location }
-          params={ this.props.params }
-          messages={ messages }
-          search={ false }
+          limit={window.mailpoet_listing_per_page}
+          location={this.props.location}
+          params={this.props.params}
+          messages={messages}
+          search={false}
           endpoint="segments"
-          onRenderItem={ this.renderItem }
-          columns={ columns }
-          bulk_actions={ bulk_actions }
-          item_actions={ item_actions }
+          onRenderItem={this.renderItem}
+          columns={columns}
+          bulk_actions={bulk_actions}
+          item_actions={item_actions}
           sort_by="name"
           sort_order="asc"
         />

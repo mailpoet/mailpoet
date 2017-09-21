@@ -104,7 +104,7 @@ const newsletter_actions = [
     name: 'view',
     link: function (newsletter) {
       return (
-        <a href={ newsletter.preview_url } target="_blank">
+        <a href={newsletter.preview_url} target="_blank">
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -114,7 +114,7 @@ const newsletter_actions = [
     name: 'edit',
     link: function (newsletter) {
       return (
-        <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
+        <a href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}>
           {MailPoet.I18n.t('edit')}
         </a>
       );
@@ -154,7 +154,7 @@ const newsletter_actions = [
 ];
 
 const NewsletterListNotification = React.createClass({
-  mixins: [ MailerMixin ],
+  mixins: [MailerMixin],
   updateStatus: function (e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -184,9 +184,9 @@ const NewsletterListNotification = React.createClass({
   renderStatus: function (newsletter) {
     return (
       <select
-        data-id={ newsletter.id }
-        defaultValue={ newsletter.status }
-        onChange={ this.updateStatus }
+        data-id={newsletter.id}
+        defaultValue={newsletter.status}
+        onChange={this.updateStatus}
       >
         <option value="active">{ MailPoet.I18n.t('active') }</option>
         <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
@@ -203,7 +203,7 @@ const NewsletterListNotification = React.createClass({
     });
 
     // check if the user has specified segments to send to
-    if(segments.length === 0) {
+    if (segments.length === 0) {
       return (
         <span className="mailpoet_error">
           { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }
@@ -269,7 +269,7 @@ const NewsletterListNotification = React.createClass({
     } else {
       return (
         <Link
-          to={ `/notification/history/${ newsletter.id }` }
+          to={`/notification/history/${newsletter.id}`}
         >{ MailPoet.I18n.t('viewHistory') }</Link>
       );
     }
@@ -283,25 +283,25 @@ const NewsletterListNotification = React.createClass({
 
     return (
       <div>
-        <td className={ rowClasses }>
+        <td className={rowClasses}>
           <strong>
             <a
               className="row-title"
-              href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }
+              href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
             >{ newsletter.subject }</a>
           </strong>
           { actions }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('status') }>
+        <td className="column" data-colname={MailPoet.I18n.t('status')}>
           { this.renderStatus(newsletter) }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('settings') }>
+        <td className="column" data-colname={MailPoet.I18n.t('settings')}>
           { this.renderSettings(newsletter) }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('history') }>
+        <td className="column" data-colname={MailPoet.I18n.t('history')}>
           { this.renderHistoryLink(newsletter) }
         </td>
-        <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
+        <td className="column-date" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
         </td>
       </div>
@@ -317,21 +317,21 @@ const NewsletterListNotification = React.createClass({
         <ListingTabs tab="notification" />
 
         <Listing
-          limit={ window.mailpoet_listing_per_page }
-          location={ this.props.location }
-          params={ this.props.params }
+          limit={window.mailpoet_listing_per_page}
+          location={this.props.location}
+          params={this.props.params}
           endpoint="newsletters"
           type="notification"
           base_url="notification"
-          onRenderItem={ this.renderItem }
-          columns={ columns }
-          bulk_actions={ bulk_actions }
-          item_actions={ newsletter_actions }
-          messages={ messages }
-          auto_refresh={ true }
+          onRenderItem={this.renderItem}
+          columns={columns}
+          bulk_actions={bulk_actions}
+          item_actions={newsletter_actions}
+          messages={messages}
+          auto_refresh={true}
           sort_by="updated_at"
           sort_order="desc"
-          afterGetItems={ this.checkMailerStatus }
+          afterGetItems={this.checkMailerStatus}
         />
       </div>
     );

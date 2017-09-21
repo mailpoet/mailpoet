@@ -19,14 +19,14 @@ const ListingHeader = React.createClass({
         <ListingColumn
           onSort={this.props.onSort}
           sort_by={this.props.sort_by}
-          key={ 'column-' + index }
+          key={'column-' + index}
           column={renderColumn} />
       );
     });
 
     let checkbox;
 
-    if(this.props.is_selectable === true) {
+    if (this.props.is_selectable === true) {
       checkbox = (
         <th
           className="manage-column column-cb check-column">
@@ -37,8 +37,8 @@ const ListingHeader = React.createClass({
             type="checkbox"
             name="select_all"
             ref="toggle"
-            checked={ this.props.selection }
-            onChange={ this.handleSelectItems } />
+            checked={this.props.selection}
+            onChange={this.handleSelectItems} />
         </th>
       );
     }
@@ -68,9 +68,9 @@ const ListingColumn = React.createClass({
     );
     let label;
 
-    if(this.props.column.sortable === true) {
+    if (this.props.column.sortable === true) {
       label = (
-        <a onClick={ this.handleSort }>
+        <a onClick={this.handleSort}>
           <span>{ this.props.column.label }</span>
           <span className="sorting-indicator"></span>
         </a>
@@ -80,10 +80,10 @@ const ListingColumn = React.createClass({
     }
     return (
       <th
-        className={ classes }
-        id={this.props.column.name }
+        className={classes}
+        id={this.props.column.name}
         scope="col"
-        width={ this.props.column.width || null }
+        width={this.props.column.width || null}
       >{label}</th>
     );
   },

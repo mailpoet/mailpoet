@@ -82,7 +82,7 @@ define(
               <input
                 className="button button-primary"
                 type="button"
-                onClick={ this.handleNext }
+                onClick={this.handleNext}
                 value={MailPoet.I18n.t('next')} />
             </p>
           </div>

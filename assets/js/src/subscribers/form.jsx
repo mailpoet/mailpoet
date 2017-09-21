@@ -78,7 +78,7 @@ define(
           return !!(!segment.deleted_at && segment.type === 'default');
         },
         getLabel: function (segment) {
-          return segment.name + ' ('+ segment.subscribers +')';
+          return segment.name + ' (' + segment.subscribers + ')';
         },
         getSearchLabel: function (segment, subscriber) {
           let label = '';
@@ -107,7 +107,7 @@ define(
       },
     ];
 
-    const custom_fields = window.mailpoet_custom_fields || [];
+    const custom_fields = window.mailpoet_custom_fields || [];
     custom_fields.map((custom_field) => {
       const field = {
         name: 'cf_' + custom_field.id,
@@ -123,7 +123,7 @@ define(
       }
 
       // add placeholders for selects (date, select)
-      switch(custom_field.type) {
+      switch (custom_field.type) {
         case 'date':
           field.year_placeholder = MailPoet.I18n.t('year');
           field.month_placeholder = MailPoet.I18n.t('month');
@@ -159,8 +159,8 @@ define(
                 /\[link\](.*?)\[\/link\]/g,
                 (match, i) => (
                   <a
-                    key={ i }
-                    href={`user-edit.php?user_id=${ subscriber.wp_user_id }`}
+                    key={i}
+                    href={`user-edit.php?user_id=${subscriber.wp_user_id}`}
                   >{ match }</a>
                 )
               )
@@ -193,11 +193,11 @@ define(
 
             <Form
               endpoint="subscribers"
-              fields={ fields }
-              params={ this.props.params }
-              messages={ messages }
-              beforeFormContent={ beforeFormContent }
-              afterFormContent={ afterFormContent }
+              fields={fields}
+              params={this.props.params}
+              messages={messages}
+              beforeFormContent={beforeFormContent}
+              afterFormContent={afterFormContent}
             />
           </div>
         );

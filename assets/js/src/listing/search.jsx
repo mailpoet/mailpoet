@@ -17,7 +17,7 @@ define([
       this.refs.search.value = nextProps.search;
     },
     render: function () {
-      if(this.props.search === false) {
+      if (this.props.search === false) {
         return false;
       } else {
         return (

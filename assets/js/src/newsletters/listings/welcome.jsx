@@ -103,7 +103,7 @@ let newsletter_actions = [
     name: 'view',
     link: function (newsletter) {
       return (
-        <a href={ newsletter.preview_url } target="_blank">
+        <a href={newsletter.preview_url} target="_blank">
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -113,7 +113,7 @@ let newsletter_actions = [
     name: 'edit',
     link: function (newsletter) {
       return (
-        <a href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }>
+        <a href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}>
           {MailPoet.I18n.t('edit')}
         </a>
       );
@@ -127,7 +127,7 @@ let newsletter_actions = [
 newsletter_actions = Hooks.applyFilters('mailpoet_newsletters_listings_welcome_notification_actions', newsletter_actions);
 
 const NewsletterListWelcome = React.createClass({
-  mixins: [ StatisticsMixin, MailerMixin ],
+  mixins: [StatisticsMixin, MailerMixin],
   updateStatus: function (e) {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -164,9 +164,9 @@ const NewsletterListWelcome = React.createClass({
       <div>
         <p>
           <select
-            data-id={ newsletter.id }
-            defaultValue={ newsletter.status }
-            onChange={ this.updateStatus }
+            data-id={newsletter.id}
+            defaultValue={newsletter.status}
+            onChange={this.updateStatus}
           >
             <option value="active">{ MailPoet.I18n.t('active') }</option>
             <option value="draft">{ MailPoet.I18n.t('inactive') }</option>
@@ -256,30 +256,30 @@ const NewsletterListWelcome = React.createClass({
 
     return (
       <div>
-        <td className={ rowClasses }>
+        <td className={rowClasses}>
           <strong>
             <a
               className="row-title"
-              href={ `?page=mailpoet-newsletter-editor&id=${ newsletter.id }` }
+              href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
             >{ newsletter.subject }</a>
           </strong>
           { actions }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('status') }>
+        <td className="column" data-colname={MailPoet.I18n.t('status')}>
           { this.renderStatus(newsletter) }
         </td>
-        <td className="column" data-colname={ MailPoet.I18n.t('settings') }>
+        <td className="column" data-colname={MailPoet.I18n.t('settings')}>
           { this.renderSettings(newsletter) }
         </td>
         { (mailpoet_tracking_enabled === true) ? (
-          <td className="column" data-colname={ MailPoet.I18n.t('statistics') }>
+          <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
             { this.renderStatistics(
               newsletter,
               newsletter.total_sent > 0 && newsletter.statistics
             ) }
           </td>
         ) : null }
-        <td className="column-date" data-colname={ MailPoet.I18n.t('lastModifiedOn') }>
+        <td className="column-date" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
           <abbr>{ MailPoet.Date.format(newsletter.updated_at) }</abbr>
         </td>
       </div>
@@ -295,21 +295,21 @@ const NewsletterListWelcome = React.createClass({
         <ListingTabs tab="welcome" />
 
         <Listing
-          limit={ window.mailpoet_listing_per_page }
-          location={ this.props.location }
-          params={ this.props.params }
+          limit={window.mailpoet_listing_per_page}
+          location={this.props.location}
+          params={this.props.params}
           endpoint="newsletters"
           type="welcome"
           base_url="welcome"
-          onRenderItem={ this.renderItem }
-          columns={ columns }
-          bulk_actions={ bulk_actions }
-          item_actions={ newsletter_actions }
-          messages={ messages }
-          auto_refresh={ true }
+          onRenderItem={this.renderItem}
+          columns={columns}
+          bulk_actions={bulk_actions}
+          item_actions={newsletter_actions}
+          messages={messages}
+          auto_refresh={true}
           sort_by="updated_at"
           sort_order="desc"
-          afterGetItems={ this.checkMailerStatus }
+          afterGetItems={this.checkMailerStatus}
         />
       </div>
     );

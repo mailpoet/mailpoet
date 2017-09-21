@@ -15,14 +15,14 @@ const App = React.createClass({
 
 const container = document.getElementById('subscribers_container');
 
-if(container) {
+if (container) {
   ReactDOM.render((
-    <Router history={ history }>
-      <Route path="/" component={ App }>
-        <IndexRoute component={ SubscriberList } />
-        <Route path="new" component={ SubscriberForm } />
-        <Route path="edit/:id" component={ SubscriberForm } />
-        <Route path="*" component={ SubscriberList } />
+    <Router history={history}>
+      <Route path="/" component={App}>
+        <IndexRoute component={SubscriberList} />
+        <Route path="new" component={SubscriberForm} />
+        <Route path="edit/:id" component={SubscriberForm} />
+        <Route path="*" component={SubscriberList} />
       </Route>
     </Router>
   ), container);

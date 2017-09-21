@@ -20,15 +20,15 @@ define([
       const options = Object.keys(this.props.field.values).map(
         (value, index) => {
           return (
-            <p key={ 'checkbox-' + index }>
+            <p key={'checkbox-' + index}>
               <label>
                 <input
                   ref="checkbox"
                   type="checkbox"
                   value="1"
-                  checked={ isChecked }
-                  onChange={ this.onValueChange }
-                  name={ this.props.field.name }
+                  checked={isChecked}
+                  onChange={this.onValueChange}
+                  name={this.props.field.name}
                 />
                 { this.props.field.values[value] }
               </label>

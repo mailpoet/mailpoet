@@ -12,7 +12,7 @@ define([
 
       if (this.props.placeholder !== undefined) {
         years.push((
-          <option value="" key={ 0 }>{ this.props.placeholder }</option>
+          <option value="" key={0}>{ this.props.placeholder }</option>
         ));
       }
 
@@ -20,16 +20,16 @@ define([
       for (let i = currentYear; i >= currentYear - yearsRange; i -= 1) {
         years.push((
           <option
-            key={ i }
-            value={ i }
+            key={i}
+            value={i}
          >{ i }</option>
         ));
       }
       return (
         <select
-          name={ `${this.props.name}[year]` }
-          value={ this.props.year }
-          onChange={ this.props.onValueChange }
+          name={`${this.props.name}[year]`}
+          value={this.props.year}
+          onChange={this.props.onValueChange}
         >
           { years }
         </select>
@@ -43,23 +43,23 @@ define([
 
       if (this.props.placeholder !== undefined) {
         months.push((
-          <option value="" key={ 0 }>{ this.props.placeholder }</option>
+          <option value="" key={0}>{ this.props.placeholder }</option>
         ));
       }
 
       for (let i = 1; i <= 12; i += 1) {
         months.push((
           <option
-            key={ i }
-            value={ i }
+            key={i}
+            value={i}
          >{ this.props.monthNames[i - 1] }</option>
         ));
       }
       return (
         <select
-          name={ `${this.props.name}[month]` }
-          value={ this.props.month }
-          onChange={ this.props.onValueChange }
+          name={`${this.props.name}[month]`}
+          value={this.props.month}
+          onChange={this.props.onValueChange}
         >
           { months }
         </select>
@@ -73,24 +73,24 @@ define([
 
       if (this.props.placeholder !== undefined) {
         days.push((
-          <option value="" key={ 0 }>{ this.props.placeholder }</option>
+          <option value="" key={0}>{ this.props.placeholder }</option>
         ));
       }
 
       for (let i = 1; i <= 31; i += 1) {
         days.push((
           <option
-            key={ i }
-            value={ i }
+            key={i}
+            value={i}
           >{ i }</option>
         ));
       }
 
       return (
         <select
-          name={ `${this.props.name}[day]` }
-          value={ this.props.day }
-          onChange={ this.props.onValueChange }
+          name={`${this.props.name}[day]`}
+          value={this.props.day}
+          onChange={this.props.onValueChange}
         >
           { days }
         </select>
@@ -123,7 +123,7 @@ define([
         ? this.props.item[this.props.field.name].trim()
         : '';
 
-      if(value === '') {
+      if (value === '') {
         return;
       }
 
@@ -140,7 +140,7 @@ define([
 
       let value;
 
-      switch(dateType) {
+      switch (dateType) {
         case 'year_month_day':
           value = {
             year: this.state.year,
@@ -202,36 +202,36 @@ define([
       const dateSelects = dateFormats[dateType][0].split('/');
 
       const fields = dateSelects.map((type) => {
-        switch(type) {
+        switch (type) {
           case 'YYYY':
             return (<FormFieldDateYear
-              onValueChange={ this.onValueChange.bind(this) }
-              ref={ 'year' }
-              key={ 'year' }
-              name={ this.props.field.name }
-              year={ this.state.year }
-              placeholder={ this.props.field.year_placeholder }
+              onValueChange={this.onValueChange.bind(this)}
+              ref={'year'}
+              key={'year'}
+              name={this.props.field.name}
+              year={this.state.year}
+              placeholder={this.props.field.year_placeholder}
             />);
 
           case 'MM':
             return (<FormFieldDateMonth
-              onValueChange={ this.onValueChange.bind(this) }
-              ref={ 'month' }
-              key={ 'month' }
-              name={ this.props.field.name }
-              month={ this.state.month }
-              monthNames={ monthNames }
-              placeholder={ this.props.field.month_placeholder }
+              onValueChange={this.onValueChange.bind(this)}
+              ref={'month'}
+              key={'month'}
+              name={this.props.field.name}
+              month={this.state.month}
+              monthNames={monthNames}
+              placeholder={this.props.field.month_placeholder}
             />);
 
           case 'DD':
             return (<FormFieldDateDay
-              onValueChange={ this.onValueChange.bind(this) }
-              ref={ 'day' }
-              key={ 'day' }
-              name={ this.props.field.name }
-              day={ this.state.day }
-              placeholder={ this.props.field.day_placeholder }
+              onValueChange={this.onValueChange.bind(this)}
+              ref={'day'}
+              key={'day'}
+              name={this.props.field.name}
+              day={this.state.day}
+              placeholder={this.props.field.day_placeholder}
             />);
         }
       });

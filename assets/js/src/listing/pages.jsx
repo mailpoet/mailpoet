@@ -41,7 +41,7 @@ define([
       return Math.min(Math.max(1, Math.abs(~~page)), this.getLastPage());
     },
     handleSetManualPage: function (e) {
-      if(e.which === 13) {
+      if (e.which === 13) {
         this.setPage(this.state.page);
       }
     },
@@ -57,7 +57,7 @@ define([
       return Math.ceil(this.props.count / this.props.limit);
     },
     render: function () {
-      if(this.props.count === 0) {
+      if (this.props.count === 0) {
         return false;
       } else {
         let pagination = false;
@@ -74,11 +74,11 @@ define([
           <span aria-hidden="true" className="tablenav-pages-navspan">»</span>
         );
 
-        if(this.props.limit > 0 && this.props.count > this.props.limit) {
-          if(this.props.page > 1) {
+        if (this.props.limit > 0 && this.props.count > this.props.limit) {
+          if (this.props.page > 1) {
             previousPage = (
               <a href="javascript:;"
-                onClick={ this.setPreviousPage }
+                onClick={this.setPreviousPage}
                 className="prev-page">
                 <span className="screen-reader-text">{MailPoet.I18n.t('previousPage')}</span>
                 <span aria-hidden="true">‹</span>
@@ -86,10 +86,10 @@ define([
             );
           }
 
-          if(this.props.page > 2) {
+          if (this.props.page > 2) {
             firstPage = (
               <a href="javascript:;"
-                onClick={ this.setFirstPage }
+                onClick={this.setFirstPage}
                 className="first-page">
                 <span className="screen-reader-text">{MailPoet.I18n.t('firstPage')}</span>
                 <span aria-hidden="true">«</span>
@@ -97,10 +97,10 @@ define([
             );
           }
 
-          if(this.props.page < this.getLastPage()) {
+          if (this.props.page < this.getLastPage()) {
             nextPage = (
               <a href="javascript:;"
-                onClick={ this.setNextPage }
+                onClick={this.setNextPage}
                 className="next-page">
                 <span className="screen-reader-text">{MailPoet.I18n.t('nextPage')}</span>
                 <span aria-hidden="true">›</span>
@@ -108,10 +108,10 @@ define([
             );
           }
 
-          if(this.props.page < this.getLastPage() - 1) {
+          if (this.props.page < this.getLastPage() - 1) {
             lastPage = (
               <a href="javascript:;"
-                onClick={ this.setLastPage }
+                onClick={this.setLastPage}
                 className="last-page">
                 <span className="screen-reader-text">{MailPoet.I18n.t('lastPage')}</span>
                 <span aria-hidden="true">»</span>
@@ -119,8 +119,8 @@ define([
             );
           }
 
-          let pageValue =  this.props.page;
-          if(this.state.page !== null) {
+          let pageValue = this.props.page;
+          if (this.state.page !== null) {
             pageValue = this.state.page;
           }
 
@@ -136,13 +136,13 @@ define([
                   htmlFor="current-page-selector">{MailPoet.I18n.t('currentPage')}</label>
                 <input
                   type="text"
-                  onChange={ this.handleChangeManualPage }
-                  onKeyUp={ this.handleSetManualPage }
-                  onBlur={ this.handleBlurManualPage }
+                  onChange={this.handleChangeManualPage}
+                  onKeyUp={this.handleSetManualPage}
+                  onBlur={this.handleBlurManualPage}
                   aria-describedby="table-paging"
                   size="2"
                   ref="page"
-                  value={ pageValue }
+                  value={pageValue}
                   name="paged"
                   id="current-page-selector"
                   className="current-page" />
@@ -172,7 +172,7 @@ define([
             .replace('%$1d', this.props.count.toLocaleString());
         }
         return (
-          <div className={ classes }>
+          <div className={classes}>
             <span className="displaying-num">{ numberOfItemsLabel }</span>
             { pagination }
           </div>

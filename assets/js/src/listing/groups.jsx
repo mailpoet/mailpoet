@@ -6,12 +6,12 @@ define(['react', 'classnames'], (React, classNames) => {
     },
     render: function () {
       const groups = this.props.groups.map((group, index) => {
-        if(group.name === 'trash' && group.count === 0) {
+        if (group.name === 'trash' && group.count === 0) {
           return false;
         }
 
         const classes = classNames(
-            { current : (group.name === this.props.group) }
+            { current: (group.name === this.props.group) }
           );
 
         return (

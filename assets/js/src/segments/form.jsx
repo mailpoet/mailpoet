@@ -51,9 +51,9 @@ define(
 
             <Form
               endpoint="segments"
-              fields={ fields }
-              params={ this.props.params }
-              messages={ messages }
+              fields={fields}
+              params={this.props.params}
+              messages={messages}
             />
           </div>
         );

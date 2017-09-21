@@ -16,15 +16,15 @@ const App = React.createClass({
 
 const container = document.getElementById('help_container');
 
-if(container) {
+if (container) {
 
   ReactDOM.render((
-    <Router history={ history }>
-      <Route path="/" component={ App }>
+    <Router history={history}>
+      <Route path="/" component={App}>
         <IndexRedirect to="knowledgeBase" />
         {/* Pages */}
-        <Route path="knowledgeBase(/)**" params={{ tab: 'knowledgeBase' }} component={ KnowledgeBase } />
-        <Route path="systemInfo(/)**" params={{ tab: 'systemInfo' }} component={ SystemInfo } />
+        <Route path="knowledgeBase(/)**" params={{ tab: 'knowledgeBase' }} component={KnowledgeBase} />
+        <Route path="systemInfo(/)**" params={{ tab: 'systemInfo' }} component={SystemInfo} />
       </Route>
     </Router>
   ), container);
