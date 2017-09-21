@@ -125,6 +125,7 @@ class Initializer {
       $this->setupUpdater();
 
       $this->setupLocalizer();
+      $this->setupCapabilities();
       $this->setupMenu();
       $this->setupShortcodes();
       $this->setupImages();
@@ -187,6 +188,11 @@ class Initializer {
   function setupLocalizer() {
     $localizer = new Localizer();
     $localizer->init();
+  }
+
+  function setupCapabilities() {
+    $caps = new Capabilities();
+    $caps->init();
   }
 
   function setupMenu() {

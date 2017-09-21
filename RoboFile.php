@@ -90,6 +90,7 @@ class RoboFile extends \Robo\Tasks {
 
     $css_files = array(
       'assets/css/src/admin.styl',
+      'assets/css/src/admin-global.styl',
       'assets/css/src/newsletter_editor/newsletter_editor.styl',
       'assets/css/src/public.styl',
       'assets/css/src/rtl.styl',
