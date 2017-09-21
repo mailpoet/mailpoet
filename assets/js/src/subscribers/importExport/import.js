@@ -895,7 +895,7 @@ define(
                   for (var format in allowedDateFormats) {
                     var testedFormat = allowedDateFormats[format];
                     if (Moment(firstRowData, testedFormat, true).isValid()) {
-                      var validationRule = (typeof(testedFormat) === 'function') ?
+                      var validationRule = (typeof (testedFormat) === 'function') ?
                         'datetime' :
                         testedFormat;
                       // set validation on the column element

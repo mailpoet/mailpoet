@@ -333,7 +333,7 @@ var WysijaForm = {
       };
     // body
     WysijaForm.getBlocks().each(function (b) {
-      var block_data = (typeof(b.block['save']) === 'function') ? b.block.save() : null;
+      var block_data = (typeof (b.block['save']) === 'function') ? b.block.save() : null;
 
       if(block_data !== null) {
         // set block position
@@ -891,7 +891,7 @@ WysijaForm.Block = window.Class.create({
         WysijaForm.toggleWidgets();
 
         // optional callback execution after completely removing block
-        if(callback !== undefined && typeof(callback) === 'function') {
+        if(callback !== undefined && typeof (callback) === 'function') {
           callback();
         }
 
