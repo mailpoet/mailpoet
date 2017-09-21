@@ -169,9 +169,10 @@ class NewslettersTest extends \MailPoetTest {
     $sending_queue = SendingQueue::create();
     $sending_queue->newsletter_id = $this->newsletter->id;
     $sending_queue->status = SendingQueue::STATUS_SCHEDULED;
-    $sending_queue->newsletter_rendered_body = 'Rendered body ...';
+    $sending_queue->newsletter_rendered_body = array('html' => 'html', 'text' => 'text');
     $sending_queue->newsletter_rendered_subject = 'Rendered subject ...';
     $sending_queue->save();
+    expect($sending_queue->getErrors())->false();
 
     $router = new Newsletters();
     $newsletter_data = array(
@@ -769,6 +770,38 @@ class NewslettersTest extends \MailPoetTest {
     expect($preview_link_data['subscriber_id'])->false();
     expect($preview_link_data['subscriber_token'])->false();
     expect((boolean)$preview_link_data['preview'])->true();
+  }
+
+  function testItDeletesSendingQueueAndSetsNewsletterStatusToDraftWhenItIsUnscheduled() {
+    $newsletter = $this->newsletter;
+    $newsletter->status = Newsletter::STATUS_SCHEDULED;
+    $newsletter->save();
+    expect($newsletter->getErrors())->false();
+
+    $sending_queue = SendingQueue::create();
+    $sending_queue->newsletter_id = $newsletter->id;
+    $sending_queue->newsletter_rendered_body = array(
+      'html' => 'html',
+      'text' => 'text'
+    );
+    $sending_queue->status = SendingQueue::STATUS_SCHEDULED;
+    $sending_queue->scheduled_at = Carbon::now()->format('Y-m-d H:i');
+    $sending_queue->save();
+    expect($sending_queue->getErrors())->false();
+
+    $newsletter_data = array(
+      'id' => $newsletter->id,
+      'options' => array(
+        'isScheduled' => false
+      )
+    );
+
+    $router = new Newsletters();
+    $response = $router->save($newsletter_data);
+    $newsletter = Newsletter::findOne($newsletter->id);
+    $sending_queue = SendingQueue::findOne($sending_queue->id);
+    expect($newsletter->status)->equals(Newsletter::STATUS_DRAFT);
+    expect($sending_queue)->false();
   }
 
   function _after() {
