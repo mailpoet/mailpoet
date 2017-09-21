@@ -170,6 +170,7 @@ class NewslettersTest extends \MailPoetTest {
     $sending_queue->newsletter_id = $this->newsletter->id;
     $sending_queue->status = SendingQueue::STATUS_SCHEDULED;
     $sending_queue->newsletter_rendered_body = array('html' => 'html', 'text' => 'text');
+    $sending_queue->newsletter_rendered_subject = 'Rendered subject ...';
     $sending_queue->save();
     expect($sending_queue->getErrors())->false();
 

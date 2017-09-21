@@ -122,7 +122,6 @@ class Newsletters extends APIEndpoint {
         $newsletter->save();
       } else {
         $queue->newsletter_rendered_body = null;
-        $queue->newsletter_rendered_body = null;
         $queue->newsletter_rendered_subject = null;
         $queue->save();
       }
