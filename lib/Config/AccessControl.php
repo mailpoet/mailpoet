@@ -8,26 +8,26 @@ if(!defined('ABSPATH')) exit;
 require_once(ABSPATH . 'wp-includes/pluggable.php');
 
 class AccessControl {
-  const PERMISSION_ACCESS_PLUGIN_ADMIN = 'access_plugin_admin';
-  const PERMISSION_MANAGE_SETTINGS = 'manage_settings';
-  const PERMISSION_MANAGE_EMAILS = 'manage_emails';
-  const PERMISSION_MANAGE_SUBSCRIBERS = 'manage_subscribers';
-  const PERMISSION_MANAGE_FORMS = 'manage_forms';
-  const PERMISSION_MANAGE_SEGMENTS = 'manage_segments';
-  const PERMISSION_UPDATE_PLUGIN = 'update_plugin';
-  const NO_ACCESS_RESTRICTION = 'no_access_restriction';
+  const PERMISSION_ACCESS_PLUGIN_ADMIN = 'mailpoet_access_plugin_admin';
+  const PERMISSION_MANAGE_SETTINGS = 'mailpoet_manage_settings';
+  const PERMISSION_MANAGE_EMAILS = 'mailpoet_manage_emails';
+  const PERMISSION_MANAGE_SUBSCRIBERS = 'mailpoet_manage_subscribers';
+  const PERMISSION_MANAGE_FORMS = 'mailpoet_manage_forms';
+  const PERMISSION_MANAGE_SEGMENTS = 'mailpoet_manage_segments';
+  const PERMISSION_UPDATE_PLUGIN = 'mailpoet_update_plugin';
+  const NO_ACCESS_RESTRICTION = 'mailpoet_no_access_restriction';
 
   public $permissions;
-  public $current_user_roles;
+  public $user_roles;
   public $user_capabilities;
 
   function __construct() {
-    $this->permissions = $this->getDefaultPermissions();
+    $this->permissions = self::getDefaultPermissions();
     $this->user_roles = $this->getUserRoles();
     $this->user_capabilities = $this->getUserCapabilities();
   }
 
-  private function getDefaultPermissions() {
+  static function getDefaultPermissions() {
     return array(
       self::PERMISSION_ACCESS_PLUGIN_ADMIN => WPHooks::applyFilters(
         'mailpoet_permission_access_plugin_admin',
@@ -76,6 +76,18 @@ class AccessControl {
     );
   }
 
+  static function getPermissionLabels() {
+    return array(
+      self::PERMISSION_ACCESS_PLUGIN_ADMIN => __('Access plugin admin', 'mailpoet'),
+      self::PERMISSION_MANAGE_SETTINGS => __('Manage settings', 'mailpoet'),
+      self::PERMISSION_MANAGE_EMAILS => __('Manage emails', 'mailpoet'),
+      self::PERMISSION_MANAGE_SUBSCRIBERS => __('Manage subscribers', 'mailpoet'),
+      self::PERMISSION_MANAGE_FORMS => __('Manage forms', 'mailpoet'),
+      self::PERMISSION_MANAGE_SEGMENTS => __('Manage segments', 'mailpoet'),
+      self::PERMISSION_UPDATE_PLUGIN => __('Update plugin', 'mailpoet'),
+    );
+  }
+
   function getUserRoles() {
     $user = wp_get_current_user();
     return $user->roles;
@@ -94,11 +106,13 @@ class AccessControl {
 
   function validatePermission($permission) {
     if($permission === self::NO_ACCESS_RESTRICTION) return true;
-    if(empty($this->permissions[$permission])) return false;
-    $permitted_roles = array_intersect(
-      $this->user_roles,
-      $this->permissions[$permission]
-    );
-    return (!empty($permitted_roles));
+    foreach($this->user_roles as $role) {
+      if($role_object = get_role($role)) {
+        if($role_object->has_cap($permission)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

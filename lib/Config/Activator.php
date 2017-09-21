@@ -14,10 +14,16 @@ class Activator {
     $populator = new Populator();
     $populator->up();
     Setting::setValue('db_version', Env::$version);
+
+    $caps = new Capabilities();
+    $caps->setupWPCapabilities();
   }
 
   function deactivate() {
     $migrator = new Migrator();
     $migrator->down();
+
+    $caps = new Capabilities();
+    $caps->removeWPCapabilities();
   }
 }

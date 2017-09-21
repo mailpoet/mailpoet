@@ -109,6 +109,12 @@ class AccessControlTest extends \MailPoetTest {
     );
   }
 
+  function testItGetsPermissionLabels() {
+    $permissions = AccessControl::getDefaultPermissions();
+    $labels = AccessControl::getPermissionLabels();
+    expect(count($permissions))->equals(count($labels));
+  }
+
   function _after() {
     WPHooksHelper::releaseAllHooks();
   }
