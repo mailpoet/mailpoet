@@ -30,7 +30,6 @@
     "no-useless-escape": 0,
     "wrap-iife": 0,
     "no-plusplus": 0,
-    "array-bracket-spacing": 0,
     "default-case": 0,
     "no-lonely-if": 0,
     "no-mixed-operators": 0,
