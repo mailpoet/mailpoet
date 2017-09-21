@@ -12,7 +12,6 @@
     "prefer-arrow-callback": 0,
     "radix": 0,
     "no-alert": 0,
-    "block-scoped-var": 0,
     "guard-for-in": 0,
     "no-prototype-builtins": 0,
     "no-restricted-syntax": 0,
