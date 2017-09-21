@@ -7,7 +7,7 @@ define([
   'underscore',
   'mailpoet',
   'jquery'
-], function(App, BaseBlock, _, MailPoet, jQuery) {
+], function (App, BaseBlock, _, MailPoet, jQuery) {
 
   'use strict';
 
@@ -16,7 +16,7 @@ define([
     ImageWidgetView;
 
   Module.ImageBlockModel = base.BlockModel.extend({
-    defaults: function() {
+    defaults: function () {
       return this._getDefaults({
         type: 'image',
         link: '',
@@ -36,9 +36,9 @@ define([
 
   Module.ImageBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_image_block mailpoet_droppable_block',
-    getTemplate: function() { return window.templates.imageBlock; },
-    onDragSubstituteBy: function() { return Module.ImageWidgetView; },
-    templateContext: function() {
+    getTemplate: function () { return window.templates.imageBlock; },
+    onDragSubstituteBy: function () { return Module.ImageWidgetView; },
+    templateContext: function () {
       return _.extend({
         imageMissingSrc: App.getConfig().get('urls.imageMissing')
       }, base.BlockView.prototype.templateContext.apply(this));
@@ -46,7 +46,7 @@ define([
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
       ShowSettingsBehavior: {}
     }),
-    onRender: function() {
+    onRender: function () {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
 
@@ -59,11 +59,11 @@ define([
   });
 
   Module.ImageBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.ImageBlockSettingsView; }
+    getSettingsView: function () { return Module.ImageBlockSettingsView; }
   });
 
   Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
-    onRender: function() {
+    onRender: function () {
       MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-full-width'), {
         tooltipId: 'tooltip-editor-full-width',
         tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth')
@@ -73,8 +73,8 @@ define([
         tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth')
       });
     },
-    getTemplate: function() { return window.templates.imageBlockSettings; },
-    events: function() {
+    getTemplate: function () { return window.templates.imageBlockSettings; },
+    events: function () {
       return {
         'input .mailpoet_field_image_link': _.partial(this.changeField, 'link'),
         'input .mailpoet_field_image_address': 'changeAddress',
@@ -85,14 +85,14 @@ define([
         'click .mailpoet_done_editing': 'close'
       };
     },
-    initialize: function(options) {
+    initialize: function (options) {
       base.BlockSettingsView.prototype.initialize.apply(this, arguments);
 
       if (options.showImageManager) {
         this.showMediaManager();
       }
     },
-    showMediaManager: function() {
+    showMediaManager: function () {
       if (this._mediaManager) {
         this._mediaManager.resetSelections();
         this._mediaManager.open();
@@ -101,7 +101,7 @@ define([
 
       var MediaManager = window.wp.media.view.MediaFrame.Select.extend({
 
-        initialize: function() {
+        initialize: function () {
           window.wp.media.view.MediaFrame.prototype.initialize.apply(this, arguments);
 
           _.defaults(this.options, {
@@ -119,16 +119,16 @@ define([
           this.$el.addClass('hide-title');
         },
 
-        resetSelections: function() {
+        resetSelections: function () {
           this.state().get('selection').reset();
         },
 
-        createQuery: function(options) {
+        createQuery: function (options) {
           var query = window.wp.media.query(options);
           return query;
         },
 
-        createStates: function() {
+        createStates: function () {
           var options = this.options;
 
           // Add the default states.
@@ -156,12 +156,12 @@ define([
             })
           ]);
 
-          if(window.wp.media.view.settings.post.featuredImageId) {
+          if (window.wp.media.view.settings.post.featuredImageId) {
             this.states.add(new window.wp.media.controller.FeaturedImage());
           }
         },
 
-        bindHandlers: function() {
+        bindHandlers: function () {
           // from Select
           this.on('router:create:browse', this.createRouter, this);
           this.on('router:render:browse', this.browseRouter, this);
@@ -186,20 +186,20 @@ define([
             }
           };
 
-          _.each(handlers, function(regionHandlers, region) {
-            _.each(regionHandlers, function(callback, handler) {
+          _.each(handlers, function (regionHandlers, region) {
+            _.each(regionHandlers, function (callback, handler) {
               this.on(region + ':render:' + handler, this[callback], this);
             }, this);
           }, this);
         },
 
-        uploadContent: function() {
+        uploadContent: function () {
           window.wp.media.view.MediaFrame.Select.prototype.uploadContent.apply(this, arguments);
           this.$el.addClass('hide-toolbar');
         },
 
         // Content
-        embedContent: function() {
+        embedContent: function () {
           var view = new window.wp.media.view.Embed({
             controller: this,
             model: this.state()
@@ -209,7 +209,7 @@ define([
           view.url.focus();
         },
 
-        editSelectionContent: function() {
+        editSelectionContent: function () {
           var state = this.state(),
             selection = state.get('selection'),
             view;
@@ -230,7 +230,7 @@ define([
             text: 'Return to library',
             priority: -100,
 
-            click: function() {
+            click: function () {
               this.controller.content.mode('browse');
             }
           });
@@ -240,7 +240,7 @@ define([
         },
 
         // Toolbars
-        selectionStatusToolbar: function(view) {
+        selectionStatusToolbar: function (view) {
           var editable = this.state().get('editable');
 
           view.set('selection', new window.wp.media.view.Selection({
@@ -250,13 +250,13 @@ define([
 
             // If the selection is editable, pass the callback to
             // switch the content mode.
-            editable: editable && function() {
+            editable: editable && function () {
               this.controller.content.mode('edit-selection');
             }
-          }).render() );
+          }).render());
         },
 
-        mainInsertToolbar: function(view) {
+        mainInsertToolbar: function (view) {
           var controller = this;
 
           this.selectionStatusToolbar(view);
@@ -267,7 +267,7 @@ define([
             text: 'Select Image',
             requires: { selection: true },
 
-            click: function() {
+            click: function () {
               var state = controller.state(),
                 selection = state.get('selection');
 
@@ -277,7 +277,7 @@ define([
           });
         },
 
-        mainEmbedToolbar: function(toolbar) {
+        mainEmbedToolbar: function (toolbar) {
           var tbar = toolbar;
           tbar.view = new window.wp.media.view.Toolbar.Embed({
             controller: this,
@@ -304,10 +304,10 @@ define([
         that = this;
       this._mediaManager = theFrame;
 
-      this._mediaManager.on('insert', function() {
+      this._mediaManager.on('insert', function () {
         // Append media manager image selections to Images tab
         var selection = theFrame.state().get('selection');
-        selection.each(function(attachment) {
+        selection.each(function (attachment) {
           var sizes = attachment.get('sizes'),
             // Following advice from Becs, the target width should
             // be a double of one column width to render well on
@@ -320,13 +320,13 @@ define([
             // Pick the width that is closest to target width
             increasingByWidthDifference = _.sortBy(
               _.keys(sizes),
-              function(size) { return Math.abs(targetImageWidth - sizes[size].width); }
+              function (size) { return Math.abs(targetImageWidth - sizes[size].width); }
             ),
             bestWidth = sizes[_.first(increasingByWidthDifference)].width,
-            imagesOfBestWidth = _.filter(_.values(sizes), function(size) { return size.width === bestWidth; }),
+            imagesOfBestWidth = _.filter(_.values(sizes), function (size) { return size.width === bestWidth; }),
 
             // Maximize the height if there are multiple images with same width
-            mainSize = _.max(imagesOfBestWidth, function(size) { return size.height; });
+            mainSize = _.max(imagesOfBestWidth, function (size) { return size.height; });
 
           that.model.set({
             height: mainSize.height + 'px',
@@ -341,11 +341,11 @@ define([
 
       this._mediaManager.open();
     },
-    changeAddress: function(event) {
+    changeAddress: function (event) {
       var src = jQuery(event.target).val();
       var image = new Image();
 
-      image.onload = function() {
+      image.onload = function () {
         this.model.set({
           src: src,
           width: image.naturalWidth + 'px',
@@ -355,7 +355,7 @@ define([
 
       image.src = src;
     },
-    onBeforeDestroy: function() {
+    onBeforeDestroy: function () {
       base.BlockSettingsView.prototype.onBeforeDestroy.apply(this, arguments);
       if (typeof this._mediaManager === 'object') {
         this._mediaManager.remove();
@@ -364,14 +364,14 @@ define([
   });
 
   ImageWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return window.templates.imageInsertion; },
+    getTemplate: function () { return window.templates.imageInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,
-        drop: function() {
+        drop: function () {
           return new Module.ImageBlockModel();
         },
-        onDrop: function(options) {
+        onDrop: function (options) {
           options.droppedView.triggerMethod('showSettings', { showImageManager: true });
         }
       }
@@ -379,7 +379,7 @@ define([
   });
   Module.ImageWidgetView = ImageWidgetView;
 
-  App.on('before:start', function(App, options) {
+  App.on('before:start', function (App, options) {
     App.registerBlockType('image', {
       blockModel: Module.ImageBlockModel,
       blockView: Module.ImageBlockView

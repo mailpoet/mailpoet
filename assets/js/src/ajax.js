@@ -12,7 +12,7 @@ function requestFailed(errorMessage, xhr) {
   };
 }
 
-define('ajax', ['mailpoet', 'jquery', 'underscore'], function(mp, jQuery, _) {
+define('ajax', ['mailpoet', 'jquery', 'underscore'], function (mp, jQuery, _) {
   var MailPoet = mp;
 
   MailPoet.Ajax = {
@@ -26,24 +26,24 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(mp, jQuery, _) {
       token: null,
       data: {}
     },
-    post: function(options) {
+    post: function (options) {
       return this.request('post', options);
     },
-    init: function(options) {
+    init: function (options) {
       // merge options
       this.options = jQuery.extend({}, this.defaults, options);
 
       // set default url
-      if(this.options.url === null) {
+      if (this.options.url === null) {
         this.options.url = window.ajaxurl;
       }
 
       // set default token
-      if(this.options.token === null) {
+      if (this.options.token === null) {
         this.options.token = window.mailpoet_token;
       }
     },
-    getParams: function() {
+    getParams: function () {
       return {
         action: 'mailpoet',
         api_version: this.options.api_version,
@@ -53,7 +53,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(mp, jQuery, _) {
         data: this.options.data || {}
       };
     },
-    request: function(method, options) {
+    request: function (method, options) {
         // set options
       this.init(options);
 
@@ -62,7 +62,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(mp, jQuery, _) {
 
         // remove null values from the data object
       if (_.isObject(params.data)) {
-        params.data = _.pick(params.data, function(value) {
+        params.data = _.pick(params.data, function (value) {
           return (value !== null);
         });
       }
@@ -73,7 +73,7 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function(mp, jQuery, _) {
           params,
           null,
           'json'
-        ).then(function(data) {
+        ).then(function (data) {
           return data;
         }, _.partial(requestFailed, MailPoet.I18n.t('ajaxFailedErrorMessage')));
 

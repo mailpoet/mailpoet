@@ -7,7 +7,7 @@ define([
   'mailpoet',
   'underscore',
   'jquery'
-], function(App, BaseBlock, MailPoet, _, jQuery) {
+], function (App, BaseBlock, MailPoet, _, jQuery) {
 
   'use strict';
 
@@ -15,7 +15,7 @@ define([
     base = BaseBlock;
 
   Module.ButtonBlockModel = base.BlockModel.extend({
-    defaults: function() {
+    defaults: function () {
       return this._getDefaults({
         type: 'button',
         text: 'Button',
@@ -42,31 +42,31 @@ define([
 
   Module.ButtonBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_button_block mailpoet_droppable_block',
-    getTemplate: function() { return window.templates.buttonBlock; },
-    onDragSubstituteBy: function() { return Module.ButtonWidgetView; },
+    getTemplate: function () { return window.templates.buttonBlock; },
+    onDragSubstituteBy: function () { return Module.ButtonWidgetView; },
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
       ShowSettingsBehavior: {}
     }),
-    initialize: function() {
+    initialize: function () {
       base.BlockView.prototype.initialize.apply(this, arguments);
 
       // Listen for attempts to change all dividers in one go
-      this._replaceButtonStylesHandler = function(data) { this.model.set(data); }.bind(this);
+      this._replaceButtonStylesHandler = function (data) { this.model.set(data); }.bind(this);
       App.getChannel().on('replaceAllButtonStyles', this._replaceButtonStylesHandler);
     },
-    onRender: function() {
+    onRender: function () {
       this.toolsView = new Module.ButtonBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
     }
   });
 
   Module.ButtonBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.ButtonBlockSettingsView; }
+    getSettingsView: function () { return Module.ButtonBlockSettingsView; }
   });
 
   Module.ButtonBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return window.templates.buttonBlockSettings; },
-    events: function() {
+    getTemplate: function () { return window.templates.buttonBlockSettings; },
+    events: function () {
       return {
         'input .mailpoet_field_button_text': _.partial(this.changeField, 'text'),
         'input .mailpoet_field_button_url': _.partial(this.changeField, 'url'),
@@ -98,20 +98,20 @@ define([
         'click .mailpoet_done_editing': 'close'
       };
     },
-    templateContext: function() {
+    templateContext: function () {
       return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         availableStyles: App.getAvailableStyles().toJSON(),
         renderOptions: this.renderOptions
       });
     },
-    applyToAll: function() {
+    applyToAll: function () {
       App.getChannel().trigger('replaceAllButtonStyles', _.pick(this.model.toJSON(), 'styles', 'type'));
     },
-    updateValueAndCall: function(fieldToUpdate, callable, event) {
+    updateValueAndCall: function (fieldToUpdate, callable, event) {
       this.$(fieldToUpdate).val(jQuery(event.target).val());
       callable(event);
     },
-    changeFontWeight: function(event) {
+    changeFontWeight: function (event) {
       var checked = !!jQuery(event.target).prop('checked');
       this.model.set(
         'styles.block.fontWeight',
@@ -121,18 +121,18 @@ define([
   });
 
   Module.ButtonWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return window.templates.buttonInsertion; },
+    getTemplate: function () { return window.templates.buttonInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,
-        drop: function() {
+        drop: function () {
           return new Module.ButtonBlockModel();
         }
       }
     }
   });
 
-  App.on('before:start', function(App, options) {
+  App.on('before:start', function (App, options) {
     App.registerBlockType('button', {
       blockModel: Module.ButtonBlockModel,
       blockView: Module.ButtonBlockView

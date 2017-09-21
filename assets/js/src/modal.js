@@ -1,9 +1,9 @@
 define('modal', ['mailpoet', 'jquery'],
-  function(mp, jQuery) {
+  function (mp, jQuery) {
     'use strict';
 
     var MailPoet = mp;
-    /***************************************************************************
+    /** *************************************************************************
     MailPoet Modal:
 
       version: 0.9
@@ -20,7 +20,7 @@ define('modal', ['mailpoet', 'jquery'],
 
       // loading mode
       MailPoet.Modal.loading(bool);
-    ***************************************************************************/
+    ************************************************************************** */
 
     MailPoet.Modal = {
       version: 0.9,
@@ -79,44 +79,44 @@ define('modal', ['mailpoet', 'jquery'],
       options: {},
       templates: {
         overlay: '<div id="mailpoet_modal_overlay" style="display:none;"></div>',
-        popup: '<div id="mailpoet_popup" tabindex="-1">'+
-        '<div class="mailpoet_popup_wrapper">'+
-        '<a href="javascript:;" id="mailpoet_modal_close"></a>'+
-        '<div id="mailpoet_popup_title"><h2></h2></div>'+
-        '<div class="mailpoet_popup_body clearfix"></div>'+
-        '</div>'+
+        popup: '<div id="mailpoet_popup" tabindex="-1">' +
+        '<div class="mailpoet_popup_wrapper">' +
+        '<a href="javascript:;" id="mailpoet_modal_close"></a>' +
+        '<div id="mailpoet_popup_title"><h2></h2></div>' +
+        '<div class="mailpoet_popup_body clearfix"></div>' +
+        '</div>' +
         '</div>',
-        loading: '<div id="mailpoet_loading" style="display:none;">'+
-        '<div id="mailpoet_modal_loading_1" class="mailpoet_modal_loading"></div>'+
-        '<div id="mailpoet_modal_loading_2" class="mailpoet_modal_loading"></div>'+
-        '<div id="mailpoet_modal_loading_3" class="mailpoet_modal_loading"></div>'+
+        loading: '<div id="mailpoet_loading" style="display:none;">' +
+        '<div id="mailpoet_modal_loading_1" class="mailpoet_modal_loading"></div>' +
+        '<div id="mailpoet_modal_loading_2" class="mailpoet_modal_loading"></div>' +
+        '<div id="mailpoet_modal_loading_3" class="mailpoet_modal_loading"></div>' +
         '</div>',
-        panel: '<div id="mailpoet_panel">'+
-        '<a href="javascript:;" id="mailpoet_modal_close"></a>'+
-        '<div class="mailpoet_panel_wrapper" tabindex="-1">'+
-        '<div class="mailpoet_panel_body clearfix"></div>'+
-        '</div>'+
+        panel: '<div id="mailpoet_panel">' +
+        '<a href="javascript:;" id="mailpoet_modal_close"></a>' +
+        '<div class="mailpoet_panel_wrapper" tabindex="-1">' +
+        '<div class="mailpoet_panel_body clearfix"></div>' +
+        '</div>' +
         '</div>',
-        subpanel: '<div class="mailpoet_panel_wrapper" tabindex="-1">'+
-        '<div class="mailpoet_panel_body clearfix"></div>'+
+        subpanel: '<div class="mailpoet_panel_wrapper" tabindex="-1">' +
+        '<div class="mailpoet_panel_body clearfix"></div>' +
         '</div>'
       },
-      getContentContainer: function() {
-        return jQuery('.mailpoet_'+this.options.type+'_body');
+      getContentContainer: function () {
+        return jQuery('.mailpoet_' + this.options.type + '_body');
       },
-      setRenderer: function(renderer) {
+      setRenderer: function (renderer) {
         this.renderer = renderer;
         return this;
       },
-      compileTemplate: function(template) {
-        if(this.renderer === 'html') {
-          return function() { return template; };
+      compileTemplate: function (template) {
+        if (this.renderer === 'html') {
+          return function () { return template; };
         } else {
           return window.Handlebars.compile(template);
         }
       },
-      init: function(options) {
-        if(this.initialized === true) {
+      init: function (options) {
+        if (this.initialized === true) {
           this.close();
         }
         // merge options
@@ -131,9 +131,9 @@ define('modal', ['mailpoet', 'jquery'],
         // toggle overlay
         this.toggleOverlay(this.options.overlay);
 
-        if(this.options.type !== null) {
+        if (this.options.type !== null) {
           // insert modal depending on its type
-          if(this.options.type === 'popup') {
+          if (this.options.type === 'popup') {
             var modal = this.compileTemplate(
               this.templates[this.options.type]
             );
@@ -143,7 +143,7 @@ define('modal', ['mailpoet', 'jquery'],
             // set title
             jQuery('#mailpoet_popup_title h2')
               .html(this.options.title);
-          } else if(this.options.type === 'panel') {
+          } else if (this.options.type === 'panel') {
             // create panel
             jQuery('#mailpoet_modal_overlay')
               .after(this.templates[this.options.type]);
@@ -152,16 +152,16 @@ define('modal', ['mailpoet', 'jquery'],
           // add proper overlay class
           jQuery('#mailpoet_modal_overlay')
             .removeClass('mailpoet_popup_overlay mailpoet_panel_overlay')
-            .addClass('mailpoet_'+this.options.type+'_overlay');
+            .addClass('mailpoet_' + this.options.type + '_overlay');
         }
 
         // set "success" callback if specified
-        if(options.onSuccess !== undefined) {
+        if (options.onSuccess !== undefined) {
           this.options.onSuccess = options.onSuccess;
         }
 
         // set "cancel" callback if specified
-        if(options.onCancel !== undefined) {
+        if (options.onCancel !== undefined) {
           this.options.onCancel = options.onCancel;
         }
 
@@ -178,8 +178,8 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      initOverlay: function(toggle) {
-        if(jQuery('#mailpoet_modal_overlay').length === 0) {
+      initOverlay: function (toggle) {
+        if (jQuery('#mailpoet_modal_overlay').length === 0) {
             // insert overlay into the DOM
           jQuery('body').append(this.templates.overlay);
             // insert loading indicator into overlay
@@ -187,8 +187,8 @@ define('modal', ['mailpoet', 'jquery'],
         }
         return this;
       },
-      toggleOverlay: function(toggle) {
-        if(toggle === true) {
+      toggleOverlay: function (toggle) {
+        if (toggle === true) {
           jQuery('#mailpoet_modal_overlay')
               .removeClass('mailpoet_overlay_hidden');
         } else {
@@ -198,77 +198,77 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      setupEvents: function() {
+      setupEvents: function () {
         // close popup when user clicks on close button
         jQuery('#mailpoet_modal_close').on('click', this.cancel.bind(this));
 
         // close popup when user clicks on overlay
-        jQuery('#mailpoet_modal_overlay').on('click', function(e) {
+        jQuery('#mailpoet_modal_overlay').on('click', function (e) {
           // we need to make sure that we are actually clicking on the overlay
           // because when clicking on the popup content, it will trigger
           // the click event on the overlay
-          if(e.target.id === 'mailpoet_modal_overlay') { this.cancel(); }
+          if (e.target.id === 'mailpoet_modal_overlay') { this.cancel(); }
         }.bind(this));
 
         // close popup when user presses ESC key
-        jQuery(document).on('keyup.mailpoet_modal', function(e) {
-          if(this.opened === false) { return false; }
-          if(e.keyCode === 27) { this.cancel(); }
+        jQuery(document).on('keyup.mailpoet_modal', function (e) {
+          if (this.opened === false) { return false; }
+          if (e.keyCode === 27) { this.cancel(); }
         }.bind(this));
 
         // make sure the popup is repositioned when the window is resized
-        jQuery(window).on('resize.mailpoet_modal', function() {
+        jQuery(window).on('resize.mailpoet_modal', function () {
           this.setPosition();
         }.bind(this));
 
         return this;
       },
-      removeEvents: function() {
+      removeEvents: function () {
         jQuery(document).unbind('keyup.mailpoet_modal');
         jQuery(window).unbind('resize.mailpoet_modal');
         jQuery('#mailpoet_modal_close').off('click');
-        if(this.options.overlay === true) {
+        if (this.options.overlay === true) {
           jQuery('#mailpoet_modal_overlay').off('click');
         }
 
         return this;
       },
-      lock: function() {
+      lock: function () {
         this.locked = true;
 
         return this;
       },
-      unlock: function() {
+      unlock: function () {
         this.locked = false;
 
         return this;
       },
-      isLocked: function() {
+      isLocked: function () {
         return this.locked;
       },
-      loadTemplate: function() {
-        if(this.subpanels.length > 0) {
+      loadTemplate: function () {
+        if (this.subpanels.length > 0) {
             // hide panel
-          jQuery('.mailpoet_'+this.options.type+'_wrapper').hide();
+          jQuery('.mailpoet_' + this.options.type + '_wrapper').hide();
 
             // add sub panel wrapper
-          jQuery('#mailpoet_'+this.options.type)
+          jQuery('#mailpoet_' + this.options.type)
               .append(this.templates['subpanel']);
 
             // add sub panel content
-          jQuery('.mailpoet_'+this.options.type+'_body').last()
+          jQuery('.mailpoet_' + this.options.type + '_body').last()
               .html(this.subpanels[(this.subpanels.length - 1)].element);
 
             // focus on sub panel
-          if(this.options.focus) {
+          if (this.options.focus) {
             this.focus();
           }
         } else if (this.options.element) {
-          jQuery('.mailpoet_'+this.options.type+'_body').empty();
-          jQuery('.mailpoet_'+this.options.type+'_body')
+          jQuery('.mailpoet_' + this.options.type + '_body').empty();
+          jQuery('.mailpoet_' + this.options.type + '_body')
               .append(this.options.element);
         } else {
-          jQuery('.mailpoet_'+this.options.type+'_body')
+          jQuery('.mailpoet_' + this.options.type + '_body')
               .html(
                 this.options.body_template(
                   this.options.data
@@ -278,11 +278,11 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      loadUrl: function() {
-        if(this.options.method === 'get') {
+      loadUrl: function () {
+        if (this.options.method === 'get') {
             // make ajax request
           jQuery.getJSON(this.options.url,
-              function(data) {
+              function (data) {
                 this.options.data = jQuery.extend({}, this.options.data, data);
                 // load template using fetched data
                 this.loadTemplate();
@@ -290,10 +290,10 @@ define('modal', ['mailpoet', 'jquery'],
                 this.showModal();
               }.bind(this)
             );
-        } else if(this.options.method === 'post') {
+        } else if (this.options.method === 'post') {
             // make ajax request
           jQuery.post(this.options.url, JSON.stringify(this.options.params),
-              function(data) {
+              function (data) {
                 this.options.data = jQuery.extend({}, this.options.data, data);
                 // load template using fetched data
                 this.loadTemplate();
@@ -306,8 +306,8 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      setDimensions: function() {
-        switch(this.options.type) {
+      setDimensions: function () {
+        switch (this.options.type) {
           case 'popup':
               // set popup dimensions
             jQuery('#mailpoet_popup').css({
@@ -321,14 +321,14 @@ define('modal', ['mailpoet', 'jquery'],
             break;
           case 'panel':
               // set dimensions
-            if(this.options.position === 'right') {
+            if (this.options.position === 'right') {
               jQuery('#mailpoet_panel').css({
                 width: this.options.width,
                 right: 0,
                 marginRight: '-' + this.options.width,
                 left: 'auto'
               });
-            } else if(this.options.position === 'left') {
+            } else if (this.options.position === 'left') {
               jQuery('#mailpoet_panel').css({
                 width: this.options.width,
                 left: 0,
@@ -342,13 +342,13 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      setPosition: function() {
-        switch(this.options.type) {
+      setPosition: function () {
+        switch (this.options.type) {
           case 'popup':
             var screenWidth = jQuery(window).width(),
               screenHeight = jQuery(window).height(),
-              modalWidth = jQuery('.mailpoet_'+ this.options.type +'_wrapper').width(),
-              modalHeight = jQuery('.mailpoet_'+ this.options.type +'_wrapper').height();
+              modalWidth = jQuery('.mailpoet_' + this.options.type + '_wrapper').width(),
+              modalHeight = jQuery('.mailpoet_' + this.options.type + '_wrapper').height();
 
             var top = Math.max(48, parseInt((screenHeight / 2) - (modalHeight / 2))),
               left = Math.max(0, parseInt((screenWidth / 2) - (modalWidth / 2)));
@@ -360,13 +360,13 @@ define('modal', ['mailpoet', 'jquery'],
             });
             break;
           case 'panel':
-            setTimeout(function() {
+            setTimeout(function () {
                 // set position of popup depending on screen dimensions.
-              if(this.options.position === 'right') {
+              if (this.options.position === 'right') {
                 jQuery('#mailpoet_panel').css({
                   marginRight: 0
                 });
-              } else if(this.options.position === 'left') {
+              } else if (this.options.position === 'left') {
                 jQuery('#mailpoet_panel').css({
                   marginLeft: 0
                 });
@@ -377,7 +377,7 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      showModal: function() {
+      showModal: function () {
           // set modal dimensions
         this.setDimensions();
 
@@ -388,7 +388,7 @@ define('modal', ['mailpoet', 'jquery'],
         jQuery('body').addClass('mailpoet_modal_opened');
 
           // show popup
-        jQuery('#mailpoet_'+this.options.type).show();
+        jQuery('#mailpoet_' + this.options.type).show();
 
           // display overlay
         this.showOverlay();
@@ -397,13 +397,13 @@ define('modal', ['mailpoet', 'jquery'],
         this.setPosition();
 
           // add class on highlighted elements
-        if(this.options.highlight !== null) {
-          if(this.options.highlight.length > 0) {
+        if (this.options.highlight !== null) {
+          if (this.options.highlight.length > 0) {
             this.highlightOn(this.options.highlight);
           }
         }
 
-        if(this.options.focus) {
+        if (this.options.focus) {
           this.focus();
         }
 
@@ -411,37 +411,37 @@ define('modal', ['mailpoet', 'jquery'],
         this.opened = true;
 
           // trigger init event if specified
-        if(this.options.onInit !== null) {
+        if (this.options.onInit !== null) {
           this.options.onInit(this);
         }
 
         return this;
       },
-      focus: function() {
-        if(this.options.type == 'popup') {
-          jQuery('#mailpoet_'+this.options.type).focus();
+      focus: function () {
+        if (this.options.type == 'popup') {
+          jQuery('#mailpoet_' + this.options.type).focus();
         } else {
             // panel and subpanel
-          jQuery('#mailpoet_'+this.options.type+' .mailpoet_panel_wrapper')
+          jQuery('#mailpoet_' + this.options.type + ' .mailpoet_panel_wrapper')
               .filter(':visible').focus();
         }
         return this;
       },
-      highlightOn: function(element) {
+      highlightOn: function (element) {
         jQuery(element).addClass('mailpoet_modal_highlight');
         return this;
       },
-      highlightOff: function() {
+      highlightOff: function () {
         jQuery('.mailpoet_modal_highlight')
             .removeClass('mailpoet_modal_highlight');
         return this;
       },
-      hideModal: function(callback) {
+      hideModal: function (callback) {
           // set modal as closed
         this.opened = false;
 
           // hide modal
-        jQuery('#mailpoet_'+this.options.type).hide();
+        jQuery('#mailpoet_' + this.options.type).hide();
 
            // remove class on highlighted elements
         this.highlightOff();
@@ -451,15 +451,15 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      showOverlay: function(force) {
+      showOverlay: function (force) {
         jQuery('#mailpoet_modal_overlay').show();
         return this;
       },
-      hideOverlay: function() {
+      hideOverlay: function () {
         jQuery('#mailpoet_modal_overlay').hide();
         return this;
       },
-      popup: function(opts) {
+      popup: function (opts) {
           // get options
         var options = opts || {};
           // set modal type
@@ -473,7 +473,7 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      panel: function(opts) {
+      panel: function (opts) {
           // get options
         var options = opts || {};
           // reset subpanels
@@ -494,8 +494,8 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      subpanel: function(options) {
-        if(this.opened === false) {
+      subpanel: function (options) {
+        if (this.opened === false) {
             // if no panel is already opened, let's create one instead
           this.panel(options);
         } else {
@@ -506,11 +506,11 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      loading: function(toggle) {
+      loading: function (toggle) {
           // make sure the overlay is initialized and that it's visible
         this.initOverlay(true);
 
-        if(toggle === true) {
+        if (toggle === true) {
           this.showLoading();
         } else {
           this.hideLoading();
@@ -518,7 +518,7 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      showLoading: function() {
+      showLoading: function () {
         jQuery('#mailpoet_loading').show();
 
           // add loading class to overlay
@@ -527,7 +527,7 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      hideLoading: function() {
+      hideLoading: function () {
         jQuery('#mailpoet_loading').hide();
 
           // remove loading class from overlay
@@ -536,11 +536,11 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      open: function() {
+      open: function () {
           // load template if specified
-        if(this.options.template !== null) {
+        if (this.options.template !== null) {
             // check if a url was specified to get extra data
-          if(this.options.url !== null) {
+          if (this.options.url !== null) {
             this.loadUrl();
           } else {
               // load template
@@ -555,13 +555,13 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      success: function() {
-        if(this.subpanels.length > 0) {
-          if(this.subpanels[(this.subpanels.length - 1)].onSuccess !== undefined) {
+      success: function () {
+        if (this.subpanels.length > 0) {
+          if (this.subpanels[(this.subpanels.length - 1)].onSuccess !== undefined) {
             this.subpanels[(this.subpanels.length - 1)].onSuccess(this.subpanels[(this.subpanels.length - 1)].data);
           }
         } else {
-          if(this.options.onSuccess !== null) {
+          if (this.options.onSuccess !== null) {
             this.options.onSuccess(this.options.data);
           }
         }
@@ -569,13 +569,13 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      cancel: function() {
-        if(this.subpanels.length > 0) {
-          if(this.subpanels[(this.subpanels.length - 1)].onCancel !== undefined) {
+      cancel: function () {
+        if (this.subpanels.length > 0) {
+          if (this.subpanels[(this.subpanels.length - 1)].onCancel !== undefined) {
             this.subpanels[(this.subpanels.length - 1)].onCancel(this.subpanels[(this.subpanels.length - 1)].data);
           }
         } else {
-          if(this.options.onCancel !== null) {
+          if (this.options.onCancel !== null) {
             this.options.onCancel(this.options.data);
           }
         }
@@ -583,33 +583,33 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      destroy: function() {
+      destroy: function () {
         this.hideOverlay();
 
           // remove extra modal
-        if(jQuery('#mailpoet_'+this.options.type).length > 0) {
-          jQuery('#mailpoet_'+this.options.type).remove();
+        if (jQuery('#mailpoet_' + this.options.type).length > 0) {
+          jQuery('#mailpoet_' + this.options.type).remove();
         }
 
         this.initialized = false;
 
         return this;
       },
-      close: function() {
-        if(this.isLocked() === true) { return this; }
+      close: function () {
+        if (this.isLocked() === true) { return this; }
 
-        if(this.subpanels.length > 0) {
+        if (this.subpanels.length > 0) {
             // close subpanel
-          jQuery('.mailpoet_'+this.options.type+'_wrapper').last().remove();
+          jQuery('.mailpoet_' + this.options.type + '_wrapper').last().remove();
 
             // show previous panel
-          jQuery('.mailpoet_'+this.options.type+'_wrapper').last().show();
+          jQuery('.mailpoet_' + this.options.type + '_wrapper').last().show();
 
             // remove last subpanels
           this.subpanels.pop();
 
             // focus on previous panel
-          if(this.options.focus) {
+          if (this.options.focus) {
             this.focus();
           }
 
@@ -626,7 +626,7 @@ define('modal', ['mailpoet', 'jquery'],
         this.destroy();
 
           // restore the previously focused element
-        if(this.prevFocus !== undefined){
+        if (this.prevFocus !== undefined) {
           this.prevFocus.focus();
         }
 

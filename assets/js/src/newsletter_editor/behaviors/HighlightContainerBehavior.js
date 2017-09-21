@@ -6,7 +6,7 @@
 define([
   'backbone.marionette',
   'newsletter_editor/behaviors/BehaviorsLookup'
-], function(Marionette, BehaviorsLookup) {
+], function (Marionette, BehaviorsLookup) {
   var BL = BehaviorsLookup;
 
   BL.HighlightContainerBehavior = Marionette.Behavior.extend({
@@ -14,10 +14,10 @@ define([
       'mouseenter @ui.tools': 'enableHighlight',
       'mouseleave @ui.tools': 'disableHighlight'
     },
-    enableHighlight: function() {
+    enableHighlight: function () {
       this.$el.addClass('mailpoet_highlight');
     },
-    disableHighlight: function() {
+    disableHighlight: function () {
       if (!this.view._isBeingEdited) {
         this.$el.removeClass('mailpoet_highlight');
       }

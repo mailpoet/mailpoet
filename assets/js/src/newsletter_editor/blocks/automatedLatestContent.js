@@ -16,7 +16,7 @@ define([
   'backbone.supermodel',
   'underscore',
   'jquery'
-], function(
+], function (
   App,
   BaseBlock,
   ButtonBlock,
@@ -34,7 +34,7 @@ define([
     base = BaseBlock;
 
   Module.ALCSupervisor = SuperModel.extend({
-    initialize: function() {
+    initialize: function () {
       var DELAY_REFRESH_FOR_MS = 500;
       this.listenTo(
         App.getChannel(),
@@ -42,13 +42,13 @@ define([
         _.debounce(this.refresh, DELAY_REFRESH_FOR_MS)
       );
     },
-    refresh: function() {
-      var models = App.findModels(function(model) {
+    refresh: function () {
+      var models = App.findModels(function (model) {
         return model.get('type') === 'automatedLatestContent';
       }) || [];
 
       if (models.length === 0) return;
-      var blocks = _.map(models, function(model) {
+      var blocks = _.map(models, function (model) {
         return model.toJSON();
       });
 
@@ -56,10 +56,10 @@ define([
         blocks: blocks
       }).then(_.partial(this.refreshBlocks, models));
     },
-    refreshBlocks: function(models, renderedBlocks) {
+    refreshBlocks: function (models, renderedBlocks) {
       _.each(
         _.zip(models, renderedBlocks),
-        function(args) {
+        function (args) {
           var model = args[0],
             contents = args[1];
           model.trigger('refreshPosts', contents);
@@ -70,7 +70,7 @@ define([
 
   Module.AutomatedLatestContentBlockModel = base.BlockModel.extend({
     stale: ['_container'],
-    defaults: function() {
+    defaults: function () {
       return this._getDefaults({
         type: 'automatedLatestContent',
         amount: '5',
@@ -83,7 +83,7 @@ define([
         titleIsLink: false, // false|true
         imageFullWidth: false, // true|false
         featuredImagePosition: 'belowTitle', // 'aboveTitle'|'belowTitle'|'none'
-        //imageAlignment: 'centerPadded', // 'centerFull'|'centerPadded'|'left'|'right'|'alternate'|'none'
+        // imageAlignment: 'centerPadded', // 'centerFull'|'centerPadded'|'left'|'right'|'alternate'|'none'
         showAuthor: 'no', // 'no'|'aboveText'|'belowText'
         authorPrecededBy: 'Author:',
         showCategories: 'no', // 'no'|'aboveText'|'belowText'
@@ -100,14 +100,14 @@ define([
         _container: new (App.getBlockTypeModel('container'))()
       }, App.getConfig().get('blockDefaults.automatedLatestContent'));
     },
-    relations: function() {
+    relations: function () {
       return {
         readMoreButton: App.getBlockTypeModel('button'),
         divider: App.getBlockTypeModel('divider'),
         _container: App.getBlockTypeModel('container')
       };
     },
-    initialize: function() {
+    initialize: function () {
       base.BlockView.prototype.initialize.apply(this, arguments);
       this.on('change:amount change:contentType change:terms change:inclusionType change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:showAuthor change:authorPrecededBy change:showCategories change:categoriesPrecededBy change:readMoreType change:readMoreText change:sortBy change:showDivider', this._scheduleFetchPosts, this);
       this.listenTo(this.get('readMoreButton'), 'change', this._scheduleFetchPosts);
@@ -115,27 +115,27 @@ define([
       this.on('add remove update reset', this._scheduleFetchPosts);
       this.on('refreshPosts', this.updatePosts, this);
     },
-    updatePosts: function(posts) {
-      this.get('_container.blocks').reset(posts, {parse: true});
+    updatePosts: function (posts) {
+      this.get('_container.blocks').reset(posts, { parse: true });
     },
     /**
      * Batch more changes during a specific time, instead of fetching
      * ALC posts on each model change
      */
-    _scheduleFetchPosts: function() {
+    _scheduleFetchPosts: function () {
       App.getChannel().trigger('automatedLatestContentRefresh');
     }
   });
 
   Module.AutomatedLatestContentBlockView = base.BlockView.extend({
     className: 'mailpoet_block mailpoet_automated_latest_content_block mailpoet_droppable_block',
-    initialize: function() {
+    initialize: function () {
       function replaceButtonStylesHandler(data) {
-        this.model.set({readMoreButton: data});
+        this.model.set({ readMoreButton: data });
       }
       App.getChannel().on('replaceAllButtonStyles', replaceButtonStylesHandler.bind(this));
     },
-    getTemplate: function() { return window.templates.automatedLatestContentBlock; },
+    getTemplate: function () { return window.templates.automatedLatestContentBlock; },
     regions: {
       toolsRegion: '.mailpoet_tools',
       postsRegion: '.mailpoet_automated_latest_content_block_posts'
@@ -148,8 +148,8 @@ define([
     events: _.extend(base.BlockView.prototype.events, {
       'click .mailpoet_automated_latest_content_block_overlay': 'showSettings'
     }),
-    onDragSubstituteBy: function() { return Module.AutomatedLatestContentWidgetView; },
-    onRender: function() {
+    onDragSubstituteBy: function () { return Module.AutomatedLatestContentWidgetView; },
+    onRender: function () {
       var ContainerView = App.getBlockTypeView('container'),
         renderOptions = {
           disableTextEditor: true,
@@ -163,13 +163,13 @@ define([
   });
 
   Module.AutomatedLatestContentBlockToolsView = base.BlockToolsView.extend({
-    getSettingsView: function() { return Module.AutomatedLatestContentBlockSettingsView; }
+    getSettingsView: function () { return Module.AutomatedLatestContentBlockSettingsView; }
   });
 
   // Sidebar view container
   Module.AutomatedLatestContentBlockSettingsView = base.BlockSettingsView.extend({
-    getTemplate: function() { return window.templates.automatedLatestContentBlockSettings; },
-    events: function() {
+    getTemplate: function () { return window.templates.automatedLatestContentBlockSettings; },
+    events: function () {
       return {
         'click .mailpoet_automated_latest_content_hide_display_options': 'toggleDisplayOptions',
         'click .mailpoet_automated_latest_content_show_display_options': 'toggleDisplayOptions',
@@ -195,7 +195,7 @@ define([
         'click .mailpoet_done_editing': 'close'
       };
     },
-    onRender: function() {
+    onRender: function () {
       var that = this;
 
       // Dynamically update available post types
@@ -211,17 +211,17 @@ define([
               term: params.term
             };
           },
-          transport: function(options, success, failure) {
+          transport: function (options, success, failure) {
             var taxonomies;
             var promise = CommunicationComponent.getTaxonomies(
               that.model.get('contentType')
-            ).then(function(tax) {
+            ).then(function (tax) {
               taxonomies = tax;
               // Fetch available terms based on the list of taxonomies already fetched
               var promise = CommunicationComponent.getTerms({
                 search: options.data.term,
                 taxonomies: _.keys(taxonomies)
-              }).then(function(terms) {
+              }).then(function (terms) {
                 return {
                   taxonomies: taxonomies,
                   terms: terms
@@ -234,12 +234,12 @@ define([
             promise.fail(failure);
             return promise;
           },
-          processResults: function(data) {
+          processResults: function (data) {
             // Transform taxonomies and terms into select2 compatible format
             return {
               results: _.map(
                 data.terms,
-                function(item) {
+                function (item) {
                   return _.defaults({
                     text: data.taxonomies[item.taxonomy].labels.singular_name + ': ' + item.name,
                     id: item.term_id
@@ -250,21 +250,21 @@ define([
           }
         }
       }).on({
-        'select2:select': function(event) {
+        'select2:select': function (event) {
           var terms = that.model.get('terms');
           terms.add(event.params.data);
           // Reset whole model in order for change events to propagate properly
           that.model.set('terms', terms.toJSON());
         },
-        'select2:unselect': function(event) {
+        'select2:unselect': function (event) {
           var terms = that.model.get('terms');
           terms.remove(event.params.data);
           // Reset whole model in order for change events to propagate properly
           that.model.set('terms', terms.toJSON());
         }
-      }).trigger( 'change' );
+      }).trigger('change');
     },
-    toggleDisplayOptions: function(event) {
+    toggleDisplayOptions: function (event) {
       var el = this.$('.mailpoet_automated_latest_content_display_options'),
         showControl = this.$('.mailpoet_automated_latest_content_show_display_options');
       if (el.hasClass('mailpoet_closed')) {
@@ -275,7 +275,7 @@ define([
         showControl.removeClass('mailpoet_hidden');
       }
     },
-    showButtonSettings: function(event) {
+    showButtonSettings: function (event) {
       var buttonModule = ButtonBlock;
       (new buttonModule.ButtonBlockSettingsView({
         model: this.model.get('readMoreButton'),
@@ -286,7 +286,7 @@ define([
         }
       })).render();
     },
-    showDividerSettings: function(event) {
+    showDividerSettings: function (event) {
       var dividerModule = DividerBlock;
       (new dividerModule.DividerBlockSettingsView({
         model: this.model.get('divider'),
@@ -296,7 +296,7 @@ define([
         }
       })).render();
     },
-    changeReadMoreType: function(event) {
+    changeReadMoreType: function (event) {
       var value = jQuery(event.target).val();
       if (value == 'link') {
         this.$('.mailpoet_automated_latest_content_read_more_text').removeClass('mailpoet_hidden');
@@ -307,7 +307,7 @@ define([
       }
       this.changeField('readMoreType', event);
     },
-    changeDisplayType: function(event) {
+    changeDisplayType: function (event) {
       var value = jQuery(event.target).val();
 
       if (value == 'titleOnly') {
@@ -334,7 +334,7 @@ define([
       }
       this.changeField('displayType', event);
     },
-    changeTitleFormat: function(event) {
+    changeTitleFormat: function (event) {
       var value = jQuery(event.target).val();
       if (value == 'ul') {
         this.$('.mailpoet_automated_latest_content_non_title_list_options').addClass('mailpoet_hidden');
@@ -348,12 +348,12 @@ define([
       }
       this.changeField('titleFormat', event);
     },
-    _updateContentTypes: function(postTypes) {
+    _updateContentTypes: function (postTypes) {
       var select = this.$('.mailpoet_automated_latest_content_content_type'),
         selectedValue = this.model.get('contentType');
 
       select.find('option').remove();
-      _.each(postTypes, function(type) {
+      _.each(postTypes, function (type) {
         select.append(jQuery('<option>', {
           value: type.name,
           text: type.label
@@ -364,21 +364,21 @@ define([
   });
 
   Module.AutomatedLatestContentWidgetView = base.WidgetView.extend({
-    getTemplate: function() { return window.templates.automatedLatestContentInsertion; },
+    getTemplate: function () { return window.templates.automatedLatestContentInsertion; },
     behaviors: {
       DraggableBehavior: {
         cloneOriginal: true,
-        drop: function() {
+        drop: function () {
           return new Module.AutomatedLatestContentBlockModel({}, { parse: true });
         },
-        onDrop: function(options) {
+        onDrop: function (options) {
           options.droppedView.triggerMethod('showSettings');
         }
       }
     }
   });
 
-  App.on('before:start', function(App, options) {
+  App.on('before:start', function (App, options) {
     App.registerBlockType('automatedLatestContent', {
       blockModel: Module.AutomatedLatestContentBlockModel,
       blockView: Module.AutomatedLatestContentBlockView
@@ -391,7 +391,7 @@ define([
     });
   });
 
-  App.on('start', function(App, options) {
+  App.on('start', function (App, options) {
     var Application = App;
     Application._ALCSupervisor = new Module.ALCSupervisor();
     Application._ALCSupervisor.refresh();

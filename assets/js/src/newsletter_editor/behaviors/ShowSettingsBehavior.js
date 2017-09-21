@@ -7,7 +7,7 @@ define([
   'backbone.marionette',
   'jquery',
   'newsletter_editor/behaviors/BehaviorsLookup'
-], function(Marionette, jQuery, BehaviorsLookup) {
+], function (Marionette, jQuery, BehaviorsLookup) {
   var BL = BehaviorsLookup;
 
   BL.ShowSettingsBehavior = Marionette.Behavior.extend({
@@ -17,12 +17,12 @@ define([
     events: {
       'click .mailpoet_content': 'showSettings'
     },
-    showSettings: function(event) {
-      if(!this.isIgnoredElement(event.target)) {
+    showSettings: function (event) {
+      if (!this.isIgnoredElement(event.target)) {
         this.view.triggerMethod('showSettings');
       }
     },
-    isIgnoredElement: function(element) {
+    isIgnoredElement: function (element) {
       return this.options.ignoreFrom
         && this.options.ignoreFrom.length > 0
         && jQuery(element).is(this.options.ignoreFrom);

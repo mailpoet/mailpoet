@@ -17,7 +17,7 @@
  */
 var eventsCache = [];
 
-function track(name, data){
+function track(name, data) {
   if (typeof window.mixpanel.track !== 'function') {
     window.mixpanel.init(window.mixpanelTrackingId);
   }
@@ -53,7 +53,7 @@ function cacheEvent(forced, name, data) {
 
 define(
   ['mailpoet', 'underscore'],
-  function(mp, _) {
+  function (mp, _) {
     var MailPoet = mp;
 
     function initializeMixpanelWhenLoaded() {

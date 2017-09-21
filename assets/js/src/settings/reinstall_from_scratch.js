@@ -2,7 +2,7 @@ define(
   [
     'mailpoet'
   ],
-  function(
+  function (
     MailPoet
   ) {
 
@@ -10,7 +10,7 @@ define(
       if (confirm(MailPoet.I18n.t('reinstallConfirmation'))) {
         MailPoet.trackEvent(
           'User has reinstalled MailPoet via Settings',
-          {'MailPoet Free version': window.mailpoet_version}
+          { 'MailPoet Free version': window.mailpoet_version }
         );
 
         MailPoet.Modal.loading(true);
@@ -28,7 +28,7 @@ define(
               response.errors.map(function (error) {
                 return error.message;
               }),
-              {scroll: true}
+              { scroll: true }
             );
           }
         });

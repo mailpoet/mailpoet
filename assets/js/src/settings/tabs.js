@@ -4,13 +4,13 @@ define(
     'jquery',
     'mailpoet'
   ],
-  function(
+  function (
     Backbone,
     jQuery,
     mp
   ) {
     var MailPoet = mp;
-    if(jQuery('#mailpoet_settings').length === 0) {
+    if (jQuery('#mailpoet_settings').length === 0) {
       return;
     }
 
@@ -20,7 +20,7 @@ define(
         'mta(/:group)': 'sendingMethodGroup',
         '(:tab)': 'tabs'
       },
-      sendingMethodGroup: function(group) {
+      sendingMethodGroup: function (group) {
         // display mta tab
         this.tabs('mta');
 
@@ -32,7 +32,7 @@ define(
         // hide "save settings" button
         jQuery('.mailpoet_settings_submit').hide();
 
-        if(group === null) {
+        if (group === null) {
           // show sending methods
           jQuery('.mailpoet_sending_methods, .mailpoet_sending_methods_help').fadeIn();
         } else {
@@ -47,11 +47,11 @@ define(
           jQuery('.mailpoet_sending_methods, .mailpoet_sending_methods_help').hide();
 
           // display selected sending method's settings
-          jQuery('.mailpoet_sending_method[data-group="'+ group +'"]').show();
+          jQuery('.mailpoet_sending_method[data-group="' + group + '"]').show();
           jQuery('#mailpoet_sending_method_setup').fadeIn();
         }
       },
-      tabs: function(tabStr, section) {
+      tabs: function (tabStr, section) {
         // set default tab
         var tab = tabStr || 'mta';
 
@@ -62,11 +62,11 @@ define(
         jQuery('.mailpoet_panel, .mailpoet_section').hide();
 
         // set active tab
-        jQuery('a.nav-tab[href="#'+tab+'"]').addClass('nav-tab-active').blur();
+        jQuery('a.nav-tab[href="#' + tab + '"]').addClass('nav-tab-active').blur();
 
         // show selected panel
-        if(jQuery('.mailpoet_panel[data-tab="'+ tab +'"]').length > 0) {
-          jQuery('.mailpoet_panel[data-tab="'+ tab +'"]').show();
+        if (jQuery('.mailpoet_panel[data-tab="' + tab + '"]').length > 0) {
+          jQuery('.mailpoet_panel[data-tab="' + tab + '"]').show();
         }
 
         // show "save settings" button
@@ -82,7 +82,7 @@ define(
       }
     }));
 
-    jQuery(document).ready(function() {
+    jQuery(document).ready(function () {
       if (!Backbone.History.started) Backbone.history.start();
     });
   }
