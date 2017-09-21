@@ -41,9 +41,9 @@ define(
 
         // If the first keys part contains [ and the last ends with ], then []
         // are correctly balanced.
-        if (/\[/.test(keys[0]) && /\]$/.test(keys[ keys_last ])) {
+        if (/\[/.test(keys[0]) && /\]$/.test(keys[keys_last])) {
           // Remove the trailing ] from the last keys part.
-          keys[ keys_last ] = keys[ keys_last ].replace(/\]$/, '');
+          keys[keys_last] = keys[keys_last].replace(/\]$/, '');
 
           // Split first keys part into two parts on the [ and add them back onto
           // the beginning of the keys array.
