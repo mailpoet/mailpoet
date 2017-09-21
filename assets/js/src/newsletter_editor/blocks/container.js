@@ -51,7 +51,7 @@ define([
     },
     validate: function () {
       // Recursively propagate validation checks to blocks in the tree
-      var invalidBlock =  this.get('blocks').find(function (block) { return !block.isValid(); });
+      var invalidBlock = this.get('blocks').find(function (block) { return !block.isValid(); });
       if (invalidBlock) {
         return invalidBlock.validationError;
       }

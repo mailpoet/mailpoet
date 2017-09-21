@@ -57,8 +57,8 @@ define(
 
         // Coerce values.
         if ( coerce ) {
-          val = val && !isNaN(val)            ? +val              // number
-            : val === 'undefined'             ? undefined         // undefined
+          val = val && !isNaN(val) ? +val              // number
+            : val === 'undefined' ? undefined         // undefined
             : coerce_types[val] !== undefined ? coerce_types[val] // true, false, null
             : val;                                                // string
         }

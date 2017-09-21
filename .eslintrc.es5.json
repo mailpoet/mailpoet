@@ -18,7 +18,6 @@
     "no-prototype-builtins": 0,
     "no-restricted-syntax": 0,
     "no-useless-concat": 0,
-    "no-multi-spaces": 0,
     "no-nested-ternary": 0,
     "no-sequences": 0,
     "no-useless-return": 0,

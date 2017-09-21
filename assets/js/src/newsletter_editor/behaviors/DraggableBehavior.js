@@ -71,7 +71,7 @@ define([
             // Accurate dimensions can only be taken after insertion to document
             centerXOffset = $clone.width() / 2;
             centerYOffset = $clone.height() / 2;
-            $clone.css('top',  event.pageY - centerYOffset);
+            $clone.css('top', event.pageY - centerYOffset);
             $clone.css('left', event.pageX - centerXOffset);
 
             event.interaction.element = clone;
