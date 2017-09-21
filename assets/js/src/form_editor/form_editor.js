@@ -917,7 +917,7 @@ WysijaForm.Block.create = function (createBlock, target) {
   if(block.type === 'segment') {
     if(block.params.values === undefined) {
       var settings_segments = window.jQuery('#mailpoet_form_segments').val();
-      if(settings_segments !== null && settings_segments.length > 0){
+      if(settings_segments !== null && settings_segments.length > 0) {
         block.params.values = window.mailpoet_segments.filter(function (segment) {
           return (settings_segments.indexOf(segment.id) !== -1);
         });

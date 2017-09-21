@@ -626,7 +626,7 @@ define('modal', ['mailpoet', 'jquery'],
         this.destroy();
 
           // restore the previously focused element
-        if(this.prevFocus !== undefined){
+        if(this.prevFocus !== undefined) {
           this.prevFocus.focus();
         }
 

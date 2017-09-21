@@ -300,7 +300,7 @@ define([
     },
     onPostsScroll: function (event) {
       var $postsBox = jQuery(event.target);
-      if($postsBox.scrollTop() + $postsBox.innerHeight() >= $postsBox[0].scrollHeight){
+      if($postsBox.scrollTop() + $postsBox.innerHeight() >= $postsBox[0].scrollHeight) {
         // Load more posts if scrolled to bottom
         this.blockModel.trigger('loadMorePosts');
       }

@@ -17,7 +17,7 @@
  */
 var eventsCache = [];
 
-function track(name, data){
+function track(name, data) {
   if (typeof window.mixpanel.track !== 'function') {
     window.mixpanel.init(window.mixpanelTrackingId);
   }
