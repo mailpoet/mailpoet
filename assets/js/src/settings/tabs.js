@@ -10,7 +10,7 @@ define(
     mp
   ) {
     var MailPoet = mp;
-    if(jQuery('#mailpoet_settings').length === 0) {
+    if (jQuery('#mailpoet_settings').length === 0) {
       return;
     }
 
@@ -32,7 +32,7 @@ define(
         // hide "save settings" button
         jQuery('.mailpoet_settings_submit').hide();
 
-        if(group === null) {
+        if (group === null) {
           // show sending methods
           jQuery('.mailpoet_sending_methods, .mailpoet_sending_methods_help').fadeIn();
         } else {
@@ -65,7 +65,7 @@ define(
         jQuery('a.nav-tab[href="#' + tab + '"]').addClass('nav-tab-active').blur();
 
         // show selected panel
-        if(jQuery('.mailpoet_panel[data-tab="' + tab + '"]').length > 0) {
+        if (jQuery('.mailpoet_panel[data-tab="' + tab + '"]').length > 0) {
           jQuery('.mailpoet_panel[data-tab="' + tab + '"]').show();
         }
 

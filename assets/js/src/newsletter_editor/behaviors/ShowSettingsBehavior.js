@@ -18,7 +18,7 @@ define([
       'click .mailpoet_content': 'showSettings'
     },
     showSettings: function (event) {
-      if(!this.isIgnoredElement(event.target)) {
+      if (!this.isIgnoredElement(event.target)) {
         this.view.triggerMethod('showSettings');
       }
     },

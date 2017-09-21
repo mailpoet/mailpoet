@@ -31,7 +31,7 @@ Object.extend(document, (function () {
 
   function destroyWrapper(selector, eventName, handler) {
     var c = getCacheForSelector(selector);
-    if(!c[eventName]) return false;
+    if (!c[eventName]) return false;
     var wrapper = findWrapper(selector, eventName, handler);
     c[eventName] = c[eventName].without(wrapper);
     return wrapper;
@@ -39,10 +39,10 @@ Object.extend(document, (function () {
 
   function createWrapper(selector, eventName, handler, context) {
     var wrapper, c = getWrappersForSelector(selector, eventName);
-    if(c.pluck('handler').include(handler)) return false;
+    if (c.pluck('handler').include(handler)) return false;
     wrapper = function (event) {
       var element = event.findElement(selector);
-      if(element) handler.call(context || element, event, element);
+      if (element) handler.call(context || element, event, element);
     };
     wrapper.handler = handler;
     c.push(wrapper);
@@ -51,12 +51,12 @@ Object.extend(document, (function () {
   return {
     delegate: function (selector, eventName, handler, context) {
       var wrapper = createWrapper.apply(null, arguments);
-      if(wrapper) document.observe(eventName, wrapper);
+      if (wrapper) document.observe(eventName, wrapper);
       return document;
     },
     stopDelegating: function (selector, eventName, handler) {
       var length = arguments.length;
-      switch(length) {
+      switch (length) {
         case 2:
           getWrappersForSelector(selector, eventName).each(function (wrapper) {
             document.stopDelegating(selector, eventName, wrapper.handler);
@@ -74,7 +74,7 @@ Object.extend(document, (function () {
           break;
         default:
           var wrapper = destroyWrapper.apply(null, arguments);
-          if(wrapper) document.stopObserving(eventName, wrapper);
+          if (wrapper) document.stopObserving(eventName, wrapper);
       }
       return document;
     }
@@ -84,7 +84,7 @@ Object.extend(document, (function () {
 var Observable = (function () {
   function getEventName(nameA, namespace) {
     var name = nameA.substring(2);
-    if(namespace) name = namespace + ':' + name;
+    if (namespace) name = namespace + ':' + name;
     return name.underscore().split('_').join(':');
   }
 
@@ -92,7 +92,7 @@ var Observable = (function () {
     var proto = klass.prototype,
       namespace = proto.namespace;
     return Object.keys(proto).grep(/^on/).inject(window.$H(), function (handlers, name) {
-      if(name === 'onDomLoaded') return handlers;
+      if (name === 'onDomLoaded') return handlers;
       handlers.set(getEventName(name, namespace), getWrapper(proto[name], klass));
       return handlers;
     });
@@ -111,11 +111,11 @@ var Observable = (function () {
   }
   return {
     observe: function (selector) {
-      if(!this.handlers) this.handlers = {};
-      if(this.handlers[selector]) return;
+      if (!this.handlers) this.handlers = {};
+      if (this.handlers[selector]) return;
       var klass = this;
-      if(this.prototype.onDomLoaded) {
-        if(document.loaded) {
+      if (this.prototype.onDomLoaded) {
+        if (document.loaded) {
           onDomLoad(selector, klass);
         } else {
           document.observe('dom:loaded', onDomLoad.curry(selector, klass));
@@ -126,7 +126,7 @@ var Observable = (function () {
       });
     },
     stopObserving: function (selector) {
-      if(!this.handlers || !this.handlers[selector]) return;
+      if (!this.handlers || !this.handlers[selector]) return;
       this.handlers[selector].each(function (handler) {
         document.stopDelegating(selector, handler.key, handler.value);
       });
@@ -138,54 +138,54 @@ var Observable = (function () {
 // override droppables
 Object.extend(window.Droppables, {
   deactivate: window.Droppables.deactivate.wrap(function (proceed, drop, draggable) {
-    if(drop.onLeave) drop.onLeave(draggable, drop.element);
+    if (drop.onLeave) drop.onLeave(draggable, drop.element);
     return proceed(drop);
   }),
   activate: window.Droppables.activate.wrap(function (proceed, drop, draggable) {
-    if(drop.onEnter) drop.onEnter(draggable, drop.element);
+    if (drop.onEnter) drop.onEnter(draggable, drop.element);
     return proceed(drop);
   }),
   show: function (point, element) {
-    if(!this.drops.length) return;
+    if (!this.drops.length) return;
     var drop, affected = [];
     this.drops.each(function (drop) {
-      if(window.Droppables.isAffected(point, element, drop)) affected.push(drop);
+      if (window.Droppables.isAffected(point, element, drop)) affected.push(drop);
     });
-    if(affected.length > 0) drop = window.Droppables.findDeepestChild(affected);
-    if(this.last_active && this.last_active !== drop) this.deactivate(this.last_active, element);
-    if(drop) {
+    if (affected.length > 0) drop = window.Droppables.findDeepestChild(affected);
+    if (this.last_active && this.last_active !== drop) this.deactivate(this.last_active, element);
+    if (drop) {
       window.Position.within(drop.element, point[0], point[1]);
-      if(drop.onHover) drop.onHover(element, drop.element, window.Position.overlap(drop.overlap, drop.element));
-      if(drop !== this.last_active) window.Droppables.activate(drop, element);
+      if (drop.onHover) drop.onHover(element, drop.element, window.Position.overlap(drop.overlap, drop.element));
+      if (drop !== this.last_active) window.Droppables.activate(drop, element);
     }
   },
   displayArea: function (draggable) {
-    if(!this.drops.length) return;
+    if (!this.drops.length) return;
 
     // hide controls when displaying drop areas.
     WysijaForm.hideBlockControls();
 
     this.drops.each(function (drop, iterator) {
-      if(drop.element.hasClassName('block_placeholder')) {
+      if (drop.element.hasClassName('block_placeholder')) {
         drop.element.addClassName('active');
       }
     });
   },
   hideArea: function () {
-    if(!this.drops.length) return;
+    if (!this.drops.length) return;
     this.drops.each(function (drop, iterator) {
-      if(drop.element.hasClassName('block_placeholder')) {
+      if (drop.element.hasClassName('block_placeholder')) {
         drop.element.removeClassName('active');
-      } else if(drop.element.hasClassName('image_placeholder')) {
+      } else if (drop.element.hasClassName('image_placeholder')) {
         drop.element.removeClassName('active');
         drop.element.up().removeClassName('active');
-      } else if(drop.element.hasClassName('text_placeholder')) {
+      } else if (drop.element.hasClassName('text_placeholder')) {
         drop.element.removeClassName('active');
       }
     });
   },
   reset: function (draggable) {
-    if(this.last_active) this.deactivate(this.last_active, draggable);
+    if (this.last_active) this.deactivate(this.last_active, draggable);
   }
 });
 
@@ -203,13 +203,13 @@ var WysijaHistory = {
     var clone = element.clone(true);
 
     // check if the field is unique
-    if(parseInt(clone.readAttribute('wysija_unique'), 10) === 1) {
+    if (parseInt(clone.readAttribute('wysija_unique'), 10) === 1) {
       // check if the field is already in the queue
       window.$(WysijaHistory.container).select('[wysija_name="' + clone.readAttribute('wysija_name') + '"]').invoke('remove');
     }
 
     // check history size
-    if(window.$(WysijaHistory.container).select('> div').length >= WysijaHistory.size) {
+    if (window.$(WysijaHistory.container).select('> div').length >= WysijaHistory.size) {
       // remove oldest element (last in the list)
       window.$(WysijaHistory.container).select('> div').last().remove();
     }
@@ -223,7 +223,7 @@ var WysijaHistory = {
     // pop last block off the history
     var block = window.$(WysijaHistory.container).select('div').first();
 
-    if(block !== undefined) {
+    if (block !== undefined) {
       // insert block back into the editor
       window.$(WysijaForm.options.body).insert({
         top: block
@@ -277,7 +277,7 @@ var WysijaForm = {
     // ": fix for FileMerge because the previous line fucks up its syntax coloring
   },
   loading: function (is_loading) {
-    if(is_loading) {
+    if (is_loading) {
       window.$(WysijaForm.options.editor).addClassName('loading');
       window.$(WysijaForm.options.toolbar).addClassName('loading');
     } else {
@@ -292,10 +292,10 @@ var WysijaForm = {
     });
   },
   load: function (data) {
-    if(data === undefined) return;
+    if (data === undefined) return;
 
     // load body
-    if(data.body !== undefined) {
+    if (data.body !== undefined) {
       window.$A(data.body).each(function (block) {
         // create block
         WysijaForm.Block.create(block, window.$('block_placeholder'));
@@ -305,16 +305,16 @@ var WysijaForm = {
       var settings_elements = window.$('mailpoet_form_settings').getElements();
       settings_elements.each(function (setting) {
         // skip lists
-        if(setting.name === 'segments') {
+        if (setting.name === 'segments') {
           return true;
-        } else if(setting.name === 'on_success') {
+        } else if (setting.name === 'on_success') {
           // if the input value is equal to the one stored in the settings
-          if(setting.value === data.settings[setting.name]) {
+          if (setting.value === data.settings[setting.name]) {
             // check selected value
             window.$(setting).checked = true;
           }
-        } else if(data.settings[setting.name] !== undefined) {
-          if(typeof data.settings[setting.name] === 'string') {
+        } else if (data.settings[setting.name] !== undefined) {
+          if (typeof data.settings[setting.name] === 'string') {
             setting.setValue(WysijaForm.decodeHtmlValue(data.settings[setting.name]));
           } else {
             setting.setValue(data.settings[setting.name]);
@@ -335,7 +335,7 @@ var WysijaForm = {
     WysijaForm.getBlocks().each(function (b) {
       var block_data = (typeof (b.block['save']) === 'function') ? b.block.save() : null;
 
-      if(block_data !== null) {
+      if (block_data !== null) {
         // set block position
         block_data['position'] = position;
 
@@ -395,7 +395,7 @@ var WysijaForm = {
     };
 
     // get params (may be empty)
-    if(element.readAttribute('wysija_params') !== null && element.readAttribute('wysija_params').length > 0) {
+    if (element.readAttribute('wysija_params') !== null && element.readAttribute('wysija_params').length > 0) {
       data.params = JSON.parse(element.readAttribute('wysija_params'));
     }
     return data;
@@ -406,14 +406,14 @@ var WysijaForm = {
     // loop through each unique field already inserted in the editor and disable its toolbar equivalent
     window.$$('#' + WysijaForm.options.editor + ' [wysija_unique="1"]').map(function (element) {
       var field = window.$$('#' + WysijaForm.options.toolbar + ' [wysija_id="' + element.readAttribute('wysija_id') + '"]');
-      if(field.length > 0) {
+      if (field.length > 0) {
         field.first().addClassName('disabled');
       }
     });
 
     var hasSegmentSelection = WysijaForm.hasSegmentSelection();
 
-    if(hasSegmentSelection) {
+    if (hasSegmentSelection) {
       window.$('mailpoet_form_segments').writeAttribute('required', false).disable();
       window.$('mailpoet_settings_segment_selection').hide();
     } else {
@@ -426,7 +426,7 @@ var WysijaForm = {
   },
   isSegmentSelectionValid: function () {
     var segment_selection = window.$$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]')[0];
-    if(segment_selection !== undefined) {
+    if (segment_selection !== undefined) {
       var block = WysijaForm.get(segment_selection).block.getData();
       return (
         (block.params.values !== undefined)
@@ -444,26 +444,26 @@ var WysijaForm = {
     WysijaForm.getBlocks().each(function (container) {
       container.setPosition(index++);
       // remove z-index value to avoid issues when resizing images
-      if(container['block'] !== undefined) {
+      if (container['block'] !== undefined) {
         container.block.element.setStyle({
           zIndex: ''
         });
       }
     });
 
-    if(target !== undefined) {
+    if (target !== undefined) {
       // get placeholders (previous placeholder matches the placeholder linked to the next block)
       var block_placeholder = window.$(target.element.readAttribute('wysija_placeholder')),
         previous_placeholder = target.element.previous('.block_placeholder');
 
-      if(block_placeholder !== null) {
+      if (block_placeholder !== null) {
         // put block placeholder before the current block
         target.element.insert({
           before: block_placeholder
         });
 
         // if the next block is a wysija_block, insert previous placeholder
-        if(target.element.next() !== undefined && target.element.next().hasClassName('mailpoet_form_block') && previous_placeholder !== undefined) {
+        if (target.element.next() !== undefined && target.element.next().hasClassName('mailpoet_form_block') && previous_placeholder !== undefined) {
           target.element.insert({
             after: previous_placeholder
           });
@@ -490,7 +490,7 @@ var WysijaForm = {
         buttonMargin = 5,
         relativeTop = buttonMargin;
 
-      if(is_visible) {
+      if (is_visible) {
         // desired position is set to center of viewport
         var absoluteTop = parseInt(WysijaForm.scroll.top + ((viewportHeight / 2) - (element.getHeight() / 2)), 10),
           parentTop = parseInt(parentPos.top - blockPadding, 10),
@@ -507,15 +507,15 @@ var WysijaForm = {
     });
   },
   initToolbarPosition: function () {
-    if(WysijaForm.toolbar.top === null) WysijaForm.toolbar.top = parseInt(window.$(WysijaForm.options.container).positionedOffset().top);
-    if(WysijaForm.toolbar.y === null) WysijaForm.toolbar.y = parseInt(WysijaForm.toolbar.top);
+    if (WysijaForm.toolbar.top === null) WysijaForm.toolbar.top = parseInt(window.$(WysijaForm.options.container).positionedOffset().top);
+    if (WysijaForm.toolbar.y === null) WysijaForm.toolbar.y = parseInt(WysijaForm.toolbar.top);
 
-    if(window.isRtl) {
-      if(WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = 0;
+    if (window.isRtl) {
+      if (WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = 0;
     } else {
-      if(WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = parseInt(window.$(WysijaForm.options.container).positionedOffset().left);
+      if (WysijaForm.toolbar.left === null) WysijaForm.toolbar.left = parseInt(window.$(WysijaForm.options.container).positionedOffset().left);
     }
-    if(WysijaForm.toolbar.x === null) WysijaForm.toolbar.x = parseInt(WysijaForm.toolbar.left + window.$(WysijaForm.options.container).getDimensions().width + 15);
+    if (WysijaForm.toolbar.x === null) WysijaForm.toolbar.x = parseInt(WysijaForm.toolbar.left + window.$(WysijaForm.options.container).getDimensions().width + 15);
 
   },
   setToolbarPosition: function () {
@@ -526,7 +526,7 @@ var WysijaForm = {
       visibility: 'visible'
     };
 
-    if(window.isRtl) {
+    if (window.isRtl) {
       position.right = WysijaForm.toolbar.x + 'px';
     } else {
       position.left = WysijaForm.toolbar.x + 'px';
@@ -539,9 +539,9 @@ var WysijaForm = {
     WysijaForm.initToolbarPosition();
 
     // cancel previous effect
-    if(WysijaForm.toolbar.effect !== null) WysijaForm.toolbar.effect.cancel();
+    if (WysijaForm.toolbar.effect !== null) WysijaForm.toolbar.effect.cancel();
 
-    if(WysijaForm.scroll.top >= (WysijaForm.toolbar.top - 20)) {
+    if (WysijaForm.scroll.top >= (WysijaForm.toolbar.top - 20)) {
       WysijaForm.toolbar.y = parseInt(20 + WysijaForm.scroll.top);
       // start effect
       WysijaForm.toolbar.effect = new window.Effect.Move(WysijaForm.options.toolbar, {
@@ -574,7 +574,7 @@ var WysijaForm = {
   hideControls: function () {
     try {
       return WysijaForm.getBlocks().invoke('hideControls');
-    } catch(e) {
+    } catch (e) {
       return;
     }
   },
@@ -585,7 +585,7 @@ var WysijaForm = {
   instances: {},
   get: function (element, typ) {
     var type = typ;
-    if(type === undefined) type = 'block';
+    if (type === undefined) type = 'block';
     // identify element
     var id = element.identify();
     var instance = WysijaForm.instances[id] || new WysijaForm[type.capitalize().camelize()](id);
@@ -626,9 +626,9 @@ var WysijaForm = {
     return window.$(WysijaForm.options.container).select('.mailpoet_form_block');
   },
   startBlockPositions: function (event, target) {
-    if(target.element.hasClassName('mailpoet_form_block')) {
+    if (target.element.hasClassName('mailpoet_form_block')) {
       // store block placeholder id for the block that is being repositionned
-      if(target.element.previous('.block_placeholder') !== undefined) {
+      if (target.element.previous('.block_placeholder') !== undefined) {
         target.element.writeAttribute('wysija_placeholder', target.element.previous('.block_placeholder').identify());
       }
     }
@@ -639,10 +639,10 @@ var WysijaForm = {
     var regexp = new RegExp(/^http[s]?:\/\//),
       protocol = regexp.exec(str);
 
-    if(protocol === null) {
+    if (protocol === null) {
       // this is not a url so encode the whole thing
       return encodeURIComponent(str).replace(/[!'()*]/g, escape);
-    } else if(protocol.length === 1) {
+    } else if (protocol.length === 1) {
       // this is a url, so do not encode the protocol
       return encodeURI(str).replace(/[!'()*]/g, escape);
     }
@@ -650,7 +650,7 @@ var WysijaForm = {
   updateBlock: function (field) {
     var hasUpdated = false;
     WysijaForm.getBlocks().each(function (b) {
-      if(b.block.getData().id === field.id) {
+      if (b.block.getData().id === field.id) {
         hasUpdated = true;
         b.block.redraw(field);
       }
@@ -661,7 +661,7 @@ var WysijaForm = {
   removeBlock: function (field, callback) {
     var hasRemoved = false;
     WysijaForm.getBlocks().each(function (b) {
-      if(b.block.getData().id === field.id) {
+      if (b.block.getData().id === field.id) {
         hasRemoved = true;
         b.block.removeBlock(callback);
       }
@@ -743,7 +743,7 @@ WysijaForm.Block = window.Class.create({
     this.block.makeBlockDroppable();
 
     // setup events
-    if(this.block['setup'] !== undefined) {
+    if (this.block['setup'] !== undefined) {
       this.block.setup();
     }
     return this;
@@ -752,29 +752,29 @@ WysijaForm.Block = window.Class.create({
     this.element.writeAttribute('wysija_position', position);
   },
   hideControls: function () {
-    if(this['getControls']) {
+    if (this['getControls']) {
       this.element.removeClassName('hover');
       this.getControls().hide();
     }
   },
   showControls: function () {
-    if(this['getControls']) {
+    if (this['getControls']) {
       this.element.addClassName('hover');
       try {
         this.getControls().show();
-      } catch(e) {
+      } catch (e) {
       }
     }
   },
   makeBlockDroppable: function () {
-    if(this.isBlockDroppableEnabled() === false) {
+    if (this.isBlockDroppableEnabled() === false) {
       var block_placeholder = this.getBlockDroppable();
       window.Droppables.add(block_placeholder.identify(), WysijaForm.blockDropOptions);
       block_placeholder.addClassName('enabled');
     }
   },
   removeBlockDroppable: function () {
-    if(this.isBlockDroppableEnabled()) {
+    if (this.isBlockDroppableEnabled()) {
       var block_placeholder = this.getBlockDroppable();
       window.Droppables.remove(block_placeholder.identify());
       block_placeholder.removeClassName('enabled');
@@ -783,7 +783,7 @@ WysijaForm.Block = window.Class.create({
   isBlockDroppableEnabled: function () {
     // if the block_placeholder does not exist, create it
     var block_placeholder = this.getBlockDroppable();
-    if(block_placeholder === null) {
+    if (block_placeholder === null) {
       return this.createBlockDroppable().hasClassName('enabled');
     } else {
       return block_placeholder.hasClassName('enabled');
@@ -797,7 +797,7 @@ WysijaForm.Block = window.Class.create({
     return this.element.previous('.block_placeholder');
   },
   getBlockDroppable: function () {
-    if(this.element.previous() === undefined || this.element.previous().hasClassName('block_placeholder') === false) {
+    if (this.element.previous() === undefined || this.element.previous().hasClassName('block_placeholder') === false) {
       return null;
     } else {
       return this.element.previous();
@@ -810,11 +810,11 @@ WysijaForm.Block = window.Class.create({
     // enable controls
     this.controls = this.getControls();
 
-    if(this.controls) {
+    if (this.controls) {
       // setup events for block controls
       this.element.observe('mouseover', function () {
         // special cases where controls shouldn't be displayed
-        if(WysijaForm.locks.dragging === true || WysijaForm.locks.selectingColor === true || WysijaForm.locks.showingTools === true) return;
+        if (WysijaForm.locks.dragging === true || WysijaForm.locks.selectingColor === true || WysijaForm.locks.showingTools === true) return;
 
         // set block flag
         this.element.addClassName('hover');
@@ -823,20 +823,20 @@ WysijaForm.Block = window.Class.create({
         this.showControls();
 
         // show settings if present
-        if(this.element.down('.wysija_settings') !== undefined) {
+        if (this.element.down('.wysija_settings') !== undefined) {
           this.element.down('.wysija_settings').show();
         }
       }.bind(this));
 
       this.element.observe('mouseout', function () {
         // special cases where controls shouldn't hide
-        if(WysijaForm.locks.dragging === true || WysijaForm.locks.selectingColor === true) return;
+        if (WysijaForm.locks.dragging === true || WysijaForm.locks.selectingColor === true) return;
 
         // hide controls
         this.hideControls();
 
         // hide settings if present
-        if(this.element.down('.wysija_settings') !== undefined) {
+        if (this.element.down('.wysija_settings') !== undefined) {
           this.element.down('.wysija_settings').hide();
         }
       }.bind(this));
@@ -844,7 +844,7 @@ WysijaForm.Block = window.Class.create({
 
       // setup click event for remove button
       this.removeButton = this.controls.down('.remove') || null;
-      if(this.removeButton !== null) {
+      if (this.removeButton !== null) {
         this.removeButton.observe('click', function () {
           this.removeBlock();
           this.removeButton.stopObserving('click');
@@ -854,11 +854,11 @@ WysijaForm.Block = window.Class.create({
       // setup click event for settings button
       this.settingsButton = this.element.down('.settings') || null;
 
-      if(this.settingsButton !== null) {
+      if (this.settingsButton !== null) {
         this.settingsButton.observe('click', function (event) {
           // TODO: refactor
           var block = window.$(event.target).up('.mailpoet_form_block') || null;
-          if(block !== null) {
+          if (block !== null) {
             var field = WysijaForm.getFieldData(block);
             this.editSettings();
           }
@@ -877,7 +877,7 @@ WysijaForm.Block = window.Class.create({
       duration: 0.2,
       afterFinish: function (effect) {
         // remove placeholder
-        if(effect.element.previous('.block_placeholder') !== undefined) {
+        if (effect.element.previous('.block_placeholder') !== undefined) {
           effect.element.previous('.block_placeholder').remove();
         }
 
@@ -891,7 +891,7 @@ WysijaForm.Block = window.Class.create({
         WysijaForm.toggleWidgets();
 
         // optional callback execution after completely removing block
-        if(callback !== undefined && typeof (callback) === 'function') {
+        if (callback !== undefined && typeof (callback) === 'function') {
           callback();
         }
 
@@ -905,7 +905,7 @@ WysijaForm.Block = window.Class.create({
 /* Invoked on item dropped */
 WysijaForm.Block.create = function (createBlock, target) {
   var block = createBlock;
-  if(window.$('form_template_' + block.type) === null) {
+  if (window.$('form_template_' + block.type) === null) {
     return false;
   }
 
@@ -914,10 +914,10 @@ WysijaForm.Block.create = function (createBlock, target) {
     template = window.Handlebars.compile(window.$('form_template_' + block.type).innerHTML),
     output = '';
 
-  if(block.type === 'segment') {
-    if(block.params.values === undefined) {
+  if (block.type === 'segment') {
+    if (block.params.values === undefined) {
       var settings_segments = window.jQuery('#mailpoet_form_segments').val();
-      if(settings_segments !== null && settings_segments.length > 0) {
+      if (settings_segments !== null && settings_segments.length > 0) {
         block.params.values = window.mailpoet_segments.filter(function (segment) {
           return (settings_segments.indexOf(segment.id) !== -1);
         });
@@ -931,13 +931,13 @@ WysijaForm.Block.create = function (createBlock, target) {
 
   // check if the new block is unique and if there's already an instance
   // of it in the history. If so, remove its former instance from the history
-  if(block.unique === 1) {
+  if (block.unique === 1) {
     WysijaHistory.remove(block.field);
   }
 
   // if the drop target was the bottom placeholder
   var element = null;
-  if(target.identify() === 'block_placeholder') {
+  if (target.identify() === 'block_placeholder') {
     // insert block at the bottom
     element = body.insert(output);
     // block = body.childElements().last();
@@ -987,7 +987,7 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
     info('widget -> save');
     var data = this.getData();
 
-    if(data.element !== undefined) {
+    if (data.element !== undefined) {
       delete data.element;
     }
 
@@ -998,7 +998,7 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
       params = window.$H(current_data.params).merge(data.params).toObject();
 
     // update type if it changed
-    if(data.type !== undefined && data.type !== current_data.type) {
+    if (data.type !== undefined && data.type !== current_data.type) {
       this.element.writeAttribute('wysija_type', data.type);
     }
 
@@ -1008,7 +1008,7 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
   getData: function () {
     var data = WysijaForm.getFieldData(this.element);
     // decode params
-    if(data.params.length > 0) {
+    if (data.params.length > 0) {
       data.params = JSON.parse(data.params);
     }
     return data;
@@ -1054,23 +1054,23 @@ document.observe('dom:loaded', WysijaForm.init);
 
 /* LOGGING */
 function info(value) {
-  if(WysijaForm.options.debug === false) return;
+  if (WysijaForm.options.debug === false) return;
 
-  if(!(window.console && console.log)) {
+  if (!(window.console && console.log)) {
     (function () {
       var noop = function () {};
       var methods = ['assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log', 'markTimeline', 'profile', 'profileEnd', 'markTimeline', 'table', 'time', 'timeEnd', 'timeStamp', 'trace', 'warn'];
       var length = methods.length;
       window.console = {};
       var console = {};
-      while(length--) {
+      while (length--) {
         console[methods[length]] = noop;
       }
     }());
   }
   try {
     console.log('[DEBUG] ' + value);
-  } catch(e) {}
+  } catch (e) {}
 }
 
 module.exports = WysijaForm;

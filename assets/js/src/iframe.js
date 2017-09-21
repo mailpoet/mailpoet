@@ -5,7 +5,7 @@ define('iframe', ['mailpoet'], function (mp) {
   MailPoet.Iframe = {
     marginY: 20,
     autoSize: function (iframe) {
-      if(!iframe) return;
+      if (!iframe) return;
 
       this.setSize(
         iframe,
@@ -14,7 +14,7 @@ define('iframe', ['mailpoet'], function (mp) {
     },
     setSize: function (sizeIframe, i) {
       var iframe = sizeIframe;
-      if(!iframe) return;
+      if (!iframe) return;
 
       iframe.style.height = (
         parseInt(i, 10) + this.marginY

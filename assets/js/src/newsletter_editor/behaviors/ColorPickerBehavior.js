@@ -18,7 +18,7 @@ define([
       this.view.$('.mailpoet_color').each(function () {
         var $input = that.view.$(this);
         var updateColorInput = function (color) {
-          if(color && color.getAlpha() > 0) {
+          if (color && color.getAlpha() > 0) {
             $input.val(color.toString(preferredFormat));
           } else {
             $input.val('');

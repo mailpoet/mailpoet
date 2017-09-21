@@ -124,7 +124,7 @@ define([
         postCount = this.get('_availablePosts').length,
         nextOffset = this.get('offset') + Number(this.get('amount'));
 
-      if(postCount === 0 || postCount < nextOffset) {
+      if (postCount === 0 || postCount < nextOffset) {
         // No more posts to load
         return false;
       }
@@ -300,7 +300,7 @@ define([
     },
     onPostsScroll: function (event) {
       var $postsBox = jQuery(event.target);
-      if($postsBox.scrollTop() + $postsBox.innerHeight() >= $postsBox[0].scrollHeight) {
+      if ($postsBox.scrollTop() + $postsBox.innerHeight() >= $postsBox[0].scrollHeight) {
         // Load more posts if scrolled to bottom
         this.blockModel.trigger('loadMorePosts');
       }

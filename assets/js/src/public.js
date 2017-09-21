@@ -25,7 +25,7 @@ function (
           form.find('.mailpoet_message > p').hide();
 
           // resize iframe
-          if(window.frameElement !== null) {
+          if (window.frameElement !== null) {
             MailPoet.Iframe.autoSize(window.frameElement);
           }
         });
@@ -33,7 +33,7 @@ function (
         form.parsley().on('form:submit', function (parsley) {
           var form_data = form.serializeObject() || {};
           // check if we're on the same domain
-          if(isSameDomain(window.MailPoetForm.ajax_url) === false) {
+          if (isSameDomain(window.MailPoetForm.ajax_url) === false) {
             // non ajax post request
             return true;
           } else {

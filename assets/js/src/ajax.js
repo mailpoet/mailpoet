@@ -34,12 +34,12 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function (mp, jQuery, _) {
       this.options = jQuery.extend({}, this.defaults, options);
 
       // set default url
-      if(this.options.url === null) {
+      if (this.options.url === null) {
         this.options.url = window.ajaxurl;
       }
 
       // set default token
-      if(this.options.token === null) {
+      if (this.options.token === null) {
         this.options.token = window.mailpoet_token;
       }
     },

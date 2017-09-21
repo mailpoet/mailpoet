@@ -45,11 +45,11 @@ define([
 
     // save newsletter
     return CommunicationComponent.saveNewsletter(json).done(function (response) {
-      if(response.success !== undefined && response.success === true) {
+      if (response.success !== undefined && response.success === true) {
         // TODO: Handle translations
         // MailPoet.Notice.success("<?php _e('Newsletter has been saved.'); ?>");
-      } else if(response.error !== undefined) {
-        if(response.error.length === 0) {
+      } else if (response.error !== undefined) {
+        if (response.error.length === 0) {
           MailPoet.Notice.error(
             MailPoet.I18n.t('templateSaveFailed'),
             {
@@ -283,7 +283,7 @@ define([
     },
     next: function () {
       this.hideOptionContents();
-      if(!this.$('.mailpoet_save_next').hasClass('button-disabled')) {
+      if (!this.$('.mailpoet_save_next').hasClass('button-disabled')) {
         Module._cancelAutosave();
         Module.save().done(function (response) {
           window.location.href = App.getConfig().get('urls.send');

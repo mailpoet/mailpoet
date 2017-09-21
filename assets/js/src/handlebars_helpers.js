@@ -3,7 +3,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   Handlebars.registerHelper('concat', function () {
     var size = (arguments.length - 1),
       output = '';
-    for(var i = 0; i < size; i++) {
+    for (var i = 0; i < size; i++) {
       output += arguments[i];
     }
     return output;
@@ -13,15 +13,15 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
     return Number(value).toLocaleString();
   });
   Handlebars.registerHelper('date_format', function (timestamp, block) {
-    if(window.moment) {
-      if(timestamp === undefined || isNaN(timestamp) || timestamp <= 0) {
+    if (window.moment) {
+      if (timestamp === undefined || isNaN(timestamp) || timestamp <= 0) {
         return;
       }
 
           // set date format
       var f = block.hash.format || 'MMM Do, YYYY';
           // check if we passed a timestamp
-      if(parseInt(timestamp, 10) == timestamp) {
+      if (parseInt(timestamp, 10) == timestamp) {
         return window.moment.unix(timestamp).format(f);
       } else {
         return window.moment.utc(timestamp).format(f);
@@ -97,7 +97,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
 
   Handlebars.registerHelper('rsa_key', function (value, block) {
       // extract all lines into an array
-    if(value === undefined) return '';
+    if (value === undefined) return '';
 
     var lines = value.trim().split('\n');
 
@@ -110,7 +110,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   });
 
   Handlebars.registerHelper('trim', function (value, block) {
-    if(value === null || value === undefined) return '';
+    if (value === null || value === undefined) return '';
     return value.trim();
   });
 
@@ -142,7 +142,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   });
 
   Handlebars.registerHelper('fontWithFallback', function (font) {
-    switch(font) {
+    switch (font) {
       case 'Arial': return new Handlebars.SafeString("Arial, 'Helvetica Neue', Helvetica, sans-serif");
       case 'Comic Sans MS': return new Handlebars.SafeString("'Comic Sans MS', 'Marker Felt-Thin', Arial, sans-serif");
       case 'Courier New': return new Handlebars.SafeString("'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace");

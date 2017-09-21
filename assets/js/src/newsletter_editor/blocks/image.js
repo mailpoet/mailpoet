@@ -156,7 +156,7 @@ define([
             })
           ]);
 
-          if(window.wp.media.view.settings.post.featuredImageId) {
+          if (window.wp.media.view.settings.post.featuredImageId) {
             this.states.add(new window.wp.media.controller.FeaturedImage());
           }
         },
