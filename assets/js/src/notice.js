@@ -48,7 +48,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
     },
     createNotice: function () {
       // clone element
-      this.element = jQuery('#mailpoet_notice_'+this.options.type).clone();
+      this.element = jQuery('#mailpoet_notice_' + this.options.type).clone();
 
       // add data-id to the element
       if (this.options.id) {
@@ -68,7 +68,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       } else if (typeof this.options.positionAfter === 'string') {
         positionAfter = jQuery(this.options.positionAfter);
       } else {
-        positionAfter = jQuery('#mailpoet_notice_'+this.options.type);
+        positionAfter = jQuery('#mailpoet_notice_' + this.options.type);
       }
       positionAfter.after(this.element);
 
@@ -99,7 +99,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
     },
     updateNotice: function () {
       // update notice's message
-      jQuery('[data-id="'+this.options.id+'"').first().trigger(
+      jQuery('[data-id="' + this.options.id + '"').first().trigger(
         'setMessage', this.options.message
       );
     },
@@ -107,7 +107,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       var formattedMessage = this.formatMessage(message);
 
       // let's sugar coat the message with a fancy <p>
-      formattedMessage = '<p>'+formattedMessage+'</p>';
+      formattedMessage = '<p>' + formattedMessage + '</p>';
       // set message
       return this.element.html(formattedMessage);
     },
@@ -125,7 +125,7 @@ define('notice', ['mailpoet', 'jquery'], function (mp, jQuery) {
       if (
         this.options.id !== null
         &&
-        jQuery('[data-id="'+this.options.id+'"]').length > 0
+        jQuery('[data-id="' + this.options.id + '"]').length > 0
       ) {
         this.updateNotice();
       } else {

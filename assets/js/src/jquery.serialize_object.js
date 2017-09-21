@@ -76,7 +76,7 @@ define(
           for (; i <= keys_last; i++) {
             key = keys[i] === '' ? cur.length : keys[i];
             cur[key] = i < keys_last
-              ? cur[key] || (keys[i+1] && isNaN(keys[i+1]) ? {} : [])
+              ? cur[key] || (keys[i + 1] && isNaN(keys[i + 1]) ? {} : [])
               : val;
             cur = cur[key];
           }

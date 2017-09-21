@@ -148,7 +148,7 @@ define('date',
         for(var index = 0, token = ''; format.charAt(index); index += 1) {
           token = format.charAt(index);
           if (escapeToken === true) {
-            convertedFormat.push('['+token+']');
+            convertedFormat.push('[' + token + ']');
             escapeToken = false;
           } else {
             if (token === '\\') {
@@ -158,7 +158,7 @@ define('date',
             } else if (replacements[token] !== undefined) {
               convertedFormat.push(replacements[token]);
             } else {
-              convertedFormat.push('['+token+']');
+              convertedFormat.push('[' + token + ']');
             }
           }
         }

@@ -47,7 +47,7 @@ define(
           jQuery('.mailpoet_sending_methods, .mailpoet_sending_methods_help').hide();
 
           // display selected sending method's settings
-          jQuery('.mailpoet_sending_method[data-group="'+ group +'"]').show();
+          jQuery('.mailpoet_sending_method[data-group="' + group + '"]').show();
           jQuery('#mailpoet_sending_method_setup').fadeIn();
         }
       },
@@ -62,11 +62,11 @@ define(
         jQuery('.mailpoet_panel, .mailpoet_section').hide();
 
         // set active tab
-        jQuery('a.nav-tab[href="#'+tab+'"]').addClass('nav-tab-active').blur();
+        jQuery('a.nav-tab[href="#' + tab + '"]').addClass('nav-tab-active').blur();
 
         // show selected panel
-        if(jQuery('.mailpoet_panel[data-tab="'+ tab +'"]').length > 0) {
-          jQuery('.mailpoet_panel[data-tab="'+ tab +'"]').show();
+        if(jQuery('.mailpoet_panel[data-tab="' + tab + '"]').length > 0) {
+          jQuery('.mailpoet_panel[data-tab="' + tab + '"]').show();
         }
 
         // show "save settings" button

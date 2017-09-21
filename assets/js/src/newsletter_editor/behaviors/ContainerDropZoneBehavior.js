@@ -150,7 +150,7 @@ define([
           // compensated for to position marker right in the middle of two
           // blocks
           if (dropPosition.position === 'before') {
-            $targetBlock = that.getChildren().findByModel(viewCollection.at(dropPosition.index-1)).$el;
+            $targetBlock = that.getChildren().findByModel(viewCollection.at(dropPosition.index - 1)).$el;
           } else {
             $targetBlock = that.getChildren().findByModel(viewCollection.at(dropPosition.index)).$el;
           }

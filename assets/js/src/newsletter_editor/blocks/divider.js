@@ -61,7 +61,7 @@ define([
     },
     templateContext: function () {
       return _.extend({
-        totalHeight: parseInt(this.model.get('styles.block.padding'), 10)*2 + parseInt(this.model.get('styles.block.borderWidth')) + 'px'
+        totalHeight: parseInt(this.model.get('styles.block.padding'), 10) * 2 + parseInt(this.model.get('styles.block.borderWidth')) + 'px'
       }, base.BlockView.prototype.templateContext.apply(this));
     },
     onRender: function () {
@@ -75,7 +75,7 @@ define([
     changePadding: function () {
       this.$('.mailpoet_content').css('padding-top', this.model.get('styles.block.padding'));
       this.$('.mailpoet_content').css('padding-bottom', this.model.get('styles.block.padding'));
-      this.$('.mailpoet_resize_handle_text').text(parseInt(this.model.get('styles.block.padding'), 10)*2 + parseInt(this.model.get('styles.block.borderWidth')) + 'px');
+      this.$('.mailpoet_resize_handle_text').text(parseInt(this.model.get('styles.block.padding'), 10) * 2 + parseInt(this.model.get('styles.block.borderWidth')) + 'px');
     }
   });
 
