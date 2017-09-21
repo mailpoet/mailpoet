@@ -262,7 +262,7 @@ define([
           // Reset whole model in order for change events to propagate properly
           that.model.set('terms', terms.toJSON());
         }
-      }).trigger( 'change' );
+      }).trigger('change');
     },
     toggleDisplayOptions: function (event) {
       var el = this.$('.mailpoet_automated_latest_content_display_options'),

@@ -253,7 +253,7 @@ define([
             editable: editable && function () {
               this.controller.content.mode('edit-selection');
             }
-          }).render() );
+          }).render());
         },
 
         mainInsertToolbar: function (view) {

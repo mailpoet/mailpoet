@@ -407,7 +407,7 @@ define([
           // Reset whole model in order for change events to propagate properly
           that.model.set('terms', terms.toJSON());
         }
-      }).trigger( 'change' );
+      }).trigger('change');
     },
     changeField: function (field, event) {
       this.model.set(field, jQuery(event.target).val());
