@@ -8,8 +8,7 @@ class PieceOfCake {
   private $social_icon_url;
 
   function __construct($assets_url) {
-     $this->template_image_url = 'https://ps.w.org
-/mailpoet/assets/newsletter-templates/piece_of_cake';
+     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/piece_of_cake';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
 
