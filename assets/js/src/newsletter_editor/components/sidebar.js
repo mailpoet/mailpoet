@@ -273,7 +273,7 @@ define([
 
         var view = this.previewView.render();
         this.previewView.$el.css('height', '100%');
- 
+
         MailPoet.Modal.popup({
           template: '',
           element: this.previewView.$el,

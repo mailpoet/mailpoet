@@ -176,7 +176,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
     }
 
   };
-  
+
   /**
    * Actions to run when the DOM is ready
    */
@@ -187,7 +187,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
     jQuery('#import').click(function () {
       MailPoet.MP2Migrator.startImport();
     });
-      
+
     // Stop import button
     jQuery('#stop-import').click(function () {
       MailPoet.MP2Migrator.stopImport();
@@ -202,7 +202,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
     jQuery('#goto-welcome').click(function () {
       MailPoet.MP2Migrator.gotoWelcomePage();
     });
-    
+
     // Update the display
     MailPoet.MP2Migrator.updateDisplay();
   });

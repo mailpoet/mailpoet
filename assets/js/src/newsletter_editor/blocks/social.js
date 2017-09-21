@@ -79,7 +79,7 @@ define([
       });
     },
     _iconsChanged: function () {
-      App.getChannel().trigger('autoSave'); 
+      App.getChannel().trigger('autoSave');
     }
   });
 

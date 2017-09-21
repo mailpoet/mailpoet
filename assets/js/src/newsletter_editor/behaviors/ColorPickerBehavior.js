@@ -13,7 +13,7 @@ define([
 
   BL.ColorPickerBehavior = Marionette.Behavior.extend({
     onRender: function () {
-      var that = this, 
+      var that = this,
         preferredFormat = 'hex6';
       this.view.$('.mailpoet_color').each(function () {
         var $input = that.view.$(this);
@@ -41,7 +41,7 @@ define([
           move: updateColorInput,
           hide: updateColorInput
         });
-      });        
+      });
     }
   });
 });
