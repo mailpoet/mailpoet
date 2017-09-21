@@ -109,7 +109,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
             response.errors.map(function (error) {
               return error.message;
             }),
-            {scroll: true}
+            { scroll: true }
           );
         }
       });
@@ -140,7 +140,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
             response.errors.map(function (error) {
               return error.message;
             }),
-            {scroll: true}
+            { scroll: true }
           );
         }
       });
@@ -163,7 +163,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
             response.errors.map(function (error) {
               return error.message;
             }),
-            {scroll: true}
+            { scroll: true }
           );
         }
       });
@@ -181,7 +181,7 @@ define('mp2migrator', ['mailpoet', 'jquery'], function (mp, jQuery) {
    * Actions to run when the DOM is ready
    */
   jQuery(function () {
-    jQuery('#progressbar').progressbar({value: 0});
+    jQuery('#progressbar').progressbar({ value: 0 });
 
     // Import button
     jQuery('#import').click(function () {

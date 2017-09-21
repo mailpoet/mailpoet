@@ -116,7 +116,7 @@ define([
       this.on('refreshPosts', this.updatePosts, this);
     },
     updatePosts: function (posts) {
-      this.get('_container.blocks').reset(posts, {parse: true});
+      this.get('_container.blocks').reset(posts, { parse: true });
     },
     /**
      * Batch more changes during a specific time, instead of fetching
@@ -131,7 +131,7 @@ define([
     className: 'mailpoet_block mailpoet_automated_latest_content_block mailpoet_droppable_block',
     initialize: function () {
       function replaceButtonStylesHandler(data) {
-        this.model.set({readMoreButton: data});
+        this.model.set({ readMoreButton: data });
       }
       App.getChannel().on('replaceAllButtonStyles', replaceButtonStylesHandler.bind(this));
     },

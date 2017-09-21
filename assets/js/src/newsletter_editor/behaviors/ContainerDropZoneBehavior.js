@@ -201,9 +201,9 @@ define([
                 orientation: 'vertical'
               });
               tempCollection.get('blocks').add(droppableModel);
-              viewCollection.add(tempCollection, {at: index});
+              viewCollection.add(tempCollection, { at: index });
             } else {
-              viewCollection.add(droppableModel, {at: index});
+              viewCollection.add(droppableModel, { at: index });
             }
 
             droppedView = that.getChildren().findByModel(droppableModel);
@@ -247,7 +247,7 @@ define([
                 tempCollection.get('blocks').add(droppableModel);
               }
             }
-            viewCollection.add(tempCollection, {at: dropPosition.index});
+            viewCollection.add(tempCollection, { at: dropPosition.index });
 
             // Call post add actions
             droppedView = that.getChildren().findByModel(tempCollection).children.findByModel(droppableModel);

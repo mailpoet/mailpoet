@@ -144,7 +144,7 @@ define([
       }.bind(this));
     },
     duplicateBlock: function () {
-      this.model.collection.add(this.model.toJSON(), {at: this.model.collection.findIndex(this.model)});
+      this.model.collection.add(this.model.toJSON(), { at: this.model.collection.findIndex(this.model) });
     },
     transitionIn: function () {
       return this._transition('slideDown', 'fadeIn', 'easeOut');

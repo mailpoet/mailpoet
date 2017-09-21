@@ -35,7 +35,7 @@ define(
             step3: 'step3'
           },
           home: function () {
-            this.navigate('step1', {trigger: true});
+            this.navigate('step1', { trigger: true });
           }
         }));
 
@@ -242,7 +242,7 @@ define(
                 source: 'MailChimp',
                 'MailPoet Free version': window.mailpoet_version
               });
-              router.navigate('step2', {trigger: true});
+              router.navigate('step2', { trigger: true });
             }).fail(function (response) {
               if (response.errors.length > 0) {
                 MailPoet.Notice.error(
@@ -423,7 +423,7 @@ define(
                     source: isFile ? 'file upload' : 'pasted data',
                     'MailPoet Free version': window.mailpoet_version
                   });
-                  router.navigate('step2', {trigger: true});
+                  router.navigate('step2', { trigger: true });
                 }
                 else {
                   MailPoet.Modal.loading(false);
@@ -439,7 +439,7 @@ define(
 
         router.on('route:step2', function () {
           if (typeof (window.importData.step1) === 'undefined') {
-            router.navigate('step1', {trigger: true});
+            router.navigate('step1', { trigger: true });
             return;
           }
           // define reusable variables
@@ -678,7 +678,7 @@ define(
                       && displayedColumnsIds.indexOf(columnId) === -1)
                           ? columnId
                           : 'ignore';
-                  displayedColumns[i] = {column_id: columnId};
+                  displayedColumns[i] = { column_id: columnId };
                   displayedColumnsIds.push(columnId);
                 }
                 return options.fn(displayedColumns);
@@ -1057,7 +1057,7 @@ define(
                   });
                 window.importData.step2 = importResults;
                 enableSegmentSelection(window.mailpoetSegments);
-                router.navigate('step3', {trigger: true});
+                router.navigate('step3', { trigger: true });
               }
             });
           });
@@ -1068,7 +1068,7 @@ define(
 
         router.on('route:step3', function () {
           if (typeof (window.importData.step2) === 'undefined') {
-            router.navigate('step2', {trigger: true});
+            router.navigate('step2', { trigger: true });
             return;
           }
 
@@ -1111,7 +1111,7 @@ define(
 
           jQuery('a.mailpoet_import_again').off().click(function () {
             jQuery('#subscribers_data_import_results').hide();
-            router.navigate('step1', {trigger: true});
+            router.navigate('step1', { trigger: true });
           });
 
           jQuery('a.mailpoet_view_subscribers').off().click(function () {

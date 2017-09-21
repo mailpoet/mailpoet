@@ -14,7 +14,7 @@ define('num',
         return (Math.round(num * factor) / factor)
         .toLocaleString(
           undefined,
-          {minimumFractionDigits: precision, maximumFractionDigits: precision}
+          { minimumFractionDigits: precision, maximumFractionDigits: precision }
         );
       }
     };

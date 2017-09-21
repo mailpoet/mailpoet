@@ -28,7 +28,7 @@ define([
       return _.map(response, function (block) {
         var Type = App.getBlockTypeModel(block.type);
         // TODO: If type has no registered model, use a backup one
-        return new Type(block, {parse: true});
+        return new Type(block, { parse: true });
       });
     }
   });

@@ -93,7 +93,7 @@ define([
       );
     }
 
-    App._contentContainer = new (App.getBlockTypeModel('container'))(content, {parse: true});
+    App._contentContainer = new (App.getBlockTypeModel('container'))(content, { parse: true });
     App._contentContainerView = new (App.getBlockTypeView('container'))({
       model: App._contentContainer,
       renderOptions: { depth: 0 }

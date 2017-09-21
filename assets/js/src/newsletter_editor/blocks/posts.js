@@ -152,7 +152,7 @@ define([
       }
 
       CommunicationComponent.getTransformedPosts(data).done(function (posts) {
-        that.get('_transformedPosts').get('blocks').reset(posts, {parse: true});
+        that.get('_transformedPosts').get('blocks').reset(posts, { parse: true });
       }).fail(function () {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
       });
