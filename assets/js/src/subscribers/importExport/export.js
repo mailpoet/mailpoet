@@ -17,22 +17,29 @@ define(
      return;
    }
    jQuery(document).ready(function () {
+     var segmentsContainerElement;
+     var subscriberFieldsContainerElement;
+     var exportConfirmedOptionElement;
+     var groupBySegmentOptionElement;
+     var nextStepButton;
+     var renderSegmentsAndFields;
+     var subscribers_export_template;
      if (!window.exportData.segments) {
        return;
      }
-     var subscribers_export_template =
+     subscribers_export_template =
       Handlebars.compile(jQuery('#mailpoet_subscribers_export_template').html());
 
      // render template
      jQuery('#mailpoet_subscribers_export > div.inside').html(subscribers_export_template(window.exportData));
 
      // define reusable variables
-     var segmentsContainerElement = jQuery('#export_lists');
-     var subscriberFieldsContainerElement = jQuery('#export_columns');
-     var exportConfirmedOptionElement = jQuery(':radio[name="option_confirmed"]');
-     var groupBySegmentOptionElement = jQuery(':checkbox[name="option_group_by_list"]');
-     var nextStepButton = jQuery('a.mailpoet_export_process');
-     var renderSegmentsAndFields = function (container, data) {
+     segmentsContainerElement = jQuery('#export_lists');
+     subscriberFieldsContainerElement = jQuery('#export_columns');
+     exportConfirmedOptionElement = jQuery(':radio[name="option_confirmed"]');
+     groupBySegmentOptionElement = jQuery(':checkbox[name="option_group_by_list"]');
+     nextStepButton = jQuery('a.mailpoet_export_process');
+     renderSegmentsAndFields = function (container, data) {
        if (container.data('select2')) {
          container
          .html('')
@@ -60,12 +67,13 @@ define(
            'select',
            'deselect'
          ];
+         var allOptions;
          if (_.contains(fieldsToExclude, selectedOptionId)) {
            selectEvent.preventDefault();
            if (selectedOptionId === 'deselect') {
              jQuery(selectElement).val('').trigger('change');
            } else {
-             var allOptions = [];
+             allOptions = [];
              _.each(container.find('option'), function (field) {
                if (!_.contains(fieldsToExclude, field.value)) {
                  allOptions.push(field.value);
@@ -133,11 +141,12 @@ define(
      }
 
      nextStepButton.click(function () {
+       var exportFormat;
        if (jQuery(this).hasClass('button-disabled')) {
          return;
        }
        MailPoet.Modal.loading(true);
-       var exportFormat = jQuery(':radio[name="option_format"]:checked').val();
+       exportFormat = jQuery(':radio[name="option_format"]:checked').val();
        MailPoet.Ajax.post({
          api_version: window.mailpoet_api_version,
          endpoint: 'ImportExport',

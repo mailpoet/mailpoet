@@ -126,14 +126,17 @@ define([
         this.showMediaManager();
       }
     },
-    showMediaManager: function () {
+    showMediaManager: function() {
+      var that = this;
+      var MediaManager;
+      var theFrame;
       if (this._mediaManager) {
         this._mediaManager.resetSelections();
         this._mediaManager.open();
         return;
       }
 
-      var MediaManager = window.wp.media.view.MediaFrame.Select.extend({
+      MediaManager = window.wp.media.view.MediaFrame.Select.extend({
 
         initialize: function () {
           window.wp.media.view.MediaFrame.prototype.initialize.apply(this, arguments);
@@ -195,7 +198,8 @@ define([
           }
         },
 
-        bindHandlers: function () {
+        bindHandlers: function() {
+          var handlers;
           // from Select
           this.on('router:create:browse', this.createRouter, this);
           this.on('router:render:browse', this.browseRouter, this);
@@ -210,7 +214,7 @@ define([
 
           this.on('updateExcluded', this.browseContent, this);
 
-          var handlers = {
+          handlers = {
             content: {
               embed: 'embedContent',
               'edit-selection': 'editSelectionContent'
@@ -321,7 +325,7 @@ define([
 
       });
 
-      var theFrame = new MediaManager({
+      theFrame = new MediaManager({
         id: 'mailpoet-media-manager',
         frame: 'select',
         title: 'Select image',
@@ -335,7 +339,6 @@ define([
           text: 'Select'
         }
       });
-      var that = this;
       this._mediaManager = theFrame;
 
       this._mediaManager.on('insert', function () {

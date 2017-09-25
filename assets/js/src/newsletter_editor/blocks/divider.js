@@ -47,10 +47,10 @@ define([
         ignoreFrom: '.mailpoet_resize_handle'
       }
     }, base.BlockView.prototype.behaviors),
-    onDragSubstituteBy: function () { return Module.DividerWidgetView; },
-    initialize: function () {
-      base.BlockView.prototype.initialize.apply(this, arguments);
+    onDragSubstituteBy: function() { return Module.DividerWidgetView; },
+    initialize: function() {
       var that = this;
+      base.BlockView.prototype.initialize.apply(this, arguments);
 
       // Listen for attempts to change all dividers in one go
       this._replaceDividerHandler = function (data) { that.model.set(data); that.model.trigger('applyToAll'); };

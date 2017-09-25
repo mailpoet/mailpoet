@@ -290,13 +290,14 @@ define([
         });
       }
     },
-    validateNewsletter: function (jsonObject) {
+    validateNewsletter: function(jsonObject) {
+      var contents;
       if (!App._contentContainer.isValid()) {
         this.showValidationError(App._contentContainer.validationError);
         return;
       }
 
-      var contents = JSON.stringify(jsonObject);
+      contents = JSON.stringify(jsonObject);
       if (App.getConfig().get('validation.validateUnsubscribeLinkPresent') &&
           contents.indexOf('[link:subscription_unsubscribe_url]') < 0 &&
           contents.indexOf('[link:subscription_unsubscribe]') < 0) {
@@ -339,10 +340,12 @@ define([
     saveTimeout = undefined;
   };
 
-  Module.beforeExitWithUnsavedChanges = function (e) {
+  Module.beforeExitWithUnsavedChanges = function(e) {
+    var message;
+    var event;
     if (saveTimeout) {
-      var message = MailPoet.I18n.t('unsavedChangesWillBeLost');
-      var event = e || window.event;
+      message = MailPoet.I18n.t('unsavedChangesWillBeLost');
+      event = e || window.event;
 
       if (event) {
         event.returnValue = message;

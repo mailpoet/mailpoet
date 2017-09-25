@@ -42,13 +42,14 @@ define([
         _.debounce(this.refresh, DELAY_REFRESH_FOR_MS)
       );
     },
-    refresh: function () {
-      var models = App.findModels(function (model) {
+    refresh: function() {
+      var blocks;
+      var models = App.findModels(function(model) {
         return model.get('type') === 'automatedLatestContent';
       }) || [];
 
       if (models.length === 0) return;
-      var blocks = _.map(models, function (model) {
+      blocks = _.map(models, function(model) {
         return model.toJSON();
       });
 
@@ -213,12 +214,13 @@ define([
           },
           transport: function (options, success, failure) {
             var taxonomies;
+            var termsPromise;
             var promise = CommunicationComponent.getTaxonomies(
               that.model.get('contentType')
             ).then(function (tax) {
               taxonomies = tax;
               // Fetch available terms based on the list of taxonomies already fetched
-              var promise = CommunicationComponent.getTerms({
+              termsPromise = CommunicationComponent.getTerms({
                 search: options.data.term,
                 taxonomies: _.keys(taxonomies)
               }).then(function (terms) {
@@ -227,7 +229,7 @@ define([
                   terms: terms
                 };
               });
-              return promise;
+              return termsPromise;
             });
 
             promise.then(success);

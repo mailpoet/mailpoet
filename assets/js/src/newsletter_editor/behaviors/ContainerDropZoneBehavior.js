@@ -197,6 +197,7 @@ define([
           var index; 
           var tempCollection; 
           var tempCollection2;
+          var tempModel;
 
           if (dropPosition === undefined) return;
 
@@ -220,7 +221,7 @@ define([
           } else {
             // Special insertion by replacing target block with collection
             // and inserting dropModel into that
-            var tempModel = viewCollection.at(dropPosition.index);
+            tempModel = viewCollection.at(dropPosition.index);
 
             tempCollection = new (window.EditorApplication.getBlockTypeModel('container'))({
               orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical'
