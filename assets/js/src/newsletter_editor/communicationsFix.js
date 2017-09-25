@@ -6,16 +6,16 @@
  * Courtesy of https://gist.github.com/jmeas/7992474cdb1c5672d88b
  */
 
-(function (root, factory) {
+(function(root, factory) {
+  var Marionette = require('backbone.marionette');
+  var Radio = require('backbone.radio');
+  var _ = require('underscore');
   if (typeof define === 'function' && define.amd) {
     define(['backbone.marionette', 'backbone.radio', 'underscore'], function (Marionette, Radio, _) {
       return factory(Marionette, Radio, _);
     });
   }
   else if (typeof exports !== 'undefined') {
-    var Marionette = require('backbone.marionette');
-    var Radio = require('backbone.radio');
-    var _ = require('underscore');
     module.exports = factory(Marionette, Radio, _);
   }
   else {

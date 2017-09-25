@@ -240,9 +240,10 @@ define([
     behaviors: {
       ColorPickerBehavior: {}
     },
-    initialize: function (params) {
+    initialize: function(params) {
+      var panelParams;
       this.model.trigger('startEditing');
-      var panelParams = {
+      panelParams = {
         element: this.$el,
         template: '',
         position: 'right',

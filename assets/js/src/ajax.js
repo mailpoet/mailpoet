@@ -2,11 +2,10 @@ function requestFailed(errorMessage, xhr) {
   if (xhr.responseJSON) {
     return xhr.responseJSON;
   }
-  var message = errorMessage.replace('%d', xhr.status);
   return {
     errors: [
       {
-        message: message
+        message: errorMessage.replace('%d', xhr.status)
       }
     ]
   };
@@ -53,22 +52,24 @@ define('ajax', ['mailpoet', 'jquery', 'underscore'], function (mp, jQuery, _) {
         data: this.options.data || {}
       };
     },
-    request: function (method, options) {
-        // set options
+    request: function(method, options) {
+      var params;
+      var deferred;
+      // set options
       this.init(options);
 
-        // set request params
-      var params = this.getParams();
+      // set request params
+      params = this.getParams();
 
-        // remove null values from the data object
+      // remove null values from the data object
       if (_.isObject(params.data)) {
         params.data = _.pick(params.data, function (value) {
           return (value !== null);
         });
       }
 
-        // ajax request
-      var deferred = jQuery.post(
+      // ajax request
+      deferred = jQuery.post(
           this.options.url,
           params,
           null,

@@ -49,18 +49,21 @@ define([
 
         onstart: function (startEvent) {
           var event = startEvent;
+          var centerXOffset; 
+          var centerYOffset; 
+          var parentOffset;
+          var tempClone;
+          var clone;
+          var $original;
+          var $clone;
 
           if (that.options.cloneOriginal === true) {
             // Use substitution instead of a clone
-            var tempClone = (_.isFunction(that.options.onDragSubstituteBy)) ? that.options.onDragSubstituteBy(that) : undefined;
+            tempClone = (_.isFunction(that.options.onDragSubstituteBy)) ? that.options.onDragSubstituteBy(that) : undefined;
             // Or use a clone
-            var clone = tempClone || event.target.cloneNode(true);
-
-            var $original = jQuery(event.target);
-            var $clone = jQuery(clone);
-            var centerXOffset; 
-            var centerYOffset; 
-            var parentOffset;
+            clone = tempClone || event.target.cloneNode(true);
+            $original = jQuery(event.target);
+            $clone = jQuery(clone);
 
             $clone.addClass('mailpoet_droppable_active');
             $clone.css('position', 'absolute');

@@ -5,7 +5,7 @@ define(
   function (
     MailPoet
   ) {
-
+    var element;
     function eventHandler() {
       if (confirm(MailPoet.I18n.t('reinstallConfirmation'))) {
         MailPoet.trackEvent(
@@ -36,7 +36,7 @@ define(
       return false;
     }
 
-    var element = document.getElementById('mailpoet_reinstall');
+    element = document.getElementById('mailpoet_reinstall');
     if (element) {
       element.addEventListener('click', eventHandler, false);
     }

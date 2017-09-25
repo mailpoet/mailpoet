@@ -19,6 +19,7 @@ define([
   var SocialBlockSettingsIconView;
   var SocialBlockSettingsIconCollectionView;
   var SocialBlockSettingsStylesView;
+  var SocialIconView;
 
   Module.SocialIconModel = SuperModel.extend({
     defaults: function () {
@@ -83,7 +84,7 @@ define([
     }
   });
 
-  var SocialIconView = Marionette.View.extend({
+  SocialIconView = Marionette.View.extend({
     tagName: 'span',
     getTemplate: function () { return window.templates.socialIconBlock; },
     modelEvents: {

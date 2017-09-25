@@ -23,7 +23,7 @@ define([
   'use strict';
 
   var Module = {};
-
+  var SidebarView;
   // Widget handlers for use to create new content blocks via drag&drop
   Module._contentWidgets = new (Backbone.Collection.extend({
     model: SuperModel.extend({
@@ -52,8 +52,8 @@ define([
   Module.registerLayoutWidget = function (widget) { return Module._layoutWidgets.add(widget); };
   Module.getLayoutWidgets = function () { return Module._layoutWidgets; };
 
-  var SidebarView = Marionette.View.extend({
-    getTemplate: function () { return window.templates.sidebar; },
+  SidebarView = Marionette.View.extend({
+    getTemplate: function() { return window.templates.sidebar; },
     regions: {
       contentRegion: '.mailpoet_content_region',
       layoutRegion: '.mailpoet_layout_region',
@@ -265,12 +265,13 @@ define([
         data: json
       }).always(function () {
         MailPoet.Modal.loading(false);
-      }).done(function (response) {
+      }).done(function(response) {
+        var view;
         this.previewView = new Module.NewsletterPreviewView({
           previewUrl: response.meta.preview_url
         });
 
-        var view = this.previewView.render();
+        view = this.previewView.render();
         this.previewView.$el.css('height', '100%');
 
         MailPoet.Modal.popup({

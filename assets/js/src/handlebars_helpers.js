@@ -3,7 +3,8 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   Handlebars.registerHelper('concat', function() {
     var size = (arguments.length - 1);
     var output = '';
-    for(var i = 0; i < size; i++) {
+    var i;
+    for(i = 0; i < size; i++) {
       output += arguments[i];
     }
     return output;
@@ -12,16 +13,17 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   Handlebars.registerHelper('number_format', function (value, block) {
     return Number(value).toLocaleString();
   });
-  Handlebars.registerHelper('date_format', function (timestamp, block) {
-    if (window.moment) {
-      if (timestamp === undefined || isNaN(timestamp) || timestamp <= 0) {
+  Handlebars.registerHelper('date_format', function(timestamp, block) {
+    var f;
+    if(window.moment) {
+      if(timestamp === undefined || isNaN(timestamp) || timestamp <= 0) {
         return;
       }
 
-          // set date format
-      var f = block.hash.format || 'MMM Do, YYYY';
-          // check if we passed a timestamp
-      if (parseInt(timestamp, 10) == timestamp) {
+      // set date format
+      f = block.hash.format || 'MMM Do, YYYY';
+      // check if we passed a timestamp
+      if(parseInt(timestamp, 10) == timestamp) {
         return window.moment.unix(timestamp).format(f);
       } else {
         return window.moment.utc(timestamp).format(f);
@@ -37,6 +39,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   });
 
   Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+    var values;
     switch (operator) {
       case '==':
         return (v1 == v2) ? options.fn(this) : options.inverse(this);
@@ -59,7 +62,7 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
       case '||':
         return (v1 || v2) ? options.fn(this) : options.inverse(this);
       case 'in':
-        var values = v2.split(',');
+        values = v2.split(',');
         return (v2.indexOf(v1) !== -1) ? options.fn(this) : options.inverse(this);
       default:
         return options.inverse(this);
@@ -95,11 +98,12 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   });
 
 
-  Handlebars.registerHelper('rsa_key', function (value, block) {
-      // extract all lines into an array
-    if (value === undefined) return '';
+  Handlebars.registerHelper('rsa_key', function(value, block) {
+    var lines;
+    // extract all lines into an array
+    if(value === undefined) return '';
 
-    var lines = value.trim().split('\n');
+    lines = value.trim().split('\n');
 
       // remove header & footer
     lines.shift();
@@ -126,10 +130,10 @@ define('handlebars_helpers', ['handlebars'], function (Handlebars) {
    */
   Handlebars.registerHelper('ellipsis', function (str, limit, append) {
     var strAppend = append;
+    var sanitized = str.replace(/(<([^>]+)>)/g, '');
     if (strAppend === undefined) {
       strAppend = '';
     }
-    var sanitized = str.replace(/(<([^>]+)>)/g, '');
     if (sanitized.length > limit) {
       return sanitized.substr(0, limit - strAppend.length) + strAppend;
     } else {

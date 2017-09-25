@@ -7,6 +7,10 @@
 
 'use strict';
 
+var Observable;
+var WysijaHistory;
+var WysijaForm;
+
 Event.cacheDelegated = {};
 Object.extend(document, (function () {
   var cache = Event.cacheDelegated;
@@ -30,20 +34,22 @@ Object.extend(document, (function () {
   }
 
   function destroyWrapper(selector, eventName, handler) {
+    var wrapper;
     var c = getCacheForSelector(selector);
-    if (!c[eventName]) return false;
-    var wrapper = findWrapper(selector, eventName, handler);
+    if(!c[eventName]) return false;
+    wrapper = findWrapper(selector, eventName, handler);
     c[eventName] = c[eventName].without(wrapper);
     return wrapper;
   }
 
   function createWrapper(selector, eventName, handler, context) {
     var wrapper;
+    var element;
     var c = getWrappersForSelector(selector, eventName);
     if(c.pluck('handler').include(handler)) return false;
     wrapper = function(event) {
-      var element = event.findElement(selector);
-      if (element) handler.call(context || element, event, element);
+      element = event.findElement(selector);
+      if(element) handler.call(context || element, event, element);
     };
     wrapper.handler = handler;
     c.push(wrapper);
@@ -57,7 +63,8 @@ Object.extend(document, (function () {
     },
     stopDelegating: function (selector, eventName, handler) {
       var length = arguments.length;
-      switch (length) {
+      var wrapper;
+      switch(length) {
         case 2:
           getWrappersForSelector(selector, eventName).each(function (wrapper) {
             document.stopDelegating(selector, eventName, wrapper.handler);
@@ -74,15 +81,15 @@ Object.extend(document, (function () {
           });
           break;
         default:
-          var wrapper = destroyWrapper.apply(null, arguments);
-          if (wrapper) document.stopObserving(eventName, wrapper);
+          wrapper = destroyWrapper.apply(null, arguments);
+          if(wrapper) document.stopObserving(eventName, wrapper);
       }
       return document;
     }
   };
 })());
 
-var Observable = (function () {
+Observable = (function() {
   function getEventName(nameA, namespace) {
     var name = nameA.substring(2);
     if (namespace) name = namespace + ':' + name;
@@ -111,12 +118,12 @@ var Observable = (function () {
     });
   }
   return {
-    observe: function (selector) {
-      if (!this.handlers) this.handlers = {};
-      if (this.handlers[selector]) return;
+    observe: function(selector) {
       var klass = this;
-      if (this.prototype.onDomLoaded) {
-        if (document.loaded) {
+      if(!this.handlers) this.handlers = {};
+      if(this.handlers[selector]) return;
+      if(this.prototype.onDomLoaded) {
+        if(document.loaded) {
           onDomLoad(selector, klass);
         } else {
           document.observe('dom:loaded', onDomLoad.curry(selector, klass));
@@ -147,9 +154,9 @@ Object.extend(window.Droppables, {
     return proceed(drop);
   }),
   show: function(point, element) {
-    if(!this.drops.length) return;
     var drop; 
     var affected = [];
+    if(!this.drops.length) return;
     this.drops.each(function(drop) {
       if(window.Droppables.isAffected(point, element, drop)) affected.push(drop);
     });
@@ -197,7 +204,7 @@ Object.extend(window.Droppables, {
         - set a maximum number of items to be stored
 
 */
-var WysijaHistory = {
+WysijaHistory = {
   container: 'mailpoet_form_history',
   size: 30,
   enqueue: function (element) {
@@ -241,7 +248,7 @@ var WysijaHistory = {
 };
 
 /* MailPoet Form */
-var WysijaForm = {
+WysijaForm = {
   version: '0.7',
   options: {
     container: 'mailpoet_form_container',
@@ -293,8 +300,9 @@ var WysijaForm = {
       WysijaForm.Block.create(block, window.$('block_placeholder'));
     });
   },
-  load: function (data) {
-    if (data === undefined) return;
+  load: function(data) {
+    var settings_elements;
+    if(data === undefined) return;
 
     // load body
     if (data.body !== undefined) {
@@ -304,8 +312,8 @@ var WysijaForm = {
       });
 
       // load settings
-      var settings_elements = window.$('mailpoet_form_settings').getElements();
-      settings_elements.each(function (setting) {
+      settings_elements = window.$('mailpoet_form_settings').getElements();
+      settings_elements.each(function(setting) {
         // skip lists
         if (setting.name === 'segments') {
           return true;
@@ -402,7 +410,8 @@ var WysijaForm = {
     }
     return data;
   },
-  toggleWidgets: function () {
+  toggleWidgets: function() {
+    var hasSegmentSelection;
     window.$$('a[wysija_unique="1"]').invoke('removeClassName', 'disabled');
 
     // loop through each unique field already inserted in the editor and disable its toolbar equivalent
@@ -413,7 +422,7 @@ var WysijaForm = {
       }
     });
 
-    var hasSegmentSelection = WysijaForm.hasSegmentSelection();
+    hasSegmentSelection = WysijaForm.hasSegmentSelection();
 
     if (hasSegmentSelection) {
       window.$('mailpoet_form_segments').writeAttribute('required', false).disable();
@@ -428,8 +437,9 @@ var WysijaForm = {
   },
   isSegmentSelectionValid: function () {
     var segment_selection = window.$$('#' + WysijaForm.options.editor + ' [wysija_id="segments"]')[0];
-    if (segment_selection !== undefined) {
-      var block = WysijaForm.get(segment_selection).block.getData();
+    var block;
+    if(segment_selection !== undefined) {
+      block = WysijaForm.get(segment_selection).block.getData();
       return (
         (block.params.values !== undefined)
         &&
@@ -438,12 +448,14 @@ var WysijaForm = {
     }
     return false;
   },
-  setBlockPositions: function (event, target) {
+  setBlockPositions: function(event, target) {
+    var index = 1;
+    var block_placeholder;
+    var previous_placeholder;
     // release dragging lock
     WysijaForm.locks.dragging = false;
 
-    var index = 1;
-    WysijaForm.getBlocks().each(function (container) {
+    WysijaForm.getBlocks().each(function(container) {
       container.setPosition(index++);
       // remove z-index value to avoid issues when resizing images
       if (container['block'] !== undefined) {
@@ -455,8 +467,8 @@ var WysijaForm = {
 
     if (target !== undefined) {
       // get placeholders (previous placeholder matches the placeholder linked to the next block)
-      var block_placeholder = window.$(target.element.readAttribute('wysija_placeholder'));
-      var previous_placeholder = target.element.previous('.block_placeholder');
+      block_placeholder = window.$(target.element.readAttribute('wysija_placeholder'));
+      previous_placeholder = target.element.previous('.block_placeholder');
 
       if (block_placeholder !== null) {
         // put block placeholder before the current block
@@ -491,12 +503,15 @@ var WysijaForm = {
       var is_visible = (parentPos.top <= (WysijaForm.scroll.top + viewportHeight));
       var buttonMargin = 5;
       var relativeTop = buttonMargin;
+      var absoluteTop;
+      var parentTop;
+      var parentBottom;
 
       if (is_visible) {
         // desired position is set to center of viewport
-        var absoluteTop = parseInt(WysijaForm.scroll.top + ((viewportHeight / 2) - (element.getHeight() / 2)), 10);
-        var parentTop = parseInt(parentPos.top - blockPadding, 10);
-        var parentBottom = parseInt(parentPos.top + parentDim.height - blockPadding, 10);
+        absoluteTop = parseInt(WysijaForm.scroll.top + ((viewportHeight / 2) - (element.getHeight() / 2)), 10);
+        parentTop = parseInt(parentPos.top - blockPadding, 10);
+        parentBottom = parseInt(parentPos.top + parentDim.height - blockPadding, 10);
 
         // always center
         relativeTop = parseInt((parentDim.height / 2) - (element.getHeight() / 2), 10);
@@ -520,10 +535,11 @@ var WysijaForm = {
     if (WysijaForm.toolbar.x === null) WysijaForm.toolbar.x = parseInt(WysijaForm.toolbar.left + window.$(WysijaForm.options.container).getDimensions().width + 15);
 
   },
-  setToolbarPosition: function () {
+  setToolbarPosition: function() {
+    var position;
     WysijaForm.initToolbarPosition();
 
-    var position = {
+    position = {
       top: WysijaForm.toolbar.y + 'px',
       visibility: 'visible'
     };
@@ -587,10 +603,12 @@ var WysijaForm = {
   instances: {},
   get: function (element, typ) {
     var type = typ;
-    if (type === undefined) type = 'block';
+    var id;
+    var instance;
+    if(type === undefined) type = 'block';
     // identify element
-    var id = element.identify();
-    var instance = WysijaForm.instances[id] || new WysijaForm[type.capitalize().camelize()](id);
+    id = element.identify();
+    instance = WysijaForm.instances[id] || new WysijaForm[type.capitalize().camelize()](id);
 
     WysijaForm.instances[id] = instance;
     return instance;
@@ -768,16 +786,18 @@ WysijaForm.Block = window.Class.create({
       }
     }
   },
-  makeBlockDroppable: function () {
-    if (this.isBlockDroppableEnabled() === false) {
-      var block_placeholder = this.getBlockDroppable();
+  makeBlockDroppable: function() {
+    var block_placeholder;
+    if(this.isBlockDroppableEnabled() === false) {
+      block_placeholder = this.getBlockDroppable();
       window.Droppables.add(block_placeholder.identify(), WysijaForm.blockDropOptions);
       block_placeholder.addClassName('enabled');
     }
   },
-  removeBlockDroppable: function () {
-    if (this.isBlockDroppableEnabled()) {
-      var block_placeholder = this.getBlockDroppable();
+  removeBlockDroppable: function() {
+    var block_placeholder;
+    if(this.isBlockDroppableEnabled()) {
+      block_placeholder = this.getBlockDroppable();
       window.Droppables.remove(block_placeholder.identify());
       block_placeholder.removeClassName('enabled');
     }
@@ -808,7 +828,9 @@ WysijaForm.Block = window.Class.create({
   getControls: function () {
     return this.element.down('.wysija_controls');
   },
-  setupControls: function () {
+  setupControls: function() {
+    var block;
+    var field;
     // enable controls
     this.controls = this.getControls();
 
@@ -859,9 +881,9 @@ WysijaForm.Block = window.Class.create({
       if (this.settingsButton !== null) {
         this.settingsButton.observe('click', function (event) {
           // TODO: refactor
-          var block = window.$(event.target).up('.mailpoet_form_block') || null;
-          if (block !== null) {
-            var field = WysijaForm.getFieldData(block);
+          block = window.$(event.target).up('.mailpoet_form_block') || null;
+          if(block !== null) {
+            field = WysijaForm.getFieldData(block);
             this.editSettings();
           }
         }.bind(this));
@@ -907,20 +929,26 @@ WysijaForm.Block = window.Class.create({
 /* Invoked on item dropped */
 WysijaForm.Block.create = function (createBlock, target) {
   var block = createBlock;
-  if (window.$('form_template_' + block.type) === null) {
+  var body;
+  var block_template;
+  var template;
+  var output;
+  var settings_segments;
+  var element;
+  if(window.$('form_template_' + block.type) === null) {
     return false;
   }
 
-  var body = window.$(WysijaForm.options.body);
-  var block_template = window.Handlebars.compile(window.$('form_template_block').innerHTML);
-  var template = window.Handlebars.compile(window.$('form_template_' + block.type).innerHTML);
-  var output = '';
+  body = window.$(WysijaForm.options.body);
+  block_template = window.Handlebars.compile(window.$('form_template_block').innerHTML);
+  template = window.Handlebars.compile(window.$('form_template_' + block.type).innerHTML);
+  output = '';
 
-  if (block.type === 'segment') {
-    if (block.params.values === undefined) {
-      var settings_segments = window.jQuery('#mailpoet_form_segments').val();
-      if (settings_segments !== null && settings_segments.length > 0) {
-        block.params.values = window.mailpoet_segments.filter(function (segment) {
+  if(block.type === 'segment') {
+    if(block.params.values === undefined) {
+      settings_segments = window.jQuery('#mailpoet_form_segments').val();
+      if(settings_segments !== null && settings_segments.length > 0){
+        block.params.values = window.mailpoet_segments.filter(function(segment) {
           return (settings_segments.indexOf(segment.id) !== -1);
         });
       }
@@ -938,8 +966,8 @@ WysijaForm.Block.create = function (createBlock, target) {
   }
 
   // if the drop target was the bottom placeholder
-  var element = null;
-  if (target.identify() === 'block_placeholder') {
+  element = null;
+  if(target.identify() === 'block_placeholder') {
     // insert block at the bottom
     element = body.insert(output);
     // block = body.childElements().last();
@@ -985,9 +1013,9 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
     info('widget -> setup');
     this.setupControls();
   },
-  save: function () {
-    info('widget -> save');
+  save: function() {
     var data = this.getData();
+    info('widget -> save');
 
     if (data.element !== undefined) {
       delete data.element;
@@ -1021,17 +1049,21 @@ WysijaForm.Widget = window.Class.create(WysijaForm.Block, {
   remove: function () {
     this.removeBlock();
   },
-  redraw: function (data) {
+  redraw: function(data) {
+    var options;
+    var block_template;
+    var template;
+    var params;
     // set parameters
     this.setData(data);
-    var options = this.getData();
+    options = this.getData();
     // redraw block
-    var block_template = window.Handlebars.compile(window.$('form_template_block').innerHTML);
-    var template = window.Handlebars.compile(window.$('form_template_' + options.type).innerHTML);
-    var data = window.$H(options).merge({
+    block_template = window.Handlebars.compile(window.$('form_template_block').innerHTML);
+    template = window.Handlebars.compile(window.$('form_template_' + options.type).innerHTML);
+    params = window.$H(options).merge({
       template: template(options)
     }).toObject();
-    this.element.replace(block_template(data));
+    this.element.replace(block_template(params));
 
     WysijaForm.init();
   },
@@ -1063,9 +1095,9 @@ function info(value) {
       var noop = function () {};
       var methods = ['assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log', 'markTimeline', 'profile', 'profileEnd', 'markTimeline', 'table', 'time', 'timeEnd', 'timeStamp', 'trace', 'warn'];
       var length = methods.length;
-      window.console = {};
       var console = {};
-      while (length--) {
+      window.console = {};
+      while(length--) {
         console[methods[length]] = noop;
       }
     }());

@@ -115,8 +115,9 @@ define('modal', ['mailpoet', 'jquery'],
           return window.Handlebars.compile(template);
         }
       },
-      init: function (options) {
-        if (this.initialized === true) {
+      init: function(options) {
+        var modal;
+        if(this.initialized === true) {
           this.close();
         }
         // merge options
@@ -133,8 +134,8 @@ define('modal', ['mailpoet', 'jquery'],
 
         if (this.options.type !== null) {
           // insert modal depending on its type
-          if (this.options.type === 'popup') {
-            var modal = this.compileTemplate(
+          if(this.options.type === 'popup') {
+            modal = this.compileTemplate(
               this.templates[this.options.type]
             );
             // create modal
@@ -342,21 +343,22 @@ define('modal', ['mailpoet', 'jquery'],
 
         return this;
       },
-      setPosition: function () {
-        switch (this.options.type) {
+      setPosition: function() {
+        var screenWidth;
+        var screenHeight;
+        var modalWidth;
+        var modalHeight;
+        switch(this.options.type) {
           case 'popup':
-            var screenWidth = jQuery(window).width();
-            var screenHeight = jQuery(window).height();
-            var modalWidth = jQuery('.mailpoet_'+ this.options.type +'_wrapper').width();
-            var modalHeight = jQuery('.mailpoet_'+ this.options.type +'_wrapper').height();
+            screenWidth = jQuery(window).width();
+            screenHeight = jQuery(window).height();
+            modalWidth = jQuery('.mailpoet_'+ this.options.type +'_wrapper').width();
+            modalHeight = jQuery('.mailpoet_'+ this.options.type +'_wrapper').height();
 
-            var top = Math.max(48, parseInt((screenHeight / 2) - (modalHeight / 2)));
-            var left = Math.max(0, parseInt((screenWidth / 2) - (modalWidth / 2)));
-
-              // set position of popup depending on screen dimensions.
+            // set position of popup depending on screen dimensions.
             jQuery('#mailpoet_popup').css({
-              top: top,
-              left: left
+              top: Math.max(48, parseInt((screenHeight / 2) - (modalHeight / 2))),
+              left: Math.max(0, parseInt((screenWidth / 2) - (modalWidth / 2)))
             });
             break;
           case 'panel':

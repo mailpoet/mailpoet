@@ -43,9 +43,10 @@ define('date',
       },
       format: function (date, opts) {
         var options = opts || {};
+        var momentDate;
         this.init(options);
 
-        var momentDate = Moment(date, this.convertFormat(options.parseFormat));
+        momentDate = Moment(date, this.convertFormat(options.parseFormat));
         if (options.offset === 0) momentDate = momentDate.utc();
         return momentDate.format(this.convertFormat(this.options.format));
       },
@@ -70,7 +71,12 @@ define('date',
           format: 'H:i:s'
         });
       },
-      convertFormat: function (format) {
+      convertFormat: function(format) {
+        var replacements;
+        var convertedFormat;
+        var escapeToken;
+        var index;
+        var token;
         var format_mappings = {
           date: {
             d: 'DD',
@@ -140,12 +146,11 @@ define('date',
 
         if (!format || format.length <= 0) return format;
 
-        var replacements = format_mappings['date'];
+        replacements = format_mappings['date'];
+        convertedFormat = [];
+        escapeToken = false;
 
-        var convertedFormat = [];
-        var escapeToken = false;
-
-        for (var index = 0, token = ''; format.charAt(index); index += 1) {
+        for(index = 0, token = ''; format.charAt(index); index += 1){
           token = format.charAt(index);
           if (escapeToken === true) {
             convertedFormat.push('[' + token + ']');

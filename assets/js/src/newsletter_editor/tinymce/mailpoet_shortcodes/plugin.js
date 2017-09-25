@@ -26,15 +26,17 @@ tinymce.PluginManager.add('mailpoet_shortcodes', function(editor, url) {
     onclick: function() {
       var shortcodes = [];
       var configShortcodes = editor.settings.mailpoet_shortcodes;
+      var segment;
+      var i;
 
-      for (var segment in configShortcodes) {
+      for (segment in configShortcodes) {
         if (configShortcodes.hasOwnProperty(segment)) {
           shortcodes.push({
             type: 'label',
             text: segment
           });
 
-          for (var i = 0; i < configShortcodes[segment].length; i += 1) {
+          for (i = 0; i < configShortcodes[segment].length; i += 1) {
             shortcodes.push({
               type: 'button',
               text: configShortcodes[segment][i].text,
