@@ -4,10 +4,10 @@
     <tr>
       <th scope="row">
         <label for="mailpoet_premium_key">
-          <%= __('Premium License Key') %>
+          <%= __('Activation Key') %>
         </label>
         <p class="description">
-          <%= __('This key is used for automatic upgrades of your Premium features and access to support.') %>
+          <%= __('This key is used to validate your free or paid subscription. Paying customers will enjoy automatic upgrades of their Premium plugin and access to faster support.') %>
         </p>
       </th>
       <td>
@@ -32,7 +32,7 @@
         <div
           class="mailpoet_premium_key_invalid mailpoet_error_item mailpoet_error<% if not(settings.premium.premium_key) or premium_key_valid %> mailpoet_hidden<% endif %>"
         >
-          <%= __('Your Premium key is invalid.') %>
+          <%= __('Your key is not valid for the Premium plugin.') %>
         </div>
         <div
           class="mailpoet_mss_key_valid mailpoet_success_item mailpoet_success<% if not(settings.mta.mailpoet_api_key) or not(mss_key_valid) %> mailpoet_hidden<% endif %>"
@@ -42,7 +42,7 @@
         <div
           class="mailpoet_mss_key_invalid mailpoet_error_item mailpoet_error<% if not(settings.mta.mailpoet_api_key) or mss_key_valid %> mailpoet_hidden<% endif %>"
         >
-          <%= __('Your MailPoet Sending Service key is invalid.') %>
+          <%= __('Your key is not valid for the MailPoet Sending Service.') %>
         </div>
         <div
           class="mailpoet_premium_download mailpoet_spaced_block"
