@@ -366,13 +366,13 @@ define(
                     // done once and then email regex is run just on that element for each row
                     if (emailColumnPosition === null) {
                       for (var column in rowData) {
-                        var email = detectAndCleanupEmail(rowData[column]);
+                        var emailAddress = detectAndCleanupEmail(rowData[column]);
                         if (emailColumnPosition === null
-                            && window.emailRegex.test(email)) {
+                            && window.emailRegex.test(emailAddress)) {
                           emailColumnPosition = column;
-                          parsedEmails[email] = true; // add current e-mail to an object index
-                          rowData[column] = email;
-                          processedSubscribers[email] = rowData;
+                          parsedEmails[emailAddress] = true; // add current e-mail to an object index
+                          rowData[column] = emailAddress;
+                          processedSubscribers[emailAddress] = rowData;
                         }
                       }
                       if (emailColumnPosition === null
@@ -882,6 +882,7 @@ define(
                 ];
                 var firstRowData = subscribersClone.subscribers[0][matchedColumn.index];
                 var validationRule = false;
+                var testedFormat;
                 // check if date exists
                 if (firstRowData.trim() === '') {
                   subscribersClone.subscribers[0][matchedColumn.index] =
@@ -893,9 +894,9 @@ define(
                 }
                 else {
                   for (var format in allowedDateFormats) {
-                    var testedFormat = allowedDateFormats[format];
+                    testedFormat = allowedDateFormats[format];
                     if (Moment(firstRowData, testedFormat, true).isValid()) {
-                      var validationRule = (typeof (testedFormat) === 'function') ?
+                      validationRule = (typeof(testedFormat) === 'function') ?
                         'datetime' :
                         testedFormat;
                       // set validation on the column element
