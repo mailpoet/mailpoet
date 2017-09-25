@@ -58,7 +58,9 @@ define([
 
               $original = jQuery(event.target),
               $clone = jQuery(clone),
-              centerXOffset, centerYOffset, parentOffset;
+              centerXOffset, 
+              centerYOffset, 
+              parentOffset;
 
             $clone.addClass('mailpoet_droppable_active');
             $clone.css('position', 'absolute');

@@ -38,9 +38,10 @@ Object.extend(document, (function () {
   }
 
   function createWrapper(selector, eventName, handler, context) {
-    var wrapper, c = getWrappersForSelector(selector, eventName);
-    if (c.pluck('handler').include(handler)) return false;
-    wrapper = function (event) {
+    var wrapper, 
+      c = getWrappersForSelector(selector, eventName);
+    if(c.pluck('handler').include(handler)) return false;
+    wrapper = function(event) {
       var element = event.findElement(selector);
       if (element) handler.call(context || element, event, element);
     };
@@ -145,11 +146,12 @@ Object.extend(window.Droppables, {
     if (drop.onEnter) drop.onEnter(draggable, drop.element);
     return proceed(drop);
   }),
-  show: function (point, element) {
-    if (!this.drops.length) return;
-    var drop, affected = [];
-    this.drops.each(function (drop) {
-      if (window.Droppables.isAffected(point, element, drop)) affected.push(drop);
+  show: function(point, element) {
+    if(!this.drops.length) return;
+    var drop, 
+      affected = [];
+    this.drops.each(function(drop) {
+      if(window.Droppables.isAffected(point, element, drop)) affected.push(drop);
     });
     if (affected.length > 0) drop = window.Droppables.findDeepestChild(affected);
     if (this.last_active && this.last_active !== drop) this.deactivate(this.last_active, element);
