@@ -345,13 +345,13 @@ define('modal', ['mailpoet', 'jquery'],
       setPosition: function () {
         switch (this.options.type) {
           case 'popup':
-            var screenWidth = jQuery(window).width(),
-              screenHeight = jQuery(window).height(),
-              modalWidth = jQuery('.mailpoet_' + this.options.type + '_wrapper').width(),
-              modalHeight = jQuery('.mailpoet_' + this.options.type + '_wrapper').height();
+            var screenWidth = jQuery(window).width();
+            var screenHeight = jQuery(window).height();
+            var modalWidth = jQuery('.mailpoet_'+ this.options.type +'_wrapper').width();
+            var modalHeight = jQuery('.mailpoet_'+ this.options.type +'_wrapper').height();
 
-            var top = Math.max(48, parseInt((screenHeight / 2) - (modalHeight / 2))),
-              left = Math.max(0, parseInt((screenWidth / 2) - (modalWidth / 2)));
+            var top = Math.max(48, parseInt((screenHeight / 2) - (modalHeight / 2)));
+            var left = Math.max(0, parseInt((screenWidth / 2) - (modalWidth / 2)));
 
               // set position of popup depending on screen dimensions.
             jQuery('#mailpoet_popup').css({

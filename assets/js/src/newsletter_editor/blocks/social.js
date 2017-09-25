@@ -13,12 +13,12 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock,
-    SocialBlockSettingsIconSelectorView,
-    SocialBlockSettingsIconView,
-    SocialBlockSettingsIconCollectionView,
-    SocialBlockSettingsStylesView;
+  var Module = {};
+  var base = BaseBlock;
+  var SocialBlockSettingsIconSelectorView;
+  var SocialBlockSettingsIconView;
+  var SocialBlockSettingsIconCollectionView;
+  var SocialBlockSettingsStylesView;
 
   Module.SocialIconModel = SuperModel.extend({
     defaults: function () {
@@ -36,9 +36,9 @@ define([
     initialize: function (options) {
       var that = this;
       // Make model swap to default values for that type when iconType changes
-      this.on('change:iconType', function () {
-        var defaultValues = App.getConfig().get('socialIcons').get(that.get('iconType')),
-          iconSet = that.collection.iconBlockModel.getIconSet();
+      this.on('change:iconType', function() {
+        var defaultValues = App.getConfig().get('socialIcons').get(that.get('iconType'));
+        var iconSet = that.collection.iconBlockModel.getIconSet();
         this.set({
           link: defaultValues.get('defaultLink'),
           image: iconSet.get(that.get('iconType')),
@@ -174,11 +174,11 @@ define([
         this.$('.mailpoet_social_icon_image').attr('alt', this.model.get('text'));
       }
     },
-    templateContext: function () {
-      var icons = App.getConfig().get('socialIcons'),
-        // Construct icon type list of format [{iconType: 'type', title: 'Title'}, ...]
-        availableIconTypes = _.map(_.keys(icons.attributes), function (key) { return { iconType: key, title: icons.get(key).get('title') }; }),
-        allIconSets = App.getAvailableStyles().get('socialIconSets');
+    templateContext: function() {
+      var icons = App.getConfig().get('socialIcons');
+      // Construct icon type list of format [{iconType: 'type', title: 'Title'}, ...]
+      var availableIconTypes = _.map(_.keys(icons.attributes), function(key) { return { iconType: key, title: icons.get(key).get('title') }; });
+      var allIconSets = App.getAvailableStyles().get('socialIconSets');
       return _.extend({}, base.BlockView.prototype.templateContext.apply(this, arguments), {
         iconTypes: availableIconTypes,
         currentType: icons.get(this.model.get('iconType')).toJSON(),

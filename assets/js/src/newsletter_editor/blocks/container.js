@@ -14,9 +14,9 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock,
-    BlockCollection;
+  var Module = {};
+  var base = BaseBlock;
+  var BlockCollection;
 
   BlockCollection = Backbone.Collection.extend({
     model: base.BlockModel,
@@ -121,8 +121,8 @@ define([
           options.dragBehavior.view.model.destroy();
         },
         onDragSubstituteBy: function(behavior) {
-          var WidgetView, 
-            node;
+          var WidgetView;
+          var node;
           // When block is being dragged, display the widget icon instead.
           // This will create an instance of block's widget view and
           // use it's rendered DOM element instead of the content block
@@ -190,25 +190,25 @@ define([
         this.toolsView.triggerMethod('hideTools');
       }
     },
-    toggleEditingLayer: function (event) {
-      var that = this,
-        $toggleButton = this.$('> .mailpoet_tools .mailpoet_newsletter_layer_selector'),
-        $overlay = jQuery('.mailpoet_layer_overlay'),
-        $container = this.$('> .mailpoet_container'),
-        enableContainerLayer = function () {
-          that.$el.addClass('mailpoet_container_layer_active');
-          $toggleButton.addClass('mailpoet_container_layer_active');
-          $container.addClass('mailpoet_layer_highlight');
-          $overlay.click(disableContainerLayer);
-          $overlay.show();
-        },
-        disableContainerLayer = function () {
-          that.$el.removeClass('mailpoet_container_layer_active');
-          $toggleButton.removeClass('mailpoet_container_layer_active');
-          $container.removeClass('mailpoet_layer_highlight');
-          $overlay.hide();
-          $overlay.off('click');
-        };
+    toggleEditingLayer: function(event) {
+      var that = this;
+      var $toggleButton = this.$('> .mailpoet_tools .mailpoet_newsletter_layer_selector');
+      var $overlay = jQuery('.mailpoet_layer_overlay');
+      var $container = this.$('> .mailpoet_container');
+      var enableContainerLayer = function() {
+        that.$el.addClass('mailpoet_container_layer_active');
+        $toggleButton.addClass('mailpoet_container_layer_active');
+        $container.addClass('mailpoet_layer_highlight');
+        $overlay.click(disableContainerLayer);
+        $overlay.show();
+      };
+      var disableContainerLayer = function() {
+        that.$el.removeClass('mailpoet_container_layer_active');
+        $toggleButton.removeClass('mailpoet_container_layer_active');
+        $container.removeClass('mailpoet_layer_highlight');
+        $overlay.hide();
+        $overlay.off('click');
+      };
       if ($toggleButton.hasClass('mailpoet_container_layer_active')) {
         disableContainerLayer();
       } else {

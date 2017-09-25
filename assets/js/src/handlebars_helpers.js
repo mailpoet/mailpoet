@@ -1,9 +1,9 @@
 define('handlebars_helpers', ['handlebars'], function (Handlebars) {
   // Handlebars helpers
-  Handlebars.registerHelper('concat', function () {
-    var size = (arguments.length - 1),
-      output = '';
-    for (var i = 0; i < size; i++) {
+  Handlebars.registerHelper('concat', function() {
+    var size = (arguments.length - 1);
+    var output = '';
+    for(var i = 0; i < size; i++) {
       output += arguments[i];
     }
     return output;

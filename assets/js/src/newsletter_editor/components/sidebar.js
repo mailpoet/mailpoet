@@ -61,9 +61,9 @@ define([
       previewRegion: '.mailpoet_preview_region'
     },
     events: {
-      'click .mailpoet_sidebar_region h3, .mailpoet_sidebar_region .handlediv': function (event) {
-        var $openRegion = this.$el.find('.mailpoet_sidebar_region:not(.closed)'),
-          $targetRegion = this.$el.find(event.target).closest('.mailpoet_sidebar_region');
+      'click .mailpoet_sidebar_region h3, .mailpoet_sidebar_region .handlediv': function(event) {
+        var $openRegion = this.$el.find('.mailpoet_sidebar_region:not(.closed)');
+        var $targetRegion = this.$el.find(event.target).closest('.mailpoet_sidebar_region');
 
         $openRegion.find('.mailpoet_region_content').velocity(
           'slideUp',
@@ -113,10 +113,8 @@ define([
       // position of the sidebar would be scrollable and not fixed
       // partially out of visible screen
       this.$el.parent().each(function () {
-        var calculated_left, 
-          self;
-
-        self = jQuery(this);
+        var calculated_left; 
+        var self = jQuery(this);
 
         if (self.css('position') === 'fixed') {
           calculated_left = self.parent().offset().left - jQuery(window).scrollLeft();
@@ -372,9 +370,9 @@ define([
     Application.getLayoutWidgets = Module.getLayoutWidgets;
   });
 
-  App.on('start', function (App, options) {
-    var stylesModel = App.getGlobalStyles(),
-      sidebarView = new SidebarView();
+  App.on('start', function(App, options) {
+    var stylesModel = App.getGlobalStyles();
+    var sidebarView = new SidebarView();
 
     App._appView.showChildView('sidebarRegion', sidebarView);
 

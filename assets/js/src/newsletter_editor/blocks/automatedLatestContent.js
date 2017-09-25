@@ -30,8 +30,8 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock;
+  var Module = {};
+  var base = BaseBlock;
 
   Module.ALCSupervisor = SuperModel.extend({
     initialize: function () {
@@ -59,9 +59,9 @@ define([
     refreshBlocks: function (models, renderedBlocks) {
       _.each(
         _.zip(models, renderedBlocks),
-        function (args) {
-          var model = args[0],
-            contents = args[1];
+        function(args) {
+          var model = args[0];
+          var contents = args[1];
           model.trigger('refreshPosts', contents);
         }
       );
@@ -148,14 +148,14 @@ define([
     events: _.extend(base.BlockView.prototype.events, {
       'click .mailpoet_automated_latest_content_block_overlay': 'showSettings'
     }),
-    onDragSubstituteBy: function () { return Module.AutomatedLatestContentWidgetView; },
-    onRender: function () {
-      var ContainerView = App.getBlockTypeView('container'),
-        renderOptions = {
-          disableTextEditor: true,
-          disableDragAndDrop: true,
-          emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay')
-        };
+    onDragSubstituteBy: function() { return Module.AutomatedLatestContentWidgetView; },
+    onRender: function() {
+      var ContainerView = App.getBlockTypeView('container');
+      var renderOptions = {
+        disableTextEditor: true,
+        disableDragAndDrop: true,
+        emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay')
+      };
       this.toolsView = new Module.AutomatedLatestContentBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
       this.showChildView('postsRegion', new ContainerView({ model: this.model.get('_container'), renderOptions: renderOptions }));
@@ -264,9 +264,9 @@ define([
         }
       }).trigger('change');
     },
-    toggleDisplayOptions: function (event) {
-      var el = this.$('.mailpoet_automated_latest_content_display_options'),
-        showControl = this.$('.mailpoet_automated_latest_content_show_display_options');
+    toggleDisplayOptions: function(event) {
+      var el = this.$('.mailpoet_automated_latest_content_display_options');
+      var showControl = this.$('.mailpoet_automated_latest_content_show_display_options');
       if (el.hasClass('mailpoet_closed')) {
         el.removeClass('mailpoet_closed');
         showControl.addClass('mailpoet_hidden');
@@ -348,9 +348,9 @@ define([
       }
       this.changeField('titleFormat', event);
     },
-    _updateContentTypes: function (postTypes) {
-      var select = this.$('.mailpoet_automated_latest_content_content_type'),
-        selectedValue = this.model.get('contentType');
+    _updateContentTypes: function(postTypes) {
+      var select = this.$('.mailpoet_automated_latest_content_content_type');
+      var selectedValue = this.model.get('contentType');
 
       select.find('option').remove();
       _.each(postTypes, function (type) {

@@ -11,8 +11,8 @@ define([
 
   'use strict';
 
-  var Module = {},
-    base = BaseBlock;
+  var Module = {};
+  var base = BaseBlock;
 
   Module.ButtonBlockModel = base.BlockModel.extend({
     defaults: function () {

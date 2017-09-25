@@ -27,74 +27,74 @@ define(
      jQuery('#mailpoet_subscribers_export > div.inside').html(subscribers_export_template(window.exportData));
 
      // define reusable variables
-     var segmentsContainerElement = jQuery('#export_lists'),
-       subscriberFieldsContainerElement = jQuery('#export_columns'),
-       exportConfirmedOptionElement = jQuery(':radio[name="option_confirmed"]'),
-       groupBySegmentOptionElement = jQuery(':checkbox[name="option_group_by_list"]'),
-       nextStepButton = jQuery('a.mailpoet_export_process'),
-       renderSegmentsAndFields = function (container, data) {
-         if (container.data('select2')) {
-           container
-           .html('')
-           .select2('destroy');
-         }
+     var segmentsContainerElement = jQuery('#export_lists');
+     var subscriberFieldsContainerElement = jQuery('#export_columns');
+     var exportConfirmedOptionElement = jQuery(':radio[name="option_confirmed"]');
+     var groupBySegmentOptionElement = jQuery(':checkbox[name="option_group_by_list"]');
+     var nextStepButton = jQuery('a.mailpoet_export_process');
+     var renderSegmentsAndFields = function (container, data) {
+       if (container.data('select2')) {
          container
-         .select2({
-           data: data,
-           width: '20em',
-           templateResult: function (item) {
-             return (item.subscriberCount > 0)
-              ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
-              : item.name;
-           },
-           templateSelection: function (item) {
-             return (item.subscriberCount > 0)
-              ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
-              : item.name;
+         .html('')
+         .select2('destroy');
+       }
+       container
+       .select2({
+         data: data,
+         width: '20em',
+         templateResult: function (item) {
+           return (item.subscriberCount > 0)
+            ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
+            : item.name;
+         },
+         templateSelection: function (item) {
+           return (item.subscriberCount > 0)
+            ? item.name + ' (' + parseInt(item.subscriberCount).toLocaleString() + ')'
+            : item.name;
+         }
+       })
+       .on('select2:selecting', function (selectEvent) {
+         var selectElement = this;
+         var selectedOptionId = selectEvent.params.args.data.id;
+         var fieldsToExclude = [
+           'select',
+           'deselect'
+         ];
+         if (_.contains(fieldsToExclude, selectedOptionId)) {
+           selectEvent.preventDefault();
+           if (selectedOptionId === 'deselect') {
+             jQuery(selectElement).val('').trigger('change');
+           } else {
+             var allOptions = [];
+             _.each(container.find('option'), function (field) {
+               if (!_.contains(fieldsToExclude, field.value)) {
+                 allOptions.push(field.value);
+               }
+             });
+             jQuery(selectElement).val(allOptions).trigger('change');
            }
-         })
-         .on('select2:selecting', function (selectEvent) {
-           var selectElement = this,
-             selectedOptionId = selectEvent.params.args.data.id,
-             fieldsToExclude = [
-               'select',
-               'deselect'
-             ];
-           if (_.contains(fieldsToExclude, selectedOptionId)) {
-             selectEvent.preventDefault();
-             if (selectedOptionId === 'deselect') {
-               jQuery(selectElement).val('').trigger('change');
-             } else {
-               var allOptions = [];
-               _.each(container.find('option'), function (field) {
-                 if (!_.contains(fieldsToExclude, field.value)) {
-                   allOptions.push(field.value);
-                 }
-               });
-               jQuery(selectElement).val(allOptions).trigger('change');
-             }
-             jQuery(selectElement).select2('close');
-           }
-         })
-         .on('change', function () {
-           if ((window.exportData.segments && segmentsContainerElement.select2('data').length && subscriberFieldsContainerElement.select2('data').length)
-            ||
-            (!window.exportData.segments && subscriberFieldsContainerElement.select2('data').length)
-           ) {
-             toggleNextStepButton('on');
-           }
-           else {
-             toggleNextStepButton('off');
-           }
+           jQuery(selectElement).select2('close');
+         }
+       })
+       .on('change', function () {
+         if ((window.exportData.segments && segmentsContainerElement.select2('data').length && subscriberFieldsContainerElement.select2('data').length)
+          ||
+          (!window.exportData.segments && subscriberFieldsContainerElement.select2('data').length)
+         ) {
+           toggleNextStepButton('on');
+         }
+         else {
+           toggleNextStepButton('off');
+         }
 
-           if (segmentsContainerElement.select2('data').length > 1 && window.exportData.groupBySegmentOption) {
-             jQuery('.mailpoet_group_by_list').show();
-           }
-           else if (window.exportData.groupBySegmentOption) {
-             jQuery('.mailpoet_group_by_list').hide();
-           }
-         });
-       };
+         if (segmentsContainerElement.select2('data').length > 1 && window.exportData.groupBySegmentOption) {
+           jQuery('.mailpoet_group_by_list').show();
+         }
+         else if (window.exportData.groupBySegmentOption) {
+           jQuery('.mailpoet_group_by_list').hide();
+         }
+       });
+     };
 
      // set confirmed subscribers export option to false
      window.exportData.exportConfirmedOption = false;
