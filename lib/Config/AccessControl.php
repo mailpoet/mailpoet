@@ -107,10 +107,9 @@ class AccessControl {
   function validatePermission($permission) {
     if($permission === self::NO_ACCESS_RESTRICTION) return true;
     foreach($this->user_roles as $role) {
-      if($role_object = get_role($role)) {
-        if($role_object->has_cap($permission)) {
-          return true;
-        }
+      $role_object = get_role($role);
+      if($role_object && $role_object->has_cap($permission)) {
+        return true;
       }
     }
     return false;
