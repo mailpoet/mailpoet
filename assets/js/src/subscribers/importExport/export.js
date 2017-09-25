@@ -3,15 +3,13 @@ define(
     'underscore',
     'jquery',
     'mailpoet',
-    'handlebars',
-    'select2'
+    'handlebars'
   ],
  function (
    _,
    jQuery,
    MailPoet,
-   Handlebars,
-   select2
+   Handlebars
  ) {
    if (!jQuery('#mailpoet_subscribers_export').length) {
      return;
@@ -158,7 +156,7 @@ define(
            segments: (window.exportData.segments) ? segmentsContainerElement.val() : false,
            subscriber_fields: subscriberFieldsContainerElement.val()
          })
-       }).always(function (response) {
+       }).always(function() {
          MailPoet.Modal.loading(false);
        }).done(function (response) {
          var resultMessage = MailPoet.I18n.t('exportMessage')

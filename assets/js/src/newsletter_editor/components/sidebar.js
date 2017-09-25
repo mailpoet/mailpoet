@@ -6,9 +6,8 @@ define([
   'backbone.marionette',
   'backbone.supermodel',
   'underscore',
-  'jquery',
-  'sticky-kit'
-], function (
+  'jquery'
+], function(
   App,
   CommunicationComponent,
   MailPoet,
@@ -16,8 +15,7 @@ define([
   Marionette,
   SuperModel,
   _,
-  jQuery,
-  StickyKit
+  jQuery
   ) {
 
   'use strict';
@@ -90,7 +88,7 @@ define([
         }
       }
     },
-    initialize: function (options) {
+    initialize: function() {
       jQuery(window)
         .on('resize', this.updateHorizontalScroll.bind(this))
         .on('scroll', this.updateHorizontalScroll.bind(this));
@@ -266,12 +264,11 @@ define([
       }).always(function () {
         MailPoet.Modal.loading(false);
       }).done(function(response) {
-        var view;
         this.previewView = new Module.NewsletterPreviewView({
           previewUrl: response.meta.preview_url
         });
 
-        view = this.previewView.render();
+        this.previewView.render();
         this.previewView.$el.css('height', '100%');
 
         MailPoet.Modal.popup({
@@ -324,7 +321,7 @@ define([
       App.getChannel().request('save').always(function () {
         CommunicationComponent.previewNewsletter(data).always(function () {
           MailPoet.Modal.loading(false);
-        }).done(function (response) {
+        }).done(function() {
           MailPoet.Notice.success(
             MailPoet.I18n.t('newsletterPreviewSent'),
             { scroll: true }
@@ -363,7 +360,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function(App) {
     var Application = App;
     Application.registerWidget = Module.registerWidget;
     Application.getWidgets = Module.getWidgets;
@@ -371,8 +368,7 @@ define([
     Application.getLayoutWidgets = Module.getLayoutWidgets;
   });
 
-  App.on('start', function(App, options) {
-    var stylesModel = App.getGlobalStyles();
+  App.on('start', function(App) {
     var sidebarView = new SidebarView();
 
     App._appView.showChildView('sidebarRegion', sidebarView);

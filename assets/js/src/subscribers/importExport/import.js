@@ -7,8 +7,7 @@ define(
     'handlebars',
     'papaparse',
     'asyncqueue',
-    'moment',
-    'select2'
+    'moment'
   ],
     function (
       Backbone,
@@ -18,8 +17,7 @@ define(
       Handlebars,
       Papa,
       AsyncQueue,
-      Moment,
-      select2
+      Moment
     ) {
       if (!jQuery('#mailpoet_subscribers_import').length) {
         return;
@@ -64,7 +62,7 @@ define(
           var uploadElement;
           var uploadProcessButtonElement;
           // set or reset temporary validation rule on all columns
-          window.mailpoetColumns = jQuery.map(window.mailpoetColumns, function (column, columnIndex) {
+          window.mailpoetColumns = jQuery.map(window.mailpoetColumns, function (column) {
             var col = column;
             col.validation_rule = false;
             return col;
@@ -245,7 +243,7 @@ define(
                 api_key: mailChimpKeyInputElement.val(),
                 lists: mailChimpListsContainerElement.find('select').val()
               }
-            }).always(function (response) {
+            }).always(function() {
               MailPoet.Modal.loading(false);
             }).done(function (response) {
               window.importData.step1 = response.data;
@@ -771,7 +769,7 @@ define(
                     title: MailPoet.I18n.t('addNewField'),
                     template: jQuery('#form_template_field_form').html()
                   });
-                  jQuery('#form_field_new').parsley().on('form:submit', function (parsley) {
+                  jQuery('#form_field_new').parsley().on('form:submit', function() {
                     // get data
                     var data = jQuery(this.$element).serializeObject();
 
@@ -874,7 +872,7 @@ define(
                 return { id: columnId, index: elementIndex, validationRule: validationRule, element: element };
               });
             // iterate through the object of mailpoet columns
-            jQuery.map(window.mailpoetColumns, function (column, columnIndex) {
+            jQuery.map(window.mailpoetColumns, function (column) {
               var firstRowData;
               var validationRule;
               var testedFormat;

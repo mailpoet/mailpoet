@@ -56,12 +56,12 @@ Object.extend(document, (function () {
     return wrapper;
   }
   return {
-    delegate: function (selector, eventName, handler, context) {
+    delegate: function(selector, eventName) {
       var wrapper = createWrapper.apply(null, arguments);
       if (wrapper) document.observe(eventName, wrapper);
       return document;
     },
-    stopDelegating: function (selector, eventName, handler) {
+    stopDelegating: function(selector, eventName) {
       var length = arguments.length;
       var wrapper;
       switch(length) {
@@ -168,22 +168,22 @@ Object.extend(window.Droppables, {
       if (drop !== this.last_active) window.Droppables.activate(drop, element);
     }
   },
-  displayArea: function (draggable) {
-    if (!this.drops.length) return;
+  displayArea: function() {
+    if(!this.drops.length) return;
 
     // hide controls when displaying drop areas.
     WysijaForm.hideBlockControls();
 
-    this.drops.each(function (drop, iterator) {
-      if (drop.element.hasClassName('block_placeholder')) {
+    this.drops.each(function(drop) {
+      if(drop.element.hasClassName('block_placeholder')) {
         drop.element.addClassName('active');
       }
     });
   },
-  hideArea: function () {
-    if (!this.drops.length) return;
-    this.drops.each(function (drop, iterator) {
-      if (drop.element.hasClassName('block_placeholder')) {
+  hideArea: function() {
+    if(!this.drops.length) return;
+    this.drops.each(function(drop) {
+      if(drop.element.hasClassName('block_placeholder')) {
         drop.element.removeClassName('active');
       } else if (drop.element.hasClassName('image_placeholder')) {
         drop.element.removeClassName('active');
@@ -494,7 +494,6 @@ WysijaForm = {
   setSettingsPosition: function () {
     // get viewport offsets and dimensions
     var viewportHeight = document.viewport.getHeight();
-    var blockPadding = 5;
 
     window.$(WysijaForm.options.container).select('.wysija_settings').each(function (element) {
       // get parent dimensions and position
@@ -503,16 +502,8 @@ WysijaForm = {
       var is_visible = (parentPos.top <= (WysijaForm.scroll.top + viewportHeight));
       var buttonMargin = 5;
       var relativeTop = buttonMargin;
-      var absoluteTop;
-      var parentTop;
-      var parentBottom;
-
-      if (is_visible) {
-        // desired position is set to center of viewport
-        absoluteTop = parseInt(WysijaForm.scroll.top + ((viewportHeight / 2) - (element.getHeight() / 2)), 10);
-        parentTop = parseInt(parentPos.top - blockPadding, 10);
-        parentBottom = parseInt(parentPos.top + parentDim.height - blockPadding, 10);
-
+      
+      if(is_visible) {
         // always center
         relativeTop = parseInt((parentDim.height / 2) - (element.getHeight() / 2), 10);
       }
@@ -830,7 +821,6 @@ WysijaForm.Block = window.Class.create({
   },
   setupControls: function() {
     var block;
-    var field;
     // enable controls
     this.controls = this.getControls();
 
@@ -883,7 +873,6 @@ WysijaForm.Block = window.Class.create({
           // TODO: refactor
           block = window.$(event.target).up('.mailpoet_form_block') || null;
           if(block !== null) {
-            field = WysijaForm.getFieldData(block);
             this.editSettings();
           }
         }.bind(this));
@@ -934,7 +923,6 @@ WysijaForm.Block.create = function (createBlock, target) {
   var template;
   var output;
   var settings_segments;
-  var element;
   if(window.$('form_template_' + block.type) === null) {
     return false;
   }
@@ -966,14 +954,13 @@ WysijaForm.Block.create = function (createBlock, target) {
   }
 
   // if the drop target was the bottom placeholder
-  element = null;
   if(target.identify() === 'block_placeholder') {
     // insert block at the bottom
-    element = body.insert(output);
-    // block = body.childElements().last();
+    body.insert(output);
+    //block = body.childElements().last();
   } else {
     // insert block before the drop target
-    element = target.insert({
+    target.insert({
       before: output
     });
     // block = target.previous('.mailpoet_form_block');

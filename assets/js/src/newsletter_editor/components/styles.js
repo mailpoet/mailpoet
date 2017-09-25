@@ -83,7 +83,7 @@ define([
     this.setGlobalStyles(globalStyles);
   });
 
-  App.on('start', function (App, options) {
+  App.on('start', function(App) {
     var stylesView = new Module.StylesView({ model: App.getGlobalStyles() });
     App._appView.showChildView('stylesRegion', stylesView);
   });

@@ -110,7 +110,7 @@ define([
     }
   });
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function(App) {
     App.registerBlockType('header', {
       blockModel: Module.HeaderBlockModel,
       blockView: Module.HeaderBlockView

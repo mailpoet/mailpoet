@@ -351,9 +351,6 @@ define([
           // retina screen devices
           var targetImageWidth = 1320;
 
-          // For main image use the size, that's closest to being 660px in width
-          var sizeKeys = _.keys(sizes);
-
           // Pick the width that is closest to target width
           var increasingByWidthDifference = _.sortBy(
             _.keys(sizes),
@@ -416,7 +413,7 @@ define([
   });
   Module.ImageWidgetView = ImageWidgetView;
 
-  App.on('before:start', function (App, options) {
+  App.on('before:start', function(App) {
     App.registerBlockType('image', {
       blockModel: Module.ImageBlockModel,
       blockView: Module.ImageBlockView
