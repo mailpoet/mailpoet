@@ -48,3 +48,41 @@ $resize-handle-z-index = 2
 
   .mailpoet_resize_handle
     display: inline-block
+
+
+.mailpoet_image_resize_handle_container
+  position: absolute
+  bottom: 0
+  right: 0
+  width: 20px
+  height: 20px
+
+.mailpoet_image_resize_handle
+  position: relative
+  background: $resize-handle-background-color
+  border-radius(3px)
+  display: inline-block
+  width: 20px
+  height: 20px
+  cursor: nwse-resize
+  z-index: $resize-handle-z-index
+
+  .mailpoet_image_resize_handle_text,
+  .mailpoet_image_resize_handle_icon
+    pointer-events: none
+
+.mailpoet_image_resize_handle_icon
+  position: absolute
+  top: 0
+  right: 0
+
+  & > svg
+    width: 100%
+    height: 100%
+    fill: $resize-handle-font-color
+
+.mailpoet_block.mailpoet_image_resize_active > .mailpoet_block_highlight
+  border: 1px dashed $resize-active-color
+
+  .mailpoet_image_resize_handle
+    display: inline-block

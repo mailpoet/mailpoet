@@ -1,3 +1,14 @@
 <div class="mailpoet_tools"></div>
-<div class="mailpoet_content" style="text-align: {{ model.styles.block.textAlign }}"><a href="{{ model.link }}" onClick="return false;"><img src="{{#ifCond model.src '!=' ''}}{{ model.src }}{{ else }}{{ imageMissingSrc }}{{/ifCond}}" alt="{{ model.alt }}" onerror="if(this.src != '{{ imageMissingSrc }}') {this.src = '{{ imageMissingSrc }}'; this.style.width='auto';}"  /></a></div>
+<div class="mailpoet_content" style="text-align: {{ model.styles.block.textAlign }}; width: {{model.width}}">
+	<div class="mailpoet_image">
+		<a href="{{ model.link }}" onClick="return false;">
+			<img src="{{#ifCond model.src '!=' ''}}{{ model.src }}{{ else }}{{ imageMissingSrc }}{{/ifCond}}" alt="{{ model.alt }}" onerror="if(this.src != '{{ imageMissingSrc }}') {this.src = '{{ imageMissingSrc }}'; this.style.width='auto';}" width="{{model.width}}" />
+		</a>
+		<div class="mailpoet_image_resize_handle_container">
+		    <div class="mailpoet_image_resize_handle">
+		        <span class="mailpoet_image_resize_handle_icon"><%= source('newsletter/templates/svg/block-tools/resize.svg') %></span>
+		    </div>
+		</div>
+	</div>
+</div>
 <div class="mailpoet_block_highlight"></div>

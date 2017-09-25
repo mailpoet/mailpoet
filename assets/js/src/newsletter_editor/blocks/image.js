@@ -44,17 +44,28 @@ define([
       }, base.BlockView.prototype.templateContext.apply(this));
     },
     behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
-      ShowSettingsBehavior: {}
+      ResizableBehavior: {
+        elementSelector: '.mailpoet_image',
+        resizeHandleSelector: '.mailpoet_image_resize_handle',
+        onResize: function (event) {
+          var corner = this.$('.mailpoet_image').offset(),
+            width = event.pageX - corner.left;
+          this.view.model.set('width', width + 'px');
+        }
+      },
+      ShowSettingsBehavior: {
+        ignoreFrom: '.mailpoet_image_resize_handle'
+      }
     }),
     onRender: function () {
       this.toolsView = new Module.ImageBlockToolsView({ model: this.model });
       this.showChildView('toolsRegion', this.toolsView);
-
       if (this.model.get('fullWidth')) {
         this.$el.addClass('mailpoet_full_image');
       } else {
         this.$el.removeClass('mailpoet_full_image');
       }
+      this.$('.mailpoet_content').css('width', this.model.get('width'));
     }
   });
 
@@ -82,8 +93,31 @@ define([
         'change .mailpoet_field_image_full_width': _.partial(this.changeBoolCheckboxField, 'fullWidth'),
         'change .mailpoet_field_image_alignment': _.partial(this.changeField, 'styles.block.textAlign'),
         'click .mailpoet_field_image_select_another_image': 'showMediaManager',
-        'click .mailpoet_done_editing': 'close'
+        'click .mailpoet_done_editing': 'close',
+        'input .mailpoet_field_image_width': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width_input', _.partial(this.changePixelField, 'width').bind(this)),
+        'change .mailpoet_field_image_width': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width_input', _.partial(this.changePixelField, 'width').bind(this)),
+        'input .mailpoet_field_image_width_input': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width', _.partial(this.changePixelField, 'width').bind(this))
       };
+    },
+    modelEvents: function () {
+      return {
+        'change:maxWidth': 'updateMaxWidth',
+        'change:width': 'updateWidth'
+      };
+    },
+    updateValueAndCall: function (fieldToUpdate, callable, event) {
+      this.$(fieldToUpdate).val(jQuery(event.target).val());
+      callable(event);
+    },
+    updateMaxWidth: function () {
+      var maxWidth = parseInt(this.model.get('maxWidth'));
+      this.$('.mailpoet_field_image_width').attr('max', maxWidth);
+      this.$('.mailpoet_field_image_width_input').attr('max', maxWidth);
+    },
+    updateWidth: function () {
+      var width = parseInt(this.model.get('width'));
+      this.$('.mailpoet_field_image_width').val(width);
+      this.$('.mailpoet_field_image_width_input').val(width);
     },
     initialize: function (options) {
       base.BlockSettingsView.prototype.initialize.apply(this, arguments);
