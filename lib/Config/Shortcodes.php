@@ -4,6 +4,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\WP\Hooks;
 
 class Shortcodes {
   function __construct() {
@@ -26,10 +27,10 @@ class Shortcodes {
       $this, 'getArchive'
     ));
 
-    add_filter('mailpoet_archive_date', array(
+    Hooks::addFilter('mailpoet_archive_date', array(
       $this, 'renderArchiveDate'
     ), 2);
-    add_filter('mailpoet_archive_subject', array(
+    Hooks::addFilter('mailpoet_archive_subject', array(
       $this, 'renderArchiveSubject'
     ), 2, 3);
   }
@@ -79,12 +80,12 @@ class Shortcodes {
     $subscriber = Subscriber::getCurrentWPUser();
 
     if(empty($newsletters)) {
-      return apply_filters(
+      return Hooks::applyFilters(
         'mailpoet_archive_no_newsletters',
         __('Oops! There are no newsletters to display.', 'mailpoet')
       );
     } else {
-      $title = apply_filters('mailpoet_archive_title', '');
+      $title = Hooks::applyFilters('mailpoet_archive_title', '');
       if(!empty($title)) {
         $html .= '<h3 class="mailpoet_archive_title">'.$title.'</h3>';
       }
@@ -93,10 +94,10 @@ class Shortcodes {
         $queue = $newsletter->queue()->findOne();
         $html .= '<li>'.
           '<span class="mailpoet_archive_date">'.
-            apply_filters('mailpoet_archive_date', $newsletter).
+            Hooks::applyFilters('mailpoet_archive_date', $newsletter).
           '</span>
           <span class="mailpoet_archive_subject">'.
-            apply_filters('mailpoet_archive_subject', $newsletter, $subscriber, $queue).
+            Hooks::applyFilters('mailpoet_archive_subject', $newsletter, $subscriber, $queue).
           '</span>
         </li>';
       }
